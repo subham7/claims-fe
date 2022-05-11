@@ -18,7 +18,7 @@ const drawerWidth = 240
 const drawer = (
   <>
     <Toolbar />
-    <Divider />
+
     <List>
       {["Inbox", "Starred", "Send email", "Drafts"].map((text, index) => (
         <ListItem button key={text}>
@@ -70,7 +70,7 @@ export default function Sidebar(props) {
             boxSizing: "border-box",
             width: drawerWidth,
             backgroundColor: (theme) =>
-              theme.palette.mode == "dark" ? "#191919" : "#fff",
+              theme.palette.mode == "dark" ? "#191919" : "#F4F4F5",
           },
         }}
       >
@@ -85,8 +85,9 @@ export default function Sidebar(props) {
           "& .MuiDrawer-paper": {
             boxSizing: "border-box",
             width: drawerWidth,
+            borderRight: "none",
             backgroundColor: (theme) =>
-              theme.palette.mode == "dark" ? "#191919" : "#fff",
+              theme.palette.mode == "dark" ? "#191919" : "#F4F4F5",
           },
         }}
         open

@@ -3,10 +3,11 @@ import { Box, CssBaseline } from "@mui/material"
 
 import Navbar from "../navbar"
 import Sidebar from "../sidebar"
+import Tabs from "../linkedTabs"
 
 const drawerWidth = 240
 
-export default function Layout(props) {
+export default function Layout1(props) {
   const [mobileOpen, setMobileOpen] = React.useState(false)
 
   const handleDrawerToggle = () => {
@@ -24,15 +25,15 @@ export default function Layout(props) {
           handleDrawerToggle={handleDrawerToggle}
         />
         <Box
-          mt={7}
           component="main"
           sx={{
             flexGrow: 1,
-            p: 3,
+            paddingTop: "70px",
             width: { sm: `calc(100% - ${drawerWidth}px)` },
           }}
         >
-          {props.children}
+          <Tabs data={props.tab} />
+          <div style={{ padding: "15px 50px" }}>{props.children}</div>
         </Box>
       </Box>
     </>

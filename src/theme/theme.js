@@ -7,12 +7,20 @@ const theme = (mode) =>
     palette: {
       mode: mode,
       background: {
-        default: mode == "dark" ? "#121212" : "#F4F4F5",
-        paper: mode == "dark" ? "#242424" : "#F4F4F5",
+        default: mode == "dark" ? "#142243" : "#EFEFEF",
+        paper: mode == "dark" ? "#191919" : "#F4F4F5",
       },
     },
     components: {
       ...(mode == "dark" ? darkComponents : lightComponents),
+      MuiTab: {
+        styleOverrides: {
+          root: { textTransform: "none" },
+        },
+      },
+    },
+    text: {
+      primary: "#484848",
     },
   })
 

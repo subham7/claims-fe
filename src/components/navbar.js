@@ -3,6 +3,7 @@ import { AppBar, Box, Toolbar, IconButton, Button } from "@mui/material"
 import MenuIcon from "@mui/icons-material/Menu"
 import Image from "next/image"
 import { makeStyles } from "@mui/styles"
+import { connectWallet, setUserChain } from "../utils/wallet"
 
 const useStyles = makeStyles({
   image: {
@@ -13,6 +14,8 @@ const useStyles = makeStyles({
 
 export default function Navbar(props) {
   const classes = useStyles()
+
+  //setUserChain()
 
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -33,14 +36,16 @@ export default function Navbar(props) {
           </IconButton>
           <Box sx={{ flexGrow: 1 }}>
             <Image
-              src="/assets/images/logo.png"
-              height="30"
-              width="154"
+              src="/assets/images/monogram.png"
+              height="40"
+              width="40"
               className={classes.image}
             />
           </Box>
 
-          <Button variant="dark">Login</Button>
+          <Button variant="dark" onClick={() => connectWallet()}>
+            Connect Wallet
+          </Button>
         </Toolbar>
       </AppBar>
     </Box>
