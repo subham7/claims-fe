@@ -30,4 +30,16 @@ export const darkComponents = {
       },
     },
   },
+  MuiSwitch: {
+    styleOverrides: {
+      thumb: {
+        color: "#3B7AFD",
+      },
+      track: {
+        "&:checked": {
+          backgroundColor: "#3B7AFD",
+        },
+      },
+    },
+  }
 }

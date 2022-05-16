@@ -5,10 +5,24 @@ import Step from "@mui/material/Step"
 import StepLabel from "@mui/material/StepLabel"
 import Button from "@mui/material/Button"
 import Typography from "@mui/material/Typography"
+import { makeStyles } from "@mui/styles"
 
 import Card from "../components/card"
 
+const useStyles = makeStyles({
+  large_button: {
+    width: "31.25vw",
+  },
+  large_button_back: {
+    fontWeight: "bold",
+    width: "31.25vw",
+    color: "#242424",
+    backgroundColor:  "#F5F5F5",
+  }
+})
+
 export default function HorizontalLinearStepper(props) {
+  const classes = useStyles()
   const [activeStep, setActiveStep] = React.useState(0)
   const [skipped, setSkipped] = React.useState(new Set())
   const { steps, components } = props
@@ -56,7 +70,7 @@ export default function HorizontalLinearStepper(props) {
   }
 
   return (
-    <Box sx={{ width: "100%" }}>
+    <Box sx={{ width: "60.260vw" }}>
       <Stepper activeStep={activeStep}>
         {steps.map((label, index) => {
           const stepProps = {}
@@ -85,33 +99,33 @@ export default function HorizontalLinearStepper(props) {
             </Typography>
             <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
               <Box sx={{ flex: "1 1 auto" }} />
-              <Button onClick={handleReset}>Reset</Button>
+              <Button className={classes.large_button} onClick={handleReset}>Reset</Button>
             </Box>
           </>
         ) : (
           <>
             {components[activeStep]}
-
-            <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
-              <Button
-                color="inherit"
-                disabled={activeStep === 0}
-                onClick={handleBack}
-                sx={{ mr: 1 }}
-              >
-                Back
-              </Button>
-              <Box sx={{ flex: "1 1 auto" }} />
-              {isStepOptional(activeStep) && (
-                <Button color="inherit" onClick={handleSkip} sx={{ mr: 1 }}>
-                  Skip
+              <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
+                {activeStep === 0 ? null : (
+                  <Button
+                    className={classes.large_button_back}
+                    disabled={activeStep === 0}
+                    onClick={handleBack}
+                    sx={{ mr: 1}}
+                  >
+                    Go Back
+                  </Button>
+                )}
+                <Box sx={{ flex: "1 1 auto" }} />
+                {/* {isStepOptional(activeStep) && (
+                  <Button className={classes.large_button} color="inherit" onClick={handleSkip} sx={{ mr: 1 }}>
+                    Skip
+                  </Button>
+                )} */}
+                <Button className={classes.large_button} onClick={handleNext} >
+                  {activeStep === steps.length - 1 ? "Perfect, let's get started!" : "Next"}
                 </Button>
-              )}
-
-              <Button onClick={handleNext}>
-                {activeStep === steps.length - 1 ? "Finish" : "Next"}
-              </Button>
-            </Box>
+              </Box>
           </>
         )}
       </Card>
