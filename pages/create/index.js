@@ -52,6 +52,10 @@ const useStyles = makeStyles({
   },
   boldText: {
     fontWeight: "bold",
+  },
+  uploadImage: {
+    width: "27px",
+    height: "27px"
   }
 })
 
@@ -116,11 +120,15 @@ export default function Create(props) {
               variant="outlined"
             />
             <br />
-            <Grid container wrap="nowrap" spacing={4}>
-              <Grid item xs={3}>
+            <Grid container wrap="nowrap" spacing={0} justify="center" alignItems="center" direction="row">
+              <Grid item xs={0}>
                 <input ref={uploadInputRef} type="file" accept="image/*" id="file" name="file" hidden onChange={onChange} />
+              </Grid>
+              <Grid item xs={3}>
                 <div onClick={() => uploadInputRef.current && uploadInputRef.current.click()}>
-                  <CustomRoundedCard  />
+                  <CustomRoundedCard>
+                    <img className={classes.uploadImage} src="/assets/icons/upload.png" alt="upload-image" />
+                  </CustomRoundedCard>
                 </div>
               </Grid>
               <Grid item xs={9}>

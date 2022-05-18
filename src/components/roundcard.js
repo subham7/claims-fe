@@ -15,7 +15,9 @@ const useStyles = makeStyles({
       opacity: "1",
       "&:hover": {
         cursor: "pointer",
-      }
+      },
+      justify: "center",
+      alignItems: "center",
     }
   })
 

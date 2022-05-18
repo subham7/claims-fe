@@ -1,9 +1,11 @@
-import React from "react"
+import { React, useEffect, useState } from "react"
 import { AppBar, Box, Toolbar, IconButton, Button } from "@mui/material"
 import MenuIcon from "@mui/icons-material/Menu"
 import Image from "next/image"
 import { makeStyles } from "@mui/styles"
-import { connectWallet, setUserChain } from "../utils/wallet"
+import { connectWallet, setUserChain, onboard } from "../utils/wallet"
+import Web3 from "web3"
+import AccountButton from "./accountbutton"
 
 const useStyles = makeStyles({
   image: {
@@ -14,6 +16,40 @@ const useStyles = makeStyles({
 
 export default function Navbar(props) {
   const classes = useStyles()
+  const [previouslyConnectedWallet, setPreviouslyConnectedWallet] = useState(null)
+  const [userDetails, setUserDetails] = useState(null)
+
+  useEffect(() => {
+    setPreviouslyConnectedWallet(JSON.parse(localStorage.getItem('connectedWallets')))
+
+    const checkConnection = async () => {
+
+      var web3
+      if (window.ethereum) {
+        web3 = new Web3(window.ethereum)
+      }
+      else if (window.web3) {
+        web3 = new Web3(window.web3.currentProvider)
+      }
+      try{
+        web3.eth.getAccounts()
+        .then((async) => {
+          setUserDetails(async[0])
+        }
+      );
+    }
+    catch(err){
+      setUserDetails(null)
+    }
+  };
+      
+    checkConnection()
+  }, [])
+  
+  
+  if (previouslyConnectedWallet) {
+    onboard.connectWallet({ autoSelect: previouslyConnectedWallet[0] })
+  }
 
   //setUserChain()
 
@@ -42,10 +78,19 @@ export default function Navbar(props) {
               className={classes.image}
             />
           </Box>
-
-          <Button variant="dark" onClick={() => connectWallet()}>
-            Connect Wallet
-          </Button>
+          {previouslyConnectedWallet !== null ? (
+            <AccountButton accountDetail={userDetails} />
+          ) : (
+            <Button
+              variant="contained"
+              color="primary"
+              sx={{ mr: 2 }}
+              onClick={() => connectWallet()}
+            >
+              Connect Wallet
+            </Button>
+          )}       
+              
         </Toolbar>
       </AppBar>
     </Box>
