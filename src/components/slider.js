@@ -38,6 +38,7 @@ export default function CustomSlider(props) {
         step={1}
         valueLabelDisplay="on"
         valueLabelFormat={valuetext}
+        onChange={props.onChange}
       />
     </Box>
   );

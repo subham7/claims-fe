@@ -9,7 +9,7 @@ import styled from "@emotion/styled"
 
 
 import Layout2 from "../../src/components/layouts/layout2"
-import Stepper from "../../src/components/stepper"
+import HorizontalLinearStepper from "../../src/components/stepper"
 import CustomRoundedCard from "../../src/components/roundcard"
 import CustomCard from "../../src/components/card"
 import CustomSlider from "../../src/components/slider"
@@ -49,6 +49,7 @@ const useStyles = makeStyles({
   finserveImage: {
     width: "4.01vw",
     height: "8.13vh",
+    borderRadius: "100%"
   },
   boldText: {
     fontWeight: "bold",
@@ -66,34 +67,27 @@ export default function Create(props) {
   const [clubName, setClubName] = useState(null);
   const [clubSymbol, setClubSymbol] = useState(null);
   const [displayImage, setDisplayImage] = useState(null);
-  const [raiseAmount, setRaiseAmount] = useState(null);
-  const [maxContribution, setMaxContribution] = useState(null);
+  const [raiseAmount, setRaiseAmount] = useState(0);
+  const [maxContribution, setMaxContribution] = useState(0);
   const [mandatoryProposal, setMandatoryProposal] = useState(false);
-  const [voteForQuorum, setVoteForQuorum] = useState(null);
-  const [depositClose, setDepositClose] = useState(null);
-  const [minContribution, setMinContribution] = useState(null);
-  const [voteInFavour, setVoteInFavour] = useState(null);
+  const [voteForQuorum, setVoteForQuorum] = useState(0);
+  const [depositClose, setDepositClose] = useState(new Date());
+  const [minContribution, setMinContribution] = useState(0);
+  const [voteInFavour, setVoteInFavour] = useState(0);
 
   const handleChange = (newValue) => {
     setValue(newValue);
+    setDepositClose(newValue);
   };
 
-  const handleStepOneChange = (event) => {
-    setClubName(event.target.value);
-    setClubSymbol(event.target.value);
-    setDisplayImage(event.target.value);
+  const onSetVoteForQuorum = (event, newValue) => {
+    setVoteForQuorum(newValue);
   };
 
-  const handleStepTwoChange = (event) => {
-    setRaiseAmount(event.target.value);
-    setMaxContribution(event.target.value);
-    setMandatoryProposal(event.target.value);
-    setVoteForQuorum(event.target.value);
-    setDepositClose(event.target.value);
-    setMinContribution(event.target.value);
-    setVoteInFavour(event.target.value);
+  const onSetVoteOnFavourChange = (event, newValue) => {
+    setVoteInFavour(newValue);
   };
-  
+ 
 
   const steps = ["Add basic info", "Set club rules", "Final step"]
 
@@ -108,21 +102,27 @@ export default function Create(props) {
             <Typography className={classes.largeText} variant="p">What should we call your club?</Typography>
             <br />
             <TextField
+              error={clubName === ""}
               className={classes.textField}
               label="Club name"
               variant="outlined"
+              onChange={(e) => setClubName(e.target.value)}
+              value={clubName}
             />
             <Typography className={classes.largeText} variant="p">Enter club token symbol</Typography>
             <br />
             <TextField
+              error={clubSymbol === ""}
               className={classes.textField}
               label="Club symbol"
               variant="outlined"
+              onChange={(e) => setClubSymbol(e.target.value)}
+              value={clubSymbol}
             />
             <br />
             <Grid container wrap="nowrap" spacing={0} justify="center" alignItems="center" direction="row">
               <Grid item xs={0}>
-                <input ref={uploadInputRef} type="file" accept="image/*" id="file" name="file" hidden onChange={onChange} />
+                <input ref={uploadInputRef} type="file" accept="image/*" id="file" name="file" hidden onChange={(e) => setDisplayImage(URL.createObjectURL(e.target.files[0]))} />
               </Grid>
               <Grid item xs={3}>
                 <div onClick={() => uploadInputRef.current && uploadInputRef.current.click()}>
@@ -170,19 +170,25 @@ export default function Create(props) {
               Club raise amount (in USDC)
             </Typography>
             <TextField
+                error={raiseAmount === 0}
                 className={classes.textField}
                 label="Amount (USDC)"
                 variant="outlined"
+                onChange={(e) => setRaiseAmount(e.target.value)}
+                value={raiseAmount}
               />
               <Typography className={classes.largeText} variant="p">
                 Maximum contribution per person
               </Typography>
               <TextField
+                  error={maxContribution === 0}
                   className={classes.textField}
                   label="Max. amount (USDC)"
                   variant="outlined"
+                  onChange={(e) => setMaxContribution(e.target.value)}
+                  value={maxContribution}
                 />
-              <FormControlLabel control={<Switch />} label="Make proposals mandatory" />
+              <FormControlLabel control={<Switch />} onChange={(e) => setMandatoryProposal(e.target.value)} value={mandatoryProposal} label="Make proposals mandatory" />
               <Typography className={classes.largeText} variant="h">
                 Quorum
               </Typography>
@@ -190,7 +196,7 @@ export default function Create(props) {
                 Percentage of total members who must vote for a proposal to meet quorum:*
               </Typography>
               <Box pt={2}>
-                <CustomSlider />
+                <CustomSlider onChange={onSetVoteForQuorum} value={voteForQuorum} />
               </Box>
           </Stack>
         </Grid>
@@ -201,10 +207,11 @@ export default function Create(props) {
               When will the deposits close?
             </Typography>
             <DesktopDatePicker
+              error={value === null}
               className={classes.textField}
               inputFormat="dd/MM/yyyy"
               value={value}
-              onChange={handleChange}
+              onChange={(e) => handleChange(e)}
               renderInput={(params) => <TextField {...params} />}
             />
             </LocalizationProvider>
@@ -213,9 +220,12 @@ export default function Create(props) {
               Minimum contribution per person
             </Typography>
             <TextField
+              error={minContribution === 0}
               className={classes.textField}
               label="Min. amount (USDC)"
               variant="outlined"
+              onChange={(e) => setMinContribution(e.target.value)}
+              value={minContribution}
             />
           </Stack>
           <Box pt={14}>
@@ -223,7 +233,7 @@ export default function Create(props) {
               <Typography className={classes.largeText} variant="p">
                 Percentage of total members who must vote in favour for a proposal to pass:*
               </Typography>
-              <CustomSlider />
+              <CustomSlider onChange={onSetVoteOnFavourChange} value={voteInFavour} />
             </Stack>
           </Box>
         </Grid>
@@ -251,12 +261,12 @@ export default function Create(props) {
       </Grid>
       <Grid container spacing={2}>
         <Grid item mt={3} ml={3}>
-          <img className={classes.finserveImage} src="/assets/images/finserv_icon@2x.png" alt="finserve" />
+          <img className={classes.finserveImage} src={displayImage} alt={clubSymbol} />
         </Grid>
-        <Grid item ml={4} mt={4}>
+        <Grid item ml={4} mt={4} mb={4}>
           <Stack spacing={1}>
           <Typography variant="h5">
-            DEMO Club
+            {clubName}
           </Typography>
           <Typography variant="p"> 1 USDC = 1 DEMO</Typography>
           </Stack>
@@ -269,19 +279,19 @@ export default function Create(props) {
               Club raise amount (in USDC)
             </Typography>
             <Typography className={classes.boldText} variant="h5">
-              100,000 USDC
+              {raiseAmount} USDC
             </Typography>
             <Typography variant="p">
               Minimum contribution per person
             </Typography>
             <Typography className={classes.boldText} variant="h5">
-              500 USDC
+              {minContribution} USDC
             </Typography>
             <Typography variant="p">
               Maximum contribution per person
             </Typography>
             <Typography className={classes.boldText} variant="h5">
-              1000 USDC
+              {maxContribution} USDC
             </Typography>
           </Stack>
         </Grid>
@@ -291,19 +301,19 @@ export default function Create(props) {
               When will the deposits close?
             </Typography>
             <Typography className={classes.boldText} variant="h5">
-              12/04/2022
+              {depositClose.toLocaleDateString('en-IN')}
             </Typography>
             <Typography variant="p">
               Minimum votes needed to validate proposal
             </Typography>
             <Typography className={classes.boldText} variant="h5">
-              35%
+              {voteForQuorum}%
             </Typography>
             <Typography variant="p">
               Minimum ‘yes’ votes needed to pass a proposal
             </Typography>
             <Typography className={classes.boldText} variant="h5">
-              51%
+              {voteInFavour}%
             </Typography>
           </Stack>        
         </Grid>
@@ -315,7 +325,23 @@ export default function Create(props) {
 
   return (
     <Layout2>
-      <Stepper steps={steps} components={[step1(), step2(), step3()]} />
+      <HorizontalLinearStepper 
+      steps={steps} 
+      components={[step1(), step2(), step3()]} 
+      data={
+        {
+          clubname: clubName, 
+          clubsymbol: clubSymbol, 
+          displayimage: displayImage, 
+          raiseamount: raiseAmount, 
+          maxcontribution: maxContribution, 
+          mandatoryproposal: mandatoryProposal, 
+          voteforquorum: voteForQuorum, 
+          depositclose: depositClose, 
+          mincontribution: minContribution, 
+          voteinfavour: voteInFavour 
+        }
+      } />
     </Layout2>
   )
 }

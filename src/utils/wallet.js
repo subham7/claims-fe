@@ -64,13 +64,10 @@ export const onboard = Onboard({
 
 export async function connectWallet() {
   const wallets = await onboard.connectWallet()
-  // const success = await onboard.setChain({ chainId: "0x38" })
-  console.log(wallets)
 }
 
 export async function setUserChain() {
   const setChain = await onboard.setChain({ chainId: "0x1" })
-  console.log(setChain)
 }
 
 const walletsSub = onboard.state.select('wallets')

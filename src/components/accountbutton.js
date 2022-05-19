@@ -66,6 +66,7 @@ export default function AccountButton(props) {
     await onboard.disconnectWallet({ label: primaryWallet.label })
     setAnchorEl(null)
     setMenuItems(false)
+    localStorage.removeItem("connectedWallets")
   };
 
   return (

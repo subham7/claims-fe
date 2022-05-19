@@ -25,7 +25,7 @@ export default function HorizontalLinearStepper(props) {
   const classes = useStyles()
   const [activeStep, setActiveStep] = React.useState(0)
   const [skipped, setSkipped] = React.useState(new Set())
-  const { steps, components } = props
+  const { steps, components, data } = props
 
   const isStepOptional = (step) => {
     return step === 1
@@ -122,9 +122,29 @@ export default function HorizontalLinearStepper(props) {
                     Skip
                   </Button>
                 )} */}
-                <Button className={classes.large_button} onClick={handleNext} >
+                {(activeStep === 0 && data['clubname'] || data['clubsymbol'] !== null) || (activeStep === 1 && data['raiseamount'] && data['maxcontribution'] && data['mandatoryproposal'] && data['voteforquorum'] && data['depositclose'], data['mincontribution'] && data['voteinfavour'] !== null ) ? (
+                  <Button
+                    className={classes.large_button}
+                    variant="contained"
+                    onClick={handleNext}
+                  >
+                    Next
+                  </Button>
+                ) : (
+                  <Button
+                    className={classes.large_button}
+                    variant="contained"
+                    // disabled
+                    disabled={!data['clubname'] || !data['clubsymbol']}
+                    onClick={handleNext}
+                  >
+                    Next
+                  </Button>
+                )}
+
+                {/* <Button className={classes.large_button} onClick={handleNext} >
                   {activeStep === steps.length - 1 ? "Perfect, let's get started!" : "Next"}
-                </Button>
+                </Button> */}
               </Box>
           </>
         )}
