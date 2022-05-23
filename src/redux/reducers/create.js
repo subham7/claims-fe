@@ -11,7 +11,7 @@ export const slice = createSlice({
         maxContribution: 0,
         mandatoryProposal: false,
         voteForQuorum: 0,
-        depositClose: new Date(),
+        depositClose: null,
         minContribution: 0,
         voteInFavour: 0,
     },
@@ -52,7 +52,8 @@ export const slice = createSlice({
         addVoteInFavour: (state, action) => {
             state.voteInFavour = action.payload
         },
-    }
+    },
+    middleware: (getDefaultMiddleware) => getDefaultMiddleware(),
 })
 
 export const { 
