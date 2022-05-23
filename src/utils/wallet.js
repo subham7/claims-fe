@@ -17,8 +17,8 @@ export const  onboard = Onboard({
   wallets: [injected],
   chains: [
     {
-      id: "0x1", // chain ID must be in hexadecimel
-      token: "ETH", // main chain token
+      id: "0x1",
+      token: "ETH",
       label: "Ethereum Mainnet",
       rpcUrl: ETH_MAINNET_RPC
     },

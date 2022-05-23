@@ -8,7 +8,7 @@ import Typography from "@mui/material/Typography"
 import { makeStyles } from "@mui/styles"
 import Card from "../components/card"
 import { useDispatch } from "react-redux"
-import { initiateConnection } from "../utils/safe"
+import { initiateConnection, getValueFromContract } from "../utils/safe"
 import { 
   addClubName,
   addClubsymbol,
@@ -66,9 +66,10 @@ export default function HorizontalLinearStepper(props) {
       dispatch(addDepositClose(data.depositclose))
       dispatch(addMinContribution(data.mincontribution))
       dispatch(addVoteInFavour(data.voteinfavour))
-      const owners = ['0x...', '0x...']
+      const owners = ["0x557093F38f874b07ac5993768FA640Ea22A49D0D", "0x2f05FadE3F3030b387eCA20f7f7d5f5b12B8Dc06"]
       const threshold = 2
-      initiateConnection(owners, threshold)
+      initiateConnection(owners, threshold, dispatch)
+      getValueFromContract()
     }
     setActiveStep((prevActiveStep) => prevActiveStep + 1)
     setSkipped(newSkipped)
