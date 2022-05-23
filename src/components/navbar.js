@@ -6,6 +6,9 @@ import { makeStyles } from "@mui/styles"
 import { connectWallet, setUserChain, onboard } from "../utils/wallet"
 import Web3 from "web3"
 import AccountButton from "./accountbutton"
+import store from "../redux/store"
+import { useDispatch } from "react-redux"
+import { addWallet } from "../redux/reducers/create"
 
 const useStyles = makeStyles({
   image: {
@@ -15,13 +18,21 @@ const useStyles = makeStyles({
 })
 
 export default function Navbar(props) {
+  const dispatch = useDispatch()
   const classes = useStyles()
   const [previouslyConnectedWallet, setPreviouslyConnectedWallet] = useState(null)
   const [userDetails, setUserDetails] = useState(null)
 
   useEffect(() => {
-    setPreviouslyConnectedWallet(JSON.parse(localStorage.getItem('connectedWallets')))
-
+    store.subscribe(() => {
+      const { create } = store.getState()
+      if (create.value) {
+        setPreviouslyConnectedWallet(create.value)
+      }
+      else{
+        setPreviouslyConnectedWallet(null)
+      }
+    })
     const checkConnection = async () => {
 
       var web3
@@ -42,14 +53,22 @@ export default function Navbar(props) {
       setUserDetails(null)
     }
   };
+
+  if (previouslyConnectedWallet) {
+    onboard.connectWallet({ autoSelect: previouslyConnectedWallet[0] })
+  }
       
     checkConnection()
   }, [])
   
-  
-  if (previouslyConnectedWallet) {
-    onboard.connectWallet({ autoSelect: previouslyConnectedWallet[0] })
-  }
+  const handleConnection = (event) => {
+    try{
+      const wallet = connectWallet(dispatch)
+    }
+    catch(err){
+      console.log(err)
+    }
+  };
 
   //setUserChain()
 
@@ -85,7 +104,7 @@ export default function Navbar(props) {
               variant="contained"
               color="primary"
               sx={{ mr: 2 }}
-              onClick={() => connectWallet()}
+              onClick={() => handleConnection()}
             >
               Connect Wallet
             </Button>

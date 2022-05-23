@@ -9,7 +9,8 @@ import ArchiveIcon from '@mui/icons-material/Archive';
 import FileCopyIcon from '@mui/icons-material/FileCopy';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import { onboard } from '../utils/wallet';
+import { onboard, disconnectWallet } from '../utils/wallet';
+import { useDispatch } from 'react-redux';
 
 const StyledMenu = styled((props) => (
   <Menu
@@ -58,15 +59,16 @@ export default function AccountButton(props) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [menuItems, setMenuItems] = React.useState(true);
   const open = Boolean(anchorEl);
+  const dispatch = useDispatch();
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
   const handleDisconnect = async() => {
     const [primaryWallet] = onboard.state.get().wallets
-    await onboard.disconnectWallet({ label: primaryWallet.label })
+    await onboard.disconnectWallet({ 'label': primaryWallet.label })
+    disconnectWallet(dispatch)
     setAnchorEl(null)
     setMenuItems(false)
-    localStorage.removeItem("connectedWallets")
   };
 
   return (

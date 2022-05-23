@@ -170,7 +170,7 @@ export default function Create(props) {
               Club raise amount (in USDC)
             </Typography>
             <TextField
-                error={raiseAmount === 0}
+                error={!(raiseAmount >= 0 || raiseAmount % 1 === 0)}
                 className={classes.textField}
                 label="Amount (USDC)"
                 variant="outlined"
@@ -181,13 +181,13 @@ export default function Create(props) {
                 Maximum contribution per person
               </Typography>
               <TextField
-                  error={maxContribution === 0}
-                  className={classes.textField}
-                  label="Max. amount (USDC)"
-                  variant="outlined"
-                  onChange={(e) => setMaxContribution(e.target.value)}
-                  value={maxContribution}
-                />
+                error={!(maxContribution >= 0 || maxContribution % 1 === 0)}
+                className={classes.textField}
+                label="Max. amount (USDC)"
+                variant="outlined"
+                onChange={(e) => setMaxContribution(e.target.value)}
+                value={maxContribution}
+              />
               <FormControlLabel control={<Switch />} onChange={(e) => setMandatoryProposal(e.target.value)} value={mandatoryProposal} label="Make proposals mandatory" />
               <Typography className={classes.largeText} variant="h">
                 Quorum
@@ -215,12 +215,11 @@ export default function Create(props) {
               renderInput={(params) => <TextField {...params} />}
             />
             </LocalizationProvider>
-            <br />
             <Typography className={classes.largeText} variant="p">
               Minimum contribution per person
             </Typography>
             <TextField
-              error={minContribution === 0}
+              error={!(minContribution >= 0 || minContribution % 1 === 0)}
               className={classes.textField}
               label="Min. amount (USDC)"
               variant="outlined"
@@ -228,8 +227,8 @@ export default function Create(props) {
               value={minContribution}
             />
           </Stack>
-          <Box pt={14}>
-            <Stack spacing={5}>
+          <Box pt={15}>
+            <Stack spacing={6}>
               <Typography className={classes.largeText} variant="p">
                 Percentage of total members who must vote in favour for a proposal to pass:*
               </Typography>
@@ -325,7 +324,7 @@ export default function Create(props) {
 
   return (
     <Layout2>
-      <HorizontalLinearStepper 
+    <HorizontalLinearStepper 
       steps={steps} 
       components={[step1(), step2(), step3()]} 
       data={

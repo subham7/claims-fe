@@ -1,17 +1,19 @@
 import React from "react"
 import Onboard from "@web3-onboard/core"
 import injectedModule from "@web3-onboard/injected-wallets"
+import { useDispatch } from "react-redux"
+import { addWallet, removeWallet } from "../redux/reducers/create"
 
 
 const INFURA_ID = "sdf"
 const ETH_ROPSTEN_RPC = `https://ropsten.infura.io/v3/946205020d6c477192b1178b3c5f8590`
 const ETH_MAINNET_RPC = `https://mainnet.infura.io/v3/${INFURA_ID}`
-const ETH_RINKEBY_RPC = `https://rinkeby.infura.io/v3/${INFURA_ID}`
+const ETH_RINKEBY_RPC = `https://rinkeby.infura.io/v3/feaf3bb22fef436e996b4eb0e157dacd`
 const MATIC_MAINNET_RPC = 'https://matic-mainnet.chainstacklabs.com'
 
 const injected = injectedModule()
 
-export const onboard = Onboard({
+export const  onboard = Onboard({
   wallets: [injected],
   chains: [
     {
@@ -62,19 +64,20 @@ export const onboard = Onboard({
   },
 })
 
-export async function connectWallet() {
+export async function connectWallet(dispatch) {
   const wallets = await onboard.connectWallet()
+  dispatch(addWallet(wallets.map(({ accounts }) => accounts)))
 }
 
 export async function setUserChain() {
   const setChain = await onboard.setChain({ chainId: "0x1" })
 }
 
-const walletsSub = onboard.state.select('wallets')
-const { unsubscribe } = walletsSub.subscribe(wallets => {
-  const connectedWallets = wallets.map(({ label }) => label)
-  localStorage.setItem(
-    'connectedWallets',
-    JSON.stringify(connectedWallets)
-  )
-})
+export const walletsSub = onboard.state.select('wallets')
+
+export async function disconnectWallet(dispatch){
+  const wallet = walletsSub.subscribe(wallets => {
+    const connectedWallets = wallets.map(({ label }) => label)
+    dispatch(removeWallet(wallets.map(({ accounts }) => accounts)))
+  })
+}

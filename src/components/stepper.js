@@ -6,8 +6,21 @@ import StepLabel from "@mui/material/StepLabel"
 import Button from "@mui/material/Button"
 import Typography from "@mui/material/Typography"
 import { makeStyles } from "@mui/styles"
-
 import Card from "../components/card"
+import { useDispatch } from "react-redux"
+import { initiateConnection } from "../utils/safe"
+import { 
+  addClubName,
+  addClubsymbol,
+  addDisplayImage,
+  addRaiseAmount,
+  addMaxContribution,
+  addMandatoryProposal,
+  addVoteForQuorum,
+  addDepositClose,
+  addMinContribution,
+  addVoteInFavour
+} from "../redux/reducers/create"
 
 const useStyles = makeStyles({
   large_button: {
@@ -26,6 +39,7 @@ export default function HorizontalLinearStepper(props) {
   const [activeStep, setActiveStep] = React.useState(0)
   const [skipped, setSkipped] = React.useState(new Set())
   const { steps, components, data } = props
+  const dispatch = useDispatch()
 
   const isStepOptional = (step) => {
     return step === 1
@@ -41,7 +55,21 @@ export default function HorizontalLinearStepper(props) {
       newSkipped = new Set(newSkipped.values())
       newSkipped.delete(activeStep)
     }
-
+    if (activeStep === steps.length - 1) {
+      dispatch(addClubName(data.clubname))
+      dispatch(addClubsymbol(data.clubsymbol))
+      dispatch(addDisplayImage(data.displayimage))
+      dispatch(addRaiseAmount(data.raiseamount))
+      dispatch(addMaxContribution(data.maxcontribution))
+      dispatch(addMandatoryProposal(data.mandatoryproposal))
+      dispatch(addVoteForQuorum(data.voteforquorum))
+      dispatch(addDepositClose(data.depositclose))
+      dispatch(addMinContribution(data.mincontribution))
+      dispatch(addVoteInFavour(data.voteinfavour))
+      const owners = ['0x...', '0x...']
+      const threshold = 2
+      initiateConnection(owners, threshold)
+    }
     setActiveStep((prevActiveStep) => prevActiveStep + 1)
     setSkipped(newSkipped)
   }
@@ -106,7 +134,7 @@ export default function HorizontalLinearStepper(props) {
           <>
             {components[activeStep]}
               <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
-                {activeStep === 0 ? null : (
+                {activeStep === 0 ? <></> : (
                   <Button
                     className={classes.large_button_back}
                     disabled={activeStep === 0}
@@ -117,34 +145,14 @@ export default function HorizontalLinearStepper(props) {
                   </Button>
                 )}
                 <Box sx={{ flex: "1 1 auto" }} />
-                {/* {isStepOptional(activeStep) && (
-                  <Button className={classes.large_button} color="inherit" onClick={handleSkip} sx={{ mr: 1 }}>
-                    Skip
-                  </Button>
-                )} */}
-                {(activeStep === 0 && data['clubname'] || data['clubsymbol'] !== null) || (activeStep === 1 && data['raiseamount'] && data['maxcontribution'] && data['mandatoryproposal'] && data['voteforquorum'] && data['depositclose'], data['mincontribution'] && data['voteinfavour'] !== null ) ? (
                   <Button
                     className={classes.large_button}
-                    variant="contained"
+                    variant="contained"                    
+                    disabled={activeStep === 0 ? !data['clubname'] || !data['clubsymbol'] : activeStep === 1 ? !data['raiseamount'] || !data['maxcontribution'] ||  !data['mandatoryproposal'] || !data['voteforquorum'] || !data['depositclose'] || !data['mincontribution'] ||  !data['voteinfavour'] : activeStep === 2 ? false : true}
                     onClick={handleNext}
                   >
-                    Next
+                    {activeStep === steps.length - 1 ? "Perfect, let's get started!" : "Next"}
                   </Button>
-                ) : (
-                  <Button
-                    className={classes.large_button}
-                    variant="contained"
-                    // disabled
-                    disabled={!data['clubname'] || !data['clubsymbol']}
-                    onClick={handleNext}
-                  >
-                    Next
-                  </Button>
-                )}
-
-                {/* <Button className={classes.large_button} onClick={handleNext} >
-                  {activeStep === steps.length - 1 ? "Perfect, let's get started!" : "Next"}
-                </Button> */}
               </Box>
           </>
         )}
