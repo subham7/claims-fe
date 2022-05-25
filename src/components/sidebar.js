@@ -13,7 +13,7 @@ import {
   List,
 } from "@mui/material"
 
-const drawerWidth = 240
+const drawerWidth = 60
 
 const drawer = (
   <>
@@ -25,7 +25,7 @@ const drawer = (
           <ListItemIcon>
             {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
           </ListItemIcon>
-          <ListItemText primary={text} />
+          {/* <ListItemText primary={text} /> */}
         </ListItem>
       ))}
     </List>
@@ -36,7 +36,7 @@ const drawer = (
           <ListItemIcon>
             {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
           </ListItemIcon>
-          <ListItemText primary={text} />
+          {/* <ListItemText primary={text} /> */}
         </ListItem>
       ))}
     </List>

@@ -3,7 +3,6 @@ import { Box, CssBaseline } from "@mui/material"
 
 import Navbar from "../navbar"
 import Sidebar from "../sidebar"
-import Tabs from "../linkedTabs"
 
 const drawerWidth = 240
 
@@ -32,7 +31,6 @@ export default function Layout1(props) {
             width: { sm: `calc(100% - ${drawerWidth}px)` },
           }}
         >
-          <Tabs data={props.tab} />
           <div style={{ padding: "15px 50px" }}>{props.children}</div>
         </Box>
       </Box>

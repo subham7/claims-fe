@@ -4,13 +4,22 @@ import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import EditIcon from '@mui/icons-material/Edit';
-import Divider from '@mui/material/Divider';
-import ArchiveIcon from '@mui/icons-material/Archive';
-import FileCopyIcon from '@mui/icons-material/FileCopy';
-import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import { onboard, disconnectWallet } from '../utils/wallet';
 import { useDispatch } from 'react-redux';
+import { makeStyles } from '@mui/styles';
+
+const useStyles = makeStyles({
+  navButton: {
+    borderRadius: "10px",
+    width: "327px",
+    height: "auto",
+    background: "#111D38 0% 0% no-repeat padding-box",
+    border: "1px solid #C1D3FF40",
+    opacity: "1",
+    fontSize: "18px",
+  }
+})
 
 const StyledMenu = styled((props) => (
   <Menu
@@ -56,6 +65,7 @@ const StyledMenu = styled((props) => (
 }));
 
 export default function AccountButton(props) {
+  const classes = useStyles()
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [menuItems, setMenuItems] = React.useState(true);
   const open = Boolean(anchorEl);
@@ -74,6 +84,7 @@ export default function AccountButton(props) {
   return (
     <div>
       <Button
+        className={classes.navButton}
         id="demo-customized-button"
         aria-controls={open ? 'demo-customized-menu' : undefined}
         aria-haspopup="true"
@@ -81,9 +92,10 @@ export default function AccountButton(props) {
         variant="contained"
         disableElevation
         onClick={handleClick}
-        endIcon={<KeyboardArrowDownIcon />}
+        endIcon={<KeyboardArrowDownIcon />
+      }
       >
-        {props.accountDetail}
+        {props.accountDetail.substring(0,6) + ".........." + props.accountDetail.substring(props.accountDetail.length - 4)}
       </Button>
       <StyledMenu
         id="demo-customized-menu"
