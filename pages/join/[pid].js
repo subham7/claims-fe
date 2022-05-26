@@ -1,4 +1,4 @@
-import { React, useRef, onChange, useState } from "react"
+import {React, useRef, onChange, useState, useEffect} from "react"
 import Image from "next/image"
 import { makeStyles } from "@mui/styles"
 import { Grid, Typography, Avatar, Card, Button, Stack, Divider } from "@mui/material"
@@ -6,6 +6,8 @@ import Layout3 from "../../src/components/layouts/layout3"
 import ProgressBar from "../../src/components/progressbar"
 import { connectWallet, setUserChain, onboard } from "../../src/utils/wallet"
 import { useDispatch } from "react-redux"
+import { useRouter } from "next/router";
+import { fetchClub } from "../../src/api";
 
 
 const useStyles = makeStyles({
@@ -99,10 +101,30 @@ const useStyles = makeStyles({
   },
 })
 
-export default function Join(props) {
+export default  function Join(props) {
+  const router = useRouter()
+  const { pid } = router.query
   const dispatch = useDispatch()
   const classes = useStyles() 
   const [walletConnected, setWalletConnected] = useState(false)
+  const [data, setData] = useState([])
+  const [fetched, setFetched] = useState(false)
+
+  useEffect(() => {
+    if(!fetched){
+      fetchClub(pid)
+      .then((result) => {
+            result.data.then(
+              (data) => {
+                setData(data)
+                setFetched(true)
+              },
+              (error) => {
+                console.log(error)
+              })
+          })
+        }
+  })
 
   const handleConnectWallet = () => {
     try{
@@ -127,7 +149,7 @@ export default function Join(props) {
               <Grid item ml={1} mt={4} mb={7}>
                 <Stack spacing={0}>
                   <Typography variant="h4">
-                    Demo Club
+                    {data[0].name}
                   </Typography>
                   <Typography variant="h6" className={classes.dimColor}> $DEMO</Typography>
                 </Stack>
