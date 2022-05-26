@@ -324,23 +324,26 @@ export default function Create(props) {
 
   return (
     <Layout2>
-    <HorizontalLinearStepper 
-      steps={steps} 
-      components={[step1(), step2(), step3()]} 
-      data={
-        {
-          clubname: clubName, 
-          clubsymbol: clubSymbol, 
-          displayimage: displayImage, 
-          raiseamount: raiseAmount, 
-          maxcontribution: maxContribution, 
-          mandatoryproposal: mandatoryProposal, 
-          voteforquorum: voteForQuorum, 
-          depositclose: depositClose, 
-          mincontribution: minContribution, 
-          voteinfavour: voteInFavour 
-        }
-      } />
+      <div style={{ padding: "100px 400px" }}>
+        <HorizontalLinearStepper
+          steps={steps}
+          components={[step1(), step2(), step3()]}
+          data={
+            {
+              clubname: clubName,
+              clubsymbol: clubSymbol,
+              displayimage: displayImage,
+              raiseamount: raiseAmount,
+              maxcontribution: maxContribution,
+              mandatoryproposal: mandatoryProposal,
+              voteforquorum: voteForQuorum,
+              depositclose: depositClose,
+              mincontribution: minContribution,
+              voteinfavour: voteInFavour
+            }
+          } />
+      </div>
+
     </Layout2>
   )
 }

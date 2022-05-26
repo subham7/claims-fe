@@ -41,5 +41,13 @@ export const darkComponents = {
         },
       },
     },
+  },
+  MuiTableCell: {
+    styleOverrides: {
+      root: {
+        border: "none",
+        backgroundColor: "#142243",
+      }
+    }
   }
 }

@@ -1,21 +1,20 @@
-import * as React from 'react';
+import { React, useState } from 'react';
 import { styled, alpha } from '@mui/material/styles';
 import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import EditIcon from '@mui/icons-material/Edit';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import { onboard, disconnectWallet } from '../utils/wallet';
 import { useDispatch } from 'react-redux';
 import { makeStyles } from '@mui/styles';
 
 const useStyles = makeStyles({
   navButton: {
     borderRadius: "10px",
-    width: "327px",
+    width: "121px",
     height: "auto",
     background: "#111D38 0% 0% no-repeat padding-box",
-    border: "1px solid #C1D3FF40",
+    border: "2px solid #C1D3FF40",
     opacity: "1",
     fontSize: "18px",
   }
@@ -64,10 +63,10 @@ const StyledMenu = styled((props) => (
   },
 }));
 
-export default function AccountButton(props) {
+export default function ButtonDropDown(props) {
   const classes = useStyles()
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const [menuItems, setMenuItems] = React.useState(true);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [menuItems, setMenuItems] = useState(true);
   const open = Boolean(anchorEl);
   const dispatch = useDispatch();
   const handleClick = (event) => {
@@ -75,13 +74,6 @@ export default function AccountButton(props) {
   };
   const handleClose = () => {
     setAnchorEl(null);
-  };
-  const handleDisconnect = async() => {
-    const [primaryWallet] = onboard.state.get().wallets
-    await onboard.disconnectWallet({ 'label': primaryWallet.label })
-    disconnectWallet(dispatch)
-    setAnchorEl(null)
-    setMenuItems(false)
   };
 
   return (
@@ -98,7 +90,7 @@ export default function AccountButton(props) {
         endIcon={<KeyboardArrowDownIcon />
       }
       >
-        {props.accountDetail.substring(0,6) + ".........." + props.accountDetail.substring(props.accountDetail.length - 4)}
+        {props.label}
       </Button>
       <StyledMenu
         id="demo-customized-menu"
@@ -107,13 +99,13 @@ export default function AccountButton(props) {
         }}
         anchorEl={anchorEl}
         open={open}
-        close={handleClose}
-        onDisconnect={handleDisconnect}
+        onClose={handleClose}
+        // onDisconnect={handleDisconnect}
       >
         {menuItems && (
-            <MenuItem onClick={handleDisconnect} disableRipple>
+            <MenuItem disableRipple>
                 <EditIcon />
-                Disconnect
+                More
             </MenuItem>
         )}
       </StyledMenu>
