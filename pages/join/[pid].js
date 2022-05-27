@@ -1,13 +1,18 @@
 import {React, useRef, onChange, useState, useEffect} from "react"
 import Image from "next/image"
 import { makeStyles } from "@mui/styles"
-import { Grid, Typography, Avatar, Card, Button, Stack, Divider } from "@mui/material"
+import { Grid, Typography, Avatar, Card, Button, Stack, Divider, TextField } from "@mui/material"
 import Layout3 from "../../src/components/layouts/layout3"
 import ProgressBar from "../../src/components/progressbar"
 import { connectWallet, setUserChain, onboard } from "../../src/utils/wallet"
 import { useDispatch } from "react-redux"
 import { useRouter } from "next/router";
-import { fetchClub } from "../../src/api";
+import { fetchClub, USDC_CONTRACT_ADDRESS, DAO_CONTRACT_ADDRESS } from "../../src/api";
+import store from "../../src/redux/store"
+import Web3 from "web3"
+import USDCContract from "../../src/abis/usdc.json"
+import GovernorContract from "../../src/abis/governor.json"
+import { SmartContract } from "../../src/api/index"
 
 
 const useStyles = makeStyles({
@@ -57,6 +62,8 @@ const useStyles = makeStyles({
     fontSize: "38px",
     fontWeight: "bold",
     color: "#F5F5F5",
+    borderColor: "#142243",
+    borderRadius: "0px"
   },
   cardWarning: {
     backgroundColor: "#FFB74D0D",
@@ -109,8 +116,43 @@ export default  function Join(props) {
   const [walletConnected, setWalletConnected] = useState(false)
   const [data, setData] = useState([])
   const [fetched, setFetched] = useState(false)
+  const [previouslyConnectedWallet, setPreviouslyConnectedWallet] = useState(null)
+  const [userDetails, setUserDetails] = useState(null)
+  const [walletBalance, setWalletBalance] = useState(0)
+  const [depositAmount, setDepositAmount] = useState("0.0")
+  const [daoAddress, setDaoAddress] = useState(null)
 
   useEffect(() => {
+    store.subscribe(() => {
+      const { create } = store.getState()
+      if (create.value) {
+        setPreviouslyConnectedWallet(create.value)
+        setWalletBalance(create.value[0][0].balance.rETH)
+        setDaoAddress(pid)
+      }
+      else{
+        setPreviouslyConnectedWallet(null)
+      }
+    })
+    const checkConnection = async () => {
+
+      if (window.ethereum) {
+        window.web3 = new Web3(window.ethereum)
+      }
+      else if (window.web3) {
+        window.web3 = new Web3(window.web3.currentProvider)
+      }
+      try{
+        window.web3.eth.getAccounts()
+        .then((async) => {
+          setUserDetails(async[0])
+        });
+      }
+      catch(err){
+        setUserDetails(null)
+      }
+    };
+
     if(!fetched){
       fetchClub(pid)
       .then((result) => {
@@ -124,7 +166,12 @@ export default  function Join(props) {
               })
           })
         }
-  })
+    if (previouslyConnectedWallet) {
+      onboard.connectWallet({ autoSelect: previouslyConnectedWallet[0] })
+    }
+        
+    checkConnection()
+  }, [previouslyConnectedWallet, fetched, pid, userDetails])
 
   const handleConnectWallet = () => {
     try{
@@ -134,6 +181,29 @@ export default  function Join(props) {
     catch(err){
       console.log(err)
     }
+  }
+
+  const handleDeposit = () => {
+    const usdc_contract = new SmartContract(USDCContract, USDC_CONTRACT_ADDRESS)
+    const approve_contract = new SmartContract(GovernorContract, DAO_CONTRACT_ADDRESS)
+
+    const usdc_response = usdc_contract.approveDeposit(daoAddress, depositAmount)
+    usdc_response.then(
+      (result) => {
+        console.log("Success", result)
+        const deposit_response = approve_contract.deposit(daoAddress, depositAmount)
+        deposit_response.then((result) => {
+          console.log("Result", result)
+        })
+        .catch((error) => {
+          console.log("Error", error)
+        })
+      },
+      (error) => {
+        console.log("Error", error)
+      }
+    )
+    
   }
 
   return (
@@ -149,7 +219,8 @@ export default  function Join(props) {
               <Grid item ml={1} mt={4} mb={7}>
                 <Stack spacing={0}>
                   <Typography variant="h4">
-                    {data[0].name}
+                    {/* {data[0].name} */}
+                    TAB
                   </Typography>
                   <Typography variant="h6" className={classes.dimColor}> $DEMO</Typography>
                 </Stack>
@@ -245,15 +316,13 @@ export default  function Join(props) {
                       </Grid>
                       <Grid item ml={2} mt={2} mb={0} xs sx= {{ display: "flex", justifyContent:"flex-end" }}>
                         <Typography className={classes.cardSmallFont}>
-                          Balance: 20,046 USDC
+                          Balance: {walletBalance} USDC
                         </Typography>
                       </Grid>
                     </Grid>
                     <Grid container spacing={2}>
                       <Grid item ml={2} mt={0} mb={2}>
-                        <Typography className={classes.cardLargeFont}>
-                          10,000
-                        </Typography>
+                        <TextField type="number" className={classes.cardLargeFont} value={depositAmount} onChange={(e) => setDepositAmount(parseFloat(e.target.value))}/>
                       </Grid>
                       <Grid item ml={2} mt={2} mb={2} xs sx= {{ display: "flex", justifyContent:"flex-end" }}>
                         <Card className={classes.maxTag}>
@@ -275,7 +344,7 @@ export default  function Join(props) {
                   </Card>
                 </Grid>
                 <Grid item container ml={1} mt={2}>
-                  <Button variant="contained" size="large" className={classes.depositButton}>
+                  <Button variant="contained" size="large" className={classes.depositButton} onClick={handleDeposit}>
                     Deposit
                   </Button>
                 </Grid>
