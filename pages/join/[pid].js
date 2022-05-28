@@ -185,13 +185,13 @@ export default  function Join(props) {
 
   const handleDeposit = () => {
     const usdc_contract = new SmartContract(USDCContract, USDC_CONTRACT_ADDRESS)
-    const approve_contract = new SmartContract(GovernorContract, DAO_CONTRACT_ADDRESS)
+    const dao_contract = new SmartContract(GovernorContract, DAO_CONTRACT_ADDRESS)
 
-    const usdc_response = usdc_contract.approveDeposit(daoAddress, depositAmount)
+    const usdc_response = usdc_contract.approveDeposit(daoAddress, depositAmount, userDetails)
     usdc_response.then(
       (result) => {
         console.log("Success", result)
-        const deposit_response = approve_contract.deposit(daoAddress, depositAmount)
+        const deposit_response = dao_contract.deposit(USDC_CONTRACT_ADDRESS, depositAmount, userDetails)
         deposit_response.then((result) => {
           console.log("Result", result)
         })

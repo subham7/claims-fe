@@ -10,7 +10,7 @@ import {onboard} from "../utils/wallet"
 // Global variables
 const MAIN_API_URL = 'http://ec2-65-0-105-40.ap-south-1.compute.amazonaws.com:4000/v1/'
 export const DAO_CONTRACT_ADDRESS = '0xbfa33C88f614345F3cbaedB8174db04043E3E412'
-export const USDC_CONTRACT_ADDRESS = '0x69726A9381ad96312CDc8A46C054795656f49807'
+export const USDC_CONTRACT_ADDRESS = '0x484727B6151a91c0298a9D2b9fD84cE3bc6BC4E3'
 const RINKEBY_URL = 'https://rinkeby.infura.io/v3/feaf3bb22fef436e996b4eb0e157dacd'
 
 
@@ -66,15 +66,16 @@ export class SmartContract{
     ).call()
   }
 
-  async approveDeposit(address, amount) {
-    return this.contract.methods.approve(address, amount).send({ from: window.ethereum.selectedAddress })
+  async approveDeposit(address, amount, walletAddress) {
+    console.log(window.web3.selectedAddress)
+    return this.contract.methods.approve(address, amount).send({ from: walletAddress })
   }
   
-  async deposit(address, amount) {
+  async deposit(address, amount, walletAddress) {
     return this.contract.methods.deposit(
       address, 
       amount
-      ).send({ from: window.ethereum.selectedAddress })
+      ).send({ from: walletAddress })
   }
 }
 
@@ -86,7 +87,7 @@ export async function createClub(data) {
     data: null,
     error: null,
   }
-  return await fetch(MAIN_API_URL + 'club/create', {
+  await fetch(MAIN_API_URL + 'club/create', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -99,6 +100,7 @@ export async function createClub(data) {
     .catch(err => {
       resolved.error = err
     })
+  return resolved
 }
 
 export async function fetchClub(clubID) {

@@ -5,6 +5,8 @@ import { addDaoAddress } from '../redux/reducers/create'
 import store from '../redux/store'
 import { createClub, SmartContract, DAO_CONTRACT_ADDRESS } from '../api'
 import CreateDAO from '../abis/DAO.json'
+import Router from 'next/router'
+
 
 async function gnosisSafePromise(owners, threshold, dispatch) {
   try{
@@ -30,6 +32,7 @@ export async function initiateConnection(owners, threshold, dispatch, tokenName,
   const smartContract = new SmartContract(CreateDAO, DAO_CONTRACT_ADDRESS)
   await gnosisSafePromise(owners, threshold, dispatch)
     .then((safeAddress) => {
+      console.log(safeAddress)
       const value = smartContract.createDAO(
         tokenName,
         tokenSymbol,
@@ -55,12 +58,17 @@ export async function initiateConnection(owners, threshold, dispatch, tokenName,
             "treasuryAddress": safeAddress
           }
           const club = createClub(data)
-          if(club.error){
-            console.log(club.error)
-          }
-          else{
-            console.log(club.data)
-          }
+          club.then((result) => {
+            if(result.error){
+              console.log(result.error)
+            }
+            else{
+              const {pathname} = Router
+              if(pathname == '/create' ){
+                Router.push('/dashboard')
+              }
+            }
+          })          
         },
         (error) => {
         console.log(error)
