@@ -22,9 +22,9 @@ const useStyles = makeStyles({
   },
   searchField: {
     width: "548px",
-    height: "auto",
+    height: "55px",
     color: "#C1D3FF",
-    background: "#111D38 0% 0% no-repeat padding-box",
+    backgroundColor: "#111D38",
     border: "1px solid #C1D3FF40",
     borderRadius: "10px",
   },
@@ -69,10 +69,12 @@ export default function Members(props) {
     <Layout1>
       <div style={{ padding: "110px 80px" }}>
         <Grid container spacing={3}>
-          <Grid item xs={5}>
-            <Typography className={classes.clubAssets}>Members</Typography>
-          </Grid>
-          <Grid items xs="auto" mt={3}>
+          <Grid item md={9}>
+            <Grid container mb={10}>
+              <Grid item>
+              <Typography className={classes.clubAssets}>Members</Typography>
+              </Grid>
+            <Grid item xs sx={{ display: "flex", justifyContent: "flex-end" }}>
             <TextField 
               className={classes.searchField}
               placeholder="Search proposals"
@@ -80,11 +82,10 @@ export default function Members(props) {
                 endAdornment: <IconButton type="submit" sx={{ p: '10px' }} aria-label="search"><SearchIcon /></IconButton>
               }}
               />
-          </Grid>
-        </Grid>
-        <Grid container spacing={2}>
-          <Grid item xs={8.5}>
-              <BasicTable title={"Members"}/>
+            </Grid>
+            </Grid>
+            <BasicTable />
+            
           </Grid>
         </Grid>
       </div>           

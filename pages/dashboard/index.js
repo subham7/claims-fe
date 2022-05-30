@@ -197,199 +197,202 @@ export default function Dashboard(props) {
   const classes = useStyles()
   return (
     <>
-    <Layout1>
-      <div style={{ padding: "110px 80px" }}>
-        <Grid container spacing={3}>
-          <Grid item>
-            <Card className={classes.firstCard}>
-              <CardMedia
-                component="img"
-                image="/assets/images/card_illustration.png"
-                alt="green iguana"
-              />
-              <Box className={classes.cardOverlay}>
-                <Typography className={classes.card1text1}>
-                  Demo Club
-                </Typography>
-                <Typography className={classes.card1text2}>
-                  $Demo
-                </Typography>
-                <Typography className={classes.card1text3}>
-                  My Share ($)
-                </Typography>
-                <Typography className={classes.card1text4}>
-                  13,700
-                </Typography>
-                <Typography className={classes.card1text5}>
-                  10%
-                </Typography>
-              </Box>                
-            </Card>
-          </Grid>
-          <Grid item>
-          <Card className={classes.secondCard}>
-            <Grid container m={4}>
-              <Grid container>
-                <Stack mt={4}>
-                  <Typography className={classes.card2text1}>
-                    ICON
-                  </Typography>
-                  <Typography mt={4} className={classes.card2text1}>
-                    Tresury ($)
-                  </Typography>
-                  <Typography className={classes.card2text2}>
-                    1,37,000
-                  </Typography>
-                  <Typography className={classes.card2text3}>
-                    37%
-                  </Typography>
-                </Stack>
-                <Divider className={classes.divider} variant="middle" orientation="vertical" />
-                <Stack m={4}>
-                  <Typography className={classes.card2text4}>
-                    Members
-                  </Typography>
-                  <Typography className={classes.card2text5}>
-                    8
-                  </Typography>
-                  <Typography mt={3} className={classes.card2text6}>
-                    Tresury Wallet
-                  </Typography>
-                  <Typography className={classes.card2text7}>
-                    $97,600
-                  </Typography>
-                  <Typography mt={3} className={classes.card2text8}>
-                    Hot Wallet
-                  </Typography>
-                  <Typography className={classes.card2text9}>
-                    $43,206
-                  </Typography>
-                </Stack>
-              </Grid>
-            </Grid>
-          </Card>
-        </Grid>
-          <Grid item>
-            <Card className={classes.thirdCard}>
-              <Grid container m={2}>
-                <Grid items>
-                  <Typography className={classes.card3text1}>
-                    Joining link
-                  </Typography>
-                </Grid>
-                <Grid items mr={4} xs sx= {{ display: "flex", justifyContent:"flex-end" }}>
-                  <Grid container xs sx= {{ display: "flex", justifyContent:"flex-end" }}>
-                    <Grid item mt={1} mr={1}>
-                      <div className={classes.activeIllustration}></div>
+      <Layout1>
+        <div style={{ padding: "110px 80px" }}>
+          <Grid container spacing={2}>
+            <Grid item md={9}>
+              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={{ xs: 1, sm: 2, md: 4 }}>
+                <Card className={classes.firstCard}>
+                  <CardMedia
+                    component="img"
+                    image="/assets/images/card_illustration.png"
+                    alt="green iguana"
+                  />
+                  <Box className={classes.cardOverlay}>
+                    <Typography className={classes.card1text1}>
+                      Demo Club
+                    </Typography>
+                    <Typography className={classes.card1text2}>
+                      $Demo
+                    </Typography>
+                    <Typography className={classes.card1text3}>
+                      My Share ($)
+                    </Typography>
+                    <Typography className={classes.card1text4}>
+                      13,700
+                    </Typography>
+                    <Typography className={classes.card1text5}>
+                      10%
+                    </Typography>
+                  </Box>
+                </Card>
+                <Card className={classes.secondCard}>
+                  <Grid container m={4}>
+                    <Grid container>
+                      <Stack mt={4}>
+                        <Typography className={classes.card2text1}>
+                          ICON
+                        </Typography>
+                        <Typography mt={4} className={classes.card2text1}>
+                          Tresury ($)
+                        </Typography>
+                        <Typography className={classes.card2text2}>
+                          1,37,000
+                        </Typography>
+                        <Typography className={classes.card2text3}>
+                          37%
+                        </Typography>
+                      </Stack>
+                      <Divider className={classes.divider} variant="middle" orientation="vertical" />
+                      <Stack m={4}>
+                        <Typography className={classes.card2text4}>
+                          Members
+                        </Typography>
+                        <Typography className={classes.card2text5}>
+                          8
+                        </Typography>
+                        <Typography mt={3} className={classes.card2text6}>
+                          Tresury Wallet
+                        </Typography>
+                        <Typography className={classes.card2text7}>
+                          $97,600
+                        </Typography>
+                        <Typography mt={3} className={classes.card2text8}>
+                          Hot Wallet
+                        </Typography>
+                        <Typography className={classes.card2text9}>
+                          $43,206
+                        </Typography>
+                      </Stack>
                     </Grid>
-                    <Grid item>
-                      <Typography className={classes.card3text2}>
-                        Active
+                  </Grid>
+                </Card>
+              </Stack>
+              <Stack>
+                <Grid item>
+                  <Stack direction={{ xs: 'column', sm: 'column' }} spacing={{ xs: 1, sm: 2, md: 4 }}>
+                    <Grid container item mt={8}>
+                      <Typography className={classes.clubAssets}>Club Assets</Typography>
+                    </Grid>
+                    <Grid container mt={4}>
+                      <Grid items>
+                        <ButtonDropDown label="All" />
+                      </Grid>
+                      <Grid items ml={2}>
+                        <TextField
+                          className={classes.searchField}
+                          placeholder="Search by name or address"
+                          InputProps={{
+                            endAdornment: <IconButton type="submit" sx={{ p: '10px' }} aria-label="search"><SearchIcon /></IconButton>
+                          }}
+                        />``
+                      </Grid>
+                    </Grid>
+
+                    <Typography mt={5} mb={5} className={classes.tokensText}>Tokens</Typography>
+                    <BasicTable />
+
+                    <Typography mt={16} mb={5} className={classes.tokensText}>Collectibles</Typography>
+                    <Grid container>
+                      <Grid items m={1}>
+                        <CollectionCard />
+                      </Grid>
+                      <Grid items m={1}>
+                        <CollectionCard />
+                      </Grid>
+                      <Grid items m={1}>
+                        <CollectionCard />
+                      </Grid>
+                    </Grid>
+
+                    <Typography mt={16} mb={5} className={classes.tokensText}>Off-chain investments</Typography>
+                    <BasicTable />
+                  </Stack>
+                </Grid>
+              </Stack>
+            </Grid>
+            <Grid item md={3}>
+              <Stack>
+                <Card className={classes.thirdCard}>
+                  <Grid container m={2}>
+                    <Grid items>
+                      <Typography className={classes.card3text1}>
+                        Joining link
+                      </Typography>
+                    </Grid>
+                    <Grid items mr={4} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
+                      <Grid container xs sx={{ display: "flex", justifyContent: "flex-end" }}>
+                        <Grid item mt={1} mr={1}>
+                          <div className={classes.activeIllustration}></div>
+                        </Grid>
+                        <Grid item>
+                          <Typography className={classes.card3text2}>
+                            Active
+                          </Typography>
+                        </Grid>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                  <Grid container>
+                    <Grid items mt={2} ml={1} mr={1} >
+                      <TextField
+                        className={classes.linkInput}
+                        InputProps={{
+                          endAdornment: <Button variant="contained" className={classes.copyButton}>Copy</Button>
+                        }}
+                      />
+                    </Grid>
+                  </Grid>
+                  <Grid container>
+                    <Grid items mt={4} ml={1} mr={1} >
+                      <Typography className={classes.card3text4}>
+                        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore
                       </Typography>
                     </Grid>
                   </Grid>
-                </Grid>
-              </Grid>
-              <Grid container>
-                <Grid items mt={2} ml={1} mr={1} >
-                  <TextField 
-                  className={classes.linkInput} 
-                  InputProps={{
-                    endAdornment: <Button variant="contained" className={classes.copyButton}>Copy</Button>
-                  }}
-                  />
-                </Grid>
-              </Grid>
-              <Grid container>
-                <Grid items mt={4} ml={1} mr={1} >
-                  <Typography className={classes.card3text4}>
-                  Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore
-                  </Typography>
-                </Grid>
-              </Grid>
-            </Card>
+                </Card>
+              </Stack>
+              <Stack mt={2}>
+                <Card className={classes.fourthCard}>
+                  <Grid container m={2}>
+                    <Grid items>
+                      <Typography className={classes.card2text1}>
+                        Pending proposals
+                      </Typography>
+                    </Grid>
+                    <Grid items mt={1.2} ml={1}>
+                      <div className={classes.pendingIllustration}></div>
+                    </Grid>
+                  </Grid>
+                  <Grid container m={2}>
+                    <Stack >
+                      <Typography className={classes.card5text1}>
+                        Proposed by 0x75ed……34fd
+                      </Typography>
+                      <Typography className={classes.card5text2}>
+                        [#7] Buy 2 ETH worth of Evaders in their private round.
+                      </Typography>
+                      <Typography className={classes.card5text1}>
+                        Expires on 21/05/22
+                      </Typography>
+
+                      <Typography mt={3} className={classes.card5text1}>
+                        Proposed by 0x75ed……34fd
+                      </Typography>
+                      <Typography className={classes.card5text2}>
+                        [#7] Buy 2 ETH worth of Evaders in their private round.
+                      </Typography>
+                      <Typography className={classes.card5text1}>
+                        Expires on 21/05/22
+                      </Typography>
+                    </Stack>
+                  </Grid>
+                </Card>
+              </Stack>
+            </Grid>
           </Grid>
-        </Grid>
-        <Grid container mt={4} spacing={3}>
-          <Grid item>
-            <Stack>
-              <Typography className={classes.clubAssets}>Club Assets</Typography>
-              <Grid container mt={4}>
-                <Grid items>
-                  <ButtonDropDown label="All"/>
-                </Grid>
-                <Grid items ml={2}>
-                <TextField 
-                  className={classes.searchField}
-                  placeholder="Search by name or address"
-                  InputProps={{
-                    endAdornment: <IconButton type="submit" sx={{ p: '10px' }} aria-label="search"><SearchIcon /></IconButton>
-                  }}
-                  />``
-                </Grid>
-              </Grid>
-
-              <Typography mt={5} mb={5} className={classes.tokensText}>Tokens</Typography>
-              <BasicTable />
-
-              <Typography mt={16} mb={5} className={classes.tokensText}>Collectibles</Typography>
-              <Grid container>
-                <Grid items m={1}>
-                  <CollectionCard />
-                </Grid>
-                <Grid items m={1}>
-                  <CollectionCard />
-                </Grid>
-                <Grid items m={1}>
-                  <CollectionCard />
-                </Grid>
-              </Grid> 
-
-              <Typography mt={16} mb={5} className={classes.tokensText}>Off-chain investments</Typography>
-              <BasicTable />          
-            </Stack>
-          </Grid>
-
-          <Grid mr={4} item xs sx= {{ display: "flex", justifyContent:"flex-end" }}>
-            <Card className={classes.fourthCard}>
-              <Grid container m={2}>
-                <Grid items>
-                  <Typography className={classes.card2text1}>
-                    Pending proposals
-                  </Typography>
-                </Grid>
-                <Grid items mt={1.2} ml={1}>
-                  <div className={classes.pendingIllustration}></div>
-                </Grid>
-              </Grid>
-              <Grid container m={2}>
-                <Stack>
-                  <Typography className={classes.card5text1}>
-                    Proposed by 0x75ed……34fd
-                  </Typography>
-                  <Typography className={classes.card5text2}>
-                    [#7] Buy 2 ETH worth of Evaders in their private round.
-                  </Typography>
-                  <Typography className={classes.card5text1}>
-                    Expires on 21/05/22
-                  </Typography>
-
-                  <Typography mt={3} className={classes.card5text1}>
-                    Proposed by 0x75ed……34fd
-                  </Typography>
-                  <Typography className={classes.card5text2}>
-                    [#7] Buy 2 ETH worth of Evaders in their private round.
-                  </Typography>
-                  <Typography className={classes.card5text1}>
-                  Expires on 21/05/22
-                  </Typography>
-                </Stack>
-              </Grid>
-            </Card>
-          </Grid>
-        </Grid>   
-      </div>           
-    </Layout1>
+        </div>
+      </Layout1>
     </>
-    )
+  )
 }

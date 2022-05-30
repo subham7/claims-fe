@@ -9,7 +9,7 @@ import {onboard} from "../utils/wallet"
 
 // Global variables
 const MAIN_API_URL = 'http://ec2-65-0-105-40.ap-south-1.compute.amazonaws.com:4000/v1/'
-export const DAO_CONTRACT_ADDRESS = '0xbfa33C88f614345F3cbaedB8174db04043E3E412'
+export const FACTORY_CONTRACT_ADDRESS = '0xbfa33C88f614345F3cbaedB8174db04043E3E412'
 export const USDC_CONTRACT_ADDRESS = '0x484727B6151a91c0298a9D2b9fD84cE3bc6BC4E3'
 const RINKEBY_URL = 'https://rinkeby.infura.io/v3/feaf3bb22fef436e996b4eb0e157dacd'
 

@@ -3,7 +3,7 @@ import { ethAdapter } from './web3-adapter'
 import { safeConnected, safeDisconnected } from '../redux/reducers/gnosis'
 import { addDaoAddress } from '../redux/reducers/create'
 import store from '../redux/store'
-import { createClub, SmartContract, DAO_CONTRACT_ADDRESS } from '../api'
+import { createClub, SmartContract, FACTORY_CONTRACT_ADDRESS } from '../api'
 import CreateDAO from '../abis/DAO.json'
 import Router from 'next/router'
 
@@ -29,7 +29,7 @@ async function gnosisSafePromise(owners, threshold, dispatch) {
 export async function initiateConnection(owners, threshold, dispatch, tokenName, tokenSymbol, totalDeposit, minDeposit, maxDeposit, ownerFee, closeDate, feeUSDC, quoram, formThreshold) {
   let daoAddress = null;
   let tokenAddress = null;
-  const smartContract = new SmartContract(CreateDAO, DAO_CONTRACT_ADDRESS)
+  const smartContract = new SmartContract(CreateDAO, FACTORY_CONTRACT_ADDRESS)
   await gnosisSafePromise(owners, threshold, dispatch)
     .then((safeAddress) => {
       console.log(safeAddress)

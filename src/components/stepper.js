@@ -9,7 +9,7 @@ import { makeStyles } from "@mui/styles"
 import Card from "../components/card"
 import { useDispatch } from "react-redux"
 import { initiateConnection } from "../utils/safe"
-import { 
+import {
   addClubName,
   addClubsymbol,
   addDisplayImage,
@@ -30,7 +30,7 @@ const useStyles = makeStyles({
     fontWeight: "bold",
     width: "31.25vw",
     color: "#242424",
-    backgroundColor:  "#F5F5F5",
+    backgroundColor: "#F5F5F5",
   }
 })
 
@@ -69,18 +69,18 @@ export default function HorizontalLinearStepper(props) {
       const owners = ["0x557093F38f874b07ac5993768FA640Ea22A49D0D", "0x2f05FadE3F3030b387eCA20f7f7d5f5b12B8Dc06"]
       const threshold = 2
       initiateConnection(
-        owners, 
-        threshold, 
-        dispatch, 
-        data.clubname, 
-        data.clubsymbol, 
-        data.raiseamount, 
-        data.mincontribution, 
-        data.maxcontribution, 
-        0, 
-        data.depositclose, 
-        0, 
-        data.voteforquorum, 
+        owners,
+        threshold,
+        dispatch,
+        data.clubname,
+        data.clubsymbol,
+        data.raiseamount,
+        data.mincontribution,
+        data.maxcontribution,
+        0,
+        data.depositclose,
+        0,
+        data.voteforquorum,
         data.voteinfavour
       )
     }
@@ -147,27 +147,27 @@ export default function HorizontalLinearStepper(props) {
         ) : (
           <>
             {components[activeStep]}
-              <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
-                {activeStep === 0 ? <></> : (
-                  <Button
-                    className={classes.large_button_back}
-                    disabled={activeStep === 0}
-                    onClick={handleBack}
-                    sx={{ mr: 1}}
-                  >
-                    Go Back
-                  </Button>
-                )}
-                <Box sx={{ flex: "1 1 auto" }} />
-                  <Button
-                    className={classes.large_button}
-                    variant="contained"                    
-                    disabled={activeStep === 0 ? !data['clubname'] || !data['clubsymbol'] : activeStep === 1 ? !data['raiseamount'] || !data['maxcontribution'] ||  !data['mandatoryproposal'] || !data['voteforquorum'] || !data['depositclose'] || !data['mincontribution'] ||  !data['voteinfavour'] : activeStep === 2 ? false : true}
-                    onClick={handleNext}
-                  >
-                    {activeStep === steps.length - 1 ? "Perfect, let's get started!" : "Next"}
-                  </Button>
-              </Box>
+            <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
+              {activeStep === 0 ? <></> : (
+                <Button
+                  className={classes.large_button_back}
+                  disabled={activeStep === 0}
+                  onClick={handleBack}
+                  sx={{ mr: 1 }}
+                >
+                  Go Back
+                </Button>
+              )}
+              <Box sx={{ flex: "1 1 auto" }} />
+              <Button
+                className={classes.large_button}
+                variant="contained"
+                disabled={activeStep === 0 ? !data['clubname'] || !data['clubsymbol'] : activeStep === 1 ? !data['raiseamount'] || !data['maxcontribution'] || !data['mandatoryproposal'] || !data['voteforquorum'] || !data['depositclose'] || !data['mincontribution'] || !data['voteinfavour'] : activeStep === 2 ? false : true}
+                onClick={handleNext}
+              >
+                {activeStep === steps.length - 1 ? "Perfect, let's get started!" : "Next"}
+              </Button>
+            </Box>
           </>
         )}
       </Card>
