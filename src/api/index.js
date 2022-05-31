@@ -135,6 +135,14 @@ export class SmartContract{
   async balance(governanceToken) {
     return this.contract.methods.balance(governanceToken).call({ from: this.walletAddress })
   }
+
+  async tokenDetails() {
+    return this.contract.methods.tokenDetails().call({ from: this.walletAddress })
+  }
+
+  async getGovernorDetails() {
+    return this.contract.methods.getGovernorDetails().call({ from: this.walletAddress })
+  }
 }
 
 
@@ -166,18 +174,21 @@ export async function fetchClub(clubID) {
     data: null,
     error: null,
   }
-  await fetch(MAIN_API_URL + `/club/${clubID}`, {
+  return await fetch(MAIN_API_URL + `club/${clubID}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
     },
   })
-    .then(data => {
-      resolved.data = data.json()
-      return resolved
-    })
-    .catch(err => {
-      resolved.error = err
-      return resolved
-    })
+  .then(response => response.json())
+  .then(data => {
+    resolved.data = data
+    return resolved
+    console.log('Success:', data);
+  })
+  .catch((error) => {
+    resolved.error = error
+    return resolved
+    console.error('Error:', error);
+  });
 }

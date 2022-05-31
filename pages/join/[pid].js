@@ -1,7 +1,7 @@
 import { React, useRef, onChange, useState, useEffect } from "react"
 import Image from "next/image"
 import { makeStyles } from "@mui/styles"
-import { Grid, Typography, Avatar, Card, Button, Stack, Divider, Input, Snackbar, Alert } from "@mui/material"
+import { Grid, Typography, Avatar, Card, Button, Stack, Divider, Input, Snackbar, Alert, Skeleton, Chip } from "@mui/material"
 import Layout3 from "../../src/components/layouts/layout3"
 import ProgressBar from "../../src/components/progressbar"
 import { connectWallet, setUserChain, onboard } from "../../src/utils/wallet"
@@ -150,6 +150,12 @@ export default function Join(props) {
   const [maxDeposit, setMaxDeposit] = useState(0)
   const [totalDeposit, setTotalDeposit] = useState(0)
   const [quoram, setQuoram] = useState(0)
+  const [tokenDetails, settokenDetails] = useState(null)
+  const [tokenAPIDetails, settokenAPIDetails] = useState(null) // contains the details extracted from API
+  const [apiTokenDetailSet, setApiTokenDetailSet] = useState(false)
+  const [governorDetails, setGovernorDetails] = useState(null)
+  const [governorDataFetched, setGovernorDataFetched] = useState(false)
+
 
   useEffect(() => {
     store.subscribe(() => {
@@ -180,86 +186,116 @@ export default function Join(props) {
         setUserDetails(null)
       }
     };
-    
-    if (!dataFetched && walletConnected){
-      // dispatch(addClubName(result))
 
-      // dispatch(addClubsymbol(data.clubsymbol))
-      // dispatch(addDisplayImage(data.displayimage))
-      // dispatch(addRaiseAmount(data.raiseamount))
-      // dispatch(addMaxContribution(data.maxcontribution))
-      // dispatch(addMandatoryProposal(data.mandatoryproposal))
-      // dispatch(addVoteForQuorum(data.voteforquorum))
-      // dispatch(addMinContribution(data.mincontribution))
-      // dispatch(addVoteInFavour(data.voteinfavour))
-      // dispatch(addDepositClose(data.depositclose))
+    const tokenAPIDetailsRetrieval = async () => {
+      let response = await fetchClub(pid)
+      settokenAPIDetails(response)
+      if (response.data.length > 0)
+      {
+        setApiTokenDetailSet(true)
+      }
+    }
 
-
-      const contract = new SmartContract(GovernorContract, daoAddress, userDetails)
-      contract.depositClosed()
+    const tokenDetailsRetrieval = async () => {
+      if(tokenAPIDetails && tokenAPIDetails.data.length > 0 && !dataFetched){
+        const tokenDetailContract = new SmartContract(USDCContract, tokenAPIDetails.data[0].tokenAddress, userDetails)
+        await tokenDetailContract.tokenDetails()
       .then((result) => {
-          console.log(result)
-          setDataFetched(true)
-        },
-        (error) => {
-          console.log(error)
-        }
-      )
-      contract.minDeposit()
-      .then((result) => {
-          setMinDeposit(result)
-          setDataFetched(true)
-        },
-        (error) => {
-          console.log(error)
-        }
-      )
-      contract.maxDeposit()
-      .then((result) => {
-          setMaxDeposit(result)
-          setDataFetched(true)
-        },
-        (error) => {
-          console.log(error)
-        }
-      )
-      contract.totalDeposit()
-      .then((result) => {
-          setTotalDeposit(result)
-          setDataFetched(true)
-        },
-        (error) => {
-          console.log(error)
-        }
-      )
-      contract.quoram()
-      .then((result) => {
-          setQuoram(result)
-          setDataFetched(true)
-        },
-        (error) => {
-          console.log(error)
-        }
-      )
-      contract.maxDeposit()
-      .then((result) => {
-          setMaxDeposit(result)
-          setDataFetched(true)
-        },
-        (error) => {
-          console.log(error)
-        }
-      )
-      fetchClub(pid)
-      .then((data) => {
         console.log(result)
+        settokenDetails(result)
         setDataFetched(true)
       },
       (error) => {
         console.log(error)
       }
       )
+      }
     }
+
+    const contractDetailsRetrieval = async () => {
+      if(daoAddress !== null && !governorDataFetched && governorDetails === null){
+        const governorDetailContract = new SmartContract(GovernorContract, daoAddress, userDetails)
+        await governorDetailContract.getGovernorDetails()
+      .then((result) => {
+        console.log(result)
+        setGovernorDetails(result)
+        setGovernorDataFetched(true)
+      },
+      (error) => {
+        console.log(error)
+      }
+      )
+      }
+    }
+
+    
+    // if (!dataFetched && walletConnected){
+
+    //   const contract = new SmartContract(GovernorContract, daoAddress, userDetails)
+    //   contract.depositClosed()
+    //   .then((result) => {
+    //       console.log(result)
+    //       setDataFetched(true)
+    //     },
+    //     (error) => {
+    //       console.log(error)
+    //     }
+    //   )
+    //   contract.minDeposit()
+    //   .then((result) => {
+    //       setMinDeposit(result)
+    //       setDataFetched(true)
+    //     },
+    //     (error) => {
+    //       console.log(error)
+    //     }
+    //   )
+    //   contract.maxDeposit()
+    //   .then((result) => {
+    //       setMaxDeposit(result)
+    //       setDataFetched(true)
+    //     },
+    //     (error) => {
+    //       console.log(error)
+    //     }
+    //   )
+    //   contract.totalDeposit()
+    //   .then((result) => {
+    //       setTotalDeposit(result)
+    //       setDataFetched(true)
+    //     },
+    //     (error) => {
+    //       console.log(error)
+    //     }
+    //   )
+    //   contract.quoram()
+    //   .then((result) => {
+    //       setQuoram(result)
+    //       setDataFetched(true)
+    //     },
+    //     (error) => {
+    //       console.log(error)
+    //     }
+    //   )
+    //   contract.maxDeposit()
+    //   .then((result) => {
+    //       setMaxDeposit(result)
+    //       setDataFetched(true)
+    //     },
+    //     (error) => {
+    //       console.log(error)
+    //     }
+    //   )
+    //   // fetchClub(pid)
+    //   // .then((data) => {
+    //   //   console.log(result)
+    //   //   setDataFetched(true)
+    //   // },
+    //   // (error) => {
+    //   //   console.log(error)
+    //   // }
+      
+    // }
 
     if (!fetched) {
     const usdc_contract = new SmartContract(USDCContract, USDC_CONTRACT_ADDRESS, userDetails)
@@ -279,7 +315,11 @@ export default function Join(props) {
     }
 
     checkConnection()
-  }, [previouslyConnectedWallet, fetched, pid, userDetails, dataFetched, daoAddress])
+    tokenAPIDetailsRetrieval()
+    tokenDetailsRetrieval()
+    contractDetailsRetrieval()
+
+  }, [previouslyConnectedWallet, fetched, pid, userDetails, dataFetched, daoAddress, walletConnected, tokenAPIDetails, governorDataFetched, governorDetails])
 
   const handleConnectWallet = () => {
     try {
@@ -304,7 +344,7 @@ export default function Join(props) {
         console.log("Success", result)
         const deposit_response = dao_contract.deposit(USDC_CONTRACT_ADDRESS, depositAmount)
         deposit_response.then((result) => {
-          console.log("Result", result)
+          // console.log("Result", result)
           setAlertStatus("success")
           setOpenSnackBar(true)  
         })
@@ -346,15 +386,14 @@ export default function Join(props) {
             <Card className={classes.cardRegular}>
               <Grid container spacing={2}>
                 <Grid item mt={3} ml={3}>
-                  <Avatar className={classes.avatarStyle}>D</Avatar>
+                  <Avatar className={classes.avatarStyle}>{apiTokenDetailSet ? tokenAPIDetails.data[0].name[0] : <Skeleton variant="rectangular" width={100} height={25} />}</Avatar>
                 </Grid>
                 <Grid item ml={1} mt={4} mb={7}>
                   <Stack spacing={0}>
                     <Typography variant="h4">
-                      {/* {fetched ? data[0].name : null} */}
-                      TAB
+                      {apiTokenDetailSet ? tokenAPIDetails.data[0].name : <Skeleton variant="rectangular" width={100} height={25} />}
                     </Typography>
-                    <Typography variant="h6" className={classes.dimColor}> $DEMO</Typography>
+                    <Typography variant="h6" className={classes.dimColor}>{dataFetched ? ("$" + tokenDetails[1]) : null}</Typography>
                   </Stack>
                 </Grid>
               </Grid>
@@ -362,60 +401,63 @@ export default function Join(props) {
               <Grid container spacing={7}>
                 <Grid item ml={4} mt={5} mb={2}>
                   <Stack spacing={1} alignItems="stretch">
-                    <Typography variant="p" className={classes.valuesDimStyle}>Deposits deadline</Typography>
+                    <Typography variant="p" className={classes.valuesDimStyle}>{dataFetched ? "Deposits deadline" : <Skeleton variant="rectangular" width={100} height={25} />}</Typography>
                     <Grid container ml={2} mt={2} mb={2}>
                       <Grid item>
                         <Typography variant="p" className={classes.valuesStyle}>
-                          12/04/2022
+                          {governorDataFetched ? console.log(governorDetails) : <Skeleton variant="rectangular" width={100} height={25} />}
                         </Typography>
                       </Grid>
                       <Grid item m={1}>
-                        <Card className={classes.openTag}>
-                          <Typography className={classes.openTagFont}>
-                            Open
-                          </Typography>
-                        </Card>
+                        {dataFetched ? 
+                           <Card className={classes.openTag}>
+                           <Typography className={classes.openTagFont}>
+                             Open
+                           </Typography>
+                          </Card>
+                        : <Skeleton variant="rectangular" />}
+                       
                       </Grid>
                     </Grid>
                   </Stack>
                   <br />
                   <Stack spacing={1} alignItems="stretch">
-                    <Typography variant="p" className={classes.valuesDimStyle}>Governance</Typography>
-                    <Typography variant="p" className={classes.valuesStyle}>By Voting</Typography>
+                    <Typography variant="p" className={classes.valuesDimStyle}>{dataFetched ? "Governance" : <Skeleton variant="rectangular" width={100} height={25} />}</Typography>
+                    <Typography variant="p" className={classes.valuesStyle}>{dataFetched ? "By Voting" : <Skeleton variant="rectangular" width={100} height={25} />}</Typography>
                   </Stack>
                 </Grid>
                 <Grid item ml={4} mt={5} mb={2}>
                   <Stack spacing={1} alignItems="stretch">
-                    <Typography variant="p" className={classes.valuesDimStyle}>Minimum Deposits</Typography>
-                    <Typography variant="p" className={classes.valuesStyle}>{ dataFetched ? minDeposit : 0 } USDC</Typography>
+                    <Typography variant="p" className={classes.valuesDimStyle}>{dataFetched ? "Minimum Deposits" : <Skeleton variant="rectangular" width={100} height={25} />}</Typography>
+                    <Typography variant="p" className={classes.valuesStyle}>{ dataFetched ? minDeposit + " USDC" : <Skeleton variant="rectangular" width={100} height={25} /> }</Typography>
                   </Stack>
                   <br />
                   <Stack spacing={1} alignItems="stretch">
-                    <Typography variant="p" className={classes.valuesDimStyle}>Members</Typography>
-                    <Typography variant="p" className={classes.valuesStyle}>8</Typography>
+                    <Typography variant="p" className={classes.valuesDimStyle}>{dataFetched ? "Members" : <Skeleton variant="rectangular" width={100} height={25} />}</Typography>
+                    <Typography variant="p" className={classes.valuesStyle}>{dataFetched ? 8 : <Skeleton variant="rectangular" width={100} height={25} />}</Typography>
                   </Stack>
                 </Grid>
                 <Grid item ml={4} mt={5} mb={2}>
                   <Stack spacing={1} alignItems="stretch">
-                    <Typography variant="p" className={classes.valuesDimStyle}>Maximum Deposit</Typography>
-                    <Typography variant="p" className={classes.valuesStyle}>{ dataFetched ? maxDeposit : 0 } USDC</Typography>
+                    <Typography variant="p" className={classes.valuesDimStyle}>{dataFetched ? "Maximum Deposit" : <Skeleton variant="rectangular" width={100} height={25} />}</Typography>
+                    <Typography variant="p" className={classes.valuesStyle}>{ dataFetched ? maxDeposit + " USDC" : <Skeleton variant="rectangular" width={100} height={25} /> } </Typography>
                   </Stack>
                 </Grid>
               </Grid>
               <Grid item ml={3} mt={5} mb={2} mr={3}>
-                <ProgressBar value={ dataFetched ? quoram : 0 } />
+                {dataFetched ? <ProgressBar value={ dataFetched ? parseInt(quoram) : 0 } /> : <Skeleton variant="rectangular"  />}
               </Grid>
               <Grid container spacing={2} >
                 <Grid item ml={4} mt={5} mb={2}>
                   <Stack spacing={1}>
-                    <Typography variant="p" className={classes.valuesDimStyle}>Club Tokens Minted so far</Typography>
-                    <Typography variant="p" className={classes.valuesStyle}>68,000 $DEMO</Typography>
+                    <Typography variant="p" className={classes.valuesDimStyle}>{dataFetched ? "Club Tokens Minted so far" : <Skeleton variant="rectangular" width={100} height={25} />}</Typography>
+                    <Typography variant="p" className={classes.valuesStyle}>{dataFetched ? (tokenDetails[2] + " $" + tokenDetails[1]) : <Skeleton variant="rectangular" width={100} height={25} />}</Typography>
                   </Stack>
                 </Grid>
                 <Grid item ml={4} mt={5} mb={2} mr={4} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
                   <Stack spacing={1}>
-                    <Typography variant="p" className={classes.valuesDimStyle}>Total Supply</Typography>
-                    <Typography variant="p" className={classes.valuesStyle}>{ dataFetched ? totalDeposit : 0} $DEMO</Typography>
+                    <Typography variant="p" className={classes.valuesDimStyle}>{dataFetched ? "Total Supply" : <Skeleton variant="rectangular" width={100} height={25} />}</Typography>
+                    <Typography variant="p" className={classes.valuesStyle}>{ dataFetched ? totalDeposit + (" $" + tokenDetails[1]) : <Skeleton variant="rectangular" width={100} height={25} />} </Typography>
                   </Stack>
                 </Grid>
               </Grid>
