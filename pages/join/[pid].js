@@ -181,7 +181,7 @@ export default function Join(props) {
       }
     };
     
-    if (!dataFetched){
+    if (!dataFetched && walletConnected){
       // dispatch(addClubName(result))
 
       // dispatch(addClubsymbol(data.clubsymbol))
@@ -250,7 +250,7 @@ export default function Join(props) {
           console.log(error)
         }
       )
-      fetchClub()
+      fetchClub(pid)
       .then((data) => {
         console.log(result)
         setDataFetched(true)

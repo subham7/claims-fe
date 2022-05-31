@@ -10,8 +10,13 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Grid from '@mui/material/Grid';
 import { makeStyles } from "@mui/styles"
 import Card from "../components/card"
+import Alert from "@mui/material"
 import { useDispatch } from "react-redux"
 import { initiateConnection } from "../utils/safe"
+import store from "../redux/store"
+import Web3 from 'web3'
+import Web3Adapter from '@gnosis.pm/safe-web3-lib'
+
 import {
   addClubName,
   addClubsymbol,
@@ -63,29 +68,35 @@ export default function HorizontalLinearStepper(props) {
       newSkipped.delete(activeStep)
     }
     if (activeStep === steps.length - 1) {
-      
-      const owners = ["0x557093F38f874b07ac5993768FA640Ea22A49D0D", "0x2f05FadE3F3030b387eCA20f7f7d5f5b12B8Dc06"]
-      const threshold = 2
-      initiateConnection(
-        owners,
-        threshold,
-        dispatch,
-        data.clubname,
-        data.clubsymbol,
-        data.raiseamount,
-        data.mincontribution,
-        data.maxcontribution,
-        0,
-        data.depositclose,
-        0,
-        data.voteforquorum,
-        data.voteinfavour
-      )
-      .then((result) => {
-        setLoading(false)
-      })
-      .catch((error) => {
-        setLoading(true)
+      const web3 = new Web3(Web3.givenProvider)
+      const auth = web3.eth.getAccounts()
+      let owners = []
+      auth.then((result) => {
+        owners.push(result)
+        const threshold = 1
+        initiateConnection(
+          owners,
+          threshold,
+          dispatch,
+          data.clubname,
+          data.clubsymbol,
+          data.raiseamount,
+          data.mincontribution,
+          data.maxcontribution,
+          0,
+          data.depositclose,
+          0,
+          data.voteforquorum,
+          data.voteinfavour
+        )
+        .then((result) => {
+          setLoading(false)
+        })
+        .catch((error) => {
+          setLoading(true)
+        })
+      }, (error) => {
+        console.log("Error connecting to Wallet!")
       })
     }
     setActiveStep((prevActiveStep) => prevActiveStep + 1)
