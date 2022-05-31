@@ -15,5 +15,5 @@ const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
 
 
 export default function ProgressBar(props){ 
-    return <BorderLinearProgress variant="determinate" value={50} />
+    return <BorderLinearProgress variant="determinate" value={props.value} />
 }

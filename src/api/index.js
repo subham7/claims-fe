@@ -9,9 +9,10 @@ import {onboard} from "../utils/wallet"
 
 // Global variables
 const MAIN_API_URL = 'http://ec2-65-0-105-40.ap-south-1.compute.amazonaws.com:4000/v1/'
-export const FACTORY_CONTRACT_ADDRESS = '0xbfa33C88f614345F3cbaedB8174db04043E3E412'
+// export const FACTORY_CONTRACT_ADDRESS = '0x585d26CE6E1D28C334E22b307d43F32D5bF283Dd'
+export const FACTORY_CONTRACT_ADDRESS = '0x23fcD67A37848De5917705Aa55C82f17E142be3a'
 export const USDC_CONTRACT_ADDRESS = '0x484727B6151a91c0298a9D2b9fD84cE3bc6BC4E3'
-const RINKEBY_URL = 'https://rinkeby.infura.io/v3/feaf3bb22fef436e996b4eb0e157dacd'
+const RINKEBY_URL = "https://young-black-silence.rinkeby.quiknode.pro/16777add1b7c70fec1d3080f9d7a64e1bc3095df/"
 
 
 // Smart contract calls
@@ -39,16 +40,17 @@ async function syncWallet() {
 }
 
 export class SmartContract{
-  constructor(abiFile, contractAddress) {
+  constructor(abiFile, contractAddress, walletAddress) {
     syncWallet()
     this.web3 = new Web3(window.web3)
     this.abi = abiFile.abi
     this.contractAddress = contractAddress
-    this.checkSum = this.web3.utils.toChecksumAddress(this.contractAddress)
+    // this.checkSum = this.web3.utils.toChecksumAddress(this.contractAddress)
     this.contract = new this.web3.eth.Contract(this.abi, this.contractAddress)
+    this.walletAddress = walletAddress
   }
 
-  async createDAO(tokenName, tokenSymbol, totalDeposit, minDeposit, maxDeposit, ownerFee, closeDate, feeUSDC,safeAddress, quoram, formThreshold) {
+  async createDAO(tokenName, tokenSymbol, totalDeposit, minDeposit, maxDeposit, ownerFee, closeDate, feeUSDC, tresuryAddress, quoram, formThreshold) {
     const days = Math.round((new Date(closeDate) - new Date()) / (1000 * 60 * 60 * 24))
     // call createDAO method from contract
     return this.contract.methods.createDAO(
@@ -60,22 +62,78 @@ export class SmartContract{
       ownerFee,
       days,
       feeUSDC,
-      safeAddress,
+      tresuryAddress,
       quoram,
       formThreshold
-    ).call()
+    ).send({ from : this.walletAddress})
   }
 
-  async approveDeposit(address, amount, walletAddress) {
+  async approveDeposit(address, amount) {
     console.log(window.web3.selectedAddress)
-    return this.contract.methods.approve(address, amount).send({ from: walletAddress })
+    return this.contract.methods.approve(address, amount).send({ from: this.walletAddress })
   }
   
-  async deposit(address, amount, walletAddress) {
+  async deposit(address, amount) {
     return this.contract.methods.deposit(
       address, 
       amount
-      ).send({ from: walletAddress })
+      ).send({ from: this.walletAddress })
+  }
+  
+  async balanceOf() {
+    return this.contract.methods.balanceOf(this.walletAddress).call({from: this.walletAddress})
+  }
+
+  async ownerAddress() {
+    return this.contract.methods.ownerAddress().call({ from: this.walletAddress })
+  }
+  
+  async totalDeposit() {
+    return this.contract.methods.totalDeposit().call({ from: this.walletAddress })
+  }
+
+  async minDeposit() {
+    return this.contract.methods.minDeposit().call({ from: this.walletAddress })
+  }
+
+  async maxDeposit() {
+    return this.contract.methods.maxDeposit().call({ from: this.walletAddress })
+  }
+
+  async closeDate() {
+    return this.contract.methods.closeDate().call({ from: this.walletAddress })
+  }
+
+  async ownerFee() {
+    return this.contract.methods.ownerFee().call({ from: this.walletAddress })
+  }
+
+  async daoAmount() {
+    return this.contract.methods.daoAmount().call({ from: this.walletAddress })
+  }
+
+  async quoram() {
+    return this.contract.methods.quoram().call({ from: this.walletAddress })
+  }
+
+  async threshold() {
+    return this.contract.methods.threshold().call({ from: this.walletAddress })
+  }
+
+  async depositClosed() {
+    return this.contract.methods.depositClosed().call({ from: this.walletAddress })
+  }
+
+  async tresuryAddress() {
+    return this.contract.methods.tresuryAddress().call({ from: this.walletAddress })
+  }
+
+  async tokenAddress() {
+    return this.contract.methods.tokenAddress().call({ from: this.walletAddress })
+  }
+
+  async balance(governanceToken) {
+    return this.contract.methods.balance(governanceToken).call({ from: this.walletAddress })
   }
 }
 
@@ -116,9 +174,10 @@ export async function fetchClub(clubID) {
   })
     .then(data => {
       resolved.data = data.json()
+      return resolved
     })
     .catch(err => {
       resolved.error = err
+      return resolved
     })
-  return resolved
 }

@@ -29,10 +29,18 @@ async function gnosisSafePromise(owners, threshold, dispatch) {
 export async function initiateConnection(owners, threshold, dispatch, tokenName, tokenSymbol, totalDeposit, minDeposit, maxDeposit, ownerFee, closeDate, feeUSDC, quoram, formThreshold) {
   let daoAddress = null;
   let tokenAddress = null;
-  const smartContract = new SmartContract(CreateDAO, FACTORY_CONTRACT_ADDRESS)
+  let walletAddress = null;
+  store.subscribe(() => {
+    const { create } = store.getState()
+    if (create.value) {
+      walletAddress = create.value[0][0].address
+      console.log(walletAddress)
+    }
+  })
+  const smartContract = new SmartContract(CreateDAO, FACTORY_CONTRACT_ADDRESS, walletAddress)
   await gnosisSafePromise(owners, threshold, dispatch)
-    .then((safeAddress) => {
-      console.log(safeAddress)
+    .then((treasuryAddress) => {
+      
       const value = smartContract.createDAO(
         tokenName,
         tokenSymbol,
@@ -42,21 +50,23 @@ export async function initiateConnection(owners, threshold, dispatch, tokenName,
         ownerFee,
         closeDate,
         feeUSDC,
-        safeAddress,
+        treasuryAddress,
         quoram,
-        formThreshold
+        formThreshold,
       )
       value.then(
         (result) => {
-          daoAddress = result[0]
-          tokenAddress = result[1]
+          console.log(result)
+          daoAddress = result.events[1].address
+          tokenAddress = result.events[0].address
           dispatch(addDaoAddress(result[0]))
           const data = {
             "name": tokenName,
             "tokenAddress" : tokenAddress,
             "daoAddress": daoAddress,
-            "treasuryAddress": safeAddress
+            "treasuryAddress": treasuryAddress
           }
+          console.log(data)
           const club = createClub(data)
           club.then((result) => {
             if(result.error){

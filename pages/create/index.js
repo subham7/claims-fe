@@ -1,7 +1,7 @@
 import { React, useRef, onChange, useState } from "react"
 import { makeStyles } from "@mui/styles"
 
-import { Grid, Typography, TextField, Card, Switch, FormControlLabel, Box, Stack, Divider } from "@mui/material"
+import { Grid, Typography, TextField, Card, Switch, FormControlLabel, Box, Stack, Divider, Backdrop, CircularProgress } from "@mui/material"
 import { DesktopDatePicker } from '@mui/x-date-pickers'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
@@ -74,6 +74,7 @@ export default function Create(props) {
   const [depositClose, setDepositClose] = useState(new Date());
   const [minContribution, setMinContribution] = useState(0);
   const [voteInFavour, setVoteInFavour] = useState(0);
+  const [open, setOpen] = useState(false);
 
   const handleChange = (newValue) => {
     setValue(newValue);
@@ -88,6 +89,13 @@ export default function Create(props) {
     setVoteInFavour(newValue);
   };
  
+  const handleLoading = (event) => {
+    setOpen(true)
+  }
+
+  const handleClose = () => {
+    setOpen(false);
+  }
 
   const steps = ["Add basic info", "Set club rules", "Final step"]
 
@@ -341,9 +349,12 @@ export default function Create(props) {
               mincontribution: minContribution,
               voteinfavour: voteInFavour
             }
-          } />
+          }
+          loading={handleLoading}
+           />
+           
       </div>
-          
+        
     </Layout2>
   )
 }

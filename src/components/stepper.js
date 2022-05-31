@@ -5,6 +5,9 @@ import Step from "@mui/material/Step"
 import StepLabel from "@mui/material/StepLabel"
 import Button from "@mui/material/Button"
 import Typography from "@mui/material/Typography"
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress'; 
+import Grid from '@mui/material/Grid';
 import { makeStyles } from "@mui/styles"
 import Card from "../components/card"
 import { useDispatch } from "react-redux"
@@ -38,8 +41,11 @@ export default function HorizontalLinearStepper(props) {
   const classes = useStyles()
   const [activeStep, setActiveStep] = React.useState(0)
   const [skipped, setSkipped] = React.useState(new Set())
-  const { steps, components, data } = props
+  const { steps, components, data, handleLoading } = props
   const dispatch = useDispatch()
+  const [loading, setLoading] = React.useState(false)
+  const [open, setOpen] = React.useState(false)
+
 
   const isStepOptional = (step) => {
     return step === 1
@@ -50,22 +56,14 @@ export default function HorizontalLinearStepper(props) {
   }
 
   const handleNext = () => {
+    setOpen(true)
     let newSkipped = skipped
     if (isStepSkipped(activeStep)) {
       newSkipped = new Set(newSkipped.values())
       newSkipped.delete(activeStep)
     }
     if (activeStep === steps.length - 1) {
-      dispatch(addClubName(data.clubname))
-      dispatch(addClubsymbol(data.clubsymbol))
-      dispatch(addDisplayImage(data.displayimage))
-      dispatch(addRaiseAmount(data.raiseamount))
-      dispatch(addMaxContribution(data.maxcontribution))
-      dispatch(addMandatoryProposal(data.mandatoryproposal))
-      dispatch(addVoteForQuorum(data.voteforquorum))
-      dispatch(addDepositClose(data.depositclose))
-      dispatch(addMinContribution(data.mincontribution))
-      dispatch(addVoteInFavour(data.voteinfavour))
+      
       const owners = ["0x557093F38f874b07ac5993768FA640Ea22A49D0D", "0x2f05FadE3F3030b387eCA20f7f7d5f5b12B8Dc06"]
       const threshold = 2
       initiateConnection(
@@ -83,6 +81,12 @@ export default function HorizontalLinearStepper(props) {
         data.voteforquorum,
         data.voteinfavour
       )
+      .then((result) => {
+        setLoading(false)
+      })
+      .catch((error) => {
+        setLoading(true)
+      })
     }
     setActiveStep((prevActiveStep) => prevActiveStep + 1)
     setSkipped(newSkipped)
@@ -111,6 +115,10 @@ export default function HorizontalLinearStepper(props) {
     setActiveStep(0)
   }
 
+  const handlePageLoading = () => {
+    handleLoading
+  }
+
   return (
     <Box sx={{ width: "60.260vw" }}>
       <Stepper activeStep={activeStep}>
@@ -136,13 +144,17 @@ export default function HorizontalLinearStepper(props) {
       <Card>
         {activeStep === steps.length ? (
           <>
-            <Typography sx={{ mt: 2, mb: 1 }}>
-              All steps completed - you&apos;re finished
-            </Typography>
-            <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
-              <Box sx={{ flex: "1 1 auto" }} />
-              <Button className={classes.large_button} onClick={handleReset}>Reset</Button>
-            </Box>
+          <Grid container md={12}>
+            <Grid item>
+            <Typography variant="h3" >Please wait while we are processing your request</Typography>
+            </Grid>
+          </Grid>
+            <Backdrop
+              sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+              open={open}
+            >
+            <CircularProgress color="inherit" />
+          </Backdrop>
           </>
         ) : (
           <>

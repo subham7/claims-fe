@@ -13,6 +13,18 @@ import Web3 from "web3"
 import USDCContract from "../../src/abis/usdc.json"
 import GovernorContract from "../../src/abis/governor.json"
 import { SmartContract } from "../../src/api/index"
+import {
+  addClubName,
+  addClubsymbol,
+  addDisplayImage,
+  addRaiseAmount,
+  addMaxContribution,
+  addMandatoryProposal,
+  addVoteForQuorum,
+  addDepositClose,
+  addMinContribution,
+  addVoteInFavour
+} from "../../src/redux/reducers/create"
 
 
 const useStyles = makeStyles({
@@ -126,6 +138,7 @@ export default function Join(props) {
   const [walletConnected, setWalletConnected] = useState(false)
   const [data, setData] = useState([])
   const [fetched, setFetched] = useState(false)
+  const [dataFetched, setDataFetched] = useState(false)
   const [previouslyConnectedWallet, setPreviouslyConnectedWallet] = useState(null)
   const [userDetails, setUserDetails] = useState(null)
   const [walletBalance, setWalletBalance] = useState(0)
@@ -133,13 +146,16 @@ export default function Join(props) {
   const [daoAddress, setDaoAddress] = useState(null)
   const [openSnackBar, setOpenSnackBar] = useState(false)
   const [alertStatus, setAlertStatus] = useState(null)
+  const [minDeposit, setMinDeposit] = useState(0)
+  const [maxDeposit, setMaxDeposit] = useState(0)
+  const [totalDeposit, setTotalDeposit] = useState(0)
+  const [quoram, setQuoram] = useState(0)
 
   useEffect(() => {
     store.subscribe(() => {
       const { create } = store.getState()
       if (create.value) {
         setPreviouslyConnectedWallet(create.value)
-        setWalletBalance(create.value[0][0].balance.rETH)
         setDaoAddress(pid)
       }
       else {
@@ -164,27 +180,106 @@ export default function Join(props) {
         setUserDetails(null)
       }
     };
+    
+    if (!dataFetched){
+      // dispatch(addClubName(result))
+
+      // dispatch(addClubsymbol(data.clubsymbol))
+      // dispatch(addDisplayImage(data.displayimage))
+      // dispatch(addRaiseAmount(data.raiseamount))
+      // dispatch(addMaxContribution(data.maxcontribution))
+      // dispatch(addMandatoryProposal(data.mandatoryproposal))
+      // dispatch(addVoteForQuorum(data.voteforquorum))
+      // dispatch(addMinContribution(data.mincontribution))
+      // dispatch(addVoteInFavour(data.voteinfavour))
+      // dispatch(addDepositClose(data.depositclose))
+
+
+      const contract = new SmartContract(GovernorContract, daoAddress, userDetails)
+      contract.depositClosed()
+      .then((result) => {
+          console.log(result)
+          setDataFetched(true)
+        },
+        (error) => {
+          console.log(error)
+        }
+      )
+      contract.minDeposit()
+      .then((result) => {
+          setMinDeposit(result)
+          setDataFetched(true)
+        },
+        (error) => {
+          console.log(error)
+        }
+      )
+      contract.maxDeposit()
+      .then((result) => {
+          setMaxDeposit(result)
+          setDataFetched(true)
+        },
+        (error) => {
+          console.log(error)
+        }
+      )
+      contract.totalDeposit()
+      .then((result) => {
+          setTotalDeposit(result)
+          setDataFetched(true)
+        },
+        (error) => {
+          console.log(error)
+        }
+      )
+      contract.quoram()
+      .then((result) => {
+          setQuoram(result)
+          setDataFetched(true)
+        },
+        (error) => {
+          console.log(error)
+        }
+      )
+      contract.maxDeposit()
+      .then((result) => {
+          setMaxDeposit(result)
+          setDataFetched(true)
+        },
+        (error) => {
+          console.log(error)
+        }
+      )
+      fetchClub()
+      .then((data) => {
+        console.log(result)
+        setDataFetched(true)
+      },
+      (error) => {
+        console.log(error)
+      }
+      )
+    }
 
     if (!fetched) {
-      fetchClub(pid)
-        .then((result) => {
-          result.data.then(
-            (data) => {
-              console.log(data[0])
-              setData(data)
-              setFetched(true)
-            },
-            (error) => {
-              console.log(error)
-            })
-        })
+    const usdc_contract = new SmartContract(USDCContract, USDC_CONTRACT_ADDRESS, userDetails)
+    usdc_contract.balanceOf()
+    .then((result) => {
+      setWalletBalance(result)
+      setFetched(true)
+      },
+      (error) => {
+        console.log("Failed to fetch wallet USDC", error)
+      }
+    )
+
     }
     if (previouslyConnectedWallet) {
       onboard.connectWallet({ autoSelect: previouslyConnectedWallet[0] })
     }
 
     checkConnection()
-  }, [previouslyConnectedWallet, fetched, pid, userDetails])
+  }, [previouslyConnectedWallet, fetched, pid, userDetails, dataFetched, daoAddress])
 
   const handleConnectWallet = () => {
     try {
@@ -198,14 +293,16 @@ export default function Join(props) {
 
   const handleDeposit = () => {
     console.log(typeof(depositAmount))
-    const usdc_contract = new SmartContract(USDCContract, USDC_CONTRACT_ADDRESS)
-    const dao_contract = new SmartContract(GovernorContract, daoAddress)
+    const usdc_contract = new SmartContract(USDCContract, USDC_CONTRACT_ADDRESS, userDetails)
+    // pass governor contract
+    const dao_contract = new SmartContract(GovernorContract, daoAddress, userDetails)
 
-    const usdc_response = usdc_contract.approveDeposit(daoAddress, depositAmount, userDetails)
+    // pass governor contract
+    const usdc_response = usdc_contract.approveDeposit(daoAddress, depositAmount)
     usdc_response.then(
       (result) => {
         console.log("Success", result)
-        const deposit_response = dao_contract.deposit(USDC_CONTRACT_ADDRESS, depositAmount, userDetails)
+        const deposit_response = dao_contract.deposit(USDC_CONTRACT_ADDRESS, depositAmount)
         deposit_response.then((result) => {
           console.log("Result", result)
           setAlertStatus("success")
@@ -231,7 +328,7 @@ export default function Join(props) {
 
   const handleMaxButtonClick = (event) => {
     // value should be the maximum deposit value
-    setDepositAmount(parseInt("10000"))
+    setDepositAmount(parseInt(maxDeposit))
   }
 
   const handleClose = (event, reason) => {
@@ -254,7 +351,8 @@ export default function Join(props) {
                 <Grid item ml={1} mt={4} mb={7}>
                   <Stack spacing={0}>
                     <Typography variant="h4">
-                      {fetched ? data[0].name : null}
+                      {/* {fetched ? data[0].name : null} */}
+                      TAB
                     </Typography>
                     <Typography variant="h6" className={classes.dimColor}> $DEMO</Typography>
                   </Stack>
@@ -289,7 +387,7 @@ export default function Join(props) {
                 <Grid item ml={4} mt={5} mb={2}>
                   <Stack spacing={1} alignItems="stretch">
                     <Typography variant="p" className={classes.valuesDimStyle}>Minimum Deposits</Typography>
-                    <Typography variant="p" className={classes.valuesStyle}>1,000 USDC</Typography>
+                    <Typography variant="p" className={classes.valuesStyle}>{ dataFetched ? minDeposit : 0 } USDC</Typography>
                   </Stack>
                   <br />
                   <Stack spacing={1} alignItems="stretch">
@@ -300,12 +398,12 @@ export default function Join(props) {
                 <Grid item ml={4} mt={5} mb={2}>
                   <Stack spacing={1} alignItems="stretch">
                     <Typography variant="p" className={classes.valuesDimStyle}>Maximum Deposit</Typography>
-                    <Typography variant="p" className={classes.valuesStyle}>10,000 USDC</Typography>
+                    <Typography variant="p" className={classes.valuesStyle}>{ dataFetched ? maxDeposit : 0 } USDC</Typography>
                   </Stack>
                 </Grid>
               </Grid>
               <Grid item ml={3} mt={5} mb={2} mr={3}>
-                <ProgressBar />
+                <ProgressBar value={ dataFetched ? quoram : 0 } />
               </Grid>
               <Grid container spacing={2} >
                 <Grid item ml={4} mt={5} mb={2}>
@@ -317,7 +415,7 @@ export default function Join(props) {
                 <Grid item ml={4} mt={5} mb={2} mr={4} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
                   <Stack spacing={1}>
                     <Typography variant="p" className={classes.valuesDimStyle}>Total Supply</Typography>
-                    <Typography variant="p" className={classes.valuesStyle}>100,000 $DEMO</Typography>
+                    <Typography variant="p" className={classes.valuesStyle}>{ dataFetched ? totalDeposit : 0} $DEMO</Typography>
                   </Stack>
                 </Grid>
               </Grid>
