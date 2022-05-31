@@ -49,16 +49,12 @@ export async function initiateConnection(
   quoram,
   formThreshold
 ) {
+  const web3 = new Web3(Web3.givenProvider)
+  const safeOwner = await web3.eth.getAccounts()
   let daoAddress = null
   let tokenAddress = null
-  let walletAddress = null
-  store.subscribe(() => {
-    const { create } = store.getState()
-    if (create.value) {
-      walletAddress = create.value[0][0].address
-      console.log(walletAddress)
-    }
-  })
+  let walletAddress = safeOwner[0]
+ 
   const smartContract = new SmartContract(
     CreateDAO,
     FACTORY_CONTRACT_ADDRESS,
