@@ -5,17 +5,17 @@ import Step from "@mui/material/Step"
 import StepLabel from "@mui/material/StepLabel"
 import Button from "@mui/material/Button"
 import Typography from "@mui/material/Typography"
-import Backdrop from '@mui/material/Backdrop';
-import CircularProgress from '@mui/material/CircularProgress'; 
-import Grid from '@mui/material/Grid';
+import Backdrop from "@mui/material/Backdrop"
+import CircularProgress from "@mui/material/CircularProgress"
+import Grid from "@mui/material/Grid"
 import { makeStyles } from "@mui/styles"
 import Card from "../components/card"
 import Alert from "@mui/material"
 import { useDispatch } from "react-redux"
 import { initiateConnection } from "../utils/safe"
 import store from "../redux/store"
-import Web3 from 'web3'
-import Web3Adapter from '@gnosis.pm/safe-web3-lib'
+import Web3 from "web3"
+import Web3Adapter from "@gnosis.pm/safe-web3-lib"
 
 import {
   addClubName,
@@ -27,7 +27,7 @@ import {
   addVoteForQuorum,
   addDepositClose,
   addMinContribution,
-  addVoteInFavour
+  addVoteInFavour,
 } from "../redux/reducers/create"
 
 const useStyles = makeStyles({
@@ -39,7 +39,7 @@ const useStyles = makeStyles({
     width: "31.25vw",
     color: "#242424",
     backgroundColor: "#F5F5F5",
-  }
+  },
 })
 
 export default function HorizontalLinearStepper(props) {
@@ -50,7 +50,6 @@ export default function HorizontalLinearStepper(props) {
   const dispatch = useDispatch()
   const [loading, setLoading] = React.useState(false)
   const [open, setOpen] = React.useState(false)
-
 
   const isStepOptional = (step) => {
     return step === 1
@@ -71,33 +70,37 @@ export default function HorizontalLinearStepper(props) {
       const web3 = new Web3(Web3.givenProvider)
       const auth = web3.eth.getAccounts()
       let owners = []
-      auth.then((result) => {
-        owners.push(result)
-        const threshold = 1
-        initiateConnection(
-          owners,
-          threshold,
-          dispatch,
-          data.clubname,
-          data.clubsymbol,
-          data.raiseamount,
-          data.mincontribution,
-          data.maxcontribution,
-          0,
-          data.depositclose,
-          0,
-          data.voteforquorum,
-          data.voteinfavour
-        )
-        .then((result) => {
-          setLoading(false)
-        })
-        .catch((error) => {
-          setLoading(true)
-        })
-      }, (error) => {
-        console.log("Error connecting to Wallet!")
-      })
+      auth.then(
+        (result) => {
+          owners.push(result[0])
+          console.log("owners", owners)
+          const threshold = 1
+          initiateConnection(
+            owners,
+            threshold,
+            dispatch,
+            data.clubname,
+            data.clubsymbol,
+            data.raiseamount,
+            data.mincontribution,
+            data.maxcontribution,
+            0,
+            data.depositclose,
+            0,
+            data.voteforquorum,
+            data.voteinfavour
+          )
+            .then((result) => {
+              setLoading(false)
+            })
+            .catch((error) => {
+              setLoading(true)
+            })
+        },
+        (error) => {
+          console.log("Error connecting to Wallet!")
+        }
+      )
     }
     setActiveStep((prevActiveStep) => prevActiveStep + 1)
     setSkipped(newSkipped)
@@ -155,23 +158,27 @@ export default function HorizontalLinearStepper(props) {
       <Card>
         {activeStep === steps.length ? (
           <>
-          <Grid container md={12}>
-            <Grid item>
-            <Typography variant="h3" >Please wait while we are processing your request</Typography>
+            <Grid container md={12}>
+              <Grid item>
+                <Typography variant="h3">
+                  Please wait while we are processing your request
+                </Typography>
+              </Grid>
             </Grid>
-          </Grid>
             <Backdrop
-              sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+              sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
               open={open}
             >
-            <CircularProgress color="inherit" />
-          </Backdrop>
+              <CircularProgress color="inherit" />
+            </Backdrop>
           </>
         ) : (
           <>
             {components[activeStep]}
             <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
-              {activeStep === 0 ? <></> : (
+              {activeStep === 0 ? (
+                <></>
+              ) : (
                 <Button
                   className={classes.large_button_back}
                   disabled={activeStep === 0}
@@ -185,10 +192,26 @@ export default function HorizontalLinearStepper(props) {
               <Button
                 className={classes.large_button}
                 variant="contained"
-                disabled={activeStep === 0 ? !data['clubname'] || !data['clubsymbol'] : activeStep === 1 ? !data['raiseamount'] || !data['maxcontribution'] || !data['mandatoryproposal'] || !data['voteforquorum'] || !data['depositclose'] || !data['mincontribution'] || !data['voteinfavour'] : activeStep === 2 ? false : true}
+                disabled={
+                  activeStep === 0
+                    ? !data["clubname"] || !data["clubsymbol"]
+                    : activeStep === 1
+                    ? !data["raiseamount"] ||
+                      !data["maxcontribution"] ||
+                      !data["mandatoryproposal"] ||
+                      !data["voteforquorum"] ||
+                      !data["depositclose"] ||
+                      !data["mincontribution"] ||
+                      !data["voteinfavour"]
+                    : activeStep === 2
+                    ? false
+                    : true
+                }
                 onClick={handleNext}
               >
-                {activeStep === steps.length - 1 ? "Perfect, let's get started!" : "Next"}
+                {activeStep === steps.length - 1
+                  ? "Perfect, let's get started!"
+                  : "Next"}
               </Button>
             </Box>
           </>
