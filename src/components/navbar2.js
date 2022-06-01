@@ -1,5 +1,5 @@
 import { React, useEffect, useState } from "react"
-import { AppBar, Box, Toolbar, IconButton, Button } from "@mui/material"
+import { AppBar, Box, Toolbar, IconButton, Button, Typography } from "@mui/material"
 import MenuIcon from "@mui/icons-material/Menu"
 import Image from "next/image"
 import { makeStyles } from "@mui/styles"
@@ -8,16 +8,29 @@ import Web3 from "web3"
 import AccountButton from "./accountbutton"
 import store from "../redux/store"
 import { useDispatch } from "react-redux"
-import { addWallet } from "../redux/reducers/create"
 
 const useStyles = makeStyles({
   image: {
     height: "30px",
     width: "auto !important",
   },
+  navbarText: {
+    flexGrow: 1,
+    fontSize: "18px",
+    color: "#C1D3FF",
+  },
+  navButton: {
+    borderRadius: "10px",
+    width: "327px",
+    height: "auto",
+    background: "#111D38 0% 0% no-repeat padding-box",
+    border: "1px solid #C1D3FF40",
+    opacity: "1",
+    fontSize: "18px",
+  }
 })
 
-export default function Navbar(props) {
+export default function Navbar2(props) {
   const dispatch = useDispatch()
   const classes = useStyles()
   const [previouslyConnectedWallet, setPreviouslyConnectedWallet] = useState(null)
@@ -70,7 +83,6 @@ export default function Navbar(props) {
     }
   };
 
-  //setUserChain()
 
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -89,25 +101,24 @@ export default function Navbar(props) {
           >
             <MenuIcon />
           </IconButton>
-          <Box sx={{ flexGrow: 1 }}>
-            <Image
-              src="/assets/images/monogram.png"
-              height="40"
-              width="40"
-              className={classes.image}
-              alt="monogram"
-            />
-          </Box>
+          <Image
+            src="/assets/images/monogram.png"
+            height="40"
+            width="40"
+            className={classes.image}
+            alt="monogram"
+          />
+          <Typography  variant="h6" component="div" ml={20} className={classes.navbarText}> 
+            No wallet connected
+          </Typography>
           {previouslyConnectedWallet !== null ? (
             <AccountButton accountDetail={userDetails} />
           ) : (
             <Button
-              variant="contained"
-              color="primary"
-              sx={{ mr: 2 }}
-              onClick={() => handleConnection()}
+              sx={{ mr: 2, mt: 2 }}
+              className={classes.navButton}
             >
-              Connect Wallet
+              No wallet connected
             </Button>
           )}       
               

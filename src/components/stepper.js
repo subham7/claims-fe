@@ -5,13 +5,51 @@ import Step from "@mui/material/Step"
 import StepLabel from "@mui/material/StepLabel"
 import Button from "@mui/material/Button"
 import Typography from "@mui/material/Typography"
-
+import Backdrop from "@mui/material/Backdrop"
+import CircularProgress from "@mui/material/CircularProgress"
+import Grid from "@mui/material/Grid"
+import { makeStyles } from "@mui/styles"
 import Card from "../components/card"
+import Alert from "@mui/material"
+import { useDispatch } from "react-redux"
+import { initiateConnection } from "../utils/safe"
+import store from "../redux/store"
+import Web3 from "web3"
+import Web3Adapter from "@gnosis.pm/safe-web3-lib"
+
+import {
+  addClubName,
+  addClubsymbol,
+  addDisplayImage,
+  addRaiseAmount,
+  addMaxContribution,
+  addMandatoryProposal,
+  addVoteForQuorum,
+  addDepositClose,
+  addMinContribution,
+  addVoteInFavour,
+} from "../redux/reducers/create"
+
+const useStyles = makeStyles({
+  large_button: {
+    width: "31.25vw",
+  },
+  large_button_back: {
+    fontWeight: "bold",
+    width: "31.25vw",
+    color: "#242424",
+    backgroundColor: "#F5F5F5",
+  },
+})
 
 export default function HorizontalLinearStepper(props) {
+  const classes = useStyles()
   const [activeStep, setActiveStep] = React.useState(0)
   const [skipped, setSkipped] = React.useState(new Set())
-  const { steps, components } = props
+  const { steps, components, data, handleLoading } = props
+  const dispatch = useDispatch()
+  const [loading, setLoading] = React.useState(false)
+  const [open, setOpen] = React.useState(false)
 
   const isStepOptional = (step) => {
     return step === 1
@@ -22,12 +60,48 @@ export default function HorizontalLinearStepper(props) {
   }
 
   const handleNext = () => {
+    setOpen(true)
     let newSkipped = skipped
     if (isStepSkipped(activeStep)) {
       newSkipped = new Set(newSkipped.values())
       newSkipped.delete(activeStep)
     }
-
+    if (activeStep === steps.length - 1) {
+      const web3 = new Web3(Web3.givenProvider)
+      const auth = web3.eth.getAccounts()
+      let owners = []
+      auth.then(
+        (result) => {
+          owners.push(result[0])
+          console.log("owners", owners)
+          const threshold = 1
+          initiateConnection(
+            owners,
+            threshold,
+            dispatch,
+            data.clubname,
+            data.clubsymbol,
+            data.raiseamount,
+            data.mincontribution,
+            data.maxcontribution,
+            0,
+            data.depositclose,
+            0,
+            data.voteforquorum,
+            data.voteinfavour
+          )
+            .then((result) => {
+              setLoading(false)
+            })
+            .catch((error) => {
+              setLoading(true)
+            })
+        },
+        (error) => {
+          console.log("Error connecting to Wallet!")
+        }
+      )
+    }
     setActiveStep((prevActiveStep) => prevActiveStep + 1)
     setSkipped(newSkipped)
   }
@@ -55,8 +129,12 @@ export default function HorizontalLinearStepper(props) {
     setActiveStep(0)
   }
 
+  const handlePageLoading = () => {
+    handleLoading
+  }
+
   return (
-    <Box sx={{ width: "100%" }}>
+    <Box sx={{ width: "60.260vw" }}>
       <Stepper activeStep={activeStep}>
         {steps.map((label, index) => {
           const stepProps = {}
@@ -80,36 +158,60 @@ export default function HorizontalLinearStepper(props) {
       <Card>
         {activeStep === steps.length ? (
           <>
-            <Typography sx={{ mt: 2, mb: 1 }}>
-              All steps completed - you&apos;re finished
-            </Typography>
-            <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
-              <Box sx={{ flex: "1 1 auto" }} />
-              <Button onClick={handleReset}>Reset</Button>
-            </Box>
+            <Grid container md={12}>
+              <Grid item>
+                <Typography variant="h3">
+                  Please wait while we are processing your request
+                </Typography>
+              </Grid>
+            </Grid>
+            <Backdrop
+              sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+              open={open}
+            >
+              <CircularProgress color="inherit" />
+            </Backdrop>
           </>
         ) : (
           <>
             {components[activeStep]}
-
             <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
-              <Button
-                color="inherit"
-                disabled={activeStep === 0}
-                onClick={handleBack}
-                sx={{ mr: 1 }}
-              >
-                Back
-              </Button>
-              <Box sx={{ flex: "1 1 auto" }} />
-              {isStepOptional(activeStep) && (
-                <Button color="inherit" onClick={handleSkip} sx={{ mr: 1 }}>
-                  Skip
+              {activeStep === 0 ? (
+                <></>
+              ) : (
+                <Button
+                  className={classes.large_button_back}
+                  disabled={activeStep === 0}
+                  onClick={handleBack}
+                  sx={{ mr: 1 }}
+                >
+                  Go Back
                 </Button>
               )}
-
-              <Button onClick={handleNext}>
-                {activeStep === steps.length - 1 ? "Finish" : "Next"}
+              <Box sx={{ flex: "1 1 auto" }} />
+              <Button
+                className={classes.large_button}
+                variant="contained"
+                disabled={
+                  activeStep === 0
+                    ? !data["clubname"] || !data["clubsymbol"]
+                    : activeStep === 1
+                    ? !data["raiseamount"] ||
+                      !data["maxcontribution"] ||
+                      !data["mandatoryproposal"] ||
+                      !data["voteforquorum"] ||
+                      !data["depositclose"] ||
+                      !data["mincontribution"] ||
+                      !data["voteinfavour"]
+                    : activeStep === 2
+                    ? false
+                    : true
+                }
+                onClick={handleNext}
+              >
+                {activeStep === steps.length - 1
+                  ? "Perfect, let's get started!"
+                  : "Next"}
               </Button>
             </Box>
           </>

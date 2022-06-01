@@ -1,0 +1,171 @@
+{
+    "contractName": "CreateDAO",
+    "abi": [
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "_newDAO",
+                    "type": "address"
+                }
+            ],
+            "name": "changeDAOImplementation",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "_newOrganiser",
+                    "type": "address"
+                }
+            ],
+            "name": "changeOrganiser",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "stateMutability": "nonpayable",
+            "type": "constructor"
+        },
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": false,
+                    "internalType": "address",
+                    "name": "newDao",
+                    "type": "address"
+                }
+            ],
+            "name": "ChangeGovernorAddress",
+            "type": "event"
+        },
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": false,
+                    "internalType": "address",
+                    "name": "newOrganiser",
+                    "type": "address"
+                }
+            ],
+            "name": "ChangeOrganiser",
+            "type": "event"
+        },
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": false,
+                    "internalType": "address",
+                    "name": "newToken",
+                    "type": "address"
+                }
+            ],
+            "name": "ChangeTokenAddress",
+            "type": "event"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "_newToken",
+                    "type": "address"
+                }
+            ],
+            "name": "changeTokenImplementation",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "string",
+                    "name": "tokenName",
+                    "type": "string"
+                },
+                {
+                    "internalType": "string",
+                    "name": "tokenSymbol",
+                    "type": "string"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "_totalDeposit",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "_minDeposit",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "_maxDeposit",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "_ownerFee",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "_days",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "bool",
+                    "name": "_feeUSDC",
+                    "type": "bool"
+                },
+                {
+                    "internalType": "address",
+                    "name": "_tresuryAddress",
+                    "type": "address"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "_quoram",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "_threshold",
+                    "type": "uint256"
+                }
+            ],
+            "name": "createDAO",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": true,
+                    "internalType": "address",
+                    "name": "",
+                    "type": "address"
+                },
+                {
+                    "indexed": true,
+                    "internalType": "address",
+                    "name": "",
+                    "type": "address"
+                }
+            ],
+            "name": "CreatedGovernor",
+            "type": "event"
+        }
+    ]
+    
+}
