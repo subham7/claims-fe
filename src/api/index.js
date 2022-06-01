@@ -10,7 +10,7 @@ import {onboard} from "../utils/wallet"
 // Global variables
 const MAIN_API_URL = 'http://ec2-65-0-105-40.ap-south-1.compute.amazonaws.com:4000/v1/'
 // export const FACTORY_CONTRACT_ADDRESS = '0x585d26CE6E1D28C334E22b307d43F32D5bF283Dd'
-export const FACTORY_CONTRACT_ADDRESS = '0xE8269328F9B28AF72E37843fEc0940AAf3e8f281'
+export const FACTORY_CONTRACT_ADDRESS = '0x5767C46519e4946aA42414E4Da754E5C11D52Ef0'
 export const USDC_CONTRACT_ADDRESS = '0x484727B6151a91c0298a9D2b9fD84cE3bc6BC4E3'
 const RINKEBY_URL = "https://young-black-silence.rinkeby.quiknode.pro/16777add1b7c70fec1d3080f9d7a64e1bc3095df/"
 

@@ -389,7 +389,7 @@ export default function Join(props) {
                 <Grid item ml={4} mt={5} mb={2} mr={4} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
                   <Stack spacing={1}>
                     <Typography variant="p" className={classes.valuesDimStyle}>{dataFetched ? "Total Supply" : <Skeleton variant="rectangular" width={100} height={25} />}</Typography>
-                    <Typography variant="p" className={classes.valuesStyle}>{dataFetched ? totalDeposit + (" $" + tokenDetails[1]) : <Skeleton variant="rectangular" width={100} height={25} />} </Typography>
+                    <Typography variant="p" className={classes.valuesStyle}>{governorDataFetched ? governorDetails[4] + (" $" + tokenDetails[1]) : <Skeleton variant="rectangular" width={100} height={25} />} </Typography>
                   </Stack>
                 </Grid>
               </Grid>
