@@ -337,7 +337,7 @@ export default function Join(props) {
                     <Grid container ml={2} mt={2} mb={2}>
                       <Grid item>
                         <Typography variant="p" className={classes.valuesStyle}>
-                          {governorDataFetched ? new Date(parseInt(governorDetails[0])).toLocaleDateString() : <Skeleton variant="rectangular" width={100} height={25} />}
+                          {governorDataFetched ? new Date(parseInt(governorDetails[0]) * 1000).toJSON().slice(0,10).split('-').reverse().join('/') : <Skeleton variant="rectangular" width={100} height={25} />}
                         </Typography>
                       </Grid>
                       <Grid item m={1}>
@@ -407,7 +407,7 @@ export default function Join(props) {
                   <Grid item ml={1} mt={4} mb={4} mr={2} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
                     <Typography variant="h6" className={classes.dimColor}>
                       {/* const days = Math.round((new Date(closeDate) - new Date()) / (1000 * 60 * 60 * 24)) */}
-                      Closes in {governorDataFetched ? Math.round((new Date(parseInt(governorDetails[0])) - new Date()) / (1000 * 60 * 60 * 24)) : 0} days
+                      Closes in {governorDataFetched ? Math.round((new Date(parseInt(governorDetails[0]) * 1000) - new Date()) / (1000 * 60 * 60 * 24)) : 0} days
                     </Typography>
                   </Grid>
                 </Grid>
