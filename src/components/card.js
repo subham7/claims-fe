@@ -3,7 +3,6 @@ import React from "react"
 import { makeStyles } from "@mui/styles"
 import Image from "next/image"
 import Tags from "./tags"
-import CardTabs from "./cardTabs"
 
 const useStyles = makeStyles({
   card: { marginTop: "50px" },
