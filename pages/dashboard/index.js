@@ -1,6 +1,6 @@
 import { React } from "react"
 import { makeStyles } from "@mui/styles"
-import Layout1 from "../../src/components/layouts/layout3"
+import Layout1 from "../../src/components/layouts/layout1"
 import { Box, Card, Grid, Typography, CardMedia, Divider, Stack, TextField, Button, IconButton } from "@mui/material"
 import SearchIcon from "@mui/icons-material/Search"
 import ButtonDropDown from "../../src/components/buttondropdown"
@@ -190,6 +190,10 @@ const useStyles = makeStyles({
   tokensText: {
     fontSize: "30px",
     color: "#F5F5F5",
+  },
+  iconMetroCoin: {
+    width: "81px",
+    height: "60px",
   }
 })
 
@@ -197,7 +201,7 @@ export default function Dashboard(props) {
   const classes = useStyles()
   return (
     <>
-      <Layout1>
+      <Layout1 page={1}>
         <div style={{ padding: "110px 80px" }}>
           <Grid container spacing={2}>
             <Grid item md={9}>
@@ -230,9 +234,7 @@ export default function Dashboard(props) {
                   <Grid container m={4}>
                     <Grid container>
                       <Stack mt={4}>
-                        <Typography className={classes.card2text1}>
-                          ICON
-                        </Typography>
+                        <img src="/assets/icons/Icon-metro-coins.png" alt="icon-metro-coins" className={classes.iconMetroCoin} />
                         <Typography mt={4} className={classes.card2text1}>
                           Tresury ($)
                         </Typography>
@@ -285,7 +287,7 @@ export default function Dashboard(props) {
                           InputProps={{
                             endAdornment: <IconButton type="submit" sx={{ p: '10px' }} aria-label="search"><SearchIcon /></IconButton>
                           }}
-                        />``
+                        />
                       </Grid>
                     </Grid>
 

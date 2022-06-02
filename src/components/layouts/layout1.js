@@ -1,10 +1,11 @@
 import * as React from "react"
 import { Box, CssBaseline } from "@mui/material"
 
-import Navbar from "../navbar"
+
+import Navbar from "../navbar2"
 import Sidebar from "../sidebar"
 
-const drawerWidth = 240
+const drawerWidth = 50
 
 export default function Layout1(props) {
   const [mobileOpen, setMobileOpen] = React.useState(false)
@@ -15,19 +16,18 @@ export default function Layout1(props) {
 
   return (
     <>
-      <Navbar handleDrawerToggle={handleDrawerToggle} />
-
+      <Navbar handleDrawerToggle={handleDrawerToggle} page={props.page} />
       <Box sx={{ display: "flex" }}>
         <CssBaseline />
         <Sidebar
           mobileOpen={mobileOpen}
           handleDrawerToggle={handleDrawerToggle}
+          page={props.page}
         />
         <Box
           component="main"
           sx={{
             flexGrow: 1,
-            paddingTop: "70px",
             width: { sm: `calc(100% - ${drawerWidth}px)` },
           }}
         >

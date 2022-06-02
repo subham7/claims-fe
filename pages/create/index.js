@@ -28,7 +28,7 @@ const useStyles = makeStyles({
   largeText: {
     fontSize: "18px",
   },
-  smallText : {
+  smallText: {
     fontSize: "14px",
   },
   cardWarning: {
@@ -88,7 +88,7 @@ export default function Create(props) {
   const onSetVoteOnFavourChange = (event, newValue) => {
     setVoteInFavour(newValue);
   };
- 
+
   const handleLoading = (event) => {
     setOpen(true)
   }
@@ -161,7 +161,7 @@ export default function Create(props) {
                   This info is public on the blockchain. This can not be changed later, please choose a name accordingly.
                 </Typography>
               </Card>
-            </Grid>           
+            </Grid>
           </Grid>
         </Grid>
       </>
@@ -170,14 +170,14 @@ export default function Create(props) {
 
   const step2 = () => {
     return (
-    <>
-      <Grid container spacing={6}>
-        <Grid item md={6}>
-          <Stack spacing={3}>
-            <Typography className={classes.largeText} variant="p">
-              Club raise amount (in USDC)
-            </Typography>
-            <TextField
+      <>
+        <Grid container spacing={6}>
+          <Grid item md={6}>
+            <Stack spacing={3}>
+              <Typography className={classes.largeText} variant="p">
+                Club raise amount (in USDC)
+              </Typography>
+              <TextField
                 error={!(raiseAmount >= 0 || raiseAmount % 1 === 0)}
                 className={classes.textField}
                 label="Amount (USDC)"
@@ -206,125 +206,125 @@ export default function Create(props) {
               <Box pt={2}>
                 <CustomSlider onChange={onSetVoteForQuorum} value={voteForQuorum} />
               </Box>
-          </Stack>
-        </Grid>
-        <Grid item md={6}>
-          <Stack spacing={3}>
-            <LocalizationProvider dateAdapter={AdapterDateFns}>
-            <Typography className={classes.largeText} variant="p">
-              When will the deposits close?
-            </Typography>
-            <DesktopDatePicker
-              error={value === null}
-              className={classes.textField}
-              inputFormat="dd/MM/yyyy"
-              value={value}
-              onChange={(e) => handleChange(e)}
-              renderInput={(params) => <TextField {...params} />}
-            />
-            </LocalizationProvider>
-            <Typography className={classes.largeText} variant="p">
-              Minimum contribution per person
-            </Typography>
-            <TextField
-              error={!(minContribution >= 0 || minContribution % 1 === 0)}
-              className={classes.textField}
-              label="Min. amount (USDC)"
-              variant="outlined"
-              onChange={(e) => setMinContribution(e.target.value)}
-              value={minContribution}
-            />
-          </Stack>
-          <Box pt={15}>
-            <Stack spacing={6}>
-              <Typography className={classes.largeText} variant="p">
-                Percentage of total members who must vote in favour for a proposal to pass:*
-              </Typography>
-              <CustomSlider onChange={onSetVoteOnFavourChange} value={voteInFavour} />
             </Stack>
-          </Box>
-        </Grid>
-        <Grid item md={12}>
-          <Card className={classes.cardRegular}>
-            <Typography variant="p">
-              Proposals once made mandatory can not be changed once club is created. However, it is possible to make changes in the quorum (or) voting structure even after the club is created.
-            </Typography>
-          </Card>
           </Grid>
-      </Grid>
-    </>)
+          <Grid item md={6}>
+            <Stack spacing={3}>
+              <LocalizationProvider dateAdapter={AdapterDateFns}>
+                <Typography className={classes.largeText} variant="p">
+                  When will the deposits close?
+                </Typography>
+                <DesktopDatePicker
+                  error={value === null}
+                  className={classes.textField}
+                  inputFormat="dd/MM/yyyy"
+                  value={value}
+                  onChange={(e) => handleChange(e)}
+                  renderInput={(params) => <TextField {...params} />}
+                />
+              </LocalizationProvider>
+              <Typography className={classes.largeText} variant="p">
+                Minimum contribution per person
+              </Typography>
+              <TextField
+                error={!(minContribution >= 0 || minContribution % 1 === 0)}
+                className={classes.textField}
+                label="Min. amount (USDC)"
+                variant="outlined"
+                onChange={(e) => setMinContribution(e.target.value)}
+                value={minContribution}
+              />
+            </Stack>
+            <Box pt={15}>
+              <Stack spacing={6}>
+                <Typography className={classes.largeText} variant="p">
+                  Percentage of total members who must vote in favour for a proposal to pass:*
+                </Typography>
+                <CustomSlider onChange={onSetVoteOnFavourChange} value={voteInFavour} />
+              </Stack>
+            </Box>
+          </Grid>
+          <Grid item md={12}>
+            <Card className={classes.cardRegular}>
+              <Typography variant="p">
+                Proposals once made mandatory can not be changed once club is created. However, it is possible to make changes in the quorum (or) voting structure even after the club is created.
+              </Typography>
+            </Card>
+          </Grid>
+        </Grid>
+      </>)
   }
 
   const step3 = () => {
     return (
       <>
-      <Grid container spacing={4}>
-        <Grid item md={12}>
-          <Typography variant="h5" m={3}>
-            Review details & confirm
-          </Typography>
-          <Divider variant="middle"/>
+        <Grid container spacing={4}>
+          <Grid item md={12}>
+            <Typography variant="h5" m={3}>
+              Review details & confirm
+            </Typography>
+            <Divider variant="middle" />
+          </Grid>
         </Grid>
-      </Grid>
-      <Grid container spacing={2}>
-        <Grid item mt={3} ml={3}>
-          <img className={classes.finserveImage} src={displayImage} alt={clubSymbol} />
+        <Grid container spacing={2}>
+          <Grid item mt={3} ml={3}>
+            <img className={classes.finserveImage} src={displayImage} alt={clubSymbol} />
+          </Grid>
+          <Grid item ml={4} mt={4} mb={4}>
+            <Stack spacing={1}>
+              <Typography variant="h5">
+                {clubName}
+              </Typography>
+              <Typography variant="p"> 1 USDC = 1 DEMO</Typography>
+            </Stack>
+          </Grid>
         </Grid>
-        <Grid item ml={4} mt={4} mb={4}>
-          <Stack spacing={1}>
-          <Typography variant="h5">
-            {clubName}
-          </Typography>
-          <Typography variant="p"> 1 USDC = 1 DEMO</Typography>
-          </Stack>
+        <Grid container spacing={2}>
+          <Grid item md={6}>
+            <Stack spacing={2} alignItems="stretch">
+              <Typography variant="p">
+                Club raise amount (in USDC)
+              </Typography>
+              <Typography className={classes.boldText} variant="h5">
+                {raiseAmount} USDC
+              </Typography>
+              <Typography variant="p">
+                Minimum contribution per person
+              </Typography>
+              <Typography className={classes.boldText} variant="h5">
+                {minContribution} USDC
+              </Typography>
+              <Typography variant="p">
+                Maximum contribution per person
+              </Typography>
+              <Typography className={classes.boldText} variant="h5">
+                {maxContribution} USDC
+              </Typography>
+            </Stack>
+          </Grid>
+          <Grid item md={6}>
+            <Stack spacing={2} alignItems="stretch">
+              <Typography variant="p">
+                When will the deposits close?
+              </Typography>
+              <Typography className={classes.boldText} variant="h5">
+                {depositClose.toLocaleDateString('en-IN')}
+              </Typography>
+              <Typography variant="p">
+                Minimum votes needed to validate proposal
+              </Typography>
+              <Typography className={classes.boldText} variant="h5">
+                {voteForQuorum}%
+              </Typography>
+              <Typography variant="p">
+                Minimum ‘yes’ votes needed to pass a proposal
+              </Typography>
+              <Typography className={classes.boldText} variant="h5">
+                {voteInFavour}%
+              </Typography>
+            </Stack>
+          </Grid>
         </Grid>
-      </Grid>
-      <Grid container spacing={2}>
-        <Grid item md={6}>
-          <Stack spacing={2} alignItems="stretch">
-            <Typography variant="p">
-              Club raise amount (in USDC)
-            </Typography>
-            <Typography className={classes.boldText} variant="h5">
-              {raiseAmount} USDC
-            </Typography>
-            <Typography variant="p">
-              Minimum contribution per person
-            </Typography>
-            <Typography className={classes.boldText} variant="h5">
-              {minContribution} USDC
-            </Typography>
-            <Typography variant="p">
-              Maximum contribution per person
-            </Typography>
-            <Typography className={classes.boldText} variant="h5">
-              {maxContribution} USDC
-            </Typography>
-          </Stack>
-        </Grid>
-        <Grid item md={6}>
-          <Stack spacing={2} alignItems="stretch">
-            <Typography variant="p">
-              When will the deposits close?
-            </Typography>
-            <Typography className={classes.boldText} variant="h5">
-              {depositClose.toLocaleDateString('en-IN')}
-            </Typography>
-            <Typography variant="p">
-              Minimum votes needed to validate proposal
-            </Typography>
-            <Typography className={classes.boldText} variant="h5">
-              {voteForQuorum}%
-            </Typography>
-            <Typography variant="p">
-              Minimum ‘yes’ votes needed to pass a proposal
-            </Typography>
-            <Typography className={classes.boldText} variant="h5">
-              {voteInFavour}%
-            </Typography>
-          </Stack>        
-        </Grid>
-      </Grid>
 
       </>
     )
@@ -351,10 +351,10 @@ export default function Create(props) {
             }
           }
           loading={handleLoading}
-           />
-           
+        />
+
       </div>
-        
+
     </Layout2>
   )
 }

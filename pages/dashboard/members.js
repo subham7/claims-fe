@@ -1,6 +1,6 @@
 import { React } from "react"
 import { makeStyles } from "@mui/styles"
-import Layout1 from "../../src/components/layouts/layout3"
+import Layout1 from "../../src/components/layouts/layout1"
 import { Box, Card, Grid, Typography, ListItemButton, ListItemText, Stack, TextField, Button, IconButton } from "@mui/material"
 import SearchIcon from "@mui/icons-material/Search"
 import BasicTable from "../../src/components/table"
@@ -66,30 +66,30 @@ export default function Members(props) {
   const classes = useStyles()
   return (
     <>
-    <Layout1>
-      <div style={{ padding: "110px 80px" }}>
-        <Grid container spacing={3}>
-          <Grid item md={9}>
-            <Grid container mb={10}>
-              <Grid item>
-              <Typography className={classes.clubAssets}>Members</Typography>
+      <Layout1 page={2}>
+        <div style={{ padding: "110px 80px" }}>
+          <Grid container spacing={3}>
+            <Grid item md={9}>
+              <Grid container mb={10}>
+                <Grid item>
+                  <Typography className={classes.clubAssets}>Members</Typography>
+                </Grid>
+                <Grid item xs sx={{ display: "flex", justifyContent: "flex-end" }}>
+                  <TextField
+                    className={classes.searchField}
+                    placeholder="Search members"
+                    InputProps={{
+                      endAdornment: <IconButton type="submit" sx={{ p: '10px' }} aria-label="search"><SearchIcon /></IconButton>
+                    }}
+                  />
+                </Grid>
               </Grid>
-            <Grid item xs sx={{ display: "flex", justifyContent: "flex-end" }}>
-            <TextField 
-              className={classes.searchField}
-              placeholder="Search proposals"
-              InputProps={{
-                endAdornment: <IconButton type="submit" sx={{ p: '10px' }} aria-label="search"><SearchIcon /></IconButton>
-              }}
-              />
+              <BasicTable />
+
             </Grid>
-            </Grid>
-            <BasicTable />
-            
           </Grid>
-        </Grid>
-      </div>           
-    </Layout1>
+        </div>
+      </Layout1>
     </>
-    )
+  )
 }

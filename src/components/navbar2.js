@@ -108,9 +108,18 @@ export default function Navbar2(props) {
             className={classes.image}
             alt="monogram"
           />
+          {previouslyConnectedWallet !== null ? (<Typography  variant="h6" component="div" ml={20} className={classes.navbarText}> 
+          </Typography>) : (
           <Typography  variant="h6" component="div" ml={20} className={classes.navbarText}> 
             No wallet connected
-          </Typography>
+          </Typography>)
+          }
+          <Button
+              variant="contained"
+              sx={{ mr: 2, mt: 2 }}
+            >
+              Discover
+            </Button>
           {previouslyConnectedWallet !== null ? (
             <AccountButton accountDetail={userDetails} />
           ) : (
