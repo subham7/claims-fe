@@ -231,7 +231,7 @@ export default function Join(props) {
       const usdc_contract = new SmartContract(USDCContract, USDC_CONTRACT_ADDRESS, userDetails)
       usdc_contract.balanceOf()
         .then((result) => {
-          setWalletBalance(result)
+          setWalletBalance(result / Math.pow(10, 18))
           setFetched(true)
         },
           (error) => {
