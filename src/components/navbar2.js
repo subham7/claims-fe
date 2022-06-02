@@ -101,6 +101,7 @@ export default function Navbar2(props) {
           >
             <MenuIcon />
           </IconButton>
+          <Box sx={{ flexGrow: 1 }}>
           <Image
             src="/assets/images/monogram.png"
             height="40"
@@ -108,14 +109,17 @@ export default function Navbar2(props) {
             className={classes.image}
             alt="monogram"
           />
-          {previouslyConnectedWallet !== null ? (<Typography  variant="h6" component="div" ml={20} className={classes.navbarText}> 
+          </Box>
+          
+          {/* {previouslyConnectedWallet !== null ? (<Typography  variant="h6" component="div" ml={20} className={classes.navbarText}> 
           </Typography>) : (
           <Typography  variant="h6" component="div" ml={20} className={classes.navbarText}> 
             No wallet connected
           </Typography>)
-          }
+          } */}
           <Button
               variant="contained"
+              color="primary"
               sx={{ mr: 2, mt: 2 }}
             >
               Discover

@@ -82,14 +82,14 @@ export default function Sidebar(props) {
               <HomeRoundedIcon />
             </ListItemIcon>
           </ListItemButton>
-          <ListItemButton  component="a" href="/dashboard/proposal">
-          <ListItemIcon className={page == 2 ? classes.listItemIconSelected : classes.listItemIcon}>
-            <InsertDriveFileRoundedIcon />
+          <ListItemButton component="a" href="/dashboard/proposal">
+            <ListItemIcon className={page == 2 ? classes.listItemIconSelected : classes.listItemIcon}>
+              <InsertDriveFileRoundedIcon />
             </ListItemIcon>
           </ListItemButton>
           <ListItemButton component="a" href="/dashboard/members">
-          <ListItemIcon className={page == 3 ? classes.listItemIconSelected : classes.listItemIcon}><PeopleRoundedIcon /></ListItemIcon>
-            
+            <ListItemIcon className={page == 3 ? classes.listItemIconSelected : classes.listItemIcon}><PeopleRoundedIcon /></ListItemIcon>
+
           </ListItemButton>
           <ListItemButton>
             <ListItemIcon className={classes.listItemIcon}><CompareArrowsRoundedIcon /></ListItemIcon>
@@ -123,18 +123,29 @@ export default function Sidebar(props) {
               <HomeRoundedIcon />
             </ListItemIcon>
           </ListItemButton>
+
           <ListItemButton component="a" href="/dashboard/proposal">
-            <ListItemIcon className={page == 2 ? classes.listItemIconSelected : classes.listItemIcon}><InsertDriveFileRoundedIcon /></ListItemIcon>
+            <ListItemIcon className={page == 2 ? classes.listItemIconSelected : classes.listItemIcon}>
+              <InsertDriveFileRoundedIcon />
+            </ListItemIcon>
 
           </ListItemButton>
           <ListItemButton component="a" href="/dashboard/members">
-            <ListItemIcon className={page == 3 ? classes.listItemIconSelected : classes.listItemIcon}><PeopleRoundedIcon /></ListItemIcon>
+            <ListItemIcon className={page == 3 ? classes.listItemIconSelected : classes.listItemIcon}>
+              <PeopleRoundedIcon />
+            </ListItemIcon>
+          </ListItemButton>
+
+          <ListItemButton >
+            <ListItemIcon className={classes.listItemIcon}>
+              <CompareArrowsRoundedIcon />
+            </ListItemIcon>
           </ListItemButton>
           <ListItemButton >
-            <ListItemIcon className={classes.listItemIcon}><CompareArrowsRoundedIcon /></ListItemIcon>
-          </ListItemButton>
-          <ListItemButton >
-            <ListItemIcon className={classes.listItemIcon}><SettingsRoundedIcon /></ListItemIcon>
+
+            <ListItemIcon className={classes.listItemIcon}>
+              <SettingsRoundedIcon />
+            </ListItemIcon>
           </ListItemButton>
         </List>
       </Drawer>
