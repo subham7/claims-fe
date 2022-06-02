@@ -78,7 +78,7 @@ export default function Proposal(props) {
   const classes = useStyles()
   return (
     <>
-      <Layout1 page={3}>
+      <Layout1 page={2}>
         <div style={{ padding: "110px 80px" }}>
           <Grid container spacing={3}>
             <Grid item md={9}>
