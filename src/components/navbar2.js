@@ -75,12 +75,12 @@ export default function Navbar2(props) {
   }, [previouslyConnectedWallet])
   
   const handleConnection = (event) => {
-    try{
-      const wallet = connectWallet(dispatch)
-    }
-    catch(err){
-      console.log(err)
-    }
+    const wallet = connectWallet(dispatch)
+    wallet.then((response) => {
+      if (!response) {
+        console.log("Error connecting wallet")
+      }
+    })
   };
 
 
