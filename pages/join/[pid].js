@@ -254,7 +254,13 @@ export default function Join(props) {
   const handleConnectWallet = () => {
     try {
       const wallet = connectWallet(dispatch)
-      setWalletConnected(true)
+      wallet.then((response) => {
+        if (response){
+          setWalletConnected(true)
+        } else {
+          setWalletConnected(false)
+        }
+      })
     }
     catch (err) {
       console.log(err)
