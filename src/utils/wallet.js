@@ -65,8 +65,14 @@ export const  onboard = Onboard({
 })
 
 export async function connectWallet(dispatch) {
-  const wallets = await onboard.connectWallet()
-  dispatch(addWallet(wallets.map(({ accounts }) => accounts)))
+    const wallets = await onboard.connectWallet()
+    if (wallets.length == 0){
+      return false
+    }
+    else{
+      dispatch(addWallet(wallets.map(({ accounts }) => accounts)))
+      return true 
+    }
 }
 
 export async function setUserChain() {
