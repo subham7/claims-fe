@@ -32,7 +32,8 @@ import {
 
 const useStyles = makeStyles({
   large_button: {
-    width: "31.25vw",
+    marginLeft: "25%",
+    width: "208px"
   },
   large_button_back: {
     fontWeight: "bold",
@@ -155,7 +156,6 @@ export default function HorizontalLinearStepper(props) {
         })}
       </Stepper>
 
-      <Card>
         {activeStep === steps.length ? (
           <>
             <Grid container md={12}>
@@ -176,20 +176,8 @@ export default function HorizontalLinearStepper(props) {
           <>
             {components[activeStep]}
             <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
-              {activeStep === 0 ? (
-                <></>
-              ) : (
+              {activeStep != 1 ? (
                 <Button
-                  className={classes.large_button_back}
-                  disabled={activeStep === 0}
-                  onClick={handleBack}
-                  sx={{ mr: 1 }}
-                >
-                  Go Back
-                </Button>
-              )}
-              <Box sx={{ flex: "1 1 auto" }} />
-              <Button
                 className={classes.large_button}
                 variant="contained"
                 disabled={
@@ -213,10 +201,10 @@ export default function HorizontalLinearStepper(props) {
                   ? "Perfect, let's get started!"
                   : "Next"}
               </Button>
+              ) : <></>}
             </Box>
           </>
         )}
-      </Card>
     </Box>
   )
 }

@@ -6,13 +6,19 @@ const CustomPrompt = styled(Slider)(({ theme }) => ({
   '& .MuiSlider-rail': {
     color: '#C1D3FF',
     backgroundColor: '#C1D3FF',
+    height: "13px"
   },
   '& .MuiSlider-track': {
-    color: '#3B7AFD'
+    color: '#3B7AFD',
+    height: "13px"
   },
-
+  '& .MuiSlider-thumb': {
+    width: "26px",
+    height: "26px",
+  },
   '& .MuiSlider-valueLabel': {
-    fontSize: 12,
+    color: "#C1D3FF",
+    fontSize: 18,
     fontWeight: 'normal',
     top: -6,
     backgroundColor: 'unset',
@@ -32,7 +38,7 @@ function valuetext(value, index) {
 
 export default function CustomSlider(props) {
   return(
-    <Box sx={{width: "28vw"}}>
+    <Box sx={{width: "100%"}}>
       <CustomPrompt
         aria-label="Always visible"
         step={1}

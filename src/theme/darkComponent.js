@@ -49,5 +49,13 @@ export const darkComponents = {
         backgroundColor: "#142243",
       }
     }
+  },
+  MuiTextField: {
+    styleOverrides: {
+      root: {
+        borderRadius: "10px",
+        backgroundColor: "#111D38",
+      }
+    }
   }
 }

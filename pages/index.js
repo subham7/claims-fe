@@ -6,7 +6,7 @@ import { useDispatch } from "react-redux"
 import { makeStyles } from "@mui/styles"
 import AddIcon from '@mui/icons-material/Add'
 import { style } from "@mui/system"
-import Router from 'next/link'
+import Router from "next/router"
 
 
 const useStyles = makeStyles({
@@ -53,7 +53,8 @@ export default function app() {
 
   const handleCreateButtonClick = async (event) => {
     const { pathname } = Router
-      if (pathname == "/" && clubFlow) {
+    console.log(pathname)
+      if (pathname == "/") {
         Router.push("/create")
       }
   }
