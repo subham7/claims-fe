@@ -1,6 +1,6 @@
 import { React, useRef, onChange, useState } from "react"
 import { makeStyles } from "@mui/styles"
-import { Grid, Item, Typography, TextField, Card, Switch, FormControlLabel, Box, Stack, Divider, Button, CircularProgress, autocompleteClasses } from "@mui/material"
+import { Grid, Item, Typography, TextField, Card, Switch, FormControlLabel, Box, Stack, Divider, Button, CircularProgress, IconButton } from "@mui/material"
 import styled from "@emotion/styled"
 import Layout2 from "../../src/components/layouts/layout2"
 import HorizontalLinearStepper from "../../src/components/stepper"
@@ -13,7 +13,8 @@ import ContractCard from "../../src/components/contractCard"
 import { contractList, tokenType, dateTill, exitDates } from './data'
 import Link from "next/link"
 import SimpleSelectButton from "../../src/components/simpleSelectButton"
-import AddCircleOutlinedIcon from '@mui/icons-material/AddCircleOutlined';
+import AddCircleOutlinedIcon from '@mui/icons-material/AddCircleOutlined'
+import DeleteIcon from '@mui/icons-material/Delete'
 
 
 const useStyles = makeStyles({
@@ -66,6 +67,9 @@ const useStyles = makeStyles({
     margin: 0,
     padding: 0,
     borderRadius: "10px",
+  },
+  addCircleColour: {
+    color: "#C1D3FF",
   }
 })
 
@@ -84,6 +88,8 @@ export default function Create(props) {
   const [minContribution, setMinContribution] = useState(0);
   const [voteInFavour, setVoteInFavour] = useState(0);
   const [open, setOpen] = useState(false);
+  const [addressList, setAddressList] = useState([]);
+
 
   const handleChange = (newValue) => {
     setValue(newValue);
@@ -107,8 +113,25 @@ export default function Create(props) {
   }
 
   const handleContractClick = (key) => {
-    console.log(key)
+    console.log(props)
   }
+  
+  const handleInputChange = (e, index) => {
+    const address = e.target.value;
+    const list = [...addressList];
+    list[index] = address;
+    setAddressList(list);
+  };
+
+  const handleRemoveClick = index => {
+    const list = [...addressList];
+    list.splice(index, 1);
+    setAddressList(list);
+  };
+
+  const handleAddClick = () => {
+    setAddressList([...addressList, ""]);
+  };
 
   const steps = ["Add basic info", "Select template", "Set rules"]
 
@@ -333,8 +356,28 @@ export default function Create(props) {
             </Typography>
                   </Grid>
                 <Grid item xs sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }} mr={3}>
-                <AddCircleOutlinedIcon />
+                <IconButton aria-label="add" onClick={handleAddClick}>
+                  <AddCircleOutlinedIcon className={classes.addCircleColour}/>
+                </IconButton>
                 </Grid>
+              </Grid>
+              <Grid container pl={3} pr={1} mt={2} mb={2}>
+                {addressList.map((data, key) => {
+                  return (
+                    <Grid item xs sx={{ display: "flex", justifyContent: "flex-start", alignItems: "center" }} key={key} >
+                      <TextField
+                        error={!(maxContribution >= 0 || maxContribution % 1 === 0)}
+                        variant="outlined"
+                        onChange={(e) => handleInputChange(e, key)}
+                        placeholder={"0x"}
+                        sx={{ m: 1, width: 443, mt: 1, borderRadius: "10px", }}
+                      />
+                      <IconButton aria-label="add" onClick={handleRemoveClick}>
+                        <DeleteIcon />
+                      </IconButton>
+                    </Grid>
+                );
+              })}
               </Grid>
             </Card>
             <br />
@@ -403,7 +446,8 @@ export default function Create(props) {
               voteforquorum: voteForQuorum,
               depositclose: depositClose,
               mincontribution: minContribution,
-              voteinfavour: voteInFavour
+              voteinfavour: voteInFavour,
+              addressList: addressList,
             }
           }
           loading={handleLoading}
