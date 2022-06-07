@@ -1,10 +1,13 @@
-import { React } from "react"
+import { React, useState } from "react"
 import { makeStyles } from "@mui/styles"
 import Layout1 from "../../src/components/layouts/layout1"
-import { Box, Card, Grid, Typography, ListItemButton, ListItemText, Stack, TextField, Button, IconButton, Image } from "@mui/material"
+import { Box, Card, Grid, Typography, ListItemButton, ListItemText, Stack, TextField, Button, IconButton, Modal, Select, OutlinedInput, MenuItem, TextareaAutosize } from "@mui/material"
 import SearchIcon from "@mui/icons-material/Search"
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
 import AddCircleRoundedIcon from '@mui/icons-material/AddCircleRounded'
+import { fontStyle } from "@mui/system"
+import SimpleSelectButton from "../../src/components/simpleSelectButton"
+import {proposalType} from "./data"
 
 const useStyles = makeStyles({
   clubAssets: {
@@ -16,6 +19,13 @@ const useStyles = makeStyles({
     height: "60px",
     background: "#3B7AFD 0% 0% no-repeat padding-box",
     borderRadius: "10px",
+  },
+  addButton2: {
+    width: "242px",
+    height: "60px",
+    background: "#3B7AFD 0% 0% no-repeat padding-box",
+    borderRadius: "10px",
+    fontSize: "22px",
   },
   searchField: {
     width: "548px",
@@ -71,11 +81,72 @@ const useStyles = makeStyles({
   cardFontNo: {
     fontSize: "18px",
     color: "#D55438",
+  },
+  dialogBox: {
+    fontSize: "38px",
+    color: "#FFFFFF",
+    opacity: 1,
+    fontStyle: "normal"
+  },
+  cardDropDown: {
+    width: "340px"
+  },
+  cardTextBox: {
+    color: "#C1D3FF",
+    background: "#111D38 0% 0% no-repeat padding-box",
+    border: "1px solid #C1D3FF40",
+    borderRadius: "10px",
+  },
+  modalStyle: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: "792px",
+    bgcolor: 'background.paper',
+    boxShadow: 24,
+    p: 4,
+  },
+  proposalCard: {
+   backgroundColor: "#142243",
+   padding: 0,
+   margin: 0
+  },
+  mainCard: {
+    border: "1px solid",
+    backgroundColor: "#142243",
   }
 })
 
+
 export default function Proposal(props) {
   const classes = useStyles()
+  const [open, setOpen] = useState(false)
+  const [name, setName] = useState([])
+  const [openCard, setOpenCard] = useState(false)
+  const [commandList, setCommandList] = useState([])
+  const [questionList, setQuestionList] = useState([])
+
+  const handleChange = (event) => {
+    const {
+      target: { value },
+    } = event
+    setName(value)
+  }
+
+  const handleClickOpen = () => {
+    setOpen(true)
+  }
+  
+  const handleClose = () => {
+    setOpen(false)
+  }
+
+  const handleAddNewCommand = () => {
+    setOpenCard(true)
+    setCommandList([...commandList, ""])
+  }
+
   return (
     <>
       <Layout1 page={2}>
@@ -95,13 +166,13 @@ export default function Proposal(props) {
                         endAdornment: <IconButton type="submit" sx={{ p: '10px' }} aria-label="search"><SearchIcon /></IconButton>
                       }}
                     />
-                    <Button className={classes.addButton} variant="outlined" startIcon={<AddCircleRoundedIcon />}>
-                      Add new
+                    <Button className={classes.addButton} variant="outlined" startIcon={<AddCircleRoundedIcon />} onClick={handleClickOpen}>
+                      Create new
                     </Button>
                   </Stack>
                 </Grid>
               </Grid>
-              <Card>
+              <Card className={classes.mainCard}>
                 <Grid container>
                   <Grid items ml={2} mr={2}>
                     <Typography className={classes.cardFont}>
@@ -181,6 +252,149 @@ export default function Proposal(props) {
               </Card>
             </Grid>
           </Grid>
+          <Modal open={open} onClose={handleClose} disableScrollLock={true} sx={{ overflow:'scroll',}}>
+            <Card className={classes.modalStyle}>
+            <Grid container >
+              <Grid item m={3}>
+              <Typography className={classes.dialogBox}>Create proposal</Typography>
+              </Grid>
+            </Grid>
+            <Grid container spacing={3} ml={0}>
+              <Grid item md={6} >
+              <Typography className={classes.cardFont}>Type of Proposal</Typography>
+              </Grid>
+              <Grid item md={6}>
+              <Typography className={classes.cardFont}>Voting duration</Typography>
+              </Grid>
+            </Grid>
+            <Grid container spacing={1} ml={2}>
+                <Grid item md={6}>
+                <Select
+                  displayEmpty
+                  value={name}
+                  onChange={handleChange}
+                  input={<OutlinedInput />}
+                  renderValue={(selected) => {
+                    if (selected.length === 0) {
+                      return proposalType[0].name
+                    }
+                    return selected
+                  }}
+                  MenuProps={proposalType}
+                  style={{ borderRadius: "10px", background: "#111D38 0% 0% no-repeat padding-box", width: "90%" }}
+                >
+                  {proposalType.map((value) => (
+                    <MenuItem
+                      key={value.type}
+                      value={value.type}>
+                      {value.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+                </Grid>
+                <Grid item md={6}>
+                <Select
+                  displayEmpty
+                  value={name}
+                  onChange={handleChange}
+                  input={<OutlinedInput />}
+                  renderValue={(selected) => {
+                    if (selected.length === 0) {
+                      return "Action"
+                    }
+                    return selected
+                  }}
+                  MenuProps={["Action", "Survey"]}
+                  style={{ borderRadius: "10px", background: "#111D38 0% 0% no-repeat padding-box",  width: "90%" }}
+                >
+                  {["Action", "Survey"].map((value) => (
+                    <MenuItem
+                      key={value}
+                      value={value}>
+                      {value}
+                    </MenuItem>
+                  ))}
+                </Select>
+                </Grid>
+              </Grid>
+              <Grid container item ml={3} mt={2}>
+                <Typography className={classes.cardFont}>Proposal Title*</Typography>
+              </Grid>
+              <Grid container item ml={3} mt={2}>
+                <TextField sx={{ width: "95%", backgroundColor: "#C1D3FF40"}} className={classes.cardTextBox}
+                      placeholder="Add your one line description here"/>
+              </Grid>
+              <Grid container item ml={3} mt={2}>
+                <Typography className={classes.cardFont}>Proposal description*</Typography>
+              </Grid>
+              <Grid container item ml={3} mt={3}>
+              <TextareaAutosize
+                aria-label="minimum height"
+                minRows={10}
+                placeholder="Add full description here"
+                style={{ width: "95%", height: "auto", backgroundColor: "#19274B", fontSize: "18px", color: "#C1D3FF" }}
+              />
+              </Grid>
+              <Grid container item ml={3} mt={3} mb={2}>
+                <Typography className={classes.cardFont}>Choose a command for this proposal to execute</Typography>
+              </Grid>
+              <Grid item ml={3} mr={2}>
+              {openCard ? (
+                <Card className={classes.proposalCard}>
+                {commandList.map((data, key) => {
+                  return (
+                <>
+                <Grid container item  ml={3} mt={2}>
+                <Typography className={classes.cardFont}>Command #{key + 1}</Typography>
+                </Grid>
+                <Grid container item ml={3} mt={1} mb={2}>
+                <Select
+                  displayEmpty
+                  value={name}
+                  onChange={handleChange}
+                  input={<OutlinedInput />}
+                  renderValue={(selected) => {
+                    if (selected.length === 0) {
+                      return "Select a command"
+                    }
+                    return selected
+                  }}
+                  MenuProps={["Select a command"]}
+                  style={{ borderRadius: "10px", background: "#111D38 0% 0% no-repeat padding-box",  width: "90%" }}
+                >
+                  {["Select a command"].map((value) => (
+                    <MenuItem
+                      key={value}
+                      value={value}>
+                      {value}
+                    </MenuItem>
+                  ))}
+                </Select>
+                </Grid>
+                </> 
+                  )
+                })}
+              </Card>
+              ) : <></>}
+              </Grid>
+              <Grid container item mt={2} ml={3}>
+              <Button className={classes.addButton2} variant="outlined" startIcon={<AddCircleRoundedIcon />} onClick={handleAddNewCommand}>
+                Add command
+              </Button>
+              </Grid>
+              <Grid container>
+                <Grid item xs sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
+                <Grid item>
+                <Button onClick={handleClose}>Cancel</Button>
+                </Grid>
+                <Grid item ml={2}>
+                <Button onClick={handleClose}>Next</Button>
+                </Grid>
+                </Grid>
+                </Grid>
+              
+            </Card>
+        </Modal>
         </div>
       </Layout1>
     </>

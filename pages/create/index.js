@@ -1,9 +1,8 @@
 import { React, useRef, onChange, useState } from "react"
 import { makeStyles } from "@mui/styles"
-import { Grid, Item, Typography, TextField, Card, Switch, FormControlLabel, Box, Stack, Divider, Button, CircularProgress, IconButton } from "@mui/material"
+import { Grid, Item, Typography, TextField, Card, Switch, FormControlLabel, Box, Stack, Divider, Button, CircularProgress, IconButton, Stepper, StepLabel, Step, Backdrop } from "@mui/material"
 import styled from "@emotion/styled"
 import Layout2 from "../../src/components/layouts/layout2"
-import HorizontalLinearStepper from "../../src/components/stepper"
 import CustomRoundedCard from "../../src/components/roundcard"
 import CustomCard from "../../src/components/card"
 import CustomSlider from "../../src/components/slider"
@@ -15,6 +14,10 @@ import Link from "next/link"
 import SimpleSelectButton from "../../src/components/simpleSelectButton"
 import AddCircleOutlinedIcon from '@mui/icons-material/AddCircleOutlined'
 import DeleteIcon from '@mui/icons-material/Delete'
+import Web3 from "web3"
+import Web3Adapter from "@gnosis.pm/safe-web3-lib"
+import { initiateConnection } from "../../src/utils/safe"
+
 
 
 const useStyles = makeStyles({
@@ -62,15 +65,20 @@ const useStyles = makeStyles({
     backgroundColor: "#111D38",
     color: "#3B7AFD",
     fontSize: "18px",
+    width: "208px",
   },
-  cardPadding : {
+  cardPadding: {
     margin: 0,
     padding: 0,
     borderRadius: "10px",
   },
   addCircleColour: {
     color: "#C1D3FF",
-  }
+  },
+  large_button: {
+    fontSize: "18px",
+    width: "208px"
+  },
 })
 
 export default function Create(props) {
@@ -87,8 +95,11 @@ export default function Create(props) {
   const [depositClose, setDepositClose] = useState(new Date());
   const [minContribution, setMinContribution] = useState(0);
   const [voteInFavour, setVoteInFavour] = useState(0);
-  const [open, setOpen] = useState(false);
   const [addressList, setAddressList] = useState([]);
+  const [activeStep, setActiveStep] = useState(0)
+  const [skipped, setSkipped] = useState(new Set())
+  const [loading, setLoading] = useState(false)
+  const [open, setOpen] = useState(false)
 
 
   const handleChange = (newValue) => {
@@ -112,10 +123,6 @@ export default function Create(props) {
     setOpen(false);
   }
 
-  const handleContractClick = (key) => {
-    console.log(props)
-  }
-  
   const handleInputChange = (e, index) => {
     const address = e.target.value;
     const list = [...addressList];
@@ -134,6 +141,92 @@ export default function Create(props) {
   };
 
   const steps = ["Add basic info", "Select template", "Set rules"]
+
+  const isStepOptional = (step) => {
+    return step === 1
+  }
+
+  const isStepSkipped = (step) => {
+    return skipped.has(step)
+  }
+
+  const handleNext = () => {
+    setOpen(true)
+    let newSkipped = skipped
+    if (isStepSkipped(activeStep)) {
+      newSkipped = new Set(newSkipped.values())
+      newSkipped.delete(activeStep)
+    }
+    if (activeStep === steps.length - 1) {
+      const web3 = new Web3(Web3.givenProvider)
+      const auth = web3.eth.getAccounts()
+      let owners = []
+      auth.then(
+        (result) => {
+          owners.push(result[0])
+          console.log("owners", owners)
+          const threshold = 1
+          initiateConnection(
+            owners,
+            threshold,
+            dispatch,
+            clubName,
+            clubSymbol,
+            raiseAmount,
+            minContribution,
+            maxContribution,
+            0,
+            depositClose,
+            0,
+            voteForQuorum,
+            voteInFavour
+          )
+            .then((result) => {
+              setLoading(false)
+            })
+            .catch((error) => {
+              setLoading(true)
+            })
+        },
+        (error) => {
+          console.log("Error connecting to Wallet!")
+        }
+      )
+    }
+    setActiveStep((prevActiveStep) => prevActiveStep + 1)
+    setSkipped(newSkipped)
+  }
+
+  const handleBack = () => {
+    setActiveStep((prevActiveStep) => prevActiveStep - 1)
+  }
+
+  const handleSkip = () => {
+    if (!isStepOptional(activeStep)) {
+      // You probably want to guard against something like this,
+      // it should never occur unless someone's actively trying to break something.
+      throw new Error("You can't skip a step that isn't optional.")
+    }
+
+    setActiveStep((prevActiveStep) => prevActiveStep + 1)
+    setSkipped((prevSkipped) => {
+      const newSkipped = new Set(prevSkipped.values())
+      newSkipped.add(activeStep)
+      return newSkipped
+    })
+  }
+
+  const handleReset = () => {
+    setActiveStep(0)
+  }
+
+  const handlePageLoading = () => {
+    handleLoading
+  }
+
+  const handleContractClick = (key) => {
+    handleNext()
+  }
 
   const step1 = () => {
     return (
@@ -177,6 +270,23 @@ export default function Create(props) {
                 <Button onClick={() => uploadInputRef.current && uploadInputRef.current.click()} startIcon={<UploadIcon />} className={classes.uploadButton}>Upload file</Button>
               </Grid>
             </Grid>
+            <br />
+            <Grid container wrap="nowrap" spacing={0} justify="center" alignItems="center" direction="row">
+              <Grid item xs={0} mt={2}>
+                <Button
+                  className={classes.large_button}
+                  variant="contained"
+                  disabled={
+                    activeStep === 0
+                      ? !clubName || !clubSymbol :
+                      false
+                  }
+                  onClick={handleNext}
+                >
+                  Next
+                </Button>
+              </Grid>
+            </Grid>
           </Grid>
         </Grid>
       </>
@@ -186,7 +296,7 @@ export default function Create(props) {
   const step2 = () => {
     return (
       <>
-      <Grid container direction="row">
+        <Grid container direction="row">
           <Grid item md={12} mt={8}>
             <Typography className={classes.largeText1}>
               Choose a template or create a custom
@@ -195,28 +305,28 @@ export default function Create(props) {
             <Typography className={classes.largeText}>
               Templates once chosen can be modified at a later too like voting quorum, financials, etc.
             </Typography>
-            </Grid>
-            </Grid>
-        <Grid 
-          container 
+          </Grid>
+        </Grid>
+        <Grid
+          container
           direction="row"
           justifyContent="center"
           alignItems="center">
           <Grid item md={12} mt={8}>
-          <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
-            {contractList.map((data, key) => {
-              return (
-                <Grid item xs={6} key={key} onClick={() => handleContractClick(key)}>
-                  <ContractCard 
-                  contractHeading={data.contractHeading} 
-                  contractSubHeading={data.contractSubHeading} 
-                  contractImage={data.image}
-                  star={data.star}
-                  />
-                </Grid>
-              )
-            })}
-          </Grid>
+            <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
+              {contractList.map((data, key) => {
+                return (
+                  <Grid item xs={6} key={key} onClick={() => handleContractClick(key)}>
+                    <ContractCard
+                      contractHeading={data.contractHeading}
+                      contractSubHeading={data.contractSubHeading}
+                      contractImage={data.image}
+                      star={data.star}
+                    />
+                  </Grid>
+                )
+              })}
+            </Grid>
           </Grid>
         </Grid>
       </>)
@@ -226,139 +336,139 @@ export default function Create(props) {
     return (
       <>
         <Grid container spacing={3}>
-          <Grid item md={12}  mt={8}>
-          <Typography className={classes.largeText1}>
-          Investment club
+          <Grid item md={12} mt={8}>
+            <Typography className={classes.largeText1}>
+              Investment club
             </Typography>
             <br />
             <Typography className={classes.largeText}>
-            Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren
+              Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren
             </Typography>
             <br />
             <br />
             <Typography className={classes.largeText} mb={2}>
-            Club tokens
+              Club tokens
             </Typography>
             <Card className={classes.cardPadding}>
               <Grid container pl={3} pr={1}>
                 <Grid item xs sx={{ display: "flex", justifyContent: "flex-start", alignItems: "center" }}>
-                <Typography className={classes.largeText}>
-                Membership token
-            </Typography>
-                  </Grid>
+                  <Typography className={classes.largeText}>
+                    Membership token
+                  </Typography>
+                </Grid>
                 <Grid item xs sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
-                  <SimpleSelectButton data={tokenType}/>
+                  <SimpleSelectButton data={tokenType} />
                 </Grid>
               </Grid>
             </Card>
 
             <Typography className={classes.largeText} mt={4} mb={2}>
-            Governance
+              Governance
             </Typography>
             <Card className={classes.cardPadding} mb={2}>
               <Grid container pl={3} pr={1} mt={2} mb={2}>
                 <Grid item xs sx={{ display: "flex", justifyContent: "flex-start", alignItems: "center" }}>
-                <Typography className={classes.largeText}>
-                Make proposals mandatory
-            </Typography>
-                  </Grid>
+                  <Typography className={classes.largeText}>
+                    Make proposals mandatory
+                  </Typography>
+                </Grid>
                 <Grid item xs sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
-                <FormControlLabel control={<Switch />} onChange={(e) => setMandatoryProposal(e.target.value)} value={mandatoryProposal} label=""/>
+                  <FormControlLabel control={<Switch />} onChange={(e) => setMandatoryProposal(e.target.value)} value={mandatoryProposal} label="" />
                 </Grid>
               </Grid>
             </Card>
             <br />
             <Card className={classes.cardPadding} mb={2}>
-                <Grid container item xs sx={{ display: "flex", justifyContent: "flex-start", alignItems: "center" }} pl={3} pr={1} mt={2} mb={2}>
+              <Grid container item xs sx={{ display: "flex", justifyContent: "flex-start", alignItems: "center" }} pl={3} pr={1} mt={2} mb={2}>
                 <Typography className={classes.largeText}>
-                Minimum votes needed to <Box sx={{ color : "#FFFFFF"}} fontWeight='fontWeightBold' display='inline'>validate</Box> a proposal
-            </Typography>
-                  </Grid>
-                <Grid container item md={11.3} mt={4} ml={4} mb={4}>
+                  Minimum votes needed to <Box sx={{ color: "#FFFFFF" }} fontWeight='fontWeightBold' display='inline'>validate</Box> a proposal
+                </Typography>
+              </Grid>
+              <Grid container item md={11.3} mt={4} ml={4} mb={4}>
                 <CustomSlider onChange={onSetVoteForQuorum} value={voteForQuorum} />
-                </Grid>
+              </Grid>
             </Card>
             <br />
             <Card className={classes.cardPadding} mb={2}>
-                <Grid container item xs sx={{ display: "flex", justifyContent: "flex-start", alignItems: "center" }} pl={3} pr={1} mt={2} mb={2}>
+              <Grid container item xs sx={{ display: "flex", justifyContent: "flex-start", alignItems: "center" }} pl={3} pr={1} mt={2} mb={2}>
                 <Typography className={classes.largeText}>
-                Minimum votes in support to <Box sx={{ color : "#FFFFFF"}} fontWeight='fontWeightBold' display='inline'>pass</Box> a proposal
-            </Typography>
-                  </Grid>
-                <Grid container item md={11.3} mt={4} ml={4} mb={4}>
+                  Minimum votes in support to <Box sx={{ color: "#FFFFFF" }} fontWeight='fontWeightBold' display='inline'>pass</Box> a proposal
+                </Typography>
+              </Grid>
+              <Grid container item md={11.3} mt={4} ml={4} mb={4}>
                 <CustomSlider onChange={onSetVoteOnFavourChange} value={voteInFavour} />
-                </Grid>
+              </Grid>
             </Card>
             <br />
 
             <Typography className={classes.largeText} mt={3} mb={2}>
-            Deposits
+              Deposits
             </Typography>
             <Card className={classes.cardPadding}>
               <Grid container pl={3} pr={1}>
                 <Grid item xs sx={{ display: "flex", justifyContent: "flex-start", alignItems: "center" }}>
-                <Typography className={classes.largeText}>
-                Accept deposits till
-            </Typography>
-                  </Grid>
+                  <Typography className={classes.largeText}>
+                    Accept deposits till
+                  </Typography>
+                </Grid>
                 <Grid item xs sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
-                  <SimpleSelectButton data={dateTill}/>
+                  <SimpleSelectButton data={dateTill} />
                 </Grid>
               </Grid>
             </Card>
             <br />
             <Card className={classes.cardPadding} mb={2}>
-                <Grid container pl={3} pr={1}>
-                  <Grid item xs sx={{ display: "flex", justifyContent: "flex-start", alignItems: "center" }}>
-                <Typography className={classes.largeText}>
-                Minimum contribution per person
-            </Typography>
-                  </Grid>
-                  <Grid item xs sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
+              <Grid container pl={3} pr={1}>
+                <Grid item xs sx={{ display: "flex", justifyContent: "flex-start", alignItems: "center" }}>
+                  <Typography className={classes.largeText}>
+                    Minimum contribution per person
+                  </Typography>
+                </Grid>
+                <Grid item xs sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
                   <TextField
-                error={!(minContribution >= 0 || minContribution % 1 === 0)}
-                variant="outlined"
-                onChange={(e) => setMinContribution(e.target.value)}
-                value={minContribution}
-                sx={{ m: 1, width: 443, mt: 1, borderRadius: "10px", }}
-              />
+                    error={!(minContribution >= 0 || minContribution % 1 === 0)}
+                    variant="outlined"
+                    onChange={(e) => setMinContribution(e.target.value)}
+                    value={minContribution}
+                    sx={{ m: 1, width: 443, mt: 1, borderRadius: "10px", }}
+                  />
                 </Grid>
-                </Grid>
+              </Grid>
             </Card>
-            
+
             <br />
             <Card className={classes.cardPadding} mb={2}>
-                <Grid container pl={3} pr={1}>
-                  <Grid item xs sx={{ display: "flex", justifyContent: "flex-start", alignItems: "center" }}>
-                <Typography className={classes.largeText}>
-                Maximum contribution per person
-            </Typography>
-                  </Grid>
-                  <Grid item xs sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
+              <Grid container pl={3} pr={1}>
+                <Grid item xs sx={{ display: "flex", justifyContent: "flex-start", alignItems: "center" }}>
+                  <Typography className={classes.largeText}>
+                    Maximum contribution per person
+                  </Typography>
+                </Grid>
+                <Grid item xs sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
                   <TextField
-                error={!(maxContribution >= 0 || maxContribution % 1 === 0)}
-                variant="outlined"
-                onChange={(e) => setMaxContribution(e.target.value)}
-                value={maxContribution}
-                sx={{ m: 1, width: 443, mt: 1, borderRadius: "10px", }}
-              />
+                    error={!(maxContribution >= 0 || maxContribution % 1 === 0)}
+                    variant="outlined"
+                    onChange={(e) => setMaxContribution(e.target.value)}
+                    value={maxContribution}
+                    sx={{ m: 1, width: 443, mt: 1, borderRadius: "10px", }}
+                  />
                 </Grid>
-                </Grid>
+              </Grid>
             </Card>
             <Typography className={classes.largeText} mt={4} mb={2}>
-            Wallet Signators
+              Wallet Signators
             </Typography>
             <Card className={classes.cardPadding} mb={2}>
               <Grid container pl={3} pr={1} mt={2} mb={2}>
                 <Grid item xs sx={{ display: "flex", justifyContent: "flex-start", alignItems: "center" }}>
-                <Typography className={classes.largeText}>
-                Add more wallets that will sign & approve final transaction
-            </Typography>
-                  </Grid>
+                  <Typography className={classes.largeText}>
+                    Add more wallets that will sign & approve final transaction
+                  </Typography>
+                </Grid>
                 <Grid item xs sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }} mr={3}>
-                <IconButton aria-label="add" onClick={handleAddClick}>
-                  <AddCircleOutlinedIcon className={classes.addCircleColour}/>
-                </IconButton>
+                  <IconButton aria-label="add" onClick={handleAddClick}>
+                    <AddCircleOutlinedIcon className={classes.addCircleColour} />
+                  </IconButton>
                 </Grid>
               </Grid>
               <Grid container pl={3} pr={1} mt={2} mb={2}>
@@ -376,35 +486,35 @@ export default function Create(props) {
                         <DeleteIcon />
                       </IconButton>
                     </Grid>
-                );
-              })}
+                  );
+                })}
               </Grid>
             </Card>
             <br />
 
             <Card className={classes.cardPadding} mb={2}>
-                <Grid container item xs sx={{ display: "flex", justifyContent: "flex-start", alignItems: "center" }} pl={3} pr={1} mt={2} mb={2}>
+              <Grid container item xs sx={{ display: "flex", justifyContent: "flex-start", alignItems: "center" }} pl={3} pr={1} mt={2} mb={2}>
                 <Typography className={classes.largeText}>
-                Minimum signatures needed to <Box sx={{ color : "#FFFFFF"}} fontWeight='fontWeightBold' display='inline'>pass</Box> any transaction
-            </Typography>
-                  </Grid>
-                <Grid container item md={11.3} mt={4} ml={4} mb={4}>
+                  Minimum signatures needed to <Box sx={{ color: "#FFFFFF" }} fontWeight='fontWeightBold' display='inline'>pass</Box> any transaction
+                </Typography>
+              </Grid>
+              <Grid container item md={11.3} mt={4} ml={4} mb={4}>
                 <CustomSlider onChange={onSetVoteOnFavourChange} value={voteInFavour} />
-                </Grid>
+              </Grid>
             </Card>
-            
+
             <Typography className={classes.largeText} mt={4} mb={2}>
               Other
             </Typography>
             <Card className={classes.cardPadding} mb={2}>
               <Grid container pl={3} pr={1} mt={2} mb={2}>
                 <Grid item xs sx={{ display: "flex", justifyContent: "flex-start", alignItems: "center" }}>
-                <Typography className={classes.largeText}>
-                Add a carry fee
-            </Typography>
-                  </Grid>
+                  <Typography className={classes.largeText}>
+                    Add a carry fee
+                  </Typography>
+                </Grid>
                 <Grid item xs sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
-                <FormControlLabel control={<Switch />} onChange={(e) => setMandatoryProposal(e.target.value)} value={mandatoryProposal} label=""/>
+                  <FormControlLabel control={<Switch />} onChange={(e) => setMandatoryProposal(e.target.value)} value={mandatoryProposal} label="" />
                 </Grid>
               </Grid>
             </Card>
@@ -412,16 +522,16 @@ export default function Create(props) {
             <Card className={classes.cardPadding}>
               <Grid container pl={3} pr={1}>
                 <Grid item xs sx={{ display: "flex", justifyContent: "flex-start", alignItems: "center" }}>
-                <Typography className={classes.largeText}>
-                Accept deposits till
-            </Typography>
-                  </Grid>
+                  <Typography className={classes.largeText}>
+                    Accept deposits till
+                  </Typography>
+                </Grid>
                 <Grid item xs sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
-                  <SimpleSelectButton data={exitDates}/>
+                  <SimpleSelectButton data={exitDates} />
                 </Grid>
               </Grid>
             </Card>
-            
+
           </Grid>
         </Grid>
 
@@ -429,30 +539,79 @@ export default function Create(props) {
     )
   }
 
+  const components = [step1(), step2(), step3()]
   return (
     <Layout2>
       <div style={{ padding: "100px 400px" }}>
-        <HorizontalLinearStepper
-          steps={steps}
-          components={[step1(), step2(), step3()]}
-          data={
-            {
-              clubname: clubName,
-              clubsymbol: clubSymbol,
-              displayimage: displayImage,
-              raiseamount: raiseAmount,
-              maxcontribution: maxContribution,
-              mandatoryproposal: mandatoryProposal,
-              voteforquorum: voteForQuorum,
-              depositclose: depositClose,
-              mincontribution: minContribution,
-              voteinfavour: voteInFavour,
-              addressList: addressList,
-            }
-          }
-          loading={handleLoading}
-        />
+        <Box sx={{ width: "60.260vw" }}>
+          <Stepper activeStep={activeStep}>
+            {steps.map((label, index) => {
+              const stepProps = {}
+              const labelProps = {}
+              // if (isStepOptional(index)) {
+              //   labelProps.optional = (
+              //     <Typography variant="caption">Optional</Typography>
+              //   )
+              // }
+              if (isStepSkipped(index)) {
+                stepProps.completed = false
+              }
+              return (
+                <Step key={label} {...stepProps}>
+                  <StepLabel {...labelProps}>{label}</StepLabel>
+                </Step>
+              )
+            })}
+          </Stepper>
 
+          {activeStep === steps.length ? (
+            <>
+              <Grid container md={12}>
+                <Grid item >
+                  <Typography className={classes.largeText1}>
+                    Please wait while we are processing your request
+                  </Typography>
+                </Grid>
+              </Grid>
+              <Backdrop
+                sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                open={open}
+              >
+                <CircularProgress color="inherit" />
+              </Backdrop>
+            </>
+          ) : (
+            <>
+              {components[activeStep]}
+              <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
+                {activeStep === 2 ? (
+                  <Button
+                    className={classes.large_button}
+                    variant="contained"
+                    disabled={
+                      activeStep === 0
+                        ? !clubName || !clubSymbol
+                        : activeStep === 1
+                          ? !raiseAmount ||
+                          !maxContribution ||
+                          !mandatoryProposal ||
+                          !voteForQuorum ||
+                          !depositClose ||
+                          !minContribution ||
+                          !voteInFavour
+                          : activeStep === 2
+                            ? false
+                            : true
+                    }
+                    onClick={handleNext}
+                  >
+                    Next
+                  </Button>
+                ) : <></>}
+              </Box>
+            </>
+          )}
+        </Box>
       </div>
 
     </Layout2>
