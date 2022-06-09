@@ -1,6 +1,6 @@
 import { React, useRef, onChange, useState } from "react"
 import { makeStyles } from "@mui/styles"
-import { Grid, Item, Typography, TextField, Card, Switch, FormControlLabel, Box, Stack, Divider, Button, CircularProgress, IconButton, Stepper, StepLabel, Step, Backdrop } from "@mui/material"
+import { Grid, Item, Typography, TextField, Card, Switch, FormControlLabel, Box, Stack, Divider, Button, CircularProgress, IconButton, Stepper, StepLabel, Step, Backdrop, FormControl, Select, OutlinedInput, Menu, MenuItem } from "@mui/material"
 import styled from "@emotion/styled"
 import Layout2 from "../../src/components/layouts/layout2"
 import CustomRoundedCard from "../../src/components/roundcard"
@@ -17,8 +17,19 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import Web3 from "web3"
 import Web3Adapter from "@gnosis.pm/safe-web3-lib"
 import { initiateConnection } from "../../src/utils/safe"
+import { useDispatch } from "react-redux"
+import {ProtectRoute} from "../../src/components/auth"
 
-
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+  PaperProps: {
+    style: {
+      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+      width: 250,
+    },
+  },
+};
 
 const useStyles = makeStyles({
   textField: {
@@ -81,7 +92,7 @@ const useStyles = makeStyles({
   },
 })
 
-export default function Create(props) {
+const Create = (props) => {
   const classes = useStyles()
   const uploadInputRef = useRef(null);
   const [value, setValue] = useState(null);
@@ -93,6 +104,7 @@ export default function Create(props) {
   const [mandatoryProposal, setMandatoryProposal] = useState(false);
   const [voteForQuorum, setVoteForQuorum] = useState(0);
   const [depositClose, setDepositClose] = useState(new Date());
+  const [membersLeaveDate, setMembersLeaveDate] = useState(new Date())
   const [minContribution, setMinContribution] = useState(0);
   const [voteInFavour, setVoteInFavour] = useState(0);
   const [addressList, setAddressList] = useState([]);
@@ -100,12 +112,17 @@ export default function Create(props) {
   const [skipped, setSkipped] = useState(new Set())
   const [loading, setLoading] = useState(false)
   const [open, setOpen] = useState(false)
+  const dispatch = useDispatch()
 
 
   const handleChange = (newValue) => {
-    setValue(newValue);
-    setDepositClose(newValue);
+    setValue(newValue.target.value);
+    setDepositClose(newValue.target.value);
   };
+
+  const handleDepositClose = (newValue) => {
+    setMembersLeaveDate(newValue.target.value);
+  }
 
   const onSetVoteForQuorum = (event, newValue) => {
     setVoteForQuorum(newValue);
@@ -160,14 +177,13 @@ export default function Create(props) {
     if (activeStep === steps.length - 1) {
       const web3 = new Web3(Web3.givenProvider)
       const auth = web3.eth.getAccounts()
-      let owners = []
       auth.then(
         (result) => {
-          owners.push(result[0])
-          console.log("owners", owners)
-          const threshold = 1
+          addressList.unshift(result[0])
+          console.log("owners", addressList)
+          const threshold = addressList.length - 1
           initiateConnection(
-            owners,
+            addressList,
             threshold,
             dispatch,
             clubName,
@@ -412,7 +428,32 @@ export default function Create(props) {
                   </Typography>
                 </Grid>
                 <Grid item xs sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
-                  <SimpleSelectButton data={dateTill} />
+                <FormControl sx={{ m: 1, width: 443, mt: 1 }}>
+                  <Select
+                    displayEmpty
+                    value={String(depositClose)}
+                    onChange={handleChange}
+                    input={<OutlinedInput />}
+                    // renderValue={(selected) => {
+                    //   if (selected.length === 0) {
+                    //     return <em>{dateTill[0].text}</em>;
+                    //   }
+                    //   return selected
+                    // }}
+                    MenuProps={MenuProps}
+                    style={{ borderRadius: "10px", background: "#111D38 0% 0% no-repeat padding-box", }}
+                  >
+                    {dateTill.map((value) => (
+                      <MenuItem
+                        key={value.text}
+                        value={String(value.date)}
+                        onSelect={() => handleChange(value.data)}
+                        >
+                        {value.text}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
                 </Grid>
               </Grid>
             </Card>
@@ -523,11 +564,29 @@ export default function Create(props) {
               <Grid container pl={3} pr={1}>
                 <Grid item xs sx={{ display: "flex", justifyContent: "flex-start", alignItems: "center" }}>
                   <Typography className={classes.largeText}>
-                    Accept deposits till
+                  Allow members to exit (from date of deposit)
                   </Typography>
                 </Grid>
                 <Grid item xs sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
-                  <SimpleSelectButton data={exitDates} />
+                <FormControl sx={{ m: 1, width: 443, mt: 1 }}>
+                  <Select
+                    displayEmpty
+                    value={value}
+                    onChange={handleDepositClose}
+                    input={<OutlinedInput />}
+                    MenuProps={MenuProps}
+                    style={{ borderRadius: "10px", background: "#111D38 0% 0% no-repeat padding-box", }}
+                  >
+                    {exitDates.map((value) => (
+                      <MenuItem
+                        key={value.text}
+                        value={String(value.date)}
+                        >
+                        {value.text}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
                 </Grid>
               </Grid>
             </Card>
@@ -617,3 +676,6 @@ export default function Create(props) {
     </Layout2>
   )
 }
+
+export default ProtectRoute(Create);
+// export default Create

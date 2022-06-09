@@ -67,10 +67,13 @@ export const  onboard = Onboard({
 export async function connectWallet(dispatch) {
     const wallets = await onboard.connectWallet()
     if (wallets.length == 0){
+      localStorage.setItem("isWalletConnected", false)
       return false
     }
     else{
       dispatch(addWallet(wallets.map(({ accounts }) => accounts)))
+      localStorage.setItem("wallet", wallets.map(({ accounts }) => accounts)[0][0].address)
+      localStorage.setItem("isWalletConnected", true)
       return true 
     }
 }

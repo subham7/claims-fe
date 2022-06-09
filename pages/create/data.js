@@ -48,16 +48,41 @@ export const tokenType = [
     "ERC-20 transferable",
 ]
 
+const today = new Date()
 export const dateTill = [
-    "1 Week starting from today",
-    "2 Week starting from today",
-    "1 month starting from today",
+    {
+        text: "1 Week starting from today",
+        date: new Date(today.getFullYear(), today.getMonth(), today.getDate() + 7)
+    },
+    {
+        text: "2 Week starting from today",
+        date: new Date(today.getFullYear(), today.getMonth(), today.getDate() + 14)
+    },
+    {
+        text: "1 month starting from today",
+        date: new Date(today.getFullYear(), today.getMonth() + 1, today.getDate())
+    }
 ]
 
 export const exitDates = [
-    "After 1 week",
-    "After 1 month",
-    "After 3 month",
-    "After 6 month",
-    "After 1 year",
+    {
+        text: "After 1 week",
+        date: new Date(today.getFullYear(), today.getMonth(), today.getDate() + 7) 
+    },
+    {
+        text: "After 1 month",
+        date: new Date(today.getFullYear(), today.getMonth() + 1, today.getDate()) 
+    },
+    {
+        text: "After 3 month",
+        date: new Date(today.getFullYear(), today.getMonth() + 3, today.getDate()) 
+    },
+    {
+        text: "After 6 month",
+        date: new Date(today.getFullYear(), today.getMonth() + 6, today.getDate()) 
+    },
+    {
+        text: "After 1 year",
+        date: new Date(today.getFullYear() + 1, today.getMonth(), today.getDate()) 
+    },
 ]
