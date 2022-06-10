@@ -7,7 +7,7 @@ import { connectWallet, setUserChain, onboard } from "../utils/wallet"
 import Web3 from "web3"
 import AccountButton from "./accountbutton"
 import store from "../redux/store"
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { addWallet } from "../redux/reducers/create"
 
 const useStyles = makeStyles({
@@ -22,19 +22,13 @@ export default function Navbar(props) {
   const classes = useStyles()
   const [previouslyConnectedWallet, setPreviouslyConnectedWallet] = useState(null)
   const [userDetails, setUserDetails] = useState(null)
+  const wallet = useSelector(state => {return state.create.value})
 
   useEffect(() => {
-    store.subscribe(() => {
-      const { create } = store.getState()
-      if (create.value) {
-        setPreviouslyConnectedWallet(create.value)
-      }
-      else{
-        setPreviouslyConnectedWallet(null)
-      }
-    })
+    if (wallet !== null){
+      setPreviouslyConnectedWallet(wallet[0][0].address)
+    }
     const checkConnection = async () => {
-
       var web3
       if (window.ethereum) {
         web3 = new Web3(window.ethereum)

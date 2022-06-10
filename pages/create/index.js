@@ -18,7 +18,7 @@ import Web3 from "web3"
 import Web3Adapter from "@gnosis.pm/safe-web3-lib"
 import { initiateConnection } from "../../src/utils/safe"
 import { useDispatch } from "react-redux"
-import {ProtectRoute} from "../../src/components/auth"
+import ProtectRoute from "../../src/components/auth"
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -113,6 +113,7 @@ const Create = (props) => {
   const [loading, setLoading] = useState(false)
   const [open, setOpen] = useState(false)
   const dispatch = useDispatch()
+  const { wallet } = props
 
 
   const handleChange = (newValue) => {
