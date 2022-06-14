@@ -42,19 +42,19 @@ export default function App() {
   const [clubFlow, setClubFlow] = useState(false)
   const classes = useStyles()
   const [walletID, setWalletID] = useState(null)
-  const [clubData, setClubData] = useState({})
+  const [clubData, setClubData] = useState([])
+  const [clubOwnerAddress, setClubOwnerAddress] = useState(null)
   const [fetched, setFetched] = useState(false)
 
   useEffect(() => {
     setWalletID(localStorage.getItem("wallet"))
-  })
+  }, [walletID])
 
   const handleConnection = async (event) => {
     let wallet = connectWallet(dispatch)
     wallet.then((response) => {
       if (response) {
         setClubFlow(true)
-        console.log(walletID)
         if (!fetched && walletID){
           const getClubs = fetchClubByUserAddress(walletID)
           getClubs.then((result) => {
@@ -62,8 +62,8 @@ export default function App() {
               console.log(error)
             }
             else {
-              console.log(result.data)
-              setClubData(result.data)
+              setClubData(Array.from(result.data.clubs))
+              setClubOwnerAddress(result.data.userAddress.substring(0, 6) + ".........." + result.data.userAddress.substring(result.data.userAddress.length - 4))
               setFetched(true)
             }
           })
@@ -107,7 +107,7 @@ export default function App() {
                 </Grid>
                 <Divider className={classes.divider} />
                 <Stack spacing={3}>
-                  {/* {clubData.map((data, key) => {
+                  {clubData.map((club, key) => {
                     return (
                       <ListItemButton component="a" href="/dashboard" key={key}>
                       <Grid container>
@@ -117,63 +117,21 @@ export default function App() {
                         <Grid item md={6}>
                           <Stack
                             spacing={0}>
-                            <Typography className={classes.yourClubText}>data.name</Typography>
-                            <Typography className={classes.clubAddress}>0xCE2a.........ef8b</Typography>
+                            <Typography className={classes.yourClubText}>{club.name}</Typography>
+                            <Typography className={classes.clubAddress}>{clubOwnerAddress}</Typography>
                           </Stack>
                         </Grid>
                         <Grid item md={4} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
                           <Stack
                             spacing={0} alignItems="flex-end" justifyContent="flex-end">
                             <Typography className={classes.createClubButton}>1,37,000 USDC</Typography>
-                            <Typography className={classes.clubAddress}>Owner</Typography>
+                            <Typography className={classes.clubAddress}>{clubOwnerAddress === walletID ? "Owner" : "Member"}</Typography>
                           </Stack>
                         </Grid>
                       </Grid>
                     </ListItemButton>
                     )
-                  })} */}
-                  <ListItemButton component="a" href="/dashboard">
-                    <Grid container>
-                      <Grid item md={2}>
-                        <img src="/assets/images/finserv_icon@2x.png" alt="club_logo" className={classes.logoImage} />
-                      </Grid>
-                      <Grid item md={6}>
-                        <Stack
-                          spacing={0}>
-                          <Typography className={classes.yourClubText}>Demo Club</Typography>
-                          <Typography className={classes.clubAddress}>0xCE2a.........ef8b</Typography>
-                        </Stack>
-                      </Grid>
-                      <Grid item md={4} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
-                        <Stack
-                          spacing={0} alignItems="flex-end" justifyContent="flex-end">
-                          <Typography className={classes.createClubButton}>1,37,000 USDC</Typography>
-                          <Typography className={classes.clubAddress}>Owner</Typography>
-                        </Stack>
-                      </Grid>
-                    </Grid>
-                  </ListItemButton>
-                  <ListItemButton component="a" href="/dashboard">
-                    <Grid container>
-                      <Grid item md={2}>
-                        <img src="/assets/images/finserv_icon@2x.png" alt="club_logo" className={classes.logoImage} />
-                      </Grid>
-                      <Grid item md={6}>
-                        <Stack
-                          spacing={0}>
-                          <Typography className={classes.yourClubText}>Demo Club</Typography>
-                          <Typography className={classes.clubAddress}>0xCE2a.........ef8b</Typography>
-                        </Stack>
-                      </Grid>
-                      <Grid item md={4} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
-                        <Stack
-                          spacing={0} alignItems="flex-end" justifyContent="flex-end">
-                          <Typography className={classes.createClubButton}>1,37,000 USDC</Typography>
-                          <Typography className={classes.clubAddress}>Owner</Typography>
-                        </Stack>
-                      </Grid>
-                    </Grid>
-                  </ListItemButton>
+                  })}
                 </Stack>
               </Card>
             </Grid>
