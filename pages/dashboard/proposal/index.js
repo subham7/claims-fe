@@ -8,6 +8,8 @@ import AddCircleRoundedIcon from '@mui/icons-material/AddCircleRounded'
 import { fontStyle } from "@mui/system"
 import SimpleSelectButton from "../../../src/components/simpleSelectButton"
 import { proposalType } from "../data"
+import { createProposal } from "../../../src/api/index"
+import { votingDuration } from "../data"
 
 const useStyles = makeStyles({
   clubAssets: {
@@ -126,6 +128,10 @@ export default function Proposal(props) {
   const [openCard, setOpenCard] = useState(false)
   const [commandList, setCommandList] = useState([])
   const [questionList, setQuestionList] = useState([])
+
+  const handleNext = (event) => {
+     
+  }
 
   const handleChange = (event) => {
     const {
@@ -330,18 +336,18 @@ export default function Proposal(props) {
                     input={<OutlinedInput />}
                     renderValue={(selected) => {
                       if (selected.length === 0) {
-                        return "Action"
+                        return votingDuration[0].text
                       }
                       return selected
                     }}
-                    MenuProps={["Action", "Survey"]}
+                    MenuProps={votingDuration}
                     style={{ borderRadius: "10px", background: "#111D38 0% 0% no-repeat padding-box", width: "90%" }}
                   >
-                    {["Action", "Survey"].map((value) => (
+                    {votingDuration.map((value) => (
                       <MenuItem
-                        key={value}
-                        value={value}>
-                        {value}
+                        key={value.date}
+                        value={value.date}>
+                        {value.text}
                       </MenuItem>
                     ))}
                   </Select>
@@ -418,7 +424,7 @@ export default function Proposal(props) {
                     <Button onClick={handleClose}>Cancel</Button>
                   </Grid>
                   <Grid item ml={2}>
-                    <Button onClick={handleClose}>Next</Button>
+                    <Button onClick={handleNext}>Next</Button>
                   </Grid>
                 </Grid>
               </Grid>

@@ -1,12 +1,14 @@
-import { React, useState } from "react"
+import { React, useEffect, useState } from "react"
 import Layout from "../src/components/layouts/layout3"
 import { Grid, Button, Card, Typography, Divider, Stack, Menu, ListItemButton } from "@mui/material"
 import { connectWallet } from "../src/utils/wallet"
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { makeStyles } from "@mui/styles"
 import AddIcon from '@mui/icons-material/Add'
 import { style } from "@mui/system"
 import Router from "next/router"
+import { fetchClubByUserAddress } from "../src/api/index"
+import store from "../src/redux/store"
 
 
 const useStyles = makeStyles({
@@ -35,20 +37,43 @@ const useStyles = makeStyles({
   }
 })
 
-export default function app() {
+export default function App() {
   const dispatch = useDispatch()
   const [clubFlow, setClubFlow] = useState(false)
   const classes = useStyles()
+  const [walletID, setWalletID] = useState(null)
+  const [clubData, setClubData] = useState({})
+  const [fetched, setFetched] = useState(false)
+
+  useEffect(() => {
+    setWalletID(localStorage.getItem("wallet"))
+  })
 
   const handleConnection = async (event) => {
-    const wallet = connectWallet(dispatch)
+    let wallet = connectWallet(dispatch)
     wallet.then((response) => {
       if (response) {
         setClubFlow(true)
+        console.log(walletID)
+        if (!fetched && walletID){
+          const getClubs = fetchClubByUserAddress(walletID)
+          getClubs.then((result) => {
+            if (result.error) {
+              console.log(error)
+            }
+            else {
+              console.log(result.data)
+              setClubData(result.data)
+              setFetched(true)
+            }
+          })
+        }
+
       } else {
         setClubFlow(false)
       }
     })
+    
   }
 
   const handleCreateButtonClick = async (event) => {
@@ -82,6 +107,31 @@ export default function app() {
                 </Grid>
                 <Divider className={classes.divider} />
                 <Stack spacing={3}>
+                  {/* {clubData.map((data, key) => {
+                    return (
+                      <ListItemButton component="a" href="/dashboard" key={key}>
+                      <Grid container>
+                        <Grid item md={2}>
+                          <img src="/assets/images/finserv_icon@2x.png" alt="club_logo" className={classes.logoImage} />
+                        </Grid>
+                        <Grid item md={6}>
+                          <Stack
+                            spacing={0}>
+                            <Typography className={classes.yourClubText}>data.name</Typography>
+                            <Typography className={classes.clubAddress}>0xCE2a.........ef8b</Typography>
+                          </Stack>
+                        </Grid>
+                        <Grid item md={4} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
+                          <Stack
+                            spacing={0} alignItems="flex-end" justifyContent="flex-end">
+                            <Typography className={classes.createClubButton}>1,37,000 USDC</Typography>
+                            <Typography className={classes.clubAddress}>Owner</Typography>
+                          </Stack>
+                        </Grid>
+                      </Grid>
+                    </ListItemButton>
+                    )
+                  })} */}
                   <ListItemButton component="a" href="/dashboard">
                     <Grid container>
                       <Grid item md={2}>

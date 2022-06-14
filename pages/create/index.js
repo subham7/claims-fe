@@ -17,8 +17,9 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import Web3 from "web3"
 import Web3Adapter from "@gnosis.pm/safe-web3-lib"
 import { initiateConnection } from "../../src/utils/safe"
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import ProtectRoute from "../../src/components/auth"
+import { addClubID } from "../../src/redux/reducers/create"
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -108,13 +109,14 @@ const Create = (props) => {
   const [minContribution, setMinContribution] = useState(0);
   const [voteInFavour, setVoteInFavour] = useState(0);
   const [addressList, setAddressList] = useState([]);
-  const [activeStep, setActiveStep] = useState(0)
-  const [skipped, setSkipped] = useState(new Set())
-  const [loading, setLoading] = useState(false)
-  const [open, setOpen] = useState(false)
-  const dispatch = useDispatch()
-  const { wallet } = props
-
+  const [activeStep, setActiveStep] = useState(0);
+  const [skipped, setSkipped] = useState(new Set());
+  const [loading, setLoading] = useState(false);
+  const [open, setOpen] = useState(false);
+  const clubID = useSelector(state => {return state.create.clubID});
+  const dispatch = useDispatch();
+  const { wallet } = props;
+  let walletAddress = null;
 
   const handleChange = (newValue) => {
     setValue(newValue.target.value);
@@ -180,9 +182,9 @@ const Create = (props) => {
       const auth = web3.eth.getAccounts()
       auth.then(
         (result) => {
-          addressList.unshift(result[0])
-          console.log("owners", addressList)
-          const threshold = addressList.length - 1
+          walletAddress = result[0]
+          addressList.unshift(walletAddress)
+          const threshold = addressList.length === 1 ? addressList.length : addressList.length - 1
           initiateConnection(
             addressList,
             threshold,
@@ -198,7 +200,7 @@ const Create = (props) => {
             voteForQuorum,
             voteInFavour
           )
-            .then((result) => {
+          .then((result) => {
               setLoading(false)
             })
             .catch((error) => {
@@ -492,6 +494,26 @@ const Create = (props) => {
                     variant="outlined"
                     onChange={(e) => setMaxContribution(e.target.value)}
                     value={maxContribution}
+                    sx={{ m: 1, width: 443, mt: 1, borderRadius: "10px", }}
+                  />
+                </Grid>
+              </Grid>
+            </Card>
+
+            <br />
+            <Card className={classes.cardPadding} mb={2}>
+              <Grid container pl={3} pr={1}>
+                <Grid item xs sx={{ display: "flex", justifyContent: "flex-start", alignItems: "center" }}>
+                  <Typography className={classes.largeText}>
+                    Total amount you want to raise
+                  </Typography>
+                </Grid>
+                <Grid item xs sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
+                  <TextField
+                    error={!(raiseAmount >= 0 || raiseAmount % 1 === 0)}
+                    variant="outlined"
+                    onChange={(e) => setRaiseAmount(e.target.value)}
+                    value={raiseAmount}
                     sx={{ m: 1, width: 443, mt: 1, borderRadius: "10px", }}
                   />
                 </Grid>

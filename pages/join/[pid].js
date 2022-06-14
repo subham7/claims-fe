@@ -7,7 +7,7 @@ import ProgressBar from "../../src/components/progressbar"
 import { connectWallet, setUserChain, onboard } from "../../src/utils/wallet"
 import { useDispatch } from "react-redux"
 import { useRouter } from "next/router";
-import { fetchClub, USDC_CONTRACT_ADDRESS, FACTORY_CONTRACT_ADDRESS } from "../../src/api";
+import { fetchClub, USDC_CONTRACT_ADDRESS, FACTORY_CONTRACT_ADDRESS, createUser } from "../../src/api";
 import store from "../../src/redux/store"
 import Web3 from "web3"
 import USDCContract from "../../src/abis/usdc.json"
@@ -268,7 +268,6 @@ export default function Join(props) {
   }
 
   const handleDeposit = () => {
-    console.log(typeof (depositAmount))
     const usdc_contract = new SmartContract(USDCContract, USDC_CONTRACT_ADDRESS, userDetails)
     // pass governor contract
     const dao_contract = new SmartContract(GovernorContract, daoAddress, userDetails)
@@ -281,6 +280,22 @@ export default function Join(props) {
         const deposit_response = dao_contract.deposit(USDC_CONTRACT_ADDRESS, depositAmount)
         deposit_response.then((result) => {
           // console.log("Result", result)
+          const data = {
+            "userAddress": userDetails,
+            "clubs": [
+              {
+                "clubId": tokenAPIDetails.data[0].clubId,
+                "isAdmin": 0,
+              }
+          ]}
+          const createuser = createUser(
+            data
+          )
+          createuser.then((result) => {
+            if (result.error) {
+              console.log(result.error)
+            }
+          })
           setAlertStatus("success")
           setOpenSnackBar(true)
         })
@@ -389,7 +404,7 @@ export default function Join(props) {
                 <Grid item ml={4} mt={5} mb={2}>
                   <Stack spacing={1}>
                     <Typography variant="p" className={classes.valuesDimStyle}>{dataFetched ? "Club Tokens Minted so far" : <Skeleton variant="rectangular" width={100} height={25} />}</Typography>
-                    <Typography variant="p" className={classes.valuesStyle}>{dataFetched ? (tokenDetails[2] + " $" + tokenDetails[1]) : <Skeleton variant="rectangular" width={100} height={25} />}</Typography>
+                    <Typography variant="p" className={classes.valuesStyle}>{dataFetched ? (tokenDetails[2] / Math.pow(10, 18) + " $" + tokenDetails[1]) : <Skeleton variant="rectangular" width={100} height={25} />}</Typography>
                   </Stack>
                 </Grid>
                 <Grid item ml={4} mt={5} mb={2} mr={4} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
