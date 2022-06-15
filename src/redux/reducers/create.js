@@ -16,6 +16,8 @@ export const slice = createSlice({
         voteInFavour: 0,
         daoAddress: null,
         clubID: null,
+        clubRoute: null,
+        proposalId: null,
     },
     reducers: {
         addWallet: (state, action) => {
@@ -61,7 +63,13 @@ export const slice = createSlice({
             state.daoAddress = null
         },
         addClubID: (state, action) => {
-            state.addClubID = action.payload
+            state.clubID = action.payload
+        },
+        addClubRoute: (state, action) => {
+            state.clubRoute = action.payload
+        },
+        addProposalId: (state, action) => {
+            state.proposalId = action.payload
         }
     },
     middleware: (getDefaultMiddleware) => getDefaultMiddleware(),
@@ -83,6 +91,8 @@ export const {
     addDaoAddress,
     removeDaoAddress,
     addClubID,
+    addClubRoute,
+    addProposalId,
     } = slice.actions
     
 

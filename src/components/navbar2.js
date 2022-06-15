@@ -37,6 +37,9 @@ export default function Navbar2(props) {
   const [userDetails, setUserDetails] = useState(null)
 
   useEffect(() => {
+    if ( localStorage.getItem("isWalletConnected")) {
+      setPreviouslyConnectedWallet(localStorage.getItem("wallet"))
+    }
     store.subscribe(() => {
       const { create } = store.getState()
       if (create.value) {
@@ -66,10 +69,6 @@ export default function Navbar2(props) {
       setUserDetails(null)
     }
   };
-
-  if (previouslyConnectedWallet) {
-    onboard.connectWallet({ autoSelect: previouslyConnectedWallet[0] })
-  }
       
     checkConnection()
   }, [previouslyConnectedWallet])

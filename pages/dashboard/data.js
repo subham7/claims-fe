@@ -1,12 +1,12 @@
 export const proposalType = [
     {
-        type: "survey",
+        type: "Survey",
         name: "Survey"
     },
-    {
-        type: "action",
-        name: "Action"
-    }
+    // {
+    //     type: "Action",
+    //     name: "Action"
+    // }
 ]
 
 const today = new Date()

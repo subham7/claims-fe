@@ -1,15 +1,22 @@
-import { React, useState } from "react"
+import { React, useEffect, useState } from "react"
 import { makeStyles } from "@mui/styles"
 import Layout1 from "../../../src/components/layouts/layout1"
-import { Box, Card, Grid, Typography, ListItemButton, ListItemText, Stack, TextField, Button, IconButton, Modal, Select, OutlinedInput, MenuItem, TextareaAutosize, Chip, Dialog, DialogContent } from "@mui/material"
+import { Box, Card, Grid, Typography, ListItemButton, ListItemText, Stack, TextField, Button, IconButton, Modal, Select, OutlinedInput, MenuItem, TextareaAutosize, Chip, Dialog, DialogContent, Snackbar, Alert, CardActionArea } from "@mui/material"
 import SearchIcon from "@mui/icons-material/Search"
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
 import AddCircleRoundedIcon from '@mui/icons-material/AddCircleRounded'
 import { fontStyle } from "@mui/system"
 import SimpleSelectButton from "../../../src/components/simpleSelectButton"
 import { proposalType } from "../data"
-import { createProposal } from "../../../src/api/index"
+import { createProposal, getProposal } from "../../../src/api/index"
 import { votingDuration } from "../data"
+import { DesktopDatePicker } from '@mui/x-date-pickers'
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
+import Web3 from "web3";
+import { useSelector } from "react-redux"
+import { useRouter } from "next/router"
+
 
 const useStyles = makeStyles({
   clubAssets: {
@@ -111,12 +118,18 @@ const useStyles = makeStyles({
     margin: 0
   },
   mainCard: {
+    borderRadius: "10px",
     border: "1px solid",
     backgroundColor: "#142243",
   },
   daysFont: {
     fontSize: "21px",
     color: "#FFFFFF"
+  },
+  datePicker: {
+    borderRadius: "10px", 
+    backgroundColor: "#111D38", 
+    width: "100%",
   }
 })
 
@@ -125,12 +138,85 @@ export default function Proposal(props) {
   const classes = useStyles()
   const [open, setOpen] = useState(false)
   const [name, setName] = useState([])
+  const [duration, setDuration] = useState(null)
+  const [title, setTitle] = useState(null)
+  const [description, setDescription] = useState(null)
+  const [type, setType] = useState(proposalType[0].type)
   const [openCard, setOpenCard] = useState(false)
   const [commandList, setCommandList] = useState([])
-  const [questionList, setQuestionList] = useState([])
+  const [optionList, setOptionList] = useState([])
+  const [failed, setFailed] = useState(false)
+  const [openSnackBar, setOpenSnackBar] = useState(false)
+  const [proposalData, setProposalData] = useState([])
+  const [fetched, setFetched] = useState(false)
+  const router = useRouter()
+  const clubID = useSelector(state => {return state.create.clubID})
+
+  const fetchData = () => {
+    const proposalData = getProposal(clubID)
+    proposalData.then((result) => {
+      if (result.status != 200) {
+        console.log(result.error)
+        setFetched(false)
+      } else {
+        console.log(result.data)
+        setProposalData(result.data)
+        setFetched(true)
+      }
+    })
+  }
 
   const handleNext = (event) => {
-     
+    const web3 = new Web3(window.web3)
+    const walletAddress = web3.utils.toChecksumAddress(localStorage.getItem("wallet"))
+    // temporary only, will update at a latest stage
+    const data = {
+      "name": title,
+      "description": description,
+      "createdBy": walletAddress,
+      "clubId": clubID,
+      "votingDuration": new Date(duration).toISOString(),
+      "votingOptions":  [
+        {
+          "text": "Yes"
+        },
+        {
+          "text": "No"
+        },
+        {
+          "text": "Abstain"
+        }
+      ]
+    }
+    const createRequest = createProposal(data)
+    createRequest.then((result) => {
+      if (result.status !== 201) {
+        setFailed(true)
+      } else {
+        fetchData()
+        setFailed(false)
+        setOpen(false)
+      }
+    })
+  }
+
+  
+
+  useEffect(() => {
+    if (!fetched) {
+    fetchData()
+    }
+  }, [fetched])
+
+  const handleTypeChange = (event) => {
+    const { target: { value } } = event
+    if (value === proposalType[0].type) {
+      setType(value)
+    }
+  }
+
+  const handleProposalClick = (proposal) => {
+    router.push(`/dashboard/proposal/${proposal.proposalId}`, undefined, { shallow: true })
   }
 
   const handleChange = (event) => {
@@ -138,6 +224,10 @@ export default function Proposal(props) {
       target: { value },
     } = event
     setName(value)
+  }
+
+  const handleDurationChange = (value) => {
+    setDuration(value)
   }
 
   const handleClickOpen = () => {
@@ -152,6 +242,18 @@ export default function Proposal(props) {
     setOpenCard(true)
     setCommandList([...commandList, ""])
   }
+
+  const handleAddNewOption = () => {
+    setOpenCard(true)
+    setOptionList([...optionList, ""])
+  }
+
+  const handleSnackBarClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setOpenSnackBar(false)
+  };
 
   return (
     <>
@@ -179,42 +281,52 @@ export default function Proposal(props) {
                 </Grid>
               </Grid>
               <Grid container spacing={3}>
-                <Grid item>
-                  <Card className={classes.mainCard}>
-                    <Grid container>
-                      <Grid items ml={2} mr={2}>
-                        <Typography className={classes.cardFont}>
-                          Proposed by 0x75ed……34fd
-                        </Typography>
+                {proposalData.map((proposal, key) => {
+                  return (
+                    <Grid item key={key} onClick={e => {handleProposalClick(proposalData[key])}} md={12}>
+                      <CardActionArea className={classes.mainCard}>
+                      <Card className={classes.mainCard}>
+                      <Grid container>
+                        <Grid items ml={2} mr={2}>
+                          <Typography className={classes.cardFont}>
+                            Proposed by {proposal.createdBy.substring(0, 6) + ".........." + proposal.createdBy.substring(proposal.createdBy.length - 4)}
+                          </Typography>
+                        </Grid>
+                        <Grid items ml={1} mr={1} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
+                          {Math.round((new Date(proposal.votingDuration) - new Date()) / (1000 * 60 * 60 * 24)) < 0 ?
+                            (<Chip className={classes.cardFontNo} label="Closed" />) :
+                            (<Chip className={classes.cardFontYes} label="Active" />)
+                        }
+                        </Grid>
                       </Grid>
-                      <Grid items ml={1} mr={1} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
-                        <Chip className={classes.cardFontYes} label="Active" />
+                      <Grid container>
+                        <Grid items ml={2} mr={2}>
+                          <Typography className={classes.cardFont1}>
+                            [#{key + 1}] {proposal.name}
+                          </Typography>
+                        </Grid>
                       </Grid>
-                    </Grid>
-                    <Grid container>
-                      <Grid items ml={2} mr={2}>
-                        <Typography className={classes.cardFont1}>
-                          [#7] Buy 2 ETH worth of Evaders in their private round.
-                        </Typography>
+                      <Grid container>
+                        <Grid items ml={2} mr={2}>
+                          <Typography className={classes.cardFont}>
+                            {proposal.description.substring(0, 200)}...
+                          </Typography>
+                        </Grid>
                       </Grid>
-                    </Grid>
-                    <Grid container>
-                      <Grid items ml={2} mr={2}>
-                        <Typography className={classes.cardFont}>
-                          Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet…
-                        </Typography>
+                      <Grid container>
+                        <Grid items ml={2} mr={2} mt={2}>
+                          <Typography className={classes.daysFont}>
+                            {Math.round((new Date(proposal.votingDuration) - new Date()) / (1000 * 60 * 60 * 24))} days left
+                          </Typography>
+                        </Grid>
                       </Grid>
-                    </Grid>
-                    <Grid container>
-                      <Grid items ml={2} mr={2} mt={2}>
-                        <Typography className={classes.daysFont}>
-                          3 days left
-                        </Typography>
-                      </Grid>
-                    </Grid>
-                  </Card>
-                </Grid>
-                <Grid item>
+                    </Card>
+                      </CardActionArea>
+                  </Grid>             
+                  )
+                })}
+                
+                {/* <Grid item>
                   <Card className={classes.mainCard}>
                     <Grid container>
                       <Grid items ml={2} mr={2}>
@@ -248,11 +360,8 @@ export default function Proposal(props) {
                       </Grid>
                     </Grid>
                   </Card>
-                </Grid>
+                </Grid> */}
               </Grid>
-
-
-
             </Grid>
             <Grid item md={3}>
               <Card>
@@ -307,8 +416,8 @@ export default function Proposal(props) {
                 <Grid item md={6}>
                   <Select
                     displayEmpty
-                    value={name}
-                    onChange={handleChange}
+                    value={type}
+                    onChange={handleTypeChange}
                     input={<OutlinedInput />}
                     renderValue={(selected) => {
                       if (selected.length === 0) {
@@ -317,7 +426,7 @@ export default function Proposal(props) {
                       return selected
                     }}
                     MenuProps={proposalType}
-                    style={{ borderRadius: "10px", background: "#111D38 0% 0% no-repeat padding-box", width: "90%" }}
+                    style={{ borderRadius: "10px", background: "#111D38 0% 0% no-repeat padding-box", width: "90%",  }}
                   >
                     {proposalType.map((value) => (
                       <MenuItem
@@ -329,28 +438,16 @@ export default function Proposal(props) {
                   </Select>
                 </Grid>
                 <Grid item md={6}>
-                  <Select
-                    displayEmpty
-                    value={name}
-                    onChange={handleChange}
-                    input={<OutlinedInput />}
-                    renderValue={(selected) => {
-                      if (selected.length === 0) {
-                        return votingDuration[0].text
-                      }
-                      return selected
-                    }}
-                    MenuProps={votingDuration}
-                    style={{ borderRadius: "10px", background: "#111D38 0% 0% no-repeat padding-box", width: "90%" }}
-                  >
-                    {votingDuration.map((value) => (
-                      <MenuItem
-                        key={value.date}
-                        value={value.date}>
-                        {value.text}
-                      </MenuItem>
-                    ))}
-                  </Select>
+                <LocalizationProvider dateAdapter={AdapterDateFns}>
+                  <DesktopDatePicker
+                    error={duration === null}
+                    className={classes.datePicker}
+                    inputFormat="dd/MM/yyyy"
+                    value={duration}
+                    onChange={(e) => handleDurationChange(e)}
+                    renderInput={(params) => <TextField {...params} />}
+                  />
+                  </LocalizationProvider>
                 </Grid>
               </Grid>
               <Grid container item ml={3} mt={2}>
@@ -358,78 +455,154 @@ export default function Proposal(props) {
               </Grid>
               <Grid container item ml={3} mt={2}>
                 <TextField sx={{ width: "95%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
-                  placeholder="Add your one line description here" />
+                  placeholder="Add your one line description here" onChange={(e) => setTitle(e.target.value)} />
               </Grid>
               <Grid container item ml={3} mt={2}>
                 <Typography className={classes.cardFont}>Proposal description*</Typography>
               </Grid>
-              <Grid container item ml={3} mt={3}>
-                <TextareaAutosize
-                  aria-label="minimum height"
-                  minRows={10}
+              <Grid container item ml={3} mt={3} mb={3}>
+                <TextField
+                  onChange={(e) => setDescription(e.target.value)}
+                  multiline
+                  rows={10}
+                  // aria-label="minimum height"
+                  // minRows={10}
                   placeholder="Add full description here"
                   style={{ width: "95%", height: "auto", backgroundColor: "#19274B", fontSize: "18px", color: "#C1D3FF" }}
                 />
               </Grid>
-              <Grid container item ml={3} mt={3} mb={2}>
-                <Typography className={classes.cardFont}>Choose a command for this proposal to execute</Typography>
-              </Grid>
-              <Grid item ml={3} mr={2}>
-                {openCard ? (
-                  <Card className={classes.proposalCard}>
-                    {commandList.map((data, key) => {
-                      return (
-                        <>
-                          <Grid container item ml={3} mt={2}>
-                            <Typography className={classes.cardFont}>Command #{key + 1}</Typography>
-                          </Grid>
-                          <Grid container item ml={3} mt={1} mb={2}>
-                            <Select
-                              displayEmpty
-                              value={name}
-                              onChange={handleChange}
-                              input={<OutlinedInput />}
-                              renderValue={(selected) => {
-                                if (selected.length === 0) {
-                                  return "Select a command"
-                                }
-                                return selected
-                              }}
-                              MenuProps={["Select a command"]}
-                              style={{ borderRadius: "10px", background: "#111D38 0% 0% no-repeat padding-box", width: "90%" }}
-                            >
-                              {["Select a command"].map((value) => (
-                                <MenuItem
-                                  key={value}
-                                  value={value}>
-                                  {value}
-                                </MenuItem>
-                              ))}
-                            </Select>
-                          </Grid>
-                        </>
-                      )
-                    })}
-                  </Card>
-                ) : <></>}
-              </Grid>
-              <Grid container item mt={2} ml={3}>
-                <Button className={classes.addButton2} variant="outlined" startIcon={<AddCircleRoundedIcon />} onClick={handleAddNewCommand}>
-                  Add command
-                </Button>
-              </Grid>
+              {/* {type === proposalType[0].type ?
+                (
+                  <>
+                    <Grid container item ml={3} mt={3} mb={2}>
+                      <Typography className={classes.cardFont}>Add your question &amp; create options here</Typography>
+                    </Grid>
+                    <Grid container item ml={3} mt={2}>
+                      <TextField sx={{ width: "95%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
+                        placeholder="Add your one line description here" />
+                    </Grid>
+                    <Grid item ml={3} mr={2}>
+                      {openCard ? (
+                        <Card className={classes.proposalCard}>
+                          {optionList.map((data, key) => {
+                            return (
+                              <>
+                                <Grid container item ml={3} mt={2}>
+                                  <Typography className={classes.cardFont}>Option #{key + 1}</Typography>
+                                </Grid>
+                                <Grid container item ml={3} mt={1} mb={2}>
+                                  <Select
+                                    displayEmpty
+                                    value={name}
+                                    onChange={handleChange}
+                                    input={<OutlinedInput />}
+                                    renderValue={(selected) => {
+                                      if (selected.length === 0) {
+                                        return "Select an option"
+                                      }
+                                      return selected
+                                    }}
+                                    MenuProps={["Select an Option"]}
+                                    style={{ borderRadius: "10px", background: "#111D38 0% 0% no-repeat padding-box", width: "90%" }}
+                                  >
+                                    {["Select a command"].map((value) => (
+                                      <MenuItem
+                                        key={value}
+                                        value={value}>
+                                        {value}
+                                      </MenuItem>
+                                    ))}
+                                  </Select>
+                                </Grid>
+                              </>
+                            )
+                          })}
+                        </Card>
+                      ) : <></>}
+                    </Grid>
+                    <Grid container item mt={2} ml={3}>
+                      <Button className={classes.addButton2} variant="outlined" startIcon={<AddCircleRoundedIcon />} onClick={handleAddNewOption}>
+                        Add Option
+                      </Button>
+                    </Grid>
+                  </>
+                )
+                :
+                (
+                  <>
+                    <Grid container item ml={3} mt={3} mb={2}>
+                      <Typography className={classes.cardFont}>Choose a command for this proposal to execute</Typography>
+                    </Grid>
+                    <Grid item ml={3} mr={2}>
+                      {openCard ? (
+                        <Card className={classes.proposalCard}>
+                          {commandList.map((data, key) => {
+                            return (
+                              <>
+                                <Grid container item ml={3} mt={2}>
+                                  <Typography className={classes.cardFont}>Command #{key + 1}</Typography>
+                                </Grid>
+                                <Grid container item ml={3} mt={1} mb={2}>
+                                  <Select
+                                    displayEmpty
+                                    value={name}
+                                    onChange={handleChange}
+                                    input={<OutlinedInput />}
+                                    renderValue={(selected) => {
+                                      if (selected.length === 0) {
+                                        return "Select a command"
+                                      }
+                                      return selected
+                                    }}
+                                    MenuProps={["Select a command"]}
+                                    style={{ borderRadius: "10px", background: "#111D38 0% 0% no-repeat padding-box", width: "90%" }}
+                                  >
+                                    {["Select a command"].map((value) => (
+                                      <MenuItem
+                                        key={value}
+                                        value={value}>
+                                        {value}
+                                      </MenuItem>
+                                    ))}
+                                  </Select>
+                                </Grid>
+                              </>
+                            )
+                          })}
+                        </Card>
+                      ) : <></>}
+                    </Grid>
+                    <Grid container item mt={2} ml={3}>
+                      <Button className={classes.addButton2} variant="outlined" startIcon={<AddCircleRoundedIcon />} onClick={handleAddNewCommand}>
+                        Add command
+                      </Button>
+                    </Grid>
+                  </>
+                )
+              } */}
               <Grid container>
-                <Grid item xs sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
+                <Grid item  mr={2} xs sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
                   <Grid item>
                     <Button onClick={handleClose}>Cancel</Button>
                   </Grid>
                   <Grid item ml={2}>
-                    <Button onClick={handleNext}>Next</Button>
+                  {(duration === null || title === null || description === null ) ? <Button onClick={handleNext} disabled >Next</Button> :<Button onClick={handleNext} >Next</Button> }
+                    
                   </Grid>
                 </Grid>
               </Grid>
             </DialogContent>
           </Dialog>
+          <Snackbar open={openSnackBar} autoHideDuration={6000} onClose={handleSnackBarClose} anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
+          {!failed ?
+            (<Alert onClose={handleSnackBarClose} severity="success" sx={{ width: '100%' }}>
+              Proposal Successfully created!
+            </Alert>) :
+            (<Alert onClose={handleSnackBarClose} severity="error" sx={{ width: '100%' }}>
+              Proposal creation failed!
+            </Alert>)
+          }
+        </Snackbar>
         </div>
       </Layout1>
     </>

@@ -17,6 +17,7 @@ import {
   List,
   Link
 } from "@mui/material"
+import { useRouter } from "next/router";
 
 const useStyles = makeStyles({
   listItemIcon: {
@@ -46,6 +47,7 @@ const drawerWidth = 100
 export default function Sidebar(props) {
   const classes = useStyles()
   const { window, page } = props
+  const router = useRouter()
   const container =
     window !== undefined ? () => window().document.body : undefined
 
@@ -77,17 +79,17 @@ export default function Sidebar(props) {
       >
         <Toolbar />
         <List>
-          <ListItemButton component="a" href="/dashboard" alignItems="center">
+          <ListItemButton component="a" onClick={e => { router.push("/dashboard", undefined, {shallow: true})}} alignItems="center">
             <ListItemIcon className={page == 1 ? classes.listItemIconSelected : classes.listItemIcon}>
               <HomeRoundedIcon />
             </ListItemIcon>
           </ListItemButton>
-          <ListItemButton component="a" href="/dashboard/proposal">
+          <ListItemButton component="a" onClick={e => { router.push("/dashboard/proposal", undefined, {shallow: true})}}>
             <ListItemIcon className={page == 2 ? classes.listItemIconSelected : classes.listItemIcon}>
               <InsertDriveFileRoundedIcon />
             </ListItemIcon>
           </ListItemButton>
-          <ListItemButton component="a" href="/dashboard/members">
+          <ListItemButton component="a" onClick={e => { router.push("/dashboard/members", undefined, {shallow: true})}}>
             <ListItemIcon className={page == 3 ? classes.listItemIconSelected : classes.listItemIcon}><PeopleRoundedIcon /></ListItemIcon>
 
           </ListItemButton>
@@ -118,19 +120,19 @@ export default function Sidebar(props) {
         <Toolbar />
 
         <List>
-          <ListItemButton component="a" href="/dashboard" alignItems="center">
+          <ListItemButton component="a" onClick={e => { router.push("/dashboard", undefined, {shallow: true})}} alignItems="center">
             <ListItemIcon className={page == 1 ? classes.listItemIconSelected : classes.listItemIcon}>
               <HomeRoundedIcon />
             </ListItemIcon>
           </ListItemButton>
 
-          <ListItemButton component="a" href="/dashboard/proposal">
+          <ListItemButton component="a" onClick={e => { router.push("/dashboard/proposal", undefined, {shallow: true})}}>
             <ListItemIcon className={page == 2 ? classes.listItemIconSelected : classes.listItemIcon}>
               <InsertDriveFileRoundedIcon />
             </ListItemIcon>
 
           </ListItemButton>
-          <ListItemButton component="a" href="/dashboard/members">
+          <ListItemButton component="a" onClick={e => { router.push("/dashboard/members", undefined, {shallow: true})}}>
             <ListItemIcon className={page == 3 ? classes.listItemIconSelected : classes.listItemIcon}>
               <PeopleRoundedIcon />
             </ListItemIcon>

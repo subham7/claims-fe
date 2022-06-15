@@ -215,6 +215,16 @@ export async function createProposal(data) {
 }
 
 // get proposal by id API
-export async function getProposal(data) {
-  return await axios.get(MAIN_API_URL + 'proposal', data)
+export async function getProposal(clubId) {
+  return await axios.get(MAIN_API_URL + `proposal/club/${clubId}`)
+}
+
+// get proposal detail by proposal id
+export async function getProposalDetail(proposalId) {
+  return await axios.get(MAIN_API_URL + `proposal/${proposalId}`)
+}
+
+// cast vote API
+export async function castVote(data) {
+  return await axios.post(MAIN_API_URL + `proposal/vote`, data)
 }

@@ -6,9 +6,10 @@ import { useDispatch, useSelector } from "react-redux"
 import { makeStyles } from "@mui/styles"
 import AddIcon from '@mui/icons-material/Add'
 import { style } from "@mui/system"
-import Router from "next/router"
+import Router, { useRouter } from "next/router"
 import { fetchClubByUserAddress } from "../src/api/index"
 import store from "../src/redux/store"
+import { addClubName, addDaoAddress, addClubID, addClubRoute } from "../src/redux/reducers/create"
 
 
 const useStyles = makeStyles({
@@ -45,6 +46,7 @@ export default function App() {
   const [clubData, setClubData] = useState([])
   const [clubOwnerAddress, setClubOwnerAddress] = useState(null)
   const [fetched, setFetched] = useState(false)
+  const router = useRouter()
 
   useEffect(() => {
     setWalletID(localStorage.getItem("wallet"))
@@ -58,8 +60,8 @@ export default function App() {
         if (!fetched && walletID){
           const getClubs = fetchClubByUserAddress(walletID)
           getClubs.then((result) => {
-            if (result.error) {
-              console.log(error)
+            if (result.status != 200) {
+              console.log(result.statusText)
             }
             else {
               setClubData(Array.from(result.data.clubs))
@@ -82,6 +84,15 @@ export default function App() {
       if (pathname == "/") {
         Router.push("/create")
       }
+  }
+
+  const handleItemClick = (data) => {
+    console.log(data)
+    dispatch(addClubName(data.name))
+    dispatch(addDaoAddress(data.daoAddress))
+    dispatch(addClubID(data.clubId))
+    dispatch(addClubRoute(data.route))
+    router.push("/dashboard" , undefined, { shallow: true })
   }
 
   return (
@@ -109,7 +120,7 @@ export default function App() {
                 <Stack spacing={3}>
                   {clubData.map((club, key) => {
                     return (
-                      <ListItemButton component="a" href="/dashboard" key={key}>
+                      <ListItemButton component="a" key={key} onClick={e => {handleItemClick(clubData[key])}}>
                       <Grid container>
                         <Grid item md={2}>
                           <img src="/assets/images/finserv_icon@2x.png" alt="club_logo" className={classes.logoImage} />

@@ -1,13 +1,17 @@
-import { React, useState } from "react"
+import { React, useEffect, useState } from "react"
+import Web3 from "web3"
 import { makeStyles } from "@mui/styles"
 import Layout1 from "../../../src/components/layouts/layout1"
-import { Box, Card, Grid, Typography, ListItemButton, ListItemText, Divider, Stack, TextField, Button, IconButton, Modal, Select, OutlinedInput, MenuItem, TextareaAutosize, Chip } from "@mui/material"
+import { Box, Card, Grid, Typography, ListItemButton, ListItemText, Divider, Stack, TextField, Button, IconButton, Modal, Select, OutlinedInput, MenuItem, TextareaAutosize, Chip, CardActionArea } from "@mui/material"
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
 import { useRouter } from "next/router"
 import Router from "next/router"
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace'
 import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded'
 import ProgressBar from "../../../src/components/progressbar"
+import { useDispatch, useSelector } from "react-redux"
+import {addProposalId} from "../../../src/redux/reducers/create"
+import { getProposalDetail, castVote } from "../../../src/api/index"
 
 const useStyles = makeStyles({
   clubAssets: {
@@ -105,18 +109,62 @@ export default function ProposalDetail(props) {
   const { pid } = router.query
   const classes = useStyles()
   const [voted, setVoted] = useState(false)
+  const [fetched, setFetched] = useState(false)
+  const [proposalData, setProposalData] = useState([])
+  const [castVoteOption, setCastVoteOption] = useState(null)
+  const clubID = useSelector(state => {return state.create.clubID})
+  let walletAddress = localStorage.getItem("wallet")
+  const dispatch = useDispatch()
+
+  const fetchData = () => {
+    dispatch(addProposalId(pid))
+    const proposalData = getProposalDetail(pid)
+    proposalData.then((result) => {
+      if (result.status != 200) {
+        console.log(result.statusText)
+        setFetched(false)
+      } else {
+        console.log(result.data)
+        setProposalData(result.data)
+        setFetched(true)
+      }
+    })
+  }
+
+  useEffect(() => {
+    if (!fetched) {
+      fetchData()
+    }
+  }, [fetched])
 
   const returnHome = () => {
     const { pathname } = Router
-    Router.push("/dashboard/proposal")
+    router.push("/dashboard/proposal", undefined, { shallow: true })
   }
 
   const submitVote = () => {
-    setVoted(true)
+    const web3 = new Web3(window.web3)
+    walletAddress = web3.utils.toChecksumAddress(walletAddress)
+    const payload = {
+      "proposalId": pid,
+      "votingOptionId": castVoteOption,
+      "voterAddress": walletAddress,
+      "clubId": clubID
+    }
+    const voteSubmit = castVote(payload)
+    voteSubmit.then((result) => {
+      if (result.status !== 201) {
+        console.log(result.statusText)
+        setVoted(false)
+      } else {
+        setVoted(true)
+      }
+    })
+    
   }
 
   const handleShowMore = () => {
-    Router.push("/dashboard")
+    router.push("/dashboard",undefined, { shallow: true })
   }
 
   return (
@@ -135,7 +183,7 @@ export default function ProposalDetail(props) {
               </Grid>
               <Grid container mb={5}>
                 <Grid item>
-                  <Typography className={classes.clubAssets}>Buy 2 ETH worth of Evaders in their private round.</Typography>
+                  <Typography className={classes.clubAssets}>{fetched? proposalData[0].name : null}</Typography>
                 </Grid>
               </Grid>
               <Grid container direction="row" spacing={4}>
@@ -165,7 +213,7 @@ export default function ProposalDetail(props) {
                 </Grid>
               </Grid>
               <Grid container item className={classes.listFont}>
-                Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. <br /><br /> Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. <br /><br /> Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren
+              {fetched? proposalData[0].description : null}
               </Grid>
               <Grid container mt={6}>
                 <Grid item md={12}>
@@ -173,27 +221,30 @@ export default function ProposalDetail(props) {
                     <Typography className={classes.cardFont1}>Cast your vote</Typography>
                     <Divider sx={{ marginTop: 2, marginBottom: 3 }} />
                     <Stack spacing={2}>
-                      <Card className={classes.mainCard}>
-                        <Grid container item justifyContent="center" alignItems="center">
-                          <Typography className={classes.cardFont1} >Vote for Choice 1</Typography>
-                        </Grid>
-                      </Card>
-                      <Card className={classes.mainCard}>
-                        <Grid container item justifyContent="center" alignItems="center">
-                          <Typography className={classes.cardFont1} >Vote for Choice 2</Typography>
-                        </Grid>
-                      </Card>
-                      <Card className={classes.mainCard}>
-                        <Grid container item justifyContent="center" alignItems="center">
-                          <Typography className={classes.cardFont1} >Vote for Choice 3</Typography>
-                        </Grid>
-                      </Card>
+                      {fetched ? proposalData[0].votingOptions.map((data, key) => {
+                        return (
+                        <CardActionArea className={classes.mainCard} key={key}>
+                          <Card className={classes.mainCard} onClick={e => {setCastVoteOption(data.votingOptionId)}}>
+                            <Grid container item justifyContent="center" alignItems="center">
+                              <Typography className={classes.cardFont1} >Vote {data.text} </Typography>
+                            </Grid>
+                          </Card>
+                        </CardActionArea>
+                        )
+                      }) : null}
+
+                      <CardActionArea className={classes.mainCard}>
                       <Card className={voted ? classes.mainCardButtonSuccess : classes.mainCardButton} onClick={submitVote}>
                         <Grid container justifyContent="center" alignItems="center">
                           {voted ? (<Grid item mt={0.5}><CheckCircleRoundedIcon /></Grid>) : <Grid item></Grid>}
-                          <Grid item>{voted ? (<Typography className={classes.cardFont1} >Successfully voted</Typography>) : (<Typography className={classes.cardFont1}>Vote now</Typography>)}</Grid>
+                          <Grid item>
+                            {voted ? (<Typography className={classes.cardFont1} >Successfully voted</Typography>) : (<Typography className={classes.cardFont1}>Vote now</Typography>)}
+                          </Grid>
                         </Grid>
                       </Card>
+                      </CardActionArea>
+                      
+                      
                     </Stack>
                   </Card>
                 </Grid>
