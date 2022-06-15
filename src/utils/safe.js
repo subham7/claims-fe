@@ -90,8 +90,8 @@ export async function initiateConnection(
           }
           const club = createClub(data)
           club.then((result) => {
-            if (result.error) {
-              console.log(result.error)
+            if (result.status !== 201) {
+              console.log(result.statusText)
             } else {
               // create user in the API
               const data = {
