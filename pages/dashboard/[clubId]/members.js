@@ -1,9 +1,9 @@
 import { React } from "react"
 import { makeStyles } from "@mui/styles"
-import Layout1 from "../../src/components/layouts/layout1"
+import Layout1 from "../../../src/components/layouts/layout1"
 import { Box, Card, Grid, Typography, ListItemButton, ListItemText, Stack, TextField, Button, IconButton } from "@mui/material"
 import SearchIcon from "@mui/icons-material/Search"
-import BasicTable from "../../src/components/table"
+import BasicTable from "../../../src/components/table"
 
 const useStyles = makeStyles({
   clubAssets: {

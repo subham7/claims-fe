@@ -7,7 +7,7 @@ import ProgressBar from "../../src/components/progressbar"
 import { connectWallet, setUserChain, onboard } from "../../src/utils/wallet"
 import { useDispatch } from "react-redux"
 import { useRouter } from "next/router";
-import { fetchClub, USDC_CONTRACT_ADDRESS, FACTORY_CONTRACT_ADDRESS, createUser } from "../../src/api";
+import { fetchClubbyDaoAddress, USDC_CONTRACT_ADDRESS, FACTORY_CONTRACT_ADDRESS, createUser } from "../../src/api";
 import store from "../../src/redux/store"
 import Web3 from "web3"
 import USDCContract from "../../src/abis/usdc.json"
@@ -158,6 +158,7 @@ export default function Join(props) {
 
 
   useEffect(() => {
+  const walletAddress = localStorage.getItem("wallet")
     store.subscribe(() => {
       const { create } = store.getState()
       if (create.value) {
@@ -188,7 +189,7 @@ export default function Join(props) {
     };
 
     const tokenAPIDetailsRetrieval = async () => {
-      let response = await fetchClub(pid)
+      let response = await fetchClubbyDaoAddress(pid)
       settokenAPIDetails(response)
       if (response.data.length > 0) {
         setApiTokenDetailSet(true)
@@ -197,7 +198,7 @@ export default function Join(props) {
 
     const tokenDetailsRetrieval = async () => {
       if (tokenAPIDetails && tokenAPIDetails.data.length > 0 && !dataFetched) {
-        const tokenDetailContract = new SmartContract(USDCContract, tokenAPIDetails.data[0].tokenAddress, userDetails)
+        const tokenDetailContract = new SmartContract(USDCContract, tokenAPIDetails.data[0].tokenAddress, walletAddress || userDetails)
         await tokenDetailContract.tokenDetails()
           .then((result) => {
             // console.log(result)
@@ -213,7 +214,7 @@ export default function Join(props) {
 
     const contractDetailsRetrieval = async () => {
       if (daoAddress !== null && !governorDataFetched && governorDetails === null) {
-        const governorDetailContract = new SmartContract(GovernorContract, daoAddress, userDetails)
+        const governorDetailContract = new SmartContract(GovernorContract, daoAddress, walletAddress || userDetails)
         await governorDetailContract.getGovernorDetails()
           .then((result) => {
             // console.log(result)
@@ -228,7 +229,7 @@ export default function Join(props) {
     }
 
     if (!fetched) {
-      const usdc_contract = new SmartContract(USDCContract, USDC_CONTRACT_ADDRESS, userDetails)
+      const usdc_contract = new SmartContract(USDCContract, USDC_CONTRACT_ADDRESS, walletAddress || userDetails)
       usdc_contract.balanceOf()
         .then((result) => {
           setWalletBalance(result / Math.pow(10, 18))

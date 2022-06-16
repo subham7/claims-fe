@@ -156,6 +156,11 @@ export async function createClub(data) {
 
 // fetch club details API
 export async function fetchClub(clubID) {
+  return await axios.get(MAIN_API_URL + `club?clubId=${clubID}`)
+}
+
+// fetch club by DAO address
+export async function fetchClubbyDaoAddress(clubID) {
   const resolved = {
     data: null,
     error: null,
@@ -227,4 +232,19 @@ export async function getProposalDetail(proposalId) {
 // cast vote API
 export async function castVote(data) {
   return await axios.post(MAIN_API_URL + `proposal/vote`, data)
+}
+
+// getTokens API 
+export async function getTokens(gnosisAddress) {
+  return await axios.get(MAIN_API_URL + `gnosis/getTokens?gnosisAddress=${gnosisAddress}`)
+}
+
+// getTokens API 
+export async function getNfts(gnosisAddress) {
+  return await axios.get(MAIN_API_URL + `gnosis/getNFT?gnosisAddress=${gnosisAddress}`)
+}
+
+// getTokens API 
+export async function getBalance(gnosisAddress) {
+  return await axios.get(MAIN_API_URL + `gnosis/getAssets?gnosisAddress=${gnosisAddress}`)
 }

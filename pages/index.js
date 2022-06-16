@@ -92,7 +92,7 @@ export default function App() {
     dispatch(addDaoAddress(data.daoAddress))
     dispatch(addClubID(data.clubId))
     dispatch(addClubRoute(data.route))
-    router.push("/dashboard" , undefined, { shallow: true })
+    router.push(`/dashboard/${data.clubId}` , undefined, { shallow: true })
   }
 
   return (

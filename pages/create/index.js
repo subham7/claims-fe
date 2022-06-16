@@ -18,7 +18,7 @@ import Web3 from "web3"
 import Web3Adapter from "@gnosis.pm/safe-web3-lib"
 import { initiateConnection } from "../../src/utils/safe"
 import { useDispatch, useSelector } from "react-redux"
-import ProtectRoute from "../../src/components/auth"
+import ProtectRoute from "../../src/utils/auth"
 import { addClubID } from "../../src/redux/reducers/create"
 
 const ITEM_HEIGHT = 48;

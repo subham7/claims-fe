@@ -1,21 +1,21 @@
 import { React, useEffect, useState } from "react"
 import { makeStyles } from "@mui/styles"
-import Layout1 from "../../../src/components/layouts/layout1"
+import Layout1 from "../../../../src/components/layouts/layout1"
 import { Box, Card, Grid, Typography, ListItemButton, ListItemText, Stack, TextField, Button, IconButton, Modal, Select, OutlinedInput, MenuItem, TextareaAutosize, Chip, Dialog, DialogContent, Snackbar, Alert, CardActionArea } from "@mui/material"
 import SearchIcon from "@mui/icons-material/Search"
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
 import AddCircleRoundedIcon from '@mui/icons-material/AddCircleRounded'
 import { fontStyle } from "@mui/system"
-import SimpleSelectButton from "../../../src/components/simpleSelectButton"
-import { proposalType } from "../data"
-import { createProposal, getProposal } from "../../../src/api/index"
-import { votingDuration } from "../data"
+import SimpleSelectButton from "../../../../src/components/simpleSelectButton"
+import { proposalType } from "../../data"
+import { createProposal, getProposal } from "../../../../src/api/index"
+import { votingDuration } from "../../data"
 import { DesktopDatePicker } from '@mui/x-date-pickers'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
 import Web3 from "web3";
 import { useSelector } from "react-redux"
-import { useRouter } from "next/router"
+import { useRouter, withRouter } from "next/router"
 
 
 const useStyles = makeStyles({
@@ -45,10 +45,12 @@ const useStyles = makeStyles({
     borderRadius: "10px",
   },
   allIllustration: {
-    width: "21px",
-    height: "21px",
+    width: "12px",
+    height: "12px",
     marginRight: "15px",
-    // background: `transparent url('${coin_icon.src}') 0% 0% no-repeat padding-box`,
+    backgroundColor: "#3B7AFD",
+    borderRadius: "50%",
+    marginRight: "15px"
   },
   activeIllustration: {
     height: "12px",
@@ -119,7 +121,7 @@ const useStyles = makeStyles({
   },
   mainCard: {
     borderRadius: "10px",
-    border: "1px solid",
+    border: "1px solid #C1D3FF40",
     backgroundColor: "#142243",
   },
   daysFont: {
@@ -134,7 +136,7 @@ const useStyles = makeStyles({
 })
 
 
-export default function Proposal(props) {
+const Proposal = ({router}) => {
   const classes = useStyles()
   const [open, setOpen] = useState(false)
   const [name, setName] = useState([])
@@ -149,7 +151,7 @@ export default function Proposal(props) {
   const [openSnackBar, setOpenSnackBar] = useState(false)
   const [proposalData, setProposalData] = useState([])
   const [fetched, setFetched] = useState(false)
-  const router = useRouter()
+  const routers = useRouter()
   const clubID = useSelector(state => {return state.create.clubID})
 
   const fetchData = () => {
@@ -159,7 +161,6 @@ export default function Proposal(props) {
         console.log(result.error)
         setFetched(false)
       } else {
-        console.log(result.data)
         setProposalData(result.data)
         setFetched(true)
       }
@@ -216,7 +217,7 @@ export default function Proposal(props) {
   }
 
   const handleProposalClick = (proposal) => {
-    router.push(`/dashboard/proposal/${proposal.proposalId}`, undefined, { shallow: true })
+    routers.push(`${router.asPath}/${proposal.proposalId}`, undefined, { shallow: true })
   }
 
   const handleChange = (event) => {
@@ -284,12 +285,12 @@ export default function Proposal(props) {
                 {proposalData.map((proposal, key) => {
                   return (
                     <Grid item key={key} onClick={e => {handleProposalClick(proposalData[key])}} md={12}>
-                      <CardActionArea className={classes.mainCard}>
+                      <CardActionArea sx={{ borderRadius: "10px", }}>
                       <Card className={classes.mainCard}>
                       <Grid container>
                         <Grid items ml={2} mr={2}>
                           <Typography className={classes.cardFont}>
-                            Proposed by {proposal.createdBy.substring(0, 6) + ".........." + proposal.createdBy.substring(proposal.createdBy.length - 4)}
+                            Proposed by {fetched ? proposal.createdBy.substring(0, 6) + ".........." + proposal.createdBy.substring(proposal.createdBy.length - 4) : null}
                           </Typography>
                         </Grid>
                         <Grid items ml={1} mr={1} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
@@ -368,12 +369,12 @@ export default function Proposal(props) {
                 <Grid container>
                   <Grid items>
                     <Typography className={classes.listFont}>
-                      Assets
+                      Status
                     </Typography>
                   </Grid>
                 </Grid>
                 <ListItemButton component="a" href="#simple-list">
-                  <img src="/assets/icons/coins.png" alt="coins" className={classes.allIllustration} />
+                <div className={classes.allIllustration}></div>
                   <ListItemText primary="All" className={classes.listFont} />
                   <ArrowForwardIosIcon fontSize="5px" />
                 </ListItemButton>
@@ -608,3 +609,5 @@ export default function Proposal(props) {
     </>
   )
 }
+
+export default withRouter(Proposal)
