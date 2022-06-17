@@ -291,7 +291,7 @@ const Join = (props) => {
             "userAddress": userDetails,
             "clubs": [
               {
-                "clubId": tokenAPIDetails.clubId,
+                "clubId": clubId,
                 "isAdmin": 0,
               }
           ]}
@@ -305,7 +305,7 @@ const Join = (props) => {
           })
           setAlertStatus("success")
           setOpenSnackBar(true)
-          router.push(`/dashboard/${tokenAPIDetails.clubId}` ,undefined, {shallow: true})
+          router.push(`/dashboard/${clubId}` ,undefined, {shallow: true})
         })
           .catch((error) => {
             console.log("Error", error)
