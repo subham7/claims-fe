@@ -45,6 +45,9 @@ export default function CustomSlider(props) {
         valueLabelDisplay="on"
         valueLabelFormat={valuetext}
         onChange={props.onChange}
+        defaultValue={props.defaultValue}
+        min={props.min}
+        max={props.max}
       />
     </Box>
   );

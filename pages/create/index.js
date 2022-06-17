@@ -1,6 +1,6 @@
 import { React, useRef, onChange, useState } from "react"
 import { makeStyles } from "@mui/styles"
-import { Grid, Item, Typography, TextField, Card, Switch, FormControlLabel, Box, Stack, Divider, Button, CircularProgress, IconButton, Stepper, StepLabel, Step, Backdrop, FormControl, Select, OutlinedInput, Menu, MenuItem } from "@mui/material"
+import { Grid, Item, Typography, TextField, Card, Switch, FormControlLabel, Box, Stack, Divider, Button, CircularProgress, IconButton, Stepper, StepLabel, Step, Backdrop, FormControl, Select, OutlinedInput, Menu, MenuItem, Alert } from "@mui/material"
 import styled from "@emotion/styled"
 import Layout2 from "../../src/components/layouts/layout2"
 import CustomRoundedCard from "../../src/components/roundcard"
@@ -20,6 +20,10 @@ import { initiateConnection } from "../../src/utils/safe"
 import { useDispatch, useSelector } from "react-redux"
 import ProtectRoute from "../../src/utils/auth"
 import { addClubID } from "../../src/redux/reducers/create"
+import InfoIcon from '@mui/icons-material/Info'
+import { DesktopDatePicker } from '@mui/x-date-pickers'
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -96,7 +100,6 @@ const useStyles = makeStyles({
 const Create = (props) => {
   const classes = useStyles()
   const uploadInputRef = useRef(null);
-  const [value, setValue] = useState(null);
   const [clubName, setClubName] = useState(null);
   const [clubSymbol, setClubSymbol] = useState(null);
   const [displayImage, setDisplayImage] = useState(null);
@@ -105,22 +108,23 @@ const Create = (props) => {
   const [mandatoryProposal, setMandatoryProposal] = useState(false);
   const [voteForQuorum, setVoteForQuorum] = useState(0);
   const [depositClose, setDepositClose] = useState(new Date());
-  const [membersLeaveDate, setMembersLeaveDate] = useState(new Date())
+  const [membersLeaveDate, setMembersLeaveDate] = useState(null)
   const [minContribution, setMinContribution] = useState(0);
-  const [voteInFavour, setVoteInFavour] = useState(0);
+  const [voteInFavour, setVoteInFavour] = useState(51);
   const [addressList, setAddressList] = useState([]);
   const [activeStep, setActiveStep] = useState(0);
   const [skipped, setSkipped] = useState(new Set());
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
+  const [voteOnFavourErrorMessage, setVoteOnFavourErrorMessage] = useState(false)
   const clubID = useSelector(state => {return state.create.clubID});
+  const [threshold, setThreshold] = useState(0)
   const dispatch = useDispatch();
   const { wallet } = props;
   let walletAddress = null;
 
   const handleChange = (newValue) => {
-    setValue(newValue.target.value);
-    setDepositClose(newValue.target.value);
+    setDepositClose(newValue);
   };
 
   const handleDepositClose = (newValue) => {
@@ -132,8 +136,23 @@ const Create = (props) => {
   };
 
   const onSetVoteOnFavourChange = (event, newValue) => {
-    setVoteInFavour(newValue);
-  };
+    if (newValue < 50) {
+      setVoteOnFavourErrorMessage(true)
+    }
+    if (newValue > 50) {
+      setVoteOnFavourErrorMessage(false)
+      setVoteInFavour(newValue)
+    }
+  }
+
+  const minimumSignaturePercentage = (newValue) => {
+    if (addressList.length === 1) {
+      setThreshold(addressList.length)
+    }
+    if (addressList.length > 1) {
+      setThreshold(Math.ceil(addressList.length * (parseInt(newValue) / 100 )))
+    }
+  }
 
   const handleLoading = (event) => {
     setOpen(true)
@@ -184,7 +203,6 @@ const Create = (props) => {
         (result) => {
           walletAddress = result[0]
           addressList.unshift(walletAddress)
-          const threshold = addressList.length === 1 ? addressList.length : addressList.length - 1
           initiateConnection(
             addressList,
             threshold,
@@ -381,7 +399,7 @@ const Create = (props) => {
               </Grid>
             </Card>
 
-            <Typography className={classes.largeText} mt={4} mb={2}>
+            {/* <Typography className={classes.largeText} mt={4} mb={2}>
               Governance
             </Typography>
             <Card className={classes.cardPadding} mb={2}>
@@ -395,7 +413,7 @@ const Create = (props) => {
                   <FormControlLabel control={<Switch />} onChange={(e) => setMandatoryProposal(e.target.value)} value={mandatoryProposal} label="" />
                 </Grid>
               </Grid>
-            </Card>
+            </Card> */}
             <br />
             <Card className={classes.cardPadding} mb={2}>
               <Grid container item xs sx={{ display: "flex", justifyContent: "flex-start", alignItems: "center" }} pl={3} pr={1} mt={2} mb={2}>
@@ -415,8 +433,21 @@ const Create = (props) => {
                 </Typography>
               </Grid>
               <Grid container item md={11.3} mt={4} ml={4} mb={4}>
-                <CustomSlider onChange={onSetVoteOnFavourChange} value={voteInFavour} />
+                <CustomSlider onChange={onSetVoteOnFavourChange} value={voteInFavour} defaultValue={voteInFavour} min={51} max={100}/>
               </Grid>
+              { voteOnFavourErrorMessage ? 
+                <Grid container md={11.3} mt={4} ml={4} mb={4}>
+                  <Grid item>
+                  <InfoIcon sx={{ color: "#D55438"}} />
+                  </Grid>
+                  <Grid item mt={0.2} ml={0.5}>
+                  <Typography variant="p" sx={{ color: "#D55438"}}>
+                    Minumum votes in support to pass a proposal should be greater than 50%
+                  </Typography>
+                  </Grid>
+                </Grid> : null
+              }
+              
             </Card>
             <br />
 
@@ -431,32 +462,15 @@ const Create = (props) => {
                   </Typography>
                 </Grid>
                 <Grid item xs sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
-                <FormControl sx={{ m: 1, width: 443, mt: 1 }}>
-                  <Select
-                    displayEmpty
-                    value={String(depositClose)}
-                    onChange={handleChange}
-                    input={<OutlinedInput />}
-                    // renderValue={(selected) => {
-                    //   if (selected.length === 0) {
-                    //     return <em>{dateTill[0].text}</em>;
-                    //   }
-                    //   return selected
-                    // }}
-                    MenuProps={MenuProps}
-                    style={{ borderRadius: "10px", background: "#111D38 0% 0% no-repeat padding-box", }}
-                  >
-                    {dateTill.map((value) => (
-                      <MenuItem
-                        key={value.text}
-                        value={String(value.date)}
-                        onSelect={() => handleChange(value.data)}
-                        >
-                        {value.text}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
+                <LocalizationProvider dateAdapter={AdapterDateFns}>
+                  <DesktopDatePicker
+                    error={depositClose === null}
+                    inputFormat="dd/MM/yyyy"
+                    value={depositClose}
+                    onChange={e => handleChange(e)}
+                    renderInput={(params) => <TextField {...params} sx={{ m: 1, width: 443, mt: 1, borderRadius: "10px", }} />}
+                  />
+                  </LocalizationProvider>
                 </Grid>
               </Grid>
             </Card>
@@ -470,9 +484,9 @@ const Create = (props) => {
                 </Grid>
                 <Grid item xs sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
                   <TextField
-                    error={!(minContribution >= 0 || minContribution % 1 === 0)}
+                    error={minContribution < 0 || minContribution === null || minContribution % 1 !== 0 || typeof minContribution === "undefined"}
                     variant="outlined"
-                    onChange={(e) => setMinContribution(e.target.value)}
+                    onChange={(e) => {setMinContribution(e.target.value)}}
                     value={minContribution}
                     sx={{ m: 1, width: 443, mt: 1, borderRadius: "10px", }}
                   />
@@ -490,7 +504,7 @@ const Create = (props) => {
                 </Grid>
                 <Grid item xs sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
                   <TextField
-                    error={!(maxContribution >= 0 || maxContribution % 1 === 0)}
+                    error={maxContribution < 0 || maxContribution === null || maxContribution % 1 !== 0 || typeof maxContribution === "undefined" || parseInt(maxContribution) < parseInt(minContribution)}
                     variant="outlined"
                     onChange={(e) => setMaxContribution(e.target.value)}
                     value={maxContribution}
@@ -510,7 +524,7 @@ const Create = (props) => {
                 </Grid>
                 <Grid item xs sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
                   <TextField
-                    error={!(raiseAmount >= 0 || raiseAmount % 1 === 0)}
+                    error={raiseAmount < 0 || raiseAmount === null || raiseAmount % 1 !== 0 || typeof raiseAmount === "undefined" || parseInt(raiseAmount) < parseInt(maxContribution) || parseInt(raiseAmount) < parseInt(minContribution)}
                     variant="outlined"
                     onChange={(e) => setRaiseAmount(e.target.value)}
                     value={raiseAmount}
@@ -540,7 +554,7 @@ const Create = (props) => {
                   return (
                     <Grid item xs sx={{ display: "flex", justifyContent: "flex-start", alignItems: "center" }} key={key} >
                       <TextField
-                        error={!(maxContribution >= 0 || maxContribution % 1 === 0)}
+                        error={!(/^0x[a-zA-Z0-9]+/gm.test(addressList[key]))}
                         variant="outlined"
                         onChange={(e) => handleInputChange(e, key)}
                         placeholder={"0x"}
@@ -563,11 +577,11 @@ const Create = (props) => {
                 </Typography>
               </Grid>
               <Grid container item md={11.3} mt={4} ml={4} mb={4}>
-                <CustomSlider onChange={onSetVoteOnFavourChange} value={voteInFavour} />
+                <CustomSlider onChange={e => minimumSignaturePercentage(e.target.value)} value={threshold} />
               </Grid>
             </Card>
 
-            <Typography className={classes.largeText} mt={4} mb={2}>
+            {/* <Typography className={classes.largeText} mt={4} mb={2}>
               Other
             </Typography>
             <Card className={classes.cardPadding} mb={2}>
@@ -612,7 +626,7 @@ const Create = (props) => {
                 </FormControl>
                 </Grid>
               </Grid>
-            </Card>
+            </Card> */}
 
           </Grid>
         </Grid>
@@ -673,16 +687,15 @@ const Create = (props) => {
                     disabled={
                       activeStep === 0
                         ? !clubName || !clubSymbol
-                        : activeStep === 1
+                        : activeStep === 2
                           ? !raiseAmount ||
                           !maxContribution ||
-                          !mandatoryProposal ||
                           !voteForQuorum ||
                           !depositClose ||
                           !minContribution ||
-                          !voteInFavour
-                          : activeStep === 2
-                            ? false
+                          voteInFavour < 50
+                          // : activeStep === 2
+                          //   ? false
                             : true
                     }
                     onClick={handleNext}
