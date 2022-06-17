@@ -7,9 +7,8 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
 import AddCircleRoundedIcon from '@mui/icons-material/AddCircleRounded'
 import { fontStyle } from "@mui/system"
 import SimpleSelectButton from "../../../../src/components/simpleSelectButton"
-import { proposalType } from "../../data"
+import { proposalType, votingDuration } from "../../../../src/data/dashboard"
 import { createProposal, getProposal } from "../../../../src/api/index"
-import { votingDuration } from "../../data"
 import { DesktopDatePicker } from '@mui/x-date-pickers'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
