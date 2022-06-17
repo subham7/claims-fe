@@ -9,7 +9,7 @@ import CustomSlider from "../../src/components/slider"
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import UploadIcon from '@mui/icons-material/Upload'
 import ContractCard from "../../src/components/contractCard"
-import { contractList, tokenType, dateTill, exitDates } from './data'
+import { contractList, tokenType, dateTill, exitDates } from '../../src/data/create'
 import Link from "next/link"
 import SimpleSelectButton from "../../src/components/simpleSelectButton"
 import AddCircleOutlinedIcon from '@mui/icons-material/AddCircleOutlined'
