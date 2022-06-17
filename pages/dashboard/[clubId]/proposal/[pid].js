@@ -119,7 +119,7 @@ const ProposalDetail = ({ router }) => {
   const [castVoteOption, setCastVoteOption] = useState(null)
   const clubID = useSelector(state => { return state.create.clubID })
   const [cardSelected, setCardSelected] = useState(null)
-  let walletAddress = localStorage.getItem("wallet")
+  const [walletAddress, setWalletAddress] = useState(null) 
   let voteId = null
   const dispatch = useDispatch()
 
@@ -152,6 +152,7 @@ const ProposalDetail = ({ router }) => {
   }
 
   useEffect(() => {
+    setWalletAddress(localStorage.getItem("wallet"))
     if (!fetched) {
       fetchData()
     }

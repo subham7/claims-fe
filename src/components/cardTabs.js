@@ -60,7 +60,7 @@ export default function SimpleTab(props) {
         className={classes.root}
       >
         {tabs.map((item, index) => (
-          <Tab label={item.label} {...a11yProps(index)} />
+          <Tab key={index} label={item.label} {...a11yProps(index)} />
         ))}
       </Tabs>
 
