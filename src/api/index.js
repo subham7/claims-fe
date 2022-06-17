@@ -248,3 +248,8 @@ export async function getNfts(gnosisAddress) {
 export async function getBalance(gnosisAddress) {
   return await axios.get(MAIN_API_URL + `gnosis/getAssets?gnosisAddress=${gnosisAddress}`)
 }
+
+// get members list API
+export async function getMembersDetails(clubId) {
+  return await axios.get(MAIN_API_URL + `user/club/${clubId}`)
+}

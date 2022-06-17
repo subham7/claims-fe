@@ -201,7 +201,6 @@ const Proposal = ({router}) => {
     })
   }
 
-  
 
   useEffect(() => {
     if (!fetched) {
