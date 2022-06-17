@@ -222,11 +222,11 @@ const ProposalDetail = ({ router }) => {
                 <Grid item>
                   <Grid container>
                     <Grid items mt={1.2}>
-                      <div className={classes.activeIllustration}></div>
+                      {fetched ? <div className={proposalData[0].status === "active" ? classes.activeIllustration : proposalData[0].status === "closed" ? classes.pendingIllustration : classes.closedIllustration  }></div> : null}
                     </Grid>
                     <Grid items>
                       <Typography className={classes.listFont}>
-                        Active
+                        {fetched ? proposalData[0].status.charAt(0).toUpperCase() + proposalData[0].status.slice(1) : null}
                       </Typography>
                     </Grid>
                   </Grid>

@@ -22,33 +22,41 @@ async function syncWallet() {
   if (window.ethereum) {
     window.web3 = new Web3(window.ethereum)
     await window.ethereum.request({ method: 'eth_requestAccounts'})
-    .then(console.log("connected"))
+    .then((result) =>
+     { console.log("connected")
+        return true}
+      )
     .catch((error) => {
       if (error.code === 4001) {
         // EIP-1193 userRejectedRequest error
         console.log('Please connect to MetaMask.');
+        return false
       } else {
         console.error(error);
+        return false
       }
     });
   }
   else if (window.web3) {
     window.web3 = new Web3(window.web3.currentProvider)
+    return true
   }
   else {
     window.alert('Non-Ethereum browser detected. You should consider trying MetaMask!')
+    return false
   }
 }
 
 export class SmartContract{
   constructor(abiFile, contractAddress, walletAddress) {
-    syncWallet()
-    this.web3 = new Web3(window.web3)
-    this.abi = abiFile.abi
-    this.contractAddress = contractAddress
-    this.checkSum = this.web3.utils.toChecksumAddress(this.contractAddress)
-    this.contract = new this.web3.eth.Contract(this.abi, this.checkSum)
-    this.walletAddress = this.web3.utils.toChecksumAddress(walletAddress)
+    if (syncWallet() && abiFile && contractAddress && walletAddress){
+      this.web3 = new Web3(window.web3)
+      this.abi = abiFile.abi
+      this.contractAddress = contractAddress
+      this.checkSum = this.web3.utils.toChecksumAddress(this.contractAddress)
+      this.contract = new this.web3.eth.Contract(this.abi, this.checkSum)
+      this.walletAddress = this.web3.utils.toChecksumAddress(walletAddress)
+    }
   }
 
   async createDAO(tokenName, tokenSymbol, totalDeposit, minDeposit, maxDeposit, ownerFee, closeDate, feeUSDC, tresuryAddress, quoram, formThreshold) {
