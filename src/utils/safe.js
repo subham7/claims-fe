@@ -4,11 +4,12 @@ import Web3Adapter from "@gnosis.pm/safe-web3-lib"
 import { SafeFactory } from "@gnosis.pm/safe-core-sdk"
 //import { ethAdapter } from "./web3-adapter"
 import { safeConnected, safeDisconnected } from "../redux/reducers/gnosis"
-import { addDaoAddress } from "../redux/reducers/create"
+import { addDaoAddress, addClubID } from "../redux/reducers/create"
 import store from "../redux/store"
-import { createClub, SmartContract, FACTORY_CONTRACT_ADDRESS } from "../api"
+import { createClub, SmartContract, FACTORY_CONTRACT_ADDRESS, fetchClub } from "../api"
 import CreateDAO from "../abis/DAO.json"
 import Router from "next/router"
+import { createUser } from "../../src/api/index"
 
 async function gnosisSafePromise(owners, threshold, dispatch) {
   try {
@@ -54,7 +55,7 @@ export async function initiateConnection(
   let daoAddress = null
   let tokenAddress = null
   let walletAddress = safeOwner[0]
- 
+
   const smartContract = new SmartContract(
     CreateDAO,
     FACTORY_CONTRACT_ADDRESS,
@@ -87,12 +88,33 @@ export async function initiateConnection(
             daoAddress: daoAddress,
             treasuryAddress: treasuryAddress,
           }
-          console.log(data)
           const club = createClub(data)
           club.then((result) => {
-            if (result.error) {
-              console.log(result.error)
+            if (result.status !== 201) {
+              console.log(result.statusText)
             } else {
+              // create user in the API
+              const data = {
+                "userAddress": walletAddress,
+                "clubs": [
+                  {
+                    "clubId": result.data.clubId,
+                    "isAdmin": 1,
+                  }
+                ]
+              }
+              const createuser = createUser(
+                data
+              )
+              createuser.then((result) => {
+                if (result.error) {
+                  console.log(result.error)
+                }
+              })
+
+              dispatch(addDaoAddress(result.data.daoAddress))
+              dispatch(addClubID(result.data.clubId))
+
               const { pathname } = Router
               if (pathname == "/create") {
                 Router.push("/dashboard")

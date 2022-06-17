@@ -1,11 +1,11 @@
 import React from "react"
 
-import Navbar2 from "../navbar2"
+import Navbar3 from "../navbar3"
 
 export default function Layout3(props) {
   return (
     <>
-      <Navbar2 />
+      <Navbar3 />
       <>{props.children}</>
     </>
   )

@@ -30,16 +30,13 @@ const useStyles = makeStyles({
   }
 })
 
-export default function Navbar2(props) {
+export default function Navbar3(props) {
   const dispatch = useDispatch()
   const classes = useStyles()
   const [previouslyConnectedWallet, setPreviouslyConnectedWallet] = useState(null)
   const [userDetails, setUserDetails] = useState(null)
 
   useEffect(() => {
-    if ( localStorage.getItem("isWalletConnected")) {
-      setPreviouslyConnectedWallet(localStorage.getItem("wallet"))
-    }
     store.subscribe(() => {
       const { create } = store.getState()
       if (create.value) {
@@ -69,6 +66,10 @@ export default function Navbar2(props) {
       setUserDetails(null)
     }
   };
+
+  if (previouslyConnectedWallet) {
+    onboard.connectWallet({ autoSelect: previouslyConnectedWallet[0] })
+  }
       
     checkConnection()
   }, [previouslyConnectedWallet])
@@ -110,19 +111,6 @@ export default function Navbar2(props) {
           />
           </Box>
           
-          {/* {previouslyConnectedWallet !== null ? (<Typography  variant="h6" component="div" ml={20} className={classes.navbarText}> 
-          </Typography>) : (
-          <Typography  variant="h6" component="div" ml={20} className={classes.navbarText}> 
-            No wallet connected
-          </Typography>)
-          } */}
-          <Button
-              variant="contained"
-              color="primary"
-              sx={{ mr: 2, mt: 2 }}
-            >
-              Discover
-            </Button>
           {previouslyConnectedWallet !== null ? (
             <AccountButton accountDetail={userDetails} />
           ) : (

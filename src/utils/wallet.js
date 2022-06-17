@@ -3,7 +3,7 @@ import Onboard from "@web3-onboard/core"
 import injectedModule from "@web3-onboard/injected-wallets"
 import { useDispatch } from "react-redux"
 import { addWallet, removeWallet } from "../redux/reducers/create"
-
+import Router from "next/router"
 
 const INFURA_ID = "sdf"
 const ETH_ROPSTEN_RPC = `https://ropsten.infura.io/v3/946205020d6c477192b1178b3c5f8590`
@@ -65,8 +65,17 @@ export const  onboard = Onboard({
 })
 
 export async function connectWallet(dispatch) {
-  const wallets = await onboard.connectWallet()
-  dispatch(addWallet(wallets.map(({ accounts }) => accounts)))
+    const wallets = await onboard.connectWallet()
+    if (wallets.length == 0){
+      localStorage.setItem("isWalletConnected", false)
+      return false
+    }
+    else{
+      dispatch(addWallet(wallets.map(({ accounts }) => accounts)))
+      localStorage.setItem("wallet", wallets.map(({ accounts }) => accounts)[0][0].address)
+      localStorage.setItem("isWalletConnected", true)
+      return true 
+    }
 }
 
 export async function setUserChain() {
@@ -76,8 +85,8 @@ export async function setUserChain() {
 export const walletsSub = onboard.state.select('wallets')
 
 export async function disconnectWallet(dispatch){
-  const wallet = walletsSub.subscribe(wallets => {
-    const connectedWallets = wallets.map(({ label }) => label)
-    dispatch(removeWallet(wallets.map(({ accounts }) => accounts)))
-  })
+  dispatch(removeWallet())
+  localStorage.setItem("wallet", null)
+  localStorage.setItem("isWalletConnected", false)
+  Router.push("/")
 }

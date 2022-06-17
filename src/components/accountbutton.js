@@ -18,6 +18,7 @@ const useStyles = makeStyles({
     border: "1px solid #C1D3FF40",
     opacity: "1",
     fontSize: "18px",
+    marginTop: "15px"
   }
 })
 
