@@ -8,7 +8,7 @@ import BasicTable from "../../../src/components/table"
 import CollectionCard from "../../../src/components/cardcontent"
 import Router, { useRouter } from "next/router"
 import ClubFetch from "../../../src/utils/clubFetch"
-import { SmartContract, fetchClubbyDaoAddress } from "../../../src/api"
+import { SmartContract, fetchClubbyDaoAddress, getMembersDetails, getBalance } from "../../../src/api"
 import GovernorContract from "../../../src/abis/governor.json"
 import USDCContract from "../../../src/abis/usdc.json"
 import { useSelector } from "react-redux"
@@ -208,6 +208,7 @@ const Dashboard = (props) => {
   const classes = useStyles()
   const daoAddress = useSelector(state => {return state.create.daoAddress})
   const walletAddress = useSelector(state => {return state.create.value})
+  const tresuryAddress = useSelector(state => { return state.create.tresuryAddress})
   const [clubDetails, setClubDetails] = useState([])
   const [clubDetailsFetched, setClubDetailsFetched] = useState(false)
   const [tokenDetails, settokenDetails] = useState(null)
@@ -215,7 +216,11 @@ const Dashboard = (props) => {
   const [tokenAPIDetails, settokenAPIDetails] = useState(null) // contains the details extracted from API
   const [apiTokenDetailSet, setApiTokenDetailSet] = useState(false)
   const [joinLink, setJoinLink] = useState(null)
-
+  const [membersFetched, setMembersFetched] = useState(false)
+  const [members, setMembers] = useState(0)
+  const [membersDetails, setMembersDetails] = useState([])
+  const [tresuryWalletBalanceFetched, setTresuryWalletBalanceFetched] = useState(false)
+  const [tresuryWalletBalance, setTresuryWalletBalance] = useState([])
 
   const fetchGovernorContractData = async () => {
     if (daoAddress && walletAddress){
@@ -231,6 +236,17 @@ const Dashboard = (props) => {
           setClubDetailsFetched(false)
         }
       )
+    }
+  }
+
+  const findCurrentMember = () => {
+    if (membersFetched && membersDetails.length > 0) {
+      let obj = membersDetails.find(member => member.address === walletAddress)
+      let pos = membersDetails.indexOf(obj)
+      if (pos >= 0) {
+        return membersDetails[pos].balance
+      }
+      return 0
     }
   }
 
@@ -260,19 +276,59 @@ const Dashboard = (props) => {
     }
   }
 
-  const fetchClubAssetToken = () => {
+  const fetchMembers = () => {
+    const membersData = getMembersDetails(clubId)
+    membersData.then((result) => {
+      if (result.status != 200) {
+        console.log(result.statusText)
+        setMembersFetched(false)
+      } else {
+        setMembersDetails(result.data)
+        setMembers(result.data.length)
+        setMembersFetched(true)
+      }
+    })
+  }
 
-  } 
+  const fetchClubAssetToken = () => {
+    // require API
+  }
+
+  const fetchTresuryWallet = () => {
+    const tresuryWalletData = getBalance(tresuryAddress)
+    tresuryWalletData.then((result) => {
+      if (result.status != 200) {
+        console.log(result.statusText)
+        setTresuryWalletBalanceFetched(false)
+      } else {
+        console.log(result.data)
+        setTresuryWalletBalance(result.data)
+        setTresuryWalletBalanceFetched(true)
+      }
+    })
+  }
+
+  const calculateTresuryWalletBalance = () => {
+    let sum = 0.0
+    if (tresuryWalletBalanceFetched && tresuryWalletBalance.length > 0) {
+      tresuryWalletBalance.forEach((data, key) => {
+      sum += parseFloat(data.fiatConversion)
+    })
+    }
+    return sum
+  }
 
   useEffect(() => {
       tokenAPIDetailsRetrieval()
-      tokenDetailsRetrieval()
-    
-  }, [daoAddress, walletAddress, dataFetched, apiTokenDetailSet])
+      tokenDetailsRetrieval()   
+      fetchMembers()
+      fetchTresuryWallet()
+  }, [daoAddress, walletAddress, dataFetched, apiTokenDetailSet, membersFetched, tresuryWalletBalanceFetched])
 
   const handleCopy = () => {
     navigator.clipboard.writeText(joinLink)
   }
+  
   
   return (
     <>
@@ -298,7 +354,7 @@ const Dashboard = (props) => {
                       My Share ($)
                     </Typography>
                     <Typography className={classes.card1text4}>
-                      13,700
+                      {findCurrentMember()}
                     </Typography>
                     <Typography className={classes.card1text5}>
                       10%
@@ -326,20 +382,20 @@ const Dashboard = (props) => {
                           Members
                         </Typography>
                         <Typography className={classes.card2text5}>
-                          8
+                          {membersFetched ? members : 0}
                         </Typography>
                         <Typography mt={3} className={classes.card2text6}>
                           Tresury Wallet
                         </Typography>
                         <Typography className={classes.card2text7}>
-                          $97,600
+                          ${calculateTresuryWalletBalance()}
                         </Typography>
-                        <Typography mt={3} className={classes.card2text8}>
+                        {/* <Typography mt={3} className={classes.card2text8}>
                           Hot Wallet
                         </Typography>
                         <Typography className={classes.card2text9}>
                           $43,206
-                        </Typography>
+                        </Typography> */}
                       </Stack>
                     </Grid>
                   </Grid>

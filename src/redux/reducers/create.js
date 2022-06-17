@@ -7,17 +7,12 @@ export const slice = createSlice({
         clubName: null,
         clubsymbol: null,
         displayImage: null,
-        raiseAmount: 0,
-        maxContribution: 0,
-        mandatoryProposal: false,
-        voteForQuorum: 0,
-        depositClose: null,
-        minContribution: 0,
-        voteInFavour: 0,
         daoAddress: null,
         clubID: null,
         clubRoute: null,
         proposalId: null,
+        tresuryAddress: null,
+        tokenAddress: null,
     },
     reducers: {
         addWallet: (state, action) => {
@@ -35,27 +30,6 @@ export const slice = createSlice({
         addDisplayImage: (state, action) => {
             state.displayImage = action.payload
         },
-        addRaiseAmount: (state, action) => {
-            state.raiseAmount = action.payload
-        },
-        addMaxContribution: (state, action) => {
-            state.maxContribution = action.payload
-        },
-        addMandatoryProposal: (state, action) => {
-            state.mandatoryProposal = action.payload
-        },
-        addVoteForQuorum: (state, action) => {
-            state.voteForQuorum = action.payload
-        },
-        addDepositClose: (state, action) => {
-            state.depositClose = action.payload
-        },
-        addMinContribution: (state, action) => {
-            state.minContribution = action.payload
-        },
-        addVoteInFavour: (state, action) => {
-            state.voteInFavour = action.payload
-        },
         addDaoAddress: (state, action) => {
             state.daoAddress = action.payload
         },
@@ -70,6 +44,12 @@ export const slice = createSlice({
         },
         addProposalId: (state, action) => {
             state.proposalId = action.payload
+        },
+        addTresuryAddress: (state, action) => {
+            state.tresuryAddress = action.payload
+        },
+        addTokenAddress: (state, action) => {
+            state.tokenAddress = action.payload
         }
     },
     middleware: (getDefaultMiddleware) => getDefaultMiddleware(),
@@ -81,18 +61,13 @@ export const {
     addClubName,
     addClubsymbol,
     addDisplayImage,
-    addRaiseAmount,
-    addMaxContribution,
-    addMandatoryProposal,
-    addVoteForQuorum,
-    addDepositClose,
-    addMinContribution,
-    addVoteInFavour,
     addDaoAddress,
     removeDaoAddress,
     addClubID,
     addClubRoute,
     addProposalId,
+    addTresuryAddress,
+    addTokenAddress,
     } = slice.actions
     
 
