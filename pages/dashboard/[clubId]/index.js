@@ -492,7 +492,7 @@ const Dashboard = (props) => {
                   <Grid container m={2}>
                     <Grid items>
                       <Typography className={classes.card2text1}>
-                        Pending proposals
+                        Closed proposals
                       </Typography>
                     </Grid>
                     <Grid items mt={1.2} ml={1}>

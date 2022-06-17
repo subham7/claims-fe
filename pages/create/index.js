@@ -577,7 +577,14 @@ const Create = (props) => {
                 </Typography>
               </Grid>
               <Grid container item md={11.3} mt={4} ml={4} mb={4}>
-                <CustomSlider onChange={e => minimumSignaturePercentage(e.target.value)} value={threshold} />
+              <TextField
+                error={addressList.length <= threshold}
+                variant="outlined"
+                onChange={(e) => setThreshold(e.target.value)}
+                value={threshold}
+                sx={{ m: 1, width: 443, mt: 1, borderRadius: "10px", }}
+              />
+                {/* <CustomSlider onChange={e => minimumSignaturePercentage(e.target.value)} value={threshold} /> */}
               </Grid>
             </Card>
 

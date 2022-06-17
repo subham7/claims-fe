@@ -117,7 +117,7 @@ export async function initiateConnection(
 
               const { pathname } = Router
               if (pathname == "/create") {
-                Router.push("/dashboard")
+                Router.push(`/dashboard/${result.data.clubId}`, undefined, {shallow: true})
               }
             }
           })
