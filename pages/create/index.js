@@ -670,8 +670,8 @@ const Create = (props) => {
           {activeStep === steps.length ? (
             <>
               <Grid container md={12}>
-                <Grid item >
-                  <Typography className={classes.largeText1}>
+                <Grid item justifyContent="center" alignContent="center" >
+                  <Typography sx={{ color: "#FFFFFF", fontSize: "30px" }}>
                     Please wait while we are processing your request
                   </Typography>
                 </Grid>
