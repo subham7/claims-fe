@@ -118,7 +118,7 @@ const Create = (props) => {
   const [open, setOpen] = useState(false);
   const [voteOnFavourErrorMessage, setVoteOnFavourErrorMessage] = useState(false)
   const clubID = useSelector(state => {return state.create.clubID});
-  const [threshold, setThreshold] = useState(0)
+  const [threshold, setThreshold] = useState(1)
   const dispatch = useDispatch();
   const { wallet } = props;
   let walletAddress = null;
@@ -578,7 +578,7 @@ const Create = (props) => {
               </Grid>
               <Grid container item md={11.3} mt={4} ml={4} mb={4}>
               <TextField
-                error={addressList.length <= threshold}
+                error={(threshold > addressList.length || threshold < 1) && addressList.length > 0}
                 variant="outlined"
                 onChange={(e) => setThreshold(e.target.value)}
                 value={threshold}
@@ -669,8 +669,8 @@ const Create = (props) => {
 
           {activeStep === steps.length ? (
             <>
-              <Grid container md={12}>
-                <Grid item justifyContent="center" alignContent="center" >
+              <Grid container md={12} justifyContent="center" alignContent="center">
+                <Grid item>
                   <Typography sx={{ color: "#FFFFFF", fontSize: "30px" }}>
                     Please wait while we are processing your request
                   </Typography>
