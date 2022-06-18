@@ -1,7 +1,7 @@
 import { React, useRef, onChange, useState, useEffect } from "react"
 import Image from "next/image"
 import { makeStyles } from "@mui/styles"
-import { Grid, Typography, Avatar, Card, Button, Stack, Divider, Input, Snackbar, Alert, Skeleton, Chip } from "@mui/material"
+import { Grid, Typography, Avatar, Card, Button, Stack, Divider, Input, Snackbar, Alert, Skeleton, Chip, Backdrop, CircularProgress } from "@mui/material"
 import Layout3 from "../../src/components/layouts/layout3"
 import ProgressBar from "../../src/components/progressbar"
 import { connectWallet, setUserChain, onboard } from "../../src/utils/wallet"
@@ -13,6 +13,7 @@ import Web3 from "web3"
 import USDCContract from "../../src/abis/usdc.json"
 import GovernorContract from "../../src/abis/governor.json"
 import { SmartContract } from "../../src/api/index"
+import { set } from "date-fns"
 
 
 const useStyles = makeStyles({
@@ -146,6 +147,7 @@ const Join = (props) => {
   const [clubId, setClubId] = useState(null)
   const [membersFetched, setMembersFetched] = useState(false)
   const [members, setMembers] = useState(0)
+  const [depositInitiated, setDepositInitiated] = useState(false)
 
 
   const checkConnection = async () => {
@@ -275,6 +277,7 @@ const Join = (props) => {
 
 
   const handleDeposit = async () => {
+    setDepositInitiated(true)
     const usdc_contract = new SmartContract(USDCContract, USDC_CONTRACT_ADDRESS, userDetails)
     // pass governor contract
     const dao_contract = new SmartContract(GovernorContract, daoAddress, userDetails)
@@ -293,6 +296,7 @@ const Join = (props) => {
               {
                 "clubId": clubId,
                 "isAdmin": 0,
+                "balance": depositAmount,
               }
           ]}
           const createuser = createUser(
@@ -406,7 +410,7 @@ const Join = (props) => {
                 </Grid>
               </Grid>
               <Grid item ml={3} mt={5} mb={2} mr={3}>
-                {walletConnected ? <ProgressBar value={governorDataFetched ? parseInt(governorDetails[3]) : 0} /> : <Skeleton variant="rectangular" />}
+                {walletConnected ? <ProgressBar value={governorDataFetched ? (parseFloat(governorDetails[2]) / parseFloat(governorDetails[4])) * 100 : 0} /> : <Skeleton variant="rectangular" />}
               </Grid>
               <Grid container spacing={2} >
                 <Grid item ml={4} mt={5} mb={2}>
@@ -510,6 +514,14 @@ const Join = (props) => {
             </Alert>)
           }
         </Snackbar>
+        {depositInitiated ? 
+          <Backdrop
+          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+          open={open}
+        >
+          <CircularProgress color="inherit" />
+        </Backdrop>  
+      : null}
       </div>
     </Layout3>
   )
