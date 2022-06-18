@@ -1,11 +1,17 @@
-import { React } from "react"
+import { React, useEffect, useState } from "react"
 import { makeStyles } from "@mui/styles"
-import Layout1 from "../../src/components/layouts/layout3"
+import Layout1 from "../../../src/components/layouts/layout1"
 import { Box, Card, Grid, Typography, CardMedia, Divider, Stack, TextField, Button, IconButton } from "@mui/material"
 import SearchIcon from "@mui/icons-material/Search"
-import ButtonDropDown from "../../src/components/buttondropdown"
-import BasicTable from "../../src/components/table"
-import CollectionCard from "../../src/components/cardcontent"
+import ButtonDropDown from "../../../src/components/buttondropdown"
+import BasicTable from "../../../src/components/table"
+import CollectionCard from "../../../src/components/cardcontent"
+import Router, { useRouter } from "next/router"
+import ClubFetch from "../../../src/utils/clubFetch"
+import { SmartContract, fetchClubbyDaoAddress } from "../../../src/api"
+import GovernorContract from "../../../src/abis/governor.json"
+import USDCContract from "../../../src/abis/usdc.json"
+import { useSelector } from "react-redux"
 
 const useStyles = makeStyles({
   firstCard: {
@@ -55,7 +61,7 @@ const useStyles = makeStyles({
   },
   card1text4: {
     fontWeight: "bold",
-    fontSize: "54px",
+    fontSize: "50px",
     color: "#EFEFEF",
     textTransform: "uppercase",
     opacity: "1",
@@ -73,7 +79,7 @@ const useStyles = makeStyles({
   },
   card2text2: {
     fontWeight: "bold",
-    fontSize: "46px",
+    fontSize: "40px",
     color: "#EFEFEF",
     opacity: "1",
   },
@@ -141,8 +147,7 @@ const useStyles = makeStyles({
     width: "68px",
     height: "30px",
     background: "#3B7AFD 0% 0% no-repeat padding-box",
-    borderRadius: "5px"
-
+    borderRadius: "15px"
   },
   linkInput: {
     width: "354px",
@@ -156,7 +161,7 @@ const useStyles = makeStyles({
     paddingLeft: "20%",
   },
   clubAssets: {
-    fontSize: "48px",
+    fontSize: "40px",
     color: "#FFFFFF",
   },
   fourthCard: {
@@ -190,14 +195,88 @@ const useStyles = makeStyles({
   tokensText: {
     fontSize: "30px",
     color: "#F5F5F5",
+  },
+  iconMetroCoin: {
+    width: "81px",
+    height: "60px",
   }
 })
 
-export default function Dashboard(props) {
+const Dashboard = (props) => {
+  const router = useRouter()
+  const { clubId } = router.query
   const classes = useStyles()
+  const daoAddress = useSelector(state => {return state.create.daoAddress})
+  const walletAddress = useSelector(state => {return state.create.value})
+  const [clubDetails, setClubDetails] = useState([])
+  const [clubDetailsFetched, setClubDetailsFetched] = useState(false)
+  const [tokenDetails, settokenDetails] = useState(null)
+  const [dataFetched, setDataFetched] = useState(false)
+  const [tokenAPIDetails, settokenAPIDetails] = useState(null) // contains the details extracted from API
+  const [apiTokenDetailSet, setApiTokenDetailSet] = useState(false)
+  const [joinLink, setJoinLink] = useState(null)
+
+
+  const fetchGovernorContractData = async () => {
+    if (daoAddress && walletAddress){
+      const fetchClubDetails = new SmartContract(GovernorContract, daoAddress, walletAddress)
+      await fetchClubDetails.getGovernorDetails()
+      .then((result) => {
+        // console.log(result)
+        setClubDetails(result)
+        setClubDetailsFetched(true)
+      },
+        (error) => {
+          console.log(error)
+          setClubDetailsFetched(false)
+        }
+      )
+    }
+  }
+
+  const tokenAPIDetailsRetrieval = async () => {
+    let response = await fetchClubbyDaoAddress(daoAddress)
+    if (response.data.length > 0) {
+      // console.log(response.data[0])
+      settokenAPIDetails(response.data[0])
+      setApiTokenDetailSet(true)
+    }
+  }
+
+  const tokenDetailsRetrieval = async () => {
+    if (tokenAPIDetails && !dataFetched) {
+      const tokenDetailContract = new SmartContract(USDCContract, tokenAPIDetails.tokenAddress, walletAddress)
+      await tokenDetailContract.tokenDetails()
+        .then((result) => {
+          // console.log(result)
+          settokenDetails(result)
+          setJoinLink(typeof window !== 'undefined' && window.location.origin ? `${window.location.origin}/join/${daoAddress}` : null)
+          setDataFetched(true)
+        },
+          (error) => {
+            console.log(error)
+          }
+        )
+    }
+  }
+
+  const fetchClubAssetToken = () => {
+
+  } 
+
+  useEffect(() => {
+      tokenAPIDetailsRetrieval()
+      tokenDetailsRetrieval()
+    
+  }, [daoAddress, walletAddress, dataFetched, apiTokenDetailSet])
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(joinLink)
+  }
+  
   return (
     <>
-      <Layout1>
+      <Layout1 page={1}>
         <div style={{ padding: "110px 80px" }}>
           <Grid container spacing={2}>
             <Grid item md={9}>
@@ -210,10 +289,10 @@ export default function Dashboard(props) {
                   />
                   <Box className={classes.cardOverlay}>
                     <Typography className={classes.card1text1}>
-                      Demo Club
+                      {dataFetched ? tokenDetails[0] : null}
                     </Typography>
                     <Typography className={classes.card1text2}>
-                      $Demo
+                      ${dataFetched ? tokenDetails[1] : null}
                     </Typography>
                     <Typography className={classes.card1text3}>
                       My Share ($)
@@ -230,14 +309,12 @@ export default function Dashboard(props) {
                   <Grid container m={4}>
                     <Grid container>
                       <Stack mt={4}>
-                        <Typography className={classes.card2text1}>
-                          ICON
-                        </Typography>
+                        <img src="/assets/icons/Icon-metro-coins.png" alt="icon-metro-coins" className={classes.iconMetroCoin} />
                         <Typography mt={4} className={classes.card2text1}>
                           Tresury ($)
                         </Typography>
                         <Typography className={classes.card2text2}>
-                          1,37,000
+                          {dataFetched ? tokenDetails[2]/ Math.pow(10, 18) : null}
                         </Typography>
                         <Typography className={classes.card2text3}>
                           37%
@@ -285,7 +362,7 @@ export default function Dashboard(props) {
                           InputProps={{
                             endAdornment: <IconButton type="submit" sx={{ p: '10px' }} aria-label="search"><SearchIcon /></IconButton>
                           }}
-                        />``
+                        />
                       </Grid>
                     </Grid>
 
@@ -337,8 +414,10 @@ export default function Dashboard(props) {
                     <Grid items mt={2} ml={1} mr={1} >
                       <TextField
                         className={classes.linkInput}
+                        disabled
+                        value={joinLink}
                         InputProps={{
-                          endAdornment: <Button variant="contained" className={classes.copyButton}>Copy</Button>
+                          endAdornment: <Button variant="contained" className={classes.copyButton} onClick={handleCopy}>Copy</Button>
                         }}
                       />
                     </Grid>
@@ -396,3 +475,5 @@ export default function Dashboard(props) {
     </>
   )
 }
+
+export default ClubFetch(Dashboard)

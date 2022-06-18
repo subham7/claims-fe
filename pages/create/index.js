@@ -1,18 +1,40 @@
 import { React, useRef, onChange, useState } from "react"
 import { makeStyles } from "@mui/styles"
-
-import { Grid, Typography, TextField, Card, Switch, FormControlLabel, Box, Stack, Divider, Backdrop, CircularProgress } from "@mui/material"
-import { DesktopDatePicker } from '@mui/x-date-pickers'
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
+import { Grid, Item, Typography, TextField, Card, Switch, FormControlLabel, Box, Stack, Divider, Button, CircularProgress, IconButton, Stepper, StepLabel, Step, Backdrop, FormControl, Select, OutlinedInput, Menu, MenuItem, Alert } from "@mui/material"
 import styled from "@emotion/styled"
-
-
 import Layout2 from "../../src/components/layouts/layout2"
-import HorizontalLinearStepper from "../../src/components/stepper"
 import CustomRoundedCard from "../../src/components/roundcard"
 import CustomCard from "../../src/components/card"
 import CustomSlider from "../../src/components/slider"
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
+import UploadIcon from '@mui/icons-material/Upload'
+import ContractCard from "../../src/components/contractCard"
+import { contractList, tokenType, dateTill, exitDates } from '../../src/data/create'
+import Link from "next/link"
+import SimpleSelectButton from "../../src/components/simpleSelectButton"
+import AddCircleOutlinedIcon from '@mui/icons-material/AddCircleOutlined'
+import DeleteIcon from '@mui/icons-material/Delete'
+import Web3 from "web3"
+import Web3Adapter from "@gnosis.pm/safe-web3-lib"
+import { initiateConnection } from "../../src/utils/safe"
+import { useDispatch, useSelector } from "react-redux"
+import ProtectRoute from "../../src/utils/auth"
+import { addClubID } from "../../src/redux/reducers/create"
+import InfoIcon from '@mui/icons-material/Info'
+import { DesktopDatePicker } from '@mui/x-date-pickers'
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
+
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+  PaperProps: {
+    style: {
+      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+      width: 250,
+    },
+  },
+};
 
 const useStyles = makeStyles({
   textField: {
@@ -27,8 +49,19 @@ const useStyles = makeStyles({
   },
   largeText: {
     fontSize: "18px",
+    color: "#C1D3FF"
   },
-  smallText : {
+  largeText1: {
+    fontSize: "46px",
+    color: "#FFFFFF"
+  },
+  wrapTextIcon: {
+    fontSize: "18px",
+    color: "#C1D3FF",
+    verticalAlign: 'middle',
+    display: 'inline-flex'
+  },
+  smallText: {
     fontSize: "14px",
   },
   cardWarning: {
@@ -41,29 +74,32 @@ const useStyles = makeStyles({
     color: "#FFB74D",
     fontSize: "14px",
   },
-  cardRegular: {
-    backgroundColor: "#EFEFEF0D",
-    borderRadius: "10px",
-    opacity: 1,
-  },
-  finserveImage: {
-    width: "4.01vw",
-    height: "8.13vh",
-    borderRadius: "100%"
-  },
   boldText: {
     fontWeight: "bold",
   },
-  uploadImage: {
-    width: "27px",
-    height: "27px"
-  }
+  uploadButton: {
+    backgroundColor: "#111D38",
+    color: "#3B7AFD",
+    fontSize: "18px",
+    width: "208px",
+  },
+  cardPadding: {
+    margin: 0,
+    padding: 0,
+    borderRadius: "10px",
+  },
+  addCircleColour: {
+    color: "#C1D3FF",
+  },
+  large_button: {
+    fontSize: "18px",
+    width: "208px"
+  },
 })
 
-export default function Create(props) {
+const Create = (props) => {
   const classes = useStyles()
   const uploadInputRef = useRef(null);
-  const [value, setValue] = useState(null);
   const [clubName, setClubName] = useState(null);
   const [clubSymbol, setClubSymbol] = useState(null);
   const [displayImage, setDisplayImage] = useState(null);
@@ -72,23 +108,52 @@ export default function Create(props) {
   const [mandatoryProposal, setMandatoryProposal] = useState(false);
   const [voteForQuorum, setVoteForQuorum] = useState(0);
   const [depositClose, setDepositClose] = useState(new Date());
+  const [membersLeaveDate, setMembersLeaveDate] = useState(null)
   const [minContribution, setMinContribution] = useState(0);
-  const [voteInFavour, setVoteInFavour] = useState(0);
+  const [voteInFavour, setVoteInFavour] = useState(51);
+  const [addressList, setAddressList] = useState([]);
+  const [activeStep, setActiveStep] = useState(0);
+  const [skipped, setSkipped] = useState(new Set());
+  const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
+  const [voteOnFavourErrorMessage, setVoteOnFavourErrorMessage] = useState(false)
+  const clubID = useSelector(state => {return state.create.clubID});
+  const [threshold, setThreshold] = useState(0)
+  const dispatch = useDispatch();
+  const { wallet } = props;
+  let walletAddress = null;
 
   const handleChange = (newValue) => {
-    setValue(newValue);
     setDepositClose(newValue);
   };
+
+  const handleDepositClose = (newValue) => {
+    setMembersLeaveDate(newValue.target.value);
+  }
 
   const onSetVoteForQuorum = (event, newValue) => {
     setVoteForQuorum(newValue);
   };
 
   const onSetVoteOnFavourChange = (event, newValue) => {
-    setVoteInFavour(newValue);
-  };
- 
+    if (newValue < 50) {
+      setVoteOnFavourErrorMessage(true)
+    }
+    if (newValue > 50) {
+      setVoteOnFavourErrorMessage(false)
+      setVoteInFavour(newValue)
+    }
+  }
+
+  const minimumSignaturePercentage = (newValue) => {
+    if (addressList.length === 1) {
+      setThreshold(addressList.length)
+    }
+    if (addressList.length > 1) {
+      setThreshold(Math.ceil(addressList.length * (parseInt(newValue) / 100 )))
+    }
+  }
+
   const handleLoading = (event) => {
     setOpen(true)
   }
@@ -97,18 +162,124 @@ export default function Create(props) {
     setOpen(false);
   }
 
-  const steps = ["Add basic info", "Set club rules", "Final step"]
+  const handleInputChange = (e, index) => {
+    const address = e.target.value;
+    const list = [...addressList];
+    list[index] = address;
+    setAddressList(list);
+  };
+
+  const handleRemoveClick = index => {
+    const list = [...addressList];
+    list.splice(index, 1);
+    setAddressList(list);
+  };
+
+  const handleAddClick = () => {
+    setAddressList([...addressList, ""]);
+  };
+
+  const steps = ["Add basic info", "Select template", "Set rules"]
+
+  const isStepOptional = (step) => {
+    return step === 1
+  }
+
+  const isStepSkipped = (step) => {
+    return skipped.has(step)
+  }
+
+  const handleNext = () => {
+    setOpen(true)
+    let newSkipped = skipped
+    if (isStepSkipped(activeStep)) {
+      newSkipped = new Set(newSkipped.values())
+      newSkipped.delete(activeStep)
+    }
+    if (activeStep === steps.length - 1) {
+      const web3 = new Web3(Web3.givenProvider)
+      const auth = web3.eth.getAccounts()
+      auth.then(
+        (result) => {
+          walletAddress = result[0]
+          addressList.unshift(walletAddress)
+          initiateConnection(
+            addressList,
+            threshold,
+            dispatch,
+            clubName,
+            clubSymbol,
+            raiseAmount,
+            minContribution,
+            maxContribution,
+            0,
+            depositClose,
+            0,
+            voteForQuorum,
+            voteInFavour
+          )
+          .then((result) => {
+              setLoading(false)
+            })
+            .catch((error) => {
+              setLoading(true)
+            })
+        },
+        (error) => {
+          console.log("Error connecting to Wallet!")
+        }
+      )
+    }
+    setActiveStep((prevActiveStep) => prevActiveStep + 1)
+    setSkipped(newSkipped)
+  }
+
+  const handleBack = () => {
+    setActiveStep((prevActiveStep) => prevActiveStep - 1)
+  }
+
+  const handleSkip = () => {
+    if (!isStepOptional(activeStep)) {
+      // You probably want to guard against something like this,
+      // it should never occur unless someone's actively trying to break something.
+      throw new Error("You can't skip a step that isn't optional.")
+    }
+
+    setActiveStep((prevActiveStep) => prevActiveStep + 1)
+    setSkipped((prevSkipped) => {
+      const newSkipped = new Set(prevSkipped.values())
+      newSkipped.add(activeStep)
+      return newSkipped
+    })
+  }
+
+  const handleReset = () => {
+    setActiveStep(0)
+  }
+
+  const handlePageLoading = () => {
+    handleLoading
+  }
+
+  const handleContractClick = (key) => {
+    handleNext()
+  }
 
   const step1 = () => {
     return (
       <>
-        <Grid container spacing={2}>
-          <Grid item md={6}>
-            <img className={classes.image} src="/assets/images/hands.png" alt="token-hands" />
-          </Grid>
-          <Grid item md={6}>
-            <Typography className={classes.largeText} variant="p">What should we call your club?</Typography>
+        <Grid container direction="row"
+          justifyContent="center"
+          alignItems="center">
+          <Grid item md={6} mt={8}>
+            <Typography className={classes.largeText1}>
+              What&apos;s your club info?
+            </Typography>
             <br />
+            <Typography className={classes.wrapTextIcon}>
+              You&apos;ll be the admin of the club since you&apos;re creating the club. &nbsp;
+              <InfoOutlinedIcon />
+            </Typography>
             <TextField
               error={clubName === ""}
               className={classes.textField}
@@ -117,51 +288,42 @@ export default function Create(props) {
               onChange={(e) => setClubName(e.target.value)}
               value={clubName}
             />
-            <Typography className={classes.largeText} variant="p">Enter club token symbol</Typography>
-            <br />
             <TextField
               error={clubSymbol === ""}
               className={classes.textField}
-              label="Club symbol"
+              label="Club token symbol (eg: $DEMO)"
               variant="outlined"
               onChange={(e) => setClubSymbol(e.target.value)}
               value={clubSymbol}
             />
             <br />
+            <Typography className={classes.largeText} variant="p">
+              Upload a display picture (Optional)
+            </Typography>
+            <br />
             <Grid container wrap="nowrap" spacing={0} justify="center" alignItems="center" direction="row">
-              <Grid item xs={0}>
+              <Grid item xs={0} mt={2}>
                 <input ref={uploadInputRef} type="file" accept="image/*" id="file" name="file" hidden onChange={(e) => setDisplayImage(URL.createObjectURL(e.target.files[0]))} />
-              </Grid>
-              <Grid item xs={3}>
-                <div onClick={() => uploadInputRef.current && uploadInputRef.current.click()}>
-                  <CustomRoundedCard>
-                    <img className={classes.uploadImage} src="/assets/icons/upload.png" alt="upload-image" />
-                  </CustomRoundedCard>
-                </div>
-              </Grid>
-              <Grid item xs={9}>
-                <Grid container spacing={2}>
-                  <Grid item xs={12}>
-                    <Typography className={classes.largeText} variant="p">
-                      Upload a display picture (Not mandatory)
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={10}>
-                    <Typography className={classes.smallText}>
-                      Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.
-                    </Typography>
-                  </Grid>
-                </Grid>
+                <Button onClick={() => uploadInputRef.current && uploadInputRef.current.click()} startIcon={<UploadIcon />} className={classes.uploadButton}>Upload file</Button>
               </Grid>
             </Grid>
             <br />
-            <Grid container>
-              <Card className={classes.cardWarning}>
-                <Typography className={classes.textWarning} variant="p">
-                  This info is public on the blockchain. This can not be changed later, please choose a name accordingly.
-                </Typography>
-              </Card>
-            </Grid>           
+            <Grid container wrap="nowrap" spacing={0} justify="center" alignItems="center" direction="row">
+              <Grid item xs={0} mt={2}>
+                <Button
+                  className={classes.large_button}
+                  variant="contained"
+                  disabled={
+                    activeStep === 0
+                      ? !clubName || !clubSymbol :
+                      false
+                  }
+                  onClick={handleNext}
+                >
+                  Next
+                </Button>
+              </Grid>
+            </Grid>
           </Grid>
         </Grid>
       </>
@@ -170,191 +332,386 @@ export default function Create(props) {
 
   const step2 = () => {
     return (
-    <>
-      <Grid container spacing={6}>
-        <Grid item md={6}>
-          <Stack spacing={3}>
-            <Typography className={classes.largeText} variant="p">
-              Club raise amount (in USDC)
+      <>
+        <Grid container direction="row">
+          <Grid item md={12} mt={8}>
+            <Typography className={classes.largeText1}>
+              Choose a template or create a custom
             </Typography>
-            <TextField
-                error={!(raiseAmount >= 0 || raiseAmount % 1 === 0)}
-                className={classes.textField}
-                label="Amount (USDC)"
-                variant="outlined"
-                onChange={(e) => setRaiseAmount(e.target.value)}
-                value={raiseAmount}
-              />
-              <Typography className={classes.largeText} variant="p">
-                Maximum contribution per person
-              </Typography>
-              <TextField
-                error={!(maxContribution >= 0 || maxContribution % 1 === 0)}
-                className={classes.textField}
-                label="Max. amount (USDC)"
-                variant="outlined"
-                onChange={(e) => setMaxContribution(e.target.value)}
-                value={maxContribution}
-              />
-              <FormControlLabel control={<Switch />} onChange={(e) => setMandatoryProposal(e.target.value)} value={mandatoryProposal} label="Make proposals mandatory" />
-              <Typography className={classes.largeText} variant="h">
-                Quorum
-              </Typography>
-              <Typography className={classes.largeText} variant="p">
-                Percentage of total members who must vote for a proposal to meet quorum:*
-              </Typography>
-              <Box pt={2}>
-                <CustomSlider onChange={onSetVoteForQuorum} value={voteForQuorum} />
-              </Box>
-          </Stack>
-        </Grid>
-        <Grid item md={6}>
-          <Stack spacing={3}>
-            <LocalizationProvider dateAdapter={AdapterDateFns}>
-            <Typography className={classes.largeText} variant="p">
-              When will the deposits close?
+            <br />
+            <Typography className={classes.largeText}>
+              Templates once chosen can be modified at a later too like voting quorum, financials, etc.
             </Typography>
-            <DesktopDatePicker
-              error={value === null}
-              className={classes.textField}
-              inputFormat="dd/MM/yyyy"
-              value={value}
-              onChange={(e) => handleChange(e)}
-              renderInput={(params) => <TextField {...params} />}
-            />
-            </LocalizationProvider>
-            <Typography className={classes.largeText} variant="p">
-              Minimum contribution per person
-            </Typography>
-            <TextField
-              error={!(minContribution >= 0 || minContribution % 1 === 0)}
-              className={classes.textField}
-              label="Min. amount (USDC)"
-              variant="outlined"
-              onChange={(e) => setMinContribution(e.target.value)}
-              value={minContribution}
-            />
-          </Stack>
-          <Box pt={15}>
-            <Stack spacing={6}>
-              <Typography className={classes.largeText} variant="p">
-                Percentage of total members who must vote in favour for a proposal to pass:*
-              </Typography>
-              <CustomSlider onChange={onSetVoteOnFavourChange} value={voteInFavour} />
-            </Stack>
-          </Box>
-        </Grid>
-        <Grid item md={12}>
-          <Card className={classes.cardRegular}>
-            <Typography variant="p">
-              Proposals once made mandatory can not be changed once club is created. However, it is possible to make changes in the quorum (or) voting structure even after the club is created.
-            </Typography>
-          </Card>
           </Grid>
-      </Grid>
-    </>)
+        </Grid>
+        <Grid
+          container
+          direction="row"
+          justifyContent="center"
+          alignItems="center">
+          <Grid item md={12} mt={8}>
+            <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
+              {contractList.map((data, key) => {
+                return (
+                  <Grid item xs={6} key={key} onClick={() => handleContractClick(key)}>
+                    <ContractCard
+                      contractHeading={data.contractHeading}
+                      contractSubHeading={data.contractSubHeading}
+                      contractImage={data.image}
+                      star={data.star}
+                    />
+                  </Grid>
+                )
+              })}
+            </Grid>
+          </Grid>
+        </Grid>
+      </>)
   }
 
   const step3 = () => {
     return (
       <>
-      <Grid container spacing={4}>
-        <Grid item md={12}>
-          <Typography variant="h5" m={3}>
-            Review details & confirm
-          </Typography>
-          <Divider variant="middle"/>
+        <Grid container spacing={3}>
+          <Grid item md={12} mt={8}>
+            <Typography className={classes.largeText1}>
+              Investment club
+            </Typography>
+            <br />
+            <Typography className={classes.largeText}>
+              Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren
+            </Typography>
+            <br />
+            <br />
+            <Typography className={classes.largeText} mb={2}>
+              Club tokens
+            </Typography>
+            <Card className={classes.cardPadding}>
+              <Grid container pl={3} pr={1}>
+                <Grid item xs sx={{ display: "flex", justifyContent: "flex-start", alignItems: "center" }}>
+                  <Typography className={classes.largeText}>
+                    Membership token
+                  </Typography>
+                </Grid>
+                <Grid item xs sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
+                  <SimpleSelectButton data={tokenType} />
+                </Grid>
+              </Grid>
+            </Card>
+
+            {/* <Typography className={classes.largeText} mt={4} mb={2}>
+              Governance
+            </Typography>
+            <Card className={classes.cardPadding} mb={2}>
+              <Grid container pl={3} pr={1} mt={2} mb={2}>
+                <Grid item xs sx={{ display: "flex", justifyContent: "flex-start", alignItems: "center" }}>
+                  <Typography className={classes.largeText}>
+                    Make proposals mandatory
+                  </Typography>
+                </Grid>
+                <Grid item xs sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
+                  <FormControlLabel control={<Switch />} onChange={(e) => setMandatoryProposal(e.target.value)} value={mandatoryProposal} label="" />
+                </Grid>
+              </Grid>
+            </Card> */}
+            <br />
+            <Card className={classes.cardPadding} mb={2}>
+              <Grid container item xs sx={{ display: "flex", justifyContent: "flex-start", alignItems: "center" }} pl={3} pr={1} mt={2} mb={2}>
+                <Typography className={classes.largeText}>
+                  Minimum votes needed to <Box sx={{ color: "#FFFFFF" }} fontWeight='fontWeightBold' display='inline'>validate</Box> a proposal
+                </Typography>
+              </Grid>
+              <Grid container item md={11.3} mt={4} ml={4} mb={4}>
+                <CustomSlider onChange={onSetVoteForQuorum} value={voteForQuorum} />
+              </Grid>
+            </Card>
+            <br />
+            <Card className={classes.cardPadding} mb={2}>
+              <Grid container item xs sx={{ display: "flex", justifyContent: "flex-start", alignItems: "center" }} pl={3} pr={1} mt={2} mb={2}>
+                <Typography className={classes.largeText}>
+                  Minimum votes in support to <Box sx={{ color: "#FFFFFF" }} fontWeight='fontWeightBold' display='inline'>pass</Box> a proposal
+                </Typography>
+              </Grid>
+              <Grid container item md={11.3} mt={4} ml={4} mb={4}>
+                <CustomSlider onChange={onSetVoteOnFavourChange} value={voteInFavour} defaultValue={voteInFavour} min={51} max={100}/>
+              </Grid>
+              { voteOnFavourErrorMessage ? 
+                <Grid container md={11.3} mt={4} ml={4} mb={4}>
+                  <Grid item>
+                  <InfoIcon sx={{ color: "#D55438"}} />
+                  </Grid>
+                  <Grid item mt={0.2} ml={0.5}>
+                  <Typography variant="p" sx={{ color: "#D55438"}}>
+                    Minumum votes in support to pass a proposal should be greater than 50%
+                  </Typography>
+                  </Grid>
+                </Grid> : null
+              }
+              
+            </Card>
+            <br />
+
+            <Typography className={classes.largeText} mt={3} mb={2}>
+              Deposits
+            </Typography>
+            <Card className={classes.cardPadding}>
+              <Grid container pl={3} pr={1}>
+                <Grid item xs sx={{ display: "flex", justifyContent: "flex-start", alignItems: "center" }}>
+                  <Typography className={classes.largeText}>
+                    Accept deposits till
+                  </Typography>
+                </Grid>
+                <Grid item xs sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
+                <LocalizationProvider dateAdapter={AdapterDateFns}>
+                  <DesktopDatePicker
+                    error={depositClose === null}
+                    inputFormat="dd/MM/yyyy"
+                    value={depositClose}
+                    onChange={e => handleChange(e)}
+                    renderInput={(params) => <TextField {...params} sx={{ m: 1, width: 443, mt: 1, borderRadius: "10px", }} />}
+                  />
+                  </LocalizationProvider>
+                </Grid>
+              </Grid>
+            </Card>
+            <br />
+            <Card className={classes.cardPadding} mb={2}>
+              <Grid container pl={3} pr={1}>
+                <Grid item xs sx={{ display: "flex", justifyContent: "flex-start", alignItems: "center" }}>
+                  <Typography className={classes.largeText}>
+                    Minimum contribution per person
+                  </Typography>
+                </Grid>
+                <Grid item xs sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
+                  <TextField
+                    error={minContribution < 0 || minContribution === null || minContribution % 1 !== 0 || typeof minContribution === "undefined"}
+                    variant="outlined"
+                    onChange={(e) => {setMinContribution(e.target.value)}}
+                    value={minContribution}
+                    sx={{ m: 1, width: 443, mt: 1, borderRadius: "10px", }}
+                  />
+                </Grid>
+              </Grid>
+            </Card>
+
+            <br />
+            <Card className={classes.cardPadding} mb={2}>
+              <Grid container pl={3} pr={1}>
+                <Grid item xs sx={{ display: "flex", justifyContent: "flex-start", alignItems: "center" }}>
+                  <Typography className={classes.largeText}>
+                    Maximum contribution per person
+                  </Typography>
+                </Grid>
+                <Grid item xs sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
+                  <TextField
+                    error={maxContribution < 0 || maxContribution === null || maxContribution % 1 !== 0 || typeof maxContribution === "undefined" || parseInt(maxContribution) < parseInt(minContribution)}
+                    variant="outlined"
+                    onChange={(e) => setMaxContribution(e.target.value)}
+                    value={maxContribution}
+                    sx={{ m: 1, width: 443, mt: 1, borderRadius: "10px", }}
+                  />
+                </Grid>
+              </Grid>
+            </Card>
+
+            <br />
+            <Card className={classes.cardPadding} mb={2}>
+              <Grid container pl={3} pr={1}>
+                <Grid item xs sx={{ display: "flex", justifyContent: "flex-start", alignItems: "center" }}>
+                  <Typography className={classes.largeText}>
+                    Total amount you want to raise
+                  </Typography>
+                </Grid>
+                <Grid item xs sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
+                  <TextField
+                    error={raiseAmount < 0 || raiseAmount === null || raiseAmount % 1 !== 0 || typeof raiseAmount === "undefined" || parseInt(raiseAmount) < parseInt(maxContribution) || parseInt(raiseAmount) < parseInt(minContribution)}
+                    variant="outlined"
+                    onChange={(e) => setRaiseAmount(e.target.value)}
+                    value={raiseAmount}
+                    sx={{ m: 1, width: 443, mt: 1, borderRadius: "10px", }}
+                  />
+                </Grid>
+              </Grid>
+            </Card>
+            <Typography className={classes.largeText} mt={4} mb={2}>
+              Wallet Signators
+            </Typography>
+            <Card className={classes.cardPadding} mb={2}>
+              <Grid container pl={3} pr={1} mt={2} mb={2}>
+                <Grid item xs sx={{ display: "flex", justifyContent: "flex-start", alignItems: "center" }}>
+                  <Typography className={classes.largeText}>
+                    Add more wallets that will sign & approve final transaction
+                  </Typography>
+                </Grid>
+                <Grid item xs sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }} mr={3}>
+                  <IconButton aria-label="add" onClick={handleAddClick}>
+                    <AddCircleOutlinedIcon className={classes.addCircleColour} />
+                  </IconButton>
+                </Grid>
+              </Grid>
+              <Grid container pl={3} pr={1} mt={2} mb={2}>
+                {addressList.map((data, key) => {
+                  return (
+                    <Grid item xs sx={{ display: "flex", justifyContent: "flex-start", alignItems: "center" }} key={key} >
+                      <TextField
+                        error={!(/^0x[a-zA-Z0-9]+/gm.test(addressList[key]))}
+                        variant="outlined"
+                        onChange={(e) => handleInputChange(e, key)}
+                        placeholder={"0x"}
+                        sx={{ m: 1, width: 443, mt: 1, borderRadius: "10px", }}
+                      />
+                      <IconButton aria-label="add" onClick={handleRemoveClick}>
+                        <DeleteIcon />
+                      </IconButton>
+                    </Grid>
+                  );
+                })}
+              </Grid>
+            </Card>
+            <br />
+
+            <Card className={classes.cardPadding} mb={2}>
+              <Grid container item xs sx={{ display: "flex", justifyContent: "flex-start", alignItems: "center" }} pl={3} pr={1} mt={2} mb={2}>
+                <Typography className={classes.largeText}>
+                  Minimum signatures needed to <Box sx={{ color: "#FFFFFF" }} fontWeight='fontWeightBold' display='inline'>pass</Box> any transaction
+                </Typography>
+              </Grid>
+              <Grid container item md={11.3} mt={4} ml={4} mb={4}>
+                <CustomSlider onChange={e => minimumSignaturePercentage(e.target.value)} value={threshold} />
+              </Grid>
+            </Card>
+
+            {/* <Typography className={classes.largeText} mt={4} mb={2}>
+              Other
+            </Typography>
+            <Card className={classes.cardPadding} mb={2}>
+              <Grid container pl={3} pr={1} mt={2} mb={2}>
+                <Grid item xs sx={{ display: "flex", justifyContent: "flex-start", alignItems: "center" }}>
+                  <Typography className={classes.largeText}>
+                    Add a carry fee
+                  </Typography>
+                </Grid>
+                <Grid item xs sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
+                  <FormControlLabel control={<Switch />} onChange={(e) => setMandatoryProposal(e.target.value)} value={mandatoryProposal} label="" />
+                </Grid>
+              </Grid>
+            </Card>
+            <br />
+            <Card className={classes.cardPadding}>
+              <Grid container pl={3} pr={1}>
+                <Grid item xs sx={{ display: "flex", justifyContent: "flex-start", alignItems: "center" }}>
+                  <Typography className={classes.largeText}>
+                  Allow members to exit (from date of deposit)
+                  </Typography>
+                </Grid>
+                <Grid item xs sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
+                <FormControl sx={{ m: 1, width: 443, mt: 1 }}>
+                  <Select
+                    displayEmpty
+                    value={value}
+                    onChange={handleDepositClose}
+                    input={<OutlinedInput />}
+                    MenuProps={MenuProps}
+                    style={{ borderRadius: "10px", background: "#111D38 0% 0% no-repeat padding-box", }}
+                  >
+                    {exitDates.map((value) => (
+                      <MenuItem
+                        key={value.text}
+                        value={String(value.date)}
+                        >
+                        {value.text}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+                </Grid>
+              </Grid>
+            </Card> */}
+
+          </Grid>
         </Grid>
-      </Grid>
-      <Grid container spacing={2}>
-        <Grid item mt={3} ml={3}>
-          <img className={classes.finserveImage} src={displayImage} alt={clubSymbol} />
-        </Grid>
-        <Grid item ml={4} mt={4} mb={4}>
-          <Stack spacing={1}>
-          <Typography variant="h5">
-            {clubName}
-          </Typography>
-          <Typography variant="p"> 1 USDC = 1 DEMO</Typography>
-          </Stack>
-        </Grid>
-      </Grid>
-      <Grid container spacing={2}>
-        <Grid item md={6}>
-          <Stack spacing={2} alignItems="stretch">
-            <Typography variant="p">
-              Club raise amount (in USDC)
-            </Typography>
-            <Typography className={classes.boldText} variant="h5">
-              {raiseAmount} USDC
-            </Typography>
-            <Typography variant="p">
-              Minimum contribution per person
-            </Typography>
-            <Typography className={classes.boldText} variant="h5">
-              {minContribution} USDC
-            </Typography>
-            <Typography variant="p">
-              Maximum contribution per person
-            </Typography>
-            <Typography className={classes.boldText} variant="h5">
-              {maxContribution} USDC
-            </Typography>
-          </Stack>
-        </Grid>
-        <Grid item md={6}>
-          <Stack spacing={2} alignItems="stretch">
-            <Typography variant="p">
-              When will the deposits close?
-            </Typography>
-            <Typography className={classes.boldText} variant="h5">
-              {depositClose.toLocaleDateString('en-IN')}
-            </Typography>
-            <Typography variant="p">
-              Minimum votes needed to validate proposal
-            </Typography>
-            <Typography className={classes.boldText} variant="h5">
-              {voteForQuorum}%
-            </Typography>
-            <Typography variant="p">
-              Minimum ‘yes’ votes needed to pass a proposal
-            </Typography>
-            <Typography className={classes.boldText} variant="h5">
-              {voteInFavour}%
-            </Typography>
-          </Stack>        
-        </Grid>
-      </Grid>
 
       </>
     )
   }
 
+  const components = [step1(), step2(), step3()]
   return (
     <Layout2>
       <div style={{ padding: "100px 400px" }}>
-        <HorizontalLinearStepper
-          steps={steps}
-          components={[step1(), step2(), step3()]}
-          data={
-            {
-              clubname: clubName,
-              clubsymbol: clubSymbol,
-              displayimage: displayImage,
-              raiseamount: raiseAmount,
-              maxcontribution: maxContribution,
-              mandatoryproposal: mandatoryProposal,
-              voteforquorum: voteForQuorum,
-              depositclose: depositClose,
-              mincontribution: minContribution,
-              voteinfavour: voteInFavour
-            }
-          }
-          loading={handleLoading}
-           />
-           
+        <Box sx={{ width: "60.260vw" }}>
+          <Stepper activeStep={activeStep}>
+            {steps.map((label, index) => {
+              const stepProps = {}
+              const labelProps = {}
+              // if (isStepOptional(index)) {
+              //   labelProps.optional = (
+              //     <Typography variant="caption">Optional</Typography>
+              //   )
+              // }
+              if (isStepSkipped(index)) {
+                stepProps.completed = false
+              }
+              return (
+                <Step key={label} {...stepProps}>
+                  <StepLabel {...labelProps}>{label}</StepLabel>
+                </Step>
+              )
+            })}
+          </Stepper>
+
+          {activeStep === steps.length ? (
+            <>
+              <Grid container md={12}>
+                <Grid item >
+                  <Typography className={classes.largeText1}>
+                    Please wait while we are processing your request
+                  </Typography>
+                </Grid>
+              </Grid>
+              <Backdrop
+                sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                open={open}
+              >
+                <CircularProgress color="inherit" />
+              </Backdrop>
+            </>
+          ) : (
+            <>
+              {components[activeStep]}
+              <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
+                {activeStep === 2 ? (
+                  <Button
+                    className={classes.large_button}
+                    variant="contained"
+                    disabled={
+                      activeStep === 0
+                        ? !clubName || !clubSymbol
+                        : activeStep === 2
+                          ? !raiseAmount ||
+                          !maxContribution ||
+                          !voteForQuorum ||
+                          !depositClose ||
+                          !minContribution ||
+                          voteInFavour < 50
+                          // : activeStep === 2
+                          //   ? false
+                            : true
+                    }
+                    onClick={handleNext}
+                  >
+                    Next
+                  </Button>
+                ) : <></>}
+              </Box>
+            </>
+          )}
+        </Box>
       </div>
-        
+
     </Layout2>
   )
 }
+
+export default ProtectRoute(Create);
+// export default Create
