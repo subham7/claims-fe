@@ -9,7 +9,7 @@ import axios from "axios";
 
 
 // Global variables
-const MAIN_API_URL = 'http://ec2-65-0-105-40.ap-south-1.compute.amazonaws.com:4000/v1/'
+const MAIN_API_URL = 'https://api.stationx.network/v1/'
 // const MAIN_API_URL = 'https://8c3f-115-99-246-5.in.ngrok.io/v1/'
 export const FACTORY_CONTRACT_ADDRESS = '0x5767C46519e4946aA42414E4Da754E5C11D52Ef0'
 export const USDC_CONTRACT_ADDRESS = '0x484727B6151a91c0298a9D2b9fD84cE3bc6BC4E3'
