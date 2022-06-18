@@ -146,8 +146,8 @@ export default function Members(props) {
                         sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                       >
                         <TableCell align="left" className={classes.tablecontent}><></>{data.userAddress.substring(0, 6) + "......" + data.userAddress.substring(data.userAddress.length - 4)}</TableCell>
-                        <TableCell align="left" className={classes.tablecontent}>{data.balance}</TableCell>
-                        <TableCell align="left" className={classes.tablecontent}>${data.balance}</TableCell>
+                        <TableCell align="left" className={classes.tablecontent}>{data.clubs[0].balance}</TableCell>
+                        <TableCell align="left" className={classes.tablecontent}>${data.clubs[0].balance}</TableCell>
                         <TableCell align="left"className={classes.tablecontent2}>15/06/2022</TableCell>
                       </TableRow>
                     ))}

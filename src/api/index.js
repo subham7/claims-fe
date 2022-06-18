@@ -228,7 +228,10 @@ export async function createProposal(data) {
 }
 
 // get proposal by id API
-export async function getProposal(clubId) {
+export async function getProposal(clubId, filter) {
+  if (filter) {
+    return await axios.get(MAIN_API_URL + `proposal/club/${clubId}`, { params: { status:`\"${filter}\"`}})
+  }
   return await axios.get(MAIN_API_URL + `proposal/club/${clubId}`)
 }
 
@@ -244,7 +247,7 @@ export async function castVote(data) {
 
 // getTokens API 
 export async function getTokens(gnosisAddress) {
-  return await axios.get(MAIN_API_URL + `gnosis/getTokens?gnosisAddress=${gnosisAddress}`)
+  return await axios.get(MAIN_API_URL + "gnosis/getTokens", { params : { gnosisAddress: `${gnosisAddress}`}})
 }
 
 // getTokens API 

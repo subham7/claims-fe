@@ -1,14 +1,14 @@
 import { React, useEffect, useState } from "react"
 import { makeStyles } from "@mui/styles"
 import Layout1 from "../../../src/components/layouts/layout1"
-import { Box, Card, Grid, Typography, CardMedia, Divider, Stack, TextField, Button, IconButton } from "@mui/material"
+import { Box, Card, Grid, Typography, CardMedia, Divider, Stack, TextField, Button, IconButton, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Table } from "@mui/material"
 import SearchIcon from "@mui/icons-material/Search"
 import ButtonDropDown from "../../../src/components/buttondropdown"
 import BasicTable from "../../../src/components/table"
 import CollectionCard from "../../../src/components/cardcontent"
 import Router, { useRouter } from "next/router"
 import ClubFetch from "../../../src/utils/clubFetch"
-import { SmartContract, fetchClubbyDaoAddress, getMembersDetails, getBalance } from "../../../src/api"
+import { SmartContract, fetchClubbyDaoAddress, getMembersDetails, getBalance, getProposal, getTokens, USDC_CONTRACT_ADDRESS } from "../../../src/api"
 import GovernorContract from "../../../src/abis/governor.json"
 import USDCContract from "../../../src/abis/usdc.json"
 import { useSelector } from "react-redux"
@@ -166,7 +166,6 @@ const useStyles = makeStyles({
   },
   fourthCard: {
     width: "413px",
-    height: "545px",
     borderRadius: "20px"
   },
   pendingIllustration: {
@@ -199,7 +198,23 @@ const useStyles = makeStyles({
   iconMetroCoin: {
     width: "81px",
     height: "60px",
-  }
+  },
+  tableheading: {
+    color: "#C1D3FF",
+    fontSize: "22px",
+  },
+  tablecontent: {
+    fontSize: "22px",
+    color: "#F5F5F5",
+  },
+  tablecontent2: {
+    fontSize: "22px",
+  },
+  membersTitleSmall: {
+    fontSize: "24px",
+    color: "#FFFFFF",
+    backgroundColor: "#19274B"
+  },
 })
 
 const Dashboard = (props) => {
@@ -221,6 +236,10 @@ const Dashboard = (props) => {
   const [membersDetails, setMembersDetails] = useState([])
   const [tresuryWalletBalanceFetched, setTresuryWalletBalanceFetched] = useState(false)
   const [tresuryWalletBalance, setTresuryWalletBalance] = useState([])
+  const [closedProposalData, setClosedProposalData] = useState([])
+  const [closedProposalDataFetched, setClosedProposalDataFetched] = useState(false)
+  const [clubAssetTokenFetched, setClubAssetTokenFetched] = useState(false)
+  const [clubAssetTokenData, setClubAssetTokenData] = useState([])
 
   const fetchGovernorContractData = async () => {
     if (daoAddress && walletAddress){
@@ -240,11 +259,11 @@ const Dashboard = (props) => {
   }
 
   const findCurrentMember = () => {
-    if (membersFetched && membersDetails.length > 0) {
-      let obj = membersDetails.find(member => member.address === walletAddress)
+    if (membersFetched && membersDetails.length > 0 && walletAddress) {
+      let obj = membersDetails.find(member => member.userAddress === walletAddress)
       let pos = membersDetails.indexOf(obj)
       if (pos >= 0) {
-        return membersDetails[pos].balance
+        return membersDetails[pos].clubs[0].balance
       }
       return 0
     }
@@ -280,7 +299,6 @@ const Dashboard = (props) => {
     const membersData = getMembersDetails(clubId)
     membersData.then((result) => {
       if (result.status != 200) {
-        console.log(result.statusText)
         setMembersFetched(false)
       } else {
         setMembersDetails(result.data)
@@ -291,17 +309,26 @@ const Dashboard = (props) => {
   }
 
   const fetchClubAssetToken = () => {
-    // require API
+    const tokens = getTokens(tresuryAddress)
+    tokens.then((result) => {
+      if (result.status != 200) {
+        console.log(result.statusText)
+        setClubAssetTokenFetched(false)
+      } else {
+        console.log(result.data)
+        setClubAssetTokenData(result.data)
+        setClubAssetTokenFetched(true)
+      }
+    })
   }
 
   const fetchTresuryWallet = () => {
     const tresuryWalletData = getBalance(tresuryAddress)
     tresuryWalletData.then((result) => {
       if (result.status != 200) {
-        console.log(result.statusText)
         setTresuryWalletBalanceFetched(false)
       } else {
-        console.log(result.data)
+        // console.log(result.data)
         setTresuryWalletBalance(result.data)
         setTresuryWalletBalanceFetched(true)
       }
@@ -311,11 +338,31 @@ const Dashboard = (props) => {
   const calculateTresuryWalletBalance = () => {
     let sum = 0.0
     if (tresuryWalletBalanceFetched && tresuryWalletBalance.length > 0) {
+      console.log(tresuryWalletBalance)
       tresuryWalletBalance.forEach((data, key) => {
-      sum += parseFloat(data.fiatConversion)
+        if (data.tokenAddress !== "0x484727B6151a91c0298a9D2b9fD84cE3bc6BC4E3") {
+          sum += parseFloat(data.fiatBalance)
+        }
+        else {
+          sum += parseFloat(data.balance) / Math.pow(10, 18)
+          console.log(parseFloat(data.balance) / Math.pow(10, 18))
+        }
     })
     }
     return sum
+  }
+
+  const fetchClosedProposals = () => {
+    const closedProposals = getProposal(clubId, "closed")
+    closedProposals.then((result) => {
+      if (result.status != 200) {
+        console.log(result.statusText)
+        setClosedProposalDataFetched(false)
+      } else {
+        setClosedProposalData(result.data)
+        setClosedProposalDataFetched(true)
+      }
+    })
   }
 
   useEffect(() => {
@@ -323,7 +370,9 @@ const Dashboard = (props) => {
       tokenDetailsRetrieval()   
       fetchMembers()
       fetchTresuryWallet()
-  }, [daoAddress, walletAddress, dataFetched, apiTokenDetailSet, membersFetched, tresuryWalletBalanceFetched])
+      fetchClosedProposals()
+      fetchClubAssetToken()
+  }, [daoAddress, walletAddress, dataFetched, apiTokenDetailSet, membersFetched, tresuryWalletBalanceFetched, closedProposalDataFetched, clubAssetTokenFetched])
 
   const handleCopy = () => {
     navigator.clipboard.writeText(joinLink)
@@ -372,9 +421,9 @@ const Dashboard = (props) => {
                         <Typography className={classes.card2text2}>
                           {dataFetched ? tokenDetails[2]/ Math.pow(10, 18) : null}
                         </Typography>
-                        <Typography className={classes.card2text3}>
+                        {/* <Typography className={classes.card2text3}>
                           37%
-                        </Typography>
+                        </Typography> */}
                       </Stack>
                       <Divider className={classes.divider} variant="middle" orientation="vertical" />
                       <Stack m={4}>
@@ -388,7 +437,7 @@ const Dashboard = (props) => {
                           Tresury Wallet
                         </Typography>
                         <Typography className={classes.card2text7}>
-                          ${calculateTresuryWalletBalance()}
+                          ${dataFetched ? tokenDetails[2]/ Math.pow(10, 18) : null}
                         </Typography>
                         {/* <Typography mt={3} className={classes.card2text8}>
                           Hot Wallet
@@ -421,9 +470,32 @@ const Dashboard = (props) => {
                         />
                       </Grid>
                     </Grid>
-
                     <Typography mt={5} mb={5} className={classes.tokensText}>Tokens</Typography>
-                    <BasicTable />
+                    <TableContainer component={Paper}>
+                      <Table sx={{ minWidth: 809 }} aria-label="simple table">
+                        <TableHead>
+                          <TableRow>
+                            <TableCell align="left" className={classes.tableheading}>Token</TableCell>
+                            <TableCell align="left" className={classes.tableheading}>Balance</TableCell>
+                            <TableCell align="left" className={classes.tableheading}>Value (USD)</TableCell>
+                            {/* <TableCell align="left" className={classes.tableheading}>Day change</TableCell> */}
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {clubAssetTokenData.length > 0 ? clubAssetTokenData.slice(1).map((data, key) => (
+                            <TableRow
+                              key={key}
+                              sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                            >
+                              <TableCell align="left" className={classes.tablecontent}><></>{data.token.name}</TableCell>
+                              <TableCell align="left" className={classes.tablecontent}>{data.balance}</TableCell>
+                              <TableCell align="left" className={classes.tablecontent}>${data.balance}</TableCell>
+                              {/* <TableCell align="left"className={classes.tablecontent2} sx={row.daychange > 0 ? { color: "#0ABB92" } : { color: "#D55438" }}>{row.daychange > 0 ? "+" : ""}{row.daychange}</TableCell> */}
+                            </TableRow>
+                          )) : null}
+                        </TableBody>
+                      </Table>
+                    </TableContainer>
 
                     <Typography mt={16} mb={5} className={classes.tokensText}>Collectibles</Typography>
                     <Grid container>
@@ -438,8 +510,8 @@ const Dashboard = (props) => {
                       </Grid>
                     </Grid>
 
-                    <Typography mt={16} mb={5} className={classes.tokensText}>Off-chain investments</Typography>
-                    <BasicTable />
+                    {/* <Typography mt={16} mb={5} className={classes.tokensText}>Off-chain investments</Typography>
+                    <BasicTable /> */}
                   </Stack>
                 </Grid>
               </Stack>
@@ -488,7 +560,8 @@ const Dashboard = (props) => {
                 </Card>
               </Stack>
               <Stack mt={2}>
-                <Card className={classes.fourthCard}>
+                {closedProposalData.length > 0 ? (
+                  <Card className={classes.fourthCard}>
                   <Grid container m={2}>
                     <Grid items>
                       <Typography className={classes.card2text1}>
@@ -501,28 +574,26 @@ const Dashboard = (props) => {
                   </Grid>
                   <Grid container m={2}>
                     <Stack >
-                      <Typography className={classes.card5text1}>
-                        Proposed by 0x75ed……34fd
-                      </Typography>
-                      <Typography className={classes.card5text2}>
-                        [#7] Buy 2 ETH worth of Evaders in their private round.
-                      </Typography>
-                      <Typography className={classes.card5text1}>
-                        Expires on 21/05/22
-                      </Typography>
-
-                      <Typography mt={3} className={classes.card5text1}>
-                        Proposed by 0x75ed……34fd
-                      </Typography>
-                      <Typography className={classes.card5text2}>
-                        [#7] Buy 2 ETH worth of Evaders in their private round.
-                      </Typography>
-                      <Typography className={classes.card5text1}>
-                        Expires on 21/05/22
-                      </Typography>
+                      {closedProposalDataFetched ? closedProposalData.map((data, key) => {
+                        return (
+                          <div key={key}>
+                          <Typography className={classes.card5text1} >
+                            Proposed by {data.createdBy.substring(0, 6) + "......" + data.createdBy.substring(data.createdBy.length - 4)}
+                          </Typography>
+                          <Typography className={classes.card5text2}>
+                            {data.name}
+                          </Typography>
+                          <Typography className={classes.card5text1}>
+                            Expired on {new Date(data.votingDuration).toLocaleDateString()}
+                          </Typography>
+                          </div>
+                        )
+                      }) : null}
                     </Stack>
                   </Grid>
                 </Card>
+                ) : null}
+                
               </Stack>
             </Grid>
           </Grid>
