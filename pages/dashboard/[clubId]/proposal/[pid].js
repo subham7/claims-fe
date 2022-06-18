@@ -119,7 +119,7 @@ const ProposalDetail = ({ router }) => {
   const [castVoteOption, setCastVoteOption] = useState(null)
   const clubID = useSelector(state => { return state.create.clubID })
   const [cardSelected, setCardSelected] = useState(null)
-  let walletAddress = localStorage.getItem("wallet")
+  const [walletAddress, setWalletAddress] = useState(null) 
   let voteId = null
   const dispatch = useDispatch()
 
@@ -152,6 +152,7 @@ const ProposalDetail = ({ router }) => {
   }
 
   useEffect(() => {
+    setWalletAddress(localStorage.getItem("wallet"))
     if (!fetched) {
       fetchData()
     }
@@ -222,11 +223,11 @@ const ProposalDetail = ({ router }) => {
                 <Grid item>
                   <Grid container>
                     <Grid items mt={1.2}>
-                      <div className={classes.activeIllustration}></div>
+                      {fetched ? <div className={proposalData[0].status === "active" ? classes.activeIllustration : proposalData[0].status === "closed" ? classes.pendingIllustration : classes.closedIllustration  }></div> : null}
                     </Grid>
                     <Grid items>
                       <Typography className={classes.listFont}>
-                        Active
+                        {fetched ? proposalData[0].status.charAt(0).toUpperCase() + proposalData[0].status.slice(1) : null}
                       </Typography>
                     </Grid>
                   </Grid>

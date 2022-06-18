@@ -46,6 +46,7 @@ export default function App() {
   const [clubData, setClubData] = useState([])
   const [clubOwnerAddress, setClubOwnerAddress] = useState(null)
   const [fetched, setFetched] = useState(false)
+  const [noWalletMessage, setNoWalletMessage] = useState(null)
   const router = useRouter()
 
   useEffect(() => {
@@ -68,6 +69,10 @@ export default function App() {
               setClubOwnerAddress(result.data.userAddress.substring(0, 6) + ".........." + result.data.userAddress.substring(result.data.userAddress.length - 4))
               setFetched(true)
             }
+          })
+          .catch((error) => {
+            setNoWalletMessage("You don't have any clubs available, please join an existing one or create a new club")
+            console.log(error)
           })
         }
 
@@ -118,7 +123,7 @@ export default function App() {
                 </Grid>
                 <Divider className={classes.divider} />
                 <Stack spacing={3}>
-                  {clubData.map((club, key) => {
+                  {fetched ? clubData.map((club, key) => {
                     return (
                       <ListItemButton component="a" key={key} onClick={e => {handleItemClick(clubData[key])}}>
                       <Grid container>
@@ -142,7 +147,7 @@ export default function App() {
                       </Grid>
                     </ListItemButton>
                     )
-                  })}
+                  }) : <Grid container item justifyContent="center" alignItems="center" ><Typography>{noWalletMessage}</Typography></Grid>}
                 </Stack>
               </Card>
             </Grid>

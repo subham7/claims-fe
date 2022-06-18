@@ -84,12 +84,17 @@ const useStyles = makeStyles({
     fontSize: "24px",
     color: "#EFEFEF",
   },
-  cardFontYes: {
+  cardFontActive: {
     fontSize: "16px",
     backgroundColor: "#0ABB92",
     padding: "0 5px 0 5px"
   },
-  cardFontNo: {
+  cardFontPending: {
+    fontSize: "16px",
+    backgroundColor: "#FFB74D",
+    padding: "0 5px 0 5px"
+  },
+  cardFontFailed: {
     fontSize: "16px",
     backgroundColor: "#D55438",
     padding: "0 5px 0 5px"
@@ -205,7 +210,7 @@ const Proposal = ({router}) => {
     if (!fetched) {
     fetchData()
     }
-  }, [fetched])
+  }, [])
 
   const handleTypeChange = (event) => {
     const { target: { value } } = event
@@ -292,10 +297,7 @@ const Proposal = ({router}) => {
                           </Typography>
                         </Grid>
                         <Grid items ml={1} mr={1} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
-                          {Math.round((new Date(proposal.votingDuration) - new Date()) / (1000 * 60 * 60 * 24)) < 0 ?
-                            (<Chip className={classes.cardFontNo} label="Closed" />) :
-                            (<Chip className={classes.cardFontYes} label="Active" />)
-                        }
+                          {fetched ? <Chip className={proposal.status === "active" ? classes.cardFontActive : proposal.status === "closed" ? classes.cardFontPending : classes.cardFontFailed  } label={proposal.status.charAt(0).toUpperCase() + proposal.status.slice(1)} /> : null }
                         </Grid>
                       </Grid>
                       <Grid container>
@@ -371,7 +373,7 @@ const Proposal = ({router}) => {
                     </Typography>
                   </Grid>
                 </Grid>
-                <ListItemButton component="a" href="#simple-list">
+                <ListItemButton>
                 <div className={classes.allIllustration}></div>
                   <ListItemText primary="All" className={classes.listFont} />
                   <ArrowForwardIosIcon fontSize="5px" />
@@ -385,12 +387,12 @@ const Proposal = ({router}) => {
 
                 <ListItemButton component="a" href="#simple-list">
                   <div className={classes.pendingIllustration}></div>
-                  <ListItemText primary="Pending" className={classes.listFont} />
+                  <ListItemText primary="Closed" className={classes.listFont} />
                   <ArrowForwardIosIcon fontSize="5px" />
                 </ListItemButton>
                 <ListItemButton component="a" href="#simple-list">
                   <div className={classes.closedIllustration}></div>
-                  <ListItemText primary="Closed" className={classes.listFont} />
+                  <ListItemText primary="Failed" className={classes.listFont} />
                   <ArrowForwardIosIcon fontSize="5px" />
                 </ListItemButton>
               </Card>

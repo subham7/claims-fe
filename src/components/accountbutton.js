@@ -99,7 +99,7 @@ export default function AccountButton(props) {
         endIcon={<KeyboardArrowDownIcon />
         }
       >
-        {props.accountDetail !== null ? (props.accountDetail.substring(0, 6) + ".........." + props.accountDetail.substring(props.accountDetail.length - 4)) : null}
+        {props.accountDetail ? (props.accountDetail.substring(0, 6) + ".........." + props.accountDetail.substring(props.accountDetail.length - 4)) : null}
       </Button>
       <StyledMenu
         id="demo-customized-menu"

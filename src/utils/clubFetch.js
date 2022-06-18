@@ -2,7 +2,7 @@ import React, { createContext, useState, useContext, useEffect } from 'react'
 import Router, { useRouter } from 'next/router'
 import { useDispatch, useSelector } from "react-redux"
 import { fetchClub } from "../api/index"
-import { addClubID, addClubName, addClubRoute, addDaoAddress, addWallet } from '../redux/reducers/create'
+import { addClubID, addClubName, addClubRoute, addDaoAddress, addWallet, addTresuryAddress, addTokenAddress } from '../redux/reducers/create'
 
 const ClubFetch = (Component) => {
     const RetrieveDataComponent = () => {
@@ -23,6 +23,8 @@ const ClubFetch = (Component) => {
             dispatch(addClubName(result.data[0].name))
             dispatch(addClubRoute(result.data[0].route))
             dispatch(addDaoAddress(result.data[0].daoAddress))
+            dispatch(addTresuryAddress(result.data[0].treasuryAddress))
+            dispatch(addTokenAddress(result.data[0].tokenAddress))
             setDataFetched(true)
           }
         })
