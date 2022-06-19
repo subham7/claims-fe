@@ -13,7 +13,6 @@ import Web3 from "web3"
 import USDCContract from "../../src/abis/usdc.json"
 import GovernorContract from "../../src/abis/governor.json"
 import { SmartContract } from "../../src/api/index"
-import { set } from "date-fns"
 
 
 const useStyles = makeStyles({
@@ -410,7 +409,7 @@ const Join = (props) => {
                 </Grid>
               </Grid>
               <Grid item ml={3} mt={5} mb={2} mr={3}>
-                {walletConnected ? <ProgressBar value={governorDataFetched ? (parseFloat(governorDetails[2]) / parseFloat(governorDetails[4])) * 100 : 0} /> : <Skeleton variant="rectangular" />}
+                {walletConnected ? <ProgressBar value={governorDataFetched ? (parseFloat(tokenDetails[2] / Math.pow(10, 18)) / parseFloat(governorDetails[4])) * 100 : 0} /> : <Skeleton variant="rectangular" />}
               </Grid>
               <Grid container spacing={2} >
                 <Grid item ml={4} mt={5} mb={2}>
