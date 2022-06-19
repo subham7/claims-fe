@@ -171,6 +171,22 @@ const Proposal = ({router}) => {
     })
   }
 
+  const fetchFilteredData = (type) => {
+    if (type !== "all") {
+      const proposalData = getProposal(clubID, type)
+      proposalData.then((result) => {
+        if (result.status != 200) {
+          console.log(result.error)
+          setFetched(false)
+        } else {
+          setProposalData(result.data)
+          setFetched(true)
+        }
+      })
+    }
+    fetchData()
+  }
+
   const handleNext = (event) => {
     const web3 = new Web3(window.web3)
     const walletAddress = web3.utils.toChecksumAddress(localStorage.getItem("wallet"))
@@ -373,24 +389,24 @@ const Proposal = ({router}) => {
                     </Typography>
                   </Grid>
                 </Grid>
-                <ListItemButton>
+                <ListItemButton onClick={() => fetchFilteredData("all")}>
                 <div className={classes.allIllustration}></div>
                   <ListItemText primary="All" className={classes.listFont} />
                   <ArrowForwardIosIcon fontSize="5px" />
                 </ListItemButton>
 
-                <ListItemButton component="a" href="#simple-list">
+                <ListItemButton onClick={() => fetchFilteredData("active")}>
                   <div className={classes.activeIllustration}></div>
                   <ListItemText primary="Active" className={classes.listFont} />
                   <ArrowForwardIosIcon fontSize="5px" />
                 </ListItemButton>
 
-                <ListItemButton component="a" href="#simple-list">
+                <ListItemButton onClick={() => fetchFilteredData("closed")}>
                   <div className={classes.pendingIllustration}></div>
                   <ListItemText primary="Closed" className={classes.listFont} />
                   <ArrowForwardIosIcon fontSize="5px" />
                 </ListItemButton>
-                <ListItemButton component="a" href="#simple-list">
+                <ListItemButton onClick={() => fetchFilteredData("failed")}>
                   <div className={classes.closedIllustration}></div>
                   <ListItemText primary="Failed" className={classes.listFont} />
                   <ArrowForwardIosIcon fontSize="5px" />
