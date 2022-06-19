@@ -22,39 +22,17 @@ export default function Navbar(props) {
   const classes = useStyles()
   const [previouslyConnectedWallet, setPreviouslyConnectedWallet] = useState(null)
   const [userDetails, setUserDetails] = useState(null)
-  const wallet = useSelector(state => {return state.create.value})
+  const wallet = useSelector(state => { return state.create.value })
 
   useEffect(() => {
-    if (wallet !== null){
+    if (wallet !== null) {
+      console.log(wallet[0][0].address)
       setPreviouslyConnectedWallet(wallet[0][0].address)
+      setUserDetails(wallet[0][0].address)
     }
-    const checkConnection = async () => {
-      var web3
-      if (window.ethereum) {
-        web3 = new Web3(window.ethereum)
-      }
-      else if (window.web3) {
-        web3 = new Web3(window.web3.currentProvider)
-      }
-      try{
-        web3.eth.getAccounts()
-        .then((async) => {
-          setUserDetails(async[0])
-        }
-      );
-    }
-    catch(err){
-      setUserDetails(null)
-    }
-  };
 
-  if (previouslyConnectedWallet) {
-    onboard.connectWallet({ autoSelect: previouslyConnectedWallet[0] })
-  }
-      
-    checkConnection()
   }, [previouslyConnectedWallet])
-  
+
   const handleConnection = async (event) => {
     const wallet = connectWallet(dispatch)
     wallet.then((response) => {
@@ -103,8 +81,8 @@ export default function Navbar(props) {
             >
               Connect Wallet
             </Button>
-          )}       
-              
+          )}
+
         </Toolbar>
       </AppBar>
     </Box>
