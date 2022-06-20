@@ -372,7 +372,8 @@ const Dashboard = (props) => {
       fetchTresuryWallet()
       fetchClosedProposals()
       fetchClubAssetToken()
-  }, [daoAddress, walletAddress, dataFetched, apiTokenDetailSet, membersFetched, tresuryWalletBalanceFetched, closedProposalDataFetched, clubAssetTokenFetched])
+      fetchGovernorContractData()
+  }, [daoAddress, walletAddress, dataFetched, apiTokenDetailSet, membersFetched, tresuryWalletBalanceFetched, closedProposalDataFetched, clubAssetTokenFetched, clubDetailsFetched])
 
   const handleCopy = () => {
     navigator.clipboard.writeText(joinLink)
@@ -406,7 +407,7 @@ const Dashboard = (props) => {
                       {findCurrentMember()}
                     </Typography>
                     <Typography className={classes.card1text5}>
-                      10%
+                      {clubDetailsFetched ? (findCurrentMember() / clubDetails[4]) * 100 : 0}%
                     </Typography>
                   </Box>
                 </Card>
