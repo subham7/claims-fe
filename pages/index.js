@@ -1,6 +1,6 @@
 import { React, useEffect, useState } from "react"
 import Layout from "../src/components/layouts/layout3"
-import { Grid, Button, Card, Typography, Divider, Stack, Menu, ListItemButton } from "@mui/material"
+import { Grid, Button, Card, Typography, Divider, Stack, Menu, ListItemButton, Avatar } from "@mui/material"
 import { connectWallet } from "../src/utils/wallet"
 import { useDispatch, useSelector } from "react-redux"
 import { makeStyles } from "@mui/styles"
@@ -35,6 +35,13 @@ const useStyles = makeStyles({
     fontSize: "16px",
     color: "#C1D3FF",
     opacity: 1,
+  },
+  avatarStyle: {
+    width: "5.21vw",
+    height: "10.26vh",
+    backgroundColor: "#C1D3FF33",
+    color: "#C1D3FF",
+    fontSize: "3.25rem"
   }
 })
 
@@ -128,7 +135,7 @@ export default function App() {
                       <ListItemButton component="a" key={key} onClick={e => {handleItemClick(clubData[key])}}>
                       <Grid container>
                         <Grid item md={2}>
-                          <img src="/assets/images/finserv_icon@2x.png" alt="club_logo" className={classes.logoImage} />
+                          <Avatar className={classes.avatarStyle}>{club.name[0]}</Avatar>
                         </Grid>
                         <Grid item md={6}>
                           <Stack
@@ -140,7 +147,7 @@ export default function App() {
                         <Grid item md={4} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
                           <Stack
                             spacing={0} alignItems="flex-end" justifyContent="flex-end">
-                            <Typography className={classes.createClubButton}>1,37,000 USDC</Typography>
+                            <Typography className={classes.createClubButton}></Typography>
                             <Typography className={classes.clubAddress}>{clubOwnerAddress === walletID ? "Owner" : "Member"}</Typography>
                           </Stack>
                         </Grid>

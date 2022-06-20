@@ -13,7 +13,6 @@ import Web3 from "web3"
 import USDCContract from "../../src/abis/usdc.json"
 import GovernorContract from "../../src/abis/governor.json"
 import { SmartContract } from "../../src/api/index"
-import { set } from "date-fns"
 
 
 const useStyles = makeStyles({
@@ -117,6 +116,23 @@ const useStyles = makeStyles({
     color: "#0ABB92",
     opacity: "1",
   },
+  closeTag: {
+    width: "60px",
+    height: "20px",
+    borderRadius: "11px",
+    opacity: "1",
+    padding: "10px",
+    justifyContent: "center",
+    display: "flex",
+    alignItems: "center",
+    backgroundColor: "#FFB74D0D",
+  },
+  closeTagFont: {
+    fontSize: "12px",
+    textTransform: "uppercase",
+    color: "#FFB74D",
+    opacity: "1",
+  },
 })
 
 const Join = (props) => {
@@ -148,6 +164,7 @@ const Join = (props) => {
   const [membersFetched, setMembersFetched] = useState(false)
   const [members, setMembers] = useState(0)
   const [depositInitiated, setDepositInitiated] = useState(false)
+  const [closingDays, setClosingDays] = useState(0)
 
 
   const checkConnection = async () => {
@@ -219,6 +236,7 @@ const Join = (props) => {
         .then((result) => {
           // console.log(result)
           setGovernorDetails(result)
+          setClosingDays(Math.round((new Date(parseInt(result[0]) * 1000) - new Date()) / (1000 * 60 * 60 * 24)))
           setGovernorDataFetched(true)
         },
           (error) => {
@@ -247,7 +265,7 @@ const Join = (props) => {
     try {
       const wallet = connectWallet(dispatch)
       wallet.then((response) => {
-        if (response){
+        if (response) {
           setWalletConnected(true)
         } else {
           setWalletConnected(false)
@@ -271,9 +289,9 @@ const Join = (props) => {
       contractDetailsRetrieval()
       fetchMembers()
     }
-    
 
-  }, [pid, apiTokenDetailSet, dataFetched,  walletConnected, fetched, governorDetails, membersFetched])
+
+  }, [pid, apiTokenDetailSet, dataFetched, walletConnected, fetched, governorDetails, membersFetched])
 
 
   const handleDeposit = async () => {
@@ -298,7 +316,8 @@ const Join = (props) => {
                 "isAdmin": 0,
                 "balance": depositAmount,
               }
-          ]}
+            ]
+          }
           const createuser = createUser(
             data
           )
@@ -309,7 +328,7 @@ const Join = (props) => {
           })
           setAlertStatus("success")
           setOpenSnackBar(true)
-          router.push(`/dashboard/${clubId}` ,undefined, {shallow: true})
+          router.push(`/dashboard/${clubId}`, undefined, { shallow: true })
         })
           .catch((error) => {
             console.log("Error", error)
@@ -370,18 +389,21 @@ const Join = (props) => {
                     <Grid container ml={2} mt={2} mb={2}>
                       <Grid item>
                         <Typography variant="p" className={classes.valuesStyle}>
-                          {governorDataFetched ? new Date(parseInt(governorDetails[0]) * 1000).toJSON().slice(0,10).split('-').reverse().join('/') : <Skeleton variant="rectangular" width={100} height={25} />}
+                          {governorDataFetched ? new Date(parseInt(governorDetails[0]) * 1000).toJSON().slice(0, 10).split('-').reverse().join('/') : <Skeleton variant="rectangular" width={100} height={25} />}
                         </Typography>
                       </Grid>
                       <Grid item m={1}>
-                        {walletConnected ?
-                          <Card className={classes.openTag}>
-                            <Typography className={classes.openTagFont}>
-                              Open
-                            </Typography>
-                          </Card>
-                          : <Skeleton variant="rectangular" />}
-
+                        {walletConnected ? governorDataFetched ?
+                          closingDays > 0 ?
+                            (<Card className={classes.openTag}>
+                              <Typography className={classes.openTagFont}>
+                                Open
+                              </Typography>
+                            </Card>) : (<Card className={classes.closeTag}>
+                              <Typography className={classes.closeTagFont}>
+                                Closed
+                              </Typography>
+                            </Card>) : <Skeleton variant="rectangular" width={100} height={25} /> : null}
                       </Grid>
                     </Grid>
                   </Stack>
@@ -410,7 +432,7 @@ const Join = (props) => {
                 </Grid>
               </Grid>
               <Grid item ml={3} mt={5} mb={2} mr={3}>
-                {walletConnected ? <ProgressBar value={governorDataFetched ? (parseFloat(governorDetails[2]) / parseFloat(governorDetails[4])) * 100 : 0} /> : <Skeleton variant="rectangular" />}
+                {walletConnected ? <ProgressBar value={governorDataFetched ? (parseFloat(tokenDetails[2] / Math.pow(10, 18)) / parseFloat(governorDetails[4])) * 100 : 0} /> : <Skeleton variant="rectangular" />}
               </Grid>
               <Grid container spacing={2} >
                 <Grid item ml={4} mt={5} mb={2}>
@@ -439,8 +461,7 @@ const Join = (props) => {
                   </Grid>
                   <Grid item ml={1} mt={4} mb={4} mr={2} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
                     <Typography variant="h6" className={classes.dimColor}>
-                      {/* const days = Math.round((new Date(closeDate) - new Date()) / (1000 * 60 * 60 * 24)) */}
-                      Closes in {governorDataFetched ? Math.round((new Date(parseInt(governorDetails[0]) * 1000) - new Date()) / (1000 * 60 * 60 * 24)) : 0} days
+                      {governorDataFetched ? closingDays > 0 ? "Closes in " + closingDays + " days" : "Joining Closed" : 0}
                     </Typography>
                   </Grid>
                 </Grid>
@@ -462,7 +483,7 @@ const Join = (props) => {
                       </Grid>
                       <Grid container spacing={2}>
                         <Grid item ml={2} mt={0} mb={2}>
-                          <Input type="number" error={depositAmount === ""} className={classes.cardLargeFont} value={depositAmount} onChange={(e) => handleInputChange(e.target.value)} />
+                          <Input type="number" error={depositAmount === ""} className={classes.cardLargeFont} value={depositAmount} onChange={(e) => handleInputChange(e.target.value)} disabled={closingDays > 0 ? false : true} />
                         </Grid>
                         <Grid item ml={2} mt={2} mb={2} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
                           <Button className={classes.maxTag} onClick={handleMaxButtonClick}>
@@ -482,7 +503,7 @@ const Join = (props) => {
                     </Card>
                   </Grid>
                   <Grid item container ml={1} mt={2}>
-                    <Button variant="contained" size="large" className={classes.depositButton} onClick={handleDeposit}>
+                    <Button variant="contained" size="large" className={classes.depositButton} onClick={handleDeposit} disabled={closingDays > 0 ? false : true}>
                       Deposit
                     </Button>
                   </Grid>
@@ -514,14 +535,14 @@ const Join = (props) => {
             </Alert>)
           }
         </Snackbar>
-        {depositInitiated ? 
+        {depositInitiated ?
           <Backdrop
-          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-          open={open}
-        >
-          <CircularProgress color="inherit" />
-        </Backdrop>  
-      : null}
+            sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+            open={open}
+          >
+            <CircularProgress color="inherit" />
+          </Backdrop>
+          : null}
       </div>
     </Layout3>
   )

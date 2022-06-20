@@ -122,7 +122,7 @@ export class SmartContract{
   }
 
   async quoram() {
-    return this.contract.methods.quoram().call({ from: this.walletAddress })
+    return this.contract.methods.quorum().call({ from: this.walletAddress })
   }
 
   async threshold() {

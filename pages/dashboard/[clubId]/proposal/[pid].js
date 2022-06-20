@@ -8,6 +8,7 @@ import { useRouter } from "next/router"
 import Router, { withRouter } from "next/router"
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace'
 import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded'
+import CloseIcon from '@mui/icons-material/Close'
 import ProgressBar from "../../../../src/components/progressbar"
 import { useDispatch, useSelector } from "react-redux"
 import { addProposalId } from "../../../../src/redux/reducers/create"
@@ -99,6 +100,10 @@ const useStyles = makeStyles({
     fontSize: "50px",
     color: "#0ABB92",
   },
+  mainCardButtonError: {
+    fontSize: "50px",
+    color: "#D55438",
+  },
   seeMoreButton: {
     border: "1px solid #C1D3FF40",
     borderRadius: "10px",
@@ -119,7 +124,7 @@ const ProposalDetail = ({ router }) => {
   const [castVoteOption, setCastVoteOption] = useState(null)
   const clubID = useSelector(state => { return state.create.clubID })
   const [cardSelected, setCardSelected] = useState(null)
-  const [walletAddress, setWalletAddress] = useState(null) 
+  const walletAddress = useSelector(state => { return state.create.value })
   let voteId = null
   const dispatch = useDispatch()
 
@@ -152,7 +157,6 @@ const ProposalDetail = ({ router }) => {
   }
 
   useEffect(() => {
-    setWalletAddress(localStorage.getItem("wallet"))
     if (!fetched) {
       fetchData()
     }
@@ -203,36 +207,35 @@ const ProposalDetail = ({ router }) => {
   return (
     <>
       <Layout1 page={2}>
-        <div style={{ padding: "110px 80px" }}>
-          <Grid container spacing={6}>
-            <Grid item md={9}>
-              <Grid container spacing={1} onClick={returnHome} >
-                <Grid item mt={0.5} sx={{ "&:hover": { cursor: "pointer", } }}>
-                  <KeyboardBackspaceIcon className={classes.listFont} />
-                </Grid>
-                <Grid item sx={{ "&:hover": { cursor: "pointer", } }}>
-                  <Typography className={classes.listFont}>Back to proposals</Typography>
-                </Grid>
+        <Grid container spacing={6} paddingLeft={10} paddingTop={10}>
+          <Grid item md={9}>
+            <Grid container spacing={1} onClick={returnHome} >
+              <Grid item mt={0.5} sx={{ "&:hover": { cursor: "pointer", } }}>
+                <KeyboardBackspaceIcon className={classes.listFont} />
               </Grid>
-              <Grid container mb={5}>
-                <Grid item>
-                  <Typography className={classes.clubAssets}>{fetched ? proposalData[0].name : null}</Typography>
-                </Grid>
+              <Grid item sx={{ "&:hover": { cursor: "pointer", } }}>
+                <Typography className={classes.listFont}>Back to proposals</Typography>
               </Grid>
-              <Grid container direction="row" spacing={4}>
-                <Grid item>
-                  <Grid container>
-                    <Grid items mt={1.2}>
-                      {fetched ? <div className={proposalData[0].status === "active" ? classes.activeIllustration : proposalData[0].status === "closed" ? classes.pendingIllustration : classes.closedIllustration  }></div> : null}
-                    </Grid>
-                    <Grid items>
-                      <Typography className={classes.listFont}>
-                        {fetched ? proposalData[0].status.charAt(0).toUpperCase() + proposalData[0].status.slice(1) : null}
-                      </Typography>
-                    </Grid>
+            </Grid>
+            <Grid container mb={5}>
+              <Grid item>
+                <Typography className={classes.clubAssets}>{fetched ? proposalData[0].name : null}</Typography>
+              </Grid>
+            </Grid>
+            <Grid container direction="row" spacing={4}>
+              <Grid item>
+                <Grid container>
+                  <Grid items mt={1.2}>
+                    {fetched ? <div className={proposalData[0].status === "active" ? classes.activeIllustration : proposalData[0].status === "closed" ? classes.pendingIllustration : classes.closedIllustration}></div> : null}
+                  </Grid>
+                  <Grid items>
+                    <Typography className={classes.listFont}>
+                      {fetched ? proposalData[0].status.charAt(0).toUpperCase() + proposalData[0].status.slice(1) : null}
+                    </Typography>
                   </Grid>
                 </Grid>
-                {/* <Grid item>
+              </Grid>
+              {/* <Grid item>
                   <Grid container>
                     <Grid items mt={1.2}>
                       <div className={classes.activeIllustration}></div>
@@ -244,194 +247,206 @@ const ProposalDetail = ({ router }) => {
                     </Grid>
                   </Grid>
                 </Grid> */}
-              </Grid>
-              <Grid container item className={classes.listFont}>
-                {fetched ? proposalData[0].description : null}
-              </Grid>
-              <Grid container mt={6}>
-                <Grid item md={12}>
-                  {voted || fetched && checkUserVoted(pid) ? (
-                    <Card sx={{ width: "100%" }}>
-                      <Grid container direction="column" justifyContent="center" alignItems="center" mt={10} mb={10}>
-                        <Grid item mt={0.5}><CheckCircleRoundedIcon className={classes.mainCardButtonSuccess}/></Grid>
-                        <Grid item mt={0.5}>
-                          <Typography className={classes.successfulMessageText}>Successfully voted</Typography>
-                        </Grid>
-                        <Grid item mt={0.5}>
+            </Grid>
+            <Grid container item className={classes.listFont}>
+              {fetched ? proposalData[0].description : null}
+            </Grid>
+            <Grid container mt={6}>
+              <Grid item md={12}>
+                {voted || fetched && checkUserVoted(pid) ? (
+                  <Card sx={{ width: "100%" }}>
+                    <Grid container direction="column" justifyContent="center" alignItems="center" mt={10} mb={10}>
+                      <Grid item mt={0.5}><CheckCircleRoundedIcon className={classes.mainCardButtonSuccess} /></Grid>
+                      <Grid item mt={0.5}>
+                        <Typography className={classes.successfulMessageText}>Successfully voted</Typography>
+                      </Grid>
+                      <Grid item mt={0.5}>
                         <Typography className={classes.listFont2}>
                           {/* Voted for */}
-                        </Typography>  
-                        </Grid>
+                        </Typography>
                       </Grid>
-                    </Card>
-                  ) : (
-                    <Card>
-                    <Typography className={classes.cardFont1}>Cast your vote</Typography>
-                    <Divider sx={{ marginTop: 2, marginBottom: 3 }} />
-                    <Stack spacing={2}>
-                      {fetched ? proposalData[0].votingOptions.map((data, key) => {
-                        return (
-                          <CardActionArea className={classes.mainCard} key={key}>
-                            <Card className={cardSelected == key ? classes.mainCardSelected :classes.mainCard} onClick={e => { setCastVoteOption(data.votingOptionId); setCardSelected(key) }}>
-                              <Grid container item justifyContent="center" alignItems="center">
-                                <Typography className={classes.cardFont1} >{data.text} </Typography>
-                              </Grid>
-                            </Card>
-                          </CardActionArea>
-                        )
-                      }) : null}
-
-                      <CardActionArea className={classes.mainCard}>
-                        <Card className={voted ? classes.mainCardButtonSuccess : classes.mainCardButton} onClick={submitVote}>
-                          <Grid container justifyContent="center" alignItems="center">
-                            {voted ? (<Grid item mt={0.5}><CheckCircleRoundedIcon /></Grid>) : <Grid item></Grid>}
-                            <Grid item>
-                              {voted ? (<Typography className={classes.cardFont1} >Successfully voted</Typography>) : (<Typography className={classes.cardFont1}>Vote now</Typography>)}
-                            </Grid>
-                          </Grid>
-                        </Card>
-                      </CardActionArea>
-                    </Stack>
+                    </Grid>
                   </Card>
-                  )}
-                </Grid>
-
-              </Grid>
-            </Grid>
-            <Grid item md={3}>
-              <Stack spacing={3}>
-                <Card>
-                  <Grid container>
-                    <Grid items>
-                      <Typography className={classes.listFont2}>
-                        Proposed by
-                      </Typography>
+                ) : fetched ? proposalData[0].status === "closed" ? (
+                  <Card sx={{ width: "100%" }}>
+                    <Grid container direction="column" justifyContent="center" alignItems="center" mt={10} mb={10}>
+                      <Grid item mt={0.5}><CloseIcon className={classes.mainCardButtonError} /></Grid>
+                      <Grid item mt={0.5}>
+                        <Typography className={classes.successfulMessageText}>Voting Closed</Typography>
+                      </Grid>
+                      <Grid item mt={0.5}>
+                        <Typography className={classes.listFont2}>
+                          {/* Voted for */}
+                        </Typography>
+                      </Grid>
                     </Grid>
-                    <Grid items xs sx={{ display: "flex", justifyContent: "flex-end" }}>
-                      <Typography className={classes.listFont2Colourless}>
-                        {fetched ? proposalData[0].createdBy.substring(0, 6) + ".........." + proposalData[0].createdBy.substring(proposalData[0].createdBy.length - 4) : null}
-                      </Typography>
-                    </Grid>
-                  </Grid>
-                  <Grid container>
-                    <Grid items>
-                      <Typography className={classes.listFont2}>
-                        Voting system
-                      </Typography>
-                    </Grid>
-                    <Grid items xs sx={{ display: "flex", justifyContent: "flex-end" }}>
-                      <Typography className={classes.listFont2Colourless}>
-                        Single choice
-                      </Typography>
-                    </Grid>
-                  </Grid>
-                  <Grid container>
-                    <Grid items>
-                      <Typography className={classes.listFont2}>
-                        Start date
-                      </Typography>
-                    </Grid>
-                    <Grid items xs sx={{ display: "flex", justifyContent: "flex-end" }}>
-                      <Typography className={classes.listFont2Colourless}>
-                        {fetched ? new Date(String(proposalData[0].updateDate)).toLocaleDateString() : null}
-                      </Typography>
-                    </Grid>
-                  </Grid>
-                  <Grid container>
-                    <Grid items>
-                      <Typography className={classes.listFont2}>
-                        End date
-                      </Typography>
-                    </Grid>
-                    <Grid items xs sx={{ display: "flex", justifyContent: "flex-end" }}>
-                      <Typography className={classes.listFont2Colourless}>
-                        {fetched ? new Date(String(proposalData[0].votingDuration)).toLocaleDateString() : null}
-                      </Typography>
-                    </Grid>
-                  </Grid>
-                </Card>
-                <Card>
-                  <Grid container item mb={2}>
-                    <Typography className={classes.listFont}>
-                      Current results
-                    </Typography>
-                  </Grid>
-                  {fetched ?
-                    proposalData[0].votingOptions.map((vote, key) => {
+                  </Card>
+                ) : (<Card>
+                  <Typography className={classes.cardFont1}>Cast your vote</Typography>
+                  <Divider sx={{ marginTop: 2, marginBottom: 3 }} />
+                  <Stack spacing={2}>
+                    {fetched ? proposalData[0].votingOptions.map((data, key) => {
                       return (
-                        <div key={key}>
-                          <Grid container>
-                            <Grid item>
-                              <Typography className={classes.listFont2}>
-                                Vote for {vote.text}
-                              </Typography>
+                        <CardActionArea className={classes.mainCard} key={key}>
+                          <Card className={cardSelected == key ? classes.mainCardSelected : classes.mainCard} onClick={e => { setCastVoteOption(data.votingOptionId); setCardSelected(key) }}>
+                            <Grid container item justifyContent="center" alignItems="center">
+                              <Typography className={classes.cardFont1} >{data.text} </Typography>
                             </Grid>
-                            <Grid item xs sx={{ display: "flex", justifyContent: "flex-end" }}>
-                              <Typography className={classes.listFont2Colourless}>
-                                {vote.count > 0 ?calculateVotePercentage(vote.count) : 0}%
-                              </Typography>
-                            </Grid>
-                          </Grid>
-                          <ProgressBar value={vote.count > 0 ? calculateVotePercentage(vote.count) : 0} />
-                        </div>
+                          </Card>
+                        </CardActionArea>
                       )
-                    })
-                    :
-                    null
-                  }
-                </Card>
-                <Card>
-                  <Grid container item mb={2}>
-                    <Typography className={classes.listFont}>
-                      Votes
+                    }) : null}
+
+                    <CardActionArea className={classes.mainCard}>
+                      <Card className={voted ? classes.mainCardButtonSuccess : classes.mainCardButton} onClick={submitVote}>
+                        <Grid container justifyContent="center" alignItems="center">
+                          {voted ? (<Grid item mt={0.5}><CheckCircleRoundedIcon /></Grid>) : <Grid item></Grid>}
+                          <Grid item>
+                            {voted ? (<Typography className={classes.cardFont1} >Successfully voted</Typography>) : (<Typography className={classes.cardFont1}>Vote now</Typography>)}
+                          </Grid>
+                        </Grid>
+                      </Card>
+                    </CardActionArea>
+                  </Stack>
+                </Card>) : null}
+              </Grid>
+
+            </Grid>
+          </Grid>
+          <Grid item md={3}>
+            <Stack spacing={3}>
+              <Card>
+                <Grid container>
+                  <Grid items>
+                    <Typography className={classes.listFont2}>
+                      Proposed by
                     </Typography>
                   </Grid>
-
-                  {fetched ? proposalData[0].vote.map((voter, key) => {
+                  <Grid items xs sx={{ display: "flex", justifyContent: "flex-end" }}>
+                    <Typography className={classes.listFont2Colourless}>
+                      {fetched ? proposalData[0].createdBy.substring(0, 6) + ".........." + proposalData[0].createdBy.substring(proposalData[0].createdBy.length - 4) : null}
+                    </Typography>
+                  </Grid>
+                </Grid>
+                <Grid container>
+                  <Grid items>
+                    <Typography className={classes.listFont2}>
+                      Voting system
+                    </Typography>
+                  </Grid>
+                  <Grid items xs sx={{ display: "flex", justifyContent: "flex-end" }}>
+                    <Typography className={classes.listFont2Colourless}>
+                      Single choice
+                    </Typography>
+                  </Grid>
+                </Grid>
+                <Grid container>
+                  <Grid items>
+                    <Typography className={classes.listFont2}>
+                      Start date
+                    </Typography>
+                  </Grid>
+                  <Grid items xs sx={{ display: "flex", justifyContent: "flex-end" }}>
+                    <Typography className={classes.listFont2Colourless}>
+                      {fetched ? new Date(String(proposalData[0].updateDate)).toLocaleDateString() : null}
+                    </Typography>
+                  </Grid>
+                </Grid>
+                <Grid container>
+                  <Grid items>
+                    <Typography className={classes.listFont2}>
+                      End date
+                    </Typography>
+                  </Grid>
+                  <Grid items xs sx={{ display: "flex", justifyContent: "flex-end" }}>
+                    <Typography className={classes.listFont2Colourless}>
+                      {fetched ? new Date(String(proposalData[0].votingDuration)).toLocaleDateString() : null}
+                    </Typography>
+                  </Grid>
+                </Grid>
+              </Card>
+              <Card>
+                <Grid container item mb={2}>
+                  <Typography className={classes.listFont}>
+                    Current results
+                  </Typography>
+                </Grid>
+                {fetched ?
+                  proposalData[0].votingOptions.map((vote, key) => {
                     return (
                       <div key={key}>
                         <Grid container>
                           <Grid item>
-                            <Typography className={classes.listFont2Colourless}>
-                              {voter.voterAddress.substring(0, 6) + "......" + voter.voterAddress.substring(voter.voterAddress.length - 4)}
+                            <Typography className={classes.listFont2}>
+                              Vote for {vote.text}
                             </Typography>
                           </Grid>
                           <Grid item xs sx={{ display: "flex", justifyContent: "flex-end" }}>
                             <Typography className={classes.listFont2Colourless}>
-                              Vote for {fetched ? proposalData[0].votingOptions[parseInt(fetchVotingOptionChoice(voter.votingOptionId))].text : null}                              
+                              {vote.count > 0 ? calculateVotePercentage(vote.count) : 0}%
                             </Typography>
                           </Grid>
                         </Grid>
-                        <Grid container>
-                          <Grid item>
-                            <Typography className={classes.listFont2small}>
-                              10,000 $DEMO
-                            </Typography>
-                          </Grid>
-                          <Grid item xs sx={{ display: "flex", justifyContent: "flex-end" }}>
-                            <Typography className={classes.listFont2small}>
-                              Signed on {new Date(voter.createdAt).toLocaleDateString()}
-                            </Typography>
-                          </Grid>
-                        </Grid>
-                        <br />
+                        <ProgressBar value={vote.count > 0 ? calculateVotePercentage(vote.count) : 0} />
                       </div>
                     )
-                  }) :
-                    null
-                  }
-                  {fetched && proposalData[0].length > 3 ? (
-                    <Grid container item>
+                  })
+                  :
+                  null
+                }
+              </Card>
+              <Card>
+                <Grid container item mb={2}>
+                  <Typography className={classes.listFont}>
+                    Votes
+                  </Typography>
+                </Grid>
+                {console.log(proposalData)}
+                {fetched ?
+                  proposalData[0].vote.length > 0 ?
+                    proposalData[0].vote.map((voter, key) => {
+                      return (
+                        <div key={key}>
+                          <Grid container>
+                            <Grid item>
+                              <Typography className={classes.listFont2Colourless}>
+                                {voter.voterAddress.substring(0, 6) + "......" + voter.voterAddress.substring(voter.voterAddress.length - 4)}
+                              </Typography>
+                            </Grid>
+                            <Grid item xs sx={{ display: "flex", justifyContent: "flex-end" }}>
+                              <Typography className={classes.listFont2Colourless}>
+                                Vote for {fetched ? proposalData[0].votingOptions[parseInt(fetchVotingOptionChoice(voter.votingOptionId))].text : null}
+                              </Typography>
+                            </Grid>
+                          </Grid>
+                          <Grid container>
+                            {/* <Grid item>
+                                <Typography className={classes.listFont2small}>
+                                  10,000 $DEMO
+                                </Typography>
+                              </Grid> */}
+                            <Grid item xs sx={{ display: "flex", justifyContent: "flex-end" }}>
+                              <Typography className={classes.listFont2small}>
+                                Signed on {new Date(voter.createdAt).toLocaleDateString()}
+                              </Typography>
+                            </Grid>
+                          </Grid>
+                          <br />
+                        </div>
+                      )
+                    }) : (<Typography className={classes.listFont2Colourless}>No previous votes available</Typography>)
+                  : null}
+                {fetched && proposalData[0].length > 3 ? (
+                  <Grid container item>
                     <Button className={classes.seeMoreButton} fullWidth onClick={handleShowMore}>
                       See more
                     </Button>
                   </Grid>
-                  ) : null }
-                </Card>
-              </Stack>
-            </Grid>
+                ) : null}
+              </Card>
+            </Stack>
           </Grid>
-        </div>
+        </Grid>
       </Layout1>
     </>
   )
