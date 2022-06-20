@@ -80,25 +80,34 @@ export default function Sidebar(props) {
       >
         <Toolbar />
         <List>
-          <ListItemButton component="a" onClick={e => { router.push("/dashboard", undefined, {shallow: true})}} alignItems="center">
+          <ListItemButton component="a" onClick={e => { router.push(`/dashboard/${clubId}`, undefined, { shallow: true }) }} alignItems="center">
             <ListItemIcon className={page == 1 ? classes.listItemIconSelected : classes.listItemIcon}>
               <HomeRoundedIcon />
             </ListItemIcon>
           </ListItemButton>
-          <ListItemButton component="a" onClick={e => { router.push("/dashboard/proposal", undefined, {shallow: true})}}>
+
+          <ListItemButton component="a" onClick={e => { router.push(`/dashboard/${clubId}/proposal`, undefined, { shallow: true }) }}>
             <ListItemIcon className={page == 2 ? classes.listItemIconSelected : classes.listItemIcon}>
               <InsertDriveFileRoundedIcon />
             </ListItemIcon>
           </ListItemButton>
-          <ListItemButton component="a" onClick={e => { router.push("/dashboard/members", undefined, {shallow: true})}}>
-            <ListItemIcon className={page == 3 ? classes.listItemIconSelected : classes.listItemIcon}><PeopleRoundedIcon /></ListItemIcon>
 
+          <ListItemButton component="a" onClick={e => { router.push(`/dashboard/${clubId}/members`, undefined, { shallow: true }) }}>
+            <ListItemIcon className={page == 3 ? classes.listItemIconSelected : classes.listItemIcon}>
+              <PeopleRoundedIcon />
+            </ListItemIcon>
           </ListItemButton>
+
           <ListItemButton>
-            <ListItemIcon className={classes.listItemIcon}><CompareArrowsRoundedIcon /></ListItemIcon>
+            <ListItemIcon className={classes.listItemIcon}>
+              <CompareArrowsRoundedIcon />
+            </ListItemIcon>
           </ListItemButton>
-          <ListItemButton>
-            <ListItemIcon className={classes.listItemIcon}><SettingsRoundedIcon /></ListItemIcon>
+
+          <ListItemButton component="a" onClick={e => { router.push(`/dashboard/${clubId}/settings`, undefined, { shallow: true }) }}>
+            <ListItemIcon className={classes.listItemIcon}>
+              <SettingsRoundedIcon />
+            </ListItemIcon>
           </ListItemButton>
         </List>
       </Drawer>
@@ -121,19 +130,19 @@ export default function Sidebar(props) {
         <Toolbar />
 
         <List>
-          <ListItemButton component="a" onClick={e => { router.push(`/dashboard/${clubId}`, undefined, {shallow: true})}} alignItems="center">
+          <ListItemButton component="a" onClick={e => { router.push(`/dashboard/${clubId}`, undefined, { shallow: true }) }} alignItems="center">
             <ListItemIcon className={page == 1 ? classes.listItemIconSelected : classes.listItemIcon}>
               <HomeRoundedIcon />
             </ListItemIcon>
           </ListItemButton>
 
-          <ListItemButton component="a" onClick={e => { router.push(`/dashboard/${clubId}/proposal`, undefined, {shallow: true})}}>
+          <ListItemButton component="a" onClick={e => { router.push(`/dashboard/${clubId}/proposal`, undefined, { shallow: true }) }}>
             <ListItemIcon className={page == 2 ? classes.listItemIconSelected : classes.listItemIcon}>
               <InsertDriveFileRoundedIcon />
             </ListItemIcon>
 
           </ListItemButton>
-          <ListItemButton component="a" onClick={e => { router.push(`/dashboard/${clubId}/members`, undefined, {shallow: true})}}>
+          <ListItemButton component="a" onClick={e => { router.push(`/dashboard/${clubId}/members`, undefined, { shallow: true }) }}>
             <ListItemIcon className={page == 3 ? classes.listItemIconSelected : classes.listItemIcon}>
               <PeopleRoundedIcon />
             </ListItemIcon>
@@ -144,9 +153,9 @@ export default function Sidebar(props) {
               <CompareArrowsRoundedIcon />
             </ListItemIcon>
           </ListItemButton>
-          <ListItemButton >
 
-            <ListItemIcon className={classes.listItemIcon}>
+          <ListItemButton component="a" onClick={e => { router.push(`/dashboard/${clubId}/settings`, undefined, { shallow: true }) }}>
+            <ListItemIcon className={page == 5 ? classes.listItemIconSelected : classes.listItemIcon}>
               <SettingsRoundedIcon />
             </ListItemIcon>
           </ListItemButton>

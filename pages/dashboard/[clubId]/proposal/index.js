@@ -133,14 +133,14 @@ const useStyles = makeStyles({
     color: "#FFFFFF"
   },
   datePicker: {
-    borderRadius: "10px", 
-    backgroundColor: "#111D38", 
+    borderRadius: "10px",
+    backgroundColor: "#111D38",
     width: "100%",
   }
 })
 
 
-const Proposal = ({router}) => {
+const Proposal = ({ router }) => {
   const classes = useStyles()
   const [open, setOpen] = useState(false)
   const [name, setName] = useState([])
@@ -156,7 +156,7 @@ const Proposal = ({router}) => {
   const [proposalData, setProposalData] = useState([])
   const [fetched, setFetched] = useState(false)
   const routers = useRouter()
-  const clubID = useSelector(state => {return state.create.clubID})
+  const clubID = useSelector(state => { return state.create.clubID })
 
   const fetchData = () => {
     const proposalData = getProposal(clubID)
@@ -197,7 +197,7 @@ const Proposal = ({router}) => {
       "createdBy": walletAddress,
       "clubId": clubID,
       "votingDuration": new Date(duration).toISOString(),
-      "votingOptions":  [
+      "votingOptions": [
         {
           "text": "Yes"
         },
@@ -224,7 +224,7 @@ const Proposal = ({router}) => {
 
   useEffect(() => {
     if (!fetched) {
-    fetchData()
+      fetchData()
     }
   }, [])
 
@@ -278,72 +278,71 @@ const Proposal = ({router}) => {
   return (
     <>
       <Layout1 page={2}>
-        <div style={{ padding: "110px 80px" }}>
-          <Grid container spacing={3}>
-            <Grid item md={9}>
-              <Grid container mb={5}>
-                <Grid item>
-                  <Typography className={classes.clubAssets}>Proposals</Typography>
-                </Grid>
-                <Grid item spacing={2} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
-                  <Stack direction="row" spacing={4}>
-                    <TextField
-                      className={classes.searchField}
-                      placeholder="Search proposals"
-                      InputProps={{
-                        endAdornment: <IconButton type="submit" sx={{ p: '10px' }} aria-label="search"><SearchIcon /></IconButton>
-                      }}
-                    />
-                    <Button className={classes.addButton} variant="outlined" startIcon={<AddCircleRoundedIcon />} onClick={handleClickOpen}>
-                      Create new
-                    </Button>
-                  </Stack>
-                </Grid>
+        <Grid container spacing={3} paddingLeft={10} paddingTop={10}>
+          <Grid item md={9}>
+            <Grid container mb={5}>
+              <Grid item>
+                <Typography className={classes.clubAssets}>Proposals</Typography>
               </Grid>
-              <Grid container spacing={3}>
-                {proposalData.map((proposal, key) => {
-                  return (
-                    <Grid item key={key} onClick={e => {handleProposalClick(proposalData[key])}} md={12}>
-                      <CardActionArea sx={{ borderRadius: "10px", }}>
+              <Grid item spacing={2} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
+                <Stack direction="row" spacing={4}>
+                  <TextField
+                    className={classes.searchField}
+                    placeholder="Search proposals"
+                    InputProps={{
+                      endAdornment: <IconButton type="submit" sx={{ p: '10px' }} aria-label="search"><SearchIcon /></IconButton>
+                    }}
+                  />
+                  <Button className={classes.addButton} variant="outlined" startIcon={<AddCircleRoundedIcon />} onClick={handleClickOpen}>
+                    Create new
+                  </Button>
+                </Stack>
+              </Grid>
+            </Grid>
+            <Grid container spacing={3}>
+              {proposalData.map((proposal, key) => {
+                return (
+                  <Grid item key={key} onClick={e => { handleProposalClick(proposalData[key]) }} md={12}>
+                    <CardActionArea sx={{ borderRadius: "10px", }}>
                       <Card className={classes.mainCard}>
-                      <Grid container>
-                        <Grid items ml={2} mr={2}>
-                          <Typography className={classes.cardFont}>
-                            Proposed by {fetched ? proposal.createdBy.substring(0, 6) + ".........." + proposal.createdBy.substring(proposal.createdBy.length - 4) : null}
-                          </Typography>
+                        <Grid container>
+                          <Grid items ml={2} mr={2}>
+                            <Typography className={classes.cardFont}>
+                              Proposed by {fetched ? proposal.createdBy.substring(0, 6) + ".........." + proposal.createdBy.substring(proposal.createdBy.length - 4) : null}
+                            </Typography>
+                          </Grid>
+                          <Grid items ml={1} mr={1} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
+                            {fetched ? <Chip className={proposal.status === "active" ? classes.cardFontActive : proposal.status === "closed" ? classes.cardFontPending : classes.cardFontFailed} label={proposal.status.charAt(0).toUpperCase() + proposal.status.slice(1)} /> : null}
+                          </Grid>
                         </Grid>
-                        <Grid items ml={1} mr={1} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
-                          {fetched ? <Chip className={proposal.status === "active" ? classes.cardFontActive : proposal.status === "closed" ? classes.cardFontPending : classes.cardFontFailed  } label={proposal.status.charAt(0).toUpperCase() + proposal.status.slice(1)} /> : null }
+                        <Grid container>
+                          <Grid items ml={2} mr={2}>
+                            <Typography className={classes.cardFont1}>
+                              [#{key + 1}] {proposal.name}
+                            </Typography>
+                          </Grid>
                         </Grid>
-                      </Grid>
-                      <Grid container>
-                        <Grid items ml={2} mr={2}>
-                          <Typography className={classes.cardFont1}>
-                            [#{key + 1}] {proposal.name}
-                          </Typography>
+                        <Grid container>
+                          <Grid items ml={2} mr={2}>
+                            <Typography className={classes.cardFont}>
+                              {proposal.description.substring(0, 200)}...
+                            </Typography>
+                          </Grid>
                         </Grid>
-                      </Grid>
-                      <Grid container>
-                        <Grid items ml={2} mr={2}>
-                          <Typography className={classes.cardFont}>
-                            {proposal.description.substring(0, 200)}...
-                          </Typography>
+                        <Grid container>
+                          <Grid items ml={2} mr={2} mt={2}>
+                            <Typography className={classes.daysFont}>
+                              {Math.round((new Date(proposal.votingDuration) - new Date()) / (1000 * 60 * 60 * 24))} days left
+                            </Typography>
+                          </Grid>
                         </Grid>
-                      </Grid>
-                      <Grid container>
-                        <Grid items ml={2} mr={2} mt={2}>
-                          <Typography className={classes.daysFont}>
-                            {Math.round((new Date(proposal.votingDuration) - new Date()) / (1000 * 60 * 60 * 24))} days left
-                          </Typography>
-                        </Grid>
-                      </Grid>
-                    </Card>
-                      </CardActionArea>
-                  </Grid>             
-                  )
-                })}
-                
-                {/* <Grid item>
+                      </Card>
+                    </CardActionArea>
+                  </Grid>
+                )
+              })}
+
+              {/* <Grid item>
                   <Card className={classes.mainCard}>
                     <Grid container>
                       <Grid items ml={2} mr={2}>
@@ -378,83 +377,83 @@ const Proposal = ({router}) => {
                     </Grid>
                   </Card>
                 </Grid> */}
-              </Grid>
-            </Grid>
-            <Grid item md={3}>
-              <Card>
-                <Grid container>
-                  <Grid items>
-                    <Typography className={classes.listFont}>
-                      Status
-                    </Typography>
-                  </Grid>
-                </Grid>
-                <ListItemButton onClick={() => fetchFilteredData("all")}>
-                <div className={classes.allIllustration}></div>
-                  <ListItemText primary="All" className={classes.listFont} />
-                  <ArrowForwardIosIcon fontSize="5px" />
-                </ListItemButton>
-
-                <ListItemButton onClick={() => fetchFilteredData("active")}>
-                  <div className={classes.activeIllustration}></div>
-                  <ListItemText primary="Active" className={classes.listFont} />
-                  <ArrowForwardIosIcon fontSize="5px" />
-                </ListItemButton>
-
-                <ListItemButton onClick={() => fetchFilteredData("closed")}>
-                  <div className={classes.pendingIllustration}></div>
-                  <ListItemText primary="Closed" className={classes.listFont} />
-                  <ArrowForwardIosIcon fontSize="5px" />
-                </ListItemButton>
-                <ListItemButton onClick={() => fetchFilteredData("failed")}>
-                  <div className={classes.closedIllustration}></div>
-                  <ListItemText primary="Failed" className={classes.listFont} />
-                  <ArrowForwardIosIcon fontSize="5px" />
-                </ListItemButton>
-              </Card>
             </Grid>
           </Grid>
-          <Dialog open={open} onClose={handleClose} scroll="body" PaperProps={{ classes: { root: classes.modalStyle } }} fullWidth maxWidth="lg" >
-            <DialogContent sx={{ overflow: "hidden", backgroundColor: '#19274B', }} >
-              <Grid container >
-                <Grid item m={3}>
-                  <Typography className={classes.dialogBox}>Create proposal</Typography>
+          <Grid item md={3}>
+            <Card>
+              <Grid container>
+                <Grid items>
+                  <Typography className={classes.listFont}>
+                    Status
+                  </Typography>
                 </Grid>
               </Grid>
-              <Grid container spacing={3} ml={0}>
-                <Grid item md={6} >
-                  <Typography className={classes.cardFont}>Type of Proposal</Typography>
-                </Grid>
-                <Grid item md={6}>
-                  <Typography className={classes.cardFont}>Voting duration</Typography>
-                </Grid>
+              <ListItemButton onClick={() => fetchFilteredData("all")}>
+                <div className={classes.allIllustration}></div>
+                <ListItemText primary="All" className={classes.listFont} />
+                <ArrowForwardIosIcon fontSize="5px" />
+              </ListItemButton>
+
+              <ListItemButton onClick={() => fetchFilteredData("active")}>
+                <div className={classes.activeIllustration}></div>
+                <ListItemText primary="Active" className={classes.listFont} />
+                <ArrowForwardIosIcon fontSize="5px" />
+              </ListItemButton>
+
+              <ListItemButton onClick={() => fetchFilteredData("closed")}>
+                <div className={classes.pendingIllustration}></div>
+                <ListItemText primary="Closed" className={classes.listFont} />
+                <ArrowForwardIosIcon fontSize="5px" />
+              </ListItemButton>
+              <ListItemButton onClick={() => fetchFilteredData("failed")}>
+                <div className={classes.closedIllustration}></div>
+                <ListItemText primary="Failed" className={classes.listFont} />
+                <ArrowForwardIosIcon fontSize="5px" />
+              </ListItemButton>
+            </Card>
+          </Grid>
+        </Grid>
+        <Dialog open={open} onClose={handleClose} scroll="body" PaperProps={{ classes: { root: classes.modalStyle } }} fullWidth maxWidth="lg" >
+          <DialogContent sx={{ overflow: "hidden", backgroundColor: '#19274B', }} >
+            <Grid container >
+              <Grid item m={3}>
+                <Typography className={classes.dialogBox}>Create proposal</Typography>
               </Grid>
-              <Grid container spacing={1} ml={2}>
-                <Grid item md={6}>
-                  <Select
-                    displayEmpty
-                    value={type}
-                    onChange={handleTypeChange}
-                    input={<OutlinedInput />}
-                    renderValue={(selected) => {
-                      if (selected.length === 0) {
-                        return proposalType[0].name
-                      }
-                      return selected
-                    }}
-                    MenuProps={proposalType}
-                    style={{ borderRadius: "10px", background: "#111D38 0% 0% no-repeat padding-box", width: "90%",  }}
-                  >
-                    {proposalType.map((value) => (
-                      <MenuItem
-                        key={value.type}
-                        value={value.type}>
-                        {value.name}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </Grid>
-                <Grid item md={6}>
+            </Grid>
+            <Grid container spacing={3} ml={0}>
+              <Grid item md={6} >
+                <Typography className={classes.cardFont}>Type of Proposal</Typography>
+              </Grid>
+              <Grid item md={6}>
+                <Typography className={classes.cardFont}>Voting duration</Typography>
+              </Grid>
+            </Grid>
+            <Grid container spacing={1} ml={2}>
+              <Grid item md={6}>
+                <Select
+                  displayEmpty
+                  value={type}
+                  onChange={handleTypeChange}
+                  input={<OutlinedInput />}
+                  renderValue={(selected) => {
+                    if (selected.length === 0) {
+                      return proposalType[0].name
+                    }
+                    return selected
+                  }}
+                  MenuProps={proposalType}
+                  style={{ borderRadius: "10px", background: "#111D38 0% 0% no-repeat padding-box", width: "90%", }}
+                >
+                  {proposalType.map((value) => (
+                    <MenuItem
+                      key={value.type}
+                      value={value.type}>
+                      {value.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </Grid>
+              <Grid item md={6}>
                 <LocalizationProvider dateAdapter={AdapterDateFns}>
                   <DesktopDatePicker
                     error={duration === null}
@@ -464,31 +463,31 @@ const Proposal = ({router}) => {
                     onChange={(e) => handleDurationChange(e)}
                     renderInput={(params) => <TextField {...params} />}
                   />
-                  </LocalizationProvider>
-                </Grid>
+                </LocalizationProvider>
               </Grid>
-              <Grid container item ml={3} mt={2}>
-                <Typography className={classes.cardFont}>Proposal Title*</Typography>
-              </Grid>
-              <Grid container item ml={3} mt={2}>
-                <TextField sx={{ width: "95%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
-                  placeholder="Add your one line description here" onChange={(e) => setTitle(e.target.value)} />
-              </Grid>
-              <Grid container item ml={3} mt={2}>
-                <Typography className={classes.cardFont}>Proposal description*</Typography>
-              </Grid>
-              <Grid container item ml={3} mt={3} mb={3}>
-                <TextField
-                  onChange={(e) => setDescription(e.target.value)}
-                  multiline
-                  rows={10}
-                  // aria-label="minimum height"
-                  // minRows={10}
-                  placeholder="Add full description here"
-                  style={{ width: "95%", height: "auto", backgroundColor: "#19274B", fontSize: "18px", color: "#C1D3FF" }}
-                />
-              </Grid>
-              {/* {type === proposalType[0].type ?
+            </Grid>
+            <Grid container item ml={3} mt={2}>
+              <Typography className={classes.cardFont}>Proposal Title*</Typography>
+            </Grid>
+            <Grid container item ml={3} mt={2}>
+              <TextField sx={{ width: "95%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
+                placeholder="Add your one line description here" onChange={(e) => setTitle(e.target.value)} />
+            </Grid>
+            <Grid container item ml={3} mt={2}>
+              <Typography className={classes.cardFont}>Proposal description*</Typography>
+            </Grid>
+            <Grid container item ml={3} mt={3} mb={3}>
+              <TextField
+                onChange={(e) => setDescription(e.target.value)}
+                multiline
+                rows={10}
+                // aria-label="minimum height"
+                // minRows={10}
+                placeholder="Add full description here"
+                style={{ width: "95%", height: "auto", backgroundColor: "#19274B", fontSize: "18px", color: "#C1D3FF" }}
+              />
+            </Grid>
+            {/* {type === proposalType[0].type ?
                 (
                   <>
                     <Grid container item ml={3} mt={3} mb={2}>
@@ -597,20 +596,20 @@ const Proposal = ({router}) => {
                   </>
                 )
               } */}
-              <Grid container>
-                <Grid item  mr={2} xs sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
-                  <Grid item>
-                    <Button onClick={handleClose}>Cancel</Button>
-                  </Grid>
-                  <Grid item ml={2}>
-                  {(duration === null || title === null || description === null ) ? <Button onClick={handleNext} disabled >Next</Button> :<Button onClick={handleNext} >Next</Button> }
-                    
-                  </Grid>
+            <Grid container>
+              <Grid item mr={2} xs sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
+                <Grid item>
+                  <Button onClick={handleClose}>Cancel</Button>
+                </Grid>
+                <Grid item ml={2}>
+                  {(duration === null || title === null || description === null) ? <Button onClick={handleNext} disabled >Next</Button> : <Button onClick={handleNext} >Next</Button>}
+
                 </Grid>
               </Grid>
-            </DialogContent>
-          </Dialog>
-          <Snackbar open={openSnackBar} autoHideDuration={6000} onClose={handleSnackBarClose} anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
+            </Grid>
+          </DialogContent>
+        </Dialog>
+        <Snackbar open={openSnackBar} autoHideDuration={6000} onClose={handleSnackBarClose} anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
           {!failed ?
             (<Alert onClose={handleSnackBarClose} severity="success" sx={{ width: '100%' }}>
               Proposal Successfully created!
@@ -620,7 +619,6 @@ const Proposal = ({router}) => {
             </Alert>)
           }
         </Snackbar>
-        </div>
       </Layout1>
     </>
   )
