@@ -24,7 +24,7 @@ const useStyles = makeStyles({
     color: "#FFFFFF",
   },
   addButton: {
-    width: "208px",
+    width: "11vw",
     height: "60px",
     background: "#3B7AFD 0% 0% no-repeat padding-box",
     borderRadius: "10px",
@@ -38,7 +38,7 @@ const useStyles = makeStyles({
     fontFamily: "Whyte",
   },
   searchField: {
-    width: "548px",
+    width: "28.5vw",
     height: "55px",
     color: "#C1D3FF",
     background: "#111D38 0% 0% no-repeat padding-box",
@@ -297,7 +297,7 @@ const Proposal = ({ router }) => {
   return (
     <>
       <Layout1 page={2}>
-        <Grid container spacing={3} paddingLeft={10} paddingTop={10}>
+        <Grid container spacing={3} paddingLeft={10} paddingTop={15}>
           <Grid item md={9}>
             <Grid container mb={5}>
               <Grid item>

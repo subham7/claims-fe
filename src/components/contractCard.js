@@ -31,7 +31,7 @@ const useStyles = makeStyles({
     borderRadius: "10px 10px 0px 0px",
     padding: 0,
     width: "529px",
-    height: "466px",
+    height: "600px",
     "&:hover": {
       cursor: "pointer",
     },

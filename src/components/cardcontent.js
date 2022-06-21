@@ -4,8 +4,7 @@ import { makeStyles } from "@mui/styles"
 
 const useStyles = makeStyles({
   image: {
-    height: "346px",
-    width: "346px",
+    width:"100%"
   },
   heading: {
     fontSize: "21px",
@@ -24,7 +23,7 @@ const useStyles = makeStyles({
 export default function CollectionCard() {
   const classes = useStyles()
   return (
-    <Card sx={{ maxWidth: 345 }}>
+    <Card sx={{ maxWidth: "17.968vw" }}>
       <CardMedia
         className={classes.image}
         component="img"

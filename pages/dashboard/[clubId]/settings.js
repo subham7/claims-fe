@@ -7,8 +7,8 @@ import Router, { useRouter } from "next/router"
 import { useSelector, useDispatch } from "react-redux"
 import { fetchClubbyDaoAddress, USDC_CONTRACT_ADDRESS, FACTORY_CONTRACT_ADDRESS, createUser, getMembersDetails } from "../../../src/api"
 import Web3 from "web3"
-import USDCContract from "../../../src/abis/usdc.json"
-import GovernorContract from "../../../src/abis/governor.json"
+import USDCContract from "../../../src/abis/usdcTokenContract.json"
+import GovernorContract from "../../../src/abis/governorContract.json"
 import { SmartContract } from "../../../src/api/index"
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import LinkIcon from '@mui/icons-material/Link'

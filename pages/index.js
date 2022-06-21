@@ -177,7 +177,7 @@ export default function App() {
             justifyContent="center"
             alignItems="center">
 
-            <Grid item >
+            <Grid item mt={15} >
               <img src="/assets/images/start_illustration.svg" />
             </Grid>
             <Grid item mt={4}>

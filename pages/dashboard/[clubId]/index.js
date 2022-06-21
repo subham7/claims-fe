@@ -9,14 +9,14 @@ import CollectionCard from "../../../src/components/cardcontent"
 import Router, { useRouter } from "next/router"
 import ClubFetch from "../../../src/utils/clubFetch"
 import { SmartContract, fetchClubbyDaoAddress, getMembersDetails, getBalance, getProposal, getTokens, USDC_CONTRACT_ADDRESS } from "../../../src/api"
-import GovernorContract from "../../../src/abis/governor.json"
-import USDCContract from "../../../src/abis/usdc.json"
+import GovernorContract from "../../../src/abis/governorContract.json"
+import USDCContract from "../../../src/abis/usdcTokenContract.json"
 import { useSelector } from "react-redux"
 
 const useStyles = makeStyles({
   firstCard: {
     position: "relative",
-    width: "626px",
+    width: "32vw",
     height: "352px",
     padding: "0px",
     opacity: "1",
@@ -24,13 +24,13 @@ const useStyles = makeStyles({
   },
   secondCard: {
     position: "relative",
-    width: "626px",
+    width: "32vw",
     height: "352px",
     padding: "0px",
     opacity: "1",
   },
   thirdCard: {
-    width: "413px",
+    width: "22vw",
     height: "351px",
   },
   cardOverlay: {
@@ -41,18 +41,21 @@ const useStyles = makeStyles({
     bottom: "30px",
   },
   card1text1: {
-    fontSize: "34px",
+    fontFamily: "Whyte",
+    fontSize: "3.4vh",
     color: "#EFEFEF",
     textTransform: "uppercase",
     opacity: "1",
   },
   card1text2: {
-    fontSize: "22px",
+    fontFamily: "Whyte",
+    fontSize: "2.2vh",
     color: "#C1D3FF",
     textTransform: "uppercase",
     opacity: "1",
   },
   card1text3: {
+    fontFamily: "Whyte",
     paddingTop: "70px",
     fontSize: "22px",
     color: "#C1D3FF",
@@ -60,6 +63,7 @@ const useStyles = makeStyles({
     opacity: "1",
   },
   card1text4: {
+    fontFamily: "Whyte",
     fontWeight: "bold",
     fontSize: "50px",
     color: "#EFEFEF",
@@ -67,70 +71,83 @@ const useStyles = makeStyles({
     opacity: "1",
   },
   card1text5: {
+    fontFamily: "Whyte",
     fontSize: "22px",
     color: "#C1D3FF",
     textTransform: "uppercase",
     opacity: "1",
   },
   card2text1: {
+    fontFamily: "Whyte",
     fontSize: "22px",
     color: "#C1D3FF",
     opacity: "1",
   },
   card2text2: {
+    fontFamily: "Whyte",
     fontWeight: "bold",
     fontSize: "40px",
     color: "#EFEFEF",
     opacity: "1",
   },
   card2text3: {
+    fontFamily: "Whyte",
     fontSize: "22px",
     color: "#0ABB92",
     opacity: "1",
   },
   card2text4: {
+    fontFamily: "Whyte",
     fontSize: "18px",
     color: "#C1D3FF",
     opacity: "1",
   },
   card2text5: {
+    fontFamily: "Whyte",
     fontSize: "22px",
     color: "#EFEFEF",
     opacity: "1",
   },
   card2text6: {
+    fontFamily: "Whyte",
     fontSize: "18px",
     color: "#C1D3FF",
     opacity: "1",
   },
   card2text7: {
+    fontFamily: "Whyte",
     fontSize: "22px",
     color: "#EFEFEF",
     opacity: "1",
   },
   card2text8: {
+    fontFamily: "Whyte",
     fontSize: "18px",
     color: "#EFEFEF",
     opacity: "1",
   },
   card2text9: {
+    fontFamily: "Whyte",
     fontSize: "22px",
     color: "#C1D3FF",
     textTransform: "uppercase",
     opacity: "1",
   },
   card3text1: {
-
+    fontFamily: "Whyte",
   },
   card3text2: {
+    fontFamily: "Whyte",
     fontSize: "19px",
     color: "#0ABB92",
   },
   card3text3: {
+    fontFamily: "Whyte",
     width: "354px",
     color: "#C1D3FF",
   },
   card3text4: {
+    fontFamily: "Whyte",
     textAlign: "left",
     fontSize: "19px",
     letteSpacing: "0.2px",
@@ -150,7 +167,7 @@ const useStyles = makeStyles({
     borderRadius: "15px"
   },
   linkInput: {
-    width: "354px",
+    width: "18.4vw",
     height: "auto",
     color: "#C1D3FF",
     background: "#111D38 0% 0% no-repeat padding-box",
@@ -161,11 +178,12 @@ const useStyles = makeStyles({
     paddingLeft: "20%",
   },
   clubAssets: {
+    fontFamily: "Whyte",
     fontSize: "40px",
     color: "#FFFFFF",
   },
   fourthCard: {
-    width: "413px",
+    width: "22vw",
     borderRadius: "20px"
   },
   pendingIllustration: {
@@ -175,16 +193,18 @@ const useStyles = makeStyles({
     borderRadius: "50%",
   },
   card5text1: {
+    fontFamily: "Whyte",
     fontSize: "16px",
     color: "#C1D3FF",
     opacity: "1",
   },
   card5text2: {
+    fontFamily: "Whyte",
     fontSize: "22px",
     color: "#EFEFEF",
   },
   searchField: {
-    width: "548px",
+    width: "28.5vw",
     height: "auto",
     color: "#C1D3FF",
     background: "#111D38 0% 0% no-repeat padding-box",
@@ -192,25 +212,29 @@ const useStyles = makeStyles({
     borderRadius: "10px",
   },
   tokensText: {
+    fontFamily: "Whyte",
     fontSize: "30px",
     color: "#F5F5F5",
   },
   iconMetroCoin: {
-    width: "81px",
-    height: "60px",
+    width: "70%"
   },
   tableheading: {
+    fontFamily: "Whyte",
     color: "#C1D3FF",
     fontSize: "22px",
   },
   tablecontent: {
+    fontFamily: "Whyte",
     fontSize: "22px",
     color: "#F5F5F5",
   },
   tablecontent2: {
+    fontFamily: "Whyte",
     fontSize: "22px",
   },
   membersTitleSmall: {
+    fontFamily: "Whyte",
     fontSize: "24px",
     color: "#FFFFFF",
     backgroundColor: "#19274B"
@@ -383,15 +407,15 @@ const Dashboard = (props) => {
   return (
     <>
       <Layout1 page={1}>
-        <div style={{ padding: "110px 80px" }}>
-          <Grid container spacing={2}>
+        {/* <div style={{ padding: "110px 80px" }}> */}
+          <Grid container spacing={1} paddingLeft={10} paddingTop={15}>
             <Grid item md={9}>
-              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={{ xs: 1, sm: 2, md: 4 }}>
+              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={3}>
                 <Card className={classes.firstCard}>
                   <CardMedia
                     component="img"
                     image="/assets/images/card_illustration.png"
-                    alt="green iguana"
+                    alt="abstract background"
                   />
                   <Box className={classes.cardOverlay}>
                     <Typography className={classes.card1text1}>
@@ -413,9 +437,10 @@ const Dashboard = (props) => {
                 </Card>
                 <Card className={classes.secondCard}>
                   <Grid container m={4}>
-                    <Grid container>
-                      <Stack mt={4}>
-                        <img src="/assets/icons/Icon-metro-coins.png" alt="icon-metro-coins" className={classes.iconMetroCoin} />
+                    <Grid container spacing={{ xs:2, sm:5, md: 3}} direction={{xs: "column", sm: "column", md: "row" }}>
+                      <Grid item mt={4}>
+                        <Grid container item direction="column">
+                        <img src="/assets/icons/icon-metro-coin.svg" alt="icon-metro-coins" className={classes.iconMetroCoin} />
                         <Typography mt={4} className={classes.card2text1}>
                           Tresury ($)
                         </Typography>
@@ -425,9 +450,11 @@ const Dashboard = (props) => {
                         {/* <Typography className={classes.card2text3}>
                           37%
                         </Typography> */}
-                      </Stack>
-                      <Divider className={classes.divider} variant="middle" orientation="vertical" />
-                      <Stack m={4}>
+                        </Grid>
+                      </Grid>
+                      <Grid item ml={4}><Divider className={classes.divider} variant="middle" orientation="vertical" /></Grid>
+                      <Grid item mt={4} ml={1}>
+                        <Grid container item direction="column">
                         <Typography className={classes.card2text4}>
                           Members
                         </Typography>
@@ -446,6 +473,11 @@ const Dashboard = (props) => {
                         <Typography className={classes.card2text9}>
                           $43,206
                         </Typography> */}
+                        </Grid>
+                      </Grid>
+
+                      <Stack m={4}>
+                        
                       </Stack>
                     </Grid>
                   </Grid>
@@ -554,7 +586,7 @@ const Dashboard = (props) => {
                   <Grid container>
                     <Grid items mt={4} ml={1} mr={1} >
                       <Typography className={classes.card3text4}>
-                        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore
+                      Share this link for new members to join your club and add funds into this club.
                       </Typography>
                     </Grid>
                   </Grid>
@@ -598,7 +630,7 @@ const Dashboard = (props) => {
               </Stack>
             </Grid>
           </Grid>
-        </div>
+        {/* </div> */}
       </Layout1>
     </>
   )

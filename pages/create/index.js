@@ -262,7 +262,9 @@ const Create = (props) => {
   }
 
   const handleContractClick = (key) => {
-    handleNext()
+    if (key == 0) {
+      handleNext()
+    }
   }
 
   const step1 = () => {
@@ -646,7 +648,7 @@ const Create = (props) => {
   return (
     <Layout2>
       <div style={{ padding: "100px 400px" }}>
-        <Box sx={{ width: "60.260vw" }}>
+        <Box sx={{ width: "60.260vw" }} paddingTop={10} >
           <Stepper activeStep={activeStep}>
             {steps.map((label, index) => {
               const stepProps = {}
