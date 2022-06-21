@@ -1,12 +1,13 @@
 import { React, useEffect, useState } from "react"
 import { makeStyles } from "@mui/styles"
 import Layout1 from "../../../src/components/layouts/layout1"
-import { Box, Card, Grid, Typography, ListItemButton, ListItemText, Stack, TextField, Button, IconButton, Table, TableContainer, TableBody, TableCell, TableRow, TableHead } from "@mui/material"
+import { Box, Card, Grid, Typography, ListItemButton, Avatar, Stack, TextField, Button, IconButton, Table, TableContainer, TableBody, TableCell, TableRow, TableHead } from "@mui/material"
 import SearchIcon from "@mui/icons-material/Search"
 import BasicTable from "../../../src/components/table"
 import {getMembersDetails} from "../../../src/api/index"
 import { useSelector } from "react-redux"
 import Paper from '@mui/material/Paper';
+import { useRouter } from "next/router"
 
 
 
@@ -81,6 +82,14 @@ const useStyles = makeStyles({
     color: "#FFFFFF",
     backgroundColor: "#19274B"
   },
+  activityLink: {
+    color: "#C1D3FF",
+    textDecoration: "none",
+    "&:hover": {
+      textDecoration: "none",
+      cursor: "pointer",
+    }
+  },
 })
 
 export default function Members(props) {
@@ -89,6 +98,7 @@ export default function Members(props) {
   const header = ["Name", "Deposit amount", "Club tokens", "Joined on"]
   const [members, setMembers] = useState([])
   const [fetched, setFetched] = useState(false)
+  const router = useRouter()
 
   const fetchMembers = () => {
     const membersData = getMembersDetails(clubID)
@@ -108,6 +118,11 @@ export default function Members(props) {
       fetchMembers()
     }
   }, [fetched])
+
+  const handleAddressClick = (event, address) => {
+    event.preventDefault()
+    router.push(`https://rinkeby.etherscan.io/address/${address}`)
+  } 
 
   return (
     <>
@@ -145,7 +160,7 @@ export default function Members(props) {
                         key={key}
                         sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                       >
-                        <TableCell align="left" className={classes.tablecontent}><></>{data.userAddress.substring(0, 6) + "......" + data.userAddress.substring(data.userAddress.length - 4)}</TableCell>
+                        <TableCell align="left" className={classes.tablecontent}><a className={classes.activityLink} onClick={(e) => {handleAddressClick(e, data.userAddress)}}> {data.userAddress.substring(0, 6) + "......" + data.userAddress.substring(data.userAddress.length - 4)} </a></TableCell>
                         <TableCell align="left" className={classes.tablecontent}>{data.clubs[0].balance}</TableCell>
                         <TableCell align="left" className={classes.tablecontent}>${data.clubs[0].balance}</TableCell>
                         <TableCell align="left"className={classes.tablecontent2}>15/06/2022</TableCell>

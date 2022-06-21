@@ -3,7 +3,7 @@ import Layout1 from "../../../src/components/layouts/layout1"
 import { Box, Card, Grid, Typography, Avatar, Button, Stack, Skeleton, Divider, TableCell, TableRow, TableHead, Dialog, DialogContent, IconButton } from "@mui/material"
 import { makeStyles } from "@mui/styles"
 import ProgressBar from "../../../src/components/progressbar"
-import { useRouter } from "next/router"
+import Router, { useRouter } from "next/router"
 import { useSelector, useDispatch } from "react-redux"
 import { fetchClubbyDaoAddress, USDC_CONTRACT_ADDRESS, FACTORY_CONTRACT_ADDRESS, createUser, getMembersDetails } from "../../../src/api"
 import Web3 from "web3"
@@ -140,6 +140,7 @@ const Settings = (props) => {
   const classes = useStyles()
   const daoAddress = useSelector(state => { return state.create.daoAddress })
   const dispatch = useDispatch()
+  const router = useRouter()
   const [dataFetched, setDataFetched] = useState(false)
   const walletAddress = useSelector(state => { return state.create.value })
   const [tokenDetails, settokenDetails] = useState(null)
@@ -378,7 +379,7 @@ const Settings = (props) => {
                         </IconButton>
                       </Grid>
                       <Grid item>
-                        <IconButton color="primary" onClick={() => { navigator.clipboard.writeText(daoAddress) }}>
+                        <IconButton color="primary" onClick={() => { router.push(`https://rinkeby.etherscan.io/address/${daoAddress}`) }}>
                           <LinkIcon className={classes.iconColor} />
                         </IconButton>
                       </Grid>
@@ -399,7 +400,7 @@ const Settings = (props) => {
                         </IconButton>
                       </Grid>
                       <Grid item>
-                        <IconButton color="primary" onClick={() => { navigator.clipboard.writeText(tokenAPIDetails[0].treasuryAddress) }}>
+                        <IconButton color="primary" onClick={() => { router.push(`https://rinkeby.etherscan.io/address/${tokenAPIDetails[0].treasuryAddress}`) }}>
                           <LinkIcon className={classes.iconColor} />
                         </IconButton>
                       </Grid>

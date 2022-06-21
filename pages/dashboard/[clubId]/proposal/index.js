@@ -7,7 +7,7 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
 import AddCircleRoundedIcon from '@mui/icons-material/AddCircleRounded'
 import { fontStyle } from "@mui/system"
 import SimpleSelectButton from "../../../../src/components/simpleSelectButton"
-import { proposalType, votingDuration } from "../../../../src/data/dashboard"
+import { proposalType, commandTypeList } from "../../../../src/data/dashboard"
 import { createProposal, getProposal } from "../../../../src/api/index"
 import { DesktopDatePicker } from '@mui/x-date-pickers'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
@@ -19,6 +19,7 @@ import { useRouter, withRouter } from "next/router"
 
 const useStyles = makeStyles({
   clubAssets: {
+    fontFamily: "Whyte",
     fontSize: "48px",
     color: "#FFFFFF",
   },
@@ -34,6 +35,7 @@ const useStyles = makeStyles({
     background: "#3B7AFD 0% 0% no-repeat padding-box",
     borderRadius: "10px",
     fontSize: "22px",
+    fontFamily: "Whyte",
   },
   searchField: {
     width: "548px",
@@ -74,32 +76,39 @@ const useStyles = makeStyles({
   },
   listFont: {
     fontSize: "22px",
-    color: "#C1D3FF"
+    color: "#C1D3FF",
+    fontFamily: "Whyte",
   },
   cardFont: {
     fontSize: "18px",
     color: "#C1D3FF",
+    fontFamily: "Whyte",
   },
   cardFont1: {
     fontSize: "24px",
     color: "#EFEFEF",
+    fontFamily: "Whyte",
   },
   cardFontActive: {
+    fontFamily: "Whyte",
     fontSize: "16px",
     backgroundColor: "#0ABB92",
     padding: "0 5px 0 5px"
   },
   cardFontPending: {
+    fontFamily: "Whyte",
     fontSize: "16px",
     backgroundColor: "#FFB74D",
     padding: "0 5px 0 5px"
   },
   cardFontFailed: {
+    fontFamily: "Whyte",
     fontSize: "16px",
     backgroundColor: "#D55438",
     padding: "0 5px 0 5px"
   },
   dialogBox: {
+    fontFamily: "Whyte",
     fontSize: "38px",
     color: "#FFFFFF",
     opacity: 1,
@@ -129,13 +138,14 @@ const useStyles = makeStyles({
     backgroundColor: "#142243",
   },
   daysFont: {
+    fontFamily: "Whyte",
     fontSize: "21px",
     color: "#FFFFFF"
   },
   datePicker: {
     borderRadius: "10px",
     backgroundColor: "#111D38",
-    width: "100%",
+    width: "90%",
   }
 })
 
@@ -157,6 +167,7 @@ const Proposal = ({ router }) => {
   const [fetched, setFetched] = useState(false)
   const routers = useRouter()
   const clubID = useSelector(state => { return state.create.clubID })
+  const [senderAddress, setSenderAddress] = useState(null)
 
   const fetchData = () => {
     const proposalData = getProposal(clubID)
@@ -190,35 +201,43 @@ const Proposal = ({ router }) => {
   const handleNext = (event) => {
     const web3 = new Web3(window.web3)
     const walletAddress = web3.utils.toChecksumAddress(localStorage.getItem("wallet"))
-    // temporary only, will update at a latest stage
-    const data = {
-      "name": title,
-      "description": description,
-      "createdBy": walletAddress,
-      "clubId": clubID,
-      "votingDuration": new Date(duration).toISOString(),
-      "votingOptions": [
-        {
-          "text": "Yes"
-        },
-        {
-          "text": "No"
-        },
-        {
-          "text": "Abstain"
-        }
-      ]
-    }
-    const createRequest = createProposal(data)
-    createRequest.then((result) => {
-      if (result.status !== 201) {
-        setFailed(true)
-      } else {
-        fetchData()
-        setFailed(false)
-        setOpen(false)
+    if (type === proposalType[0].type) {
+      // temporary only, will update at a latest stage
+      const data = {
+        "name": title,
+        "description": description,
+        "createdBy": walletAddress,
+        "clubId": clubID,
+        "votingDuration": new Date(duration).toISOString(),
+        "votingOptions": [
+          {
+            "text": "Yes"
+          },
+          {
+            "text": "No"
+          },
+          {
+            "text": "Abstain"
+          }
+        ]
       }
-    })
+
+      const createRequest = createProposal(data)
+      createRequest.then((result) => {
+        if (result.status !== 201) {
+          setFailed(true)
+        } else {
+          fetchData()
+          setFailed(false)
+          setOpen(false)
+        }
+      })
+    }
+    else {
+      const payload = {
+        
+      }
+    }
   }
 
 
@@ -230,7 +249,7 @@ const Proposal = ({ router }) => {
 
   const handleTypeChange = (event) => {
     const { target: { value } } = event
-    if (value === proposalType[0].type) {
+    if (value) {
       setType(value)
     }
   }
@@ -273,7 +292,7 @@ const Proposal = ({ router }) => {
       return;
     }
     setOpenSnackBar(false)
-  };
+  }
 
   return (
     <>
@@ -342,41 +361,6 @@ const Proposal = ({ router }) => {
                 )
               })}
 
-              {/* <Grid item>
-                  <Card className={classes.mainCard}>
-                    <Grid container>
-                      <Grid items ml={2} mr={2}>
-                        <Typography className={classes.cardFont}>
-                          Proposed by 0x75ed……34fd
-                        </Typography>
-                      </Grid>
-                      <Grid items ml={1} mr={1} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
-                        <Chip className={classes.cardFontNo} label="Closed" />
-                      </Grid>
-                    </Grid>
-                    <Grid container>
-                      <Grid items ml={2} mr={2}>
-                        <Typography className={classes.cardFont1}>
-                          [#7] Buy 2 ETH worth of Evaders in their private round.
-                        </Typography>
-                      </Grid>
-                    </Grid>
-                    <Grid container>
-                      <Grid items ml={2} mr={2}>
-                        <Typography className={classes.cardFont}>
-                          Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet…
-                        </Typography>
-                      </Grid>
-                    </Grid>
-                    <Grid container>
-                      <Grid items ml={2} mr={2} mt={2}>
-                        <Typography className={classes.daysFont}>
-                          3 days left
-                        </Typography>
-                      </Grid>
-                    </Grid>
-                  </Card>
-                </Grid> */}
             </Grid>
           </Grid>
           <Grid item md={3}>
@@ -437,7 +421,7 @@ const Proposal = ({ router }) => {
                   input={<OutlinedInput />}
                   renderValue={(selected) => {
                     if (selected.length === 0) {
-                      return proposalType[0].name
+                      return proposalType.name
                     }
                     return selected
                   }}
@@ -457,11 +441,11 @@ const Proposal = ({ router }) => {
                 <LocalizationProvider dateAdapter={AdapterDateFns}>
                   <DesktopDatePicker
                     error={duration === null}
-                    className={classes.datePicker}
+                    // className={classes.datePicker}
                     inputFormat="dd/MM/yyyy"
                     value={duration}
                     onChange={(e) => handleDurationChange(e)}
-                    renderInput={(params) => <TextField {...params} />}
+                    renderInput={(params) => <TextField {...params} className={classes.datePicker}/>}
                   />
                 </LocalizationProvider>
               </Grid>
@@ -484,10 +468,10 @@ const Proposal = ({ router }) => {
                 // aria-label="minimum height"
                 // minRows={10}
                 placeholder="Add full description here"
-                style={{ width: "95%", height: "auto", backgroundColor: "#19274B", fontSize: "18px", color: "#C1D3FF" }}
+                style={{ width: "95%", height: "auto", backgroundColor: "#19274B", fontSize: "18px", color: "#C1D3FF", fontFamily: "Whyte", }}
               />
             </Grid>
-            {/* {type === proposalType[0].type ?
+            {type === proposalType[0].type ?
                 (
                   <>
                     <Grid container item ml={3} mt={3} mb={2}>
@@ -570,18 +554,29 @@ const Proposal = ({ router }) => {
                                       }
                                       return selected
                                     }}
-                                    MenuProps={["Select a command"]}
+                                    MenuProps={commandTypeList}
                                     style={{ borderRadius: "10px", background: "#111D38 0% 0% no-repeat padding-box", width: "90%" }}
                                   >
-                                    {["Select a command"].map((value) => (
+                                    {commandTypeList.map((command) => (
                                       <MenuItem
-                                        key={value}
-                                        value={value}>
-                                        {value}
+                                        key={command.commandId}
+                                        value={command.commandText}>
+                                        {command.commandText}
                                       </MenuItem>
                                     ))}
                                   </Select>
                                 </Grid>
+                                {name === commandTypeList[7].commandText ? 
+                                  (
+                                    <Grid container item ml={3} mt={1} mb={2}>
+                                      <Typography className={classes.cardFont}>Receiver&apos;s wallet address</Typography>
+                                      <TextField sx={{ width: "90%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
+                                        placeholder="0x..." onChange={(e) => setSenderAddress(e.target.value)} />
+                                    </Grid>
+                                  )
+                                  :
+                                  null
+                                }
                               </>
                             )
                           })}
@@ -595,7 +590,7 @@ const Proposal = ({ router }) => {
                     </Grid>
                   </>
                 )
-              } */}
+              }
             <Grid container>
               <Grid item mr={2} xs sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
                 <Grid item>

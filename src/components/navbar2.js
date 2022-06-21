@@ -127,7 +127,7 @@ export default function Navbar2(props) {
             <AccountButton accountDetail={userDetails} />
           ) : (
             <Button
-              sx={{ mr: 2, mt: 2 }}
+              sx={{ mr: 2, mt: 2, fontFamily: "Whyte" }}
               className={classes.navButton}
             >
               No wallet connected
