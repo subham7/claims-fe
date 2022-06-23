@@ -17,17 +17,20 @@ const useStyles = makeStyles({
   valuesStyle: {
     fontSize: "21px",
     fontWeight: "normal",
+    fontFamily: "Whyte",
   },
   valuesDimStyle: {
     fontSize: "21px",
     color: "#C1D3FF",
+    fontFamily: "Whyte",
   },
   avatarStyle: {
     width: "5.21vw",
     height: "10.26vh",
     backgroundColor: "#C1D3FF33",
     color: "#C1D3FF",
-    fontSize: "3.25rem"
+    fontSize: "3.25rem",
+    fontFamily: "Whyte",
   },
   cardRegular: {
     // height: "626px",
@@ -41,12 +44,14 @@ const useStyles = makeStyles({
   connectWalletButton: {
     backgroundColor: "#3B7AFD",
     fontSize: "21px",
+    fontFamily: "Whyte",
   },
   depositButton: {
     backgroundColor: "#3B7AFD",
     width: "208px",
     height: "60px",
     fontSize: "21px",
+    fontFamily: "Whyte",
   },
   cardSmall: {
     backgroundColor: "#111D38",
@@ -54,6 +59,7 @@ const useStyles = makeStyles({
     opacity: 1,
   },
   cardSmallFont: {
+    fontFamily: "Whyte",
     fontSize: "18px",
     color: "#C1D3FF",
   },
@@ -61,6 +67,7 @@ const useStyles = makeStyles({
     width: "150px",
     fontSize: "38px",
     fontWeight: "bold",
+    fontFamily: "Whyte",
     color: "#F5F5F5",
     borderColor: "#142243",
     borderRadius: "0px",
@@ -85,6 +92,7 @@ const useStyles = makeStyles({
     textAlign: "left",
     color: "#FFB74D",
     fontSize: "14px",
+    fontFamily: "Whyte",
   },
   maxTag: {
     borderRadius: "17px",
@@ -97,6 +105,7 @@ const useStyles = makeStyles({
     alignItems: "center",
     backgroundColor: " #3B7AFD",
     fontSize: "20px",
+    fontFamily: "Whyte",
   },
   openTag: {
     width: "60px",
@@ -114,6 +123,7 @@ const useStyles = makeStyles({
     textTransform: "uppercase",
     color: "#0ABB92",
     opacity: "1",
+    fontFamily: "Whyte",
   },
   iconColor: {
     color: "#C1D3FF",
@@ -275,8 +285,7 @@ const Settings = (props) => {
   return (
     <>
       <Layout1 page={5}>
-        <div style={{ padding: "110px 80px" }}>
-          <Grid container spacing={3}>
+          <Grid container spacing={3} paddingLeft={10} paddingTop={15}>
             <Grid item md={9}>
               <Card className={classes.cardRegular}>
                 <Grid container spacing={2}>
@@ -543,7 +552,6 @@ const Settings = (props) => {
               </Grid>
             </DialogContent>
           </Dialog>
-        </div>
       </Layout1>
     </>
   )
