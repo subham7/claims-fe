@@ -763,5 +763,5 @@ const Create = (props) => {
   )
 }
 
-// export default ProtectRoute(Create);
-export default Create
+export default ProtectRoute(Create);
+// export default Create
