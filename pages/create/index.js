@@ -41,6 +41,7 @@ const useStyles = makeStyles({
     width: "100%",
     margin: "16px 0 25px 0",
     fontSize: "18px",
+    fontFamily: "Whyte",
   },
   image: {
     width: "22.9vw",
@@ -49,20 +50,24 @@ const useStyles = makeStyles({
   },
   largeText: {
     fontSize: "18px",
-    color: "#C1D3FF"
+    color: "#C1D3FF",
+    fontFamily: "Whyte",
   },
   largeText1: {
-    fontSize: "46px",
-    color: "#FFFFFF"
+    fontSize: "2.4vw",
+    color: "#FFFFFF",
+    fontFamily: "Whyte",
   },
   wrapTextIcon: {
     fontSize: "18px",
+    fontFamily: "Whyte",
     color: "#C1D3FF",
     verticalAlign: 'middle',
     display: 'inline-flex'
   },
   smallText: {
     fontSize: "14px",
+    fontFamily: "Whyte",
   },
   cardWarning: {
     backgroundColor: "#FFB74D0D",
@@ -73,15 +78,18 @@ const useStyles = makeStyles({
     textAlign: "left",
     color: "#FFB74D",
     fontSize: "14px",
+    fontFamily: "Whyte",
   },
   boldText: {
     fontWeight: "bold",
+    fontFamily: "Whyte",
   },
   uploadButton: {
     backgroundColor: "#111D38",
     color: "#3B7AFD",
     fontSize: "18px",
     width: "208px",
+    fontFamily: "Whyte",
   },
   cardPadding: {
     margin: 0,
@@ -90,11 +98,22 @@ const useStyles = makeStyles({
   },
   addCircleColour: {
     color: "#C1D3FF",
+    fontFamily: "Whyte",
   },
   large_button: {
     fontSize: "18px",
-    width: "208px"
+    width: "208px",
+    borderRadius: "30px",
+    fontFamily: "Whyte",
   },
+  backButton: {
+    fontSize: "18px",
+    width: "208px",
+    borderRadius: "30px",
+    backgroundColor: "#FFFFFF",
+    color: "#3B7AFD",
+    fontFamily: "Whyte",
+  }
 })
 
 const Create = (props) => {
@@ -262,7 +281,9 @@ const Create = (props) => {
   }
 
   const handleContractClick = (key) => {
-    handleNext()
+    if (key == 0) {
+      handleNext()
+    }
   }
 
   const step1 = () => {
@@ -645,8 +666,8 @@ const Create = (props) => {
   const components = [step1(), step2(), step3()]
   return (
     <Layout2>
-      <div style={{ padding: "100px 400px" }}>
-        <Box sx={{ width: "60.260vw" }}>
+      <Grid container item paddingLeft={{ xs: 5, sm: 5, md:10, lg:50 }} paddingTop={15} paddingRight={{xs: 10, sm: 5, md:10, lg:40 }} justifyContent="center" alignItems="center">
+        <Box width={{ xs: "60%", sm: "70%", md:"80%", lg: "100%" }} paddingTop={10} >
           <Stepper activeStep={activeStep}>
             {steps.map((label, index) => {
               const stepProps = {}
@@ -686,8 +707,16 @@ const Create = (props) => {
           ) : (
             <>
               {components[activeStep]}
-              <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
+              <Box width={{ xs: "100%", sm: "100%", md:"100%" }} paddingTop={10} paddingBottom={10}>
                 {activeStep === 2 ? (
+                <>
+                  <Button
+                  color="inherit"
+                  onClick={handleBack}
+                  className={classes.large_button}
+                  >
+                    Back
+                  </Button>
                   <Button
                     className={classes.large_button}
                     variant="contained"
@@ -709,12 +738,26 @@ const Create = (props) => {
                   >
                     Next
                   </Button>
-                ) : <></>}
+                  </>
+                  
+                ) : 
+                <>
+                  {activeStep === 1 ? 
+                  <Button
+                  color="inherit"
+                  onClick={handleBack}
+                  className={classes.large_button}
+                  >
+                    Back
+                  </Button>
+                  : null  
+                }
+                </>}
               </Box>
             </>
           )}
         </Box>
-      </div>
+      </Grid>
 
     </Layout2>
   )

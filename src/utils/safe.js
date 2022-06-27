@@ -7,7 +7,7 @@ import { safeConnected, safeDisconnected } from "../redux/reducers/gnosis"
 import { addDaoAddress, addClubID } from "../redux/reducers/create"
 import store from "../redux/store"
 import { createClub, SmartContract, FACTORY_CONTRACT_ADDRESS, fetchClub } from "../api"
-import CreateDAO from "../abis/DAO.json"
+import FactoryContract from "../abis/factoryContract.json"
 import Router from "next/router"
 import { createUser } from "../../src/api/index"
 
@@ -57,9 +57,9 @@ export async function initiateConnection(
   let walletAddress = safeOwner[0]
 
   const smartContract = new SmartContract(
-    CreateDAO,
+    FactoryContract,
     FACTORY_CONTRACT_ADDRESS,
-    walletAddress
+    undefined
   )
   await gnosisSafePromise(owners, threshold, dispatch)
     .then((treasuryAddress) => {

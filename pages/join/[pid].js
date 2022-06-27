@@ -10,16 +10,18 @@ import { useRouter } from "next/router";
 import { fetchClubbyDaoAddress, USDC_CONTRACT_ADDRESS, FACTORY_CONTRACT_ADDRESS, createUser, getMembersDetails } from "../../src/api";
 import store from "../../src/redux/store"
 import Web3 from "web3"
-import USDCContract from "../../src/abis/usdc.json"
-import GovernorContract from "../../src/abis/governor.json"
+import USDCContract from "../../src/abis/usdcTokenContract.json"
+import GovernorContract from "../../src/abis/governorContract.json"
 import { SmartContract } from "../../src/api/index"
 
 
 const useStyles = makeStyles({
   valuesStyle: {
-    fontSize: "24px",
+    fontFamily: "Whyte",
+    fontSize: "21px",
   },
   valuesDimStyle: {
+    fontFamily: "Whyte",
     fontSize: "21px",
     color: "#C1D3FF",
   },
@@ -28,10 +30,11 @@ const useStyles = makeStyles({
     height: "10.26vh",
     backgroundColor: "#C1D3FF33",
     color: "#C1D3FF",
-    fontSize: "3.25rem"
+    fontSize: "3.25rem",
+    fontFamily: "Whyte",
   },
   cardRegular: {
-    height: "626px",
+    // height: "626px",
     backgroundColor: "#19274B",
     borderRadius: "10px",
     opacity: 1,
@@ -41,12 +44,14 @@ const useStyles = makeStyles({
   },
   connectWalletButton: {
     backgroundColor: "#3B7AFD",
+    fontFamily: "Whyte",
     fontSize: "21px",
   },
   depositButton: {
     backgroundColor: "#3B7AFD",
     width: "208px",
     height: "60px",
+    fontFamily: "Whyte",
     fontSize: "21px",
   },
   cardSmall: {
@@ -55,6 +60,7 @@ const useStyles = makeStyles({
     opacity: 1,
   },
   cardSmallFont: {
+    fontFamily: "Whyte",
     fontSize: "18px",
     color: "#C1D3FF",
   },
@@ -62,6 +68,7 @@ const useStyles = makeStyles({
     width: "150px",
     fontSize: "38px",
     fontWeight: "bold",
+    fontFamily: "Whyte",
     color: "#F5F5F5",
     borderColor: "#142243",
     borderRadius: "0px",
@@ -85,6 +92,7 @@ const useStyles = makeStyles({
   textWarning: {
     textAlign: "left",
     color: "#FFB74D",
+    fontFamily: "Whyte",
     fontSize: "14px",
   },
   maxTag: {
@@ -98,6 +106,7 @@ const useStyles = makeStyles({
     alignItems: "center",
     backgroundColor: " #3B7AFD",
     fontSize: "20px",
+    fontFamily: "Whyte",
   },
   openTag: {
     width: "60px",
@@ -111,6 +120,7 @@ const useStyles = makeStyles({
     backgroundColor: "#0ABB9233",
   },
   openTagFont: {
+    fontFamily: "Whyte",
     fontSize: "12px",
     textTransform: "uppercase",
     color: "#0ABB92",
@@ -128,6 +138,7 @@ const useStyles = makeStyles({
     backgroundColor: "#FFB74D0D",
   },
   closeTagFont: {
+    fontFamily: "Whyte",
     fontSize: "12px",
     textTransform: "uppercase",
     color: "#FFB74D",
@@ -200,7 +211,7 @@ const Join = (props) => {
 
   const tokenDetailsRetrieval = async () => {
     if (tokenAPIDetails && tokenAPIDetails.length > 0) {
-      const tokenDetailContract = new SmartContract(USDCContract, tokenAPIDetails[0].tokenAddress, userDetails)
+      const tokenDetailContract = new SmartContract(USDCContract, tokenAPIDetails[0].tokenAddress, undefined)
       await tokenDetailContract.tokenDetails()
         .then((result) => {
           // console.log(result)
@@ -231,7 +242,7 @@ const Join = (props) => {
 
   const contractDetailsRetrieval = async () => {
     if (daoAddress && !governorDataFetched && !governorDetails && userDetails) {
-      const governorDetailContract = new SmartContract(GovernorContract, daoAddress, userDetails)
+      const governorDetailContract = new SmartContract(GovernorContract, daoAddress, undefined)
       await governorDetailContract.getGovernorDetails()
         .then((result) => {
           // console.log(result)
@@ -248,7 +259,7 @@ const Join = (props) => {
 
   const obtaineWalletBallance = async () => {
     if (!fetched && userDetails) {
-      const usdc_contract = new SmartContract(USDCContract, USDC_CONTRACT_ADDRESS, userDetails)
+      const usdc_contract = new SmartContract(USDCContract, USDC_CONTRACT_ADDRESS, undefined)
       await usdc_contract.balanceOf()
         .then((result) => {
           setWalletBalance(result / Math.pow(10, 18))
@@ -296,9 +307,9 @@ const Join = (props) => {
 
   const handleDeposit = async () => {
     setDepositInitiated(true)
-    const usdc_contract = new SmartContract(USDCContract, USDC_CONTRACT_ADDRESS, userDetails)
+    const usdc_contract = new SmartContract(USDCContract, USDC_CONTRACT_ADDRESS, undefined)
     // pass governor contract
-    const dao_contract = new SmartContract(GovernorContract, daoAddress, userDetails)
+    const dao_contract = new SmartContract(GovernorContract, daoAddress, undefined)
 
     // pass governor contract
     const usdc_response = usdc_contract.approveDeposit(daoAddress, depositAmount)
@@ -364,8 +375,7 @@ const Join = (props) => {
 
   return (
     <Layout3>
-      <div style={{ padding: "127px 140px" }}>
-        <Grid container spacing={2}>
+        <Grid container spacing={2} paddingLeft={10} paddingTop={15} paddingRight={10}>
           <Grid item md={7}>
             <Card className={classes.cardRegular}>
               <Grid container spacing={2}>
@@ -543,7 +553,6 @@ const Join = (props) => {
             <CircularProgress color="inherit" />
           </Backdrop>
           : null}
-      </div>
     </Layout3>
   )
 }

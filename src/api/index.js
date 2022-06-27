@@ -1,7 +1,7 @@
 import Web3 from "web3";
-import CreateDAO from "../abis/DAO.json";
-import GovernorContract from "../abis/governor.json";
-import USDCContract from "../abis/usdc.json";
+import FactoryContract from "../abis/factoryContract.json";
+import GovernorContract from "../abis/governorContract.json";
+import USDCContract from "../abis/usdcTokenContract.json";
 import { useDispatch } from "react-redux"
 import { addWallet, removeWallet } from "../redux/reducers/create"
 import {onboard} from "../utils/wallet"
@@ -9,11 +9,10 @@ import axios from "axios";
 
 
 // Global variables
-const MAIN_API_URL = 'https://api.stationx.network/v1/'
-// const MAIN_API_URL = 'https://8c3f-115-99-246-5.in.ngrok.io/v1/'
-export const FACTORY_CONTRACT_ADDRESS = '0x5767C46519e4946aA42414E4Da754E5C11D52Ef0'
-export const USDC_CONTRACT_ADDRESS = '0x484727B6151a91c0298a9D2b9fD84cE3bc6BC4E3'
-const RINKEBY_URL = "https://young-black-silence.rinkeby.quiknode.pro/16777add1b7c70fec1d3080f9d7a64e1bc3095df/"
+const MAIN_API_URL = process.env.NEXT_PUBLIC_API_HOST
+export const FACTORY_CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_FACTORY_CONTRACT_ADDRESS
+export const USDC_CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_USDC_CONTRACT_ADDRESS
+const RINKEBY_URL = process.env.NEXT_PUBLIC_RINKEBY_URL
 
 
 // Smart contract calls
@@ -48,7 +47,7 @@ async function syncWallet() {
 }
 
 export class SmartContract{
-  constructor(abiFile, contractAddress, walletAddress) {
+  constructor(abiFile, contractAddress, walletAddress=localStorage.getItem("wallet")) {
     if (syncWallet() && abiFile && contractAddress && walletAddress){
       this.web3 = new Web3(window.web3)
       this.abi = abiFile.abi
@@ -59,6 +58,7 @@ export class SmartContract{
     }
   }
 
+  // create new club contract function
   async createDAO(tokenName, tokenSymbol, totalDeposit, minDeposit, maxDeposit, ownerFee, closeDate, feeUSDC, tresuryAddress, quoram, formThreshold) {
     const days = Math.round((new Date(closeDate) - new Date()) / (1000 * 60 * 60 * 24))
     // call createDAO method from contract
@@ -77,8 +77,55 @@ export class SmartContract{
     ).send({ from : this.walletAddress})
   }
 
+  // execute 
+  async updateProposalAndExecution(
+    proposalHash="", 
+    executionStatus="", 
+    proposalId=1, 
+    customToken="0x0000000000000000000000000000000000000000", 
+    airDropToken="0x0000000000000000000000000000000000000000",
+    executionIds=[0,0,0,0,0,0,0,0,0], 
+    quoram=0, 
+    threshold=0,
+    day=0,
+    minDeposits=0,
+    maxDeposits=0,
+    totalDeposits=0,
+    airDropAmount=0,
+    mintGTAmounts=[],
+    mintGTAddresses=[],
+    customTokenAmounts=[], 
+    customTokenAddresses=[], 
+    sendEthAmounts=[],
+    sendEthAddresses=[],
+    executiveRoles=[]
+) {
+    return this.contract.methods.updateProposalAndExecution({
+      proposalHash: proposalHash,
+      status: executionStatus,
+      proposalId: proposalId,
+      customToken: customToken,
+      airDropToken: airDropToken,
+      executionIds: executionIds,
+      quorum: quoram,
+      threshold: threshold,
+      day: day,
+      minDeposits: minDeposits,
+      maxDeposits: maxDeposits,
+      totalDeposits: totalDeposits,
+      airDropAmount: airDropAmount,
+      mintGTAmounts: mintGTAmounts,      
+      mintGTAddresses: mintGTAddresses,    
+      customTokenAmounts: customTokenAmounts,  
+      customTokenAddresses: customTokenAddresses,   
+      sendEthAmounts: sendEthAmounts,         
+      sendEthAddresses: sendEthAddresses,       
+      executiveRoles: executiveRoles
+    } 
+      ).send( { from: this.walletAddress })
+    }
+
   async approveDeposit(address, amount) {
-    console.log(window.web3.selectedAddress)
     return this.contract.methods.approve(address, amount).send({ from: this.walletAddress })
   }
   

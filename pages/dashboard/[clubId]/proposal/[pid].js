@@ -2,7 +2,7 @@ import { React, useEffect, useState } from "react"
 import Web3 from "web3"
 import { makeStyles } from "@mui/styles"
 import Layout1 from "../../../../src/components/layouts/layout1"
-import { Box, Card, Grid, Typography, ListItemButton, ListItemText, Divider, Stack, TextField, Button, IconButton, Modal, Select, OutlinedInput, MenuItem, TextareaAutosize, Chip, CardActionArea } from "@mui/material"
+import { Box, Card, Grid, Typography, ListItemButton, ListItemText, Divider, Stack, TextField, Button, IconButton, Modal, Select, OutlinedInput, MenuItem, TextareaAutosize, Chip, CardActionArea, Snackbar, Alert } from "@mui/material"
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
 import { useRouter } from "next/router"
 import Router, { withRouter } from "next/router"
@@ -13,6 +13,8 @@ import ProgressBar from "../../../../src/components/progressbar"
 import { useDispatch, useSelector } from "react-redux"
 import { addProposalId } from "../../../../src/redux/reducers/create"
 import { getProposalDetail, castVote } from "../../../../src/api/index"
+import GovernorContract from "../../../../src/abis/governorContract.json"
+import { SmartContract } from "../../../../src/api/index"
 
 const useStyles = makeStyles({
   clubAssets: {
@@ -109,7 +111,6 @@ const useStyles = makeStyles({
     borderRadius: "10px",
     backgroundColor: "#19274B",
     display: "flex",
-
   }
 })
 
@@ -121,10 +122,17 @@ const ProposalDetail = ({ router }) => {
   const [voted, setVoted] = useState(false)
   const [fetched, setFetched] = useState(false)
   const [proposalData, setProposalData] = useState([])
-  const [castVoteOption, setCastVoteOption] = useState(null)
+  const [castVoteOption, setCastVoteOption] = useState('')
   const clubID = useSelector(state => { return state.create.clubID })
   const [cardSelected, setCardSelected] = useState(null)
   const walletAddress = useSelector(state => { return state.create.value })
+  const daoAddress = useSelector(state => { return state.create.daoAddress })
+  const [executed, setExecuted] = useState(false)
+  const [message, setMessage] = useState("")
+  const [failed, setFailed] = useState(false)
+  const [openSnackBar, setOpenSnackBar] = useState(false)
+
+
   let voteId = null
   const dispatch = useDispatch()
 
@@ -186,6 +194,327 @@ const ProposalDetail = ({ router }) => {
     })
   }
 
+  const executeFunction = () => {
+    if (proposalData[0].commands[0].executionId == 0) {
+      // for airdrop execution
+      const updateProposal = new SmartContract(GovernorContract, daoAddress, undefined)
+      const response = updateProposal.updateProposalAndExecution(
+        proposalData[0].ipfsHash,
+        "Executed",
+        123444,
+        undefined,
+        proposalData[0].commands[0].airDropToken,
+        [1, 0, 0, 0, 0, 0, 0, 0, 0],
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        proposalData[0].commands[0].airDropAmount,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+      )
+      response.then((result) => {
+        // console.log(result)
+        setExecuted(true)
+        setOpenSnackBar(true)
+        setMessage("Airdrop execution successful!")
+        setFailed(false)
+      }, (error) => {
+        setExecuted(false)
+        setOpenSnackBar(true)
+        setMessage("Airdrop execution failed!")
+        setFailed(true)
+        // console.log(error)
+      })
+    }
+    if (proposalData[0].commands[0].executionId == 1) {
+      // for mintGT execution
+      const updateProposal = new SmartContract(GovernorContract, daoAddress, undefined)
+      const response = updateProposal.updateProposalAndExecution(
+        proposalData[0].ipfsHash,
+        "Executed",
+        123444,
+        undefined,
+        undefined,
+        [0, 1, 0, 0, 0, 0, 0, 0, 0],
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        [proposalData[0].commands[0].mintGTAmounts],
+        [proposalData[0].commands[0].mintGTAddresses],
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+      )
+      response.then((result) => {
+        // console.log(result)
+        setExecuted(true)
+        setOpenSnackBar(true)
+        setMessage("MintGT execution successful!")
+        setFailed(false)
+      }, (error) => {
+        // console.log(error)
+        setExecuted(false)
+        setOpenSnackBar(true)
+        setMessage("MintGT execution failed!")
+        setFailed(true)
+      })
+
+    }
+    if (proposalData[0].commands[0].executionId == 2) {
+      // for assigner executor role execution
+      const updateProposal = new SmartContract(GovernorContract, daoAddress, undefined)
+      const response = updateProposal.updateProposalAndExecution(
+        proposalData[0].ipfsHash,
+        "Executed",
+        123444,
+        undefined,
+        undefined,
+        [0, 0, 1, 0, 0, 0, 0, 0, 0],
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        [proposalData[0].commands[0].executiveRoles],
+      )
+      response.then((result) => {
+        // console.log(result)
+        setExecuted(true)
+        setOpenSnackBar(true)
+        setMessage("Assigner executor role allocation successful!")
+        setFailed(false)
+      }, (error) => {
+        // console.log(error)
+        setExecuted(false)
+        setOpenSnackBar(true)
+        setMessage("Assigner executor role allocation failed!")
+        setFailed(true)
+      })
+    }
+    if (proposalData[0].commands[0].executionId == 3) {
+      // For execution of Governance settings
+      const updateProposal = new SmartContract(GovernorContract, daoAddress, undefined)
+      const response = updateProposal.updateProposalAndExecution(
+        proposalData[0].ipfsHash,
+        "Executed",
+        123444,
+        undefined,
+        undefined,
+        [0, 0, 0, 1, 0, 0, 0, 0, 0],
+        proposalData[0].commands[0].quorum,
+        proposalData[0].commands[0].threshold,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined
+      )
+      response.then((result) => {
+        // console.log(result)
+        setExecuted(true)
+        setOpenSnackBar(true)
+        setMessage("Governance settings execution successful!")
+        setFailed(false)
+      }, (error) => {
+        // console.log(error)
+        setExecuted(false)
+        setOpenSnackBar(true)
+        setMessage("Governance settings execution failed!")
+        setFailed(true)
+      })
+    }
+
+    if (proposalData[0].commands[0].executionId == 4) {
+      // start deposit execution
+      const updateProposal = new SmartContract(GovernorContract, daoAddress, undefined)
+      const response = updateProposal.updateProposalAndExecution(
+        proposalData[0].ipfsHash,
+        "Executed",
+        123444,
+        undefined,
+        undefined,
+        [0, 0, 0, 0, 1, 0, 0, 0, 0],
+        undefined,
+        undefined,
+        proposalData[0].commands[0].day,
+        proposalData[0].commands[0].minDeposits,
+        proposalData[0].commands[0].maxDeposits,
+        proposalData[0].commands[0].totalDeposits,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined
+      )
+      response.then((result) => {
+        // console.log(result)
+        setExecuted(true)
+        setOpenSnackBar(true)
+        setMessage("Start deposit execution successful!")
+        setFailed(false)
+      }, (error) => {
+        // console.log(error)
+        setExecuted(false)
+        setOpenSnackBar(true)
+        setMessage("Start deposit execution failed!")
+        setFailed(true)
+      })
+    }
+
+    if (proposalData[0].commands[0].executionId == 5) {
+      // close deposit execution
+      const updateProposal = new SmartContract(GovernorContract, daoAddress, undefined)
+      const response = updateProposal.updateProposalAndExecution(
+        proposalData[0].ipfsHash,
+        "Executed",
+        123444,
+        undefined,
+        undefined,
+        [0, 0, 0, 0, 0, 1, 0, 0, 0],
+        proposalData[0].commands[0].quorum,
+        proposalData[0].commands[0].threshold,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined
+      )
+      response.then((result) => {
+        // console.log(result)
+        setExecuted(true)
+        setOpenSnackBar(true)
+        setMessage("Close deposit execution successful!")
+        setFailed(false)
+      }, (error) => {
+        // console.log(error)
+        setExecuted(false)
+        setOpenSnackBar(true)
+        setMessage("Close deposit execution failed!")
+        setFailed(true)
+      })
+    }
+    if (proposalData[0].commands[0].executionId == 6) {
+      // update raise amount execution
+      const updateProposal = new SmartContract(GovernorContract, daoAddress, undefined)
+      const response = updateProposal.updateProposalAndExecution(
+        proposalData[0].ipfsHash,
+        "Executed",
+        123444,
+        undefined,
+        undefined,
+        [0, 0, 0, 0, 0, 0, 1, 0, 0],
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        proposalData[0].commands[0].CardtotalDeposits,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined
+      )
+      response.then((result) => {
+        console.log(result)
+        setExecuted(true)
+        setOpenSnackBar(true)
+        setMessage("Update raise amount execution successful!")
+        setFailed(false)
+      }, (error) => {
+        // console.log(error)
+        setExecuted(false)
+        setOpenSnackBar(true)
+        setMessage("Update raise amount execution failed!")
+        setFailed(true)
+      })
+    }
+    if (proposalData[0].commands[0].executionId == 7) {
+      // send custom token execution
+    }
+    if (proposalData[0].commands[0].executionId == 8) {
+      // send ethereum
+      const updateProposal = new SmartContract(GovernorContract, daoAddress, undefined)
+      const response = updateProposal.updateProposalAndExecution(
+        proposalData[0].ipfsHash,
+        "Executed",
+        123444,
+        undefined,
+        undefined,
+        [0, 0, 0, 0, 0, 0, 0, 0, 1],
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        [proposalData[0].commands[0].sendEthAmounts],
+        [proposalData[0].commands[0].sendEthAddresses],
+        undefined
+      )
+      response.then((result) => {
+        // console.log(result)
+        setExecuted(true)
+        setOpenSnackBar(true)
+        setMessage("Send ETH execution successful!")
+        setFailed(false)
+      }, (error) => {
+        console.log(error)
+        setExecuted(false)
+        setOpenSnackBar(true)
+        setMessage("Send ETH execution failed!")
+        setFailed(true)
+      })
+    } 
+  }
+
   const checkUserVoted = (pid) => {
     const web3 = new Web3(window.web3)
     walletAddress = web3.utils.toChecksumAddress(walletAddress)
@@ -202,6 +531,13 @@ const ProposalDetail = ({ router }) => {
 
   const handleShowMore = () => {
     router.push("/dashboard", undefined, { shallow: true })
+  }
+
+  const handleSnackBarClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setOpenSnackBar(false)
   }
 
   return (
@@ -282,32 +618,60 @@ const ProposalDetail = ({ router }) => {
                     </Grid>
                   </Card>
                 ) : (<Card>
-                  <Typography className={classes.cardFont1}>Cast your vote</Typography>
-                  <Divider sx={{ marginTop: 2, marginBottom: 3 }} />
-                  <Stack spacing={2}>
-                    {fetched ? proposalData[0].votingOptions.map((data, key) => {
-                      return (
-                        <CardActionArea className={classes.mainCard} key={key}>
-                          <Card className={cardSelected == key ? classes.mainCardSelected : classes.mainCard} onClick={e => { setCastVoteOption(data.votingOptionId); setCardSelected(key) }}>
-                            <Grid container item justifyContent="center" alignItems="center">
-                              <Typography className={classes.cardFont1} >{data.text} </Typography>
+                  {proposalData[0].type !== "action" ? 
+                    <>
+                    <Typography className={classes.cardFont1}>Cast your vote</Typography>
+                    <Divider sx={{ marginTop: 2, marginBottom: 3 }} />
+                    <Stack spacing={2}>
+                      {fetched ? proposalData[0].votingOptions.map((data, key) => {
+                        return (
+                          <CardActionArea className={classes.mainCard} key={key}>
+                            <Card className={cardSelected == key ? classes.mainCardSelected : classes.mainCard} onClick={e => { setCastVoteOption(data.votingOptionId); setCardSelected(key) }}>
+                              <Grid container item justifyContent="center" alignItems="center">
+                                <Typography className={classes.cardFont1} >{data.text} </Typography>
+                              </Grid>
+                            </Card>
+                          </CardActionArea>
+                        )
+                      }) : null}
+                      <CardActionArea className={classes.mainCard}>
+                        <Card className={voted ? classes.mainCardButtonSuccess : classes.mainCardButton} onClick={submitVote}>
+                          <Grid container justifyContent="center" alignItems="center">
+                            {voted ? (<Grid item mt={0.5}><CheckCircleRoundedIcon /></Grid>) : <Grid item></Grid>}
+                            <Grid item>
+                              {voted ? (<Typography className={classes.cardFont1} >Successfully voted</Typography>) : (<Typography className={classes.cardFont1}>Vote now</Typography>)}
                             </Grid>
-                          </Card>
-                        </CardActionArea>
-                      )
-                    }) : null}
-
-                    <CardActionArea className={classes.mainCard}>
-                      <Card className={voted ? classes.mainCardButtonSuccess : classes.mainCardButton} onClick={submitVote}>
+                          </Grid>
+                        </Card>
+                      </CardActionArea>
+                    </Stack>
+                    </>
+                    : 
+                    <Stack spacing={2}>
+                      {executed ? (
+                        <Grid container direction="column" justifyContent="center" alignItems="center" mt={10} mb={10}>
+                          <Grid item mt={0.5}><CheckCircleRoundedIcon className={classes.mainCardButtonSuccess} /></Grid>
+                          <Grid item mt={0.5}>
+                            <Typography className={classes.successfulMessageText}>Successfully Executed</Typography>
+                          </Grid>
+                          <Grid item mt={0.5}>
+                            <Typography className={classes.listFont2}>
+                              {/* Voted for */}
+                            </Typography>
+                          </Grid>
+                        </Grid>
+                      ) : <CardActionArea className={classes.mainCard}>
+                      <Card className={executed ? classes.mainCardButtonSuccess : classes.mainCardButton} onClick={executeFunction}>
                         <Grid container justifyContent="center" alignItems="center">
-                          {voted ? (<Grid item mt={0.5}><CheckCircleRoundedIcon /></Grid>) : <Grid item></Grid>}
+                          {executed ? (<Grid item mt={0.5}><CheckCircleRoundedIcon /></Grid>) : <Grid item></Grid>}
                           <Grid item>
-                            {voted ? (<Typography className={classes.cardFont1} >Successfully voted</Typography>) : (<Typography className={classes.cardFont1}>Vote now</Typography>)}
+                            {executed ? (<Typography className={classes.cardFont1} >Executed Successfully</Typography>) : (<Typography className={classes.cardFont1}>Execute Now</Typography>)}
                           </Grid>
                         </Grid>
                       </Card>
-                    </CardActionArea>
+                    </CardActionArea> }
                   </Stack>
+                    }
                 </Card>) : null}
               </Grid>
 
@@ -447,6 +811,16 @@ const ProposalDetail = ({ router }) => {
             </Stack>
           </Grid>
         </Grid>
+        <Snackbar open={openSnackBar} autoHideDuration={6000} onClose={handleSnackBarClose} anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
+          {!failed ?
+            (<Alert onClose={handleSnackBarClose} severity="success" sx={{ width: '100%' }}>
+              {message}
+            </Alert>) :
+            (<Alert onClose={handleSnackBarClose} severity="error" sx={{ width: '100%' }}>
+              {message}
+            </Alert>)
+          }
+        </Snackbar>
       </Layout1>
     </>
   )

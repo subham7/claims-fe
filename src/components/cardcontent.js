@@ -4,18 +4,21 @@ import { makeStyles } from "@mui/styles"
 
 const useStyles = makeStyles({
   image: {
-    height: "346px",
-    width: "346px",
+    width:"100%",
+    padding: 0,
   },
   heading: {
     fontSize: "21px",
+    fontFamily: "Whyte",
     color: "#F5F5F5",
   },
   subheading: {
+    fontFamily: "Whyte",
     fontSize: "15px",
     color: "#767676",
   },
   netamount: {
+    fontFamily: "Whyte",
     fontSize: "21px",
     color: "#0ABB92",
   }
@@ -24,7 +27,7 @@ const useStyles = makeStyles({
 export default function CollectionCard() {
   const classes = useStyles()
   return (
-    <Card sx={{ maxWidth: 345 }}>
+    <Card sx={{ maxWidth: "17.968vw", padding: 0, }}>
       <CardMedia
         className={classes.image}
         component="img"

@@ -49,7 +49,7 @@ export default function Navbar(props) {
       <AppBar
         className={classes.root}
         position="fixed"
-        sx={{ width: "100%", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        sx={{ width: "100%", zIndex: (theme) => theme.zIndex.drawer + 1, fontFamily: "Whyte",  paddingBottom: "15px"  }}
       >
         <Toolbar>
           <IconButton
@@ -76,7 +76,7 @@ export default function Navbar(props) {
             <Button
               variant="contained"
               color="primary"
-              sx={{ mr: 2 }}
+              sx={{ mr: 2, fontFamily: "Whyte" }}
               onClick={() => handleConnection()}
             >
               Connect Wallet

@@ -3,12 +3,12 @@ import Layout1 from "../../../src/components/layouts/layout1"
 import { Box, Card, Grid, Typography, Avatar, Button, Stack, Skeleton, Divider, TableCell, TableRow, TableHead, Dialog, DialogContent, IconButton } from "@mui/material"
 import { makeStyles } from "@mui/styles"
 import ProgressBar from "../../../src/components/progressbar"
-import { useRouter } from "next/router"
+import Router, { useRouter } from "next/router"
 import { useSelector, useDispatch } from "react-redux"
 import { fetchClubbyDaoAddress, USDC_CONTRACT_ADDRESS, FACTORY_CONTRACT_ADDRESS, createUser, getMembersDetails } from "../../../src/api"
 import Web3 from "web3"
-import USDCContract from "../../../src/abis/usdc.json"
-import GovernorContract from "../../../src/abis/governor.json"
+import USDCContract from "../../../src/abis/usdcTokenContract.json"
+import GovernorContract from "../../../src/abis/governorContract.json"
 import { SmartContract } from "../../../src/api/index"
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import LinkIcon from '@mui/icons-material/Link'
@@ -17,17 +17,20 @@ const useStyles = makeStyles({
   valuesStyle: {
     fontSize: "21px",
     fontWeight: "normal",
+    fontFamily: "Whyte",
   },
   valuesDimStyle: {
     fontSize: "21px",
     color: "#C1D3FF",
+    fontFamily: "Whyte",
   },
   avatarStyle: {
     width: "5.21vw",
     height: "10.26vh",
     backgroundColor: "#C1D3FF33",
     color: "#C1D3FF",
-    fontSize: "3.25rem"
+    fontSize: "3.25rem",
+    fontFamily: "Whyte",
   },
   cardRegular: {
     // height: "626px",
@@ -41,12 +44,14 @@ const useStyles = makeStyles({
   connectWalletButton: {
     backgroundColor: "#3B7AFD",
     fontSize: "21px",
+    fontFamily: "Whyte",
   },
   depositButton: {
     backgroundColor: "#3B7AFD",
     width: "208px",
     height: "60px",
     fontSize: "21px",
+    fontFamily: "Whyte",
   },
   cardSmall: {
     backgroundColor: "#111D38",
@@ -54,6 +59,7 @@ const useStyles = makeStyles({
     opacity: 1,
   },
   cardSmallFont: {
+    fontFamily: "Whyte",
     fontSize: "18px",
     color: "#C1D3FF",
   },
@@ -61,6 +67,7 @@ const useStyles = makeStyles({
     width: "150px",
     fontSize: "38px",
     fontWeight: "bold",
+    fontFamily: "Whyte",
     color: "#F5F5F5",
     borderColor: "#142243",
     borderRadius: "0px",
@@ -85,6 +92,7 @@ const useStyles = makeStyles({
     textAlign: "left",
     color: "#FFB74D",
     fontSize: "14px",
+    fontFamily: "Whyte",
   },
   maxTag: {
     borderRadius: "17px",
@@ -97,6 +105,7 @@ const useStyles = makeStyles({
     alignItems: "center",
     backgroundColor: " #3B7AFD",
     fontSize: "20px",
+    fontFamily: "Whyte",
   },
   openTag: {
     width: "60px",
@@ -114,6 +123,7 @@ const useStyles = makeStyles({
     textTransform: "uppercase",
     color: "#0ABB92",
     opacity: "1",
+    fontFamily: "Whyte",
   },
   iconColor: {
     color: "#C1D3FF",
@@ -140,6 +150,7 @@ const Settings = (props) => {
   const classes = useStyles()
   const daoAddress = useSelector(state => { return state.create.daoAddress })
   const dispatch = useDispatch()
+  const router = useRouter()
   const [dataFetched, setDataFetched] = useState(false)
   const walletAddress = useSelector(state => { return state.create.value })
   const [tokenDetails, settokenDetails] = useState(null)
@@ -170,7 +181,7 @@ const Settings = (props) => {
 
   const tokenDetailsRetrieval = async () => {
     if (tokenAPIDetails && tokenAPIDetails.length > 0) {
-      const tokenDetailContract = new SmartContract(USDCContract, tokenAPIDetails[0].tokenAddress, walletAddress)
+      const tokenDetailContract = new SmartContract(USDCContract, tokenAPIDetails[0].tokenAddress, undefined)
       await tokenDetailContract.tokenDetails()
         .then((result) => {
           // console.log(result)
@@ -202,7 +213,7 @@ const Settings = (props) => {
 
   const contractDetailsRetrieval = async () => {
     if (daoAddress && !governorDataFetched && !governorDetails && walletAddress) {
-      const governorDetailContract = new SmartContract(GovernorContract, daoAddress, walletAddress)
+      const governorDetailContract = new SmartContract(GovernorContract, daoAddress, undefined)
       await governorDetailContract.getGovernorDetails()
         .then((result) => {
           // console.log(result)
@@ -241,8 +252,8 @@ const Settings = (props) => {
   }
 
   const findCurrentMember = () => {
-    console.log(walletAddress)
-    console.log(membersDetails)
+    // console.log(walletAddress)
+    // console.log(membersDetails)
     if (membersFetched && membersDetails.length > 0 && walletAddress) {
       let obj = membersDetails.find(member => member.userAddress === walletAddress)
       let pos = membersDetails.indexOf(obj)
@@ -274,8 +285,7 @@ const Settings = (props) => {
   return (
     <>
       <Layout1 page={5}>
-        <div style={{ padding: "110px 80px" }}>
-          <Grid container spacing={3}>
+          <Grid container spacing={3} paddingLeft={10} paddingTop={15}>
             <Grid item md={9}>
               <Card className={classes.cardRegular}>
                 <Grid container spacing={2}>
@@ -325,7 +335,7 @@ const Settings = (props) => {
                     <br />
                     <Stack spacing={1} alignItems="stretch">
                       <Typography variant="p" className={classes.valuesDimStyle}>Your ownership</Typography>
-                      <Typography variant="p" className={classes.valuesStyle}>{governorDataFetched ? (findCurrentMember() / governorDetails[4]) * 100 : 0}% (${findCurrentMember()} )</Typography>
+                      <Typography variant="p" className={classes.valuesStyle}>{governorDataFetched && dataFetched ? ((findCurrentMember() / (tokenDetails[2]/ Math.pow(10, 18))).toFixed(2) * 100) : 0}% (${findCurrentMember()} )</Typography>
                     </Stack>
                   </Grid>
                   <Grid item ml={4} mt={5} mb={2}>
@@ -378,7 +388,7 @@ const Settings = (props) => {
                         </IconButton>
                       </Grid>
                       <Grid item>
-                        <IconButton color="primary" onClick={() => { navigator.clipboard.writeText(daoAddress) }}>
+                        <IconButton color="primary" onClick={() => { router.push(`https://rinkeby.etherscan.io/address/${daoAddress}`) }}>
                           <LinkIcon className={classes.iconColor} />
                         </IconButton>
                       </Grid>
@@ -399,7 +409,7 @@ const Settings = (props) => {
                         </IconButton>
                       </Grid>
                       <Grid item>
-                        <IconButton color="primary" onClick={() => { navigator.clipboard.writeText(tokenAPIDetails[0].treasuryAddress) }}>
+                        <IconButton color="primary" onClick={() => { router.push(`https://rinkeby.etherscan.io/address/${tokenAPIDetails[0].treasuryAddress}`) }}>
                           <LinkIcon className={classes.iconColor} />
                         </IconButton>
                       </Grid>
@@ -542,7 +552,6 @@ const Settings = (props) => {
               </Grid>
             </DialogContent>
           </Dialog>
-        </div>
       </Layout1>
     </>
   )

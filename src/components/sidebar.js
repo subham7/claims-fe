@@ -39,7 +39,7 @@ const useStyles = makeStyles({
     borderRadius: "23px",
     justifyContent: "center",
     alignItems: "center",
-  }
+  },
 })
 
 const drawerWidth = 100
@@ -55,7 +55,6 @@ export default function Sidebar(props) {
   return (
     <Box
       component="nav"
-      // sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
       aria-label="mailbox folders"
     >
       {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
@@ -73,8 +72,10 @@ export default function Sidebar(props) {
           "& .MuiDrawer-paper": {
             boxSizing: "border-box",
             width: drawerWidth,
+            paddingTop: "50px",
             backgroundColor: (theme) =>
               theme.palette.mode == "dark" ? "#142243" : "#F4F4F5",
+
           },
         }}
       >
@@ -120,7 +121,7 @@ export default function Sidebar(props) {
           "& .MuiDrawer-paper": {
             boxSizing: "border-box",
             width: drawerWidth,
-            borderRight: "none",
+            paddingTop: "50px",
             backgroundColor: (theme) =>
               theme.palette.mode == "dark" ? "#142243" : "#F4F4F5",
           },
