@@ -12,10 +12,9 @@ import CloseIcon from '@mui/icons-material/Close'
 import ProgressBar from "../../../../src/components/progressbar"
 import { useDispatch, useSelector } from "react-redux"
 import { addProposalId } from "../../../../src/redux/reducers/create"
-import { getProposalDetail, castVote } from "../../../../src/api/index"
+import { getProposalDetail, castVote, getMembersDetails, SmartContract, patchProposalStatus, USDC_CONTRACT_ADDRESS } from "../../../../src/api/index"
 import GovernorContract from "../../../../src/abis/governorContract.json"
 import USDCContract from "../../../../src/abis/usdcTokenContract.json"
-import { SmartContract, patchProposalStatus, USDC_CONTRACT_ADDRESS } from "../../../../src/api/index"
 
 const useStyles = makeStyles({
   clubAssets: {
@@ -122,6 +121,8 @@ const ProposalDetail = ({ router }) => {
   const classes = useStyles()
   const [voted, setVoted] = useState(false)
   const [fetched, setFetched] = useState(false)
+  const [members, setMembers] = useState([])
+  const [membersFetched, setMembersFetched] = useState([])
   const [proposalData, setProposalData] = useState([])
   const [castVoteOption, setCastVoteOption] = useState('')
   const clubID = useSelector(state => { return state.create.clubID })
@@ -146,6 +147,16 @@ const ProposalDetail = ({ router }) => {
       } else {
         setProposalData(result.data)
         setFetched(true)
+      }
+    })
+
+    const membersData = getMembersDetails(clubID)
+    membersData.then((result) => {
+      if (result.status != 200) {
+        setMembersFetched(false)
+      } else {
+        setMembers(result.data)
+        setMembersFetched(true)
       }
     })
   }
@@ -192,6 +203,25 @@ const ProposalDetail = ({ router }) => {
         setVoted(true)
       }
     })
+  }
+
+  const isCurrentUserAdmin = () => {
+    console.log(walletAddress)
+    if (membersFetched && members.length > 0 && walletAddress) {
+      let obj = members.find(member => member.userAddress === walletAddress)
+      let pos = members.indexOf(obj)
+      if (obj.clubs[0].isAdmin) {
+        return true
+      } else {
+        return false
+      }
+    }
+  }
+
+  const executeNonAdminUser = () => {
+    setOpenSnackBar(true)
+    setFailed(true)
+    setMessage("Only admin of the club is able to execute the proposal!")
   }
 
   const executeFunction = async() => {
@@ -798,7 +828,8 @@ const ProposalDetail = ({ router }) => {
                               </Typography>
                             </Grid>
                           </Grid>
-                        ) : <CardActionArea className={classes.mainCard}>
+                        ) : 
+                        isCurrentUserAdmin() ? (
                           <Card className={executed ? classes.mainCardButtonSuccess : classes.mainCardButton} onClick={executeFunction}>
                             <Grid container justifyContent="center" alignItems="center">
                               {executed ? (<Grid item mt={0.5}><CheckCircleRoundedIcon /></Grid>) : <Grid item></Grid>}
@@ -807,7 +838,17 @@ const ProposalDetail = ({ router }) => {
                               </Grid>
                             </Grid>
                           </Card>
-                        </CardActionArea>}
+                        ) : (
+                          <CardActionArea className={classes.mainCard}>
+                          <Card className={classes.mainCardButton} onClick={executeNonAdminUser}>
+                            <Grid container justifyContent="center" alignItems="center">
+                              <Grid item>
+                                <Typography className={classes.cardFont1} >Execute Now</Typography>
+                              </Grid>
+                            </Grid>
+                          </Card>
+                        </CardActionArea>
+                        )}
                       </Stack>
                     }
                   </Card>) : null}
