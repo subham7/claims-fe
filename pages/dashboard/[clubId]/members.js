@@ -1,4 +1,4 @@
-import { React, useEffect, useState } from "react"
+import { React, useEffect, useState, useRef } from "react"
 import { makeStyles } from "@mui/styles"
 import Layout1 from "../../../src/components/layouts/layout1"
 import { Box, Card, Grid, Typography, ListItemButton, Avatar, Stack, TextField, Button, IconButton, Table, TableContainer, TableBody, TableCell, TableRow, TableHead } from "@mui/material"
@@ -8,7 +8,7 @@ import {getMembersDetails} from "../../../src/api/index"
 import { useSelector } from "react-redux"
 import Paper from '@mui/material/Paper';
 import { useRouter } from "next/router"
-
+import jazzicon from "@metamask/jazzicon"
 
 
 const useStyles = makeStyles({
@@ -99,6 +99,16 @@ export default function Members(props) {
   const [members, setMembers] = useState([])
   const [fetched, setFetched] = useState(false)
   const router = useRouter()
+  const avatarRef = useRef()
+
+  const generateJazzIcon = (account) => {
+      if (account) {
+        const addr = account.slice(2, 10)
+        const seed = parseInt(addr, 16)
+        const icon = jazzicon(35, seed)
+        return icon
+      }
+  }
 
   const fetchMembers = () => {
     const membersData = getMembersDetails(clubID)
@@ -160,6 +170,7 @@ export default function Members(props) {
                         key={key}
                         sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                       >
+                        {/* <TableCell align="left" className={classes.tablecontent}>{generateJazzIcon(data.userAddress)</TableCell> */}
                         <TableCell align="left" className={classes.tablecontent}><a className={classes.activityLink} onClick={(e) => {handleAddressClick(e, data.userAddress)}}> {data.userAddress.substring(0, 6) + "......" + data.userAddress.substring(data.userAddress.length - 4)} </a></TableCell>
                         <TableCell align="left" className={classes.tablecontent}>{data.clubs[0].balance}</TableCell>
                         <TableCell align="left" className={classes.tablecontent}>${data.clubs[0].balance}</TableCell>

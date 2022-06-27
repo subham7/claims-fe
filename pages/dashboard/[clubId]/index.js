@@ -267,7 +267,7 @@ const Dashboard = (props) => {
 
   const fetchGovernorContractData = async () => {
     if (daoAddress && walletAddress){
-      const fetchClubDetails = new SmartContract(GovernorContract, daoAddress, walletAddress)
+      const fetchClubDetails = new SmartContract(GovernorContract, daoAddress, undefined)
       await fetchClubDetails.getGovernorDetails()
       .then((result) => {
         // console.log(result)
@@ -304,7 +304,7 @@ const Dashboard = (props) => {
 
   const tokenDetailsRetrieval = async () => {
     if (tokenAPIDetails && !dataFetched) {
-      const tokenDetailContract = new SmartContract(USDCContract, tokenAPIDetails.tokenAddress, walletAddress)
+      const tokenDetailContract = new SmartContract(USDCContract, tokenAPIDetails.tokenAddress, undefined)
       await tokenDetailContract.tokenDetails()
         .then((result) => {
           // console.log(result)

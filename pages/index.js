@@ -71,32 +71,31 @@ export default function App() {
   const router = useRouter()
 
   useEffect(() => {
-    setWalletID(localStorage.getItem("wallet"))
+    if (!fetched && walletID) {
+      const getClubs = fetchClubByUserAddress(walletID)
+      getClubs.then((result) => {
+        if (result.status != 200) {
+          console.log(result.statusText)
+        }
+        else {
+          setClubData(Array.from(result.data.clubs))
+          setClubOwnerAddress(result.data.userAddress.substring(0, 6) + ".........." + result.data.userAddress.substring(result.data.userAddress.length - 4))
+          setFetched(true)
+        }
+      })
+        .catch((error) => {
+          setNoWalletMessage("You don't have any clubs available, please join an existing one or create a new club")
+          console.log(error)
+        })
+    }
   }, [walletID])
 
   const handleConnection = async (event) => {
     let wallet = connectWallet(dispatch)
     wallet.then((response) => {
       if (response) {
+        setWalletID(localStorage.getItem("wallet"))
         setClubFlow(true)
-        if (!fetched && walletID) {
-          const getClubs = fetchClubByUserAddress(walletID)
-          getClubs.then((result) => {
-            if (result.status != 200) {
-              console.log(result.statusText)
-            }
-            else {
-              setClubData(Array.from(result.data.clubs))
-              setClubOwnerAddress(result.data.userAddress.substring(0, 6) + ".........." + result.data.userAddress.substring(result.data.userAddress.length - 4))
-              setFetched(true)
-            }
-          })
-            .catch((error) => {
-              setNoWalletMessage("You don't have any clubs available, please join an existing one or create a new club")
-              console.log(error)
-            })
-        }
-
       } else {
         setClubFlow(false)
       }

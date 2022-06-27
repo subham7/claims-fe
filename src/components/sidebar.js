@@ -40,9 +40,6 @@ const useStyles = makeStyles({
     justifyContent: "center",
     alignItems: "center",
   },
-  boxBorder: {
-    borderRight: "10px solid white"
-  }
 })
 
 const drawerWidth = 100

@@ -47,7 +47,7 @@ async function syncWallet() {
 }
 
 export class SmartContract{
-  constructor(abiFile, contractAddress, walletAddress) {
+  constructor(abiFile, contractAddress, walletAddress=localStorage.getItem("wallet")) {
     if (syncWallet() && abiFile && contractAddress && walletAddress){
       this.web3 = new Web3(window.web3)
       this.abi = abiFile.abi
@@ -58,6 +58,7 @@ export class SmartContract{
     }
   }
 
+  // create new club contract function
   async createDAO(tokenName, tokenSymbol, totalDeposit, minDeposit, maxDeposit, ownerFee, closeDate, feeUSDC, tresuryAddress, quoram, formThreshold) {
     const days = Math.round((new Date(closeDate) - new Date()) / (1000 * 60 * 60 * 24))
     // call createDAO method from contract
@@ -76,28 +77,51 @@ export class SmartContract{
     ).send({ from : this.walletAddress})
   }
 
-  async updateProposalAndExecution(proposalHash, status, proposalId, customToken, executionIds, customTokenAmounts, customTokenAddresses) {
+  // execute 
+  async updateProposalAndExecution(
+    proposalHash="", 
+    executionStatus="", 
+    proposalId=1, 
+    customToken="0x0000000000000000000000000000000000000000", 
+    airDropToken="0x0000000000000000000000000000000000000000",
+    executionIds=[0,0,0,0,0,0,0,0,0], 
+    quoram=0, 
+    threshold=0,
+    day=0,
+    minDeposits=0,
+    maxDeposits=0,
+    totalDeposits=0,
+    airDropAmount=0,
+    mintGTAmounts=[],
+    mintGTAddresses=[],
+    customTokenAmounts=[], 
+    customTokenAddresses=[], 
+    sendEthAmounts=[],
+    sendEthAddresses=[],
+    executiveRoles=[]
+) {
     return this.contract.methods.updateProposalAndExecution({
       proposalHash: proposalHash,
-      status: status,
+      status: executionStatus,
       proposalId: proposalId,
       customToken: customToken,
-      airDropToken: "0x0000000000000000000000000000000000000000",
+      airDropToken: airDropToken,
       executionIds: executionIds,
-      quorum: 0,
-      threshold: 0,
-      day: 0,
-      minDeposits: 0,
-      maxDeposits: 0,
-      totalDeposits: 0,
-      airDropAmount: 0,
-      mintGTAmounts: [],      
-      mintGTAddresses: [],    
+      quorum: quoram,
+      threshold: threshold,
+      day: day,
+      minDeposits: minDeposits,
+      maxDeposits: maxDeposits,
+      totalDeposits: totalDeposits,
+      airDropAmount: airDropAmount,
+      mintGTAmounts: mintGTAmounts,      
+      mintGTAddresses: mintGTAddresses,    
       customTokenAmounts: customTokenAmounts,  
       customTokenAddresses: customTokenAddresses,   
-      sendEthAmounts: [],         
-      sendEthAddresses: [],       
-      executiveRoles: []} 
+      sendEthAmounts: sendEthAmounts,         
+      sendEthAddresses: sendEthAddresses,       
+      executiveRoles: executiveRoles
+    } 
       ).send( { from: this.walletAddress })
     }
 

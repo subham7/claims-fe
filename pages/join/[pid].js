@@ -211,7 +211,7 @@ const Join = (props) => {
 
   const tokenDetailsRetrieval = async () => {
     if (tokenAPIDetails && tokenAPIDetails.length > 0) {
-      const tokenDetailContract = new SmartContract(USDCContract, tokenAPIDetails[0].tokenAddress, userDetails)
+      const tokenDetailContract = new SmartContract(USDCContract, tokenAPIDetails[0].tokenAddress, undefined)
       await tokenDetailContract.tokenDetails()
         .then((result) => {
           // console.log(result)
@@ -242,7 +242,7 @@ const Join = (props) => {
 
   const contractDetailsRetrieval = async () => {
     if (daoAddress && !governorDataFetched && !governorDetails && userDetails) {
-      const governorDetailContract = new SmartContract(GovernorContract, daoAddress, userDetails)
+      const governorDetailContract = new SmartContract(GovernorContract, daoAddress, undefined)
       await governorDetailContract.getGovernorDetails()
         .then((result) => {
           // console.log(result)
@@ -259,7 +259,7 @@ const Join = (props) => {
 
   const obtaineWalletBallance = async () => {
     if (!fetched && userDetails) {
-      const usdc_contract = new SmartContract(USDCContract, USDC_CONTRACT_ADDRESS, userDetails)
+      const usdc_contract = new SmartContract(USDCContract, USDC_CONTRACT_ADDRESS, undefined)
       await usdc_contract.balanceOf()
         .then((result) => {
           setWalletBalance(result / Math.pow(10, 18))
@@ -307,9 +307,9 @@ const Join = (props) => {
 
   const handleDeposit = async () => {
     setDepositInitiated(true)
-    const usdc_contract = new SmartContract(USDCContract, USDC_CONTRACT_ADDRESS, userDetails)
+    const usdc_contract = new SmartContract(USDCContract, USDC_CONTRACT_ADDRESS, undefined)
     // pass governor contract
-    const dao_contract = new SmartContract(GovernorContract, daoAddress, userDetails)
+    const dao_contract = new SmartContract(GovernorContract, daoAddress, undefined)
 
     // pass governor contract
     const usdc_response = usdc_contract.approveDeposit(daoAddress, depositAmount)

@@ -2,28 +2,47 @@
   "contractName": "FactoryContract",
   "abi": [
     {
+      "inputs": [],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
       "anonymous": false,
       "inputs": [
         {
-          "indexed": true,
+          "indexed": false,
           "internalType": "address",
-          "name": "delegator",
-          "type": "address"
-        },
-        {
-          "indexed": true,
-          "internalType": "address",
-          "name": "fromDelegate",
-          "type": "address"
-        },
-        {
-          "indexed": true,
-          "internalType": "address",
-          "name": "toDelegate",
+          "name": "newDao",
           "type": "address"
         }
       ],
-      "name": "DelegateChanged",
+      "name": "ChangeGovernorAddress",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "newOrganiser",
+          "type": "address"
+        }
+      ],
+      "name": "ChangeOrganiser",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "newToken",
+          "type": "address"
+        }
+      ],
+      "name": "ChangeTokenAddress",
       "type": "event"
     },
     {
@@ -32,34 +51,28 @@
         {
           "indexed": true,
           "internalType": "address",
-          "name": "delegate",
+          "name": "",
           "type": "address"
         },
         {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "previousBalance",
-          "type": "uint256"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "newBalance",
-          "type": "uint256"
+          "indexed": true,
+          "internalType": "address",
+          "name": "",
+          "type": "address"
         }
       ],
-      "name": "DelegateVotesChanged",
+      "name": "CreatedGovernor",
       "type": "event"
     },
     {
       "inputs": [
         {
           "internalType": "address",
-          "name": "delegatee",
+          "name": "_newDAO",
           "type": "address"
         }
       ],
-      "name": "delegate",
+      "name": "changeDAOImplementation",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -68,36 +81,11 @@
       "inputs": [
         {
           "internalType": "address",
-          "name": "delegatee",
+          "name": "_newOrganiser",
           "type": "address"
-        },
-        {
-          "internalType": "uint256",
-          "name": "nonce",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "expiry",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint8",
-          "name": "v",
-          "type": "uint8"
-        },
-        {
-          "internalType": "bytes32",
-          "name": "r",
-          "type": "bytes32"
-        },
-        {
-          "internalType": "bytes32",
-          "name": "s",
-          "type": "bytes32"
         }
       ],
-      "name": "delegateBySig",
+      "name": "changeOrganiser",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -106,82 +94,78 @@
       "inputs": [
         {
           "internalType": "address",
-          "name": "account",
+          "name": "_newToken",
           "type": "address"
         }
       ],
-      "name": "delegates",
-      "outputs": [
-        {
-          "internalType": "address",
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "stateMutability": "view",
+      "name": "changeTokenImplementation",
+      "outputs": [],
+      "stateMutability": "nonpayable",
       "type": "function"
     },
     {
       "inputs": [
         {
-          "internalType": "uint256",
-          "name": "blockNumber",
-          "type": "uint256"
-        }
-      ],
-      "name": "getPastTotalSupply",
-      "outputs": [
+          "internalType": "string",
+          "name": "tokenName",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "tokenSymbol",
+          "type": "string"
+        },
         {
           "internalType": "uint256",
-          "name": "",
+          "name": "_totalDeposit",
           "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
+        },
+        {
+          "internalType": "uint256",
+          "name": "_minDeposit",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_maxDeposit",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_ownerFee",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_days",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "_feeUSDC",
+          "type": "bool"
+        },
         {
           "internalType": "address",
-          "name": "account",
+          "name": "_tresuryAddress",
           "type": "address"
         },
         {
           "internalType": "uint256",
-          "name": "blockNumber",
+          "name": "_quoram",
           "type": "uint256"
-        }
-      ],
-      "name": "getPastVotes",
-      "outputs": [
+        },
         {
           "internalType": "uint256",
-          "name": "",
+          "name": "_threshold",
           "type": "uint256"
         }
       ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "account",
-          "type": "address"
-        }
-      ],
-      "name": "getVotes",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
+      "name": "createDAO",
+      "outputs": [],
+      "stateMutability": "nonpayable",
       "type": "function"
     }
   ]
+  
 }

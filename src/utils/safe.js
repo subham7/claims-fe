@@ -59,7 +59,7 @@ export async function initiateConnection(
   const smartContract = new SmartContract(
     FactoryContract,
     FACTORY_CONTRACT_ADDRESS,
-    walletAddress
+    undefined
   )
   await gnosisSafePromise(owners, threshold, dispatch)
     .then((treasuryAddress) => {
