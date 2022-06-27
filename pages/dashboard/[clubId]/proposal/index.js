@@ -8,7 +8,7 @@ import AddCircleRoundedIcon from '@mui/icons-material/AddCircleRounded'
 import { fontStyle } from "@mui/system"
 import SimpleSelectButton from "../../../../src/components/simpleSelectButton"
 import { proposalType, commandTypeList } from "../../../../src/data/dashboard"
-import { createProposal, getProposal } from "../../../../src/api/index"
+import { createProposal, getProposal, getTokens } from "../../../../src/api/index"
 import { DesktopDatePicker } from '@mui/x-date-pickers'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
@@ -156,6 +156,7 @@ const Proposal = ({ router }) => {
   const classes = useStyles()
   const daoAddress = useSelector(state => { return state.create.daoAddress })
   const clubID = useSelector(state => { return state.create.clubID })
+  const tresuryAddress = useSelector(state => { return state.create.tresuryAddress})
   const [open, setOpen] = useState(false)
   const [name, setName] = useState([])
   const [duration, setDuration] = useState(null)
@@ -170,8 +171,9 @@ const Proposal = ({ router }) => {
   const [proposalData, setProposalData] = useState([])
   const [fetched, setFetched] = useState(false)
   const routers = useRouter()
-  const [senderAddress, setSenderAddress] = useState('')
-  const [transerAmount, setTransferAmount] = useState(0)
+  const [customTokenAddresses, setCustomTokenAddresses] = useState([])
+  const [customTokenAmounts, setCustomTokenAmounts] = useState([])
+  const [customToken, setCustomToken] = useState('')
   const [quorumValue, setQuorumValue] = useState(0)
   const [thresholdValue, setThresholdValue] = useState(0)
   const [searchProposal, setSearchProposal] = useState('')
@@ -188,17 +190,28 @@ const Proposal = ({ router }) => {
   const [sendEthAmounts, setSendEthAmounts] = useState([])
   const [surveyOption, setSurveyOption] = useState([])
   const [surveyValue, setSurveyValue] = useState('')
+  const [tokenData, setTokenData] = useState([])
+  const [tokenFetched, setTokenFetched] = useState(false)
 
 
   const fetchData = () => {
     const proposalData = getProposal(clubID)
     proposalData.then((result) => {
       if (result.status != 200) {
-        console.log(result.error)
         setFetched(false)
       } else {
         setProposalData(result.data)
         setFetched(true)
+      }
+    })
+
+    const tokenData = getTokens(tresuryAddress)
+    tokenData.then((result) => {
+      if (result.status != 200) {
+        setTokenFetched(false)
+      } else {
+        setTokenData(result.data)
+        setTokenFetched(true)
       }
     })
   }
@@ -490,12 +503,34 @@ const Proposal = ({ router }) => {
 
       if (name === commandTypeList[7].commandText) {
         // for execution of sending custom token
-        const tresuryWalletApproval = new SmartContract(USDCContract, daoAddress, undefined)
-        const transferApprovalResponse = tresuryWalletApproval.approveDeposit(senderAddress, parseFloat(transerAmount))
-        transferApprovalResponse.then((result) => {
-          console.log(result)
-        }, (error) => {
-          console.log(error)
+        const payload = {
+          "name": title,
+          "description": description,
+          "createdBy": walletAddress,
+          "clubId": clubID,
+          "votingDuration": new Date(duration).toISOString(),
+          "commands": [
+            {
+              "executionId": 7,
+              "customToken": customToken,
+              "customTokenAmounts": [parseFloat(customTokenAmounts)],
+              "customTokenAddresses": [customTokenAddresses]
+            }
+          ],
+          "type": "action"
+        }
+        const createRequest = createProposal(payload)
+        createRequest.then((result) => {
+          if (result.status !== 201) {
+            setOpenSnackBar(true)
+            setFailed(true)
+          } else {
+            // console.log(result.data)
+            fetchData()
+            setOpenSnackBar(true)
+            setFailed(false)
+            setOpen(false)
+          }
         })
       }
 
@@ -536,7 +571,7 @@ const Proposal = ({ router }) => {
 
 
   useEffect(() => {
-    if (!fetched) {
+    if (!fetched && !tokenFetched) {
       fetchData()
     }
   }, [])
@@ -550,6 +585,11 @@ const Proposal = ({ router }) => {
 
   const handleProposalClick = (proposal) => {
     routers.push(`${router.asPath}/${proposal.proposalId}`, undefined, { shallow: true })
+  }
+
+  const handleTokenChange = (event) => {
+    const { target: { value }, } = event
+    setCustomToken(value)
   }
 
   const handleChange = (event) => {
@@ -987,27 +1027,46 @@ const Proposal = ({ router }) => {
                                               // send custom token execution
                                               <Grid container ml={1} mt={1} mb={2} spacing={2} direction="column">
                                                 <Grid item>
+                                                  <Typography className={classes.cardFont}>Custom token</Typography>
+                                                </Grid>
+                                                <Grid item>
+                                                <Select
+                                                  displayEmpty
+                                                  value={customToken}
+                                                  onChange={handleTokenChange}
+                                                  input={<OutlinedInput />}
+                                                  renderValue={(selected) => {
+                                                    if (selected.length === 0) {
+                                                      return "Select a Token"
+                                                    }
+                                                    return selected
+                                                  }}
+                                                  MenuProps={tokenData}
+                                                  style={{ borderRadius: "10px", background: "#111D38 0% 0% no-repeat padding-box", width: "90%" }}
+                                                >
+                                                  {tokenData.slice(1).map((token) => (
+                                                    <MenuItem
+                                                      key={token.name}
+                                                      value={token.tokenAddress}>
+                                                      {token.token.name}
+                                                    </MenuItem>
+                                                  ))}
+                                                </Select>
+                                                </Grid>
+                                                <Grid item>
                                                   <Typography className={classes.cardFont}>Receiver&apos;s wallet address</Typography>
                                                 </Grid>
                                                 <Grid item>
                                                   <TextField sx={{ width: "90%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
-                                                    placeholder="0x..." onChange={(e) => setSenderAddress(e.target.value)} />
+                                                    placeholder="0x..." onChange={(e) => setCustomTokenAddresses(e.target.value)} />
                                                 </Grid>
                                                 <Grid item>
                                                   <Typography className={classes.cardFont}>Amount to be sent</Typography>
                                                 </Grid>
                                                 <Grid item>
                                                   <TextField sx={{ width: "90%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
-                                                    placeholder="0" onChange={(e) => setTransferAmount(e.target.value)} />
-                                                </Grid>
-                                                <Grid item>
-                                                  <Typography className={classes.cardFont}>Custom token</Typography>
-                                                </Grid>
-                                                <Grid item>
-                                                  <TextField sx={{ width: "90%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
-                                                    placeholder="0x..." onChange={(e) => setTransferAmount(e.target.value)} />
-                                                </Grid>
-                                                <Grid item></Grid>
+                                                    placeholder="0" onChange={(e) => setCustomTokenAmounts(e.target.value)} />
+                                                </Grid>                                                
                                               </Grid>
                                             ) :
                                               name === commandTypeList[8].commandText ? (

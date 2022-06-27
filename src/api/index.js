@@ -311,3 +311,8 @@ export async function getBalance(gnosisAddress) {
 export async function getMembersDetails(clubId) {
   return await axios.get(MAIN_API_URL + `user/club/${clubId}`)
 }
+
+// update proposal status API
+export async function patchProposalStatus(proposalId) {
+  return await axios.patch(MAIN_API_URL + "proposal/status", { "proposalId" : proposalId})
+}
