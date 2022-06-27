@@ -252,8 +252,8 @@ const Settings = (props) => {
   }
 
   const findCurrentMember = () => {
-    console.log(walletAddress)
-    console.log(membersDetails)
+    // console.log(walletAddress)
+    // console.log(membersDetails)
     if (membersFetched && membersDetails.length > 0 && walletAddress) {
       let obj = membersDetails.find(member => member.userAddress === walletAddress)
       let pos = membersDetails.indexOf(obj)
@@ -335,7 +335,7 @@ const Settings = (props) => {
                     <br />
                     <Stack spacing={1} alignItems="stretch">
                       <Typography variant="p" className={classes.valuesDimStyle}>Your ownership</Typography>
-                      <Typography variant="p" className={classes.valuesStyle}>{governorDataFetched ? (findCurrentMember() / governorDetails[4]) * 100 : 0}% (${findCurrentMember()} )</Typography>
+                      <Typography variant="p" className={classes.valuesStyle}>{governorDataFetched && dataFetched ? ((findCurrentMember() / (tokenDetails[2]/ Math.pow(10, 18))).toFixed(2) * 100) : 0}% (${findCurrentMember()} )</Typography>
                     </Stack>
                   </Grid>
                   <Grid item ml={4} mt={5} mb={2}>

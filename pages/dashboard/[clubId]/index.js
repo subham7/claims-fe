@@ -431,7 +431,7 @@ const Dashboard = (props) => {
                       {findCurrentMember()}
                     </Typography>
                     <Typography className={classes.card1text5}>
-                      {clubDetailsFetched ? (findCurrentMember() / clubDetails[4]) * 100 : 0}%
+                      {clubDetailsFetched && dataFetched ? ((findCurrentMember() / (tokenDetails[2]/ Math.pow(10, 18))).toFixed(2) * 100) : 0}%
                     </Typography>
                   </Box>
                 </Card>
