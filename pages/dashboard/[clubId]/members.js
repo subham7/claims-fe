@@ -174,7 +174,7 @@ export default function Members(props) {
                         <TableCell align="left" className={classes.tablecontent}><a className={classes.activityLink} onClick={(e) => {handleAddressClick(e, data.userAddress)}}> {data.userAddress.substring(0, 6) + "......" + data.userAddress.substring(data.userAddress.length - 4)} </a></TableCell>
                         <TableCell align="left" className={classes.tablecontent}>{data.clubs[0].balance}</TableCell>
                         <TableCell align="left" className={classes.tablecontent}>${data.clubs[0].balance}</TableCell>
-                        <TableCell align="left"className={classes.tablecontent2}>15/06/2022</TableCell>
+                        <TableCell align="left"className={classes.tablecontent2}>{new Date(data.clubs[0].joiningDate).toLocaleDateString()}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
