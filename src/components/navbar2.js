@@ -89,7 +89,7 @@ export default function Navbar2(props) {
       <AppBar
         className={classes.root}
         position="fixed"
-        sx={{ width: "100%", zIndex: (theme) => theme.zIndex.drawer + 1, borderBottom: "1px solid #C1D3FF", paddingBottom: "15px" }}
+        sx={{ width: "100%", zIndex: (theme) => theme.zIndex.drawer + 1, paddingBottom: "15px" }}
       >
         <Toolbar>
           <IconButton
