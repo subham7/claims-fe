@@ -92,7 +92,7 @@ const useStyles = makeStyles({
   },
 })
 
-export default function Members(props) {
+const Members = (props) => {
   const classes = useStyles()
   const clubID = useSelector(state => { return state.create.clubID })
   const header = ["Name", "Deposit amount", "Club tokens", "Joined on"]
@@ -187,3 +187,5 @@ export default function Members(props) {
     </>
   )
 }
+
+export default Members

@@ -18,6 +18,7 @@ import { useRouter, withRouter } from "next/router"
 import { SmartContract } from "../../../../src/api/index"
 import USDCContract from "../../../../src/abis/usdcTokenContract.json"
 import GovernorContract from "../../../../src/abis/governorContract.json"
+import ClubFetch from "../../../../src/utils/clubFetch"
 
 
 const useStyles = makeStyles({
@@ -152,7 +153,7 @@ const useStyles = makeStyles({
 })
 
 
-const Proposal = ({ router }) => {
+const Proposal = () => {
   const classes = useStyles()
   const daoAddress = useSelector(state => { return state.create.daoAddress })
   const clubID = useSelector(state => { return state.create.clubID })
@@ -170,7 +171,7 @@ const Proposal = ({ router }) => {
   const [openSnackBar, setOpenSnackBar] = useState(false)
   const [proposalData, setProposalData] = useState([])
   const [fetched, setFetched] = useState(false)
-  const routers = useRouter()
+  const router = useRouter()
   const [customTokenAddresses, setCustomTokenAddresses] = useState([])
   const [customTokenAmounts, setCustomTokenAmounts] = useState([])
   const [customToken, setCustomToken] = useState('')
@@ -584,7 +585,7 @@ const Proposal = ({ router }) => {
   }
 
   const handleProposalClick = (proposal) => {
-    routers.push(`${router.asPath}/${proposal.proposalId}`, undefined, { shallow: true })
+    router.push(`${router.asPath}/${proposal.proposalId}`, undefined, { shallow: true })
   }
 
   const handleTokenChange = (event) => {
@@ -995,20 +996,6 @@ const Proposal = ({ router }) => {
                                         name === commandTypeList[5].commandText ? (
                                           // close deposit execution
                                           <Grid container ml={1} mt={1} mb={2} spacing={2} direction="column">
-                                            <Grid item>
-                                              <Typography className={classes.cardFont}>Quorum</Typography>
-                                            </Grid>
-                                            <Grid item>
-                                              <TextField sx={{ width: "90%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
-                                                placeholder="0" onChange={(e) => setQuorumValue(parseInt(e.target.value))} />
-                                            </Grid>
-                                            <Grid item>
-                                              <Typography className={classes.cardFont}>Threshold</Typography>
-                                            </Grid>
-                                            <Grid item>
-                                              <TextField sx={{ width: "90%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
-                                                placeholder="0" onChange={(e) => setThresholdValue(parseInt(e.target.value))} />
-                                            </Grid>
                                           </Grid>
                                         ) :
                                           name === commandTypeList[6].commandText ? (
@@ -1131,4 +1118,4 @@ const Proposal = ({ router }) => {
   )
 }
 
-export default withRouter(Proposal)
+export default ClubFetch(Proposal)

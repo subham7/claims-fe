@@ -12,6 +12,7 @@ import GovernorContract from "../../../src/abis/governorContract.json"
 import { SmartContract } from "../../../src/api/index"
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import LinkIcon from '@mui/icons-material/Link'
+import ClubFetch from "../../../src/utils/clubFetch"
 
 const useStyles = makeStyles({
   valuesStyle: {
@@ -557,4 +558,4 @@ const Settings = (props) => {
   )
 }
 
-export default Settings
+export default ClubFetch(Settings)
