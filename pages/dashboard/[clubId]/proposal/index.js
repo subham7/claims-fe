@@ -154,9 +154,11 @@ const useStyles = makeStyles({
 
 
 const Proposal = () => {
+  const router = useRouter()
+  const { clubId } = router.query
   const classes = useStyles()
   const daoAddress = useSelector(state => { return state.create.daoAddress })
-  const clubID = useSelector(state => { return state.create.clubID })
+  const clubID = clubId
   const tresuryAddress = useSelector(state => { return state.create.tresuryAddress})
   const [open, setOpen] = useState(false)
   const [name, setName] = useState([])
@@ -171,7 +173,6 @@ const Proposal = () => {
   const [openSnackBar, setOpenSnackBar] = useState(false)
   const [proposalData, setProposalData] = useState([])
   const [fetched, setFetched] = useState(false)
-  const router = useRouter()
   const [customTokenAddresses, setCustomTokenAddresses] = useState([])
   const [customTokenAmounts, setCustomTokenAmounts] = useState([])
   const [customToken, setCustomToken] = useState('')
@@ -572,10 +573,8 @@ const Proposal = () => {
 
 
   useEffect(() => {
-    if (!fetched && !tokenFetched) {
-      fetchData()
-    }
-  }, [])
+    fetchData()
+  }, [clubID, fetched])
 
   const handleTypeChange = (event) => {
     const { target: { value } } = event

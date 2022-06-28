@@ -15,6 +15,7 @@ import { addProposalId } from "../../../../src/redux/reducers/create"
 import { getProposalDetail, castVote, getMembersDetails, SmartContract, patchProposalStatus, USDC_CONTRACT_ADDRESS } from "../../../../src/api/index"
 import GovernorContract from "../../../../src/abis/governorContract.json"
 import USDCContract from "../../../../src/abis/usdcTokenContract.json"
+import ClubFetch from "../../../../src/utils/clubFetch"
 
 const useStyles = makeStyles({
   clubAssets: {
@@ -115,17 +116,17 @@ const useStyles = makeStyles({
 })
 
 
-const ProposalDetail = ({ router }) => {
-  // const router = useRouter()
-  const { pid } = router.query
+const ProposalDetail = () => {
+  const router = useRouter()
+  const { pid, clubId } = router.query
   const classes = useStyles()
   const [voted, setVoted] = useState(false)
   const [fetched, setFetched] = useState(false)
   const [members, setMembers] = useState([])
-  const [membersFetched, setMembersFetched] = useState([])
+  const [membersFetched, setMembersFetched] = useState(false)
   const [proposalData, setProposalData] = useState([])
   const [castVoteOption, setCastVoteOption] = useState('')
-  const clubID = useSelector(state => { return state.create.clubID })
+  const clubID = clubId
   const [cardSelected, setCardSelected] = useState(null)
   const walletAddress = useSelector(state => { return state.create.value })
   const daoAddress = useSelector(state => { return state.create.daoAddress })
@@ -176,10 +177,8 @@ const ProposalDetail = ({ router }) => {
   }
 
   useEffect(() => {
-    if (!fetched) {
-      fetchData()
-    }
-  }, [fetched])
+    fetchData()
+  }, [fetched, membersFetched])
 
   const returnHome = () => {
     router.back()
@@ -1004,4 +1003,4 @@ const ProposalDetail = ({ router }) => {
   )
 }
 
-export default withRouter(ProposalDetail)
+export default ClubFetch(ProposalDetail)

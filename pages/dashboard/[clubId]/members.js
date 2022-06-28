@@ -9,6 +9,7 @@ import { useSelector } from "react-redux"
 import Paper from '@mui/material/Paper';
 import { useRouter } from "next/router"
 import jazzicon from "@metamask/jazzicon"
+import ClubFetch from "../../../src/utils/clubFetch"
 
 
 const useStyles = makeStyles({
@@ -93,12 +94,14 @@ const useStyles = makeStyles({
 })
 
 const Members = (props) => {
+  const router = useRouter()
+  const { clubId } = router.query
   const classes = useStyles()
-  const clubID = useSelector(state => { return state.create.clubID })
+  const clubID = clubId
   const header = ["Name", "Deposit amount", "Club tokens", "Joined on"]
   const [members, setMembers] = useState([])
   const [fetched, setFetched] = useState(false)
-  const router = useRouter()
+  
   const avatarRef = useRef()
 
   const generateJazzIcon = (account) => {
@@ -114,7 +117,6 @@ const Members = (props) => {
     const membersData = getMembersDetails(clubID)
     membersData.then((result) => {
       if (result.status != 200) {
-        console.log(result.statusText)
         setFetched(false)
       } else {
         setMembers(result.data)
@@ -124,10 +126,8 @@ const Members = (props) => {
   }
 
   useEffect(() => {
-    if (!fetched) {
-      fetchMembers()
-    }
-  }, [fetched])
+    fetchMembers()
+  }, [clubID, fetched])
 
   const handleAddressClick = (event, address) => {
     event.preventDefault()
@@ -188,4 +188,4 @@ const Members = (props) => {
   )
 }
 
-export default Members
+export default ClubFetch(Members)
