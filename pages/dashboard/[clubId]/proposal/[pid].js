@@ -321,6 +321,7 @@ const ProposalDetail = () => {
     }
 
     if (proposalData[0].commands[0].executionId == 2) {
+      const web3 = new Web3(window.web3)
       // for assigner executor role execution
       const updateProposal = new SmartContract(GovernorContract, daoAddress, undefined)
       const response = updateProposal.updateProposalAndExecution(
@@ -343,7 +344,7 @@ const ProposalDetail = () => {
         undefined,
         undefined,
         undefined,
-        [proposalData[0].commands[0].executiveRoles],
+        [web3.utils.toChecksumAddress(proposalData[0].commands[0].executiveRoles)],
       )
       response.then((result) => {
         const updateStatus = patchProposalStatus(pid)

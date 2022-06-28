@@ -38,16 +38,16 @@ export const votingDuration = [
 ]
 
 export const commandTypeList = [
-    {
-        commandId: 0,
-        command: "airdropCustomToken",
-        commandText: "Air drop custom token"
-    },
-    {
-        commandId: 1,
-        command: "mintGTToAddress",
-        commandText: "Mint GTTo Address"
-    },
+    // {
+    //     commandId: 0,
+    //     command: "airdropCustomToken",
+    //     commandText: "Air drop custom token"
+    // },
+    // {
+    //     commandId: 1,
+    //     command: "mintGTToAddress",
+    //     commandText: "Mint GTTo Address"
+    // },
     {
         commandId: 2,
         command: "assignExecutorRole",
@@ -73,14 +73,14 @@ export const commandTypeList = [
         command: "updateRaiseAmount",
         commandText: "Update raise amount"
     },
-    {
-        commandId: 7,
-        command: "sendCustomToken",
-        commandText: "Send custom token"
-    },
-    {
-        commandId: 8,
-        command: "sendEth",
-        commandText: "Send ETH"
-    },
+    // {
+    //     commandId: 7,
+    //     command: "sendCustomToken",
+    //     commandText: "Send custom token"
+    // },
+    // {
+    //     commandId: 8,
+    //     command: "sendEth",
+    //     commandText: "Send ETH"
+    // },
 ]
