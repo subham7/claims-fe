@@ -25,14 +25,6 @@ const useStyles = makeStyles({
     fontSize: "21px",
     color: "#C1D3FF",
   },
-  avatarStyle: {
-    width: "5.21vw",
-    height: "10.26vh",
-    backgroundColor: "#C1D3FF33",
-    color: "#C1D3FF",
-    fontSize: "3.25rem",
-    fontFamily: "Whyte",
-  },
   cardRegular: {
     // height: "626px",
     backgroundColor: "#19274B",
@@ -380,7 +372,7 @@ const Join = (props) => {
             <Card className={classes.cardRegular}>
               <Grid container spacing={2}>
                 <Grid item mt={3} ml={3}>
-                  <Avatar className={classes.avatarStyle}>{apiTokenDetailSet ? tokenAPIDetails[0].name[0] : <Skeleton variant="rectangular" width={100} height={25} />}</Avatar>
+                  <Avatar variant="clubSelect2">{apiTokenDetailSet ? tokenAPIDetails[0].name[0] : <Skeleton variant="rectangular" width={100} height={25} />}</Avatar>
                 </Grid>
                 <Grid item ml={1} mt={4} mb={7}>
                   <Stack spacing={0}>
@@ -526,7 +518,7 @@ const Join = (props) => {
                     <Image src="/assets/images/connect_illustration.png" alt="connect_illustration" width="418px" height="377px" />
                   </Grid>
                   <Grid item container ml={1} mt={2}>
-                    <Button variant="contained" className={classes.connectWalletButton} onClick={handleConnectWallet}>
+                    <Button variant="primary" onClick={handleConnectWallet}>
                       Connect Wallet
                     </Button>
                   </Grid>

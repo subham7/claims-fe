@@ -7,20 +7,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import { onboard, disconnectWallet } from '../utils/wallet';
 import { useDispatch } from 'react-redux';
-import { makeStyles } from '@mui/styles';
 
-const useStyles = makeStyles({
-  navButton: {
-    borderRadius: "10px",
-    width: "327px",
-    height: "auto",
-    background: "#111D38 0% 0% no-repeat padding-box",
-    border: "1px solid #C1D3FF40",
-    opacity: "1",
-    fontSize: "18px",
-    marginTop: "15px"
-  }
-})
 
 const StyledMenu = styled((props) => (
   <Menu
@@ -66,7 +53,6 @@ const StyledMenu = styled((props) => (
 }));
 
 export default function AccountButton(props) {
-  const classes = useStyles()
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [menuItems, setMenuItems] = React.useState(true);
   const open = Boolean(anchorEl);
@@ -88,15 +74,15 @@ export default function AccountButton(props) {
   return (
     <div>
       <Button
-        className={classes.navButton}
-        id="demo-customized-button"
-        aria-controls={open ? 'demo-customized-menu' : undefined}
-        aria-haspopup="true"
-        aria-expanded={open ? 'true' : undefined}
-        variant="contained"
-        disableElevation
-        onClick={handleClick}
-        endIcon={<KeyboardArrowDownIcon />
+          sx={{ mr: 2, mt: 2 }}
+          id="demo-customized-button"
+          aria-controls={open ? 'demo-customized-menu' : undefined}
+          aria-haspopup="true"
+          aria-expanded={open ? 'true' : undefined}
+          variant="navBar"
+          disableElevation
+          onClick={handleClick}
+          endIcon={<KeyboardArrowDownIcon />
         }
       >
         {props.accountDetail ? (props.accountDetail.substring(0, 6) + ".........." + props.accountDetail.substring(props.accountDetail.length - 4)) : null}

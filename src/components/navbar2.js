@@ -117,13 +117,13 @@ export default function Navbar2(props) {
             No wallet connected
           </Typography>)
           } */}
-          <Button
-              variant="contained"
-              color="primary"
-              sx={{ mr: 2, mt: 2 }}
-            startIcon={<LocalFireDepartmentIcon />}>
-              Discover
-            </Button>
+          {/*<Button*/}
+          {/*    variant="contained"*/}
+          {/*    color="primary"*/}
+          {/*    sx={{ mr: 2, mt: 2 }}*/}
+          {/*  startIcon={<LocalFireDepartmentIcon />}>*/}
+          {/*    Discover*/}
+          {/*  </Button>*/}
           {previouslyConnectedWallet !== null ? (
             <AccountButton accountDetail={userDetails} />
           ) : (

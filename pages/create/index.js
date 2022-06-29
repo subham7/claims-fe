@@ -1,6 +1,31 @@
 import { React, useRef, onChange, useState } from "react"
 import { makeStyles } from "@mui/styles"
-import { Grid, Item, Typography, TextField, Card, Switch, FormControlLabel, Box, Stack, Divider, Button, CircularProgress, IconButton, Stepper, StepLabel, Step, Backdrop, FormControl, Select, OutlinedInput, Menu, MenuItem, Alert } from "@mui/material"
+import {
+  Grid,
+  Item,
+  Typography,
+  TextField,
+  Card,
+  Switch,
+  FormControlLabel,
+  Box,
+  Stack,
+  Divider,
+  Button,
+  CircularProgress,
+  IconButton,
+  Stepper,
+  StepLabel,
+  Step,
+  Backdrop,
+  FormControl,
+  Select,
+  OutlinedInput,
+  Menu,
+  MenuItem,
+  Alert,
+  StepButton
+} from "@mui/material"
 import styled from "@emotion/styled"
 import Layout2 from "../../src/components/layouts/layout2"
 import CustomRoundedCard from "../../src/components/roundcard"
@@ -122,13 +147,13 @@ const Create = (props) => {
   const [clubName, setClubName] = useState(null);
   const [clubSymbol, setClubSymbol] = useState(null);
   const [displayImage, setDisplayImage] = useState(null);
-  const [raiseAmount, setRaiseAmount] = useState(0);
-  const [maxContribution, setMaxContribution] = useState(0);
+  const [raiseAmount, setRaiseAmount] = useState('');
+  const [maxContribution, setMaxContribution] = useState('');
   const [mandatoryProposal, setMandatoryProposal] = useState(false);
   const [voteForQuorum, setVoteForQuorum] = useState(0);
   const [depositClose, setDepositClose] = useState(new Date());
   const [membersLeaveDate, setMembersLeaveDate] = useState(null)
-  const [minContribution, setMinContribution] = useState(0);
+  const [minContribution, setMinContribution] = useState('');
   const [voteInFavour, setVoteInFavour] = useState(51);
   const [addressList, setAddressList] = useState([]);
   const [activeStep, setActiveStep] = useState(0);
@@ -140,6 +165,8 @@ const Create = (props) => {
   const [threshold, setThreshold] = useState(1)
   const dispatch = useDispatch();
   const { wallet } = props;
+  const [completed, setCompleted] = useState({});
+
   let walletAddress = null;
 
   const handleChange = (newValue) => {
@@ -286,6 +313,10 @@ const Create = (props) => {
     }
   }
 
+  const handleStep = (step) => () => {
+    setActiveStep(step);
+  };
+
   const step1 = () => {
     return (
       <>
@@ -332,8 +363,7 @@ const Create = (props) => {
             <Grid container wrap="nowrap" spacing={0} justify="center" alignItems="center" direction="row">
               <Grid item xs={0} mt={2}>
                 <Button
-                  className={classes.large_button}
-                  variant="contained"
+                  variant="wideButton"
                   disabled={
                     activeStep === 0
                       ? !clubName || !clubSymbol :
@@ -357,11 +387,11 @@ const Create = (props) => {
         <Grid container direction="row">
           <Grid item md={12} mt={8}>
             <Typography className={classes.largeText1}>
-              Choose a template or create a custom
+              Select your club&apos;s objective
             </Typography>
             <br />
             <Typography className={classes.largeText}>
-              Templates once chosen can be modified at a later too like voting quorum, financials, etc.
+              We’ve curated unique templates for likewise objectives so you can only focus on achieving them while we take care of the rest.
             </Typography>
           </Grid>
         </Grid>
@@ -400,7 +430,7 @@ const Create = (props) => {
             </Typography>
             <br />
             <Typography className={classes.largeText}>
-              Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren
+              Collectively manage your club’s investments through governance that works for you.
             </Typography>
             <br />
             <br />
@@ -489,7 +519,7 @@ const Create = (props) => {
                     inputFormat="dd/MM/yyyy"
                     value={depositClose}
                     onChange={e => handleChange(e)}
-                    renderInput={(params) => <TextField {...params} sx={{ m: 1, width: 443, mt: 1, borderRadius: "10px", }} />}
+                    renderInput={(params) => <TextField place{...params} sx={{ m: 1, width: 443, mt: 1, borderRadius: "10px", }} />}
                   />
                   </LocalizationProvider>
                 </Grid>
@@ -510,6 +540,7 @@ const Create = (props) => {
                     onChange={(e) => {setMinContribution(e.target.value)}}
                     value={minContribution}
                     sx={{ m: 1, width: 443, mt: 1, borderRadius: "10px", }}
+                    placeholder={"$100"}
                   />
                 </Grid>
               </Grid>
@@ -530,6 +561,7 @@ const Create = (props) => {
                     onChange={(e) => setMaxContribution(e.target.value)}
                     value={maxContribution}
                     sx={{ m: 1, width: 443, mt: 1, borderRadius: "10px", }}
+                    placeholder={"$1,000"}
                   />
                 </Grid>
               </Grid>
@@ -550,64 +582,69 @@ const Create = (props) => {
                     onChange={(e) => setRaiseAmount(e.target.value)}
                     value={raiseAmount}
                     sx={{ m: 1, width: 443, mt: 1, borderRadius: "10px", }}
+                    placeholder={"$10,000"}
                   />
                 </Grid>
               </Grid>
             </Card>
-            <Typography className={classes.largeText} mt={4} mb={2}>
-              Wallet Signators
-            </Typography>
-            <Card className={classes.cardPadding} mb={2}>
-              <Grid container pl={3} pr={1} mt={2} mb={2}>
-                <Grid item xs sx={{ display: "flex", justifyContent: "flex-start", alignItems: "center" }}>
-                  <Typography className={classes.largeText}>
-                    Add more wallets that will sign & approve final transaction
-                  </Typography>
-                </Grid>
-                <Grid item xs sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }} mr={3}>
-                  <IconButton aria-label="add" onClick={handleAddClick}>
-                    <AddCircleOutlinedIcon className={classes.addCircleColour} />
-                  </IconButton>
-                </Grid>
-              </Grid>
-              <Grid container pl={3} pr={1} mt={2} mb={2}>
-                {addressList.map((data, key) => {
-                  return (
-                    <Grid item xs sx={{ display: "flex", justifyContent: "flex-start", alignItems: "center" }} key={key} >
-                      <TextField
-                        error={!(/^0x[a-zA-Z0-9]+/gm.test(addressList[key]))}
-                        variant="outlined"
-                        onChange={(e) => handleInputChange(e, key)}
-                        placeholder={"0x"}
-                        sx={{ m: 1, width: 443, mt: 1, borderRadius: "10px", }}
-                      />
-                      <IconButton aria-label="add" onClick={handleRemoveClick}>
-                        <DeleteIcon />
-                      </IconButton>
-                    </Grid>
-                  );
-                })}
-              </Grid>
-            </Card>
+            {/*<Typography className={classes.largeText} mt={4} mb={2}>*/}
+            {/*  Wallet Signators*/}
+            {/*</Typography>*/}
+            {/*<Card className={classes.cardPadding} mb={2}>*/}
+            {/*  <Grid container pl={3} pr={1} mt={2} mb={2}>*/}
+            {/*    <Grid item xs sx={{ display: "flex", justifyContent: "flex-start", alignItems: "center" }}>*/}
+            {/*      <Typography className={classes.largeText}>*/}
+            {/*        Add more wallets that will sign & approve final transaction*/}
+            {/*      </Typography>*/}
+            {/*    </Grid>*/}
+            {/*    <Grid item xs sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }} mr={3}>*/}
+            {/*      <IconButton aria-label="add" onClick={handleAddClick}>*/}
+            {/*        <AddCircleOutlinedIcon className={classes.addCircleColour} />*/}
+            {/*      </IconButton>*/}
+            {/*    </Grid>*/}
+            {/*  </Grid>*/}
+            {/*  {addressList.length > 0 ?*/}
+            {/*    <Grid container pl={3} pr={1} mt={2} mb={2}>*/}
+            {/*      {addressList.map((data, key) => {*/}
+            {/*        return (<>*/}
+            {/*          <Grid item xs sx={{ display: "flex", justifyContent: "flex-start", alignItems: "center" }} key={key} >*/}
+            {/*            <TextField*/}
+            {/*                label="Wallet address"*/}
+            {/*                error={!(/^0x[a-zA-Z0-9]+/gm.test(addressList[key]))}*/}
+            {/*                variant="outlined"*/}
+            {/*                onChange={(e) => handleInputChange(e, key)}*/}
+            {/*                placeholder={"0x"}*/}
+            {/*                sx={{ m: 1, width: 443, mt: 1, borderRadius: "10px", }}*/}
+            {/*            />*/}
+            {/*            <IconButton aria-label="add" onClick={handleRemoveClick}>*/}
+            {/*              <DeleteIcon />*/}
+            {/*            </IconButton>*/}
+            {/*          </Grid>*/}
+            {/*          </>*/}
+            {/*        );*/}
+            {/*      })}*/}
+            {/*    </Grid> : null}*/}
+
+            {/*</Card>*/}
             <br />
 
-            <Card className={classes.cardPadding} mb={2}>
-              <Grid container item xs sx={{ display: "flex", justifyContent: "flex-start", alignItems: "center" }} pl={3} pr={1} mt={2} mb={2}>
-                <Typography className={classes.largeText}>
-                  Minimum signatures needed to <Box sx={{ color: "#FFFFFF" }} fontWeight='fontWeightBold' display='inline'>pass</Box> any transaction
-                </Typography>
-              </Grid>
-              <Grid container item md={11.3} mt={4} ml={4} mb={4}>
-              <TextField
-                error={(threshold > addressList.length || threshold < 1) && addressList.length > 0}
-                variant="outlined"
-                onChange={(e) => setThreshold(e.target.value)}
-                value={threshold}
-                sx={{ m: 1, width: 443, mt: 1, borderRadius: "10px", }}
-              />
-                {/* <CustomSlider onChange={e => minimumSignaturePercentage(e.target.value)} value={threshold} /> */}
-              </Grid>
-            </Card>
+            {/*<Card className={classes.cardPadding} mb={2}>*/}
+            {/*  <Grid container item xs sx={{ display: "flex", justifyContent: "flex-start", alignItems: "center" }} pl={3} pr={1} mt={2} mb={2}>*/}
+            {/*    <Typography className={classes.largeText}>*/}
+            {/*      Minimum signatures needed to <Box sx={{ color: "#FFFFFF" }} fontWeight='fontWeightBold' display='inline'>pass</Box> any transaction*/}
+            {/*    </Typography>*/}
+            {/*  </Grid>*/}
+            {/*  <Grid container item md={11.3} mt={4} ml={4} mb={4}>*/}
+            {/*  <TextField*/}
+            {/*    error={(threshold > addressList.length || threshold < 1) && addressList.length > 0}*/}
+            {/*    variant="outlined"*/}
+            {/*    onChange={(e) => setThreshold(e.target.value)}*/}
+            {/*    value={threshold}*/}
+            {/*    sx={{ m: 1, width: 443, mt: 1, borderRadius: "10px", }}*/}
+            {/*  />*/}
+            {/*    /!* <CustomSlider onChange={e => minimumSignaturePercentage(e.target.value)} value={threshold} /> *!/*/}
+            {/*  </Grid>*/}
+            {/*</Card>*/}
 
             {/* <Typography className={classes.largeText} mt={4} mb={2}>
               Other
@@ -681,9 +718,14 @@ const Create = (props) => {
                 stepProps.completed = false
               }
               return (
-                <Step key={label} {...stepProps}>
-                  <StepLabel {...labelProps}>{label}</StepLabel>
-                </Step>
+                    <Step key={label} completed={completed[index]}>
+                      <StepButton color="inherit" onClick={handleStep(index)}>
+                        {label}
+                      </StepButton>
+                    </Step>
+                // <Step key={label} {...stepProps}>
+                //   <StepLabel {...labelProps}>{label}</StepLabel>
+                // </Step>
               )
             })}
           </Stepper>
@@ -711,15 +753,7 @@ const Create = (props) => {
                 {activeStep === 2 ? (
                 <>
                   <Button
-                  color="inherit"
-                  onClick={handleBack}
-                  className={classes.large_button}
-                  >
-                    Back
-                  </Button>
-                  <Button
-                    className={classes.large_button}
-                    variant="contained"
+                    variant="wideButton"
                     disabled={
                       activeStep === 0
                         ? !clubName || !clubSymbol
@@ -740,19 +774,9 @@ const Create = (props) => {
                   </Button>
                   </>
                   
-                ) : 
-                <>
-                  {activeStep === 1 ? 
-                  <Button
-                  color="inherit"
-                  onClick={handleBack}
-                  className={classes.large_button}
-                  >
-                    Back
-                  </Button>
-                  : null  
+                ) :
+                <></>
                 }
-                </>}
               </Box>
             </>
           )}

@@ -25,14 +25,6 @@ const useStyles = makeStyles({
     color: "#C1D3FF",
     fontFamily: "Whyte",
   },
-  avatarStyle: {
-    width: "5.21vw",
-    height: "10.26vh",
-    backgroundColor: "#C1D3FF33",
-    color: "#C1D3FF",
-    fontSize: "3.25rem",
-    fontFamily: "Whyte",
-  },
   cardRegular: {
     // height: "626px",
     backgroundColor: "#19274B",
@@ -291,7 +283,7 @@ const Settings = (props) => {
               <Card className={classes.cardRegular}>
                 <Grid container spacing={2}>
                   <Grid item mt={3} ml={3}>
-                    <Avatar className={classes.avatarStyle}>{apiTokenDetailSet ? tokenAPIDetails[0].name[0] : null}</Avatar>
+                    <Avatar variant="clubSelect2">{apiTokenDetailSet ? tokenAPIDetails[0].name[0] : null}</Avatar>
                   </Grid>
                   <Grid item ml={1} mt={4} mb={7}>
                     <Stack spacing={0}>

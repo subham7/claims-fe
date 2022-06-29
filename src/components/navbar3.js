@@ -14,22 +14,6 @@ const useStyles = makeStyles({
     height: "30px",
     width: "auto !important",
   },
-  navbarText: {
-    flexGrow: 1,
-    fontSize: "18px",
-    color: "#C1D3FF",
-    fontFamily: "Whyte",
-  },
-  navButton: {
-    borderRadius: "10px",
-    width: "327px",
-    height: "auto",
-    background: "#111D38 0% 0% no-repeat padding-box",
-    border: "1px solid #C1D3FF40",
-    opacity: "1",
-    fontSize: "18px",
-    fontFamily: "Whyte"
-  }
 })
 
 export default function Navbar3(props) {
@@ -117,8 +101,9 @@ export default function Navbar3(props) {
             <AccountButton accountDetail={userDetails} />
           ) : (
             <Button
-              sx={{ mr: 2, mt: 2, fontFamily: "Whyte" }}
-              className={classes.navButton}
+                variant="navBar"
+                sx={{ mr: 2, mt: 2 }}
+                className={classes.navButton}
             >
               No wallet connected
             </Button>
