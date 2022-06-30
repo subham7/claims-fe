@@ -47,7 +47,7 @@ const useStyles = makeStyles({
     color: "#C1D3FF",
     background: "#111D38 0% 0% no-repeat padding-box",
     border: "1px solid #C1D3FF40",
-    borderRadius: "10px",
+    borderRadius: "30px",
   },
   allIllustration: {
     width: "12px",

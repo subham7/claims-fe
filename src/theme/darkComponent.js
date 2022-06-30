@@ -34,8 +34,10 @@ export const darkComponents = {
           fontFamily: "Whyte",
           borderRadius: "30px",
           "&:hover": {
-            background: "#F5F5F5",
-            color: "#3B7AFD",
+            background: "#111D38 0% 0% no-repeat padding-box",
+            boxShadow: "0px 0px 12px #3B7AFD40",
+            border: "1px solid #C1D3FF40",
+            opacity: "1"
           },
         }
       },
@@ -52,7 +54,7 @@ export const darkComponents = {
             color: "#3B7AFD",
           },
         }
-      }
+      },
     ]
   },
   MuiCard: {
@@ -91,7 +93,24 @@ export const darkComponents = {
         border: "none",
         backgroundColor: "#142243",
       }
-    }
+    },
+    variants: [
+      {
+        props: { variant: "tableBody" },
+        style: {
+          fontSize: "1.375em",
+          fontFamily: "Whyte",
+        }
+      },
+      {
+        props: { variant: "tableHeading" },
+        style: {
+          fontSize: "1.375em",
+          fontFamily: "Whyte",
+          color: "#C1D3FF",
+        }
+      },
+    ]
   },
   MuiTextField: {
     styleOverrides: {
@@ -99,7 +118,28 @@ export const darkComponents = {
         borderRadius: "10px",
         backgroundColor: "#111D38",
       }
-    }
+    },
+    variants: [
+      {
+        props: { variant: "dashboardSearch" },
+        style: {
+          width: "28.5vw",
+          height: "auto",
+          color: "#C1D3FF",
+          background: "#111D38 0% 0% no-repeat padding-box",
+          border: "1px solid #C1D3FF40",
+          borderRadius: "30px",
+        }
+      }
+    ]
+  },
+  MuiOutlinedInput: {
+    styleOverrides: {
+      root: {
+        borderRadius: "30px",
+        backgroundColor: "#111D38",
+      }
+    },
   },
   MuiDialog: {
     styleOverrides: {
@@ -126,7 +166,61 @@ export const darkComponents = {
           fontSize: "1.3125em",
           color: "#C1D3FF"
         }
+      },
+      {
+        props: { variant: "regularText2" },
+        style: {
+          fontSize: "1.1875em",
+          fontFamily: "Whyte",
+          color: "#C1D3FF",
+        }
+      },
+      {
+        props: { variant: "regularText3" },
+        style: {
+          fontSize: "1.375em",
+          fontFamily: "Whyte",
+        }
+      },
+      {
+        props: { variant: "regularText4" },
+        style: {
+          fontSize: "1.25em",
+          fontFamily: "Whyte",
+        }
+      },
+      {
+        props: { variant: "regularText5" },
+        style: {
+          fontSize: "1.1875em",
+          fontFamily: "Whyte",
+          color: "#C1D3FF",
+        }
+      },
+      {
+        props: { variant: "subHeading" },
+        style: {
+          fontSize: "1.875em",
+          fontFamily: "Whyte",
+          color: "#F5F5F5",
+        }
+      },
+      {
+        props: { variant: "cardFont1" },
+        style: {
+          fontFamily: "Whyte",
+          fontSize: "1.3125em",
+        }
+      },
+      {
+        props: { variant: "cardFont2" },
+        style: {
+          fontFamily: "Whyte",
+          fontSize: "0.9375em",
+          color: "#C1D3FF",
+        }
       }
+
     ]
   },
   MuiAvatar: {
@@ -161,5 +255,17 @@ export const darkComponents = {
         fontSize: "30px"
       }
     }
+  },
+  MuiCardMedia: {
+    variants: [
+      {
+        props: { variant: "collectionImage"},
+        style: {
+          width:"100%",
+          padding: 0,
+        }
+      }
+    ]
   }
+
 }

@@ -15,9 +15,13 @@ import {
   ListItemButton,
   Divider,
   List,
-  Link
+  Link, Tooltip
 } from "@mui/material"
+import { tooltipClasses } from '@mui/material/Tooltip';
 import { useRouter } from "next/router";
+import {styled} from "@mui/material/styles";
+import Fade from '@mui/material/Fade';
+import Zoom from '@mui/material/Zoom';
 
 const useStyles = makeStyles({
   listItemIcon: {
@@ -41,6 +45,23 @@ const useStyles = makeStyles({
     alignItems: "center",
   },
 })
+
+const BootstrapTooltip = styled(({ className, ...props }) => (
+    <Tooltip
+        TransitionComponent={Fade}
+        TransitionProps={{ timeout: 600 }} {...props} arrow classes={{ popper: className }} />
+))(({ theme }) => ({
+  [`& .${tooltipClasses.arrow}`]: {
+    color: "#C1D3FF",
+  },
+  [`& .${tooltipClasses.tooltip}`]: {
+    fontFamily: "Whyte",
+    backgroundColor: "#C1D3FF",
+    color: "#142243",
+    fontSize: theme.typography.pxToRem(15),
+    border: '1px solid #dadde9',
+  },
+}));
 
 const drawerWidth = 100
 
@@ -81,35 +102,45 @@ export default function Sidebar(props) {
       >
         <Toolbar />
         <List>
-          <ListItemButton component="a" onClick={e => { router.push(`/dashboard/${clubId}`, undefined, { shallow: true }) }} alignItems="center">
-            <ListItemIcon className={page == 1 ? classes.listItemIconSelected : classes.listItemIcon}>
-              <HomeRoundedIcon />
-            </ListItemIcon>
-          </ListItemButton>
+          <BootstrapTooltip title="Dashboard" placement="left">
+            <ListItemButton component="a" onClick={e => { router.push(`/dashboard/${clubId}`, undefined, { shallow: true }) }} alignItems="center">
+              <ListItemIcon className={page == 1 ? classes.listItemIconSelected : classes.listItemIcon}>
+                <HomeRoundedIcon />
+              </ListItemIcon>
+            </ListItemButton>
+          </BootstrapTooltip>
 
-          <ListItemButton component="a" onClick={e => { router.push(`/dashboard/${clubId}/proposal`, undefined, { shallow: true }) }}>
-            <ListItemIcon className={page == 2 ? classes.listItemIconSelected : classes.listItemIcon}>
-              <InsertDriveFileRoundedIcon />
-            </ListItemIcon>
-          </ListItemButton>
+          <BootstrapTooltip title="Proposals" placement="left">
+            <ListItemButton component="a" onClick={e => { router.push(`/dashboard/${clubId}/proposal`, undefined, { shallow: true }) }}>
+              <ListItemIcon className={page == 2 ? classes.listItemIconSelected : classes.listItemIcon}>
+                <InsertDriveFileRoundedIcon />
+              </ListItemIcon>
+            </ListItemButton>
+          </BootstrapTooltip>
 
-          <ListItemButton component="a" onClick={e => { router.push(`/dashboard/${clubId}/members`, undefined, { shallow: true }) }}>
-            <ListItemIcon className={page == 3 ? classes.listItemIconSelected : classes.listItemIcon}>
-              <PeopleRoundedIcon />
-            </ListItemIcon>
-          </ListItemButton>
+          <BootstrapTooltip title="Members" placement="left">
+            <ListItemButton component="a" onClick={e => { router.push(`/dashboard/${clubId}/members`, undefined, { shallow: true }) }}>
+              <ListItemIcon className={page == 3 ? classes.listItemIconSelected : classes.listItemIcon}>
+                <PeopleRoundedIcon />
+              </ListItemIcon>
+            </ListItemButton>
+          </BootstrapTooltip>
 
-          <ListItemButton>
-            <ListItemIcon className={classes.listItemIcon}>
-              <CompareArrowsRoundedIcon />
-            </ListItemIcon>
-          </ListItemButton>
+          <BootstrapTooltip title="Transactions" placement="left">
+            <ListItemButton>
+              <ListItemIcon className={classes.listItemIcon}>
+                <CompareArrowsRoundedIcon />
+              </ListItemIcon>
+            </ListItemButton>
+          </BootstrapTooltip>
 
-          <ListItemButton component="a" onClick={e => { router.push(`/dashboard/${clubId}/settings`, undefined, { shallow: true }) }}>
-            <ListItemIcon className={classes.listItemIcon}>
-              <SettingsRoundedIcon />
-            </ListItemIcon>
-          </ListItemButton>
+          <BootstrapTooltip title="Settings" placement="left">
+            <ListItemButton component="a" onClick={e => { router.push(`/dashboard/${clubId}/settings`, undefined, { shallow: true }) }}>
+              <ListItemIcon className={classes.listItemIcon}>
+                <SettingsRoundedIcon />
+              </ListItemIcon>
+            </ListItemButton>
+          </BootstrapTooltip>
         </List>
       </Drawer>
 
@@ -131,35 +162,45 @@ export default function Sidebar(props) {
         <Toolbar />
 
         <List>
-          <ListItemButton component="a" onClick={e => { router.push(`/dashboard/${clubId}`, undefined, { shallow: true }) }} alignItems="center">
-            <ListItemIcon className={page == 1 ? classes.listItemIconSelected : classes.listItemIcon}>
-              <HomeRoundedIcon />
-            </ListItemIcon>
-          </ListItemButton>
+          <BootstrapTooltip title="Dashboard" placement="left">
+            <ListItemButton component="a" onClick={e => { router.push(`/dashboard/${clubId}`, undefined, { shallow: true }) }} alignItems="center">
+              <ListItemIcon className={page == 1 ? classes.listItemIconSelected : classes.listItemIcon}>
+                <HomeRoundedIcon />
+              </ListItemIcon>
+            </ListItemButton>
+          </BootstrapTooltip>
 
-          <ListItemButton component="a" onClick={e => { router.push(`/dashboard/${clubId}/proposal`, undefined, { shallow: true }) }}>
-            <ListItemIcon className={page == 2 ? classes.listItemIconSelected : classes.listItemIcon}>
-              <InsertDriveFileRoundedIcon />
-            </ListItemIcon>
+          <BootstrapTooltip title="Proposals" placement="left">
+            <ListItemButton component="a" onClick={e => { router.push(`/dashboard/${clubId}/proposal`, undefined, { shallow: true }) }}>
+              <ListItemIcon className={page == 2 ? classes.listItemIconSelected : classes.listItemIcon}>
+                <InsertDriveFileRoundedIcon />
+              </ListItemIcon>
+            </ListItemButton>
+          </BootstrapTooltip>
 
-          </ListItemButton>
-          <ListItemButton component="a" onClick={e => { router.push(`/dashboard/${clubId}/members`, undefined, { shallow: true }) }}>
-            <ListItemIcon className={page == 3 ? classes.listItemIconSelected : classes.listItemIcon}>
-              <PeopleRoundedIcon />
-            </ListItemIcon>
-          </ListItemButton>
+          <BootstrapTooltip title="Members" placement="left">
+            <ListItemButton component="a" onClick={e => { router.push(`/dashboard/${clubId}/members`, undefined, { shallow: true }) }}>
+              <ListItemIcon className={page == 3 ? classes.listItemIconSelected : classes.listItemIcon}>
+                <PeopleRoundedIcon />
+              </ListItemIcon>
+            </ListItemButton>
+          </BootstrapTooltip>
 
-          <ListItemButton >
-            <ListItemIcon className={classes.listItemIcon}>
-              <CompareArrowsRoundedIcon />
-            </ListItemIcon>
-          </ListItemButton>
+          <BootstrapTooltip title="Transactions" placement="left">
+            <ListItemButton >
+              <ListItemIcon className={classes.listItemIcon}>
+                <CompareArrowsRoundedIcon />
+              </ListItemIcon>
+            </ListItemButton>
+          </BootstrapTooltip>
 
-          <ListItemButton component="a" onClick={e => { router.push(`/dashboard/${clubId}/settings`, undefined, { shallow: true }) }}>
-            <ListItemIcon className={page == 5 ? classes.listItemIconSelected : classes.listItemIcon}>
-              <SettingsRoundedIcon />
-            </ListItemIcon>
-          </ListItemButton>
+          <BootstrapTooltip title="Settings" placement="left">
+            <ListItemButton component="a" onClick={e => { router.push(`/dashboard/${clubId}/settings`, undefined, { shallow: true }) }}>
+              <ListItemIcon className={page == 5 ? classes.listItemIconSelected : classes.listItemIcon}>
+                <SettingsRoundedIcon />
+              </ListItemIcon>
+            </ListItemButton>
+          </BootstrapTooltip>
         </List>
       </Drawer>
     </Box>

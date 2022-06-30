@@ -52,10 +52,10 @@ export default function BasicTable(props) {
       <Table sx={{ minWidth: 809 }} aria-label="simple table">
         <TableHead>
           <TableRow>
-            <TableCell align="left" className={classes.tableheading}>Token</TableCell>
-            <TableCell align="left" className={classes.tableheading}>Balance</TableCell>
-            <TableCell align="left" className={classes.tableheading}>Value (USD)</TableCell>
-            <TableCell align="left" className={classes.tableheading}>Day change</TableCell>
+            <TableCell align="left" variant='tableHeading'>Token</TableCell>
+            <TableCell align="left" variant='tableHeading'>Balance</TableCell>
+            <TableCell align="left" variant='tableHeading'>Value (USD)</TableCell>
+            <TableCell align="left" variant='tableHeading'>Day change</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -64,10 +64,10 @@ export default function BasicTable(props) {
               key={row.name}
               sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
             >
-              <TableCell align="left" className={classes.tablecontent}><></>{row.token}</TableCell>
-              <TableCell align="left" className={classes.tablecontent}>{row.balance}</TableCell>
-              <TableCell align="left" className={classes.tablecontent}>${row.value}</TableCell>
-              <TableCell align="left"className={classes.tablecontent2} sx={row.daychange > 0 ? { color: "#0ABB92" } : { color: "#D55438" }}>{row.daychange > 0 ? "+" : ""}{row.daychange}</TableCell>
+              <TableCell align="left" variant="tableBody"><></>{row.token}</TableCell>
+              <TableCell align="left" variant="tableBody">{row.balance}</TableCell>
+              <TableCell align="left" variant="tableBody">${row.value}</TableCell>
+              <TableCell align="left" variant="tableBody" sx={row.daychange > 0 ? { color: "#0ABB92" } : { color: "#D55438" }}>{row.daychange > 0 ? "+" : ""}{row.daychange}</TableCell>
             </TableRow>
           ))}
         </TableBody>

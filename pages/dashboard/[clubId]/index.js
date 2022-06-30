@@ -1,7 +1,8 @@
 import { React, useEffect, useState } from "react"
 import { makeStyles } from "@mui/styles"
 import Layout1 from "../../../src/components/layouts/layout1"
-import { Box, Card, Grid, Typography, CardMedia, Divider, Stack, TextField, Button, IconButton, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Table } from "@mui/material"
+import { Box, Card, Grid, Typography, CardMedia, Divider, Stack, Button, IconButton, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Table } from "@mui/material"
+import TextField from "@mui/material/TextField"
 import SearchIcon from "@mui/icons-material/Search"
 import ButtonDropDown from "../../../src/components/buttondropdown"
 import BasicTable from "../../../src/components/table"
@@ -134,6 +135,7 @@ const useStyles = makeStyles({
     opacity: "1",
   },
   card3text1: {
+    fontSize: "19px",
     fontFamily: "Whyte",
   },
   card3text2: {
@@ -172,7 +174,13 @@ const useStyles = makeStyles({
     color: "#C1D3FF",
     background: "#111D38 0% 0% no-repeat padding-box",
     border: "1px solid #C1D3FF40",
-    borderRadius: "10px",
+    borderRadius: "30px",
+    "&:hover": {
+      boxShadow: "0px 0px 12px #C1D3FF40",
+      border: "1px solid #C1D3FF40",
+      borderRadius: "30px",
+      opacity: 1,
+    },
   },
   divider: {
     paddingLeft: "20%",
@@ -209,12 +217,13 @@ const useStyles = makeStyles({
     color: "#C1D3FF",
     background: "#111D38 0% 0% no-repeat padding-box",
     border: "1px solid #C1D3FF40",
-    borderRadius: "10px",
-  },
-  tokensText: {
-    fontFamily: "Whyte",
-    fontSize: "30px",
-    color: "#F5F5F5",
+    borderRadius: "30px",
+    "&:hover": {
+      boxShadow: "0px 0px 12px #C1D3FF40",
+      border: "1px solid #C1D3FF40",
+      borderRadius: "30px",
+      opacity: 1,
+    },
   },
   iconMetroCoin: {
     width: "70%"
@@ -441,8 +450,8 @@ const Dashboard = (props) => {
                       <Grid item mt={4}>
                         <Grid container item direction="column">
                         <img src="/assets/icons/icon-metro-coin.svg" alt="icon-metro-coins" className={classes.iconMetroCoin} />
-                        <Typography mt={4} className={classes.card2text1}>
-                          Tresury ($)
+                        <Typography mt={4} variant="regularText4">
+                          Treasury ($)
                         </Typography>
                         <Typography className={classes.card2text2}>
                           {dataFetched ? tokenDetails[2]/ Math.pow(10, 18) : null}
@@ -455,16 +464,16 @@ const Dashboard = (props) => {
                       <Grid item ml={4}><Divider className={classes.divider} variant="middle" orientation="vertical" /></Grid>
                       <Grid item mt={4} ml={1}>
                         <Grid container item direction="column">
-                        <Typography className={classes.card2text4}>
+                        <Typography variant="regularText2">
                           Members
                         </Typography>
-                        <Typography className={classes.card2text5}>
+                        <Typography variant="regularText4">
                           {membersFetched ? members : 0}
                         </Typography>
-                        <Typography mt={3} className={classes.card2text6}>
+                        <Typography mt={3} variant="regularText2">
                           Tresury Wallet
                         </Typography>
-                        <Typography className={classes.card2text7}>
+                        <Typography variant="regularText4">
                           ${dataFetched ? tokenDetails[2]/ Math.pow(10, 18) : null}
                         </Typography>
                         {/* <Typography mt={3} className={classes.card2text8}>
@@ -503,15 +512,15 @@ const Dashboard = (props) => {
                         />
                       </Grid>
                     </Grid>
-                    <Typography mt={5} mb={5} className={classes.tokensText}>Tokens</Typography>
+                    <Typography mt={5} mb={5} variant="subHeading">Tokens</Typography>
                     <TableContainer component={Paper}>
                       <Table sx={{ minWidth: 809 }} aria-label="simple table">
                         <TableHead>
                           <TableRow>
-                            <TableCell align="left" className={classes.tableheading}>Token</TableCell>
-                            <TableCell align="left" className={classes.tableheading}>Balance</TableCell>
-                            <TableCell align="left" className={classes.tableheading}>Value (USD)</TableCell>
-                            {/* <TableCell align="left" className={classes.tableheading}>Day change</TableCell> */}
+                            <TableCell align="left" variant="tableHeading">Token</TableCell>
+                            <TableCell align="left" variant="tableHeading">Balance</TableCell>
+                            <TableCell align="left" variant="tableHeading">Value (USD)</TableCell>
+                            {/* <TableCell align="left" variant="tableHeading">Day change</TableCell> */}
                           </TableRow>
                         </TableHead>
                         <TableBody>
@@ -520,17 +529,17 @@ const Dashboard = (props) => {
                               key={key}
                               sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                             >
-                              <TableCell align="left" className={classes.tablecontent}><></>{data.token.name}</TableCell>
-                              <TableCell align="left" className={classes.tablecontent}>{data.balance}</TableCell>
-                              <TableCell align="left" className={classes.tablecontent}>${data.balance}</TableCell>
-                              {/* <TableCell align="left"className={classes.tablecontent2} sx={row.daychange > 0 ? { color: "#0ABB92" } : { color: "#D55438" }}>{row.daychange > 0 ? "+" : ""}{row.daychange}</TableCell> */}
+                              <TableCell align="left" variant="tableBody"><></>{data.token.name}</TableCell>
+                              <TableCell align="left" variant="tableBody">{data.balance}</TableCell>
+                              <TableCell align="left" variant="tableBody">${data.balance}</TableCell>
+                              {/* <TableCell align="left" variant="tableBody" sx={row.daychange > 0 ? { color: "#0ABB92" } : { color: "#D55438" }}>{row.daychange > 0 ? "+" : ""}{row.daychange}</TableCell> */}
                             </TableRow>
                           )) : null}
                         </TableBody>
                       </Table>
                     </TableContainer>
 
-                    <Typography mt={16} mb={5} className={classes.tokensText}>Collectibles</Typography>
+                    <Typography mt={16} mb={5} variant="subHeading">Collectibles</Typography>
                     <Grid container>
                       <Grid items m={1}>
                         <CollectionCard />
@@ -543,7 +552,7 @@ const Dashboard = (props) => {
                       </Grid>
                     </Grid>
 
-                    {/* <Typography mt={16} mb={5} className={classes.tokensText}>Off-chain investments</Typography>
+                    {/* <Typography mt={16} mb={5} variant="subHeading">Off-chain investments</Typography>
                     <BasicTable /> */}
                   </Stack>
                 </Grid>
@@ -554,7 +563,7 @@ const Dashboard = (props) => {
                 <Card className={classes.thirdCard}>
                   <Grid container m={2}>
                     <Grid items>
-                      <Typography className={classes.card3text1}>
+                      <Typography variant="regularText4">
                         Joining link
                       </Typography>
                     </Grid>
@@ -564,7 +573,7 @@ const Dashboard = (props) => {
                           <div className={classes.activeIllustration}></div>
                         </Grid>
                         <Grid item>
-                          <Typography className={classes.card3text2}>
+                          <Typography sx={{ color: "#0ABB92", fontSize: "1.25em", fontFamily: "Whyte"}}>
                             Active
                           </Typography>
                         </Grid>
@@ -585,7 +594,7 @@ const Dashboard = (props) => {
                   </Grid>
                   <Grid container>
                     <Grid items mt={4} ml={1} mr={1} >
-                      <Typography className={classes.card3text4}>
+                      <Typography variant="regularText5">
                       Share this link for new members to join your club and add funds into this club.
                       </Typography>
                     </Grid>

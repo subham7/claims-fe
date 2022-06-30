@@ -111,19 +111,20 @@ export default function Navbar2(props) {
           />
           </Box>
           
-          {/* {previouslyConnectedWallet !== null ? (<Typography  variant="h6" component="div" ml={20} className={classes.navbarText}> 
+          {/* {previouslyConnectedWallet !== null ? (<Typography  variant="h6" component="div" ml={20} className={classes.navbarText}>
           </Typography>) : (
-          <Typography  variant="h6" component="div" ml={20} className={classes.navbarText}> 
+          <Typography  variant="h6" component="div" ml={20} className={classes.navbarText}>
             No wallet connected
           </Typography>)
           } */}
-          {/*<Button*/}
-          {/*    variant="contained"*/}
-          {/*    color="primary"*/}
-          {/*    sx={{ mr: 2, mt: 2 }}*/}
-          {/*  startIcon={<LocalFireDepartmentIcon />}>*/}
-          {/*    Discover*/}
-          {/*  </Button>*/}
+          <Button
+              variant="contained"
+              color="primary"
+              sx={{ mr: 2, mt: 2 }}
+            // startIcon={<LocalFireDepartmentIcon />}
+          >
+              Deposit
+            </Button>
           {previouslyConnectedWallet !== null ? (
             <AccountButton accountDetail={userDetails} />
           ) : (
