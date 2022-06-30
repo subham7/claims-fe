@@ -21,7 +21,7 @@ export default function CollectionCard() {
         image="/assets/images/ape.png"
       />
       <CardContent>
-        <Typography gutterBottom variant="h6" component="div" variant="cardFont1">
+        <Typography gutterBottom component="div" variant="cardFont1">
           Cryptopunk #8651
         </Typography>
         <Grid container spacing={4}>

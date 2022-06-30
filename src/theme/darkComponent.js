@@ -266,6 +266,13 @@ export const darkComponents = {
         }
       }
     ]
+  },
+  MuiTableContainer: {
+    styleOverrides: {
+      root: {
+        backgroundColor: "none"
+      }
+    }
   }
 
 }
