@@ -1,7 +1,25 @@
 import { React, useEffect, useState } from "react"
 import { makeStyles } from "@mui/styles"
 import Layout1 from "../../../src/components/layouts/layout1"
-import { Box, Card, Grid, Typography, CardMedia, Divider, Stack, Button, IconButton, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Table } from "@mui/material"
+import {
+  Box,
+  Card,
+  Grid,
+  Typography,
+  CardMedia,
+  Divider,
+  Stack,
+  Button,
+  IconButton,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Table,
+  CircularProgress, Backdrop
+} from "@mui/material"
 import TextField from "@mui/material/TextField"
 import SearchIcon from "@mui/icons-material/Search"
 import ButtonDropDown from "../../../src/components/buttondropdown"
@@ -174,11 +192,11 @@ const useStyles = makeStyles({
     color: "#C1D3FF",
     background: "#111D38 0% 0% no-repeat padding-box",
     border: "1px solid #C1D3FF40",
-    borderRadius: "30px",
+    borderRadius: "10px",
     "&:hover": {
       boxShadow: "0px 0px 12px #C1D3FF40",
       border: "1px solid #C1D3FF40",
-      borderRadius: "30px",
+      borderRadius: "10px",
       opacity: 1,
     },
   },
@@ -217,11 +235,11 @@ const useStyles = makeStyles({
     color: "#C1D3FF",
     background: "#111D38 0% 0% no-repeat padding-box",
     border: "1px solid #C1D3FF40",
-    borderRadius: "30px",
+    borderRadius: "10px",
     "&:hover": {
       boxShadow: "0px 0px 12px #C1D3FF40",
       border: "1px solid #C1D3FF40",
-      borderRadius: "30px",
+      borderRadius: "10px",
       opacity: 1,
     },
   },
@@ -273,6 +291,7 @@ const Dashboard = (props) => {
   const [closedProposalDataFetched, setClosedProposalDataFetched] = useState(false)
   const [clubAssetTokenFetched, setClubAssetTokenFetched] = useState(false)
   const [clubAssetTokenData, setClubAssetTokenData] = useState([])
+  const [loaderOpen, setLoaderOpen] = useState(false)
 
   const fetchGovernorContractData = async () => {
     if (daoAddress && walletAddress){
@@ -399,13 +418,18 @@ const Dashboard = (props) => {
   }
 
   useEffect(() => {
-      tokenAPIDetailsRetrieval()
-      tokenDetailsRetrieval()   
-      fetchMembers()
-      fetchTresuryWallet()
-      fetchClosedProposals()
-      fetchClubAssetToken()
-      fetchGovernorContractData()
+    setLoaderOpen(true)
+    tokenAPIDetailsRetrieval()
+    tokenDetailsRetrieval()
+    fetchMembers()
+    fetchTresuryWallet()
+    fetchClosedProposals()
+    fetchClubAssetToken()
+    fetchGovernorContractData()
+
+    if (dataFetched && apiTokenDetailSet && membersFetched && tresuryWalletBalanceFetched && closedProposalDataFetched && clubAssetTokenFetched && clubDetailsFetched) {
+      setLoaderOpen(false)
+    }
   }, [daoAddress, walletAddress, dataFetched, apiTokenDetailSet, membersFetched, tresuryWalletBalanceFetched, closedProposalDataFetched, clubAssetTokenFetched, clubDetailsFetched])
 
   const handleCopy = () => {
@@ -639,7 +663,12 @@ const Dashboard = (props) => {
               </Stack>
             </Grid>
           </Grid>
-        {/* </div> */}
+        <Backdrop
+            sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+            open={loaderOpen}
+        >
+          <CircularProgress color="inherit" />
+        </Backdrop>
       </Layout1>
     </>
   )

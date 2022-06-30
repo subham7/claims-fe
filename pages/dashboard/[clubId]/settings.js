@@ -1,6 +1,23 @@
-import { useEffect, useState } from "react"
+import {React, useEffect, useState} from "react"
 import Layout1 from "../../../src/components/layouts/layout1"
-import { Box, Card, Grid, Typography, Avatar, Button, Stack, Skeleton, Divider, TableCell, TableRow, TableHead, Dialog, DialogContent, IconButton } from "@mui/material"
+import {
+  Box,
+  Card,
+  Grid,
+  Typography,
+  Avatar,
+  Button,
+  Stack,
+  Skeleton,
+  Divider,
+  TableCell,
+  TableRow,
+  TableHead,
+  Dialog,
+  DialogContent,
+  IconButton,
+  CircularProgress, Backdrop
+} from "@mui/material"
 import { makeStyles } from "@mui/styles"
 import ProgressBar from "../../../src/components/progressbar"
 import Router, { useRouter } from "next/router"
@@ -160,6 +177,7 @@ const Settings = (props) => {
   const [maxDeposit, setMaxDeposit] = useState(0)
   const [maxDepositFetched, setMaxDepositFetched] = useState(false)
   const [membersDetails, setMembersDetails] = useState([])
+  const [loaderOpen, setLoaderOpen] = useState(false)
 
   const tokenAPIDetailsRetrieval = async () => {
     let response = await fetchClubbyDaoAddress(daoAddress)
@@ -258,10 +276,14 @@ const Settings = (props) => {
   }
 
   useEffect(() => {
+    setLoaderOpen(true);
     tokenAPIDetailsRetrieval()
     tokenDetailsRetrieval()
     contractDetailsRetrieval()
     fetchMembers()
+    if (apiTokenDetailSet && dataFetched && governorDataFetched && membersFetched) {
+      setLoaderOpen(false)
+    }
 
   }, [daoAddress, apiTokenDetailSet, dataFetched, governorDetails, membersFetched])
 
@@ -545,6 +567,12 @@ const Settings = (props) => {
               </Grid>
             </DialogContent>
           </Dialog>
+        <Backdrop
+            sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+            open={loaderOpen}
+        >
+          <CircularProgress color="inherit" />
+        </Backdrop>
       </Layout1>
     </>
   )

@@ -349,17 +349,17 @@ const Create = (props) => {
               value={clubSymbol}
             />
             <br />
-            <Typography className={classes.largeText} variant="p">
-              Upload a display picture (Optional)
-            </Typography>
-            <br />
-            <Grid container wrap="nowrap" spacing={0} justify="center" alignItems="center" direction="row">
-              <Grid item xs={0} mt={2}>
-                <input ref={uploadInputRef} type="file" accept="image/*" id="file" name="file" hidden onChange={(e) => setDisplayImage(URL.createObjectURL(e.target.files[0]))} />
-                <Button onClick={() => uploadInputRef.current && uploadInputRef.current.click()} startIcon={<UploadIcon />} className={classes.uploadButton}>Upload file</Button>
-              </Grid>
-            </Grid>
-            <br />
+            {/*<Typography className={classes.largeText} variant="p">*/}
+            {/*  Upload a display picture (Optional)*/}
+            {/*</Typography>*/}
+            {/*<br />*/}
+            {/*<Grid container wrap="nowrap" spacing={0} justify="center" alignItems="center" direction="row">*/}
+            {/*  <Grid item xs={0} mt={2}>*/}
+            {/*    <input ref={uploadInputRef} type="file" accept="image/*" id="file" name="file" hidden onChange={(e) => setDisplayImage(URL.createObjectURL(e.target.files[0]))} />*/}
+            {/*    <Button onClick={() => uploadInputRef.current && uploadInputRef.current.click()} startIcon={<UploadIcon />} className={classes.uploadButton}>Upload file</Button>*/}
+            {/*  </Grid>*/}
+            {/*</Grid>*/}
+            {/*<br />*/}
             <Grid container wrap="nowrap" spacing={0} justify="center" alignItems="center" direction="row">
               <Grid item xs={0} mt={2}>
                 <Button

@@ -1,7 +1,30 @@
 import { React, useEffect, useState } from "react"
 import { makeStyles } from "@mui/styles"
 import Layout1 from "../../../../src/components/layouts/layout1"
-import { Box, Card, Grid, Typography, ListItemButton, ListItemText, Stack, TextField, Button, IconButton, Modal, Select, OutlinedInput, MenuItem, TextareaAutosize, Chip, Dialog, DialogContent, Snackbar, Alert, CardActionArea } from "@mui/material"
+import {
+  Box,
+  Card,
+  Grid,
+  Typography,
+  ListItemButton,
+  ListItemText,
+  Stack,
+  TextField,
+  Button,
+  IconButton,
+  Modal,
+  Select,
+  OutlinedInput,
+  MenuItem,
+  TextareaAutosize,
+  Chip,
+  Dialog,
+  DialogContent,
+  Snackbar,
+  Alert,
+  CardActionArea,
+  CircularProgress, Backdrop
+} from "@mui/material"
 import SearchIcon from "@mui/icons-material/Search"
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
 import AddCircleRoundedIcon from '@mui/icons-material/AddCircleRounded'
@@ -47,7 +70,13 @@ const useStyles = makeStyles({
     color: "#C1D3FF",
     background: "#111D38 0% 0% no-repeat padding-box",
     border: "1px solid #C1D3FF40",
-    borderRadius: "30px",
+    borderRadius: "10px",
+    "&:hover": {
+      boxShadow: "0px 0px 12px #C1D3FF40",
+      border: "1px solid #C1D3FF40",
+      borderRadius: "10px",
+      opacity: 1,
+    },
   },
   allIllustration: {
     width: "12px",
@@ -93,22 +122,19 @@ const useStyles = makeStyles({
     fontFamily: "Whyte",
   },
   cardFontActive: {
-    fontFamily: "Whyte",
     fontSize: "16px",
     backgroundColor: "#0ABB92",
-    padding: "0 5px 0 5px"
+    padding: "5px 5px 5px 5px"
   },
   cardFontPending: {
-    fontFamily: "Whyte",
     fontSize: "16px",
     backgroundColor: "#FFB74D",
-    padding: "0 5px 0 5px"
+    padding: "5px 5px 5px 5px"
   },
   cardFontFailed: {
-    fontFamily: "Whyte",
     fontSize: "16px",
     backgroundColor: "#D55438",
-    padding: "0 5px 0 5px"
+    padding: "5px 5px 5px 5px"
   },
   dialogBox: {
     fontFamily: "Whyte",
@@ -194,6 +220,8 @@ const Proposal = () => {
   const [surveyValue, setSurveyValue] = useState('')
   const [tokenData, setTokenData] = useState([])
   const [tokenFetched, setTokenFetched] = useState(false)
+  const [loaderOpen, setLoaderOpen] = useState(false)
+  const [selectedListItem, setSelectedListItem] = useState('')
 
 
   const fetchData = () => {
@@ -204,6 +232,7 @@ const Proposal = () => {
       } else {
         setProposalData(result.data)
         setFetched(true)
+        setLoaderOpen(false)
       }
     })
 
@@ -219,6 +248,7 @@ const Proposal = () => {
   }
 
   const fetchFilteredData = (type) => {
+    setSelectedListItem(type)
     if (type !== "all") {
       const proposalData = getProposal(clubID, type)
       proposalData.then((result) => {
@@ -231,6 +261,7 @@ const Proposal = () => {
         }
       })
     }
+    setLoaderOpen(true)
     fetchData()
   }
 
@@ -264,6 +295,7 @@ const Proposal = () => {
           setFailed(true)
           return false
         } else {
+          setLoaderOpen(true)
           fetchData()
           setOpenSnackBar(true)
           setFailed(false)
@@ -361,6 +393,7 @@ const Proposal = () => {
             setFailed(true)
           } else {
             // console.log(result.data)
+            setLoaderOpen(true)
             fetchData()
             setOpenSnackBar(true)
             setFailed(false)
@@ -394,6 +427,7 @@ const Proposal = () => {
             setFailed(true)
           } else {
             // console.log(result.data)
+            setLoaderOpen(true)
             fetchData()
             setOpenSnackBar(true)
             setFailed(false)
@@ -432,6 +466,7 @@ const Proposal = () => {
             setFailed(true)
           } else {
             // console.log(result.data)
+            setLoaderOpen(true)
             fetchData()
             setOpenSnackBar(true)
             setFailed(false)
@@ -464,6 +499,7 @@ const Proposal = () => {
             setFailed(true)
           } else {
             // console.log(result.data)
+            setLoaderOpen(true)
             fetchData()
             setOpenSnackBar(true)
             setFailed(false)
@@ -495,6 +531,7 @@ const Proposal = () => {
             setFailed(true)
           } else {
             // console.log(result.data)
+            setLoaderOpen(true)
             fetchData()
             setOpenSnackBar(true)
             setFailed(false)
@@ -573,6 +610,7 @@ const Proposal = () => {
 
 
   useEffect(() => {
+    setLoaderOpen(true)
     fetchData()
   }, [clubID, fetched])
 
@@ -638,25 +676,29 @@ const Proposal = () => {
       <Layout1 page={2}>
         <Grid container spacing={3} paddingLeft={10} paddingTop={15}>
           <Grid item md={9}>
-            <Grid container mb={5}>
+            <Grid container mb={5} direction={{ xs: "column", sm: "column", md: "column", lg: "row" }}>
               <Grid item>
-                <Typography className={classes.clubAssets}>Proposals</Typography>
+                <Typography variant="title">Proposals</Typography>
               </Grid>
-              <Grid item spacing={2} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
-                <Stack direction="row" spacing={4}>
-                  <TextField
-                    value={searchProposal}
-                    onChange={(e) => setSearchProposal(e.target.value)}
-                    className={classes.searchField}
-                    placeholder="Search proposals"
-                    InputProps={{
-                      endAdornment: <IconButton type="submit" sx={{ p: '10px' }} aria-label="search"><SearchIcon /></IconButton>
-                    }}
-                  />
-                  <Button className={classes.addButton} variant="outlined" startIcon={<AddCircleRoundedIcon />} onClick={handleClickOpen}>
+              <Grid item spacing={2} xs sx={{ display: { lg:"flex" }, justifyContent: { md: "flex-center", lg:"flex-end" } }}>
+                <Grid container direction="row" spacing={2} >
+                  <Grid item xs sx={{ display: "flex", justifyContent: "flex-end" }}>
+                    <TextField
+                        value={searchProposal}
+                        onChange={(e) => setSearchProposal(e.target.value)}
+                        className={classes.searchField}
+                        placeholder="Search proposals"
+                        InputProps={{
+                          endAdornment: <IconButton type="submit" sx={{ p: '10px' }} aria-label="search"><SearchIcon /></IconButton>
+                        }}
+                    />
+                  </Grid>
+                <Grid item>
+                  <Button  variant="primary" startIcon={<AddCircleRoundedIcon />} onClick={handleClickOpen}>
                     Create new
                   </Button>
-                </Stack>
+                </Grid>
+                </Grid>
               </Grid>
             </Grid>
             <Grid container spacing={3}>
@@ -709,30 +751,30 @@ const Proposal = () => {
               <Grid container>
                 <Grid items>
                   <Typography className={classes.listFont}>
-                    Status
+                    Proposals
                   </Typography>
                 </Grid>
               </Grid>
-              <ListItemButton onClick={() => fetchFilteredData("all")}>
+              <ListItemButton selected={selectedListItem === "all"} onClick={() => fetchFilteredData("all")}>
                 <div className={classes.allIllustration}></div>
                 <ListItemText primary="All" className={classes.listFont} />
                 <ArrowForwardIosIcon fontSize="5px" />
               </ListItemButton>
 
-              <ListItemButton onClick={() => fetchFilteredData("active")}>
+              <ListItemButton selected={selectedListItem === "active"} onClick={() => fetchFilteredData("active")}>
                 <div className={classes.activeIllustration}></div>
                 <ListItemText primary="Active" className={classes.listFont} />
                 <ArrowForwardIosIcon fontSize="5px" />
               </ListItemButton>
 
-              <ListItemButton onClick={() => fetchFilteredData("closed")}>
+              <ListItemButton selected={selectedListItem === "closed"} onClick={() => fetchFilteredData("closed")}>
                 <div className={classes.pendingIllustration}></div>
                 <ListItemText primary="Closed" className={classes.listFont} />
                 <ArrowForwardIosIcon fontSize="5px" />
               </ListItemButton>
-              <ListItemButton onClick={() => fetchFilteredData("failed")}>
+              <ListItemButton selected={selectedListItem === "executed"} onClick={() => fetchFilteredData("executed")}>
                 <div className={classes.closedIllustration}></div>
-                <ListItemText primary="Failed" className={classes.listFont} />
+                <ListItemText primary="Executed" className={classes.listFont} />
                 <ArrowForwardIosIcon fontSize="5px" />
               </ListItemButton>
             </Card>
@@ -1114,6 +1156,12 @@ const Proposal = () => {
             </Alert>)
           }
         </Snackbar>
+        <Backdrop
+            sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+            open={loaderOpen}
+        >
+          <CircularProgress color="inherit" />
+        </Backdrop>
       </Layout1>
     </>
   )

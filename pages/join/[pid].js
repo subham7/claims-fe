@@ -98,7 +98,10 @@ const useStyles = makeStyles({
     alignItems: "center",
     backgroundColor: " #3B7AFD",
     fontSize: "20px",
-    fontFamily: "Whyte",
+    "&:hover": {
+      background: "#F5F5F5",
+      color: "#3B7AFD",
+    },
   },
   openTag: {
     width: "60px",
@@ -112,7 +115,7 @@ const useStyles = makeStyles({
     backgroundColor: "#0ABB9233",
   },
   openTagFont: {
-    fontFamily: "Whyte",
+    padding: "2px",
     fontSize: "12px",
     textTransform: "uppercase",
     color: "#0ABB92",
@@ -130,7 +133,7 @@ const useStyles = makeStyles({
     backgroundColor: "#FFB74D0D",
   },
   closeTagFont: {
-    fontFamily: "Whyte",
+    padding: "2px",
     fontSize: "12px",
     textTransform: "uppercase",
     color: "#FFB74D",
@@ -385,10 +388,10 @@ const Join = (props) => {
               </Grid>
               <Divider variant="middle" />
               <Grid container spacing={7}>
-                <Grid item ml={4} mt={5} mb={2}>
+                <Grid item ml={4} mt={5} mb={{ xs: 0, sm: 0, md:0, lg:2 }}>
                   <Stack spacing={1} alignItems="stretch">
                     <Typography variant="p" className={classes.valuesDimStyle}>{walletConnected ? "Deposits deadline" : <Skeleton variant="rectangular" width={100} height={25} />}</Typography>
-                    <Grid container ml={2} mt={2} mb={2}>
+                    <Grid container ml={2} mt={2} mb={{ xs: 0, sm: 0, md:0, lg:2 }}>
                       <Grid item>
                         <Typography variant="p" className={classes.valuesStyle}>
                           {governorDataFetched ? new Date(parseInt(governorDetails[0]) * 1000).toJSON().slice(0, 10).split('-').reverse().join('/') : <Skeleton variant="rectangular" width={100} height={25} />}
@@ -415,7 +418,7 @@ const Join = (props) => {
                     <Typography variant="p" className={classes.valuesStyle}>{walletConnected ? "By Voting" : <Skeleton variant="rectangular" width={100} height={25} />}</Typography>
                   </Stack>
                 </Grid>
-                <Grid item ml={4} mt={5} mb={2}>
+                <Grid item ml={4} mt={5} mb={{ xs: 0, sm: 0, md:0, lg:2 }}>
                   <Stack spacing={1} alignItems="stretch">
                     <Typography variant="p" className={classes.valuesDimStyle}>{walletConnected ? "Minimum Deposits" : <Skeleton variant="rectangular" width={100} height={25} />}</Typography>
                     <Typography variant="p" className={classes.valuesStyle}>{governorDataFetched ? governorDetails[1] + " USDC" : <Skeleton variant="rectangular" width={100} height={25} />}</Typography>
@@ -426,7 +429,7 @@ const Join = (props) => {
                     <Typography variant="p" className={classes.valuesStyle}>{walletConnected ? members : <Skeleton variant="rectangular" width={100} height={25} />}</Typography>
                   </Stack>
                 </Grid>
-                <Grid item ml={4} mt={5} mb={2}>
+                <Grid item ml={4} mt={{ xs: 0, sm: 0, md:1, lg:5 }} mb={{ xs: 0, sm: 0, md:0, lg:2 }}>
                   <Stack spacing={1} alignItems="stretch">
                     <Typography variant="p" className={classes.valuesDimStyle}>{walletConnected ? "Maximum Deposit" : <Skeleton variant="rectangular" width={100} height={25} />}</Typography>
                     <Typography variant="p" className={classes.valuesStyle}>{governorDataFetched ? governorDetails[2] + " USDC" : <Skeleton variant="rectangular" width={100} height={25} />} </Typography>
@@ -484,7 +487,7 @@ const Join = (props) => {
                         </Grid>
                       </Grid>
                       <Grid container spacing={2}>
-                        <Grid item ml={2} mt={0} mb={2}>
+                        <Grid item ml={2} mt={1} mb={3}>
                           <Input type="number" error={depositAmount === ""} className={classes.cardLargeFont} value={depositAmount} onChange={(e) => handleInputChange(e.target.value)} disabled={closingDays > 0 ? false : true} />
                         </Grid>
                         <Grid item ml={2} mt={2} mb={2} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
@@ -504,8 +507,8 @@ const Join = (props) => {
                       </Typography>
                     </Card>
                   </Grid>
-                  <Grid item container ml={1} mt={2}>
-                    <Button variant="contained" size="large" className={classes.depositButton} onClick={handleDeposit} disabled={closingDays > 0 ? false : true}>
+                  <Grid item container ml={1} mt={2} mb={1}>
+                    <Button variant="primary" size="large"  onClick={handleDeposit} disabled={closingDays > 0 ? false : true}>
                       Deposit
                     </Button>
                   </Grid>
@@ -514,7 +517,7 @@ const Join = (props) => {
             ) : (
               <Card className={classes.cardRegular}>
                 <Grid container spacing={2}>
-                  <Grid item ml={15} mr={15} mt={5} mb={5}>
+                  <Grid item ml={15} mr={15} mt={5} mb={7}>
                     <Image src="/assets/images/connect_illustration.png" alt="connect_illustration" width="418px" height="377px" />
                   </Grid>
                   <Grid item container ml={1} mt={2}>

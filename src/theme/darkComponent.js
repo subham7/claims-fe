@@ -16,7 +16,6 @@ export const darkComponents = {
         props: { variant: "primary" },
         style: {
           fontSize: "1.3rem",
-          fontFamily: "Whyte",
           borderRadius: "30px",
           "&:hover": {
             background: "#F5F5F5",
@@ -31,7 +30,6 @@ export const darkComponents = {
           border: "1px solid #C1D3FF40",
           opacity: "1",
           fontSize: "1.3rem",
-          fontFamily: "Whyte",
           borderRadius: "30px",
           "&:hover": {
             background: "#111D38 0% 0% no-repeat padding-box",
@@ -48,7 +46,6 @@ export const darkComponents = {
           paddingRight: "3.125vw",
           fontSize: "1.3rem",
           borderRadius: "30px",
-          fontFamily: "Whyte",
           "&:hover": {
             background: "#F5F5F5",
             color: "#3B7AFD",
@@ -136,7 +133,7 @@ export const darkComponents = {
   MuiOutlinedInput: {
     styleOverrides: {
       root: {
-        borderRadius: "30px",
+        borderRadius: "10px",
         backgroundColor: "#111D38",
       }
     },
@@ -219,6 +216,21 @@ export const darkComponents = {
           fontSize: "0.9375em",
           color: "#C1D3FF",
         }
+      },
+      {
+        props: { variant: "textLink" },
+        style: {
+          fontSize: "1.5em",
+          color: "#FFFFFF",
+          backgroundColor: "#19274B"
+        }
+      },
+      {
+        props: { variant: "title"},
+        style: {
+          fontSize: "3em",
+          color: "#FFFFFF",
+        }
       }
 
     ]
@@ -270,7 +282,8 @@ export const darkComponents = {
   MuiTableContainer: {
     styleOverrides: {
       root: {
-        backgroundColor: "none"
+        backgroundColor: "#00000000",
+        boxShadow: "none"
       }
     }
   }

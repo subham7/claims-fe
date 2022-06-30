@@ -114,7 +114,7 @@ export default function App() {
             alignItems="center" mt={20} mb={10} >
             <Grid item md={5}>
               <Card>
-                <Grid container>
+                <Grid container mt={2}>
                   <Grid item>
                     <Typography className={classes.yourClubText}>
                       Your clubs
@@ -146,7 +146,7 @@ export default function App() {
                             <Stack
                               spacing={0} alignItems="flex-end" justifyContent="flex-end">
                               <Typography className={classes.createClubButton}></Typography>
-                              <Typography className={classes.clubAddress}>{clubOwnerAddress === walletID ? "Owner" : "Member"}</Typography>
+                              <Typography className={classes.clubAddress}>{club.isAdmin ? "Admin" : "Member"}</Typography>
                             </Stack>
                           </Grid>
                         </Grid>

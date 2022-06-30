@@ -6,27 +6,7 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
-import { makeStyles } from "@mui/styles";
 
-const useStyles = makeStyles({
-  tableheading: {
-    color: "#C1D3FF",
-    fontSize: "22px",
-  },
-  tablecontent: {
-    fontSize: "22px",
-    color: "#F5F5F5",
-  },
-  tablecontent2: {
-    fontSize: "22px",
-  },
-  membersTitleSmall: {
-    fontSize: "24px",
-    color: "#FFFFFF",
-    backgroundColor: "#19274B"
-  },
-});
 
 function createData(token, balance, value, daychange) {
   return { token, balance, value, daychange };
@@ -42,11 +22,10 @@ const rows = [
 ];
 
 export default function BasicTable(props) {
-  const classes = useStyles()
   return (
-    <TableContainer component={Paper}>
+    <TableContainer>
       {props.title !== null ?
-          <Typography className={classes.membersTitleSmall}>{props.title}</Typography> :
+          <Typography variant="textLink">{props.title}</Typography> :
           null
       }
       <Table sx={{ minWidth: 809 }} aria-label="simple table">

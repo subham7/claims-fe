@@ -126,13 +126,13 @@ export default function Sidebar(props) {
             </ListItemButton>
           </BootstrapTooltip>
 
-          <BootstrapTooltip title="Transactions" placement="left">
-            <ListItemButton>
-              <ListItemIcon className={classes.listItemIcon}>
-                <CompareArrowsRoundedIcon />
-              </ListItemIcon>
-            </ListItemButton>
-          </BootstrapTooltip>
+          {/*<BootstrapTooltip title="Transactions" placement="left">*/}
+          {/*  <ListItemButton>*/}
+          {/*    <ListItemIcon className={classes.listItemIcon}>*/}
+          {/*      <CompareArrowsRoundedIcon />*/}
+          {/*    </ListItemIcon>*/}
+          {/*  </ListItemButton>*/}
+          {/*</BootstrapTooltip>*/}
 
           <BootstrapTooltip title="Settings" placement="left">
             <ListItemButton component="a" onClick={e => { router.push(`/dashboard/${clubId}/settings`, undefined, { shallow: true }) }}>
@@ -186,13 +186,13 @@ export default function Sidebar(props) {
             </ListItemButton>
           </BootstrapTooltip>
 
-          <BootstrapTooltip title="Transactions" placement="left">
-            <ListItemButton >
-              <ListItemIcon className={classes.listItemIcon}>
-                <CompareArrowsRoundedIcon />
-              </ListItemIcon>
-            </ListItemButton>
-          </BootstrapTooltip>
+          {/*<BootstrapTooltip title="Transactions" placement="left">*/}
+          {/*  <ListItemButton >*/}
+          {/*    <ListItemIcon className={classes.listItemIcon}>*/}
+          {/*      <CompareArrowsRoundedIcon />*/}
+          {/*    </ListItemIcon>*/}
+          {/*  </ListItemButton>*/}
+          {/*</BootstrapTooltip>*/}
 
           <BootstrapTooltip title="Settings" placement="left">
             <ListItemButton component="a" onClick={e => { router.push(`/dashboard/${clubId}/settings`, undefined, { shallow: true }) }}>
