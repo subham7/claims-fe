@@ -33,6 +33,10 @@ import USDCContract from "../../../src/abis/usdcTokenContract.json"
 import { useSelector } from "react-redux"
 
 const useStyles = makeStyles({
+  media: {
+    position: "absolute",
+    bottom: 0
+  },
   firstCard: {
     position: "relative",
     width: "32vw",
@@ -446,9 +450,11 @@ const Dashboard = (props) => {
               <Stack direction={{ xs: 'column', sm: 'row' }} spacing={3}>
                 <Card className={classes.firstCard}>
                   <CardMedia
-                    component="img"
-                    image="/assets/images/card_illustration.png"
-                    alt="abstract background"
+                      className={classes.media}
+                      component="img"
+                      image="/assets/images/card_illustration.png"
+                      alt="abstract background"
+                      sx={{ position: "absolute", bottom: 0 }}
                   />
                   <Box className={classes.cardOverlay}>
                     <Typography className={classes.card1text1}>

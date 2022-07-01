@@ -6,7 +6,9 @@ import MenuItem from '@mui/material/MenuItem';
 import EditIcon from '@mui/icons-material/Edit';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import { onboard, disconnectWallet } from '../utils/wallet';
-import { useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux'
+import jazzicon from "@metamask/jazzicon"
+import {useState} from "react";
 
 
 const StyledMenu = styled((props) => (
@@ -57,6 +59,7 @@ export default function AccountButton(props) {
   const [menuItems, setMenuItems] = React.useState(true);
   const open = Boolean(anchorEl);
   const dispatch = useDispatch();
+  const [generated, setGenerated] = useState(false)
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -71,6 +74,17 @@ export default function AccountButton(props) {
     setMenuItems(false)
   };
 
+  const generateJazzIcon = (account) => {
+    if (account && !generated) {
+      var element = document.getElementById("jazzicon")
+      const addr = account.slice(2, 10)
+      const seed = parseInt(addr, 16)
+      const icon = jazzicon(32, seed)
+      setGenerated(true)
+      element.appendChild(icon)
+    }
+  };
+
   return (
     <div>
       <Button
@@ -82,6 +96,7 @@ export default function AccountButton(props) {
           variant="navBar"
           disableElevation
           onClick={handleClick}
+          startIcon={<div id="jazzicon">{props.accountDetail ? generateJazzIcon(props.accountDetail) : null} </div>}
           endIcon={<KeyboardArrowDownIcon />
         }
       >

@@ -310,7 +310,7 @@ export const darkComponents = {
           width:"100%",
           padding: 0,
         }
-      }
+      },
     ]
   },
   MuiTableContainer: {
@@ -334,7 +334,7 @@ export const darkComponents = {
   MuiList: {
     styleOverrides: {
       root: {
-        backgroundColor: "#19274b",
+        backgroundColor: "#142243",
       }
     }
   },

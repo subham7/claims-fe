@@ -91,6 +91,7 @@ export default function Sidebar(props) {
         sx={{
           display: { xs: "block", sm: "none" },
           "& .MuiDrawer-paper": {
+            border: "none",
             boxSizing: "border-box",
             width: drawerWidth,
             paddingTop: "50px",
@@ -150,6 +151,7 @@ export default function Sidebar(props) {
         sx={{
           display: { xs: "none", sm: "block" },
           "& .MuiDrawer-paper": {
+            border: "none",
             boxSizing: "border-box",
             width: drawerWidth,
             paddingTop: "50px",
