@@ -40,22 +40,8 @@ const useStyles = makeStyles({
     opacity: 1,
     fontFamily: "Whyte",
   },
-  avatarStyle: {
-    width: "5.21vw",
-    height: "10.26vh",
-    backgroundColor: "#C1D3FF33",
-    color: "#C1D3FF",
-    fontSize: "3.25rem",
-    fontFamily: "Whyte",
-  },
-  indexMainText: {
-    font: "normal normal normal 48px/36px Whyte",
-    color: "#F5F5F5"
-  },
-  indexMainText2: {
-    fontFamily: "Whyte",
-    fontSize: "21px",
-    color: "#C1D3FF"
+  bannerImage: {
+    width: "60vh"
   }
 })
 
@@ -128,14 +114,14 @@ export default function App() {
             alignItems="center" mt={20} mb={10} >
             <Grid item md={5}>
               <Card>
-                <Grid container>
+                <Grid container mt={2}>
                   <Grid item>
                     <Typography className={classes.yourClubText}>
                       Your clubs
                     </Typography>
                   </Grid>
                   <Grid item xs sx={{ display: "flex", justifyContent: "flex-end" }}>
-                    <Button startIcon={<AddIcon sx={{ fontSize: "22px" }} />} variant="contained" className={classes.createClubButton} onClick={handleCreateButtonClick}>
+                    <Button startIcon={<AddIcon fontSize="large" />} variant="primary" onClick={handleCreateButtonClick}>
                       Create club
                     </Button>
                   </Grid>
@@ -147,7 +133,7 @@ export default function App() {
                       <ListItemButton component="a" key={key} onClick={e => { handleItemClick(clubData[key]) }}>
                         <Grid container>
                           <Grid item md={2}>
-                            <Avatar className={classes.avatarStyle}>{club.name[0]}</Avatar>
+                            <Avatar variant="clubSelect">{club.name[0]}</Avatar>
                           </Grid>
                           <Grid item md={6}>
                             <Stack
@@ -160,7 +146,7 @@ export default function App() {
                             <Stack
                               spacing={0} alignItems="flex-end" justifyContent="flex-end">
                               <Typography className={classes.createClubButton}></Typography>
-                              <Typography className={classes.clubAddress}>{clubOwnerAddress === walletID ? "Owner" : "Member"}</Typography>
+                              <Typography className={classes.clubAddress}>{club.isAdmin ? "Admin" : "Member"}</Typography>
                             </Stack>
                           </Grid>
                         </Grid>
@@ -177,19 +163,19 @@ export default function App() {
             alignItems="center">
 
             <Grid item mt={15} >
-              <img src="/assets/images/start_illustration.svg" />
+              <img className={classes.bannerImage} src="/assets/images/start_illustration.svg" />
             </Grid>
             <Grid item mt={4}>
-              <Typography className={classes.indexMainText}>Do more together</Typography>
+              <Typography variant="mainHeading" >Do more together</Typography>
             </Grid>
             <Grid item mt={4}>
-              <Typography className={classes.indexMainText2}>Create or join a club in less than 60 seconds using StationX</Typography>
+              <Typography variant="regularText">Create or join a club in less than 60 seconds using StationX</Typography>
             </Grid>
             <Grid item m={4}>
               <Button
-                variant="contained"
+                variant="primary"
                 color="primary"
-                sx={{ mr: 2, fontFamily: "Whyte", borderRadius: "30px" }}
+                sx={{ mr: 2 }}
                 onClick={() => handleConnection()}
               >
                 Connect Wallet

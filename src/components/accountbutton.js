@@ -6,21 +6,10 @@ import MenuItem from '@mui/material/MenuItem';
 import EditIcon from '@mui/icons-material/Edit';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import { onboard, disconnectWallet } from '../utils/wallet';
-import { useDispatch } from 'react-redux';
-import { makeStyles } from '@mui/styles';
+import { useDispatch } from 'react-redux'
+import jazzicon from "@metamask/jazzicon"
+import {useState} from "react";
 
-const useStyles = makeStyles({
-  navButton: {
-    borderRadius: "10px",
-    width: "327px",
-    height: "auto",
-    background: "#111D38 0% 0% no-repeat padding-box",
-    border: "1px solid #C1D3FF40",
-    opacity: "1",
-    fontSize: "18px",
-    marginTop: "15px"
-  }
-})
 
 const StyledMenu = styled((props) => (
   <Menu
@@ -66,11 +55,11 @@ const StyledMenu = styled((props) => (
 }));
 
 export default function AccountButton(props) {
-  const classes = useStyles()
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [menuItems, setMenuItems] = React.useState(true);
   const open = Boolean(anchorEl);
   const dispatch = useDispatch();
+  const [generated, setGenerated] = useState(false)
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -85,18 +74,30 @@ export default function AccountButton(props) {
     setMenuItems(false)
   };
 
+  const generateJazzIcon = (account) => {
+    if (account && !generated) {
+      var element = document.getElementById("jazzicon")
+      const addr = account.slice(2, 10)
+      const seed = parseInt(addr, 16)
+      const icon = jazzicon(32, seed)
+      setGenerated(true)
+      element.appendChild(icon)
+    }
+  };
+
   return (
     <div>
       <Button
-        className={classes.navButton}
-        id="demo-customized-button"
-        aria-controls={open ? 'demo-customized-menu' : undefined}
-        aria-haspopup="true"
-        aria-expanded={open ? 'true' : undefined}
-        variant="contained"
-        disableElevation
-        onClick={handleClick}
-        endIcon={<KeyboardArrowDownIcon />
+          sx={{ mr: 2, mt: 2 }}
+          id="demo-customized-button"
+          aria-controls={open ? 'demo-customized-menu' : undefined}
+          aria-haspopup="true"
+          aria-expanded={open ? 'true' : undefined}
+          variant="navBar"
+          disableElevation
+          onClick={handleClick}
+          // startIcon={<div id="jazzicon">{props.accountDetail ? generateJazzIcon(props.accountDetail) : null} </div>}
+          endIcon={<KeyboardArrowDownIcon />
         }
       >
         {props.accountDetail ? (props.accountDetail.substring(0, 6) + ".........." + props.accountDetail.substring(props.accountDetail.length - 4)) : null}

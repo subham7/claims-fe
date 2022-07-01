@@ -6,19 +6,7 @@ import MenuItem from '@mui/material/MenuItem';
 import EditIcon from '@mui/icons-material/Edit';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import { useDispatch } from 'react-redux';
-import { makeStyles } from '@mui/styles';
 
-const useStyles = makeStyles({
-  navButton: {
-    borderRadius: "10px",
-    width: "121px",
-    height: "auto",
-    background: "#111D38 0% 0% no-repeat padding-box",
-    border: "2px solid #C1D3FF40",
-    opacity: "1",
-    fontSize: "18px",
-  }
-})
 
 const StyledMenu = styled((props) => (
   <Menu
@@ -64,7 +52,6 @@ const StyledMenu = styled((props) => (
 }));
 
 export default function ButtonDropDown(props) {
-  const classes = useStyles()
   const [anchorEl, setAnchorEl] = useState(null);
   const [menuItems, setMenuItems] = useState(true);
   const open = Boolean(anchorEl);
@@ -79,12 +66,11 @@ export default function ButtonDropDown(props) {
   return (
     <div>
       <Button
-        className={classes.navButton}
+        variant="navBar"
         id="demo-customized-button"
         aria-controls={open ? 'demo-customized-menu' : undefined}
         aria-haspopup="true"
         aria-expanded={open ? 'true' : undefined}
-        variant="contained"
         disableElevation
         onClick={handleClick}
         endIcon={<KeyboardArrowDownIcon />

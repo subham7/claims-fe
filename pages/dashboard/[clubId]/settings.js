@@ -1,6 +1,23 @@
-import { useEffect, useState } from "react"
+import {React, useEffect, useState} from "react"
 import Layout1 from "../../../src/components/layouts/layout1"
-import { Box, Card, Grid, Typography, Avatar, Button, Stack, Skeleton, Divider, TableCell, TableRow, TableHead, Dialog, DialogContent, IconButton } from "@mui/material"
+import {
+  Box,
+  Card,
+  Grid,
+  Typography,
+  Avatar,
+  Button,
+  Stack,
+  Skeleton,
+  Divider,
+  TableCell,
+  TableRow,
+  TableHead,
+  Dialog,
+  DialogContent,
+  IconButton,
+  CircularProgress, Backdrop
+} from "@mui/material"
 import { makeStyles } from "@mui/styles"
 import ProgressBar from "../../../src/components/progressbar"
 import Router, { useRouter } from "next/router"
@@ -12,6 +29,7 @@ import GovernorContract from "../../../src/abis/governorContract.json"
 import { SmartContract } from "../../../src/api/index"
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import LinkIcon from '@mui/icons-material/Link'
+import ClubFetch from "../../../src/utils/clubFetch"
 
 const useStyles = makeStyles({
   valuesStyle: {
@@ -22,14 +40,6 @@ const useStyles = makeStyles({
   valuesDimStyle: {
     fontSize: "21px",
     color: "#C1D3FF",
-    fontFamily: "Whyte",
-  },
-  avatarStyle: {
-    width: "5.21vw",
-    height: "10.26vh",
-    backgroundColor: "#C1D3FF33",
-    color: "#C1D3FF",
-    fontSize: "3.25rem",
     fontFamily: "Whyte",
   },
   cardRegular: {
@@ -167,6 +177,7 @@ const Settings = (props) => {
   const [maxDeposit, setMaxDeposit] = useState(0)
   const [maxDepositFetched, setMaxDepositFetched] = useState(false)
   const [membersDetails, setMembersDetails] = useState([])
+  const [loaderOpen, setLoaderOpen] = useState(false)
 
   const tokenAPIDetailsRetrieval = async () => {
     let response = await fetchClubbyDaoAddress(daoAddress)
@@ -265,10 +276,14 @@ const Settings = (props) => {
   }
 
   useEffect(() => {
+    setLoaderOpen(true);
     tokenAPIDetailsRetrieval()
     tokenDetailsRetrieval()
     contractDetailsRetrieval()
     fetchMembers()
+    if (apiTokenDetailSet && dataFetched && governorDataFetched && membersFetched) {
+      setLoaderOpen(false)
+    }
 
   }, [daoAddress, apiTokenDetailSet, dataFetched, governorDetails, membersFetched])
 
@@ -290,7 +305,7 @@ const Settings = (props) => {
               <Card className={classes.cardRegular}>
                 <Grid container spacing={2}>
                   <Grid item mt={3} ml={3}>
-                    <Avatar className={classes.avatarStyle}>{apiTokenDetailSet ? tokenAPIDetails[0].name[0] : null}</Avatar>
+                    <Avatar variant="clubSelect2">{apiTokenDetailSet ? tokenAPIDetails[0].name[0] : null}</Avatar>
                   </Grid>
                   <Grid item ml={1} mt={4} mb={7}>
                     <Stack spacing={0}>
@@ -305,7 +320,7 @@ const Settings = (props) => {
                 <Grid container spacing={7}>
                   <Grid item ml={4} mt={5} mb={2}>
                     <Stack spacing={1} alignItems="stretch">
-                      <Typography variant="p" className={classes.valuesDimStyle}>Deposits deadline</Typography>
+                      <Typography variant="settingText">Deposits deadline</Typography>
                       <Grid container ml={2} mt={2} mb={2}>
                         <Grid item>
                           <Typography variant="p" className={classes.valuesStyle}>
@@ -323,30 +338,30 @@ const Settings = (props) => {
                     </Stack>
                     <br />
                     <Stack spacing={1} alignItems="stretch">
-                      <Typography variant="p" className={classes.valuesDimStyle}>Tresury wallet</Typography>
+                      <Typography variant="settingText">Tresury wallet</Typography>
                       <Typography variant="p" className={classes.valuesStyle}>${dataFetched ? tokenDetails[2] / Math.pow(10, 18) : null}</Typography>
                     </Stack>
                   </Grid>
                   <Grid item ml={4} mt={5} mb={2}>
                     <Stack spacing={1} alignItems="stretch">
-                      <Typography variant="p" className={classes.valuesDimStyle}>Minimum Deposits</Typography>
+                      <Typography variant="settingText">Minimum Deposits</Typography>
                       <Typography variant="p" className={classes.valuesStyle}>{governorDataFetched ? governorDetails[1] + " USDC" : null}</Typography>
                     </Stack>
                     <br />
                     <Stack spacing={1} alignItems="stretch">
-                      <Typography variant="p" className={classes.valuesDimStyle}>Your ownership</Typography>
+                      <Typography variant="settingText">Your ownership</Typography>
                       <Typography variant="p" className={classes.valuesStyle}>{governorDataFetched && dataFetched ? ((findCurrentMember() / (tokenDetails[2]/ Math.pow(10, 18))).toFixed(2) * 100) : 0}% (${findCurrentMember()} )</Typography>
                     </Stack>
                   </Grid>
                   <Grid item ml={4} mt={5} mb={2}>
                     <Stack spacing={1} alignItems="stretch">
-                      <Typography variant="p" className={classes.valuesDimStyle}>Maximum Deposit</Typography>
+                      <Typography variant="settingText">Maximum Deposit</Typography>
                       <Typography variant="p" className={classes.valuesStyle}>{governorDataFetched ? governorDetails[2] + " USDC" : null} </Typography>
                     </Stack>
                   </Grid>
                   <Grid item ml={4} mt={5} mb={2}>
                     <Stack spacing={1} alignItems="stretch">
-                      <Typography variant="p" className={classes.valuesDimStyle}>Members</Typography>
+                      <Typography variant="settingText">Members</Typography>
                       <Typography variant="p" className={classes.valuesStyle}>{membersFetched ? members : 0}</Typography>
                     </Stack>
                   </Grid>
@@ -355,15 +370,15 @@ const Settings = (props) => {
                   <ProgressBar value={governorDataFetched && dataFetched ? parseInt(tokenDetails[2] / Math.pow(10, 18)) / parseInt(governorDetails[4]) * 100 : 0} />
                 </Grid>
                 <Grid container spacing={2} >
-                  <Grid item ml={4} mt={5} mb={2}>
+                  <Grid item ml={4} mt={1} mb={2}>
                     <Stack spacing={1}>
-                      <Typography variant="p" className={classes.valuesDimStyle}>Club Tokens Minted so far</Typography>
+                      <Typography variant="settingText">Club Tokens Minted so far</Typography>
                       <Typography variant="p" className={classes.valuesStyle}>{dataFetched ? (tokenDetails[2] / Math.pow(10, 18) + " $" + tokenDetails[1]) : null}</Typography>
                     </Stack>
                   </Grid>
-                  <Grid item ml={4} mt={5} mb={2} mr={4} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
+                  <Grid item ml={4} mt={1} mb={2} mr={4} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
                     <Stack spacing={1}>
-                      <Typography variant="p" className={classes.valuesDimStyle}>Total Supply</Typography>
+                      <Typography variant="settingText">Total Supply</Typography>
                       <Typography variant="p" className={classes.valuesStyle}>{governorDataFetched && dataFetched ? governorDetails[4] + (" $" + tokenDetails[1]) : null} </Typography>
                     </Stack>
                   </Grid>
@@ -379,7 +394,7 @@ const Settings = (props) => {
                 <Stack spacing={3} ml={3}>
                   <Grid container>
                     <Grid item >
-                      <Typography variant="p" className={classes.valuesStyle}>Club contract address</Typography>
+                      <Typography variant="settingText" >Club contract address</Typography>
                     </Grid>
                     <Grid container xs sx={{ display: "flex", justifyContent: "flex-end" }} spacing={1}>
                       <Grid item>
@@ -400,7 +415,7 @@ const Settings = (props) => {
                   <Divider />
                   <Grid container ml={3} mr={4}>
                     <Grid item >
-                      <Typography variant="p" className={classes.valuesStyle}>Treasury wallet address</Typography>
+                      <Typography variant="settingText">Treasury wallet address</Typography>
                     </Grid>
                     <Grid container xs sx={{ display: "flex", justifyContent: "flex-end" }} spacing={1}>
                       <Grid item>
@@ -438,7 +453,7 @@ const Settings = (props) => {
                   <Divider /> */}
                   <Grid container ml={3} mr={4}>
                     <Grid item >
-                      <Typography variant="p" className={classes.valuesStyle}>Accept new member requests?</Typography>
+                      <Typography variant="settingText">Accept new member requests?</Typography>
                     </Grid>
                     <Grid item mr={4} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
                       <Typography variant="p" className={classes.valuesStyle}>Yes <a className={classes.activityLink} onClick={(e) => handleClickOpen(e)}>(change)</a></Typography>
@@ -447,7 +462,7 @@ const Settings = (props) => {
                   <Divider />
                   <Grid container ml={3} mr={4}>
                     <Grid item >
-                      <Typography variant="p" className={classes.valuesStyle}>Enable/disable withdrawals from treasury wallet</Typography>
+                      <Typography variant="settingText">Enable/disable withdrawals from treasury wallet</Typography>
                     </Grid>
                     <Grid item mr={4} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
                       <Typography variant="p" className={classes.valuesStyle}>Enabled <a className={classes.activityLink} onClick={(e) => handleClickOpen(e)}>(propose)</a></Typography>
@@ -457,7 +472,7 @@ const Settings = (props) => {
 
                   <Grid container ml={3} mr={4}>
                     <Grid item >
-                      <Typography variant="p" className={classes.valuesStyle}>Accept new member requests?</Typography>
+                      <Typography variant="settingText">Accept new member requests?</Typography>
                     </Grid>
                     <Grid item mr={4} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
                       <Typography variant="p" className={classes.valuesStyle}>Yes <a className={classes.activityLink} onClick={(e) => handleClickOpen(e)}>(change)</a></Typography>
@@ -466,7 +481,7 @@ const Settings = (props) => {
                   <Divider />
                   <Grid container ml={3} mr={4}>
                     <Grid item >
-                      <Typography variant="p" className={classes.valuesStyle}>Accept new member requests?</Typography>
+                      <Typography variant="settingText">Accept new member requests?</Typography>
                     </Grid>
                     <Grid item mr={4} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
                       <Typography variant="p" className={classes.valuesStyle}>Yes <a className={classes.activityLink} onClick={(e) => handleClickOpen(e)}>(change)</a></Typography>
@@ -475,7 +490,7 @@ const Settings = (props) => {
                   <Divider />
                   <Grid container ml={3} mr={4}>
                     <Grid item >
-                      <Typography variant="p" className={classes.valuesStyle}>Minimum deposit amount for new members</Typography>
+                      <Typography variant="settingText">Minimum deposit amount for new members</Typography>
                     </Grid>
                     <Grid item mr={4} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
                       <Typography variant="p" className={classes.valuesStyle}>{governorDataFetched ? governorDetails[1] : null} USDC <a className={classes.activityLink} onClick={(e) => handleClickOpen(e)}>(change)</a></Typography>
@@ -484,7 +499,7 @@ const Settings = (props) => {
                   <Divider />
                   <Grid container ml={3} mr={4}>
                     <Grid item >
-                      <Typography variant="p" className={classes.valuesStyle}>Maximum deposit amount for new members</Typography>
+                      <Typography variant="settingText">Maximum deposit amount for new members</Typography>
                     </Grid>
                     <Grid item mr={4} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
                       <Typography variant="p" className={classes.valuesStyle}>{governorDataFetched ? governorDetails[2] : null} USDC <a className={classes.activityLink} onClick={(e) => handleClickOpen(e)}>(change)</a></Typography>
@@ -493,7 +508,7 @@ const Settings = (props) => {
                   <Divider />
                   <Grid container ml={3} mr={4}>
                     <Grid item >
-                      <Typography variant="p" className={classes.valuesStyle}>Minimum votes to validate a proposal</Typography>
+                      <Typography variant="settingText">Minimum votes to validate a proposal</Typography>
                     </Grid>
                     <Grid item mr={4} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
                       <Typography variant="p" className={classes.valuesStyle}>{minDepositFetched ? minDeposit + "%" : null} <a className={classes.activityLink} onClick={(e) => handleClickOpen(e)}>(propose)</a></Typography>
@@ -502,7 +517,7 @@ const Settings = (props) => {
                   <Divider />
                   <Grid container ml={3} mr={4}>
                     <Grid item >
-                      <Typography variant="p" className={classes.valuesStyle}>Minimum supporting votes to pass a proposal</Typography>
+                      <Typography variant="settingText">Minimum supporting votes to pass a proposal</Typography>
                     </Grid>
                     <Grid item mr={4} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
                       <Typography variant="p" className={classes.valuesStyle}>{maxDepositFetched ? maxDeposit + "%" : null} <a className={classes.activityLink} onClick={(e) => handleClickOpen(e)}>(propose)</a></Typography>
@@ -511,7 +526,7 @@ const Settings = (props) => {
                   <Divider />
                   <Grid container ml={3} mr={4}>
                     <Grid item >
-                      <Typography variant="p" className={classes.valuesStyle}>Club’s carry fees</Typography>
+                      <Typography variant="settingText">Club’s carry fees</Typography>
                     </Grid>
                     <Grid item mr={4} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
                       <Typography variant="p" className={classes.valuesStyle}>No <a className={classes.activityLink} onClick={(e) => handleClickOpen(e)}>(propose)</a></Typography>
@@ -520,7 +535,7 @@ const Settings = (props) => {
                   <Divider />
                   <Grid container ml={3} mr={4}>
                     <Grid item >
-                      <Typography variant="p" className={classes.valuesStyle}>Allow deposits till this date</Typography>
+                      <Typography variant="settingText">Allow deposits till this date</Typography>
                     </Grid>
                     <Grid item mr={4} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
                       <Typography variant="p" className={classes.valuesStyle}>{governorDataFetched ? new Date(parseInt(governorDetails[0]) * 1000).toJSON().slice(0, 10).split('-').reverse().join('/') : null} <a className={classes.activityLink} onClick={(e) => handleClickOpen(e)}>(change)</a></Typography>
@@ -529,7 +544,7 @@ const Settings = (props) => {
                   <Divider />
                   <Grid container ml={3} mr={4}>
                     <Grid item >
-                      <Typography variant="p" className={classes.valuesStyle}>Is there a carry fee?</Typography>
+                      <Typography variant="settingText">Is there a carry fee?</Typography>
                     </Grid>
                     <Grid item mr={4} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
                       <Typography variant="p" className={classes.valuesStyle}>No <a className={classes.activityLink} onClick={(e) => handleClickOpen(e)}>(propose)</a></Typography>
@@ -552,9 +567,15 @@ const Settings = (props) => {
               </Grid>
             </DialogContent>
           </Dialog>
+        <Backdrop
+            sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+            open={loaderOpen}
+        >
+          <CircularProgress color="inherit" />
+        </Backdrop>
       </Layout1>
     </>
   )
 }
 
-export default Settings
+export default ClubFetch(Settings)

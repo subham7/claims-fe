@@ -1,7 +1,26 @@
 import { React, useEffect, useState } from "react"
 import { makeStyles } from "@mui/styles"
 import Layout1 from "../../../src/components/layouts/layout1"
-import { Box, Card, Grid, Typography, CardMedia, Divider, Stack, TextField, Button, IconButton, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Table } from "@mui/material"
+import {
+  Box,
+  Card,
+  Grid,
+  Typography,
+  CardMedia,
+  Divider,
+  Stack,
+  Button,
+  IconButton,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Table,
+  CircularProgress, Backdrop, ListItemButton
+} from "@mui/material"
+import TextField from "@mui/material/TextField"
 import SearchIcon from "@mui/icons-material/Search"
 import ButtonDropDown from "../../../src/components/buttondropdown"
 import BasicTable from "../../../src/components/table"
@@ -14,6 +33,10 @@ import USDCContract from "../../../src/abis/usdcTokenContract.json"
 import { useSelector } from "react-redux"
 
 const useStyles = makeStyles({
+  media: {
+    position: "absolute",
+    bottom: 0
+  },
   firstCard: {
     position: "relative",
     width: "32vw",
@@ -134,6 +157,7 @@ const useStyles = makeStyles({
     opacity: "1",
   },
   card3text1: {
+    fontSize: "19px",
     fontFamily: "Whyte",
   },
   card3text2: {
@@ -173,6 +197,12 @@ const useStyles = makeStyles({
     background: "#111D38 0% 0% no-repeat padding-box",
     border: "1px solid #C1D3FF40",
     borderRadius: "10px",
+    "&:hover": {
+      boxShadow: "0px 0px 12px #C1D3FF40",
+      border: "1px solid #C1D3FF40",
+      borderRadius: "10px",
+      opacity: 1,
+    },
   },
   divider: {
     paddingLeft: "20%",
@@ -210,11 +240,12 @@ const useStyles = makeStyles({
     background: "#111D38 0% 0% no-repeat padding-box",
     border: "1px solid #C1D3FF40",
     borderRadius: "10px",
-  },
-  tokensText: {
-    fontFamily: "Whyte",
-    fontSize: "30px",
-    color: "#F5F5F5",
+    "&:hover": {
+      boxShadow: "0px 0px 12px #C1D3FF40",
+      border: "1px solid #C1D3FF40",
+      borderRadius: "10px",
+      opacity: 1,
+    },
   },
   iconMetroCoin: {
     width: "70%"
@@ -260,10 +291,11 @@ const Dashboard = (props) => {
   const [membersDetails, setMembersDetails] = useState([])
   const [tresuryWalletBalanceFetched, setTresuryWalletBalanceFetched] = useState(false)
   const [tresuryWalletBalance, setTresuryWalletBalance] = useState([])
-  const [closedProposalData, setClosedProposalData] = useState([])
-  const [closedProposalDataFetched, setClosedProposalDataFetched] = useState(false)
+  const [activeProposalData, setActiveProposalData] = useState([])
+  const [activeProposalDataFetched, setActiveProposalDataFetched] = useState(false)
   const [clubAssetTokenFetched, setClubAssetTokenFetched] = useState(false)
   const [clubAssetTokenData, setClubAssetTokenData] = useState([])
+  const [loaderOpen, setLoaderOpen] = useState(false)
 
   const fetchGovernorContractData = async () => {
     if (daoAddress && walletAddress){
@@ -376,31 +408,43 @@ const Dashboard = (props) => {
     return sum
   }
 
-  const fetchClosedProposals = () => {
-    const closedProposals = getProposal(clubId, "closed")
-    closedProposals.then((result) => {
+  const fetchActiveProposals = () => {
+    const activeProposals = getProposal(clubId, "active")
+    activeProposals.then((result) => {
       if (result.status != 200) {
-        console.log(result.statusText)
-        setClosedProposalDataFetched(false)
+        setActiveProposalDataFetched(false)
       } else {
-        setClosedProposalData(result.data)
-        setClosedProposalDataFetched(true)
+        setActiveProposalData(result.data)
+        setActiveProposalDataFetched(true)
       }
     })
   }
 
   useEffect(() => {
-      tokenAPIDetailsRetrieval()
-      tokenDetailsRetrieval()   
-      fetchMembers()
-      fetchTresuryWallet()
-      fetchClosedProposals()
-      fetchClubAssetToken()
-      fetchGovernorContractData()
-  }, [daoAddress, walletAddress, dataFetched, apiTokenDetailSet, membersFetched, tresuryWalletBalanceFetched, closedProposalDataFetched, clubAssetTokenFetched, clubDetailsFetched])
+    setLoaderOpen(true)
+    tokenAPIDetailsRetrieval()
+    tokenDetailsRetrieval()
+    fetchMembers()
+    fetchTresuryWallet()
+    fetchActiveProposals()
+    fetchClubAssetToken()
+    fetchGovernorContractData()
+
+    if (dataFetched && apiTokenDetailSet && membersFetched && tresuryWalletBalanceFetched && activeProposalDataFetched && clubAssetTokenFetched && clubDetailsFetched) {
+      setLoaderOpen(false)
+    }
+  }, [daoAddress, walletAddress, dataFetched, apiTokenDetailSet, membersFetched, tresuryWalletBalanceFetched, activeProposalDataFetched, clubAssetTokenFetched, clubDetailsFetched])
 
   const handleCopy = () => {
     navigator.clipboard.writeText(joinLink)
+  }
+
+  const handleProposalClick = (proposal) => {
+    router.push(`${router.asPath}/proposal/${proposal.proposalId}`, undefined, { shallow: true })
+  }
+
+  const handleMoreClick = () => {
+    router.push(`${router.asPath}/proposal`, undefined, { shallow: true })
   }
   
   
@@ -413,9 +457,11 @@ const Dashboard = (props) => {
               <Stack direction={{ xs: 'column', sm: 'row' }} spacing={3}>
                 <Card className={classes.firstCard}>
                   <CardMedia
-                    component="img"
-                    image="/assets/images/card_illustration.png"
-                    alt="abstract background"
+                      className={classes.media}
+                      component="img"
+                      image="/assets/images/card_illustration.png"
+                      alt="abstract background"
+                      sx={{ position: "absolute", bottom: 0 }}
                   />
                   <Box className={classes.cardOverlay}>
                     <Typography className={classes.card1text1}>
@@ -431,7 +477,7 @@ const Dashboard = (props) => {
                       {findCurrentMember()}
                     </Typography>
                     <Typography className={classes.card1text5}>
-                      {clubDetailsFetched && dataFetched ? ((findCurrentMember() / (tokenDetails[2]/ Math.pow(10, 18))).toFixed(2) * 100) : 0}%
+                      {clubDetailsFetched && dataFetched ? isNaN((findCurrentMember() / (tokenDetails[2]/ Math.pow(10, 18))).toFixed(2) * 100) ? 0 : 0: 0}%
                     </Typography>
                   </Box>
                 </Card>
@@ -441,8 +487,8 @@ const Dashboard = (props) => {
                       <Grid item mt={4}>
                         <Grid container item direction="column">
                         <img src="/assets/icons/icon-metro-coin.svg" alt="icon-metro-coins" className={classes.iconMetroCoin} />
-                        <Typography mt={4} className={classes.card2text1}>
-                          Tresury ($)
+                        <Typography mt={4} variant="regularText4">
+                          Treasury ($)
                         </Typography>
                         <Typography className={classes.card2text2}>
                           {dataFetched ? tokenDetails[2]/ Math.pow(10, 18) : null}
@@ -455,16 +501,16 @@ const Dashboard = (props) => {
                       <Grid item ml={4}><Divider className={classes.divider} variant="middle" orientation="vertical" /></Grid>
                       <Grid item mt={4} ml={1}>
                         <Grid container item direction="column">
-                        <Typography className={classes.card2text4}>
+                        <Typography variant="regularText2">
                           Members
                         </Typography>
-                        <Typography className={classes.card2text5}>
+                        <Typography variant="regularText4">
                           {membersFetched ? members : 0}
                         </Typography>
-                        <Typography mt={3} className={classes.card2text6}>
+                        <Typography mt={3} variant="regularText2">
                           Tresury Wallet
                         </Typography>
-                        <Typography className={classes.card2text7}>
+                        <Typography variant="regularText4">
                           ${dataFetched ? tokenDetails[2]/ Math.pow(10, 18) : null}
                         </Typography>
                         {/* <Typography mt={3} className={classes.card2text8}>
@@ -503,15 +549,15 @@ const Dashboard = (props) => {
                         />
                       </Grid>
                     </Grid>
-                    <Typography mt={5} mb={5} className={classes.tokensText}>Tokens</Typography>
+                    <Typography mt={5} mb={5} variant="subHeading">Tokens</Typography>
                     <TableContainer component={Paper}>
                       <Table sx={{ minWidth: 809 }} aria-label="simple table">
                         <TableHead>
                           <TableRow>
-                            <TableCell align="left" className={classes.tableheading}>Token</TableCell>
-                            <TableCell align="left" className={classes.tableheading}>Balance</TableCell>
-                            <TableCell align="left" className={classes.tableheading}>Value (USD)</TableCell>
-                            {/* <TableCell align="left" className={classes.tableheading}>Day change</TableCell> */}
+                            <TableCell align="left" variant="tableHeading">Token</TableCell>
+                            <TableCell align="left" variant="tableHeading">Balance</TableCell>
+                            <TableCell align="left" variant="tableHeading">Value (USD)</TableCell>
+                            {/* <TableCell align="left" variant="tableHeading">Day change</TableCell> */}
                           </TableRow>
                         </TableHead>
                         <TableBody>
@@ -520,17 +566,17 @@ const Dashboard = (props) => {
                               key={key}
                               sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                             >
-                              <TableCell align="left" className={classes.tablecontent}><></>{data.token.name}</TableCell>
-                              <TableCell align="left" className={classes.tablecontent}>{data.balance}</TableCell>
-                              <TableCell align="left" className={classes.tablecontent}>${data.balance}</TableCell>
-                              {/* <TableCell align="left"className={classes.tablecontent2} sx={row.daychange > 0 ? { color: "#0ABB92" } : { color: "#D55438" }}>{row.daychange > 0 ? "+" : ""}{row.daychange}</TableCell> */}
+                              <TableCell align="left" variant="tableBody"><></>{data.token.name}</TableCell>
+                              <TableCell align="left" variant="tableBody">{data.balance}</TableCell>
+                              <TableCell align="left" variant="tableBody">${data.balance}</TableCell>
+                              {/* <TableCell align="left" variant="tableBody" sx={row.daychange > 0 ? { color: "#0ABB92" } : { color: "#D55438" }}>{row.daychange > 0 ? "+" : ""}{row.daychange}</TableCell> */}
                             </TableRow>
                           )) : null}
                         </TableBody>
                       </Table>
                     </TableContainer>
 
-                    <Typography mt={16} mb={5} className={classes.tokensText}>Collectibles</Typography>
+                    <Typography mt={16} mb={5} variant="subHeading">Collectibles</Typography>
                     <Grid container>
                       <Grid items m={1}>
                         <CollectionCard />
@@ -543,7 +589,7 @@ const Dashboard = (props) => {
                       </Grid>
                     </Grid>
 
-                    {/* <Typography mt={16} mb={5} className={classes.tokensText}>Off-chain investments</Typography>
+                    {/* <Typography mt={16} mb={5} variant="subHeading">Off-chain investments</Typography>
                     <BasicTable /> */}
                   </Stack>
                 </Grid>
@@ -554,7 +600,7 @@ const Dashboard = (props) => {
                 <Card className={classes.thirdCard}>
                   <Grid container m={2}>
                     <Grid items>
-                      <Typography className={classes.card3text1}>
+                      <Typography variant="regularText4">
                         Joining link
                       </Typography>
                     </Grid>
@@ -564,7 +610,7 @@ const Dashboard = (props) => {
                           <div className={classes.activeIllustration}></div>
                         </Grid>
                         <Grid item>
-                          <Typography className={classes.card3text2}>
+                          <Typography sx={{ color: "#0ABB92", fontSize: "1.25em", fontFamily: "Whyte"}}>
                             Active
                           </Typography>
                         </Grid>
@@ -585,7 +631,7 @@ const Dashboard = (props) => {
                   </Grid>
                   <Grid container>
                     <Grid items mt={4} ml={1} mr={1} >
-                      <Typography className={classes.card3text4}>
+                      <Typography variant="regularText5">
                       Share this link for new members to join your club and add funds into this club.
                       </Typography>
                     </Grid>
@@ -593,34 +639,55 @@ const Dashboard = (props) => {
                 </Card>
               </Stack>
               <Stack mt={2}>
-                {closedProposalData.length > 0 ? (
+                {activeProposalData.length > 0 ? (
                   <Card className={classes.fourthCard}>
                   <Grid container m={2}>
                     <Grid items>
                       <Typography className={classes.card2text1}>
-                        Closed proposals
+                        Active proposals
                       </Typography>
                     </Grid>
                     <Grid items mt={1.2} ml={1}>
-                      <div className={classes.pendingIllustration}></div>
+                      <div className={classes.activeIllustration}></div>
                     </Grid>
                   </Grid>
-                  <Grid container m={2}>
+                  <Grid container m={1}>
                     <Stack >
-                      {closedProposalDataFetched ? closedProposalData.map((data, key) => {
-                        return (
-                          <div key={key}>
-                          <Typography className={classes.card5text1} >
-                            Proposed by {data.createdBy.substring(0, 6) + "......" + data.createdBy.substring(data.createdBy.length - 4)}
-                          </Typography>
-                          <Typography className={classes.card5text2}>
-                            {data.name}
-                          </Typography>
-                          <Typography className={classes.card5text1}>
-                            Expired on {new Date(data.votingDuration).toLocaleDateString()}
-                          </Typography>
-                          </div>
-                        )
+                      {activeProposalDataFetched ? activeProposalData.map((data, key) => {
+                        if (key < 3) {
+                          return (
+                            <>
+                              <ListItemButton key={key} onClick={() => handleProposalClick(activeProposalData[key])}>
+                                <Grid container direction="column">
+                                  <Grid item>
+                                    <Typography className={classes.card5text1} >
+                                      Proposed by {data.createdBy.substring(0, 6) + "......" + data.createdBy.substring(data.createdBy.length - 4)}
+                                    </Typography>
+                                  </Grid>
+                                  <Grid item>
+                                    <Typography className={classes.card5text2}>
+                                      {data.name}
+                                    </Typography>
+                                  </Grid>
+                                  <Grid item>
+                                    <Typography className={classes.card5text1}>
+                                      Expired on {new Date(data.votingDuration).toLocaleDateString()}
+                                    </Typography>
+                                  </Grid>
+                                </Grid>
+                              </ListItemButton>
+                            </>
+                          )
+                        }
+                        if (key == 4) {
+                          return (
+                              <ListItemButton onClick={() => handleMoreClick()} >
+                                <Typography className={classes.card2text1}>More</Typography>
+                              </ListItemButton>
+                              )
+
+                        }
+
                       }) : null}
                     </Stack>
                   </Grid>
@@ -630,7 +697,12 @@ const Dashboard = (props) => {
               </Stack>
             </Grid>
           </Grid>
-        {/* </div> */}
+        <Backdrop
+            sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+            open={loaderOpen}
+        >
+          <CircularProgress color="inherit" />
+        </Backdrop>
       </Layout1>
     </>
   )
