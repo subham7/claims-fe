@@ -18,7 +18,7 @@ import {
   TableRow,
   Paper,
   Table,
-  CircularProgress, Backdrop
+  CircularProgress, Backdrop, ListItemButton
 } from "@mui/material"
 import TextField from "@mui/material/TextField"
 import SearchIcon from "@mui/icons-material/Search"
@@ -291,8 +291,8 @@ const Dashboard = (props) => {
   const [membersDetails, setMembersDetails] = useState([])
   const [tresuryWalletBalanceFetched, setTresuryWalletBalanceFetched] = useState(false)
   const [tresuryWalletBalance, setTresuryWalletBalance] = useState([])
-  const [closedProposalData, setClosedProposalData] = useState([])
-  const [closedProposalDataFetched, setClosedProposalDataFetched] = useState(false)
+  const [activeProposalData, setActiveProposalData] = useState([])
+  const [activeProposalDataFetched, setActiveProposalDataFetched] = useState(false)
   const [clubAssetTokenFetched, setClubAssetTokenFetched] = useState(false)
   const [clubAssetTokenData, setClubAssetTokenData] = useState([])
   const [loaderOpen, setLoaderOpen] = useState(false)
@@ -408,15 +408,14 @@ const Dashboard = (props) => {
     return sum
   }
 
-  const fetchClosedProposals = () => {
-    const closedProposals = getProposal(clubId, "closed")
-    closedProposals.then((result) => {
+  const fetchActiveProposals = () => {
+    const activeProposals = getProposal(clubId, "active")
+    activeProposals.then((result) => {
       if (result.status != 200) {
-        console.log(result.statusText)
-        setClosedProposalDataFetched(false)
+        setActiveProposalDataFetched(false)
       } else {
-        setClosedProposalData(result.data)
-        setClosedProposalDataFetched(true)
+        setActiveProposalData(result.data)
+        setActiveProposalDataFetched(true)
       }
     })
   }
@@ -427,17 +426,25 @@ const Dashboard = (props) => {
     tokenDetailsRetrieval()
     fetchMembers()
     fetchTresuryWallet()
-    fetchClosedProposals()
+    fetchActiveProposals()
     fetchClubAssetToken()
     fetchGovernorContractData()
 
-    if (dataFetched && apiTokenDetailSet && membersFetched && tresuryWalletBalanceFetched && closedProposalDataFetched && clubAssetTokenFetched && clubDetailsFetched) {
+    if (dataFetched && apiTokenDetailSet && membersFetched && tresuryWalletBalanceFetched && activeProposalDataFetched && clubAssetTokenFetched && clubDetailsFetched) {
       setLoaderOpen(false)
     }
-  }, [daoAddress, walletAddress, dataFetched, apiTokenDetailSet, membersFetched, tresuryWalletBalanceFetched, closedProposalDataFetched, clubAssetTokenFetched, clubDetailsFetched])
+  }, [daoAddress, walletAddress, dataFetched, apiTokenDetailSet, membersFetched, tresuryWalletBalanceFetched, activeProposalDataFetched, clubAssetTokenFetched, clubDetailsFetched])
 
   const handleCopy = () => {
     navigator.clipboard.writeText(joinLink)
+  }
+
+  const handleProposalClick = (proposal) => {
+    router.push(`${router.asPath}/proposal/${proposal.proposalId}`, undefined, { shallow: true })
+  }
+
+  const handleMoreClick = () => {
+    router.push(`${router.asPath}/proposal`, undefined, { shallow: true })
   }
   
   
@@ -632,34 +639,55 @@ const Dashboard = (props) => {
                 </Card>
               </Stack>
               <Stack mt={2}>
-                {closedProposalData.length > 0 ? (
+                {activeProposalData.length > 0 ? (
                   <Card className={classes.fourthCard}>
                   <Grid container m={2}>
                     <Grid items>
                       <Typography className={classes.card2text1}>
-                        Closed proposals
+                        Active proposals
                       </Typography>
                     </Grid>
                     <Grid items mt={1.2} ml={1}>
-                      <div className={classes.pendingIllustration}></div>
+                      <div className={classes.activeIllustration}></div>
                     </Grid>
                   </Grid>
-                  <Grid container m={2}>
+                  <Grid container m={1}>
                     <Stack >
-                      {closedProposalDataFetched ? closedProposalData.map((data, key) => {
-                        return (
-                          <div key={key}>
-                          <Typography className={classes.card5text1} >
-                            Proposed by {data.createdBy.substring(0, 6) + "......" + data.createdBy.substring(data.createdBy.length - 4)}
-                          </Typography>
-                          <Typography className={classes.card5text2}>
-                            {data.name}
-                          </Typography>
-                          <Typography className={classes.card5text1}>
-                            Expired on {new Date(data.votingDuration).toLocaleDateString()}
-                          </Typography>
-                          </div>
-                        )
+                      {activeProposalDataFetched ? activeProposalData.map((data, key) => {
+                        if (key < 3) {
+                          return (
+                            <>
+                              <ListItemButton key={key} onClick={() => handleProposalClick(activeProposalData[key])}>
+                                <Grid container direction="column">
+                                  <Grid item>
+                                    <Typography className={classes.card5text1} >
+                                      Proposed by {data.createdBy.substring(0, 6) + "......" + data.createdBy.substring(data.createdBy.length - 4)}
+                                    </Typography>
+                                  </Grid>
+                                  <Grid item>
+                                    <Typography className={classes.card5text2}>
+                                      {data.name}
+                                    </Typography>
+                                  </Grid>
+                                  <Grid item>
+                                    <Typography className={classes.card5text1}>
+                                      Expired on {new Date(data.votingDuration).toLocaleDateString()}
+                                    </Typography>
+                                  </Grid>
+                                </Grid>
+                              </ListItemButton>
+                            </>
+                          )
+                        }
+                        if (key == 4) {
+                          return (
+                              <ListItemButton onClick={() => handleMoreClick()} >
+                                <Typography className={classes.card2text1}>More</Typography>
+                              </ListItemButton>
+                              )
+
+                        }
+
                       }) : null}
                     </Stack>
                   </Grid>

@@ -96,7 +96,7 @@ export default function AccountButton(props) {
           variant="navBar"
           disableElevation
           onClick={handleClick}
-          startIcon={<div id="jazzicon">{props.accountDetail ? generateJazzIcon(props.accountDetail) : null} </div>}
+          // startIcon={<div id="jazzicon">{props.accountDetail ? generateJazzIcon(props.accountDetail) : null} </div>}
           endIcon={<KeyboardArrowDownIcon />
         }
       >
