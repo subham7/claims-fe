@@ -24,6 +24,17 @@ export const darkComponents = {
         }
       },
       {
+        props: { variant: "cancel" },
+        style: {
+          fontSize: "1.3rem",
+          borderRadius: "30px",
+          "&:hover": {
+            background: "#F5F5F5",
+            color: "#D55438",
+          },
+        }
+      },
+      {
         props: { variant: "navBar" },
         style: {
           background: "#111D38 0% 0% no-repeat padding-box",
@@ -228,10 +239,33 @@ export const darkComponents = {
       {
         props: { variant: "title"},
         style: {
+          fontFamily: "Whyte",
           fontSize: "3em",
           color: "#FFFFFF",
         }
-      }
+      },
+      {
+        props: { variant: "proposalSubHeading" },
+        style: {
+          fontSize: "0.75em",
+          color: "#C1D3FF",
+        }
+      },
+      {
+        props: { variant: "proposalBody" },
+        style: {
+          fontSize: "1.3rem",
+          color: "#C1D3FF"
+        }
+      },
+      {
+        props: { variant: "settingText" },
+        style: {
+          fontSize: "1.375em",
+          fontFamily: "Whyte",
+          color: "#C1D3FF",
+        }
+      },
 
     ]
   },
@@ -286,6 +320,30 @@ export const darkComponents = {
         boxShadow: "none"
       }
     }
-  }
+  },
+  MuiLinearProgress: {
+    styleOverrides: {
+      root: {
+        backgroundColor: "#19274b",
+      },
+      colorPrimary: {
+        backgroundColor: "#19274b",
+      }
+    }
+  },
+  MuiList: {
+    styleOverrides: {
+      root: {
+        backgroundColor: "#19274b",
+      }
+    }
+  },
+  MuiCalendarPicker: {
+    styleOverrides: {
+      root: {
+        backgroundColor: "#19274b",
+      }
+    }
+  },
 
 }

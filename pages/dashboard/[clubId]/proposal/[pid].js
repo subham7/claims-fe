@@ -697,7 +697,7 @@ const ProposalDetail = () => {
     <>
       <Layout1 page={2}>
         <Grid container spacing={6} paddingLeft={10} paddingTop={10}>
-          <Grid item md={9}>
+          <Grid item md={8.5}>
             <Grid container spacing={1} onClick={returnHome} >
               <Grid item mt={0.5} sx={{ "&:hover": { cursor: "pointer", } }}>
                 <KeyboardBackspaceIcon className={classes.listFont} />
@@ -915,13 +915,14 @@ const ProposalDetail = () => {
                   </Typography>
                 </Grid>
                 {fetched ?
+                  proposalData[0].votingOptions.length > 0 ?
                   proposalData[0].votingOptions.map((vote, key) => {
                     return (
                       <div key={key}>
                         <Grid container>
                           <Grid item>
                             <Typography className={classes.listFont2}>
-                              Vote for {vote.text}
+                              {vote.text}
                             </Typography>
                           </Grid>
                           <Grid item xs sx={{ display: "flex", justifyContent: "flex-end" }}>
@@ -934,7 +935,7 @@ const ProposalDetail = () => {
                       </div>
                     )
                   })
-                  :
+                  : (<Typography className={classes.listFont2Colourless}>No previous results available</Typography>) :
                   null
                 }
               </Card>
@@ -957,7 +958,7 @@ const ProposalDetail = () => {
                             </Grid>
                             <Grid item xs sx={{ display: "flex", justifyContent: "flex-end" }}>
                               <Typography className={classes.listFont2Colourless}>
-                                Vote for {fetched ? proposalData[0].votingOptions[parseInt(fetchVotingOptionChoice(voter.votingOptionId))].text : null}
+                                {fetched ? proposalData[0].votingOptions[parseInt(fetchVotingOptionChoice(voter.votingOptionId))].text : null}
                               </Typography>
                             </Grid>
                           </Grid>
@@ -968,7 +969,7 @@ const ProposalDetail = () => {
                                 </Typography>
                               </Grid> */}
                             <Grid item xs sx={{ display: "flex", justifyContent: "flex-end" }}>
-                              <Typography className={classes.listFont2small}>
+                              <Typography variant="proposalSubHeading">
                                 Signed on {new Date(voter.createdAt).toLocaleDateString()}
                               </Typography>
                             </Grid>

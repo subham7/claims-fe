@@ -28,6 +28,7 @@ import {
 import SearchIcon from "@mui/icons-material/Search"
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
 import AddCircleRoundedIcon from '@mui/icons-material/AddCircleRounded'
+import CancelIcon from '@mui/icons-material/Cancel';
 import { fontStyle } from "@mui/system"
 import SimpleSelectButton from "../../../../src/components/simpleSelectButton"
 import { proposalType, commandTypeList } from "../../../../src/data/dashboard"
@@ -664,6 +665,12 @@ const Proposal = () => {
     setSurveyOption([...surveyOption, surveyValue])
   }
 
+  const handleRemoveClick = (index) => {
+    const list = [...commandList];
+    list.splice(index, 1);
+    setCommandList(list);
+  };
+
   const handleSnackBarClose = (event, reason) => {
     if (reason === 'clickaway') {
       return;
@@ -789,10 +796,10 @@ const Proposal = () => {
             </Grid>
             <Grid container spacing={3} ml={0}>
               <Grid item md={6} >
-                <Typography className={classes.cardFont}>Type of Proposal</Typography>
+                <Typography variant="proposalBody">Type of Proposal</Typography>
               </Grid>
               <Grid item md={6}>
-                <Typography className={classes.cardFont}>Voting duration</Typography>
+                <Typography variant="proposalBody" >Proposal deadline</Typography>
               </Grid>
             </Grid>
             <Grid container spacing={1} ml={2}>
@@ -834,14 +841,14 @@ const Proposal = () => {
               </Grid>
             </Grid>
             <Grid container item ml={3} mt={2}>
-              <Typography className={classes.cardFont}>Proposal Title*</Typography>
+              <Typography variant="proposalBody">Proposal Title*</Typography>
             </Grid>
             <Grid container item ml={3} mt={2}>
               <TextField sx={{ width: "95%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
                 placeholder="Add your one line description here" onChange={(e) => setTitle(e.target.value)} />
             </Grid>
             <Grid container item ml={3} mt={2}>
-              <Typography className={classes.cardFont}>Proposal description*</Typography>
+              <Typography variant="proposalBody">Proposal description*</Typography>
             </Grid>
             <Grid container item ml={3} mt={3} mb={3}>
               <TextField
@@ -864,12 +871,21 @@ const Proposal = () => {
                           return (
                             <>
                               <Grid container item ml={3} mt={2}>
-                                <Typography className={classes.cardFont}>Option #{key + 1}</Typography>
+                                <Typography variant="proposalBody">Option #{key + 1}</Typography>
                               </Grid>
                               <Grid container ml={1} mt={1} mb={2} spacing={2} direction="column">
-                                <Grid item>
-                                  <TextField sx={{ width: "90%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
-                                    placeholder="Yes / No / Abstain, etc." onChange={(e) => setSurveyValue(e.target.value)} />
+                                <Grid container direction="row" ml={2}>
+                                  <Grid item md={10}>
+                                    <TextField sx={{ width: "90%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
+                                               placeholder="Yes / No / Abstain, etc." onChange={(e) => setSurveyValue(e.target.value)} />
+                                  </Grid>
+                                  <Grid item md={1} mt={1}>
+                                    <IconButton aria-label="add" onClick={(e) => handleRemoveClick(key)} mt={1}>
+                                      <CancelIcon />
+                                    </IconButton>
+                                  </Grid>
+
+
                                 </Grid>
                               </Grid>
                             </>
@@ -879,7 +895,7 @@ const Proposal = () => {
                     ) : <></>}
                   </Grid>
                   <Grid container item mt={2} ml={3}>
-                    <Button className={classes.addButton2} variant="outlined" startIcon={<AddCircleRoundedIcon />} onClick={handleAddNewOption}>
+                    <Button variant="primary" startIcon={<AddCircleRoundedIcon />} onClick={handleAddNewOption}>
                       Add Option
                     </Button>
                   </Grid>
@@ -889,7 +905,7 @@ const Proposal = () => {
               (
                 <>
                   <Grid container item ml={3} mt={3} mb={2}>
-                    <Typography className={classes.cardFont}>Choose a command for this proposal to execute</Typography>
+                    <Typography variant="proposalBody">Choose a command for this proposal to execute</Typography>
                   </Grid>
                   <Grid item ml={3} mr={2}>
                     {openCard ? (
@@ -898,7 +914,7 @@ const Proposal = () => {
                           return (
                             <>
                               <Grid container item ml={3} mt={2}>
-                                <Typography className={classes.cardFont}>Command #{key + 1}</Typography>
+                                <Typography variant="proposalBody">Command #{key + 1}</Typography>
                               </Grid>
                               <Grid container item ml={3} mt={1} mb={2}>
                                 <Select
@@ -923,6 +939,9 @@ const Proposal = () => {
                                     </MenuItem>
                                   ))}
                                 </Select>
+                                <IconButton aria-label="add" onClick={(e) => handleRemoveClick(key)}>
+                                  <CancelIcon />
+                                </IconButton>
                               </Grid>
                               {/* {name === commandTypeList[0].commandText ? (
                                 // airdrop execution
@@ -967,7 +986,7 @@ const Proposal = () => {
                                     // assign executor role execution
                                     <Grid container ml={1} mt={1} mb={2} spacing={2} direction="column">
                                       <Grid item>
-                                        <Typography className={classes.cardFont}>Executor role address</Typography>
+                                        <Typography variant="proposalBody">Executor role address</Typography>
                                       </Grid>
                                       <Grid item>
                                         <TextField sx={{ width: "90%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
@@ -980,14 +999,14 @@ const Proposal = () => {
                                       (
                                         <Grid container ml={1} mt={1} mb={2} spacing={2} direction="column">
                                           <Grid item>
-                                            <Typography className={classes.cardFont}>Quorum</Typography>
+                                            <Typography variant="proposalBody">Quorum</Typography>
                                           </Grid>
                                           <Grid item>
                                             <TextField sx={{ width: "90%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
                                               placeholder="0" onChange={(e) => setQuorumValue(parseInt(e.target.value))} />
                                           </Grid>
                                           <Grid item>
-                                            <Typography className={classes.cardFont}>Threshold</Typography>
+                                            <Typography variant="proposalBody">Threshold</Typography>
                                           </Grid>
                                           <Grid item>
                                             <TextField sx={{ width: "90%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
@@ -999,7 +1018,7 @@ const Proposal = () => {
                                         // start deposit execution
                                         <Grid container ml={1} mt={1} mb={2} spacing={2} direction="column">
                                           <Grid item>
-                                            <Typography className={classes.cardFont}>Deposit day</Typography>
+                                            <Typography variant="proposalBody">Deposit day</Typography>
                                           </Grid>
                                           <Grid item>
                                             <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -1013,21 +1032,21 @@ const Proposal = () => {
                                             </LocalizationProvider>
                                           </Grid>
                                           <Grid item>
-                                            <Typography className={classes.cardFont}>Minimum deposit</Typography>
+                                            <Typography variant="proposalBody">Minimum deposit</Typography>
                                           </Grid>
                                           <Grid item>
                                             <TextField sx={{ width: "90%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
                                               placeholder="0" onChange={(e) => setMinDeposits(e.target.value)} />
                                           </Grid>
                                           <Grid item>
-                                            <Typography className={classes.cardFont}>Maximum deposit</Typography>
+                                            <Typography variant="proposalBody">Maximum deposit</Typography>
                                           </Grid>
                                           <Grid item>
                                             <TextField sx={{ width: "90%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
                                               placeholder="0" onChange={(e) => setMaxDeposits(parseInt(e.target.value))} />
                                           </Grid>
                                           <Grid item>
-                                            <Typography className={classes.cardFont}>Total deposit</Typography>
+                                            <Typography variant="proposalBody">Total deposit</Typography>
                                           </Grid>
                                           <Grid item>
                                             <TextField sx={{ width: "90%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
@@ -1044,7 +1063,7 @@ const Proposal = () => {
                                             // update raise amount execution
                                             <Grid container ml={1} mt={1} mb={2} spacing={2} direction="column">
                                               <Grid item>
-                                                <Typography className={classes.cardFont}>Total deposit</Typography>
+                                                <Typography variant="proposalBody">Total deposit</Typography>
                                               </Grid>
                                               <Grid item>
                                                 <TextField sx={{ width: "90%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
@@ -1126,7 +1145,7 @@ const Proposal = () => {
                     ) : <></>}
                   </Grid>
                   <Grid container item mt={2} ml={3}>
-                    <Button className={classes.addButton2} variant="outlined" startIcon={<AddCircleRoundedIcon />} onClick={handleAddNewCommand}>
+                    <Button variant="primary" startIcon={<AddCircleRoundedIcon />} onClick={handleAddNewCommand}>
                       Add command
                     </Button>
                   </Grid>
@@ -1136,10 +1155,10 @@ const Proposal = () => {
             <Grid container>
               <Grid item mr={2} xs sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
                 <Grid item>
-                  <Button onClick={handleClose}>Cancel</Button>
+                  <Button variant="cancel" onClick={handleClose}>Cancel</Button>
                 </Grid>
                 <Grid item ml={2}>
-                  {(duration === null || title === null || description === null) ? <Button onClick={handleNext} disabled >Submit</Button> : <Button onClick={handleNext} >Submit</Button>}
+                  {(duration === null || title === null || description === null) ? <Button variant="primary" onClick={handleNext} disabled >Submit</Button> : <Button variant="primary" onClick={handleNext} >Submit</Button>}
 
                 </Grid>
               </Grid>
