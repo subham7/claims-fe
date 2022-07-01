@@ -30,6 +30,8 @@ import { SmartContract } from "../../../src/api/index"
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import LinkIcon from '@mui/icons-material/Link'
 import ClubFetch from "../../../src/utils/clubFetch"
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+
 
 const useStyles = makeStyles({
   valuesStyle: {
@@ -129,6 +131,7 @@ const useStyles = makeStyles({
     backgroundColor: "#0ABB9233",
   },
   openTagFont: {
+    paddingTop: "5px",
     fontSize: "12px",
     textTransform: "uppercase",
     color: "#0ABB92",
@@ -350,7 +353,7 @@ const Settings = (props) => {
                     <br />
                     <Stack spacing={1} alignItems="stretch">
                       <Typography variant="settingText">Your ownership</Typography>
-                      <Typography variant="p" className={classes.valuesStyle}>{governorDataFetched && dataFetched ? ((findCurrentMember() / (tokenDetails[2]/ Math.pow(10, 18))).toFixed(2) * 100) : 0}% (${findCurrentMember()} )</Typography>
+                      <Typography variant="p" className={classes.valuesStyle}>{governorDataFetched && dataFetched ? isNaN((findCurrentMember() / (tokenDetails[2]/ Math.pow(10, 18))).toFixed(2) * 100) ? 0 : 0 : 0}% (${findCurrentMember()} )</Typography>
                     </Stack>
                   </Grid>
                   <Grid item ml={4} mt={5} mb={2}>
@@ -403,12 +406,12 @@ const Settings = (props) => {
                         </IconButton>
                       </Grid>
                       <Grid item>
-                        <IconButton color="primary" onClick={() => { router.push(`https://rinkeby.etherscan.io/address/${daoAddress}`) }}>
-                          <LinkIcon className={classes.iconColor} />
+                        <IconButton color="primary" onClick={() => { window.open(`https://rinkeby.etherscan.io/address/${daoAddress}`) }}>
+                          <OpenInNewIcon className={classes.iconColor} />
                         </IconButton>
                       </Grid>
                       <Grid item mr={4}>
-                        <Typography variant="p" className={classes.valuesStyle}>{apiTokenDetailSet ? tokenAPIDetails[0].daoAddress : null}</Typography>
+                        <Typography variant="p" className={classes.valuesStyle}>{apiTokenDetailSet ? tokenAPIDetails[0].daoAddress.substring(0, 6) + "......" + tokenAPIDetails[0].daoAddress.substring(tokenAPIDetails[0].daoAddress.length - 4) : null}</Typography>
                       </Grid>
                     </Grid>
                   </Grid>
@@ -424,12 +427,12 @@ const Settings = (props) => {
                         </IconButton>
                       </Grid>
                       <Grid item>
-                        <IconButton color="primary" onClick={() => { router.push(`https://rinkeby.etherscan.io/address/${tokenAPIDetails[0].treasuryAddress}`) }}>
-                          <LinkIcon className={classes.iconColor} />
+                        <IconButton color="primary" onClick={() => { window.open(`https://rinkeby.etherscan.io/address/${tokenAPIDetails[0].treasuryAddress}`) }}>
+                          <OpenInNewIcon className={classes.iconColor} />
                         </IconButton>
                       </Grid>
                       <Grid item mr={4}>
-                        <Typography variant="p" className={classes.valuesStyle}>{apiTokenDetailSet ? tokenAPIDetails[0].treasuryAddress : null}</Typography>
+                        <Typography variant="p" className={classes.valuesStyle}>{apiTokenDetailSet ? tokenAPIDetails[0].treasuryAddress.substring(0, 6) + "......" + tokenAPIDetails[0].treasuryAddress.substring(tokenAPIDetails[0].treasuryAddress.length - 4) : null}</Typography>
                       </Grid>
                     </Grid>
                   </Grid>

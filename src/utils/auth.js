@@ -4,6 +4,7 @@ import { connectWallet } from "../utils/wallet"
 import { useDispatch, useSelector } from "react-redux"
 import store from "../../src/redux/store"
 import { CircularProgress, Backdrop, Button, Typography } from "@mui/material"
+import { checkNetwork } from "./wallet"
 
 
 
@@ -21,6 +22,7 @@ export default function ProtectRoute(Component) {
       }
 
     useEffect(() => {
+      checkNetwork()
       const handleMount = async () => {
         if (wallet !== null) {
           setWalletAddress(wallet[0][0].address)

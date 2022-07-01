@@ -44,8 +44,10 @@ export const contractList = [
 ]
 
 export const tokenType = [
-    "ERC-20 non-transferable",
-    "ERC-20 transferable",
+    "Transferable ERC20 Token",
+    "Non Transferable ERC20 Token",
+    "NFT",
+    "Custom ERC20 Token",
 ]
 
 const today = new Date()

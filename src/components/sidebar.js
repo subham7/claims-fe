@@ -55,7 +55,6 @@ const BootstrapTooltip = styled(({ className, ...props }) => (
     color: "#C1D3FF",
   },
   [`& .${tooltipClasses.tooltip}`]: {
-    fontFamily: "Whyte",
     backgroundColor: "#C1D3FF",
     color: "#142243",
     fontSize: theme.typography.pxToRem(15),

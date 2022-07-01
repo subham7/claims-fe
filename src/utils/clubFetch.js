@@ -4,6 +4,8 @@ import Router, { useRouter } from 'next/router'
 import { useDispatch, useSelector } from "react-redux"
 import { fetchClub } from "../api/index"
 import { addClubID, addClubName, addClubRoute, addDaoAddress, addWallet, addTresuryAddress, addTokenAddress } from '../redux/reducers/create'
+import { checkNetwork } from "./wallet"
+
 
 const ClubFetch = (Component) => {
     const RetrieveDataComponent = () => {
@@ -33,6 +35,7 @@ const ClubFetch = (Component) => {
         })
       }
       useEffect(() => {
+        checkNetwork()
         if (!dataFetched && clubId) {
           fetchData(clubId)
         }

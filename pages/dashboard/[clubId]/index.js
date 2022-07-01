@@ -18,7 +18,8 @@ import {
   TableRow,
   Paper,
   Table,
-  CircularProgress, Backdrop, ListItemButton
+  CircularProgress, Backdrop, ListItemButton,
+  Snackbar, Alert
 } from "@mui/material"
 import TextField from "@mui/material/TextField"
 import SearchIcon from "@mui/icons-material/Search"
@@ -27,7 +28,7 @@ import BasicTable from "../../../src/components/table"
 import CollectionCard from "../../../src/components/cardcontent"
 import Router, { useRouter } from "next/router"
 import ClubFetch from "../../../src/utils/clubFetch"
-import { SmartContract, fetchClubbyDaoAddress, getMembersDetails, getBalance, getProposal, getTokens, USDC_CONTRACT_ADDRESS } from "../../../src/api"
+import { SmartContract, fetchClubbyDaoAddress, getMembersDetails, getBalance, getProposal, getTokens, USDC_CONTRACT_ADDRESS, getNfts } from "../../../src/api"
 import GovernorContract from "../../../src/abis/governorContract.json"
 import USDCContract from "../../../src/abis/usdcTokenContract.json"
 import { useSelector } from "react-redux"
@@ -296,6 +297,10 @@ const Dashboard = (props) => {
   const [clubAssetTokenFetched, setClubAssetTokenFetched] = useState(false)
   const [clubAssetTokenData, setClubAssetTokenData] = useState([])
   const [loaderOpen, setLoaderOpen] = useState(false)
+  const [failed, setFailed] = useState(false)
+  const [openSnackBar, setOpenSnackBar] = useState(false)
+  const [ntfData, setNftData] = useState([])
+  const [nftFetched, setNftFetched] = useState(false)
 
   const fetchGovernorContractData = async () => {
     if (daoAddress && walletAddress){
@@ -322,6 +327,20 @@ const Dashboard = (props) => {
         return membersDetails[pos].clubs[0].balance
       }
       return 0
+    }
+  }
+
+  const checkIsAdmin = () => {
+    if (membersFetched && membersDetails.length > 0 && walletAddress) {
+      let obj = membersDetails.find(member => member.userAddress === walletAddress)
+      console.log(obj)
+      let pos = membersDetails.indexOf(obj)
+      if (pos >= 0) {
+        if (membersDetails[pos].clubs[0].isAdmin) {
+          return true
+        }
+      }
+      return false
     }
   }
 
@@ -368,12 +387,22 @@ const Dashboard = (props) => {
     const tokens = getTokens(tresuryAddress)
     tokens.then((result) => {
       if (result.status != 200) {
-        console.log(result.statusText)
         setClubAssetTokenFetched(false)
       } else {
         // console.log(result.data)
         setClubAssetTokenData(result.data)
         setClubAssetTokenFetched(true)
+      }
+    })
+
+    const nfts = getNfts(tresuryAddress)
+    nfts.then((result) => {
+      if (result.status != 200) {
+        setNftFetched(false)
+      } else {
+        // console.log(result.data)
+        setNftData(result.data)
+        setNftFetched(true)
       }
     })
   }
@@ -420,6 +449,34 @@ const Dashboard = (props) => {
     })
   }
 
+  const importTokenToMetaMask = async () => {
+    try {
+      const wasAdded = await ethereum.request({
+        method: 'wallet_watchAsset',
+        params: {
+          type: 'ERC20',
+          options: {
+            address: USDC_CONTRACT_ADDRESS,
+            symbol: "USDC",
+            decimals: 18,
+          },
+        },
+      });
+    
+      if (wasAdded) {
+        setFailed(false)
+        setOpenSnackBar(true)
+      } else {
+        setFailed(true)
+        setOpenSnackBar(true)
+      }
+    } catch (error) {
+      console.log(error);
+      setFailed(true)
+      setOpenSnackBar(true)
+    }
+  }
+
   useEffect(() => {
     setLoaderOpen(true)
     tokenAPIDetailsRetrieval()
@@ -446,11 +503,18 @@ const Dashboard = (props) => {
   const handleMoreClick = () => {
     router.push(`${router.asPath}/proposal`, undefined, { shallow: true })
   }
+
+  const handleSnackBarClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setOpenSnackBar(false)
+  }
   
   
   return (
     <>
-      <Layout1 page={1}>
+      <Layout1 page={1} depositUrl={joinLink}>
         {/* <div style={{ padding: "110px 80px" }}> */}
           <Grid container spacing={1} paddingLeft={10} paddingTop={15}>
             <Grid item md={9}>
@@ -479,6 +543,9 @@ const Dashboard = (props) => {
                     <Typography className={classes.card1text5}>
                       {clubDetailsFetched && dataFetched ? isNaN((findCurrentMember() / (tokenDetails[2]/ Math.pow(10, 18))).toFixed(2) * 100) ? 0 : 0: 0}%
                     </Typography>
+                    <Grid container item xs sx={{ display: "flex", justifyContent: "flex-end"}}>
+                    <Button variant="transparent" onClick={importTokenToMetaMask}>Import token</Button>
+                    </Grid>
                   </Box>
                 </Card>
                 <Card className={classes.secondCard}>
@@ -550,7 +617,8 @@ const Dashboard = (props) => {
                       </Grid>
                     </Grid>
                     <Typography mt={5} mb={5} variant="subHeading">Tokens</Typography>
-                    <TableContainer component={Paper}>
+                    {clubAssetTokenData.slice(1).length > 0 ? 
+                      <TableContainer component={Paper}>
                       <Table sx={{ minWidth: 809 }} aria-label="simple table">
                         <TableHead>
                           <TableRow>
@@ -574,20 +642,21 @@ const Dashboard = (props) => {
                           )) : null}
                         </TableBody>
                       </Table>
-                    </TableContainer>
-
+                    </TableContainer> : 
+                    <Typography variant="regularText2" >No tokens available</Typography>
+                    }
                     <Typography mt={16} mb={5} variant="subHeading">Collectibles</Typography>
                     <Grid container>
-                      <Grid items m={1}>
-                        <CollectionCard />
-                      </Grid>
-                      <Grid items m={1}>
-                        <CollectionCard />
-                      </Grid>
-                      <Grid items m={1}>
-                        <CollectionCard />
-                      </Grid>
-                    </Grid>
+                    {nftFetched ? ntfData.length > 0 ?
+                      ntfData.map((data, key) => {
+                        <Grid items m={1}>
+                          <CollectionCard imageURI={data.logoUri} tokenName={data.tokenName} tokenSymbol={data.tokenSymbol}/>
+                        </Grid>
+                      })
+                      : <Typography variant="regularText2" >No collectibles available</Typography> : null
+                  }
+                  </Grid>
+                    
 
                     {/* <Typography mt={16} mb={5} variant="subHeading">Off-chain investments</Typography>
                     <BasicTable /> */}
@@ -617,25 +686,30 @@ const Dashboard = (props) => {
                       </Grid>
                     </Grid>
                   </Grid>
-                  <Grid container>
-                    <Grid items mt={2} ml={1} mr={1} >
-                      <TextField
-                        className={classes.linkInput}
-                        disabled
-                        value={joinLink}
-                        InputProps={{
-                          endAdornment: <Button variant="contained" className={classes.copyButton} onClick={handleCopy}>Copy</Button>
-                        }}
-                      />
+                  {checkIsAdmin() ? (
+                    <>
+                      <Grid container>
+                      <Grid items mt={2} ml={1} mr={1} >
+                        <TextField
+                          className={classes.linkInput}
+                          disabled
+                          value={joinLink}
+                          InputProps={{
+                            endAdornment: <Button variant="contained" className={classes.copyButton} onClick={handleCopy}>Copy</Button>
+                          }}
+                        />
+                      </Grid>
                     </Grid>
-                  </Grid>
-                  <Grid container>
-                    <Grid items mt={4} ml={1} mr={1} >
-                      <Typography variant="regularText5">
-                      Share this link for new members to join your club and add funds into this club.
-                      </Typography>
+                    <Grid container>
+                      <Grid items mt={4} ml={1} mr={1} >
+                        <Typography variant="regularText5">
+                        Share this link for new members to join your club and add funds into this club.
+                        </Typography>
+                      </Grid>
                     </Grid>
-                  </Grid>
+                    </>
+                  ) : null}
+                  
                 </Card>
               </Stack>
               <Stack mt={2}>
@@ -697,6 +771,16 @@ const Dashboard = (props) => {
               </Stack>
             </Grid>
           </Grid>
+          <Snackbar open={openSnackBar} autoHideDuration={6000} onClose={handleSnackBarClose} anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
+          {!failed ?
+            (<Alert onClose={handleSnackBarClose} severity="success" sx={{ width: '100%' }}>
+              Token imported successfully to your wallet!
+            </Alert>) :
+            (<Alert onClose={handleSnackBarClose} severity="error" sx={{ width: '100%' }}>
+              Error occured while importing token to your wallet!
+            </Alert>)
+          }
+        </Snackbar>
         <Backdrop
             sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
             open={loaderOpen}

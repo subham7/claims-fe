@@ -9,6 +9,7 @@ import AccountButton from "./accountbutton"
 import store from "../redux/store"
 import { useDispatch } from "react-redux"
 import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment'
+import { useRouter } from "next/router"
 
 const useStyles = makeStyles({
   image: {
@@ -32,6 +33,7 @@ const useStyles = makeStyles({
 })
 
 export default function Navbar2(props) {
+  const router = useRouter()
   const dispatch = useDispatch()
   const classes = useStyles()
   const [previouslyConnectedWallet, setPreviouslyConnectedWallet] = useState(null)
@@ -83,6 +85,10 @@ export default function Navbar2(props) {
     })
   };
 
+  const handleDepositRedirect = () => {
+    router.push(`${props.depositUrl}`, undefined, { shallow: true })
+  }
+
 
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -117,14 +123,16 @@ export default function Navbar2(props) {
             No wallet connected
           </Typography>)
           } */}
-          <Button
-              variant="contained"
+          {props.page === 1 ? <Button
+              variant="primary"
               color="primary"
               sx={{ mr: 2, mt: 2 }}
             // startIcon={<LocalFireDepartmentIcon />}
+            onClick={handleDepositRedirect}
           >
               Deposit
-            </Button>
+            </Button> : null }
+          
           {previouslyConnectedWallet !== null ? (
             <AccountButton accountDetail={userDetails} />
           ) : (

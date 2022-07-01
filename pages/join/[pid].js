@@ -13,6 +13,7 @@ import Web3 from "web3"
 import USDCContract from "../../src/abis/usdcTokenContract.json"
 import GovernorContract from "../../src/abis/governorContract.json"
 import { SmartContract } from "../../src/api/index"
+import { checkNetwork } from "../../src/utils/wallet"
 
 
 const useStyles = makeStyles({
@@ -115,7 +116,7 @@ const useStyles = makeStyles({
     backgroundColor: "#0ABB9233",
   },
   openTagFont: {
-    padding: "2px",
+    paddingTop: "1px",
     fontSize: "12px",
     textTransform: "uppercase",
     color: "#0ABB92",
@@ -133,7 +134,7 @@ const useStyles = makeStyles({
     backgroundColor: "#FFB74D0D",
   },
   closeTagFont: {
-    padding: "2px",
+    padding: "1px",
     fontSize: "12px",
     textTransform: "uppercase",
     color: "#FFB74D",
@@ -284,6 +285,7 @@ const Join = (props) => {
   }
 
   useEffect(() => {
+    checkNetwork()
     tokenAPIDetailsRetrieval()
     tokenDetailsRetrieval()
 

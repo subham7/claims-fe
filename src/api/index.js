@@ -279,7 +279,9 @@ export async function getProposal(clubId, filter) {
   if (filter) {
     return await axios.get(MAIN_API_URL + `proposal/club/${clubId}`, { params: { status:`\"${filter}\"`}})
   }
-  return await axios.get(MAIN_API_URL + `proposal/club/${clubId}`)
+  else {
+    return await axios.get(MAIN_API_URL + `proposal/club/${clubId}`)
+  }
 }
 
 // get proposal detail by proposal id

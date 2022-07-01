@@ -28,6 +28,7 @@ import Paper from '@mui/material/Paper';
 import { useRouter } from "next/router"
 import jazzicon from "@metamask/jazzicon"
 import ClubFetch from "../../../src/utils/clubFetch"
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 
 
 const useStyles = makeStyles({
@@ -140,7 +141,18 @@ const Members = (props) => {
                         sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                       >
                         {/* <TableCell align="left" className={classes.tablecontent}>{generateJazzIcon(data.userAddress)</TableCell> */}
-                        <TableCell align="left" variant="tableBody"><a className={classes.activityLink} onClick={(e) => {handleAddressClick(e, data.userAddress)}}> {data.userAddress.substring(0, 6) + "......" + data.userAddress.substring(data.userAddress.length - 4)} </a></TableCell>
+                        <TableCell align="left" variant="tableBody" >
+                          <Grid container direction="row" alignItems="center" spacing={1}>
+                            <Grid item>
+                              <a className={classes.activityLink} onClick={(e) => {handleAddressClick(e, data.userAddress)}}> {data.userAddress.substring(0, 6) + "......" + data.userAddress.substring(data.userAddress.length - 4)} </a>
+                            </Grid>
+                            <Grid item>
+                              <IconButton color="primary">
+                                <OpenInNewIcon className={classes.activityLink} onClick={(e) => {handleAddressClick(e, data.userAddress)}} />
+                              </IconButton>
+                            </Grid>
+                          </Grid>
+                        </TableCell>
                         <TableCell align="left" variant="tableBody">{data.clubs[0].balance}</TableCell>
                         <TableCell align="left" variant="tableBody">${data.clubs[0].balance}</TableCell>
                         <TableCell align="left" variant="tableBody">{new Date(data.clubs[0].joiningDate).toLocaleDateString()}</TableCell>

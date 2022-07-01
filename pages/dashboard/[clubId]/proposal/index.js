@@ -254,7 +254,6 @@ const Proposal = () => {
       const proposalData = getProposal(clubID, type)
       proposalData.then((result) => {
         if (result.status != 200) {
-          console.log(result.error)
           setFetched(false)
         } else {
           setProposalData(result.data)
@@ -612,8 +611,10 @@ const Proposal = () => {
 
   useEffect(() => {
     setLoaderOpen(true)
-    fetchData()
-  }, [clubID, fetched])
+    if (!fetched) {
+      fetchData()
+    }
+  },[clubId, fetched] )
 
   const handleTypeChange = (event) => {
     const { target: { value } } = event
