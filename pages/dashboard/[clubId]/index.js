@@ -456,8 +456,8 @@ const Dashboard = (props) => {
         params: {
           type: 'ERC20',
           options: {
-            address: USDC_CONTRACT_ADDRESS,
-            symbol: "USDC",
+            address: tokenAPIDetails.tokenAddress,
+            symbol: tokenDetails[1],
             decimals: 18,
           },
         },
