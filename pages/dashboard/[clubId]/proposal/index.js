@@ -223,6 +223,8 @@ const Proposal = () => {
   const [tokenFetched, setTokenFetched] = useState(false)
   const [loaderOpen, setLoaderOpen] = useState(false)
   const [selectedListItem, setSelectedListItem] = useState('')
+  const [enableSubmitButton, setEnableSubmitButton] = useState(false)
+  const [count, setCount] = useState(0)
 
 
   const fetchData = () => {
@@ -261,11 +263,14 @@ const Proposal = () => {
         }
       })
     }
-    setLoaderOpen(true)
-    fetchData()
+    else {
+      setLoaderOpen(true)
+      fetchData()
+    }
   }
 
   const handleNext = async (event) => {
+    setLoaderOpen(true)
     const web3 = new Web3(window.web3)
     const walletAddress = web3.utils.toChecksumAddress(localStorage.getItem("wallet"))
     if (type === proposalType[0].type) {
@@ -279,6 +284,7 @@ const Proposal = () => {
           options.push({ "text": surveyOption[i] })
         }
       }
+      setOpen(false)
       const payload = {
         "name": title,
         "description": description,
@@ -291,6 +297,7 @@ const Proposal = () => {
       const createRequest = createProposal(payload)
       createRequest.then((result) => {
         if (result.status !== 201) {
+          setLoaderOpen(false)
           setOpenSnackBar(true)
           setFailed(true)
           return false
@@ -305,6 +312,7 @@ const Proposal = () => {
       })
     }
     else {
+      setOpen(false)
       // if (name === commandTypeList[0].commandText) {
       //   // for airdrop execution
       //   const payload = {
@@ -610,11 +618,8 @@ const Proposal = () => {
 
 
   useEffect(() => {
-    setLoaderOpen(true)
-    if (!fetched) {
-      fetchData()
-    }
-  },[clubId, fetched] )
+   fetchFilteredData("all")
+  },[clubID])
 
   const handleTypeChange = (event) => {
     const { target: { value } } = event
@@ -637,6 +642,7 @@ const Proposal = () => {
       target: { value },
     } = event
     setName(value)
+    setEnableSubmitButton(true)
   }
 
   const handleDurationChange = (value) => {
@@ -664,12 +670,19 @@ const Proposal = () => {
     setOpenCard(true)
     setOptionList([...optionList, ""])
     setSurveyOption([...surveyOption, surveyValue])
+    console.log(optionList)
   }
 
   const handleRemoveClick = (index) => {
     const list = [...commandList];
     list.splice(index, 1);
     setCommandList(list);
+  };
+
+  const handleRemoveSurveyClick = (index) => {
+    const list = [...optionList];
+    list.splice(index, 1);
+    setOptionList(list);
   };
 
   const handleSnackBarClose = (event, reason) => {
@@ -710,48 +723,54 @@ const Proposal = () => {
               </Grid>
             </Grid>
             <Grid container spacing={3}>
-              {proposalData.map((proposal, key) => {
-                return (
-                  <Grid item key={key} onClick={e => { handleProposalClick(proposalData[key]) }} md={12}>
-                    <CardActionArea sx={{ borderRadius: "10px", }}>
-                      <Card className={classes.mainCard}>
-                        <Grid container>
-                          <Grid items ml={2} mr={2}>
-                            <Typography className={classes.cardFont}>
-                              Proposed by {fetched ? proposal.createdBy.substring(0, 6) + ".........." + proposal.createdBy.substring(proposal.createdBy.length - 4) : null}
-                            </Typography>
+              {proposalData.length > 0 ?
+                proposalData.map((proposal, key) => {
+                  return (
+                    <Grid item key={key} onClick={e => { handleProposalClick(proposalData[key]) }} md={12}>
+                      <CardActionArea sx={{ borderRadius: "10px", }}>
+                        <Card className={classes.mainCard}>
+                          <Grid container>
+                            <Grid items ml={2} mr={2}>
+                              <Typography className={classes.cardFont}>
+                                Proposed by {fetched ? proposal.createdBy.substring(0, 6) + ".........." + proposal.createdBy.substring(proposal.createdBy.length - 4) : null}
+                              </Typography>
+                            </Grid>
+                            <Grid items ml={1} mr={1} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
+                              {fetched ? <Chip className={proposal.status === "active" ? classes.cardFontActive : proposal.status === "closed" ? classes.cardFontPending : classes.cardFontFailed} label={proposal.status.charAt(0).toUpperCase() + proposal.status.slice(1)} /> : null}
+                            </Grid>
                           </Grid>
-                          <Grid items ml={1} mr={1} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
-                            {fetched ? <Chip className={proposal.status === "active" ? classes.cardFontActive : proposal.status === "closed" ? classes.cardFontPending : classes.cardFontFailed} label={proposal.status.charAt(0).toUpperCase() + proposal.status.slice(1)} /> : null}
+                          <Grid container>
+                            <Grid items ml={2} mr={2}>
+                              <Typography className={classes.cardFont1}>
+                                [#{key + 1}] {proposal.name}
+                              </Typography>
+                            </Grid>
                           </Grid>
-                        </Grid>
-                        <Grid container>
-                          <Grid items ml={2} mr={2}>
-                            <Typography className={classes.cardFont1}>
-                              [#{key + 1}] {proposal.name}
-                            </Typography>
+                          <Grid container>
+                            <Grid items ml={2} mr={2}>
+                              <Typography className={classes.cardFont}>
+                                {proposal.description.substring(0, 200)}...
+                              </Typography>
+                            </Grid>
                           </Grid>
-                        </Grid>
-                        <Grid container>
-                          <Grid items ml={2} mr={2}>
-                            <Typography className={classes.cardFont}>
-                              {proposal.description.substring(0, 200)}...
-                            </Typography>
+                          <Grid container>
+                            <Grid items ml={2} mr={2} mt={2}>
+                              <Typography className={classes.daysFont}>
+                                {Math.round((new Date(proposal.votingDuration) - new Date()) / (1000 * 60 * 60 * 24))} days left
+                              </Typography>
+                            </Grid>
                           </Grid>
-                        </Grid>
-                        <Grid container>
-                          <Grid items ml={2} mr={2} mt={2}>
-                            <Typography className={classes.daysFont}>
-                              {Math.round((new Date(proposal.votingDuration) - new Date()) / (1000 * 60 * 60 * 24))} days left
-                            </Typography>
-                          </Grid>
-                        </Grid>
-                      </Card>
-                    </CardActionArea>
-                  </Grid>
-                )
-              })}
-
+                        </Card>
+                      </CardActionArea>
+                    </Grid>
+                  )
+                }) :
+                <Grid item justifyContent="center" alignItems="center">
+                  <Typography className={classes.cardFont1}>
+                    No proposals available
+                  </Typography>
+                </Grid>
+              }
             </Grid>
           </Grid>
           <Grid item md={3}>
@@ -878,15 +897,13 @@ const Proposal = () => {
                                 <Grid container direction="row" ml={2}>
                                   <Grid item md={10}>
                                     <TextField sx={{ width: "90%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
-                                               placeholder="Yes / No / Abstain, etc." onChange={(e) => setSurveyValue(e.target.value)} />
+                                               placeholder="Yes / No / Abstain, etc." onChange={(e) => {setSurveyValue(e.target.value);setEnableSubmitButton(true)}} />
                                   </Grid>
                                   <Grid item md={1} mt={1}>
-                                    <IconButton aria-label="add" onClick={(e) => handleRemoveClick(key)} mt={1}>
+                                    <IconButton aria-label="add" onClick={(e) => handleRemoveSurveyClick(key)} mt={1}>
                                       <CancelIcon />
                                     </IconButton>
                                   </Grid>
-
-
                                 </Grid>
                               </Grid>
                             </>
@@ -1159,8 +1176,23 @@ const Proposal = () => {
                   <Button variant="cancel" onClick={handleClose}>Cancel</Button>
                 </Grid>
                 <Grid item ml={2}>
-                  {(duration === null || title === null || description === null) ? <Button variant="primary" onClick={handleNext} disabled >Submit</Button> : <Button variant="primary" onClick={handleNext} >Submit</Button>}
-
+                  {
+                    type === proposalType[0].type ?
+                      (duration === null || title === null || description === null || surveyOption.length < 2 || !enableSubmitButton) ?
+                        <Button variant="primary" onClick={handleNext} disabled >
+                          Submit
+                        </Button> :
+                          <Button variant="primary" onClick={handleNext} >
+                            Submit
+                          </Button>
+                        : (duration === null || title === null || description === null || !enableSubmitButton) ?
+                          <Button variant="primary" onClick={handleNext} disabled >
+                            Submit
+                          </Button> :
+                          <Button variant="primary" onClick={handleNext} >
+                            Submit
+                          </Button>
+                  }
                 </Grid>
               </Grid>
             </Grid>

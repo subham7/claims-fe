@@ -1,7 +1,23 @@
 import { React, useRef, onChange, useState, useEffect } from "react"
 import Image from "next/image"
 import { makeStyles } from "@mui/styles"
-import { Grid, Typography, Avatar, Card, Button, Stack, Divider, Input, Snackbar, Alert, Skeleton, Chip, Backdrop, CircularProgress } from "@mui/material"
+import {
+  Grid,
+  Typography,
+  Avatar,
+  Card,
+  Button,
+  Stack,
+  Divider,
+  Input,
+  Snackbar,
+  Alert,
+  Skeleton,
+  Chip,
+  Backdrop,
+  CircularProgress,
+  TextField
+} from "@mui/material"
 import Layout3 from "../../src/components/layouts/layout3"
 import ProgressBar from "../../src/components/progressbar"
 import { connectWallet, setUserChain, onboard } from "../../src/utils/wallet"
@@ -59,7 +75,7 @@ const useStyles = makeStyles({
   },
   cardLargeFont: {
     width: "150px",
-    fontSize: "38px",
+    fontSize: "2em",
     fontWeight: "bold",
     fontFamily: "Whyte",
     color: "#F5F5F5",
@@ -390,69 +406,93 @@ const Join = (props) => {
               </Grid>
               <Divider variant="middle" />
               <Grid container spacing={7}>
-                <Grid item ml={4} mt={5} mb={{ xs: 0, sm: 0, md:0, lg:2 }}>
-                  <Stack spacing={1} alignItems="stretch">
-                    <Typography variant="p" className={classes.valuesDimStyle}>{walletConnected ? "Deposits deadline" : <Skeleton variant="rectangular" width={100} height={25} />}</Typography>
-                    <Grid container ml={2} mt={2} mb={{ xs: 0, sm: 0, md:0, lg:2 }}>
-                      <Grid item>
-                        <Typography variant="p" className={classes.valuesStyle}>
-                          {governorDataFetched ? new Date(parseInt(governorDetails[0]) * 1000).toJSON().slice(0, 10).split('-').reverse().join('/') : <Skeleton variant="rectangular" width={100} height={25} />}
-                        </Typography>
-                      </Grid>
-                      <Grid item m={1}>
-                        {walletConnected ? governorDataFetched ?
-                          closingDays > 0 ?
-                            (<Card className={classes.openTag}>
-                              <Typography className={classes.openTagFont}>
-                                Open
-                              </Typography>
-                            </Card>) : (<Card className={classes.closeTag}>
-                              <Typography className={classes.closeTagFont}>
-                                Closed
-                              </Typography>
-                            </Card>) : <Skeleton variant="rectangular" width={100} height={25} /> : null}
-                      </Grid>
+                <Grid item ml={4} mt={5} md={3}>
+                  <Typography variant="p" className={classes.valuesDimStyle}>{walletConnected ? "Deposits deadline" : <Skeleton variant="rectangular" width={100} height={25} />}</Typography>
+                  <Grid container mt={2} direction="row">
+                    <Grid item>
+                      <Typography variant="p" className={classes.valuesStyle}>
+                        {governorDataFetched ? new Date(parseInt(governorDetails[0]) * 1000).toJSON().slice(0, 10).split('-').reverse().join('/') : <Skeleton variant="rectangular" width={100} height={25} />}
+                      </Typography>
                     </Grid>
-                  </Stack>
-                  <br />
-                  <Stack spacing={1} alignItems="stretch">
-                    <Typography variant="p" className={classes.valuesDimStyle}>{walletConnected ? "Governance" : <Skeleton variant="rectangular" width={100} height={25} />}</Typography>
-                    <Typography variant="p" className={classes.valuesStyle}>{walletConnected ? "By Voting" : <Skeleton variant="rectangular" width={100} height={25} />}</Typography>
-                  </Stack>
+                    <Grid item ml={1}>
+                      {walletConnected ? governorDataFetched ?
+                        closingDays > 0 ?
+                          (<Card className={classes.openTag}>
+                            <Typography className={classes.openTagFont}>
+                              Open
+                            </Typography>
+                          </Card>) : (<Card className={classes.closeTag}>
+                            <Typography className={classes.closeTagFont}>
+                              Closed
+                            </Typography>
+                          </Card>) : <Skeleton variant="rectangular" width={100} height={25} /> : null}
+                    </Grid>
+                  </Grid>
                 </Grid>
-                <Grid item ml={4} mt={5} mb={{ xs: 0, sm: 0, md:0, lg:2 }}>
-                  <Stack spacing={1} alignItems="stretch">
-                    <Typography variant="p" className={classes.valuesDimStyle}>{walletConnected ? "Minimum Deposits" : <Skeleton variant="rectangular" width={100} height={25} />}</Typography>
-                    <Typography variant="p" className={classes.valuesStyle}>{governorDataFetched ? governorDetails[1] + " USDC" : <Skeleton variant="rectangular" width={100} height={25} />}</Typography>
-                  </Stack>
-                  <br />
-                  <Stack spacing={1} alignItems="stretch">
-                    <Typography variant="p" className={classes.valuesDimStyle}>{walletConnected ? "Members" : <Skeleton variant="rectangular" width={100} height={25} />}</Typography>
-                    <Typography variant="p" className={classes.valuesStyle}>{walletConnected ? members : <Skeleton variant="rectangular" width={100} height={25} />}</Typography>
-                  </Stack>
+                <Grid item ml={4} mt={5} md={3}>
+                  <Grid container>
+                    <Grid item>
+                      <Typography variant="p" className={classes.valuesDimStyle}>{walletConnected ? "Minimum Deposits" : <Skeleton variant="rectangular" width={100} height={25} />}</Typography>
+                    </Grid>
+                    <Grid item mt={2}>
+                      <Typography variant="p" className={classes.valuesStyle}>{governorDataFetched ? governorDetails[1] + " USDC" : <Skeleton variant="rectangular" width={100} height={25} />}</Typography>
+                    </Grid>
+                  </Grid>
                 </Grid>
-                <Grid item ml={4} mt={{ xs: 0, sm: 0, md:1, lg:5 }} mb={{ xs: 0, sm: 0, md:0, lg:2 }}>
-                  <Stack spacing={1} alignItems="stretch">
-                    <Typography variant="p" className={classes.valuesDimStyle}>{walletConnected ? "Maximum Deposit" : <Skeleton variant="rectangular" width={100} height={25} />}</Typography>
-                    <Typography variant="p" className={classes.valuesStyle}>{governorDataFetched ? governorDetails[2] + " USDC" : <Skeleton variant="rectangular" width={100} height={25} />} </Typography>
-                  </Stack>
+                <Grid item ml={4} mt={5} md={3}>
+                  <Grid container>
+                    <Grid item>
+                      <Typography variant="p" className={classes.valuesDimStyle}>{walletConnected ? "Maximum Deposit" : <Skeleton variant="rectangular" width={100} height={25} />}</Typography>
+                    </Grid>
+                    <Grid item mt={2}>
+                      <Typography variant="p" className={classes.valuesStyle}>{governorDataFetched ? governorDetails[2] + " USDC" : <Skeleton variant="rectangular" width={100} height={25} />} </Typography>
+                    </Grid>
+                  </Grid>
                 </Grid>
               </Grid>
-              <Grid item ml={3} mt={5} mb={2} mr={3}>
+              <Grid container mt={5}>
+                <Grid item ml={4} md={3}>
+                  <Grid item>
+                    <Typography variant="p" className={classes.valuesDimStyle}>{walletConnected ? "Governance" : <Skeleton variant="rectangular" width={100} height={25} />}</Typography>
+                  </Grid>
+                  <Grid item mt={2}>
+                    <Typography variant="p" className={classes.valuesStyle}>{walletConnected ? "By Voting" : <Skeleton variant="rectangular" width={100} height={25} />}</Typography>
+                  </Grid>
+                </Grid>
+                <Grid item ml={5} md={3}>
+                  <Grid container direction="column">
+                    <Grid item>
+                      <Typography variant="p" className={classes.valuesDimStyle}>{walletConnected ? "Members" : <Skeleton variant="rectangular" width={100} height={25} />}</Typography>
+                    </Grid>
+                    <Grid item mt={2}>
+                      <Typography variant="p" className={classes.valuesStyle}>{walletConnected ? members : <Skeleton variant="rectangular" width={100} height={25} />}</Typography>
+                    </Grid>
+                  </Grid>
+                </Grid>
+              </Grid>
+              <Grid item ml={3} mt={5} mb={2} mr={3} >
                 {walletConnected ? <ProgressBar value={governorDataFetched ? (parseFloat(tokenDetails[2] / Math.pow(10, 18)) / parseFloat(governorDetails[4])) * 100 : 0} /> : <Skeleton variant="rectangular" />}
               </Grid>
-              <Grid container spacing={2} >
-                <Grid item ml={4} mt={5} mb={2}>
-                  <Stack spacing={1}>
-                    <Typography variant="p" className={classes.valuesDimStyle}>{walletConnected ? "Club Tokens Minted so far" : <Skeleton variant="rectangular" width={100} height={25} />}</Typography>
-                    <Typography variant="p" className={classes.valuesStyle}>{walletConnected ? (tokenDetails[2] / Math.pow(10, 18) + " $" + tokenDetails[1]) : <Skeleton variant="rectangular" width={100} height={25} />}</Typography>
-                  </Stack>
+              <Grid container spacing={2} direction="row" justifyContent="space-evenly" alignItems="center" >
+                <Grid item ml={1} mt={1} mb={2} md={8}>
+                  <Grid container direction="column" spacing={2}>
+                    <Grid item>
+                      <Typography variant="p" className={classes.valuesDimStyle}>{walletConnected ? "Club Tokens Minted so far" : <Skeleton variant="rectangular" width={100} height={25} />}</Typography>
+                    </Grid>
+                    <Grid item>
+                      <Typography variant="p" className={classes.valuesStyle}>{walletConnected ? (tokenDetails[2] / Math.pow(10, 18) + " $" + tokenDetails[1]) : <Skeleton variant="rectangular" width={100} height={25} />}</Typography>
+                    </Grid>
+                  </Grid>
                 </Grid>
-                <Grid item ml={4} mt={5} mb={2} mr={4} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
-                  <Stack spacing={1}>
-                    <Typography variant="p" className={classes.valuesDimStyle}>{walletConnected ? "Total Supply" : <Skeleton variant="rectangular" width={100} height={25} />}</Typography>
-                    <Typography variant="p" className={classes.valuesStyle}>{governorDataFetched ? governorDetails[4] + (" $" + tokenDetails[1]) : <Skeleton variant="rectangular" width={100} height={25} />} </Typography>
-                  </Stack>
+                <Grid item mt={1} mb={2} mr={3} direction="row">
+                  <Grid container direction="column" spacing={2} >
+                    <Grid item>
+                      <Typography variant="p" className={classes.valuesDimStyle}>{walletConnected ? "Total Supply" : <Skeleton variant="rectangular" width={100} height={25} />}</Typography>
+                    </Grid>
+                    <Grid item>
+                      <Typography variant="p" className={classes.valuesStyle}>{governorDataFetched ? governorDetails[4] + (" $" + tokenDetails[1]) : <Skeleton variant="rectangular" width={100} height={25} />} </Typography>
+                    </Grid>
+                  </Grid>
                 </Grid>
               </Grid>
             </Card>
@@ -489,8 +529,17 @@ const Join = (props) => {
                         </Grid>
                       </Grid>
                       <Grid container spacing={2}>
-                        <Grid item ml={2} mt={1} mb={3}>
-                          <Input type="number" error={depositAmount === ""} className={classes.cardLargeFont} value={depositAmount} onChange={(e) => handleInputChange(e.target.value)} disabled={closingDays > 0 ? false : true} />
+                        <Grid item ml={2} mt={1} mb={3} p={1}>
+                          <Input
+                              type="number"
+                              error={depositAmount === ""}
+                              className={classes.cardLargeFont}
+                              value={depositAmount}
+                              onChange={(e) => handleInputChange(e.target.value)}
+                              disabled={closingDays > 0 ? false : true}
+                              inputProps={{style: {fontSize: "1em"}}}
+                              InputLabelProps={{style: {fontSize: "1em"}}}
+                          />
                         </Grid>
                         <Grid item ml={2} mt={2} mb={2} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
                           <Button className={classes.maxTag} onClick={handleMaxButtonClick}>
