@@ -30,6 +30,8 @@ import { SmartContract } from "../../../src/api/index"
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import LinkIcon from '@mui/icons-material/Link'
 import ClubFetch from "../../../src/utils/clubFetch"
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+
 
 const useStyles = makeStyles({
   valuesStyle: {
@@ -129,6 +131,7 @@ const useStyles = makeStyles({
     backgroundColor: "#0ABB9233",
   },
   openTagFont: {
+    paddingTop: "5px",
     fontSize: "12px",
     textTransform: "uppercase",
     color: "#0ABB92",
@@ -178,6 +181,7 @@ const Settings = (props) => {
   const [maxDepositFetched, setMaxDepositFetched] = useState(false)
   const [membersDetails, setMembersDetails] = useState([])
   const [loaderOpen, setLoaderOpen] = useState(false)
+  const [closingDays, setClosingDays] = useState(0)
 
   const tokenAPIDetailsRetrieval = async () => {
     let response = await fetchClubbyDaoAddress(daoAddress)
@@ -229,6 +233,7 @@ const Settings = (props) => {
         .then((result) => {
           // console.log(result)
           setGovernorDetails(result)
+          setClosingDays(Math.round((new Date(parseInt(result[0]) * 1000) - new Date()) / (1000 * 60 * 60 * 24)))
           setGovernorDataFetched(true)
         },
           (error) => {
@@ -318,52 +323,80 @@ const Settings = (props) => {
                 </Grid>
                 <Divider variant="middle" />
                 <Grid container spacing={7}>
-                  <Grid item ml={4} mt={5} mb={2}>
-                    <Stack spacing={1} alignItems="stretch">
-                      <Typography variant="settingText">Deposits deadline</Typography>
-                      <Grid container ml={2} mt={2} mb={2}>
-                        <Grid item>
-                          <Typography variant="p" className={classes.valuesStyle}>
-                            {governorDataFetched ? new Date(parseInt(governorDetails[0]) * 1000).toJSON().slice(0, 10).split('-').reverse().join('/') : null}
-                          </Typography>
-                        </Grid>
-                        <Grid item m={1}>
-                          <Card className={classes.openTag}>
-                            <Typography className={classes.openTagFont}>
-                              Open
-                            </Typography>
-                          </Card>
-                        </Grid>
+                  <Grid item ml={4} mt={5} mb={2} md={2.5}>
+                    <Typography variant="settingText">Deposits deadline</Typography>
+                    <Grid container>
+                      <Grid item>
+                        <Typography variant="p" className={classes.valuesStyle}>
+                          {governorDataFetched ? new Date(parseInt(governorDetails[0]) * 1000).toJSON().slice(0, 10).split('-').reverse().join('/') : null}
+                        </Typography>
                       </Grid>
-                    </Stack>
-                    <br />
-                    <Stack spacing={1} alignItems="stretch">
-                      <Typography variant="settingText">Tresury wallet</Typography>
-                      <Typography variant="p" className={classes.valuesStyle}>${dataFetched ? tokenDetails[2] / Math.pow(10, 18) : null}</Typography>
-                    </Stack>
+                      <Grid item ml={1}>
+                        {governorDataFetched ?
+                        closingDays > 0 ?
+                        (<Card className={classes.openTag}>
+                          <Typography className={classes.openTagFont}>
+                            Open
+                          </Typography>
+                        </Card>) : (<Card className={classes.closeTag}>
+                          <Typography className={classes.closeTagFont}>
+                            Closed
+                          </Typography>
+                        </Card>) : null}
+                      </Grid>
+                    </Grid>
                   </Grid>
-                  <Grid item ml={4} mt={5} mb={2}>
-                    <Stack spacing={1} alignItems="stretch">
-                      <Typography variant="settingText">Minimum Deposits</Typography>
-                      <Typography variant="p" className={classes.valuesStyle}>{governorDataFetched ? governorDetails[1] + " USDC" : null}</Typography>
-                    </Stack>
-                    <br />
-                    <Stack spacing={1} alignItems="stretch">
-                      <Typography variant="settingText">Your ownership</Typography>
-                      <Typography variant="p" className={classes.valuesStyle}>{governorDataFetched && dataFetched ? ((findCurrentMember() / (tokenDetails[2]/ Math.pow(10, 18))).toFixed(2) * 100) : 0}% (${findCurrentMember()} )</Typography>
-                    </Stack>
+                  <Grid item ml={4} mt={5} md={2.5}>
+                    <Grid container>
+                      <Grid item>
+                        <Typography variant="p" className={classes.valuesDimStyle}>Minimum Deposits</Typography>
+                      </Grid>
+                      <Grid item mt={1}>
+                        <Typography variant="p" className={classes.valuesStyle}>{governorDataFetched ? governorDetails[1] + " USDC" : <Skeleton variant="rectangular" width={100} height={25} />}</Typography>
+                      </Grid>
+                    </Grid>
                   </Grid>
-                  <Grid item ml={4} mt={5} mb={2}>
-                    <Stack spacing={1} alignItems="stretch">
-                      <Typography variant="settingText">Maximum Deposit</Typography>
-                      <Typography variant="p" className={classes.valuesStyle}>{governorDataFetched ? governorDetails[2] + " USDC" : null} </Typography>
-                    </Stack>
+                  <Grid item ml={4} mt={5} md={2.5}>
+                    <Grid container>
+                      <Grid item>
+                        <Typography variant="p" className={classes.valuesDimStyle}>Maximum Deposit</Typography>
+                      </Grid>
+                      <Grid item mt={2}>
+                        <Typography variant="p" className={classes.valuesStyle}>{governorDataFetched ? governorDetails[2] + " USDC" : <Skeleton variant="rectangular" width={100} height={25} />} </Typography>
+                      </Grid>
+                    </Grid>
                   </Grid>
-                  <Grid item ml={4} mt={5} mb={2}>
-                    <Stack spacing={1} alignItems="stretch">
-                      <Typography variant="settingText">Members</Typography>
-                      <Typography variant="p" className={classes.valuesStyle}>{membersFetched ? members : 0}</Typography>
-                    </Stack>
+                  <Grid item ml={4} mt={5} md={2.5}>
+                    <Grid container direction="column">
+                      <Grid item>
+                        <Typography variant="p" className={classes.valuesDimStyle}>Members</Typography>
+                      </Grid>
+                      <Grid item mt={2}>
+                        <Typography variant="p" className={classes.valuesStyle}>{membersFetched ? members : 0}</Typography>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                </Grid>
+                <Grid container mt={5}>
+                  <Grid item  ml={4} md={2.5}>
+                    <Grid container direction="column">
+                      <Grid item>
+                        <Typography variant="settingText">Tresury wallet</Typography>
+                      </Grid>
+                      <Grid item mt={2}>
+                        <Typography variant="p" className={classes.valuesStyle}>${dataFetched ? tokenDetails[2] / Math.pow(10, 18) : null}</Typography>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                  <Grid item ml={4} md={2.5}>
+                    <Grid container direction="column">
+                      <Grid item>
+                        <Typography variant="settingText">Your ownership</Typography>
+                      </Grid>
+                      <Grid item mt={2}>
+                        <Typography variant="p" className={classes.valuesStyle}>{governorDataFetched && dataFetched ? isNaN((findCurrentMember() / (tokenDetails[2]/ Math.pow(10, 18))).toFixed(2) * 100) ? 0 : 0 : 0}% (${findCurrentMember()} )</Typography>
+                      </Grid>
+                    </Grid>
                   </Grid>
                 </Grid>
                 <Grid item ml={3} mt={5} mb={2} mr={3}>
@@ -403,12 +436,12 @@ const Settings = (props) => {
                         </IconButton>
                       </Grid>
                       <Grid item>
-                        <IconButton color="primary" onClick={() => { router.push(`https://rinkeby.etherscan.io/address/${daoAddress}`) }}>
-                          <LinkIcon className={classes.iconColor} />
+                        <IconButton color="primary" onClick={() => { window.open(`https://rinkeby.etherscan.io/address/${daoAddress}`) }}>
+                          <OpenInNewIcon className={classes.iconColor} />
                         </IconButton>
                       </Grid>
                       <Grid item mr={4}>
-                        <Typography variant="p" className={classes.valuesStyle}>{apiTokenDetailSet ? tokenAPIDetails[0].daoAddress : null}</Typography>
+                        <Typography variant="p" className={classes.valuesStyle}>{apiTokenDetailSet ? tokenAPIDetails[0].daoAddress.substring(0, 6) + "......" + tokenAPIDetails[0].daoAddress.substring(tokenAPIDetails[0].daoAddress.length - 4) : null}</Typography>
                       </Grid>
                     </Grid>
                   </Grid>
@@ -424,12 +457,12 @@ const Settings = (props) => {
                         </IconButton>
                       </Grid>
                       <Grid item>
-                        <IconButton color="primary" onClick={() => { router.push(`https://rinkeby.etherscan.io/address/${tokenAPIDetails[0].treasuryAddress}`) }}>
-                          <LinkIcon className={classes.iconColor} />
+                        <IconButton color="primary" onClick={() => { window.open(`https://rinkeby.etherscan.io/address/${tokenAPIDetails[0].treasuryAddress}`) }}>
+                          <OpenInNewIcon className={classes.iconColor} />
                         </IconButton>
                       </Grid>
                       <Grid item mr={4}>
-                        <Typography variant="p" className={classes.valuesStyle}>{apiTokenDetailSet ? tokenAPIDetails[0].treasuryAddress : null}</Typography>
+                        <Typography variant="p" className={classes.valuesStyle}>{apiTokenDetailSet ? tokenAPIDetails[0].treasuryAddress.substring(0, 6) + "......" + tokenAPIDetails[0].treasuryAddress.substring(tokenAPIDetails[0].treasuryAddress.length - 4) : null}</Typography>
                       </Grid>
                     </Grid>
                   </Grid>

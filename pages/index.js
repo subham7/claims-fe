@@ -10,6 +10,7 @@ import Router, { useRouter } from "next/router"
 import { fetchClubByUserAddress } from "../src/api/index"
 import store from "../src/redux/store"
 import { addClubName, addDaoAddress, addClubID, addClubRoute } from "../src/redux/reducers/create"
+import {checkNetwork} from "../src/utils/wallet"
 
 
 const useStyles = makeStyles({
@@ -57,6 +58,7 @@ export default function App() {
   const router = useRouter()
 
   useEffect(() => {
+    checkNetwork()
     if (!fetched && walletID) {
       const getClubs = fetchClubByUserAddress(walletID)
       getClubs.then((result) => {

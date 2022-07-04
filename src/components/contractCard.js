@@ -35,8 +35,9 @@ const useStyles = makeStyles({
     height: "45vh",
     "&:hover": {
       cursor: "pointer",
+      background: "transparent linear-gradient(133deg, #0ABB92 0%, #3B7AFD 100%) 0% 0% no-repeat padding-box"
     },
-  }
+  },
 });
 
 export default function ContractCard(props) {
@@ -53,7 +54,7 @@ export default function ContractCard(props) {
         />
       </div>
 
-      <CardContent>
+      <CardContent >
         <Typography gutterBottom component="div" className={classes.heading}>
           {contractHeading}{star ? <StarIcon sx={{ color: "#FFB74D" }} /> : <></>}
         </Typography>

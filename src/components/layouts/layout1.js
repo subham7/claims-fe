@@ -16,7 +16,7 @@ export default function Layout1(props) {
 
   return (
     <>
-      <Navbar handleDrawerToggle={handleDrawerToggle} page={props.page} />
+      <Navbar handleDrawerToggle={handleDrawerToggle} page={props.page} depositUrl={props.depositUrl} />
       <Box sx={{ display: "flex" }}>
         <CssBaseline />
         <Sidebar

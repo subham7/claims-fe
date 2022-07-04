@@ -63,6 +63,14 @@ export const darkComponents = {
           },
         }
       },
+      {
+        props: { variant: "transparent" },
+        style: {
+          backgroundColor: "#3181F600",
+          borderRadius: "30px",
+          opacity: "100%"
+        }
+      }
     ]
   },
   MuiCard: {

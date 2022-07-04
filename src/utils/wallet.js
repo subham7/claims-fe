@@ -64,6 +64,36 @@ export const  onboard = Onboard({
   },
 })
 
+export async function checkNetwork() {
+  if (window.ethereum) {
+    try {
+      await window.ethereum.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: '0x4' }],
+      });
+    } catch (error) {
+      if (error.code === 4902) {
+        try {
+          await window.ethereum.request({
+            method: 'wallet_addEthereumChain',
+            params: [
+              {
+                chainId: '0x4',
+                rpcUrl: ETH_RINKEBY_RPC,
+              },
+            ],
+          });
+        } catch (addError) {
+          console.error(addError);
+        }
+      }
+      console.error(error);
+    }
+  } else {
+    alert('MetaMask is not installed. Please consider installing it: https://metamask.io/download.html');
+  } 
+}
+
 export async function connectWallet(dispatch) {
     const wallets = await onboard.connectWallet()
     if (wallets.length == 0){

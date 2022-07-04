@@ -2,8 +2,8 @@ import { styled } from '@mui/material/styles';
 import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress';
 
 const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
-    height: 10,
-    borderRadius: 5,
+    height: 20,
+    borderRadius: 30,
     [`&.${linearProgressClasses.colorPrimary}`]: {
         border: "1px solid #C1D3FF40"
     },
