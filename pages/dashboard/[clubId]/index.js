@@ -333,7 +333,6 @@ const Dashboard = (props) => {
   const checkIsAdmin = () => {
     if (membersFetched && membersDetails.length > 0 && walletAddress) {
       let obj = membersDetails.find(member => member.userAddress === walletAddress)
-      console.log(obj)
       let pos = membersDetails.indexOf(obj)
       if (pos >= 0) {
         if (membersDetails[pos].clubs[0].isAdmin) {

@@ -1,18 +1,12 @@
 import {React, useEffect, useState} from "react"
 import Layout1 from "../../../src/components/layouts/layout1"
 import {
-  Box,
   Card,
   Grid,
   Typography,
   Avatar,
-  Button,
   Stack,
-  Skeleton,
   Divider,
-  TableCell,
-  TableRow,
-  TableHead,
   Dialog,
   DialogContent,
   IconButton,
@@ -28,7 +22,6 @@ import USDCContract from "../../../src/abis/usdcTokenContract.json"
 import GovernorContract from "../../../src/abis/governorContract.json"
 import { SmartContract } from "../../../src/api/index"
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
-import LinkIcon from '@mui/icons-material/Link'
 import ClubFetch from "../../../src/utils/clubFetch"
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 
@@ -352,7 +345,7 @@ const Settings = (props) => {
                         <Typography variant="p" className={classes.valuesDimStyle}>Minimum Deposits</Typography>
                       </Grid>
                       <Grid item mt={1}>
-                        <Typography variant="p" className={classes.valuesStyle}>{governorDataFetched ? governorDetails[1] + " USDC" : <Skeleton variant="rectangular" width={100} height={25} />}</Typography>
+                        <Typography variant="p" className={classes.valuesStyle}>{governorDataFetched ? governorDetails[1] + " USDC" : null}</Typography>
                       </Grid>
                     </Grid>
                   </Grid>
@@ -362,7 +355,7 @@ const Settings = (props) => {
                         <Typography variant="p" className={classes.valuesDimStyle}>Maximum Deposit</Typography>
                       </Grid>
                       <Grid item mt={2}>
-                        <Typography variant="p" className={classes.valuesStyle}>{governorDataFetched ? governorDetails[2] + " USDC" : <Skeleton variant="rectangular" width={100} height={25} />} </Typography>
+                        <Typography variant="p" className={classes.valuesStyle}>{governorDataFetched ? governorDetails[2] + " USDC" : null} </Typography>
                       </Grid>
                     </Grid>
                   </Grid>
