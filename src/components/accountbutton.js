@@ -9,6 +9,7 @@ import { onboard, disconnectWallet } from '../utils/wallet';
 import { useDispatch } from 'react-redux'
 import jazzicon from "@metamask/jazzicon"
 import {useState} from "react";
+import {useRouter} from "next/router";
 
 
 const StyledMenu = styled((props) => (
@@ -60,18 +61,25 @@ export default function AccountButton(props) {
   const open = Boolean(anchorEl);
   const dispatch = useDispatch();
   const [generated, setGenerated] = useState(false)
+  const router = useRouter()
+
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
   const handleClose = () => {
     setAnchorEl(null);
   };
+
   const handleDisconnect = async () => {
     const [primaryWallet] = onboard.state.get().wallets
-    await onboard.disconnectWallet({ 'label': primaryWallet.label })
+    await onboard.disconnectWallet({ 'label': localStorage.getItem("label" )})
     disconnectWallet(dispatch)
     setAnchorEl(null)
-    setMenuItems(false)
+    if (router.pathname === "/") {
+      router.reload()
+    } else {
+      router.push("/")
+    }
   };
 
   const generateJazzIcon = (account) => {
@@ -109,7 +117,7 @@ export default function AccountButton(props) {
         }}
         anchorEl={anchorEl}
         open={open}
-        close={handleClose}
+        onClose={handleClose}
         onDisconnect={handleDisconnect}
       >
         {menuItems && (
