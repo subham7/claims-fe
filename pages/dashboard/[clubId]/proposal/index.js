@@ -182,7 +182,7 @@ const useStyles = makeStyles({
 
 const Proposal = () => {
   const router = useRouter()
-  const { clubId } = router.query
+  const { clubId, create_proposal } = router.query
   const classes = useStyles()
   const daoAddress = useSelector(state => { return state.create.daoAddress })
   const clubID = clubId
@@ -618,6 +618,9 @@ const Proposal = () => {
 
 
   useEffect(() => {
+    if (create_proposal) {
+      setOpen(true)
+    }
    fetchFilteredData("all")
   },[clubID])
 
@@ -765,10 +768,10 @@ const Proposal = () => {
                     </Grid>
                   )
                 }) :
-                <Grid item justifyContent="center" alignItems="center">
-                  <Typography className={classes.cardFont1}>
-                    No proposals available
-                  </Typography>
+                <Grid item justifyContent="center" alignItems="center" md={10}>
+                  <Card variant="noProposalCard">
+                    <Typography sx={{ fontSize: "1.625em", fontFamily: "Whyte" }} p={3}>Create your club’s first proposal here.</Typography>
+                  </Card>
                 </Grid>
               }
             </Grid>

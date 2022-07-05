@@ -57,6 +57,9 @@ const useStyles = makeStyles({
     width: "22vw",
     height: "351px",
   },
+  fifthCard: {
+    background: "transparent linear-gradient(132deg, #17326A 0%, #19274B 51%, #3D2652 100%) 0% 0% no-repeat padding-box"
+  },
   cardOverlay: {
     position: "absolute",
     top: "30px",
@@ -301,6 +304,20 @@ const Dashboard = (props) => {
   const [openSnackBar, setOpenSnackBar] = useState(false)
   const [ntfData, setNftData] = useState([])
   const [nftFetched, setNftFetched] = useState(false)
+  const [userBalance, setUserBalance] = useState(0)
+  const [userBalanceFetched, setUserBalanceFetched] = useState(false)
+
+  const fetchUserBalance = async () => {
+    const fetchUserBalance = new SmartContract(GovernorContract, daoAddress, undefined)
+    await fetchUserBalance.checkUserBalance()
+        .then((result) => {
+          setUserBalance(result.data)
+          setUserBalanceFetched(true)
+        },
+          (error) => {
+            setUserBalanceFetched(false)
+          })
+  }
 
   const fetchGovernorContractData = async () => {
     if (daoAddress && walletAddress){
@@ -537,13 +554,14 @@ const Dashboard = (props) => {
                       My Share ($)
                     </Typography>
                     <Typography className={classes.card1text4}>
-                      {findCurrentMember()}
+                      {userBalanceFetched ? userBalance : 0}
+                      {/*{findCurrentMember()}*/}
                     </Typography>
                     <Typography className={classes.card1text5}>
-                      {clubDetailsFetched && dataFetched ? isNaN((findCurrentMember() / (tokenDetails[2]/ Math.pow(10, 18))).toFixed(2) * 100) ? 0 : 0: 0}%
+                      {userBalanceFetched && dataFetched ? isNaN((userBalance / (tokenDetails[2]/ Math.pow(10, 18))).toFixed(2) * 100) ? 0 : 0: 0}%
                     </Typography>
                     <Grid container item xs sx={{ display: "flex", justifyContent: "flex-end"}}>
-                    <Button variant="transparent" onClick={importTokenToMetaMask}>Import token</Button>
+                      <Button variant="transparent" onClick={importTokenToMetaMask}>Import token</Button>
                     </Grid>
                   </Box>
                 </Card>
@@ -641,8 +659,14 @@ const Dashboard = (props) => {
                           )) : null}
                         </TableBody>
                       </Table>
-                    </TableContainer> : 
-                    <Typography variant="regularText2" >No tokens available</Typography>
+                    </TableContainer> :
+                        <Grid item justifyContent="center" alignItems="center" md={10}>
+                          <Card variant="noProposalCard">
+                            <Typography sx={{ fontSize: "1.625em", fontFamily: "Whyte" }} p={3}>
+                              Track all tokens in your club’s treasury wallet real-time
+                            </Typography>
+                          </Card>
+                        </Grid>
                     }
                     <Typography mt={16} mb={5} variant="subHeading">Collectibles</Typography>
                     <Grid container>
@@ -652,7 +676,14 @@ const Dashboard = (props) => {
                           <CollectionCard imageURI={data.logoUri} tokenName={data.tokenName} tokenSymbol={data.tokenSymbol}/>
                         </Grid>
                       })
-                      : <Typography variant="regularText2" >No collectibles available</Typography> : null
+                      : <Grid item justifyContent="center" alignItems="center" md={10}>
+                          <Card variant="noProposalCard">
+                            <Typography sx={{ fontSize: "1.625em", fontFamily: "Whyte" }} p={3}>
+                              Track all NFTs in your club’s treasury wallet real-time
+                            </Typography>
+                          </Card>
+                        </Grid>
+                        : null
                   }
                   </Grid>
                     
@@ -665,6 +696,21 @@ const Dashboard = (props) => {
             </Grid>
             <Grid item md={3}>
               <Stack>
+                <Card className={classes.fifthCard}>
+                  <Grid container pl={2} pt={2} pr={2} pb={5}>
+                    <Grid items>
+                      <Typography variant="getStartedClub">
+                        Get started with your club 👋
+                      </Typography>
+                    </Grid>
+                    <Grid item pt={6}>
+                      <Button variant="primary">Read Docs</Button>
+                    </Grid>
+                  </Grid>
+                </Card>
+              </Stack>
+
+              <Stack mt={2}>
                 <Card className={classes.thirdCard}>
                   <Grid container m={2}>
                     <Grid items>
@@ -712,61 +758,78 @@ const Dashboard = (props) => {
                 </Card>
               </Stack>
               <Stack mt={2}>
-                {activeProposalData.length > 0 ? (
                   <Card className={classes.fourthCard}>
                   <Grid container m={2}>
                     <Grid items>
                       <Typography className={classes.card2text1}>
-                        Active proposals
+                        Proposals
                       </Typography>
                     </Grid>
-                    <Grid items mt={1.2} ml={1}>
-                      <div className={classes.activeIllustration}></div>
-                    </Grid>
                   </Grid>
-                  <Grid container m={1}>
-                    <Stack >
-                      {activeProposalDataFetched ? activeProposalData.map((data, key) => {
-                        if (key < 3) {
-                          return (
-                            <>
-                              <ListItemButton key={key} onClick={() => handleProposalClick(activeProposalData[key])}>
-                                <Grid container direction="column">
-                                  <Grid item>
-                                    <Typography className={classes.card5text1} >
-                                      Proposed by {data.createdBy.substring(0, 6) + "......" + data.createdBy.substring(data.createdBy.length - 4)}
-                                    </Typography>
-                                  </Grid>
-                                  <Grid item>
-                                    <Typography className={classes.card5text2}>
-                                      {data.name}
-                                    </Typography>
-                                  </Grid>
-                                  <Grid item>
-                                    <Typography className={classes.card5text1}>
-                                      Expired on {new Date(data.votingDuration).toLocaleDateString()}
-                                    </Typography>
-                                  </Grid>
-                                </Grid>
-                              </ListItemButton>
-                            </>
-                          )
-                        }
-                        if (key == 4) {
-                          return (
-                              <ListItemButton onClick={() => handleMoreClick()} >
-                                <Typography className={classes.card2text1}>More</Typography>
-                              </ListItemButton>
-                              )
+                    {activeProposalData.length > 0 ?
+                        <Grid container m={1}>
+                          <Stack >
+                            {activeProposalDataFetched ? activeProposalData.map((data, key) => {
+                              if (key < 3) {
+                                return (
+                                    <>
+                                      <ListItemButton key={key} onClick={() => handleProposalClick(activeProposalData[key])}>
+                                        <Grid container direction="column">
+                                          <Grid item>
+                                            <Typography className={classes.card5text1} >
+                                              Proposed by {data.createdBy.substring(0, 6) + "......" + data.createdBy.substring(data.createdBy.length - 4)}
+                                            </Typography>
+                                          </Grid>
+                                          <Grid item>
+                                            <Typography className={classes.card5text2}>
+                                              {data.name}
+                                            </Typography>
+                                          </Grid>
+                                          <Grid item>
+                                            <Typography className={classes.card5text1}>
+                                              Expired on {new Date(data.votingDuration).toLocaleDateString()}
+                                            </Typography>
+                                          </Grid>
+                                        </Grid>
+                                      </ListItemButton>
+                                    </>
+                                )
+                              }
+                              if (key == 4) {
+                                return (
+                                    <ListItemButton onClick={() => handleMoreClick()} >
+                                      <Typography className={classes.card2text1}>More</Typography>
+                                    </ListItemButton>
+                                )
 
-                        }
+                              }
 
-                      }) : null}
-                    </Stack>
-                  </Grid>
+                            }) : null}
+                          </Stack>
+                        </Grid> :
+                        <Grid container pt={10} justifyContent="center" alignItems="center">
+                          <Grid item>
+                            <Typography className={classes.card2text1}>No proposals raised yet</Typography>
+                          </Grid>
+                          <Grid item pb={15}>
+                            <Button variant="primary" onClick={e => {
+                              router.push(
+                                  {
+                                    pathname: `/dashboard/${clubId}/proposal`,
+                                    query: {
+                                      create_proposal: true
+                                    }},
+                                  undefined,
+                                  {
+                                    shallow: true
+                                  })
+                            }}>Create new</Button>
+                          </Grid>
+                        </Grid>
+                    }
+
                 </Card>
-                ) : null}
-                
+
               </Stack>
             </Grid>
           </Grid>
