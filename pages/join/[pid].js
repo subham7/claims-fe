@@ -329,11 +329,23 @@ const Join = (props) => {
       console.log(err)
     }
   }
-
   useEffect(() => {
     checkNetwork()
-    tokenAPIDetailsRetrieval()
-    tokenDetailsRetrieval()
+  }, [])
+
+  useEffect(() => {
+    if (pid) {
+      tokenAPIDetailsRetrieval()
+    }
+  }, [pid])
+
+  useEffect(() => {
+    if (tokenAPIDetails) {
+      tokenDetailsRetrieval()
+    }
+  }, [tokenAPIDetails])
+
+  useEffect(() => {
     if (clubId) {
       fetchClubData()
     }
@@ -341,6 +353,7 @@ const Join = (props) => {
     if (previouslyConnectedWallet) {
       onboard.connectWallet({ autoSelect: walletAddress })
     }
+
     if (checkConnection() && walletConnected) {
       obtaineWalletBallance()
       contractDetailsRetrieval()
@@ -348,7 +361,7 @@ const Join = (props) => {
     }
 
 
-  }, [pid, apiTokenDetailSet, dataFetched, walletConnected, fetched, governorDetails, membersFetched])
+  }, [previouslyConnectedWallet, walletConnected, clubId])
 
 
   const handleDeposit = async () => {

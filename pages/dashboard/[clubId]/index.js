@@ -307,32 +307,35 @@ const Dashboard = (props) => {
   const [userBalance, setUserBalance] = useState(0)
   const [userBalanceFetched, setUserBalanceFetched] = useState(false)
 
-  const fetchUserBalance = async () => {
-    const fetchUserBalance = new SmartContract(GovernorContract, daoAddress, undefined)
-    await fetchUserBalance.checkUserBalance()
-        .then((result) => {
-          setUserBalance(result.data)
-          setUserBalanceFetched(true)
-        },
-          (error) => {
-            setUserBalanceFetched(false)
-          })
+  const fetchUserBalanceAPI = async () => {
+    if (daoAddress) {
+      const fetchUserBalance = new SmartContract(GovernorContract, daoAddress, undefined)
+      await fetchUserBalance.checkUserBalance(daoAddress)
+          .then((result) => {
+                console.log("dao", result.data)
+                setUserBalance(result.data)
+                setUserBalanceFetched(true)
+              },
+              (error) => {
+                setUserBalanceFetched(false)
+              })
+    }
   }
 
   const fetchGovernorContractData = async () => {
     if (daoAddress && walletAddress){
       const fetchClubDetails = new SmartContract(GovernorContract, daoAddress, undefined)
       await fetchClubDetails.getGovernorDetails()
-      .then((result) => {
-        // console.log(result)
-        setClubDetails(result)
-        setClubDetailsFetched(true)
-      },
-        (error) => {
-          console.log(error)
-          setClubDetailsFetched(false)
-        }
-      )
+          .then((result) => {
+                // console.log(result)
+                setClubDetails(result)
+                setClubDetailsFetched(true)
+              },
+              (error) => {
+                console.log(error)
+                setClubDetailsFetched(false)
+              }
+          )
     }
   }
 
@@ -373,16 +376,16 @@ const Dashboard = (props) => {
     if (tokenAPIDetails && !dataFetched) {
       const tokenDetailContract = new SmartContract(USDCContract, tokenAPIDetails.tokenAddress, undefined)
       await tokenDetailContract.tokenDetails()
-        .then((result) => {
-          // console.log(result)
-          settokenDetails(result)
-          setJoinLink(typeof window !== 'undefined' && window.location.origin ? `${window.location.origin}/join/${daoAddress}` : null)
-          setDataFetched(true)
-        },
-          (error) => {
-            console.log(error)
-          }
-        )
+          .then((result) => {
+                // console.log(result)
+                settokenDetails(result)
+                setJoinLink(typeof window !== 'undefined' && window.location.origin ? `${window.location.origin}/join/${daoAddress}` : null)
+                setDataFetched(true)
+              },
+              (error) => {
+                console.log(error)
+              }
+          )
     }
   }
 
@@ -448,7 +451,7 @@ const Dashboard = (props) => {
           sum += parseFloat(data.balance) / Math.pow(10, 18)
           console.log(parseFloat(data.balance) / Math.pow(10, 18))
         }
-    })
+      })
     }
     return sum
   }
@@ -478,7 +481,7 @@ const Dashboard = (props) => {
           },
         },
       });
-    
+
       if (wasAdded) {
         setFailed(false)
         setOpenSnackBar(true)
@@ -495,14 +498,44 @@ const Dashboard = (props) => {
 
   useEffect(() => {
     setLoaderOpen(true)
-    tokenAPIDetailsRetrieval()
-    tokenDetailsRetrieval()
-    fetchMembers()
-    fetchTresuryWallet()
-    fetchActiveProposals()
-    fetchClubAssetToken()
-    fetchGovernorContractData()
+    if (daoAddress) {
+      tokenAPIDetailsRetrieval()
+    }
+    if (walletAddress && daoAddress) {
+      fetchGovernorContractData()
+    }
+  }, [daoAddress])
 
+  useEffect(() => {
+    if (tokenAPIDetails) {
+      tokenDetailsRetrieval()
+    }
+  }, [tokenAPIDetails])
+
+
+  useEffect(() => {
+    if (tresuryAddress) {
+      fetchTresuryWallet()
+      fetchClubAssetToken()
+    }
+  }, [tresuryAddress])
+
+  useEffect(() => {
+    if (clubId) {
+      fetchMembers()
+      fetchActiveProposals()
+    }
+  }, [clubId])
+
+  useEffect(() => {
+    setLoaderOpen(true)
+
+    if (dataFetched) {
+      fetchUserBalanceAPI()
+    }
+  }, [dataFetched])
+
+  useEffect(() => {
     if (dataFetched && apiTokenDetailSet && membersFetched && tresuryWalletBalanceFetched && activeProposalDataFetched && clubAssetTokenFetched && clubDetailsFetched) {
       setLoaderOpen(false)
     }
@@ -526,12 +559,12 @@ const Dashboard = (props) => {
     }
     setOpenSnackBar(false)
   }
-  
-  
+
+
   return (
-    <>
-      <Layout1 page={1} depositUrl={joinLink}>
-        {/* <div style={{ padding: "110px 80px" }}> */}
+      <>
+        <Layout1 page={1} depositUrl={joinLink}>
+          {/* <div style={{ padding: "110px 80px" }}> */}
           <Grid container spacing={1} paddingLeft={10} paddingTop={15}>
             <Grid item md={9}>
               <Stack direction={{ xs: 'column', sm: 'row' }} spacing={3}>
@@ -570,14 +603,14 @@ const Dashboard = (props) => {
                     <Grid container spacing={{ xs:2, sm:5, md: 3}} direction={{xs: "column", sm: "column", md: "row" }}>
                       <Grid item mt={4}>
                         <Grid container item direction="column">
-                        <img src="/assets/icons/icon-metro-coin.svg" alt="icon-metro-coins" className={classes.iconMetroCoin} />
-                        <Typography mt={4} variant="regularText4">
-                          Treasury ($)
-                        </Typography>
-                        <Typography className={classes.card2text2}>
-                          {dataFetched ? tokenDetails[2]/ Math.pow(10, 18) : null}
-                        </Typography>
-                        {/* <Typography className={classes.card2text3}>
+                          <img src="/assets/icons/icon-metro-coin.svg" alt="icon-metro-coins" className={classes.iconMetroCoin} />
+                          <Typography mt={4} variant="regularText4">
+                            Treasury ($)
+                          </Typography>
+                          <Typography className={classes.card2text2}>
+                            {dataFetched ? tokenDetails[2]/ Math.pow(10, 18) : null}
+                          </Typography>
+                          {/* <Typography className={classes.card2text3}>
                           37%
                         </Typography> */}
                         </Grid>
@@ -585,19 +618,19 @@ const Dashboard = (props) => {
                       <Grid item ml={4}><Divider className={classes.divider} variant="middle" orientation="vertical" /></Grid>
                       <Grid item mt={4} ml={1}>
                         <Grid container item direction="column">
-                        <Typography variant="regularText2">
-                          Members
-                        </Typography>
-                        <Typography variant="regularText4">
-                          {membersFetched ? members : 0}
-                        </Typography>
-                        <Typography mt={3} variant="regularText2">
-                          Tresury Wallet
-                        </Typography>
-                        <Typography variant="regularText4">
-                          ${dataFetched ? tokenDetails[2]/ Math.pow(10, 18) : null}
-                        </Typography>
-                        {/* <Typography mt={3} className={classes.card2text8}>
+                          <Typography variant="regularText2">
+                            Members
+                          </Typography>
+                          <Typography variant="regularText4">
+                            {membersFetched ? members : 0}
+                          </Typography>
+                          <Typography mt={3} variant="regularText2">
+                            Tresury Wallet
+                          </Typography>
+                          <Typography variant="regularText4">
+                            ${dataFetched ? tokenDetails[2]/ Math.pow(10, 18) : null}
+                          </Typography>
+                          {/* <Typography mt={3} className={classes.card2text8}>
                           Hot Wallet
                         </Typography>
                         <Typography className={classes.card2text9}>
@@ -607,7 +640,7 @@ const Dashboard = (props) => {
                       </Grid>
 
                       <Stack m={4}>
-                        
+
                       </Stack>
                     </Grid>
                   </Grid>
@@ -625,41 +658,41 @@ const Dashboard = (props) => {
                       </Grid>
                       <Grid items ml={2}>
                         <TextField
-                          className={classes.searchField}
-                          placeholder="Search by name or address"
-                          InputProps={{
-                            endAdornment: <IconButton type="submit" sx={{ p: '10px' }} aria-label="search"><SearchIcon /></IconButton>
-                          }}
+                            className={classes.searchField}
+                            placeholder="Search by name or address"
+                            InputProps={{
+                              endAdornment: <IconButton type="submit" sx={{ p: '10px' }} aria-label="search"><SearchIcon /></IconButton>
+                            }}
                         />
                       </Grid>
                     </Grid>
                     <Typography mt={5} mb={5} variant="subHeading">Tokens</Typography>
-                    {clubAssetTokenData.slice(1).length > 0 ? 
-                      <TableContainer component={Paper}>
-                      <Table sx={{ minWidth: 809 }} aria-label="simple table">
-                        <TableHead>
-                          <TableRow>
-                            <TableCell align="left" variant="tableHeading">Token</TableCell>
-                            <TableCell align="left" variant="tableHeading">Balance</TableCell>
-                            <TableCell align="left" variant="tableHeading">Value (USD)</TableCell>
-                            {/* <TableCell align="left" variant="tableHeading">Day change</TableCell> */}
-                          </TableRow>
-                        </TableHead>
-                        <TableBody>
-                          {clubAssetTokenData.length > 0 ? clubAssetTokenData.slice(1).map((data, key) => (
-                            <TableRow
-                              key={key}
-                              sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                            >
-                              <TableCell align="left" variant="tableBody"><></>{data.token.name}</TableCell>
-                              <TableCell align="left" variant="tableBody">{data.balance}</TableCell>
-                              <TableCell align="left" variant="tableBody">${data.balance}</TableCell>
-                              {/* <TableCell align="left" variant="tableBody" sx={row.daychange > 0 ? { color: "#0ABB92" } : { color: "#D55438" }}>{row.daychange > 0 ? "+" : ""}{row.daychange}</TableCell> */}
-                            </TableRow>
-                          )) : null}
-                        </TableBody>
-                      </Table>
-                    </TableContainer> :
+                    {clubAssetTokenData.slice(1).length > 0 ?
+                        <TableContainer component={Paper}>
+                          <Table sx={{ minWidth: 809 }} aria-label="simple table">
+                            <TableHead>
+                              <TableRow>
+                                <TableCell align="left" variant="tableHeading">Token</TableCell>
+                                <TableCell align="left" variant="tableHeading">Balance</TableCell>
+                                <TableCell align="left" variant="tableHeading">Value (USD)</TableCell>
+                                {/* <TableCell align="left" variant="tableHeading">Day change</TableCell> */}
+                              </TableRow>
+                            </TableHead>
+                            <TableBody>
+                              {clubAssetTokenData.length > 0 ? clubAssetTokenData.slice(1).map((data, key) => (
+                                  <TableRow
+                                      key={key}
+                                      sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                  >
+                                    <TableCell align="left" variant="tableBody"><></>{data.token.name}</TableCell>
+                                    <TableCell align="left" variant="tableBody">{data.balance}</TableCell>
+                                    <TableCell align="left" variant="tableBody">${data.balance}</TableCell>
+                                    {/* <TableCell align="left" variant="tableBody" sx={row.daychange > 0 ? { color: "#0ABB92" } : { color: "#D55438" }}>{row.daychange > 0 ? "+" : ""}{row.daychange}</TableCell> */}
+                                  </TableRow>
+                              )) : null}
+                            </TableBody>
+                          </Table>
+                        </TableContainer> :
                         <Grid item justifyContent="center" alignItems="center" md={10}>
                           <Card variant="noProposalCard">
                             <Typography sx={{ fontSize: "1.625em", fontFamily: "Whyte" }} p={3}>
@@ -670,23 +703,23 @@ const Dashboard = (props) => {
                     }
                     <Typography mt={16} mb={5} variant="subHeading">Collectibles</Typography>
                     <Grid container>
-                    {nftFetched ? ntfData.length > 0 ?
-                      ntfData.map((data, key) => {
-                        <Grid items m={1}>
-                          <CollectionCard imageURI={data.logoUri} tokenName={data.tokenName} tokenSymbol={data.tokenSymbol}/>
-                        </Grid>
-                      })
-                      : <Grid item justifyContent="center" alignItems="center" md={10}>
-                          <Card variant="noProposalCard">
-                            <Typography sx={{ fontSize: "1.625em", fontFamily: "Whyte" }} p={3}>
-                              Track all NFTs in your club’s treasury wallet real-time
-                            </Typography>
-                          </Card>
-                        </Grid>
-                        : null
-                  }
-                  </Grid>
-                    
+                      {nftFetched ? ntfData.length > 0 ?
+                              ntfData.map((data, key) => {
+                                <Grid items m={1}>
+                                  <CollectionCard imageURI={data.logoUri} tokenName={data.tokenName} tokenSymbol={data.tokenSymbol}/>
+                                </Grid>
+                              })
+                              : <Grid item justifyContent="center" alignItems="center" md={10}>
+                                <Card variant="noProposalCard">
+                                  <Typography sx={{ fontSize: "1.625em", fontFamily: "Whyte" }} p={3}>
+                                    Track all NFTs in your club’s treasury wallet real-time
+                                  </Typography>
+                                </Card>
+                              </Grid>
+                          : null
+                      }
+                    </Grid>
+
 
                     {/* <Typography mt={16} mb={5} variant="subHeading">Off-chain investments</Typography>
                     <BasicTable /> */}
@@ -732,33 +765,33 @@ const Dashboard = (props) => {
                     </Grid>
                   </Grid>
                   {checkIsAdmin() ? (
-                    <>
-                      <Grid container>
-                      <Grid items mt={2} ml={1} mr={1} >
-                        <TextField
-                          className={classes.linkInput}
-                          disabled
-                          value={joinLink}
-                          InputProps={{
-                            endAdornment: <Button variant="contained" className={classes.copyButton} onClick={handleCopy}>Copy</Button>
-                          }}
-                        />
-                      </Grid>
-                    </Grid>
-                    <Grid container>
-                      <Grid items mt={4} ml={1} mr={1} >
-                        <Typography variant="regularText5">
-                        Share this link for new members to join your club and add funds into this club.
-                        </Typography>
-                      </Grid>
-                    </Grid>
-                    </>
+                      <>
+                        <Grid container>
+                          <Grid items mt={2} ml={1} mr={1} >
+                            <TextField
+                                className={classes.linkInput}
+                                disabled
+                                value={joinLink}
+                                InputProps={{
+                                  endAdornment: <Button variant="contained" className={classes.copyButton} onClick={handleCopy}>Copy</Button>
+                                }}
+                            />
+                          </Grid>
+                        </Grid>
+                        <Grid container>
+                          <Grid items mt={4} ml={1} mr={1} >
+                            <Typography variant="regularText5">
+                              Share this link for new members to join your club and add funds into this club.
+                            </Typography>
+                          </Grid>
+                        </Grid>
+                      </>
                   ) : null}
-                  
+
                 </Card>
               </Stack>
               <Stack mt={2}>
-                  <Card className={classes.fourthCard}>
+                <Card className={classes.fourthCard}>
                   <Grid container m={2}>
                     <Grid items>
                       <Typography className={classes.card2text1}>
@@ -766,67 +799,67 @@ const Dashboard = (props) => {
                       </Typography>
                     </Grid>
                   </Grid>
-                    {activeProposalData.length > 0 ?
-                        <Grid container m={1}>
-                          <Stack >
-                            {activeProposalDataFetched ? activeProposalData.map((data, key) => {
-                              if (key < 3) {
-                                return (
-                                    <>
-                                      <ListItemButton key={key} onClick={() => handleProposalClick(activeProposalData[key])}>
-                                        <Grid container direction="column">
-                                          <Grid item>
-                                            <Typography className={classes.card5text1} >
-                                              Proposed by {data.createdBy.substring(0, 6) + "......" + data.createdBy.substring(data.createdBy.length - 4)}
-                                            </Typography>
-                                          </Grid>
-                                          <Grid item>
-                                            <Typography className={classes.card5text2}>
-                                              {data.name}
-                                            </Typography>
-                                          </Grid>
-                                          <Grid item>
-                                            <Typography className={classes.card5text1}>
-                                              Expired on {new Date(data.votingDuration).toLocaleDateString()}
-                                            </Typography>
-                                          </Grid>
+                  {activeProposalData.length > 0 ?
+                      <Grid container m={1}>
+                        <Stack >
+                          {activeProposalDataFetched ? activeProposalData.map((data, key) => {
+                            if (key < 3) {
+                              return (
+                                  <>
+                                    <ListItemButton key={key} onClick={() => handleProposalClick(activeProposalData[key])}>
+                                      <Grid container direction="column">
+                                        <Grid item>
+                                          <Typography className={classes.card5text1} >
+                                            Proposed by {data.createdBy.substring(0, 6) + "......" + data.createdBy.substring(data.createdBy.length - 4)}
+                                          </Typography>
                                         </Grid>
-                                      </ListItemButton>
-                                    </>
-                                )
-                              }
-                              if (key == 4) {
-                                return (
-                                    <ListItemButton onClick={() => handleMoreClick()} >
-                                      <Typography className={classes.card2text1}>More</Typography>
+                                        <Grid item>
+                                          <Typography className={classes.card5text2}>
+                                            {data.name}
+                                          </Typography>
+                                        </Grid>
+                                        <Grid item>
+                                          <Typography className={classes.card5text1}>
+                                            Expired on {new Date(data.votingDuration).toLocaleDateString()}
+                                          </Typography>
+                                        </Grid>
+                                      </Grid>
                                     </ListItemButton>
-                                )
+                                  </>
+                              )
+                            }
+                            if (key == 4) {
+                              return (
+                                  <ListItemButton onClick={() => handleMoreClick()} >
+                                    <Typography className={classes.card2text1}>More</Typography>
+                                  </ListItemButton>
+                              )
 
-                              }
+                            }
 
-                            }) : null}
-                          </Stack>
-                        </Grid> :
-                        <Grid container pt={10} justifyContent="center" alignItems="center">
-                          <Grid item>
-                            <Typography className={classes.card2text1}>No proposals raised yet</Typography>
-                          </Grid>
-                          <Grid item pb={15}>
-                            <Button variant="primary" onClick={e => {
-                              router.push(
-                                  {
-                                    pathname: `/dashboard/${clubId}/proposal`,
-                                    query: {
-                                      create_proposal: true
-                                    }},
-                                  undefined,
-                                  {
-                                    shallow: true
-                                  })
-                            }}>Create new</Button>
-                          </Grid>
+                          }) : null}
+                        </Stack>
+                      </Grid> :
+                      <Grid container pt={10} justifyContent="center" alignItems="center">
+                        <Grid item>
+                          <Typography className={classes.card2text1}>No proposals raised yet</Typography>
                         </Grid>
-                    }
+                        <Grid item pb={15}>
+                          <Button variant="primary" onClick={e => {
+                            router.push(
+                                {
+                                  pathname: `/dashboard/${clubId}/proposal`,
+                                  query: {
+                                    create_proposal: true
+                                  }},
+                                undefined,
+                                {
+                                  shallow: true
+                                })
+                          }}>Create new</Button>
+                        </Grid>
+                      </Grid>
+                  }
 
                 </Card>
 
@@ -834,23 +867,23 @@ const Dashboard = (props) => {
             </Grid>
           </Grid>
           <Snackbar open={openSnackBar} autoHideDuration={6000} onClose={handleSnackBarClose} anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
-          {!failed ?
-            (<Alert onClose={handleSnackBarClose} severity="success" sx={{ width: '100%' }}>
-              Token imported successfully to your wallet!
-            </Alert>) :
-            (<Alert onClose={handleSnackBarClose} severity="error" sx={{ width: '100%' }}>
-              Error occured while importing token to your wallet!
-            </Alert>)
-          }
-        </Snackbar>
-        <Backdrop
-            sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-            open={loaderOpen}
-        >
-          <CircularProgress color="inherit" />
-        </Backdrop>
-      </Layout1>
-    </>
+            {!failed ?
+                (<Alert onClose={handleSnackBarClose} severity="success" sx={{ width: '100%' }}>
+                  Token imported successfully to your wallet!
+                </Alert>) :
+                (<Alert onClose={handleSnackBarClose} severity="error" sx={{ width: '100%' }}>
+                  Error occured while importing token to your wallet!
+                </Alert>)
+            }
+          </Snackbar>
+          <Backdrop
+              sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+              open={loaderOpen}
+          >
+            <CircularProgress color="inherit" />
+          </Backdrop>
+        </Layout1>
+      </>
   )
 }
 
