@@ -135,7 +135,7 @@ export default function App() {
                       <ListItemButton component="a" key={key} onClick={e => { handleItemClick(clubData[key]) }}>
                         <Grid container>
                           <Grid item md={2}>
-                            <Avatar variant="clubSelect">{club.name[0]}</Avatar>
+                            <img src={club.imageUrl} width="80vw" alt="club_image" />
                           </Grid>
                           <Grid item md={6}>
                             <Stack

@@ -24,6 +24,7 @@ import { SmartContract } from "../../../src/api/index"
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import ClubFetch from "../../../src/utils/clubFetch"
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+import Image from "next/image";
 
 
 const useStyles = makeStyles({
@@ -157,6 +158,7 @@ const Settings = (props) => {
   const daoAddress = useSelector(state => { return state.create.daoAddress })
   const dispatch = useDispatch()
   const router = useRouter()
+  const imageUrl = useSelector(state => {return state.create.clubImageUrl})
   const [dataFetched, setDataFetched] = useState(false)
   const walletAddress = useSelector(state => { return state.create.value })
   const [tokenDetails, settokenDetails] = useState(null)
@@ -303,7 +305,7 @@ const Settings = (props) => {
               <Card className={classes.cardRegular}>
                 <Grid container spacing={2}>
                   <Grid item mt={3} ml={3}>
-                    <Avatar variant="clubSelect2">{apiTokenDetailSet ? tokenAPIDetails[0].name[0] : null}</Avatar>
+                    <img src={imageUrl ?? null} width="100vw" alt="profile_pic"/>
                   </Grid>
                   <Grid item ml={1} mt={4} mb={7}>
                     <Stack spacing={0}>

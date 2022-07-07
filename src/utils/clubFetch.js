@@ -3,7 +3,16 @@ import Web3 from "web3"
 import Router, { useRouter } from 'next/router'
 import { useDispatch, useSelector } from "react-redux"
 import { fetchClub } from "../api/index"
-import { addClubID, addClubName, addClubRoute, addDaoAddress, addWallet, addTresuryAddress, addTokenAddress } from '../redux/reducers/create'
+import {
+  addClubID,
+  addClubName,
+  addClubRoute,
+  addDaoAddress,
+  addWallet,
+  addTresuryAddress,
+  addTokenAddress,
+addClubImageUrl
+} from '../redux/reducers/create'
 import { checkNetwork } from "./wallet"
 
 
@@ -18,7 +27,6 @@ const ClubFetch = (Component) => {
         const clubData = fetchClub(clubId)
         clubData.then((result) => {
           if (result.status != 200) {
-            console.log(result.statusText)
             setDataFetched(false)
           } else {
             const web3 = new Web3(window.web3)
@@ -30,6 +38,7 @@ const ClubFetch = (Component) => {
             dispatch(addDaoAddress(result.data[0].daoAddress))
             dispatch(addTresuryAddress(result.data[0].treasuryAddress))
             dispatch(addTokenAddress(result.data[0].tokenAddress))
+            dispatch(addClubImageUrl(result.data[0].imageUrl))
             setDataFetched(true)
           }
         })

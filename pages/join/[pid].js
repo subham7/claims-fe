@@ -23,13 +23,28 @@ import ProgressBar from "../../src/components/progressbar"
 import { connectWallet, setUserChain, onboard } from "../../src/utils/wallet"
 import { useDispatch } from "react-redux"
 import { useRouter } from "next/router";
-import { fetchClubbyDaoAddress, USDC_CONTRACT_ADDRESS, FACTORY_CONTRACT_ADDRESS, createUser, getMembersDetails } from "../../src/api";
+import {
+  fetchClubbyDaoAddress,
+  USDC_CONTRACT_ADDRESS,
+  FACTORY_CONTRACT_ADDRESS,
+  createUser,
+  getMembersDetails,
+  fetchClub
+} from "../../src/api";
 import store from "../../src/redux/store"
 import Web3 from "web3"
 import USDCContract from "../../src/abis/usdcTokenContract.json"
 import GovernorContract from "../../src/abis/governorContract.json"
 import { SmartContract } from "../../src/api/index"
 import { checkNetwork } from "../../src/utils/wallet"
+import {
+  addClubID, addClubImageUrl,
+  addClubName,
+  addClubRoute,
+  addDaoAddress, addTokenAddress,
+  addTresuryAddress,
+  addWallet
+} from "../../src/redux/reducers/create";
 
 
 const useStyles = makeStyles({
@@ -188,6 +203,8 @@ const Join = (props) => {
   const [members, setMembers] = useState(0)
   const [depositInitiated, setDepositInitiated] = useState(false)
   const [closingDays, setClosingDays] = useState(0)
+  const [imageFetched, setImageFetched] = useState(false)
+  const [imageUrl, setImageUrl] = useState('')
 
 
   const checkConnection = async () => {
@@ -209,6 +226,19 @@ const Join = (props) => {
       return false
     }
   }
+
+  const fetchClubData = async () => {
+    const clubData = fetchClub(clubId)
+    clubData.then((result) => {
+      if (result.status != 200) {
+        setImageFetched(false)
+      } else {
+        setImageUrl(result.data[0].imageUrl)
+        setImageFetched(true)
+      }
+    })
+  }
+
 
   const tokenAPIDetailsRetrieval = async () => {
     let response = await fetchClubbyDaoAddress(pid)
@@ -304,6 +334,9 @@ const Join = (props) => {
     checkNetwork()
     tokenAPIDetailsRetrieval()
     tokenDetailsRetrieval()
+    if (clubId) {
+      fetchClubData()
+    }
 
     if (previouslyConnectedWallet) {
       onboard.connectWallet({ autoSelect: walletAddress })
@@ -393,7 +426,7 @@ const Join = (props) => {
             <Card className={classes.cardRegular}>
               <Grid container spacing={2}>
                 <Grid item mt={3} ml={3}>
-                  <Avatar variant="clubSelect2">{apiTokenDetailSet ? tokenAPIDetails[0].name[0] : <Skeleton variant="rectangular" width={100} height={25} />}</Avatar>
+                  <img src={imageFetched ? imageUrl : null} alt="club-image" width="100vw" />
                 </Grid>
                 <Grid item ml={1} mt={4} mb={7}>
                   <Stack spacing={0}>
