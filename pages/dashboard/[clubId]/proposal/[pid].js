@@ -134,6 +134,7 @@ const ProposalDetail = () => {
   const [message, setMessage] = useState("")
   const [failed, setFailed] = useState(false)
   const [openSnackBar, setOpenSnackBar] = useState(false)
+  const tresuryAddress = useSelector(state => { return state.create.tresuryAddress})
 
 
   let voteId = null
@@ -564,53 +565,51 @@ const ProposalDetail = () => {
       const tresuryWalletApproval = new SmartContract(USDCContract, USDC_CONTRACT_ADDRESS, undefined)
       const sendCustomToken = new SmartContract(GovernorContract, daoAddress, undefined)
 
-      const transferApprovalResponse = tresuryWalletApproval.approveDeposit(daoAddress, parseFloat(proposalData[0].commands[0].customTokenAmounts[0]))
+      const transferApprovalResponse = sendCustomToken.approveDeposit( proposalData[0].commands[0].customTokenAddresses, proposalData[0].commands[0].customTokenAmounts, daoAddress, tresuryAddress)
+
+      // const transferApprovalResponse = tresuryWalletApproval.approveDeposit(daoAddress, parseFloat(proposalData[0].commands[0].customTokenAmounts[0]))
       await transferApprovalResponse.then((result) => {
-        const sendCustomTokenResponse = sendCustomToken.updateProposalAndExecution(
-          proposalData[0].ipfsHash,
-          "Executed",
-          123444,
-          proposalData[0].customToken,
-          undefined,
-          [0,0,0,0,0,0,0,1,0],
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          proposalData[0].commands[0].customTokenAmounts,
-          proposalData[0].commands[0].customTokenAddresses,
-          undefined,
-          undefined,
-          undefined
-        )
-        sendCustomTokenResponse.then((result) => {
-          const updateStatus = patchProposalStatus(pid)
-          updateStatus.then((result) => {
-            if (result.status != 200) {
-              setExecuted(false)
-              setOpenSnackBar(true)
-              setMessage("Send custom token execution status update failed!")
-              setFailed(true)
-            } else {
-              setExecuted(true)
-              setOpenSnackBar(true)
-              setMessage("Send custom token execution successful!")
-              setFailed(false)
-            }
-          })
-        }, (error) => {
-          setExecuted(false)
-          setOpenSnackBar(true)
-          setMessage("Send custom tokenexecution failed!")
-          setFailed(true)
-        })
-      }, 
+        // const sendCustomTokenResponse = sendCustomToken.updateProposalAndExecution(
+        //   proposalData[0].ipfsHash,
+        //   "Executed",
+        //   123444,
+        //   proposalData[0].customToken,
+        //   undefined,
+        //   [0,0,0,0,0,0,0,1,0],
+        //   undefined,
+        //   undefined,
+        //   undefined,
+        //   undefined,
+        //   undefined,
+        //   undefined,
+        //   undefined,
+        //   undefined,
+        //   undefined,
+        //   proposalData[0].commands[0].customTokenAmounts,
+        //   proposalData[0].commands[0].customTokenAddresses,
+        //   undefined,
+        //   undefined,
+        //   undefined
+        // )
+        // sendCustomTokenResponse.then((result) => {
+        //   const updateStatus = patchProposalStatus(pid)
+        //   updateStatus.then((result) => {
+        //     if (result.status != 200) {
+        //       setExecuted(false)
+        //       setOpenSnackBar(true)
+        //       setMessage("Send custom token execution status update failed!")
+        //       setFailed(true)
+        //     } else {
+        //       setExecuted(true)
+        //       setOpenSnackBar(true)
+        //       setMessage("Send custom token execution successful!")
+        //       setFailed(false)
+        //     }
+        //   })
+        console.log(result)
+        },
       (error) => {
+        console.log(error)
         setExecuted(false)
         setOpenSnackBar(true)
         setMessage("Send custom token approval failed!")

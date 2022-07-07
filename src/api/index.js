@@ -6,7 +6,14 @@ import { useDispatch } from "react-redux"
 import { addWallet, removeWallet } from "../redux/reducers/create"
 import {onboard} from "../utils/wallet"
 import axios from "axios";
+import SafeAppsSDK from '@gnosis.pm/safe-apps-sdk'
+import approveFunctionAbi from "../abis/approveFunctionAbi.json"
 
+const opts = {
+  allowedDomains: [/gnosis-safe.io/],
+}
+
+const appsSdk = new SafeAppsSDK(opts);
 
 // Global variables
 const MAIN_API_URL = process.env.NEXT_PUBLIC_API_HOST
@@ -125,8 +132,27 @@ export class SmartContract{
       ).send( { from: this.walletAddress })
     }
 
-  async approveDeposit(address, amount) {
-    return this.contract.methods.approve(address, amount).send({ from: this.walletAddress })
+  async approveDeposit(
+      address,
+      amount,
+      daoAddress, tresuryAddress){
+    console.log(address, amount, tresuryAddress)
+    const contract = new web3.eth.Contract(approveFunctionAbi, daoAddress);
+    const txs = [
+      {
+        to: tresuryAddress,
+        value: amount[0],
+        data: contract.methods.approve(daoAddress, amount[0]).encodeABI(),
+      }
+    ]
+    console.log("execution called")
+    try {
+      const transaction = await appsSdk.txs.send({ txs })
+      console.log(transaction)
+    } catch (err) {
+      console.log(err.message)
+    }
+    // return this.contract.methods.approve(address, amount).send({ from: this.walletAddress })
   }
   
   async deposit(address, amount) {
@@ -138,6 +164,10 @@ export class SmartContract{
   
   async balanceOf() {
     return this.contract.methods.balanceOf(this.walletAddress).call({from: this.walletAddress})
+  }
+
+  async checkUserBalance() {
+    return this.contract.methods.checkUserBalance(this.walletAddress).call({ from: this.walletAddress })
   }
 
   async ownerAddress() {

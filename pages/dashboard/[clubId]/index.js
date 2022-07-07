@@ -310,15 +310,15 @@ const Dashboard = (props) => {
   const fetchUserBalanceAPI = async () => {
     if (daoAddress) {
       const fetchUserBalance = new SmartContract(GovernorContract, daoAddress, undefined)
-      await fetchUserBalance.checkUserBalance(daoAddress)
-          .then((result) => {
-                console.log("dao", result.data)
-                setUserBalance(result.data)
-                setUserBalanceFetched(true)
-              },
-              (error) => {
-                setUserBalanceFetched(false)
-              })
+      await fetchUserBalance.checkUserBalance()
+        .then((result) => {
+              console.log("dao", result)
+              setUserBalance(result)
+              setUserBalanceFetched(true)
+            },
+            (error) => {
+              setUserBalanceFetched(false)
+            })
     }
   }
 
