@@ -12,6 +12,7 @@
     "@date-io/date-fns": "^2.13.2",
     "@emotion/react": "^11.8.1",
     "@emotion/styled": "^11.8.1",
+    "@gnosis.pm/safe-apps-sdk": "^7.5.0",
     "@gnosis.pm/safe-core-sdk": "^2.1.0",
     "@gnosis.pm/safe-web3-lib": "^1.1.0",
     "@metamask/jazzicon": "^2.0.0",
