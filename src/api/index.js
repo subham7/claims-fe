@@ -132,29 +132,36 @@ export class SmartContract{
       ).send( { from: this.walletAddress })
     }
 
-  async approveDeposit(
+  async approveDepositGnosis(
       address,
       amount,
-      daoAddress, tresuryAddress){
-    console.log(address, amount, tresuryAddress)
-    const contract = new web3.eth.Contract(approveFunctionAbi, daoAddress);
-    const txs = [
-      {
-        to: tresuryAddress,
-        value: amount[0],
-        data: contract.methods.approve(daoAddress, amount[0]).encodeABI(),
-      }
-    ]
-    console.log("execution called")
-    try {
-      const transaction = await appsSdk.txs.send({ txs })
-      console.log(transaction)
-    } catch (err) {
-      console.log(err.message)
-    }
+      daoAddress,
+      tresuryAddress){
+    // console.log(address, amount, tresuryAddress)
+    // const contract = new web3.eth.Contract(approveFunctionAbi, daoAddress);
+    // const txs = [
+    //   {
+    //     to: tresuryAddress,
+    //     value: amount[0],
+    //     data: contract.methods.approve(daoAddress, amount[0]).encodeABI(),
+    //   }
+    // ]
+    // console.log("execution called")
+    // try {
+    //   const transaction = await appsSdk.txs.send({ txs })
+    //   console.log(transaction)
+    // } catch (err) {
+    //   console.log(err.message)
+    // }
     // return this.contract.methods.approve(address, amount).send({ from: this.walletAddress })
+    const contract = new web3.eth.Contract(approveFunctionAbi, address[0]);
+    const transaction = await contract.methods.approve(daoAddress, amount[0]).call({ from: tresuryAddress })
+    console.log(transaction)
   }
-  
+
+  async approveDeposit(address, amount) {
+    return this.contract.methods.approve(address, amount).send({ from: this.walletAddress })
+  }
   async deposit(address, amount) {
     return this.contract.methods.deposit(
       address, 

@@ -565,7 +565,7 @@ const ProposalDetail = () => {
       const tresuryWalletApproval = new SmartContract(USDCContract, USDC_CONTRACT_ADDRESS, undefined)
       const sendCustomToken = new SmartContract(GovernorContract, daoAddress, undefined)
 
-      const transferApprovalResponse = sendCustomToken.approveDeposit( proposalData[0].commands[0].customTokenAddresses, proposalData[0].commands[0].customTokenAmounts, daoAddress, tresuryAddress)
+      const transferApprovalResponse = sendCustomToken.approveDepositGnosis( proposalData[0].commands[0].customTokenAddresses, proposalData[0].commands[0].customTokenAmounts, daoAddress, tresuryAddress)
 
       // const transferApprovalResponse = tresuryWalletApproval.approveDeposit(daoAddress, parseFloat(proposalData[0].commands[0].customTokenAmounts[0]))
       await transferApprovalResponse.then((result) => {
