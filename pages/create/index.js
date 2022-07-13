@@ -151,7 +151,7 @@ const Create = (props) => {
   const [maxContribution, setMaxContribution] = useState('');
   const [mandatoryProposal, setMandatoryProposal] = useState(false);
   const [voteForQuorum, setVoteForQuorum] = useState(0);
-  const [depositClose, setDepositClose] = useState(new Date());
+  const [depositClose, setDepositClose] = useState(new Date(new Date().getTime() + (24 * 60 * 60 * 1000)) );
   const [membersLeaveDate, setMembersLeaveDate] = useState(null)
   const [minContribution, setMinContribution] = useState('');
   const [voteInFavour, setVoteInFavour] = useState(51);
@@ -402,6 +402,7 @@ const Create = (props) => {
                     contractSubHeading={data.contractSubHeading}
                     contractImage={data.image}
                     star={data.star}
+                    inactive={data.inactive}
                 />
               </Grid>
             )

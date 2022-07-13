@@ -189,7 +189,7 @@ const Proposal = () => {
   const tresuryAddress = useSelector(state => { return state.create.tresuryAddress})
   const [open, setOpen] = useState(false)
   const [name, setName] = useState([])
-  const [duration, setDuration] = useState(null)
+  const [duration, setDuration] = useState(new Date(new Date().getTime() + (24 * 60 * 60 * 1000)))
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [type, setType] = useState(proposalType[0].type)
@@ -727,7 +727,8 @@ const Proposal = () => {
               </Grid>
             </Grid>
             <Grid container spacing={3}>
-              {proposalData.length > 0 ?
+              { selectedListItem === "all" ?
+                proposalData.length > 0 ?
                 proposalData.map((proposal, key) => {
                   return (
                     <Grid item key={key} onClick={e => { handleProposalClick(proposalData[key]) }} md={12}>
@@ -774,6 +775,53 @@ const Proposal = () => {
                     <Typography sx={{ fontSize: "1.625em", fontFamily: "Whyte" }} p={3}>Create your club’s first proposal here.</Typography>
                   </Card>
                 </Grid>
+                  : proposalData.length > 0 ?
+                      proposalData.map((proposal, key) => {
+                        return (
+                            <Grid item key={key} onClick={e => { handleProposalClick(proposalData[key]) }} md={12}>
+                              <CardActionArea sx={{ borderRadius: "10px", }}>
+                                <Card className={classes.mainCard}>
+                                  <Grid container>
+                                    <Grid items ml={2} mr={2}>
+                                      <Typography className={classes.cardFont}>
+                                        Proposed by {fetched ? proposal.createdBy.substring(0, 6) + ".........." + proposal.createdBy.substring(proposal.createdBy.length - 4) : null}
+                                      </Typography>
+                                    </Grid>
+                                    <Grid items ml={1} mr={1} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
+                                      {fetched ? <Chip className={proposal.status === "active" ? classes.cardFontActive : proposal.status === "closed" ? classes.cardFontPending : classes.cardFontFailed} label={proposal.status.charAt(0).toUpperCase() + proposal.status.slice(1)} /> : null}
+                                    </Grid>
+                                  </Grid>
+                                  <Grid container>
+                                    <Grid items ml={2} mr={2}>
+                                      <Typography className={classes.cardFont1}>
+                                        [#{key + 1}] {proposal.name}
+                                      </Typography>
+                                    </Grid>
+                                  </Grid>
+                                  <Grid container>
+                                    <Grid items ml={2} mr={2}>
+                                      <Typography className={classes.cardFont}>
+                                        {proposal.description.substring(0, 200)}...
+                                      </Typography>
+                                    </Grid>
+                                  </Grid>
+                                  <Grid container>
+                                    <Grid items ml={2} mr={2} mt={2}>
+                                      <Typography className={classes.daysFont}>
+                                        {Math.round((new Date(proposal.votingDuration) - new Date()) / (1000 * 60 * 60 * 24))} days left
+                                      </Typography>
+                                    </Grid>
+                                  </Grid>
+                                </Card>
+                              </CardActionArea>
+                            </Grid>
+                        )
+                      }) :
+                      <Grid item justifyContent="center" alignItems="center" md={10}>
+                    <Card variant="noProposalCard">
+                      <Typography sx={{ fontSize: "1.625em", fontFamily: "Whyte" }} p={3}>No Proposals found</Typography>
+                    </Card>
+                  </Grid>
               }
             </Grid>
           </Grid>
