@@ -737,7 +737,7 @@ const Dashboard = (props) => {
                       </Typography>
                     </Grid>
                     <Grid item pt={6}>
-                      <Button variant="primary">Read Docs</Button>
+                      <Button variant="primary" onClick={() => { window.open(`https://stationx.substack.com/p/get-started-with-stationx-on-rinkeby`)}}>Read Docs</Button>
                     </Grid>
                   </Grid>
                 </Card>
