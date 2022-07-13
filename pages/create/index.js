@@ -532,7 +532,8 @@ const Create = (props) => {
                     inputFormat="dd/MM/yyyy"
                     value={depositClose}
                     onChange={e => handleChange(e)}
-                    renderInput={(params) => <TextField place{...params} sx={{ m: 1, width: 443, mt: 1, borderRadius: "10px", }} />}
+                    renderInput={(params) => <TextField onKeyDown={(e) => e.preventDefault()} place{...params} sx={{ m: 1, width: 443, mt: 1, borderRadius: "10px", }} />}
+                    minDate={depositClose}
                   />
                   </LocalizationProvider>
                 </Grid>

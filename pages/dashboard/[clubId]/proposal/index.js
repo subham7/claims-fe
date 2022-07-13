@@ -907,7 +907,8 @@ const Proposal = () => {
                     inputFormat="dd/MM/yyyy"
                     value={duration}
                     onChange={(e) => handleDurationChange(e)}
-                    renderInput={(params) => <TextField {...params} className={classes.datePicker} />}
+                    renderInput={(params) => <TextField onKeyDown={(e) => e.preventDefault()} {...params} className={classes.datePicker} />}
+                    minDate={duration}
                   />
                 </LocalizationProvider>
               </Grid>

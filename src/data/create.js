@@ -51,8 +51,8 @@ export const contractList = [
 ]
 
 export const tokenType = [
-    "Transferable ERC20 Token",
-    "Non Transferable ERC20 Token (Coming soon!)",
+    "Non Transferable ERC20 Token",
+    "Transferable ERC20 Token (Coming soon!)",
     "NFT (Coming soon!)",
     "Custom ERC20 Token (Coming soon!)",
 ]

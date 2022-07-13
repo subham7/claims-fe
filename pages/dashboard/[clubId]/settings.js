@@ -356,7 +356,7 @@ const Settings = (props) => {
                       <Grid item>
                         <Typography variant="p" className={classes.valuesDimStyle}>Maximum Deposit</Typography>
                       </Grid>
-                      <Grid item mt={2}>
+                      <Grid item mt={1}>
                         <Typography variant="p" className={classes.valuesStyle}>{governorDataFetched ? governorDetails[2] + " USDC" : null} </Typography>
                       </Grid>
                     </Grid>
@@ -366,7 +366,7 @@ const Settings = (props) => {
                       <Grid item>
                         <Typography variant="p" className={classes.valuesDimStyle}>Members</Typography>
                       </Grid>
-                      <Grid item mt={2}>
+                      <Grid item mt={{ lg: 5, xl: 1}}>
                         <Typography variant="p" className={classes.valuesStyle}>{membersFetched ? members : 0}</Typography>
                       </Grid>
                     </Grid>
