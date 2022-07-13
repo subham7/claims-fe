@@ -206,7 +206,6 @@ const ProposalDetail = () => {
   }
 
   const isCurrentUserAdmin = () => {
-    console.log(walletAddress)
     if (membersFetched && members.length > 0 && walletAddress) {
       let obj = members.find(member => member.userAddress === walletAddress)
       let pos = members.indexOf(obj)
@@ -855,7 +854,7 @@ const ProposalDetail = () => {
 
             </Grid>
           </Grid>
-          <Grid item md={3}>
+          <Grid item md={3.5}>
             <Stack spacing={3}>
               <Card>
                 <Grid container>
