@@ -3,51 +3,58 @@ export const contractList = [
         contractHeading: "Invest together",
         contractSubHeading: "For friends, colleagues, investment DAOs, syndicates, funds, VCs & communities of any size.",
         image: "/assets/images/investments_illustration.svg",
-        star: false
+        star: false,
+        inactive: false,
     },
     {
         contractHeading: "Manage Grants (Coming soon)",
         contractSubHeading: "Give grants to ideas that matter - for protocols, accelerators, teams, foundations & more",
         image: "/assets/images/grants_illustration.svg",
-        star: false
+        star: false,
+        inactive: true,
     },
     {
         contractHeading: "NFT DAO Treasury (Coming soon)",
         contractSubHeading: "Empower your NFT community in your roadmap - for creators, artists, NFT projects, crowdfunding",
         image: "/assets/images/treasury_illustration.svg",
-        star: false
+        star: false,
+        inactive: true,
     },
     {
         contractHeading: "NFT Collectors (Party DAO) (Coming soon)",
         contractSubHeading: "Start your own party DAO, collect NFTs, art & everything rare, as a club - for NFT enthusiasts, artists, collectors & more.",
         image: "/assets/images/collectors_illustration.svg",
-        star: false
+        star: false,
+        inactive: true,
     },
     {
         contractHeading: "Impact DAOs (Coming soon)",
         contractSubHeading: "Work together towards causes close to your heart - for charities, crowdfunding, NGOs, philanthropists & more.",
         image: "/assets/images/charity_illustration.svg",
-        star: false
+        star: false,
+        inactive: true,
     },
     {
         contractHeading: "Social DAOs (Coming soon)",
         contractSubHeading: "Empower people sharing common interests to do meet-ups, events & interact socially",
         image: "/assets/images/party_illustration.svg",
-        star: false
+        star: false,
+        inactive: true,
     },
     {
         contractHeading: "Create custom (Coming soon)",
         contractSubHeading: "Choose custom parameters to create a club with other goals",
         image: "/assets/images/custom_illustration.svg",
-        star: true
+        star: true,
+        inactive: true,
     },
 ]
 
 export const tokenType = [
     "Transferable ERC20 Token",
-    "Non Transferable ERC20 Token",
-    "NFT",
-    "Custom ERC20 Token",
+    "Non Transferable ERC20 Token (Coming soon!)",
+    "NFT (Coming soon!)",
+    "Custom ERC20 Token (Coming soon!)",
 ]
 
 const today = new Date()
