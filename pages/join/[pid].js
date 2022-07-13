@@ -16,7 +16,7 @@ import {
   Chip,
   Backdrop,
   CircularProgress,
-  TextField
+  TextField, DialogContent, Dialog
 } from "@mui/material"
 import Layout3 from "../../src/components/layouts/layout3"
 import ProgressBar from "../../src/components/progressbar"
@@ -171,6 +171,13 @@ const useStyles = makeStyles({
     color: "#FFB74D",
     opacity: "1",
   },
+  modalStyle: {
+    width: "792px",
+    backgroundColor: '#19274B',
+  },
+  dialogBox: {
+    fontSize: "28px"
+  },
 })
 
 const Join = (props) => {
@@ -205,6 +212,7 @@ const Join = (props) => {
   const [closingDays, setClosingDays] = useState(0)
   const [imageFetched, setImageFetched] = useState(false)
   const [imageUrl, setImageUrl] = useState('')
+  const [open, setOpen] = useState(false)
 
 
   const checkConnection = async () => {
@@ -330,7 +338,17 @@ const Join = (props) => {
     }
   }
   useEffect(() => {
-    checkNetwork()
+    const web3 = new Web3(Web3.givenProvider)
+    const networkIdRK = '4'
+    web3.eth.net.getId()
+        .then((networkId) => {
+          if (networkId != networkIdRK) {
+            setOpen(true)
+          }
+        })
+        .catch((err) => {
+          console.log(err)
+        });
   }, [])
 
   useEffect(() => {
@@ -431,6 +449,21 @@ const Join = (props) => {
     }
     setOpenSnackBar(false)
   };
+
+  const handleDialogClose = (e) => {
+    e.preventDefault()
+    setOpen(false)
+  }
+
+  const handleSwitchNetwork = async () => {
+    const switched = await checkNetwork()
+    if (switched) {
+      setOpen(false)
+    }
+    else {
+      setOpen(true)
+    }
+  }
 
   return (
     <Layout3>
@@ -645,6 +678,21 @@ const Join = (props) => {
             <CircularProgress color="inherit" />
           </Backdrop>
           : null}
+      <Dialog open={open} onClose={handleDialogClose} scroll="body" PaperProps={{ classes: { root: classes.modalStyle } }} fullWidth maxWidth="lg" >
+        <DialogContent sx={{ overflow: "hidden", backgroundColor: '#19274B', }} >
+          <Grid container justifyContent="center" alignItems="center" direction="column" mt={3}>
+            <Grid item pl={15}>
+              <img src="/assets/images/connected_world_wuay.svg" width="80%" />
+            </Grid>
+            <Grid item m={3}>
+              <Typography className={classes.dialogBox}>You are in the wrong network, please switch to the correct network by clicking the button provided below</Typography>
+            </Grid>
+            <Grid item m={3}>
+              <Button variant="primary" onClick={() => {handleSwitchNetwork()}}>Switch Network</Button>
+            </Grid>
+          </Grid>
+        </DialogContent>
+      </Dialog>
     </Layout3>
   )
 }

@@ -70,6 +70,7 @@ export async function checkNetwork() {
         method: 'wallet_switchEthereumChain',
         params: [{ chainId: '0x4' }],
       });
+      return true
     } catch (error) {
       if (error.code === 4902) {
         try {
@@ -87,9 +88,11 @@ export async function checkNetwork() {
         }
       }
       console.error(error);
+      return false
     }
   } else {
     alert('MetaMask is not installed. Please consider installing it: https://metamask.io/download.html');
+    return false
   } 
 }
 
