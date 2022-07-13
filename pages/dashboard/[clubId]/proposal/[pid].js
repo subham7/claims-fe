@@ -784,7 +784,7 @@ const ProposalDetail = () => {
                   </Card>
                 ) :
                   (<Card>
-                    {proposalData[0].type !== "action" ?
+                    {proposalData[0].type ?
                       <>
                         <Typography className={classes.cardFont1}>Cast your vote</Typography>
                         <Divider sx={{ marginTop: 2, marginBottom: 3 }} />
@@ -826,7 +826,7 @@ const ProposalDetail = () => {
                               </Typography>
                             </Grid>
                           </Grid>
-                        ) : 
+                        ) :
                         isCurrentUserAdmin() ? (
                           <Card className={executed ? classes.mainCardButtonSuccess : classes.mainCardButton} onClick={executeFunction}>
                             <Grid container justifyContent="center" alignItems="center">

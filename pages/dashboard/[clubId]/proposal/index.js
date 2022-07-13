@@ -225,6 +225,17 @@ const Proposal = () => {
   const [selectedListItem, setSelectedListItem] = useState('')
   const [enableSubmitButton, setEnableSubmitButton] = useState(false)
   const [count, setCount] = useState(0)
+  const defaultOptions = [
+    {
+      "text": "Yes"
+    },
+    {
+      "text": "No"
+    },
+    {
+      "text": "Abstain"
+    }
+  ]
 
 
   const fetchData = () => {
@@ -322,6 +333,7 @@ const Proposal = () => {
           "createdBy": walletAddress,
           "clubId": clubID,
           "votingDuration": new Date(duration).toISOString(),
+          "votingOptions": defaultOptions,
           "commands": [
             {
               "executionId": 0,
@@ -354,6 +366,7 @@ const Proposal = () => {
           "createdBy": walletAddress,
           "clubId": clubID,
           "votingDuration": new Date(duration).toISOString(),
+          "votingOptions": defaultOptions,
           "commands": [
             {
               "executionId": 1,
@@ -379,7 +392,7 @@ const Proposal = () => {
 
       }
 
-      if (name === commandTypeList[0].commandText) {
+      if (name === commandTypeList[2].commandText) {
         // for assigner executor role execution
         const payload = {
           "name": title,
@@ -387,6 +400,7 @@ const Proposal = () => {
           "createdBy": walletAddress,
           "clubId": clubID,
           "votingDuration": new Date(duration).toISOString(),
+          "votingOptions": defaultOptions,
           "commands": [
             {
               "executionId": 2,
@@ -412,7 +426,7 @@ const Proposal = () => {
 
       }
 
-      if (name === commandTypeList[1].commandText) {
+      if (name === commandTypeList[3].commandText) {
         // For execution of Governance settings
         const payload = {
           "name": title,
@@ -420,6 +434,7 @@ const Proposal = () => {
           "createdBy": walletAddress,
           "clubId": clubID,
           "votingDuration": new Date(duration).toISOString(),
+          "votingOptions": defaultOptions,
           "commands": [
             {
               "executionId": 3,
@@ -445,7 +460,7 @@ const Proposal = () => {
         })
       }
 
-      if (name === commandTypeList[2].commandText) {
+      if (name === commandTypeList[4].commandText) {
         const today = new Date()
         const calculateDay = new Date(day)
         const difference = calculateDay.getTime() - today.getTime()
@@ -457,6 +472,7 @@ const Proposal = () => {
           "createdBy": walletAddress,
           "clubId": clubID,
           "votingDuration": new Date(duration).toISOString(),
+          "votingOptions": defaultOptions,
           "commands": [
             {
               "executionId": 4,
@@ -484,7 +500,7 @@ const Proposal = () => {
         })
       }
 
-      if (name === commandTypeList[3].commandText) {
+      if (name === commandTypeList[5].commandText) {
         // For execution of close deposit
         const payload = {
           "name": title,
@@ -492,6 +508,7 @@ const Proposal = () => {
           "createdBy": walletAddress,
           "clubId": clubID,
           "votingDuration": new Date(duration).toISOString(),
+          "votingOptions": defaultOptions,
           "commands": [
             {
               "executionId": 5,
@@ -517,7 +534,7 @@ const Proposal = () => {
         })
       }
 
-      if (name === commandTypeList[4].commandText) {
+      if (name === commandTypeList[6].commandText) {
         // For execution of update raise amount
         const payload = {
           "name": title,
@@ -525,6 +542,7 @@ const Proposal = () => {
           "createdBy": walletAddress,
           "clubId": clubID,
           "votingDuration": new Date(duration).toISOString(),
+          "votingOptions": defaultOptions,
           "commands": [
             {
               "executionId": 6,
@@ -557,6 +575,7 @@ const Proposal = () => {
           "createdBy": walletAddress,
           "clubId": clubID,
           "votingDuration": new Date(duration).toISOString(),
+          "votingOptions": defaultOptions,
           "commands": [
             {
               "executionId": 7,
@@ -590,6 +609,7 @@ const Proposal = () => {
           "createdBy": walletAddress,
           "clubId": clubID,
           "votingDuration": new Date(duration).toISOString(),
+          "votingOptions": defaultOptions,
           "commands": [
             {
               "executionId": 8,
