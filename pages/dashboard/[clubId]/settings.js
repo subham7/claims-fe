@@ -321,12 +321,12 @@ const Settings = (props) => {
                   <Grid item ml={4} mt={5} mb={2} md={2.5}>
                     <Typography variant="settingText">Deposits deadline</Typography>
                     <Grid container>
-                      <Grid item>
+                      <Grid item mt={1}>
                         <Typography variant="p" className={classes.valuesStyle}>
                           {governorDataFetched ? new Date(parseInt(governorDetails[0]) * 1000).toJSON().slice(0, 10).split('-').reverse().join('/') : null}
                         </Typography>
                       </Grid>
-                      <Grid item ml={1}>
+                      <Grid item ml={1} mt={1}>
                         {governorDataFetched ?
                         closingDays > 0 ?
                         (<Card className={classes.openTag}>
