@@ -177,6 +177,22 @@ const Settings = (props) => {
   const [membersDetails, setMembersDetails] = useState([])
   const [loaderOpen, setLoaderOpen] = useState(false)
   const [closingDays, setClosingDays] = useState(0)
+  const [userBalance, setUserBalance] = useState('')
+  const [userBalanceFetched, setUserBalanceFetched] = useState(false)
+
+  const fetchUserBalanceAPI = async () => {
+    if (daoAddress) {
+      const fetchUserBalance = new SmartContract(GovernorContract, daoAddress, undefined)
+      await fetchUserBalance.checkUserBalance()
+        .then((result) => {
+          setUserBalance(web3.utils.fromWei(result, 'ether'))
+          setUserBalanceFetched(true)
+        },
+        (error) => {
+          setUserBalanceFetched(false)
+        })
+    }
+  }
 
   const tokenAPIDetailsRetrieval = async () => {
     let response = await fetchClubbyDaoAddress(daoAddress)
@@ -194,7 +210,6 @@ const Settings = (props) => {
       const tokenDetailContract = new SmartContract(USDCContract, tokenAPIDetails[0].tokenAddress, undefined)
       await tokenDetailContract.tokenDetails()
         .then((result) => {
-          // console.log(result)
           settokenDetails(result)
           setDataFetched(true)
         },
@@ -251,7 +266,6 @@ const Settings = (props) => {
       // maximim deposit amount from smart contract
       await governorDetailContract.threshold()
         .then((result) => {
-          // console.log(result)
           setMaxDeposit(result)
           setMaxDepositFetched(true)
         },
@@ -263,8 +277,6 @@ const Settings = (props) => {
   }
 
   const findCurrentMember = () => {
-    // console.log(walletAddress)
-    // console.log(membersDetails)
     if (membersFetched && membersDetails.length > 0 && walletAddress) {
       let obj = membersDetails.find(member => member.userAddress === walletAddress)
       let pos = membersDetails.indexOf(obj)
@@ -286,6 +298,14 @@ const Settings = (props) => {
     }
 
   }, [daoAddress, apiTokenDetailSet, dataFetched, governorDetails, membersFetched])
+
+  useEffect(() => {
+    setLoaderOpen(true)
+
+    if (dataFetched) {
+      fetchUserBalanceAPI()
+    }
+  }, [dataFetched])
 
   const handleClickOpen = (e) => {
     e.preventDefault()
@@ -389,7 +409,7 @@ const Settings = (props) => {
                         <Typography variant="settingText">Your ownership</Typography>
                       </Grid>
                       <Grid item mt={2}>
-                        <Typography variant="p" className={classes.valuesStyle}>{governorDataFetched && dataFetched ? isNaN((findCurrentMember() / (tokenDetails[2]/ Math.pow(10, 18))).toFixed(2) * 100) ? 0 : 0 : 0}% (${findCurrentMember()} )</Typography>
+                        <Typography variant="p" className={classes.valuesStyle}>{userBalanceFetched && dataFetched ? (parseFloat(userBalance) / parseFloat(web3.utils.fromWei(tokenDetails[2]))) : 0}% (${userBalance} )</Typography>
                       </Grid>
                     </Grid>
                   </Grid>
@@ -500,19 +520,19 @@ const Settings = (props) => {
 
                   <Grid container ml={3} mr={4}>
                     <Grid item >
-                      <Typography variant="settingText">Accept new member requests?</Typography>
+                      <Typography variant="settingText">Gate contributions?</Typography>
                     </Grid>
                     <Grid item mr={4} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
-                      <Typography variant="p" className={classes.valuesStyle}>Yes <a className={classes.activityLink} onClick={(e) => handleClickOpen(e)}>(change)</a></Typography>
+                      <Typography variant="p" className={classes.valuesStyle}>No <a className={classes.activityLink} onClick={(e) => handleClickOpen(e)}>(propose)</a></Typography>
                     </Grid>
                   </Grid>
                   <Divider />
                   <Grid container ml={3} mr={4}>
                     <Grid item >
-                      <Typography variant="settingText">Accept new member requests?</Typography>
+                      <Typography variant="settingText">Enable/Disable contributions</Typography>
                     </Grid>
                     <Grid item mr={4} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
-                      <Typography variant="p" className={classes.valuesStyle}>Yes <a className={classes.activityLink} onClick={(e) => handleClickOpen(e)}>(change)</a></Typography>
+                      <Typography variant="p" className={classes.valuesStyle}>Enabled <a className={classes.activityLink} onClick={(e) => handleClickOpen(e)}>(propose)</a></Typography>
                     </Grid>
                   </Grid>
                   <Divider />
