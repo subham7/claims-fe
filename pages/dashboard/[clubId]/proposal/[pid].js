@@ -2,7 +2,29 @@ import { React, useEffect, useState } from "react"
 import Web3 from "web3"
 import { makeStyles } from "@mui/styles"
 import Layout1 from "../../../../src/components/layouts/layout1"
-import { Box, Card, Grid, Typography, ListItemButton, ListItemText, Divider, Stack, TextField, Button, IconButton, Modal, Select, OutlinedInput, MenuItem, TextareaAutosize, Chip, CardActionArea, Snackbar, Alert } from "@mui/material"
+import {
+  Box,
+  Card,
+  Grid,
+  Typography,
+  ListItemButton,
+  ListItemText,
+  Divider,
+  Stack,
+  TextField,
+  Button,
+  IconButton,
+  Modal,
+  Select,
+  OutlinedInput,
+  MenuItem,
+  TextareaAutosize,
+  Chip,
+  CardActionArea,
+  Snackbar,
+  Alert,
+  CircularProgress, Backdrop
+} from "@mui/material"
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
 import { useRouter } from "next/router"
 import Router, { withRouter } from "next/router"
@@ -135,32 +157,34 @@ const ProposalDetail = () => {
   const [failed, setFailed] = useState(false)
   const [openSnackBar, setOpenSnackBar] = useState(false)
   const tresuryAddress = useSelector(state => { return state.create.tresuryAddress})
-
+  const [loaderOpen, setLoaderOpen] = useState(false)
 
   let voteId = null
   const dispatch = useDispatch()
 
   const fetchData = () => {
-    dispatch(addProposalId(pid))
-    const proposalData = getProposalDetail(pid)
-    proposalData.then((result) => {
-      if (result.status != 200) {
-        setFetched(false)
-      } else {
-        setProposalData(result.data)
-        setFetched(true)
-      }
-    })
+      dispatch(addProposalId(pid))
+      const proposalData = getProposalDetail(pid)
+      proposalData.then((result) => {
+        if (result.status != 200) {
+          setFetched(false)
+        } else {
+          setProposalData(result.data)
+          setFetched(true)
+        }
+      })
+  }
 
-    const membersData = getMembersDetails(clubID)
-    membersData.then((result) => {
-      if (result.status != 200) {
-        setMembersFetched(false)
-      } else {
-        setMembers(result.data)
-        setMembersFetched(true)
-      }
-    })
+  const fetcheMembersData = () => {
+      const membersData = getMembersDetails(clubID)
+      membersData.then((result) => {
+        if (result.status != 200) {
+          setMembersFetched(false)
+        } else {
+          setMembers(result.data)
+          setMembersFetched(true)
+        }
+      })
   }
 
   const calculateVotePercentage = (voteReceived) => {
@@ -168,7 +192,7 @@ const ProposalDetail = () => {
     proposalData[0].votingOptions.map((vote, key) => {
       totalVote += vote.count
     })
-    return (voteReceived / totalVote) * 100
+    return (voteReceived / totalVote).toFixed(2) * 100
   }
 
   const fetchVotingOptionChoice = (votingOptionAddress) => {
@@ -178,7 +202,23 @@ const ProposalDetail = () => {
   }
 
   useEffect(() => {
-    fetchData()
+    setLoaderOpen(true)
+    if (pid) {
+      fetchData()
+    }
+  }, [pid])
+
+  useEffect(() => {
+    setLoaderOpen(true)
+    if (clubId) {
+      fetcheMembersData()
+    }
+  }, [clubId])
+
+  useEffect(() => {
+    if (fetched && membersFetched) {
+      setLoaderOpen(false)
+    }
   }, [fetched, membersFetched])
 
   const returnHome = () => {
@@ -561,51 +601,23 @@ const ProposalDetail = () => {
 
     if (proposalData[0].commands[0].executionId == 7) {
       // send custom token execution
-      const tresuryWalletApproval = new SmartContract(USDCContract, USDC_CONTRACT_ADDRESS, undefined)
       const sendCustomToken = new SmartContract(GovernorContract, daoAddress, undefined)
-
       const transferApprovalResponse = sendCustomToken.approveDepositGnosis( proposalData[0].commands[0].customTokenAddresses, proposalData[0].commands[0].customTokenAmounts, daoAddress, tresuryAddress)
-
-      // const transferApprovalResponse = tresuryWalletApproval.approveDeposit(daoAddress, parseFloat(proposalData[0].commands[0].customTokenAmounts[0]))
       await transferApprovalResponse.then((result) => {
-        // const sendCustomTokenResponse = sendCustomToken.updateProposalAndExecution(
-        //   proposalData[0].ipfsHash,
-        //   "Executed",
-        //   123444,
-        //   proposalData[0].customToken,
-        //   undefined,
-        //   [0,0,0,0,0,0,0,1,0],
-        //   undefined,
-        //   undefined,
-        //   undefined,
-        //   undefined,
-        //   undefined,
-        //   undefined,
-        //   undefined,
-        //   undefined,
-        //   undefined,
-        //   proposalData[0].commands[0].customTokenAmounts,
-        //   proposalData[0].commands[0].customTokenAddresses,
-        //   undefined,
-        //   undefined,
-        //   undefined
-        // )
-        // sendCustomTokenResponse.then((result) => {
-        //   const updateStatus = patchProposalStatus(pid)
-        //   updateStatus.then((result) => {
-        //     if (result.status != 200) {
-        //       setExecuted(false)
-        //       setOpenSnackBar(true)
-        //       setMessage("Send custom token execution status update failed!")
-        //       setFailed(true)
-        //     } else {
-        //       setExecuted(true)
-        //       setOpenSnackBar(true)
-        //       setMessage("Send custom token execution successful!")
-        //       setFailed(false)
-        //     }
-        //   })
-        console.log(result)
+        const updateStatus = patchProposalStatus(pid)
+        updateStatus.then((result) => {
+          if (result.status != 200) {
+            setExecuted(false)
+            setOpenSnackBar(true)
+            setMessage("Send custom token execution status update failed!")
+            setFailed(true)
+          } else {
+            setExecuted(true)
+            setOpenSnackBar(true)
+            setMessage("Send custom token execution successful!")
+            setFailed(false)
+          }
+        })
         },
       (error) => {
         console.log(error)
@@ -667,17 +679,23 @@ const ProposalDetail = () => {
   }
 
   const checkUserVoted = (pid) => {
-    const web3 = new Web3(window.web3)
-    walletAddress = web3.utils.toChecksumAddress(walletAddress)
-    let obj = proposalData[0].vote.find(voteCasted => voteCasted.voterAddress === walletAddress)
-    return proposalData[0].vote.indexOf(obj) >= 0 ? true : false
+    if (walletAddress) {
+      const web3 = new Web3(window.web3)
+      let userAddress = walletAddress
+      userAddress = web3.utils.toChecksumAddress(userAddress)
+      let obj = proposalData[0].vote.find(voteCasted => voteCasted.voterAddress === userAddress)
+      return proposalData[0].vote.indexOf(obj) >= 0 ? true : false
+    }
   }
 
   const fetchUserVoteText = (pid) => {
-    const web3 = new Web3(window.web3)
-    walletAddress = web3.utils.toChecksumAddress(walletAddress)
-    let obj = proposalData[0].vote.find(voteCasted => voteCasted.voterAddress === walletAddress)
-    return proposalData[0].vote.indexOf(obj) >= 0 ? true : false
+    if (walletAddress) {
+      const web3 = new Web3(window.web3)
+      let userAddress = walletAddress
+      userAddress = web3.utils.toChecksumAddress(userAddress)
+      let obj = proposalData[0].vote.find(voteCasted => voteCasted.voterAddress === userAddress)
+      return proposalData[0].vote.indexOf(obj) >= 0 ? true : false
+    }
   }
 
   const handleShowMore = () => {
@@ -998,6 +1016,12 @@ const ProposalDetail = () => {
             </Alert>)
           }
         </Snackbar>
+        <Backdrop
+            sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+            open={loaderOpen}
+        >
+          <CircularProgress color="inherit" />
+        </Backdrop>
       </Layout1>
     </>
   )
