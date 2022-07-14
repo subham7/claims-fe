@@ -304,7 +304,7 @@ const Dashboard = (props) => {
   const [openSnackBar, setOpenSnackBar] = useState(false)
   const [ntfData, setNftData] = useState([])
   const [nftFetched, setNftFetched] = useState(false)
-  const [userBalance, setUserBalance] = useState(0)
+  const [userBalance, setUserBalance] = useState('')
   const [userBalanceFetched, setUserBalanceFetched] = useState(false)
 
   const fetchUserBalanceAPI = async () => {
@@ -312,13 +312,12 @@ const Dashboard = (props) => {
       const fetchUserBalance = new SmartContract(GovernorContract, daoAddress, undefined)
       await fetchUserBalance.checkUserBalance()
         .then((result) => {
-              console.log("dao", result)
-              setUserBalance(result)
-              setUserBalanceFetched(true)
-            },
-            (error) => {
-              setUserBalanceFetched(false)
-            })
+            setUserBalance(web3.utils.fromWei(result, 'ether'))
+            setUserBalanceFetched(true)
+          },
+          (error) => {
+            setUserBalanceFetched(false)
+          })
     }
   }
 
@@ -449,7 +448,6 @@ const Dashboard = (props) => {
         }
         else {
           sum += parseFloat(data.balance) / Math.pow(10, 18)
-          console.log(parseFloat(data.balance) / Math.pow(10, 18))
         }
       })
     }
@@ -591,7 +589,7 @@ const Dashboard = (props) => {
                       {/*{findCurrentMember()}*/}
                     </Typography>
                     <Typography className={classes.card1text5}>
-                      {userBalanceFetched && dataFetched ? isNaN((userBalance / (tokenDetails[2]/ Math.pow(10, 18))).toFixed(2) * 100) ? 0 : 0: 0}%
+                      {userBalanceFetched && dataFetched ? (parseFloat(userBalance) / parseFloat(web3.utils.fromWei(tokenDetails[2]))) : 0}%
                     </Typography>
                     <Grid container item xs sx={{ display: "flex", justifyContent: "flex-end"}}>
                       <Button variant="transparent" onClick={importTokenToMetaMask}>Import token</Button>
@@ -685,8 +683,8 @@ const Dashboard = (props) => {
                                       sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                   >
                                     <TableCell align="left" variant="tableBody"><></>{data.token.name}</TableCell>
-                                    <TableCell align="left" variant="tableBody">{data.balance}</TableCell>
-                                    <TableCell align="left" variant="tableBody">${data.balance}</TableCell>
+                                    <TableCell align="left" variant="tableBody">{web3.utils.fromWei(data.balance, 'ether')}</TableCell>
+                                    <TableCell align="left" variant="tableBody">${web3.utils.fromWei(data.balance, 'ether')}</TableCell>
                                     {/* <TableCell align="left" variant="tableBody" sx={row.daychange > 0 ? { color: "#0ABB92" } : { color: "#D55438" }}>{row.daychange > 0 ? "+" : ""}{row.daychange}</TableCell> */}
                                   </TableRow>
                               )) : null}
