@@ -132,35 +132,59 @@ export class SmartContract{
       ).send( { from: this.walletAddress })
     }
 
-  async approveDepositGnosis(
-      address,
-      amount,
-      daoAddress,
-      tresuryAddress){
-    // console.log(address, amount, tresuryAddress)
-    // const contract = new web3.eth.Contract(approveFunctionAbi, daoAddress);
-    // const txs = [
-    //   {
-    //     to: tresuryAddress,
-    //     value: amount[0],
-    //     data: contract.methods.approve(daoAddress, amount[0]).encodeABI(),
-    //   }
-    // ]
-    // console.log("execution called")
-    // try {
-    //   const transaction = await appsSdk.txs.send({ txs })
-    //   console.log(transaction)
-    // } catch (err) {
-    //   console.log(err.message)
-    // }
-    // return this.contract.methods.approve(address, amount).send({ from: this.walletAddress })
-    const contract = new web3.eth.Contract(approveFunctionAbi, address[0]);
-    const transaction = await contract.methods.approve(daoAddress, amount[0]).call({ from: tresuryAddress })
-    console.log(transaction)
+  async approveDepositGnosis(address, amount, daoAddress, tresuryAddress){
+    const safeOwner = this.walletAddress
+    const ethAdapter = new Web3Adapter({
+      web3: this.web3,
+      signerAddress: safeOwner,
+    })
+    const txServiceUrl = 'https://safe-transaction.rinkeby.gnosis.io'
+    const safeService = new SafeServiceClient({ txServiceUrl, ethAdapter })
+    const web = new Web3(window.web3)
+    const usdcContract = new web.eth.Contract(USDCContract.abi, USDC_CONTRACT_ADDRESS)
+    const safeSdk = await Safe.create({ ethAdapter:ethAdapter, safeAddress: tresuryAddress })
+    const number = new web3.utils.BN(amount[0]);
+    const sendAmount = web3.utils.toWei(number, 'ether')
+    const transaction = {
+      to: USDC_CONTRACT_ADDRESS,
+      data: usdcContract.methods.transfer(address[0], sendAmount).encodeABI(),
+      value: '0',
+    }
+    const safeTransaction = await safeSdk.createTransaction(transaction)
+    await safeSdk.signTransaction(safeTransaction)
+    const safeTxHash = await safeSdk.getTransactionHash(safeTransaction)
+    await safeService.proposeTransaction({
+      safeAddress: tresuryAddress,
+      safeTransaction: safeTransaction,
+      safeTxHash: safeTxHash,
+      senderAddress: this.walletAddress,
+    })
+    const tx = await safeService.getTransaction(safeTxHash)
+    const safeTransactionData = {
+      to: tx.to,
+      value: tx.value,
+      operation: tx.operation,
+      safeTxGas: tx.safeTxGas,
+      baseGas: tx.baseGas,
+      gasPrice: tx.gasPrice,
+      gasToken: tx.gasToken,
+      refundReceiver: tx.refundReceiver,
+      nonce: tx.nonce,
+      data: tx.data,
+    }
+    const safeTransaction2 = await safeSdk.createTransaction(safeTransactionData)
+    for (let i = 0; i < tx.confirmations.length; i++){
+      const signature = new EthSignSignature(tx.confirmations[i].owner, tx.confirmations[i].signature)
+      safeTransaction2.addSignature(signature)
+    }
+    const executeTxResponse = await safeSdk.executeTransaction(safeTransaction2)
+    const receipt = executeTxResponse.transactionResponse && (await executeTxResponse.transactionResponse.wait())
+    return executeTxResponse
   }
 
   async approveDeposit(address, amount) {
-    return this.contract.methods.approve(address, amount).send({ from: this.walletAddress })
+    const number = new web3.utils.BN(amount);
+    return this.contract.methods.approve(address, web3.utils.toWei(number, 'ether')).send({ from: this.walletAddress })
   }
   async deposit(address, amount) {
     return this.contract.methods.deposit(
