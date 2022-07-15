@@ -899,7 +899,7 @@ const Proposal = () => {
                 <ListItemText primary="Executed" className={classes.listFont} />
                 <ArrowForwardIosIcon fontSize="5px" />
               </ListItemButton>
-              <ListItemButton selected={selectedListItem === "executed"} onClick={() => fetchFilteredData("failed")}>
+              <ListItemButton selected={selectedListItem === "failed"} onClick={() => fetchFilteredData("failed")}>
                 <div className={classes.failedIllustration}></div>
                 <ListItemText primary="Failed" className={classes.listFont} />
                 <ArrowForwardIosIcon fontSize="5px" />
