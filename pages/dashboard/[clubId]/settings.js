@@ -132,6 +132,24 @@ const useStyles = makeStyles({
     opacity: "1",
     fontFamily: "Whyte",
   },
+  closeTag: {
+    width: "60px",
+    height: "20px",
+    borderRadius: "11px",
+    opacity: "1",
+    padding: "10px",
+    justifyContent: "center",
+    display: "flex",
+    alignItems: "center",
+    backgroundColor: "#FFB74D0D",
+  },
+  closeTagFont: {
+    padding: "1px",
+    fontSize: "12px",
+    textTransform: "uppercase",
+    color: "#FFB74D",
+    opacity: "1",
+  },
   iconColor: {
     color: "#C1D3FF",
   },
@@ -304,6 +322,8 @@ const Settings = (props) => {
 
     if (dataFetched) {
       fetchUserBalanceAPI()
+      setLoaderOpen(false)
+
     }
   }, [dataFetched])
 
