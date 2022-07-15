@@ -1144,14 +1144,14 @@
     "@gnosis.pm/safe-react-gateway-sdk" "^3.1.3"
     "ethers" "^5.6.8"
 
-"@gnosis.pm/safe-core-sdk-types@^1.1.0":
-  "integrity" "sha512-VvEqWCliA6KXwt9N4YTzN5JcqnhLxLjUTU7trpQqQ7wU9OQcF+Kdrer86wDOF5lYZVE24zudw1s4gW3dxUkm6A=="
-  "resolved" "https://registry.npmjs.org/@gnosis.pm/safe-core-sdk-types/-/safe-core-sdk-types-1.1.0.tgz"
-  "version" "1.1.0"
+"@gnosis.pm/safe-core-sdk-types@^1.1.0", "@gnosis.pm/safe-core-sdk-types@^1.2.1":
+  "integrity" "sha512-K2kTGk1FNKlCJtuDqbFrRPNxot/4dQPiI2pnquGJchpJXIMflKb7xPcjDY5CPTYlBG3lCoQ9ZRk7Ytlu66TcSQ=="
+  "resolved" "https://registry.npmjs.org/@gnosis.pm/safe-core-sdk-types/-/safe-core-sdk-types-1.2.1.tgz"
+  "version" "1.2.1"
   dependencies:
     "@ethersproject/bignumber" "^5.6.0"
     "@ethersproject/contracts" "^5.6.0"
-    "@gnosis.pm/safe-deployments" "^1.12.0"
+    "@gnosis.pm/safe-deployments" "1.15.0"
     "web3-core" "^1.7.1"
 
 "@gnosis.pm/safe-core-sdk-utils@^1.1.0":
@@ -1174,10 +1174,12 @@
     "semver" "^7.3.5"
     "web3-utils" "^1.7.1"
 
-"@gnosis.pm/safe-deployments@^1.12.0":
-  "integrity" "sha512-fNwQqTdBushxlkqp8WpgXVP9HTePa/VFWM9VYPzbSsdqYqSUnXYDDOMyHH3H6eNltwRV8RVp/cxqUZLrvQ3YPg=="
-  "resolved" "https://registry.npmjs.org/@gnosis.pm/safe-deployments/-/safe-deployments-1.12.0.tgz"
-  "version" "1.12.0"
+"@gnosis.pm/safe-deployments@^1.12.0", "@gnosis.pm/safe-deployments@1.15.0":
+  "integrity" "sha512-twfC5HNuj+TKS2gOowf6A1FGZfOLBHAV2JhYpmOCf2MKsfcG+Fe4TrSRgQg605MhWdwFiaGVpNkcwjvpxhGuew=="
+  "resolved" "https://registry.npmjs.org/@gnosis.pm/safe-deployments/-/safe-deployments-1.15.0.tgz"
+  "version" "1.15.0"
+  dependencies:
+    "semver" "^7.3.7"
 
 "@gnosis.pm/safe-react-gateway-sdk@^3.1.3":
   "integrity" "sha512-o/U2hN5RoK8sa6UT5hALc+4yveJ5qctMxCHe0VBJ5IE2KHqqwHrFteOVcrkunmgb5V5U8GfZVYhehuHDVN8WMA=="
@@ -1185,6 +1187,15 @@
   "version" "3.1.3"
   dependencies:
     "cross-fetch" "^3.1.5"
+
+"@gnosis.pm/safe-service-client@^1.2.0":
+  "integrity" "sha512-KAgnSgviYuMDYP/GETi5AxJTq/196qf+TXdXD5P136btPQo9XQta63IumpXY8+EQTZPJGmL8vSInXEUySy9SAA=="
+  "resolved" "https://registry.npmjs.org/@gnosis.pm/safe-service-client/-/safe-service-client-1.2.0.tgz"
+  "version" "1.2.0"
+  dependencies:
+    "@ethersproject/abstract-signer" "^5.6.2"
+    "@gnosis.pm/safe-core-sdk-types" "^1.2.1"
+    "node-fetch" "^2.6.6"
 
 "@gnosis.pm/safe-web3-lib@^1.1.0":
   "integrity" "sha512-B4wnVDtiK2EBuXwsI0hTYlACLVr8F9qvpFC16/Smdg8fWv/r6WpK7yB86DRyW9R1BEwkjmPvpvx9rqIKW5xRkA=="
@@ -4420,7 +4431,7 @@
   "resolved" "https://registry.npmjs.org/node-addon-api/-/node-addon-api-2.0.2.tgz"
   "version" "2.0.2"
 
-"node-fetch@2.6.7":
+"node-fetch@^2.6.6", "node-fetch@2.6.7":
   "integrity" "sha512-ZjMPFEfVx5j+y2yF35Kzx5sF7kDzxuDj6ziH4FFbOp87zKDZNx8yExJIb05OGF4Nlt9IHFIMBkRl41VdvcNdbQ=="
   "resolved" "https://registry.npmjs.org/node-fetch/-/node-fetch-2.6.7.tgz"
   "version" "2.6.7"
@@ -5109,6 +5120,13 @@
   "integrity" "sha512-PoeGJYh8HK4BTO/a9Tf6ZG3veo/A7ZVsYrSA6J8ny9nb3B1VrpkuN+z9OE5wfE5p6H4LchYZsegiQgbJD94ZFQ=="
   "resolved" "https://registry.npmjs.org/semver/-/semver-7.3.5.tgz"
   "version" "7.3.5"
+  dependencies:
+    "lru-cache" "^6.0.0"
+
+"semver@^7.3.7":
+  "integrity" "sha512-QlYTucUYOews+WeEujDoEGziz4K6c47V/Bd+LjSSYcA94p+DmINdf7ncaUinThfvZyu13lN9OY1XDxt8C0Tw0g=="
+  "resolved" "https://registry.npmjs.org/semver/-/semver-7.3.7.tgz"
+  "version" "7.3.7"
   dependencies:
     "lru-cache" "^6.0.0"
 
