@@ -188,6 +188,12 @@ const useStyles = makeStyles({
     backgroundColor: "#0ABB92",
     borderRadius: "50%",
   },
+  inactiveIllustration: {
+    height: "12px",
+    width: "12px",
+    backgroundColor: "#D55438",
+    borderRadius: "50%",
+  },
   copyButton: {
     width: "68px",
     height: "30px",
@@ -306,6 +312,7 @@ const Dashboard = (props) => {
   const [nftFetched, setNftFetched] = useState(false)
   const [userBalance, setUserBalance] = useState('')
   const [userBalanceFetched, setUserBalanceFetched] = useState(false)
+  const [closingDays, setClosingDays] = useState(0)
 
   const fetchUserBalanceAPI = async () => {
     if (daoAddress) {
@@ -328,6 +335,7 @@ const Dashboard = (props) => {
           .then((result) => {
                 // console.log(result)
                 setClubDetails(result)
+                setClosingDays(Math.round((new Date(parseInt(result[0]) * 1000) - new Date()) / (1000 * 60 * 60 * 24)))
                 setClubDetailsFetched(true)
               },
               (error) => {
@@ -750,16 +758,29 @@ const Dashboard = (props) => {
                       </Typography>
                     </Grid>
                     <Grid items mr={4} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
-                      <Grid container xs sx={{ display: "flex", justifyContent: "flex-end" }}>
-                        <Grid item mt={1} mr={1}>
-                          <div className={classes.activeIllustration}></div>
-                        </Grid>
-                        <Grid item>
-                          <Typography sx={{ color: "#0ABB92", fontSize: "1.25em", fontFamily: "Whyte"}}>
-                            Active
-                          </Typography>
-                        </Grid>
-                      </Grid>
+                      {/*TODO: add closing date*/}
+                      {clubDetailsFetched ? closingDays > 0 ?
+                        <Grid container xs sx={{display: "flex", justifyContent: "flex-end"}}>
+                          <Grid item mt={1} mr={1}>
+                            <div className={classes.activeIllustration}></div>
+                          </Grid>
+                          <Grid item>
+                            <Typography sx={{color: "#0ABB92", fontSize: "1.25em", fontFamily: "Whyte"}}>
+                              Active
+                            </Typography>
+                          </Grid>
+                        </Grid> :
+                        <Grid container xs sx={{display: "flex", justifyContent: "flex-end"}}>
+                          <Grid item mt={1} mr={1}>
+                            <div className={classes.inactiveIllustration}></div>
+                          </Grid>
+                          <Grid item>
+                            <Typography sx={{color: "#D55438", fontSize: "1.25em", fontFamily: "Whyte"}}>
+                              In-active
+                            </Typography>
+                          </Grid>
+                        </Grid> : null
+                      }
                     </Grid>
                   </Grid>
                   <Grid container>
@@ -769,7 +790,11 @@ const Dashboard = (props) => {
                         disabled
                         value={joinLink}
                         InputProps={{
-                          endAdornment: <Button variant="contained" className={classes.copyButton} onClick={handleCopy}>Copy</Button>
+                          endAdornment: <Button
+                            variant="contained"
+                            className={classes.copyButton}
+                            onClick={handleCopy}
+                            disabled={closingDays <= 0 ? true : false}>Copy</Button>
                         }}
                       />
                     </Grid>
