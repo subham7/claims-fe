@@ -312,7 +312,7 @@ const Dashboard = (props) => {
       const fetchUserBalance = new SmartContract(GovernorContract, daoAddress, undefined)
       await fetchUserBalance.checkUserBalance()
         .then((result) => {
-            setUserBalance(web3.utils.fromWei(result, 'ether'))
+            setUserBalance(web3.utils.fromWei(result))
             setUserBalanceFetched(true)
           },
           (error) => {
@@ -376,14 +376,14 @@ const Dashboard = (props) => {
       const tokenDetailContract = new SmartContract(USDCContract, tokenAPIDetails.tokenAddress, undefined)
       await tokenDetailContract.tokenDetails()
           .then((result) => {
-                // console.log(result)
-                settokenDetails(result)
-                setJoinLink(typeof window !== 'undefined' && window.location.origin ? `${window.location.origin}/join/${daoAddress}` : null)
-                setDataFetched(true)
-              },
-              (error) => {
-                console.log(error)
-              }
+              // console.log(result)
+              settokenDetails(result)
+              setJoinLink(typeof window !== 'undefined' && window.location.origin ? `${window.location.origin}/join/${daoAddress}` : null)
+              setDataFetched(true)
+            },
+            (error) => {
+              console.log(error)
+            }
           )
     }
   }
@@ -589,7 +589,7 @@ const Dashboard = (props) => {
                       {/*{findCurrentMember()}*/}
                     </Typography>
                     <Typography className={classes.card1text5}>
-                      {userBalanceFetched && dataFetched ? (parseFloat(userBalance) / parseFloat(web3.utils.fromWei(tokenDetails[2]))) : 0}%
+                      {userBalanceFetched && dataFetched ? isNaN(parseFloat(userBalance) / parseFloat(web3.utils.fromWei(tokenDetails[2])) * 100) ? 0 : (parseFloat(userBalance) / parseFloat(web3.utils.fromWei(tokenDetails[2])) * 100) : 0}%
                     </Typography>
                     <Grid container item xs sx={{ display: "flex", justifyContent: "flex-end"}}>
                       <Button variant="transparent" onClick={importTokenToMetaMask}>Import token</Button>
@@ -606,7 +606,7 @@ const Dashboard = (props) => {
                             Treasury ($)
                           </Typography>
                           <Typography className={classes.card2text2}>
-                            {dataFetched ? tokenDetails[2]/ Math.pow(10, 18) : null}
+                            {dataFetched ? web3.utils.fromWei(tokenDetails[2]) : null}
                           </Typography>
                           {/* <Typography className={classes.card2text3}>
                           37%
@@ -683,8 +683,8 @@ const Dashboard = (props) => {
                                       sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                   >
                                     <TableCell align="left" variant="tableBody"><></>{data.token.name}</TableCell>
-                                    <TableCell align="left" variant="tableBody">{web3.utils.fromWei(data.balance, 'ether')}</TableCell>
-                                    <TableCell align="left" variant="tableBody">${web3.utils.fromWei(data.balance, 'ether')}</TableCell>
+                                    <TableCell align="left" variant="tableBody">{web3.utils.fromWei(data.balance)}</TableCell>
+                                    <TableCell align="left" variant="tableBody">${web3.utils.fromWei(data.balance)}</TableCell>
                                     {/* <TableCell align="left" variant="tableBody" sx={row.daychange > 0 ? { color: "#0ABB92" } : { color: "#D55438" }}>{row.daychange > 0 ? "+" : ""}{row.daychange}</TableCell> */}
                                   </TableRow>
                               )) : null}
@@ -742,7 +742,7 @@ const Dashboard = (props) => {
               </Stack>
 
               <Stack mt={2}>
-                <Card className={classes.thirdCard}>
+                {checkIsAdmin() ? <Card className={classes.thirdCard}>
                   <Grid container m={2}>
                     <Grid items>
                       <Typography variant="regularText4">
@@ -762,31 +762,27 @@ const Dashboard = (props) => {
                       </Grid>
                     </Grid>
                   </Grid>
-                  {checkIsAdmin() ? (
-                      <>
-                        <Grid container>
-                          <Grid items mt={2} ml={1} mr={1} >
-                            <TextField
-                                className={classes.linkInput}
-                                disabled
-                                value={joinLink}
-                                InputProps={{
-                                  endAdornment: <Button variant="contained" className={classes.copyButton} onClick={handleCopy}>Copy</Button>
-                                }}
-                            />
-                          </Grid>
-                        </Grid>
-                        <Grid container>
-                          <Grid items mt={4} ml={1} mr={1} >
-                            <Typography variant="regularText5">
-                              Share this link for new members to join your club and add funds into this club.
-                            </Typography>
-                          </Grid>
-                        </Grid>
-                      </>
-                  ) : null}
+                  <Grid container>
+                    <Grid items mt={2} ml={1} mr={1} >
+                      <TextField
+                        className={classes.linkInput}
+                        disabled
+                        value={joinLink}
+                        InputProps={{
+                          endAdornment: <Button variant="contained" className={classes.copyButton} onClick={handleCopy}>Copy</Button>
+                        }}
+                      />
+                    </Grid>
+                  </Grid>
+                  <Grid container>
+                    <Grid items mt={4} ml={1} mr={1} >
+                      <Typography variant="regularText5">
+                        Share this link for new members to join your club and add funds into this club.
+                      </Typography>
+                    </Grid>
+                  </Grid>
+                </Card> : null }
 
-                </Card>
               </Stack>
               <Stack mt={2}>
                 <Card className={classes.fourthCard}>
@@ -798,6 +794,7 @@ const Dashboard = (props) => {
                     </Grid>
                   </Grid>
                   {activeProposalData.length > 0 ?
+                    <>
                       <Grid container m={1}>
                         <Stack >
                           {activeProposalDataFetched ? activeProposalData.map((data, key) => {
@@ -826,18 +823,15 @@ const Dashboard = (props) => {
                                   </>
                               )
                             }
-                            if (key == 4) {
-                              return (
-                                  <ListItemButton onClick={() => handleMoreClick()} >
-                                    <Typography className={classes.card2text1}>More</Typography>
-                                  </ListItemButton>
-                              )
-
-                            }
-
                           }) : null}
                         </Stack>
-                      </Grid> :
+                      </Grid>
+                    <Grid container>
+                      <Grid item md={12}>
+                        <Button sx={{ width: "100%"}} variant="transparentWhite"  onClick={() => handleMoreClick()}>More</Button>
+                      </Grid>
+                    </Grid> </>
+                    :
                       <Grid container pt={10} justifyContent="center" alignItems="center">
                         <Grid item>
                           <Typography className={classes.card2text1}>No proposals raised yet</Typography>

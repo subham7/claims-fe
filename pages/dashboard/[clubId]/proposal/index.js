@@ -93,14 +93,21 @@ const useStyles = makeStyles({
     borderRadius: "50%",
     marginRight: "15px"
   },
-  pendingIllustration: {
+  passedIllustration: {
     height: "12px",
     width: "12px",
     backgroundColor: "#FFB74D",
     borderRadius: "50%",
     marginRight: "15px"
   },
-  closedIllustration: {
+  executedIllustration: {
+    height: "12px",
+    width: "12px",
+    backgroundColor: "#F75F71",
+    borderRadius: "50%",
+    marginRight: "15px"
+  },
+  failedIllustration: {
     height: "12px",
     width: "12px",
     backgroundColor: "#D55438",
@@ -127,7 +134,12 @@ const useStyles = makeStyles({
     backgroundColor: "#0ABB92",
     padding: "5px 5px 5px 5px"
   },
-  cardFontPending: {
+  cardFontExecuted: {
+    fontSize: "16px",
+    backgroundColor: "#F75F71",
+    padding: "5px 5px 5px 5px"
+  },
+  cardFontPassed: {
     fontSize: "16px",
     backgroundColor: "#FFB74D",
     padding: "5px 5px 5px 5px"
@@ -761,7 +773,13 @@ const Proposal = () => {
                               </Typography>
                             </Grid>
                             <Grid items ml={1} mr={1} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
-                              {fetched ? <Chip className={proposal.status === "active" ? classes.cardFontActive : proposal.status === "closed" ? classes.cardFontPending : classes.cardFontFailed} label={proposal.status.charAt(0).toUpperCase() + proposal.status.slice(1)} /> : null}
+                              {fetched ?
+                                <Chip className={
+                                  proposal.status === "active" ? classes.cardFontActive :
+                                  proposal.status === "passed" ? classes.cardFontPassed :
+                                    proposal.status === "executed" ? classes.cardFontExecuted :
+                                      proposal.status === "failed" ? classes.cardFontFailed :
+                                    classes.cardFontFailed} label={proposal.status.charAt(0).toUpperCase() + proposal.status.slice(1)} /> : null}
                             </Grid>
                           </Grid>
                           <Grid container>
@@ -808,7 +826,12 @@ const Proposal = () => {
                                       </Typography>
                                     </Grid>
                                     <Grid items ml={1} mr={1} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
-                                      {fetched ? <Chip className={proposal.status === "active" ? classes.cardFontActive : proposal.status === "closed" ? classes.cardFontPending : classes.cardFontFailed} label={proposal.status.charAt(0).toUpperCase() + proposal.status.slice(1)} /> : null}
+                                      {fetched ? <Chip className={
+                                        proposal.status === "active" ? classes.cardFontActive :
+                                          proposal.status === "passed" ? classes.cardFontPassed :
+                                            proposal.status === "executed" ? classes.cardFontExecuted :
+                                              proposal.status === "failed" ? classes.cardFontFailed :
+                                            classes.cardFontFailed} label={proposal.status.charAt(0).toUpperCase() + proposal.status.slice(1)} /> : null}
                                     </Grid>
                                   </Grid>
                                   <Grid container>
@@ -866,14 +889,19 @@ const Proposal = () => {
                 <ArrowForwardIosIcon fontSize="5px" />
               </ListItemButton>
 
-              <ListItemButton selected={selectedListItem === "closed"} onClick={() => fetchFilteredData("closed")}>
-                <div className={classes.pendingIllustration}></div>
-                <ListItemText primary="Closed" className={classes.listFont} />
+              <ListItemButton selected={selectedListItem === "closed"} onClick={() => fetchFilteredData("passed")}>
+                <div className={classes.passedIllustration}></div>
+                <ListItemText primary="Passed" className={classes.listFont} />
                 <ArrowForwardIosIcon fontSize="5px" />
               </ListItemButton>
               <ListItemButton selected={selectedListItem === "executed"} onClick={() => fetchFilteredData("executed")}>
-                <div className={classes.closedIllustration}></div>
+                <div className={classes.executedIllustration}></div>
                 <ListItemText primary="Executed" className={classes.listFont} />
+                <ArrowForwardIosIcon fontSize="5px" />
+              </ListItemButton>
+              <ListItemButton selected={selectedListItem === "executed"} onClick={() => fetchFilteredData("failed")}>
+                <div className={classes.failedIllustration}></div>
+                <ListItemText primary="Failed" className={classes.listFont} />
                 <ArrowForwardIosIcon fontSize="5px" />
               </ListItemButton>
             </Card>

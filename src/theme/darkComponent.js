@@ -70,7 +70,20 @@ export const darkComponents = {
           borderRadius: "30px",
           opacity: "100%"
         }
-      }
+      },
+      {
+        props: { variant: "transparentWhite" },
+        style: {
+          border: "1px solid #C1D3FF40",
+          background: "#19274B",
+          fontSize: "1.3rem",
+          borderRadius: "30px",
+          "&:hover": {
+            background: "#F5F5F5",
+            color: "#3B7AFD",
+          },
+        }
+      },
     ]
   },
   MuiCard: {

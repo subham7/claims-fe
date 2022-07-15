@@ -185,7 +185,7 @@ const Settings = (props) => {
       const fetchUserBalance = new SmartContract(GovernorContract, daoAddress, undefined)
       await fetchUserBalance.checkUserBalance()
         .then((result) => {
-          setUserBalance(web3.utils.fromWei(result, 'ether'))
+          setUserBalance(web3.utils.fromWei(result))
           setUserBalanceFetched(true)
         },
         (error) => {
@@ -409,7 +409,7 @@ const Settings = (props) => {
                         <Typography variant="settingText">Your ownership</Typography>
                       </Grid>
                       <Grid item mt={2}>
-                        <Typography variant="p" className={classes.valuesStyle}>{userBalanceFetched && dataFetched ? (parseFloat(userBalance) / parseFloat(web3.utils.fromWei(tokenDetails[2]))) : 0}% (${userBalance} )</Typography>
+                        <Typography variant="p" className={classes.valuesStyle}>{userBalanceFetched && dataFetched ? isNaN(parseFloat(userBalance) / web3.utils.fromWei(tokenDetails[2]) * 100) ? 0 : (parseFloat(userBalance) / parseFloat(web3.utils.fromWei(tokenDetails[2])) * 100)  : 0}% (${userBalance} )</Typography>
                       </Grid>
                     </Grid>
                   </Grid>

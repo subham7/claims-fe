@@ -2,7 +2,13 @@
   "contractName": "FactoryContract",
   "abi": [
     {
-      "inputs": [],
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_USDC",
+          "type": "address"
+        }
+      ],
       "stateMutability": "nonpayable",
       "type": "constructor"
     },
@@ -43,6 +49,19 @@
         }
       ],
       "name": "ChangeTokenAddress",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "USDC",
+          "type": "address"
+        }
+      ],
+      "name": "ChangedUSDCAddress",
       "type": "event"
     },
     {
@@ -99,6 +118,19 @@
         }
       ],
       "name": "changeTokenImplementation",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_USDCAddress",
+          "type": "address"
+        }
+      ],
+      "name": "changeUSDCAddress",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -165,7 +197,19 @@
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getUSDCAddress",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
     }
   ]
-  
 }

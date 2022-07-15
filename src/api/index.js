@@ -8,6 +8,9 @@ import {onboard} from "../utils/wallet"
 import axios from "axios";
 import SafeAppsSDK from '@gnosis.pm/safe-apps-sdk'
 import approveFunctionAbi from "../abis/approveFunctionAbi.json"
+import Web3Adapter from "@gnosis.pm/safe-web3-lib";
+import Safe, {EthSignSignature} from "@gnosis.pm/safe-core-sdk";
+import SafeServiceClient from "@gnosis.pm/safe-service-client";
 
 const opts = {
   allowedDomains: [/gnosis-safe.io/],
@@ -188,8 +191,7 @@ export class SmartContract{
   }
   async deposit(address, amount) {
     return this.contract.methods.deposit(
-      address, 
-      amount
+      address, amount
       ).send({ from: this.walletAddress })
   }
   
@@ -377,5 +379,5 @@ export async function getMembersDetails(clubId) {
 
 // update proposal status API
 export async function patchProposalStatus(proposalId) {
-  return await axios.patch(MAIN_API_URL + "proposal/status", { "proposalId" : proposalId})
+  return await axios.patch(MAIN_API_URL + "proposal/result", { "proposalId" : proposalId})
 }
