@@ -670,14 +670,6 @@ const Join = (props) => {
             </Alert>)
           }
         </Snackbar>
-        {depositInitiated ?
-          <Backdrop
-            sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-            open={open}
-          >
-            <CircularProgress color="inherit" />
-          </Backdrop>
-          : null}
       <Dialog open={open} onClose={handleDialogClose} scroll="body" PaperProps={{ classes: { root: classes.modalStyle } }} fullWidth maxWidth="lg" >
         <DialogContent sx={{ overflow: "hidden", backgroundColor: '#19274B', }} >
           <Grid container justifyContent="center" alignItems="center" direction="column" mt={3}>
@@ -693,6 +685,12 @@ const Join = (props) => {
           </Grid>
         </DialogContent>
       </Dialog>
+      <Backdrop
+        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={depositInitiated}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </Layout3>
   )
 }
