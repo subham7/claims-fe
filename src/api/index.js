@@ -136,6 +136,7 @@ export class SmartContract{
     }
 
   async approveDepositGnosis(address, amount, daoAddress, tresuryAddress){
+    console.log(tresuryAddress)
     const safeOwner = this.walletAddress
     const ethAdapter = new Web3Adapter({
       web3: this.web3,
@@ -143,19 +144,23 @@ export class SmartContract{
     })
     const txServiceUrl = 'https://safe-transaction.rinkeby.gnosis.io'
     const safeService = new SafeServiceClient({ txServiceUrl, ethAdapter })
-    const web = new Web3(window.web3)
-    const usdcContract = new web.eth.Contract(USDCContract.abi, USDC_CONTRACT_ADDRESS)
+    const web3 = new Web3(window.web3)
+
+    const usdcContract = new web3.eth.Contract(USDCContract.abi, USDC_CONTRACT_ADDRESS)
+    console.log("USDC contract address", USDC_CONTRACT_ADDRESS)
+    console.log(usdcContract)
+
     const safeSdk = await Safe.create({ ethAdapter:ethAdapter, safeAddress: tresuryAddress })
-    const number = new web3.utils.BN(amount[0]);
-    const sendAmount = web3.utils.toWei(number, 'ether')
     const transaction = {
-      to: USDC_CONTRACT_ADDRESS,
-      data: usdcContract.methods.transfer(address[0], sendAmount).encodeABI(),
+      to: address[0],
+      data: usdcContract.methods.transfer(address[0], amount[0]).encodeABI(),
       value: '0',
     }
     const safeTransaction = await safeSdk.createTransaction(transaction)
+    console.log(safeTransaction)
     await safeSdk.signTransaction(safeTransaction)
     const safeTxHash = await safeSdk.getTransactionHash(safeTransaction)
+    console.log(safeTxHash)
     await safeService.proposeTransaction({
       safeAddress: tresuryAddress,
       safeTransaction: safeTransaction,
@@ -163,6 +168,7 @@ export class SmartContract{
       senderAddress: this.walletAddress,
     })
     const tx = await safeService.getTransaction(safeTxHash)
+    console.log(tx)
     const safeTransactionData = {
       to: tx.to,
       value: tx.value,
@@ -176,13 +182,17 @@ export class SmartContract{
       data: tx.data,
     }
     const safeTransaction2 = await safeSdk.createTransaction(safeTransactionData)
+
     for (let i = 0; i < tx.confirmations.length; i++){
       const signature = new EthSignSignature(tx.confirmations[i].owner, tx.confirmations[i].signature)
       safeTransaction2.addSignature(signature)
     }
+    console.log(safeTransaction2)
     const executeTxResponse = await safeSdk.executeTransaction(safeTransaction2)
+    console.log(executeTxResponse)
     const receipt = executeTxResponse.transactionResponse && (await executeTxResponse.transactionResponse.wait())
-    return executeTxResponse
+    console.log(receipt)
+
   }
 
   async approveDeposit(address, amount) {
