@@ -26,7 +26,9 @@ async function gnosisSafePromise(owners, threshold, dispatch) {
       owners,
       threshold,
     }
+    console.log(safeAccountConfig)
     const safeSdk = await safeFactory.deploySafe({ safeAccountConfig })
+    console.log("Safe sdk", safeSdk)
     const newSafeAddress = safeSdk.getAddress()
     dispatch(safeConnected(newSafeAddress, safeSdk))
     return newSafeAddress
@@ -87,6 +89,7 @@ export async function initiateConnection(
             tokenAddress: tokenAddress,
             daoAddress: daoAddress,
             treasuryAddress: treasuryAddress,
+            networkId: 4
           }
           const club = createClub(data)
           club.then((result) => {

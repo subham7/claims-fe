@@ -156,16 +156,18 @@ export class SmartContract{
       data: usdcContract.methods.transfer(address[0], amount[0]).encodeABI(),
       value: '0',
     }
+    console.log(transaction)
     const safeTransaction = await safeSdk.createTransaction(transaction)
     console.log(safeTransaction)
     await safeSdk.signTransaction(safeTransaction)
     const safeTxHash = await safeSdk.getTransactionHash(safeTransaction)
     console.log(safeTxHash)
     await safeService.proposeTransaction({
-      safeAddress: tresuryAddress,
-      safeTransaction: safeTransaction,
+      safeAddress: "0x681716522F5c6D6C1D1A3684F91757504098e725",
+      safeTransaction: safeTransaction.data,
       safeTxHash: safeTxHash,
       senderAddress: this.walletAddress,
+      senderSignature: senderSignature.data
     })
     const tx = await safeService.getTransaction(safeTxHash)
     console.log(tx)
