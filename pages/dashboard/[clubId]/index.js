@@ -28,7 +28,7 @@ import BasicTable from "../../../src/components/table"
 import CollectionCard from "../../../src/components/cardcontent"
 import Router, { useRouter } from "next/router"
 import ClubFetch from "../../../src/utils/clubFetch"
-import { SmartContract, fetchClubbyDaoAddress, getMembersDetails, getBalance, getProposal, getTokens, USDC_CONTRACT_ADDRESS, getNfts } from "../../../src/api"
+import { SmartContract, fetchClubbyDaoAddress, getMembersDetails, getBalance, getProposal, getAssets, USDC_CONTRACT_ADDRESS, getNfts } from "../../../src/api"
 import GovernorContract from "../../../src/abis/governorContract.json"
 import USDCContract from "../../../src/abis/usdcTokenContract.json"
 import { useSelector } from "react-redux"
@@ -410,12 +410,12 @@ const Dashboard = (props) => {
   }
 
   const fetchClubAssetToken = () => {
-    const tokens = getTokens(tresuryAddress)
+    const tokens = getAssets(clubId)
     tokens.then((result) => {
       if (result.status != 200) {
         setClubAssetTokenFetched(false)
       } else {
-        // console.log(result.data)
+        console.log(result.data)
         setClubAssetTokenData(result.data)
         setClubAssetTokenFetched(true)
       }
@@ -614,7 +614,7 @@ const Dashboard = (props) => {
                             Treasury ($)
                           </Typography>
                           <Typography className={classes.card2text2}>
-                            {dataFetched ? web3.utils.fromWei(tokenDetails[2]) : null}
+                            {dataFetched ? web3.utils.fromWei(tokenDetails[2], "Mwei") : null}
                           </Typography>
                           {/* <Typography className={classes.card2text3}>
                           37%
@@ -634,7 +634,7 @@ const Dashboard = (props) => {
                             Tresury Wallet
                           </Typography>
                           <Typography variant="regularText4">
-                            ${dataFetched ? tokenDetails[2]/ Math.pow(10, 18) : null}
+                            ${dataFetched ? web3.utils.fromWei(tokenDetails[2], "Mwei") : null}
                           </Typography>
                           {/* <Typography mt={3} className={classes.card2text8}>
                           Hot Wallet
@@ -673,7 +673,7 @@ const Dashboard = (props) => {
                       </Grid>
                     </Grid>
                     <Typography mt={5} mb={5} variant="subHeading">Tokens</Typography>
-                    {clubAssetTokenData.slice(1).length > 0 ?
+                    {clubAssetTokenFetched ? clubAssetTokenData.tokens.length > 0 ?
                         <TableContainer component={Paper}>
                           <Table sx={{ minWidth: 809 }} aria-label="simple table">
                             <TableHead>
@@ -685,14 +685,14 @@ const Dashboard = (props) => {
                               </TableRow>
                             </TableHead>
                             <TableBody>
-                              {clubAssetTokenData.length > 0 ? clubAssetTokenData.slice(1).map((data, key) => (
+                              {clubAssetTokenData.tokens.length > 0 ? clubAssetTokenData.tokens.map((data, key) => (
                                   <TableRow
                                       key={key}
                                       sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                   >
                                     <TableCell align="left" variant="tableBody"><></>{data.token.name}</TableCell>
-                                    <TableCell align="left" variant="tableBody">{web3.utils.fromWei(data.balance)}</TableCell>
-                                    <TableCell align="left" variant="tableBody">${web3.utils.fromWei(data.balance)}</TableCell>
+                                    <TableCell align="left" variant="tableBody">{data.balance}</TableCell>
+                                    <TableCell align="left" variant="tableBody">${data.value}</TableCell>
                                     {/* <TableCell align="left" variant="tableBody" sx={row.daychange > 0 ? { color: "#0ABB92" } : { color: "#D55438" }}>{row.daychange > 0 ? "+" : ""}{row.daychange}</TableCell> */}
                                   </TableRow>
                               )) : null}
@@ -705,7 +705,7 @@ const Dashboard = (props) => {
                               Track all tokens in your club’s treasury wallet real-time
                             </Typography>
                           </Card>
-                        </Grid>
+                        </Grid> : null
                     }
                     <Typography mt={16} mb={5} variant="subHeading">Collectibles</Typography>
                     <Grid container>

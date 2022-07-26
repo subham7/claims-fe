@@ -57,6 +57,15 @@ export async function initiateConnection(
   let daoAddress = null
   let tokenAddress = null
   let walletAddress = safeOwner[0]
+  let networkId = null
+
+  await web3.eth.net.getId()
+    .then((id) => {
+      networkId = id
+    })
+    .catch((err) => {
+      console.log(err)
+    });
 
   const smartContract = new SmartContract(
     FactoryContract,
@@ -89,7 +98,7 @@ export async function initiateConnection(
             tokenAddress: tokenAddress,
             daoAddress: daoAddress,
             treasuryAddress: treasuryAddress,
-            networkId: 4
+            networkId: networkId
           }
           const club = createClub(data)
           club.then((result) => {

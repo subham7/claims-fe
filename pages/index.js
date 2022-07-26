@@ -77,7 +77,7 @@ export default function App() {
   const [open, setOpen] = useState(false)
   const router = useRouter()
 
-  useEffect(async () => {
+  useEffect(() => {
     const web3 = new Web3(Web3.givenProvider)
     const networkIdRK = '4'
     web3.eth.net.getId()

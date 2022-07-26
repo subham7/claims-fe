@@ -312,7 +312,7 @@ const Join = (props) => {
       const usdc_contract = new SmartContract(USDCContract, USDC_CONTRACT_ADDRESS, undefined)
       await usdc_contract.balanceOf()
         .then((result) => {
-          setWalletBalance(result / Math.pow(10, 18))
+          setWalletBalance(web3.utils.fromWei(result, 'Mwei'))
           setFetched(true)
         },
           (error) => {

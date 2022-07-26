@@ -26,7 +26,6 @@ export default function Navbar(props) {
 
   useEffect(() => {
     if (wallet !== null) {
-      console.log(wallet[0][0].address)
       setPreviouslyConnectedWallet(wallet[0][0].address)
       setUserDetails(wallet[0][0].address)
     }

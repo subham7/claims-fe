@@ -419,7 +419,7 @@ const Settings = (props) => {
                         <Typography variant="settingText">Tresury wallet</Typography>
                       </Grid>
                       <Grid item mt={2}>
-                        <Typography variant="p" className={classes.valuesStyle}>${dataFetched ? tokenDetails[2] / Math.pow(10, 18) : null}</Typography>
+                        <Typography variant="p" className={classes.valuesStyle}>${dataFetched ?  web3.utils.fromWei(tokenDetails[2], "Mwei") : null}</Typography>
                       </Grid>
                     </Grid>
                   </Grid>
@@ -441,7 +441,7 @@ const Settings = (props) => {
                   <Grid item ml={4} mt={1} mb={2}>
                     <Stack spacing={1}>
                       <Typography variant="settingText">Club Tokens Minted so far</Typography>
-                      <Typography variant="p" className={classes.valuesStyle}>{dataFetched ? (tokenDetails[2] / Math.pow(10, 18) + " $" + tokenDetails[1]) : null}</Typography>
+                      <Typography variant="p" className={classes.valuesStyle}>{dataFetched ? ( web3.utils.fromWei(tokenDetails[2], "Mwei") + " $" + tokenDetails[1]) : null}</Typography>
                     </Stack>
                   </Grid>
                   <Grid item ml={4} mt={1} mb={2} mr={4} xs sx={{ display: "flex", justifyContent: "flex-end" }}>

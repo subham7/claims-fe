@@ -393,3 +393,8 @@ export async function getMembersDetails(clubId) {
 export async function patchProposalStatus(proposalId) {
   return await axios.patch(MAIN_API_URL + "proposal/result", { "proposalId" : proposalId})
 }
+
+// get assets API
+export async function getAssets(clubId) {
+  return await axios.get(MAIN_API_URL + `assets/${clubId}`)
+}
