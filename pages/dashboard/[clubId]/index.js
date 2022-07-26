@@ -685,17 +685,23 @@ const Dashboard = (props) => {
                               </TableRow>
                             </TableHead>
                             <TableBody>
-                              {clubAssetTokenData.tokens.length > 0 ? clubAssetTokenData.tokens.map((data, key) => (
-                                  <TableRow
-                                      key={key}
-                                      sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                                  >
-                                    <TableCell align="left" variant="tableBody"><></>{data.token.name}</TableCell>
-                                    <TableCell align="left" variant="tableBody">{data.balance}</TableCell>
-                                    <TableCell align="left" variant="tableBody">${data.value}</TableCell>
-                                    {/* <TableCell align="left" variant="tableBody" sx={row.daychange > 0 ? { color: "#0ABB92" } : { color: "#D55438" }}>{row.daychange > 0 ? "+" : ""}{row.daychange}</TableCell> */}
-                                  </TableRow>
-                              )) : null}
+                              {clubAssetTokenData.tokens.length > 0 ? clubAssetTokenData.tokens.map((data, key) => {
+                                  if (data.value !== 0) {
+                                    return (
+                                      <TableRow
+                                        key={key}
+                                        sx={{'&:last-child td, &:last-child th': {border: 0}}}
+                                      >
+                                        <TableCell align="left" variant="tableBody"><></>
+                                          {data.token.name}</TableCell>
+                                        <TableCell align="left" variant="tableBody">{data.value}</TableCell>
+                                        <TableCell align="left" variant="tableBody">${data.fiatBalance}</TableCell>
+                                        {/* <TableCell align="left" variant="tableBody" sx={row.daychange > 0 ? { color: "#0ABB92" } : { color: "#D55438" }}>{row.daychange > 0 ? "+" : ""}{row.daychange}</TableCell> */}
+                                      </TableRow>
+                                      )
+                                  }
+                              }
+                              ) : null}
                             </TableBody>
                           </Table>
                         </TableContainer> :
