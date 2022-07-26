@@ -559,7 +559,7 @@ const Join = (props) => {
                       <Typography variant="p" className={classes.valuesDimStyle}>{walletConnected ? "Club Tokens Minted so far" : <Skeleton variant="rectangular" width={100} height={25} />}</Typography>
                     </Grid>
                     <Grid item>
-                      <Typography variant="p" className={classes.valuesStyle}>{walletConnected ? (tokenDetails[2] / Math.pow(10, 18) + " $" + tokenDetails[1]) : <Skeleton variant="rectangular" width={100} height={25} />}</Typography>
+                      <Typography variant="p" className={classes.valuesStyle}>{walletConnected ? (web3.utils.fromWei(tokenDetails[2], "Mwei") + " $" + tokenDetails[1]) : <Skeleton variant="rectangular" width={100} height={25} />}</Typography>
                     </Grid>
                   </Grid>
                 </Grid>
