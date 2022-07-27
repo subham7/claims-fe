@@ -319,7 +319,7 @@ const Dashboard = (props) => {
       const fetchUserBalance = new SmartContract(GovernorContract, daoAddress, undefined)
       await fetchUserBalance.checkUserBalance()
         .then((result) => {
-            setUserBalance(web3.utils.fromWei(result))
+            setUserBalance(web3.utils.fromWei(result, "Mwei"))
             setUserBalanceFetched(true)
           },
           (error) => {
@@ -597,7 +597,7 @@ const Dashboard = (props) => {
                       {/*{findCurrentMember()}*/}
                     </Typography>
                     <Typography className={classes.card1text5}>
-                      {userBalanceFetched && dataFetched ? isNaN(parseFloat(userBalance) / parseFloat(web3.utils.fromWei(tokenDetails[2])) * 100) ? 0 : (parseFloat(userBalance) / parseFloat(web3.utils.fromWei(tokenDetails[2])) * 100) : 0}%
+                      {userBalanceFetched && dataFetched ? isNaN(parseFloat(userBalance) / parseFloat(web3.utils.fromWei(tokenDetails[2], "Mwei")) * 100) ? 0 : (parseFloat(userBalance) / parseFloat(web3.utils.fromWei(tokenDetails[2], "Mwei")) * 100) : 0}%
                     </Typography>
                     <Grid container item xs sx={{ display: "flex", justifyContent: "flex-end"}}>
                       <Button variant="transparent" onClick={importTokenToMetaMask}>Import token</Button>
@@ -614,7 +614,7 @@ const Dashboard = (props) => {
                             Treasury ($)
                           </Typography>
                           <Typography className={classes.card2text2}>
-                            {dataFetched ? web3.utils.fromWei(tokenDetails[2], "Mwei") : null}
+                            {clubAssetTokenFetched ? clubAssetTokenData.totalBalance : null}
                           </Typography>
                           {/* <Typography className={classes.card2text3}>
                           37%
@@ -634,7 +634,7 @@ const Dashboard = (props) => {
                             Tresury Wallet
                           </Typography>
                           <Typography variant="regularText4">
-                            ${dataFetched ? web3.utils.fromWei(tokenDetails[2], "Mwei") : null}
+                            ${clubAssetTokenFetched ? clubAssetTokenData.totalBalance : null}
                           </Typography>
                           {/* <Typography mt={3} className={classes.card2text8}>
                           Hot Wallet
@@ -716,19 +716,19 @@ const Dashboard = (props) => {
                     <Typography mt={16} mb={5} variant="subHeading">Collectibles</Typography>
                     <Grid container>
                       {nftFetched ? ntfData.length > 0 ?
-                              ntfData.map((data, key) => {
-                                <Grid items m={1}>
-                                  <CollectionCard imageURI={data.logoUri} tokenName={data.tokenName} tokenSymbol={data.tokenSymbol}/>
-                                </Grid>
-                              })
-                              : <Grid item justifyContent="center" alignItems="center" md={10}>
-                                <Card variant="noProposalCard">
-                                  <Typography sx={{ fontSize: "1.625em", fontFamily: "Whyte" }} p={3}>
-                                    Track all NFTs in your club’s treasury wallet real-time
-                                  </Typography>
-                                </Card>
-                              </Grid>
-                          : null
+                        ntfData.map((data, key) => {
+                          <Grid items m={1}>
+                            <CollectionCard imageURI={data.logoUri} tokenName={data.tokenName} tokenSymbol={data.tokenSymbol}/>
+                          </Grid>
+                        })
+                        : <Grid item justifyContent="center" alignItems="center" md={10}>
+                          <Card variant="noProposalCard">
+                            <Typography sx={{ fontSize: "1.625em", fontFamily: "Whyte" }} p={3}>
+                              Track all NFTs in your club’s treasury wallet real-time
+                            </Typography>
+                          </Card>
+                        </Grid>
+                        : null
                       }
                     </Grid>
 
