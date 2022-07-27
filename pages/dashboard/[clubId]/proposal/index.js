@@ -188,6 +188,9 @@ const useStyles = makeStyles({
     borderRadius: "10px",
     backgroundColor: "#111D38",
     width: "90%",
+  },
+  banner: {
+    width: "100%"
   }
 })
 
@@ -337,40 +340,40 @@ const Proposal = () => {
     }
     else {
       setOpen(false)
-      if (name === commandTypeList[0].commandText) {
-        // for airdrop execution
-        const payload = {
-          "name": title,
-          "description": description,
-          "createdBy": walletAddress,
-          "clubId": clubID,
-          "votingDuration": new Date(duration).toISOString(),
-          "votingOptions": defaultOptions,
-          "commands": [
-            {
-              "executionId": 0,
-              "airDropToken": airDropToken,
-              "airDropAmount": airDropAmount,
-            }
-          ],
-          "type": "action"
-        }
-        const createRequest = createProposal(payload)
-        createRequest.then((result) => {
-          if (result.status !== 201) {
-            setOpenSnackBar(true)
-            setFailed(true)
-          } else {
-            // console.log(result.data)
-            fetchData()
-            setOpenSnackBar(true)
-            setFailed(false)
-            setOpen(false)
-          }
-        })
-      }
+      // if (name === commandTypeList[0].commandText) {
+      //   // for airdrop execution
+      //   const payload = {
+      //     "name": title,
+      //     "description": description,
+      //     "createdBy": walletAddress,
+      //     "clubId": clubID,
+      //     "votingDuration": new Date(duration).toISOString(),
+      //     "votingOptions": defaultOptions,
+      //     "commands": [
+      //       {
+      //         "executionId": 0,
+      //         "airDropToken": airDropToken,
+      //         "airDropAmount": airDropAmount,
+      //       }
+      //     ],
+      //     "type": "action"
+      //   }
+      //   const createRequest = createProposal(payload)
+      //   createRequest.then((result) => {
+      //     if (result.status !== 201) {
+      //       setOpenSnackBar(true)
+      //       setFailed(true)
+      //     } else {
+      //       // console.log(result.data)
+      //       fetchData()
+      //       setOpenSnackBar(true)
+      //       setFailed(false)
+      //       setOpen(false)
+      //     }
+      //   })
+      // }
 
-      if (name === commandTypeList[1].commandText) {
+      if (name === commandTypeList[0].commandText) {
         // for mintGT execution
         const payload = {
           "name": title,
@@ -404,41 +407,41 @@ const Proposal = () => {
 
       }
 
-      if (name === commandTypeList[2].commandText) {
-        // for assigner executor role execution
-        const payload = {
-          "name": title,
-          "description": description,
-          "createdBy": walletAddress,
-          "clubId": clubID,
-          "votingDuration": new Date(duration).toISOString(),
-          "votingOptions": defaultOptions,
-          "commands": [
-            {
-              "executionId": 2,
-              "executiveRoles": web3.utils.toChecksumAddress(executiveRoles),
-            }
-          ],
-          "type": "action"
-        }
-        const createRequest = createProposal(payload)
-        createRequest.then((result) => {
-          if (result.status !== 201) {
-            setOpenSnackBar(true)
-            setFailed(true)
-          } else {
-            // console.log(result.data)
-            setLoaderOpen(true)
-            fetchData()
-            setOpenSnackBar(true)
-            setFailed(false)
-            setOpen(false)
-          }
-        })
+      // if (name === commandTypeList[2].commandText) {
+      //   // for assigner executor role execution
+      //   const payload = {
+      //     "name": title,
+      //     "description": description,
+      //     "createdBy": walletAddress,
+      //     "clubId": clubID,
+      //     "votingDuration": new Date(duration).toISOString(),
+      //     "votingOptions": defaultOptions,
+      //     "commands": [
+      //       {
+      //         "executionId": 2,
+      //         "executiveRoles": web3.utils.toChecksumAddress(executiveRoles),
+      //       }
+      //     ],
+      //     "type": "action"
+      //   }
+      //   const createRequest = createProposal(payload)
+      //   createRequest.then((result) => {
+      //     if (result.status !== 201) {
+      //       setOpenSnackBar(true)
+      //       setFailed(true)
+      //     } else {
+      //       // console.log(result.data)
+      //       setLoaderOpen(true)
+      //       fetchData()
+      //       setOpenSnackBar(true)
+      //       setFailed(false)
+      //       setOpen(false)
+      //     }
+      //   })
+      //
+      // }
 
-      }
-
-      if (name === commandTypeList[3].commandText) {
+      if (name === commandTypeList[1].commandText) {
         // For execution of Governance settings
         const payload = {
           "name": title,
@@ -472,12 +475,12 @@ const Proposal = () => {
         })
       }
 
-      if (name === commandTypeList[4].commandText) {
+      if (name === commandTypeList[2].commandText) {
+        // For execution of start deposit
         const today = new Date()
         const calculateDay = new Date(day)
         const difference = calculateDay.getTime() - today.getTime()
         const dayCalculated = Math.ceil(difference / (1000 * 3600 * 24))
-        // For execution of start deposit
         const payload = {
           "name": title,
           "description": description,
@@ -512,7 +515,7 @@ const Proposal = () => {
         })
       }
 
-      if (name === commandTypeList[5].commandText) {
+      if (name === commandTypeList[3].commandText) {
         // For execution of close deposit
         const payload = {
           "name": title,
@@ -546,7 +549,7 @@ const Proposal = () => {
         })
       }
 
-      if (name === commandTypeList[6].commandText) {
+      if (name === commandTypeList[4].commandText) {
         // For execution of update raise amount
         const payload = {
           "name": title,
@@ -579,72 +582,72 @@ const Proposal = () => {
         })
       }
 
-      if (name === commandTypeList[7].commandText) {
-        // for execution of sending custom token
-        const payload = {
-          "name": title,
-          "description": description,
-          "createdBy": walletAddress,
-          "clubId": clubID,
-          "votingDuration": new Date(duration).toISOString(),
-          "votingOptions": defaultOptions,
-          "commands": [
-            {
-              "executionId": 7,
-              "customToken": customToken,
-              "customTokenAmounts": [parseFloat(customTokenAmounts)],
-              "customTokenAddresses": [customTokenAddresses]
-            }
-          ],
-          "type": "action"
-        }
-        const createRequest = createProposal(payload)
-        createRequest.then((result) => {
-          if (result.status !== 201) {
-            setOpenSnackBar(true)
-            setFailed(true)
-          } else {
-            // console.log(result.data)
-            fetchData()
-            setOpenSnackBar(true)
-            setFailed(false)
-            setOpen(false)
-          }
-        })
-      }
-
-      if (name === commandTypeList[8].commandText) {
-        // For execution send ethereum
-        const payload = {
-          "name": title,
-          "description": description,
-          "createdBy": walletAddress,
-          "clubId": clubID,
-          "votingDuration": new Date(duration).toISOString(),
-          "votingOptions": defaultOptions,
-          "commands": [
-            {
-              "executionId": 8,
-              "sendEthAddresses": sendEthAddresses,
-              "sendEthAmounts": sendEthAmounts,
-            }
-          ],
-          "type": "action"
-        }
-        const createRequest = createProposal(payload)
-        createRequest.then((result) => {
-          if (result.status !== 201) {
-            setOpenSnackBar(true)
-            setFailed(true)
-          } else {
-            // console.log(result.data)
-            fetchData()
-            setOpenSnackBar(true)
-            setFailed(false)
-            setOpen(false)
-          }
-        })
-      }
+      // if (name === commandTypeList[7].commandText) {
+      //   // for execution of sending custom token
+      //   const payload = {
+      //     "name": title,
+      //     "description": description,
+      //     "createdBy": walletAddress,
+      //     "clubId": clubID,
+      //     "votingDuration": new Date(duration).toISOString(),
+      //     "votingOptions": defaultOptions,
+      //     "commands": [
+      //       {
+      //         "executionId": 7,
+      //         "customToken": customToken,
+      //         "customTokenAmounts": [parseFloat(customTokenAmounts)],
+      //         "customTokenAddresses": [customTokenAddresses]
+      //       }
+      //     ],
+      //     "type": "action"
+      //   }
+      //   const createRequest = createProposal(payload)
+      //   createRequest.then((result) => {
+      //     if (result.status !== 201) {
+      //       setOpenSnackBar(true)
+      //       setFailed(true)
+      //     } else {
+      //       // console.log(result.data)
+      //       fetchData()
+      //       setOpenSnackBar(true)
+      //       setFailed(false)
+      //       setOpen(false)
+      //     }
+      //   })
+      // }
+      //
+      // if (name === commandTypeList[8].commandText) {
+      //   // For execution send ethereum
+      //   const payload = {
+      //     "name": title,
+      //     "description": description,
+      //     "createdBy": walletAddress,
+      //     "clubId": clubID,
+      //     "votingDuration": new Date(duration).toISOString(),
+      //     "votingOptions": defaultOptions,
+      //     "commands": [
+      //       {
+      //         "executionId": 8,
+      //         "sendEthAddresses": sendEthAddresses,
+      //         "sendEthAmounts": sendEthAmounts,
+      //       }
+      //     ],
+      //     "type": "action"
+      //   }
+      //   const createRequest = createProposal(payload)
+      //   createRequest.then((result) => {
+      //     if (result.status !== 201) {
+      //       setOpenSnackBar(true)
+      //       setFailed(true)
+      //     } else {
+      //       // console.log(result.data)
+      //       fetchData()
+      //       setOpenSnackBar(true)
+      //       setFailed(false)
+      //       setOpen(false)
+      //     }
+      //   })
+      // }
 
     }
   }
@@ -809,9 +812,7 @@ const Proposal = () => {
                   )
                 }) :
                 <Grid item justifyContent="center" alignItems="center" md={10}>
-                  <Card variant="noProposalCard">
-                    <Typography sx={{ fontSize: "1.625em", fontFamily: "Whyte" }} p={3}>Create your club’s first proposal here.</Typography>
-                  </Card>
+                  <img src="/assets/images/tokens_banner.png" alt="token-banner" className={classes.banner} />
                 </Grid>
                   : proposalData.length > 0 ?
                       proposalData.map((proposal, key) => {
@@ -1062,27 +1063,29 @@ const Proposal = () => {
                                   <CancelIcon />
                                 </IconButton>
                               </Grid>
-                              {name === commandTypeList[0].commandText ? (
-                                // airdrop execution
-                                <Grid container ml={1} mt={1} mb={2} spacing={2} direction="column">
-                                  <Grid item>
-                                    <Typography className={classes.cardFont}>Air drop token</Typography>
-                                  </Grid>
-                                  <Grid item>
-                                    <TextField sx={{ width: "90%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
-                                      placeholder="0x..." onChange={(e) => setAirDropToken(e.target.value)} />
-                                  </Grid>
-                                  <Grid item>
-                                    <Typography className={classes.cardFont}>Amount</Typography>
-                                  </Grid>
-                                  <Grid item>
-                                    <TextField sx={{ width: "90%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
-                                      placeholder="0" onChange={(e) => setAirDropAmount(parseInt(e.target.value))} />
-                                  </Grid>
-                                </Grid>
-                              ) :
-                                name === commandTypeList[1].commandText ? (
-                                  // airdrop execution
+                              {
+                              //   name === commandTypeList[0].commandText ? (
+                              //   // airdrop execution
+                              //   <Grid container ml={1} mt={1} mb={2} spacing={2} direction="column">
+                              //     <Grid item>
+                              //       <Typography className={classes.cardFont}>Air drop token</Typography>
+                              //     </Grid>
+                              //     <Grid item>
+                              //       <TextField sx={{ width: "90%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
+                              //         placeholder="0x..." onChange={(e) => setAirDropToken(e.target.value)} />
+                              //     </Grid>
+                              //     <Grid item>
+                              //       <Typography className={classes.cardFont}>Amount</Typography>
+                              //     </Grid>
+                              //     <Grid item>
+                              //       <TextField sx={{ width: "90%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
+                              //         placeholder="0" onChange={(e) => setAirDropAmount(parseInt(e.target.value))} />
+                              //     </Grid>
+                              //   </Grid>
+                              // )
+                              //     :
+                                name === commandTypeList[0].commandText ? (
+                                  // mintgtto execution
                                   <Grid container ml={1} mt={1} mb={2} spacing={2} direction="column">
                                     <Grid item>
                                       <Typography className={classes.cardFont}>MintGT address</Typography>
@@ -1101,18 +1104,18 @@ const Proposal = () => {
                                   </Grid>
                                 )
                                   :
-                                  name === commandTypeList[0].commandText ? (
-                                    // assign executor role execution
-                                    <Grid container ml={1} mt={1} mb={2} spacing={2} direction="column">
-                                      <Grid item>
-                                        <Typography variant="proposalBody">Executor role address</Typography>
-                                      </Grid>
-                                      <Grid item>
-                                        <TextField sx={{ width: "90%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
-                                          placeholder="0x..." onChange={(e) => setExecutiveRoles(e.target.value)} />
-                                      </Grid>
-                                    </Grid>
-                                  ) :
+                                  // name === commandTypeList[0].commandText ? (
+                                  //   // assign executor role execution
+                                  //   <Grid container ml={1} mt={1} mb={2} spacing={2} direction="column">
+                                  //     <Grid item>
+                                  //       <Typography variant="proposalBody">Executor role address</Typography>
+                                  //     </Grid>
+                                  //     <Grid item>
+                                  //       <TextField sx={{ width: "90%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
+                                  //         placeholder="0x..." onChange={(e) => setExecutiveRoles(e.target.value)} />
+                                  //     </Grid>
+                                  //   </Grid>
+                                  // ) :
                                    name === commandTypeList[1].commandText ?
                                       // update governance settings execution
                                       (
@@ -1190,52 +1193,53 @@ const Proposal = () => {
                                               </Grid>
                                             </Grid>
                                           ) :
-                                            name === commandTypeList[7].commandText ? (
-                                              // send custom token execution
-                                              <Grid container ml={1} mt={1} mb={2} spacing={2} direction="column">
-                                                <Grid item>
-                                                  <Typography className={classes.cardFont}>Custom token</Typography>
-                                                </Grid>
-                                                <Grid item>
-                                                <Select
-                                                  displayEmpty
-                                                  value={customToken}
-                                                  onChange={handleTokenChange}
-                                                  input={<OutlinedInput />}
-                                                  renderValue={(selected) => {
-                                                    if (selected.length === 0) {
-                                                      return "Select a Token"
-                                                    }
-                                                    return selected
-                                                  }}
-                                                  MenuProps={tokenData}
-                                                  style={{ borderRadius: "10px", background: "#111D38 0% 0% no-repeat padding-box", width: "90%" }}
-                                                >
-                                                  {tokenData.slice(1).map((token) => (
-                                                    <MenuItem
-                                                      key={token.name}
-                                                      value={token.tokenAddress}>
-                                                      {token.token.name}
-                                                    </MenuItem>
-                                                  ))}
-                                                </Select>
-                                                </Grid>
-                                                <Grid item>
-                                                  <Typography className={classes.cardFont}>Receiver&apos;s wallet address</Typography>
-                                                </Grid>
-                                                <Grid item>
-                                                  <TextField sx={{ width: "90%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
-                                                    placeholder="0x..." onChange={(e) => setCustomTokenAddresses(e.target.value)} />
-                                                </Grid>
-                                                <Grid item>
-                                                  <Typography className={classes.cardFont}>Amount to be sent</Typography>
-                                                </Grid>
-                                                <Grid item>
-                                                  <TextField sx={{ width: "90%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
-                                                    placeholder="0" onChange={(e) => setCustomTokenAmounts(e.target.value)} />
-                                                </Grid>
-                                              </Grid>
-                                            ) :null
+                                            // name === commandTypeList[7].commandText ? (
+                                            //   // send custom token execution
+                                            //   <Grid container ml={1} mt={1} mb={2} spacing={2} direction="column">
+                                            //     <Grid item>
+                                            //       <Typography className={classes.cardFont}>Custom token</Typography>
+                                            //     </Grid>
+                                            //     <Grid item>
+                                            //     <Select
+                                            //       displayEmpty
+                                            //       value={customToken}
+                                            //       onChange={handleTokenChange}
+                                            //       input={<OutlinedInput />}
+                                            //       renderValue={(selected) => {
+                                            //         if (selected.length === 0) {
+                                            //           return "Select a Token"
+                                            //         }
+                                            //         return selected
+                                            //       }}
+                                            //       MenuProps={tokenData}
+                                            //       style={{ borderRadius: "10px", background: "#111D38 0% 0% no-repeat padding-box", width: "90%" }}
+                                            //     >
+                                            //       {tokenData.slice(1).map((token) => (
+                                            //         <MenuItem
+                                            //           key={token.name}
+                                            //           value={token.tokenAddress}>
+                                            //           {token.token.name}
+                                            //         </MenuItem>
+                                            //       ))}
+                                            //     </Select>
+                                            //     </Grid>
+                                            //     <Grid item>
+                                            //       <Typography className={classes.cardFont}>Receiver&apos;s wallet address</Typography>
+                                            //     </Grid>
+                                            //     <Grid item>
+                                            //       <TextField sx={{ width: "90%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
+                                            //         placeholder="0x..." onChange={(e) => setCustomTokenAddresses(e.target.value)} />
+                                            //     </Grid>
+                                            //     <Grid item>
+                                            //       <Typography className={classes.cardFont}>Amount to be sent</Typography>
+                                            //     </Grid>
+                                            //     <Grid item>
+                                            //       <TextField sx={{ width: "90%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
+                                            //         placeholder="0" onChange={(e) => setCustomTokenAmounts(e.target.value)} />
+                                            //     </Grid>
+                                            //   </Grid>
+                                            // ) :
+                                null
                                             //   name === commandTypeList[8].commandText ? (
                                             //     // send eth execution
                                             //     <Grid container ml={1} mt={1} mb={2} spacing={2} direction="column">
