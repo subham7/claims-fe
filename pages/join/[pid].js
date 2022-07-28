@@ -29,7 +29,9 @@ import {
   FACTORY_CONTRACT_ADDRESS,
   createUser,
   getMembersDetails,
-  fetchClub
+  fetchClub,
+  patchUserBalance,
+  checkUserByClub
 } from "../../src/api";
 import store from "../../src/redux/store"
 import Web3 from "web3"
@@ -384,52 +386,94 @@ const Join = (props) => {
 
   const handleDeposit = async () => {
     setDepositInitiated(true)
-    const usdc_contract = new SmartContract(USDCContract, USDC_CONTRACT_ADDRESS, undefined)
-    // pass governor contract
-    const dao_contract = new SmartContract(GovernorContract, daoAddress, undefined)
-
-    // pass governor contract
-    const usdc_response = usdc_contract.approveDeposit(daoAddress, depositAmount)
-    await usdc_response.then(
-      (result) => {
-        console.log("Success", result)
-        const deposit_response = dao_contract.deposit(USDC_CONTRACT_ADDRESS, depositAmount)
-        deposit_response.then((result) => {
-          // console.log("Result", result)
-          const data = {
-            "userAddress": userDetails,
-            "clubs": [
-              {
-                "clubId": clubId,
-                "isAdmin": 0,
-                "balance": depositAmount,
-              }
-            ]
-          }
-          const createuser = createUser(
-            data
-          )
-          createuser.then((result) => {
-            if (result.error) {
-              console.log(result.error)
+    const checkUserExists = checkUserByClub(userDetails, clubId)
+    checkUserExists.then((result) => {
+      if (result.status != 200 || result === false) {
+        // if the user doesn't exist
+        const usdc_contract = new SmartContract(USDCContract, USDC_CONTRACT_ADDRESS, undefined)
+        // pass governor contract
+        const dao_contract = new SmartContract(GovernorContract, daoAddress, undefined)
+        // pass governor contract
+        const usdc_response = usdc_contract.approveDeposit(daoAddress, depositAmount)
+        usdc_response.then(
+            (result) => {
+              const deposit_response = dao_contract.deposit(USDC_CONTRACT_ADDRESS, depositAmount)
+              deposit_response.then((result) => {
+                const data = {
+                  "userAddress": userDetails,
+                  "clubs": [
+                    {
+                      "clubId": clubId,
+                      "isAdmin": 0,
+                      "balance": depositAmount,
+                    }
+                  ]
+                }
+                const createuser = createUser(
+                    data
+                )
+                createuser.then((result) => {
+                  if (result.status != 200) {
+                    console.log("Error", result)
+                    setAlertStatus("error")
+                    setOpenSnackBar(true)
+                  }
+                  else {
+                    setAlertStatus("success")
+                    setOpenSnackBar(true)
+                    router.push(`/dashboard/${clubId}`, undefined, { shallow: true })
+                  }
+                })
+              })
+            },
+            (error) => {
+              console.log("Error", error)
+              setAlertStatus("error")
+              setOpenSnackBar(true)
             }
-          })
-          setAlertStatus("success")
-          setOpenSnackBar(true)
-          router.push(`/dashboard/${clubId}`, undefined, { shallow: true })
-        })
-          .catch((error) => {
-            console.log("Error", error)
-            setAlertStatus("error")
-            setOpenSnackBar(true)
-          })
-      },
-      (error) => {
-        console.log("Error", error)
-        setAlertStatus("error")
-        setOpenSnackBar(true)
+        )
       }
-    )
+      else {
+        // if user exists
+        const usdc_contract = new SmartContract(USDCContract, USDC_CONTRACT_ADDRESS, undefined)
+        // pass governor contract
+        const dao_contract = new SmartContract(GovernorContract, daoAddress, undefined)
+        // pass governor contract
+        const usdc_response = usdc_contract.approveDeposit(daoAddress, depositAmount)
+        usdc_response.then(
+            (result) => {
+              const deposit_response = dao_contract.deposit(USDC_CONTRACT_ADDRESS, depositAmount)
+              deposit_response.then((result) => {
+                const patchData = {
+                  "userAddress": userDetails,
+                  "clubId": clubId,
+                  "balance": depositAmount
+                }
+                const updateDepositAmount = patchUserBalance(
+                    patchData
+                )
+                updateDepositAmount.then((result => {
+                  if (result.status != 200) {
+                    console.log("Error", result)
+                    setAlertStatus("error")
+                    setOpenSnackBar(true)
+                  } else {
+                    setAlertStatus("success")
+                    setOpenSnackBar(true)
+                    router.push(`/dashboard/${clubId}`, undefined, { shallow: true })
+                  }
+                }))
+              })
+            },
+            (error) => {
+              console.log("Error", error)
+              setAlertStatus("error")
+              setOpenSnackBar(true)
+            }
+        )
+      }
+    })
+
   }
 
   const handleInputChange = (newValue) => {

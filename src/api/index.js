@@ -398,3 +398,13 @@ export async function patchProposalStatus(proposalId) {
 export async function getAssets(clubId) {
   return await axios.get(MAIN_API_URL + `assets/${clubId}`)
 }
+
+// update user amount status
+export async function patchUserBalance(data) {
+  return await axios.patch(MAIN_API_URL + "user/balance", data)
+}
+
+// check whether user exists in a club by user address
+export async function checkUserByClub(walletAddress, clubId) {
+  return await axios.get(MAIN_API_URL + `user/${walletAddress}/club/${clubId}/check`)
+}

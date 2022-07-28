@@ -41,12 +41,12 @@ export const commandTypeList = [
     // {
     //     commandId: 0,
     //     command: "airdropCustomToken",
-    //     commandText: "Air drop custom token"
+    //     commandText: "Distribute token to members"
     // },
     {
         commandId: 1,
         command: "mintGTToAddress",
-        commandText: "Mint GTTo Address"
+        commandText: "Mint club token"
     },
     // {
     //     commandId: 2,
@@ -71,7 +71,7 @@ export const commandTypeList = [
     {
         commandId: 6,
         command: "updateRaiseAmount",
-        commandText: "Update raise amount"
+        commandText: "Change total raise amount"
     },
     // {
     //     commandId: 7,
