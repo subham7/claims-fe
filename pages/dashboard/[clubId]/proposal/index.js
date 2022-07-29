@@ -93,14 +93,21 @@ const useStyles = makeStyles({
     borderRadius: "50%",
     marginRight: "15px"
   },
-  pendingIllustration: {
+  passedIllustration: {
     height: "12px",
     width: "12px",
     backgroundColor: "#FFB74D",
     borderRadius: "50%",
     marginRight: "15px"
   },
-  closedIllustration: {
+  executedIllustration: {
+    height: "12px",
+    width: "12px",
+    backgroundColor: "#F75F71",
+    borderRadius: "50%",
+    marginRight: "15px"
+  },
+  failedIllustration: {
     height: "12px",
     width: "12px",
     backgroundColor: "#D55438",
@@ -127,7 +134,12 @@ const useStyles = makeStyles({
     backgroundColor: "#0ABB92",
     padding: "5px 5px 5px 5px"
   },
-  cardFontPending: {
+  cardFontExecuted: {
+    fontSize: "16px",
+    backgroundColor: "#F75F71",
+    padding: "5px 5px 5px 5px"
+  },
+  cardFontPassed: {
     fontSize: "16px",
     backgroundColor: "#FFB74D",
     padding: "5px 5px 5px 5px"
@@ -176,20 +188,23 @@ const useStyles = makeStyles({
     borderRadius: "10px",
     backgroundColor: "#111D38",
     width: "90%",
+  },
+  banner: {
+    width: "100%"
   }
 })
 
 
 const Proposal = () => {
   const router = useRouter()
-  const { clubId } = router.query
+  const { clubId, create_proposal } = router.query
   const classes = useStyles()
   const daoAddress = useSelector(state => { return state.create.daoAddress })
   const clubID = clubId
   const tresuryAddress = useSelector(state => { return state.create.tresuryAddress})
   const [open, setOpen] = useState(false)
   const [name, setName] = useState([])
-  const [duration, setDuration] = useState(null)
+  const [duration, setDuration] = useState(new Date(new Date().getTime() + (24 * 60 * 60 * 1000)))
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [type, setType] = useState(proposalType[0].type)
@@ -225,6 +240,17 @@ const Proposal = () => {
   const [selectedListItem, setSelectedListItem] = useState('')
   const [enableSubmitButton, setEnableSubmitButton] = useState(false)
   const [count, setCount] = useState(0)
+  const defaultOptions = [
+    {
+      "text": "Yes"
+    },
+    {
+      "text": "No"
+    },
+    {
+      "text": "Abstain"
+    }
+  ]
 
 
   const fetchData = () => {
@@ -244,6 +270,7 @@ const Proposal = () => {
       if (result.status != 200) {
         setTokenFetched(false)
       } else {
+        console.log(result.data)
         setTokenData(result.data)
         setTokenFetched(true)
       }
@@ -321,6 +348,7 @@ const Proposal = () => {
       //     "createdBy": walletAddress,
       //     "clubId": clubID,
       //     "votingDuration": new Date(duration).toISOString(),
+      //     "votingOptions": defaultOptions,
       //     "commands": [
       //       {
       //         "executionId": 0,
@@ -345,51 +373,20 @@ const Proposal = () => {
       //   })
       // }
 
-      // if (name === commandTypeList[1].commandText) {
-      //   // for mintGT execution
-      //   const payload = {
-      //     "name": title,
-      //     "description": description,
-      //     "createdBy": walletAddress,
-      //     "clubId": clubID,
-      //     "votingDuration": new Date(duration).toISOString(),
-      //     "commands": [
-      //       {
-      //         "executionId": 1,
-      //         "mintGTAddresses": mintGtAddress,
-      //         "mintGTAmounts": mintGTAmounts,
-      //       }
-      //     ],
-      //     "type": "action"
-      //   }
-      //   const createRequest = createProposal(payload)
-      //   createRequest.then((result) => {
-      //     if (result.status !== 201) {
-      //       setOpenSnackBar(true)
-      //       setFailed(true)
-      //     } else {
-      //       // console.log(result.data)
-      //       fetchData()
-      //       setOpenSnackBar(true)
-      //       setFailed(false)
-      //       setOpen(false)
-      //     }
-      //   })
-
-      // }
-
       if (name === commandTypeList[0].commandText) {
-        // for assigner executor role execution
+        // for mintGT execution
         const payload = {
           "name": title,
           "description": description,
           "createdBy": walletAddress,
           "clubId": clubID,
           "votingDuration": new Date(duration).toISOString(),
+          "votingOptions": defaultOptions,
           "commands": [
             {
-              "executionId": 2,
-              "executiveRoles": web3.utils.toChecksumAddress(executiveRoles),
+              "executionId": 1,
+              "mintGTAddresses": mintGtAddress,
+              "mintGTAmounts": mintGTAmounts,
             }
           ],
           "type": "action"
@@ -401,7 +398,6 @@ const Proposal = () => {
             setFailed(true)
           } else {
             // console.log(result.data)
-            setLoaderOpen(true)
             fetchData()
             setOpenSnackBar(true)
             setFailed(false)
@@ -411,6 +407,40 @@ const Proposal = () => {
 
       }
 
+      // if (name === commandTypeList[2].commandText) {
+      //   // for assigner executor role execution
+      //   const payload = {
+      //     "name": title,
+      //     "description": description,
+      //     "createdBy": walletAddress,
+      //     "clubId": clubID,
+      //     "votingDuration": new Date(duration).toISOString(),
+      //     "votingOptions": defaultOptions,
+      //     "commands": [
+      //       {
+      //         "executionId": 2,
+      //         "executiveRoles": web3.utils.toChecksumAddress(executiveRoles),
+      //       }
+      //     ],
+      //     "type": "action"
+      //   }
+      //   const createRequest = createProposal(payload)
+      //   createRequest.then((result) => {
+      //     if (result.status !== 201) {
+      //       setOpenSnackBar(true)
+      //       setFailed(true)
+      //     } else {
+      //       // console.log(result.data)
+      //       setLoaderOpen(true)
+      //       fetchData()
+      //       setOpenSnackBar(true)
+      //       setFailed(false)
+      //       setOpen(false)
+      //     }
+      //   })
+      //
+      // }
+
       if (name === commandTypeList[1].commandText) {
         // For execution of Governance settings
         const payload = {
@@ -419,6 +449,7 @@ const Proposal = () => {
           "createdBy": walletAddress,
           "clubId": clubID,
           "votingDuration": new Date(duration).toISOString(),
+          "votingOptions": defaultOptions,
           "commands": [
             {
               "executionId": 3,
@@ -445,17 +476,18 @@ const Proposal = () => {
       }
 
       if (name === commandTypeList[2].commandText) {
+        // For execution of start deposit
         const today = new Date()
         const calculateDay = new Date(day)
         const difference = calculateDay.getTime() - today.getTime()
         const dayCalculated = Math.ceil(difference / (1000 * 3600 * 24))
-        // For execution of start deposit
         const payload = {
           "name": title,
           "description": description,
           "createdBy": walletAddress,
           "clubId": clubID,
           "votingDuration": new Date(duration).toISOString(),
+          "votingOptions": defaultOptions,
           "commands": [
             {
               "executionId": 4,
@@ -491,6 +523,7 @@ const Proposal = () => {
           "createdBy": walletAddress,
           "clubId": clubID,
           "votingDuration": new Date(duration).toISOString(),
+          "votingOptions": defaultOptions,
           "commands": [
             {
               "executionId": 5,
@@ -524,6 +557,7 @@ const Proposal = () => {
           "createdBy": walletAddress,
           "clubId": clubID,
           "votingDuration": new Date(duration).toISOString(),
+          "votingOptions": defaultOptions,
           "commands": [
             {
               "executionId": 6,
@@ -556,6 +590,7 @@ const Proposal = () => {
       //     "createdBy": walletAddress,
       //     "clubId": clubID,
       //     "votingDuration": new Date(duration).toISOString(),
+      //     "votingOptions": defaultOptions,
       //     "commands": [
       //       {
       //         "executionId": 7,
@@ -580,7 +615,7 @@ const Proposal = () => {
       //     }
       //   })
       // }
-
+      //
       // if (name === commandTypeList[8].commandText) {
       //   // For execution send ethereum
       //   const payload = {
@@ -589,6 +624,7 @@ const Proposal = () => {
       //     "createdBy": walletAddress,
       //     "clubId": clubID,
       //     "votingDuration": new Date(duration).toISOString(),
+      //     "votingOptions": defaultOptions,
       //     "commands": [
       //       {
       //         "executionId": 8,
@@ -618,6 +654,9 @@ const Proposal = () => {
 
 
   useEffect(() => {
+    if (create_proposal) {
+      setOpen(true)
+    }
    fetchFilteredData("all")
   },[clubID])
 
@@ -723,7 +762,8 @@ const Proposal = () => {
               </Grid>
             </Grid>
             <Grid container spacing={3}>
-              {proposalData.length > 0 ?
+              { selectedListItem === "all" ?
+                proposalData.length > 0 ?
                 proposalData.map((proposal, key) => {
                   return (
                     <Grid item key={key} onClick={e => { handleProposalClick(proposalData[key]) }} md={12}>
@@ -736,7 +776,13 @@ const Proposal = () => {
                               </Typography>
                             </Grid>
                             <Grid items ml={1} mr={1} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
-                              {fetched ? <Chip className={proposal.status === "active" ? classes.cardFontActive : proposal.status === "closed" ? classes.cardFontPending : classes.cardFontFailed} label={proposal.status.charAt(0).toUpperCase() + proposal.status.slice(1)} /> : null}
+                              {fetched ?
+                                <Chip className={
+                                  proposal.status === "active" ? classes.cardFontActive :
+                                  proposal.status === "passed" ? classes.cardFontPassed :
+                                    proposal.status === "executed" ? classes.cardFontExecuted :
+                                      proposal.status === "failed" ? classes.cardFontFailed :
+                                    classes.cardFontFailed} label={proposal.status.charAt(0).toUpperCase() + proposal.status.slice(1)} /> : null}
                             </Grid>
                           </Grid>
                           <Grid container>
@@ -765,11 +811,61 @@ const Proposal = () => {
                     </Grid>
                   )
                 }) :
-                <Grid item justifyContent="center" alignItems="center">
-                  <Typography className={classes.cardFont1}>
-                    No proposals available
-                  </Typography>
+                <Grid item justifyContent="center" alignItems="center" md={10}>
+                  <img src="/assets/images/tokens_banner.png" alt="token-banner" className={classes.banner} />
                 </Grid>
+                  : proposalData.length > 0 ?
+                      proposalData.map((proposal, key) => {
+                        return (
+                            <Grid item key={key} onClick={e => { handleProposalClick(proposalData[key]) }} md={12}>
+                              <CardActionArea sx={{ borderRadius: "10px", }}>
+                                <Card className={classes.mainCard}>
+                                  <Grid container>
+                                    <Grid items ml={2} mr={2}>
+                                      <Typography className={classes.cardFont}>
+                                        Proposed by {fetched ? proposal.createdBy.substring(0, 6) + ".........." + proposal.createdBy.substring(proposal.createdBy.length - 4) : null}
+                                      </Typography>
+                                    </Grid>
+                                    <Grid items ml={1} mr={1} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
+                                      {fetched ? <Chip className={
+                                        proposal.status === "active" ? classes.cardFontActive :
+                                          proposal.status === "passed" ? classes.cardFontPassed :
+                                            proposal.status === "executed" ? classes.cardFontExecuted :
+                                              proposal.status === "failed" ? classes.cardFontFailed :
+                                            classes.cardFontFailed} label={proposal.status.charAt(0).toUpperCase() + proposal.status.slice(1)} /> : null}
+                                    </Grid>
+                                  </Grid>
+                                  <Grid container>
+                                    <Grid items ml={2} mr={2}>
+                                      <Typography className={classes.cardFont1}>
+                                        [#{key + 1}] {proposal.name}
+                                      </Typography>
+                                    </Grid>
+                                  </Grid>
+                                  <Grid container>
+                                    <Grid items ml={2} mr={2}>
+                                      <Typography className={classes.cardFont}>
+                                        {proposal.description.substring(0, 200)}...
+                                      </Typography>
+                                    </Grid>
+                                  </Grid>
+                                  <Grid container>
+                                    <Grid items ml={2} mr={2} mt={2}>
+                                      <Typography className={classes.daysFont}>
+                                        {Math.round((new Date(proposal.votingDuration) - new Date()) / (1000 * 60 * 60 * 24))} days left
+                                      </Typography>
+                                    </Grid>
+                                  </Grid>
+                                </Card>
+                              </CardActionArea>
+                            </Grid>
+                        )
+                      }) :
+                      <Grid item justifyContent="center" alignItems="center" md={10}>
+                    <Card variant="noProposalCard">
+                      <Typography sx={{ fontSize: "1.625em", fontFamily: "Whyte" }} p={3}>No Proposals found</Typography>
+                    </Card>
+                  </Grid>
               }
             </Grid>
           </Grid>
@@ -794,14 +890,19 @@ const Proposal = () => {
                 <ArrowForwardIosIcon fontSize="5px" />
               </ListItemButton>
 
-              <ListItemButton selected={selectedListItem === "closed"} onClick={() => fetchFilteredData("closed")}>
-                <div className={classes.pendingIllustration}></div>
-                <ListItemText primary="Closed" className={classes.listFont} />
+              <ListItemButton selected={selectedListItem === "closed"} onClick={() => fetchFilteredData("passed")}>
+                <div className={classes.passedIllustration}></div>
+                <ListItemText primary="Passed" className={classes.listFont} />
                 <ArrowForwardIosIcon fontSize="5px" />
               </ListItemButton>
               <ListItemButton selected={selectedListItem === "executed"} onClick={() => fetchFilteredData("executed")}>
-                <div className={classes.closedIllustration}></div>
+                <div className={classes.executedIllustration}></div>
                 <ListItemText primary="Executed" className={classes.listFont} />
+                <ArrowForwardIosIcon fontSize="5px" />
+              </ListItemButton>
+              <ListItemButton selected={selectedListItem === "failed"} onClick={() => fetchFilteredData("failed")}>
+                <div className={classes.failedIllustration}></div>
+                <ListItemText primary="Failed" className={classes.listFont} />
                 <ArrowForwardIosIcon fontSize="5px" />
               </ListItemButton>
             </Card>
@@ -855,7 +956,8 @@ const Proposal = () => {
                     inputFormat="dd/MM/yyyy"
                     value={duration}
                     onChange={(e) => handleDurationChange(e)}
-                    renderInput={(params) => <TextField {...params} className={classes.datePicker} />}
+                    renderInput={(params) => <TextField onKeyDown={(e) => e.preventDefault()} {...params} className={classes.datePicker} />}
+                    minDate={duration}
                   />
                 </LocalizationProvider>
               </Grid>
@@ -961,27 +1063,29 @@ const Proposal = () => {
                                   <CancelIcon />
                                 </IconButton>
                               </Grid>
-                              {/* {name === commandTypeList[0].commandText ? (
-                                // airdrop execution
-                                <Grid container ml={1} mt={1} mb={2} spacing={2} direction="column">
-                                  <Grid item>
-                                    <Typography className={classes.cardFont}>Air drop token</Typography>
-                                  </Grid>
-                                  <Grid item>
-                                    <TextField sx={{ width: "90%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
-                                      placeholder="0x..." onChange={(e) => setAirDropToken(e.target.value)} />
-                                  </Grid>
-                                  <Grid item>
-                                    <Typography className={classes.cardFont}>Amount</Typography>
-                                  </Grid>
-                                  <Grid item>
-                                    <TextField sx={{ width: "90%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
-                                      placeholder="0" onChange={(e) => setAirDropAmount(parseInt(e.target.value))} />
-                                  </Grid>
-                                </Grid>
-                              ) : */}
-                                {/* {name === commandTypeList[1].commandText ? (
-                                  // airdrop execution
+                              {
+                              //   name === commandTypeList[0].commandText ? (
+                              //   // airdrop execution
+                              //   <Grid container ml={1} mt={1} mb={2} spacing={2} direction="column">
+                              //     <Grid item>
+                              //       <Typography className={classes.cardFont}>Air drop token</Typography>
+                              //     </Grid>
+                              //     <Grid item>
+                              //       <TextField sx={{ width: "90%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
+                              //         placeholder="0x..." onChange={(e) => setAirDropToken(e.target.value)} />
+                              //     </Grid>
+                              //     <Grid item>
+                              //       <Typography className={classes.cardFont}>Amount</Typography>
+                              //     </Grid>
+                              //     <Grid item>
+                              //       <TextField sx={{ width: "90%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
+                              //         placeholder="0" onChange={(e) => setAirDropAmount(parseInt(e.target.value))} />
+                              //     </Grid>
+                              //   </Grid>
+                              // )
+                              //     :
+                                name === commandTypeList[0].commandText ? (
+                                  // mintgtto execution
                                   <Grid container ml={1} mt={1} mb={2} spacing={2} direction="column">
                                     <Grid item>
                                       <Typography className={classes.cardFont}>MintGT address</Typography>
@@ -999,19 +1103,19 @@ const Proposal = () => {
                                     </Grid>
                                   </Grid>
                                 )
-                                  :  */}
-                                  {name === commandTypeList[0].commandText ? (
-                                    // assign executor role execution
-                                    <Grid container ml={1} mt={1} mb={2} spacing={2} direction="column">
-                                      <Grid item>
-                                        <Typography variant="proposalBody">Executor role address</Typography>
-                                      </Grid>
-                                      <Grid item>
-                                        <TextField sx={{ width: "90%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
-                                          placeholder="0x..." onChange={(e) => setExecutiveRoles(e.target.value)} />
-                                      </Grid>
-                                    </Grid>
-                                  ) :
+                                  :
+                                  // name === commandTypeList[0].commandText ? (
+                                  //   // assign executor role execution
+                                  //   <Grid container ml={1} mt={1} mb={2} spacing={2} direction="column">
+                                  //     <Grid item>
+                                  //       <Typography variant="proposalBody">Executor role address</Typography>
+                                  //     </Grid>
+                                  //     <Grid item>
+                                  //       <TextField sx={{ width: "90%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
+                                  //         placeholder="0x..." onChange={(e) => setExecutiveRoles(e.target.value)} />
+                                  //     </Grid>
+                                  //   </Grid>
+                                  // ) :
                                    name === commandTypeList[1].commandText ?
                                       // update governance settings execution
                                       (
@@ -1088,7 +1192,7 @@ const Proposal = () => {
                                                   placeholder="0" onChange={(e) => setTotalDeposits(parseInt(e.target.value))} />
                                               </Grid>
                                             </Grid>
-                                          ) :null
+                                          ) :
                                             // name === commandTypeList[7].commandText ? (
                                             //   // send custom token execution
                                             //   <Grid container ml={1} mt={1} mb={2} spacing={2} direction="column">
@@ -1132,9 +1236,10 @@ const Proposal = () => {
                                             //     <Grid item>
                                             //       <TextField sx={{ width: "90%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
                                             //         placeholder="0" onChange={(e) => setCustomTokenAmounts(e.target.value)} />
-                                            //     </Grid>                                                
+                                            //     </Grid>
                                             //   </Grid>
                                             // ) :
+                                null
                                             //   name === commandTypeList[8].commandText ? (
                                             //     // send eth execution
                                             //     <Grid container ml={1} mt={1} mb={2} spacing={2} direction="column">

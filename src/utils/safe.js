@@ -26,7 +26,9 @@ async function gnosisSafePromise(owners, threshold, dispatch) {
       owners,
       threshold,
     }
+    console.log(safeAccountConfig)
     const safeSdk = await safeFactory.deploySafe({ safeAccountConfig })
+    console.log("Safe sdk", safeSdk)
     const newSafeAddress = safeSdk.getAddress()
     dispatch(safeConnected(newSafeAddress, safeSdk))
     return newSafeAddress
@@ -55,6 +57,15 @@ export async function initiateConnection(
   let daoAddress = null
   let tokenAddress = null
   let walletAddress = safeOwner[0]
+  let networkId = null
+
+  await web3.eth.net.getId()
+    .then((id) => {
+      networkId = id
+    })
+    .catch((err) => {
+      console.log(err)
+    });
 
   const smartContract = new SmartContract(
     FactoryContract,
@@ -87,6 +98,7 @@ export async function initiateConnection(
             tokenAddress: tokenAddress,
             daoAddress: daoAddress,
             treasuryAddress: treasuryAddress,
+            networkId: networkId
           }
           const club = createClub(data)
           club.then((result) => {

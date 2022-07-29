@@ -70,7 +70,20 @@ export const darkComponents = {
           borderRadius: "30px",
           opacity: "100%"
         }
-      }
+      },
+      {
+        props: { variant: "transparentWhite" },
+        style: {
+          border: "1px solid #C1D3FF40",
+          background: "#19274B",
+          fontSize: "1.3rem",
+          borderRadius: "30px",
+          "&:hover": {
+            background: "#F5F5F5",
+            color: "#3B7AFD",
+          },
+        }
+      },
     ]
   },
   MuiCard: {
@@ -81,6 +94,14 @@ export const darkComponents = {
         padding: "20px",
       },
     },
+    variants: [
+      {
+        props: { variant: "noProposalCard" },
+        style: {
+          background: "transparent linear-gradient(270deg, #3B7AFD 0%, #19274B 100%) 0% 0% no-repeat padding-box"
+        }
+      }
+    ]
   },
   MuiAppBar: {
     styleOverrides: {
@@ -274,6 +295,14 @@ export const darkComponents = {
           color: "#C1D3FF",
         }
       },
+      {
+        props: { variant: "getStartedClub" },
+        style: {
+          fontSize: "2.125em",
+          fontFamily: "Whyte",
+          color: "#FFFFFF"
+        }
+      }
 
     ]
   },

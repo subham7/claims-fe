@@ -1,5 +1,4 @@
 import "../styles/globals.css"
-import "ui-neumorphism/dist/index.css"
 import React from "react"
 import { ThemeProvider } from "@mui/material/styles"
 import theme from "../src/theme/theme"

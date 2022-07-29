@@ -37,3 +37,5 @@ yarn-error.log*
 package-lock.json
 
 .idea/
+yarn.local
+yarn.lock

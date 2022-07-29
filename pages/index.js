@@ -1,6 +1,17 @@
 import { React, useEffect, useState } from "react"
 import Layout from "../src/components/layouts/layout3"
-import { Grid, Button, Card, Typography, Divider, Stack, Menu, ListItemButton, Avatar } from "@mui/material"
+import {
+  Grid,
+  Button,
+  Card,
+  Typography,
+  Divider,
+  Stack,
+  Menu,
+  ListItemButton,
+  Avatar,
+  DialogContent, Dialog
+} from "@mui/material"
 import { connectWallet } from "../src/utils/wallet"
 import { useDispatch, useSelector } from "react-redux"
 import { makeStyles } from "@mui/styles"
@@ -11,6 +22,7 @@ import { fetchClubByUserAddress } from "../src/api/index"
 import store from "../src/redux/store"
 import { addClubName, addDaoAddress, addClubID, addClubRoute } from "../src/redux/reducers/create"
 import {checkNetwork} from "../src/utils/wallet"
+import Web3 from "web3";
 
 
 const useStyles = makeStyles({
@@ -43,7 +55,14 @@ const useStyles = makeStyles({
   },
   bannerImage: {
     width: "60vh"
-  }
+  },
+  modalStyle: {
+    width: "792px",
+    backgroundColor: '#19274B',
+  },
+  dialogBox: {
+    fontSize: "28px"
+  },
 })
 
 export default function App() {
@@ -55,10 +74,21 @@ export default function App() {
   const [clubOwnerAddress, setClubOwnerAddress] = useState(null)
   const [fetched, setFetched] = useState(false)
   const [noWalletMessage, setNoWalletMessage] = useState(null)
+  const [open, setOpen] = useState(false)
   const router = useRouter()
 
   useEffect(() => {
-    checkNetwork()
+    const web3 = new Web3(Web3.givenProvider)
+    const networkIdRK = '4'
+    web3.eth.net.getId()
+      .then((networkId) => {
+        if (networkId != networkIdRK) {
+          setOpen(true)
+        }
+      })
+      .catch((err) => {
+        console.log(err)
+      });
     if (!fetched && walletID) {
       const getClubs = fetchClubByUserAddress(walletID)
       getClubs.then((result) => {
@@ -108,6 +138,21 @@ export default function App() {
     router.push(`/dashboard/${data.clubId}`, undefined, { shallow: true })
   }
 
+  const handleClose = (e) => {
+    e.preventDefault()
+    setOpen(false)
+  }
+
+  const handleSwitchNetwork = async () => {
+    const switched = await checkNetwork()
+    if (switched) {
+      setOpen(false)
+    }
+    else {
+      setOpen(true)
+    }
+  }
+
   return (
     <Layout>
         {clubFlow ? (
@@ -135,7 +180,7 @@ export default function App() {
                       <ListItemButton component="a" key={key} onClick={e => { handleItemClick(clubData[key]) }}>
                         <Grid container>
                           <Grid item md={2}>
-                            <Avatar variant="clubSelect">{club.name[0]}</Avatar>
+                            <img src={club.imageUrl} width="80vw" alt="club_image" />
                           </Grid>
                           <Grid item md={6}>
                             <Stack
@@ -186,7 +231,21 @@ export default function App() {
           </Grid>
 
         )}
-
+      <Dialog open={open} onClose={handleClose} scroll="body" PaperProps={{ classes: { root: classes.modalStyle } }} fullWidth maxWidth="lg" >
+        <DialogContent sx={{ overflow: "hidden", backgroundColor: '#19274B', }} >
+          <Grid container justifyContent="center" alignItems="center" direction="column" mt={3}>
+            <Grid item pl={15}>
+              <img src="/assets/images/connected_world_wuay.svg" width="80%" />
+            </Grid>
+            <Grid item m={3}>
+              <Typography className={classes.dialogBox}>You are in the wrong network, please switch to the correct network by clicking the button provided below</Typography>
+            </Grid>
+            <Grid item m={3}>
+              <Button variant="primary" onClick={() => {handleSwitchNetwork()}}>Switch Network</Button>
+            </Grid>
+          </Grid>
+        </DialogContent>
+      </Dialog>
     </Layout>
   )
 }

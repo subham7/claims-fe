@@ -9,10 +9,13 @@ import { onboard, disconnectWallet } from '../utils/wallet';
 import { useDispatch } from 'react-redux'
 import jazzicon from "@metamask/jazzicon"
 import {useState} from "react";
+import {useRouter} from "next/router";
 
 
 const StyledMenu = styled((props) => (
   <Menu
+    overflow= 'visible'
+    filter= 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))'
     elevation={0}
     anchorOrigin={{
       vertical: 'bottom',
@@ -26,9 +29,10 @@ const StyledMenu = styled((props) => (
   />
 ))(({ theme }) => ({
   '& .MuiPaper-root': {
-    borderRadius: 6,
+    borderRadius: 30,
+    border: "1px solid #C1D3FF40",
     marginTop: theme.spacing(1),
-    minWidth: 180,
+    minWidth: 280,
     color:
       theme.palette.mode === 'light' ? '#19274B' : theme.palette.grey[300],
     boxShadow:
@@ -40,7 +44,7 @@ const StyledMenu = styled((props) => (
     '& .MuiMenuItem-root': {
       '& .MuiSvgIcon-root': {
         fontSize: 18,
-        color: theme.palette.text.secondary,
+        color: "#F5F5F5",
         marginRight: theme.spacing(1.5),
         backgroundColor: "#19274B"
       },
@@ -49,6 +53,7 @@ const StyledMenu = styled((props) => (
           theme.palette.primary.main,
           theme.palette.action.selectedOpacity,
         ),
+        border: "1px solid #C1D3FF40"
       },
     },
   },
@@ -60,18 +65,25 @@ export default function AccountButton(props) {
   const open = Boolean(anchorEl);
   const dispatch = useDispatch();
   const [generated, setGenerated] = useState(false)
+  const router = useRouter()
+
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
   const handleClose = () => {
     setAnchorEl(null);
   };
+
   const handleDisconnect = async () => {
     const [primaryWallet] = onboard.state.get().wallets
-    await onboard.disconnectWallet({ 'label': primaryWallet.label })
+    await onboard.disconnectWallet({ 'label': localStorage.getItem("label" )})
     disconnectWallet(dispatch)
     setAnchorEl(null)
-    setMenuItems(false)
+    if (router.pathname === "/") {
+      router.reload()
+    } else {
+      router.push("/")
+    }
   };
 
   const generateJazzIcon = (account) => {
@@ -109,7 +121,7 @@ export default function AccountButton(props) {
         }}
         anchorEl={anchorEl}
         open={open}
-        close={handleClose}
+        onClose={handleClose}
         onDisconnect={handleDisconnect}
       >
         {menuItems && (

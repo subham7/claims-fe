@@ -151,7 +151,7 @@ const Create = (props) => {
   const [maxContribution, setMaxContribution] = useState('');
   const [mandatoryProposal, setMandatoryProposal] = useState(false);
   const [voteForQuorum, setVoteForQuorum] = useState(0);
-  const [depositClose, setDepositClose] = useState(new Date());
+  const [depositClose, setDepositClose] = useState(new Date(new Date().getTime() + (24 * 60 * 60 * 1000)) );
   const [membersLeaveDate, setMembersLeaveDate] = useState(null)
   const [minContribution, setMinContribution] = useState('');
   const [voteInFavour, setVoteInFavour] = useState(51);
@@ -323,7 +323,7 @@ const Create = (props) => {
         <Grid container direction="row"
           justifyContent="center"
           alignItems="center">
-          <Grid item md={6} mt={8}>
+          <Grid item md={8} mt={8}>
             <Typography className={classes.largeText1}>
               What&apos;s your club info?
             </Typography>
@@ -384,7 +384,7 @@ const Create = (props) => {
   const step2 = () => {
     return (
       <>
-        <Grid container direction="row">
+        <Grid container direction="row" justifyContent="center" alignItems="center" spacing={3}>
           <Grid item md={12} mt={8}>
             <Typography className={classes.largeText1}>
               Select your club&apos;s objective
@@ -394,29 +394,42 @@ const Create = (props) => {
               We’ve curated unique templates for likewise objectives so you can only focus on achieving them while we take care of the rest.
             </Typography>
           </Grid>
+          {contractList.map((data, key) => {
+            return (
+              <Grid item md={6} key={key} onClick={() => handleContractClick(key)}>
+                <ContractCard
+                    contractHeading={data.contractHeading}
+                    contractSubHeading={data.contractSubHeading}
+                    contractImage={data.image}
+                    star={data.star}
+                    inactive={data.inactive}
+                />
+              </Grid>
+            )
+          })}
         </Grid>
-        <Grid
-          container
-          direction="row"
-          justifyContent="center"
-          alignItems="center">
-          <Grid item md={12} mt={8}>
-            <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
-              {contractList.map((data, key) => {
-                return (
-                  <Grid item xs={6} key={key} onClick={() => handleContractClick(key)}>
-                    <ContractCard
-                      contractHeading={data.contractHeading}
-                      contractSubHeading={data.contractSubHeading}
-                      contractImage={data.image}
-                      star={data.star}
-                    />
-                  </Grid>
-                )
-              })}
-            </Grid>
-          </Grid>
-        </Grid>
+        {/*<Grid*/}
+        {/*  container*/}
+        {/*  direction="row"*/}
+        {/*  justifyContent="center"*/}
+        {/*  alignItems="center">*/}
+        {/*  <Grid item md={12} mt={8}>*/}
+        {/*    <Grid container rowSpacing={2} columnSpacing={{ xs: 1, sm: 2, md: 1, lg: 1 }}>*/}
+        {/*      {contractList.map((data, key) => {*/}
+        {/*        return (*/}
+        {/*          <Grid item md={6} key={key} onClick={() => handleContractClick(key)}>*/}
+        {/*            <ContractCard*/}
+        {/*              contractHeading={data.contractHeading}*/}
+        {/*              contractSubHeading={data.contractSubHeading}*/}
+        {/*              contractImage={data.image}*/}
+        {/*              star={data.star}*/}
+        {/*            />*/}
+        {/*          </Grid>*/}
+        {/*        )*/}
+        {/*      })}*/}
+        {/*  /!*  </Grid>*!/*/}
+        {/*  /!*</Grid>*!/*/}
+        {/*</Grid>*/}
       </>)
   }
 
@@ -519,7 +532,8 @@ const Create = (props) => {
                     inputFormat="dd/MM/yyyy"
                     value={depositClose}
                     onChange={e => handleChange(e)}
-                    renderInput={(params) => <TextField place{...params} sx={{ m: 1, width: 443, mt: 1, borderRadius: "10px", }} />}
+                    renderInput={(params) => <TextField onKeyDown={(e) => e.preventDefault()} place{...params} sx={{ m: 1, width: 443, mt: 1, borderRadius: "10px", }} />}
+                    minDate={depositClose}
                   />
                   </LocalizationProvider>
                 </Grid>
@@ -703,7 +717,7 @@ const Create = (props) => {
   const components = [step1(), step2(), step3()]
   return (
     <Layout2>
-      <Grid container item paddingLeft={{ xs: 5, sm: 5, md:10, lg:50 }} paddingTop={15} paddingRight={{xs: 10, sm: 5, md:10, lg:40 }} justifyContent="center" alignItems="center">
+      <Grid container item paddingLeft={{ xs: 5, sm: 5, md:10, lg:45 }} paddingTop={15} paddingRight={{xs: 5, sm: 5, md:10, lg:45 }} justifyContent="center" alignItems="center">
         <Box width={{ xs: "60%", sm: "70%", md:"80%", lg: "100%" }} paddingTop={10} >
           <Stepper activeStep={activeStep}>
             {steps.map((label, index) => {

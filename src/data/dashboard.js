@@ -41,18 +41,18 @@ export const commandTypeList = [
     // {
     //     commandId: 0,
     //     command: "airdropCustomToken",
-    //     commandText: "Air drop custom token"
-    // },
-    // {
-    //     commandId: 1,
-    //     command: "mintGTToAddress",
-    //     commandText: "Mint GTTo Address"
+    //     commandText: "Distribute token to members"
     // },
     {
-        commandId: 2,
-        command: "assignExecutorRole",
-        commandText: "Assign executor role"
+        commandId: 1,
+        command: "mintGTToAddress",
+        commandText: "Mint club token"
     },
+    // {
+    //     commandId: 2,
+    //     command: "assignExecutorRole",
+    //     commandText: "Assign executor role"
+    // },
     {
         commandId: 3,
         command: "updateGovernanceSettings",
@@ -71,7 +71,7 @@ export const commandTypeList = [
     {
         commandId: 6,
         command: "updateRaiseAmount",
-        commandText: "Update raise amount"
+        commandText: "Change total raise amount"
     },
     // {
     //     commandId: 7,

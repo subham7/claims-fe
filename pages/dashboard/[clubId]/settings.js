@@ -1,18 +1,12 @@
 import {React, useEffect, useState} from "react"
 import Layout1 from "../../../src/components/layouts/layout1"
 import {
-  Box,
   Card,
   Grid,
   Typography,
   Avatar,
-  Button,
   Stack,
-  Skeleton,
   Divider,
-  TableCell,
-  TableRow,
-  TableHead,
   Dialog,
   DialogContent,
   IconButton,
@@ -28,9 +22,9 @@ import USDCContract from "../../../src/abis/usdcTokenContract.json"
 import GovernorContract from "../../../src/abis/governorContract.json"
 import { SmartContract } from "../../../src/api/index"
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
-import LinkIcon from '@mui/icons-material/Link'
 import ClubFetch from "../../../src/utils/clubFetch"
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+import Image from "next/image";
 
 
 const useStyles = makeStyles({
@@ -138,6 +132,24 @@ const useStyles = makeStyles({
     opacity: "1",
     fontFamily: "Whyte",
   },
+  closeTag: {
+    width: "60px",
+    height: "20px",
+    borderRadius: "11px",
+    opacity: "1",
+    padding: "10px",
+    justifyContent: "center",
+    display: "flex",
+    alignItems: "center",
+    backgroundColor: "#FFB74D0D",
+  },
+  closeTagFont: {
+    padding: "1px",
+    fontSize: "12px",
+    textTransform: "uppercase",
+    color: "#FFB74D",
+    opacity: "1",
+  },
   iconColor: {
     color: "#C1D3FF",
   },
@@ -164,6 +176,7 @@ const Settings = (props) => {
   const daoAddress = useSelector(state => { return state.create.daoAddress })
   const dispatch = useDispatch()
   const router = useRouter()
+  const imageUrl = useSelector(state => {return state.create.clubImageUrl})
   const [dataFetched, setDataFetched] = useState(false)
   const walletAddress = useSelector(state => { return state.create.value })
   const [tokenDetails, settokenDetails] = useState(null)
@@ -182,6 +195,22 @@ const Settings = (props) => {
   const [membersDetails, setMembersDetails] = useState([])
   const [loaderOpen, setLoaderOpen] = useState(false)
   const [closingDays, setClosingDays] = useState(0)
+  const [userBalance, setUserBalance] = useState('')
+  const [userBalanceFetched, setUserBalanceFetched] = useState(false)
+
+  const fetchUserBalanceAPI = async () => {
+    if (daoAddress) {
+      const fetchUserBalance = new SmartContract(GovernorContract, daoAddress, undefined)
+      await fetchUserBalance.checkUserBalance()
+        .then((result) => {
+          setUserBalance(web3.utils.fromWei(result, "Mwei"))
+          setUserBalanceFetched(true)
+        },
+        (error) => {
+          setUserBalanceFetched(false)
+        })
+    }
+  }
 
   const tokenAPIDetailsRetrieval = async () => {
     let response = await fetchClubbyDaoAddress(daoAddress)
@@ -199,7 +228,6 @@ const Settings = (props) => {
       const tokenDetailContract = new SmartContract(USDCContract, tokenAPIDetails[0].tokenAddress, undefined)
       await tokenDetailContract.tokenDetails()
         .then((result) => {
-          // console.log(result)
           settokenDetails(result)
           setDataFetched(true)
         },
@@ -256,7 +284,6 @@ const Settings = (props) => {
       // maximim deposit amount from smart contract
       await governorDetailContract.threshold()
         .then((result) => {
-          // console.log(result)
           setMaxDeposit(result)
           setMaxDepositFetched(true)
         },
@@ -268,8 +295,6 @@ const Settings = (props) => {
   }
 
   const findCurrentMember = () => {
-    // console.log(walletAddress)
-    // console.log(membersDetails)
     if (membersFetched && membersDetails.length > 0 && walletAddress) {
       let obj = membersDetails.find(member => member.userAddress === walletAddress)
       let pos = membersDetails.indexOf(obj)
@@ -292,6 +317,16 @@ const Settings = (props) => {
 
   }, [daoAddress, apiTokenDetailSet, dataFetched, governorDetails, membersFetched])
 
+  useEffect(() => {
+    setLoaderOpen(true)
+
+    if (dataFetched) {
+      fetchUserBalanceAPI()
+      setLoaderOpen(false)
+
+    }
+  }, [dataFetched])
+
   const handleClickOpen = (e) => {
     e.preventDefault()
     setOpen(true)
@@ -310,7 +345,7 @@ const Settings = (props) => {
               <Card className={classes.cardRegular}>
                 <Grid container spacing={2}>
                   <Grid item mt={3} ml={3}>
-                    <Avatar variant="clubSelect2">{apiTokenDetailSet ? tokenAPIDetails[0].name[0] : null}</Avatar>
+                    <img src={imageUrl ?? null} width="100vw" alt="profile_pic"/>
                   </Grid>
                   <Grid item ml={1} mt={4} mb={7}>
                     <Stack spacing={0}>
@@ -326,12 +361,12 @@ const Settings = (props) => {
                   <Grid item ml={4} mt={5} mb={2} md={2.5}>
                     <Typography variant="settingText">Deposits deadline</Typography>
                     <Grid container>
-                      <Grid item>
+                      <Grid item mt={1}>
                         <Typography variant="p" className={classes.valuesStyle}>
                           {governorDataFetched ? new Date(parseInt(governorDetails[0]) * 1000).toJSON().slice(0, 10).split('-').reverse().join('/') : null}
                         </Typography>
                       </Grid>
-                      <Grid item ml={1}>
+                      <Grid item ml={1} mt={1}>
                         {governorDataFetched ?
                         closingDays > 0 ?
                         (<Card className={classes.openTag}>
@@ -352,7 +387,7 @@ const Settings = (props) => {
                         <Typography variant="p" className={classes.valuesDimStyle}>Minimum Deposits</Typography>
                       </Grid>
                       <Grid item mt={1}>
-                        <Typography variant="p" className={classes.valuesStyle}>{governorDataFetched ? governorDetails[1] + " USDC" : <Skeleton variant="rectangular" width={100} height={25} />}</Typography>
+                        <Typography variant="p" className={classes.valuesStyle}>{governorDataFetched ? governorDetails[1] + " USDC" : null}</Typography>
                       </Grid>
                     </Grid>
                   </Grid>
@@ -361,8 +396,8 @@ const Settings = (props) => {
                       <Grid item>
                         <Typography variant="p" className={classes.valuesDimStyle}>Maximum Deposit</Typography>
                       </Grid>
-                      <Grid item mt={2}>
-                        <Typography variant="p" className={classes.valuesStyle}>{governorDataFetched ? governorDetails[2] + " USDC" : <Skeleton variant="rectangular" width={100} height={25} />} </Typography>
+                      <Grid item mt={1}>
+                        <Typography variant="p" className={classes.valuesStyle}>{governorDataFetched ? governorDetails[2] + " USDC" : null} </Typography>
                       </Grid>
                     </Grid>
                   </Grid>
@@ -371,7 +406,7 @@ const Settings = (props) => {
                       <Grid item>
                         <Typography variant="p" className={classes.valuesDimStyle}>Members</Typography>
                       </Grid>
-                      <Grid item mt={2}>
+                      <Grid item mt={{ lg: 5, xl: 1}}>
                         <Typography variant="p" className={classes.valuesStyle}>{membersFetched ? members : 0}</Typography>
                       </Grid>
                     </Grid>
@@ -384,7 +419,7 @@ const Settings = (props) => {
                         <Typography variant="settingText">Tresury wallet</Typography>
                       </Grid>
                       <Grid item mt={2}>
-                        <Typography variant="p" className={classes.valuesStyle}>${dataFetched ? tokenDetails[2] / Math.pow(10, 18) : null}</Typography>
+                        <Typography variant="p" className={classes.valuesStyle}>${dataFetched ?  web3.utils.fromWei(tokenDetails[2], "Mwei") : null}</Typography>
                       </Grid>
                     </Grid>
                   </Grid>
@@ -394,7 +429,7 @@ const Settings = (props) => {
                         <Typography variant="settingText">Your ownership</Typography>
                       </Grid>
                       <Grid item mt={2}>
-                        <Typography variant="p" className={classes.valuesStyle}>{governorDataFetched && dataFetched ? isNaN((findCurrentMember() / (tokenDetails[2]/ Math.pow(10, 18))).toFixed(2) * 100) ? 0 : 0 : 0}% (${findCurrentMember()} )</Typography>
+                        <Typography variant="p" className={classes.valuesStyle}>{userBalanceFetched && dataFetched ? isNaN(parseFloat(userBalance) / web3.utils.fromWei(tokenDetails[2], "Mwei") * 100) ? 0 : (parseFloat(userBalance) / parseFloat(web3.utils.fromWei(tokenDetails[2], "Mwei")) * 100)  : 0}% (${userBalance} )</Typography>
                       </Grid>
                     </Grid>
                   </Grid>
@@ -406,7 +441,7 @@ const Settings = (props) => {
                   <Grid item ml={4} mt={1} mb={2}>
                     <Stack spacing={1}>
                       <Typography variant="settingText">Club Tokens Minted so far</Typography>
-                      <Typography variant="p" className={classes.valuesStyle}>{dataFetched ? (tokenDetails[2] / Math.pow(10, 18) + " $" + tokenDetails[1]) : null}</Typography>
+                      <Typography variant="p" className={classes.valuesStyle}>{dataFetched ? ( web3.utils.fromWei(tokenDetails[2], "Mwei") + " $" + tokenDetails[1]) : null}</Typography>
                     </Stack>
                   </Grid>
                   <Grid item ml={4} mt={1} mb={2} mr={4} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
@@ -505,19 +540,19 @@ const Settings = (props) => {
 
                   <Grid container ml={3} mr={4}>
                     <Grid item >
-                      <Typography variant="settingText">Accept new member requests?</Typography>
+                      <Typography variant="settingText">Gate contributions?</Typography>
                     </Grid>
                     <Grid item mr={4} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
-                      <Typography variant="p" className={classes.valuesStyle}>Yes <a className={classes.activityLink} onClick={(e) => handleClickOpen(e)}>(change)</a></Typography>
+                      <Typography variant="p" className={classes.valuesStyle}>No <a className={classes.activityLink} onClick={(e) => handleClickOpen(e)}>(propose)</a></Typography>
                     </Grid>
                   </Grid>
                   <Divider />
                   <Grid container ml={3} mr={4}>
                     <Grid item >
-                      <Typography variant="settingText">Accept new member requests?</Typography>
+                      <Typography variant="settingText">Enable/Disable contributions</Typography>
                     </Grid>
                     <Grid item mr={4} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
-                      <Typography variant="p" className={classes.valuesStyle}>Yes <a className={classes.activityLink} onClick={(e) => handleClickOpen(e)}>(change)</a></Typography>
+                      <Typography variant="p" className={classes.valuesStyle}>Enabled <a className={classes.activityLink} onClick={(e) => handleClickOpen(e)}>(propose)</a></Typography>
                     </Grid>
                   </Grid>
                   <Divider />

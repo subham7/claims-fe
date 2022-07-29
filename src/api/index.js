@@ -6,7 +6,17 @@ import { useDispatch } from "react-redux"
 import { addWallet, removeWallet } from "../redux/reducers/create"
 import {onboard} from "../utils/wallet"
 import axios from "axios";
+import SafeAppsSDK from '@gnosis.pm/safe-apps-sdk'
+import approveFunctionAbi from "../abis/approveFunctionAbi.json"
+import Web3Adapter from "@gnosis.pm/safe-web3-lib";
+import Safe, {EthSignSignature} from "@gnosis.pm/safe-core-sdk";
+import SafeServiceClient from "@gnosis.pm/safe-service-client";
 
+const opts = {
+  allowedDomains: [/gnosis-safe.io/],
+}
+
+const appsSdk = new SafeAppsSDK(opts);
 
 // Global variables
 const MAIN_API_URL = process.env.NEXT_PUBLIC_API_HOST
@@ -125,19 +135,84 @@ export class SmartContract{
       ).send( { from: this.walletAddress })
     }
 
-  async approveDeposit(address, amount) {
-    return this.contract.methods.approve(address, amount).send({ from: this.walletAddress })
+  async approveDepositGnosis(address, amount, daoAddress, tresuryAddress){
+    console.log(tresuryAddress)
+    const safeOwner = this.walletAddress
+    const ethAdapter = new Web3Adapter({
+      web3: this.web3,
+      signerAddress: safeOwner,
+    })
+    const txServiceUrl = 'https://safe-transaction.rinkeby.gnosis.io'
+    const safeService = new SafeServiceClient({ txServiceUrl, ethAdapter })
+    const web3 = new Web3(window.web3)
+
+    const usdcContract = new web3.eth.Contract(USDCContract.abi, USDC_CONTRACT_ADDRESS)
+    console.log("USDC contract address", USDC_CONTRACT_ADDRESS)
+    console.log(usdcContract)
+
+    const safeSdk = await Safe.create({ ethAdapter:ethAdapter, safeAddress: tresuryAddress })
+    const transaction = {
+      to: address[0],
+      data: usdcContract.methods.transfer(address[0], amount[0]).encodeABI(),
+      value: '0',
+    }
+    console.log(transaction)
+    const safeTransaction = await safeSdk.createTransaction(transaction)
+    console.log(safeTransaction)
+    await safeSdk.signTransaction(safeTransaction)
+    const safeTxHash = await safeSdk.getTransactionHash(safeTransaction)
+    console.log(safeTxHash)
+    await safeService.proposeTransaction({
+      safeAddress: "0x681716522F5c6D6C1D1A3684F91757504098e725",
+      safeTransaction: safeTransaction.data,
+      safeTxHash: safeTxHash,
+      senderAddress: this.walletAddress,
+      senderSignature: senderSignature.data
+    })
+    const tx = await safeService.getTransaction(safeTxHash)
+    console.log(tx)
+    const safeTransactionData = {
+      to: tx.to,
+      value: tx.value,
+      operation: tx.operation,
+      safeTxGas: tx.safeTxGas,
+      baseGas: tx.baseGas,
+      gasPrice: tx.gasPrice,
+      gasToken: tx.gasToken,
+      refundReceiver: tx.refundReceiver,
+      nonce: tx.nonce,
+      data: tx.data,
+    }
+    const safeTransaction2 = await safeSdk.createTransaction(safeTransactionData)
+
+    for (let i = 0; i < tx.confirmations.length; i++){
+      const signature = new EthSignSignature(tx.confirmations[i].owner, tx.confirmations[i].signature)
+      safeTransaction2.addSignature(signature)
+    }
+    console.log(safeTransaction2)
+    const executeTxResponse = await safeSdk.executeTransaction(safeTransaction2)
+    console.log(executeTxResponse)
+    const receipt = executeTxResponse.transactionResponse && (await executeTxResponse.transactionResponse.wait())
+    console.log(receipt)
+
   }
-  
+
+  async approveDeposit(address, amount) {
+    const number = new web3.utils.BN(amount);
+    return this.contract.methods.approve(address, web3.utils.toWei(number, 'ether')).send({ from: this.walletAddress })
+  }
   async deposit(address, amount) {
     return this.contract.methods.deposit(
-      address, 
-      amount
+      address, amount
       ).send({ from: this.walletAddress })
   }
   
   async balanceOf() {
     return this.contract.methods.balanceOf(this.walletAddress).call({from: this.walletAddress})
+  }
+
+  async checkUserBalance() {
+    return this.contract.methods.checkUserBalance(this.walletAddress).call({ from: this.walletAddress })
   }
 
   async ownerAddress() {
@@ -316,5 +391,20 @@ export async function getMembersDetails(clubId) {
 
 // update proposal status API
 export async function patchProposalStatus(proposalId) {
-  return await axios.patch(MAIN_API_URL + "proposal/status", { "proposalId" : proposalId})
+  return await axios.patch(MAIN_API_URL + "proposal/result", { "proposalId" : proposalId})
+}
+
+// get assets API
+export async function getAssets(clubId) {
+  return await axios.get(MAIN_API_URL + `assets/${clubId}`)
+}
+
+// update user amount status
+export async function patchUserBalance(data) {
+  return await axios.patch(MAIN_API_URL + "user/balance", data)
+}
+
+// check whether user exists in a club by user address
+export async function checkUserByClub(walletAddress, clubId) {
+  return await axios.get(MAIN_API_URL + `user/${walletAddress}/club/${clubId}/check`)
 }
