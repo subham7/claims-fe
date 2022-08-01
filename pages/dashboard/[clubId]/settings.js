@@ -25,6 +25,11 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import ClubFetch from "../../../src/utils/clubFetch"
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import Image from "next/image";
+import {
+  calculateTreasuryTargetShare,
+  calculateUserSharePercentage,
+  convertAmountToWei
+} from "../../../src/utils/globalFunctions";
 
 
 const useStyles = makeStyles({
@@ -419,7 +424,7 @@ const Settings = (props) => {
                         <Typography variant="settingText">Tresury wallet</Typography>
                       </Grid>
                       <Grid item mt={2}>
-                        <Typography variant="p" className={classes.valuesStyle}>${dataFetched ?  web3.utils.fromWei(tokenDetails[2], "Mwei") : null}</Typography>
+                        <Typography variant="p" className={classes.valuesStyle}>${dataFetched ?  convertAmountToWei(tokenDetails[2]) : null}</Typography>
                       </Grid>
                     </Grid>
                   </Grid>
@@ -429,19 +434,19 @@ const Settings = (props) => {
                         <Typography variant="settingText">Your ownership</Typography>
                       </Grid>
                       <Grid item mt={2}>
-                        <Typography variant="p" className={classes.valuesStyle}>{userBalanceFetched && dataFetched ? isNaN(parseFloat(userBalance) / web3.utils.fromWei(tokenDetails[2], "Mwei") * 100) ? 0 : (parseFloat(userBalance) / parseFloat(web3.utils.fromWei(tokenDetails[2], "Mwei")) * 100)  : 0}% (${userBalance} )</Typography>
+                        <Typography variant="p" className={classes.valuesStyle}>{userBalanceFetched && dataFetched ? isNaN(calculateUserSharePercentage(userBalance, tokenDetails[2])) ? 0 : (calculateUserSharePercentage(userBalance, tokenDetails[2]))  : 0}% (${userBalance} )</Typography>
                       </Grid>
                     </Grid>
                   </Grid>
                 </Grid>
                 <Grid item ml={3} mt={5} mb={2} mr={3}>
-                  <ProgressBar value={governorDataFetched && dataFetched ? parseInt(tokenDetails[2] / Math.pow(10, 18)) / parseInt(governorDetails[4]) * 100 : 0} />
+                  <ProgressBar value={governorDataFetched && dataFetched ? calculateTreasuryTargetShare(tokenDetails[2], governorDetails[4]) : 0} />
                 </Grid>
                 <Grid container spacing={2} >
                   <Grid item ml={4} mt={1} mb={2}>
                     <Stack spacing={1}>
                       <Typography variant="settingText">Club Tokens Minted so far</Typography>
-                      <Typography variant="p" className={classes.valuesStyle}>{dataFetched ? ( web3.utils.fromWei(tokenDetails[2], "Mwei") + " $" + tokenDetails[1]) : null}</Typography>
+                      <Typography variant="p" className={classes.valuesStyle}>{dataFetched ? ( convertAmountToWei(tokenDetails[2]) + " $" + tokenDetails[1]) : null}</Typography>
                     </Stack>
                   </Grid>
                   <Grid item ml={4} mt={1} mb={2} mr={4} xs sx={{ display: "flex", justifyContent: "flex-end" }}>

@@ -51,6 +51,7 @@ import {
   addTresuryAddress,
   addWallet,
 } from "../../src/redux/reducers/create"
+import {calculateTreasuryTargetShare, convertAmountToWei} from "../../src/utils/globalFunctions";
 
 const useStyles = makeStyles({
   valuesStyle: {
@@ -758,9 +759,7 @@ const Join = (props) => {
                 <ProgressBar
                   value={
                     governorDataFetched
-                      ? (parseFloat(tokenDetails[2] / Math.pow(10, 18)) /
-                          parseFloat(governorDetails[4])) *
-                        100
+                      ? calculateTreasuryTargetShare(tokenDetails[2], governorDetails[4])
                       : 0
                   }
                 />
@@ -793,7 +792,7 @@ const Join = (props) => {
                   <Grid item>
                     <Typography variant="p" className={classes.valuesStyle}>
                       {walletConnected ? (
-                        web3.utils.fromWei(tokenDetails[2], "Mwei") +
+                        convertAmountToWei(tokenDetails[2]) +
                         " $" +
                         tokenDetails[1]
                       ) : (
