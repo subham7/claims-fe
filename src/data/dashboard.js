@@ -73,11 +73,11 @@ export const commandTypeList = [
         command: "updateRaiseAmount",
         commandText: "Change total raise amount"
     },
-    // {
-    //     commandId: 7,
-    //     command: "sendCustomToken",
-    //     commandText: "Send custom token"
-    // },
+    {
+        commandId: 7,
+        command: "sendCustomToken",
+        commandText: "Send custom token"
+    },
     // {
     //     commandId: 8,
     //     command: "sendEth",
