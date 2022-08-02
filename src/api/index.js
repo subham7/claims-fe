@@ -136,7 +136,6 @@ export class SmartContract{
     }
 
   async approveDepositGnosis(address, amount, daoAddress, tresuryAddress){
-    console.log(tresuryAddress)
     const safeOwner = this.walletAddress
     const ethAdapter = new Web3Adapter({
       web3: this.web3,
@@ -147,21 +146,16 @@ export class SmartContract{
     const web3 = new Web3(window.web3)
 
     const usdcContract = new web3.eth.Contract(USDCContract.abi, USDC_CONTRACT_ADDRESS)
-    console.log("USDC contract address", USDC_CONTRACT_ADDRESS)
-    console.log(usdcContract)
 
     const safeSdk = await Safe.create({ ethAdapter:ethAdapter, safeAddress: tresuryAddress })
     const transaction = {
-      to: address[0],
+      to: USDC_CONTRACT_ADDRESS,
       data: usdcContract.methods.transfer(address[0], amount[0]).encodeABI(),
       value: '0',
     }
-    console.log(transaction)
     const safeTransaction = await safeSdk.createTransaction(transaction)
-    console.log(safeTransaction)
     await safeSdk.signTransaction(safeTransaction)
     const safeTxHash = await safeSdk.getTransactionHash(safeTransaction)
-    console.log(safeTxHash)
     const senderSignature = await safeSdk.signTransactionHash(safeTxHash)
     await safeService.proposeTransaction({
       safeAddress: tresuryAddress,
@@ -171,7 +165,6 @@ export class SmartContract{
       senderSignature: senderSignature.data,
     })
     const tx = await safeService.getTransaction(safeTxHash)
-    console.log(tx)
     const safeTransactionData = {
       to: tx.to,
       value: tx.value,
@@ -190,12 +183,9 @@ export class SmartContract{
       const signature = new EthSignSignature(tx.confirmations[i].owner, tx.confirmations[i].signature)
       safeTransaction2.addSignature(signature)
     }
-    console.log(safeTransaction2)
     const executeTxResponse = await safeSdk.executeTransaction(safeTransaction2)
-    console.log(executeTxResponse)
     const receipt = executeTxResponse.transactionResponse && (await executeTxResponse.transactionResponse.wait())
-    console.log(receipt)
-
+    return executeTxResponse
   }
 
   async approveDeposit(address, amount) {

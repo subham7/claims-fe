@@ -43,6 +43,7 @@ import { SmartContract } from "../../../../src/api/index"
 import USDCContract from "../../../../src/abis/usdcTokenContract.json"
 import GovernorContract from "../../../../src/abis/governorContract.json"
 import ClubFetch from "../../../../src/utils/clubFetch"
+import {convertToWei} from "../../../../src/utils/globalFunctions";
 
 
 const useStyles = makeStyles({
@@ -599,7 +600,7 @@ const Proposal = () => {
             {
               "executionId": 7,
               "customToken": customToken,
-              "customTokenAmounts": [parseFloat(customTokenAmounts)],
+              "customTokenAmounts": [convertToWei(customTokenAmounts)],
               "customTokenAddresses": [customTokenAddresses]
             }
           ],

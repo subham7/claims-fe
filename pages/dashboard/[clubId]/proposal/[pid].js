@@ -618,19 +618,28 @@ const ProposalDetail = () => {
         daoAddress,
         tresuryAddress)
       await transferApprovalResponse.then((result) => {
-        const updateStatus = patchProposalStatus(pid)
-        updateStatus.then((result) => {
-          if (result.status != 200) {
-            setExecuted(false)
-            setOpenSnackBar(true)
-            setMessage("Send custom token execution status update failed!")
-            setFailed(true)
-          } else {
-            setExecuted(true)
-            setOpenSnackBar(true)
-            setMessage("Send custom token execution successful!")
-            setFailed(false)
-          }
+        result.promiEvent.then((receipt) => {
+          console.log(receipt)
+          const updateStatus = patchProposalStatus(pid)
+          updateStatus.then((response) => {
+            if (response.status != 200) {
+              setExecuted(false)
+              setOpenSnackBar(true)
+              setMessage("Send custom token execution status update failed!")
+              setFailed(true)
+            } else {
+              setExecuted(true)
+              setOpenSnackBar(true)
+              setMessage("Send custom token execution successful!")
+              setFailed(false)
+            }
+          })
+        })
+        .catch((error) => {
+          setExecuted(false)
+          setOpenSnackBar(true)
+          setMessage("Send custom token execution status update failed!")
+          setFailed(true)
         })
         },
       (error) => {
