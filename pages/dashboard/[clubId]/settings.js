@@ -16,7 +16,14 @@ import { makeStyles } from "@mui/styles"
 import ProgressBar from "../../../src/components/progressbar"
 import Router, { useRouter } from "next/router"
 import { useSelector, useDispatch } from "react-redux"
-import { fetchClubbyDaoAddress, USDC_CONTRACT_ADDRESS, FACTORY_CONTRACT_ADDRESS, createUser, getMembersDetails } from "../../../src/api"
+import {
+  fetchClubbyDaoAddress,
+  USDC_CONTRACT_ADDRESS,
+  FACTORY_CONTRACT_ADDRESS,
+  createUser,
+  getMembersDetails,
+  getAssets
+} from "../../../src/api"
 import Web3 from "web3"
 import USDCContract from "../../../src/abis/usdcTokenContract.json"
 import GovernorContract from "../../../src/abis/governorContract.json"
@@ -179,6 +186,7 @@ const Settings = (props) => {
   // const router = useRouter()
   const classes = useStyles()
   const daoAddress = useSelector(state => { return state.create.daoAddress })
+  const tresuryAddress = useSelector(state => { return state.create.tresuryAddress})
   const dispatch = useDispatch()
   const router = useRouter()
   const imageUrl = useSelector(state => {return state.create.clubImageUrl})
@@ -202,6 +210,8 @@ const Settings = (props) => {
   const [closingDays, setClosingDays] = useState(0)
   const [userBalance, setUserBalance] = useState('')
   const [userBalanceFetched, setUserBalanceFetched] = useState(false)
+  const [clubAssetTokenFetched, setClubAssetTokenFetched] = useState(false)
+  const [clubAssetTokenData, setClubAssetTokenData] = useState([])
 
   const fetchUserBalanceAPI = async () => {
     if (daoAddress) {
@@ -257,6 +267,18 @@ const Settings = (props) => {
         }
       })
     }
+  }
+
+  const fetchClubAssetToken = () => {
+    const tokens = getAssets(clubId)
+    tokens.then((result) => {
+      if (result.status != 200) {
+        setClubAssetTokenFetched(false)
+      } else {
+        setClubAssetTokenData(result.data)
+        setClubAssetTokenFetched(true)
+      }
+    })
   }
 
   const contractDetailsRetrieval = async () => {
@@ -331,6 +353,12 @@ const Settings = (props) => {
 
     }
   }, [dataFetched])
+
+  useEffect(() => {
+    if (clubId) {
+      fetchClubAssetToken()
+    }
+  }, [clubId])
 
   const handleClickOpen = (e) => {
     e.preventDefault()
@@ -424,7 +452,7 @@ const Settings = (props) => {
                         <Typography variant="settingText">Tresury wallet</Typography>
                       </Grid>
                       <Grid item mt={2}>
-                        <Typography variant="p" className={classes.valuesStyle}>${dataFetched ?  convertAmountToWei(tokenDetails[2]) : null}</Typography>
+                        <Typography variant="p" className={classes.valuesStyle}>${clubAssetTokenFetched ? clubAssetTokenData.totalBalance : null}</Typography>
                       </Grid>
                     </Grid>
                   </Grid>
