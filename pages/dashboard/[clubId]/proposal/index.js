@@ -32,17 +32,19 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import { fontStyle } from "@mui/system"
 import SimpleSelectButton from "../../../../src/components/simpleSelectButton"
 import { proposalType, commandTypeList } from "../../../../src/data/dashboard"
-import { createProposal, getProposal, getTokens } from "../../../../src/api/index"
+import {getAssets} from "../../../../src/api/assets"
+import {createProposal, getProposal} from "../../../../src/api/proposal"
 import { DesktopDatePicker } from '@mui/x-date-pickers'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
 import Web3 from "web3";
 import { useSelector } from "react-redux"
 import { useRouter, withRouter } from "next/router"
-import { SmartContract } from "../../../../src/api/index"
+import { SmartContract } from "../../../../src/api/contract"
 import USDCContract from "../../../../src/abis/usdcTokenContract.json"
 import GovernorContract from "../../../../src/abis/governorContract.json"
 import ClubFetch from "../../../../src/utils/clubFetch"
+import {convertToWei} from "../../../../src/utils/globalFunctions";
 
 
 const useStyles = makeStyles({
@@ -253,6 +255,21 @@ const Proposal = () => {
   ]
 
 
+  const fetchTokens = () => {
+    if (tresuryAddress) {
+      const tokenData = getAssets(clubId)
+      tokenData.then((result) => {
+        if (result.status != 200) {
+          setTokenFetched(false)
+        } else {
+          console.log(result.data)
+          setTokenData(result.data.tokens)
+          setTokenFetched(true)
+        }
+      })
+    }
+  }
+
   const fetchData = () => {
     const proposalData = getProposal(clubID)
     proposalData.then((result) => {
@@ -262,17 +279,6 @@ const Proposal = () => {
         setProposalData(result.data)
         setFetched(true)
         setLoaderOpen(false)
-      }
-    })
-
-    const tokenData = getTokens(tresuryAddress)
-    tokenData.then((result) => {
-      if (result.status != 200) {
-        setTokenFetched(false)
-      } else {
-        console.log(result.data)
-        setTokenData(result.data)
-        setTokenFetched(true)
       }
     })
   }
@@ -582,39 +588,39 @@ const Proposal = () => {
         })
       }
 
-      // if (name === commandTypeList[7].commandText) {
-      //   // for execution of sending custom token
-      //   const payload = {
-      //     "name": title,
-      //     "description": description,
-      //     "createdBy": walletAddress,
-      //     "clubId": clubID,
-      //     "votingDuration": new Date(duration).toISOString(),
-      //     "votingOptions": defaultOptions,
-      //     "commands": [
-      //       {
-      //         "executionId": 7,
-      //         "customToken": customToken,
-      //         "customTokenAmounts": [parseFloat(customTokenAmounts)],
-      //         "customTokenAddresses": [customTokenAddresses]
-      //       }
-      //     ],
-      //     "type": "action"
-      //   }
-      //   const createRequest = createProposal(payload)
-      //   createRequest.then((result) => {
-      //     if (result.status !== 201) {
-      //       setOpenSnackBar(true)
-      //       setFailed(true)
-      //     } else {
-      //       // console.log(result.data)
-      //       fetchData()
-      //       setOpenSnackBar(true)
-      //       setFailed(false)
-      //       setOpen(false)
-      //     }
-      //   })
-      // }
+      if (name === commandTypeList[5].commandText) {
+        // for execution of sending custom token
+        const payload = {
+          "name": title,
+          "description": description,
+          "createdBy": walletAddress,
+          "clubId": clubID,
+          "votingDuration": new Date(duration).toISOString(),
+          "votingOptions": defaultOptions,
+          "commands": [
+            {
+              "executionId": 7,
+              "customToken": customToken,
+              "customTokenAmounts": [convertToWei(customTokenAmounts)],
+              "customTokenAddresses": [customTokenAddresses]
+            }
+          ],
+          "type": "action"
+        }
+        const createRequest = createProposal(payload)
+        createRequest.then((result) => {
+          if (result.status !== 201) {
+            setOpenSnackBar(true)
+            setFailed(true)
+          } else {
+            // console.log(result.data)
+            fetchData()
+            setOpenSnackBar(true)
+            setFailed(false)
+            setOpen(false)
+          }
+        })
+      }
       //
       // if (name === commandTypeList[8].commandText) {
       //   // For execution send ethereum
@@ -657,8 +663,12 @@ const Proposal = () => {
     if (create_proposal) {
       setOpen(true)
     }
-   fetchFilteredData("all")
+    fetchFilteredData("all")
   },[clubID])
+
+  useEffect(() => {
+    fetchTokens()
+  }, [tresuryAddress])
 
   const handleTypeChange = (event) => {
     const { target: { value } } = event
@@ -1193,52 +1203,52 @@ const Proposal = () => {
                                               </Grid>
                                             </Grid>
                                           ) :
-                                            // name === commandTypeList[7].commandText ? (
-                                            //   // send custom token execution
-                                            //   <Grid container ml={1} mt={1} mb={2} spacing={2} direction="column">
-                                            //     <Grid item>
-                                            //       <Typography className={classes.cardFont}>Custom token</Typography>
-                                            //     </Grid>
-                                            //     <Grid item>
-                                            //     <Select
-                                            //       displayEmpty
-                                            //       value={customToken}
-                                            //       onChange={handleTokenChange}
-                                            //       input={<OutlinedInput />}
-                                            //       renderValue={(selected) => {
-                                            //         if (selected.length === 0) {
-                                            //           return "Select a Token"
-                                            //         }
-                                            //         return selected
-                                            //       }}
-                                            //       MenuProps={tokenData}
-                                            //       style={{ borderRadius: "10px", background: "#111D38 0% 0% no-repeat padding-box", width: "90%" }}
-                                            //     >
-                                            //       {tokenData.slice(1).map((token) => (
-                                            //         <MenuItem
-                                            //           key={token.name}
-                                            //           value={token.tokenAddress}>
-                                            //           {token.token.name}
-                                            //         </MenuItem>
-                                            //       ))}
-                                            //     </Select>
-                                            //     </Grid>
-                                            //     <Grid item>
-                                            //       <Typography className={classes.cardFont}>Receiver&apos;s wallet address</Typography>
-                                            //     </Grid>
-                                            //     <Grid item>
-                                            //       <TextField sx={{ width: "90%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
-                                            //         placeholder="0x..." onChange={(e) => setCustomTokenAddresses(e.target.value)} />
-                                            //     </Grid>
-                                            //     <Grid item>
-                                            //       <Typography className={classes.cardFont}>Amount to be sent</Typography>
-                                            //     </Grid>
-                                            //     <Grid item>
-                                            //       <TextField sx={{ width: "90%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
-                                            //         placeholder="0" onChange={(e) => setCustomTokenAmounts(e.target.value)} />
-                                            //     </Grid>
-                                            //   </Grid>
-                                            // ) :
+                                            name === commandTypeList[5].commandText ? (
+                                              // send custom token execution
+                                              <Grid container ml={1} mt={1} mb={2} spacing={2} direction="column">
+                                                <Grid item>
+                                                  <Typography className={classes.cardFont}>Custom token</Typography>
+                                                </Grid>
+                                                <Grid item>
+                                                <Select
+                                                  displayEmpty
+                                                  value={customToken}
+                                                  onChange={handleTokenChange}
+                                                  input={<OutlinedInput />}
+                                                  renderValue={(selected) => {
+                                                    if (selected.length === 0) {
+                                                      return "Select a Token"
+                                                    }
+                                                    return selected
+                                                  }}
+                                                  MenuProps={tokenData}
+                                                  style={{ borderRadius: "10px", background: "#111D38 0% 0% no-repeat padding-box", width: "90%" }}
+                                                >
+                                                  {tokenData.slice(1).map((token) => (
+                                                    <MenuItem
+                                                      key={token.name}
+                                                      value={token.tokenAddress}>
+                                                      {token.token.name}
+                                                    </MenuItem>
+                                                  ))}
+                                                </Select>
+                                                </Grid>
+                                                <Grid item>
+                                                  <Typography className={classes.cardFont}>Receiver&apos;s wallet address</Typography>
+                                                </Grid>
+                                                <Grid item>
+                                                  <TextField sx={{ width: "90%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
+                                                    placeholder="0x..." onChange={(e) => setCustomTokenAddresses(e.target.value)} />
+                                                </Grid>
+                                                <Grid item>
+                                                  <Typography className={classes.cardFont}>Amount to be sent</Typography>
+                                                </Grid>
+                                                <Grid item>
+                                                  <TextField sx={{ width: "90%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
+                                                    placeholder="0" onChange={(e) => setCustomTokenAmounts(e.target.value)} />
+                                                </Grid>
+                                              </Grid>
+                                            ) :
                                 null
                                             //   name === commandTypeList[8].commandText ? (
                                             //     // send eth execution

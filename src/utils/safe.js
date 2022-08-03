@@ -1,15 +1,15 @@
 import Web3 from "web3"
 import Web3Adapter from "@gnosis.pm/safe-web3-lib"
-
 import { SafeFactory } from "@gnosis.pm/safe-core-sdk"
-//import { ethAdapter } from "./web3-adapter"
 import { safeConnected, safeDisconnected } from "../redux/reducers/gnosis"
 import { addDaoAddress, addClubID } from "../redux/reducers/create"
 import store from "../redux/store"
-import { createClub, SmartContract, FACTORY_CONTRACT_ADDRESS, fetchClub } from "../api"
+import { SmartContract } from "../api/contract"
+import {createClub, fetchClub} from "../api/club"
+import { FACTORY_CONTRACT_ADDRESS } from "../api"
 import FactoryContract from "../abis/factoryContract.json"
 import Router from "next/router"
-import { createUser } from "../../src/api/index"
+import { createUser } from "../api/user"
 
 async function gnosisSafePromise(owners, threshold, dispatch) {
   try {

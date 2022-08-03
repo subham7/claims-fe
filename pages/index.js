@@ -18,7 +18,7 @@ import { makeStyles } from "@mui/styles"
 import AddIcon from '@mui/icons-material/Add'
 import { style } from "@mui/system"
 import Router, { useRouter } from "next/router"
-import { fetchClubByUserAddress } from "../src/api/index"
+import { fetchClubByUserAddress } from "../src/api/user"
 import store from "../src/redux/store"
 import { addClubName, addDaoAddress, addClubID, addClubRoute } from "../src/redux/reducers/create"
 import {checkNetwork} from "../src/utils/wallet"

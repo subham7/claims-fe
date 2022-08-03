@@ -26,31 +26,19 @@ import { connectWallet, setUserChain, onboard } from "../../src/utils/wallet"
 import { useDispatch } from "react-redux"
 import { useRouter } from "next/router"
 import {
-  fetchClubbyDaoAddress,
   USDC_CONTRACT_ADDRESS,
   FACTORY_CONTRACT_ADDRESS,
-  createUser,
-  getMembersDetails,
-  fetchClub,
-  patchUserBalance,
-  checkUserByClub,
 } from "../../src/api"
+import { fetchClub, fetchClubbyDaoAddress } from "../../src/api/club"
+import {createUser} from "../../src/api/user"
+import {getMembersDetails, patchUserBalance, checkUserByClub} from "../../src/api/user"
 import store from "../../src/redux/store"
 import Web3 from "web3"
 import USDCContract from "../../src/abis/usdcTokenContract.json"
 import GovernorContract from "../../src/abis/governorContract.json"
-import { SmartContract } from "../../src/api/index"
+import { SmartContract } from "../../src/api/contract"
 import { checkNetwork } from "../../src/utils/wallet"
-import {
-  addClubID,
-  addClubImageUrl,
-  addClubName,
-  addClubRoute,
-  addDaoAddress,
-  addTokenAddress,
-  addTresuryAddress,
-  addWallet,
-} from "../../src/redux/reducers/create"
+import {calculateTreasuryTargetShare, convertAmountToWei} from "../../src/utils/globalFunctions";
 
 const useStyles = makeStyles({
   valuesStyle: {
@@ -758,9 +746,7 @@ const Join = (props) => {
                 <ProgressBar
                   value={
                     governorDataFetched
-                      ? (parseFloat(tokenDetails[2] / Math.pow(10, 18)) /
-                          parseFloat(governorDetails[4])) *
-                        100
+                      ? calculateTreasuryTargetShare(tokenDetails[2], governorDetails[4])
                       : 0
                   }
                 />
@@ -793,7 +779,7 @@ const Join = (props) => {
                   <Grid item>
                     <Typography variant="p" className={classes.valuesStyle}>
                       {walletConnected ? (
-                        web3.utils.fromWei(tokenDetails[2], "Mwei") +
+                        convertAmountToWei(tokenDetails[2]) +
                         " $" +
                         tokenDetails[1]
                       ) : (

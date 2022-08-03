@@ -28,11 +28,18 @@ import BasicTable from "../../../src/components/table"
 import CollectionCard from "../../../src/components/cardcontent"
 import Router, { useRouter } from "next/router"
 import ClubFetch from "../../../src/utils/clubFetch"
-import { SmartContract, fetchClubbyDaoAddress, getMembersDetails, getBalance, getProposal, getAssets, USDC_CONTRACT_ADDRESS, getNfts } from "../../../src/api"
+import { SmartContract }  from "../../../src/api/contract"
+import { USDC_CONTRACT_ADDRESS } from "../../../src/api"
+import {getProposal} from "../../../src/api/proposal"
+import {fetchClubbyDaoAddress} from "../../../src/api/club"
+import {getNfts, getBalance} from "../../../src/api/gnosis"
+import {getAssets} from "../../../src/api/assets"
+import {getMembersDetails} from "../../../src/api/user"
 import GovernorContract from "../../../src/abis/governorContract.json"
 import USDCContract from "../../../src/abis/usdcTokenContract.json"
 import { useSelector } from "react-redux"
 import Image from "next/image";
+import {calculateUserSharePercentage} from "../../../src/utils/globalFunctions";
 
 const useStyles = makeStyles({
   media: {
@@ -601,7 +608,7 @@ const Dashboard = (props) => {
                       {/*{findCurrentMember()}*/}
                     </Typography>
                     <Typography className={classes.card1text5}>
-                      {userBalanceFetched && dataFetched ? isNaN(parseFloat(userBalance) / parseFloat(web3.utils.fromWei(tokenDetails[2], "Mwei")) * 100) ? 0 : (parseFloat(userBalance) / parseFloat(web3.utils.fromWei(tokenDetails[2], "Mwei")) * 100) : 0}%
+                      {userBalanceFetched && dataFetched ? isNaN(calculateUserSharePercentage(userBalance, tokenDetails[2])) ? 0 : (calculateUserSharePercentage(userBalance, tokenDetails[2])) : 0}%
                     </Typography>
                     <Grid container item xs sx={{ display: "flex", justifyContent: "flex-end"}}>
                       <Button variant="transparent" onClick={importTokenToMetaMask}>Import token</Button>

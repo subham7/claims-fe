@@ -2,7 +2,7 @@ import React, { createContext, useState, useContext, useEffect } from 'react'
 import Web3 from "web3" 
 import Router, { useRouter } from 'next/router'
 import { useDispatch, useSelector } from "react-redux"
-import { fetchClub } from "../api/index"
+import { fetchClub } from "../api/club"
 import {
   addClubID,
   addClubName,
