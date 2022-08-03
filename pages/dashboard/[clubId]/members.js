@@ -22,7 +22,7 @@ import {
 } from "@mui/material"
 import SearchIcon from "@mui/icons-material/Search"
 import BasicTable from "../../../src/components/table"
-import {getMembersDetails} from "../../../src/api/index"
+import {getMembersDetails} from "../../../src/api/user"
 import { useSelector } from "react-redux"
 import Paper from '@mui/material/Paper';
 import { useRouter } from "next/router"

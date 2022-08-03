@@ -32,14 +32,15 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import { fontStyle } from "@mui/system"
 import SimpleSelectButton from "../../../../src/components/simpleSelectButton"
 import { proposalType, commandTypeList } from "../../../../src/data/dashboard"
-import {createProposal, getAssets, getProposal, getTokens} from "../../../../src/api/index"
+import {getAssets} from "../../../../src/api/assets"
+import {createProposal, getProposal} from "../../../../src/api/proposal"
 import { DesktopDatePicker } from '@mui/x-date-pickers'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
 import Web3 from "web3";
 import { useSelector } from "react-redux"
 import { useRouter, withRouter } from "next/router"
-import { SmartContract } from "../../../../src/api/index"
+import { SmartContract } from "../../../../src/api/contract"
 import USDCContract from "../../../../src/abis/usdcTokenContract.json"
 import GovernorContract from "../../../../src/abis/governorContract.json"
 import ClubFetch from "../../../../src/utils/clubFetch"

@@ -34,7 +34,10 @@ import CloseIcon from '@mui/icons-material/Close'
 import ProgressBar from "../../../../src/components/progressbar"
 import { useDispatch, useSelector } from "react-redux"
 import { addProposalId } from "../../../../src/redux/reducers/create"
-import { getProposalDetail, castVote, getMembersDetails, SmartContract, patchProposalStatus, USDC_CONTRACT_ADDRESS } from "../../../../src/api/index"
+import { SmartContract } from "../../../../src/api/contract"
+import {getProposalDetail, castVote, patchProposalExecuted} from "../../../../src/api/proposal"
+import {USDC_CONTRACT_ADDRESS } from "../../../../src/api/index"
+import {getMembersDetails} from "../../../../src/api/user"
 import GovernorContract from "../../../../src/abis/governorContract.json"
 import USDCContract from "../../../../src/abis/usdcTokenContract.json"
 import ClubFetch from "../../../../src/utils/clubFetch"
@@ -174,7 +177,7 @@ const ProposalDetail = () => {
       dispatch(addProposalId(pid))
       const proposalData = getProposalDetail(pid)
       proposalData.then((result) => {
-        if (result.status != 200) {
+        if (result.status !== 200) {
           setFetched(false)
         } else {
           setProposalData(result.data)
@@ -183,10 +186,10 @@ const ProposalDetail = () => {
       })
   }
 
-  const fetcheMembersData = () => {
+  const fetchMembersData = () => {
       const membersData = getMembersDetails(clubID)
       membersData.then((result) => {
-        if (result.status != 200) {
+        if (result.status !== 200) {
           setMembersFetched(false)
         } else {
           setMembers(result.data)
@@ -219,7 +222,7 @@ const ProposalDetail = () => {
   useEffect(() => {
     setLoaderOpen(true)
     if (clubId) {
-      fetcheMembersData()
+      fetchMembersData()
     }
   }, [clubId])
 
@@ -234,6 +237,7 @@ const ProposalDetail = () => {
   }
 
   const submitVote = () => {
+    setLoaderOpen(true)
     const web3 = new Web3(window.web3)
     const userAddress = web3.utils.toChecksumAddress(walletAddress)
     const payload = {
@@ -247,8 +251,10 @@ const ProposalDetail = () => {
       if (result.status !== 201) {
         console.log(result.statusText)
         setVoted(false)
+        setLoaderOpen(false)
       } else {
         setVoted(true)
+        setLoaderOpen(false)
       }
     })
   }
@@ -272,7 +278,8 @@ const ProposalDetail = () => {
   }
 
   const executeFunction = async() => {
-    if (proposalData[0].commands[0].executionId == 0) {
+    setLoaderOpen(true)
+    if (proposalData[0].commands[0].executionId === 0) {
       // for airdrop execution
       const updateProposal = new SmartContract(GovernorContract, daoAddress, undefined)
       const response = updateProposal.updateProposalAndExecution(
@@ -298,18 +305,20 @@ const ProposalDetail = () => {
         undefined,
       )
       response.then((result) => {
-        const updateStatus = patchProposalStatus(pid)
+        const updateStatus = patchProposalExecuted(pid)
         updateStatus.then((result) => {
-          if (result.status != 200) {
+          if (result.status !== 200) {
             setExecuted(false)
             setOpenSnackBar(true)
             setMessage("Airdrop execution status update failed!")
             setFailed(true)
+            setLoaderOpen(false)
           } else {
             setExecuted(true)
             setOpenSnackBar(true)
             setMessage("Airdrop execution successful!")
             setFailed(false)
+            setLoaderOpen(false)
           }
         })
       }, (error) => {
@@ -317,10 +326,11 @@ const ProposalDetail = () => {
         setOpenSnackBar(true)
         setMessage("Airdrop execution failed!")
         setFailed(true)
+        setLoaderOpen(false)
       })
     }
 
-    if (proposalData[0].commands[0].executionId == 1) {
+    if (proposalData[0].commands[0].executionId === 1) {
       // for mintGT execution
       const updateProposal = new SmartContract(GovernorContract, daoAddress, undefined)
       const response = updateProposal.updateProposalAndExecution(
@@ -346,19 +356,20 @@ const ProposalDetail = () => {
         undefined,
       )
       response.then((result) => {
-        console.log(result)
-        const updateStatus = patchProposalStatus(pid)
+        const updateStatus = patchProposalExecuted(pid)
         updateStatus.then((result) => {
-          if (result.status != 200) {
+          if (result.status !== 200) {
             setExecuted(false)
             setOpenSnackBar(true)
             setMessage("MintGT execution status update failed!")
             setFailed(true)
+            setLoaderOpen(false)
           } else {
             setExecuted(true)
             setOpenSnackBar(true)
             setMessage("MintGT execution successful!")
             setFailed(false)
+            setLoaderOpen(false)
           }
         })
       }, (error) => {
@@ -367,10 +378,11 @@ const ProposalDetail = () => {
         setOpenSnackBar(true)
         setMessage("MintGT execution failed!")
         setFailed(true)
+        setLoaderOpen(false)
       })
     }
 
-    if (proposalData[0].commands[0].executionId == 2) {
+    if (proposalData[0].commands[0].executionId === 2) {
       const web3 = new Web3(window.web3)
       // for assigner executor role execution
       const updateProposal = new SmartContract(GovernorContract, daoAddress, undefined)
@@ -397,18 +409,20 @@ const ProposalDetail = () => {
         [web3.utils.toChecksumAddress(proposalData[0].commands[0].executiveRoles)],
       )
       response.then((result) => {
-        const updateStatus = patchProposalStatus(pid)
+        const updateStatus = patchProposalExecuted(pid)
         updateStatus.then((result) => {
-          if (result.status != 200) {
+          if (result.status !== 200) {
             setExecuted(false)
             setOpenSnackBar(true)
             setMessage("Assigner executor role status update failed!")
             setFailed(true)
+            setLoaderOpen(false)
           } else {
             setExecuted(true)
             setOpenSnackBar(true)
             setMessage("Assigner executor role allocation successful!")
             setFailed(false)
+            setLoaderOpen(false)
           }
         })
       }, (error) => {
@@ -416,9 +430,10 @@ const ProposalDetail = () => {
         setOpenSnackBar(true)
         setMessage("Assigner executor role allocation failed!")
         setFailed(true)
+        setLoaderOpen(false)
       })
     }
-    if (proposalData[0].commands[0].executionId == 3) {
+    if (proposalData[0].commands[0].executionId === 3) {
       // For execution of Governance settings
       const updateProposal = new SmartContract(GovernorContract, daoAddress, undefined)
       const response = updateProposal.updateProposalAndExecution(
@@ -444,18 +459,20 @@ const ProposalDetail = () => {
         undefined
       )
       response.then((result) => {
-        const updateStatus = patchProposalStatus(pid)
+        const updateStatus = patchProposalExecuted(pid)
         updateStatus.then((result) => {
-          if (result.status != 200) {
+          if (result.status !== 200) {
             setExecuted(false)
             setOpenSnackBar(true)
             setMessage("Governance settings status update failed!")
             setFailed(true)
+            setLoaderOpen(false)
           } else {
             setExecuted(true)
             setOpenSnackBar(true)
             setMessage("Governance settings execution successful!")
             setFailed(false)
+            setLoaderOpen(false)
           }
         })
       }, (error) => {
@@ -463,10 +480,11 @@ const ProposalDetail = () => {
         setOpenSnackBar(true)
         setMessage("Governance settings execution failed!")
         setFailed(true)
+        setLoaderOpen(false)
       })
     }
 
-    if (proposalData[0].commands[0].executionId == 4) {
+    if (proposalData[0].commands[0].executionId === 4) {
       // start deposit execution
       const updateProposal = new SmartContract(GovernorContract, daoAddress, undefined)
       const response = updateProposal.updateProposalAndExecution(
@@ -492,18 +510,20 @@ const ProposalDetail = () => {
         undefined
       )
       response.then((result) => {
-        const updateStatus = patchProposalStatus(pid)
+        const updateStatus = patchProposalExecuted(pid)
         updateStatus.then((result) => {
-          if (result.status != 200) {
+          if (result.status !== 200) {
             setExecuted(false)
             setOpenSnackBar(true)
             setMessage("Start deposit execution status update failed!")
             setFailed(true)
+            setLoaderOpen(false)
           } else {
             setExecuted(true)
             setOpenSnackBar(true)
             setMessage("Start deposit execution successful!")
             setFailed(false)
+            setLoaderOpen(false)
           }
         })
       }, (error) => {
@@ -511,10 +531,11 @@ const ProposalDetail = () => {
         setOpenSnackBar(true)
         setMessage("Start deposit execution failed!")
         setFailed(true)
+        setLoaderOpen(false)
       })
     }
 
-    if (proposalData[0].commands[0].executionId == 5) {
+    if (proposalData[0].commands[0].executionId === 5) {
       // close deposit execution
       const updateProposal = new SmartContract(GovernorContract, daoAddress, undefined)
       const response = updateProposal.updateProposalAndExecution(
@@ -540,18 +561,20 @@ const ProposalDetail = () => {
         undefined
       )
       response.then((result) => {
-        const updateStatus = patchProposalStatus(pid)
+        const updateStatus = patchProposalExecuted(pid)
         updateStatus.then((result) => {
-          if (result.status != 200) {
+          if (result.status !== 200) {
             setExecuted(false)
             setOpenSnackBar(true)
             setMessage("Close deposit execution status update failed!")
             setFailed(true)
+            setLoaderOpen(false)
           } else {
             setExecuted(true)
             setOpenSnackBar(true)
             setMessage("Close deposit execution successful!")
             setFailed(false)
+            setLoaderOpen(false)
           }
         })
       }, (error) => {
@@ -559,9 +582,10 @@ const ProposalDetail = () => {
         setOpenSnackBar(true)
         setMessage("Close deposit execution failed!")
         setFailed(true)
+        setLoaderOpen(false)
       })
     }
-    if (proposalData[0].commands[0].executionId == 6) {
+    if (proposalData[0].commands[0].executionId === 6) {
       // update raise amount execution
       const updateProposal = new SmartContract(GovernorContract, daoAddress, undefined)
       const response = updateProposal.updateProposalAndExecution(
@@ -587,18 +611,20 @@ const ProposalDetail = () => {
         undefined
       )
       response.then((result) => {
-        const updateStatus = patchProposalStatus(pid)
+        const updateStatus = patchProposalExecuted(pid)
         updateStatus.then((result) => {
-          if (result.status != 200) {
+          if (result.status !== 200) {
             setExecuted(false)
             setOpenSnackBar(true)
             setMessage("Raise amount execution status update failed!")
             setFailed(true)
+            setLoaderOpen(false)
           } else {
             setExecuted(true)
             setOpenSnackBar(true)
             setMessage("Update raise amount execution successful!")
             setFailed(false)
+            setLoaderOpen(false)
           }
         })
       }, (error) => {
@@ -606,10 +632,11 @@ const ProposalDetail = () => {
         setOpenSnackBar(true)
         setMessage("Update raise amount execution failed!")
         setFailed(true)
+        setLoaderOpen(false)
       })
     }
 
-    if (proposalData[0].commands[0].executionId == 7) {
+    if (proposalData[0].commands[0].executionId === 7) {
       // send custom token execution
       const sendCustomToken = new SmartContract(GovernorContract, daoAddress, undefined)
       const transferApprovalResponse = sendCustomToken.approveDepositGnosis(
@@ -620,18 +647,20 @@ const ProposalDetail = () => {
       await transferApprovalResponse.then((result) => {
         result.promiEvent.then((receipt) => {
           console.log(receipt)
-          const updateStatus = patchProposalStatus(pid)
+          const updateStatus = patchProposalExecuted(pid)
           updateStatus.then((response) => {
-            if (response.status != 200) {
+            if (response.status !== 200) {
               setExecuted(false)
               setOpenSnackBar(true)
               setMessage("Send custom token execution status update failed!")
               setFailed(true)
+              setLoaderOpen(false)
             } else {
               setExecuted(true)
               setOpenSnackBar(true)
               setMessage("Send custom token execution successful!")
               setFailed(false)
+              setLoaderOpen(false)
             }
           })
         })
@@ -640,6 +669,7 @@ const ProposalDetail = () => {
           setOpenSnackBar(true)
           setMessage("Send custom token execution status update failed!")
           setFailed(true)
+          setLoaderOpen(false)
         })
         },
       (error) => {
@@ -648,10 +678,11 @@ const ProposalDetail = () => {
         setOpenSnackBar(true)
         setMessage("Send custom token approval failed!")
         setFailed(true)
+        setLoaderOpen(false)
       })
     }
 
-    if (proposalData[0].commands[0].executionId == 8) {
+    if (proposalData[0].commands[0].executionId === 8) {
       // send ethereum
       const updateProposal = new SmartContract(GovernorContract, daoAddress, undefined)
       const response = updateProposal.updateProposalAndExecution(
@@ -677,18 +708,20 @@ const ProposalDetail = () => {
         undefined
       )
       response.then((result) => {
-        const updateStatus = patchProposalStatus(pid)
+        const updateStatus = patchProposalExecuted(pid)
         updateStatus.then((result) => {
-          if (result.status != 200) {
+          if (result.status !== 200) {
             setExecuted(false)
             setOpenSnackBar(true)
             setMessage("Send ETH execution status update failed!")
             setFailed(true)
+            setLoaderOpen(false)
           } else {
             setExecuted(true)
             setOpenSnackBar(true)
             setMessage("Send ETH execution successful!")
             setFailed(false)
+            setLoaderOpen(false)
           }
         })
       }, (error) => {
@@ -697,6 +730,7 @@ const ProposalDetail = () => {
         setOpenSnackBar(true)
         setMessage("Send ETH execution failed!")
         setFailed(true)
+        setLoaderOpen(false)
       })
     }
   }
@@ -707,7 +741,7 @@ const ProposalDetail = () => {
       let userAddress = walletAddress
       userAddress = web3.utils.toChecksumAddress(userAddress)
       let obj = proposalData[0].vote.find(voteCasted => voteCasted.voterAddress === userAddress)
-      return proposalData[0].vote.indexOf(obj) >= 0 ? true : false
+      return proposalData[0].vote.indexOf(obj) >= 0
     }
   }
 
@@ -717,7 +751,7 @@ const ProposalDetail = () => {
       let userAddress = walletAddress
       userAddress = web3.utils.toChecksumAddress(userAddress)
       let obj = proposalData[0].vote.find(voteCasted => voteCasted.voterAddress === userAddress)
-      return proposalData[0].vote.indexOf(obj) >= 0 ? true : false
+      return proposalData[0].vote.indexOf(obj) >= 0
     }
   }
 

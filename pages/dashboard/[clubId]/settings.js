@@ -17,17 +17,16 @@ import ProgressBar from "../../../src/components/progressbar"
 import Router, { useRouter } from "next/router"
 import { useSelector, useDispatch } from "react-redux"
 import {
-  fetchClubbyDaoAddress,
   USDC_CONTRACT_ADDRESS,
   FACTORY_CONTRACT_ADDRESS,
-  createUser,
-  getMembersDetails,
-  getAssets
 } from "../../../src/api"
+import {getMembersDetails} from "../../../src/api/user"
 import Web3 from "web3"
 import USDCContract from "../../../src/abis/usdcTokenContract.json"
 import GovernorContract from "../../../src/abis/governorContract.json"
-import { SmartContract } from "../../../src/api/index"
+import { SmartContract } from "../../../src/api/contract"
+import {fetchClubbyDaoAddress} from "../../../src/api/club"
+import {getAssets} from "../../../src/api/assets"
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import ClubFetch from "../../../src/utils/clubFetch"
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
