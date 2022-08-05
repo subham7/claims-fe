@@ -14,6 +14,8 @@ import {
 addClubImageUrl
 } from '../redux/reducers/create'
 import { checkNetwork } from "./wallet"
+import {loginToken} from "../api/auth";
+import {setJwtToken, setRefreshToken} from "./auth";
 
 
 const ClubFetch = (Component) => {
@@ -28,10 +30,20 @@ const ClubFetch = (Component) => {
         if(clubId) {
           const clubData = fetchClub(clubId)
           clubData.then((result) => {
-            if (result.status != 200) {
+            if (result.status !== 200) {
             } else {
               const web3 = new Web3(window.web3)
               const checkedwallet = web3.utils.toChecksumAddress(localStorage.getItem("wallet"))
+              const getLoginToken = loginToken(checkedwallet)
+              getLoginToken.then((response) => {
+                if (response.status !== 200) {
+                  console.log(response.data.error)
+                  router.push('/')
+                } else {
+                  setJwtToken(response.data.tokens.access.token)
+                  setRefreshToken(response.data.tokens.refresh.token)
+                }
+              })
               dispatch(addWallet(checkedwallet))
               dispatch(addClubID(result.data[0].clubId))
               dispatch(addClubName(result.data[0].name))

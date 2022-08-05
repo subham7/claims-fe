@@ -23,6 +23,8 @@ import store from "../src/redux/store"
 import { addClubName, addDaoAddress, addClubID, addClubRoute } from "../src/redux/reducers/create"
 import {checkNetwork} from "../src/utils/wallet"
 import Web3 from "web3";
+import {setJwtToken, setRefreshToken} from "../src/utils/auth";
+import {loginToken} from "../src/api/auth";
 
 
 const useStyles = makeStyles({
@@ -112,13 +114,23 @@ export default function App() {
     let wallet = connectWallet(dispatch)
     wallet.then((response) => {
       if (response) {
+        const getLoginToken = loginToken(localStorage.getItem("wallet"))
+        getLoginToken.then((response) => {
+          if (response.status !== 200) {
+            console.log(response.data.error)
+          }
+          else {
+            console.log(response)
+            setJwtToken(response.data.tokens.access.token)
+            setRefreshToken(response.data.tokens.refresh.token)
+          }
+        })
         setWalletID(localStorage.getItem("wallet"))
         setClubFlow(true)
       } else {
         setClubFlow(false)
       }
     })
-
   }
 
   const handleCreateButtonClick = async (event) => {

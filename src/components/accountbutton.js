@@ -10,6 +10,7 @@ import { useDispatch } from 'react-redux'
 import jazzicon from "@metamask/jazzicon"
 import {useState} from "react";
 import {useRouter} from "next/router";
+import {setJwtToken, setRefreshToken} from "../utils/auth";
 
 
 const StyledMenu = styled((props) => (
@@ -77,7 +78,9 @@ export default function AccountButton(props) {
   const handleDisconnect = async () => {
     const [primaryWallet] = onboard.state.get().wallets
     await onboard.disconnectWallet({ 'label': localStorage.getItem("label" )})
-    disconnectWallet(dispatch)
+    await disconnectWallet(dispatch)
+    setJwtToken("")
+    setRefreshToken("")
     setAnchorEl(null)
     if (router.pathname === "/") {
       router.reload()
