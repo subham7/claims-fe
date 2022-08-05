@@ -32,6 +32,7 @@ import ClubFetch from "../../../src/utils/clubFetch"
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import Image from "next/image";
 import {
+  calculateDays,
   calculateTreasuryTargetShare,
   calculateUserSharePercentage,
   convertAmountToWei
@@ -287,7 +288,7 @@ const Settings = (props) => {
         .then((result) => {
           // console.log(result)
           setGovernorDetails(result)
-          setClosingDays(Math.round((new Date(parseInt(result[0]) * 1000) - new Date()) / (1000 * 60 * 60 * 24)))
+          setClosingDays(calculateDays(parseInt(result[0]) * 1000))
           setGovernorDataFetched(true)
         },
           (error) => {
@@ -298,7 +299,6 @@ const Settings = (props) => {
       // minimum deposit amount from smart contract
       await governorDetailContract.quoram()
         .then((result) => {
-          console.log(result)
           setMinDeposit(result)
           setMinDepositFetched(true)
         },

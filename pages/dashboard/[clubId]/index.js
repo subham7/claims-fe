@@ -39,7 +39,7 @@ import GovernorContract from "../../../src/abis/governorContract.json"
 import USDCContract from "../../../src/abis/usdcTokenContract.json"
 import { useSelector } from "react-redux"
 import Image from "next/image";
-import {calculateUserSharePercentage} from "../../../src/utils/globalFunctions";
+import {calculateDays, calculateUserSharePercentage} from "../../../src/utils/globalFunctions";
 
 const useStyles = makeStyles({
   media: {
@@ -66,6 +66,8 @@ const useStyles = makeStyles({
     height: "351px",
   },
   fifthCard: {
+    width: "22vw",
+    height: "351px",
     background: "transparent linear-gradient(132deg, #17326A 0%, #19274B 51%, #3D2652 100%) 0% 0% no-repeat padding-box"
   },
   cardOverlay: {
@@ -209,8 +211,7 @@ const useStyles = makeStyles({
     borderRadius: "15px"
   },
   linkInput: {
-    width: "18.4vw",
-    height: "auto",
+    width: "100%",
     color: "#C1D3FF",
     background: "#111D38 0% 0% no-repeat padding-box",
     border: "1px solid #C1D3FF40",
@@ -346,7 +347,7 @@ const Dashboard = (props) => {
           .then((result) => {
                 // console.log(result)
                 setClubDetails(result)
-                setClosingDays(Math.round((new Date(parseInt(result[0]) * 1000) - new Date()) / (1000 * 60 * 60 * 24)))
+                setClosingDays(calculateDays(parseInt(result[0]) * 1000))
                 setClubDetailsFetched(true)
               },
               (error) => {
@@ -670,10 +671,10 @@ const Dashboard = (props) => {
                       <Typography className={classes.clubAssets}>Club Assets</Typography>
                     </Grid>
                     <Grid container mt={4}>
-                      <Grid items>
+                      <Grid item>
                         <ButtonDropDown label="All" />
                       </Grid>
-                      <Grid items ml={2}>
+                      <Grid item ml={2}>
                         <TextField
                             className={classes.searchField}
                             placeholder="Search by name or address"
@@ -762,7 +763,7 @@ const Dashboard = (props) => {
                     <Grid container>
                       {nftFetched ? ntfData.length > 0 ?
                         ntfData.map((data, key) => {
-                          <Grid items m={1}>
+                          <Grid item m={1} key={key}>
                             <CollectionCard imageURI={data.logoUri} tokenName={data.tokenName} tokenSymbol={data.tokenSymbol}/>
                           </Grid>
                         })
@@ -782,7 +783,7 @@ const Dashboard = (props) => {
               <Stack>
                 <Card className={classes.fifthCard}>
                   <Grid container pl={2} pt={2} pr={2} pb={5}>
-                    <Grid items>
+                    <Grid item>
                       <Typography variant="getStartedClub">
                         Get started with your club 👋
                       </Typography>
@@ -796,17 +797,17 @@ const Dashboard = (props) => {
 
               <Stack mt={2}>
                 {checkIsAdmin() ? <Card className={classes.thirdCard}>
-                  <Grid container m={2}>
-                    <Grid items>
+                  <Grid container mt={1} ml={1} justifyContent="space-evenly" direction="row">
+                    <Grid item md={9}>
                       <Typography variant="regularText4">
                         Joining link
                       </Typography>
                     </Grid>
-                    <Grid items mr={4} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
+                    <Grid item md={3}>
                       {/*TODO: add closing date*/}
                       {clubDetailsFetched ? closingDays > 0 ?
-                        <Grid container xs sx={{display: "flex", justifyContent: "flex-end"}}>
-                          <Grid item mt={1} mr={1}>
+                        <Grid container>
+                          <Grid item mt={1} mr={1} >
                             <div className={classes.activeIllustration}></div>
                           </Grid>
                           <Grid item>
@@ -815,7 +816,7 @@ const Dashboard = (props) => {
                             </Typography>
                           </Grid>
                         </Grid> :
-                        <Grid container xs sx={{display: "flex", justifyContent: "flex-end"}}>
+                        <Grid container>
                           <Grid item mt={1} mr={1}>
                             <div className={classes.inactiveIllustration}></div>
                           </Grid>
@@ -829,7 +830,7 @@ const Dashboard = (props) => {
                     </Grid>
                   </Grid>
                   <Grid container>
-                    <Grid items mt={2} ml={1} mr={1} >
+                    <Grid item md={12} mt={2} ml={1} mr={1} >
                       <TextField
                         className={classes.linkInput}
                         disabled
@@ -845,7 +846,7 @@ const Dashboard = (props) => {
                     </Grid>
                   </Grid>
                   <Grid container>
-                    <Grid items mt={4} ml={1} mr={1} >
+                    <Grid item md={12} mt={4} ml={1} mr={1} >
                       <Typography variant="regularText5">
                         Share this link for new members to join your club and add funds into this club.
                       </Typography>
@@ -857,7 +858,7 @@ const Dashboard = (props) => {
               <Stack mt={2}>
                 <Card className={classes.fourthCard}>
                   <Grid container m={2}>
-                    <Grid items>
+                    <Grid item>
                       <Typography className={classes.card2text1}>
                         Proposals
                       </Typography>
@@ -866,14 +867,14 @@ const Dashboard = (props) => {
                   {activeProposalData.length > 0 ?
                     <>
                       <Grid container m={1}>
-                        <Stack >
+                        <Grid item md={12} mr={2}>
                           {activeProposalDataFetched ? activeProposalData.map((data, key) => {
                             if (key < 3) {
                               return (
-                                  <>
-                                    <ListItemButton key={key} onClick={() => handleProposalClick(activeProposalData[key])}>
+                                  <div key={key}>
+                                    <ListItemButton onClick={() => handleProposalClick(activeProposalData[key])} sx={{width: "100%"}}>
                                       <Grid container direction="column">
-                                        <Grid item>
+                                        <Grid item md={12}>
                                           <Typography className={classes.card5text1} >
                                             Proposed by {data.createdBy.substring(0, 6) + "......" + data.createdBy.substring(data.createdBy.length - 4)}
                                           </Typography>
@@ -890,11 +891,11 @@ const Dashboard = (props) => {
                                         </Grid>
                                       </Grid>
                                     </ListItemButton>
-                                  </>
+                                  </div>
                               )
                             }
                           }) : null}
-                        </Stack>
+                        </Grid>
                       </Grid>
                     <Grid container>
                       <Grid item md={12}>

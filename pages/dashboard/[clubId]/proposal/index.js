@@ -44,7 +44,7 @@ import { SmartContract } from "../../../../src/api/contract"
 import USDCContract from "../../../../src/abis/usdcTokenContract.json"
 import GovernorContract from "../../../../src/abis/governorContract.json"
 import ClubFetch from "../../../../src/utils/clubFetch"
-import {convertToWei} from "../../../../src/utils/globalFunctions";
+import {calculateDays, convertToWei} from "../../../../src/utils/globalFunctions";
 
 
 const useStyles = makeStyles({
@@ -212,7 +212,17 @@ const Proposal = () => {
   const [type, setType] = useState(proposalType[0].type)
   const [openCard, setOpenCard] = useState(false)
   const [commandList, setCommandList] = useState([])
-  const [optionList, setOptionList] = useState([])
+  const [optionList, setOptionList] = useState([
+    {
+      "text": "Yes"
+    },
+    {
+      "text": "No"
+    },
+    {
+      "text": "Abstain"
+    }
+  ])
   const [failed, setFailed] = useState(false)
   const [openSnackBar, setOpenSnackBar] = useState(false)
   const [proposalData, setProposalData] = useState([])
@@ -262,7 +272,6 @@ const Proposal = () => {
         if (result.status != 200) {
           setTokenFetched(false)
         } else {
-          console.log(result.data)
           setTokenData(result.data.tokens)
           setTokenFetched(true)
         }
@@ -750,7 +759,7 @@ const Proposal = () => {
               <Grid item>
                 <Typography variant="title">Proposals</Typography>
               </Grid>
-              <Grid item spacing={2} xs sx={{ display: { lg:"flex" }, justifyContent: { md: "flex-center", lg:"flex-end" } }}>
+              <Grid item xs sx={{ display: { lg:"flex" }, justifyContent: { md: "flex-center", lg:"flex-end" } }}>
                 <Grid container direction="row" spacing={2} >
                   <Grid item xs sx={{ display: "flex", justifyContent: "flex-end" }}>
                     <TextField
@@ -776,16 +785,16 @@ const Proposal = () => {
                 proposalData.length > 0 ?
                 proposalData.map((proposal, key) => {
                   return (
-                    <Grid item key={key} onClick={e => { handleProposalClick(proposalData[key]) }} md={12}>
+                    <Grid item key={proposal.id} onClick={e => { handleProposalClick(proposalData[key]) }} md={12}>
                       <CardActionArea sx={{ borderRadius: "10px", }}>
                         <Card className={classes.mainCard}>
                           <Grid container>
-                            <Grid items ml={2} mr={2}>
+                            <Grid item ml={2} mr={2}>
                               <Typography className={classes.cardFont}>
                                 Proposed by {fetched ? proposal.createdBy.substring(0, 6) + ".........." + proposal.createdBy.substring(proposal.createdBy.length - 4) : null}
                               </Typography>
                             </Grid>
-                            <Grid items ml={1} mr={1} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
+                            <Grid item ml={1} mr={1} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
                               {fetched ?
                                 <Chip className={
                                   proposal.status === "active" ? classes.cardFontActive :
@@ -796,23 +805,23 @@ const Proposal = () => {
                             </Grid>
                           </Grid>
                           <Grid container>
-                            <Grid items ml={2} mr={2}>
+                            <Grid item ml={2} mr={2}>
                               <Typography className={classes.cardFont1}>
                                 [#{key + 1}] {proposal.name}
                               </Typography>
                             </Grid>
                           </Grid>
                           <Grid container>
-                            <Grid items ml={2} mr={2}>
+                            <Grid item ml={2} mr={2}>
                               <Typography className={classes.cardFont}>
                                 {proposal.description.substring(0, 200)}...
                               </Typography>
                             </Grid>
                           </Grid>
                           <Grid container>
-                            <Grid items ml={2} mr={2} mt={2}>
+                            <Grid item ml={2} mr={2} mt={2}>
                               <Typography className={classes.daysFont}>
-                                {Math.round((new Date(proposal.votingDuration) - new Date()) / (1000 * 60 * 60 * 24))} days left
+                                {calculateDays(proposal.votingDuration) <= 0 ? "Voting closed" : calculateDays(proposal.votingDuration) +  " days left" }
                               </Typography>
                             </Grid>
                           </Grid>
@@ -827,16 +836,16 @@ const Proposal = () => {
                   : proposalData.length > 0 ?
                       proposalData.map((proposal, key) => {
                         return (
-                            <Grid item key={key} onClick={e => { handleProposalClick(proposalData[key]) }} md={12}>
+                            <Grid item key={proposal.id} onClick={e => { handleProposalClick(proposalData[key]) }} md={12}>
                               <CardActionArea sx={{ borderRadius: "10px", }}>
                                 <Card className={classes.mainCard}>
                                   <Grid container>
-                                    <Grid items ml={2} mr={2}>
+                                    <Grid item ml={2} mr={2}>
                                       <Typography className={classes.cardFont}>
                                         Proposed by {fetched ? proposal.createdBy.substring(0, 6) + ".........." + proposal.createdBy.substring(proposal.createdBy.length - 4) : null}
                                       </Typography>
                                     </Grid>
-                                    <Grid items ml={1} mr={1} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
+                                    <Grid item ml={1} mr={1} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
                                       {fetched ? <Chip className={
                                         proposal.status === "active" ? classes.cardFontActive :
                                           proposal.status === "passed" ? classes.cardFontPassed :
@@ -846,23 +855,23 @@ const Proposal = () => {
                                     </Grid>
                                   </Grid>
                                   <Grid container>
-                                    <Grid items ml={2} mr={2}>
+                                    <Grid item ml={2} mr={2}>
                                       <Typography className={classes.cardFont1}>
                                         [#{key + 1}] {proposal.name}
                                       </Typography>
                                     </Grid>
                                   </Grid>
                                   <Grid container>
-                                    <Grid items ml={2} mr={2}>
+                                    <Grid item ml={2} mr={2}>
                                       <Typography className={classes.cardFont}>
                                         {proposal.description.substring(0, 200)}...
                                       </Typography>
                                     </Grid>
                                   </Grid>
                                   <Grid container>
-                                    <Grid items ml={2} mr={2} mt={2}>
+                                    <Grid item ml={2} mr={2} mt={2}>
                                       <Typography className={classes.daysFont}>
-                                        {Math.round((new Date(proposal.votingDuration) - new Date()) / (1000 * 60 * 60 * 24))} days left
+                                        {calculateDays(proposal.votingDuration) <= 0 ? "Voting closed" : calculateDays(proposal.votingDuration) +  " days left" }
                                       </Typography>
                                     </Grid>
                                   </Grid>
@@ -882,7 +891,7 @@ const Proposal = () => {
           <Grid item md={3}>
             <Card>
               <Grid container>
-                <Grid items>
+                <Grid item>
                   <Typography className={classes.listFont}>
                     Proposals
                   </Typography>
@@ -946,7 +955,6 @@ const Proposal = () => {
                     }
                     return selected
                   }}
-                  MenuProps={proposalType}
                   style={{ borderRadius: "10px", background: "#111D38 0% 0% no-repeat padding-box", width: "90%", }}
                 >
                   {proposalType.map((value) => (
@@ -995,34 +1003,37 @@ const Proposal = () => {
             </Grid>
             {type === proposalType[0].type ?
               (
-                <>
+              <>
+                {!enableSubmitButton ? setEnableSubmitButton(true) : null}
                   <Grid item ml={3} mr={2}>
-                    {openCard ? (
-                      <Card className={classes.proposalCard}>
-                        {optionList.map((data, key) => {
-                          return (
-                            <>
-                              <Grid container item ml={3} mt={2}>
-                                <Typography variant="proposalBody">Option #{key + 1}</Typography>
-                              </Grid>
-                              <Grid container ml={1} mt={1} mb={2} spacing={2} direction="column">
-                                <Grid container direction="row" ml={2}>
-                                  <Grid item md={10}>
-                                    <TextField sx={{ width: "90%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
-                                               placeholder="Yes / No / Abstain, etc." onChange={(e) => {setSurveyValue(e.target.value);setEnableSubmitButton(true)}} />
-                                  </Grid>
-                                  <Grid item md={1} mt={1}>
-                                    <IconButton aria-label="add" onClick={(e) => handleRemoveSurveyClick(key)} mt={1}>
-                                      <CancelIcon />
-                                    </IconButton>
-                                  </Grid>
+                    <Card className={classes.proposalCard}>
+                      {optionList.map((data, key) => {
+                        return (
+                          <div key={key}>
+                            <Grid container item ml={3} mt={2}>
+                              <Typography variant="proposalBody">Option #{key + 1}</Typography>
+                            </Grid>
+                            <Grid container ml={1} mt={1} mb={2} spacing={2} direction="column">
+                              <Grid container direction="row" ml={2}>
+                                <Grid item md={10}>
+                                  <TextField sx={{ width: "90%", backgroundColor: "#C1D3FF40" }}
+                                             className={classes.cardTextBox}
+                                             placeholder="Yes / No / Abstain, etc."
+                                             onChange={(e) => {setSurveyValue(e.target.value)}}
+                                             defaultValue={data.text}
+                                  />
+                                </Grid>
+                                <Grid item md={1} mt={1}>
+                                  <IconButton aria-label="add" onClick={(e) => handleRemoveSurveyClick(key)} mt={1}>
+                                    <CancelIcon />
+                                  </IconButton>
                                 </Grid>
                               </Grid>
-                            </>
-                          )
-                        })}
-                      </Card>
-                    ) : <></>}
+                            </Grid>
+                          </div>
+                        )
+                      })}
+                    </Card>
                   </Grid>
                   <Grid container item mt={2} ml={3}>
                     <Button variant="primary" startIcon={<AddCircleRoundedIcon />} onClick={handleAddNewOption}>
@@ -1042,7 +1053,7 @@ const Proposal = () => {
                       <Card className={classes.proposalCard}>
                         {commandList.map((data, key) => {
                           return (
-                            <>
+                            <div key={key}>
                               <Grid container item ml={3} mt={2}>
                                 <Typography variant="proposalBody">Command #{key + 1}</Typography>
                               </Grid>
@@ -1271,7 +1282,7 @@ const Proposal = () => {
                                             //   ) 
                                             // : null
                               }
-                            </>
+                            </div>
                           )
                         })}
                       </Card>

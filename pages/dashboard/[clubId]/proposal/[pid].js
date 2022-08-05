@@ -787,7 +787,7 @@ const ProposalDetail = () => {
             <Grid container direction="row" spacing={4}>
               <Grid item>
                 <Grid container>
-                  <Grid items mt={1.2}>
+                  <Grid item mt={1.2}>
                     {fetched ? <div className={
                       proposalData[0].status === "active" ? classes.activeIllustration :
                         proposalData[0].status === "passed" ? classes.passedIllustration :
@@ -795,7 +795,7 @@ const ProposalDetail = () => {
                             proposalData[0].status === "failed" ? classes.failedIllustration :
                           classes.failedIllustration}></div> : null}
                   </Grid>
-                  <Grid items>
+                  <Grid item>
                     <Typography className={classes.listFont}>
                       {fetched ? proposalData[0].status.charAt(0).toUpperCase() + proposalData[0].status.slice(1) : null}
                     </Typography>
@@ -804,10 +804,10 @@ const ProposalDetail = () => {
               </Grid>
               {/* <Grid item>
                   <Grid container>
-                    <Grid items mt={1.2}>
+                    <Grid item mt={1.2}>
                       <div className={classes.activeIllustration}></div>
                     </Grid>
-                    <Grid items>
+                    <Grid item>
                       <Typography className={classes.listFont}>
                         Share
                       </Typography>
@@ -1013,48 +1013,48 @@ const ProposalDetail = () => {
             <Stack spacing={3}>
               <Card>
                 <Grid container>
-                  <Grid items>
+                  <Grid item>
                     <Typography className={classes.listFont2}>
                       Proposed by
                     </Typography>
                   </Grid>
-                  <Grid items xs sx={{ display: "flex", justifyContent: "flex-end" }}>
+                  <Grid item xs sx={{ display: "flex", justifyContent: "flex-end" }}>
                     <Typography className={classes.listFont2Colourless}>
                       {fetched ? proposalData[0].createdBy.substring(0, 6) + ".........." + proposalData[0].createdBy.substring(proposalData[0].createdBy.length - 4) : null}
                     </Typography>
                   </Grid>
                 </Grid>
                 <Grid container>
-                  <Grid items>
+                  <Grid item>
                     <Typography className={classes.listFont2}>
                       Voting system
                     </Typography>
                   </Grid>
-                  <Grid items xs sx={{ display: "flex", justifyContent: "flex-end" }}>
+                  <Grid item xs sx={{ display: "flex", justifyContent: "flex-end" }}>
                     <Typography className={classes.listFont2Colourless}>
                       Single choice
                     </Typography>
                   </Grid>
                 </Grid>
                 <Grid container>
-                  <Grid items>
+                  <Grid item>
                     <Typography className={classes.listFont2}>
                       Start date
                     </Typography>
                   </Grid>
-                  <Grid items xs sx={{ display: "flex", justifyContent: "flex-end" }}>
+                  <Grid item xs sx={{ display: "flex", justifyContent: "flex-end" }}>
                     <Typography className={classes.listFont2Colourless}>
                       {fetched ? new Date(String(proposalData[0].updateDate)).toLocaleDateString() : null}
                     </Typography>
                   </Grid>
                 </Grid>
                 <Grid container>
-                  <Grid items>
+                  <Grid item>
                     <Typography className={classes.listFont2}>
                       End date
                     </Typography>
                   </Grid>
-                  <Grid items xs sx={{ display: "flex", justifyContent: "flex-end" }}>
+                  <Grid item xs sx={{ display: "flex", justifyContent: "flex-end" }}>
                     <Typography className={classes.listFont2Colourless}>
                       {fetched ? new Date(String(proposalData[0].votingDuration)).toLocaleDateString() : null}
                     </Typography>

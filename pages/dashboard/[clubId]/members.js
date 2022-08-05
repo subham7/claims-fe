@@ -147,8 +147,8 @@ const Members = (props) => {
                               <a className={classes.activityLink} onClick={(e) => {handleAddressClick(e, data.userAddress)}}> {data.userAddress.substring(0, 6) + "......" + data.userAddress.substring(data.userAddress.length - 4)} </a>
                             </Grid>
                             <Grid item>
-                              <IconButton color="primary">
-                                <OpenInNewIcon className={classes.activityLink} onClick={(e) => {handleAddressClick(e, data.userAddress)}} />
+                              <IconButton color="primary" onClick={(e) => {handleAddressClick(e, data.userAddress)}}>
+                                <OpenInNewIcon className={classes.activityLink} />
                               </IconButton>
                             </Grid>
                           </Grid>
