@@ -17,3 +17,8 @@ export const convertToWei = (amount) => {
   // function for converting the amount from decimal to Wei format
   return web3.utils.toWei(web3.utils.toBN(amount).toString(), 'Mwei')
 }
+
+export const calculateDays = (dateTime) => {
+  // function for calculating the number of days
+  return Math.round((new Date(dateTime) - new Date()) / (1000 * 60 * 60 * 24))
+}

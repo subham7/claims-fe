@@ -4,6 +4,7 @@ import SafeServiceClient from "@gnosis.pm/safe-service-client";
 import USDCContract from "../../abis/usdcTokenContract.json";
 import Safe, {EthSignSignature} from "@gnosis.pm/safe-core-sdk";
 import {USDC_CONTRACT_ADDRESS} from "../index";
+import {calculateDays} from "../../utils/globalFunctions";
 
 async function syncWallet() {
   // function for validating metamask wallet
@@ -50,7 +51,7 @@ export class SmartContract{
 
   // create new club contract function
   async createDAO(tokenName, tokenSymbol, totalDeposit, minDeposit, maxDeposit, ownerFee, closeDate, feeUSDC, tresuryAddress, quoram, formThreshold) {
-    const days = Math.round((new Date(closeDate) - new Date()) / (1000 * 60 * 60 * 24))
+    const days = Math.round(calculateDays(closeDate))
     // call createDAO method from contract
     return this.contract.methods.createDAO(
       tokenName,
