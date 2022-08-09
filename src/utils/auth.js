@@ -33,9 +33,27 @@ export default function ProtectRoute(Component) {
               console.log(response.data.error)
               router.push('/')
             } else {
-              console.log(response)
+              setExpiryTime(response.data.tokens.access.expires)
+              const expiryTime = getExpiryTime()
+              const currentDate = Date()
               setJwtToken(response.data.tokens.access.token)
-              setRefreshToken(response.data.tokens.access.refreshToken)
+              setRefreshToken(response.data.tokens.refresh.token)
+              if (expiryTime < currentDate) {
+                const obtainNewToken = refreshToken(getRefreshToken(), getJwtToken())
+                obtainNewToken.then((tokenResponse) => {
+                  if (response.status !== 200) {
+                    console.log(tokenResponse.data.error)
+                  }
+                  else {
+                    setExpiryTime(tokenResponse.data.tokens.access.expires)
+                    setJwtToken(tokenResponse.data.tokens.access.token)
+                    setRefreshToken(tokenResponse.data.tokens.refresh.token)
+                  }
+                })
+                  .catch((error) => {
+                    console.log(error)
+                  })
+              }
             }
           })
         }
@@ -62,6 +80,14 @@ export function getJwtToken() {
 
 export function setJwtToken(token) {
   sessionStorage.setItem("jwt", token)
+}
+
+export function getExpiryTime() {
+  return sessionStorage.getItem("expiresAt")
+}
+
+export function setExpiryTime(time) {
+  sessionStorage.setItem("expiresAt", time)
 }
 
 export function getRefreshToken() {

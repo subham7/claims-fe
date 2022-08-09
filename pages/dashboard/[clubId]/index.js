@@ -427,7 +427,7 @@ const Dashboard = (props) => {
       if (result.status != 200) {
         setClubAssetTokenFetched(false)
       } else {
-        console.log(result.data)
+        // console.log(result.data)
         setClubAssetTokenData(result.data)
         setClubAssetTokenFetched(true)
       }

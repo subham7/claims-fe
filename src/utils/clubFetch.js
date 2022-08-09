@@ -14,8 +14,8 @@ import {
 addClubImageUrl
 } from '../redux/reducers/create'
 import { checkNetwork } from "./wallet"
-import {loginToken} from "../api/auth";
-import {setJwtToken, setRefreshToken} from "./auth";
+import {loginToken, refreshToken} from "../api/auth";
+import {getExpiryTime, getJwtToken, getRefreshToken, setExpiryTime, setJwtToken, setRefreshToken} from "./auth";
 
 
 const ClubFetch = (Component) => {
@@ -40,8 +40,27 @@ const ClubFetch = (Component) => {
                   console.log(response.data.error)
                   router.push('/')
                 } else {
+                  setExpiryTime(response.data.tokens.access.expires)
+                  const expiryTime = getExpiryTime()
+                  const currentDate = Date()
                   setJwtToken(response.data.tokens.access.token)
                   setRefreshToken(response.data.tokens.refresh.token)
+                  if (expiryTime < currentDate) {
+                    const obtainNewToken = refreshToken(getRefreshToken(), getJwtToken())
+                    obtainNewToken.then((tokenResponse) => {
+                      if (response.status !== 200) {
+                        console.log(tokenResponse.data.error)
+                      }
+                      else {
+                        setExpiryTime(tokenResponse.data.tokens.access.expires)
+                        setJwtToken(tokenResponse.data.tokens.access.token)
+                        setRefreshToken(tokenResponse.data.tokens.refresh.token)
+                      }
+                    })
+                      .catch((error) => {
+                        console.log(error)
+                      })
+                  }
                 }
               })
               dispatch(addWallet(checkedwallet))

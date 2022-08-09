@@ -23,8 +23,15 @@ import store from "../src/redux/store"
 import { addClubName, addDaoAddress, addClubID, addClubRoute } from "../src/redux/reducers/create"
 import {checkNetwork} from "../src/utils/wallet"
 import Web3 from "web3";
-import {setJwtToken, setRefreshToken} from "../src/utils/auth";
-import {loginToken} from "../src/api/auth";
+import {
+  getExpiryTime,
+  getJwtToken,
+  getRefreshToken,
+  setExpiryTime,
+  setJwtToken,
+  setRefreshToken
+} from "../src/utils/auth";
+import {loginToken, refreshToken} from "../src/api/auth";
 
 
 const useStyles = makeStyles({
@@ -120,9 +127,27 @@ export default function App() {
             console.log(response.data.error)
           }
           else {
-            console.log(response)
+            setExpiryTime(response.data.tokens.access.expires)
+            const expiryTime = getExpiryTime()
+            const currentDate = Date()
             setJwtToken(response.data.tokens.access.token)
             setRefreshToken(response.data.tokens.refresh.token)
+            if (expiryTime < currentDate) {
+              const obtainNewToken = refreshToken(getRefreshToken(), getJwtToken())
+              obtainNewToken.then((tokenResponse) => {
+                if (response.status !== 200) {
+                  console.log(tokenResponse.data.error)
+                }
+                else {
+                  setExpiryTime(tokenResponse.data.tokens.access.expires)
+                  setJwtToken(tokenResponse.data.tokens.access.token)
+                  setRefreshToken(tokenResponse.data.tokens.refresh.token)
+                }
+              })
+              .catch((error) => {
+                console.log(error)
+              })
+            }
           }
         })
         setWalletID(localStorage.getItem("wallet"))
