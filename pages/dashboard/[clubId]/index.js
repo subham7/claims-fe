@@ -22,6 +22,7 @@ import {
   Snackbar, Alert
 } from "@mui/material"
 import TextField from "@mui/material/TextField"
+import ProgressBar from "../../../src/components/progressbar"
 import SearchIcon from "@mui/icons-material/Search"
 import ButtonDropDown from "../../../src/components/buttondropdown"
 import BasicTable from "../../../src/components/table"
@@ -39,6 +40,12 @@ import GovernorContract from "../../../src/abis/governorContract.json"
 import USDCContract from "../../../src/abis/usdcTokenContract.json"
 import { useSelector } from "react-redux"
 import Image from "next/image";
+import {
+ 
+  calculateTreasuryTargetShare,
+  
+  convertAmountToWei
+} from "../../../src/utils/globalFunctions";
 import {calculateDays, calculateUserSharePercentage} from "../../../src/utils/globalFunctions";
 
 const useStyles = makeStyles({
@@ -298,6 +305,8 @@ const Dashboard = (props) => {
   const router = useRouter()
   const { clubId } = router.query
   const classes = useStyles()
+  const [governorDataFetched, setGovernorDataFetched] = useState(false)
+  const imageUrl = useSelector(state => {return state.create.clubImageUrl})
   const daoAddress = useSelector(state => {return state.create.daoAddress})
   const walletAddress = useSelector(state => {return state.create.value})
   const tresuryAddress = useSelector(state => { return state.create.tresuryAddress})
@@ -485,6 +494,7 @@ const Dashboard = (props) => {
       }
     })
   }
+  
 
   const importTokenToMetaMask = async () => {
     try {
@@ -513,6 +523,9 @@ const Dashboard = (props) => {
       setOpenSnackBar(true)
     }
   }
+
+
+  
 
   useEffect(() => {
     setLoaderOpen(true)
@@ -577,7 +590,8 @@ const Dashboard = (props) => {
     }
     setOpenSnackBar(false)
   }
-
+console.log(tokenDetails)
+console.log(userBalance)
 
   return (
       <>
@@ -586,18 +600,132 @@ const Dashboard = (props) => {
           <Grid container spacing={1} paddingLeft={10} paddingTop={15}>
             <Grid item md={9}>
               <Stack direction={{ xs: 'column', sm: 'row' }} spacing={3}>
-                <Card className={classes.firstCard}>
-                  <CardMedia
-                      className={classes.media}
-                      component="img"
-                      image="/assets/images/card_illustration.png"
-                      alt="abstract background"
-                      sx={{ position: "absolute", bottom: 0 }}
-                  />
-                  <Box className={classes.cardOverlay}>
+              
+              <Card className={classes.cardRegular}>
+                <Grid container spacing={2}>
+                  <Grid item mt={3} ml={3}>
+                    <img src={imageUrl ?? null} width="100vw" alt="profile_pic"/>
+                  </Grid>
+                  <Grid item ml={1} mt={4} mb={7}>
+                    <Stack spacing={0}>
                     <Typography className={classes.card1text1}>
                       {dataFetched ? tokenDetails[0] : null}
                     </Typography>
+                      <Typography variant="h4">
+                        {apiTokenDetailSet ? tokenAPIDetails[0] : null}
+                      </Typography>
+                      <Typography variant="h6" className={classes.dimColor}>{dataFetched ? ("$" + tokenDetails[1]) : null}</Typography>
+                    </Stack>
+                  </Grid>
+                </Grid>
+                <Divider variant="middle" />
+                <Grid container spacing={7}>
+                  <Grid item ml={4} mt={5} mb={2} md={2.5}>
+                  <Grid container>
+                      <Grid item>
+                        <Typography variant="p" className={classes.valuesStyle}> Total Deposits </Typography>
+                      </Grid>
+                      <Grid item mt={1}>
+                        <Typography variant="p" className={classes.valuesStyle}>{governorDataFetched ? governorDetails[2] + " USDC" : null} </Typography>
+                      </Grid>
+                    </Grid>
+                    <Grid container>
+                      <Grid item mt={1}>
+                        <Typography variant="p" className={classes.valuesStyle}>
+                          {governorDataFetched ? new Date(parseInt(governorDetails[0]) * 1000).toJSON().slice(0, 10).split('-').reverse().join('/') : null}
+                        </Typography>
+                      </Grid>
+                      <Grid item ml={1} mt={1}>
+                        {governorDataFetched ?
+                        closingDays > 0 ?
+                        (<Card className={classes.openTag}>
+                          <Typography className={classes.openTagFont}>
+                            Open
+                          </Typography>
+                        </Card>) : (<Card className={classes.closeTag}>
+                          <Typography className={classes.closeTagFont}>
+                            Closed
+                          </Typography>
+                        </Card>) : null}
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                  <Grid item ml={4} mt={5} md={2.5}>
+                    <Grid container>
+                      <Grid item>
+                        <Typography variant="p" className={classes.valuesDimStyle}>Minimum Deposits</Typography>
+                      </Grid>
+                      <Grid item mt={1}>
+                        <Typography variant="p" className={classes.valuesStyle}>{governorDataFetched ? governorDetails[1] + " USDC" : null}</Typography>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                  <Grid item ml={4} mt={5} md={2.5}>
+                    <Grid container>
+                      <Grid item>
+                        <Typography variant="p" className={classes.valuesDimStyle}>Maximum Deposit</Typography>
+                      </Grid>
+                      <Grid item mt={1}>
+                        <Typography variant="p" className={classes.valuesStyle}>{governorDataFetched ? governorDetails[2] + " USDC" : null} </Typography>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                  <Grid item ml={4} mt={5} md={2.5}>
+                    <Grid container direction="column">
+                      <Grid item>
+                        <Typography variant="p" className={classes.valuesDimStyle}>Members</Typography>
+                      </Grid>
+                      <Grid item mt={{ lg: 5, xl: 1}}>
+                        <Typography variant="p" className={classes.valuesStyle}>{membersFetched ? members : 0}</Typography>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                </Grid>
+                <Grid container mt={5}>
+                  <Grid item  ml={4} md={2.5}>
+                    <Grid container direction="column">
+                      <Grid item>
+                        <Typography variant="settingText">Tresury wallet</Typography>
+                      </Grid>
+                      <Grid item mt={2}>
+                        <Typography variant="p" className={classes.valuesStyle}>${clubAssetTokenFetched ? clubAssetTokenData.totalBalance : null}</Typography>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                  <Grid item ml={4} md={2.5}>
+                    <Grid container direction="column">
+                      <Grid item>
+                        <Typography variant="settingText">Your ownership</Typography>
+                      </Grid>
+                      <Grid item mt={2}>
+                        <Typography variant="p" className={classes.valuesStyle}>{userBalanceFetched && dataFetched ? isNaN(calculateUserSharePercentage(userBalance, tokenDetails[2])) ? 0 : (calculateUserSharePercentage(userBalance, tokenDetails[2]))  : 0}% (${userBalance} )</Typography>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                </Grid>
+                <Grid item ml={3} mt={5} mb={2} mr={3}>
+                  <ProgressBar value={governorDataFetched && dataFetched ? calculateTreasuryTargetShare(tokenDetails[2], governorDetails[4]) : 0} />
+                </Grid>
+                <Grid container spacing={2} >
+                  <Grid item ml={4} mt={1} mb={2}>
+                    <Stack spacing={1}>
+                      <Typography variant="settingText">Club Tokens Minted so far</Typography>
+                      <Typography variant="p" className={classes.valuesStyle}>{dataFetched ? ( convertAmountToWei(tokenDetails[2]) + " $" + tokenDetails[1]) : null}</Typography>
+                    </Stack>
+                  </Grid>
+                  <Grid item ml={4} mt={1} mb={2} mr={4} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
+                    <Stack spacing={1}>
+                      <Typography variant="settingText">Total Supply</Typography>
+                      <Typography variant="p" className={classes.valuesStyle}>{governorDataFetched && dataFetched ? governorDetails[4] + (" $" + tokenDetails[1]) : null} </Typography>
+                    </Stack>
+                  </Grid>
+                </Grid>
+              </Card>
+                <Card className={classes.firstCard}>
+               
+                  
+                  <Box className={classes.cardOverlay}>
+                   
                     <Typography className={classes.card1text2}>
                       ${dataFetched ? tokenDetails[1] : null}
                     </Typography>
