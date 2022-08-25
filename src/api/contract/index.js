@@ -4,7 +4,7 @@ import SafeServiceClient from "@gnosis.pm/safe-service-client";
 import USDCContract from "../../abis/usdcTokenContract.json";
 import Safe, {EthSignSignature} from "@gnosis.pm/safe-core-sdk";
 import {USDC_CONTRACT_ADDRESS,FACTORY_CONTRACT_ADDRESS} from "../index";
-import {calculateDays} from "../../utils/globalFunctions";
+import {calculateDays, convertToWei} from "../../utils/globalFunctions";
 import FactoryContract from "../../abis/factoryContract.json";
 import { SafeFactory } from "@gnosis.pm/safe-core-sdk"
 
@@ -52,55 +52,21 @@ export class SmartContract{
   }
 
   // create new club contract function
-  async createDAO(owners,threshold,dispatch,tokenName, tokenSymbol, totalDeposit, minDeposit, maxDeposit, ownerFee, closeDate, feeUSDC, tresuryAddress, quoram, formThreshold) {
+  async createDAO(owners, threshold, dispatch, tokenName, tokenSymbol, totalDeposit, minDeposit, maxDeposit, ownerFee, closeDate, feeUSDC, tresuryAddress, quoram, formThreshold) {
     const days = Math.round(calculateDays(closeDate))
-    const web3 = new Web3(Web3.givenProvider)
-    const safeOwner = await web3.eth.getAccounts()
-    console.log(SafeFactory)
-    const safeAccountConfig = {
-      owners,
-      threshold,
-    }
-    console.log(safeAccountConfig)
-    const ethAdapter = new Web3Adapter({
-      web3,
-      signerAddress: safeOwner[0],
-    })
-    const safeFactory = await SafeFactory.create({ ethAdapter })
-    const safeSdk = await safeFactory.deploySafe({ safeAccountConfig })
-    const usdcContract = new web3.eth.Contract(USDCContract.abi, USDC_CONTRACT_ADDRESS)
-// create transaction
-const factoryContract = new web3.eth.Contract(FactoryContract.abi, FACTORY_CONTRACT_ADDRESS)
-    // call createDAO method from contract
-    const transaction = {
-      
-      to: FACTORY_CONTRACT_ADDRESS,
-      data: factoryContract.methods.createDAO(tokenName, tokenSymbol, Web3.utils.toWei(`${totalDeposit }`, 'ether'), Web3.utils.toWei(`${minDeposit }`, 'ether'), Web3.utils.toWei(`${maxDeposit }`, 'ether'), Web3.utils.toWei(`${ownerFee}`, 'ether'), closeDate.getTime(), Web3.utils.toWei(`${feeUSDC}`, 'ether'), tresuryAddress, quoram, formThreshold).encodeABI(),
-      value: '0',
-}
-
-
-const safeTransaction = await safeSdk.createTransaction(transaction)
-// execute the transaction
-const executeTxResponse = await safeSdk.executeTransaction(safeTransaction)
-console.log(executeTxResponse)
-return executeTxResponse
-
-
-    // return this.contract.methods.createDAO(
-    //   tokenName,
-    //   tokenSymbol,
-    //   totalDeposit,
-    //   minDeposit,
-    //   maxDeposit,
-    //   ownerFee,
-    //   days,
-    //   feeUSDC,
-    //   tresuryAddress,
-    //   quoram,
-    //   formThreshold,
-    //   usdcContract,
-    // ).send({ from : this.walletAddress})
+    return this.contract.methods.createDAO(
+      tokenName,
+      tokenSymbol,
+      convertToWei(totalDeposit),
+      convertToWei(minDeposit),
+      convertToWei(maxDeposit),
+      convertToWei(ownerFee),
+      days,
+      convertToWei(feeUSDC),
+      quoram,
+      formThreshold,
+      tresuryAddress,
+    ).send({ from : this.walletAddress})
   }
 
   async updateProposalAndExecution(
