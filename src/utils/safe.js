@@ -19,7 +19,7 @@ async function gnosisSafePromise(owners, threshold, dispatch) {
       web3,
       signerAddress: safeOwner[0],
     })
-
+console.log(safeOwner)
     console.log(ethAdapter)
     const safeFactory = await SafeFactory.create({ ethAdapter })
     const safeAccountConfig = {
@@ -75,6 +75,9 @@ export async function initiateConnection(
   await gnosisSafePromise(owners, threshold, dispatch)
     .then((treasuryAddress) => {
       const value = smartContract.createDAO(
+        owners,
+        threshold,
+        dispatch,
         tokenName,
         tokenSymbol,
         totalDeposit,
@@ -89,10 +92,10 @@ export async function initiateConnection(
       )
       value.then(
         (result) => {
-          console.log(result)
-          daoAddress = result.events[1].address
-          tokenAddress = result.events[0].address
-          dispatch(addDaoAddress(result[0]))
+         
+          // daoAddress = result.events[1].address
+          // tokenAddress = result.events[0].address
+          // dispatch(addDaoAddress(result[0]))
           const data = {
             name: tokenName,
             tokenAddress: tokenAddress,
@@ -100,6 +103,7 @@ export async function initiateConnection(
             treasuryAddress: treasuryAddress,
             networkId: networkId
           }
+          console.log(result)
           const club = createClub(data)
           club.then((result) => {
             if (result.status !== 201) {
