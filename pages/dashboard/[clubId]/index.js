@@ -70,7 +70,7 @@ const useStyles = makeStyles({
     padding: "0px",
     marginTop:"20px",
    
-    background: "#0ABB92 no-repeat"
+    background: "#0ABB92 no-repeat padding-box"
   },
   thirdCard: {
     width: "32vw",
@@ -764,18 +764,21 @@ const [governorDataFetched, setGovernorDataFetched] = useState(false)
                            {clubAssetTokenFetched ? clubAssetTokenData.totalBalance : null}
                          </Typography>
                          <CardMedia
+       
+        image="/assets/images/treasurywallet.png"
         component="img"
-        height="100%"
-        width="100%"
-        image="/assets/images/treasurywallet.svg"
-        alt="treasury wallet"
-        variant="treasury"
+       
+        className={classes.media} 
+       
+        alt="ownershipshare"
+        sx={{ position: "absolute", bottom: 0 }}  
+       
       />
                        </Grid>
                        </Grid>
                 </Card>
                 <Card className={classes.secondCard}>
-                  <Grid container m={4}>
+                  <Grid container >
                     <Grid container spacing={{ xs:2, sm:5, md: 3}} direction={{xs: "column", sm: "column", md: "column" }}>
                       <Grid item mt={4}>
                       <Box className={classes.cardOverlay}>
@@ -798,15 +801,17 @@ const [governorDataFetched, setGovernorDataFetched] = useState(false)
                       <Button variant="transparent" onClick={importTokenToMetaMask}>Import token</Button>
                     </Grid>
                     <CardMedia
+                     image="/assets/images/ownershipshare.png"
         component="img"
-        height="100%"
-        width="100%"
-        position="relative"
-        image="/assets/images/ownershipshare.svg"
-        alt="ownershipshare"/>
+       
+        className={classes.media} 
+       
+        alt="ownershipshare"
+        sx={{ position: "absolute", bottom: 0, paddingTop: "4px" }}  
+        />
                   </Box>
                       </Grid>
-                      
+                      {/* <CardMedia    className={classes.media}    component=“img”    image=“/assets/images/card_illustration.png”    alt=“abstract background”    sx={{ position: “absolute”, bottom: 0 }}                     />   */}
                      
 
                     
@@ -946,12 +951,13 @@ const [governorDataFetched, setGovernorDataFetched] = useState(false)
                     </Grid>
                   </Grid>
                   <CardMedia
+      image="/assets/images/docs.png"
         component="img"
-        height="fit-content"
-        width="fit-content"
-        image="/assets/images/docs.svg"
-        alt="docs"
-        variant="Docs"
+       
+        className={classes.media} 
+       
+        alt="ownershipshare"
+        sx={{ position: "absolute", bottom: 0, }} 
       />
                 </Card>
                 
