@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="518" height="164" viewBox="0 0 518 164">
+  <defs>
+    <clipPath id="clip-path">
+      <rect id="Rectangle_367" data-name="Rectangle 367" width="518" height="164" rx="10" fill="#142243"/>
+    </clipPath>
+  </defs>
+  <g id="treasurywallet" clip-path="url(#clip-path)">
+    <g id="Group_481" data-name="Group 481" transform="translate(279.157 44.337)">
+      <path id="Path_860" data-name="Path 860" d="M870.245,256.51V365c-.014,11.365-9.672,20.574-21.591,20.587H617.459a22,22,0,0,1-16.057-6.841v-.969a21.28,21.28,0,0,0,15.925,7.177l39.987-38.128a5.842,5.842,0,0,1,7.985,0l21.253,20.258,49.82-47.5a5.842,5.842,0,0,1,7.986,0l29.225,27.859,95.341-90.9.658-.019.306-.006Z" transform="translate(-601.402 -256.51)" fill="#c9cbff"/>
+      <ellipse id="Ellipse_287" data-name="Ellipse 287" cx="4.65" cy="4.434" rx="4.65" ry="4.434" transform="translate(55.473 75.691)" fill="#ffd"/>
+      <ellipse id="Ellipse_288" data-name="Ellipse 288" cx="4.65" cy="4.434" rx="4.65" ry="4.434" transform="translate(133.203 47.819)" fill="#ffd"/>
+    </g>
+  </g>
+</svg>

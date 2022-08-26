@@ -300,7 +300,15 @@ export const darkComponents = {
         style: {
           fontSize: "2.125em",
           fontFamily: "Whyte",
-          color: "#FFFFFF"
+          color: "#111D38"
+        }
+      },
+      {
+        props: { variant: "Docs" },
+        style: {
+          fontSize: "1.2em",
+          fontFamily: "Whyte",
+          
         }
       }
 

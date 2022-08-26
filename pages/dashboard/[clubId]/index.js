@@ -18,10 +18,12 @@ import {
   TableRow,
   Paper,
   Table,
+  Link,
   CircularProgress, Backdrop, ListItemButton,
   Snackbar, Alert
 } from "@mui/material"
 import TextField from "@mui/material/TextField"
+import ProgressBar from "../../../src/components/progressbar"
 import SearchIcon from "@mui/icons-material/Search"
 import ButtonDropDown from "../../../src/components/buttondropdown"
 import BasicTable from "../../../src/components/table"
@@ -39,7 +41,13 @@ import GovernorContract from "../../../src/abis/governorContract.json"
 import USDCContract from "../../../src/abis/usdcTokenContract.json"
 import { useSelector } from "react-redux"
 import Image from "next/image";
-import {calculateDays, calculateUserSharePercentage} from "../../../src/utils/globalFunctions";
+import {
+  calculateDays,
+  calculateTreasuryTargetShare,
+  calculateUserSharePercentage,
+  convertAmountToWei
+} from "../../../src/utils/globalFunctions";
+
 
 const useStyles = makeStyles({
   media: {
@@ -48,27 +56,31 @@ const useStyles = makeStyles({
   },
   firstCard: {
     position: "relative",
-    width: "32vw",
-    height: "352px",
+    width: "Infinityvw",
+    height: "164px",
     padding: "0px",
-    opacity: "1",
-    background: "transparent linear-gradient(120deg, #3B7AFD 0%, #011FFD 100%) 0% 0% no-repeat padding-box"
+   
+    background: "#6A66FF no-repeat",
+    variant: "outlined"
   },
   secondCard: {
     position: "relative",
-    width: "32vw",
-    height: "352px",
+    width: "Infinityvw",
+    height: "164px",
     padding: "0px",
-    opacity: "1",
+    marginTop:"20px",
+   
+    background: "#0ABB92 no-repeat"
   },
   thirdCard: {
-    width: "22vw",
+    width: "32vw",
     height: "351px",
   },
   fifthCard: {
     width: "22vw",
     height: "351px",
-    background: "transparent linear-gradient(132deg, #17326A 0%, #19274B 51%, #3D2652 100%) 0% 0% no-repeat padding-box"
+    background: "#FFFFDD no-repeat padding-box",
+    
   },
   cardOverlay: {
     position: "absolute",
@@ -76,6 +88,18 @@ const useStyles = makeStyles({
     left: "30px",
     right: "30px",
     bottom: "30px",
+  },
+  cardSharp1: {
+    backgroundColor: "#19274B",
+   borderRadius: "5px",
+    opacity: 1,
+  },
+  cardSharp2: {
+    backgroundColor: "#19274B",
+    borderRadius: "5px",
+   
+   
+    opacity: 1,
   },
   card1text1: {
     fontFamily: "Whyte",
@@ -90,11 +114,12 @@ const useStyles = makeStyles({
     color: "#C1D3FF",
     textTransform: "uppercase",
     opacity: "1",
+    paddingLeft: "10px",
   },
   card1text3: {
     fontFamily: "Whyte",
-    paddingTop: "70px",
-    fontSize: "22px",
+    
+    fontSize: "15px",
     color: "#C1D3FF",
     textTransform: "uppercase",
     opacity: "1",
@@ -123,7 +148,7 @@ const useStyles = makeStyles({
   card2text2: {
     fontFamily: "Whyte",
     fontWeight: "bold",
-    fontSize: "40px",
+    fontSize: "20px",
     color: "#EFEFEF",
     opacity: "1",
   },
@@ -187,7 +212,7 @@ const useStyles = makeStyles({
   card3text4: {
     fontFamily: "Whyte",
     textAlign: "left",
-    fontSize: "19px",
+    fontSize: "6px",
     letteSpacing: "0.2px",
     color: "#C1D3FF",
     opacity: "1",
@@ -291,7 +316,14 @@ const useStyles = makeStyles({
   },
   banner: {
     width: "100%"
-  }
+  },
+  treasury: {
+    width: "100%",
+    
+
+  },
+ 
+  
 })
 
 const Dashboard = (props) => {
@@ -308,6 +340,11 @@ const Dashboard = (props) => {
   const [tokenAPIDetails, settokenAPIDetails] = useState(null) // contains the details extracted from API
   const [apiTokenDetailSet, setApiTokenDetailSet] = useState(false)
   const [joinLink, setJoinLink] = useState(null)
+  const [governorDetails, setGovernorDetails] = useState(null)
+  const [minDeposit, setMinDeposit] = useState(0)
+  const [minDepositFetched, setMinDepositFetched] = useState(false)
+  const [maxDeposit, setMaxDeposit] = useState(0)
+  const [maxDepositFetched, setMaxDepositFetched] = useState(false)
   const [membersFetched, setMembersFetched] = useState(false)
   const [members, setMembers] = useState(0)
   const [membersDetails, setMembersDetails] = useState([])
@@ -325,6 +362,9 @@ const Dashboard = (props) => {
   const [userBalance, setUserBalance] = useState('')
   const [userBalanceFetched, setUserBalanceFetched] = useState(false)
   const [closingDays, setClosingDays] = useState(0)
+const imageUrl = useSelector(state => {return state.create.clubImageUrl})
+const [governorDataFetched, setGovernorDataFetched] = useState(false)
+
 
   const fetchUserBalanceAPI = async () => {
     if (daoAddress) {
@@ -381,6 +421,45 @@ const Dashboard = (props) => {
       return false
     }
   }
+  const contractDetailsRetrieval = async () => {
+    if (daoAddress && !governorDataFetched && !governorDetails && walletAddress) {
+      const governorDetailContract = new SmartContract(GovernorContract, daoAddress, undefined)
+      await governorDetailContract.getGovernorDetails()
+        .then((result) => {
+          // console.log(result)
+          setGovernorDetails(result)
+          setClosingDays(calculateDays(parseInt(result[0]) * 1000))
+          setGovernorDataFetched(true)
+        },
+          (error) => {
+            console.log(error)
+          }
+        )
+
+      // minimum deposit amount from smart contract
+      await governorDetailContract.quoram()
+        .then((result) => {
+          setMinDeposit(result)
+          setMinDepositFetched(true)
+        },
+          (error) => {
+            console.log(error)
+          }
+        )
+
+      // maximim deposit amount from smart contract
+      await governorDetailContract.threshold()
+        .then((result) => {
+          setMaxDeposit(result)
+          setMaxDepositFetched(true)
+        },
+          (error) => {
+            console.log(error)
+          }
+        )
+    }
+  }
+
 
   const tokenAPIDetailsRetrieval = async () => {
     let response = await fetchClubbyDaoAddress(daoAddress)
@@ -532,6 +611,17 @@ const Dashboard = (props) => {
 
 
   useEffect(() => {
+    setLoaderOpen(true);
+    tokenAPIDetailsRetrieval()
+    tokenDetailsRetrieval()
+    contractDetailsRetrieval()
+    fetchMembers()
+    if (apiTokenDetailSet && dataFetched && governorDataFetched && membersFetched) {
+      setLoaderOpen(false)
+    }
+
+  }, [daoAddress, apiTokenDetailSet, dataFetched, governorDetails, membersFetched])
+  useEffect(() => {
     if (tresuryAddress) {
       fetchTresuryWallet()
       fetchClubAssetToken()
@@ -583,26 +673,119 @@ const Dashboard = (props) => {
       <>
         <Layout1 page={1} depositUrl={joinLink}>
           {/* <div style={{ padding: "110px 80px" }}> */}
+         
           <Grid container spacing={1} paddingLeft={10} paddingTop={15}>
+           
+              
+              
             <Grid item md={9}>
               <Stack direction={{ xs: 'column', sm: 'row' }} spacing={3}>
+              <Grid item xs={12}> 
+          <Grid className={classes.cardSharp1} mt={3} >
+                <Grid container spacing={2}>
+                  <Grid item mt={3} ml={3} >
+                    <img src={imageUrl ?? null} width="100vw" alt="profile_pic"/>
+                  </Grid>
+                  <Grid item ml={1} mt={4} mb={7}>
+                    <Stack spacing={0}>
+                      <Typography variant="h4">
+                        {apiTokenDetailSet ? tokenAPIDetails[0] : null}
+                      </Typography>
+
+                      <Typography variant="h6" className={classes.dimColor}>{dataFetched ? ("$" + tokenDetails[1]) : null}</Typography>
+                      <Grid container item direction="row"  >
+                    <Typography variant="regularText4" sx={{ m: 0.5 }}>
+                            {membersFetched ? members : 0}
+                          </Typography>
+                          <Typography variant="regularText2">
+                            Members
+                          </Typography>
+                         
+                          
+                          
+                        </Grid>
+                    </Stack>
+                  </Grid>
+                </Grid>
+
+                </Grid> 
+                <Grid className={classes.cardSharp2}>
+                
+                <Grid container spacing={7}>
+                  
+                  <Grid item ml={1} mt={5} md={2.5}   >
+                    <Grid container>
+                      <Grid item>
+                        <Typography variant="p" className={classes.valuesDimStyle}>Member Deposits</Typography>
+                      </Grid>
+                      <Grid item mt={1}>
+                        <Typography variant="p" className={classes.valuesStyle}>{governorDataFetched ? governorDetails[1] + " USDC" : null}</Typography>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                  <Grid item ml={4} mt={5} md={2.5} mb={5}>
+                    <Grid container>
+                      <Grid item>
+                        <Typography variant="p" className={classes.valuesDimStyle}> Club tokens minted </Typography>
+                      </Grid>
+                      <Grid item mt={1}>
+                      <Typography variant="p" className={classes.valuesStyle}>{dataFetched ? ( convertAmountToWei(tokenDetails[2]) + " $" + tokenDetails[1]) : null}</Typography>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                  <Grid item ml={2} mt={5} md={2.5} mr={4}>
+                    <Grid container>
+                      <Grid item>
+                        <Typography variant="p" className={classes.valuesDimStyle}>Maximum Token Supply</Typography>
+                      </Grid>
+                      <Grid item mt={1}>
+                      <Typography variant="p" className={classes.valuesStyle}>{governorDataFetched && dataFetched ? governorDetails[4] + (" $" + tokenDetails[1]) : null} </Typography>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                  
+                </Grid>
+               
+                
+                
+              </Grid>
+              </Grid>
+              <Grid container spacing={{ xs:2, sm:5, md: 3}} direction={{xs: "column", sm: "column", md: "column" }}>
                 <Card className={classes.firstCard}>
-                  <CardMedia
-                      className={classes.media}
-                      component="img"
-                      image="/assets/images/card_illustration.png"
-                      alt="abstract background"
-                      sx={{ position: "absolute", bottom: 0 }}
-                  />
-                  <Box className={classes.cardOverlay}>
+                 
+                 <Grid item mt={4} ml={5}> 
+
+                  <Grid container item direction="column">
+                         
+                         <Typography  variant="regularText4">
+                           Treasury ($)
+                         </Typography>
+                         <Typography className={classes.card2text2}>
+                           {clubAssetTokenFetched ? clubAssetTokenData.totalBalance : null}
+                         </Typography>
+                         <CardMedia
+        component="img"
+        height="100%"
+        width="100%"
+        image="/assets/images/treasurywallet.svg"
+        alt="treasury wallet"
+        variant="treasury"
+      />
+                       </Grid>
+                       </Grid>
+                </Card>
+                <Card className={classes.secondCard}>
+                  <Grid container m={4}>
+                    <Grid container spacing={{ xs:2, sm:5, md: 3}} direction={{xs: "column", sm: "column", md: "column" }}>
+                      <Grid item mt={4}>
+                      <Box className={classes.cardOverlay}>
                     <Typography className={classes.card1text1}>
                       {dataFetched ? tokenDetails[0] : null}
                     </Typography>
-                    <Typography className={classes.card1text2}>
-                      ${dataFetched ? tokenDetails[1] : null}
-                    </Typography>
+                    
+                    
                     <Typography className={classes.card1text3}>
-                      My Share ($)
+                      My ownership Share ($)
                     </Typography>
                     <Typography className={classes.card1text4}>
                       {userBalanceFetched ? userBalance : 0}
@@ -614,55 +797,24 @@ const Dashboard = (props) => {
                     <Grid container item xs sx={{ display: "flex", justifyContent: "flex-end"}}>
                       <Button variant="transparent" onClick={importTokenToMetaMask}>Import token</Button>
                     </Grid>
+                    <CardMedia
+        component="img"
+        height="100%"
+        width="100%"
+        position="relative"
+        image="/assets/images/ownershipshare.svg"
+        alt="ownershipshare"/>
                   </Box>
-                </Card>
-                <Card className={classes.secondCard}>
-                  <Grid container m={4}>
-                    <Grid container spacing={{ xs:2, sm:5, md: 3}} direction={{xs: "column", sm: "column", md: "row" }}>
-                      <Grid item mt={4}>
-                        <Grid container item direction="column">
-                          <img src="/assets/icons/icon-metro-coin.svg" alt="icon-metro-coins" className={classes.iconMetroCoin} />
-                          <Typography mt={4} variant="regularText4">
-                            Treasury ($)
-                          </Typography>
-                          <Typography className={classes.card2text2}>
-                            {clubAssetTokenFetched ? clubAssetTokenData.totalBalance : null}
-                          </Typography>
-                          {/* <Typography className={classes.card2text3}>
-                          37%
-                        </Typography> */}
-                        </Grid>
                       </Grid>
-                      <Grid item ml={4}><Divider className={classes.divider} variant="middle" orientation="vertical" /></Grid>
-                      <Grid item mt={4} ml={1}>
-                        <Grid container item direction="column">
-                          <Typography variant="regularText2">
-                            Members
-                          </Typography>
-                          <Typography variant="regularText4">
-                            {membersFetched ? members : 0}
-                          </Typography>
-                          <Typography mt={3} variant="regularText2">
-                            Tresury Wallet
-                          </Typography>
-                          <Typography variant="regularText4">
-                            ${clubAssetTokenFetched ? clubAssetTokenData.totalBalance : null}
-                          </Typography>
-                          {/* <Typography mt={3} className={classes.card2text8}>
-                          Hot Wallet
-                        </Typography>
-                        <Typography className={classes.card2text9}>
-                          $43,206
-                        </Typography> */}
-                        </Grid>
-                      </Grid>
+                      
+                     
 
-                      <Stack m={4}>
-
-                      </Stack>
+                    
                     </Grid>
                   </Grid>
                 </Card>
+</Grid>
+
               </Stack>
               <Stack>
                 <Grid item>
@@ -782,21 +934,31 @@ const Dashboard = (props) => {
             <Grid item md={3}>
               <Stack>
                 <Card className={classes.fifthCard}>
-                  <Grid container pl={2} pt={2} pr={2} pb={5}>
+                  <Grid container pl={2} color={"black"} pr={2} pb={5}>
                     <Grid item>
                       <Typography variant="getStartedClub">
                         Get started with your club 👋
                       </Typography>
                     </Grid>
                     <Grid item pt={6}>
-                      <Button variant="primary" onClick={() => { window.open(`https://stationx.substack.com/p/get-started-with-stationx-on-rinkeby`)}}>Read Docs</Button>
+         
+                      <Link  color={"#111D38 "} variant="Docs" onClick={() => { window.open(`https://stationx.substack.com/p/get-started-with-stationx-on-rinkeby`)}}>Read Docs</Link>
                     </Grid>
                   </Grid>
+                  <CardMedia
+        component="img"
+        height="fit-content"
+        width="fit-content"
+        image="/assets/images/docs.svg"
+        alt="docs"
+        variant="Docs"
+      />
                 </Card>
+                
               </Stack>
 
               <Stack mt={2}>
-                {checkIsAdmin() ? <Card className={classes.thirdCard}>
+                {checkIsAdmin() ? <Card className={classes.fourthCard}>
                   <Grid container mt={1} ml={1} justifyContent="space-evenly" direction="row">
                     <Grid item md={9}>
                       <Typography variant="regularText4">
