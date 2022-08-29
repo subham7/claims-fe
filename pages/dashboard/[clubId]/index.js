@@ -924,23 +924,39 @@ const Dashboard = (props) => {
           <Grid item md={3}>
             <Stack>
               <Card className={classes.fifthCard}>
-                <CardMedia
-                  image="/assets/images/docs.png"
-                  component="img"
-                  alt="ownership_share"
-                />
-                <Grid container pl={2} color={"black"} pr={2} pb={5}>
-                  <Box className={classes.cardOverlay}>
+              <Grid >
+              <Grid> 
+              
+             
                     <Grid item>
                       <Typography variant="getStartedClub">
                         Get started with your club 👋
                       </Typography>
                     </Grid>
-                    <Grid item pt={6}>
+                    <Grid item   >
+                    
                       <Link color={"#111D38 "} variant="Docs" onClick={() => { window.open(`https://stationx.substack.com/p/get-started-with-stationx-on-rinkeby`) }}>Read Docs</Link>
-                    </Grid>
-                  </Box>
+                    
+                      <Grid> 
+                      <CardMedia
+                  image="/assets/images/docs.png"
+                  component="img"
+                  alt="ownership_share"
+                  
+                  
+
+                />
                 </Grid>
+                   
+                   
+                   
+                    </Grid>
+                  
+                
+               
+                 
+                  </Grid>
+                  </Grid>
               </Card>
             </Stack>
 
