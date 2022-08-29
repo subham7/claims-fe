@@ -88,14 +88,15 @@ export async function initiateConnection(
       )
       value.then(
         (result) => {
-          console.log("DAO result", result)
-          console.log(result.events[0].address)
           daoAddress = result.events[0].address
           dispatch(addDaoAddress(result.events[0].address))
+          // TODO: as of now, setting the tokenType to be static, by default erc20NonTransferable will be the contract
           const data = {
             name: tokenName,
             daoAddress: daoAddress,
-            networkId: networkId
+            gnosisAddress: treasuryAddress,
+            networkId: networkId,
+            tokenType: "erc20NonTransferable",
           }
           const club = createClub(data)
           club.then((result) => {
