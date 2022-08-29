@@ -9,7 +9,6 @@ import {
   addClubRoute,
   addDaoAddress,
   addWallet,
-  addTresuryAddress,
   addTokenAddress,
 addClubImageUrl
 } from '../redux/reducers/create'
@@ -68,7 +67,6 @@ const ClubFetch = (Component) => {
               dispatch(addClubName(result.data[0].name))
               dispatch(addClubRoute(result.data[0].route))
               dispatch(addDaoAddress(result.data[0].daoAddress))
-              dispatch(addTresuryAddress(result.data[0].treasuryAddress))
               dispatch(addTokenAddress(result.data[0].tokenAddress))
               dispatch(addClubImageUrl(result.data[0].imageUrl))
             }

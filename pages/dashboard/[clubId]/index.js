@@ -36,14 +36,13 @@ import {fetchClubbyDaoAddress} from "../../../src/api/club"
 import {getNfts, getBalance} from "../../../src/api/gnosis"
 import {getAssets} from "../../../src/api/assets"
 import {getMembersDetails} from "../../../src/api/user"
-import GovernorContract from "../../../src/abis/governorContract.json"
+import { IMPLEMENTATION_CONTRACT_ADDRESS } from "../../../src/api"
+import ImplementationContact from "../../../src/abis/implementationABI.json"
 import USDCContract from "../../../src/abis/usdcTokenContract.json"
 import { useSelector } from "react-redux"
 import Image from "next/image";
 import {
- 
   calculateTreasuryTargetShare,
-  
   convertAmountToWei
 } from "../../../src/utils/globalFunctions";
 import {calculateDays, calculateUserSharePercentage} from "../../../src/utils/globalFunctions";
@@ -309,7 +308,6 @@ const Dashboard = (props) => {
   const imageUrl = useSelector(state => {return state.create.clubImageUrl})
   const daoAddress = useSelector(state => {return state.create.daoAddress})
   const walletAddress = useSelector(state => {return state.create.value})
-  const tresuryAddress = useSelector(state => { return state.create.tresuryAddress})
   const [clubDetails, setClubDetails] = useState([])
   const [clubDetailsFetched, setClubDetailsFetched] = useState(false)
   const [tokenDetails, settokenDetails] = useState(null)
@@ -337,7 +335,7 @@ const Dashboard = (props) => {
 
   const fetchUserBalanceAPI = async () => {
     if (daoAddress) {
-      const fetchUserBalance = new SmartContract(GovernorContract, daoAddress, undefined)
+      const fetchUserBalance = new SmartContract(ImplementationContact, daoAddress, undefined)
       await fetchUserBalance.checkUserBalance()
         .then((result) => {
             setUserBalance(web3.utils.fromWei(result, "Mwei"))
@@ -351,7 +349,7 @@ const Dashboard = (props) => {
 
   const fetchGovernorContractData = async () => {
     if (daoAddress && walletAddress){
-      const fetchClubDetails = new SmartContract(GovernorContract, daoAddress, undefined)
+      const fetchClubDetails = new SmartContract(ImplementationContact, daoAddress, undefined)
       await fetchClubDetails.getGovernorDetails()
           .then((result) => {
                 // console.log(result)
@@ -402,7 +400,7 @@ const Dashboard = (props) => {
 
   const tokenDetailsRetrieval = async () => {
     if (tokenAPIDetails && !dataFetched) {
-      const tokenDetailContract = new SmartContract(USDCContract, tokenAPIDetails.tokenAddress, undefined)
+      const tokenDetailContract = new SmartContract(ImplementationContact, tokenAPIDetails.daoAddress, undefined)
       await tokenDetailContract.tokenDetails()
           .then((result) => {
               // console.log(result)
@@ -442,7 +440,7 @@ const Dashboard = (props) => {
       }
     })
 
-    const nfts = getNfts(tresuryAddress)
+    const nfts = getNfts(daoAddress)
     nfts.then((result) => {
       if (result.status != 200) {
         setNftFetched(false)
@@ -455,7 +453,7 @@ const Dashboard = (props) => {
   }
 
   const fetchTresuryWallet = () => {
-    const tresuryWalletData = getBalance(tresuryAddress)
+    const tresuryWalletData = getBalance(daoAddress)
     tresuryWalletData.then((result) => {
       if (result.status != 200) {
         setTresuryWalletBalanceFetched(false)
@@ -524,9 +522,6 @@ const Dashboard = (props) => {
     }
   }
 
-
-  
-
   useEffect(() => {
     setLoaderOpen(true)
     if (daoAddress) {
@@ -545,11 +540,11 @@ const Dashboard = (props) => {
 
 
   useEffect(() => {
-    if (tresuryAddress) {
+    if (daoAddress) {
       fetchTresuryWallet()
       fetchClubAssetToken()
     }
-  }, [tresuryAddress])
+  }, [daoAddress])
 
   useEffect(() => {
     if (clubId) {
@@ -567,6 +562,7 @@ const Dashboard = (props) => {
   }, [dataFetched])
 
   useEffect(() => {
+    console.log(dataFetched, apiTokenDetailSet, membersFetched, tresuryWalletBalanceFetched, activeProposalDataFetched, clubAssetTokenFetched, clubDetailsFetched)
     if (dataFetched && apiTokenDetailSet && membersFetched && tresuryWalletBalanceFetched && activeProposalDataFetched && clubAssetTokenFetched && clubDetailsFetched) {
       setLoaderOpen(false)
     }
@@ -590,8 +586,6 @@ const Dashboard = (props) => {
     }
     setOpenSnackBar(false)
   }
-console.log(tokenDetails)
-console.log(userBalance)
 
   return (
       <>

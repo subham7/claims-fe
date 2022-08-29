@@ -1,6 +1,6 @@
 {
   "contractName": "ImplementationContract",
-  "abi": [
+  "abi":
     [
       {
         "anonymous": false,
@@ -1323,5 +1323,4 @@
         "type": "function"
       }
     ]
-  ]
 }

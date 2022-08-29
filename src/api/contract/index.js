@@ -3,7 +3,11 @@ import Web3Adapter from "@gnosis.pm/safe-web3-lib";
 import SafeServiceClient from "@gnosis.pm/safe-service-client";
 import USDCContract from "../../abis/usdcTokenContract.json";
 import Safe, {EthSignSignature} from "@gnosis.pm/safe-core-sdk";
-import {USDC_CONTRACT_ADDRESS,FACTORY_CONTRACT_ADDRESS} from "../index";
+import {
+  USDC_CONTRACT_ADDRESS,
+  FACTORY_CONTRACT_ADDRESS, 
+  IMPLEMENTATION_CONTRACT_ADDRESS
+} from "../index";
 import {calculateDays, convertToWei} from "../../utils/globalFunctions";
 import FactoryContract from "../../abis/factoryContract.json";
 import { SafeFactory } from "@gnosis.pm/safe-core-sdk"
