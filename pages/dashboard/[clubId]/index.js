@@ -94,7 +94,7 @@ const useStyles = makeStyles({
     opacity: 1,
   },
   cardSharp2: {
-    backgroundColor: "#19274B",
+    backgroundColor: "#142243",
     borderRadius: "5px",
 
 
