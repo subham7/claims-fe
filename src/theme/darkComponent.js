@@ -2,7 +2,7 @@ export const darkComponents = {
   MuiButton: {
     styleOverrides: {
       root: {
-        background: "#111D38",
+        background: "#3B7AFD",
         "&:hover": {},
         borderRadius: "10px",
         opacity: 1,
