@@ -19,6 +19,7 @@ import {
   TextField,
   DialogContent,
   Dialog,
+  CardMedia,
 } from "@mui/material"
 import Layout3 from "../../src/components/layouts/layout3"
 import ProgressBar from "../../src/components/progressbar"
@@ -56,6 +57,12 @@ const useStyles = makeStyles({
     borderRadius: "10px",
     opacity: 1,
   },
+  cardJoin: {
+    backgroundColor: "#81F5FF",
+    borderRadius: "10px",
+    opacity: 1,
+    
+  },
   dimColor: {
     color: "#C1D3FF",
   },
@@ -80,6 +87,9 @@ const useStyles = makeStyles({
     fontFamily: "Whyte",
     fontSize: "18px",
     color: "#C1D3FF",
+  },
+  JoinText:{
+  color:"#111D38",
   },
   cardLargeFont: {
     width: "150px",
@@ -928,24 +938,47 @@ const Join = (props) => {
               </Grid>
             </Card>
           ) : (
-            <Card className={classes.cardRegular}>
-              <Grid container spacing={2}>
-                <Grid item ml={15} mr={15} mt={5} mb={7}>
-                  <Image
-                    src="/assets/images/connect_illustration.png"
-                    alt="connect_illustration"
-                    width="418px"
-                    height="377px"
-                  />
-                </Grid>
-                <Grid item container ml={1} mt={2}>
+        
+            <Card className={classes.cardJoin}>
+            <Grid >
+
+              <Grid container spacing={2} >
+              <Grid item>
+                 <Typography className={classes.JoinText}> Join this station by depositing your funds </Typography>
+               </Grid>
+                <Grid  wrap='nowrap'> 
+                <Grid item>
+                
                   <Button variant="primary" onClick={handleConnectWallet}>
                     Connect Wallet
                   </Button>
-                </Grid>
+               </Grid> 
+               <Grid> 
+               
+               <CardMedia
+                  image="/assets/images/joinstation.png"
+                  component="img"
+                  alt="ownership_share"
+                  className={classes.media}
+                  
+                
+                />
+              
+               </Grid>
+               
+               
+               </Grid> 
+               
               </Grid>
+
+              </Grid>
+
+              
             </Card>
+            
           )}
+
+          
         </Grid>
       </Grid>
       <Snackbar

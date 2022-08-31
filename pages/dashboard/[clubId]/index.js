@@ -958,21 +958,10 @@ const Dashboard = (props) => {
                   alt="ownership_share"
                   className={classes.docimg}
                 
-                    
-                 
-                   
-                  
-                  
-
                 />
                 </Grid>
-                   
-                   
-                   
-                    </Grid>
-                  
                 
-               
+                    </Grid>
                  
                   </Grid>
                   </Grid>
