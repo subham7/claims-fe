@@ -79,14 +79,14 @@ const useStyles = makeStyles({
     fontSize: "21px",
   },
   cardSmall: {
-    backgroundColor: "#111D38",
+    backgroundColor: "#FFFFFF",
     borderRadius: "20px",
     opacity: 1,
   },
   cardSmallFont: {
     fontFamily: "Whyte",
     fontSize: "18px",
-    color: "#C1D3FF",
+    color: "#111D38",
   },
   JoinText:{
   color:"#111D38",
@@ -114,6 +114,7 @@ const useStyles = makeStyles({
   cardWarning: {
     backgroundColor: "#FFB74D0D",
     borderRadius: "10px",
+    borderColor:"#111D38",
     opacity: 1,
   },
   textWarning: {
@@ -838,11 +839,12 @@ const Join = (props) => {
         </Grid>
         <Grid item md={5}>
           {walletConnected ? (
-            <Card className={classes.cardRegular}>
+            <Card className={classes.cardJoin}>
               <Grid container spacing={2}>
-                <Grid item ml={2} mt={4} mb={4}>
+                <Grid item ml={2} mt={4} mb={4} className={classes.JoinText}>
                   <Typography variant="h4">Join this Club</Typography>
                 </Grid>
+                <Divider/> 
                 <Grid
                   item
                   ml={1}
@@ -852,7 +854,7 @@ const Join = (props) => {
                   xs
                   sx={{ display: "flex", justifyContent: "flex-end" }}
                 >
-                  <Typography variant="h6" className={classes.dimColor}>
+                  <Typography variant="h6" className={classes.JoinText}>
                     {governorDataFetched
                       ? closingDays > 0
                         ? "Closes in " + closingDays + " days"
@@ -861,7 +863,7 @@ const Join = (props) => {
                   </Typography>
                 </Grid>
               </Grid>
-              <Divider variant="middle" />
+              <Divider variant="middle" sx={{ bgcolor: "#3B7AFD" }} />
               <Grid container spacing={2}>
                 <Grid item md={12} mt={5}>
                   <Card className={classes.cardSmall}>
@@ -919,7 +921,7 @@ const Join = (props) => {
               <Grid container spacing={2}>
                 <Grid item md={12} mt={2}>
                   <Card className={classes.cardWarning}>
-                    <Typography className={classes.textWarning}>
+                    <Typography className={classes.JoinText}>
                       Clubs can have same names or symbols, please make sure to
                       trust the sender for the link before depositing.
                     </Typography>
