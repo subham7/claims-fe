@@ -332,6 +332,9 @@ const useStyles = makeStyles({
 
 
   },
+  valueDetailStyle: {
+color:"#81F5FF"
+  },
 
 
 })
@@ -722,7 +725,7 @@ const Dashboard = (props) => {
                           <Typography variant="p" className={classes.valuesDimStyle}>Member Deposits</Typography>
                         </Grid>
                         <Grid item mt={1}>
-                          <Typography variant="p" className={classes.valuesStyle}>{governorDataFetched ? governorDetails[1] + " USDC" : null}</Typography>
+                          <Typography variant="p" className={classes.valueDetailStyle}>{governorDataFetched ? governorDetails[1] + " USDC" : null}</Typography>
                         </Grid>
                       </Grid>
                     </Grid>
@@ -732,7 +735,7 @@ const Dashboard = (props) => {
                           <Typography variant="p" className={classes.valuesDimStyle}> Club tokens minted </Typography>
                         </Grid>
                         <Grid item mt={1}>
-                          <Typography variant="p" className={classes.valuesStyle}>{dataFetched ? (convertAmountToWei(tokenDetails[2]) + " $" + tokenDetails[1]) : null}</Typography>
+                          <Typography variant="p" className={classes.valueDetailStyle}>{dataFetched ? (convertAmountToWei(tokenDetails[2]) + " $" + tokenDetails[1]) : null}</Typography>
                         </Grid>
                       </Grid>
                     </Grid>
@@ -742,7 +745,7 @@ const Dashboard = (props) => {
                           <Typography variant="p" className={classes.valuesDimStyle}>Maximum Token Supply</Typography>
                         </Grid>
                         <Grid item mt={1}>
-                          <Typography variant="p" className={classes.valuesStyle}>{governorDataFetched && dataFetched ? governorDetails[4] + (" $" + tokenDetails[1]) : null} </Typography>
+                          <Typography variant="p" className={classes.valueDetailStyle}>{governorDataFetched && dataFetched ? governorDetails[4] + (" $" + tokenDetails[1]) : null} </Typography>
                         </Grid>
                       </Grid>
                     </Grid>
