@@ -35,7 +35,7 @@ import {getMembersDetails, patchUserBalance, checkUserByClub} from "../../src/ap
 import store from "../../src/redux/store"
 import Web3 from "web3"
 import USDCContract from "../../src/abis/usdcTokenContract.json"
-import GovernorContract from "../../src/abis/governorContract.json"
+import ImplementationContract from "../../src/abis/implementationABI.json"
 import { SmartContract } from "../../src/api/contract"
 import { checkNetwork } from "../../src/utils/wallet"
 import {calculateTreasuryTargetShare, convertAmountToWei} from "../../src/utils/globalFunctions";
@@ -252,7 +252,7 @@ const Join = (props) => {
     if (tokenAPIDetails && tokenAPIDetails.length > 0) {
       const tokenDetailContract = new SmartContract(
         USDCContract,
-        tokenAPIDetails[0].tokenAddress,
+        tokenAPIDetails[0].daoAddress,
         undefined
       )
       await tokenDetailContract.tokenDetails().then(
@@ -286,7 +286,7 @@ const Join = (props) => {
   const contractDetailsRetrieval = async () => {
     if (daoAddress && !governorDataFetched && !governorDetails && userDetails) {
       const governorDetailContract = new SmartContract(
-        GovernorContract,
+        ImplementationContract,
         daoAddress,
         undefined
       )
@@ -401,7 +401,7 @@ const Join = (props) => {
         )
         // pass governor contract
         const dao_contract = new SmartContract(
-          GovernorContract,
+          ImplementationContract,
           daoAddress,
           undefined
         )
@@ -459,7 +459,7 @@ const Join = (props) => {
         )
         // pass governor contract
         const dao_contract = new SmartContract(
-          GovernorContract,
+          ImplementationContract,
           daoAddress,
           undefined
         )

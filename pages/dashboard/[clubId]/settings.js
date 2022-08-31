@@ -23,7 +23,7 @@ import {
 import {getMembersDetails} from "../../../src/api/user"
 import Web3 from "web3"
 import USDCContract from "../../../src/abis/usdcTokenContract.json"
-import GovernorContract from "../../../src/abis/governorContract.json"
+import ImplementationContract from "../../../src/abis/implementationABI.json"
 import { SmartContract } from "../../../src/api/contract"
 import {fetchClubbyDaoAddress} from "../../../src/api/club"
 import {getAssets} from "../../../src/api/assets"
@@ -215,7 +215,7 @@ const Settings = (props) => {
 
   const fetchUserBalanceAPI = async () => {
     if (daoAddress) {
-      const fetchUserBalance = new SmartContract(GovernorContract, daoAddress, undefined)
+      const fetchUserBalance = new SmartContract(ImplementationContract, daoAddress, undefined)
       await fetchUserBalance.checkUserBalance()
         .then((result) => {
           setUserBalance(web3.utils.fromWei(result, "Mwei"))
@@ -283,7 +283,7 @@ const Settings = (props) => {
 
   const contractDetailsRetrieval = async () => {
     if (daoAddress && !governorDataFetched && !governorDetails && walletAddress) {
-      const governorDetailContract = new SmartContract(GovernorContract, daoAddress, undefined)
+      const governorDetailContract = new SmartContract(ImplementationContract, daoAddress, undefined)
       await governorDetailContract.getGovernorDetails()
         .then((result) => {
           // console.log(result)
@@ -529,7 +529,7 @@ const Settings = (props) => {
                         </IconButton>
                       </Grid>
                       <Grid item mr={4}>
-                        <Typography variant="p" className={classes.valuesStyle}>{apiTokenDetailSet ? tokenAPIDetails[0].treasuryAddress.substring(0, 6) + "......" + tokenAPIDetails[0].treasuryAddress.substring(tokenAPIDetails[0].treasuryAddress.length - 4) : null}</Typography>
+                        <Typography variant="p" className={classes.valuesStyle}>{apiTokenDetailSet ? tokenAPIDetails[0].gnosisAddress.substring(0, 6) + "......" + tokenAPIDetails[0].gnosisAddress.substring(tokenAPIDetails[0].gnosisAddress.length - 4) : null}</Typography>
                       </Grid>
                     </Grid>
                   </Grid>

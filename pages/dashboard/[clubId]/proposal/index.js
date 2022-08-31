@@ -42,7 +42,6 @@ import { useSelector } from "react-redux"
 import { useRouter, withRouter } from "next/router"
 import { SmartContract } from "../../../../src/api/contract"
 import USDCContract from "../../../../src/abis/usdcTokenContract.json"
-import GovernorContract from "../../../../src/abis/governorContract.json"
 import ClubFetch from "../../../../src/utils/clubFetch"
 import {calculateDays, convertToWei} from "../../../../src/utils/globalFunctions";
 
