@@ -321,6 +321,17 @@ const useStyles = makeStyles({
 
 
   },
+  docimg: {
+    right:"0",
+   marginLeft:"52%",
+   marginTop:"20%",
+  
+  width:"60%",
+
+    sx:{ position: "absolute", bottom: 0 },
+
+
+  },
 
 
 })
@@ -935,13 +946,18 @@ const Dashboard = (props) => {
                     </Grid>
                     <Grid item   >
                     
-                      <Link color={"#111D38 "} variant="Docs" onClick={() => { window.open(`https://stationx.substack.com/p/get-started-with-stationx-on-rinkeby`) }}>Read Docs</Link>
+                      <Link color={"#111D38 "} variant="Docs" className={classes.Docs} onClick={() => { window.open(`https://stationx.substack.com/p/get-started-with-stationx-on-rinkeby`) }}>Read Docs</Link>
                     
                       <Grid> 
                       <CardMedia
                   image="/assets/images/docs.png"
                   component="img"
                   alt="ownership_share"
+                  className={classes.docimg}
+                
+                    
+                 
+                   
                   
                   
 
