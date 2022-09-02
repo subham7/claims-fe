@@ -9,6 +9,7 @@ const ETH_ROPSTEN_RPC = `https://ropsten.infura.io/v3/946205020d6c477192b1178b3c
 const ETH_MAINNET_RPC = `https://mainnet.infura.io/v3/${INFURA_ID}`
 const ETH_RINKEBY_RPC = `https://rinkeby.infura.io/v3/feaf3bb22fef436e996b4eb0e157dacd`
 const MATIC_MAINNET_RPC = 'https://matic-mainnet.chainstacklabs.com'
+const ETH_KOVAN_RPC = `https://sparkling-virulent-forest.kovan.quiknode.pro/8ad7efe047ada81851077edd5405e8851346a88b/`
 
 const injected = injectedModule()
 
@@ -51,6 +52,12 @@ export const  onboard = Onboard({
       label: "Fantom Mainnet",
       rpcUrl: "https://rpc.ftm.tools/",
     },
+    // {
+    //   id: "0x42",
+    //   token: "ETH",
+    //   label: "Kovan",
+    //   rpcUrl: ETH_KOVAN_RPC
+    // }
   ],
   appMetadata: {
     name: "StationX",
@@ -68,7 +75,7 @@ export async function checkNetwork() {
     try {
       await window.ethereum.request({
         method: 'wallet_switchEthereumChain',
-        params: [{ chainId: '0x4' }],
+        params: [{ chainId: '0x2a' }],
       });
       return true
     } catch (error) {
@@ -78,8 +85,8 @@ export async function checkNetwork() {
             method: 'wallet_addEthereumChain',
             params: [
               {
-                chainId: '0x4',
-                rpcUrl: ETH_RINKEBY_RPC,
+                chainId: '0x2a',
+                rpcUrl: ETH_KOVAN_RPC,
               },
             ],
           });

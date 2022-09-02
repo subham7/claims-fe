@@ -23,6 +23,9 @@ export const slice = createSlice({
             state.safeAddress = action.payload.safeAddress;
             state.safeSdk = action.payload.safeSdk;
         },
+        addSafeAddress: (state, action) => {
+            state.safeAddress = action.payload;
+        },
         safeDisconnected: (state, action) => {
             state.safeAddress = null;
             state.safeSdk = null;
@@ -80,7 +83,8 @@ export const {
     transactionConfirmed, 
     transactionConfirmedErrorCreated, 
     transactionConfirmedHashCreated, 
-    transactionConfirmedReceiptCreated 
+    transactionConfirmedReceiptCreated,
+    addSafeAddress,
 } = slice.actions
 
 export default slice.reducer
