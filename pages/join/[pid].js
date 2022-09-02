@@ -251,7 +251,7 @@ const Join = (props) => {
   const tokenDetailsRetrieval = async () => {
     if (tokenAPIDetails && tokenAPIDetails.length > 0) {
       const tokenDetailContract = new SmartContract(
-        USDCContract,
+        ImplementationContract
         tokenAPIDetails[0].daoAddress,
         undefined
       )
@@ -312,7 +312,7 @@ const Join = (props) => {
   const obtaineWalletBallance = async () => {
     if (!fetched && userDetails) {
       const usdc_contract = new SmartContract(
-        USDCContract,
+        implementationContract,
         USDC_CONTRACT_ADDRESS,
         undefined
       )
@@ -395,7 +395,7 @@ const Join = (props) => {
         console.log("*********** User doesn't exist")
         // if the user doesn't exist
         const usdc_contract = new SmartContract(
-          USDCContract,
+          implementationContract,
           USDC_CONTRACT_ADDRESS,
           undefined
         )
@@ -453,7 +453,7 @@ const Join = (props) => {
         console.log("*********** User exist")
         // if user exists
         const usdc_contract = new SmartContract(
-          USDCContract,
+          implementationContract,
           USDC_CONTRACT_ADDRESS,
           undefined
         )
