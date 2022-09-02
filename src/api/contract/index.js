@@ -120,7 +120,7 @@ export class SmartContract{
     ).send( { from: this.walletAddress })
   }
 
-  async approveDepositGnosis(address, amount, daoAddress, tresuryAddress){
+  async approveDepositGnosis(address, amount, daoAddress, gnosisAddress){
     const safeOwner = this.walletAddress
     const ethAdapter = new Web3Adapter({
       web3: this.web3,
@@ -132,7 +132,7 @@ export class SmartContract{
 
     const usdcContract = new web3.eth.Contract(USDCContract.abi, USDC_CONTRACT_ADDRESS)
 
-    const safeSdk = await Safe.create({ ethAdapter:ethAdapter, safeAddress: tresuryAddress })
+    const safeSdk = await Safe.create({ ethAdapter:ethAdapter, safeAddress: gnosisAddress })
     const transaction = {
       to: USDC_CONTRACT_ADDRESS,
       data: usdcContract.methods.transfer(address[0], amount[0]).encodeABI(),
@@ -143,7 +143,7 @@ export class SmartContract{
     const safeTxHash = await safeSdk.getTransactionHash(safeTransaction)
     const senderSignature = await safeSdk.signTransactionHash(safeTxHash)
     await safeService.proposeTransaction({
-      safeAddress: tresuryAddress,
+      safeAddress: gnosisAddress,
       safeTransactionData: safeTransaction.data,
       safeTxHash: safeTxHash,
       senderAddress: this.walletAddress,

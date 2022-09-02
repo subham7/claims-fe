@@ -15,6 +15,7 @@ addClubImageUrl
 import { checkNetwork } from "./wallet"
 import {loginToken, refreshToken} from "../api/auth";
 import {getExpiryTime, getJwtToken, getRefreshToken, setExpiryTime, setJwtToken, setRefreshToken} from "./auth";
+import { addSafeAddress } from '../redux/reducers/gnosis';
 
 
 const ClubFetch = (Component) => {
@@ -69,6 +70,7 @@ const ClubFetch = (Component) => {
               dispatch(addDaoAddress(result.data[0].daoAddress))
               dispatch(addTokenAddress(result.data[0].tokenAddress))
               dispatch(addClubImageUrl(result.data[0].imageUrl))
+              dispatch(addSafeAddress(result.data[0].gnosisAddress))
             }
           })
         }

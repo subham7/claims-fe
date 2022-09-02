@@ -240,7 +240,7 @@ const Settings = (props) => {
 
   const tokenDetailsRetrieval = async () => {
     if (tokenAPIDetails && tokenAPIDetails.length > 0) {
-      const tokenDetailContract = new SmartContract(USDCContract, tokenAPIDetails[0].tokenAddress, undefined)
+      const tokenDetailContract = new SmartContract(USDCContract, tokenAPIDetails[0].daoAddress, undefined)
       await tokenDetailContract.tokenDetails()
         .then((result) => {
           settokenDetails(result)
@@ -513,27 +513,7 @@ const Settings = (props) => {
                     </Grid>
                   </Grid>
                   <Divider />
-                  <Grid container ml={3} mr={4}>
-                    <Grid item >
-                      <Typography variant="settingText">Treasury wallet address</Typography>
-                    </Grid>
-                    <Grid container xs sx={{ display: "flex", justifyContent: "flex-end" }} spacing={1}>
-                      <Grid item>
-                        <IconButton color="primary" onClick={() => { navigator.clipboard.writeText(tokenAPIDetails[0].treasuryAddress) }}>
-                          <ContentCopyIcon className={classes.iconColor} />
-                        </IconButton>
-                      </Grid>
-                      <Grid item>
-                        <IconButton color="primary" onClick={() => { window.open(`https://rinkeby.etherscan.io/address/${tokenAPIDetails[0].treasuryAddress}`) }}>
-                          <OpenInNewIcon className={classes.iconColor} />
-                        </IconButton>
-                      </Grid>
-                      <Grid item mr={4}>
-                        <Typography variant="p" className={classes.valuesStyle}>{apiTokenDetailSet ? tokenAPIDetails[0].gnosisAddress.substring(0, 6) + "......" + tokenAPIDetails[0].gnosisAddress.substring(tokenAPIDetails[0].gnosisAddress.length - 4) : null}</Typography>
-                      </Grid>
-                    </Grid>
-                  </Grid>
-                  <Divider />
+                
                   {/* <Grid container ml={3} mr={4}>
                     <Grid item >
                       <Typography variant="p" className={classes.valuesStyle}>Hot wallet address</Typography>
