@@ -41,7 +41,7 @@ import {getMembersDetails} from "../../../../src/api/user"
 
 import USDCContract from "../../../../src/abis/usdcTokenContract.json"
 import ClubFetch from "../../../../src/utils/clubFetch"
-import implementationABI from "../../../../src/abis/usdcTokenContract.json"
+import implementationABI from "../../../../src/abis/implementationABI.json"
 
 const useStyles = makeStyles({
   clubAssets: {
