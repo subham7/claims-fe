@@ -88,7 +88,7 @@ export default function App() {
 
   useEffect(() => {
     const web3 = new Web3(Web3.givenProvider)
-    const networkIdRK = '4'
+    const networkIdRK = '42'
     web3.eth.net.getId()
       .then((networkId) => {
         if (networkId != networkIdRK) {
