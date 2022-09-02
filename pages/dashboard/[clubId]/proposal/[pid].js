@@ -38,10 +38,9 @@ import { SmartContract } from "../../../../src/api/contract"
 import {getProposalDetail, castVote, patchProposalExecuted} from "../../../../src/api/proposal"
 import {USDC_CONTRACT_ADDRESS } from "../../../../src/api/index"
 import {getMembersDetails} from "../../../../src/api/user"
-
+import ImplementationContract from "../../../../src/abis/implementationABI.json"
 import USDCContract from "../../../../src/abis/usdcTokenContract.json"
 import ClubFetch from "../../../../src/utils/clubFetch"
-import implementationABI from "../../../../src/abis/implementationABI.json"
 
 const useStyles = makeStyles({
   clubAssets: {
@@ -282,7 +281,7 @@ const ProposalDetail = () => {
     setLoaderOpen(true)
     if (proposalData[0].commands[0].executionId === 0) {
       // for airdrop execution
-      const updateProposal = new SmartContract(implementationABI, daoAddress, undefined)
+      const updateProposal = new SmartContract(ImplementationContract, daoAddress, undefined)
       const response = updateProposal.updateProposalAndExecution(
         proposalData[0].ipfsHash,
         "Executed",
@@ -333,7 +332,7 @@ const ProposalDetail = () => {
 
     if (proposalData[0].commands[0].executionId === 1) {
       // for mintGT execution
-      const updateProposal = new SmartContract(implementationABI, daoAddress, undefined)
+      const updateProposal = new SmartContract(ImplementationContract, daoAddress, undefined)
       const response = updateProposal.updateProposalAndExecution(
         proposalData[0].ipfsHash,
         "Executed",
@@ -386,7 +385,7 @@ const ProposalDetail = () => {
     if (proposalData[0].commands[0].executionId === 2) {
       const web3 = new Web3(window.web3)
       // for assigner executor role execution
-      const updateProposal = new SmartContract(implementationABI, daoAddress, undefined)
+      const updateProposal = new SmartContract(ImplementationContract, daoAddress, undefined)
       const response = updateProposal.updateProposalAndExecution(
         proposalData[0].ipfsHash,
         "Executed",
@@ -436,7 +435,7 @@ const ProposalDetail = () => {
     }
     if (proposalData[0].commands[0].executionId === 3) {
       // For execution of Governance settings
-      const updateProposal = new SmartContract(implementationABI, daoAddress, undefined)
+      const updateProposal = new SmartContract(ImplementationContract, daoAddress, undefined)
       const response = updateProposal.updateProposalAndExecution(
         proposalData[0].ipfsHash,
         "Executed",
@@ -487,7 +486,7 @@ const ProposalDetail = () => {
 
     if (proposalData[0].commands[0].executionId === 4) {
       // start deposit execution
-      const updateProposal = new SmartContract(implementationABI, daoAddress, undefined)
+      const updateProposal = new SmartContract(ImplementationContract, daoAddress, undefined)
       const response = updateProposal.updateProposalAndExecution(
         proposalData[0].ipfsHash,
         "Executed",
@@ -538,7 +537,7 @@ const ProposalDetail = () => {
 
     if (proposalData[0].commands[0].executionId === 5) {
       // close deposit execution
-      const updateProposal = new SmartContract(implementationABI, daoAddress, undefined)
+      const updateProposal = new SmartContract(ImplementationContract, daoAddress, undefined)
       const response = updateProposal.updateProposalAndExecution(
         proposalData[0].ipfsHash,
         "Executed",
@@ -588,7 +587,7 @@ const ProposalDetail = () => {
     }
     if (proposalData[0].commands[0].executionId === 6) {
       // update raise amount execution
-      const updateProposal = new SmartContract(implementationABI, daoAddress, undefined)
+      const updateProposal = new SmartContract(ImplementationContract, daoAddress, undefined)
       const response = updateProposal.updateProposalAndExecution(
         proposalData[0].ipfsHash,
         "Executed",
@@ -639,7 +638,7 @@ const ProposalDetail = () => {
 
     if (proposalData[0].commands[0].executionId === 7) {
       // send custom token execution
-      const sendCustomToken = new SmartContract(implementationABI, daoAddress, undefined)
+      const sendCustomToken = new SmartContract(ImplementationContract, daoAddress, undefined)
       const transferApprovalResponse = sendCustomToken.approveDepositGnosis(
         proposalData[0].commands[0].customTokenAddresses,
         proposalData[0].commands[0].customTokenAmounts,
@@ -685,7 +684,7 @@ const ProposalDetail = () => {
 
     if (proposalData[0].commands[0].executionId === 8) {
       // send ethereum
-      const updateProposal = new SmartContract(implementationABI, daoAddress, undefined)
+      const updateProposal = new SmartContract(ImplementationContract, daoAddress, undefined)
       const response = updateProposal.updateProposalAndExecution(
         proposalData[0].ipfsHash,
         "Executed",
