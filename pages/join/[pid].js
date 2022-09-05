@@ -19,6 +19,7 @@ import {
   TextField,
   DialogContent,
   Dialog,
+  CardMedia,
 } from "@mui/material"
 import Layout3 from "../../src/components/layouts/layout3"
 import ProgressBar from "../../src/components/progressbar"
@@ -56,6 +57,12 @@ const useStyles = makeStyles({
     borderRadius: "10px",
     opacity: 1,
   },
+  cardJoin: {
+    backgroundColor: "#81F5FF",
+    borderRadius: "10px",
+    opacity: 1,
+    
+  },
   dimColor: {
     color: "#C1D3FF",
   },
@@ -72,14 +79,17 @@ const useStyles = makeStyles({
     fontSize: "21px",
   },
   cardSmall: {
-    backgroundColor: "#111D38",
+    backgroundColor: "#FFFFFF",
     borderRadius: "20px",
     opacity: 1,
   },
   cardSmallFont: {
     fontFamily: "Whyte",
     fontSize: "18px",
-    color: "#C1D3FF",
+    color: "#111D38",
+  },
+  JoinText:{
+  color:"#111D38",
   },
   cardLargeFont: {
     width: "150px",
@@ -104,6 +114,7 @@ const useStyles = makeStyles({
   cardWarning: {
     backgroundColor: "#FFB74D0D",
     borderRadius: "10px",
+    borderColor:"#111D38",
     opacity: 1,
   },
   textWarning: {
@@ -828,11 +839,12 @@ const Join = (props) => {
         </Grid>
         <Grid item md={5}>
           {walletConnected ? (
-            <Card className={classes.cardRegular}>
+            <Card className={classes.cardJoin}>
               <Grid container spacing={2}>
-                <Grid item ml={2} mt={4} mb={4}>
+                <Grid item ml={2} mt={4} mb={4} className={classes.JoinText}>
                   <Typography variant="h4">Join this Club</Typography>
                 </Grid>
+                <Divider/> 
                 <Grid
                   item
                   ml={1}
@@ -842,7 +854,7 @@ const Join = (props) => {
                   xs
                   sx={{ display: "flex", justifyContent: "flex-end" }}
                 >
-                  <Typography variant="h6" className={classes.dimColor}>
+                  <Typography variant="h6" className={classes.JoinText}>
                     {governorDataFetched
                       ? closingDays > 0
                         ? "Closes in " + closingDays + " days"
@@ -851,7 +863,7 @@ const Join = (props) => {
                   </Typography>
                 </Grid>
               </Grid>
-              <Divider variant="middle" />
+              <Divider variant="middle" sx={{ bgcolor: "#3B7AFD" }} />
               <Grid container spacing={2}>
                 <Grid item md={12} mt={5}>
                   <Card className={classes.cardSmall}>
@@ -909,7 +921,7 @@ const Join = (props) => {
               <Grid container spacing={2}>
                 <Grid item md={12} mt={2}>
                   <Card className={classes.cardWarning}>
-                    <Typography className={classes.textWarning}>
+                    <Typography className={classes.JoinText}>
                       Clubs can have same names or symbols, please make sure to
                       trust the sender for the link before depositing.
                     </Typography>
@@ -928,24 +940,47 @@ const Join = (props) => {
               </Grid>
             </Card>
           ) : (
-            <Card className={classes.cardRegular}>
-              <Grid container spacing={2}>
-                <Grid item ml={15} mr={15} mt={5} mb={7}>
-                  <Image
-                    src="/assets/images/connect_illustration.png"
-                    alt="connect_illustration"
-                    width="418px"
-                    height="377px"
-                  />
-                </Grid>
-                <Grid item container ml={1} mt={2}>
+        
+            <Card className={classes.cardJoin}>
+            <Grid >
+
+              <Grid container spacing={2} >
+              <Grid item>
+                 <Typography className={classes.JoinText}> Join this station by depositing your funds </Typography>
+               </Grid>
+                <Grid  wrap='nowrap'> 
+                <Grid item>
+                
                   <Button variant="primary" onClick={handleConnectWallet}>
                     Connect Wallet
                   </Button>
-                </Grid>
+               </Grid> 
+               <Grid> 
+               
+               <CardMedia
+                  image="/assets/images/joinstation.png"
+                  component="img"
+                  alt="ownership_share"
+                  className={classes.media}
+                  
+                
+                />
+              
+               </Grid>
+               
+               
+               </Grid> 
+               
               </Grid>
+
+              </Grid>
+
+              
             </Card>
+            
           )}
+
+          
         </Grid>
       </Grid>
       <Snackbar

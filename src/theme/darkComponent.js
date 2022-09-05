@@ -2,7 +2,7 @@ export const darkComponents = {
   MuiButton: {
     styleOverrides: {
       root: {
-        background: "#3181F6",
+        background: "#3B7AFD",
         "&:hover": {},
         borderRadius: "10px",
         opacity: 1,
@@ -107,7 +107,7 @@ export const darkComponents = {
     styleOverrides: {
       root: {
         boxShadow: "none",
-        backgroundColor: "#142243",
+        backgroundColor: "#111D38",
         backgroundImage: "none",
       },
     },
@@ -300,7 +300,15 @@ export const darkComponents = {
         style: {
           fontSize: "2.125em",
           fontFamily: "Whyte",
-          color: "#FFFFFF"
+          color: "#111D38"
+        }
+      },
+      {
+        props: { variant: "Docs" },
+        style: {
+          fontSize: "1.2em",
+          fontFamily: "Whyte",
+          
         }
       }
 
@@ -371,7 +379,7 @@ export const darkComponents = {
   MuiList: {
     styleOverrides: {
       root: {
-        backgroundColor: "#142243",
+        backgroundColor: "#111D38",
       }
     }
   },
