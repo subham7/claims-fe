@@ -75,14 +75,14 @@ export class SmartContract{
   }
 
   async updateProposalAndExecution(
-    daoAddress,
+    daoAddress="",
     gnosisAddress="",
     proposalHash="",
     executionStatus="",
     proposalId=1,
     customToken="0x0000000000000000000000000000000000000000",
     airDropToken="0x0000000000000000000000000000000000000000",
-    executionIds=[0,0,0,0,0,0,0,0,0],
+    executionIds=[0,0,0,0,0,0,0,0],
     quoram=0,
     threshold=0,
     day=0,
@@ -98,28 +98,51 @@ export class SmartContract{
     sendEthAddresses=[],
     ownersAirdropFees=0
   ) {
-  const parameters = {
-    proposalHash,
-    executionStatus,
-    proposalId,
-    customToken,
-    airDropToken,
-    executionIds,
-    quoram,
-    threshold,
-    day,
-    minDeposits,
-    maxDeposits,
-    totalDeposits,
-    airDropAmount,
-    mintGTAmounts,
-    mintGTAddresses,
-    customTokenAmounts,
-    customTokenAddresses,
-    sendEthAmounts,
-    sendEthAddresses,
-    ownersAirdropFees
-  }
+  // const parameters = [
+  //   proposalHash,
+  //   executionStatus,
+  //   proposalId,
+  //   customToken,
+  //   airDropToken,
+  //   executionIds,
+  //   quoram,
+  //   threshold,
+  //   day,
+  //   minDeposits,
+  //   maxDeposits,
+  //   totalDeposits,
+  //   airDropAmount,
+  //   mintGTAmounts,
+  //   mintGTAddresses,
+  //   customTokenAmounts,
+  //   customTokenAddresses,
+  //   sendEthAmounts,
+  //   sendEthAddresses,
+  //   ownersAirdropFees
+  // ]
+  const parameters = [{
+    "proposalHash": proposalHash,
+    "status": executionStatus,
+    "proposalId": proposalId,
+    "customToken": customToken,
+    "airDropToken": airDropToken,
+    "executionIds": executionIds,
+    "quorum": quoram,
+    "threshold": threshold,
+    "day": day,
+    "minDeposits": minDeposits,
+    "maxDeposits": maxDeposits,
+    "totalDeposits": totalDeposits,
+    "airDropAmount": airDropAmount,
+    "mintGTAmounts": mintGTAmounts,
+    "mintGTAddresses": mintGTAddresses,
+    "customTokenAmounts": customTokenAmounts,
+    "customTokenAddresses": customTokenAddresses,
+    "sendEthAmounts": sendEthAmounts,
+    "sendEthAddresses": sendEthAddresses,
+    "ownersAirdropFees": ownersAirdropFees
+  }]
+  console.log(parameters)
   const safeOwner = this.walletAddress
   const ethAdapter = new Web3Adapter({
     web3: this.web3,
@@ -182,6 +205,7 @@ export class SmartContract{
     const signature = new EthSignSignature(tx.confirmations[i].owner, tx.confirmations[i].signature)
     safeTransaction2.addSignature(signature)
   }
+  console.log("signed")
   const executeTxResponse = await safeSdk.executeTransaction(safeTransaction2)
   console.log("Execute transaction", executeTxResponse)
 
