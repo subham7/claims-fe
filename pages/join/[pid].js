@@ -24,7 +24,7 @@ import {
 import Layout3 from "../../src/components/layouts/layout3"
 import ProgressBar from "../../src/components/progressbar"
 import { connectWallet, setUserChain, onboard } from "../../src/utils/wallet"
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { useRouter } from "next/router"
 import {
   USDC_CONTRACT_ADDRESS,
@@ -39,7 +39,7 @@ import USDCContract from "../../src/abis/usdcTokenContract.json"
 import ImplementationContract from "../../src/abis/implementationABI.json"
 import { SmartContract } from "../../src/api/contract"
 import { checkNetwork } from "../../src/utils/wallet"
-import {calculateTreasuryTargetShare, convertAmountToWei} from "../../src/utils/globalFunctions";
+import {calculateTreasuryTargetShare, convertAmountToWei, convertToWei} from "../../src/utils/globalFunctions";
 
 const useStyles = makeStyles({
   valuesStyle: {
@@ -194,8 +194,7 @@ const Join = (props) => {
   const [data, setData] = useState([])
   const [fetched, setFetched] = useState(false)
   const [dataFetched, setDataFetched] = useState(false)
-  const [previouslyConnectedWallet, setPreviouslyConnectedWallet] =
-    useState(null)
+  const [previouslyConnectedWallet, setPreviouslyConnectedWallet] = useState(null)
   const [userDetails, setUserDetails] = useState(null)
   const [walletBalance, setWalletBalance] = useState(0)
   const [depositAmount, setDepositAmount] = useState(0)
@@ -218,6 +217,7 @@ const Join = (props) => {
   const [imageFetched, setImageFetched] = useState(false)
   const [imageUrl, setImageUrl] = useState("")
   const [open, setOpen] = useState(false)
+  const [gnosisAddress, setGnosisAddress] = useState(null)
 
   const checkConnection = async () => {
     if (window.ethereum) {
@@ -253,6 +253,7 @@ const Join = (props) => {
     if (response.data.length > 0) {
       settokenAPIDetails(response.data)
       setClubId(response.data[0].clubId)
+      setGnosisAddress(response.data[0].gnosisAddress)
       setApiTokenDetailSet(true)
     } else {
       setApiTokenDetailSet(false)
@@ -262,13 +263,12 @@ const Join = (props) => {
   const tokenDetailsRetrieval = async () => {
     if (tokenAPIDetails && tokenAPIDetails.length > 0) {
       const tokenDetailContract = new SmartContract(
-        ImplementationContract
+        ImplementationContract,
         tokenAPIDetails[0].daoAddress,
         undefined
       )
       await tokenDetailContract.tokenDetails().then(
         (result) => {
-          // console.log(result)
           settokenDetails(result)
           setDataFetched(true)
         },
@@ -323,7 +323,7 @@ const Join = (props) => {
   const obtaineWalletBallance = async () => {
     if (!fetched && userDetails) {
       const usdc_contract = new SmartContract(
-        implementationContract,
+        ImplementationContract,
         USDC_CONTRACT_ADDRESS,
         undefined
       )
@@ -355,7 +355,7 @@ const Join = (props) => {
   }
   useEffect(() => {
     const web3 = new Web3(Web3.givenProvider)
-    const networkIdRK = "42"
+    const networkIdRK = "4"
     web3.eth.net
       .getId()
       .then((networkId) => {
@@ -400,13 +400,10 @@ const Join = (props) => {
     setDepositInitiated(true)
     const checkUserExists = checkUserByClub(userDetails, clubId)
     checkUserExists.then((result) => {
-      console.log("********* check user")
-      console.log(result)
       if (result.data === false) {
-        console.log("*********** User doesn't exist")
         // if the user doesn't exist
         const usdc_contract = new SmartContract(
-          implementationContract,
+          ImplementationContract,
           USDC_CONTRACT_ADDRESS,
           undefined
         )
@@ -461,10 +458,9 @@ const Join = (props) => {
           }
         )
       } else {
-        console.log("*********** User exist")
         // if user exists
         const usdc_contract = new SmartContract(
-          implementationContract,
+          ImplementationContract,
           USDC_CONTRACT_ADDRESS,
           undefined
         )
@@ -657,7 +653,7 @@ const Join = (props) => {
                   <Grid item mt={2}>
                     <Typography variant="p" className={classes.valuesStyle}>
                       {governorDataFetched ? (
-                        governorDetails[1] + " USDC"
+                        convertAmountToWei(governorDetails[1]) + " USDC"
                       ) : (
                         <Skeleton
                           variant="rectangular"
@@ -687,7 +683,7 @@ const Join = (props) => {
                   <Grid item mt={2}>
                     <Typography variant="p" className={classes.valuesStyle}>
                       {governorDataFetched ? (
-                        governorDetails[2] + " USDC"
+                        convertAmountToWei(governorDetails[2]) + " USDC"
                       ) : (
                         <Skeleton
                           variant="rectangular"
@@ -822,7 +818,7 @@ const Join = (props) => {
                   <Grid item>
                     <Typography variant="p" className={classes.valuesStyle}>
                       {governorDataFetched ? (
-                        governorDetails[4] + (" $" + tokenDetails[1])
+                        convertAmountToWei(governorDetails[4]) + (" $" + tokenDetails[1])
                       ) : (
                         <Skeleton
                           variant="rectangular"

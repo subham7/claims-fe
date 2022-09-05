@@ -10,6 +10,7 @@ import {
 } from "../index";
 import {calculateDays, convertToWei} from "../../utils/globalFunctions";
 import FactoryContract from "../../abis/factoryContract.json";
+import ImplementationContract from "../../abis/implementationABI.json"
 import { SafeFactory } from "@gnosis.pm/safe-core-sdk"
 
 async function syncWallet() {
@@ -74,6 +75,8 @@ export class SmartContract{
   }
 
   async updateProposalAndExecution(
+    daoAddress,
+    gnosisAddress="",
     proposalHash="",
     executionStatus="",
     proposalId=1,
@@ -93,34 +96,134 @@ export class SmartContract{
     customTokenAddresses=[],
     sendEthAmounts=[],
     sendEthAddresses=[],
-    executiveRoles=[]
+    ownersAirdropFees=0
   ) {
-    return this.contract.methods.updateProposalAndExecution({
-        proposalHash: proposalHash,
-        status: executionStatus,
-        proposalId: proposalId,
-        customToken: customToken,
-        airDropToken: airDropToken,
-        executionIds: executionIds,
-        quorum: quoram,
-        threshold: threshold,
-        day: day,
-        minDeposits: minDeposits,
-        maxDeposits: maxDeposits,
-        totalDeposits: totalDeposits,
-        airDropAmount: airDropAmount,
-        mintGTAmounts: mintGTAmounts,
-        mintGTAddresses: mintGTAddresses,
-        customTokenAmounts: customTokenAmounts,
-        customTokenAddresses: customTokenAddresses,
-        sendEthAmounts: sendEthAmounts,
-        sendEthAddresses: sendEthAddresses,
-        executiveRoles: executiveRoles
-      }
-    ).send( { from: this.walletAddress })
+  const parameters = {
+    proposalHash,
+    executionStatus,
+    proposalId,
+    customToken,
+    airDropToken,
+    executionIds,
+    quoram,
+    threshold,
+    day,
+    minDeposits,
+    maxDeposits,
+    totalDeposits,
+    airDropAmount,
+    mintGTAmounts,
+    mintGTAddresses,
+    customTokenAmounts,
+    customTokenAddresses,
+    sendEthAmounts,
+    sendEthAddresses,
+    ownersAirdropFees
+  }
+  const safeOwner = this.walletAddress
+  const ethAdapter = new Web3Adapter({
+    web3: this.web3,
+    signerAddress: safeOwner,
+  })
+  const txServiceUrl = 'https://safe-transaction.rinkeby.gnosis.io'
+  const safeService = new SafeServiceClient({ txServiceUrl, ethAdapter })
+  console.log("safe service", safeService)
+  
+  const web3 = new Web3(window.web3)
+  const implementationContract = new web3.eth.Contract(ImplementationContract.abi, daoAddress)
+  const safeSdk = await Safe.create({ ethAdapter:ethAdapter, safeAddress: gnosisAddress })
+  console.log("Safe SDK", safeSdk)
+  console.log("Before implementation")
+  console.log(await implementationContract.methods.updateProposalAndExecution(parameters).encodeABI())
+  console.log("after implementation")
+  
+  const transaction = {
+    to: daoAddress,
+    data: implementationContract.methods.updateProposalAndExecution(parameters).encodeABI(),
+    value: '0',
+  }
+  const safeTransaction = await safeSdk.createTransaction(transaction)
+  console.log("Safe transaction", safeTransaction)
+  
+  await safeSdk.signTransaction(safeTransaction)
+  const safeTxHash = await safeSdk.getTransactionHash(safeTransaction)
+  console.log("Safe transaction hash", safeTxHash)
+  
+  const senderSignature = await safeSdk.signTransactionHash(safeTxHash)
+  console.log("Sender signature", senderSignature)
+
+  await safeService.proposeTransaction({
+    safeAddress: gnosisAddress,
+    safeTransactionData: safeTransaction.data,
+    safeTxHash: safeTxHash,
+    senderAddress: this.walletAddress,
+    senderSignature: senderSignature.data,
+  })
+  const tx = await safeService.getTransaction(safeTxHash)
+
+  console.log("Transaction", tx)
+  const safeTransactionData = {
+    to: tx.to,
+    value: tx.value,
+    operation: tx.operation,
+    safeTxGas: tx.safeTxGas,
+    baseGas: tx.baseGas,
+    gasPrice: tx.gasPrice,
+    gasToken: tx.gasToken,
+    refundReceiver: tx.refundReceiver,
+    nonce: tx.nonce,
+    data: tx.data,
   }
 
-  async approveDepositGnosis(address, amount, daoAddress, gnosisAddress){
+  const safeTransaction2 = await safeSdk.createTransaction(safeTransactionData)
+  console.log("Safe transaction 2", safeTransaction2)
+  
+  for (let i = 0; i < tx.confirmations.length; i++){
+    const signature = new EthSignSignature(tx.confirmations[i].owner, tx.confirmations[i].signature)
+    safeTransaction2.addSignature(signature)
+  }
+  const executeTxResponse = await safeSdk.executeTransaction(safeTransaction2)
+  console.log("Execute transaction", executeTxResponse)
+
+  const receipt = executeTxResponse.transactionResponse && (await executeTxResponse.transactionResponse.wait())
+  console.log("Receipt", receipt)
+  return executeTxResponse
+  }
+
+  async approveAndDeposit(amount, gnosisAddress) {
+    // method for depositing tokens to a club
+    const safeOwner = this.walletAddress
+    const ethAdapter = new Web3Adapter({
+      web3: this.web3,
+      signerAddress: safeOwner,
+    })
+    const txServiceUrl = 'https://safe-transaction.rinkeby.gnosis.io'
+    const safeService = new SafeServiceClient({ txServiceUrl, ethAdapter })
+    const web3 = new Web3(window.web3)
+    const usdcContract = new web3.eth.Contract(ImplementationContract.abi, USDC_CONTRACT_ADDRESS)
+    const safeSdk = await Safe.create({ ethAdapter:ethAdapter, safeAddress: gnosisAddress })
+    const transaction = {
+      to: USDC_CONTRACT_ADDRESS,
+      data: usdcContract.methods.deposit(USDC_CONTRACT_ADDRESS, amount).encodeABI(),
+      value: '0',
+    }
+    const safeTransaction = await safeSdk.createTransaction(transaction)
+    const safeTxHash = await safeSdk.getTransactionHash(safeTransaction)
+    const senderSignature = await safeSdk.signTransactionHash(safeTxHash)
+    await safeService.proposeTransaction({
+      safeAddress: gnosisAddress,
+      safeTransactionData: safeTransaction.data,
+      safeTxHash: safeTxHash,
+      senderAddress: this.walletAddress,
+      senderSignature: senderSignature.data,
+    })
+    const executeTxResponse = await safeSdk.executeTransaction(safeTransaction)
+    const receipt = executeTxResponse.transactionResponse && (await executeTxResponse.transactionResponse.wait())
+    return receipt
+  }
+
+  async approveSendCustomToken(address, amount, daoAddress, gnosisAddress){
+    // method for sending custom token
     const safeOwner = this.walletAddress
     const ethAdapter = new Web3Adapter({
       web3: this.web3,
@@ -175,7 +278,7 @@ export class SmartContract{
 
   async approveDeposit(address, amount) {
     const number = new web3.utils.BN(amount);
-    return this.contract.methods.approve(address, web3.utils.toWei(number, 'ether')).send({ from: this.walletAddress })
+    return this.contract.methods.approve(address, web3.utils.toWei(number, 'Mwei')).send({ from: this.walletAddress })
   }
   async deposit(address, amount) {
     return this.contract.methods.deposit(

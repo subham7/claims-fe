@@ -5,7 +5,7 @@ export const calculateUserSharePercentage = (balance, total) => {
 
 export const convertAmountToWei = (value) => {
   // function for converting the amount from Wei format
-  return web3.utils.fromWei(value)
+  return web3.utils.fromWei(value, 'Mwei')
 }
 
 export const calculateTreasuryTargetShare = (treasuryBalance, totalSupply) => {

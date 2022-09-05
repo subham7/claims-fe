@@ -163,6 +163,7 @@ const ProposalDetail = () => {
   const [cardSelected, setCardSelected] = useState(null)
   const walletAddress = useSelector(state => { return state.create.value })
   const daoAddress = useSelector(state => { return state.create.daoAddress })
+  const gnosisAddress = useSelector(state => {return state.gnosis.safeAddress })
   const [executed, setExecuted] = useState(false)
   const [message, setMessage] = useState("")
   const [failed, setFailed] = useState(false)
@@ -437,6 +438,8 @@ const ProposalDetail = () => {
       // For execution of Governance settings
       const updateProposal = new SmartContract(ImplementationContract, daoAddress, undefined)
       const response = updateProposal.updateProposalAndExecution(
+        daoAddress,
+        gnosisAddress,
         proposalData[0].ipfsHash,
         "Executed",
         123444,
@@ -476,6 +479,7 @@ const ProposalDetail = () => {
           }
         })
       }, (error) => {
+        console.log(error)
         setExecuted(false)
         setOpenSnackBar(true)
         setMessage("Governance settings execution failed!")
@@ -639,7 +643,7 @@ const ProposalDetail = () => {
     if (proposalData[0].commands[0].executionId === 7) {
       // send custom token execution
       const sendCustomToken = new SmartContract(ImplementationContract, daoAddress, undefined)
-      const transferApprovalResponse = sendCustomToken.approveDepositGnosis(
+      const transferApprovalResponse = sendCustomToken.approveSendCustomToken(
         proposalData[0].commands[0].customTokenAddresses,
         proposalData[0].commands[0].customTokenAmounts,
         daoAddress,
