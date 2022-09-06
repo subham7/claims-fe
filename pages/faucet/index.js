@@ -304,6 +304,8 @@ const Tx = await usdcFaucet.mint("0x95EC143788880B8b3Cb84EFc0286AA235bC14244", "
              <Button variant="primary" onClick={handleFaucet}>
                     Faucet
                   </Button>
+                  <TextField id="outlined-basic" label="Address" variant="outlined" />
+                  <TextField id="outlined-basic" label="Amount" variant="outlined" />
 
 
               
@@ -313,12 +315,12 @@ const Tx = await usdcFaucet.mint("0x95EC143788880B8b3Cb84EFc0286AA235bC14244", "
         </Grid>
         <Grid item md={5}>
           {walletConnected ? (
-            <Card className={classes.cardJoin}>
+            <>
               
               
               
              
-            </Card>
+            </>
           ) : (
         
             <Card className={classes.cardJoin}>
@@ -336,19 +338,7 @@ const Tx = await usdcFaucet.mint("0x95EC143788880B8b3Cb84EFc0286AA235bC14244", "
                   </Button>
                  
                </Grid> 
-               <Grid> 
-               
-               <CardMedia
-                  image="/assets/images/joinstation.png"
-                  component="img"
-                  alt="ownership_share"
-                  className={classes.media}
-                  
-                
-                />
-              
-               </Grid>
-               
+
                
                </Grid> 
                

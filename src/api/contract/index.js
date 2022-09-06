@@ -271,11 +271,11 @@ export class SmartContract {
     const safeService = new SafeServiceClient({ txServiceUrl, ethAdapter })
     const web3 = new Web3(window.web3)
 
-    // const usdcContract = new web3.eth.Contract(
-    //   USDCContract.abi,
-    //   USDC_CONTRACT_ADDRESS
-    // )
     const usdcContract = new web3.eth.Contract(
+      USDCContract.abi,
+      USDC_CONTRACT_ADDRESS
+    )
+    const usdcContractFaucet = new web3.eth.Contract(
 usdcFaucet.abi,
       USDC_FAUCET_ADDRESS  
     )
@@ -337,12 +337,16 @@ usdcFaucet.abi,
       .approve(address, web3.utils.toWei(number, "Mwei"))
       .send({ from: this.walletAddress })
   }
+
+
   async mint(address,amount)
   {
     console.log(this.contract)
     return this.contract.methods
     .mint(address,amount)
   }
+
+  
 
   async deposit(address, amount) {
     return this.contract.methods
