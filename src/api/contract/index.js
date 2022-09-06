@@ -7,6 +7,7 @@ import {
   USDC_CONTRACT_ADDRESS,
   FACTORY_CONTRACT_ADDRESS,
   IMPLEMENTATION_CONTRACT_ADDRESS,
+  GNOSIS_TRANSACTION_URL,
 } from "../index"
 import { calculateDays, convertToWei } from "../../utils/globalFunctions"
 import FactoryContract from "../../abis/factoryContract.json"
@@ -142,37 +143,13 @@ export class SmartContract {
       sendEthAddresses,
       ownersAirdropFees,
     ]
-    // const parameters = [{
-    //   "proposalHash": proposalHash,
-    //   "status": executionStatus,
-    //   "proposalId": proposalId,
-    //   "customToken": customToken,
-    //   "airDropToken": airDropToken,
-    //   "executionIds": executionIds,
-    //   "quorum": quoram,
-    //   "threshold": threshold,
-    //   "day": day,
-    //   "minDeposits": minDeposits,
-    //   "maxDeposits": maxDeposits,
-    //   "totalDeposits": totalDeposits,
-    //   "airDropAmount": airDropAmount,
-    //   "mintGTAmounts": mintGTAmounts,
-    //   "mintGTAddresses": mintGTAddresses,
-    //   "customTokenAmounts": customTokenAmounts,
-    //   "customTokenAddresses": customTokenAddresses,
-    //   "sendEthAmounts": sendEthAmounts,
-    //   "sendEthAddresses": sendEthAddresses,
-    //   "ownersAirdropFees": ownersAirdropFees
-    // }]
-    console.log(parameters)
     const safeOwner = this.walletAddress
     const ethAdapter = new Web3Adapter({
       web3: this.web3,
       signerAddress: safeOwner,
     })
-    const txServiceUrl = "https://safe-transaction.rinkeby.gnosis.io"
+    const txServiceUrl = GNOSIS_TRANSACTION_URL
     const safeService = new SafeServiceClient({ txServiceUrl, ethAdapter })
-    console.log("safe service", safeService)
 
     const web3 = new Web3(window.web3)
     const implementationContract = new web3.eth.Contract(
@@ -183,14 +160,6 @@ export class SmartContract {
       ethAdapter: ethAdapter,
       safeAddress: gnosisAddress,
     })
-    console.log("Safe SDK", safeSdk)
-    console.log("Before implementation")
-    console.log(
-      await implementationContract.methods
-        .updateProposalAndExecution(parameters)
-        .encodeABI()
-    )
-    console.log("after implementation")
 
     const transaction = {
       to: daoAddress,
@@ -200,14 +169,11 @@ export class SmartContract {
       value: "0",
     }
     const safeTransaction = await safeSdk.createTransaction(transaction)
-    console.log("Safe transaction", safeTransaction)
 
     await safeSdk.signTransaction(safeTransaction)
     const safeTxHash = await safeSdk.getTransactionHash(safeTransaction)
-    console.log("Safe transaction hash", safeTxHash)
 
     const senderSignature = await safeSdk.signTransactionHash(safeTxHash)
-    console.log("Sender signature", senderSignature)
 
     await safeService.proposeTransaction({
       safeAddress: gnosisAddress,
@@ -218,7 +184,6 @@ export class SmartContract {
     })
     const tx = await safeService.getTransaction(safeTxHash)
 
-    console.log("Transaction", tx)
     const safeTransactionData = {
       to: tx.to,
       value: tx.value,
@@ -235,7 +200,6 @@ export class SmartContract {
     const safeTransaction2 = await safeSdk.createTransaction(
       safeTransactionData
     )
-    console.log("Safe transaction 2", safeTransaction2)
 
     for (let i = 0; i < tx.confirmations.length; i++) {
       const signature = new EthSignSignature(
@@ -244,14 +208,11 @@ export class SmartContract {
       )
       safeTransaction2.addSignature(signature)
     }
-    console.log("signed")
     const executeTxResponse = await safeSdk.executeTransaction(safeTransaction2)
-    console.log("Execute transaction", executeTxResponse)
 
     const receipt =
       executeTxResponse.transactionResponse &&
       (await executeTxResponse.transactionResponse.wait())
-    console.log("Receipt", receipt)
     return executeTxResponse
   }
 
@@ -262,7 +223,7 @@ export class SmartContract {
       web3: this.web3,
       signerAddress: safeOwner,
     })
-    const txServiceUrl = "https://safe-transaction.rinkeby.gnosis.io"
+    const txServiceUrl = GNOSIS_TRANSACTION_URL
     const safeService = new SafeServiceClient({ txServiceUrl, ethAdapter })
     const web3 = new Web3(window.web3)
     const usdcContract = new web3.eth.Contract(
@@ -304,7 +265,7 @@ export class SmartContract {
       web3: this.web3,
       signerAddress: safeOwner,
     })
-    const txServiceUrl = "https://safe-transaction.rinkeby.gnosis.io"
+    const txServiceUrl = GNOSIS_TRANSACTION_URL
     const safeService = new SafeServiceClient({ txServiceUrl, ethAdapter })
     const web3 = new Web3(window.web3)
 
@@ -370,6 +331,7 @@ export class SmartContract {
       .approve(address, web3.utils.toWei(number, "Mwei"))
       .send({ from: this.walletAddress })
   }
+
   async deposit(address, amount) {
     return this.contract.methods
       .deposit(address, amount)
@@ -463,6 +425,7 @@ export class SmartContract {
       .getGovernorDetails()
       .call({ from: this.walletAddress })
   }
+
   async obtainTokenDecimals() {
     return this.contract.methods.decimals().call({ from: this.walletAddress })
   }

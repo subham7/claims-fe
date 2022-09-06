@@ -284,6 +284,8 @@ const ProposalDetail = () => {
       // for airdrop execution
       const updateProposal = new SmartContract(ImplementationContract, daoAddress, undefined)
       const response = updateProposal.updateProposalAndExecution(
+        daoAddress,
+        gnosisAddress,
         proposalData[0].ipfsHash,
         "Executed",
         123444,
@@ -335,6 +337,8 @@ const ProposalDetail = () => {
       // for mintGT execution
       const updateProposal = new SmartContract(ImplementationContract, daoAddress, undefined)
       const response = updateProposal.updateProposalAndExecution(
+        daoAddress,
+        gnosisAddress,
         proposalData[0].ipfsHash,
         "Executed",
         123444,
@@ -383,58 +387,60 @@ const ProposalDetail = () => {
       })
     }
 
+    // if (proposalData[0].commands[0].executionId === 2) {
+    //   const web3 = new Web3(window.web3)
+    //   // for assigner executor role execution
+    //   const updateProposal = new SmartContract(ImplementationContract, daoAddress, undefined)
+    //   const response = updateProposal.updateProposalAndExecution(
+    //     daoAddress,
+    //     gnosisAddress,
+    //     proposalData[0].ipfsHash,
+    //     "Executed",
+    //     123444,
+    //     undefined,
+    //     undefined,
+    //     [0, 0, 1, 0, 0, 0, 0, 0],
+    //     undefined,
+    //     undefined,
+    //     undefined,
+    //     undefined,
+    //     undefined,
+    //     undefined,
+    //     undefined,
+    //     undefined,
+    //     undefined,
+    //     undefined,
+    //     undefined,
+    //     undefined,
+    //     undefined,
+    //     [web3.utils.toChecksumAddress(proposalData[0].commands[0].executiveRoles)],
+    //   )
+    //   response.then((result) => {
+    //     const updateStatus = patchProposalExecuted(pid)
+    //     updateStatus.then((result) => {
+    //       if (result.status !== 200) {
+    //         setExecuted(false)
+    //         setOpenSnackBar(true)
+    //         setMessage("Assigner executor role status update failed!")
+    //         setFailed(true)
+    //         setLoaderOpen(false)
+    //       } else {
+    //         setExecuted(true)
+    //         setOpenSnackBar(true)
+    //         setMessage("Assigner executor role allocation successful!")
+    //         setFailed(false)
+    //         setLoaderOpen(false)
+    //       }
+    //     })
+    //   }, (error) => {
+    //     setExecuted(false)
+    //     setOpenSnackBar(true)
+    //     setMessage("Assigner executor role allocation failed!")
+    //     setFailed(true)
+    //     setLoaderOpen(false)
+    //   })
+    // }
     if (proposalData[0].commands[0].executionId === 2) {
-      const web3 = new Web3(window.web3)
-      // for assigner executor role execution
-      const updateProposal = new SmartContract(ImplementationContract, daoAddress, undefined)
-      const response = updateProposal.updateProposalAndExecution(
-        proposalData[0].ipfsHash,
-        "Executed",
-        123444,
-        undefined,
-        undefined,
-        [0, 0, 1, 0, 0, 0, 0, 0],
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        [web3.utils.toChecksumAddress(proposalData[0].commands[0].executiveRoles)],
-      )
-      response.then((result) => {
-        const updateStatus = patchProposalExecuted(pid)
-        updateStatus.then((result) => {
-          if (result.status !== 200) {
-            setExecuted(false)
-            setOpenSnackBar(true)
-            setMessage("Assigner executor role status update failed!")
-            setFailed(true)
-            setLoaderOpen(false)
-          } else {
-            setExecuted(true)
-            setOpenSnackBar(true)
-            setMessage("Assigner executor role allocation successful!")
-            setFailed(false)
-            setLoaderOpen(false)
-          }
-        })
-      }, (error) => {
-        setExecuted(false)
-        setOpenSnackBar(true)
-        setMessage("Assigner executor role allocation failed!")
-        setFailed(true)
-        setLoaderOpen(false)
-      })
-    }
-    if (proposalData[0].commands[0].executionId === 3) {
       // For execution of Governance settings
       const updateProposal = new SmartContract(ImplementationContract, daoAddress, undefined)
       const response = updateProposal.updateProposalAndExecution(
@@ -488,16 +494,18 @@ const ProposalDetail = () => {
       })
     }
 
-    if (proposalData[0].commands[0].executionId === 4) {
+    if (proposalData[0].commands[0].executionId === 3) {
       // start deposit execution
       const updateProposal = new SmartContract(ImplementationContract, daoAddress, undefined)
       const response = updateProposal.updateProposalAndExecution(
+        daoAddress,
+        gnosisAddress,
         proposalData[0].ipfsHash,
         "Executed",
         123444,
         undefined,
         undefined,
-        [0, 0, 0, 0, 1, 0, 0, 0],
+        [0, 0, 0, 1, 0, 0, 0, 0],
         undefined,
         undefined,
         proposalData[0].commands[0].day,
@@ -539,16 +547,18 @@ const ProposalDetail = () => {
       })
     }
 
-    if (proposalData[0].commands[0].executionId === 5) {
+    if (proposalData[0].commands[0].executionId === 4) {
       // close deposit execution
       const updateProposal = new SmartContract(ImplementationContract, daoAddress, undefined)
       const response = updateProposal.updateProposalAndExecution(
+        daoAddress,
+        gnosisAddress,
         proposalData[0].ipfsHash,
         "Executed",
         123444,
         undefined,
         undefined,
-        [0, 0, 0, 0, 0, 1, 0, 0],
+        [0, 0, 0, 0, 1, 0, 0, 0],
         proposalData[0].commands[0].quorum,
         proposalData[0].commands[0].threshold,
         undefined,
@@ -589,16 +599,18 @@ const ProposalDetail = () => {
         setLoaderOpen(false)
       })
     }
-    if (proposalData[0].commands[0].executionId === 6) {
+    if (proposalData[0].commands[0].executionId === 5) {
       // update raise amount execution
       const updateProposal = new SmartContract(ImplementationContract, daoAddress, undefined)
       const response = updateProposal.updateProposalAndExecution(
+        daoAddress,
+        gnosisAddress,
         proposalData[0].ipfsHash,
         "Executed",
         123444,
         undefined,
         undefined,
-        [0, 0, 0, 0, 0, 0, 1, 0],
+        [0, 0, 0, 0, 0, 1, 0, 0],
         undefined,
         undefined,
         undefined,
@@ -640,56 +652,65 @@ const ProposalDetail = () => {
       })
     }
 
-    if (proposalData[0].commands[0].executionId === 7) {
+    if (proposalData[0].commands[0].executionId === 6) {
       // send custom token execution
-      const sendCustomToken = new SmartContract(ImplementationContract, daoAddress, undefined)
-      const transferApprovalResponse = sendCustomToken.approveSendCustomToken(
+      const updateProposal = new SmartContract(ImplementationContract, daoAddress, undefined)
+      const response = updateProposal.updateProposalAndExecution(
+        daoAddress,
+        gnosisAddress,
+        proposalData[0].ipfsHash,
+        "Executed",
+        123444,
+        undefined,
+        undefined,
+        [0, 0, 0, 0, 0, 0, 1, 0],
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
         proposalData[0].commands[0].customTokenAddresses,
         proposalData[0].commands[0].customTokenAmounts,
-        daoAddress,
-        tresuryAddress)
-      await transferApprovalResponse.then((result) => {
-        result.promiEvent.then((receipt) => {
-          console.log(receipt)
-          const updateStatus = patchProposalExecuted(pid)
-          updateStatus.then((response) => {
-            if (response.status !== 200) {
-              setExecuted(false)
-              setOpenSnackBar(true)
-              setMessage("Send custom token execution status update failed!")
-              setFailed(true)
-              setLoaderOpen(false)
-            } else {
-              setExecuted(true)
-              setOpenSnackBar(true)
-              setMessage("Send custom token execution successful!")
-              setFailed(false)
-              setLoaderOpen(false)
-            }
-          })
+        undefined,
+        undefined,
+        undefined
+      )
+      response.then((result) => {
+        const updateStatus = patchProposalExecuted(pid)
+        updateStatus.then((result) => {
+          if (result.status !== 200) {
+            setExecuted(false)
+            setOpenSnackBar(true)
+            setMessage("Send custom token execution status update failed!")
+            setFailed(true)
+            setLoaderOpen(false)
+          } else {
+            setExecuted(true)
+            setOpenSnackBar(true)
+            setMessage("Send custom token execution successful!")
+            setFailed(false)
+            setLoaderOpen(false)
+          }
         })
-        .catch((error) => {
-          setExecuted(false)
-          setOpenSnackBar(true)
-          setMessage("Send custom token execution status update failed!")
-          setFailed(true)
-          setLoaderOpen(false)
-        })
-        },
-      (error) => {
-        console.log(error)
+      }, (error) => {
         setExecuted(false)
         setOpenSnackBar(true)
-        setMessage("Send custom token approval failed!")
+        setMessage("Send custom token execution status update failed!")
         setFailed(true)
         setLoaderOpen(false)
       })
     }
 
-    if (proposalData[0].commands[0].executionId === 8) {
+    if (proposalData[0].commands[0].executionId === 7) {
       // send ethereum
       const updateProposal = new SmartContract(ImplementationContract, daoAddress, undefined)
       const response = updateProposal.updateProposalAndExecution(
+        daoAddress,
+        gnosisAddress,
         proposalData[0].ipfsHash,
         "Executed",
         123444,

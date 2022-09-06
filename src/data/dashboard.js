@@ -38,11 +38,11 @@ export const votingDuration = [
 ]
 
 export const commandTypeList = [
-    // {
-    //     commandId: 0,
-    //     command: "airdropCustomToken",
-    //     commandText: "Distribute token to members"
-    // },
+    {
+        commandId: 0,
+        command: "airdropCustomToken",
+        commandText: "Distribute token to members"
+    },
     {
         commandId: 1,
         command: "mintGTToAddress",
@@ -54,33 +54,33 @@ export const commandTypeList = [
     //     commandText: "Assign executor role"
     // },
     {
-        commandId: 3,
+        commandId: 2,
         command: "updateGovernanceSettings",
         commandText: "Update Governance Settings"
     },
     {
-        commandId: 4,
+        commandId: 3,
         command: "startDeposit",
         commandText: "Start deposit"
     },
     {
-        commandId: 5,
+        commandId: 4,
         command: "closeDeposit",
         commandText: "Close deposit"
     },
     {
-        commandId: 6,
+        commandId: 5,
         command: "updateRaiseAmount",
         commandText: "Change total raise amount"
     },
     {
-        commandId: 7,
+        commandId: 6,
         command: "sendCustomToken",
         commandText: "Send custom token"
     },
-    // {
-    //     commandId: 8,
-    //     command: "sendEth",
-    //     commandText: "Send ETH"
-    // },
+    {
+        commandId: 7,
+        command: "sendEth",
+        commandText: "Send ETH"
+    },
 ]
