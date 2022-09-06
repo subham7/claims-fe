@@ -416,13 +416,13 @@ const Join = (props) => {
         // pass governor contract
         const usdc_response = usdc_contract.approveDeposit(
           daoAddress,
-          depositAmount
+          convertToWei(depositAmount)
         )
         usdc_response.then(
           (result) => {
             const deposit_response = dao_contract.deposit(
               USDC_CONTRACT_ADDRESS,
-              depositAmount
+              convertToWei(depositAmount)
             )
             deposit_response.then((result) => {
               const data = {
@@ -431,7 +431,7 @@ const Join = (props) => {
                   {
                     clubId: clubId,
                     isAdmin: 0,
-                    balance: depositAmount,
+                    balance: convertToWei(depositAmount),
                   },
                 ],
               }
@@ -473,19 +473,19 @@ const Join = (props) => {
         // pass governor contract
         const usdc_response = usdc_contract.approveDeposit(
           daoAddress,
-          depositAmount
+          convertToWei(depositAmount)
         )
         usdc_response.then(
           (result) => {
             const deposit_response = dao_contract.deposit(
               USDC_CONTRACT_ADDRESS,
-              depositAmount
+              convertToWei(depositAmount)
             )
             deposit_response.then((result) => {
               const patchData = {
                 userAddress: userDetails,
                 clubId: clubId,
-                balance: depositAmount,
+                balance: convertToWei(depositAmount),
               }
               const updateDepositAmount = patchUserBalance(patchData)
               updateDepositAmount.then((result) => {

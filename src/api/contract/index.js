@@ -463,4 +463,8 @@ export class SmartContract {
       .getGovernorDetails()
       .call({ from: this.walletAddress })
   }
+  async obtainTokenDecimals() {
+    return this.contract.methods.decimals().call({ from: this.walletAddress })
+  }
 }
+
