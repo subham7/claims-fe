@@ -92,6 +92,9 @@ const useStyles = makeStyles({
   },
   JoinText:{
   color:"#111D38",
+  fontFamily: "Whyte",
+  fontSize: "21px",
+  fontWeight: "bold",
   },
   cardLargeFont: {
     width: "150px",
