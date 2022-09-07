@@ -61,6 +61,8 @@ const useStyles = makeStyles({
     backgroundColor: "#81F5FF",
     borderRadius: "10px",
     opacity: 1,
+    justifyContent:"space-between" ,
+    
     
   },
   dimColor: {
@@ -940,13 +942,11 @@ const Join = (props) => {
             <Card className={classes.cardJoin}>
             <Grid >
 
-              <Grid container spacing={2} >
+              <Grid container spacing={2} justifyContent={"space-between"} height={"100%"}>
               <Grid item>
                  <Typography className={classes.JoinText}> Join this station by depositing your funds </Typography>
                </Grid>
-                <Grid   direction="row"
-  alignItems="center"
-  justifyContent="center"> 
+                <Grid >
                 <Grid >
                 
                   <Button variant="primary" onClick={handleConnectWallet}>

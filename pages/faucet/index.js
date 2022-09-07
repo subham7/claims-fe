@@ -321,28 +321,11 @@ const Tx = await usdcFaucet.mint(FaucetAddress, convertToWei(FaucetAmount),)
           ) : (
         
             <Card className={classes.cardJoin}>
-            <Grid >
-
-              <Grid container spacing={2} >
-              <Grid item>
-                 <Typography className={classes.JoinText}> Join this station by depositing your funds </Typography>
-               </Grid>
-                <Grid  wrap='nowrap'> 
-                <Grid item>
-                
-                  <Button variant="primary" onClick={handleConnectWallet}>
-                    Connect Wallet
-                  </Button>
-                 
-               </Grid> 
+            
 
                
-               </Grid> 
                
-              </Grid>
-
-              </Grid>
-
+             
               
             </Card>
             
