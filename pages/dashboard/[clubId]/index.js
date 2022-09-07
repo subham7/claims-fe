@@ -89,7 +89,8 @@ const useStyles = makeStyles({
   cardSharp2: {
     backgroundColor: "#142243",
     borderRadius: "5px",
- height:"22vh",
+ height:"23vh",
+ 
 
     opacity: 1,
   },
@@ -699,11 +700,11 @@ const Dashboard = () => {
                 </Grid>
                 <Grid className={classes.cardSharp2} >
 
-                  <Grid container spacing={7} justifyContent="center"  alignItems="center">
+                  <Grid container spacing={7} justifyContent="center" wrap="nowrap" alignItems="center">
 
                     <Grid item   md={2.5}   >
                       <Grid container>
-                        <Grid item>
+                        <Grid item ml={4}>
                           <Typography variant="p" className={classes.valuesDimStyle}>Member Deposits</Typography>
                         </Grid>
                         <Grid item mt={1}>
