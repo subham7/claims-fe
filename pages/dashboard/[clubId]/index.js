@@ -89,7 +89,7 @@ const useStyles = makeStyles({
   cardSharp2: {
     backgroundColor: "#142243",
     borderRadius: "5px",
-
+ height:"22vh",
 
     opacity: 1,
   },
@@ -671,21 +671,21 @@ const Dashboard = () => {
         <Grid container spacing={1} paddingLeft={10} paddingTop={15}>
           <Grid item md={9}>
             <Stack direction={{ xs: 'column', sm: 'row' }} spacing={3}>
-              <Grid item xs={12}>
+              <Grid item xs={12} >
                 <Grid className={classes.cardSharp1} mt={3} >
                   <Grid container spacing={2}>
-                    <Grid item mb={3} ml={3} >
+                    <Grid item mb={8} ml={3} >
                       <img src={imageUrl ?? null} width="100vw" alt="profile_pic" />
                     </Grid>
-                    <Grid item ml={1} mt={4} mb={9}>
+                    <Grid item ml={1} mt={2} mb={9}>
                       <Stack spacing={0}>
-                        <Typography variant="h4">
+                        <Typography variant="h4"  >
                           {apiTokenDetailSet ? tokenAPIDetails[0] : null}
                         </Typography>
 
                         <Typography variant="h6" className={classes.dimColor}>{dataFetched ? ("$" + tokenDetails[1]) : null}</Typography>
                         <Grid container item direction="row"  >
-                          <Typography variant="regularText4" sx={{ m: 0.5 }} mb={2}>
+                          <Typography variant="regularText4" mr={1} >
                             {membersFetched ? members : 0}
                           </Typography>
                           <Typography variant="regularText2">
@@ -711,8 +711,8 @@ const Dashboard = () => {
                         </Grid>
                       </Grid>
                     </Grid>
-                    <Grid item ml={3} md={2.5} mb={5} >
-                      <Grid container>
+                    <Grid item ml={3}  >
+                      <Grid container direction="column" >
                         <Grid item>
                           <Typography variant="p" className={classes.valuesDimStyle}> Club tokens minted </Typography>
                         </Grid>
@@ -721,10 +721,10 @@ const Dashboard = () => {
                         </Grid>
                       </Grid>
                     </Grid>
-                    <Grid item ml={3}  md={2.5} mr={5}>
+                    <Grid item ml={3}  md={2.5}  mr={5}>
                       <Grid container>
                         <Grid item>
-                          <Typography variant="p" className={classes.valuesDimStyle}>Maximum Token Supply</Typography>
+                          <Typography variant="p" className={classes.valuesDimStyle}>Max Token Supply</Typography>
                         </Grid>
                         <Grid item mt={1}>
                           <Typography variant="p" className={classes.valueDetailStyle}>{governorDataFetched && dataFetched ? governorDetails[4] + (" $" + tokenDetails[1]) : null} </Typography>
