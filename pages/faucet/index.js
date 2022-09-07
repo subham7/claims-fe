@@ -1,7 +1,7 @@
 import { React, useRef, onChange, useState, useEffect } from "react"
 import Image from "next/image"
 import { makeStyles } from "@mui/styles"
-import usdcFaucetABI from "../../src/abis/usdcFaucet.json"
+import USDCFaucet from "../../src/abis/usdcFaucet.json"
 import {
   Grid,
   Typography,
@@ -28,7 +28,6 @@ import { connectWallet, setUserChain, onboard } from "../../src/utils/wallet"
 import { useDispatch, useSelector } from "react-redux"
 import { useRouter } from "next/router"
 import {
-  
   USDC_FAUCET_ADDRESS
 } from "../../src/api"
 import { fetchClub, fetchClubbyDaoAddress } from "../../src/api/club"
@@ -246,22 +245,16 @@ const handleConnectWallet = () => {
 
   const handleFaucet = async () => {
 
-   const usdcFaucet = await new SmartContract(
-    usdcFaucetABI.abi,
+   const usdcFaucet = new SmartContract(
+    USDCFaucet,
     USDC_FAUCET_ADDRESS,
     undefined
-
    )
 const Tx = await usdcFaucet.mint("0x95EC143788880B8b3Cb84EFc0286AA235bC14244", "10000")
    console.log(usdcFaucet)
    console.log("faucet" , usdcFaucet)
   }
 
- 
-
-  
-
-  
 
   const handleDialogClose = (e) => {
     e.preventDefault()

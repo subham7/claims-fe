@@ -1,9 +1,6 @@
 {
-"contractName": "usdcFaucet",
+"contractName": "USDCFaucet",
 "abi":
-
-
-
 [
 	{
 		"inputs": [],
