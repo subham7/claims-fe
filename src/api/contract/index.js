@@ -342,8 +342,7 @@ usdcFaucet.abi,
   async mint(address,amount)
   {
     console.log(this.contract)
-    return this.contract.methods
-    .mint(address,amount)
+    return this.contract.methods.mint(address, amount).send({ from: this.walletAddress })
   }
 
   

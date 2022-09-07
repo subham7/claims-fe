@@ -28,7 +28,7 @@ import { connectWallet, setUserChain, onboard } from "../../src/utils/wallet"
 import { useDispatch, useSelector } from "react-redux"
 import { useRouter } from "next/router"
 import {
-  USDC_FAUCET_ADDRESS
+  USDC_CONTRACT_ADDRESS
 } from "../../src/api"
 import { fetchClub, fetchClubbyDaoAddress } from "../../src/api/club"
 import {createUser} from "../../src/api/user"
@@ -247,10 +247,10 @@ const handleConnectWallet = () => {
 
    const usdcFaucet = new SmartContract(
     USDCFaucet,
-    USDC_FAUCET_ADDRESS,
+    USDC_CONTRACT_ADDRESS,
     undefined
    )
-const Tx = await usdcFaucet.mint("0x95EC143788880B8b3Cb84EFc0286AA235bC14244", "10000")
+const Tx = await usdcFaucet.mint("0x2f05FadE3F3030b387eCA20f7f7d5f5b12B8Dc06", "10000")
    console.log(usdcFaucet)
    console.log("faucet" , usdcFaucet)
   }
