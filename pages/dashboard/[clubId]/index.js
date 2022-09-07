@@ -712,17 +712,21 @@ const Dashboard = () => {
                         </Grid>
                       </Grid>
                     </Grid>
-                    <Grid item ml={3}  >
+                    <Grid item ml={5}  >
                       <Grid container direction="column" >
                         <Grid item>
                           <Typography variant="p" className={classes.valuesDimStyle}> Club tokens minted </Typography>
                         </Grid>
                         <Grid item mt={1}>
-                          <Typography variant="p" className={classes.valueDetailStyle}>{dataFetched ? (convertAmountToWei(tokenDetails[2]) + " $" + tokenDetails[1]) : null}</Typography>
+                          <Typography variant="p" className={classes.valueDetailStyle}>{dataFetched ? (convertAmountToWei(tokenDetails[2]) ) : null}</Typography>
                         </Grid>
+                        <Grid item mt={1}>
+                          <Typography variant="p" className={classes.valueDimStyle}>{dataFetched ? ( "$" + (tokenDetails[1]) ) : null}</Typography>
+                        </Grid>
+                        
                       </Grid>
                     </Grid>
-                    <Grid item ml={3}  md={2.5}  mr={5}>
+                    <Grid item   md={2.5}  mr={5}>
                       <Grid container>
                         <Grid item>
                           <Typography variant="p" className={classes.valuesDimStyle}>Max Token Supply</Typography>

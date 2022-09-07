@@ -419,7 +419,7 @@ const Settings = (props) => {
                         <Typography variant="p" className={classes.valuesDimStyle}>Minimum Deposits</Typography>
                       </Grid>
                       <Grid item mt={1}>
-                        <Typography variant="p" className={classes.valuesStyle}>{governorDataFetched ? governorDetails[1] + " USDC" : null}</Typography>
+                        <Typography variant="p" className={classes.valuesStyle}>{governorDataFetched ? convertAmountToWei(governorDetails[1]) + " USDC" : null}</Typography>
                       </Grid>
                     </Grid>
                   </Grid>
@@ -429,7 +429,7 @@ const Settings = (props) => {
                         <Typography variant="p" className={classes.valuesDimStyle}>Maximum Deposit</Typography>
                       </Grid>
                       <Grid item mt={1}>
-                        <Typography variant="p" className={classes.valuesStyle}>{governorDataFetched ? governorDetails[2] + " USDC" : null} </Typography>
+                        <Typography variant="p" className={classes.valuesStyle}>{governorDataFetched ? convertAmountToWei(governorDetails[2]) + " USDC" : null} </Typography>
                       </Grid>
                     </Grid>
                   </Grid>
