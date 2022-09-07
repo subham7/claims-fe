@@ -479,7 +479,7 @@ const Settings = (props) => {
                   <Grid item ml={4} mt={1} mb={2} mr={4} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
                     <Stack spacing={1}>
                       <Typography variant="settingText">Total Supply</Typography>
-                      <Typography variant="p" className={classes.valuesStyle}>{governorDataFetched && dataFetched ? governorDetails[4] + (" $" + tokenDetails[1]) : null} </Typography>
+                      <Typography variant="p" className={classes.valuesStyle}>{governorDataFetched && dataFetched ? convertAmountToWei(governorDetails[4]) + (" $" + tokenDetails[1]) : null} </Typography>
                     </Stack>
                   </Grid>
                 </Grid>
@@ -573,7 +573,7 @@ const Settings = (props) => {
                       <Typography variant="settingText">Minimum deposit amount for new members</Typography>
                     </Grid>
                     <Grid item mr={4} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
-                      <Typography variant="p" className={classes.valuesStyle}>{governorDataFetched ? governorDetails[1] : null} USDC <a className={classes.activityLink} onClick={(e) => handleClickOpen(e)}>(change)</a></Typography>
+                      <Typography variant="p" className={classes.valuesStyle}>{governorDataFetched ? convertAmountToWei(governorDetails[1]) : null} USDC <a className={classes.activityLink} onClick={(e) => handleClickOpen(e)}>(change)</a></Typography>
                     </Grid>
                   </Grid>
                   <Divider />
@@ -582,7 +582,7 @@ const Settings = (props) => {
                       <Typography variant="settingText">Maximum deposit amount for new members</Typography>
                     </Grid>
                     <Grid item mr={4} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
-                      <Typography variant="p" className={classes.valuesStyle}>{governorDataFetched ? governorDetails[2] : null} USDC <a className={classes.activityLink} onClick={(e) => handleClickOpen(e)}>(change)</a></Typography>
+                      <Typography variant="p" className={classes.valuesStyle}>{governorDataFetched ? convertAmountToWei(governorDetails[2]) : null} USDC <a className={classes.activityLink} onClick={(e) => handleClickOpen(e)}>(change)</a></Typography>
                     </Grid>
                   </Grid>
                   <Divider />
