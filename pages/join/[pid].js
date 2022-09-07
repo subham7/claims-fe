@@ -84,6 +84,7 @@ const useStyles = makeStyles({
     backgroundColor: "#FFFFFF",
     borderRadius: "20px",
     opacity: 1,
+    
   },
   cardSmallFont: {
     fontFamily: "Whyte",
@@ -121,6 +122,7 @@ const useStyles = makeStyles({
     borderRadius: "10px",
     borderColor:"#111D38",
     opacity: 1,
+    border: "1px solid #C1D3FF",
   },
   textWarning: {
     textAlign: "left",
