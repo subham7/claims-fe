@@ -39,6 +39,7 @@ import ImplementationContract from "../../src/abis/implementationABI.json"
 import { SmartContract } from "../../src/api/contract"
 import { checkNetwork } from "../../src/utils/wallet"
 import {calculateTreasuryTargetShare, convertAmountToWei, convertToWei} from "../../src/utils/globalFunctions";
+import { SignalCellularNull } from "@mui/icons-material"
 
 const useStyles = makeStyles({
   valuesStyle: {
@@ -205,6 +206,9 @@ const Join = (props) => {
   const [imageUrl, setImageUrl] = useState("")
   const [open, setOpen] = useState(false)
   const [gnosisAddress, setGnosisAddress] = useState(null)
+  const[FaucetAmount,setFaucetAmount] = useState(null)
+  const[FaucetAddress,setFaucetAddress]=useState(null)
+
 
   
  
@@ -243,14 +247,14 @@ const handleConnectWallet = () => {
 
 
 
-  const handleFaucet = async () => {
+  const handleFaucet = async (FaucetAddress,FaucetAmount) => {
 
    const usdcFaucet = new SmartContract(
     USDCFaucet,
     USDC_CONTRACT_ADDRESS,
     undefined
    )
-const Tx = await usdcFaucet.mint("0x2f05FadE3F3030b387eCA20f7f7d5f5b12B8Dc06", "10000")
+const Tx = await usdcFaucet.mint(FaucetAddress, convertToWei(FaucetAmount),)
    console.log(usdcFaucet)
    console.log("faucet" , usdcFaucet)
   }
@@ -294,11 +298,11 @@ const Tx = await usdcFaucet.mint("0x2f05FadE3F3030b387eCA20f7f7d5f5b12B8Dc06", "
               justifyContent="space-evenly"
               alignItems="center"
             >
-             <Button variant="primary" onClick={handleFaucet}>
-                    Faucet
+             <Button variant="primary" onClick={ () => handleFaucet  (FaucetAddress,FaucetAmount)}>
+                    Mint
                   </Button>
-                  <TextField id="outlined-basic" label="Address" variant="outlined" />
-                  <TextField id="outlined-basic" label="Amount" variant="outlined" />
+                  <TextField id="outlined-basic" label="Address" onChange={(e) => setFaucetAddress(e.target.value)} variant="outlined" />
+                  <TextField id="outlined-basic" label="Amount" onChange={(e) => setFaucetAmount(e.target.value) } variant="outlined" />
 
 
               

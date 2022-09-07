@@ -944,8 +944,10 @@ const Join = (props) => {
               <Grid item>
                  <Typography className={classes.JoinText}> Join this station by depositing your funds </Typography>
                </Grid>
-                <Grid  wrap='nowrap'> 
-                <Grid item>
+                <Grid   direction="row"
+  alignItems="center"
+  justifyContent="center"> 
+                <Grid >
                 
                   <Button variant="primary" onClick={handleConnectWallet}>
                     Connect Wallet
