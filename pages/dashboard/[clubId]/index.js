@@ -681,7 +681,7 @@ console.log(tokenAPIDetails)
                     <Grid item  ml={3} mt={2} >
                       <img src={imageUrl ?? null} width="100vw" alt="profile_pic" />
                     </Grid>
-                    <Grid item ml={1} mt={4} >
+                    <Grid item ml={1} mt={2} >
                       <Stack spacing={0}>
                         <Typography variant="h4"  >
                           {apiTokenDetailSet ? tokenAPIDetails.name : null}
@@ -704,8 +704,8 @@ console.log(tokenAPIDetails)
                 <Card className={classes.cardSharp2} >
 
                  
-                  <Grid container alignItems="center"
-  justifyContent="center" paddingTop={4} paddingBottom={3}>
+                  <Grid container 
+   paddingTop={3} paddingBottom={1}>
   <Grid item xs={4}>
   <Grid container>
                         <Grid item >
