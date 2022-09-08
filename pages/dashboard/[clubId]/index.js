@@ -599,7 +599,8 @@ const Dashboard = () => {
       setOpenSnackBar(true)
     }
   }
-
+console.log(tokenAPIDetails)
+console.log(tokenDetails)
   useEffect(() => {
     setLoaderOpen(true)
     if (daoAddress) {
@@ -681,10 +682,10 @@ const Dashboard = () => {
                     <Grid item ml={1} mt={2} mb={9}>
                       <Stack spacing={0}>
                         <Typography variant="h4"  >
-                          {apiTokenDetailSet ? tokenAPIDetails[0] : null}
+                          {apiTokenDetailSet ? tokenDetails[0] : null}
                         </Typography>
 
-                        <Typography variant="h6" className={classes.dimColor}>{dataFetched ? ("$" + tokenDetails[1]) : null}</Typography>
+                     
                         <Grid container item direction="row"  >
                           <Typography variant="regularText4" mr={1} >
                             {membersFetched ? members : 0}
