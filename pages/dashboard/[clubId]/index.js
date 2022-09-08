@@ -600,7 +600,8 @@ const Dashboard = () => {
     }
   }
 console.log(tokenAPIDetails)
-console.log(tokenDetails)
+console.log(governorDetails)
+console.log(tokenAPIDetails)
   useEffect(() => {
     setLoaderOpen(true)
     if (daoAddress) {
@@ -639,7 +640,7 @@ console.log(tokenDetails)
       fetchUserBalanceAPI()
     }
   }, [dataFetched])
-
+  console.log(dataFetched, apiTokenDetailSet, membersFetched, tresuryWalletBalanceFetched, activeProposalDataFetched, clubAssetTokenFetched, clubDetailsFetched)
   useEffect(() => {
     console.log(dataFetched, apiTokenDetailSet, membersFetched, tresuryWalletBalanceFetched, activeProposalDataFetched, clubAssetTokenFetched, clubDetailsFetched)
     if (dataFetched && apiTokenDetailSet && membersFetched && tresuryWalletBalanceFetched && activeProposalDataFetched && clubAssetTokenFetched && clubDetailsFetched) {
@@ -682,7 +683,7 @@ console.log(tokenDetails)
                     <Grid item ml={1} mt={2} mb={9}>
                       <Stack spacing={0}>
                         <Typography variant="h4"  >
-                          {apiTokenDetailSet ? tokenDetails[0] : null}
+                          {apiTokenDetailSet ? tokenAPIDetails.name : null}
                         </Typography>
 
                      
