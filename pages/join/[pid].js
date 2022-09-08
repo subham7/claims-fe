@@ -958,7 +958,7 @@ const Join = (props) => {
                     Connect 
                   </Button>
                </Grid> 
-               <Grid marginTop="100px"> 
+               <Grid > 
                
                <CardMedia
                   image="/assets/images/joinstation.png"
