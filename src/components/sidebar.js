@@ -95,7 +95,7 @@ export default function Sidebar(props) {
             width: drawerWidth,
             paddingTop: "50px",
             backgroundColor: (theme) =>
-              theme.palette.mode == "dark" ? "#111D38" : "#F4F4F5",
+              theme.palette.mode == "dark" ? "#19274B" : "#F4F4F5",
 
           },
         }}
@@ -155,7 +155,7 @@ export default function Sidebar(props) {
             width: drawerWidth,
             paddingTop: "50px",
             backgroundColor: (theme) =>
-              theme.palette.mode == "dark" ? "#111D38" : "#F4F4F5",
+              theme.palette.mode == "dark" ? "#19274B" : "#F4F4F5",
           },
         }}
         open
