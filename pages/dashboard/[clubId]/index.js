@@ -429,7 +429,7 @@ const Dashboard = () => {
   }
   const contractDetailsRetrieval = async () => {
     if (daoAddress && !governorDataFetched && !governorDetails && walletAddress) {
-      const governorDetailContract = new SmartContract(GovernorContract, daoAddress, undefined)
+      const governorDetailContract = new SmartContract(ImplementationContact, daoAddress, undefined)
       await governorDetailContract.getGovernorDetails()
         .then((result) => {
           // console.log(result)
@@ -634,6 +634,7 @@ console.log(tokenAPIDetails)
   }, [clubId])
 
   useEffect(() => {
+    contractDetailsRetrieval()
     setLoaderOpen(true)
 
     if (dataFetched) {
@@ -667,7 +668,7 @@ console.log(tokenAPIDetails)
     }
     setOpenSnackBar(false)
   }
-
+console.log(governorDataFetched)
   return (
     <>
       <Layout1 page={1} depositUrl={joinLink}>
@@ -712,7 +713,7 @@ console.log(tokenAPIDetails)
                           <Typography variant="h6" className={classes.valuesDimStyle}>Member Deposits</Typography>
                         </Grid>
                         <Grid item >
-                          <Typography variant="h5" className={classes.valueDetailStyle}>{governorDataFetched ? governorDetails[1] + " USDC" : null}</Typography>
+                          <Typography variant="h5" className={classes.valueDetailStyle}>{governorDataFetched ? convertAmountToWei(governorDetails[1]) + " USDC" : null}</Typography>
                         </Grid>
                       </Grid>
   </Grid>
@@ -792,8 +793,7 @@ console.log(tokenAPIDetails)
                             {userBalanceFetched && dataFetched ? isNaN(calculateUserSharePercentage(userBalance, tokenDetails[2])) ? 0 : (calculateUserSharePercentage(userBalance, tokenDetails[2])) : 0}%
                           </Typography>
                           <Typography className={classes.card2text2}>
-                            {userBalanceFetched ? userBalance : 0}
-                          
+                          {governorDataFetched && dataFetched ? convertAmountToWei(governorDetails[4]) + (" $" + tokenDetails[1]) : null}
                           </Typography>
                          
                          
