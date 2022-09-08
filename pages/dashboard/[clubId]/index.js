@@ -713,7 +713,10 @@ console.log(governorDataFetched)
                           <Typography variant="h6" className={classes.valuesDimStyle}>Member Deposits</Typography>
                         </Grid>
                         <Grid item >
-                          <Typography variant="h5" className={classes.valueDetailStyle}>{governorDataFetched ? convertAmountToWei(governorDetails[1]) + " USDC" : null}</Typography>
+                          <Typography variant="h5" className={classes.valueDetailStyle}>{governorDataFetched ? convertAmountToWei(governorDetails[1])  : null}</Typography>
+                        </Grid>
+                        <Grid item >
+                          <Typography variant="h5" className={classes.valueDimStyle}> USDC </Typography>
                         </Grid>
                       </Grid>
   </Grid>
@@ -737,8 +740,12 @@ console.log(governorDataFetched)
                           <Typography variant="h6" className={classes.valuesDimStyle}>Max Token Supply</Typography>
                         </Grid>
                         <Grid item >
-                          <Typography variant="h5" className={classes.valueDetailStyle}>{governorDataFetched && dataFetched ? governorDetails[4] + (" $" + tokenDetails[1]) : null} </Typography>
+                          <Typography variant="h5" className={classes.valueDetailStyle}>{governorDataFetched && dataFetched ? governorDetails[4]  : null} </Typography>
                         </Grid>
+                        <Grid item >
+                          <Typography variant="h5" className={classes.valueDimStyle}>{dataFetched ? ( "$" + (tokenDetails[1]) ) : null}</Typography>
+                        </Grid>
+                        
                       </Grid>
   </Grid>
 </Grid>
