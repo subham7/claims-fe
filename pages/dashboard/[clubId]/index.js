@@ -140,7 +140,7 @@ const useStyles = makeStyles({
   },
   card2text2: {
     fontFamily: "Whyte",
-    fontWeight: "bold",
+   
     fontSize: "20px",
     color: "#EFEFEF",
     opacity: "1",
@@ -761,10 +761,10 @@ console.log(governorDataFetched)
 
                     <Grid container item direction="column">
 
-                      <Typography variant="regularText4">
+                      <Typography variant="h6">
                         Treasury ($)
                       </Typography>
-                      <Typography className={classes.card2text2}>
+                      <Typography  variant="h3">
                         {clubAssetTokenFetched ? clubAssetTokenData.totalBalance : null}
                       </Typography>
                       <CardMedia
@@ -793,13 +793,13 @@ console.log(governorDataFetched)
                     <Grid container spacing={{ xs: 2, sm: 5, md: 3 }} direction={{ xs: "column", sm: "column", md: "column" }}>
                       <Grid item mt={4}>
                         <Box className={classes.cardOverlay}>
-                         <Typography  variant="regularText4">
+                         <Typography  variant="h6">
                             My ownership Share 
                           </Typography>
-                          <Typography className={classes.card2text2}>
+                          <Typography  variant="h3">
                             {userBalanceFetched && dataFetched ? isNaN(calculateUserSharePercentage(userBalance, tokenDetails[2])) ? 0 : (calculateUserSharePercentage(userBalance, tokenDetails[2])) : 0}%
                           </Typography>
-                          <Typography className={classes.card2text2}>
+                          <Typography className={classes.card2text2} >
                           {governorDataFetched && dataFetched ? convertAmountToWei(governorDetails[4]) + (" $" + tokenDetails[1]) : null}
                           </Typography>
                          
