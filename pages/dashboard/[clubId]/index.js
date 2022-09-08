@@ -89,7 +89,7 @@ const useStyles = makeStyles({
   cardSharp2: {
     backgroundColor: "#142243",
     borderRadius: "5px",
- height:"23vh",
+ 
  
 
     opacity: 1,
@@ -675,19 +675,19 @@ console.log(tokenAPIDetails)
           <Grid item md={9}>
             <Stack direction={{ xs: 'column', sm: 'row' }} spacing={3}>
               <Grid item xs={12} >
-                <Grid className={classes.cardSharp1} mt={3} >
+                <Card className={classes.cardSharp1} mt={7} >
                   <Grid container spacing={2}>
-                    <Grid item mb={8} ml={3} >
+                    <Grid item  ml={3} mt={2} >
                       <img src={imageUrl ?? null} width="100vw" alt="profile_pic" />
                     </Grid>
-                    <Grid item ml={1} mt={2} mb={9}>
+                    <Grid item ml={1} mt={4} >
                       <Stack spacing={0}>
                         <Typography variant="h4"  >
                           {apiTokenDetailSet ? tokenAPIDetails.name : null}
                         </Typography>
 
                      
-                        <Grid container item direction="row"  >
+                        <Grid container item direction="row" paddingBottom={6} >
                           <Typography variant="regularText4" mr={1} >
                             {membersFetched ? members : 0}
                           </Typography>
@@ -699,16 +699,16 @@ console.log(tokenAPIDetails)
                     </Grid>
                   </Grid>
 
-                </Grid>
-                <Grid className={classes.cardSharp2} >
+                </Card>
+                <Card className={classes.cardSharp2} >
 
                  
                   <Grid container alignItems="center"
-  justifyContent="center">
+  justifyContent="center" paddingTop={4} paddingBottom={3}>
   <Grid item xs={4}>
   <Grid container>
                         <Grid item >
-                          <Typography variant="p" className={classes.valuesDimStyle}>Member Deposits</Typography>
+                          <Typography variant="h6" className={classes.valuesDimStyle}>Member Deposits</Typography>
                         </Grid>
                         <Grid item >
                           <Typography variant="p" className={classes.valueDetailStyle}>{governorDataFetched ? governorDetails[1] + " USDC" : null}</Typography>
@@ -718,7 +718,7 @@ console.log(tokenAPIDetails)
   <Grid item xs={4}>
   <Grid container direction="column" >
                         <Grid item>
-                          <Typography variant="p" className={classes.valuesDimStyle}> Club tokens minted </Typography>
+                          <Typography variant="h6" className={classes.valuesDimStyle}> Club tokens minted </Typography>
                         </Grid>
                         <Grid item >
                           <Typography variant="p" className={classes.valueDetailStyle}>{dataFetched ? (convertAmountToWei(tokenDetails[2]) ) : null}</Typography>
@@ -732,7 +732,7 @@ console.log(tokenAPIDetails)
   <Grid item xs={4}>
   <Grid >
                         <Grid item>
-                          <Typography variant="p" className={classes.valuesDimStyle}>Max Token Supply</Typography>
+                          <Typography variant="h6" className={classes.valuesDimStyle}>Max Token Supply</Typography>
                         </Grid>
                         <Grid item >
                           <Typography variant="p" className={classes.valueDetailStyle}>{governorDataFetched && dataFetched ? governorDetails[4] + (" $" + tokenDetails[1]) : null} </Typography>
@@ -743,7 +743,7 @@ console.log(tokenAPIDetails)
 
 
 
-                </Grid>
+                </Card>
               </Grid>
               <Grid container spacing={{ xs: 2, sm: 5, md: 3 }} direction={{ xs: "column", sm: "column", md: "column" }}>
                 <Card className={classes.firstCard}>
