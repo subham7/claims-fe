@@ -702,44 +702,44 @@ console.log(tokenAPIDetails)
                 </Grid>
                 <Grid className={classes.cardSharp2} >
 
-                  <Grid container spacing={7} justifyContent="center" wrap="nowrap" alignItems="center">
-
-                    <Grid item   md={2.5}   >
-                      <Grid container>
-                        <Grid item ml={4}>
+                 
+                  <Grid container alignItems="center"
+  justifyContent="center">
+  <Grid item xs={4}>
+  <Grid container>
+                        <Grid item >
                           <Typography variant="p" className={classes.valuesDimStyle}>Member Deposits</Typography>
                         </Grid>
-                        <Grid item mt={1}>
+                        <Grid item >
                           <Typography variant="p" className={classes.valueDetailStyle}>{governorDataFetched ? governorDetails[1] + " USDC" : null}</Typography>
                         </Grid>
                       </Grid>
-                    </Grid>
-                    <Grid item ml={5}  >
-                      <Grid container direction="column" >
+  </Grid>
+  <Grid item xs={4}>
+  <Grid container direction="column" >
                         <Grid item>
                           <Typography variant="p" className={classes.valuesDimStyle}> Club tokens minted </Typography>
                         </Grid>
-                        <Grid item mt={1}>
+                        <Grid item >
                           <Typography variant="p" className={classes.valueDetailStyle}>{dataFetched ? (convertAmountToWei(tokenDetails[2]) ) : null}</Typography>
                         </Grid>
-                        <Grid item mt={1}>
+                        <Grid item >
                           <Typography variant="p" className={classes.valueDimStyle}>{dataFetched ? ( "$" + (tokenDetails[1]) ) : null}</Typography>
                         </Grid>
                         
                       </Grid>
-                    </Grid>
-                    <Grid item   md={2.5}  mr={5}>
-                      <Grid container>
+  </Grid>
+  <Grid item xs={4}>
+  <Grid >
                         <Grid item>
                           <Typography variant="p" className={classes.valuesDimStyle}>Max Token Supply</Typography>
                         </Grid>
-                        <Grid item mt={1}>
+                        <Grid item >
                           <Typography variant="p" className={classes.valueDetailStyle}>{governorDataFetched && dataFetched ? governorDetails[4] + (" $" + tokenDetails[1]) : null} </Typography>
                         </Grid>
                       </Grid>
-                    </Grid>
-
-                  </Grid>
+  </Grid>
+</Grid>
 
 
 
