@@ -114,7 +114,7 @@ const useStyles = makeStyles({
 
     fontSize: "15px",
     color: "#C1D3FF",
-    textTransform: "uppercase",
+   
     opacity: "1",
   },
   card1text4: {
@@ -785,22 +785,18 @@ console.log(tokenAPIDetails)
                     <Grid container spacing={{ xs: 2, sm: 5, md: 3 }} direction={{ xs: "column", sm: "column", md: "column" }}>
                       <Grid item mt={4}>
                         <Box className={classes.cardOverlay}>
-                          <Typography className={classes.card1text1}>
-                            {dataFetched ? tokenDetails[0] : null}
+                         <Typography  variant="regularText4">
+                            My ownership Share 
                           </Typography>
-                          <Typography className={classes.card1text3}>
-                            My ownership Share ($)
-                          </Typography>
-                          <Typography className={classes.card1text4}>
-                            {userBalanceFetched ? userBalance : 0}
-                            {/*{findCurrentMember()}*/}
-                          </Typography>
-                          <Typography className={classes.card1text5}>
+                          <Typography className={classes.card2text2}>
                             {userBalanceFetched && dataFetched ? isNaN(calculateUserSharePercentage(userBalance, tokenDetails[2])) ? 0 : (calculateUserSharePercentage(userBalance, tokenDetails[2])) : 0}%
                           </Typography>
-                          <Grid container item xs sx={{ display: "flex", justifyContent: "flex-end" }}>
-                            <Button variant="transparent" onClick={importTokenToMetaMask}>Import token</Button>
-                          </Grid>
+                          <Typography className={classes.card2text2}>
+                            {userBalanceFetched ? userBalance : 0}
+                          
+                          </Typography>
+                         
+                         
                         </Box>
                       </Grid>
                       {/* <CardMedia    className={classes.media}    component=“img”    image=“/assets/images/card_illustration.png”    alt=“abstract background”    sx={{ position: “absolute”, bottom: 0 }}                     />   */}
