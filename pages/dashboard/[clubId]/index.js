@@ -740,7 +740,7 @@ console.log(governorDataFetched)
                           <Typography variant="h6" className={classes.valuesDimStyle}>Max Token Supply</Typography>
                         </Grid>
                         <Grid item >
-                          <Typography variant="h5" className={classes.valueDetailStyle}>{governorDataFetched && dataFetched ? governorDetails[4]  : null} </Typography>
+                          <Typography variant="h5" className={classes.valueDetailStyle}>{governorDataFetched && dataFetched ? convertAmountToWei(governorDetails[4])  : null} </Typography>
                         </Grid>
                         <Grid item >
                           <Typography variant="h5" className={classes.valueDimStyle}>{dataFetched ? ( "$" + (tokenDetails[1]) ) : null}</Typography>
