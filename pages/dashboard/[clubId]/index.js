@@ -641,6 +641,7 @@ console.log(tokenAPIDetails)
     }
   }, [dataFetched])
   console.log(dataFetched, apiTokenDetailSet, membersFetched, tresuryWalletBalanceFetched, activeProposalDataFetched, clubAssetTokenFetched, clubDetailsFetched)
+ console.log(clubAssetTokenData)
   useEffect(() => {
     console.log(dataFetched, apiTokenDetailSet, membersFetched, tresuryWalletBalanceFetched, activeProposalDataFetched, clubAssetTokenFetched, clubDetailsFetched)
     if (dataFetched && apiTokenDetailSet && membersFetched && tresuryWalletBalanceFetched && activeProposalDataFetched && clubAssetTokenFetched && clubDetailsFetched) {
@@ -711,7 +712,7 @@ console.log(tokenAPIDetails)
                           <Typography variant="h6" className={classes.valuesDimStyle}>Member Deposits</Typography>
                         </Grid>
                         <Grid item >
-                          <Typography variant="p" className={classes.valueDetailStyle}>{governorDataFetched ? governorDetails[1] + " USDC" : null}</Typography>
+                          <Typography variant="h5" className={classes.valueDetailStyle}>{governorDataFetched ? governorDetails[1] + " USDC" : null}</Typography>
                         </Grid>
                       </Grid>
   </Grid>
@@ -721,10 +722,10 @@ console.log(tokenAPIDetails)
                           <Typography variant="h6" className={classes.valuesDimStyle}> Club tokens minted </Typography>
                         </Grid>
                         <Grid item >
-                          <Typography variant="p" className={classes.valueDetailStyle}>{dataFetched ? (convertAmountToWei(tokenDetails[2]) ) : null}</Typography>
+                          <Typography variant="h5" className={classes.valueDetailStyle}>{dataFetched ? (convertAmountToWei(tokenDetails[2]) ) : null}</Typography>
                         </Grid>
                         <Grid item >
-                          <Typography variant="p" className={classes.valueDimStyle}>{dataFetched ? ( "$" + (tokenDetails[1]) ) : null}</Typography>
+                          <Typography variant="h5" className={classes.valueDimStyle}>{dataFetched ? ( "$" + (tokenDetails[1]) ) : null}</Typography>
                         </Grid>
                         
                       </Grid>
@@ -735,7 +736,7 @@ console.log(tokenAPIDetails)
                           <Typography variant="h6" className={classes.valuesDimStyle}>Max Token Supply</Typography>
                         </Grid>
                         <Grid item >
-                          <Typography variant="p" className={classes.valueDetailStyle}>{governorDataFetched && dataFetched ? governorDetails[4] + (" $" + tokenDetails[1]) : null} </Typography>
+                          <Typography variant="h5" className={classes.valueDetailStyle}>{governorDataFetched && dataFetched ? governorDetails[4] + (" $" + tokenDetails[1]) : null} </Typography>
                         </Grid>
                       </Grid>
   </Grid>
