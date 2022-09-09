@@ -128,7 +128,7 @@ export const darkComponents = {
     styleOverrides: {
       root: {
         border: "none",
-        backgroundColor: "#101d38",
+        backgroundColor: "#19274B",
       }
     },
     variants: [

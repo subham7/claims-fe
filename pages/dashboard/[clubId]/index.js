@@ -140,8 +140,7 @@ const useStyles = makeStyles({
   },
   card2text2: {
     fontFamily: "Whyte",
-   
-    fontSize: "20px",
+   fontSize: "20px",
     color: "#EFEFEF",
     opacity: "1",
   },
@@ -757,15 +756,15 @@ console.log(governorDataFetched)
               <Grid container spacing={{ xs: 2, sm: 5, md: 3 }} direction={{ xs: "column", sm: "column", md: "column" }}>
                 <Card className={classes.firstCard}>
 
-                  <Grid item mt={4} ml={5}>
+                  <Grid item mt={3} ml={5}>
 
                     <Grid container item direction="column">
 
-                      <Typography variant="h6">
-                        Treasury ($)
+                      <Typography variant="regularText4" fontSize={"21px"}>
+                        Treasury wallet
                       </Typography>
-                      <Typography  variant="h3">
-                        {clubAssetTokenFetched ? clubAssetTokenData.totalBalance : null}
+                      <Typography  fontSize={"48px"} fontWeight="bold">
+                        ${clubAssetTokenFetched ? clubAssetTokenData.totalBalance : null}
                       </Typography>
                       <CardMedia
 
@@ -790,13 +789,13 @@ console.log(governorDataFetched)
                     sx={{ position: "absolute", bottom: 0, paddingTop: "4px" }}
                   />
                   <Grid container >
-                    <Grid container spacing={{ xs: 2, sm: 5, md: 3 }} direction={{ xs: "column", sm: "column", md: "column" }}>
-                      <Grid item mt={4}>
+                    <Grid container  direction={{ xs: "column", sm: "column", md: "column" }}>
+                      <Grid item >
                         <Box className={classes.cardOverlay}>
-                         <Typography  variant="h6">
+                         <Typography  variant="regularText4" fontSize={"21px"}>
                             My ownership Share 
                           </Typography>
-                          <Typography  variant="h3">
+                          <Typography fontSize={"48px"} fontWeight="bold">
                             {userBalanceFetched && dataFetched ? isNaN(calculateUserSharePercentage(userBalance, tokenDetails[2])) ? 0 : (calculateUserSharePercentage(userBalance, tokenDetails[2])) : 0}%
                           </Typography>
                           <Typography className={classes.card2text2} >
@@ -936,7 +935,7 @@ console.log(governorDataFetched)
               
              
                     <Grid item>
-                      <Typography variant="getStartedClub">
+                      <Typography variant="getStartedClub" fontSize={"36px"}>
                         Get started with your club 👋
                       </Typography>
                     </Grid>
@@ -970,29 +969,7 @@ console.log(governorDataFetched)
                     </Typography>
                   </Grid>
                   <Grid item md={3}>
-                    {/*TODO: add closing date*/}
-                    {clubDetailsFetched ? closingDays > 0 ?
-                      <Grid container>
-                        <Grid item mt={1} mr={1} >
-                          <div className={classes.activeIllustration}></div>
-                        </Grid>
-                        <Grid item>
-                          <Typography sx={{ color: "#0ABB92", fontSize: "1.25em", fontFamily: "Whyte" }}>
-                            Active
-                          </Typography>
-                        </Grid>
-                      </Grid> :
-                      <Grid container>
-                        <Grid item mt={1} mr={1}>
-                          <div className={classes.inactiveIllustration}></div>
-                        </Grid>
-                        <Grid item>
-                          <Typography sx={{ color: "#D55438", fontSize: "1.25em", fontFamily: "Whyte" }}>
-                            In-active
-                          </Typography>
-                        </Grid>
-                      </Grid> : null
-                    }
+                   
                   </Grid>
                 </Grid>
                 <Grid container>
