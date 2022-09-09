@@ -600,7 +600,8 @@ const Dashboard = () => {
   }
 console.log(tokenAPIDetails)
 console.log(governorDetails)
-console.log(tokenAPIDetails)
+console.log(tokenDetails)
+
   useEffect(() => {
     setLoaderOpen(true)
     if (daoAddress) {
@@ -796,7 +797,7 @@ console.log(governorDataFetched)
                             My ownership Share 
                           </Typography>
                           <Typography fontSize={"48px"} fontWeight="bold">
-                            {userBalanceFetched && dataFetched ? isNaN(calculateUserSharePercentage(userBalance, tokenDetails[2])) ? 0 : (calculateUserSharePercentage(userBalance, tokenDetails[2])) : 0}%
+                          {userBalanceFetched && dataFetched ? isNaN(calculateUserSharePercentage(userBalance, tokenDetails[2])) ? 0 : (calculateUserSharePercentage(userBalance, tokenDetails[2]))  : 0}% 
                           </Typography>
                           <Typography className={classes.card2text2} >
                           {governorDataFetched && dataFetched ? convertAmountToWei(governorDetails[4]) + (" $" + tokenDetails[1]) : null}
