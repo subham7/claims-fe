@@ -182,6 +182,19 @@ const useStyles = makeStyles({
   dialogBox: {
     fontSize: "28px",
   },
+  textField: {
+    width: "100%",
+    margin: "16px 0 25px 0",
+    fontSize: "18px",
+    fontFamily: "Whyte",
+  },
+  wrapTextIcon: {
+    fontSize: "18px",
+    fontFamily: "Whyte",
+    color: "#C1D3FF",
+    verticalAlign: 'middle',
+    display: 'inline-flex'
+  },
 })
 
 const Join = (props) => {
@@ -334,30 +347,32 @@ const Tx = await usdcFaucet.mint(FaucetAddress,(FaucetAmount ).toString())
               alignItems="center"
       >
        
-          <Card className={classes.cardRegular}>
+         
+        </Grid>
+        <Grid container direction="row"
+          justifyContent="center"
+          alignItems="center">
+          <Grid item md={8} mt={8}>
            
-            <Divider variant="middle" />
+            <br />
+            <Typography className={classes.wrapTextIcon}>
+             You can now mint USDC tokens to your wallet address.
+            </Typography>
+            <TextField id="outlined-basic"  className={classes.textField} disabled marginTop={10} variant="outlined" value={FaucetAddress}/>
+            <TextField id="outlined-basic"  className={classes.textField} label="Amount" marginTop={10} onChange={(e) => setFaucetAmount(e.target.value) } variant="outlined" />
            
-           
-           
-            <Grid
-              container
-              spacing={2}
-              direction="column"
-              justifyContent="space-between"
-              alignItems="center"
-            >
-           
-                  <TextField id="outlined-basic"  disabled marginTop={10} variant="outlined" value={FaucetAddress}/>
-                  <TextField id="outlined-basic" label="Amount" marginTop={10} onChange={(e) => setFaucetAmount(e.target.value) } variant="outlined" />
-
-                  <Button variant="primary" onClick={ () => handleFaucet  (FaucetAddress,FaucetAmount)}>
-                    Mint
-                  </Button>
-              
-             
+            <Grid container wrap="nowrap" spacing={0} justify="center" alignItems="center" direction="row">
+              <Grid item xs={0} mt={2}>
+                <Button
+                  variant="wideButton"
+                  
+                  onClick={ () => handleFaucet  (FaucetAddress,FaucetAmount)}
+                >
+                  Mint
+                </Button>
+              </Grid>
             </Grid>
-          </Card>
+          </Grid>
         </Grid>
        
       
