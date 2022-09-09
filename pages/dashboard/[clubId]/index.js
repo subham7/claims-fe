@@ -318,7 +318,7 @@ const useStyles = makeStyles({
   docimg: {
     right:"0",
    marginLeft:"52%",
-   marginTop:"20%",
+   marginTop:"30%",
   
   width:"60%",
 
@@ -677,7 +677,7 @@ console.log(governorDataFetched)
           <Grid item md={9}>
             <Stack direction={{ xs: 'column', sm: 'row' }} spacing={3}>
               <Grid item xs={12} >
-                <Card className={classes.cardSharp1} mt={7} >
+                <Card className={classes.cardSharp1}  >
                   <Grid container spacing={2}>
                     <Grid item  ml={3} mt={2} >
                       <img src={imageUrl ?? null} width="100vw" alt="profile_pic" />
@@ -689,7 +689,7 @@ console.log(governorDataFetched)
                         </Typography>
 
                      
-                        <Grid container item direction="row" paddingBottom={6} >
+                        <Grid container item direction="row" paddingBottom={4} >
                           <Typography variant="regularText2" mr={1} >
                             {membersFetched ? members : 0}
                           </Typography>
@@ -706,30 +706,30 @@ console.log(governorDataFetched)
 
                  
                   <Grid container 
-   paddingTop={3} paddingBottom={1}>
+   paddingTop={1} paddingBottom={1}>
   <Grid item xs={4}>
   <Grid container direction="column">
                         <Grid item >
-                          <Typography variant="h6" className={classes.valuesDimStyle}>Member Deposits</Typography>
+                          <Typography variant="regularText4" fontSize={"18px"} className={classes.valuesDimStyle}>Member Deposits</Typography>
                         </Grid>
                         <Grid item >
-                          <Typography variant="h5" className={classes.valueDetailStyle}>{governorDataFetched ? convertAmountToWei(governorDetails[1])  : null}</Typography>
+                          <Typography fontWeight="bold" fontSize={"24px"} className={classes.valueDetailStyle}>{governorDataFetched ? convertAmountToWei(governorDetails[1])  : null}</Typography>
                         </Grid>
                         <Grid item >
-                          <Typography variant="h5" className={classes.valueDimStyle}> USDC </Typography>
+                          <Typography variant="regularText4" fontSize={"18px"} className={classes.valueDimStyle}> USDC </Typography>
                         </Grid>
                       </Grid>
   </Grid>
   <Grid item xs={4}>
   <Grid container direction="column" >
                         <Grid item>
-                          <Typography variant="h6" className={classes.valuesDimStyle}> Club tokens minted </Typography>
+                          <Typography variant="regularText4" fontSize={"18px"} className={classes.valuesDimStyle}> Club tokens minted </Typography>
                         </Grid>
                         <Grid item >
-                          <Typography variant="h5" className={classes.valueDetailStyle}>{dataFetched ? (convertAmountToWei(tokenDetails[2]) ) : null}</Typography>
+                          <Typography fontWeight="bold" fontSize={"24px"} className={classes.valueDetailStyle}>{dataFetched ? (convertAmountToWei(tokenDetails[2]) ) : null}</Typography>
                         </Grid>
                         <Grid item >
-                          <Typography variant="h5" className={classes.valueDimStyle}>{dataFetched ? ( "$" + (tokenDetails[1]) ) : null}</Typography>
+                          <Typography variant="regularText4" fontSize={"18px"} className={classes.valueDimStyle}>{dataFetched ? ( "$" + (tokenDetails[1]) ) : null}</Typography>
                         </Grid>
                         
                       </Grid>
@@ -737,13 +737,13 @@ console.log(governorDataFetched)
   <Grid item xs={4}>
   <Grid >
                         <Grid item>
-                          <Typography variant="h6" className={classes.valuesDimStyle}>Max Token Supply</Typography>
+                          <Typography variant="regularText4" fontSize={"18px"} className={classes.valuesDimStyle}>Max Token Supply</Typography>
                         </Grid>
                         <Grid item >
-                          <Typography variant="h5" className={classes.valueDetailStyle}>{governorDataFetched && dataFetched ? convertAmountToWei(governorDetails[4])  : null} </Typography>
+                          <Typography fontWeight="bold" fontSize={"24px"} className={classes.valueDetailStyle}>{governorDataFetched && dataFetched ? convertAmountToWei(governorDetails[4])  : null} </Typography>
                         </Grid>
                         <Grid item >
-                          <Typography variant="h5" className={classes.valueDimStyle}>{dataFetched ? ( "$" + (tokenDetails[1]) ) : null}</Typography>
+                          <Typography variant="regularText4" fontSize={"18px"} className={classes.valueDimStyle}>{dataFetched ? ( "$" + (tokenDetails[1]) ) : null}</Typography>
                         </Grid>
                         
                       </Grid>
