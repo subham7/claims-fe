@@ -191,7 +191,7 @@ const Join = (props) => {
   const dispatch = useDispatch()
   const classes = useStyles()
   const [walletConnected, setWalletConnected] = useState(false)
- 
+  const [previouslyConnectedWallet, setPreviouslyConnectedWallet] = useState(null)
   const [tokenDetails, settokenDetails] = useState(null)
   const [tokenAPIDetails, settokenAPIDetails] = useState(null) // contains the details extracted from API
   const [apiTokenDetailSet, setApiTokenDetailSet] = useState(false)
@@ -241,10 +241,57 @@ const handleConnectWallet = () => {
       })
   }, [])
 
- 
- 
+  const getAccount = async () => {
+    if ( localStorage.getItem("isWalletConnected")) {
+      setPreviouslyConnectedWallet(localStorage.getItem("wallet"))
+    }
+    store.subscribe(async() => {
+      const { create } = await store.getState()
+      if (create.value) {
+        setPreviouslyConnectedWallet(create.value)
 
+       
+      }
+      else{
+        setPreviouslyConnectedWallet(null)
+     
+      }
 
+    }) 
+    
+
+  }
+  const getFaucetAddress = async () => {
+    var web3
+    if (window.ethereum) {
+      web3 = new Web3(window.ethereum)
+    }
+    else if (window.web3) {
+      web3 = new Web3(window.web3.currentProvider)
+    }
+    try{
+      web3.eth.getAccounts()
+      .then((async) => {
+        setFaucetAddress(async[0])
+      }
+
+    );
+  }
+  catch(err){
+    setFaucetAddress(null)
+  }
+    
+  }
+
+ 
+ useEffect(() => {
+  handleConnectWallet()
+  
+  getFaucetAddress()
+     }, [])
+console.log("previouslyConnectedWallet", previouslyConnectedWallet)
+
+console.log(FaucetAddress)
 
 
   const handleFaucet = async (FaucetAddress,FaucetAmount) => {
@@ -254,7 +301,7 @@ const handleConnectWallet = () => {
     USDC_CONTRACT_ADDRESS,
     undefined
    )
-const Tx = await usdcFaucet.mint(FaucetAddress, convertToWei(FaucetAmount),)
+const Tx = await usdcFaucet.mint(FaucetAddress,(FaucetAmount ).toString())
    console.log(usdcFaucet)
    console.log("faucet" , usdcFaucet)
   }
@@ -294,91 +341,27 @@ const Tx = await usdcFaucet.mint(FaucetAddress, convertToWei(FaucetAmount),)
             <Grid
               container
               spacing={2}
-              direction="row"
-              justifyContent="space-evenly"
+              direction="column"
+              justifyContent="center"
               alignItems="center"
             >
-             <Button variant="primary" onClick={ () => handleFaucet  (FaucetAddress,FaucetAmount)}>
-                    Mint
-                  </Button>
-                  <TextField id="outlined-basic" label="Address" onChange={(e) => setFaucetAddress(e.target.value)} variant="outlined" />
+           
+                  <TextField id="outlined-basic"  disabled  variant="outlined" value={FaucetAddress}/>
                   <TextField id="outlined-basic" label="Amount" onChange={(e) => setFaucetAmount(e.target.value) } variant="outlined" />
 
-
+                  <Button variant="primary" onClick={ () => handleFaucet  (FaucetAddress,FaucetAmount)}>
+                    Mint
+                  </Button>
               
              
             </Grid>
           </Card>
         </Grid>
-        <Grid item md={5}>
-          {walletConnected ? (
-            <>
-              
-              
-              
-             
-            </>
-          ) : (
-        
-            <Card className={classes.cardJoin}>
-            
-
-               
-               
-             
-              
-            </Card>
-            
-          )}
-
-          
-        </Grid>
+       
       </Grid>
      
-      <Dialog
-        open={open}
-        onClose={handleDialogClose}
-        scroll="body"
-        PaperProps={{ classes: { root: classes.modalStyle } }}
-        fullWidth
-        maxWidth="lg"
-      >
-        <DialogContent sx={{ overflow: "hidden", backgroundColor: "#19274B" }}>
-          <Grid
-            container
-            justifyContent="center"
-            alignItems="center"
-            direction="column"
-            mt={3}
-          >
-            <Grid item pl={15}>
-              <img src="/assets/images/connected_world_wuay.svg" width="80%" />
-            </Grid>
-            <Grid item m={3}>
-              <Typography className={classes.dialogBox}>
-                You are in the wrong network, please switch to the correct
-                network by clicking the button provided below
-              </Typography>
-            </Grid>
-            <Grid item m={3}>
-              <Button
-                variant="primary"
-                onClick={() => {
-                  handleSwitchNetwork()
-                }}
-              >
-                Switch Network
-              </Button>
-            </Grid>
-          </Grid>
-        </DialogContent>
-      </Dialog>
-      <Backdrop
-        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={depositInitiated}
-      >
-        <CircularProgress color="inherit" />
-      </Backdrop>
+     
+     
     </Layout3>
   )
 }
