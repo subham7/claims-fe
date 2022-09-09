@@ -330,8 +330,10 @@ const Tx = await usdcFaucet.mint(FaucetAddress,(FaucetAmount ).toString())
         paddingLeft={10}
         paddingTop={15}
         paddingRight={10}
+        justifyContent="center"
+              alignItems="center"
       >
-        <Grid item md={7}>
+       
           <Card className={classes.cardRegular}>
            
             <Divider variant="middle" />
@@ -342,12 +344,12 @@ const Tx = await usdcFaucet.mint(FaucetAddress,(FaucetAmount ).toString())
               container
               spacing={2}
               direction="column"
-              justifyContent="center"
+              justifyContent="space-between"
               alignItems="center"
             >
            
-                  <TextField id="outlined-basic"  disabled  variant="outlined" value={FaucetAddress}/>
-                  <TextField id="outlined-basic" label="Amount" onChange={(e) => setFaucetAmount(e.target.value) } variant="outlined" />
+                  <TextField id="outlined-basic"  disabled marginTop={10} variant="outlined" value={FaucetAddress}/>
+                  <TextField id="outlined-basic" label="Amount" marginTop={10} onChange={(e) => setFaucetAmount(e.target.value) } variant="outlined" />
 
                   <Button variant="primary" onClick={ () => handleFaucet  (FaucetAddress,FaucetAmount)}>
                     Mint
@@ -358,7 +360,7 @@ const Tx = await usdcFaucet.mint(FaucetAddress,(FaucetAmount ).toString())
           </Card>
         </Grid>
        
-      </Grid>
+      
      
      
      
