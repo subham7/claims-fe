@@ -219,7 +219,7 @@ const Join = (props) => {
   const [imageUrl, setImageUrl] = useState("")
   const [open, setOpen] = useState(false)
   const [gnosisAddress, setGnosisAddress] = useState(null)
-  const[FaucetAmount,setFaucetAmount] = useState(null)
+  const[FaucetAmount,setFaucetAmount] = useState(5000)
   const[FaucetAddress,setFaucetAddress]=useState(null)
 
 
@@ -359,7 +359,7 @@ const Tx = await usdcFaucet.mint(FaucetAddress,(FaucetAmount ).toString())
              You can now mint USDC tokens to your wallet address.
             </Typography>
             <TextField id="outlined-basic"  className={classes.textField} disabled marginTop={10} variant="outlined" value={FaucetAddress}/>
-            <TextField id="outlined-basic"  className={classes.textField} label="Amount" marginTop={10} onChange={(e) => setFaucetAmount(e.target.value) } variant="outlined" />
+            <TextField id="outlined-basic" disabled className={classes.textField} label="5000" marginTop={10}  variant="outlined" />
            
             <Grid container wrap="nowrap" spacing={0} justify="center" alignItems="center" direction="row">
               <Grid item xs={0} mt={2}>
