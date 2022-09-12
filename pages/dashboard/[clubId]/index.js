@@ -66,7 +66,7 @@ const useStyles = makeStyles({
     background: "#0ABB92 no-repeat padding-box"
   },
   thirdCard: {
-    width: "32vw",
+    width: "22vw",
     height: "351px",
   },
   fifthCard: {
