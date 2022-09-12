@@ -962,17 +962,55 @@ console.log(governorDataFetched)
             </Stack>
 
             <Stack mt={2}>
-              {checkIsAdmin() ? <Card className={classes.fourthCard}>
-                <Grid container mt={1} ml={1} justifyContent="space-evenly" direction="row">
-                  <Grid item md={9}>
-                    <Typography variant="regularText4">
-                      Joining link
-                    </Typography>
+                {checkIsAdmin() ? <Card className={classes.thirdCard}>
+                  <Grid container m={2}>
+                    <Grid items>
+                      <Typography variant="regularText4">
+                        Joining link
+                      </Typography>
+                    </Grid>
+                    <Grid items mr={4} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
+                      {/*TODO: add closing date*/}
+                      {clubDetailsFetched ? closingDays > 0 ?
+                        <Grid container xs sx={{display: "flex", justifyContent: "flex-end"}}>
+                          <Grid item mt={1} mr={1}>
+                            <div className={classes.activeIllustration}></div>
+                          </Grid>
+                          <Grid item>
+                            <Typography sx={{color: "#0ABB92", fontSize: "1.25em", fontFamily: "Whyte"}}>
+                              Active
+                            </Typography>
+                          </Grid>
+                        </Grid> :
+                        <Grid container xs sx={{display: "flex", justifyContent: "flex-end"}}>
+                          <Grid item mt={1} mr={1}>
+                            <div className={classes.inactiveIllustration}></div>
+                          </Grid>
+                          <Grid item>
+                            <Typography sx={{color: "#D55438", fontSize: "1.25em", fontFamily: "Whyte"}}>
+                              In-active
+                            </Typography>
+                          </Grid>
+                        </Grid> : null
+                      }
+                    </Grid>
                   </Grid>
-                  <Grid item md={3}>
-                   
+                  <Grid container>
+                    <Grid items mt={2} ml={1} mr={1} >
+                      <TextField
+                        className={classes.linkInput}
+                        disabled
+                        value={joinLink}
+                        InputProps={{
+                          endAdornment: <Button
+                            variant="contained"
+                            className={classes.copyButton}
+                            onClick={handleCopy}
+                            disabled={closingDays <= 0 ? true : false}>Copy</Button>
+                        }}
+                      />
+                    </Grid>
                   </Grid>
-                </Grid>
                 <Grid container>
                   <Grid item md={12} mt={2} ml={1} mr={1} >
                     <TextField
