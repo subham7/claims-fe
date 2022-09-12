@@ -21,25 +21,25 @@ import {
   Dialog,
   CardMedia,
 } from "@mui/material"
-import Layout3 from "../../src/components/layouts/layout3"
-import ProgressBar from "../../src/components/progressbar"
-import { connectWallet, setUserChain, onboard } from "../../src/utils/wallet"
+import Layout3 from "../../../src/components/layouts/layout3"
+import ProgressBar from "../../../src/components/progressbar"
+import { connectWallet, setUserChain, onboard } from "../../../src/utils/wallet"
 import { useDispatch, useSelector } from "react-redux"
 import { useRouter } from "next/router"
 import {
   USDC_CONTRACT_ADDRESS,
   FACTORY_CONTRACT_ADDRESS,
-} from "../../src/api"
-import { fetchClub, fetchClubbyDaoAddress } from "../../src/api/club"
-import {createUser} from "../../src/api/user"
-import {getMembersDetails, patchUserBalance, checkUserByClub} from "../../src/api/user"
-import store from "../../src/redux/store"
+} from "../../../src/api"
+import { fetchClub, fetchClubbyDaoAddress } from "../../../src/api/club"
+import {createUser} from "../../../src/api/user"
+import {getMembersDetails, patchUserBalance, checkUserByClub} from "../../../src/api/user"
+import store from "../../../src/redux/store"
 import Web3 from "web3"
-import USDCContract from "../../src/abis/usdcTokenContract.json"
-import ImplementationContract from "../../src/abis/implementationABI.json"
-import { SmartContract } from "../../src/api/contract"
-import { checkNetwork } from "../../src/utils/wallet"
-import {calculateTreasuryTargetShare, convertAmountToWei, convertToWei} from "../../src/utils/globalFunctions";
+import USDCContract from "../../../src/abis/usdcTokenContract.json"
+import ImplementationContract from "../../../src/abis/implementationABI.json"
+import { SmartContract } from "../../../src/api/contract"
+import { checkNetwork } from "../../../src/utils/wallet"
+import {calculateTreasuryTargetShare, convertAmountToWei, convertToWei} from "../../../src/utils/globalFunctions";
 
 const useStyles = makeStyles({
   valuesStyle: {

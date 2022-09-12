@@ -1,6 +1,6 @@
 import { React, useEffect, useState } from "react"
 import { makeStyles } from "@mui/styles"
-import Layout1 from "../../../../src/components/layouts/layout1"
+import Layout1 from "../../../../../src/components/layouts/layout1"
 import {
   Box,
   Card,
@@ -30,20 +30,17 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
 import AddCircleRoundedIcon from '@mui/icons-material/AddCircleRounded'
 import CancelIcon from '@mui/icons-material/Cancel';
 import { fontStyle } from "@mui/system"
-import SimpleSelectButton from "../../../../src/components/simpleSelectButton"
-import { proposalType, commandTypeList } from "../../../../src/data/dashboard"
-import { getAssets } from "../../../../src/api/assets"
-import { createProposal, getProposal } from "../../../../src/api/proposal"
+import { proposalType, commandTypeList } from "../../../../../src/data/dashboard"
+import { getAssets } from "../../../../../src/api/assets"
+import { createProposal, getProposal } from "../../../../../src/api/proposal"
 import { DesktopDatePicker } from '@mui/x-date-pickers'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
 import Web3 from "web3";
 import { useSelector } from "react-redux"
 import { useRouter, withRouter } from "next/router"
-import { SmartContract } from "../../../../src/api/contract"
-import USDCContract from "../../../../src/abis/usdcTokenContract.json"
-import ClubFetch from "../../../../src/utils/clubFetch"
-import { calculateDays, convertToWei } from "../../../../src/utils/globalFunctions";
+import ClubFetch from "../../../../../src/utils/clubFetch"
+import { calculateDays, convertToWei } from "../../../../../src/utils/globalFunctions";
 
 
 const useStyles = makeStyles({
