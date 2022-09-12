@@ -945,26 +945,29 @@ const Join = (props) => {
           ) : (
         
             <Card className={classes.cardJoin}>
-            <Grid >
+            <Grid   >
 
-              <Grid container spacing={2} justifyContent={"space-between"} height={"100%"}>
+              <Grid container spacing={2} justifyContent={"space-between"}  >
               <Grid item>
                  <Typography className={classes.JoinText}> Join this station by depositing your funds </Typography>
                </Grid>
-                <Grid   sx={{ display: "flex" , flexDirection:"row" }} justifyContent={"center" }>
-                <Grid mt={50} ml={4}>
+                <Grid   sx={{ display: "flex" , flexDirection:"row" }} >
+                <Grid mt={100} ml={4}>
                 
                   <Button variant="primary"   onClick={handleConnectWallet}>
                     Connect 
                   </Button>
                </Grid> 
-               <Grid > 
+               <Grid 
+              
+               > 
                
                <CardMedia
                   image="/assets/images/joinstation.png"
                   component="img"
                   alt="ownership_share"
                   className={classes.media}
+
                  
                   
                 
