@@ -1,5 +1,5 @@
 import {React, useEffect, useState} from "react"
-import Layout1 from "../../../src/components/layouts/layout1"
+import Layout1 from "../../../../src/components/layouts/layout1"
 import {
   Card,
   Grid,
@@ -13,22 +13,18 @@ import {
   CircularProgress, Backdrop
 } from "@mui/material"
 import { makeStyles } from "@mui/styles"
-import ProgressBar from "../../../src/components/progressbar"
+import ProgressBar from "../../../../src/components/progressbar"
 import Router, { useRouter } from "next/router"
 import { useSelector, useDispatch } from "react-redux"
-import {
-  USDC_CONTRACT_ADDRESS,
-  FACTORY_CONTRACT_ADDRESS,
-} from "../../../src/api"
-import {getMembersDetails} from "../../../src/api/user"
+import {getMembersDetails} from "../../../../src/api/user"
 import Web3 from "web3"
-import USDCContract from "../../../src/abis/usdcTokenContract.json"
-import ImplementationContract from "../../../src/abis/implementationABI.json"
-import { SmartContract } from "../../../src/api/contract"
-import {fetchClubbyDaoAddress} from "../../../src/api/club"
-import {getAssets} from "../../../src/api/assets"
+import USDCContract from "../../../../src/abis/usdcTokenContract.json"
+import ImplementationContract from "../../../../src/abis/implementationABI.json"
+import { SmartContract } from "../../../../src/api/contract"
+import {fetchClubbyDaoAddress} from "../../../../src/api/club"
+import {getAssets} from "../../../../src/api/assets"
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
-import ClubFetch from "../../../src/utils/clubFetch"
+import ClubFetch from "../../../../src/utils/clubFetch"
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import Image from "next/image";
 import {
@@ -36,7 +32,7 @@ import {
   calculateTreasuryTargetShare,
   calculateUserSharePercentage,
   convertAmountToWei
-} from "../../../src/utils/globalFunctions";
+} from "../../../../src/utils/globalFunctions";
 
 
 const useStyles = makeStyles({

@@ -1,7 +1,7 @@
 import { React, useEffect, useState } from "react"
 import Web3 from "web3"
 import { makeStyles } from "@mui/styles"
-import Layout1 from "../../../../src/components/layouts/layout1"
+import Layout1 from "../../../../../src/components/layouts/layout1"
 import {
   Box,
   Card,
@@ -31,16 +31,16 @@ import Router, { withRouter } from "next/router"
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace'
 import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded'
 import CloseIcon from '@mui/icons-material/Close'
-import ProgressBar from "../../../../src/components/progressbar"
+import ProgressBar from "../../../../../src/components/progressbar"
 import { useDispatch, useSelector } from "react-redux"
-import { addProposalId } from "../../../../src/redux/reducers/create"
-import { SmartContract } from "../../../../src/api/contract"
-import {getProposalDetail, castVote, patchProposalExecuted} from "../../../../src/api/proposal"
-import {USDC_CONTRACT_ADDRESS } from "../../../../src/api/index"
-import {getMembersDetails} from "../../../../src/api/user"
-import ImplementationContract from "../../../../src/abis/implementationABI.json"
-import USDCContract from "../../../../src/abis/usdcTokenContract.json"
-import ClubFetch from "../../../../src/utils/clubFetch"
+import { addProposalId } from "../../../../../src/redux/reducers/create"
+import { SmartContract } from "../../../../../src/api/contract"
+import {getProposalDetail, castVote, patchProposalExecuted} from "../../../../../src/api/proposal"
+import {USDC_CONTRACT_ADDRESS } from "../../../../../src/api/index"
+import {getMembersDetails} from "../../../../../src/api/user"
+import ImplementationContract from "../../../../../src/abis/implementationABI.json"
+import USDCContract from "../../../../../src/abis/usdcTokenContract.json"
+import ClubFetch from "../../../../../src/utils/clubFetch"
 
 const useStyles = makeStyles({
   clubAssets: {
