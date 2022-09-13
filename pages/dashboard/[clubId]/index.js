@@ -995,22 +995,8 @@ console.log(governorDataFetched)
                       }
                     </Grid>
                   </Grid>
-                  <Grid container>
-                    <Grid items mt={2} ml={1} mr={1} >
-                      <TextField
-                        className={classes.linkInput}
-                        disabled
-                        value={joinLink}
-                        InputProps={{
-                          endAdornment: <Button
-                            variant="contained"
-                            className={classes.copyButton}
-                            onClick={handleCopy}
-                            disabled={closingDays <= 0 ? true : false}>Copy</Button>
-                        }}
-                      />
-                    </Grid>
-                  </Grid>
+                
+                  
                 <Grid container>
                   <Grid item md={12} mt={2} ml={1} mr={1} >
                     <TextField
