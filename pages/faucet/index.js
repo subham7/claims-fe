@@ -21,6 +21,7 @@ import {
   DialogContent,
   Dialog,
   CardMedia,
+  Link,
 } from "@mui/material"
 import Layout3 from "../../src/components/layouts/layout3"
 import ProgressBar from "../../src/components/progressbar"
@@ -361,8 +362,9 @@ const Tx = await usdcFaucet.mint(FaucetAddress,(FaucetAmount ).toString())
             <TextField id="outlined-basic"  className={classes.textField} disabled marginTop={10} variant="outlined" value={FaucetAddress}/>
             <TextField id="outlined-basic" disabled className={classes.textField} label="5000" marginTop={10}  variant="outlined" />
            
-            <Grid container wrap="nowrap" spacing={0} justify="center" alignItems="center" direction="row">
-              <Grid item xs={0} mt={2}>
+            <Grid >
+              <Grid item xs={0} mt={2} flex flexDirection="row" justifyContent="space-between">
+               
                 <Button
                   variant="wideButton"
                   
@@ -370,6 +372,12 @@ const Tx = await usdcFaucet.mint(FaucetAddress,(FaucetAmount ).toString())
                 >
                   Mint
                 </Button>
+               
+
+                      <Link color={"#FFFFFF "} ml={"100px"} variant="Docs" onClick={() => { window.open(`https://faucets.chain.link/rinkeby`) }}> Get Eth here</Link>
+
+
+
               </Grid>
             </Grid>
           </Grid>
