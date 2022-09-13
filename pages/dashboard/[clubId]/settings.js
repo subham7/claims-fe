@@ -35,7 +35,8 @@ import {
   calculateDays,
   calculateTreasuryTargetShare,
   calculateUserSharePercentage,
-  convertAmountToWei
+  convertAmountToWei,
+  convertToWeiGovernance
 } from "../../../src/utils/globalFunctions";
 
 
@@ -217,8 +218,8 @@ const Settings = (props) => {
     if (daoAddress) {
       const fetchUserBalance = new SmartContract(ImplementationContract, daoAddress, undefined)
       await fetchUserBalance.checkUserBalance()
-        .then((result) => {
-          setUserBalance(web3.utils.fromWei(result, "Mwei"))
+        .then(async (result) => {
+          setUserBalance(await convertToWeiGovernance(daoAddress, result))
           setUserBalanceFetched(true)
         },
         (error) => {

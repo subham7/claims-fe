@@ -28,11 +28,11 @@ import CollectionCard from "../../../src/components/cardcontent"
 import { useRouter } from "next/router"
 import ClubFetch from "../../../src/utils/clubFetch"
 import { SmartContract } from "../../../src/api/contract"
-import {getProposal} from "../../../src/api/proposal"
-import {fetchClubbyDaoAddress} from "../../../src/api/club"
-import {getNfts, getBalance} from "../../../src/api/gnosis"
-import {getAssets} from "../../../src/api/assets"
-import {getMembersDetails} from "../../../src/api/user"
+import { getProposal } from "../../../src/api/proposal"
+import { fetchClubbyDaoAddress } from "../../../src/api/club"
+import { getNfts, getBalance } from "../../../src/api/gnosis"
+import { getAssets } from "../../../src/api/assets"
+import { getMembersDetails } from "../../../src/api/user"
 import ImplementationContact from "../../../src/abis/implementationABI.json"
 import { useSelector } from "react-redux"
 import {
@@ -89,9 +89,6 @@ const useStyles = makeStyles({
   cardSharp2: {
     backgroundColor: "#142243",
     borderRadius: "5px",
- 
- 
-
     opacity: 1,
   },
   card1text1: {
@@ -114,7 +111,7 @@ const useStyles = makeStyles({
 
     fontSize: "15px",
     color: "#C1D3FF",
-   
+
     opacity: "1",
   },
   card1text4: {
@@ -140,7 +137,7 @@ const useStyles = makeStyles({
   },
   card2text2: {
     fontFamily: "Whyte",
-   fontSize: "20px",
+    fontSize: "20px",
     color: "#EFEFEF",
     opacity: "1",
   },
@@ -315,18 +312,18 @@ const useStyles = makeStyles({
 
   },
   docimg: {
-    right:"0",
-   marginLeft:"52%",
-   marginTop:"30%",
-  
-  width:"60%",
+    right: "0",
+    marginLeft: "52%",
+    marginTop: "30%",
 
-    sx:{ position: "absolute", bottom: 0 },
+    width: "60%",
+
+    sx: { position: "absolute", bottom: 0 },
 
 
   },
   valueDetailStyle: {
-color:"#81F5FF"
+    color: "#81F5FF"
   },
 
 
@@ -386,7 +383,7 @@ const Dashboard = () => {
   }
 
   const fetchGovernorContractData = async () => {
-    if (daoAddress && walletAddress){
+    if (daoAddress && walletAddress) {
       const fetchClubDetails = new SmartContract(ImplementationContact, daoAddress, undefined)
       await fetchClubDetails.getGovernorDetails()
         .then((result) => {
@@ -569,7 +566,7 @@ const Dashboard = () => {
       }
     })
   }
-  
+
 
   const importTokenToMetaMask = async () => {
     try {
@@ -598,9 +595,9 @@ const Dashboard = () => {
       setOpenSnackBar(true)
     }
   }
-console.log(tokenAPIDetails)
-console.log(governorDetails)
-console.log(tokenDetails)
+  console.log(tokenAPIDetails)
+  console.log(governorDetails)
+  console.log(tokenDetails)
 
   useEffect(() => {
     setLoaderOpen(true)
@@ -642,7 +639,7 @@ console.log(tokenDetails)
     }
   }, [dataFetched])
   console.log(dataFetched, apiTokenDetailSet, membersFetched, tresuryWalletBalanceFetched, activeProposalDataFetched, clubAssetTokenFetched, clubDetailsFetched)
- console.log(clubAssetTokenData)
+  console.log(clubAssetTokenData)
   useEffect(() => {
     console.log(dataFetched, apiTokenDetailSet, membersFetched, tresuryWalletBalanceFetched, activeProposalDataFetched, clubAssetTokenFetched, clubDetailsFetched)
     if (dataFetched && apiTokenDetailSet && membersFetched && tresuryWalletBalanceFetched && activeProposalDataFetched && clubAssetTokenFetched && clubDetailsFetched) {
@@ -668,7 +665,7 @@ console.log(tokenDetails)
     }
     setOpenSnackBar(false)
   }
-console.log(governorDataFetched)
+  console.log(governorDataFetched)
   return (
     <>
       <Layout1 page={1} depositUrl={joinLink}>
@@ -679,7 +676,7 @@ console.log(governorDataFetched)
               <Grid item xs={12} >
                 <Card className={classes.cardSharp1}  >
                   <Grid container spacing={2}>
-                    <Grid item  ml={3} mt={2} >
+                    <Grid item ml={3} mt={2} >
                       <img src={imageUrl ?? null} width="100vw" alt="profile_pic" />
                     </Grid>
                     <Grid item ml={1} mt={4} >
@@ -688,7 +685,7 @@ console.log(governorDataFetched)
                           {apiTokenDetailSet ? tokenAPIDetails.name : null}
                         </Typography>
 
-                     
+
                         <Grid container item direction="row" paddingBottom={4} >
                           <Typography variant="regularText2" mr={1} >
                             {membersFetched ? members : 0}
@@ -704,51 +701,51 @@ console.log(governorDataFetched)
                 </Card>
                 <Card className={classes.cardSharp2} >
 
-                 
-                  <Grid container 
-   paddingTop={1} paddingBottom={1}>
-  <Grid item xs={4}>
-  <Grid container direction="column">
+
+                  <Grid container
+                    paddingTop={1} paddingBottom={1}>
+                    <Grid item xs={4}>
+                      <Grid container direction="column">
                         <Grid item >
                           <Typography variant="regularText4" fontSize={"18px"} className={classes.valuesDimStyle}>Member Deposits</Typography>
                         </Grid>
                         <Grid item >
-                          <Typography fontWeight="bold" fontSize={"24px"} className={classes.valueDetailStyle}>{governorDataFetched ? convertAmountToWei(governorDetails[1])  : null}</Typography>
+                          <Typography fontWeight="bold" fontSize={"24px"} className={classes.valueDetailStyle}>{governorDataFetched ? convertAmountToWei(governorDetails[1]) : null}</Typography>
                         </Grid>
                         <Grid item >
                           <Typography variant="regularText4" fontSize={"18px"} className={classes.valueDimStyle}> USDC </Typography>
                         </Grid>
                       </Grid>
-  </Grid>
-  <Grid item xs={4}>
-  <Grid container direction="column" >
+                    </Grid>
+                    <Grid item xs={4}>
+                      <Grid container direction="column" >
                         <Grid item>
                           <Typography variant="regularText4" fontSize={"18px"} className={classes.valuesDimStyle}> Club tokens minted </Typography>
                         </Grid>
                         <Grid item >
-                          <Typography fontWeight="bold" fontSize={"24px"} className={classes.valueDetailStyle}>{dataFetched ? (convertAmountToWei(tokenDetails[2]) ) : null}</Typography>
+                          <Typography fontWeight="bold" fontSize={"24px"} className={classes.valueDetailStyle}>{dataFetched ? (convertAmountToWei(tokenDetails[2])) : null}</Typography>
                         </Grid>
                         <Grid item >
-                          <Typography variant="regularText4" fontSize={"18px"} className={classes.valueDimStyle}>{dataFetched ? ( "$" + (tokenDetails[1]) ) : null}</Typography>
+                          <Typography variant="regularText4" fontSize={"18px"} className={classes.valueDimStyle}>{dataFetched ? ("$" + (tokenDetails[1])) : null}</Typography>
                         </Grid>
-                        
+
                       </Grid>
-  </Grid>
-  <Grid item xs={4}>
-  <Grid >
+                    </Grid>
+                    <Grid item xs={4}>
+                      <Grid >
                         <Grid item>
                           <Typography variant="regularText4" fontSize={"18px"} className={classes.valuesDimStyle}>Max Token Supply</Typography>
                         </Grid>
                         <Grid item >
-                          <Typography fontWeight="bold" fontSize={"24px"} className={classes.valueDetailStyle}>{governorDataFetched && dataFetched ? convertAmountToWei(governorDetails[4])  : null} </Typography>
+                          <Typography fontWeight="bold" fontSize={"24px"} className={classes.valueDetailStyle}>{governorDataFetched && dataFetched ? convertAmountToWei(governorDetails[4]) : null} </Typography>
                         </Grid>
                         <Grid item >
-                          <Typography variant="regularText4" fontSize={"18px"} className={classes.valueDimStyle}>{dataFetched ? ( "$" + (tokenDetails[1]) ) : null}</Typography>
+                          <Typography variant="regularText4" fontSize={"18px"} className={classes.valueDimStyle}>{dataFetched ? ("$" + (tokenDetails[1])) : null}</Typography>
                         </Grid>
-                        
+
                       </Grid>
-  </Grid>
-</Grid>
+                    </Grid>
+                  </Grid>
 
 
 
@@ -764,7 +761,7 @@ console.log(governorDataFetched)
                       <Typography variant="regularText4" fontSize={"21px"}>
                         Treasury wallet
                       </Typography>
-                      <Typography  fontSize={"48px"} fontWeight="bold">
+                      <Typography fontSize={"48px"} fontWeight="bold">
                         ${clubAssetTokenFetched ? clubAssetTokenData.totalBalance : null}
                       </Typography>
                       <CardMedia
@@ -790,20 +787,20 @@ console.log(governorDataFetched)
                     sx={{ position: "absolute", bottom: 0, paddingTop: "4px" }}
                   />
                   <Grid container >
-                    <Grid container  direction={{ xs: "column", sm: "column", md: "column" }}>
+                    <Grid container direction={{ xs: "column", sm: "column", md: "column" }}>
                       <Grid item >
                         <Box className={classes.cardOverlay}>
-                         <Typography  variant="regularText4" fontSize={"21px"}>
-                            My ownership Share 
+                          <Typography variant="regularText4" fontSize={"21px"}>
+                            My ownership Share
                           </Typography>
                           <Typography fontSize={"48px"} fontWeight="bold">
-                          {userBalanceFetched && dataFetched ? isNaN(calculateUserSharePercentage(userBalance, tokenDetails[2])) ? 0 : (calculateUserSharePercentage(userBalance, tokenDetails[2]))  : 0}% 
+                            {userBalanceFetched && dataFetched ? isNaN(calculateUserSharePercentage(userBalance, tokenDetails[2])) ? 0 : (calculateUserSharePercentage(userBalance, tokenDetails[2])) : 0}%
                           </Typography>
                           <Typography className={classes.card2text2} >
-                          {governorDataFetched && dataFetched ? convertAmountToWei(governorDetails[4]) + (" $" + tokenDetails[1]) : null}
+                            {governorDataFetched && dataFetched ? convertAmountToWei(governorDetails[4]) + (" $" + tokenDetails[1]) : null}
                           </Typography>
-                         
-                         
+
+
                         </Box>
                       </Grid>
                       {/* <CardMedia    className={classes.media}    component=“img”    image=“/assets/images/card_illustration.png”    alt=“abstract background”    sx={{ position: “absolute”, bottom: 0 }}                     />   */}
@@ -931,72 +928,70 @@ console.log(governorDataFetched)
           <Grid item md={3}>
             <Stack>
               <Card className={classes.fifthCard}>
-              <Grid >
-              <Grid> 
-              
-             
+                <Grid >
+                  <Grid>
+
+
                     <Grid item>
                       <Typography variant="getStartedClub" fontSize={"36px"}>
                         Get started with your club 👋
                       </Typography>
                     </Grid>
                     <Grid item   >
-                    
+
                       <Link color={"#111D38 "} variant="Docs" className={classes.Docs} onClick={() => { window.open(`https://stationx.substack.com/p/get-started-with-stationx-on-rinkeby`) }}>Read Docs</Link>
-                    
-                      <Grid> 
-                      <CardMedia
-                  image="/assets/images/docs.png"
-                  component="img"
-                  alt="ownership_share"
-                  className={classes.docimg}
-                
-                />
-                </Grid>
-                
+
+                      <Grid>
+                        <CardMedia
+                          image="/assets/images/docs.png"
+                          component="img"
+                          alt="ownership_share"
+                          className={classes.docimg}
+
+                        />
+                      </Grid>
+
                     </Grid>
-                 
+
                   </Grid>
-                  </Grid>
+                </Grid>
               </Card>
             </Stack>
 
             <Stack mt={2}>
-                {checkIsAdmin() ? <Card className={classes.thirdCard}>
-                  <Grid container m={2}>
-                    <Grid items>
-                      <Typography variant="regularText4">
-                        Joining link
-                      </Typography>
-                    </Grid>
-                    <Grid items mr={4} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
-                      {/*TODO: add closing date*/}
-                      {clubDetailsFetched ? closingDays > 0 ?
-                        <Grid container xs sx={{display: "flex", justifyContent: "flex-end"}}>
-                          <Grid item mt={1} mr={1}>
-                            <div className={classes.activeIllustration}></div>
-                          </Grid>
-                          <Grid item>
-                            <Typography sx={{color: "#0ABB92", fontSize: "1.25em", fontFamily: "Whyte"}}>
-                              Active
-                            </Typography>
-                          </Grid>
-                        </Grid> :
-                        <Grid container xs sx={{display: "flex", justifyContent: "flex-end"}}>
-                          <Grid item mt={1} mr={1}>
-                            <div className={classes.inactiveIllustration}></div>
-                          </Grid>
-                          <Grid item>
-                            <Typography sx={{color: "#D55438", fontSize: "1.25em", fontFamily: "Whyte"}}>
-                              In-active
-                            </Typography>
-                          </Grid>
-                        </Grid> : null
-                      }
-                    </Grid>
+              {checkIsAdmin() ? <Card className={classes.thirdCard}>
+                <Grid container m={2}>
+                  <Grid items>
+                    <Typography variant="regularText4">
+                      Joining link
+                    </Typography>
                   </Grid>
-                
-                  
+                  <Grid items mr={4} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
+                    {/*TODO: add closing date*/}
+                    {clubDetailsFetched ? closingDays > 0 ?
+                      <Grid container xs sx={{ display: "flex", justifyContent: "flex-end" }}>
+                        <Grid item mt={1} mr={1}>
+                          <div className={classes.activeIllustration}></div>
+                        </Grid>
+                        <Grid item>
+                          <Typography sx={{ color: "#0ABB92", fontSize: "1.25em", fontFamily: "Whyte" }}>
+                            Active
+                          </Typography>
+                        </Grid>
+                      </Grid> :
+                      <Grid container xs sx={{ display: "flex", justifyContent: "flex-end" }}>
+                        <Grid item mt={1} mr={1}>
+                          <div className={classes.inactiveIllustration}></div>
+                        </Grid>
+                        <Grid item>
+                          <Typography sx={{ color: "#D55438", fontSize: "1.25em", fontFamily: "Whyte" }}>
+                            In-active
+                          </Typography>
+                        </Grid>
+                      </Grid> : null
+                    }
+                  </Grid>
+                </Grid>
                 <Grid container>
                   <Grid item md={12} mt={2} ml={1} mr={1} >
                     <TextField
