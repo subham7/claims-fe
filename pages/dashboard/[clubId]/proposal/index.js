@@ -211,17 +211,7 @@ const Proposal = () => {
   const [type, setType] = useState(proposalType[0].type)
   const [openCard, setOpenCard] = useState(false)
   const [commandList, setCommandList] = useState([])
-  const [optionList, setOptionList] = useState([
-    {
-      "text": "Yes"
-    },
-    {
-      "text": "No"
-    },
-    {
-      "text": "Abstain"
-    }
-  ])
+  const [optionList, setOptionList] = useState([])
   const [failed, setFailed] = useState(false)
   const [openSnackBar, setOpenSnackBar] = useState(false)
   const [proposalData, setProposalData] = useState([])
@@ -1003,6 +993,9 @@ const Proposal = () => {
             {type === proposalType[0].type ?
               (
                 <>
+                <Grid container item ml={3} mt={2}>
+                  <Typography variant="proposalBody">(Minimum 2 options needed*)</Typography>
+                </Grid>
                   {!enableSubmitButton ? setEnableSubmitButton(true) : null}
                   <Grid item ml={3} mr={2}>
                     <Card className={classes.proposalCard}>
