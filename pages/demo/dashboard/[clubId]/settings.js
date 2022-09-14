@@ -1,5 +1,5 @@
 import {React, useEffect, useState} from "react"
-import Layout1 from "../../../src/components/layouts/layout1"
+import Layout1 from "../../../../src/components/layouts/layout1"
 import {
   Card,
   Grid,
@@ -13,31 +13,26 @@ import {
   CircularProgress, Backdrop
 } from "@mui/material"
 import { makeStyles } from "@mui/styles"
-import ProgressBar from "../../../src/components/progressbar"
+import ProgressBar from "../../../../src/components/progressbar"
 import Router, { useRouter } from "next/router"
 import { useSelector, useDispatch } from "react-redux"
-import {
-  USDC_CONTRACT_ADDRESS,
-  FACTORY_CONTRACT_ADDRESS,
-} from "../../../src/api"
-import {getMembersDetails} from "../../../src/api/user"
+import {getMembersDetails} from "../../../../src/api/user"
 import Web3 from "web3"
-import USDCContract from "../../../src/abis/usdcTokenContract.json"
-import ImplementationContract from "../../../src/abis/implementationABI.json"
-import { SmartContract } from "../../../src/api/contract"
-import {fetchClubbyDaoAddress} from "../../../src/api/club"
-import {getAssets} from "../../../src/api/assets"
+import USDCContract from "../../../../src/abis/usdcTokenContract.json"
+import ImplementationContract from "../../../../src/abis/implementationABI.json"
+import { SmartContract } from "../../../../src/api/contract"
+import {fetchClubbyDaoAddress} from "../../../../src/api/club"
+import {getAssets} from "../../../../src/api/assets"
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
-import ClubFetch from "../../../src/utils/clubFetch"
+import ClubFetch from "../../../../src/utils/clubFetch"
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import Image from "next/image";
 import {
   calculateDays,
   calculateTreasuryTargetShare,
   calculateUserSharePercentage,
-  convertAmountToWei,
-  convertToWeiGovernance
-} from "../../../src/utils/globalFunctions";
+  convertAmountToWei
+} from "../../../../src/utils/globalFunctions";
 
 
 const useStyles = makeStyles({
@@ -213,17 +208,13 @@ const Settings = (props) => {
   const [userBalanceFetched, setUserBalanceFetched] = useState(false)
   const [clubAssetTokenFetched, setClubAssetTokenFetched] = useState(false)
   const [clubAssetTokenData, setClubAssetTokenData] = useState([])
-  const [userOwnershipShare, setUserOwnershipShare] = useState(0)
-  const [clubTokenMinted, setClubTokenMInted] = useState(0)
-
-
 
   const fetchUserBalanceAPI = async () => {
     if (daoAddress) {
       const fetchUserBalance = new SmartContract(ImplementationContract, daoAddress, undefined)
       await fetchUserBalance.checkUserBalance()
-        .then(async (result) => {
-          setUserBalance(await convertToWeiGovernance(daoAddress, result))
+        .then((result) => {
+          setUserBalance(web3.utils.fromWei(result, "Mwei"))
           setUserBalanceFetched(true)
         },
         (error) => {
@@ -247,10 +238,8 @@ const Settings = (props) => {
     if (tokenAPIDetails && tokenAPIDetails.length > 0) {
       const tokenDetailContract = new SmartContract(USDCContract, tokenAPIDetails[0].daoAddress, undefined)
       await tokenDetailContract.tokenDetails()
-        .then(async (result) => {
+        .then((result) => {
           settokenDetails(result)
-          setUserOwnershipShare(await convertToWeiGovernance(daoAddress, result[2]))
-          setClubTokenMInted(await convertToWeiGovernance(daoAddress, result[2]))
           setDataFetched(true)
         },
           (error) => {
@@ -468,7 +457,7 @@ const Settings = (props) => {
                         <Typography variant="settingText">Your ownership</Typography>
                       </Grid>
                       <Grid item mt={2}>
-                        <Typography variant="p" className={classes.valuesStyle}>{userBalanceFetched && dataFetched ? isNaN(calculateUserSharePercentage(userBalance, tokenDetails[2])) ? 0 : (calculateUserSharePercentage(userBalance, userOwnershipShare))  : 0}% (${userBalance} )</Typography>
+                        <Typography variant="p" className={classes.valuesStyle}>{userBalanceFetched && dataFetched ? isNaN(calculateUserSharePercentage(userBalance, tokenDetails[2])) ? 0 : (calculateUserSharePercentage(userBalance, tokenDetails[2]))  : 0}% (${userBalance} )</Typography>
                       </Grid>
                     </Grid>
                   </Grid>
@@ -480,7 +469,7 @@ const Settings = (props) => {
                   <Grid item ml={4} mt={1} mb={2}>
                     <Stack spacing={1}>
                       <Typography variant="settingText">Club Tokens Minted so far</Typography>
-                      <Typography variant="p" className={classes.valuesStyle}>{dataFetched ? ( clubTokenMinted + " $" + tokenDetails[1]) : null}</Typography>
+                      <Typography variant="p" className={classes.valuesStyle}>{dataFetched ? ( convertAmountToWei(tokenDetails[2]) + " $" + tokenDetails[1]) : null}</Typography>
                     </Stack>
                   </Grid>
                   <Grid item ml={4} mt={1} mb={2} mr={4} xs sx={{ display: "flex", justifyContent: "flex-end" }}>

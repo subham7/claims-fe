@@ -21,25 +21,25 @@ import {
   Dialog,
   CardMedia,
 } from "@mui/material"
-import Layout3 from "../../src/components/layouts/layout3"
-import ProgressBar from "../../src/components/progressbar"
-import { connectWallet, setUserChain, onboard } from "../../src/utils/wallet"
+import Layout3 from "../../../src/components/layouts/layout3"
+import ProgressBar from "../../../src/components/progressbar"
+import { connectWallet, setUserChain, onboard } from "../../../src/utils/wallet"
 import { useDispatch, useSelector } from "react-redux"
 import { useRouter } from "next/router"
 import {
   USDC_CONTRACT_ADDRESS,
   FACTORY_CONTRACT_ADDRESS,
-} from "../../src/api"
-import { fetchClub, fetchClubbyDaoAddress } from "../../src/api/club"
-import {createUser} from "../../src/api/user"
-import {getMembersDetails, patchUserBalance, checkUserByClub} from "../../src/api/user"
-import store from "../../src/redux/store"
+} from "../../../src/api"
+import { fetchClub, fetchClubbyDaoAddress } from "../../../src/api/club"
+import {createUser} from "../../../src/api/user"
+import {getMembersDetails, patchUserBalance, checkUserByClub} from "../../../src/api/user"
+import store from "../../../src/redux/store"
 import Web3 from "web3"
-import USDCContract from "../../src/abis/usdcTokenContract.json"
-import ImplementationContract from "../../src/abis/implementationABI.json"
-import { SmartContract } from "../../src/api/contract"
-import { checkNetwork } from "../../src/utils/wallet"
-import {calculateTreasuryTargetShare, convertAmountToWei, convertToWei} from "../../src/utils/globalFunctions";
+import USDCContract from "../../../src/abis/usdcTokenContract.json"
+import ImplementationContract from "../../../src/abis/implementationABI.json"
+import { SmartContract } from "../../../src/api/contract"
+import { checkNetwork } from "../../../src/utils/wallet"
+import {calculateTreasuryTargetShare, convertAmountToWei, convertToWei} from "../../../src/utils/globalFunctions";
 
 const useStyles = makeStyles({
   valuesStyle: {
@@ -62,7 +62,7 @@ const useStyles = makeStyles({
     borderRadius: "10px",
     opacity: 1,
     justifyContent:"space-between" ,
-    height:"100%",
+    
     
   },
   dimColor: {
@@ -868,7 +868,7 @@ const Join = (props) => {
               </Grid>
               <Divider variant="middle" sx={{ bgcolor: "#3B7AFD" }} />
               <Grid container spacing={2}>
-                <Grid item md={12} mt={2}>
+                <Grid item md={12} mt={5}>
                   <Card className={classes.cardSmall}>
                     <Grid container spacing={2}>
                       <Grid item ml={2} mt={2} mb={0}>
@@ -890,7 +890,7 @@ const Join = (props) => {
                       </Grid>
                     </Grid>
                     <Grid container spacing={2}>
-                      <Grid item ml={2} mt={1} mb={2} p={1}>
+                      <Grid item ml={2} mt={1} mb={3} p={1}>
                         <Input
                           type="number"
                           error={depositAmount === ""}
@@ -905,8 +905,8 @@ const Join = (props) => {
                       <Grid
                         item
                         ml={2}
-                        mt={1}
-                        mb={1}
+                        mt={2}
+                        mb={2}
                         xs
                         sx={{ display: "flex", justifyContent: "flex-end" }}
                       >
@@ -930,7 +930,7 @@ const Join = (props) => {
                     </Typography>
                   </Card>
                 </Grid>
-                <Grid item container ml={1} mt={1} mb={1}>
+                <Grid item container ml={1} mt={2} mb={1}>
                   <Button
                     variant="primary"
                     size="large"
@@ -944,23 +944,21 @@ const Join = (props) => {
             </Card>
           ) : (
         
-            <Card className={classes.cardJoin} height={"full"} >
-            < >
+            <Card className={classes.cardJoin}>
+            <Grid   >
 
-              <Grid flex flexDirection="column" container  justifyContent={"space-between"} height={"100%"}>
-             <Grid margin={"25px"}> 
-                 <Typography  className={classes.JoinText}> Join this station by depositing your funds </Typography>
-                 </Grid>
-               
-                 <Grid   sx={{ display: "flex" , flexDirection:"row" }} >
-                <Grid mt={"300px"} ml={4}>
+              <Grid container spacing={2} justifyContent={"space-between"}  >
+              <Grid item>
+                 <Typography className={classes.JoinText}> Join this station by depositing your funds </Typography>
+               </Grid>
+                <Grid   sx={{ display: "flex" , flexDirection:"row" }} >
+                <Grid mt={100} ml={4}>
                 
                   <Button variant="primary"   onClick={handleConnectWallet}>
                     Connect 
                   </Button>
                </Grid> 
                <Grid 
-               mt={"50px"}
               
                > 
                
@@ -979,19 +977,13 @@ const Join = (props) => {
                
                
                </Grid> 
-              
-             
                
-               
-               </Grid> 
-               
-              
+              </Grid>
 
-         </>
+              </Grid>
 
               
             </Card>
-            
             
           )}
 

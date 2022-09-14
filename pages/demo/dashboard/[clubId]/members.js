@@ -1,16 +1,10 @@
 import { React, useEffect, useState, useRef } from "react"
 import { makeStyles } from "@mui/styles"
-import Layout1 from "../../../src/components/layouts/layout1"
+import Layout1 from "../../../../src/components/layouts/layout1"
 import {
-  Box,
-  Card,
   Grid,
   Typography,
-  ListItemButton,
-  Avatar,
-  Stack,
   TextField,
-  Button,
   IconButton,
   Table,
   TableContainer,
@@ -21,15 +15,11 @@ import {
   CircularProgress, Backdrop
 } from "@mui/material"
 import SearchIcon from "@mui/icons-material/Search"
-import BasicTable from "../../../src/components/table"
-import {getMembersDetails} from "../../../src/api/user"
-import { useSelector } from "react-redux"
 import Paper from '@mui/material/Paper';
 import { useRouter } from "next/router"
 import jazzicon from "@metamask/jazzicon"
-import ClubFetch from "../../../src/utils/clubFetch"
+import ClubFetch from "../../../../src/utils/clubFetch"
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
-import { convertToWeiGovernance, convertToWeiUSDC } from "../../../src/utils/globalFunctions"
 
 
 const useStyles = makeStyles({
@@ -82,24 +72,19 @@ const Members = (props) => {
       }
   }
 
-  const fetchMembers = () => {
-    const membersData = getMembersDetails(clubID)
-    membersData.then((result) => {
-      if (result.status != 200) {
-        setFetched(false)
-      } else {
-        setMembers(result.data)
-        setFetched(true)
-        setLoaderOpen(false)
-      }
-    })
-  }
 
   useEffect(() => {
     setLoaderOpen(true)
-    fetchMembers()
+    setMembers([
+      {
+        userAddress: localStorage.getItem("wallet"),
+        balance: "200",
+        joiningDate: "2022-09-06T09:22:08.935Z"
+      }
+    ])
+    setFetched(true)
+    setLoaderOpen(false)
   }, [clubID, fetched])
-
 
   const handleAddressClick = (event, address) => {
     event.preventDefault()
@@ -142,7 +127,6 @@ const Members = (props) => {
                         key={key}
                         sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                       >
-                        {/* <TableCell align="left" className={classes.tablecontent}>{generateJazzIcon(data.userAddress)</TableCell> */}
                         <TableCell align="left" variant="tableBody" >
                           <Grid container direction="row" alignItems="center" spacing={1}>
                             <Grid item>
@@ -155,9 +139,9 @@ const Members = (props) => {
                             </Grid>
                           </Grid>
                         </TableCell>
-                        <TableCell align="left" variant="tableBody">{data.clubs[0].balance}</TableCell>
-                        <TableCell align="left" variant="tableBody">${data.clubs[0].balance}</TableCell>
-                        <TableCell align="left" variant="tableBody">{new Date(data.clubs[0].joiningDate).toLocaleDateString()}</TableCell>
+                        <TableCell align="left" variant="tableBody">{data.balance}</TableCell>
+                        <TableCell align="left" variant="tableBody">${data.balance}</TableCell>
+                        <TableCell align="left" variant="tableBody">{new Date(data.joiningDate).toLocaleDateString()}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>

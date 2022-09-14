@@ -2,12 +2,14 @@ import Web3 from "web3"
 import Web3Adapter from "@gnosis.pm/safe-web3-lib"
 import SafeServiceClient from "@gnosis.pm/safe-service-client"
 import USDCContract from "../../abis/usdcTokenContract.json"
+import usdcFaucet from "../../abis/usdcFaucet.json"
 import Safe, { EthSignSignature } from "@gnosis.pm/safe-core-sdk"
 import {
   USDC_CONTRACT_ADDRESS,
   FACTORY_CONTRACT_ADDRESS,
   IMPLEMENTATION_CONTRACT_ADDRESS,
   GNOSIS_TRANSACTION_URL,
+  USDC_FAUCET_ADDRESS
 } from "../index"
 import { calculateDays, convertToWei } from "../../utils/globalFunctions"
 import FactoryContract from "../../abis/factoryContract.json"
@@ -273,6 +275,10 @@ export class SmartContract {
       USDCContract.abi,
       USDC_CONTRACT_ADDRESS
     )
+    const usdcContractFaucet = new web3.eth.Contract(
+usdcFaucet.abi,
+      USDC_FAUCET_ADDRESS  
+    )
 
     const safeSdk = await Safe.create({
       ethAdapter: ethAdapter,
@@ -331,6 +337,15 @@ export class SmartContract {
       .approve(address, web3.utils.toWei(number, "Mwei"))
       .send({ from: this.walletAddress })
   }
+
+
+  async mint(address,amount)
+  {
+    console.log(this.contract)
+    return this.contract.methods.mint(address, amount).send({ from: this.walletAddress })
+  }
+
+  
 
   async deposit(address, amount) {
     return this.contract.methods
