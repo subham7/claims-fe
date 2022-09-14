@@ -213,6 +213,10 @@ const Settings = (props) => {
   const [userBalanceFetched, setUserBalanceFetched] = useState(false)
   const [clubAssetTokenFetched, setClubAssetTokenFetched] = useState(false)
   const [clubAssetTokenData, setClubAssetTokenData] = useState([])
+  const [userOwnershipShare, setUserOwnershipShare] = useState(0)
+  const [clubTokenMinted, setClubTokenMInted] = useState(0)
+
+
 
   const fetchUserBalanceAPI = async () => {
     if (daoAddress) {
@@ -243,8 +247,10 @@ const Settings = (props) => {
     if (tokenAPIDetails && tokenAPIDetails.length > 0) {
       const tokenDetailContract = new SmartContract(USDCContract, tokenAPIDetails[0].daoAddress, undefined)
       await tokenDetailContract.tokenDetails()
-        .then((result) => {
+        .then(async (result) => {
           settokenDetails(result)
+          setUserOwnershipShare(await convertToWeiGovernance(daoAddress, result[2]))
+          setClubTokenMInted(await convertToWeiGovernance(daoAddress, result[2]))
           setDataFetched(true)
         },
           (error) => {
@@ -462,7 +468,7 @@ const Settings = (props) => {
                         <Typography variant="settingText">Your ownership</Typography>
                       </Grid>
                       <Grid item mt={2}>
-                        <Typography variant="p" className={classes.valuesStyle}>{userBalanceFetched && dataFetched ? isNaN(calculateUserSharePercentage(userBalance, tokenDetails[2])) ? 0 : (calculateUserSharePercentage(userBalance, tokenDetails[2]))  : 0}% (${userBalance} )</Typography>
+                        <Typography variant="p" className={classes.valuesStyle}>{userBalanceFetched && dataFetched ? isNaN(calculateUserSharePercentage(userBalance, tokenDetails[2])) ? 0 : (calculateUserSharePercentage(userBalance, userOwnershipShare))  : 0}% (${userBalance} )</Typography>
                       </Grid>
                     </Grid>
                   </Grid>
@@ -474,7 +480,7 @@ const Settings = (props) => {
                   <Grid item ml={4} mt={1} mb={2}>
                     <Stack spacing={1}>
                       <Typography variant="settingText">Club Tokens Minted so far</Typography>
-                      <Typography variant="p" className={classes.valuesStyle}>{dataFetched ? ( convertAmountToWei(tokenDetails[2]) + " $" + tokenDetails[1]) : null}</Typography>
+                      <Typography variant="p" className={classes.valuesStyle}>{dataFetched ? ( clubTokenMinted + " $" + tokenDetails[1]) : null}</Typography>
                     </Stack>
                   </Grid>
                   <Grid item ml={4} mt={1} mb={2} mr={4} xs sx={{ display: "flex", justifyContent: "flex-end" }}>

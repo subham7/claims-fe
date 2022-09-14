@@ -90,7 +90,7 @@ export const darkComponents = {
     styleOverrides: {
       root: {
         background: "#19274B",
-        borderRadius: "20px",
+        borderRadius: "10px",
         padding: "20px",
       },
     },
