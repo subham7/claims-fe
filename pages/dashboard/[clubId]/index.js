@@ -797,7 +797,7 @@ const Dashboard = () => {
                             {userBalanceFetched && dataFetched ? isNaN(calculateUserSharePercentage(userBalance, userOwnershipShare)) ? 0 : (calculateUserSharePercentage(userBalance, userOwnershipShare)) : 0}%
                           </Typography>
                           <Typography className={classes.card2text2}>
-                            {governorDataFetched && dataFetched ? convertAmountToWei(governorDetails[4]) + (" $" + tokenDetails[1]) : null}
+                            {governorDataFetched && dataFetched ? userOwnershipShare + (" $" + tokenDetails[1]) : null}
                           </Typography>
 
 
