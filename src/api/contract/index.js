@@ -6,7 +6,6 @@ import Safe, { EthSignSignature } from "@gnosis.pm/safe-core-sdk"
 import {
   USDC_CONTRACT_ADDRESS,
   FACTORY_CONTRACT_ADDRESS,
-  IMPLEMENTATION_CONTRACT_ADDRESS,
   GNOSIS_TRANSACTION_URL,
   USDC_FAUCET_ADDRESS
 } from "../index"

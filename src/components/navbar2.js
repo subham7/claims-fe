@@ -6,6 +6,7 @@ import { makeStyles } from "@mui/styles"
 import { connectWallet, setUserChain, onboard } from "../utils/wallet"
 import Web3 from "web3"
 import AccountButton from "./accountbutton"
+import NetworkSwitcher from "./networkSwitcher"
 import store from "../redux/store"
 import { useDispatch } from "react-redux"
 import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment'
@@ -132,7 +133,7 @@ export default function Navbar2(props) {
           >
               Deposit
             </Button> : null }
-          
+          <NetworkSwitcher />
           {previouslyConnectedWallet !== null ? (
             <AccountButton accountDetail={userDetails} />
           ) : (
