@@ -2,7 +2,6 @@ import Web3 from "web3"
 import Web3Adapter from "@gnosis.pm/safe-web3-lib"
 import SafeServiceClient from "@gnosis.pm/safe-service-client"
 import USDCContract from "../../abis/usdcTokenContract.json"
-import usdcFaucet from "../../abis/usdcFaucet.json"
 import Safe, { EthSignSignature } from "@gnosis.pm/safe-core-sdk"
 import {
   USDC_CONTRACT_ADDRESS,
@@ -276,7 +275,7 @@ export class SmartContract {
       USDC_CONTRACT_ADDRESS
     )
     const usdcContractFaucet = new web3.eth.Contract(
-usdcFaucet.abi,
+      USDCContract.abi,
       USDC_FAUCET_ADDRESS  
     )
 

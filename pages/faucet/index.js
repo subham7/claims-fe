@@ -1,7 +1,7 @@
 import { React, useRef, onChange, useState, useEffect } from "react"
 import Image from "next/image"
 import { makeStyles } from "@mui/styles"
-import USDCFaucet from "../../src/abis/usdcFaucet.json"
+import USDCContract from "../../src/abis/usdcTokenContract.json"
 import {
   Grid,
   Typography,
@@ -311,7 +311,7 @@ console.log(FaucetAddress)
   const handleFaucet = async (FaucetAddress,FaucetAmount) => {
 
    const usdcFaucet = new SmartContract(
-    USDCFaucet,
+    USDCContract,
     USDC_CONTRACT_ADDRESS,
     undefined
    )
