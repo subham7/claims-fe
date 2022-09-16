@@ -27,7 +27,27 @@ export const calculateDays = (dateTime) => {
   return Math.round((new Date(dateTime) - new Date()) / (1000 * 60 * 60 * 24))
 }
 
-export const convertToWeiGovernance = (daoAddress, convertValue) => {
+export const converttoWeiGovernance = (daoAddress, convertValue) => {
+  return new Promise((resolve,reject) =>{
+    const contract = new SmartContract(ImplementationContract, daoAddress, undefined)
+    const tokenDecimal = contract.obtainTokenDecimals()
+    tokenDecimal.then((result) => {
+      resolve((convertValue) * Math.pow(10, result))
+    })
+  })
+}
+
+export const converttoWeiUSDC = (value) => {
+  return new Promise((resolve,reject) =>{
+    const contract = new SmartContract(ImplementationContract, USDC_CONTRACT_ADDRESS, undefined)
+    const tokenDecimal = contract.obtainTokenDecimals()
+    tokenDecimal.then((result) => {
+      resolve(web3.utils.toBN(value) * Math.pow(10, result))
+    })
+  })
+}
+
+export const convertFromWeiGovernance = (daoAddress, convertValue) => {
   return new Promise((resolve,reject) =>{
     const contract = new SmartContract(ImplementationContract, daoAddress, undefined)
     const tokenDecimal = contract.obtainTokenDecimals()
@@ -37,7 +57,7 @@ export const convertToWeiGovernance = (daoAddress, convertValue) => {
   })
 }
 
-export const convertToWeiUSDC = (value) => {
+export const convertFromWeiUSDC = (value) => {
   return new Promise((resolve,reject) =>{
     const contract = new SmartContract(ImplementationContract, USDC_CONTRACT_ADDRESS, undefined)
     const tokenDecimal = contract.obtainTokenDecimals()

@@ -43,7 +43,7 @@ import { useRouter, withRouter } from "next/router"
 import { SmartContract } from "../../../../src/api/contract"
 import USDCContract from "../../../../src/abis/usdcTokenContract.json"
 import ClubFetch from "../../../../src/utils/clubFetch"
-import { calculateDays, convertToWei } from "../../../../src/utils/globalFunctions";
+import { calculateDays, convertToWei, converttoWeiUSDC } from "../../../../src/utils/globalFunctions";
 
 
 const useStyles = makeStyles({
@@ -357,7 +357,7 @@ const Proposal = () => {
             {
               "executionId": 0,
               "airDropToken": airDropToken,
-              "airDropAmount": airDropAmount,
+              "airDropAmount": await converttoWeiUSDC(airDropAmount),
             }
           ],
           "type": "action"
@@ -390,7 +390,7 @@ const Proposal = () => {
             {
               "executionId": 1,
               "mintGTAddresses": mintGtAddress,
-              "mintGTAmounts": mintGTAmounts,
+              "mintGTAmounts": await converttoWeiUSDC(mintGTAmounts),
             }
           ],
           "type": "action"
@@ -496,9 +496,9 @@ const Proposal = () => {
             {
               "executionId": 3,
               "day": dayCalculated,
-              "minDeposits": minDeposits,
-              "maxDeposits": maxDeposits,
-              "totalDeposits": totalDeposits,
+              "minDeposits": await converttoWeiUSDC(minDeposits),
+              "maxDeposits": await converttoWeiUSDC(maxDeposits),
+              "totalDeposits": await converttoWeiUSDC(totalDeposits),
             }
           ],
           "type": "action"
@@ -565,7 +565,7 @@ const Proposal = () => {
           "commands": [
             {
               "executionId": 5,
-              "totalDeposits": totalDeposits,
+              "totalDeposits": await converttoWeiUSDC(totalDeposits),
             }
           ],
           "type": "action"
@@ -599,7 +599,7 @@ const Proposal = () => {
             {
               "executionId": 6,
               "customToken": customToken,
-              "customTokenAmounts": [convertToWei(customTokenAmounts)],
+              "customTokenAmounts": [await converttoWeiUSDC(customTokenAmounts)],
               "customTokenAddresses": [customTokenAddresses]
             }
           ],
@@ -633,7 +633,7 @@ const Proposal = () => {
             {
               "executionId": 7,
               "sendEthAddresses": sendEthAddresses,
-              "sendEthAmounts": sendEthAmounts,
+              "sendEthAmounts": await converttoWeiUSDC(sendEthAmounts),
             }
           ],
           "type": "action"

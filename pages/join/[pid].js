@@ -31,15 +31,15 @@ import {
   FACTORY_CONTRACT_ADDRESS,
 } from "../../src/api"
 import { fetchClub, fetchClubbyDaoAddress } from "../../src/api/club"
-import {createUser} from "../../src/api/user"
-import {getMembersDetails, patchUserBalance, checkUserByClub} from "../../src/api/user"
+import { createUser } from "../../src/api/user"
+import { getMembersDetails, patchUserBalance, checkUserByClub } from "../../src/api/user"
 import store from "../../src/redux/store"
 import Web3 from "web3"
 import USDCContract from "../../src/abis/usdcTokenContract.json"
 import ImplementationContract from "../../src/abis/implementationABI.json"
 import { SmartContract } from "../../src/api/contract"
 import { checkNetwork } from "../../src/utils/wallet"
-import {calculateTreasuryTargetShare, convertAmountToWei, convertToWei} from "../../src/utils/globalFunctions";
+import { calculateTreasuryTargetShare, convertFromWeiGovernance, converttoWeiUSDC, convertFromWeiUSDC } from "../../src/utils/globalFunctions";
 
 const useStyles = makeStyles({
   valuesStyle: {
@@ -61,9 +61,9 @@ const useStyles = makeStyles({
     backgroundColor: "#81F5FF",
     borderRadius: "10px",
     opacity: 1,
-    justifyContent:"space-between" ,
-    height:"100%",
-    
+    justifyContent: "space-between",
+    height: "100%",
+
   },
   dimColor: {
     color: "#C1D3FF",
@@ -84,18 +84,18 @@ const useStyles = makeStyles({
     backgroundColor: "#FFFFFF",
     borderRadius: "20px",
     opacity: 1,
-    
+
   },
   cardSmallFont: {
     fontFamily: "Whyte",
     fontSize: "18px",
     color: "#111D38",
   },
-  JoinText:{
-  color:"#111D38",
-  fontFamily: "Whyte",
-  fontSize: "21px",
-  fontWeight: "bold",
+  JoinText: {
+    color: "#111D38",
+    fontFamily: "Whyte",
+    fontSize: "21px",
+    fontWeight: "bold",
   },
   cardLargeFont: {
     width: "150px",
@@ -116,11 +116,12 @@ const useStyles = makeStyles({
       "-webkit-appearance": "none",
       margin: 0,
     },
+    color: "#3B7AFD"
   },
   cardWarning: {
     backgroundColor: "#FFB74D0D",
     borderRadius: "10px",
-    borderColor:"#111D38",
+    borderColor: "#111D38",
     opacity: 1,
     border: "1px solid #C1D3FF",
   },
@@ -275,8 +276,9 @@ const Join = (props) => {
         undefined
       )
       await tokenDetailContract.tokenDetails().then(
-        (result) => {
+        async(result) => {
           settokenDetails(result)
+          setQuoram(await convertFromWeiGovernance(daoAddress, result[2]))
           setDataFetched(true)
         },
         (error) => {
@@ -309,13 +311,17 @@ const Join = (props) => {
         undefined
       )
       await governorDetailContract.getGovernorDetails().then(
-        (result) => {
+        async (result) => {
           // console.log(result)
           setGovernorDetails(result)
+          setMinDeposit(await convertFromWeiUSDC(result[1]))
+          setMaxDeposit(await convertFromWeiUSDC(result[2]))
+          setTotalDeposit(await convertFromWeiUSDC(result[4]))
+
           setClosingDays(
             Math.round(
               (new Date(parseInt(result[0]) * 1000) - new Date()) /
-                (1000 * 60 * 60 * 24)
+              (1000 * 60 * 60 * 24)
             )
           )
           setGovernorDataFetched(true)
@@ -406,6 +412,7 @@ const Join = (props) => {
   const handleDeposit = async () => {
     setDepositInitiated(true)
     const checkUserExists = checkUserByClub(userDetails, clubId)
+    const depositAmountConverted = await converttoWeiUSDC(depositAmount)
     checkUserExists.then((result) => {
       if (result.data === false) {
         // if the user doesn't exist
@@ -423,13 +430,13 @@ const Join = (props) => {
         // pass governor contract
         const usdc_response = usdc_contract.approveDeposit(
           daoAddress,
-          convertToWei(depositAmount)
+          depositAmountConverted
         )
         usdc_response.then(
           (result) => {
             const deposit_response = dao_contract.deposit(
               USDC_CONTRACT_ADDRESS,
-              convertToWei(depositAmount)
+              depositAmountConverted
             )
             deposit_response.then((result) => {
               const data = {
@@ -438,7 +445,7 @@ const Join = (props) => {
                   {
                     clubId: clubId,
                     isAdmin: 0,
-                    balance: convertToWei(depositAmount),
+                    balance: depositAmountConverted,
                   },
                 ],
               }
@@ -480,19 +487,19 @@ const Join = (props) => {
         // pass governor contract
         const usdc_response = usdc_contract.approveDeposit(
           daoAddress,
-          convertToWei(depositAmount)
+          depositAmountConverted
         )
         usdc_response.then(
           (result) => {
             const deposit_response = dao_contract.deposit(
               USDC_CONTRACT_ADDRESS,
-              convertToWei(depositAmount)
+              depositAmountConverted
             )
             deposit_response.then((result) => {
               const patchData = {
                 userAddress: userDetails,
                 clubId: clubId,
-                balance: convertToWei(depositAmount),
+                balance: depositAmountConverted,
               }
               const updateDepositAmount = patchUserBalance(patchData)
               updateDepositAmount.then((result) => {
@@ -524,10 +531,10 @@ const Join = (props) => {
     setDepositAmount(parseInt(newValue))
   }
 
-  const handleMaxButtonClick = (event) => {
+  const handleMaxButtonClick = async(event) => {
     // value should be the maximum deposit value
     if (governorDataFetched) {
-      setDepositAmount(parseInt(governorDetails[2]))
+      setDepositAmount(await convertFromWeiUSDC(governorDetails[2]))
     }
   }
 
@@ -660,7 +667,7 @@ const Join = (props) => {
                   <Grid item mt={2}>
                     <Typography variant="p" className={classes.valuesStyle}>
                       {governorDataFetched ? (
-                        convertAmountToWei(governorDetails[1]) + " USDC"
+                        minDeposit + " USDC"
                       ) : (
                         <Skeleton
                           variant="rectangular"
@@ -690,7 +697,7 @@ const Join = (props) => {
                   <Grid item mt={2}>
                     <Typography variant="p" className={classes.valuesStyle}>
                       {governorDataFetched ? (
-                        convertAmountToWei(governorDetails[2]) + " USDC"
+                        maxDeposit + " USDC"
                       ) : (
                         <Skeleton
                           variant="rectangular"
@@ -793,7 +800,7 @@ const Join = (props) => {
                   <Grid item>
                     <Typography variant="p" className={classes.valuesStyle}>
                       {walletConnected ? (
-                        convertAmountToWei(tokenDetails[2]) +
+                        quoram +
                         " $" +
                         tokenDetails[1]
                       ) : (
@@ -825,7 +832,7 @@ const Join = (props) => {
                   <Grid item>
                     <Typography variant="p" className={classes.valuesStyle}>
                       {governorDataFetched ? (
-                        convertAmountToWei(governorDetails[4]) + (" $" + tokenDetails[1])
+                        totalDeposit + (" $" + tokenDetails[1])
                       ) : (
                         <Skeleton
                           variant="rectangular"
@@ -847,7 +854,7 @@ const Join = (props) => {
                 <Grid item ml={2} mt={4} mb={4} className={classes.JoinText}>
                   <Typography variant="h4">Join this Club</Typography>
                 </Grid>
-                <Divider/> 
+                <Divider />
                 <Grid
                   item
                   ml={1}
@@ -943,59 +950,34 @@ const Join = (props) => {
               </Grid>
             </Card>
           ) : (
-        
             <Card className={classes.cardJoin} height={"full"} >
-            < >
-
-              <Grid flex flexDirection="column" container  justifyContent={"space-between"} height={"100%"}>
-             <Grid margin={"25px"}> 
-                 <Typography  className={classes.JoinText}> Join this station by depositing your funds </Typography>
-                 </Grid>
-               
-                 <Grid   sx={{ display: "flex" , flexDirection:"row" }} >
-                <Grid mt={"300px"} ml={4}>
-                
-                  <Button variant="primary"   onClick={handleConnectWallet}>
-                    Connect 
-                  </Button>
-               </Grid> 
-               <Grid 
-               mt={"50px"}
-              
-               > 
-               
-               <CardMedia
-                  image="/assets/images/joinstation.png"
-                  component="img"
-                  alt="ownership_share"
-                  className={classes.media}
-
-                 
-                  
-                
-                />
-              
-               </Grid>
-               
-               
-               </Grid> 
-              
-             
-               
-               
-               </Grid> 
-               
-              
-
-         </>
-
-              
+              < >
+                <Grid flex flexDirection="column" container justifyContent={"space-between"} height={"100%"}>
+                  <Grid margin={"25px"}>
+                    <Typography className={classes.JoinText}> Join this station by depositing your funds </Typography>
+                  </Grid>
+                  <Grid sx={{ display: "flex", flexDirection: "row" }} >
+                    <Grid mt={"300px"} ml={4}>
+                      <Button variant="primary" onClick={handleConnectWallet}>
+                        Connect
+                      </Button>
+                    </Grid>
+                    <Grid
+                      mt={"50px"}
+                    >
+                      <CardMedia
+                        image="/assets/images/joinstation.png"
+                        component="img"
+                        alt="ownership_share"
+                        className={classes.media}
+                      />
+                    </Grid>
+                  </Grid>
+                </Grid>
+              </>
             </Card>
-            
-            
           )}
 
-          
         </Grid>
       </Grid>
       <Snackbar

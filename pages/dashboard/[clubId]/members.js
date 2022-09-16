@@ -29,7 +29,7 @@ import { useRouter } from "next/router"
 import jazzicon from "@metamask/jazzicon"
 import ClubFetch from "../../../src/utils/clubFetch"
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
-import { convertToWeiGovernance, convertToWeiUSDC } from "../../../src/utils/globalFunctions"
+import { convertFromWeiGovernance, convertFromWeiUSDC } from "../../../src/utils/globalFunctions"
 
 
 const useStyles = makeStyles({

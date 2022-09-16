@@ -36,7 +36,7 @@ import {
   calculateTreasuryTargetShare,
   calculateUserSharePercentage,
   convertAmountToWei,
-  convertToWeiGovernance
+  convertFromWeiGovernance
 } from "../../../src/utils/globalFunctions";
 
 
@@ -223,7 +223,7 @@ const Settings = (props) => {
       const fetchUserBalance = new SmartContract(ImplementationContract, daoAddress, undefined)
       await fetchUserBalance.checkUserBalance()
         .then(async (result) => {
-          setUserBalance(await convertToWeiGovernance(daoAddress, result))
+          setUserBalance(await convertFromWeiGovernance(daoAddress, result))
           setUserBalanceFetched(true)
         },
         (error) => {
@@ -250,8 +250,8 @@ const Settings = (props) => {
       await tokenDetailContract.tokenDetails()
         .then(async (result) => {
           settokenDetails(result)
-          setUserOwnershipShare(await convertToWeiGovernance(daoAddress, result[2]))
-          setClubTokenMInted(await convertToWeiGovernance(daoAddress, result[2]))
+          setUserOwnershipShare(await convertFromWeiGovernance(daoAddress, result[2]))
+          setClubTokenMInted(await convertFromWeiGovernance(daoAddress, result[2]))
           setDataFetched(true)
         },
           (error) => {

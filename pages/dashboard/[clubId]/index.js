@@ -39,8 +39,9 @@ import {
   calculateDays,
   calculateUserSharePercentage,
   convertAmountToWei,
-  convertToWeiGovernance,
-  convertToWeiUSDC
+  convertFromWeiGovernance,
+  convertFromWeiUSDC,
+  converttoWeiUSDC,
 } from "../../../src/utils/globalFunctions";
 
 
@@ -385,7 +386,7 @@ const Dashboard = () => {
       const fetchUserBalance = new SmartContract(ImplementationContact, daoAddress, undefined)
       await fetchUserBalance.checkUserBalance()
         .then(async (result) => {
-            setUserBalance(await convertToWeiGovernance(daoAddress, result))
+            setUserBalance(await convertFromWeiGovernance(daoAddress, result))
             setUserBalanceFetched(true)
           },
           (error) => {
@@ -489,9 +490,9 @@ const Dashboard = () => {
       await tokenDetailContract.tokenDetails()
         .then(async (result) => {
             settokenDetails(result)
-            setClubTokenMInted(await convertToWeiGovernance(daoAddress, result[2]))
-            setUserOwnershipShare(await convertToWeiGovernance(daoAddress, result[2]))
-            setMemberDeposit(await convertToWeiGovernance(daoAddress, result[2]))
+            setClubTokenMInted(await convertFromWeiGovernance(daoAddress, result[2]))
+            setUserOwnershipShare(await convertFromWeiGovernance(daoAddress, result[2]))
+            setMemberDeposit(await convertFromWeiGovernance(daoAddress, result[2]))
             setJoinLink(typeof window !== 'undefined' && window.location.origin ? `${window.location.origin}/join/${daoAddress}` : null)
             setDataFetched(true)
           },
