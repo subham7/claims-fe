@@ -33,6 +33,7 @@ import {
 } from "../src/utils/auth";
 import {loginToken, refreshToken} from "../src/api/auth";
 import { fetchConfig } from "../src/api/config"
+import { updateDynamicAddress } from "../src/api/index"
 
 const useStyles = makeStyles({
   yourClubText: {
@@ -112,7 +113,8 @@ export default function App() {
         .then((networkId) => {
           if (!networksAvailable.includes(networkId)) {
             setOpen(true)
-          }
+          } 
+          updateDynamicAddress(networkId)
         })
         .catch((err) => {
           console.log(err)

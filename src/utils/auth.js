@@ -22,7 +22,7 @@ export default function ProtectRoute(Component) {
       }
 
     useEffect(() => {
-      const switched = checkNetwork()
+      // const switched = checkNetwork()
       const handleMount = async () => {
         if (wallet !== null) {
           setWalletAddress(wallet[0][0].address)

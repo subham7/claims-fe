@@ -26,7 +26,7 @@ const ClubFetch = (Component) => {
 
 
       useEffect(() => {
-        const switched = checkNetwork()
+        // const switched = checkNetwork()
         if(clubId) {
           const clubData = fetchClub(clubId)
           clubData.then((result) => {
