@@ -305,7 +305,7 @@ const ProposalDetail = () => {
         undefined,
         undefined,
         undefined,
-        undefined,
+        proposalData[0].commands[0].airDropCarryFee,
       )
       response.then((result) => {
         const updateStatus = patchProposalExecuted(pid)

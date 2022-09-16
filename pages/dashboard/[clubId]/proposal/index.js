@@ -224,6 +224,7 @@ const Proposal = () => {
   const [searchProposal, setSearchProposal] = useState('')
   const [airDropAmount, setAirDropAmount] = useState(0)
   const [airDropToken, setAirDropToken] = useState('')
+  const [airDropCarryFee, setAirDropCarryFee] = useState(0)
   const [executiveRoles, setExecutiveRoles] = useState([])
   const [mintGtAddress, setMintGtAddress] = useState('')
   const [mintGTAmounts, setMintGtAmount] = useState(0)
@@ -358,6 +359,7 @@ const Proposal = () => {
               "executionId": 0,
               "airDropToken": airDropToken,
               "airDropAmount": await converttoWeiUSDC(airDropAmount),
+              "airDropCarryFee": airDropCarryFee,
             }
           ],
           "type": "action"
@@ -1081,18 +1083,25 @@ const Proposal = () => {
                                   // airdrop execution
                                   <Grid container ml={1} mt={1} mb={2} spacing={2} direction="column">
                                     <Grid item>
-                                      <Typography className={classes.cardFont}>Air drop token</Typography>
+                                      <Typography className={classes.cardFont}>Air drop token*</Typography>
                                     </Grid>
                                     <Grid item>
                                       <TextField sx={{ width: "90%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
                                         placeholder="0x..." onChange={(e) => setAirDropToken(e.target.value)} />
                                     </Grid>
                                     <Grid item>
-                                      <Typography className={classes.cardFont}>Amount</Typography>
+                                      <Typography className={classes.cardFont}>Amount*</Typography>
                                     </Grid>
                                     <Grid item>
                                       <TextField sx={{ width: "90%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
                                         placeholder="0" onChange={(e) => setAirDropAmount(parseInt(e.target.value))} />
+                                    </Grid>
+                                    <Grid item>
+                                      <Typography className={classes.cardFont}>Carry fee (in %)</Typography>
+                                    </Grid>
+                                    <Grid item>
+                                      <TextField sx={{ width: "90%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
+                                        placeholder="0%" onChange={(e) => setAirDropCarryFee(parseInt(e.target.value))} />
                                     </Grid>
                                   </Grid>
                                 )
