@@ -245,7 +245,8 @@ const Settings = (props) => {
 
   const tokenDetailsRetrieval = async () => {
     if (tokenAPIDetails && tokenAPIDetails.length > 0) {
-      const tokenDetailContract = new SmartContract(USDCContract, tokenAPIDetails[0].daoAddress, undefined)
+      const tokenDetailContract = new SmartContract(ImplementationContract, tokenAPIDetails[0].daoAddress, undefined)
+      console.log(tokenDetailContract)
       await tokenDetailContract.tokenDetails()
         .then(async (result) => {
           settokenDetails(result)
