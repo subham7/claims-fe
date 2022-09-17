@@ -28,19 +28,15 @@ import ProgressBar from "../../src/components/progressbar"
 import { connectWallet, setUserChain, onboard } from "../../src/utils/wallet"
 import { useDispatch, useSelector } from "react-redux"
 import { useRouter } from "next/router"
-import {
-  USDC_CONTRACT_ADDRESS
-} from "../../src/api"
 import { fetchClub, fetchClubbyDaoAddress } from "../../src/api/club"
-import {createUser} from "../../src/api/user"
-import {getMembersDetails, patchUserBalance, checkUserByClub} from "../../src/api/user"
+import { createUser } from "../../src/api/user"
+import { getMembersDetails, patchUserBalance, checkUserByClub } from "../../src/api/user"
 import store from "../../src/redux/store"
 import Web3 from "web3"
 import ImplementationContract from "../../src/abis/implementationABI.json"
 import { SmartContract } from "../../src/api/contract"
 import { checkNetwork } from "../../src/utils/wallet"
-import {calculateTreasuryTargetShare, convertAmountToWei, convertToWei} from "../../src/utils/globalFunctions";
-import { SignalCellularNull } from "@mui/icons-material"
+import { calculateTreasuryTargetShare, convertAmountToWei, convertToWei } from "../../src/utils/globalFunctions";
 
 const useStyles = makeStyles({
   valuesStyle: {
@@ -62,7 +58,7 @@ const useStyles = makeStyles({
     backgroundColor: "#81F5FF",
     borderRadius: "10px",
     opacity: 1,
-    
+
   },
   dimColor: {
     color: "#C1D3FF",
@@ -89,8 +85,8 @@ const useStyles = makeStyles({
     fontSize: "18px",
     color: "#111D38",
   },
-  JoinText:{
-  color:"#111D38",
+  JoinText: {
+    color: "#111D38",
   },
   cardLargeFont: {
     width: "150px",
@@ -115,7 +111,7 @@ const useStyles = makeStyles({
   cardWarning: {
     backgroundColor: "#FFB74D0D",
     borderRadius: "10px",
-    borderColor:"#111D38",
+    borderColor: "#111D38",
     opacity: 1,
   },
   textWarning: {
@@ -198,35 +194,26 @@ const useStyles = makeStyles({
   },
 })
 
-const Join = (props) => {
-  const router = useRouter()
-  const { pid } = router.query
-  const daoAddress = pid
+const Faucet = (props) => {
   const dispatch = useDispatch()
   const classes = useStyles()
   const [walletConnected, setWalletConnected] = useState(false)
   const [previouslyConnectedWallet, setPreviouslyConnectedWallet] = useState(null)
-  const [tokenDetails, settokenDetails] = useState(null)
-  const [tokenAPIDetails, settokenAPIDetails] = useState(null) // contains the details extracted from API
-  const [apiTokenDetailSet, setApiTokenDetailSet] = useState(false)
-  const [governorDetails, setGovernorDetails] = useState(null)
-  const [governorDataFetched, setGovernorDataFetched] = useState(false)
-  const [clubId, setClubId] = useState(null)
-  const [membersFetched, setMembersFetched] = useState(false)
-  const [members, setMembers] = useState(0)
   const [depositInitiated, setDepositInitiated] = useState(false)
-  const [closingDays, setClosingDays] = useState(0)
-  const [imageFetched, setImageFetched] = useState(false)
-  const [imageUrl, setImageUrl] = useState("")
   const [open, setOpen] = useState(false)
-  const [gnosisAddress, setGnosisAddress] = useState(null)
-  const[FaucetAmount,setFaucetAmount] = useState(5000)
-  const[FaucetAddress,setFaucetAddress]=useState(null)
+  const [FaucetAmount, setFaucetAmount] = useState(5000)
+  const [FaucetAddress, setFaucetAddress] = useState(null)
+  const FACTORY_CONTRACT_ADDRESS = useSelector(state => {
+    return state.gnosis.factoryContractAddress
+  })
+  const USDC_CONTRACT_ADDRESS = useSelector(state => {
+    return state.gnosis.usdcContractAddress
+  })
+  const GNOSIS_TRANSACTION_URL = useSelector(state => {
+    return state.gnosis.transactionUrl
+  })
 
-
-  
- 
-const handleConnectWallet = () => {
+  const handleConnectWallet = () => {
     try {
       const wallet = connectWallet(dispatch)
       wallet.then((response) => {
@@ -256,24 +243,18 @@ const handleConnectWallet = () => {
   }, [])
 
   const getAccount = async () => {
-    if ( localStorage.getItem("isWalletConnected")) {
+    if (localStorage.getItem("isWalletConnected")) {
       setPreviouslyConnectedWallet(localStorage.getItem("wallet"))
     }
-    store.subscribe(async() => {
+    store.subscribe(async () => {
       const { create } = await store.getState()
       if (create.value) {
         setPreviouslyConnectedWallet(create.value)
-
-       
       }
-      else{
+      else {
         setPreviouslyConnectedWallet(null)
-     
       }
-
-    }) 
-    
-
+    })
   }
   const getFaucetAddress = async () => {
     var web3
@@ -283,41 +264,33 @@ const handleConnectWallet = () => {
     else if (window.web3) {
       web3 = new Web3(window.web3.currentProvider)
     }
-    try{
+    try {
       web3.eth.getAccounts()
-      .then((async) => {
-        setFaucetAddress(async[0])
-      }
+        .then((async) => {
+          setFaucetAddress(async[0])
+        }
 
-    );
+        );
+    }
+    catch (err) {
+      setFaucetAddress(null)
+    }
   }
-  catch(err){
-    setFaucetAddress(null)
-  }
-    
-  }
-
- 
- useEffect(() => {
-  handleConnectWallet()
-  
-  getFaucetAddress()
-     }, [])
-console.log("previouslyConnectedWallet", previouslyConnectedWallet)
-
-console.log(FaucetAddress)
 
 
-  const handleFaucet = async (FaucetAddress,FaucetAmount) => {
+  useEffect(() => {
+    handleConnectWallet()
+    getFaucetAddress()
+  }, [])
 
-   const usdcFaucet = new SmartContract(
-    USDCContract,
-    USDC_CONTRACT_ADDRESS,
-    undefined
-   )
-const Tx = await usdcFaucet.mint(FaucetAddress,(FaucetAmount ).toString())
-   console.log(usdcFaucet)
-   console.log("faucet" , usdcFaucet)
+
+  const handleFaucet = async (FaucetAddress, FaucetAmount) => {
+    const usdcFaucet = new SmartContract(
+      USDCContract,
+      USDC_CONTRACT_ADDRESS,
+      undefined, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL
+    )
+    const Tx = await usdcFaucet.mint(FaucetAddress, (FaucetAmount).toString())
   }
 
 
@@ -334,7 +307,6 @@ const Tx = await usdcFaucet.mint(FaucetAddress,(FaucetAmount ).toString())
       setOpen(true)
     }
   }
- 
 
   return (
     <Layout3>
@@ -345,50 +317,34 @@ const Tx = await usdcFaucet.mint(FaucetAddress,(FaucetAmount ).toString())
         paddingTop={15}
         paddingRight={10}
         justifyContent="center"
-              alignItems="center"
+        alignItems="center"
       >
-       
-         
-        </Grid>
-        <Grid container direction="row"
-          justifyContent="center"
-          alignItems="center">
-          <Grid item md={8} mt={8}>
-           
-            <br />
-            <Typography className={classes.wrapTextIcon}>
-             You can now mint USDC tokens to your wallet address.
-            </Typography>
-            <TextField id="outlined-basic"  className={classes.textField} disabled marginTop={10} variant="outlined" value={FaucetAddress}/>
-            <TextField id="outlined-basic" disabled className={classes.textField} label="5000" marginTop={10}  variant="outlined" />
-           
-            <Grid >
-              <Grid item xs={0} mt={2} flex flexDirection="row" justifyContent="space-between">
-               
-                <Button
-                  variant="wideButton"
-                  
-                  onClick={ () => handleFaucet  (FaucetAddress,FaucetAmount)}
-                >
-                  Mint
-                </Button>
-               
-
-                      <Link color={"#FFFFFF "} ml={"100px"} variant="Docs" onClick={() => { window.open(`https://faucets.chain.link/rinkeby`) }}> Get Eth here</Link>
-
-
-
-              </Grid>
+      </Grid>
+      <Grid container direction="row"
+        justifyContent="center"
+        alignItems="center">
+        <Grid item md={8} mt={8}>
+          <br />
+          <Typography className={classes.wrapTextIcon}>
+            You can now mint USDC tokens to your wallet address.
+          </Typography>
+          <TextField id="outlined-basic" className={classes.textField} disabled marginTop={10} variant="outlined" value={FaucetAddress} />
+          <TextField id="outlined-basic" disabled className={classes.textField} label="5000" marginTop={10} variant="outlined" />
+          <Grid >
+            <Grid item xs={0} mt={2} flex flexDirection="row" justifyContent="space-between">
+              <Button
+                variant="wideButton"
+                onClick={() => handleFaucet(FaucetAddress, FaucetAmount)}
+              >
+                Mint
+              </Button>
+              <Link color={"#FFFFFF "} ml={"100px"} variant="Docs" onClick={() => { window.open(`https://faucets.chain.link/rinkeby`) }}> Get Eth here</Link>
             </Grid>
           </Grid>
         </Grid>
-       
-      
-     
-     
-     
+      </Grid>
     </Layout3>
   )
 }
 
-export default Join
+export default Faucet

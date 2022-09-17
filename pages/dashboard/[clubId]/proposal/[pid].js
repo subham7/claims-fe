@@ -35,9 +35,8 @@ import ProgressBar from "../../../../src/components/progressbar"
 import { useDispatch, useSelector } from "react-redux"
 import { addProposalId } from "../../../../src/redux/reducers/create"
 import { SmartContract } from "../../../../src/api/contract"
-import {getProposalDetail, castVote, patchProposalExecuted} from "../../../../src/api/proposal"
-import {USDC_CONTRACT_ADDRESS } from "../../../../src/api/index"
-import {getMembersDetails} from "../../../../src/api/user"
+import { getProposalDetail, castVote, patchProposalExecuted } from "../../../../src/api/proposal"
+import { getMembersDetails } from "../../../../src/api/user"
 import ImplementationContract from "../../../../src/abis/implementationABI.json"
 import USDCContract from "../../../../src/abis/usdcTokenContract.json"
 import ClubFetch from "../../../../src/utils/clubFetch"
@@ -163,40 +162,49 @@ const ProposalDetail = () => {
   const [cardSelected, setCardSelected] = useState(null)
   const walletAddress = useSelector(state => { return state.create.value })
   const daoAddress = useSelector(state => { return state.create.daoAddress })
-  const gnosisAddress = useSelector(state => {return state.gnosis.safeAddress })
+  const gnosisAddress = useSelector(state => { return state.gnosis.safeAddress })
   const [executed, setExecuted] = useState(false)
   const [message, setMessage] = useState("")
   const [failed, setFailed] = useState(false)
   const [openSnackBar, setOpenSnackBar] = useState(false)
-  const tresuryAddress = useSelector(state => { return state.create.tresuryAddress})
+  const tresuryAddress = useSelector(state => { return state.create.tresuryAddress })
   const [loaderOpen, setLoaderOpen] = useState(false)
+  const FACTORY_CONTRACT_ADDRESS = useSelector(state => {
+    return state.gnosis.factoryContractAddress
+  })
+  const USDC_CONTRACT_ADDRESS = useSelector(state => {
+    return state.gnosis.usdcContractAddress
+  })
+  const GNOSIS_TRANSACTION_URL = useSelector(state => {
+    return state.gnosis.transactionUrl
+  })
 
   let voteId = null
   const dispatch = useDispatch()
 
   const fetchData = () => {
-      dispatch(addProposalId(pid))
-      const proposalData = getProposalDetail(pid)
-      proposalData.then((result) => {
-        if (result.status !== 200) {
-          setFetched(false)
-        } else {
-          setProposalData(result.data)
-          setFetched(true)
-        }
-      })
+    dispatch(addProposalId(pid))
+    const proposalData = getProposalDetail(pid)
+    proposalData.then((result) => {
+      if (result.status !== 200) {
+        setFetched(false)
+      } else {
+        setProposalData(result.data)
+        setFetched(true)
+      }
+    })
   }
 
   const fetchMembersData = () => {
-      const membersData = getMembersDetails(clubID)
-      membersData.then((result) => {
-        if (result.status !== 200) {
-          setMembersFetched(false)
-        } else {
-          setMembers(result.data)
-          setMembersFetched(true)
-        }
-      })
+    const membersData = getMembersDetails(clubID)
+    membersData.then((result) => {
+      if (result.status !== 200) {
+        setMembersFetched(false)
+      } else {
+        setMembers(result.data)
+        setMembersFetched(true)
+      }
+    })
   }
 
   const calculateVotePercentage = (voteReceived) => {
@@ -278,11 +286,11 @@ const ProposalDetail = () => {
     setMessage("Only admin of the club is able to execute the proposal!")
   }
 
-  const executeFunction = async() => {
+  const executeFunction = async () => {
     setLoaderOpen(true)
     if (proposalData[0].commands[0].executionId === 0) {
       // for airdrop execution
-      const updateProposal = new SmartContract(ImplementationContract, daoAddress, undefined)
+      const updateProposal = new SmartContract(ImplementationContract, daoAddress, undefined, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL)
       const response = updateProposal.updateProposalAndExecution(
         daoAddress,
         gnosisAddress,
@@ -335,7 +343,7 @@ const ProposalDetail = () => {
 
     if (proposalData[0].commands[0].executionId === 1) {
       // for mintGT execution
-      const updateProposal = new SmartContract(ImplementationContract, daoAddress, undefined)
+      const updateProposal = new SmartContract(ImplementationContract, daoAddress, undefined, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL)
       const response = updateProposal.updateProposalAndExecution(
         daoAddress,
         gnosisAddress,
@@ -390,7 +398,7 @@ const ProposalDetail = () => {
     // if (proposalData[0].commands[0].executionId === 2) {
     //   const web3 = new Web3(window.web3)
     //   // for assigner executor role execution
-    //   const updateProposal = new SmartContract(ImplementationContract, daoAddress, undefined)
+    //   const updateProposal = new SmartContract(ImplementationContract, daoAddress, undefined, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL)
     //   const response = updateProposal.updateProposalAndExecution(
     //     daoAddress,
     //     gnosisAddress,
@@ -442,7 +450,7 @@ const ProposalDetail = () => {
     // }
     if (proposalData[0].commands[0].executionId === 2) {
       // For execution of Governance settings
-      const updateProposal = new SmartContract(ImplementationContract, daoAddress, undefined)
+      const updateProposal = new SmartContract(ImplementationContract, daoAddress, undefined, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL)
       const response = updateProposal.updateProposalAndExecution(
         daoAddress,
         gnosisAddress,
@@ -496,7 +504,7 @@ const ProposalDetail = () => {
 
     if (proposalData[0].commands[0].executionId === 3) {
       // start deposit execution
-      const updateProposal = new SmartContract(ImplementationContract, daoAddress, undefined)
+      const updateProposal = new SmartContract(ImplementationContract, daoAddress, undefined, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL)
       const response = updateProposal.updateProposalAndExecution(
         daoAddress,
         gnosisAddress,
@@ -549,7 +557,7 @@ const ProposalDetail = () => {
 
     if (proposalData[0].commands[0].executionId === 4) {
       // close deposit execution
-      const updateProposal = new SmartContract(ImplementationContract, daoAddress, undefined)
+      const updateProposal = new SmartContract(ImplementationContract, daoAddress, undefined, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL)
       const response = updateProposal.updateProposalAndExecution(
         daoAddress,
         gnosisAddress,
@@ -601,7 +609,7 @@ const ProposalDetail = () => {
     }
     if (proposalData[0].commands[0].executionId === 5) {
       // update raise amount execution
-      const updateProposal = new SmartContract(ImplementationContract, daoAddress, undefined)
+      const updateProposal = new SmartContract(ImplementationContract, daoAddress, undefined, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL)
       const response = updateProposal.updateProposalAndExecution(
         daoAddress,
         gnosisAddress,
@@ -654,7 +662,7 @@ const ProposalDetail = () => {
 
     if (proposalData[0].commands[0].executionId === 6) {
       // send custom token execution
-      const updateProposal = new SmartContract(ImplementationContract, daoAddress, undefined)
+      const updateProposal = new SmartContract(ImplementationContract, daoAddress, undefined, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL)
       const response = updateProposal.updateProposalAndExecution(
         daoAddress,
         gnosisAddress,
@@ -707,7 +715,7 @@ const ProposalDetail = () => {
 
     if (proposalData[0].commands[0].executionId === 7) {
       // send ethereum
-      const updateProposal = new SmartContract(ImplementationContract, daoAddress, undefined)
+      const updateProposal = new SmartContract(ImplementationContract, daoAddress, undefined, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL)
       const response = updateProposal.updateProposalAndExecution(
         daoAddress,
         gnosisAddress,
@@ -818,7 +826,7 @@ const ProposalDetail = () => {
                         proposalData[0].status === "passed" ? classes.passedIllustration :
                           proposalData[0].status === "executed" ? classes.executedIllustration :
                             proposalData[0].status === "failed" ? classes.failedIllustration :
-                          classes.failedIllustration}></div> : null}
+                              classes.failedIllustration}></div> : null}
                   </Grid>
                   <Grid item>
                     <Typography className={classes.listFont}>
@@ -863,33 +871,33 @@ const ProposalDetail = () => {
                               </Grid>
                             </Grid>
                           </Card> :
-                        <Card>
-                          <Typography className={classes.cardFont1}>Cast your vote</Typography>
-                          <Divider sx={{ marginTop: 2, marginBottom: 3 }} />
-                          <Stack spacing={2}>
-                            {proposalData[0].votingOptions.map((data, key) => {
-                              return (
-                                <CardActionArea className={classes.mainCard} key={key} disabled={voted}>
-                                  <Card className={cardSelected == key ? classes.mainCardSelected : classes.mainCard} onClick={e => { setCastVoteOption(data.votingOptionId); setCardSelected(key) }}>
-                                    <Grid container item justifyContent="center" alignItems="center">
-                                      <Typography className={classes.cardFont1} >{data.text} </Typography>
+                          <Card>
+                            <Typography className={classes.cardFont1}>Cast your vote</Typography>
+                            <Divider sx={{ marginTop: 2, marginBottom: 3 }} />
+                            <Stack spacing={2}>
+                              {proposalData[0].votingOptions.map((data, key) => {
+                                return (
+                                  <CardActionArea className={classes.mainCard} key={key} disabled={voted}>
+                                    <Card className={cardSelected == key ? classes.mainCardSelected : classes.mainCard} onClick={e => { setCastVoteOption(data.votingOptionId); setCardSelected(key) }}>
+                                      <Grid container item justifyContent="center" alignItems="center">
+                                        <Typography className={classes.cardFont1} >{data.text} </Typography>
+                                      </Grid>
+                                    </Card>
+                                  </CardActionArea>
+                                )
+                              })}
+                              <CardActionArea className={classes.mainCard} disabled={voted}>
+                                <Card className={voted ? classes.mainCardButtonSuccess : classes.mainCardButton} onClick={!voted ? submitVote : null}>
+                                  <Grid container justifyContent="center" alignItems="center">
+                                    {voted ? (<Grid item><CheckCircleRoundedIcon /></Grid>) : <Grid item></Grid>}
+                                    <Grid item>
+                                      {voted ? (<Typography className={classes.cardFont1} mt={0.5} >Successfully voted</Typography>) : (<Typography className={classes.cardFont1}>Vote now</Typography>)}
                                     </Grid>
-                                  </Card>
-                                </CardActionArea>
-                              )
-                            })}
-                            <CardActionArea className={classes.mainCard} disabled={voted}>
-                              <Card className={voted ? classes.mainCardButtonSuccess : classes.mainCardButton} onClick={!voted ? submitVote : null}>
-                                <Grid container justifyContent="center" alignItems="center">
-                                  {voted ? (<Grid item><CheckCircleRoundedIcon /></Grid>) : <Grid item></Grid>}
-                                  <Grid item>
-                                    {voted ? (<Typography className={classes.cardFont1} mt={0.5} >Successfully voted</Typography>) : (<Typography className={classes.cardFont1}>Vote now</Typography>)}
                                   </Grid>
-                                </Grid>
-                              </Card>
-                            </CardActionArea>
-                          </Stack>
-                        </Card>
+                                </Card>
+                              </CardActionArea>
+                            </Stack>
+                          </Card>
                         :
                         proposalData[0].status === "passed" ?
                           isCurrentUserAdmin() ? (
@@ -954,20 +962,20 @@ const ProposalDetail = () => {
                       proposalData[0].type === "survey" ?
                         proposalData[0].status === "active" ?
                           checkUserVoted(pid) ? (
-                              <Card sx={{ width: "100%" }}>
-                                <Grid container direction="column" justifyContent="center" alignItems="center" mt={10} mb={10}>
-                                  <Grid item mt={0.5}><CheckCircleRoundedIcon className={classes.mainCardButtonSuccess} /></Grid>
-                                  <Grid item mt={0.5}>
-                                    <Typography className={classes.successfulMessageText}>Successfully voted</Typography>
-                                  </Grid>
-                                  <Grid item mt={0.5}>
-                                    <Typography className={classes.listFont2}>
-                                      {/* Voted for */}
-                                    </Typography>
-                                  </Grid>
+                            <Card sx={{ width: "100%" }}>
+                              <Grid container direction="column" justifyContent="center" alignItems="center" mt={10} mb={10}>
+                                <Grid item mt={0.5}><CheckCircleRoundedIcon className={classes.mainCardButtonSuccess} /></Grid>
+                                <Grid item mt={0.5}>
+                                  <Typography className={classes.successfulMessageText}>Successfully voted</Typography>
                                 </Grid>
-                              </Card>
-                            ) :
+                                <Grid item mt={0.5}>
+                                  <Typography className={classes.listFont2}>
+                                    {/* Voted for */}
+                                  </Typography>
+                                </Grid>
+                              </Grid>
+                            </Card>
+                          ) :
                             <Card>
                               <Typography className={classes.cardFont1}>Cast your vote</Typography>
                               <Divider sx={{ marginTop: 2, marginBottom: 3 }} />
@@ -1094,26 +1102,26 @@ const ProposalDetail = () => {
                 </Grid>
                 {fetched ?
                   proposalData[0].votingOptions.length > 0 ?
-                  proposalData[0].votingOptions.map((vote, key) => {
-                    return (
-                      <div key={key}>
-                        <Grid container>
-                          <Grid item>
-                            <Typography className={classes.listFont2}>
-                              {vote.text}
-                            </Typography>
+                    proposalData[0].votingOptions.map((vote, key) => {
+                      return (
+                        <div key={key}>
+                          <Grid container>
+                            <Grid item>
+                              <Typography className={classes.listFont2}>
+                                {vote.text}
+                              </Typography>
+                            </Grid>
+                            <Grid item xs sx={{ display: "flex", justifyContent: "flex-end" }}>
+                              <Typography className={classes.listFont2Colourless}>
+                                {vote.count > 0 ? calculateVotePercentage(vote.count) : 0}%
+                              </Typography>
+                            </Grid>
                           </Grid>
-                          <Grid item xs sx={{ display: "flex", justifyContent: "flex-end" }}>
-                            <Typography className={classes.listFont2Colourless}>
-                              {vote.count > 0 ? calculateVotePercentage(vote.count) : 0}%
-                            </Typography>
-                          </Grid>
-                        </Grid>
-                        <ProgressBar value={vote.count > 0 ? calculateVotePercentage(vote.count) : 0} />
-                      </div>
-                    )
-                  })
-                  : (<Typography className={classes.listFont2Colourless}>No previous results available</Typography>) :
+                          <ProgressBar value={vote.count > 0 ? calculateVotePercentage(vote.count) : 0} />
+                        </div>
+                      )
+                    })
+                    : (<Typography className={classes.listFont2Colourless}>No previous results available</Typography>) :
                   null
                 }
               </Card>
@@ -1158,12 +1166,12 @@ const ProposalDetail = () => {
                         )
                       }
                     })
-                  : (<Typography className={classes.listFont2Colourless}>No previous votes available</Typography>)
+                    : (<Typography className={classes.listFont2Colourless}>No previous votes available</Typography>)
                   : null}
                 {fetched && proposalData[0].length >= 0 ? (
                   <Grid container>
                     <Grid item md={12}>
-                      <Button sx={{ width: "100%"}} variant="transparentWhite"  onClick={() => handleShowMore()}>More</Button>
+                      <Button sx={{ width: "100%" }} variant="transparentWhite" onClick={() => handleShowMore()}>More</Button>
                     </Grid>
                   </Grid>
                 ) : null}
@@ -1182,8 +1190,8 @@ const ProposalDetail = () => {
           }
         </Snackbar>
         <Backdrop
-            sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-            open={loaderOpen}
+          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+          open={loaderOpen}
         >
           <CircularProgress color="inherit" />
         </Backdrop>

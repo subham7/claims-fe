@@ -5,23 +5,58 @@ import { useDispatch, useSelector } from "react-redux"
 import store from "../../src/redux/store"
 import { CircularProgress, Backdrop, Button, Typography } from "@mui/material"
 import { checkNetwork } from "./wallet"
-import {loginToken, refreshToken} from "../api/auth";
+import { loginToken, refreshToken } from "../api/auth"
+import { fetchConfig } from '../api/config'
+import { updateDynamicAddress } from '../api'
+import Web3 from "web3"
 
 
 export default function ProtectRoute(Component) {
-    const AuthenticatedComponent = () => {
-      const router = useRouter()
-      const dispatch = useDispatch()
-      const [walletAddress, setWalletAddress] = useState(null)
-      const [walletLoaded, setWalletLoaded] = useState(false)
-      const wallet = useSelector(state => {return state.create.value})
-      const [redirect, setRedirect] = useState(false)
+  const AuthenticatedComponent = () => {
+    const router = useRouter()
+    const dispatch = useDispatch()
+    const [walletAddress, setWalletAddress] = useState(null)
+    const [walletLoaded, setWalletLoaded] = useState(false)
+    const wallet = useSelector(state => { return state.create.value })
+    const [redirect, setRedirect] = useState(false)
+    const [networks, setNetworks] = useState([]);
+    const [networksFetched, setNetworksFetched] = useState(false);
 
-      const handleRedirectClick = () => {
-        router.push('/')
-      }
+    const handleRedirectClick = () => {
+      router.push('/')
+    }
+
+    const fetchNetworks = () => {
+      const networkData = fetchConfig()
+      networkData.then((result) => {
+        if (result.status != 200) {
+          setNetworksFetched(false)
+        } else {
+          setNetworks(result.data)
+          setNetworksFetched(true)
+        }
+      })
+    }
 
     useEffect(() => {
+      fetchNetworks()
+      if (networksFetched) {
+        const networksAvailable = []
+        networks.forEach(network => {
+          networksAvailable.push(network.networkId)
+        });
+        const web3 = new Web3(Web3.givenProvider)
+        web3.eth.net.getId()
+          .then((networkId) => {
+            if (!networksAvailable.includes(networkId)) {
+              setOpen(true)
+            }
+            updateDynamicAddress(networkId, dispatch)
+          })
+          .catch((err) => {
+            console.log(err)
+          });
+      }
       // const switched = checkNetwork()
       const handleMount = async () => {
         if (wallet !== null) {
@@ -57,22 +92,22 @@ export default function ProtectRoute(Component) {
             }
           })
         }
-        if (walletAddress === null && !walletLoaded ){
+        if (walletAddress === null && !walletLoaded) {
           setRedirect(true)
         }
         if (redirect) {
           router.push('/')
           setRedirect(false)
-        } 
+        }
       }
       handleMount();
     }, [])
 
 
     return walletLoaded ? <Component wallet={walletAddress} /> : (<Backdrop sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }} open={redirect}><Button onClick={handleRedirectClick}>Home</Button></Backdrop>);
-    }
-    return AuthenticatedComponent;
   }
+  return AuthenticatedComponent;
+}
 
 export function getJwtToken() {
   return sessionStorage.getItem("jwt")

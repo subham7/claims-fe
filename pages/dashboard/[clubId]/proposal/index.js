@@ -40,10 +40,9 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
 import Web3 from "web3";
 import { useSelector } from "react-redux"
 import { useRouter, withRouter } from "next/router"
-import { SmartContract } from "../../../../src/api/contract"
 import USDCContract from "../../../../src/abis/usdcTokenContract.json"
 import ClubFetch from "../../../../src/utils/clubFetch"
-import { calculateDays, convertToWei, converttoWeiUSDC } from "../../../../src/utils/globalFunctions";
+import { calculateDays, convertToWei, convertToWeiUSDC } from "../../../../src/utils/globalFunctions";
 
 
 const useStyles = makeStyles({
@@ -242,27 +241,27 @@ const Proposal = () => {
   const [selectedListItem, setSelectedListItem] = useState('')
   const [enableSubmitButton, setEnableSubmitButton] = useState(false)
   const [count, setCount] = useState(0)
-  const defaultOptions = [
-    {
-      "text": "Yes"
-    },
-    {
-      "text": "No"
-    },
-    {
-      "text": "Abstain"
-    }
-  ]
+  const defaultOptions = []
+  const FACTORY_CONTRACT_ADDRESS = useSelector(state => {
+    return state.gnosis.factoryContractAddress
+  })
+  const USDC_CONTRACT_ADDRESS = useSelector(state => {
+    return state.gnosis.usdcContractAddress
+  })
+  const GNOSIS_TRANSACTION_URL = useSelector(state => {
+    return state.gnosis.transactionUrl
+  })
 
 
   const fetchTokens = () => {
-    if (tresuryAddress) {
+    if (clubID) {
       const tokenData = getAssets(clubId)
       tokenData.then((result) => {
         if (result.status != 200) {
           setTokenFetched(false)
         } else {
           setTokenData(result.data.tokens)
+          console.log(result.data.tokens.slice(1))
           setTokenFetched(true)
         }
       })
@@ -358,7 +357,7 @@ const Proposal = () => {
             {
               "executionId": 0,
               "airDropToken": airDropToken,
-              "airDropAmount": await converttoWeiUSDC(airDropAmount),
+              "airDropAmount": await convertToWeiUSDC(airDropAmount, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL),
               "airDropCarryFee": airDropCarryFee,
             }
           ],
@@ -392,7 +391,7 @@ const Proposal = () => {
             {
               "executionId": 1,
               "mintGTAddresses": mintGtAddress,
-              "mintGTAmounts": await converttoWeiUSDC(mintGTAmounts),
+              "mintGTAmounts": await convertToWeiUSDC(mintGTAmounts, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL),
             }
           ],
           "type": "action"
@@ -498,9 +497,9 @@ const Proposal = () => {
             {
               "executionId": 3,
               "day": dayCalculated,
-              "minDeposits": await converttoWeiUSDC(minDeposits),
-              "maxDeposits": await converttoWeiUSDC(maxDeposits),
-              "totalDeposits": await converttoWeiUSDC(totalDeposits),
+              "minDeposits": await convertToWeiUSDC(minDeposits, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL),
+              "maxDeposits": await convertToWeiUSDC(maxDeposits, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL),
+              "totalDeposits": await convertToWeiUSDC(totalDeposits, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL),
             }
           ],
           "type": "action"
@@ -567,7 +566,7 @@ const Proposal = () => {
           "commands": [
             {
               "executionId": 5,
-              "totalDeposits": await converttoWeiUSDC(totalDeposits),
+              "totalDeposits": await convertToWeiUSDC(totalDeposits, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL),
             }
           ],
           "type": "action"
@@ -601,7 +600,7 @@ const Proposal = () => {
             {
               "executionId": 6,
               "customToken": customToken,
-              "customTokenAmounts": [await converttoWeiUSDC(customTokenAmounts)],
+              "customTokenAmounts": [await convertToWeiUSDC(customTokenAmounts, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL)],
               "customTokenAddresses": [customTokenAddresses]
             }
           ],
@@ -621,7 +620,7 @@ const Proposal = () => {
           }
         })
       }
-      
+
       if (name === commandTypeList[7].commandText) {
         // For execution send ethereum
         const payload = {
@@ -635,7 +634,7 @@ const Proposal = () => {
             {
               "executionId": 7,
               "sendEthAddresses": sendEthAddresses,
-              "sendEthAmounts": await converttoWeiUSDC(sendEthAmounts),
+              "sendEthAmounts": await convertToWeiUSDC(sendEthAmounts, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL),
             }
           ],
           "type": "action"
@@ -668,7 +667,7 @@ const Proposal = () => {
 
   useEffect(() => {
     fetchTokens()
-  }, [tresuryAddress])
+  }, [clubID])
 
   const handleTypeChange = (event) => {
     const { target: { value } } = event
@@ -995,9 +994,9 @@ const Proposal = () => {
             {type === proposalType[0].type ?
               (
                 <>
-                <Grid container item ml={3} mt={2}>
-                  <Typography variant="proposalBody">(Minimum 2 options needed*)</Typography>
-                </Grid>
+                  <Grid container item ml={3} mt={2}>
+                    <Typography variant="proposalBody">(Minimum 2 options needed*)</Typography>
+                  </Grid>
                   {!enableSubmitButton ? setEnableSubmitButton(true) : null}
                   <Grid item ml={3} mr={2}>
                     <Card className={classes.proposalCard}>
@@ -1237,6 +1236,7 @@ const Proposal = () => {
                                                     style={{ borderRadius: "10px", background: "#111D38 0% 0% no-repeat padding-box", width: "90%" }}
                                                   >
                                                     {tokenData.slice(1).map((token) => (
+
                                                       <MenuItem
                                                         key={token.name}
                                                         value={token.tokenAddress}>

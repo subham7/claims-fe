@@ -11,6 +11,9 @@ import { useRouter } from "next/router";
 import { networkType } from '../data/network';
 import { switchNetwork } from "../utils/wallet";
 import { fetchConfig, fetchConfigById } from '../api/config';
+import { updateDynamicAddress } from '../api';
+import Web3 from 'web3';
+import { RINKEYBY_RPC_URL, GOERLI_RPC_URL } from '../api';
 
 const StyledMenu = styled((props) => (
   <Menu
@@ -96,8 +99,30 @@ export default function NetworkSwitcher() {
     })
   }
 
+  const fetchDynamicAddresses = () => {
+  if (networksFetched) {
+    const networksAvailable = []
+    networks.forEach(network => {
+      networksAvailable.push(network.networkId)
+    });
+    const web3 = new Web3(Web3.givenProvider)
+    web3.eth.net.getId()
+      .then((networkId) => {
+        if (!networksAvailable.includes(networkId)) {
+          setOpen(true)
+        } 
+        updateDynamicAddress(networkId, dispatch)
+      })
+      .catch((err) => {
+        console.log(err)
+      });
+  }
+  }
+
   useEffect(() => {
     fetchNetworks()
+    fetchDynamicAddresses()
+
   }, [networksFetched])
 
   const handleClick = (event) => {
@@ -111,9 +136,17 @@ export default function NetworkSwitcher() {
   const handleNetworkChange = async (data) => {
     fetchNetworksById(data.networkId)
     if (networkDetailsFetched) {
-      const switched = await switchNetwork(networkDetails[0].networkHex, networkDetails[0].rpcUrl)
+      let rpcURL = null
+      switch(data.networkId) {
+        case 4:
+          rpcURL = RINKEYBY_RPC_URL
+        case 5:
+          rpcURL = GOERLI_RPC_URL
+      }
+      const switched = await switchNetwork(networkDetails[0].networkHex, rpcURL)
       if (switched) {
         setActiveNetwork(data.name)
+        fetchDynamicAddresses()
         setAnchorEl(null)
       }
     }

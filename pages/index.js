@@ -23,6 +23,7 @@ import store from "../src/redux/store"
 import { addClubName, addDaoAddress, addClubID, addClubRoute } from "../src/redux/reducers/create"
 import {checkNetwork} from "../src/utils/wallet"
 import Web3 from "web3";
+
 import {
   getExpiryTime,
   getJwtToken,
@@ -114,7 +115,7 @@ export default function App() {
           if (!networksAvailable.includes(networkId)) {
             setOpen(true)
           } 
-          updateDynamicAddress(networkId)
+          updateDynamicAddress(networkId, dispatch)
         })
         .catch((err) => {
           console.log(err)

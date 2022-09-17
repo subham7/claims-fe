@@ -36,7 +36,6 @@ import { useDispatch, useSelector } from "react-redux"
 import { addProposalId } from "../../../../../src/redux/reducers/create"
 import { SmartContract } from "../../../../../src/api/contract"
 import {getProposalDetail, castVote, patchProposalExecuted} from "../../../../../src/api/proposal"
-import {USDC_CONTRACT_ADDRESS } from "../../../../../src/api/index"
 import {getMembersDetails} from "../../../../../src/api/user"
 import ImplementationContract from "../../../../../src/abis/implementationABI.json"
 import USDCContract from "../../../../../src/abis/usdcTokenContract.json"
@@ -170,6 +169,15 @@ const ProposalDetail = () => {
   const [openSnackBar, setOpenSnackBar] = useState(false)
   const tresuryAddress = useSelector(state => { return state.create.tresuryAddress})
   const [loaderOpen, setLoaderOpen] = useState(false)
+  const FACTORY_CONTRACT_ADDRESS = useSelector(state => {
+    return state.gnosis.factoryContractAddress
+  })
+  const USDC_CONTRACT_ADDRESS = useSelector(state => {
+    return state.gnosis.usdcContractAddress
+  })
+  const GNOSIS_TRANSACTION_URL = useSelector(state => {
+    return state.gnosis.transactionUrl
+  })
 
   let voteId = null
   const dispatch = useDispatch()
@@ -282,7 +290,7 @@ const ProposalDetail = () => {
     setLoaderOpen(true)
     if (proposalData[0].commands[0].executionId === 0) {
       // for airdrop execution
-      const updateProposal = new SmartContract(ImplementationContract, daoAddress, undefined)
+      const updateProposal = new SmartContract(ImplementationContract, daoAddress, undefined, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL)
       const response = updateProposal.updateProposalAndExecution(
         daoAddress,
         gnosisAddress,
@@ -335,7 +343,7 @@ const ProposalDetail = () => {
 
     if (proposalData[0].commands[0].executionId === 1) {
       // for mintGT execution
-      const updateProposal = new SmartContract(ImplementationContract, daoAddress, undefined)
+      const updateProposal = new SmartContract(ImplementationContract, daoAddress, undefined, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL)
       const response = updateProposal.updateProposalAndExecution(
         daoAddress,
         gnosisAddress,
@@ -390,7 +398,7 @@ const ProposalDetail = () => {
     // if (proposalData[0].commands[0].executionId === 2) {
     //   const web3 = new Web3(window.web3)
     //   // for assigner executor role execution
-    //   const updateProposal = new SmartContract(ImplementationContract, daoAddress, undefined)
+    //   const updateProposal = new SmartContract(ImplementationContract, daoAddress, undefined, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL)
     //   const response = updateProposal.updateProposalAndExecution(
     //     daoAddress,
     //     gnosisAddress,
@@ -442,7 +450,7 @@ const ProposalDetail = () => {
     // }
     if (proposalData[0].commands[0].executionId === 2) {
       // For execution of Governance settings
-      const updateProposal = new SmartContract(ImplementationContract, daoAddress, undefined)
+      const updateProposal = new SmartContract(ImplementationContract, daoAddress, undefined, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL)
       const response = updateProposal.updateProposalAndExecution(
         daoAddress,
         gnosisAddress,
@@ -496,7 +504,7 @@ const ProposalDetail = () => {
 
     if (proposalData[0].commands[0].executionId === 3) {
       // start deposit execution
-      const updateProposal = new SmartContract(ImplementationContract, daoAddress, undefined)
+      const updateProposal = new SmartContract(ImplementationContract, daoAddress, undefined, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL)
       const response = updateProposal.updateProposalAndExecution(
         daoAddress,
         gnosisAddress,
@@ -549,7 +557,7 @@ const ProposalDetail = () => {
 
     if (proposalData[0].commands[0].executionId === 4) {
       // close deposit execution
-      const updateProposal = new SmartContract(ImplementationContract, daoAddress, undefined)
+      const updateProposal = new SmartContract(ImplementationContract, daoAddress, undefined, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL)
       const response = updateProposal.updateProposalAndExecution(
         daoAddress,
         gnosisAddress,
@@ -601,7 +609,7 @@ const ProposalDetail = () => {
     }
     if (proposalData[0].commands[0].executionId === 5) {
       // update raise amount execution
-      const updateProposal = new SmartContract(ImplementationContract, daoAddress, undefined)
+      const updateProposal = new SmartContract(ImplementationContract, daoAddress, undefined, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL)
       const response = updateProposal.updateProposalAndExecution(
         daoAddress,
         gnosisAddress,
@@ -654,7 +662,7 @@ const ProposalDetail = () => {
 
     if (proposalData[0].commands[0].executionId === 6) {
       // send custom token execution
-      const updateProposal = new SmartContract(ImplementationContract, daoAddress, undefined)
+      const updateProposal = new SmartContract(ImplementationContract, daoAddress, undefined, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL)
       const response = updateProposal.updateProposalAndExecution(
         daoAddress,
         gnosisAddress,
@@ -707,7 +715,7 @@ const ProposalDetail = () => {
 
     if (proposalData[0].commands[0].executionId === 7) {
       // send ethereum
-      const updateProposal = new SmartContract(ImplementationContract, daoAddress, undefined)
+      const updateProposal = new SmartContract(ImplementationContract, daoAddress, undefined, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL)
       const response = updateProposal.updateProposalAndExecution(
         daoAddress,
         gnosisAddress,

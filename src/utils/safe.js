@@ -6,7 +6,6 @@ import { addDaoAddress, addClubID } from "../redux/reducers/create"
 import store from "../redux/store"
 import { SmartContract } from "../api/contract"
 import {createClub, fetchClub} from "../api/club"
-import { FACTORY_CONTRACT_ADDRESS } from "../api"
 import FactoryContract from "../abis/factoryContract.json"
 import Router from "next/router"
 import { createUser } from "../api/user"
@@ -46,7 +45,10 @@ export async function initiateConnection(
   closeDate,
   feeUSDC,
   quoram,
-  formThreshold
+  formThreshold,
+  factoryContractAddress,
+  usdcContractAddress,
+  gnosisTransactionUrl
 ) {
   const web3 = new Web3(Web3.givenProvider)
   const safeOwner = await web3.eth.getAccounts()
@@ -65,8 +67,8 @@ export async function initiateConnection(
 
   const smartContract = new SmartContract(
     FactoryContract,
-    FACTORY_CONTRACT_ADDRESS,
-    undefined
+    factoryContractAddress,
+    undefined, usdcContractAddress, gnosisTransactionUrl
   )
   await gnosisSafePromise(owners, threshold, dispatch)
     .then((treasuryAddress) => {

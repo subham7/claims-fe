@@ -26,10 +26,6 @@ import ProgressBar from "../../src/components/progressbar"
 import { connectWallet, setUserChain, onboard } from "../../src/utils/wallet"
 import { useDispatch, useSelector } from "react-redux"
 import { useRouter } from "next/router"
-import {
-  USDC_CONTRACT_ADDRESS,
-  FACTORY_CONTRACT_ADDRESS,
-} from "../../src/api"
 import { fetchClub, fetchClubbyDaoAddress } from "../../src/api/club"
 import { createUser } from "../../src/api/user"
 import { getMembersDetails, patchUserBalance, checkUserByClub } from "../../src/api/user"
@@ -39,7 +35,7 @@ import USDCContract from "../../src/abis/usdcTokenContract.json"
 import ImplementationContract from "../../src/abis/implementationABI.json"
 import { SmartContract } from "../../src/api/contract"
 import { checkNetwork } from "../../src/utils/wallet"
-import { calculateTreasuryTargetShare, convertFromWeiGovernance, converttoWeiUSDC, convertFromWeiUSDC } from "../../src/utils/globalFunctions";
+import { calculateTreasuryTargetShare, convertFromWeiGovernance, convertToWeiUSDC, convertFromWeiUSDC, convertAmountToWei } from "../../src/utils/globalFunctions";
 
 const useStyles = makeStyles({
   valuesStyle: {
@@ -226,6 +222,15 @@ const Join = (props) => {
   const [imageUrl, setImageUrl] = useState("")
   const [open, setOpen] = useState(false)
   const [gnosisAddress, setGnosisAddress] = useState(null)
+  const FACTORY_CONTRACT_ADDRESS = useSelector(state => {
+    return state.gnosis.factoryContractAddress
+  })
+  const USDC_CONTRACT_ADDRESS = useSelector(state => {
+    return state.gnosis.usdcContractAddress
+  })
+  const GNOSIS_TRANSACTION_URL = useSelector(state => {
+    return state.gnosis.transactionUrl
+  })
 
   const checkConnection = async () => {
     if (window.ethereum) {
@@ -259,6 +264,7 @@ const Join = (props) => {
   const tokenAPIDetailsRetrieval = async () => {
     let response = await fetchClubbyDaoAddress(pid)
     if (response.data.length > 0) {
+      console.log("Token API details", response)
       settokenAPIDetails(response.data)
       setClubId(response.data[0].clubId)
       setGnosisAddress(response.data[0].gnosisAddress)
@@ -269,16 +275,17 @@ const Join = (props) => {
   }
 
   const tokenDetailsRetrieval = async () => {
-    if (tokenAPIDetails && tokenAPIDetails.length > 0) {
+    if (tokenAPIDetails && tokenAPIDetails.length > 0 && USDC_CONTRACT_ADDRESS && GNOSIS_TRANSACTION_URL) {
       const tokenDetailContract = new SmartContract(
         ImplementationContract,
         tokenAPIDetails[0].daoAddress,
-        undefined
+        undefined, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL
       )
       await tokenDetailContract.tokenDetails().then(
         async(result) => {
+          console.log("Token details", result)
           settokenDetails(result)
-          setQuoram(await convertFromWeiGovernance(daoAddress, result[2]))
+          setQuoram(await convertFromWeiGovernance(daoAddress, result[2], USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL))
           setDataFetched(true)
         },
         (error) => {
@@ -304,19 +311,19 @@ const Join = (props) => {
   }
 
   const contractDetailsRetrieval = async () => {
-    if (daoAddress && !governorDataFetched && !governorDetails && userDetails) {
+    if (daoAddress && !governorDataFetched && !governorDetails && userDetails &&  USDC_CONTRACT_ADDRESS && GNOSIS_TRANSACTION_URL) {
       const governorDetailContract = new SmartContract(
         ImplementationContract,
         daoAddress,
-        undefined
+        undefined, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL
       )
       await governorDetailContract.getGovernorDetails().then(
         async (result) => {
           // console.log(result)
           setGovernorDetails(result)
-          setMinDeposit(await convertFromWeiUSDC(result[1]))
-          setMaxDeposit(await convertFromWeiUSDC(result[2]))
-          setTotalDeposit(await convertFromWeiUSDC(result[4]))
+          setMinDeposit(await convertFromWeiUSDC(result[1], USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL))
+          setMaxDeposit(await convertFromWeiUSDC(result[2], USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL))
+          setTotalDeposit(await convertFromWeiUSDC(result[4], USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL))
 
           setClosingDays(
             Math.round(
@@ -338,7 +345,7 @@ const Join = (props) => {
       const usdc_contract = new SmartContract(
         ImplementationContract,
         USDC_CONTRACT_ADDRESS,
-        undefined
+        undefined, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL
       )
       await usdc_contract.balanceOf().then(
         (result) => {
@@ -385,13 +392,14 @@ const Join = (props) => {
     if (pid) {
       tokenAPIDetailsRetrieval()
     }
-  }, [pid])
+  }, [pid,  USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL])
 
   useEffect(() => {
-    if (tokenAPIDetails) {
+    console.log( USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL)
+    if (tokenAPIDetails && USDC_CONTRACT_ADDRESS && GNOSIS_TRANSACTION_URL) {
       tokenDetailsRetrieval()
     }
-  }, [tokenAPIDetails])
+  }, [tokenAPIDetails, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL])
 
   useEffect(() => {
     if (clubId) {
@@ -407,25 +415,25 @@ const Join = (props) => {
       contractDetailsRetrieval()
       fetchMembers()
     }
-  }, [previouslyConnectedWallet, walletConnected, clubId])
+  }, [previouslyConnectedWallet, walletConnected, clubId,  USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL, FACTORY_CONTRACT_ADDRESS])
 
   const handleDeposit = async () => {
     setDepositInitiated(true)
     const checkUserExists = checkUserByClub(userDetails, clubId)
-    const depositAmountConverted = await converttoWeiUSDC(depositAmount)
+    const depositAmountConverted = await convertToWeiUSDC(depositAmount, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL)
     checkUserExists.then((result) => {
       if (result.data === false) {
         // if the user doesn't exist
         const usdc_contract = new SmartContract(
           ImplementationContract,
           USDC_CONTRACT_ADDRESS,
-          undefined
+          undefined, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL
         )
         // pass governor contract
         const dao_contract = new SmartContract(
           ImplementationContract,
           daoAddress,
-          undefined
+          undefined, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL
         )
         // pass governor contract
         const usdc_response = usdc_contract.approveDeposit(
@@ -476,13 +484,13 @@ const Join = (props) => {
         const usdc_contract = new SmartContract(
           ImplementationContract,
           USDC_CONTRACT_ADDRESS,
-          undefined
+          undefined, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL
         )
         // pass governor contract
         const dao_contract = new SmartContract(
           ImplementationContract,
           daoAddress,
-          undefined
+          undefined, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL
         )
         // pass governor contract
         const usdc_response = usdc_contract.approveDeposit(
@@ -534,7 +542,7 @@ const Join = (props) => {
   const handleMaxButtonClick = async(event) => {
     // value should be the maximum deposit value
     if (governorDataFetched) {
-      setDepositAmount(await convertFromWeiUSDC(governorDetails[2]))
+      setDepositAmount(await convertFromWeiUSDC(governorDetails[2], USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL))
     }
   }
 
@@ -767,7 +775,7 @@ const Join = (props) => {
                 <ProgressBar
                   value={
                     governorDataFetched
-                      ? calculateTreasuryTargetShare(tokenDetails[2], governorDetails[4])
+                      ? calculateTreasuryTargetShare(tokenDetails[2], convertAmountToWei(governorDetails[4]))
                       : 0
                   }
                 />

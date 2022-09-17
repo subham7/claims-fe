@@ -3,12 +3,12 @@ import Onboard from "@web3-onboard/core"
 import injectedModule from "@web3-onboard/injected-wallets"
 import { useDispatch } from "react-redux"
 import { addWallet, removeWallet } from "../redux/reducers/create"
-import {RPC_URL} from "../api/index"
+import {RINKEYBY_RPC_URL} from "../api/index"
 
 const INFURA_ID = "sdf"
 const ETH_ROPSTEN_RPC = `https://ropsten.infura.io/v3/946205020d6c477192b1178b3c5f8590`
 const ETH_MAINNET_RPC = `https://mainnet.infura.io/v3/${INFURA_ID}`
-const ETH_RINKEBY_RPC = RPC_URL
+const ETH_RINKEBY_RPC = RINKEYBY_RPC_URL
 const MATIC_MAINNET_RPC = 'https://matic-mainnet.chainstacklabs.com'
 
 const injected = injectedModule()
