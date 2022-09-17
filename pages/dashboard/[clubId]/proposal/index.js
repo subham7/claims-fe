@@ -241,7 +241,17 @@ const Proposal = () => {
   const [selectedListItem, setSelectedListItem] = useState('')
   const [enableSubmitButton, setEnableSubmitButton] = useState(false)
   const [count, setCount] = useState(0)
-  const defaultOptions = []
+  const defaultOptions = [
+    {
+      "text": "Yes"
+    },
+    {
+      "text": "No"
+    },
+    {
+      "text": "Abstain"
+    }
+  ]
   const FACTORY_CONTRACT_ADDRESS = useSelector(state => {
     return state.gnosis.factoryContractAddress
   })
@@ -621,38 +631,38 @@ const Proposal = () => {
         })
       }
 
-      if (name === commandTypeList[7].commandText) {
-        // For execution send ethereum
-        const payload = {
-          "name": title,
-          "description": description,
-          "createdBy": walletAddress,
-          "clubId": clubID,
-          "votingDuration": new Date(duration).toISOString(),
-          "votingOptions": defaultOptions,
-          "commands": [
-            {
-              "executionId": 7,
-              "sendEthAddresses": sendEthAddresses,
-              "sendEthAmounts": await convertToWeiUSDC(sendEthAmounts, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL),
-            }
-          ],
-          "type": "action"
-        }
-        const createRequest = createProposal(payload)
-        createRequest.then((result) => {
-          if (result.status !== 201) {
-            setOpenSnackBar(true)
-            setFailed(true)
-          } else {
-            // console.log(result.data)
-            fetchData()
-            setOpenSnackBar(true)
-            setFailed(false)
-            setOpen(false)
-          }
-        })
-      }
+      // if (name === commandTypeList[7].commandText) {
+      //   // For execution send ethereum
+      //   const payload = {
+      //     "name": title,
+      //     "description": description,
+      //     "createdBy": walletAddress,
+      //     "clubId": clubID,
+      //     "votingDuration": new Date(duration).toISOString(),
+      //     "votingOptions": defaultOptions,
+      //     "commands": [
+      //       {
+      //         "executionId": 7,
+      //         "sendEthAddresses": sendEthAddresses,
+      //         "sendEthAmounts": await convertToWeiUSDC(sendEthAmounts, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL),
+      //       }
+      //     ],
+      //     "type": "action"
+      //   }
+      //   const createRequest = createProposal(payload)
+      //   createRequest.then((result) => {
+      //     if (result.status !== 201) {
+      //       setOpenSnackBar(true)
+      //       setFailed(true)
+      //     } else {
+      //       // console.log(result.data)
+      //       fetchData()
+      //       setOpenSnackBar(true)
+      //       setFailed(false)
+      //       setOpen(false)
+      //     }
+      //   })
+      // }
 
     }
   }
@@ -1218,7 +1228,7 @@ const Proposal = () => {
                                               // send custom token execution
                                               <Grid container ml={1} mt={1} mb={2} spacing={2} direction="column">
                                                 <Grid item>
-                                                  <Typography className={classes.cardFont}>Custom token</Typography>
+                                                  <Typography className={classes.cardFont}>Send token to an address</Typography>
                                                 </Grid>
                                                 <Grid item>
                                                   <Select
@@ -1260,27 +1270,27 @@ const Proposal = () => {
                                                     placeholder="0" onChange={(e) => setCustomTokenAmounts(e.target.value)} />
                                                 </Grid>
                                               </Grid>
-                                            ) :
-
-                                              name === commandTypeList[7].commandText ? (
-                                                // send eth execution
-                                                <Grid container ml={1} mt={1} mb={2} spacing={2} direction="column">
-                                                  <Grid item>
-                                                    <Typography className={classes.cardFont}>Ethereum address</Typography>
-                                                  </Grid>
-                                                  <Grid item>
-                                                    <TextField sx={{ width: "90%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
-                                                      placeholder="0" onChange={(e) => setSendEthAddresses(e.target.value)} />
-                                                  </Grid>
-                                                  <Grid item>
-                                                    <Typography className={classes.cardFont}>Ethereum amount</Typography>
-                                                  </Grid>
-                                                  <Grid item>
-                                                    <TextField sx={{ width: "90%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
-                                                      placeholder="0" onChange={(e) => setSendEthAmounts(parseFloat(e.target.value))} />
-                                                  </Grid>
-                                                </Grid>
-                                              )
+                                            ) 
+                                            // :
+                                              // name === commandTypeList[7].commandText ? (
+                                              //   // send eth execution
+                                              //   <Grid container ml={1} mt={1} mb={2} spacing={2} direction="column">
+                                              //     <Grid item>
+                                              //       <Typography className={classes.cardFont}>Ethereum address</Typography>
+                                              //     </Grid>
+                                              //     <Grid item>
+                                              //       <TextField sx={{ width: "90%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
+                                              //         placeholder="0" onChange={(e) => setSendEthAddresses(e.target.value)} />
+                                              //     </Grid>
+                                              //     <Grid item>
+                                              //       <Typography className={classes.cardFont}>Ethereum amount</Typography>
+                                              //     </Grid>
+                                              //     <Grid item>
+                                              //       <TextField sx={{ width: "90%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
+                                              //         placeholder="0" onChange={(e) => setSendEthAmounts(parseFloat(e.target.value))} />
+                                              //     </Grid>
+                                              //   </Grid>
+                                              // )
                                                 : null
                               }
                             </div>
