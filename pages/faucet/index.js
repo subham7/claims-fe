@@ -5,37 +5,19 @@ import USDCContract from "../../src/abis/usdcTokenContract.json"
 import {
   Grid,
   Typography,
-  Avatar,
-  Card,
   Button,
-  Stack,
-  Divider,
-  Input,
   Snackbar,
   Alert,
-  Skeleton,
-  Chip,
   Backdrop,
   CircularProgress,
   TextField,
-  DialogContent,
-  Dialog,
-  CardMedia,
-  Link,
 } from "@mui/material"
 import Layout3 from "../../src/components/layouts/layout3"
-import ProgressBar from "../../src/components/progressbar"
 import { connectWallet, setUserChain, onboard } from "../../src/utils/wallet"
 import { useDispatch, useSelector } from "react-redux"
-import { useRouter } from "next/router"
-import { fetchClub, fetchClubbyDaoAddress } from "../../src/api/club"
-import { createUser } from "../../src/api/user"
-import { getMembersDetails, patchUserBalance, checkUserByClub } from "../../src/api/user"
 import store from "../../src/redux/store"
 import Web3 from "web3"
-import ImplementationContract from "../../src/abis/implementationABI.json"
 import { SmartContract } from "../../src/api/contract"
-import { checkNetwork } from "../../src/utils/wallet"
 import { calculateTreasuryTargetShare, convertAmountToWei, convertToWei } from "../../src/utils/globalFunctions";
 
 const useStyles = makeStyles({
@@ -197,12 +179,15 @@ const useStyles = makeStyles({
 const Faucet = (props) => {
   const dispatch = useDispatch()
   const classes = useStyles()
+  const [openSnackBar, setOpenSnackBar] = useState(false)
+  const [failed, setFailed] = useState(false)
   const [walletConnected, setWalletConnected] = useState(false)
   const [previouslyConnectedWallet, setPreviouslyConnectedWallet] = useState(null)
   const [depositInitiated, setDepositInitiated] = useState(false)
   const [open, setOpen] = useState(false)
   const [FaucetAmount, setFaucetAmount] = useState(5000)
   const [FaucetAddress, setFaucetAddress] = useState(null)
+  const [statusMessage, setStatusMessage] = useState("")
   const FACTORY_CONTRACT_ADDRESS = useSelector(state => {
     return state.gnosis.factoryContractAddress
   })
@@ -269,14 +254,12 @@ const Faucet = (props) => {
         .then((async) => {
           setFaucetAddress(async[0])
         }
-
         );
     }
     catch (err) {
       setFaucetAddress(null)
     }
   }
-
 
   useEffect(() => {
     handleConnectWallet()
@@ -285,26 +268,67 @@ const Faucet = (props) => {
 
 
   const handleFaucet = async (FaucetAddress, FaucetAmount) => {
+    setOpen(true)
     const usdcFaucet = new SmartContract(
       USDCContract,
       USDC_CONTRACT_ADDRESS,
       undefined, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL
     )
-    const Tx = await usdcFaucet.mint(FaucetAddress, (FaucetAmount).toString())
+    const transaction = usdcFaucet.mint(FaucetAddress, (FaucetAmount).toString())
+    transaction.then((response) => {
+      setStatusMessage("Token minted successfully!!")
+      setOpenSnackBar(true)
+      setFailed(false)
+      setOpen(false)
+    },
+    (error) => {
+      setStatusMessage("Error minting token!, Please try again later.")
+      setOpenSnackBar(true)
+      setFailed(true)
+      setOpen(false)
+    })
   }
-
 
   const handleDialogClose = (e) => {
     e.preventDefault()
     setOpen(false)
   }
 
-  const handleSwitchNetwork = async () => {
-    const switched = await checkNetwork()
-    if (switched) {
-      setOpen(false)
-    } else {
-      setOpen(true)
+  const handleSnackBarClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setOpenSnackBar(false)
+  }
+
+  
+  const importTokenToMetaMask = async () => {
+    try {
+      const wasAdded = await ethereum.request({
+        method: 'wallet_watchAsset',
+        params: {
+          type: 'ERC20',
+          options: {
+            address: USDC_CONTRACT_ADDRESS,
+            symbol: "USDC",
+            decimals: 6,
+          },
+        },
+      });
+
+      if (wasAdded) {
+        setStatusMessage("Token imported successfully!!")
+        setFailed(false)
+        setOpenSnackBar(true)
+      } else {
+        setStatusMessage("Error importing token!, Please try again later.")
+        setFailed(true)
+        setOpenSnackBar(true)
+      }
+    } catch (error) {
+      setStatusMessage("Error importing token!, Please try again later.")
+      setFailed(true)
+      setOpenSnackBar(true)
     }
   }
 
@@ -330,7 +354,7 @@ const Faucet = (props) => {
           </Typography>
           <TextField id="outlined-basic" className={classes.textField} disabled marginTop={10} variant="outlined" value={FaucetAddress} />
           <TextField id="outlined-basic" disabled className={classes.textField} label="5000" marginTop={10} variant="outlined" />
-          <Grid >
+          <Grid container direction="row" spacing={4}>
             <Grid item xs={0} mt={2} flex flexDirection="row" justifyContent="space-between">
               <Button
                 variant="wideButton"
@@ -338,11 +362,32 @@ const Faucet = (props) => {
               >
                 Mint
               </Button>
-              <Link color={"#FFFFFF "} ml={"100px"} variant="Docs" onClick={() => { window.open(`https://faucets.chain.link/rinkeby`) }}> Get Eth here</Link>
+            </Grid>
+            <Grid item xs={0} mt={2} flex flexDirection="row" justifyContent="space-between">
+            <Button variant="transparentWhite" color={"#FFFFFF"} ml={"200px"} onClick={() => { window.open(`https://faucets.chain.link/rinkeby`) }}> Get Eth here</Button>
+            </Grid>
+            <Grid item xs={0} mt={2} flex flexDirection="row" justifyContent="space-between">
+            <Button variant="transparentWhite" color={"#FFFFFF"} ml={"200px"} onClick={() => {importTokenToMetaMask()}}> Import token</Button>
             </Grid>
           </Grid>
         </Grid>
       </Grid>
+      <Snackbar open={openSnackBar} autoHideDuration={6000} onClose={handleSnackBarClose} anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
+          {!failed ?
+            (<Alert onClose={handleSnackBarClose} severity="success" sx={{ width: '100%' }}>
+              {statusMessage}
+            </Alert>) :
+            (<Alert onClose={handleSnackBarClose} severity="error" sx={{ width: '100%' }}>
+              {statusMessage}
+            </Alert>)
+          }
+        </Snackbar>
+      <Backdrop
+          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+          open={open}
+        >
+          <CircularProgress color="inherit" />
+        </Backdrop>
     </Layout3>
   )
 }

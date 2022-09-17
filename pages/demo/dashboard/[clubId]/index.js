@@ -604,9 +604,7 @@ const Dashboard = () => {
       setOpenSnackBar(true)
     }
   }
-console.log(tokenAPIDetails)
-console.log(governorDetails)
-console.log(tokenDetails)
+
 
   useEffect(() => {
     setLoaderOpen(true)
