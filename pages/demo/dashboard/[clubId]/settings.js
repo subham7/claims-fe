@@ -208,10 +208,19 @@ const Settings = (props) => {
   const [userBalanceFetched, setUserBalanceFetched] = useState(false)
   const [clubAssetTokenFetched, setClubAssetTokenFetched] = useState(false)
   const [clubAssetTokenData, setClubAssetTokenData] = useState([])
+  const FACTORY_CONTRACT_ADDRESS = useSelector(state => {
+    return state.gnosis.factoryContractAddress
+  })
+  const USDC_CONTRACT_ADDRESS = useSelector(state => {
+    return state.gnosis.usdcContractAddress
+  })
+  const GNOSIS_TRANSACTION_URL = useSelector(state => {
+    return state.gnosis.transactionUrl
+  })
 
   const fetchUserBalanceAPI = async () => {
     if (daoAddress) {
-      const fetchUserBalance = new SmartContract(ImplementationContract, daoAddress, undefined)
+      const fetchUserBalance = new SmartContract(ImplementationContract, daoAddress, undefined, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL)
       await fetchUserBalance.checkUserBalance()
         .then((result) => {
           setUserBalance(web3.utils.fromWei(result, "Mwei"))
@@ -236,7 +245,7 @@ const Settings = (props) => {
 
   const tokenDetailsRetrieval = async () => {
     if (tokenAPIDetails && tokenAPIDetails.length > 0) {
-      const tokenDetailContract = new SmartContract(USDCContract, tokenAPIDetails[0].daoAddress, undefined)
+      const tokenDetailContract = new SmartContract(USDCContract, tokenAPIDetails[0].daoAddress, undefined, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL)
       await tokenDetailContract.tokenDetails()
         .then((result) => {
           settokenDetails(result)
@@ -279,7 +288,7 @@ const Settings = (props) => {
 
   const contractDetailsRetrieval = async () => {
     if (daoAddress && !governorDataFetched && !governorDetails && walletAddress) {
-      const governorDetailContract = new SmartContract(ImplementationContract, daoAddress, undefined)
+      const governorDetailContract = new SmartContract(ImplementationContract, daoAddress, undefined, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL)
       await governorDetailContract.getGovernorDetails()
         .then((result) => {
           // console.log(result)

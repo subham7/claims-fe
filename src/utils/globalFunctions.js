@@ -1,6 +1,5 @@
 import {SmartContract} from "../api/contract";
 import ImplementationContract from "../abis/implementationABI.json";
-import {IMPLEMENTATION_CONTRACT_ADDRESS, USDC_CONTRACT_ADDRESS} from "../api";
 
 export const calculateUserSharePercentage = (balance, total) => {
   // function for calculating the balance percentage of the users share
@@ -14,7 +13,7 @@ export const convertAmountToWei = (value) => {
 
 export const calculateTreasuryTargetShare = (treasuryBalance, totalSupply) => {
   // function for calculating the percentage of current tokens minted so far from the total target token supply
-  return parseInt(web3.utils.fromWei(treasuryBalance)) / parseInt(totalSupply) * 100
+  return parseInt(treasuryBalance) / parseInt(totalSupply) * 100
 }
 
 export const convertToWei = (amount) => {
@@ -27,9 +26,29 @@ export const calculateDays = (dateTime) => {
   return Math.round((new Date(dateTime) - new Date()) / (1000 * 60 * 60 * 24))
 }
 
-export const convertToWeiGovernance = (daoAddress, convertValue) => {
+export const convertToWeiGovernance = (daoAddress, convertValue, usdcContractAddress, gnosisTransactionUrl) => {
   return new Promise((resolve,reject) =>{
-    const contract = new SmartContract(ImplementationContract, daoAddress, undefined)
+    const contract = new SmartContract(ImplementationContract, daoAddress, undefined, usdcContractAddress, gnosisTransactionUrl)
+    const tokenDecimal = contract.obtainTokenDecimals()
+    tokenDecimal.then((result) => {
+      resolve((convertValue) * Math.pow(10, result))
+    })
+  })
+}
+
+export const convertToWeiUSDC = (value, usdcContractAddress, gnosisTransactionUrl) => {
+  return new Promise((resolve,reject) =>{
+    const contract = new SmartContract(ImplementationContract, usdcContractAddress, undefined, usdcContractAddress, gnosisTransactionUrl)
+    const tokenDecimal = contract.obtainTokenDecimals()
+    tokenDecimal.then((result) => {
+      resolve(web3.utils.toBN(value) * Math.pow(10, result))
+    })
+  })
+}
+
+export const convertFromWeiGovernance = (daoAddress, convertValue, usdcContractAddress, gnosisTransactionUrl) => {
+  return new Promise((resolve,reject) =>{
+    const contract = new SmartContract(ImplementationContract, daoAddress, undefined, usdcContractAddress, gnosisTransactionUrl)
     const tokenDecimal = contract.obtainTokenDecimals()
     tokenDecimal.then((result) => {
       resolve((convertValue) / Math.pow(10, result))
@@ -37,9 +56,9 @@ export const convertToWeiGovernance = (daoAddress, convertValue) => {
   })
 }
 
-export const convertToWeiUSDC = (value) => {
+export const convertFromWeiUSDC = (value, usdcContractAddress, gnosisTransactionUrl) => {
   return new Promise((resolve,reject) =>{
-    const contract = new SmartContract(ImplementationContract, USDC_CONTRACT_ADDRESS, undefined)
+    const contract = new SmartContract(ImplementationContract, usdcContractAddress, undefined, usdcContractAddress, gnosisTransactionUrl)
     const tokenDecimal = contract.obtainTokenDecimals()
     tokenDecimal.then((result) => {
       resolve(web3.utils.toBN(value) / Math.pow(10, result))

@@ -3,12 +3,12 @@ import Onboard from "@web3-onboard/core"
 import injectedModule from "@web3-onboard/injected-wallets"
 import { useDispatch } from "react-redux"
 import { addWallet, removeWallet } from "../redux/reducers/create"
-import {RINKEBY_URL} from "../api/index"
+import {RINKEYBY_RPC_URL} from "../api/index"
 
 const INFURA_ID = "sdf"
 const ETH_ROPSTEN_RPC = `https://ropsten.infura.io/v3/946205020d6c477192b1178b3c5f8590`
 const ETH_MAINNET_RPC = `https://mainnet.infura.io/v3/${INFURA_ID}`
-const ETH_RINKEBY_RPC = RINKEBY_URL
+const ETH_RINKEBY_RPC = RINKEYBY_RPC_URL
 const MATIC_MAINNET_RPC = 'https://matic-mainnet.chainstacklabs.com'
 
 const injected = injectedModule()
@@ -81,6 +81,39 @@ export async function checkNetwork() {
               {
                 chainId: '0x4',
                 rpcUrl: ETH_RINKEBY_RPC,
+              },
+            ],
+          });
+        } catch (addError) {
+          console.error(addError);
+        }
+      }
+      console.error(error);
+      return false
+    }
+  } else {
+    alert('MetaMask is not installed. Please consider installing it: https://metamask.io/download.html');
+    return false
+  } 
+}
+
+export async function switchNetwork(networkHex, rpcURL) {
+  if (window.ethereum) {
+    try {
+      await window.ethereum.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: networkHex }],
+      });
+      return true
+    } catch (error) {
+      if (error.code === 4902) {
+        try {
+          await window.ethereum.request({
+            method: 'wallet_addEthereumChain',
+            params: [
+              {
+                chainId: networkHex,
+                rpcUrl: rpcURL,
               },
             ],
           });

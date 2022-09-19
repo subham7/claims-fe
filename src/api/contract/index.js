@@ -2,19 +2,16 @@ import Web3 from "web3"
 import Web3Adapter from "@gnosis.pm/safe-web3-lib"
 import SafeServiceClient from "@gnosis.pm/safe-service-client"
 import USDCContract from "../../abis/usdcTokenContract.json"
-import usdcFaucet from "../../abis/usdcFaucet.json"
 import Safe, { EthSignSignature } from "@gnosis.pm/safe-core-sdk"
 import {
-  USDC_CONTRACT_ADDRESS,
-  FACTORY_CONTRACT_ADDRESS,
-  IMPLEMENTATION_CONTRACT_ADDRESS,
-  GNOSIS_TRANSACTION_URL,
   USDC_FAUCET_ADDRESS
 } from "../index"
 import { calculateDays, convertToWei } from "../../utils/globalFunctions"
 import FactoryContract from "../../abis/factoryContract.json"
 import ImplementationContract from "../../abis/implementationABI.json"
 import { SafeFactory } from "@gnosis.pm/safe-core-sdk"
+import { connect } from "react-redux"
+import { Component } from "react"
 
 async function syncWallet() {
   // function for validating metamask wallet
@@ -48,19 +45,25 @@ async function syncWallet() {
 }
 
 export class SmartContract {
+
   // Smart contract class
   constructor(
     abiFile,
     contractAddress,
-    walletAddress = localStorage.getItem("wallet")
+    walletAddress = localStorage.getItem("wallet"),
+    usdcContractAddress,
+    gnosisTransactionUrl,
   ) {
-    if (syncWallet() && abiFile && contractAddress && walletAddress) {
+    if (syncWallet() && abiFile && contractAddress && walletAddress && usdcContractAddress, gnosisTransactionUrl) {
       this.web3 = new Web3(window.web3)
       this.abi = abiFile.abi
       this.contractAddress = contractAddress
       this.checkSum = this.web3.utils.toChecksumAddress(this.contractAddress)
       this.contract = new this.web3.eth.Contract(this.abi, this.checkSum)
       this.walletAddress = this.web3.utils.toChecksumAddress(walletAddress)
+      this.usdcContractAddress = usdcContractAddress
+      this.gnosisTransactionUrl = gnosisTransactionUrl
+      // this.usdcContractFaucet = usdcFaucetAddress
     }
   }
 
@@ -150,7 +153,7 @@ export class SmartContract {
       web3: this.web3,
       signerAddress: safeOwner,
     })
-    const txServiceUrl = GNOSIS_TRANSACTION_URL
+    const txServiceUrl = this.gnosisTransactionUrl
     const safeService = new SafeServiceClient({ txServiceUrl, ethAdapter })
 
     const web3 = new Web3(window.web3)
@@ -225,21 +228,21 @@ export class SmartContract {
       web3: this.web3,
       signerAddress: safeOwner,
     })
-    const txServiceUrl = GNOSIS_TRANSACTION_URL
+    const txServiceUrl = this.gnosisTransactionUrl
     const safeService = new SafeServiceClient({ txServiceUrl, ethAdapter })
     const web3 = new Web3(window.web3)
     const usdcContract = new web3.eth.Contract(
       ImplementationContract.abi,
-      USDC_CONTRACT_ADDRESS
+      this.usdcContractAddress
     )
     const safeSdk = await Safe.create({
       ethAdapter: ethAdapter,
       safeAddress: gnosisAddress,
     })
     const transaction = {
-      to: USDC_CONTRACT_ADDRESS,
+      to: this.usdcContractAddress,
       data: usdcContract.methods
-        .deposit(USDC_CONTRACT_ADDRESS, amount)
+        .deposit(this.usdcContractAddress, amount)
         .encodeABI(),
       value: "0",
     }
@@ -267,17 +270,17 @@ export class SmartContract {
       web3: this.web3,
       signerAddress: safeOwner,
     })
-    const txServiceUrl = GNOSIS_TRANSACTION_URL
+    const txServiceUrl = this.gnosisTransactionUrl
     const safeService = new SafeServiceClient({ txServiceUrl, ethAdapter })
     const web3 = new Web3(window.web3)
 
     const usdcContract = new web3.eth.Contract(
       USDCContract.abi,
-      USDC_CONTRACT_ADDRESS
+      this.usdcContractAddress
     )
     const usdcContractFaucet = new web3.eth.Contract(
-usdcFaucet.abi,
-      USDC_FAUCET_ADDRESS  
+      USDCContract.abi,
+      USDC_FAUCET_ADDRESS
     )
 
     const safeSdk = await Safe.create({
@@ -285,7 +288,7 @@ usdcFaucet.abi,
       safeAddress: gnosisAddress,
     })
     const transaction = {
-      to: USDC_CONTRACT_ADDRESS,
+      to: this.usdcContractAddress,
       data: usdcContract.methods.transfer(address[0], amount[0]).encodeABI(),
       value: "0",
     }
@@ -339,13 +342,12 @@ usdcFaucet.abi,
   }
 
 
-  async mint(address,amount)
-  {
+  async mint(address, amount) {
     console.log(this.contract)
     return this.contract.methods.mint(address, amount).send({ from: this.walletAddress })
   }
 
-  
+
 
   async deposit(address, amount) {
     return this.contract.methods
@@ -445,4 +447,11 @@ usdcFaucet.abi,
     return this.contract.methods.decimals().call({ from: this.walletAddress })
   }
 }
+
+// const mapStateToProps = (state) => ({
+//   USDC_CONTRACT_ADDRESS : state.gnosis.usdcContractAddress,
+//   GNOSIS_TRANSACTION_URL: state.gnosis.gnosisTransactionUrl
+// })
+
+// export default connect(mapStateToProps, {})(SmartContract);
 

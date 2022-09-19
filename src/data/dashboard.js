@@ -78,9 +78,9 @@ export const commandTypeList = [
         command: "sendCustomToken",
         commandText: "Send custom token"
     },
-    {
-        commandId: 7,
-        command: "sendEth",
-        commandText: "Send ETH"
-    },
+    // {
+    //     commandId: 7,
+    //     command: "sendEth",
+    //     commandText: "Send ETH"
+    // },
 ]

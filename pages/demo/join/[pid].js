@@ -26,10 +26,6 @@ import ProgressBar from "../../../src/components/progressbar"
 import { connectWallet, setUserChain, onboard } from "../../../src/utils/wallet"
 import { useDispatch, useSelector } from "react-redux"
 import { useRouter } from "next/router"
-import {
-  USDC_CONTRACT_ADDRESS,
-  FACTORY_CONTRACT_ADDRESS,
-} from "../../../src/api"
 import { fetchClub, fetchClubbyDaoAddress } from "../../../src/api/club"
 import {createUser} from "../../../src/api/user"
 import {getMembersDetails, patchUserBalance, checkUserByClub} from "../../../src/api/user"
@@ -225,6 +221,15 @@ const Join = (props) => {
   const [imageUrl, setImageUrl] = useState("")
   const [open, setOpen] = useState(false)
   const [gnosisAddress, setGnosisAddress] = useState(null)
+  const FACTORY_CONTRACT_ADDRESS = useSelector(state => {
+    return state.gnosis.factoryContractAddress
+  })
+  const USDC_CONTRACT_ADDRESS = useSelector(state => {
+    return state.gnosis.usdcContractAddress
+  })
+  const GNOSIS_TRANSACTION_URL = useSelector(state => {
+    return state.gnosis.transactionUrl
+  })
 
   const checkConnection = async () => {
     if (window.ethereum) {
@@ -272,7 +277,7 @@ const Join = (props) => {
       const tokenDetailContract = new SmartContract(
         ImplementationContract,
         tokenAPIDetails[0].daoAddress,
-        undefined
+        undefined, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL
       )
       await tokenDetailContract.tokenDetails().then(
         (result) => {
@@ -306,7 +311,7 @@ const Join = (props) => {
       const governorDetailContract = new SmartContract(
         ImplementationContract,
         daoAddress,
-        undefined
+        undefined, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL
       )
       await governorDetailContract.getGovernorDetails().then(
         (result) => {
@@ -332,7 +337,7 @@ const Join = (props) => {
       const usdc_contract = new SmartContract(
         ImplementationContract,
         USDC_CONTRACT_ADDRESS,
-        undefined
+        undefined, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL
       )
       await usdc_contract.balanceOf().then(
         (result) => {
@@ -412,13 +417,13 @@ const Join = (props) => {
         const usdc_contract = new SmartContract(
           ImplementationContract,
           USDC_CONTRACT_ADDRESS,
-          undefined
+          undefined, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL
         )
         // pass governor contract
         const dao_contract = new SmartContract(
           ImplementationContract,
           daoAddress,
-          undefined
+          undefined, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL
         )
         // pass governor contract
         const usdc_response = usdc_contract.approveDeposit(
@@ -469,13 +474,13 @@ const Join = (props) => {
         const usdc_contract = new SmartContract(
           ImplementationContract,
           USDC_CONTRACT_ADDRESS,
-          undefined
+          undefined, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL
         )
         // pass governor contract
         const dao_contract = new SmartContract(
           ImplementationContract,
           daoAddress,
-          undefined
+          undefined, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL
         )
         // pass governor contract
         const usdc_response = usdc_contract.approveDeposit(

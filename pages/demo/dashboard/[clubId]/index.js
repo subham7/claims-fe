@@ -366,11 +366,20 @@ const Dashboard = () => {
   const [closingDays, setClosingDays] = useState(0)
   const imageUrl = useSelector(state => { return state.create.clubImageUrl })
   const [governorDataFetched, setGovernorDataFetched] = useState(false)
+  const FACTORY_CONTRACT_ADDRESS = useSelector(state => {
+    return state.gnosis.factoryContractAddress
+  })
+  const USDC_CONTRACT_ADDRESS = useSelector(state => {
+    return state.gnosis.usdcContractAddress
+  })
+  const GNOSIS_TRANSACTION_URL = useSelector(state => {
+    return state.gnosis.transactionUrl
+  })
 
 
   const fetchUserBalanceAPI = async () => {
     if (daoAddress) {
-      const fetchUserBalance = new SmartContract(ImplementationContact, daoAddress, undefined)
+      const fetchUserBalance = new SmartContract(ImplementationContact, daoAddress, undefined, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL)
       await fetchUserBalance.checkUserBalance()
         .then((result) => {
           setUserBalance(web3.utils.fromWei(result, "Mwei"))
@@ -384,7 +393,7 @@ const Dashboard = () => {
 
   const fetchGovernorContractData = async () => {
     if (daoAddress && walletAddress){
-      const fetchClubDetails = new SmartContract(ImplementationContact, daoAddress, undefined)
+      const fetchClubDetails = new SmartContract(ImplementationContact, daoAddress, undefined, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL)
       await fetchClubDetails.getGovernorDetails()
         .then((result) => {
           // console.log(result)
@@ -425,7 +434,7 @@ const Dashboard = () => {
   }
   const contractDetailsRetrieval = async () => {
     if (daoAddress && !governorDataFetched && !governorDetails && walletAddress) {
-      const governorDetailContract = new SmartContract(ImplementationContact, daoAddress, undefined)
+      const governorDetailContract = new SmartContract(ImplementationContact, daoAddress, undefined, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL)
       await governorDetailContract.getGovernorDetails()
         .then((result) => {
           // console.log(result)
@@ -474,7 +483,7 @@ const Dashboard = () => {
 
   const tokenDetailsRetrieval = async () => {
     if (tokenAPIDetails && !dataFetched) {
-      const tokenDetailContract = new SmartContract(ImplementationContact, tokenAPIDetails.daoAddress, undefined)
+      const tokenDetailContract = new SmartContract(ImplementationContact, tokenAPIDetails.daoAddress, undefined, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL)
       await tokenDetailContract.tokenDetails()
         .then((result) => {
           // console.log(result)
@@ -595,9 +604,7 @@ const Dashboard = () => {
       setOpenSnackBar(true)
     }
   }
-console.log(tokenAPIDetails)
-console.log(governorDetails)
-console.log(tokenDetails)
+
 
   useEffect(() => {
     setLoaderOpen(true)

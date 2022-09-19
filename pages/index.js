@@ -23,6 +23,7 @@ import store from "../src/redux/store"
 import { addClubName, addDaoAddress, addClubID, addClubRoute } from "../src/redux/reducers/create"
 import {checkNetwork} from "../src/utils/wallet"
 import Web3 from "web3";
+
 import {
   getExpiryTime,
   getJwtToken,
@@ -32,7 +33,8 @@ import {
   setRefreshToken
 } from "../src/utils/auth";
 import {loginToken, refreshToken} from "../src/api/auth";
-
+import { fetchConfig } from "../src/api/config"
+import { updateDynamicAddress } from "../src/api/index"
 
 const useStyles = makeStyles({
   yourClubText: {
@@ -85,19 +87,41 @@ export default function App() {
   const [noWalletMessage, setNoWalletMessage] = useState(null)
   const [open, setOpen] = useState(false)
   const router = useRouter()
+  const [networks, setNetworks] = useState([]);
+  const [networksFetched, setNetworksFetched] = useState(false);
+
+  const fetchNetworks = () => {
+    const networkData = fetchConfig()
+    networkData.then((result) => {
+      if (result.status != 200) {
+        setNetworksFetched(false)
+      } else {
+        setNetworks(result.data)
+        setNetworksFetched(true)
+      }
+    })
+  }
 
   useEffect(() => {
-    const web3 = new Web3(Web3.givenProvider)
-    const networkIdRK = '4'
-    web3.eth.net.getId()
-      .then((networkId) => {
-        if (networkId != networkIdRK) {
-          setOpen(true)
-        }
-      })
-      .catch((err) => {
-        console.log(err)
+    fetchNetworks()
+    if (networksFetched) {
+      const networksAvailable = []
+      networks.forEach(network => {
+        networksAvailable.push(network.networkId)
       });
+      const web3 = new Web3(Web3.givenProvider)
+      web3.eth.net.getId()
+        .then((networkId) => {
+          if (!networksAvailable.includes(networkId)) {
+            setOpen(true)
+          } 
+          updateDynamicAddress(networkId, dispatch)
+        })
+        .catch((err) => {
+          console.log(err)
+        });
+    }
+    
     if (!fetched && walletID) {
       const getClubs = fetchClubByUserAddress(walletID)
       getClubs.then((result) => {
