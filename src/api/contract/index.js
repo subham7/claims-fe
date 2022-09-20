@@ -86,7 +86,7 @@ export class SmartContract {
   ) {
     const days = Math.round(calculateDays(closeDate))
     return this.contract.methods
-      .createDAO(
+      .createDAO([
         tokenName,
         tokenSymbol,
         convertToWei(totalDeposit),
@@ -98,7 +98,7 @@ export class SmartContract {
         quoram,
         formThreshold,
         tresuryAddress
-      )
+      ])
       .send({ from: this.walletAddress })
   }
 
