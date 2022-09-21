@@ -49,7 +49,6 @@ const useStyles = makeStyles({
   },
   cardRegular: {
     // height: "626px",
-    backgroundColor: "#19274B",
     borderRadius: "10px",
     opacity: 1,
   },
