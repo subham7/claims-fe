@@ -722,19 +722,21 @@ const Proposal = () => {
   const handleAddNewCommand = () => {
     setOpenCard(true)
     setCommandList([...commandList, ""])
+    setCount(1)
   }
 
   const handleAddNewOption = () => {
     setOpenCard(true)
     setOptionList([...optionList, ""])
     setSurveyOption([...surveyOption, surveyValue])
-    console.log(optionList)
+    console.log(surveyOption)
   }
 
   const handleRemoveClick = (index) => {
     const list = [...commandList];
     list.splice(index, 1);
     setCommandList(list);
+    setCount(0);
   };
 
   const handleRemoveSurveyClick = (index) => {
@@ -1004,7 +1006,7 @@ const Proposal = () => {
             {type === proposalType[0].type ?
               (
                 <>
-                  <Grid container item ml={3} mt={2}>
+                  <Grid container item ml={3} mt={2} mb={2}>
                     <Typography variant="proposalBody">(Minimum 2 options needed*)</Typography>
                   </Grid>
                   {!enableSubmitButton ? setEnableSubmitButton(true) : null}
@@ -1018,7 +1020,7 @@ const Proposal = () => {
                             </Grid>
                             <Grid container ml={1} mt={1} mb={2} spacing={2} direction="column">
                               <Grid container direction="row" ml={2}>
-                                <Grid item md={10}>
+                                <Grid item md={10} mb={3}>
                                   <TextField sx={{ width: "90%", backgroundColor: "#C1D3FF40" }}
                                     className={classes.cardTextBox}
                                     placeholder="Yes / No / Abstain, etc."
@@ -1060,7 +1062,7 @@ const Proposal = () => {
                               <Grid container item ml={3} mt={2}>
                                 <Typography variant="proposalBody">Command #{key + 1}</Typography>
                               </Grid>
-                              <Grid container item ml={3} mt={1} mb={2}>
+                              <Grid container item ml={3} mt={1} mb={3}>
                                 <Select
                                   displayEmpty
                                   value={name}
@@ -1299,11 +1301,13 @@ const Proposal = () => {
                       </Card>
                     ) : <></>}
                   </Grid>
-                  <Grid container item mt={2} ml={3}>
-                    <Button variant="primary" startIcon={<AddCircleRoundedIcon />} onClick={handleAddNewCommand}>
-                      Add command
-                    </Button>
-                  </Grid>
+                  {count < 1 ?
+                    <Grid container item mt={2} ml={3}>
+                      <Button variant="primary" startIcon={<AddCircleRoundedIcon />} onClick={handleAddNewCommand}>
+                        Add command
+                      </Button>
+                    </Grid> : null
+                  }
                 </>
               )
             }

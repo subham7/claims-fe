@@ -74,7 +74,7 @@ const useStyles = makeStyles({
   },
   fifthCard: {
     width: "22vw",
-    height: "351px",
+    height: "350px",
     background: "#FFFFDD no-repeat padding-box",
   },
   cardOverlay: {
@@ -86,12 +86,15 @@ const useStyles = makeStyles({
   },
   cardSharp1: {
     backgroundColor: "#19274B",
-    borderRadius: "5px",
+    borderRadius: "10px",
+    borderBottomLeftRadius: "0px",
+    borderBottomRightRadius: "0px",
     opacity: 1,
   },
   cardSharp2: {
     backgroundColor: "#142243",
-    borderRadius: "5px",
+    borderTopLeftRadius: "0px",
+    borderTopRightRadius: "0px",
     opacity: 1,
   },
   card1text1: {
@@ -698,7 +701,7 @@ const Dashboard = () => {
         <Grid container spacing={1} paddingLeft={10} paddingTop={15}>
           <Grid item md={9}>
             <Stack direction={{ xs: 'column', sm: 'row' }} spacing={3}>
-              <Grid item xs={12}>
+            <Grid item xs={12}>
                 <Card className={classes.cardSharp1}>
                   <Grid container spacing={2}>
                     <Grid item ml={3} mt={2}>
@@ -722,9 +725,8 @@ const Dashboard = () => {
                   </Grid>
                 </Card>
                 <Card className={classes.cardSharp2}>
-                  <Grid container
-                    paddingTop={4} paddingBottom={1}>
-                    <Grid item xs={4}>
+                  <Grid container spacing={2} >
+                  <Grid item xs={4} mt={2} mb={3}>
                       <Grid container direction="column">
                         <Grid item>
                           <Typography variant="regularText4" fontSize={"18px"} className={classes.valuesDimStyle}>
@@ -741,7 +743,7 @@ const Dashboard = () => {
                         </Grid>
                       </Grid>
                     </Grid>
-                    <Grid item xs={4}>
+                    <Grid item xs={4} mt={2} mb={2}>
                       <Grid container direction="column">
                         <Grid item>
                           <Typography variant="regularText4" fontSize={"18px"} className={classes.valuesDimStyle}> Club
@@ -758,7 +760,7 @@ const Dashboard = () => {
 
                       </Grid>
                     </Grid>
-                    <Grid item xs={4}>
+                    <Grid item xs={4} mt={{md: 1, lg: 0, xl: 1.5}} mb={1}>
                       <Grid>
                         <Grid item>
                           <Typography variant="regularText4" fontSize={"18px"} className={classes.valuesDimStyle}>Max
@@ -772,7 +774,6 @@ const Dashboard = () => {
                           <Typography variant="regularText4" fontSize={"18px"}
                             className={classes.valueDimStyle}>{dataFetched ? ("$" + (tokenDetails[1])) : null}</Typography>
                         </Grid>
-
                       </Grid>
                     </Grid>
                   </Grid>
@@ -816,11 +817,9 @@ const Dashboard = () => {
                           <Typography fontSize={"48px"} fontWeight="bold">
                             {userBalanceFetched && dataFetched ? isNaN(calculateUserSharePercentage(userBalance, userOwnershipShare)) ? 0 : (calculateUserSharePercentage(userBalance, userOwnershipShare)) : 0}%
                           </Typography>
-                          <Typography className={classes.card2text2}>
+                          <Typography className={classes.card2text2} mb={1}>
                             {governorDataFetched && dataFetched ? userOwnershipShare + (" $" + tokenDetails[1]) : null}
                           </Typography>
-
-
                         </Box>
                       </Grid>
                       {/* <CardMedia    className={classes.media}    component=“img”    image=“/assets/images/card_illustration.png”    alt=“abstract background”    sx={{ position: “absolute”, bottom: 0 }}                     />   */}
@@ -828,8 +827,10 @@ const Dashboard = () => {
                   </Grid>
                 </Card>
               </Grid>
-
             </Stack>
+
+
+
             <Stack>
               <Grid item>
                 <Stack direction={{ xs: 'column', sm: 'column' }} spacing={{ xs: 1, sm: 2, md: 4 }}>
@@ -952,8 +953,6 @@ const Dashboard = () => {
               <Card className={classes.fifthCard}>
                 <Grid>
                   <Grid>
-
-
                     <Grid item>
                       <Typography variant="getStartedClub" fontSize={"36px"}>
                         Get started with your club 👋
