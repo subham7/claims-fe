@@ -341,7 +341,7 @@ const Join = (props) => {
   }
 
   const obtaineWalletBallance = async () => {
-    if (!fetched && userDetails) {
+    if (!fetched && userDetails && USDC_CONTRACT_ADDRESS && GNOSIS_TRANSACTION_URL) {
       const usdc_contract = new SmartContract(
         ImplementationContract,
         USDC_CONTRACT_ADDRESS,
@@ -373,20 +373,20 @@ const Join = (props) => {
       console.log(err)
     }
   }
-  useEffect(() => {
-    const web3 = new Web3(Web3.givenProvider)
-    const networkIdRK = "4"
-    web3.eth.net
-      .getId()
-      .then((networkId) => {
-        if (networkId != networkIdRK) {
-          setOpen(true)
-        }
-      })
-      .catch((err) => {
-        console.log(err)
-      })
-  }, [])
+  // useEffect(() => {
+  //   const web3 = new Web3(Web3.givenProvider)
+  //   const networkIdRK = "4"
+  //   web3.eth.net
+  //     .getId()
+  //     .then((networkId) => {
+  //       if (networkId != networkIdRK) {
+  //         setOpen(true)
+  //       }
+  //     })
+  //     .catch((err) => {
+  //       console.log(err)
+  //     })
+  // }, [])
 
   useEffect(() => {
     if (pid) {
@@ -395,7 +395,6 @@ const Join = (props) => {
   }, [pid,  USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL])
 
   useEffect(() => {
-    console.log( USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL)
     if (tokenAPIDetails && USDC_CONTRACT_ADDRESS && GNOSIS_TRANSACTION_URL) {
       tokenDetailsRetrieval()
     }
@@ -415,7 +414,7 @@ const Join = (props) => {
       contractDetailsRetrieval()
       fetchMembers()
     }
-  }, [previouslyConnectedWallet, walletConnected, clubId,  USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL, FACTORY_CONTRACT_ADDRESS])
+  }, [previouslyConnectedWallet, walletConnected, clubId])
 
   const handleDeposit = async () => {
     setDepositInitiated(true)

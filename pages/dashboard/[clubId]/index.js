@@ -352,6 +352,7 @@ const Dashboard = () => {
   const [tokenAPIDetails, settokenAPIDetails] = useState(null) // contains the details extracted from API
   const [apiTokenDetailSet, setApiTokenDetailSet] = useState(false)
   const [joinLink, setJoinLink] = useState(null)
+  const [depositLink, setDepositLink] = useState(null)
   const [governorDetails, setGovernorDetails] = useState(null)
   const [minDeposit, setMinDeposit] = useState(0)
   const [minDepositFetched, setMinDepositFetched] = useState(false)
@@ -512,6 +513,7 @@ const Dashboard = () => {
           setUserOwnershipShare(await convertFromWeiGovernance(daoAddress, result[2], USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL))
           setMemberDeposit(await convertFromWeiGovernance(daoAddress, result[2], USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL))
           setJoinLink(typeof window !== 'undefined' && window.location.origin ? `${window.location.origin}/join/${daoAddress}` : null)
+          setDepositLink(typeof window !== 'undefined' && window.location.origin ? `${window.location.origin}/join/${daoAddress}?dashboard=true` : null)
           setDataFetched(true)
         },
           (error) => {
@@ -697,7 +699,7 @@ const Dashboard = () => {
   }
   return (
     <>
-      <Layout1 page={1} depositUrl={joinLink}>
+      <Layout1 page={1} depositUrl={depositLink}>
         <Grid container spacing={1} paddingLeft={10} paddingTop={15}>
           <Grid item md={9}>
             <Stack direction={{ xs: 'column', sm: 'row' }} spacing={3}>
