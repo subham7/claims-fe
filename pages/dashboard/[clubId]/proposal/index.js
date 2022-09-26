@@ -29,6 +29,7 @@ import SearchIcon from "@mui/icons-material/Search"
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
 import AddCircleRoundedIcon from '@mui/icons-material/AddCircleRounded'
 import CancelIcon from '@mui/icons-material/Cancel';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { fontStyle } from "@mui/system"
 import SimpleSelectButton from "../../../../src/components/simpleSelectButton"
 import { proposalType, commandTypeList } from "../../../../src/data/dashboard"
@@ -270,8 +271,7 @@ const Proposal = () => {
         if (result.status != 200) {
           setTokenFetched(false)
         } else {
-          setTokenData(result.data.tokens)
-          console.log(result.data.tokens.slice(1))
+          setTokenData(result.data.tokenPriceList)
           setTokenFetched(true)
         }
       })
@@ -1041,7 +1041,7 @@ const Proposal = () => {
                     </Card>
                   </Grid>
                   <Grid container item mt={2} ml={3}>
-                    <Button variant="primary" startIcon={<AddCircleRoundedIcon />} onClick={handleAddNewOption}>
+                    <Button variant="primary" startIcon={<AddCircleRoundedIcon />} onClick={handleAddNewOption} disabled={optionList.length >= 1 && surveyValue === ""}>
                       Add Option
                     </Button>
                   </Grid>
@@ -1247,12 +1247,12 @@ const Proposal = () => {
                                                     MenuProps={tokenData}
                                                     style={{ borderRadius: "10px", background: "#111D38 0% 0% no-repeat padding-box", width: "90%" }}
                                                   >
-                                                    {tokenData.slice(1).map((token) => (
+                                                    {tokenData.map((token) => (
 
                                                       <MenuItem
                                                         key={token.name}
-                                                        value={token.tokenAddress}>
-                                                        {token.token.name}
+                                                        value={token.token_address}>
+                                                        {token.name}
                                                       </MenuItem>
                                                     ))}
                                                   </Select>

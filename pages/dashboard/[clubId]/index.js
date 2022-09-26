@@ -544,6 +544,7 @@ const Dashboard = () => {
         setClubAssetTokenFetched(false)
       } else {
         // console.log(result.data)
+        console.log("Assets", result.data)
         setClubAssetTokenData(result.data)
         setClubAssetTokenFetched(true)
       }
@@ -789,7 +790,7 @@ const Dashboard = () => {
                         Treasury wallet
                       </Typography>
                       <Typography fontSize={"48px"} fontWeight="bold">
-                        ${clubAssetTokenFetched ? clubAssetTokenData.totalBalance : null}
+                        ${clubAssetTokenFetched ? clubAssetTokenData.treasuryAmount : null}
                       </Typography>
                       <CardMedia
                         image="/assets/images/treasurywallet.png"
@@ -855,7 +856,7 @@ const Dashboard = () => {
                     </Grid>
                   </Grid>
                   <Typography mt={5} mb={5} variant="subHeading">Tokens</Typography>
-                  {clubAssetTokenFetched ? clubAssetTokenData.tokens.length > 0 ? clubAssetTokenData.tokens[0].balance !== '0' ?
+                  {clubAssetTokenFetched ? clubAssetTokenData.tokenPriceList.length > 0 ?
                     //  if the tokens length is > 0 and if the token[0] (by default it will be Ether) is not equal to 0, then show the table
                     <TableContainer component={Paper}>
                       <Table sx={{ minWidth: 809 }} aria-label="simple table">
@@ -868,7 +869,7 @@ const Dashboard = () => {
                           </TableRow>
                         </TableHead>
                         <TableBody>
-                          {clubAssetTokenData.tokens.length > 0 ? clubAssetTokenData.tokens.map((data, key) => {
+                          {clubAssetTokenData.tokenPriceList.map((data, key) => {
                             if (data.value !== 0) {
                               return (
                                 <TableRow
@@ -876,59 +877,21 @@ const Dashboard = () => {
                                   sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                 >
                                   <TableCell align="left" variant="tableBody"><></>
-                                    {data.token.name}</TableCell>
+                                    {data.symbol}</TableCell>
                                   <TableCell align="left" variant="tableBody">{data.value}</TableCell>
-                                  <TableCell align="left" variant="tableBody">${data.fiatBalance}</TableCell>
+                                  <TableCell align="left" variant="tableBody">${data.usd.usdValue}</TableCell>
                                   {/* <TableCell align="left" variant="tableBody" sx={row.daychange > 0 ? { color: "#0ABB92" } : { color: "#D55438" }}>{row.daychange > 0 ? "+" : ""}{row.daychange}</TableCell> */}
                                 </TableRow>
                               )
                             }
-                          }
-                          ) :
-                            null
-                          }
+                          })}
                         </TableBody>
                       </Table>
-                    </TableContainer> :
-                    clubAssetTokenData.tokens.length > 1 ?
-                      //  if the token already have Ether, but its value is 0 and there are other tokens, then display the table excluding the Ether
-                      <TableContainer component={Paper}>
-                        <Table sx={{ minWidth: 809 }} aria-label="simple table">
-                          <TableHead>
-                            <TableRow>
-                              <TableCell align="left" variant="tableHeading">Token</TableCell>
-                              <TableCell align="left" variant="tableHeading">Balance</TableCell>
-                              <TableCell align="left" variant="tableHeading">Value (USD)</TableCell>
-                              {/* <TableCell align="left" variant="tableHeading">Day change</TableCell> */}
-                            </TableRow>
-                          </TableHead>
-                          <TableBody>
-                            {clubAssetTokenData.tokens.length > 0 ? clubAssetTokenData.tokens.map((data, key) => {
-                              if (data.value !== 0) {
-                                return (
-                                  <TableRow
-                                    key={key}
-                                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                                  >
-                                    <TableCell align="left" variant="tableBody"><></>
-                                      {data.token.name}</TableCell>
-                                    <TableCell align="left" variant="tableBody">{data.value}</TableCell>
-                                    <TableCell align="left" variant="tableBody">${data.fiatBalance}</TableCell>
-                                    {/* <TableCell align="left" variant="tableBody" sx={row.daychange > 0 ? { color: "#0ABB92" } : { color: "#D55438" }}>{row.daychange > 0 ? "+" : ""}{row.daychange}</TableCell> */}
-                                  </TableRow>
-                                )
-                              }
-                            }
-                            ) :
-                              null
-                            }
-                          </TableBody>
-                        </Table>
-                      </TableContainer> :
-                      <Grid item justifyContent="center" alignItems="center" md={10}>
+                    </TableContainer> :                    
+                     <Grid item justifyContent="center" alignItems="center" md={10}>
                         <img src="/assets/images/tokens_banner.png" alt="token-banner" className={classes.banner} />
-                      </Grid>
-                    : null : null}
+                      </Grid> : null
+                      }
                   <Typography mt={16} mb={5} variant="subHeading">Collectibles</Typography>
                   <Grid container>
                     {nftFetched ? ntfData.length > 0 ?

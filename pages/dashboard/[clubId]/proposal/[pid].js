@@ -1039,6 +1039,26 @@ const ProposalDetail = () => {
                     : null
                 }
               </Grid>
+              <Grid container mt={4}>
+                <Grid item md={8}>
+                  <Card>
+                    <Grid container item>
+                    <Typography className={classes.listFont2}>
+                      Actions
+                    </Typography>
+                    <Divider sx={{ marginTop: 2, marginBottom: 3 }} />
+                    </Grid>
+
+                    <Grid container item>
+                    <Typography className={classes.listFont2Colourless}>
+                      #1 Tranfer assets to a wallet
+                    </Typography>
+                    <Divider sx={{ marginTop: 2, marginBottom: 3 }} />
+                    </Grid>
+
+                  </Card>
+                </Grid>
+              </Grid>
 
             </Grid>
           </Grid>
