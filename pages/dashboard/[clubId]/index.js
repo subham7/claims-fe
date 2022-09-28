@@ -544,7 +544,6 @@ const Dashboard = () => {
         setClubAssetTokenFetched(false)
       } else {
         // console.log(result.data)
-        console.log("Assets", result.data)
         setClubAssetTokenData(result.data)
         setClubAssetTokenFetched(true)
       }

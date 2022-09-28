@@ -460,10 +460,10 @@ const Settings = (props) => {
                 <Grid item ml={4} md={2.5}>
                   <Grid container direction="column">
                     <Grid item>
-                      <Typography variant="settingText">Tresury wallet</Typography>
+                      <Typography variant="settingText">Treasury wallet</Typography>
                     </Grid>
                     <Grid item mt={2}>
-                      <Typography variant="p" className={classes.valuesStyle}>${clubAssetTokenFetched ? clubAssetTokenData.totalBalance : null}</Typography>
+                      <Typography variant="p" className={classes.valuesStyle}>${clubAssetTokenFetched ? clubAssetTokenData.treasuryAmount : null}</Typography>
                     </Grid>
                   </Grid>
                 </Grid>
