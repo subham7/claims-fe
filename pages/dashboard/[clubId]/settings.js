@@ -10,7 +10,9 @@ import {
   Dialog,
   DialogContent,
   IconButton,
-  CircularProgress, Backdrop
+  CircularProgress, 
+  Backdrop,
+  Button
 } from "@mui/material"
 import { makeStyles } from "@mui/styles"
 import ProgressBar from "../../../src/components/progressbar"
@@ -26,6 +28,8 @@ import { getAssets } from "../../../src/api/assets"
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import ClubFetch from "../../../src/utils/clubFetch"
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+import CancelIcon from '@mui/icons-material/Cancel';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import Image from "next/image";
 import {
   calculateDays,
@@ -197,6 +201,7 @@ const Settings = (props) => {
   const [membersFetched, setMembersFetched] = useState(false)
   const [members, setMembers] = useState(0)
   const [open, setOpen] = useState(false)
+  const [tempOpen, setTempOpen] = useState(false)
   const [minDeposit, setMinDeposit] = useState(0)
   const [minDepositFetched, setMinDepositFetched] = useState(false)
   const [maxDeposit, setMaxDeposit] = useState(0)
@@ -371,9 +376,14 @@ const Settings = (props) => {
     }
   }, [clubId])
 
-  const handleClickOpen = (e) => {
+  const handleEnableDisableContribution = (e) => {
     e.preventDefault()
     setOpen(true)
+  }
+
+  const handleClickOpen = (e) => {
+    e.preventDefault()
+    setTempOpen(true)
   }
 
   const handleClose = (e) => {
@@ -576,7 +586,7 @@ const Settings = (props) => {
                     <Typography variant="settingText">Enable/Disable contributions</Typography>
                   </Grid>
                   <Grid item mr={4} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
-                    <Typography variant="p" className={classes.valuesStyle}>Enabled <a className={classes.activityLink} onClick={(e) => handleClickOpen(e)}>(propose)</a></Typography>
+                    <Typography variant="p" className={classes.valuesStyle}>Enabled <a className={classes.activityLink} onClick={(e) => handleEnableDisableContribution(e)}>(propose)</a></Typography>
                   </Grid>
                 </Grid>
                 <Divider />
@@ -647,7 +657,31 @@ const Settings = (props) => {
           </Grid>
           <Grid item md={3}></Grid>
         </Grid>
+
         <Dialog open={open} onClose={handleClose} scroll="body" PaperProps={{ classes: { root: classes.modalStyle } }} fullWidth maxWidth="lg" >
+          <DialogContent sx={{ overflow: "hidden", backgroundColor: '#19274B', }} >
+            <Grid container justifyContent="center" alignItems="center" direction="column" mt={3}>
+              <Grid item m={3}>
+                <Typography className={classes.dialogBox}>Do you want to disable contributions?</Typography>
+              </Grid>
+              <Grid container direction="row" justifyContent="center" alignItems="center">
+              <Grid item m={3}>
+              <Button variant="primary" startIcon={<CheckCircleIcon />} onClick={handleClickOpen}>
+                Disable
+              </Button>
+              </Grid>
+              <Grid item m={3}>
+                <Button variant="primary" startIcon={<CancelIcon />} onClick={handleClose}>
+                Cancel
+              </Button>
+              </Grid>
+              </Grid>
+            </Grid>
+          </DialogContent>
+        </Dialog>
+
+        {/* This is the temporary coming soon dialogue */}
+        <Dialog open={tempOpen} onClose={handleClose} scroll="body" PaperProps={{ classes: { root: classes.modalStyle } }} fullWidth maxWidth="lg" >
           <DialogContent sx={{ overflow: "hidden", backgroundColor: '#19274B', }} >
             <Grid container justifyContent="center" alignItems="center" direction="column" mt={3}>
               <Grid item>
@@ -659,6 +693,7 @@ const Settings = (props) => {
             </Grid>
           </DialogContent>
         </Dialog>
+
         <Backdrop
           sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
           open={loaderOpen}

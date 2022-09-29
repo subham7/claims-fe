@@ -347,7 +347,17 @@ export class SmartContract {
     return this.contract.methods.mint(address, amount).send({ from: this.walletAddress })
   }
 
+  async closeDeposit() {
+    return this.contract.methods
+    .closeDeposit()
+    .call({ from: this.walletAddress })
+  }
 
+  async startDeposit(startTime, closeTime) {
+    return this.contract.methods
+    .startDeposit(startTime, closeTime)
+    .call({ from: this.walletAddress })
+  }
 
   async deposit(address, amount) {
     return this.contract.methods
@@ -447,11 +457,4 @@ export class SmartContract {
     return this.contract.methods.decimals().call({ from: this.walletAddress })
   }
 }
-
-// const mapStateToProps = (state) => ({
-//   USDC_CONTRACT_ADDRESS : state.gnosis.usdcContractAddress,
-//   GNOSIS_TRANSACTION_URL: state.gnosis.gnosisTransactionUrl
-// })
-
-// export default connect(mapStateToProps, {})(SmartContract);
 

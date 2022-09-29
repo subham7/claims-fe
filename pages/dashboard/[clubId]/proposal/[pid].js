@@ -503,111 +503,6 @@ const ProposalDetail = () => {
     }
 
     if (proposalData[0].commands[0].executionId === 3) {
-      // start deposit execution
-      const updateProposal = new SmartContract(ImplementationContract, daoAddress, undefined, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL)
-      const response = updateProposal.updateProposalAndExecution(
-        daoAddress,
-        gnosisAddress,
-        proposalData[0].ipfsHash,
-        "Executed",
-        123444,
-        undefined,
-        undefined,
-        [0, 0, 0, 1, 0, 0, 0, 0],
-        undefined,
-        undefined,
-        proposalData[0].commands[0].day,
-        proposalData[0].commands[0].minDeposits,
-        proposalData[0].commands[0].maxDeposits,
-        proposalData[0].commands[0].totalDeposits,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined
-      )
-      response.then((result) => {
-        const updateStatus = patchProposalExecuted(pid)
-        updateStatus.then((result) => {
-          if (result.status !== 200) {
-            setExecuted(false)
-            setOpenSnackBar(true)
-            setMessage("Start deposit execution status update failed!")
-            setFailed(true)
-            setLoaderOpen(false)
-          } else {
-            setExecuted(true)
-            setOpenSnackBar(true)
-            setMessage("Start deposit execution successful!")
-            setFailed(false)
-            setLoaderOpen(false)
-          }
-        })
-      }, (error) => {
-        setExecuted(false)
-        setOpenSnackBar(true)
-        setMessage("Start deposit execution failed!")
-        setFailed(true)
-        setLoaderOpen(false)
-      })
-    }
-
-    if (proposalData[0].commands[0].executionId === 4) {
-      // close deposit execution
-      const updateProposal = new SmartContract(ImplementationContract, daoAddress, undefined, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL)
-      const response = updateProposal.updateProposalAndExecution(
-        daoAddress,
-        gnosisAddress,
-        proposalData[0].ipfsHash,
-        "Executed",
-        123444,
-        undefined,
-        undefined,
-        [0, 0, 0, 0, 1, 0, 0, 0],
-        proposalData[0].commands[0].quorum,
-        proposalData[0].commands[0].threshold,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined
-      )
-      response.then((result) => {
-        const updateStatus = patchProposalExecuted(pid)
-        updateStatus.then((result) => {
-          if (result.status !== 200) {
-            setExecuted(false)
-            setOpenSnackBar(true)
-            setMessage("Close deposit execution status update failed!")
-            setFailed(true)
-            setLoaderOpen(false)
-          } else {
-            setExecuted(true)
-            setOpenSnackBar(true)
-            setMessage("Close deposit execution successful!")
-            setFailed(false)
-            setLoaderOpen(false)
-          }
-        })
-      }, (error) => {
-        setExecuted(false)
-        setOpenSnackBar(true)
-        setMessage("Close deposit execution failed!")
-        setFailed(true)
-        setLoaderOpen(false)
-      })
-    }
-    if (proposalData[0].commands[0].executionId === 5) {
       // update raise amount execution
       const updateProposal = new SmartContract(ImplementationContract, daoAddress, undefined, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL)
       const response = updateProposal.updateProposalAndExecution(
@@ -660,7 +555,7 @@ const ProposalDetail = () => {
       })
     }
 
-    if (proposalData[0].commands[0].executionId === 6) {
+    if (proposalData[0].commands[0].executionId === 4) {
       // send custom token execution
       const updateProposal = new SmartContract(ImplementationContract, daoAddress, undefined, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL)
       const response = updateProposal.updateProposalAndExecution(
@@ -713,7 +608,7 @@ const ProposalDetail = () => {
       })
     }
 
-    if (proposalData[0].commands[0].executionId === 7) {
+    if (proposalData[0].commands[0].executionId === 5) {
       // send ethereum
       const updateProposal = new SmartContract(ImplementationContract, daoAddress, undefined, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL)
       const response = updateProposal.updateProposalAndExecution(

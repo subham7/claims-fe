@@ -491,11 +491,7 @@ const Proposal = () => {
       }
 
       if (name === commandTypeList[3].commandText) {
-        // For execution of start deposit
-        const today = new Date()
-        const calculateDay = new Date(day)
-        const difference = calculateDay.getTime() - today.getTime()
-        const dayCalculated = Math.ceil(difference / (1000 * 3600 * 24))
+        // For execution of update raise amount
         const payload = {
           "name": title,
           "description": description,
@@ -506,9 +502,6 @@ const Proposal = () => {
           "commands": [
             {
               "executionId": 3,
-              "day": dayCalculated,
-              "minDeposits": await convertToWeiUSDC(minDeposits, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL),
-              "maxDeposits": await convertToWeiUSDC(maxDeposits, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL),
               "totalDeposits": await convertToWeiUSDC(totalDeposits, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL),
             }
           ],
@@ -531,73 +524,6 @@ const Proposal = () => {
       }
 
       if (name === commandTypeList[4].commandText) {
-        // For execution of close deposit
-        const payload = {
-          "name": title,
-          "description": description,
-          "createdBy": walletAddress,
-          "clubId": clubID,
-          "votingDuration": new Date(duration).toISOString(),
-          "votingOptions": defaultOptions,
-          "commands": [
-            {
-              "executionId": 4,
-              "quorum": quorumValue,
-              "threshold": thresholdValue,
-            }
-          ],
-          "type": "action"
-        }
-        const createRequest = createProposal(payload)
-        createRequest.then((result) => {
-          if (result.status !== 201) {
-            setOpenSnackBar(true)
-            setFailed(true)
-          } else {
-            // console.log(result.data)
-            setLoaderOpen(true)
-            fetchData()
-            setOpenSnackBar(true)
-            setFailed(false)
-            setOpen(false)
-          }
-        })
-      }
-
-      if (name === commandTypeList[5].commandText) {
-        // For execution of update raise amount
-        const payload = {
-          "name": title,
-          "description": description,
-          "createdBy": walletAddress,
-          "clubId": clubID,
-          "votingDuration": new Date(duration).toISOString(),
-          "votingOptions": defaultOptions,
-          "commands": [
-            {
-              "executionId": 5,
-              "totalDeposits": await convertToWeiUSDC(totalDeposits, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL),
-            }
-          ],
-          "type": "action"
-        }
-        const createRequest = createProposal(payload)
-        createRequest.then((result) => {
-          if (result.status !== 201) {
-            setOpenSnackBar(true)
-            setFailed(true)
-          } else {
-            // console.log(result.data)
-            setLoaderOpen(true)
-            fetchData()
-            setOpenSnackBar(true)
-            setFailed(false)
-            setOpen(false)
-          }
-        })
-      }
-
-      if (name === commandTypeList[6].commandText) {
         // for execution of sending custom token
         const payload = {
           "name": title,
@@ -608,7 +534,7 @@ const Proposal = () => {
           "votingOptions": defaultOptions,
           "commands": [
             {
-              "executionId": 6,
+              "executionId": 4,
               "customToken": customToken,
               "customTokenAmounts": [await convertToWeiUSDC(customTokenAmounts, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL)],
               "customTokenAddresses": [customTokenAddresses]
@@ -1169,52 +1095,7 @@ const Proposal = () => {
                                           </Grid>
                                         </Grid>
                                       ) :
-                                      name === commandTypeList[3].commandText ? (
-                                        // start deposit execution
-                                        <Grid container ml={1} mt={1} mb={2} spacing={2} direction="column">
-                                          <Grid item>
-                                            <Typography variant="proposalBody">Deposit day</Typography>
-                                          </Grid>
-                                          <Grid item>
-                                            <LocalizationProvider dateAdapter={AdapterDateFns}>
-                                              <DesktopDatePicker
-                                                error={day === null}
-                                                inputFormat="dd/MM/yyyy"
-                                                value={day}
-                                                onChange={e => handleDayChange(e)}
-                                                renderInput={(params) => <TextField {...params} className={classes.datePicker} />}
-                                              />
-                                            </LocalizationProvider>
-                                          </Grid>
-                                          <Grid item>
-                                            <Typography variant="proposalBody">Minimum deposit</Typography>
-                                          </Grid>
-                                          <Grid item>
-                                            <TextField sx={{ width: "90%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
-                                              placeholder="0" onChange={(e) => setMinDeposits(e.target.value)} />
-                                          </Grid>
-                                          <Grid item>
-                                            <Typography variant="proposalBody">Maximum deposit</Typography>
-                                          </Grid>
-                                          <Grid item>
-                                            <TextField sx={{ width: "90%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
-                                              placeholder="0" onChange={(e) => setMaxDeposits(parseInt(e.target.value))} />
-                                          </Grid>
-                                          <Grid item>
-                                            <Typography variant="proposalBody">Total deposit</Typography>
-                                          </Grid>
-                                          <Grid item>
-                                            <TextField sx={{ width: "90%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
-                                              placeholder="0" onChange={(e) => setTotalDeposits(parseInt(e.target.value))} />
-                                          </Grid>
-                                        </Grid>
-                                      ) :
-                                        name === commandTypeList[4].commandText ? (
-                                          // close deposit execution
-                                          <Grid container ml={1} mt={1} mb={2} spacing={2} direction="column">
-                                          </Grid>
-                                        ) :
-                                          name === commandTypeList[5].commandText ? (
+                                          name === commandTypeList[3].commandText ? (
                                             // update raise amount execution
                                             <Grid container ml={1} mt={1} mb={2} spacing={2} direction="column">
                                               <Grid item>
@@ -1226,7 +1107,7 @@ const Proposal = () => {
                                               </Grid>
                                             </Grid>
                                           ) :
-                                            name === commandTypeList[6].commandText ? (
+                                            name === commandTypeList[4].commandText ? (
                                               // send custom token execution
                                               <Grid container ml={1} mt={1} mb={2} spacing={2} direction="column">
                                                 <Grid item>
