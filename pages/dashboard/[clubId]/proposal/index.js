@@ -228,9 +228,6 @@ const Proposal = () => {
   const [executiveRoles, setExecutiveRoles] = useState([])
   const [mintGtAddress, setMintGtAddress] = useState('')
   const [mintGTAmounts, setMintGtAmount] = useState(0)
-  const [day, setDay] = useState(null)
-  const [minDeposits, setMinDeposits] = useState(0)
-  const [maxDeposits, setMaxDeposits] = useState(0)
   const [totalDeposits, setTotalDeposits] = useState(0)
   const [sendEthAddresses, setSendEthAddresses] = useState([])
   const [sendEthAmounts, setSendEthAmounts] = useState([])
@@ -631,10 +628,6 @@ const Proposal = () => {
 
   const handleDurationChange = (value) => {
     setDuration(value)
-  }
-
-  const handleDayChange = (value) => {
-    setDay(value)
   }
 
   const handleClickOpen = () => {

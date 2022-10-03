@@ -10,9 +10,11 @@ import {
   Dialog,
   DialogContent,
   IconButton,
-  CircularProgress, 
+  CircularProgress,
   Backdrop,
-  Button
+  Button,
+  Snackbar,
+  Alert, TextField,
 } from "@mui/material"
 import { makeStyles } from "@mui/styles"
 import ProgressBar from "../../../src/components/progressbar"
@@ -22,7 +24,7 @@ import { getMembersDetails } from "../../../src/api/user"
 import Web3 from "web3"
 import USDCContract from "../../../src/abis/usdcTokenContract.json"
 import ImplementationContract from "../../../src/abis/implementationABI.json"
-import {SmartContract} from "../../../src/api/contract"
+import { SmartContract } from "../../../src/api/contract"
 import { fetchClubbyDaoAddress } from "../../../src/api/club"
 import { getAssets } from "../../../src/api/assets"
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
@@ -36,8 +38,14 @@ import {
   calculateTreasuryTargetShare,
   calculateUserSharePercentage,
   convertAmountToWei,
-  convertFromWeiGovernance
+  convertFromWeiGovernance,
+  convertFromWeiUSDC,
+  convertToWeiUSDC
 } from "../../../src/utils/globalFunctions";
+import { settingsOptions } from "../../../src/data/settingsOptions"
+import {LocalizationProvider} from "@mui/x-date-pickers/LocalizationProvider";
+import {DesktopDatePicker} from "@mui/x-date-pickers";
+import {AdapterDateFns} from "@mui/x-date-pickers/AdapterDateFns";
 
 
 const useStyles = makeStyles({
@@ -174,11 +182,16 @@ const useStyles = makeStyles({
     }
   },
   dialogBox: {
-    fontSize: "36px"
+    fontSize: "26px"
   },
   modalStyle: {
     width: "792px",
     backgroundColor: '#19274B',
+  },
+  datePicker: {
+    borderRadius: "10px",
+    backgroundColor: "#111D38",
+    width: "95%",
   },
 })
 
@@ -206,6 +219,7 @@ const Settings = (props) => {
   const [minDepositFetched, setMinDepositFetched] = useState(false)
   const [maxDeposit, setMaxDeposit] = useState(0)
   const [maxDepositFetched, setMaxDepositFetched] = useState(false)
+  const [performanceFee, setPerformanceFee] = useState(0)
   const [membersDetails, setMembersDetails] = useState([])
   const [loaderOpen, setLoaderOpen] = useState(false)
   const [closingDays, setClosingDays] = useState(0)
@@ -215,6 +229,16 @@ const Settings = (props) => {
   const [clubAssetTokenData, setClubAssetTokenData] = useState([])
   const [userOwnershipShare, setUserOwnershipShare] = useState(0)
   const [clubTokenMinted, setClubTokenMInted] = useState(0)
+  const [message, setMessage] = useState("")
+  const [failed, setFailed] = useState(false)
+  const [openSnackBar, setOpenSnackBar] = useState(false)
+  const [enabled, setEnabled] = useState(true)
+  const [settingType, setSettingType] = useState("")
+  const [day, setDay] = useState(null)
+  const [currentMinDeposit, setCurrentMinDeposit] = useState(0)
+  const [currentMaxDeposit, setCurrentMaxDeposit] = useState(0)
+  const [depositAmount, setDepositAmount] = useState(0)
+
   const FACTORY_CONTRACT_ADDRESS = useSelector(state => {
     return state.gnosis.factoryContractAddress
   })
@@ -255,7 +279,6 @@ const Settings = (props) => {
   const tokenDetailsRetrieval = async () => {
     if (tokenAPIDetails && tokenAPIDetails.length > 0) {
       const tokenDetailContract = new SmartContract(ImplementationContract, tokenAPIDetails[0].daoAddress, undefined, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL)
-      console.log(tokenDetailContract)
       await tokenDetailContract.tokenDetails()
         .then(async (result) => {
           settokenDetails(result)
@@ -307,6 +330,8 @@ const Settings = (props) => {
           setGovernorDetails(result)
           setClosingDays(calculateDays(parseInt(result[0]) * 1000))
           setGovernorDataFetched(true)
+          setCurrentMinDeposit(result[1])
+          setCurrentMaxDeposit(result[2])
         },
           (error) => {
             console.log(error)
@@ -314,15 +339,15 @@ const Settings = (props) => {
         )
 
       // minimum deposit amount from smart contract
-      await governorDetailContract.quoram()
-        .then((result) => {
-          setMinDeposit(result)
-          setMinDepositFetched(true)
-        },
-          (error) => {
-            console.log(error)
-          }
-        )
+      // await governorDetailContract.quoram()
+      //   .then((result) => {
+      //     setMinDeposit(result)
+      //     setMinDepositFetched(true)
+      //   },
+      //     (error) => {
+      //       console.log(error)
+      //     }
+      //   )
 
       // maximim deposit amount from smart contract
       await governorDetailContract.threshold()
@@ -376,9 +401,140 @@ const Settings = (props) => {
     }
   }, [clubId])
 
-  const handleEnableDisableContribution = (e) => {
-    e.preventDefault()
-    setOpen(true)
+  const handleDayChange = (value) => {
+    setDay(value)
+  }
+
+  const handleEnableDisableContribution = async (enabled) => {
+    setLoaderOpen(true)
+    setOpen(false)
+    const contract = new SmartContract(ImplementationContract, daoAddress, undefined, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL)
+    if (enabled) {
+      const response = contract.closeDeposit()
+      response.then((result) => {
+          setFailed(false)
+          setMessage("Contributions disabled!")
+          setOpenSnackBar(true)
+        },
+          (error) => {
+            setFailed(true)
+            setMessage("Contributions failed to be disabled!")
+            setOpenSnackBar(true)
+          }
+        )
+        setLoaderOpen(false)
+    } else {
+      if (depositAmount <= convertAmountToWei(governorDetails[4])) {
+        setOpen(false)
+        setFailed(true)
+        setMessage("Total supply amount should be greater than previous total supply amount!")
+        setOpenSnackBar(true)
+        setLoaderOpen(false)
+      } else {
+        const today = new Date()
+        const calculateDay = new Date(day)
+        const difference = calculateDay.getTime() - today.getTime()
+        const dayCalculated = Math.ceil(difference / (1000 * 3600 * 24))
+        const convertedDepositAmount = await convertToWeiUSDC(depositAmount, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL)
+        const response =  contract.startDeposit(dayCalculated, convertedDepositAmount)
+        response.then((result) => {
+            setOpen(false)
+            setFailed(false)
+            setMessage("Contributions enabled!")
+            setOpenSnackBar(true)
+            setLoaderOpen(false)
+          },
+            (error) => {
+              setOpen(false)
+              setFailed(true)
+              setMessage("Contributions failed to be enabled!")
+              setOpenSnackBar(true)
+              setLoaderOpen(false)
+            }
+          )
+      }
+    }
+  }
+
+  const handleContractUpdates = async (updateType) => {
+    setLoaderOpen(true)
+    setOpen(false)
+    const contract = new SmartContract(ImplementationContract, daoAddress, undefined, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL)
+
+    if (settingsOptions[1].name === updateType) {
+    //  case for min update
+      const convertedMinDeposit = await convertToWeiUSDC(minDeposit, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL)
+      if (convertedMinDeposit >= currentMaxDeposit) {
+          setLoaderOpen(false)
+          setFailed(true)
+          setMessage("Minimum deposit should not be greater than or equal to previous maximum deposit!")
+          setOpenSnackBar(true)
+      } else {
+        const response = contract.updateMinMaxDeposit(convertedMinDeposit, currentMaxDeposit)
+        response.then((result) => {
+            setLoaderOpen(false)
+            setFailed(false)
+            setMessage("Minimum deposit successfully updated!")
+            setOpenSnackBar(true)
+          },
+          (error) => {
+            setLoaderOpen(false)
+            setFailed(true)
+            setMessage("Minimum deposit failed to be updated!")
+            setOpenSnackBar(true)
+          }
+        )
+      }
+    }
+    if (settingsOptions[2].name === updateType) {
+    // case for max update
+      const convertedMaxDeposit = await convertToWeiUSDC(maxDeposit, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL)
+      if (convertedMaxDeposit <= currentMinDeposit) {
+          setLoaderOpen(false)
+          setFailed(true)
+          setMessage("Maximum deposit should not be less than or equal to previous minimum deposit!")
+          setOpenSnackBar(true)
+      } else {
+        const response = contract.updateMinMaxDeposit(currentMinDeposit, convertedMaxDeposit)
+        response.then((result) => {
+            setLoaderOpen(false)
+            setFailed(false)
+            setMessage("Maximum deposit successfully updated!")
+            setOpenSnackBar(true)
+          },
+          (error) => {
+            setLoaderOpen(false)
+            setFailed(true)
+            setMessage("Maximum deposit failed to be updated!")
+            setOpenSnackBar(true)
+          }
+        )
+      }
+    }
+    if (settingsOptions[3].name === updateType) {
+    //case for performance update
+    if (performanceFee > 100) {
+      setLoaderOpen(false)
+      setFailed(false)
+      setMessage("Performance fee cannot be greater than 100%!")
+      setOpenSnackBar(true)
+    } else {
+      const response = contract.updateOwnerFee(performanceFee)
+      response.then((result) => {
+          setLoaderOpen(false)
+          setFailed(false)
+          setMessage("Performance fee successfully updated!")
+          setOpenSnackBar(true)
+        },
+        (error) => {
+          setLoaderOpen(false)
+          setFailed(false)
+          setMessage("Performance fee failed to be updated!")
+          setOpenSnackBar(true)
+        }
+      )
+    }
+    }
   }
 
   const handleClickOpen = (e) => {
@@ -386,9 +542,20 @@ const Settings = (props) => {
     setTempOpen(true)
   }
 
+  const handleTempClose = (e) => {
+    e.preventDefault()
+    setTempOpen(false)
+  }
   const handleClose = (e) => {
     e.preventDefault()
     setOpen(false)
+  }
+
+  const handleSnackBarClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setOpenSnackBar(false)
   }
 
   return (
@@ -483,7 +650,7 @@ const Settings = (props) => {
                       <Typography variant="settingText">Your ownership</Typography>
                     </Grid>
                     <Grid item mt={2}>
-                      <Typography variant="p" className={classes.valuesStyle}>{userBalanceFetched && dataFetched ? isNaN(calculateUserSharePercentage(userBalance, tokenDetails[2])) ? 0 : (calculateUserSharePercentage(userBalance, userOwnershipShare)) : 0}% (${userBalance} )</Typography>
+                      <Typography variant="p" className={classes.valuesStyle}>{userBalanceFetched && dataFetched ? isNaN(calculateUserSharePercentage(userBalance, tokenDetails[2])) ? 0 : (calculateUserSharePercentage(userBalance, userOwnershipShare)) : 0}% (${userBalance})</Typography>
                     </Grid>
                   </Grid>
                 </Grid>
@@ -553,7 +720,8 @@ const Settings = (props) => {
                     </Grid>
                   </Grid>
                   <Divider /> */}
-                <Grid container ml={3} mr={4}>
+
+                {/* <Grid container ml={3} mr={4}>
                   <Grid item >
                     <Typography variant="settingText">Accept new member requests?</Typography>
                   </Grid>
@@ -580,22 +748,39 @@ const Settings = (props) => {
                     <Typography variant="p" className={classes.valuesStyle}>No <a className={classes.activityLink} onClick={(e) => handleClickOpen(e)}>(propose)</a></Typography>
                   </Grid>
                 </Grid>
-                <Divider />
+                <Divider /> */}
+
                 <Grid container ml={3} mr={4}>
                   <Grid item >
                     <Typography variant="settingText">Enable/Disable contributions</Typography>
                   </Grid>
                   <Grid item mr={4} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
-                    <Typography variant="p" className={classes.valuesStyle}>Enabled <a className={classes.activityLink} onClick={(e) => handleEnableDisableContribution(e)}>(propose)</a></Typography>
+                    {governorDataFetched ? closingDays > 0 ?
+                      <Typography variant="p" className={classes.valuesStyle}>
+                        Enabled
+                        <a className={classes.activityLink} onClick={(e) => { setSettingType("deposit"); setEnabled(true); setOpen(true) }}> (Disable)</a>
+                      </Typography>
+                      : <Typography variant="p" className={classes.valuesStyle}>
+                        Disabled
+                        <a className={classes.activityLink} onClick={(e) => { setSettingType("deposit"); setEnabled(false); setOpen(true) }}> (Enable)</a>
+                      </Typography>
+                      : null
+                    }
                   </Grid>
                 </Grid>
+
                 <Divider />
                 <Grid container ml={3} mr={4}>
                   <Grid item >
                     <Typography variant="settingText">Minimum deposit amount for new members</Typography>
                   </Grid>
                   <Grid item mr={4} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
-                    <Typography variant="p" className={classes.valuesStyle}>{governorDataFetched ? convertAmountToWei(governorDetails[1]) : null} USDC <a className={classes.activityLink} onClick={(e) => handleClickOpen(e)}>(change)</a></Typography>
+                    <Typography variant="p" className={classes.valuesStyle}>
+                      {governorDataFetched ? convertAmountToWei(governorDetails[1]) : null} USDC
+                      <a className={classes.activityLink} onClick={(e) => {
+                        setSettingType("minDeposit");
+                        setOpen(true)
+                      }}> (change)</a></Typography>
                   </Grid>
                 </Grid>
                 <Divider />
@@ -604,10 +789,15 @@ const Settings = (props) => {
                     <Typography variant="settingText">Maximum deposit amount for new members</Typography>
                   </Grid>
                   <Grid item mr={4} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
-                    <Typography variant="p" className={classes.valuesStyle}>{governorDataFetched ? convertAmountToWei(governorDetails[2]) : null} USDC <a className={classes.activityLink} onClick={(e) => handleClickOpen(e)}>(change)</a></Typography>
+                    <Typography variant="p" className={classes.valuesStyle}>
+                      {governorDataFetched ? convertAmountToWei(governorDetails[2]) : null} USDC
+                      <a className={classes.activityLink} onClick={(e) => {
+                        setSettingType("maxDeposit");
+                        setOpen(true)
+                      }}> (change)</a></Typography>
                   </Grid>
                 </Grid>
-                <Divider />
+                {/*<Divider />
                 <Grid container ml={3} mr={4}>
                   <Grid item >
                     <Typography variant="settingText">Minimum votes to validate a proposal</Typography>
@@ -624,18 +814,23 @@ const Settings = (props) => {
                   <Grid item mr={4} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
                     <Typography variant="p" className={classes.valuesStyle}>{maxDepositFetched ? maxDeposit + "%" : null} <a className={classes.activityLink} onClick={(e) => handleClickOpen(e)}>(propose)</a></Typography>
                   </Grid>
-                </Grid>
+                </Grid> */}
+
                 <Divider />
                 <Grid container ml={3} mr={4}>
                   <Grid item >
-                    <Typography variant="settingText">Club’s carry fees</Typography>
+                    <Typography variant="settingText">Performance fees</Typography>
                   </Grid>
                   <Grid item mr={4} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
-                    <Typography variant="p" className={classes.valuesStyle}>No <a className={classes.activityLink} onClick={(e) => handleClickOpen(e)}>(propose)</a></Typography>
+                    <Typography variant="p" className={classes.valuesStyle}>No
+                      <a className={classes.activityLink} onClick={(e) => {
+                        setSettingType("performanceFee");
+                        setOpen(true)
+                      }}>(propose)</a></Typography>
                   </Grid>
                 </Grid>
                 <Divider />
-                <Grid container ml={3} mr={4}>
+                {/* <Grid container ml={3} mr={4}>
                   <Grid item >
                     <Typography variant="settingText">Allow deposits till this date</Typography>
                   </Grid>
@@ -643,15 +838,8 @@ const Settings = (props) => {
                     <Typography variant="p" className={classes.valuesStyle}>{governorDataFetched ? new Date(parseInt(governorDetails[0]) * 1000).toJSON().slice(0, 10).split('-').reverse().join('/') : null} <a className={classes.activityLink} onClick={(e) => handleClickOpen(e)}>(change)</a></Typography>
                   </Grid>
                 </Grid>
-                <Divider />
-                <Grid container ml={3} mr={4}>
-                  <Grid item >
-                    <Typography variant="settingText">Is there a carry fee?</Typography>
-                  </Grid>
-                  <Grid item mr={4} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
-                    <Typography variant="p" className={classes.valuesStyle}>No <a className={classes.activityLink} onClick={(e) => handleClickOpen(e)}>(propose)</a></Typography>
-                  </Grid>
-                </Grid>
+                <Divider /> */}
+
               </Stack>
             </Card>
           </Grid>
@@ -662,26 +850,135 @@ const Settings = (props) => {
           <DialogContent sx={{ overflow: "hidden", backgroundColor: '#19274B', }} >
             <Grid container justifyContent="center" alignItems="center" direction="column" mt={3}>
               <Grid item m={3}>
-                <Typography className={classes.dialogBox}>Do you want to disable contributions?</Typography>
-              </Grid>
-              <Grid container direction="row" justifyContent="center" alignItems="center">
-              <Grid item m={3}>
-              <Button variant="primary" startIcon={<CheckCircleIcon />} onClick={handleClickOpen}>
-                Disable
-              </Button>
-              </Grid>
-              <Grid item m={3}>
-                <Button variant="primary" startIcon={<CancelIcon />} onClick={handleClose}>
-                Cancel
-              </Button>
-              </Grid>
+                {
+                  settingsOptions[0].name === settingType ?
+                    enabled ?
+                      <>
+                        <Typography className={classes.dialogBox}>Do you want to disable contributions?</Typography>
+                        <Grid container direction="row" justifyContent="center" alignItems="center">
+                          <Grid item m={3}>
+                            <Button variant="primary" startIcon={<CheckCircleIcon />} onClick={() => handleEnableDisableContribution(true)}>
+                              Disable
+                            </Button>
+                          </Grid>
+                          <Grid item m={3}>
+                            <Button variant="primary" startIcon={<CancelIcon />} onClick={handleClose}>
+                              Cancel
+                            </Button>
+                          </Grid>
+                        </Grid>
+                      </>
+
+                      :
+                      <>
+                        <Typography className={classes.dialogBox}>Do you want to enable contributions?</Typography>
+                        <Grid container direction="row" justifyContent="center" alignItems="center">
+                          <Grid container mt={1} mb={2} spacing={2} direction="column">
+                            <Grid item>
+                              <Typography variant="proposalBody">Deposit till</Typography>
+                            </Grid>
+                            <Grid item>
+                              <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                <DesktopDatePicker
+                                  error={day === null}
+                                  inputFormat="dd/MM/yyyy"
+                                  value={day}
+                                  onChange={e => handleDayChange(e)}
+                                  renderInput={(params) => <TextField {...params} className={classes.datePicker} />}
+                                />
+                              </LocalizationProvider>
+                            </Grid>
+                            <Grid item>
+                              <Typography variant="proposalBody">Total supply amount</Typography>
+                            </Grid>
+                            <Grid item>
+                              <TextField sx={{ width: "95%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
+                                placeholder="Enter the total supply amount" onChange={(e) => setDepositAmount(e.target.value)} />
+                            </Grid>
+                          </Grid>
+                          <Grid item m={3}>
+                            <Button variant="primary" startIcon={<CheckCircleIcon />} onClick={() => handleEnableDisableContribution(false)} disabled={day === null}>
+                              Enable
+                            </Button>
+                          </Grid>
+                          <Grid item m={3}>
+                            <Button variant="primary" startIcon={<CancelIcon />} onClick={handleClose}>
+                              Cancel
+                            </Button>
+                          </Grid>
+                        </Grid>
+                      </>
+                    :
+                    settingsOptions[1].name === settingType ?
+                      <>
+                        <Typography className={classes.dialogBox}>Update minimum deposit amount for new member</Typography>
+                        <Grid container direction="row" justifyContent="center" alignItems="center">
+                          <Grid container item>
+                            <TextField sx={{ width: "95%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
+                                       placeholder="Enter the update amount" onChange={(e) => setMinDeposit(e.target.value)} />
+                          </Grid>
+                          <Grid item m={3}>
+                            <Button variant="primary" startIcon={<CheckCircleIcon />} onClick={() => handleContractUpdates(settingType)}>
+                              Update
+                            </Button>
+                          </Grid>
+                          <Grid item m={3}>
+                            <Button variant="primary" startIcon={<CancelIcon />} onClick={handleClose}>
+                              Cancel
+                            </Button>
+                          </Grid>
+                        </Grid>
+                      </> :
+                      settingsOptions[2].name === settingType ?
+                        <>
+                          <Typography className={classes.dialogBox}>Update maximum deposit amount for new member</Typography>
+                          <Grid container direction="row" justifyContent="center" alignItems="center">
+                            <Grid container item>
+                              <TextField sx={{ width: "95%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
+                                         placeholder="Enter the update amount" onChange={(e) => setMaxDeposit(e.target.value)} />
+                            </Grid>
+                            <Grid item m={3}>
+                              <Button variant="primary" startIcon={<CheckCircleIcon />} onClick={() => handleContractUpdates(settingType)}>
+                                Update
+                              </Button>
+                            </Grid>
+                            <Grid item m={3}>
+                              <Button variant="primary" startIcon={<CancelIcon />} onClick={handleClose}>
+                                Cancel
+                              </Button>
+                            </Grid>
+                          </Grid>
+                        </> :
+                        settingsOptions[3].name === settingType ?
+                          <>
+                            <Typography className={classes.dialogBox}>Update performance fee of club (in %)</Typography>
+                            <Grid container direction="row" justifyContent="center" alignItems="center">
+                              <Grid container item>
+                                <TextField sx={{ width: "95%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
+                                           placeholder="Enter the performance fee percentage" onChange={(e) => setPerformanceFee(e.target.value)} />
+                              </Grid>
+                              <Grid item m={3}>
+                                <Button variant="primary" startIcon={<CheckCircleIcon />} onClick={() => handleContractUpdates(settingType)}>
+                                  Update
+                                </Button>
+                              </Grid>
+                              <Grid item m={3}>
+                                <Button variant="primary" startIcon={<CancelIcon />} onClick={handleClose}>
+                                  Cancel
+                                </Button>
+                              </Grid>
+                            </Grid>
+                          </>
+                      : null
+                }
+
               </Grid>
             </Grid>
           </DialogContent>
         </Dialog>
 
         {/* This is the temporary coming soon dialogue */}
-        <Dialog open={tempOpen} onClose={handleClose} scroll="body" PaperProps={{ classes: { root: classes.modalStyle } }} fullWidth maxWidth="lg" >
+        <Dialog open={tempOpen} onClose={handleTempClose} scroll="body" PaperProps={{ classes: { root: classes.modalStyle } }} fullWidth maxWidth="lg" >
           <DialogContent sx={{ overflow: "hidden", backgroundColor: '#19274B', }} >
             <Grid container justifyContent="center" alignItems="center" direction="column" mt={3}>
               <Grid item>
@@ -700,6 +997,17 @@ const Settings = (props) => {
         >
           <CircularProgress color="inherit" />
         </Backdrop>
+
+        <Snackbar open={openSnackBar} autoHideDuration={6000} onClose={handleSnackBarClose} anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
+          {!failed ?
+            (<Alert onClose={handleSnackBarClose} severity="success" sx={{ width: '100%' }}>
+              {message}
+            </Alert>) :
+            (<Alert onClose={handleSnackBarClose} severity="error" sx={{ width: '100%' }}>
+              {message}
+            </Alert>)
+          }
+        </Snackbar>
       </Layout1>
     </>
   )
