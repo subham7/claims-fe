@@ -294,8 +294,8 @@ const Settings = (props) => {
     })
   }
 
-  const contractDetailsRetrieval = async () => {
-    if (daoAddress && !governorDataFetched && !governorDetails && walletAddress) {
+  const contractDetailsRetrieval = async (refresh = false) => {
+    if ((daoAddress && !governorDataFetched && !governorDetails && walletAddress) || refresh) {
       const governorDetailContract = new SmartContract(ImplementationContract, daoAddress, undefined, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL)
       await governorDetailContract.getGovernorDetails()
         .then((result) => {
@@ -340,17 +340,20 @@ const Settings = (props) => {
     }
   }
 
-  useEffect(() => {
-    setLoaderOpen(true);
+  const loadData = () => {
+    setLoaderOpen(true)
     tokenAPIDetailsRetrieval()
     tokenDetailsRetrieval()
-    contractDetailsRetrieval()
+    contractDetailsRetrieval(false)
     fetchMembers()
 
     if (apiTokenDetailSet && dataFetched && governorDataFetched && membersFetched) {
       setLoaderOpen(false)
     }
+  }
 
+  useEffect(() => {
+    loadData()
   }, [daoAddress, apiTokenDetailSet, dataFetched, governorDetails, membersFetched])
 
   useEffect(() => {
@@ -381,13 +384,12 @@ const Settings = (props) => {
     if (enabled) {
       const response = contract.closeDeposit()
       response.then((result) => {
-        router.reload()
         setDataFetched(true)
         setFailed(false)
         setMessage("Contributions disabled!")
         setOpenSnackBar(true)
         setLoaderOpen(false)
-
+        contractDetailsRetrieval(true)
       }, (error) => {
         setFailed(true)
         setMessage("Contributions failed to be disabled!")
@@ -409,13 +411,13 @@ const Settings = (props) => {
         const convertedDepositAmount = await convertToWeiUSDC(depositAmount, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL)
         const response = contract.startDeposit(dayCalculated, convertedDepositAmount)
         response.then((result) => {
-          router.reload()
           setDataFetched(true)
           setOpen(false)
           setFailed(false)
           setMessage("Contributions enabled!")
           setOpenSnackBar(true)
           setLoaderOpen(false)
+          contractDetailsRetrieval(true)
         }, (error) => {
           setOpen(false)
           setFailed(true)
@@ -443,7 +445,7 @@ const Settings = (props) => {
       } else {
         const response = contract.updateMinMaxDeposit(convertedMinDeposit, currentMaxDeposit)
         response.then((result) => {
-          router.reload()
+          contractDetailsRetrieval(true)
           setLoaderOpen(false)
           setFailed(false)
           setMessage("Minimum deposit successfully updated!")
@@ -467,7 +469,7 @@ const Settings = (props) => {
       } else {
         const response = contract.updateMinMaxDeposit(currentMinDeposit, convertedMaxDeposit)
         response.then((result) => {
-          router.reload()
+          contractDetailsRetrieval(true)
           setLoaderOpen(false)
           setFailed(false)
           setMessage("Maximum deposit successfully updated!")
@@ -490,7 +492,7 @@ const Settings = (props) => {
       } else {
         const response = contract.updateOwnerFee(performanceFee)
         response.then((result) => {
-          router.reload()
+          fetchPerformanceFee()
           setLoaderOpen(false)
           setFailed(false)
           setMessage("Performance fee successfully updated!")
