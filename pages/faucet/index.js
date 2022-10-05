@@ -212,20 +212,20 @@ const Faucet = (props) => {
       console.log(err)
     }
   }
-  useEffect(() => {
-    const web3 = new Web3(Web3.givenProvider)
-    const networkIdRK = "4"
-    web3.eth.net
-      .getId()
-      .then((networkId) => {
-        if (networkId != networkIdRK) {
-          setOpen(true)
-        }
-      })
-      .catch((err) => {
-        console.log(err)
-      })
-  }, [])
+  // useEffect(() => {
+  //   const web3 = new Web3(Web3.givenProvider)
+  //   const networkIdRK = "4"
+  //   web3.eth.net
+  //     .getId()
+  //     .then((networkId) => {
+  //       if (networkId != networkIdRK) {
+  //         setOpen(true)
+  //       }
+  //     })
+  //     .catch((err) => {
+  //       console.log(err)
+  //     })
+  // }, [])
 
   const getAccount = async () => {
     if (localStorage.getItem("isWalletConnected")) {
@@ -364,7 +364,7 @@ const Faucet = (props) => {
               </Button>
             </Grid>
             <Grid item xs={0} mt={2} flex flexDirection="row" justifyContent="space-between">
-            <Button variant="transparentWhite" color={"#FFFFFF"} ml={"200px"} onClick={() => { window.open(`https://faucets.chain.link/rinkeby`) }}> Get Eth here</Button>
+            <Button variant="transparentWhite" color={"#FFFFFF"} ml={"200px"} onClick={() => { window.open(`https://faucets.chain.link`) }}> Get Eth here</Button>
             </Grid>
             <Grid item xs={0} mt={2} flex flexDirection="row" justifyContent="space-between">
             <Button variant="transparentWhite" color={"#FFFFFF"} ml={"200px"} onClick={() => {importTokenToMetaMask()}}> Import token</Button>

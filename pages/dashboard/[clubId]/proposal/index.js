@@ -29,6 +29,7 @@ import SearchIcon from "@mui/icons-material/Search"
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
 import AddCircleRoundedIcon from '@mui/icons-material/AddCircleRounded'
 import CancelIcon from '@mui/icons-material/Cancel';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { fontStyle } from "@mui/system"
 import SimpleSelectButton from "../../../../src/components/simpleSelectButton"
 import { proposalType, commandTypeList } from "../../../../src/data/dashboard"
@@ -227,9 +228,6 @@ const Proposal = () => {
   const [executiveRoles, setExecutiveRoles] = useState([])
   const [mintGtAddress, setMintGtAddress] = useState('')
   const [mintGTAmounts, setMintGtAmount] = useState(0)
-  const [day, setDay] = useState(null)
-  const [minDeposits, setMinDeposits] = useState(0)
-  const [maxDeposits, setMaxDeposits] = useState(0)
   const [totalDeposits, setTotalDeposits] = useState(0)
   const [sendEthAddresses, setSendEthAddresses] = useState([])
   const [sendEthAmounts, setSendEthAmounts] = useState([])
@@ -270,8 +268,7 @@ const Proposal = () => {
         if (result.status != 200) {
           setTokenFetched(false)
         } else {
-          setTokenData(result.data.tokens)
-          console.log(result.data.tokens.slice(1))
+          setTokenData(result.data.tokenPriceList)
           setTokenFetched(true)
         }
       })
@@ -491,11 +488,7 @@ const Proposal = () => {
       }
 
       if (name === commandTypeList[3].commandText) {
-        // For execution of start deposit
-        const today = new Date()
-        const calculateDay = new Date(day)
-        const difference = calculateDay.getTime() - today.getTime()
-        const dayCalculated = Math.ceil(difference / (1000 * 3600 * 24))
+        // For execution of update raise amount
         const payload = {
           "name": title,
           "description": description,
@@ -506,9 +499,6 @@ const Proposal = () => {
           "commands": [
             {
               "executionId": 3,
-              "day": dayCalculated,
-              "minDeposits": await convertToWeiUSDC(minDeposits, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL),
-              "maxDeposits": await convertToWeiUSDC(maxDeposits, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL),
               "totalDeposits": await convertToWeiUSDC(totalDeposits, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL),
             }
           ],
@@ -531,73 +521,6 @@ const Proposal = () => {
       }
 
       if (name === commandTypeList[4].commandText) {
-        // For execution of close deposit
-        const payload = {
-          "name": title,
-          "description": description,
-          "createdBy": walletAddress,
-          "clubId": clubID,
-          "votingDuration": new Date(duration).toISOString(),
-          "votingOptions": defaultOptions,
-          "commands": [
-            {
-              "executionId": 4,
-              "quorum": quorumValue,
-              "threshold": thresholdValue,
-            }
-          ],
-          "type": "action"
-        }
-        const createRequest = createProposal(payload)
-        createRequest.then((result) => {
-          if (result.status !== 201) {
-            setOpenSnackBar(true)
-            setFailed(true)
-          } else {
-            // console.log(result.data)
-            setLoaderOpen(true)
-            fetchData()
-            setOpenSnackBar(true)
-            setFailed(false)
-            setOpen(false)
-          }
-        })
-      }
-
-      if (name === commandTypeList[5].commandText) {
-        // For execution of update raise amount
-        const payload = {
-          "name": title,
-          "description": description,
-          "createdBy": walletAddress,
-          "clubId": clubID,
-          "votingDuration": new Date(duration).toISOString(),
-          "votingOptions": defaultOptions,
-          "commands": [
-            {
-              "executionId": 5,
-              "totalDeposits": await convertToWeiUSDC(totalDeposits, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL),
-            }
-          ],
-          "type": "action"
-        }
-        const createRequest = createProposal(payload)
-        createRequest.then((result) => {
-          if (result.status !== 201) {
-            setOpenSnackBar(true)
-            setFailed(true)
-          } else {
-            // console.log(result.data)
-            setLoaderOpen(true)
-            fetchData()
-            setOpenSnackBar(true)
-            setFailed(false)
-            setOpen(false)
-          }
-        })
-      }
-
-      if (name === commandTypeList[6].commandText) {
         // for execution of sending custom token
         const payload = {
           "name": title,
@@ -608,7 +531,7 @@ const Proposal = () => {
           "votingOptions": defaultOptions,
           "commands": [
             {
-              "executionId": 6,
+              "executionId": 4,
               "customToken": customToken,
               "customTokenAmounts": [await convertToWeiUSDC(customTokenAmounts, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL)],
               "customTokenAddresses": [customTokenAddresses]
@@ -707,10 +630,6 @@ const Proposal = () => {
     setDuration(value)
   }
 
-  const handleDayChange = (value) => {
-    setDay(value)
-  }
-
   const handleClickOpen = () => {
     setOpen(true)
   }
@@ -722,19 +641,21 @@ const Proposal = () => {
   const handleAddNewCommand = () => {
     setOpenCard(true)
     setCommandList([...commandList, ""])
+    setCount(1)
   }
 
   const handleAddNewOption = () => {
     setOpenCard(true)
     setOptionList([...optionList, ""])
     setSurveyOption([...surveyOption, surveyValue])
-    console.log(optionList)
+    console.log(surveyOption)
   }
 
   const handleRemoveClick = (index) => {
     const list = [...commandList];
     list.splice(index, 1);
     setCommandList(list);
+    setCount(0);
   };
 
   const handleRemoveSurveyClick = (index) => {
@@ -1004,7 +925,7 @@ const Proposal = () => {
             {type === proposalType[0].type ?
               (
                 <>
-                  <Grid container item ml={3} mt={2}>
+                  <Grid container item ml={3} mt={2} mb={2}>
                     <Typography variant="proposalBody">(Minimum 2 options needed*)</Typography>
                   </Grid>
                   {!enableSubmitButton ? setEnableSubmitButton(true) : null}
@@ -1018,7 +939,7 @@ const Proposal = () => {
                             </Grid>
                             <Grid container ml={1} mt={1} mb={2} spacing={2} direction="column">
                               <Grid container direction="row" ml={2}>
-                                <Grid item md={10}>
+                                <Grid item md={10} mb={3}>
                                   <TextField sx={{ width: "90%", backgroundColor: "#C1D3FF40" }}
                                     className={classes.cardTextBox}
                                     placeholder="Yes / No / Abstain, etc."
@@ -1039,7 +960,7 @@ const Proposal = () => {
                     </Card>
                   </Grid>
                   <Grid container item mt={2} ml={3}>
-                    <Button variant="primary" startIcon={<AddCircleRoundedIcon />} onClick={handleAddNewOption}>
+                    <Button variant="primary" startIcon={<AddCircleRoundedIcon />} onClick={handleAddNewOption} disabled={optionList.length >= 1 && surveyValue === ""}>
                       Add Option
                     </Button>
                   </Grid>
@@ -1060,7 +981,7 @@ const Proposal = () => {
                               <Grid container item ml={3} mt={2}>
                                 <Typography variant="proposalBody">Command #{key + 1}</Typography>
                               </Grid>
-                              <Grid container item ml={3} mt={1} mb={2}>
+                              <Grid container item ml={3} mt={1} mb={3}>
                                 <Select
                                   displayEmpty
                                   value={name}
@@ -1167,52 +1088,7 @@ const Proposal = () => {
                                           </Grid>
                                         </Grid>
                                       ) :
-                                      name === commandTypeList[3].commandText ? (
-                                        // start deposit execution
-                                        <Grid container ml={1} mt={1} mb={2} spacing={2} direction="column">
-                                          <Grid item>
-                                            <Typography variant="proposalBody">Deposit day</Typography>
-                                          </Grid>
-                                          <Grid item>
-                                            <LocalizationProvider dateAdapter={AdapterDateFns}>
-                                              <DesktopDatePicker
-                                                error={day === null}
-                                                inputFormat="dd/MM/yyyy"
-                                                value={day}
-                                                onChange={e => handleDayChange(e)}
-                                                renderInput={(params) => <TextField {...params} className={classes.datePicker} />}
-                                              />
-                                            </LocalizationProvider>
-                                          </Grid>
-                                          <Grid item>
-                                            <Typography variant="proposalBody">Minimum deposit</Typography>
-                                          </Grid>
-                                          <Grid item>
-                                            <TextField sx={{ width: "90%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
-                                              placeholder="0" onChange={(e) => setMinDeposits(e.target.value)} />
-                                          </Grid>
-                                          <Grid item>
-                                            <Typography variant="proposalBody">Maximum deposit</Typography>
-                                          </Grid>
-                                          <Grid item>
-                                            <TextField sx={{ width: "90%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
-                                              placeholder="0" onChange={(e) => setMaxDeposits(parseInt(e.target.value))} />
-                                          </Grid>
-                                          <Grid item>
-                                            <Typography variant="proposalBody">Total deposit</Typography>
-                                          </Grid>
-                                          <Grid item>
-                                            <TextField sx={{ width: "90%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
-                                              placeholder="0" onChange={(e) => setTotalDeposits(parseInt(e.target.value))} />
-                                          </Grid>
-                                        </Grid>
-                                      ) :
-                                        name === commandTypeList[4].commandText ? (
-                                          // close deposit execution
-                                          <Grid container ml={1} mt={1} mb={2} spacing={2} direction="column">
-                                          </Grid>
-                                        ) :
-                                          name === commandTypeList[5].commandText ? (
+                                          name === commandTypeList[3].commandText ? (
                                             // update raise amount execution
                                             <Grid container ml={1} mt={1} mb={2} spacing={2} direction="column">
                                               <Grid item>
@@ -1224,7 +1100,7 @@ const Proposal = () => {
                                               </Grid>
                                             </Grid>
                                           ) :
-                                            name === commandTypeList[6].commandText ? (
+                                            name === commandTypeList[4].commandText ? (
                                               // send custom token execution
                                               <Grid container ml={1} mt={1} mb={2} spacing={2} direction="column">
                                                 <Grid item>
@@ -1245,12 +1121,12 @@ const Proposal = () => {
                                                     MenuProps={tokenData}
                                                     style={{ borderRadius: "10px", background: "#111D38 0% 0% no-repeat padding-box", width: "90%" }}
                                                   >
-                                                    {tokenData.slice(1).map((token) => (
+                                                    {tokenData.map((token) => (
 
                                                       <MenuItem
                                                         key={token.name}
-                                                        value={token.tokenAddress}>
-                                                        {token.token.name}
+                                                        value={token.token_address}>
+                                                        {token.name}
                                                       </MenuItem>
                                                     ))}
                                                   </Select>
@@ -1299,11 +1175,13 @@ const Proposal = () => {
                       </Card>
                     ) : <></>}
                   </Grid>
-                  <Grid container item mt={2} ml={3}>
-                    <Button variant="primary" startIcon={<AddCircleRoundedIcon />} onClick={handleAddNewCommand}>
-                      Add command
-                    </Button>
-                  </Grid>
+                  {count < 1 ?
+                    <Grid container item mt={2} ml={3}>
+                      <Button variant="primary" startIcon={<AddCircleRoundedIcon />} onClick={handleAddNewCommand}>
+                        Add command
+                      </Button>
+                    </Grid> : null
+                  }
                 </>
               )
             }

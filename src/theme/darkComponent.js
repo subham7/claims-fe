@@ -89,7 +89,7 @@ export const darkComponents = {
   MuiCard: {
     styleOverrides: {
       root: {
-        background: "#19274B",
+        background: "#142243",
         borderRadius: "10px",
         padding: "20px",
       },
@@ -107,7 +107,7 @@ export const darkComponents = {
     styleOverrides: {
       root: {
         boxShadow: "none",
-        backgroundColor: "#19274B",
+        backgroundColor: "#111D38",
         backgroundImage: "none",
       },
     },
@@ -128,7 +128,7 @@ export const darkComponents = {
     styleOverrides: {
       root: {
         border: "none",
-        backgroundColor: "#19274B",
+        backgroundColor: "#111D38",
       }
     },
     variants: [
@@ -379,7 +379,7 @@ export const darkComponents = {
   MuiList: {
     styleOverrides: {
       root: {
-        backgroundColor: "#19274B",
+        backgroundColor: "#111D38",
       }
     }
   },

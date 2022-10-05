@@ -5,26 +5,17 @@ import {getJwtToken} from "../../utils/auth";
 
 export async function createUser(data) {
   // create user API
-  const resolved = {
-    data: null,
-    error: null,
-  }
-  await fetch(MAIN_API_URL + 'user', {
-    method: 'POST',
-    headers: {
-      'Authorization': 'Bearer ' + getJwtToken(),
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(data)
-  })
-    .then(res => {
-      resolved.data = res
-      console.log(res)
-    })
-    .catch(err => {
-      resolved.error = err
-    })
-  return resolved
+
+  return await axios.post(
+    MAIN_API_URL + "user",
+    data,
+    {
+      headers: {
+        'Authorization': 'Bearer ' + getJwtToken(),
+        'Content-Type': 'application/json'
+      }
+    }
+  )
 }
 
 export async function fetchClubByUserAddress(userId) {

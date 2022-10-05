@@ -5,7 +5,7 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import EditIcon from '@mui/icons-material/Edit';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { networkType } from '../data/network';
@@ -69,10 +69,12 @@ export default function NetworkSwitcher() {
   const router = useRouter()
   const [networks, setNetworks] = useState([]);
   const [networksFetched, setNetworksFetched] = useState(false);
-  const [activeNetwork, setActiveNetwork] = useState(networksFetched ? networks[0].name : null)
+  const activeNetworkName = useSelector(state => {
+    return state.gnosis.networkName
+  })
+  const [activeNetwork, setActiveNetwork] = useState(activeNetworkName)
   const [networkDetails, setNetworkDetails] = useState([])
   const [networkDetailsFetched, setNetworkDetailsFetched] = useState(false)
-
 
   const fetchNetworks = () => {
     const networkData = fetchConfig()
@@ -120,6 +122,12 @@ export default function NetworkSwitcher() {
   }
 
   useEffect(() => {
+    if (activeNetworkName) {
+      setActiveNetwork(activeNetworkName)
+    }
+  }, [activeNetworkName])
+
+  useEffect(() => {
     fetchNetworks()
     fetchDynamicAddresses()
 
@@ -137,11 +145,11 @@ export default function NetworkSwitcher() {
     fetchNetworksById(data.networkId)
     if (networkDetailsFetched) {
       let rpcURL = null
-      switch(data.networkId) {
-        case 4:
-          rpcURL = RINKEYBY_RPC_URL
-        case 5:
-          rpcURL = GOERLI_RPC_URL
+      if (data.networkId == 4) {
+        rpcURL = RINKEYBY_RPC_URL
+      }
+      if (data.networkId == 5) {
+        rpcURL = GOERLI_RPC_URL
       }
       const switched = await switchNetwork(networkDetails[0].networkHex, rpcURL)
       if (switched) {
@@ -166,7 +174,7 @@ export default function NetworkSwitcher() {
         endIcon={<KeyboardArrowDownIcon />
         }
       >
-        {activeNetwork}
+        {activeNetworkName ? activeNetworkName : activeNetwork}
       </Button>
       <StyledMenu
         id="demo-customized-menu"
@@ -176,10 +184,11 @@ export default function NetworkSwitcher() {
         anchorEl={anchorEl}
         onClose={handleClose}
         open={open}
+        
       >
-        {networksFetched ? networks.map((data, id) => {
+        {networksFetched ? networks.map((data, networkId) => {
           return (
-            <MenuItem key={id} onClick={() => handleNetworkChange(data)} disableRipple>
+            <MenuItem key={networkId} onClick={() => handleNetworkChange(data)} disableRipple >
               {data.name}
             </MenuItem>
           )

@@ -15,18 +15,57 @@ import {
 import { checkNetwork } from "./wallet"
 import { loginToken, refreshToken } from "../api/auth";
 import { getExpiryTime, getJwtToken, getRefreshToken, setExpiryTime, setJwtToken, setRefreshToken } from "./auth";
-import { addSafeAddress } from '../redux/reducers/gnosis';
+import {addSafeAddress, setAdminUser} from '../redux/reducers/gnosis';
 import { fetchConfig } from '../api/config'
 import { updateDynamicAddress } from '../api'
 import { fetchConfigById } from '../api/config'
 import { addContractAddress } from '../redux/reducers/gnosis'
+import {SmartContract} from "../api/contract";
+import ImplementationContract from "../abis/implementationABI.json";
+import {convertFromWeiGovernance} from "./globalFunctions";
 
 
 const ClubFetch = (Component) => {
   const RetrieveDataComponent = () => {
     const router = useRouter()
     const { clubId } = router.query
+    const daoAddress = useSelector(state => { return state.create.daoAddress })
     const dispatch = useDispatch()
+    const FACTORY_CONTRACT_ADDRESS = useSelector(state => {
+      return state.gnosis.factoryContractAddress
+    })
+    const USDC_CONTRACT_ADDRESS = useSelector(state => {
+      return state.gnosis.usdcContractAddress
+    })
+    const GNOSIS_TRANSACTION_URL = useSelector(state => {
+      return state.gnosis.transactionUrl
+    })
+
+    const checkUserExists = () =>{
+      if (daoAddress && USDC_CONTRACT_ADDRESS && GNOSIS_TRANSACTION_URL) {
+        const checkUserInClub = new SmartContract(ImplementationContract, daoAddress, undefined, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL)
+        const response = checkUserInClub.userDetails()
+        response.then((result) => {
+          console.log("result", result)
+          if (result[2]) {
+            dispatch(setAdminUser(true))
+          } else {
+            dispatch(setAdminUser(false))
+          }
+          // if (!result[0]) {
+          //   // router.push("/")
+          // }
+        },
+        (error) => {
+          // router.push("/")
+        })
+      }
+    }
+
+    useEffect(() => {
+      console.log("calling")
+        checkUserExists()
+    }, [daoAddress, USDC_CONTRACT_ADDRESS])
 
     useEffect(() => {
       // const switched = checkNetwork()
@@ -38,35 +77,35 @@ const ClubFetch = (Component) => {
           } else {
             const networksAvailable = []
             networks.data.forEach(network => {
-            networksAvailable.push(network.networkId)
-          });
-          const web3 = new Web3(Web3.givenProvider)
-          web3.eth.net.getId()
-            .then((networkId) => {
-              if (!networksAvailable.includes(networkId)) {
-                setOpen(true)
-              }
-              const networkData = fetchConfigById(networkId)
-              networkData.then((result) => {
-                if (result.status != 200) {
-                  console.log(result.error)
-                } else {
-                  dispatch(addContractAddress(
-                    {
-                      factoryContractAddress: result.data[0].factoryContractAddress,
-                      usdcContractAddress: result.data[0].usdcContractAddress,
-                      transactionUrl: result.data[0].gnosisTransactionUrl,
-                      networkHex: result.data[0].networkHex,
-                      networkId: result.data[0].networkId,
-                      networkName: result.data[0].name,
-                    }
-                  ))
-                }
-              })
-            })
-            .catch((err) => {
-              console.log(err)
+              networksAvailable.push(network.networkId)
             });
+            const web3 = new Web3(Web3.givenProvider)
+            web3.eth.net.getId()
+              .then((networkId) => {
+                if (!networksAvailable.includes(networkId)) {
+                  setOpen(true)
+                }
+                const networkData = fetchConfigById(networkId)
+                networkData.then((result) => {
+                  if (result.status != 200) {
+                    console.log(result.error)
+                  } else {
+                    dispatch(addContractAddress(
+                      {
+                        factoryContractAddress: result.data[0].factoryContractAddress,
+                        usdcContractAddress: result.data[0].usdcContractAddress,
+                        transactionUrl: result.data[0].gnosisTransactionUrl,
+                        networkHex: result.data[0].networkHex,
+                        networkId: result.data[0].networkId,
+                        networkName: result.data[0].name,
+                      }
+                    ))
+                  }
+                })
+              })
+              .catch((err) => {
+                console.log(err)
+              });
           }
         })
         const clubData = fetchClub(clubId)
@@ -91,8 +130,7 @@ const ClubFetch = (Component) => {
                   obtainNewToken.then((tokenResponse) => {
                     if (response.status !== 200) {
                       console.log(tokenResponse.data.error)
-                    }
-                    else {
+                    } else {
                       setExpiryTime(tokenResponse.data.tokens.access.expires)
                       setJwtToken(tokenResponse.data.tokens.access.token)
                       setRefreshToken(tokenResponse.data.tokens.refresh.token)
@@ -115,6 +153,7 @@ const ClubFetch = (Component) => {
           }
         })
       }
+      checkUserExists()
     }, [clubId])
 
     return <Component />

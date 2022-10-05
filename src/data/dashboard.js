@@ -60,21 +60,11 @@ export const commandTypeList = [
     },
     {
         commandId: 3,
-        command: "startDeposit",
-        commandText: "Start deposit"
-    },
-    {
-        commandId: 4,
-        command: "closeDeposit",
-        commandText: "Close deposit"
-    },
-    {
-        commandId: 5,
         command: "updateRaiseAmount",
         commandText: "Change total raise amount"
     },
     {
-        commandId: 6,
+        commandId: 4,
         command: "sendCustomToken",
         commandText: "Send custom token"
     },

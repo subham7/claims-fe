@@ -53,11 +53,13 @@ export default function Navbar3(props) {
       setUserDetails(null)
     }
   };
-
-  if (previouslyConnectedWallet) {
-    onboard.connectWallet({ autoSelect: previouslyConnectedWallet[0] })
+  const autoSelectWallet = async () => {
+    if (previouslyConnectedWallet) {
+    await onboard.connectWallet({ autoSelect: previouslyConnectedWallet[0], disableModals: true })
+    }
   }
-      
+ 
+    autoSelectWallet()   
     checkConnection()
   }, [previouslyConnectedWallet])
   

@@ -11,6 +11,7 @@ const appsSdk = new SafeAppsSDK(opts)
 export const MAIN_API_URL = process.env.NEXT_PUBLIC_API_HOST
 export const RINKEYBY_RPC_URL = process.env.NEXT_PUBLIC_RINKEYBY_RPC_URL
 export const GOERLI_RPC_URL = process.env.NEXT_PUBLIC_GOERLI_RPC_URL
+export const USDC_FAUCET_ADDRESS = process.env.NEXT_PUBLIC_USDC_FAUCET_ADDRESS
 
 
 export function updateDynamicAddress(networkId, dispatch) {

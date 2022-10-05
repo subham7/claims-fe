@@ -2,23 +2,23 @@ import Web3 from "web3"
 import Web3Adapter from "@gnosis.pm/safe-web3-lib"
 import SafeServiceClient from "@gnosis.pm/safe-service-client"
 import USDCContract from "../../abis/usdcTokenContract.json"
-import Safe, { EthSignSignature } from "@gnosis.pm/safe-core-sdk"
+import Safe, {EthSignSignature} from "@gnosis.pm/safe-core-sdk"
 import {
   USDC_FAUCET_ADDRESS
 } from "../index"
-import { calculateDays, convertToWei } from "../../utils/globalFunctions"
+import {calculateDays, convertToWei} from "../../utils/globalFunctions"
 import FactoryContract from "../../abis/factoryContract.json"
 import ImplementationContract from "../../abis/implementationABI.json"
-import { SafeFactory } from "@gnosis.pm/safe-core-sdk"
-import { connect } from "react-redux"
-import { Component } from "react"
+import {SafeFactory} from "@gnosis.pm/safe-core-sdk"
+import {connect} from "react-redux"
+import {Component} from "react"
 
 async function syncWallet() {
   // function for validating metamask wallet
   if (window.ethereum) {
     window.web3 = new Web3(window.ethereum)
     await window.ethereum
-      .request({ method: "eth_requestAccounts" })
+      .request({method: "eth_requestAccounts"})
       .then((result) => {
         console.log("connected")
         return true
@@ -86,7 +86,7 @@ export class SmartContract {
   ) {
     const days = Math.round(calculateDays(closeDate))
     return this.contract.methods
-      .createDAO(
+      .createDAO([
         tokenName,
         tokenSymbol,
         convertToWei(totalDeposit),
@@ -98,8 +98,8 @@ export class SmartContract {
         quoram,
         formThreshold,
         tresuryAddress
-      )
-      .send({ from: this.walletAddress })
+      ])
+      .send({from: this.walletAddress})
   }
 
   async updateProposalAndExecution(
@@ -113,18 +113,14 @@ export class SmartContract {
     executionIds = [0, 0, 0, 0, 0, 0, 0, 0],
     quoram = 0,
     threshold = 0,
-    day = 0,
-    minDeposits = 0,
-    maxDeposits = 0,
     totalDeposits = 0,
     airDropAmount = 0,
     mintGTAmounts = [],
     mintGTAddresses = [],
     customTokenAmounts = [],
     customTokenAddresses = [],
-    sendEthAmounts = [],
-    sendEthAddresses = [],
-    ownersAirdropFees = 0
+    ownersAirdropFees = 0,
+    daoAdminAddresses = []
   ) {
     const parameters = [
       proposalHash,
@@ -135,26 +131,23 @@ export class SmartContract {
       executionIds,
       quoram,
       threshold,
-      day,
-      minDeposits,
-      maxDeposits,
       totalDeposits,
       airDropAmount,
       mintGTAmounts,
       mintGTAddresses,
       customTokenAmounts,
       customTokenAddresses,
-      sendEthAmounts,
-      sendEthAddresses,
       ownersAirdropFees,
+      daoAdminAddresses,
     ]
+    console.log(parameters)
     const safeOwner = this.walletAddress
     const ethAdapter = new Web3Adapter({
       web3: this.web3,
       signerAddress: safeOwner,
     })
     const txServiceUrl = this.gnosisTransactionUrl
-    const safeService = new SafeServiceClient({ txServiceUrl, ethAdapter })
+    const safeService = new SafeServiceClient({txServiceUrl, ethAdapter})
 
     const web3 = new Web3(window.web3)
     const implementationContract = new web3.eth.Contract(
@@ -205,7 +198,7 @@ export class SmartContract {
     const safeTransaction2 = await safeSdk.createTransaction(
       safeTransactionData
     )
-
+    console.log(safeTransaction2)
     for (let i = 0; i < tx.confirmations.length; i++) {
       const signature = new EthSignSignature(
         tx.confirmations[i].owner,
@@ -214,7 +207,7 @@ export class SmartContract {
       safeTransaction2.addSignature(signature)
     }
     const executeTxResponse = await safeSdk.executeTransaction(safeTransaction2)
-
+    console.log(executeTxResponse)
     const receipt =
       executeTxResponse.transactionResponse &&
       (await executeTxResponse.transactionResponse.wait())
@@ -229,7 +222,7 @@ export class SmartContract {
       signerAddress: safeOwner,
     })
     const txServiceUrl = this.gnosisTransactionUrl
-    const safeService = new SafeServiceClient({ txServiceUrl, ethAdapter })
+    const safeService = new SafeServiceClient({txServiceUrl, ethAdapter})
     const web3 = new Web3(window.web3)
     const usdcContract = new web3.eth.Contract(
       ImplementationContract.abi,
@@ -271,7 +264,7 @@ export class SmartContract {
       signerAddress: safeOwner,
     })
     const txServiceUrl = this.gnosisTransactionUrl
-    const safeService = new SafeServiceClient({ txServiceUrl, ethAdapter })
+    const safeService = new SafeServiceClient({txServiceUrl, ethAdapter})
     const web3 = new Web3(window.web3)
 
     const usdcContract = new web3.eth.Contract(
@@ -319,7 +312,7 @@ export class SmartContract {
     const safeTransaction2 = await safeSdk.createTransaction(
       safeTransactionData
     )
-
+    console.log("CreateTransaction", safeTransaction2)
     for (let i = 0; i < tx.confirmations.length; i++) {
       const signature = new EthSignSignature(
         tx.confirmations[i].owner,
@@ -327,7 +320,10 @@ export class SmartContract {
       )
       safeTransaction2.addSignature(signature)
     }
+
     const executeTxResponse = await safeSdk.executeTransaction(safeTransaction2)
+    console.log("Transaction execution response", executeTxResponse)
+
     const receipt =
       executeTxResponse.transactionResponse &&
       (await executeTxResponse.transactionResponse.wait())
@@ -338,45 +334,58 @@ export class SmartContract {
     const number = new web3.utils.BN(amount)
     return this.contract.methods
       .approve(address, web3.utils.toWei(number, "Mwei"))
-      .send({ from: this.walletAddress })
+      .send({from: this.walletAddress})
   }
 
+  async performanceFee() {
+    return await this.contract.methods.ownerFeePerDeposit().call({from: this.walletAddress})
+  }
 
   async mint(address, amount) {
     console.log(this.contract)
-    return this.contract.methods.mint(address, amount).send({ from: this.walletAddress })
+    return this.contract.methods.mint(address, amount).send({from: this.walletAddress})
   }
 
+  async closeDeposit() {
+    return this.contract.methods
+      .closeDeposit()
+      .send({from: this.walletAddress})
+  }
 
+  async startDeposit(startTime, totalRaiseAmount) {
+    return this.contract.methods
+      .startDeposit(startTime, totalRaiseAmount)
+      .send({from: this.walletAddress})
+  }
 
   async deposit(address, amount) {
     return this.contract.methods
       .deposit(address, amount)
-      .send({ from: this.walletAddress })
+      .send({from: this.walletAddress})
   }
 
   async balanceOf() {
     return this.contract.methods
       .balanceOf(this.walletAddress)
-      .call({ from: this.walletAddress })
+      .call({from: this.walletAddress})
   }
 
   async checkUserBalance() {
     return this.contract.methods
       .checkUserBalance(this.walletAddress)
-      .call({ from: this.walletAddress })
+      .call({from: this.walletAddress})
   }
 
   async ownerAddress() {
     return this.contract.methods
       .ownerAddress()
-      .call({ from: this.walletAddress })
+      .call({from: this.walletAddress})
   }
 
   async totalDeposit() {
     return this.contract.methods
       .totalDeposit()
-      .call({ from: this.walletAddress })
+      .call({from: this.walletAddress})
   }
 
   async minDeposit() {
@@ -384,74 +393,79 @@ export class SmartContract {
   }
 
   async maxDeposit() {
-    return this.contract.methods.maxDeposit().call({ from: this.walletAddress })
+    return this.contract.methods.maxDeposit().call({from: this.walletAddress})
+  }
+
+  async updateMinMaxDeposit(minValue, maxValue) {
+    return this.contract.methods.updateMinMaxDeposit(minValue, maxValue).send({from: this.walletAddress})
+  }
+
+  async updateOwnerFee(performanceFee) {
+    return this.contract.methods.updateOwnerFee(performanceFee).send({from: this.walletAddress})
+  }
+
+  async userDetails() {
+    return this.contract.methods.userDetails(this.walletAddress).call({from: this.walletAddress})
   }
 
   async closeDate() {
-    return this.contract.methods.closeDate().call({ from: this.walletAddress })
+    return this.contract.methods.closeDate().call({from: this.walletAddress})
   }
 
   async ownerFee() {
-    return this.contract.methods.ownerFee().call({ from: this.walletAddress })
+    return this.contract.methods.ownerFee().call({from: this.walletAddress})
   }
 
   async daoAmount() {
-    return this.contract.methods.daoAmount().call({ from: this.walletAddress })
+    return this.contract.methods.daoAmount().call({from: this.walletAddress})
   }
 
   async quoram() {
-    return this.contract.methods.quorum().call({ from: this.walletAddress })
+    return this.contract.methods.quorum().call({from: this.walletAddress})
   }
 
   async threshold() {
-    return this.contract.methods.threshold().call({ from: this.walletAddress })
+    return this.contract.methods.threshold().call({from: this.walletAddress})
   }
 
   async depositClosed() {
     return this.contract.methods
       .depositClosed()
-      .call({ from: this.walletAddress })
+      .call({from: this.walletAddress})
   }
 
   async tresuryAddress() {
     return this.contract.methods
       .tresuryAddress()
-      .call({ from: this.walletAddress })
+      .call({from: this.walletAddress})
   }
 
   async tokenAddress() {
     return this.contract.methods
       .tokenAddress()
-      .call({ from: this.walletAddress })
+      .call({from: this.walletAddress})
   }
 
   async balance(governanceToken) {
     return this.contract.methods
       .balance(governanceToken)
-      .call({ from: this.walletAddress })
+      .call({from: this.walletAddress})
   }
 
   async tokenDetails() {
     return this.contract.methods
       .tokenDetails()
-      .call({ from: this.walletAddress })
+      .call({from: this.walletAddress})
   }
 
   async getGovernorDetails() {
     return this.contract.methods
       .getGovernorDetails()
-      .call({ from: this.walletAddress })
+      .call({from: this.walletAddress})
   }
 
   async obtainTokenDecimals() {
-    return this.contract.methods.decimals().call({ from: this.walletAddress })
+    return this.contract.methods.decimals().call({from: this.walletAddress})
   }
 }
-
-// const mapStateToProps = (state) => ({
-//   USDC_CONTRACT_ADDRESS : state.gnosis.usdcContractAddress,
-//   GNOSIS_TRANSACTION_URL: state.gnosis.gnosisTransactionUrl
-// })
-
-// export default connect(mapStateToProps, {})(SmartContract);
 
