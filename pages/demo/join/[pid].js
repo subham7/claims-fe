@@ -449,7 +449,7 @@ const Join = (props) => {
               }
               const createuser = createUser(data)
               createuser.then((result) => {
-                if (result.status != 200) {
+                if (result.status != 201) {
                   console.log("Error", result)
                   setAlertStatus("error")
                   setOpenSnackBar(true)

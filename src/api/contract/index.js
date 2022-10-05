@@ -113,18 +113,14 @@ export class SmartContract {
     executionIds = [0, 0, 0, 0, 0, 0, 0, 0],
     quoram = 0,
     threshold = 0,
-    day = 0,
-    minDeposits = 0,
-    maxDeposits = 0,
     totalDeposits = 0,
     airDropAmount = 0,
     mintGTAmounts = [],
     mintGTAddresses = [],
     customTokenAmounts = [],
     customTokenAddresses = [],
-    sendEthAmounts = [],
-    sendEthAddresses = [],
-    ownersAirdropFees = 0
+    ownersAirdropFees = 0,
+    daoAdminAddresses = []
   ) {
     const parameters = [
       proposalHash,
@@ -135,19 +131,16 @@ export class SmartContract {
       executionIds,
       quoram,
       threshold,
-      day,
-      minDeposits,
-      maxDeposits,
       totalDeposits,
       airDropAmount,
       mintGTAmounts,
       mintGTAddresses,
       customTokenAmounts,
       customTokenAddresses,
-      sendEthAmounts,
-      sendEthAddresses,
       ownersAirdropFees,
+      daoAdminAddresses,
     ]
+    console.log(parameters)
     const safeOwner = this.walletAddress
     const ethAdapter = new Web3Adapter({
       web3: this.web3,
@@ -205,7 +198,7 @@ export class SmartContract {
     const safeTransaction2 = await safeSdk.createTransaction(
       safeTransactionData
     )
-
+    console.log(safeTransaction2)
     for (let i = 0; i < tx.confirmations.length; i++) {
       const signature = new EthSignSignature(
         tx.confirmations[i].owner,
@@ -214,7 +207,7 @@ export class SmartContract {
       safeTransaction2.addSignature(signature)
     }
     const executeTxResponse = await safeSdk.executeTransaction(safeTransaction2)
-
+    console.log(executeTxResponse)
     const receipt =
       executeTxResponse.transactionResponse &&
       (await executeTxResponse.transactionResponse.wait())
@@ -319,7 +312,7 @@ export class SmartContract {
     const safeTransaction2 = await safeSdk.createTransaction(
       safeTransactionData
     )
-
+    console.log("CreateTransaction", safeTransaction2)
     for (let i = 0; i < tx.confirmations.length; i++) {
       const signature = new EthSignSignature(
         tx.confirmations[i].owner,
@@ -327,7 +320,10 @@ export class SmartContract {
       )
       safeTransaction2.addSignature(signature)
     }
+
     const executeTxResponse = await safeSdk.executeTransaction(safeTransaction2)
+    console.log("Transaction execution response", executeTxResponse)
+
     const receipt =
       executeTxResponse.transactionResponse &&
       (await executeTxResponse.transactionResponse.wait())
@@ -341,6 +337,9 @@ export class SmartContract {
       .send({from: this.walletAddress})
   }
 
+  async performanceFee() {
+    return await this.contract.methods.ownerFeePerDeposit().call({from: this.walletAddress})
+  }
 
   async mint(address, amount) {
     console.log(this.contract)
@@ -403,6 +402,10 @@ export class SmartContract {
 
   async updateOwnerFee(performanceFee) {
     return this.contract.methods.updateOwnerFee(performanceFee).send({from: this.walletAddress})
+  }
+
+  async userDetails() {
+    return this.contract.methods.userDetails(this.walletAddress).call({from: this.walletAddress})
   }
 
   async closeDate() {

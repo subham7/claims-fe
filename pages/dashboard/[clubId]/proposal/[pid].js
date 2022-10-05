@@ -299,10 +299,7 @@ const ProposalDetail = () => {
         123444,
         undefined,
         proposalData[0].commands[0].airDropToken,
-        [1, 0, 0, 0, 0, 0, 0, 0],
-        undefined,
-        undefined,
-        undefined,
+        [1, 0, 0, 0, 0, 0],
         undefined,
         undefined,
         undefined,
@@ -311,9 +308,8 @@ const ProposalDetail = () => {
         undefined,
         undefined,
         undefined,
-        undefined,
-        undefined,
         proposalData[0].commands[0].airDropCarryFee,
+        [],
       )
       response.then((result) => {
         const updateStatus = patchProposalExecuted(pid)
@@ -352,10 +348,7 @@ const ProposalDetail = () => {
         123444,
         undefined,
         undefined,
-        [0, 1, 0, 0, 0, 0, 0, 0],
-        undefined,
-        undefined,
-        undefined,
+        [0, 1, 0, 0, 0, 0],
         undefined,
         undefined,
         undefined,
@@ -365,8 +358,7 @@ const ProposalDetail = () => {
         undefined,
         undefined,
         undefined,
-        undefined,
-        undefined,
+        [],
       )
       response.then((result) => {
         const updateStatus = patchProposalExecuted(pid)
@@ -459,7 +451,7 @@ const ProposalDetail = () => {
         123444,
         undefined,
         undefined,
-        [0, 0, 1, 0, 0, 0, 0, 0],
+        [0, 0, 1, 0, 0, 0],
         proposalData[0].commands[0].quorum,
         proposalData[0].commands[0].threshold,
         undefined,
@@ -469,11 +461,7 @@ const ProposalDetail = () => {
         undefined,
         undefined,
         undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined
+        []
       )
       response.then((result) => {
         const updateStatus = patchProposalExecuted(pid)
@@ -513,10 +501,7 @@ const ProposalDetail = () => {
         123444,
         undefined,
         undefined,
-        [0, 0, 0, 0, 0, 1, 0, 0],
-        undefined,
-        undefined,
-        undefined,
+        [0, 0, 0, 1, 0, 0],
         undefined,
         undefined,
         proposalData[0].commands[0].totalDeposits,
@@ -526,8 +511,7 @@ const ProposalDetail = () => {
         undefined,
         undefined,
         undefined,
-        undefined,
-        undefined
+        [],
       )
       response.then((result) => {
         const updateStatus = patchProposalExecuted(pid)
@@ -561,27 +545,24 @@ const ProposalDetail = () => {
       const response = updateProposal.updateProposalAndExecution(
         daoAddress,
         gnosisAddress,
-        proposalData[0].ipfsHash,
+        "proposalData[0].ipfsHash",
         "Executed",
         123444,
+        proposalData[0].commands[0].customToken,
         undefined,
-        undefined,
-        [0, 0, 0, 0, 0, 0, 1, 0],
-        undefined,
-        undefined,
-        undefined,
+        [0, 0, 0, 0, 1, 0],
         undefined,
         undefined,
         undefined,
         undefined,
         undefined,
         undefined,
-        proposalData[0].commands[0].customTokenAddresses,
         proposalData[0].commands[0].customTokenAmounts,
+        proposalData[0].commands[0].customTokenAddresses,
         undefined,
-        undefined,
-        undefined
+        [],
       )
+      console.log(response)
       response.then((result) => {
         const updateStatus = patchProposalExecuted(pid)
         updateStatus.then((result) => {
@@ -603,60 +584,6 @@ const ProposalDetail = () => {
         setExecuted(false)
         setOpenSnackBar(true)
         setMessage("Send custom token execution status update failed!")
-        setFailed(true)
-        setLoaderOpen(false)
-      })
-    }
-
-    if (proposalData[0].commands[0].executionId === 5) {
-      // send ethereum
-      const updateProposal = new SmartContract(ImplementationContract, daoAddress, undefined, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL)
-      const response = updateProposal.updateProposalAndExecution(
-        daoAddress,
-        gnosisAddress,
-        proposalData[0].ipfsHash,
-        "Executed",
-        123444,
-        undefined,
-        undefined,
-        [0, 0, 0, 0, 0, 0, 0, 1],
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        [proposalData[0].commands[0].sendEthAmounts],
-        [proposalData[0].commands[0].sendEthAddresses],
-        undefined
-      )
-      response.then((result) => {
-        const updateStatus = patchProposalExecuted(pid)
-        updateStatus.then((result) => {
-          if (result.status !== 200) {
-            setExecuted(false)
-            setOpenSnackBar(true)
-            setMessage("Send ETH execution status update failed!")
-            setFailed(true)
-            setLoaderOpen(false)
-          } else {
-            setExecuted(true)
-            setOpenSnackBar(true)
-            setMessage("Send ETH execution successful!")
-            setFailed(false)
-            setLoaderOpen(false)
-          }
-        })
-      }, (error) => {
-        console.log(error)
-        setExecuted(false)
-        setOpenSnackBar(true)
-        setMessage("Send ETH execution failed!")
         setFailed(true)
         setLoaderOpen(false)
       })

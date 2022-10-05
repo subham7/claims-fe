@@ -789,7 +789,7 @@ const Dashboard = () => {
                         Treasury wallet
                       </Typography>
                       <Typography fontSize={"48px"} fontWeight="bold">
-                        ${clubAssetTokenFetched ? clubAssetTokenData.treasuryAmount : null}
+                        ${clubAssetTokenFetched ? parseInt(clubAssetTokenData.treasuryAmount) : null}
                       </Typography>
                       <CardMedia
                         image="/assets/images/treasurywallet.png"
@@ -817,7 +817,7 @@ const Dashboard = () => {
                             My ownership Share
                           </Typography>
                           <Typography fontSize={"48px"} fontWeight="bold">
-                            {userBalanceFetched && dataFetched ? isNaN(calculateUserSharePercentage(userBalance, userOwnershipShare)) ? 0 : (calculateUserSharePercentage(userBalance, userOwnershipShare)) : 0}%
+                            {userBalanceFetched && dataFetched ? isNaN(parseInt(calculateUserSharePercentage(userBalance, userOwnershipShare))) ? 0 : (parseInt(calculateUserSharePercentage(userBalance, userOwnershipShare))) : 0}%
                           </Typography>
                           <Typography className={classes.card2text2} mb={1}>
                             {governorDataFetched && dataFetched ? userOwnershipShare + (" $" + tokenDetails[1]) : null}

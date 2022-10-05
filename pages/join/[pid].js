@@ -98,7 +98,6 @@ const useStyles = makeStyles({
     fontSize: "2em",
     fontWeight: "bold",
     fontFamily: "Whyte",
-    color: "#F5F5F5",
     borderColor: "#142243",
     borderRadius: "0px",
     "& input[type=number]": {
@@ -215,6 +214,7 @@ const Join = (props) => {
   const [governorDataFetched, setGovernorDataFetched] = useState(false)
   const [clubId, setClubId] = useState(null)
   const [membersFetched, setMembersFetched] = useState(false)
+  const [clubTokenMinted, setClubTokenMInted] = useState(0)
   const [members, setMembers] = useState(0)
   const [depositInitiated, setDepositInitiated] = useState(false)
   const [closingDays, setClosingDays] = useState(0)
@@ -264,7 +264,6 @@ const Join = (props) => {
   const tokenAPIDetailsRetrieval = async () => {
     let response = await fetchClubbyDaoAddress(pid)
     if (response.data.length > 0) {
-      console.log("Token API details", response)
       settokenAPIDetails(response.data)
       setClubId(response.data[0].clubId)
       setGnosisAddress(response.data[0].gnosisAddress)
@@ -283,8 +282,8 @@ const Join = (props) => {
       )
       await tokenDetailContract.tokenDetails().then(
         async(result) => {
-          console.log("Token details", result)
           settokenDetails(result)
+          setClubTokenMInted(await convertFromWeiGovernance(daoAddress, result[2], USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL))
           setQuoram(await convertFromWeiGovernance(daoAddress, result[2], USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL))
           setDataFetched(true)
         },
@@ -458,7 +457,7 @@ const Join = (props) => {
               }
               const createuser = createUser(data)
               createuser.then((result) => {
-                if (result.status != 200) {
+                if (result.status !== 201) {
                   console.log("Error", result)
                   setAlertStatus("error")
                   setOpenSnackBar(true)
@@ -774,7 +773,7 @@ const Join = (props) => {
                 <ProgressBar
                   value={
                     governorDataFetched
-                      ? calculateTreasuryTargetShare(tokenDetails[2], convertAmountToWei(governorDetails[4]))
+                      ? calculateTreasuryTargetShare(clubTokenMinted, convertAmountToWei(governorDetails[4]))
                       : 0
                   }
                 />

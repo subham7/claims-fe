@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import {createSlice} from "@reduxjs/toolkit";
 
 export const slice = createSlice({
   name: "gnosis",
@@ -11,6 +11,7 @@ export const slice = createSlice({
     networkHex: null,
     networkId: null,
     networkName: null,
+    adminUser: false,
   },
   reducers: {
     safeConnected: (state, action) => {
@@ -31,6 +32,9 @@ export const slice = createSlice({
       state.networkHex = action.payload.networkHex;
       state.networkId = action.payload.networkId;
       state.networkName = action.payload.networkName;
+    },
+    setAdminUser: (state, action) => {
+      state.adminUser = action.payload;
     }
   }
 });
@@ -40,6 +44,7 @@ export const {
   safeDisconnected,
   addSafeAddress,
   addContractAddress,
+  setAdminUser,
 } = slice.actions
 
 export default slice.reducer

@@ -1,4 +1,4 @@
-import { React, useEffect, useState } from "react"
+import {React, useEffect, useState} from "react"
 import Layout1 from "../../../src/components/layouts/layout1"
 import {
   Card,
@@ -14,19 +14,20 @@ import {
   Backdrop,
   Button,
   Snackbar,
-  Alert, TextField,
+  Alert,
+  TextField,
 } from "@mui/material"
-import { makeStyles } from "@mui/styles"
+import {makeStyles} from "@mui/styles"
 import ProgressBar from "../../../src/components/progressbar"
-import Router, { useRouter } from "next/router"
-import { useSelector, useDispatch } from "react-redux"
-import { getMembersDetails } from "../../../src/api/user"
+import Router, {useRouter} from "next/router"
+import {useSelector, useDispatch} from "react-redux"
+import {getMembersDetails} from "../../../src/api/user"
 import Web3 from "web3"
 import USDCContract from "../../../src/abis/usdcTokenContract.json"
 import ImplementationContract from "../../../src/abis/implementationABI.json"
-import { SmartContract } from "../../../src/api/contract"
-import { fetchClubbyDaoAddress } from "../../../src/api/club"
-import { getAssets } from "../../../src/api/assets"
+import {SmartContract} from "../../../src/api/contract"
+import {fetchClubbyDaoAddress} from "../../../src/api/club"
+import {getAssets} from "../../../src/api/assets"
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import ClubFetch from "../../../src/utils/clubFetch"
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
@@ -42,7 +43,7 @@ import {
   convertFromWeiUSDC,
   convertToWeiUSDC
 } from "../../../src/utils/globalFunctions";
-import { settingsOptions } from "../../../src/data/settingsOptions"
+import {settingsOptions} from "../../../src/data/settingsOptions"
 import {LocalizationProvider} from "@mui/x-date-pickers/LocalizationProvider";
 import {DesktopDatePicker} from "@mui/x-date-pickers";
 import {AdapterDateFns} from "@mui/x-date-pickers/AdapterDateFns";
@@ -50,46 +51,23 @@ import {AdapterDateFns} from "@mui/x-date-pickers/AdapterDateFns";
 
 const useStyles = makeStyles({
   valuesStyle: {
-    fontSize: "21px",
-    fontWeight: "normal",
-    fontFamily: "Whyte",
-  },
-  valuesDimStyle: {
-    fontSize: "21px",
-    color: "#C1D3FF",
-    fontFamily: "Whyte",
-  },
-  cardRegular: {
+    fontSize: "21px", fontWeight: "normal", fontFamily: "Whyte",
+  }, valuesDimStyle: {
+    fontSize: "21px", color: "#C1D3FF", fontFamily: "Whyte",
+  }, cardRegular: {
     // height: "626px",
-    borderRadius: "10px",
-    opacity: 1,
-  },
-  dimColor: {
+    borderRadius: "10px", opacity: 1,
+  }, dimColor: {
     color: "#C1D3FF",
-  },
-  connectWalletButton: {
-    backgroundColor: "#3B7AFD",
-    fontSize: "21px",
-    fontFamily: "Whyte",
-  },
-  depositButton: {
-    backgroundColor: "#3B7AFD",
-    width: "208px",
-    height: "60px",
-    fontSize: "21px",
-    fontFamily: "Whyte",
-  },
-  cardSmall: {
-    backgroundColor: "#111D38",
-    borderRadius: "20px",
-    opacity: 1,
-  },
-  cardSmallFont: {
-    fontFamily: "Whyte",
-    fontSize: "18px",
-    color: "#C1D3FF",
-  },
-  cardLargeFont: {
+  }, connectWalletButton: {
+    backgroundColor: "#3B7AFD", fontSize: "21px", fontFamily: "Whyte",
+  }, depositButton: {
+    backgroundColor: "#3B7AFD", width: "208px", height: "60px", fontSize: "21px", fontFamily: "Whyte",
+  }, cardSmall: {
+    backgroundColor: "#111D38", borderRadius: "20px", opacity: 1,
+  }, cardSmallFont: {
+    fontFamily: "Whyte", fontSize: "18px", color: "#C1D3FF",
+  }, cardLargeFont: {
     width: "150px",
     fontSize: "38px",
     fontWeight: "bold",
@@ -101,26 +79,16 @@ const useStyles = makeStyles({
       '-moz-appearance': 'textfield'
     },
     '& input[type=number]::-webkit-outer-spin-button': {
-      '-webkit-appearance': 'none',
-      margin: 0
+      '-webkit-appearance': 'none', margin: 0
     },
     '& input[type=number]::-webkit-inner-spin-button': {
-      '-webkit-appearance': 'none',
-      margin: 0
+      '-webkit-appearance': 'none', margin: 0
     }
-  },
-  cardWarning: {
-    backgroundColor: "#FFB74D0D",
-    borderRadius: "10px",
-    opacity: 1,
-  },
-  textWarning: {
-    textAlign: "left",
-    color: "#FFB74D",
-    fontSize: "14px",
-    fontFamily: "Whyte",
-  },
-  maxTag: {
+  }, cardWarning: {
+    backgroundColor: "#FFB74D0D", borderRadius: "10px", opacity: 1,
+  }, textWarning: {
+    textAlign: "left", color: "#FFB74D", fontSize: "14px", fontFamily: "Whyte",
+  }, maxTag: {
     borderRadius: "17px",
     width: "98px",
     height: "34px",
@@ -132,8 +100,7 @@ const useStyles = makeStyles({
     backgroundColor: " #3B7AFD",
     fontSize: "20px",
     fontFamily: "Whyte",
-  },
-  openTag: {
+  }, openTag: {
     width: "60px",
     height: "20px",
     borderRadius: "11px",
@@ -143,16 +110,14 @@ const useStyles = makeStyles({
     display: "flex",
     alignItems: "center",
     backgroundColor: "#0ABB9233",
-  },
-  openTagFont: {
+  }, openTagFont: {
     paddingTop: "5px",
     fontSize: "12px",
     textTransform: "uppercase",
     color: "#0ABB92",
     opacity: "1",
     fontFamily: "Whyte",
-  },
-  closeTag: {
+  }, closeTag: {
     width: "60px",
     height: "20px",
     borderRadius: "11px",
@@ -162,49 +127,41 @@ const useStyles = makeStyles({
     display: "flex",
     alignItems: "center",
     backgroundColor: "#FFB74D0D",
-  },
-  closeTagFont: {
-    padding: "1px",
-    fontSize: "12px",
-    textTransform: "uppercase",
-    color: "#FFB74D",
-    opacity: "1",
-  },
-  iconColor: {
+  }, closeTagFont: {
+    padding: "1px", fontSize: "12px", textTransform: "uppercase", color: "#FFB74D", opacity: "1",
+  }, iconColor: {
     color: "#C1D3FF",
-  },
-  activityLink: {
-    color: "#3B7AFD",
-    textDecoration: "none",
-    "&:hover": {
-      textDecoration: "none",
-      cursor: "pointer",
+  }, activityLink: {
+    color: "#3B7AFD", textDecoration: "none", "&:hover": {
+      textDecoration: "none", cursor: "pointer",
     }
-  },
-  dialogBox: {
+  }, dialogBox: {
     fontSize: "26px"
-  },
-  modalStyle: {
-    width: "792px",
-    backgroundColor: '#19274B',
-  },
-  datePicker: {
-    borderRadius: "10px",
-    backgroundColor: "#111D38",
-    width: "95%",
+  }, modalStyle: {
+    width: "792px", backgroundColor: '#19274B',
+  }, datePicker: {
+    borderRadius: "10px", backgroundColor: "#111D38", width: "95%",
   },
 })
 
 const Settings = (props) => {
   // const router = useRouter()
   const classes = useStyles()
-  const daoAddress = useSelector(state => { return state.create.daoAddress })
-  const tresuryAddress = useSelector(state => { return state.create.tresuryAddress })
+  const daoAddress = useSelector(state => {
+    return state.create.daoAddress
+  })
+  const tresuryAddress = useSelector(state => {
+    return state.create.tresuryAddress
+  })
   const dispatch = useDispatch()
   const router = useRouter()
-  const imageUrl = useSelector(state => { return state.create.clubImageUrl })
+  const imageUrl = useSelector(state => {
+    return state.create.clubImageUrl
+  })
   const [dataFetched, setDataFetched] = useState(false)
-  const walletAddress = useSelector(state => { return state.create.value })
+  const walletAddress = useSelector(state => {
+    return state.create.value
+  })
   const [tokenDetails, settokenDetails] = useState(null)
   const [tokenAPIDetails, settokenAPIDetails] = useState(null) // contains the details extracted from API
   const [apiTokenDetailSet, setApiTokenDetailSet] = useState(false)
@@ -216,10 +173,15 @@ const Settings = (props) => {
   const [open, setOpen] = useState(false)
   const [tempOpen, setTempOpen] = useState(false)
   const [minDeposit, setMinDeposit] = useState(0)
+  const [quoramValue, setQuoramValue] = useState(0)
+  const [thresholdValue, setThresholdValue] = useState(0)
+  const [quoramFetched, setQuoramFetched] = useState(false)
+  const [thresholdFetched, setThresholdFetched] = useState(false)
   const [minDepositFetched, setMinDepositFetched] = useState(false)
   const [maxDeposit, setMaxDeposit] = useState(0)
   const [maxDepositFetched, setMaxDepositFetched] = useState(false)
   const [performanceFee, setPerformanceFee] = useState(0)
+  const [performanceFeeValue, setPerformanceFeeValue] = useState(0)
   const [membersDetails, setMembersDetails] = useState([])
   const [loaderOpen, setLoaderOpen] = useState(false)
   const [closingDays, setClosingDays] = useState(0)
@@ -248,7 +210,9 @@ const Settings = (props) => {
   const GNOSIS_TRANSACTION_URL = useSelector(state => {
     return state.gnosis.transactionUrl
   })
-
+  const isAdminUser = useSelector(state => {
+    return state.gnosis.adminUser
+  })
 
 
   const fetchUserBalanceAPI = async () => {
@@ -258,10 +222,21 @@ const Settings = (props) => {
         .then(async (result) => {
           setUserBalance(await convertFromWeiGovernance(daoAddress, result, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL))
           setUserBalanceFetched(true)
-        },
-          (error) => {
-            setUserBalanceFetched(false)
-          })
+        }, (error) => {
+          setUserBalanceFetched(false)
+        })
+    }
+  }
+
+  const fetchPerformanceFee = async () => {
+    if (daoAddress) {
+      const fetchFee = new SmartContract(ImplementationContract, daoAddress, undefined, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL)
+      try {
+        const fetched = await fetchFee.performanceFee()
+        setPerformanceFeeValue(fetched)
+      } catch (e) {
+        console.log(e)
+      }
     }
   }
 
@@ -285,11 +260,9 @@ const Settings = (props) => {
           setUserOwnershipShare(await convertFromWeiGovernance(daoAddress, result[2], USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL))
           setClubTokenMInted(await convertFromWeiGovernance(daoAddress, result[2], USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL))
           setDataFetched(true)
-        },
-          (error) => {
-            console.log(error)
-          }
-        )
+        }, (error) => {
+          console.log(error)
+        })
     }
   }
 
@@ -332,33 +305,27 @@ const Settings = (props) => {
           setGovernorDataFetched(true)
           setCurrentMinDeposit(result[1])
           setCurrentMaxDeposit(result[2])
-        },
-          (error) => {
-            console.log(error)
-          }
-        )
+        }, (error) => {
+          console.log(error)
+        })
 
       // minimum deposit amount from smart contract
-      // await governorDetailContract.quoram()
-      //   .then((result) => {
-      //     setMinDeposit(result)
-      //     setMinDepositFetched(true)
-      //   },
-      //     (error) => {
-      //       console.log(error)
-      //     }
-      //   )
+      await governorDetailContract.quoram()
+        .then((result) => {
+          setQuoramValue(result)
+          setQuoramFetched(true)
+        }, (error) => {
+          setQuoramFetched(false)
+        })
 
       // maximim deposit amount from smart contract
       await governorDetailContract.threshold()
         .then((result) => {
-          setMaxDeposit(result)
-          setMaxDepositFetched(true)
-        },
-          (error) => {
-            console.log(error)
-          }
-        )
+          setThresholdValue(result)
+          setThresholdFetched(true)
+        }, (error) => {
+          setQuoramFetched(false)
+        })
     }
   }
 
@@ -379,6 +346,7 @@ const Settings = (props) => {
     tokenDetailsRetrieval()
     contractDetailsRetrieval()
     fetchMembers()
+
     if (apiTokenDetailSet && dataFetched && governorDataFetched && membersFetched) {
       setLoaderOpen(false)
     }
@@ -390,6 +358,7 @@ const Settings = (props) => {
 
     if (dataFetched) {
       fetchUserBalanceAPI()
+      fetchPerformanceFee()
       setLoaderOpen(false)
 
     }
@@ -412,19 +381,21 @@ const Settings = (props) => {
     if (enabled) {
       const response = contract.closeDeposit()
       response.then((result) => {
-          setFailed(false)
-          setMessage("Contributions disabled!")
-          setOpenSnackBar(true)
-        },
-          (error) => {
-            setFailed(true)
-            setMessage("Contributions failed to be disabled!")
-            setOpenSnackBar(true)
-          }
-        )
+        router.reload()
+        setDataFetched(true)
+        setFailed(false)
+        setMessage("Contributions disabled!")
+        setOpenSnackBar(true)
         setLoaderOpen(false)
+
+      }, (error) => {
+        setFailed(true)
+        setMessage("Contributions failed to be disabled!")
+        setOpenSnackBar(true)
+        setLoaderOpen(false)
+      })
     } else {
-      if (depositAmount <= convertAmountToWei(governorDetails[4])) {
+      if (depositAmount < convertAmountToWei(governorDetails[4])) {
         setOpen(false)
         setFailed(true)
         setMessage("Total supply amount should be greater than previous total supply amount!")
@@ -436,22 +407,22 @@ const Settings = (props) => {
         const difference = calculateDay.getTime() - today.getTime()
         const dayCalculated = Math.ceil(difference / (1000 * 3600 * 24))
         const convertedDepositAmount = await convertToWeiUSDC(depositAmount, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL)
-        const response =  contract.startDeposit(dayCalculated, convertedDepositAmount)
+        const response = contract.startDeposit(dayCalculated, convertedDepositAmount)
         response.then((result) => {
-            setOpen(false)
-            setFailed(false)
-            setMessage("Contributions enabled!")
-            setOpenSnackBar(true)
-            setLoaderOpen(false)
-          },
-            (error) => {
-              setOpen(false)
-              setFailed(true)
-              setMessage("Contributions failed to be enabled!")
-              setOpenSnackBar(true)
-              setLoaderOpen(false)
-            }
-          )
+          router.reload()
+          setDataFetched(true)
+          setOpen(false)
+          setFailed(false)
+          setMessage("Contributions enabled!")
+          setOpenSnackBar(true)
+          setLoaderOpen(false)
+        }, (error) => {
+          setOpen(false)
+          setFailed(true)
+          setMessage("Contributions failed to be enabled!")
+          setOpenSnackBar(true)
+          setLoaderOpen(false)
+        })
       }
     }
   }
@@ -462,78 +433,75 @@ const Settings = (props) => {
     const contract = new SmartContract(ImplementationContract, daoAddress, undefined, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL)
 
     if (settingsOptions[1].name === updateType) {
-    //  case for min update
+      //  case for min update
       const convertedMinDeposit = await convertToWeiUSDC(minDeposit, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL)
       if (convertedMinDeposit >= currentMaxDeposit) {
-          setLoaderOpen(false)
-          setFailed(true)
-          setMessage("Minimum deposit should not be greater than or equal to previous maximum deposit!")
-          setOpenSnackBar(true)
+        setLoaderOpen(false)
+        setFailed(true)
+        setMessage("Minimum deposit should not be greater than or equal to previous maximum deposit!")
+        setOpenSnackBar(true)
       } else {
         const response = contract.updateMinMaxDeposit(convertedMinDeposit, currentMaxDeposit)
         response.then((result) => {
-            setLoaderOpen(false)
-            setFailed(false)
-            setMessage("Minimum deposit successfully updated!")
-            setOpenSnackBar(true)
-          },
-          (error) => {
-            setLoaderOpen(false)
-            setFailed(true)
-            setMessage("Minimum deposit failed to be updated!")
-            setOpenSnackBar(true)
-          }
-        )
+          router.reload()
+          setLoaderOpen(false)
+          setFailed(false)
+          setMessage("Minimum deposit successfully updated!")
+          setOpenSnackBar(true)
+        }, (error) => {
+          setLoaderOpen(false)
+          setFailed(true)
+          setMessage("Minimum deposit failed to be updated!")
+          setOpenSnackBar(true)
+        })
       }
     }
     if (settingsOptions[2].name === updateType) {
-    // case for max update
+      // case for max update
       const convertedMaxDeposit = await convertToWeiUSDC(maxDeposit, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL)
       if (convertedMaxDeposit <= currentMinDeposit) {
-          setLoaderOpen(false)
-          setFailed(true)
-          setMessage("Maximum deposit should not be less than or equal to previous minimum deposit!")
-          setOpenSnackBar(true)
+        setLoaderOpen(false)
+        setFailed(true)
+        setMessage("Maximum deposit should not be less than or equal to previous minimum deposit!")
+        setOpenSnackBar(true)
       } else {
         const response = contract.updateMinMaxDeposit(currentMinDeposit, convertedMaxDeposit)
         response.then((result) => {
-            setLoaderOpen(false)
-            setFailed(false)
-            setMessage("Maximum deposit successfully updated!")
-            setOpenSnackBar(true)
-          },
-          (error) => {
-            setLoaderOpen(false)
-            setFailed(true)
-            setMessage("Maximum deposit failed to be updated!")
-            setOpenSnackBar(true)
-          }
-        )
+          router.reload()
+          setLoaderOpen(false)
+          setFailed(false)
+          setMessage("Maximum deposit successfully updated!")
+          setOpenSnackBar(true)
+        }, (error) => {
+          setLoaderOpen(false)
+          setFailed(true)
+          setMessage("Maximum deposit failed to be updated!")
+          setOpenSnackBar(true)
+        })
       }
     }
     if (settingsOptions[3].name === updateType) {
-    //case for performance update
-    if (performanceFee > 100) {
-      setLoaderOpen(false)
-      setFailed(false)
-      setMessage("Performance fee cannot be greater than 100%!")
-      setOpenSnackBar(true)
-    } else {
-      const response = contract.updateOwnerFee(performanceFee)
-      response.then((result) => {
+      //case for performance update
+      if (performanceFee > 100) {
+        setLoaderOpen(false)
+        setFailed(false)
+        setMessage("Performance fee cannot be greater than 100%!")
+        setOpenSnackBar(true)
+      } else {
+        const response = contract.updateOwnerFee(performanceFee)
+        response.then((result) => {
+          router.reload()
           setLoaderOpen(false)
           setFailed(false)
           setMessage("Performance fee successfully updated!")
           setOpenSnackBar(true)
-        },
-        (error) => {
+        }, (error) => {
           setLoaderOpen(false)
           setFailed(false)
           setMessage("Performance fee failed to be updated!")
           setOpenSnackBar(true)
-        }
-      )
-    }
+        })
+      }
     }
   }
 
@@ -558,152 +526,186 @@ const Settings = (props) => {
     setOpenSnackBar(false)
   }
 
-  return (
-    <>
-      <Layout1 page={5}>
-        <Grid container spacing={3} paddingLeft={10} paddingTop={15}>
-          <Grid item md={9}>
-            <Card className={classes.cardRegular}>
-              <Grid container spacing={2}>
-                <Grid item mt={3} ml={3}>
-                  <img src={imageUrl ?? null} width="100vw" alt="profile_pic" />
-                </Grid>
-                <Grid item ml={1} mt={4} mb={7}>
-                  <Stack spacing={0}>
-                    <Typography variant="h4">
-                      {apiTokenDetailSet ? tokenAPIDetails[0].name : null}
-                    </Typography>
-                    <Typography variant="h6" className={classes.dimColor}>{dataFetched ? ("$" + tokenDetails[1]) : null}</Typography>
-                  </Stack>
-                </Grid>
+  return (<>
+    <Layout1 page={5}>
+      <Grid container spacing={3} paddingLeft={10} paddingTop={15}>
+        <Grid item md={9}>
+          <Card className={classes.cardRegular}>
+            <Grid container spacing={2}>
+              <Grid item mt={3} ml={3}>
+                <img src={imageUrl ?? null} width="100vw" alt="profile_pic"/>
               </Grid>
-              <Divider variant="middle" />
-              <Grid container spacing={7}>
-                <Grid item ml={4} mt={5} mb={2} md={2.5}>
-                  <Typography variant="settingText">Deposits deadline</Typography>
-                  <Grid container>
-                    <Grid item mt={1}>
-                      <Typography variant="p" className={classes.valuesStyle}>
-                        {governorDataFetched ? new Date(parseInt(governorDetails[0]) * 1000).toJSON().slice(0, 10).split('-').reverse().join('/') : null}
-                      </Typography>
-                    </Grid>
-                    <Grid item ml={1} mt={1}>
-                      {governorDataFetched ?
-                        closingDays > 0 ?
-                          (<Card className={classes.openTag}>
-                            <Typography className={classes.openTagFont}>
-                              Open
-                            </Typography>
-                          </Card>) : (<Card className={classes.closeTag}>
-                            <Typography className={classes.closeTagFont}>
-                              Closed
-                            </Typography>
-                          </Card>) : null}
-                    </Grid>
-                  </Grid>
-                </Grid>
-                <Grid item ml={4} mt={5} md={2.5}>
-                  <Grid container>
-                    <Grid item>
-                      <Typography variant="p" className={classes.valuesDimStyle}>Minimum Deposits</Typography>
-                    </Grid>
-                    <Grid item mt={1}>
-                      <Typography variant="p" className={classes.valuesStyle}>{governorDataFetched ? convertAmountToWei(governorDetails[1]) + " USDC" : null}</Typography>
-                    </Grid>
-                  </Grid>
-                </Grid>
-                <Grid item ml={4} mt={5} md={2.5}>
-                  <Grid container>
-                    <Grid item>
-                      <Typography variant="p" className={classes.valuesDimStyle}>Maximum Deposit</Typography>
-                    </Grid>
-                    <Grid item mt={1}>
-                      <Typography variant="p" className={classes.valuesStyle}>{governorDataFetched ? convertAmountToWei(governorDetails[2]) + " USDC" : null} </Typography>
-                    </Grid>
-                  </Grid>
-                </Grid>
-                <Grid item ml={4} mt={5} md={2.5}>
-                  <Grid container direction="column">
-                    <Grid item>
-                      <Typography variant="p" className={classes.valuesDimStyle}>Members</Typography>
-                    </Grid>
-                    <Grid item mt={{ lg: 5, xl: 1 }}>
-                      <Typography variant="p" className={classes.valuesStyle}>{membersFetched ? members : 0}</Typography>
-                    </Grid>
-                  </Grid>
-                </Grid>
+              <Grid item ml={1} mt={4} mb={7}>
+                <Stack spacing={0}>
+                  <Typography variant="h4">
+                    {apiTokenDetailSet ? tokenAPIDetails[0].name : null}
+                  </Typography>
+                  <Typography variant="h6"
+                              className={classes.dimColor}>{dataFetched ? ("$" + tokenDetails[1]) : null}</Typography>
+                </Stack>
               </Grid>
-              <Grid container mt={5}>
-                <Grid item ml={4} md={2.5}>
-                  <Grid container direction="column">
-                    <Grid item>
-                      <Typography variant="settingText">Treasury wallet</Typography>
-                    </Grid>
-                    <Grid item mt={2}>
-                      <Typography variant="p" className={classes.valuesStyle}>${clubAssetTokenFetched ? clubAssetTokenData.treasuryAmount : null}</Typography>
-                    </Grid>
-                  </Grid>
-                </Grid>
-                <Grid item ml={4} md={2.5}>
-                  <Grid container direction="column">
-                    <Grid item>
-                      <Typography variant="settingText">Your ownership</Typography>
-                    </Grid>
-                    <Grid item mt={2}>
-                      <Typography variant="p" className={classes.valuesStyle}>{userBalanceFetched && dataFetched ? isNaN(calculateUserSharePercentage(userBalance, tokenDetails[2])) ? 0 : (calculateUserSharePercentage(userBalance, userOwnershipShare)) : 0}% (${userBalance})</Typography>
-                    </Grid>
-                  </Grid>
-                </Grid>
-              </Grid>
-              <Grid item ml={3} mt={5} mb={2} mr={3}>
-                <ProgressBar value={governorDataFetched && dataFetched ? calculateTreasuryTargetShare(clubTokenMinted, convertAmountToWei(governorDetails[4])) : 0} />
-              </Grid>
-              <Grid container spacing={2} >
-                <Grid item ml={4} mt={1} mb={2}>
-                  <Stack spacing={1}>
-                    <Typography variant="settingText">Club Tokens Minted so far</Typography>
-                    <Typography variant="p" className={classes.valuesStyle}>{dataFetched ? (clubTokenMinted + " $" + tokenDetails[1]) : null}</Typography>
-                  </Stack>
-                </Grid>
-                <Grid item ml={4} mt={1} mb={2} mr={4} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
-                  <Stack spacing={1}>
-                    <Typography variant="settingText">Total Supply</Typography>
-                    <Typography variant="p" className={classes.valuesStyle}>{governorDataFetched && dataFetched ? convertAmountToWei(governorDetails[4]) + (" $" + tokenDetails[1]) : null} </Typography>
-                  </Stack>
-                </Grid>
-              </Grid>
-            </Card>
-            <br />
-            <Card className={classes.cardRegular}>
-              <Grid container item mb={4} spacing={3} mt={3} ml={3}>
-                <Typography variant="h4">
-                  Additional Details
-                </Typography>
-              </Grid>
-              <Stack spacing={3} ml={3}>
+            </Grid>
+            <Divider variant="middle"/>
+            <Grid container spacing={7}>
+              <Grid item ml={4} mt={5} mb={2} md={2.5}>
+                <Typography variant="settingText">Deposits deadline</Typography>
                 <Grid container>
-                  <Grid item >
-                    <Typography variant="settingText" >Club contract address</Typography>
+                  <Grid item mt={1}>
+                    <Typography variant="p" className={classes.valuesStyle}>
+                      {governorDataFetched ? new Date(parseInt(governorDetails[0]) * 1000).toJSON().slice(0, 10).split('-').reverse().join('/') : null}
+                    </Typography>
                   </Grid>
-                  <Grid container xs sx={{ display: "flex", justifyContent: "flex-end" }} spacing={1}>
-                    <Grid item>
-                      <IconButton color="primary" onClick={() => { navigator.clipboard.writeText(daoAddress) }}>
-                        <ContentCopyIcon className={classes.iconColor} />
-                      </IconButton>
-                    </Grid>
-                    <Grid item>
-                      <IconButton color="primary" onClick={() => { window.open(`https://rinkeby.etherscan.io/address/${daoAddress}`) }}>
-                        <OpenInNewIcon className={classes.iconColor} />
-                      </IconButton>
-                    </Grid>
-                    <Grid item mr={4}>
-                      <Typography variant="p" className={classes.valuesStyle}>{apiTokenDetailSet ? tokenAPIDetails[0].daoAddress.substring(0, 6) + "......" + tokenAPIDetails[0].daoAddress.substring(tokenAPIDetails[0].daoAddress.length - 4) : null}</Typography>
-                    </Grid>
+                  <Grid item ml={1} mt={1}>
+                    {governorDataFetched ? closingDays > 0 ? (<Card className={classes.openTag}>
+                      <Typography className={classes.openTagFont}>
+                        Open
+                      </Typography>
+                    </Card>) : (<Card className={classes.closeTag}>
+                      <Typography className={classes.closeTagFont}>
+                        Closed
+                      </Typography>
+                    </Card>) : null}
                   </Grid>
                 </Grid>
-                <Divider />
+              </Grid>
+              <Grid item ml={4} mt={5} md={2.5}>
+                <Grid container>
+                  <Grid item>
+                    <Typography variant="p" className={classes.valuesDimStyle}>Minimum Deposits</Typography>
+                  </Grid>
+                  <Grid item mt={1}>
+                    <Typography variant="p"
+                                className={classes.valuesStyle}>{governorDataFetched ? convertAmountToWei(governorDetails[1]) + " USDC" : null}</Typography>
+                  </Grid>
+                </Grid>
+              </Grid>
+              <Grid item ml={4} mt={5} md={2.5}>
+                <Grid container>
+                  <Grid item>
+                    <Typography variant="p" className={classes.valuesDimStyle}>Maximum Deposit</Typography>
+                  </Grid>
+                  <Grid item mt={1}>
+                    <Typography variant="p"
+                                className={classes.valuesStyle}>{governorDataFetched ? convertAmountToWei(governorDetails[2]) + " USDC" : null} </Typography>
+                  </Grid>
+                </Grid>
+              </Grid>
+              <Grid item ml={4} mt={5} md={2.5}>
+                <Grid container direction="column">
+                  <Grid item>
+                    <Typography variant="p" className={classes.valuesDimStyle}>Members</Typography>
+                  </Grid>
+                  <Grid item mt={{lg: 5, xl: 1}}>
+                    <Typography variant="p"
+                                className={classes.valuesStyle}>{membersFetched ? members : 0}</Typography>
+                  </Grid>
+                </Grid>
+              </Grid>
+            </Grid>
+            <Grid container mt={5}>
+              <Grid item ml={4} md={2.5}>
+                <Grid container direction="column">
+                  <Grid item>
+                    <Typography variant="settingText">Treasury wallet</Typography>
+                  </Grid>
+                  <Grid item mt={2}>
+                    <Typography variant="p"
+                                className={classes.valuesStyle}>${clubAssetTokenFetched ? clubAssetTokenData.treasuryAmount : null}</Typography>
+                  </Grid>
+                </Grid>
+              </Grid>
+              <Grid item ml={4.5} md={2.5}>
+                <Grid container direction="column">
+                  <Grid item>
+                    <Typography variant="settingText">Your ownership</Typography>
+                  </Grid>
+                  <Grid item mt={2}>
+                    <Typography variant="p"
+                                className={classes.valuesStyle}>{userBalanceFetched && dataFetched ? isNaN(parseInt(calculateUserSharePercentage(userBalance, tokenDetails[2]))) ? 0 : parseInt((calculateUserSharePercentage(userBalance, userOwnershipShare))) : 0}%
+                      (${userBalance})</Typography>
+                  </Grid>
+                </Grid>
+              </Grid>
+              <Grid item ml={6} md={2.5}>
+                <Grid container direction="column">
+                  <Grid item>
+                    <Typography variant="settingText">Threshold</Typography>
+                  </Grid>
+                  <Grid item mt={2}>
+                    <Typography variant="p"
+                                className={classes.valuesStyle}>{governorDataFetched && thresholdFetched ? thresholdValue : 0}</Typography>
+                  </Grid>
+                </Grid>
+              </Grid>
+              <Grid item ml={5} md={2.5}>
+                <Grid container direction="column">
+                  <Grid item>
+                    <Typography variant="settingText">Quoram</Typography>
+                  </Grid>
+                  <Grid item mt={2}>
+                    <Typography variant="p"
+                                className={classes.valuesStyle}>{governorDataFetched && quoramFetched ? quoramValue : 0}</Typography>
+                  </Grid>
+                </Grid>
+              </Grid>
+            </Grid>
+            <Grid item ml={3} mt={5} mb={2} mr={3}>
+              <ProgressBar
+                value={governorDataFetched && dataFetched ? calculateTreasuryTargetShare(clubTokenMinted, convertAmountToWei(governorDetails[4])) : 0}/>
+            </Grid>
+            <Grid container spacing={2}>
+              <Grid item ml={4} mt={1} mb={2}>
+                <Stack spacing={1}>
+                  <Typography variant="settingText">Club Tokens Minted so far</Typography>
+                  <Typography variant="p"
+                              className={classes.valuesStyle}>{dataFetched ? (clubTokenMinted + " $" + tokenDetails[1]) : null}</Typography>
+                </Stack>
+              </Grid>
+              <Grid item ml={4} mt={1} mb={2} mr={4} xs sx={{display: "flex", justifyContent: "flex-end"}}>
+                <Stack spacing={1}>
+                  <Typography variant="settingText">Total Supply</Typography>
+                  <Typography variant="p"
+                              className={classes.valuesStyle}>{governorDataFetched && dataFetched ? convertAmountToWei(governorDetails[4]) + (" $" + tokenDetails[1]) : null} </Typography>
+                </Stack>
+              </Grid>
+            </Grid>
+          </Card>
+          <br/>
+          <Card className={classes.cardRegular}>
+            <Grid container item mb={4} spacing={3} mt={3} ml={3}>
+              <Typography variant="h4">
+                Additional Details
+              </Typography>
+            </Grid>
+            <Stack spacing={3} ml={3}>
+              <Grid container>
+                <Grid item>
+                  <Typography variant="settingText">Club contract address</Typography>
+                </Grid>
+                <Grid container xs sx={{display: "flex", justifyContent: "flex-end"}} spacing={1}>
+                  <Grid item>
+                    <IconButton color="primary" onClick={() => {
+                      navigator.clipboard.writeText(daoAddress)
+                    }}>
+                      <ContentCopyIcon className={classes.iconColor}/>
+                    </IconButton>
+                  </Grid>
+                  <Grid item>
+                    <IconButton color="primary" onClick={() => {
+                      window.open(`https://rinkeby.etherscan.io/address/${daoAddress}`)
+                    }}>
+                      <OpenInNewIcon className={classes.iconColor}/>
+                    </IconButton>
+                  </Grid>
+                  <Grid item mr={4}>
+                    <Typography variant="p"
+                                className={classes.valuesStyle}>{apiTokenDetailSet ? tokenAPIDetails[0].daoAddress.substring(0, 6) + "......" + tokenAPIDetails[0].daoAddress.substring(tokenAPIDetails[0].daoAddress.length - 4) : null}</Typography>
+                  </Grid>
+                </Grid>
+              </Grid>
+              <Divider/>
 
-                {/* <Grid container ml={3} mr={4}>
+              {/* <Grid container ml={3} mr={4}>
                     <Grid item >
                       <Typography variant="p" className={classes.valuesStyle}>Hot wallet address</Typography>
                     </Grid>
@@ -721,7 +723,7 @@ const Settings = (props) => {
                   </Grid>
                   <Divider /> */}
 
-                {/* <Grid container ml={3} mr={4}>
+              {/* <Grid container ml={3} mr={4}>
                   <Grid item >
                     <Typography variant="settingText">Accept new member requests?</Typography>
                   </Grid>
@@ -750,54 +752,60 @@ const Settings = (props) => {
                 </Grid>
                 <Divider /> */}
 
-                <Grid container ml={3} mr={4}>
-                  <Grid item >
-                    <Typography variant="settingText">Enable/Disable contributions</Typography>
-                  </Grid>
-                  <Grid item mr={4} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
-                    {governorDataFetched ? closingDays > 0 ?
-                      <Typography variant="p" className={classes.valuesStyle}>
-                        Enabled
-                        <a className={classes.activityLink} onClick={(e) => { setSettingType("deposit"); setEnabled(true); setOpen(true) }}> (Disable)</a>
-                      </Typography>
-                      : <Typography variant="p" className={classes.valuesStyle}>
-                        Disabled
-                        <a className={classes.activityLink} onClick={(e) => { setSettingType("deposit"); setEnabled(false); setOpen(true) }}> (Enable)</a>
-                      </Typography>
-                      : null
-                    }
-                  </Grid>
+              <Grid container ml={3} mr={4}>
+                <Grid item>
+                  <Typography variant="settingText">Enable/Disable contributions</Typography>
                 </Grid>
+                <Grid item mr={4} xs sx={{display: "flex", justifyContent: "flex-end"}}>
+                  {governorDataFetched ? closingDays > 0 ? <Typography variant="p" className={classes.valuesStyle}>
+                    Enabled
+                    {isAdminUser ? <a className={classes.activityLink} onClick={(e) => {
+                      setSettingType("deposit");
+                      setEnabled(true);
+                      setOpen(true)
+                    }}> (Disable)</a> : null}
+                  </Typography> : <Typography variant="p" className={classes.valuesStyle}>
+                    Disabled
+                    {isAdminUser ? <a className={classes.activityLink} onClick={(e) => {
+                      setSettingType("deposit");
+                      setEnabled(false);
+                      setOpen(true)
+                    }}> (Enable)</a> : null}
+                  </Typography> : null}
+                </Grid>
+              </Grid>
 
-                <Divider />
-                <Grid container ml={3} mr={4}>
-                  <Grid item >
-                    <Typography variant="settingText">Minimum deposit amount for new members</Typography>
-                  </Grid>
-                  <Grid item mr={4} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
-                    <Typography variant="p" className={classes.valuesStyle}>
-                      {governorDataFetched ? convertAmountToWei(governorDetails[1]) : null} USDC
-                      <a className={classes.activityLink} onClick={(e) => {
-                        setSettingType("minDeposit");
-                        setOpen(true)
-                      }}> (change)</a></Typography>
-                  </Grid>
+              <Divider/>
+              <Grid container ml={3} mr={4}>
+                <Grid item>
+                  <Typography variant="settingText">Minimum deposit amount for new members</Typography>
                 </Grid>
-                <Divider />
-                <Grid container ml={3} mr={4}>
-                  <Grid item >
-                    <Typography variant="settingText">Maximum deposit amount for new members</Typography>
-                  </Grid>
-                  <Grid item mr={4} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
-                    <Typography variant="p" className={classes.valuesStyle}>
-                      {governorDataFetched ? convertAmountToWei(governorDetails[2]) : null} USDC
-                      <a className={classes.activityLink} onClick={(e) => {
-                        setSettingType("maxDeposit");
-                        setOpen(true)
-                      }}> (change)</a></Typography>
-                  </Grid>
+                <Grid item mr={4} xs sx={{display: "flex", justifyContent: "flex-end"}}>
+                  <Typography variant="p" className={classes.valuesStyle}>
+                    {governorDataFetched ? convertAmountToWei(governorDetails[1]) : null} USDC
+                    {isAdminUser ? <a className={classes.activityLink} onClick={(e) => {
+                      setSettingType("minDeposit");
+                      setOpen(true)
+                    }}> (change)</a> : null}
+                  </Typography>
                 </Grid>
-                {/*<Divider />
+              </Grid>
+              <Divider/>
+              <Grid container ml={3} mr={4}>
+                <Grid item>
+                  <Typography variant="settingText">Maximum deposit amount for new members</Typography>
+                </Grid>
+                <Grid item mr={4} xs sx={{display: "flex", justifyContent: "flex-end"}}>
+                  <Typography variant="p" className={classes.valuesStyle}>
+                    {governorDataFetched ? convertAmountToWei(governorDetails[2]) : null} USDC
+                    {isAdminUser ? <a className={classes.activityLink} onClick={(e) => {
+                      setSettingType("maxDeposit");
+                      setOpen(true)
+                    }}> (change)</a> : null}
+                  </Typography>
+                </Grid>
+              </Grid>
+              {/*<Divider />
                 <Grid container ml={3} mr={4}>
                   <Grid item >
                     <Typography variant="settingText">Minimum votes to validate a proposal</Typography>
@@ -816,21 +824,21 @@ const Settings = (props) => {
                   </Grid>
                 </Grid> */}
 
-                <Divider />
-                <Grid container ml={3} mr={4}>
-                  <Grid item >
-                    <Typography variant="settingText">Performance fees</Typography>
-                  </Grid>
-                  <Grid item mr={4} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
-                    <Typography variant="p" className={classes.valuesStyle}>No
-                      <a className={classes.activityLink} onClick={(e) => {
-                        setSettingType("performanceFee");
-                        setOpen(true)
-                      }}>(propose)</a></Typography>
-                  </Grid>
+              <Divider/>
+              <Grid container ml={3} mr={4}>
+                <Grid item>
+                  <Typography variant="settingText">Performance fees</Typography>
                 </Grid>
-                <Divider />
-                {/* <Grid container ml={3} mr={4}>
+                <Grid item mr={4} xs sx={{display: "flex", justifyContent: "flex-end"}}>
+                  <Typography variant="p" className={classes.valuesStyle}>{performanceFeeValue}
+                    {isAdminUser ? <a className={classes.activityLink} onClick={(e) => {
+                      setSettingType("performanceFee");
+                      setOpen(true)
+                    }}> (change)</a> : null}</Typography>
+                </Grid>
+              </Grid>
+              <Divider/>
+              {/* <Grid container ml={3} mr={4}>
                   <Grid item >
                     <Typography variant="settingText">Allow deposits till this date</Typography>
                   </Grid>
@@ -840,177 +848,177 @@ const Settings = (props) => {
                 </Grid>
                 <Divider /> */}
 
-              </Stack>
-            </Card>
-          </Grid>
-          <Grid item md={3}></Grid>
+            </Stack>
+          </Card>
         </Grid>
+        <Grid item md={3}></Grid>
+      </Grid>
 
-        <Dialog open={open} onClose={handleClose} scroll="body" PaperProps={{ classes: { root: classes.modalStyle } }} fullWidth maxWidth="lg" >
-          <DialogContent sx={{ overflow: "hidden", backgroundColor: '#19274B', }} >
-            <Grid container justifyContent="center" alignItems="center" direction="column" mt={3}>
-              <Grid item m={3}>
-                {
-                  settingsOptions[0].name === settingType ?
-                    enabled ?
-                      <>
-                        <Typography className={classes.dialogBox}>Do you want to disable contributions?</Typography>
-                        <Grid container direction="row" justifyContent="center" alignItems="center">
-                          <Grid item m={3}>
-                            <Button variant="primary" startIcon={<CheckCircleIcon />} onClick={() => handleEnableDisableContribution(true)}>
-                              Disable
-                            </Button>
-                          </Grid>
-                          <Grid item m={3}>
-                            <Button variant="primary" startIcon={<CancelIcon />} onClick={handleClose}>
-                              Cancel
-                            </Button>
-                          </Grid>
-                        </Grid>
-                      </>
+      <Dialog open={open} onClose={handleClose} scroll="body" PaperProps={{classes: {root: classes.modalStyle}}}
+              fullWidth maxWidth="lg">
+        <DialogContent sx={{overflow: "hidden", backgroundColor: '#19274B',}}>
+          <Grid container justifyContent="center" alignItems="center" direction="column" mt={3}>
+            <Grid item m={3}>
+              {settingsOptions[0].name === settingType ? enabled ? <>
+                  <Typography className={classes.dialogBox}>Do you want to disable contributions?</Typography>
+                  <Grid container direction="row" justifyContent="center" alignItems="center">
+                    <Grid item m={3}>
+                      <Button variant="primary" startIcon={<CheckCircleIcon/>}
+                              onClick={() => handleEnableDisableContribution(true)}>
+                        Disable
+                      </Button>
+                    </Grid>
+                    <Grid item m={3}>
+                      <Button variant="primary" startIcon={<CancelIcon/>} onClick={handleClose}>
+                        Cancel
+                      </Button>
+                    </Grid>
+                  </Grid>
+                </>
 
-                      :
-                      <>
-                        <Typography className={classes.dialogBox}>Do you want to enable contributions?</Typography>
-                        <Grid container direction="row" justifyContent="center" alignItems="center">
-                          <Grid container mt={1} mb={2} spacing={2} direction="column">
-                            <Grid item>
-                              <Typography variant="proposalBody">Deposit till</Typography>
-                            </Grid>
-                            <Grid item>
-                              <LocalizationProvider dateAdapter={AdapterDateFns}>
-                                <DesktopDatePicker
-                                  error={day === null}
-                                  inputFormat="dd/MM/yyyy"
-                                  value={day}
-                                  onChange={e => handleDayChange(e)}
-                                  renderInput={(params) => <TextField {...params} className={classes.datePicker} />}
-                                />
-                              </LocalizationProvider>
-                            </Grid>
-                            <Grid item>
-                              <Typography variant="proposalBody">Total supply amount</Typography>
-                            </Grid>
-                            <Grid item>
-                              <TextField sx={{ width: "95%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
-                                placeholder="Enter the total supply amount" onChange={(e) => setDepositAmount(e.target.value)} />
-                            </Grid>
-                          </Grid>
-                          <Grid item m={3}>
-                            <Button variant="primary" startIcon={<CheckCircleIcon />} onClick={() => handleEnableDisableContribution(false)} disabled={day === null}>
-                              Enable
-                            </Button>
-                          </Grid>
-                          <Grid item m={3}>
-                            <Button variant="primary" startIcon={<CancelIcon />} onClick={handleClose}>
-                              Cancel
-                            </Button>
-                          </Grid>
-                        </Grid>
-                      </>
-                    :
-                    settingsOptions[1].name === settingType ?
-                      <>
-                        <Typography className={classes.dialogBox}>Update minimum deposit amount for new member</Typography>
-                        <Grid container direction="row" justifyContent="center" alignItems="center">
-                          <Grid container item>
-                            <TextField sx={{ width: "95%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
-                                       placeholder="Enter the update amount" onChange={(e) => setMinDeposit(e.target.value)} />
-                          </Grid>
-                          <Grid item m={3}>
-                            <Button variant="primary" startIcon={<CheckCircleIcon />} onClick={() => handleContractUpdates(settingType)}>
-                              Update
-                            </Button>
-                          </Grid>
-                          <Grid item m={3}>
-                            <Button variant="primary" startIcon={<CancelIcon />} onClick={handleClose}>
-                              Cancel
-                            </Button>
-                          </Grid>
-                        </Grid>
-                      </> :
-                      settingsOptions[2].name === settingType ?
-                        <>
-                          <Typography className={classes.dialogBox}>Update maximum deposit amount for new member</Typography>
-                          <Grid container direction="row" justifyContent="center" alignItems="center">
-                            <Grid container item>
-                              <TextField sx={{ width: "95%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
-                                         placeholder="Enter the update amount" onChange={(e) => setMaxDeposit(e.target.value)} />
-                            </Grid>
-                            <Grid item m={3}>
-                              <Button variant="primary" startIcon={<CheckCircleIcon />} onClick={() => handleContractUpdates(settingType)}>
-                                Update
-                              </Button>
-                            </Grid>
-                            <Grid item m={3}>
-                              <Button variant="primary" startIcon={<CancelIcon />} onClick={handleClose}>
-                                Cancel
-                              </Button>
-                            </Grid>
-                          </Grid>
-                        </> :
-                        settingsOptions[3].name === settingType ?
-                          <>
-                            <Typography className={classes.dialogBox}>Update performance fee of club (in %)</Typography>
-                            <Grid container direction="row" justifyContent="center" alignItems="center">
-                              <Grid container item>
-                                <TextField sx={{ width: "95%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
-                                           placeholder="Enter the performance fee percentage" onChange={(e) => setPerformanceFee(e.target.value)} />
-                              </Grid>
-                              <Grid item m={3}>
-                                <Button variant="primary" startIcon={<CheckCircleIcon />} onClick={() => handleContractUpdates(settingType)}>
-                                  Update
-                                </Button>
-                              </Grid>
-                              <Grid item m={3}>
-                                <Button variant="primary" startIcon={<CancelIcon />} onClick={handleClose}>
-                                  Cancel
-                                </Button>
-                              </Grid>
-                            </Grid>
-                          </>
-                      : null
-                }
+                : <>
+                  <Typography className={classes.dialogBox}>Do you want to enable contributions?</Typography>
+                  <Grid container direction="row" justifyContent="center" alignItems="center">
+                    <Grid container mt={1} mb={2} spacing={2} direction="column">
+                      <Grid item>
+                        <Typography variant="proposalBody">Deposit till</Typography>
+                      </Grid>
+                      <Grid item>
+                        <LocalizationProvider dateAdapter={AdapterDateFns}>
+                          <DesktopDatePicker
+                            error={day === null}
+                            inputFormat="dd/MM/yyyy"
+                            value={day}
+                            onChange={e => handleDayChange(e)}
+                            renderInput={(params) => <TextField {...params} className={classes.datePicker}/>}
+                          />
+                        </LocalizationProvider>
+                      </Grid>
+                      <Grid item>
+                        <Typography variant="proposalBody">Total supply amount</Typography>
+                      </Grid>
+                      <Grid item>
+                        <TextField sx={{width: "95%", backgroundColor: "#C1D3FF40"}}
+                                   className={classes.cardTextBox}
+                                   placeholder="Enter the total supply amount"
+                                   onChange={(e) => setDepositAmount(e.target.value)}/>
+                      </Grid>
+                    </Grid>
+                    <Grid item m={3}>
+                      <Button variant="primary" startIcon={<CheckCircleIcon/>}
+                              onClick={() => handleEnableDisableContribution(false)} disabled={day === null}>
+                        Enable
+                      </Button>
+                    </Grid>
+                    <Grid item m={3}>
+                      <Button variant="primary" startIcon={<CancelIcon/>} onClick={handleClose}>
+                        Cancel
+                      </Button>
+                    </Grid>
+                  </Grid>
+                </> : settingsOptions[1].name === settingType ? <>
+                <Typography className={classes.dialogBox}>Update minimum deposit amount for new
+                  member</Typography>
+                <Grid container direction="row" justifyContent="center" alignItems="center">
+                  <Grid container item>
+                    <TextField sx={{width: "95%", backgroundColor: "#C1D3FF40"}} className={classes.cardTextBox}
+                               placeholder="Enter the update amount"
+                               onChange={(e) => setMinDeposit(e.target.value)}/>
+                  </Grid>
+                  <Grid item m={3}>
+                    <Button variant="primary" startIcon={<CheckCircleIcon/>}
+                            onClick={() => handleContractUpdates(settingType)}>
+                      Update
+                    </Button>
+                  </Grid>
+                  <Grid item m={3}>
+                    <Button variant="primary" startIcon={<CancelIcon/>} onClick={handleClose}>
+                      Cancel
+                    </Button>
+                  </Grid>
+                </Grid>
+              </> : settingsOptions[2].name === settingType ? <>
+                <Typography className={classes.dialogBox}>Update maximum deposit amount for new
+                  member</Typography>
+                <Grid container direction="row" justifyContent="center" alignItems="center">
+                  <Grid container item>
+                    <TextField sx={{width: "95%", backgroundColor: "#C1D3FF40"}}
+                               className={classes.cardTextBox}
+                               placeholder="Enter the update amount"
+                               onChange={(e) => setMaxDeposit(e.target.value)}/>
+                  </Grid>
+                  <Grid item m={3}>
+                    <Button variant="primary" startIcon={<CheckCircleIcon/>}
+                            onClick={() => handleContractUpdates(settingType)}>
+                      Update
+                    </Button>
+                  </Grid>
+                  <Grid item m={3}>
+                    <Button variant="primary" startIcon={<CancelIcon/>} onClick={handleClose}>
+                      Cancel
+                    </Button>
+                  </Grid>
+                </Grid>
+              </> : settingsOptions[3].name === settingType ? <>
+                <Typography className={classes.dialogBox}>Update performance fee of club (in %)</Typography>
+                <Grid container direction="row" justifyContent="center" alignItems="center">
+                  <Grid container item>
+                    <TextField sx={{width: "95%", backgroundColor: "#C1D3FF40"}}
+                               className={classes.cardTextBox}
+                               placeholder="Enter the performance fee percentage"
+                               onChange={(e) => setPerformanceFee(e.target.value)}/>
+                  </Grid>
+                  <Grid item m={3}>
+                    <Button variant="primary" startIcon={<CheckCircleIcon/>}
+                            onClick={() => handleContractUpdates(settingType)}>
+                      Update
+                    </Button>
+                  </Grid>
+                  <Grid item m={3}>
+                    <Button variant="primary" startIcon={<CancelIcon/>} onClick={handleClose}>
+                      Cancel
+                    </Button>
+                  </Grid>
+                </Grid>
+              </> : null}
 
-              </Grid>
             </Grid>
-          </DialogContent>
-        </Dialog>
+          </Grid>
+        </DialogContent>
+      </Dialog>
 
-        {/* This is the temporary coming soon dialogue */}
-        <Dialog open={tempOpen} onClose={handleTempClose} scroll="body" PaperProps={{ classes: { root: classes.modalStyle } }} fullWidth maxWidth="lg" >
-          <DialogContent sx={{ overflow: "hidden", backgroundColor: '#19274B', }} >
-            <Grid container justifyContent="center" alignItems="center" direction="column" mt={3}>
-              <Grid item>
-                <img src="/assets/images/comingsoon.svg" />
-              </Grid>
-              <Grid item m={3}>
-                <Typography className={classes.dialogBox}>Hold tight! Coming soon</Typography>
-              </Grid>
+      {/* This is the temporary coming soon dialogue */}
+      <Dialog open={tempOpen} onClose={handleTempClose} scroll="body"
+              PaperProps={{classes: {root: classes.modalStyle}}} fullWidth maxWidth="lg">
+        <DialogContent sx={{overflow: "hidden", backgroundColor: '#19274B',}}>
+          <Grid container justifyContent="center" alignItems="center" direction="column" mt={3}>
+            <Grid item>
+              <img src="/assets/images/comingsoon.svg"/>
             </Grid>
-          </DialogContent>
-        </Dialog>
+            <Grid item m={3}>
+              <Typography className={classes.dialogBox}>Hold tight! Coming soon</Typography>
+            </Grid>
+          </Grid>
+        </DialogContent>
+      </Dialog>
 
-        <Backdrop
-          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-          open={loaderOpen}
-        >
-          <CircularProgress color="inherit" />
-        </Backdrop>
+      <Backdrop
+        sx={{color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1}}
+        open={loaderOpen}
+      >
+        <CircularProgress color="inherit"/>
+      </Backdrop>
 
-        <Snackbar open={openSnackBar} autoHideDuration={6000} onClose={handleSnackBarClose} anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
-          {!failed ?
-            (<Alert onClose={handleSnackBarClose} severity="success" sx={{ width: '100%' }}>
-              {message}
-            </Alert>) :
-            (<Alert onClose={handleSnackBarClose} severity="error" sx={{ width: '100%' }}>
-              {message}
-            </Alert>)
-          }
-        </Snackbar>
-      </Layout1>
-    </>
-  )
+      <Snackbar open={openSnackBar} autoHideDuration={6000} onClose={handleSnackBarClose}
+                anchorOrigin={{vertical: 'bottom', horizontal: 'right'}}>
+        {!failed ? (<Alert onClose={handleSnackBarClose} severity="success" sx={{width: '100%'}}>
+          {message}
+        </Alert>) : (<Alert onClose={handleSnackBarClose} severity="error" sx={{width: '100%'}}>
+          {message}
+        </Alert>)}
+      </Snackbar>
+    </Layout1>
+  </>)
 }
 
 export default ClubFetch(Settings)
