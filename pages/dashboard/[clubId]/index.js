@@ -737,7 +737,7 @@ const Dashboard = () => {
                         </Grid>
                         <Grid item>
                           <Typography fontWeight="bold" fontSize={"24px"}
-                            className={classes.valueDetailStyle}>{governorDataFetched ? memberDeposit : null}</Typography>
+                            className={classes.valueDetailStyle}>{governorDataFetched ? parseFloat(memberDeposit).toFixed(2) : null}</Typography>
                         </Grid>
                         <Grid item>
                           <Typography variant="regularText4" fontSize={"18px"}
@@ -753,7 +753,7 @@ const Dashboard = () => {
                         </Grid>
                         <Grid item>
                           <Typography fontWeight="bold" fontSize={"24px"}
-                            className={classes.valueDetailStyle}>{dataFetched ? clubTokenMinted : null}</Typography>
+                            className={classes.valueDetailStyle}>{dataFetched ? parseFloat(clubTokenMinted).toFixed(2) : null}</Typography>
                         </Grid>
                         <Grid item>
                           <Typography variant="regularText4" fontSize={"18px"}
@@ -770,7 +770,7 @@ const Dashboard = () => {
                         </Grid>
                         <Grid item>
                           <Typography fontWeight="bold" fontSize={"24px"}
-                            className={classes.valueDetailStyle}>{governorDataFetched && dataFetched ? maxTokenMinted : null} </Typography>
+                            className={classes.valueDetailStyle}>{governorDataFetched && dataFetched ? parseFloat(maxTokenMinted).toFixed(2) : null} </Typography>
                         </Grid>
                         <Grid item>
                           <Typography variant="regularText4" fontSize={"18px"}
@@ -820,7 +820,7 @@ const Dashboard = () => {
                             {userBalanceFetched && dataFetched ? isNaN(parseInt(calculateUserSharePercentage(userBalance, userOwnershipShare))) ? 0 : (parseInt(calculateUserSharePercentage(userBalance, userOwnershipShare))) : 0}%
                           </Typography>
                           <Typography className={classes.card2text2} mb={1}>
-                            {governorDataFetched && dataFetched ? userOwnershipShare + (" $" + tokenDetails[1]) : null}
+                            {governorDataFetched && dataFetched ? parseFloat(userOwnershipShare).toFixed(2) + (" $" + tokenDetails[1]) : null}
                           </Typography>
                         </Box>
                       </Grid>
