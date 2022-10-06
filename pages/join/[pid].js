@@ -806,7 +806,7 @@ const Join = (props) => {
                   <Grid item>
                     <Typography variant="p" className={classes.valuesStyle}>
                       {walletConnected ? (
-                        quoram +
+                        parseInt(quoram) +
                         " $" +
                         tokenDetails[1]
                       ) : (
