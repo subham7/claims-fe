@@ -199,7 +199,6 @@ const Settings = (props) => {
   const [day, setDay] = useState(null)
   const [currentMinDeposit, setCurrentMinDeposit] = useState(0)
   const [currentMaxDeposit, setCurrentMaxDeposit] = useState(0)
-  const [depositAmount, setDepositAmount] = useState(0)
 
   const FACTORY_CONTRACT_ADDRESS = useSelector(state => {
     return state.gnosis.factoryContractAddress
@@ -397,35 +396,26 @@ const Settings = (props) => {
         setLoaderOpen(false)
       })
     } else {
-      if (depositAmount < convertAmountToWei(governorDetails[4])) {
+      const today = new Date()
+      const calculateDay = new Date(day)
+      const difference = calculateDay.getTime() - today.getTime()
+      const dayCalculated = Math.ceil(difference / (1000 * 3600 * 24))
+      const response = contract.startDeposit(dayCalculated)
+      response.then((result) => {
+        setDataFetched(true)
         setOpen(false)
-        setFailed(true)
-        setMessage("Total supply amount should be greater than previous total supply amount!")
+        setFailed(false)
+        setMessage("Contributions enabled!")
         setOpenSnackBar(true)
         setLoaderOpen(false)
-      } else {
-        const today = new Date()
-        const calculateDay = new Date(day)
-        const difference = calculateDay.getTime() - today.getTime()
-        const dayCalculated = Math.ceil(difference / (1000 * 3600 * 24))
-        const convertedDepositAmount = await convertToWeiUSDC(depositAmount, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL)
-        const response = contract.startDeposit(dayCalculated, convertedDepositAmount)
-        response.then((result) => {
-          setDataFetched(true)
-          setOpen(false)
-          setFailed(false)
-          setMessage("Contributions enabled!")
-          setOpenSnackBar(true)
-          setLoaderOpen(false)
-          contractDetailsRetrieval(true)
-        }, (error) => {
-          setOpen(false)
-          setFailed(true)
-          setMessage("Contributions failed to be enabled!")
-          setOpenSnackBar(true)
-          setLoaderOpen(false)
-        })
-      }
+        contractDetailsRetrieval(true)
+      }, (error) => {
+        setOpen(false)
+        setFailed(true)
+        setMessage("Contributions failed to be enabled!")
+        setOpenSnackBar(true)
+        setLoaderOpen(false)
+      })
     }
   }
 
@@ -660,7 +650,7 @@ const Settings = (props) => {
                 <Stack spacing={1}>
                   <Typography variant="settingText">Club Tokens Minted so far</Typography>
                   <Typography variant="p"
-                              className={classes.valuesStyle}>{dataFetched ? (clubTokenMinted + " $" + tokenDetails[1]) : null}</Typography>
+                              className={classes.valuesStyle}>{dataFetched ? (parseInt(clubTokenMinted) + " $" + tokenDetails[1]) : null}</Typography>
                 </Stack>
               </Grid>
               <Grid item ml={4} mt={1} mb={2} mr={4} xs sx={{display: "flex", justifyContent: "flex-end"}}>
@@ -895,15 +885,6 @@ const Settings = (props) => {
                             renderInput={(params) => <TextField {...params} className={classes.datePicker}/>}
                           />
                         </LocalizationProvider>
-                      </Grid>
-                      <Grid item>
-                        <Typography variant="proposalBody">Total supply amount</Typography>
-                      </Grid>
-                      <Grid item>
-                        <TextField sx={{width: "95%", backgroundColor: "#C1D3FF40"}}
-                                   className={classes.cardTextBox}
-                                   placeholder="Enter the total supply amount"
-                                   onChange={(e) => setDepositAmount(e.target.value)}/>
                       </Grid>
                     </Grid>
                     <Grid item m={3}>

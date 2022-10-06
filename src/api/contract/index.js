@@ -352,9 +352,9 @@ export class SmartContract {
       .send({from: this.walletAddress})
   }
 
-  async startDeposit(startTime, totalRaiseAmount) {
+  async startDeposit(startTime) {
     return this.contract.methods
-      .startDeposit(startTime, totalRaiseAmount)
+      .startDeposit(startTime)
       .send({from: this.walletAddress})
   }
 
