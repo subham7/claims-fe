@@ -1040,7 +1040,7 @@ const Proposal = () => {
                                     // mintgtto execution
                                     <Grid container ml={1} mt={1} mb={2} spacing={2} direction="column">
                                       <Grid item>
-                                        <Typography className={classes.cardFont}>MintGT address</Typography>
+                                        <Typography className={classes.cardFont}>User address</Typography>
                                       </Grid>
                                       <Grid item>
                                         <TextField sx={{ width: "90%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
