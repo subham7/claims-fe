@@ -16,6 +16,7 @@ import {
   Snackbar,
   Alert,
   TextField,
+  Paper,
 } from "@mui/material"
 import { makeStyles } from "@mui/styles"
 import ProgressBar from "../../../src/components/progressbar"
@@ -708,175 +709,185 @@ const Settings = (props) => {
                 </Grid>
               </Grid>
               <Divider variant="middle" />
-              <Grid container spacing={7}>
-                <Grid item ml={4} mt={5} mb={2} md={2.5}>
-                  <Typography variant="settingText">
-                    Deposits deadline
-                  </Typography>
-                  <Grid container>
-                    <Grid item mt={1}>
-                      <Typography variant="p" className={classes.valuesStyle}>
-                        {governorDataFetched
-                          ? new Date(parseInt(governorDetails[0]) * 1000)
-                              .toJSON()
-                              .slice(0, 10)
-                              .split("-")
-                              .reverse()
-                              .join("/")
-                          : null}
-                      </Typography>
-                    </Grid>
-                    <Grid item ml={1} mt={1}>
-                      {governorDataFetched ? (
-                        closingDays > 0 ? (
-                          <Card className={classes.openTag}>
-                            <Typography className={classes.openTagFont}>
-                              Open
-                            </Typography>
-                          </Card>
-                        ) : (
-                          <Card className={classes.closeTag}>
-                            <Typography className={classes.closeTagFont}>
-                              Closed
-                            </Typography>
-                          </Card>
-                        )
-                      ) : null}
-                    </Grid>
-                  </Grid>
-                </Grid>
-                <Grid item ml={4} mt={5} md={2.5}>
-                  <Grid container>
-                    <Grid item>
-                      <Typography
-                        variant="p"
-                        className={classes.valuesDimStyle}
-                      >
-                        Minimum Deposits
-                      </Typography>
-                    </Grid>
-                    <Grid item mt={1}>
-                      <Typography variant="p" className={classes.valuesStyle}>
-                        {governorDataFetched
-                          ? convertAmountToWei(governorDetails[1]) + " USDC"
-                          : null}
-                      </Typography>
+              <Paper
+                style={{
+                  background: "transparent",
+                  boxShadow: "none",
+                  paddingTop: "50px",
+                  paddingLeft: "30px",
+                }}
+              >
+                <Grid container spacing={7}>
+                  <Grid item md={3}>
+                    <Typography variant="settingText">
+                      Deposits deadline
+                    </Typography>
+                    <Grid container>
+                      <Grid item mt={1}>
+                        <Typography variant="p" className={classes.valuesStyle}>
+                          {governorDataFetched
+                            ? new Date(parseInt(governorDetails[0]) * 1000)
+                                .toJSON()
+                                .slice(0, 10)
+                                .split("-")
+                                .reverse()
+                                .join("/")
+                            : null}
+                        </Typography>
+                      </Grid>
+                      <Grid item ml={1} mt={1}>
+                        {governorDataFetched ? (
+                          closingDays > 0 ? (
+                            <Card className={classes.openTag}>
+                              <Typography className={classes.openTagFont}>
+                                Open
+                              </Typography>
+                            </Card>
+                          ) : (
+                            <Card className={classes.closeTag}>
+                              <Typography className={classes.closeTagFont}>
+                                Closed
+                              </Typography>
+                            </Card>
+                          )
+                        ) : null}
+                      </Grid>
                     </Grid>
                   </Grid>
-                </Grid>
-                <Grid item ml={4} mt={5} md={2.5}>
-                  <Grid container>
-                    <Grid item>
-                      <Typography
-                        variant="p"
-                        className={classes.valuesDimStyle}
-                      >
-                        Maximum Deposit
-                      </Typography>
-                    </Grid>
-                    <Grid item mt={1}>
-                      <Typography variant="p" className={classes.valuesStyle}>
-                        {governorDataFetched
-                          ? convertAmountToWei(governorDetails[2]) + " USDC"
-                          : null}{" "}
-                      </Typography>
-                    </Grid>
-                  </Grid>
-                </Grid>
-                <Grid item ml={4} mt={5} md={2.5}>
-                  <Grid container direction="column">
-                    <Grid item>
-                      <Typography
-                        variant="p"
-                        className={classes.valuesDimStyle}
-                      >
-                        Members
-                      </Typography>
-                    </Grid>
-                    <Grid item mt={{ lg: 5, xl: 1 }}>
-                      <Typography variant="p" className={classes.valuesStyle}>
-                        {membersFetched ? members : 0}
-                      </Typography>
+                  <Grid item md={3}>
+                    <Grid container>
+                      <Grid item>
+                        <Typography
+                          variant="p"
+                          className={classes.valuesDimStyle}
+                        >
+                          Minimum Deposits
+                        </Typography>
+                      </Grid>
+                      <Grid item mt={1}>
+                        <Typography variant="p" className={classes.valuesStyle}>
+                          {governorDataFetched
+                            ? convertAmountToWei(governorDetails[1]) + " USDC"
+                            : null}
+                        </Typography>
+                      </Grid>
                     </Grid>
                   </Grid>
-                </Grid>
-              </Grid>
-              <Grid container mt={5}>
-                <Grid item ml={4} md={2.5}>
-                  <Grid container direction="column">
-                    <Grid item>
-                      <Typography variant="settingText">
-                        Treasury wallet
-                      </Typography>
-                    </Grid>
-                    <Grid item mt={2}>
-                      <Typography variant="p" className={classes.valuesStyle}>
-                        $
-                        {clubAssetTokenFetched
-                          ? clubAssetTokenData.treasuryAmount
-                          : null}
-                      </Typography>
+                  <Grid item md={3}>
+                    <Grid container>
+                      <Grid item>
+                        <Typography
+                          variant="p"
+                          className={classes.valuesDimStyle}
+                        >
+                          Maximum Deposit
+                        </Typography>
+                      </Grid>
+                      <Grid item mt={1}>
+                        <Typography variant="p" className={classes.valuesStyle}>
+                          {governorDataFetched
+                            ? convertAmountToWei(governorDetails[2]) + " USDC"
+                            : null}{" "}
+                        </Typography>
+                      </Grid>
                     </Grid>
                   </Grid>
-                </Grid>
-                <Grid item ml={4.5} md={2.5}>
-                  <Grid container direction="column">
-                    <Grid item>
-                      <Typography variant="settingText">
-                        Your ownership
-                      </Typography>
+                  <Grid item md={3}>
+                    <Grid container direction="column">
+                      <Grid item>
+                        <Typography
+                          variant="p"
+                          className={classes.valuesDimStyle}
+                        >
+                          Members
+                        </Typography>
+                      </Grid>
+                      <Grid item mt={{ lg: 5, xl: 1 }}>
+                        <Typography variant="p" className={classes.valuesStyle}>
+                          {membersFetched ? members : 0}
+                        </Typography>
+                      </Grid>
                     </Grid>
-                    <Grid item mt={2}>
-                      <Typography variant="p" className={classes.valuesStyle}>
-                        {userBalanceFetched && dataFetched
-                          ? isNaN(
-                              parseInt(
-                                calculateUserSharePercentage(
-                                  userBalance,
-                                  tokenDetails[2]
+                  </Grid>
+                  <Grid item md={3}>
+                    <Grid container direction="column">
+                      <Grid item>
+                        <Typography variant="settingText">
+                          Treasury wallet
+                        </Typography>
+                      </Grid>
+                      <Grid item mt={2}>
+                        <Typography variant="p" className={classes.valuesStyle}>
+                          $
+                          {clubAssetTokenFetched
+                            ? clubAssetTokenData.treasuryAmount
+                            : null}
+                        </Typography>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                  <Grid item md={3}>
+                    <Grid container direction="column">
+                      <Grid item>
+                        <Typography variant="settingText">
+                          Your ownership
+                        </Typography>
+                      </Grid>
+                      <Grid item mt={2}>
+                        <Typography variant="p" className={classes.valuesStyle}>
+                          {userBalanceFetched && dataFetched
+                            ? isNaN(
+                                parseInt(
+                                  calculateUserSharePercentage(
+                                    userBalance,
+                                    tokenDetails[2]
+                                  )
                                 )
                               )
-                            )
-                            ? 0
-                            : parseInt(
-                                calculateUserSharePercentage(
-                                  userBalance,
-                                  userOwnershipShare
+                              ? 0
+                              : parseInt(
+                                  calculateUserSharePercentage(
+                                    userBalance,
+                                    userOwnershipShare
+                                  )
                                 )
-                              )
-                          : 0}
-                        % (${userBalance})
-                      </Typography>
+                            : 0}
+                          % (${userBalance})
+                        </Typography>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                  <Grid item md={3}>
+                    <Grid container direction="column">
+                      <Grid item>
+                        <Typography variant="settingText">Threshold</Typography>
+                      </Grid>
+                      <Grid item mt={2}>
+                        <Typography variant="p" className={classes.valuesStyle}>
+                          {governorDataFetched && thresholdFetched
+                            ? thresholdValue
+                            : 0}
+                        </Typography>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                  <Grid item md={3}>
+                    <Grid container direction="column">
+                      <Grid item>
+                        <Typography variant="settingText">Quoram</Typography>
+                      </Grid>
+                      <Grid item mt={2}>
+                        <Typography variant="p" className={classes.valuesStyle}>
+                          {governorDataFetched && quoramFetched
+                            ? quoramValue
+                            : 0}
+                        </Typography>
+                      </Grid>
                     </Grid>
                   </Grid>
                 </Grid>
-                <Grid item ml={6} md={2.5}>
-                  <Grid container direction="column">
-                    <Grid item>
-                      <Typography variant="settingText">Threshold</Typography>
-                    </Grid>
-                    <Grid item mt={2}>
-                      <Typography variant="p" className={classes.valuesStyle}>
-                        {governorDataFetched && thresholdFetched
-                          ? thresholdValue
-                          : 0}
-                      </Typography>
-                    </Grid>
-                  </Grid>
-                </Grid>
-                <Grid item ml={5} md={2.5}>
-                  <Grid container direction="column">
-                    <Grid item>
-                      <Typography variant="settingText">Quoram</Typography>
-                    </Grid>
-                    <Grid item mt={2}>
-                      <Typography variant="p" className={classes.valuesStyle}>
-                        {governorDataFetched && quoramFetched ? quoramValue : 0}
-                      </Typography>
-                    </Grid>
-                  </Grid>
-                </Grid>
-              </Grid>
+              </Paper>
+
               <Grid item ml={3} mt={5} mb={2} mr={3}>
                 <ProgressBar
                   value={
