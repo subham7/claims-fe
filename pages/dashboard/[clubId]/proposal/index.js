@@ -618,6 +618,11 @@ const Proposal = () => {
     setCustomToken(value)
   }
 
+  const handleAirDropTokenChange = (event) => {
+    const { target: { value }, } = event
+    setAirDropToken(value)
+  }
+
   const handleChange = (event) => {
     const {
       target: { value },
@@ -1016,8 +1021,30 @@ const Proposal = () => {
                                       <Typography className={classes.cardFont}>Air drop token*</Typography>
                                     </Grid>
                                     <Grid item>
-                                      <TextField sx={{ width: "90%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
-                                        placeholder="0x..." onChange={(e) => setAirDropToken(e.target.value)} />
+                                      <Grid item>
+                                        <Select
+                                          displayEmpty
+                                          value={airDropToken}
+                                          onChange={handleAirDropTokenChange}
+                                          input={<OutlinedInput />}
+                                          renderValue={(selected) => {
+                                            if (selected.length === 0) {
+                                              return "Select a Token"
+                                            }
+                                            return selected
+                                          }}
+                                          MenuProps={tokenData}
+                                          style={{ borderRadius: "10px", background: "#111D38 0% 0% no-repeat padding-box", width: "90%" }}
+                                        >
+                                          {tokenData.map((token) => (
+                                            <MenuItem
+                                              key={token.name}
+                                              value={token.token_address}>
+                                              {token.name}
+                                            </MenuItem>
+                                          ))}
+                                        </Select>
+                                      </Grid>
                                     </Grid>
                                     <Grid item>
                                       <Typography className={classes.cardFont}>Amount*</Typography>

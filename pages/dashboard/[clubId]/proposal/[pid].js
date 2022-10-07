@@ -1236,6 +1236,29 @@ const ProposalDetail = () => {
                           <Grid container>
                             <Grid item>
                               <Typography className={classes.listFont2}>
+                                Carry fee
+                              </Typography>
+                            </Grid>
+                            <Grid
+                              item
+                              xs
+                              sx={{
+                                display: "flex",
+                                justifyContent: "flex-end",
+                              }}
+                            >
+                              <Typography
+                                className={classes.listFont2Colourless}
+                              >
+                                {fetched
+                                  ? proposalData[0].commands[0].airDropCarryFee
+                                  : null}%
+                              </Typography>
+                            </Grid>
+                          </Grid>
+                          <Grid container>
+                            <Grid item>
+                              <Typography className={classes.listFont2}>
                                 Sender
                               </Typography>
                             </Grid>
