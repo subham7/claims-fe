@@ -1,8 +1,8 @@
-import React, { createContext, useState, useContext, useEffect } from 'react'
+import React, {createContext, useState, useContext, useEffect} from 'react'
 import Web3 from "web3"
-import Router, { useRouter } from 'next/router'
-import { useDispatch, useSelector } from "react-redux"
-import { fetchClub } from "../api/club"
+import Router, {useRouter} from 'next/router'
+import {useDispatch, useSelector} from "react-redux"
+import {fetchClub} from "../api/club"
 import {
   addClubID,
   addClubName,
@@ -12,14 +12,14 @@ import {
   addTokenAddress,
   addClubImageUrl
 } from '../redux/reducers/create'
-import { checkNetwork } from "./wallet"
-import { loginToken, refreshToken } from "../api/auth";
-import { getExpiryTime, getJwtToken, getRefreshToken, setExpiryTime, setJwtToken, setRefreshToken } from "./auth";
-import {addSafeAddress, setAdminUser} from '../redux/reducers/gnosis';
-import { fetchConfig } from '../api/config'
-import { updateDynamicAddress } from '../api'
-import { fetchConfigById } from '../api/config'
-import { addContractAddress } from '../redux/reducers/gnosis'
+import {checkNetwork} from "./wallet"
+import {loginToken, refreshToken} from "../api/auth";
+import {getExpiryTime, getJwtToken, getRefreshToken, setExpiryTime, setJwtToken, setRefreshToken} from "./auth";
+import {addSafeAddress, setAdminUser, setGovernanceTokenDetails, setUSDCTokenDetails} from '../redux/reducers/gnosis';
+import {fetchConfig} from '../api/config'
+import {updateDynamicAddress} from '../api'
+import {fetchConfigById} from '../api/config'
+import {addContractAddress} from '../redux/reducers/gnosis'
 import {SmartContract} from "../api/contract";
 import ImplementationContract from "../abis/implementationABI.json";
 import {convertFromWeiGovernance} from "./globalFunctions";
@@ -28,8 +28,12 @@ import {convertFromWeiGovernance} from "./globalFunctions";
 const ClubFetch = (Component) => {
   const RetrieveDataComponent = () => {
     const router = useRouter()
-    const { clubId } = router.query
-    const daoAddress = useSelector(state => { return state.create.daoAddress })
+    const {clubId} = router.query
+    const [tokenDecimalUsdc, setTokenDecimalUsdc] = useState("")
+    const [tokenDecimalGovernance, setTokenDecimalGovernance] = useState("")
+    const daoAddress = useSelector(state => {
+      return state.create.daoAddress
+    })
     const dispatch = useDispatch()
     const FACTORY_CONTRACT_ADDRESS = useSelector(state => {
       return state.gnosis.factoryContractAddress
@@ -41,30 +45,61 @@ const ClubFetch = (Component) => {
       return state.gnosis.transactionUrl
     })
 
-    const checkUserExists = () =>{
+    const fetchCustomTokenDecimals = async () => {
       if (daoAddress && USDC_CONTRACT_ADDRESS && GNOSIS_TRANSACTION_URL) {
-        const checkUserInClub = new SmartContract(ImplementationContract, daoAddress, undefined, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL)
-        const response = checkUserInClub.userDetails()
-        response.then((result) => {
-          console.log("result", result)
-          if (result[2]) {
-            dispatch(setAdminUser(true))
-          } else {
-            dispatch(setAdminUser(false))
+        const usdcContract = new SmartContract(ImplementationContract, USDC_CONTRACT_ADDRESS, undefined, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL)
+        const daoContract = new SmartContract(ImplementationContract, daoAddress, undefined, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL)
+
+        await usdcContract.obtainTokenDecimals().then(
+          (result) => {
+            setTokenDecimalUsdc(result)
           }
-          if (!result[0]) {
-            router.push("/")
+        )
+        await daoContract.obtainTokenDecimals().then(
+          (result) => {
+            setTokenDecimalGovernance(result)
           }
-        },
-        (error) => {
-          router.push("/")
-        })
+        )
       }
     }
 
     useEffect(() => {
-      console.log("calling")
-        checkUserExists()
+      if (tokenDecimalGovernance && tokenDecimalUsdc) {
+        dispatch(setGovernanceTokenDetails(tokenDecimalGovernance))
+        dispatch(setUSDCTokenDetails({
+          // TODO: token symbol should be dynamic, obtain it from api
+          tokenSymbol: "USDC",
+          tokenDecimal: tokenDecimalUsdc,
+        }))
+      }
+    }, [tokenDecimalGovernance, tokenDecimalUsdc])
+
+
+    const checkUserExists = () => {
+      if (daoAddress && USDC_CONTRACT_ADDRESS && GNOSIS_TRANSACTION_URL) {
+        const checkUserInClub = new SmartContract(ImplementationContract, daoAddress, undefined, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL)
+        const response = checkUserInClub.userDetails()
+        response.then((result) => {
+            console.log("result", result)
+            if (result[2]) {
+              dispatch(setAdminUser(true))
+            } else {
+              dispatch(setAdminUser(false))
+            }
+            if (!result[0]) {
+              router.push("/")
+            }
+          },
+          (error) => {
+            router.push("/")
+          })
+      }
+    }
+
+    useEffect(() => {
+      checkUserExists()
+      fetchCustomTokenDecimals()
+
     }, [daoAddress, USDC_CONTRACT_ADDRESS])
 
     useEffect(() => {
@@ -156,7 +191,7 @@ const ClubFetch = (Component) => {
       checkUserExists()
     }, [clubId])
 
-    return <Component />
+    return <Component/>
   }
   return RetrieveDataComponent;
 }

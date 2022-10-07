@@ -1,5 +1,5 @@
-import { React, useEffect, useState } from "react"
-import { makeStyles } from "@mui/styles"
+import {React, useEffect, useState} from "react"
+import {makeStyles} from "@mui/styles"
 import Layout1 from "../../../../src/components/layouts/layout1"
 import {
   Box,
@@ -30,20 +30,25 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
 import AddCircleRoundedIcon from '@mui/icons-material/AddCircleRounded'
 import CancelIcon from '@mui/icons-material/Cancel';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import { fontStyle } from "@mui/system"
+import {fontStyle} from "@mui/system"
 import SimpleSelectButton from "../../../../src/components/simpleSelectButton"
-import { proposalType, commandTypeList } from "../../../../src/data/dashboard"
-import { getAssets } from "../../../../src/api/assets"
-import { createProposal, getProposal } from "../../../../src/api/proposal"
-import { DesktopDatePicker } from '@mui/x-date-pickers'
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
+import {proposalType, commandTypeList} from "../../../../src/data/dashboard"
+import {getAssets} from "../../../../src/api/assets"
+import {createProposal, getProposal} from "../../../../src/api/proposal"
+import {DesktopDatePicker} from '@mui/x-date-pickers'
+import {LocalizationProvider} from '@mui/x-date-pickers/LocalizationProvider'
+import {AdapterDateFns} from '@mui/x-date-pickers/AdapterDateFns'
 import Web3 from "web3";
-import { useSelector } from "react-redux"
-import { useRouter, withRouter } from "next/router"
+import {useSelector} from "react-redux"
+import {useRouter, withRouter} from "next/router"
 import USDCContract from "../../../../src/abis/usdcTokenContract.json"
 import ClubFetch from "../../../../src/utils/clubFetch"
-import { calculateDays, convertToWei, convertToWeiUSDC } from "../../../../src/utils/globalFunctions";
+import {
+  calculateDays,
+  convertToWei,
+  convertToWeiGovernance,
+  convertToWeiUSDC
+} from "../../../../src/utils/globalFunctions";
 
 
 const useStyles = makeStyles({
@@ -198,11 +203,15 @@ const useStyles = makeStyles({
 
 const Proposal = () => {
   const router = useRouter()
-  const { clubId, create_proposal } = router.query
+  const {clubId, create_proposal} = router.query
   const classes = useStyles()
-  const daoAddress = useSelector(state => { return state.create.daoAddress })
+  const daoAddress = useSelector(state => {
+    return state.create.daoAddress
+  })
   const clubID = clubId
-  const tresuryAddress = useSelector(state => { return state.create.tresuryAddress })
+  const tresuryAddress = useSelector(state => {
+    return state.create.tresuryAddress
+  })
   const [open, setOpen] = useState(false)
   const [name, setName] = useState([])
   const [duration, setDuration] = useState(new Date(new Date().getTime() + (24 * 60 * 60 * 1000)))
@@ -259,6 +268,15 @@ const Proposal = () => {
   const GNOSIS_TRANSACTION_URL = useSelector(state => {
     return state.gnosis.transactionUrl
   })
+  const usdcTokenSymbol = useSelector(state => {
+    return state.gnosis.tokenSymbol
+  })
+  const usdcTokenDecimal = useSelector(state => {
+    return state.gnosis.tokenDecimal
+  })
+  const usdcGovernanceTokenDecimal = useSelector(state => {
+    return state.gnosis.governanceTokenDecimal
+  })
 
 
   const fetchTokens = () => {
@@ -300,8 +318,7 @@ const Proposal = () => {
           setFetched(true)
         }
       })
-    }
-    else {
+    } else {
       setLoaderOpen(true)
       fetchData()
     }
@@ -316,10 +333,10 @@ const Proposal = () => {
       const options = []
       for (let i = 1; i < surveyOption.length + 1; i++) {
         if (i === [...surveyOption, surveyValue].length - 1) {
-          options.push({ "text": surveyValue })
+          options.push({"text": surveyValue})
         }
         if (typeof (surveyOption[i]) !== 'undefined') {
-          options.push({ "text": surveyOption[i] })
+          options.push({"text": surveyOption[i]})
         }
       }
       setOpen(false)
@@ -348,8 +365,7 @@ const Proposal = () => {
           return result.data
         }
       })
-    }
-    else {
+    } else {
       setOpen(false)
       if (name === commandTypeList[0].commandText) {
         // for airdrop execution
@@ -366,6 +382,9 @@ const Proposal = () => {
               "airDropToken": airDropToken,
               "airDropAmount": await convertToWeiUSDC(airDropAmount, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL),
               "airDropCarryFee": airDropCarryFee,
+              "usdcTokenSymbol": usdcTokenSymbol,
+              "usdcTokenDecimal": usdcTokenDecimal,
+              "usdcGovernanceTokenDecimal": usdcGovernanceTokenDecimal,
             }
           ],
           "type": "action"
@@ -398,7 +417,10 @@ const Proposal = () => {
             {
               "executionId": 1,
               "mintGTAddresses": [mintGtAddress],
-              "mintGTAmounts": [await convertToWeiUSDC(mintGTAmounts, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL)],
+              "mintGTAmounts": [await convertToWeiGovernance(daoAddress, mintGTAmounts, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL)],
+              "usdcTokenSymbol": usdcTokenSymbol,
+              "usdcTokenDecimal": usdcTokenDecimal,
+              "usdcGovernanceTokenDecimal": usdcGovernanceTokenDecimal,
             }
           ],
           "type": "action"
@@ -468,6 +490,9 @@ const Proposal = () => {
                 "executionId": 2,
                 "quorum": quorumValue,
                 "threshold": thresholdValue,
+                "usdcTokenSymbol": usdcTokenSymbol,
+                "usdcTokenDecimal": usdcTokenDecimal,
+                "usdcGovernanceTokenDecimal": usdcGovernanceTokenDecimal,
               }
             ],
             "type": "action"
@@ -506,6 +531,9 @@ const Proposal = () => {
             {
               "executionId": 3,
               "totalDeposits": await convertToWeiUSDC(totalDeposits, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL),
+              "usdcTokenSymbol": usdcTokenSymbol,
+              "usdcTokenDecimal": usdcTokenDecimal,
+              "usdcGovernanceTokenDecimal": usdcGovernanceTokenDecimal,
             }
           ],
           "type": "action"
@@ -540,7 +568,10 @@ const Proposal = () => {
               "executionId": 4,
               "customToken": customToken,
               "customTokenAmounts": [await convertToWeiUSDC(customTokenAmounts, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL)],
-              "customTokenAddresses": [customTokenAddresses]
+              "customTokenAddresses": [customTokenAddresses],
+              "usdcTokenSymbol": usdcTokenSymbol,
+              "usdcTokenDecimal": usdcTokenDecimal,
+              "usdcGovernanceTokenDecimal": usdcGovernanceTokenDecimal,
             }
           ],
           "type": "action"
@@ -609,29 +640,29 @@ const Proposal = () => {
   }, [clubID])
 
   const handleTypeChange = (event) => {
-    const { target: { value } } = event
+    const {target: {value}} = event
     if (value) {
       setType(value)
     }
   }
 
   const handleProposalClick = (proposal) => {
-    router.push(`${router.asPath}/${proposal.proposalId}`, undefined, { shallow: true })
+    router.push(`${router.asPath}/${proposal.proposalId}`, undefined, {shallow: true})
   }
 
   const handleTokenChange = (event) => {
-    const { target: { value }, } = event
+    const {target: {value},} = event
     setCustomToken(value)
   }
 
   const handleAirDropTokenChange = (event) => {
-    const { target: { value }, } = event
+    const {target: {value},} = event
     setAirDropToken(value)
   }
 
   const handleChange = (event) => {
     const {
-      target: { value },
+      target: {value},
     } = event
     setName(value)
     setEnableSubmitButton(true)
@@ -687,25 +718,26 @@ const Proposal = () => {
       <Layout1 page={2}>
         <Grid container spacing={3} paddingLeft={10} paddingTop={15}>
           <Grid item md={9}>
-            <Grid container mb={5} direction={{ xs: "column", sm: "column", md: "column", lg: "row" }}>
+            <Grid container mb={5} direction={{xs: "column", sm: "column", md: "column", lg: "row"}}>
               <Grid item>
                 <Typography variant="title">Proposals</Typography>
               </Grid>
-              <Grid item xs sx={{ display: { lg: "flex" }, justifyContent: { md: "flex-center", lg: "flex-end" } }}>
-                <Grid container direction="row" spacing={2} >
-                  <Grid item xs sx={{ display: "flex", justifyContent: "flex-end" }}>
+              <Grid item xs sx={{display: {lg: "flex"}, justifyContent: {md: "flex-center", lg: "flex-end"}}}>
+                <Grid container direction="row" spacing={2}>
+                  <Grid item xs sx={{display: "flex", justifyContent: "flex-end"}}>
                     <TextField
                       value={searchProposal}
                       onChange={(e) => setSearchProposal(e.target.value)}
                       className={classes.searchField}
                       placeholder="Search proposals"
                       InputProps={{
-                        endAdornment: <IconButton type="submit" sx={{ p: '10px' }} aria-label="search"><SearchIcon /></IconButton>
+                        endAdornment: <IconButton type="submit" sx={{p: '10px'}}
+                                                  aria-label="search"><SearchIcon/></IconButton>
                       }}
                     />
                   </Grid>
                   <Grid item>
-                    <Button variant="primary" startIcon={<AddCircleRoundedIcon />} onClick={handleClickOpen}>
+                    <Button variant="primary" startIcon={<AddCircleRoundedIcon/>} onClick={handleClickOpen}>
                       Create new
                     </Button>
                   </Grid>
@@ -717,23 +749,27 @@ const Proposal = () => {
                 proposalData.length > 0 ?
                   proposalData.map((proposal, key) => {
                     return (
-                      <Grid item key={proposal.id} onClick={e => { handleProposalClick(proposalData[key]) }} md={12}>
-                        <CardActionArea sx={{ borderRadius: "10px", }}>
+                      <Grid item key={proposal.id} onClick={e => {
+                        handleProposalClick(proposalData[key])
+                      }} md={12}>
+                        <CardActionArea sx={{borderRadius: "10px",}}>
                           <Card className={classes.mainCard}>
                             <Grid container>
                               <Grid item ml={2} mr={2}>
                                 <Typography className={classes.cardFont}>
-                                  Proposed by {fetched ? proposal.createdBy.substring(0, 6) + ".........." + proposal.createdBy.substring(proposal.createdBy.length - 4) : null}
+                                  Proposed
+                                  by {fetched ? proposal.createdBy.substring(0, 6) + ".........." + proposal.createdBy.substring(proposal.createdBy.length - 4) : null}
                                 </Typography>
                               </Grid>
-                              <Grid item ml={1} mr={1} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
+                              <Grid item ml={1} mr={1} xs sx={{display: "flex", justifyContent: "flex-end"}}>
                                 {fetched ?
                                   <Chip className={
                                     proposal.status === "active" ? classes.cardFontActive :
                                       proposal.status === "passed" ? classes.cardFontPassed :
                                         proposal.status === "executed" ? classes.cardFontExecuted :
                                           proposal.status === "failed" ? classes.cardFontFailed :
-                                            classes.cardFontFailed} label={proposal.status.charAt(0).toUpperCase() + proposal.status.slice(1)} /> : null}
+                                            classes.cardFontFailed}
+                                        label={proposal.status.charAt(0).toUpperCase() + proposal.status.slice(1)}/> : null}
                               </Grid>
                             </Grid>
                             <Grid container>
@@ -763,27 +799,31 @@ const Proposal = () => {
                     )
                   }) :
                   <Grid item justifyContent="center" alignItems="center" md={10}>
-                    <img src="/assets/images/tokens_banner.png" alt="token-banner" className={classes.banner} />
+                    <img src="/assets/images/tokens_banner.png" alt="token-banner" className={classes.banner}/>
                   </Grid>
                 : proposalData.length > 0 ?
                   proposalData.map((proposal, key) => {
                     return (
-                      <Grid item key={proposal.id} onClick={e => { handleProposalClick(proposalData[key]) }} md={12}>
-                        <CardActionArea sx={{ borderRadius: "10px", }}>
+                      <Grid item key={proposal.id} onClick={e => {
+                        handleProposalClick(proposalData[key])
+                      }} md={12}>
+                        <CardActionArea sx={{borderRadius: "10px",}}>
                           <Card className={classes.mainCard}>
                             <Grid container>
                               <Grid item ml={2} mr={2}>
                                 <Typography className={classes.cardFont}>
-                                  Proposed by {fetched ? proposal.createdBy.substring(0, 6) + ".........." + proposal.createdBy.substring(proposal.createdBy.length - 4) : null}
+                                  Proposed
+                                  by {fetched ? proposal.createdBy.substring(0, 6) + ".........." + proposal.createdBy.substring(proposal.createdBy.length - 4) : null}
                                 </Typography>
                               </Grid>
-                              <Grid item ml={1} mr={1} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
+                              <Grid item ml={1} mr={1} xs sx={{display: "flex", justifyContent: "flex-end"}}>
                                 {fetched ? <Chip className={
                                   proposal.status === "active" ? classes.cardFontActive :
                                     proposal.status === "passed" ? classes.cardFontPassed :
                                       proposal.status === "executed" ? classes.cardFontExecuted :
                                         proposal.status === "failed" ? classes.cardFontFailed :
-                                          classes.cardFontFailed} label={proposal.status.charAt(0).toUpperCase() + proposal.status.slice(1)} /> : null}
+                                          classes.cardFontFailed}
+                                                 label={proposal.status.charAt(0).toUpperCase() + proposal.status.slice(1)}/> : null}
                               </Grid>
                             </Grid>
                             <Grid container>
@@ -814,7 +854,7 @@ const Proposal = () => {
                   }) :
                   <Grid item justifyContent="center" alignItems="center" md={10}>
                     <Card variant="noProposalCard">
-                      <Typography sx={{ fontSize: "1.625em", fontFamily: "Whyte" }} p={3}>No Proposals found</Typography>
+                      <Typography sx={{fontSize: "1.625em", fontFamily: "Whyte"}} p={3}>No Proposals found</Typography>
                     </Card>
                   </Grid>
               }
@@ -831,47 +871,48 @@ const Proposal = () => {
               </Grid>
               <ListItemButton selected={selectedListItem === "all"} onClick={() => fetchFilteredData("all")}>
                 <div className={classes.allIllustration}></div>
-                <ListItemText primary="All" className={classes.listFont} />
-                <ArrowForwardIosIcon fontSize="5px" />
+                <ListItemText primary="All" className={classes.listFont}/>
+                <ArrowForwardIosIcon fontSize="5px"/>
               </ListItemButton>
 
               <ListItemButton selected={selectedListItem === "active"} onClick={() => fetchFilteredData("active")}>
                 <div className={classes.activeIllustration}></div>
-                <ListItemText primary="Active" className={classes.listFont} />
-                <ArrowForwardIosIcon fontSize="5px" />
+                <ListItemText primary="Active" className={classes.listFont}/>
+                <ArrowForwardIosIcon fontSize="5px"/>
               </ListItemButton>
 
               <ListItemButton selected={selectedListItem === "closed"} onClick={() => fetchFilteredData("passed")}>
                 <div className={classes.passedIllustration}></div>
-                <ListItemText primary="Passed" className={classes.listFont} />
-                <ArrowForwardIosIcon fontSize="5px" />
+                <ListItemText primary="Passed" className={classes.listFont}/>
+                <ArrowForwardIosIcon fontSize="5px"/>
               </ListItemButton>
               <ListItemButton selected={selectedListItem === "executed"} onClick={() => fetchFilteredData("executed")}>
                 <div className={classes.executedIllustration}></div>
-                <ListItemText primary="Executed" className={classes.listFont} />
-                <ArrowForwardIosIcon fontSize="5px" />
+                <ListItemText primary="Executed" className={classes.listFont}/>
+                <ArrowForwardIosIcon fontSize="5px"/>
               </ListItemButton>
               <ListItemButton selected={selectedListItem === "failed"} onClick={() => fetchFilteredData("failed")}>
                 <div className={classes.failedIllustration}></div>
-                <ListItemText primary="Failed" className={classes.listFont} />
-                <ArrowForwardIosIcon fontSize="5px" />
+                <ListItemText primary="Failed" className={classes.listFont}/>
+                <ArrowForwardIosIcon fontSize="5px"/>
               </ListItemButton>
             </Card>
           </Grid>
         </Grid>
-        <Dialog open={open} onClose={handleClose} scroll="body" PaperProps={{ classes: { root: classes.modalStyle } }} fullWidth maxWidth="lg" >
-          <DialogContent sx={{ overflow: "hidden", backgroundColor: '#19274B', }} >
-            <Grid container >
+        <Dialog open={open} onClose={handleClose} scroll="body" PaperProps={{classes: {root: classes.modalStyle}}}
+                fullWidth maxWidth="lg">
+          <DialogContent sx={{overflow: "hidden", backgroundColor: '#19274B',}}>
+            <Grid container>
               <Grid item m={3}>
                 <Typography className={classes.dialogBox}>Create proposal</Typography>
               </Grid>
             </Grid>
             <Grid container spacing={3} ml={0}>
-              <Grid item md={6} >
+              <Grid item md={6}>
                 <Typography variant="proposalBody">Type of Proposal</Typography>
               </Grid>
               <Grid item md={6}>
-                <Typography variant="proposalBody" >Proposal deadline</Typography>
+                <Typography variant="proposalBody">Proposal deadline</Typography>
               </Grid>
             </Grid>
             <Grid container spacing={1} ml={2}>
@@ -880,14 +921,14 @@ const Proposal = () => {
                   displayEmpty
                   value={type}
                   onChange={handleTypeChange}
-                  input={<OutlinedInput />}
+                  input={<OutlinedInput/>}
                   renderValue={(selected) => {
                     if (selected.length === 0) {
                       return proposalType.name
                     }
                     return selected
                   }}
-                  style={{ borderRadius: "10px", background: "#111D38 0% 0% no-repeat padding-box", width: "90%", }}
+                  style={{borderRadius: "10px", background: "#111D38 0% 0% no-repeat padding-box", width: "90%",}}
                 >
                   {proposalType.map((value) => (
                     <MenuItem
@@ -906,7 +947,8 @@ const Proposal = () => {
                     inputFormat="dd/MM/yyyy"
                     value={duration}
                     onChange={(e) => handleDurationChange(e)}
-                    renderInput={(params) => <TextField onKeyDown={(e) => e.preventDefault()} {...params} className={classes.datePicker} />}
+                    renderInput={(params) => <TextField onKeyDown={(e) => e.preventDefault()} {...params}
+                                                        className={classes.datePicker}/>}
                     minDate={duration}
                   />
                 </LocalizationProvider>
@@ -916,8 +958,8 @@ const Proposal = () => {
               <Typography variant="proposalBody">Proposal Title*</Typography>
             </Grid>
             <Grid container item ml={3} mt={2}>
-              <TextField sx={{ width: "95%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
-                placeholder="Add your one line description here" onChange={(e) => setTitle(e.target.value)} />
+              <TextField sx={{width: "95%", backgroundColor: "#C1D3FF40"}} className={classes.cardTextBox}
+                         placeholder="Add your one line description here" onChange={(e) => setTitle(e.target.value)}/>
             </Grid>
             <Grid container item ml={3} mt={2}>
               <Typography variant="proposalBody">Proposal description*</Typography>
@@ -930,7 +972,14 @@ const Proposal = () => {
                 // aria-label="minimum height"
                 // minRows={10}
                 placeholder="Add full description here"
-                style={{ width: "95%", height: "auto", backgroundColor: "#19274B", fontSize: "18px", color: "#C1D3FF", fontFamily: "Whyte", }}
+                style={{
+                  width: "95%",
+                  height: "auto",
+                  backgroundColor: "#19274B",
+                  fontSize: "18px",
+                  color: "#C1D3FF",
+                  fontFamily: "Whyte",
+                }}
               />
             </Grid>
             {type === proposalType[0].type ?
@@ -951,16 +1000,18 @@ const Proposal = () => {
                             <Grid container ml={1} mt={1} mb={2} spacing={2} direction="column">
                               <Grid container direction="row" ml={2}>
                                 <Grid item md={10} mb={3}>
-                                  <TextField sx={{ width: "90%", backgroundColor: "#C1D3FF40" }}
-                                    className={classes.cardTextBox}
-                                    placeholder="Yes / No / Abstain, etc."
-                                    onChange={(e) => { setSurveyValue(e.target.value) }}
-                                    defaultValue={data.text}
+                                  <TextField sx={{width: "90%", backgroundColor: "#C1D3FF40"}}
+                                             className={classes.cardTextBox}
+                                             placeholder="Yes / No / Abstain, etc."
+                                             onChange={(e) => {
+                                               setSurveyValue(e.target.value)
+                                             }}
+                                             defaultValue={data.text}
                                   />
                                 </Grid>
                                 <Grid item md={1} mt={1}>
                                   <IconButton aria-label="add" onClick={(e) => handleRemoveSurveyClick(key)} mt={1}>
-                                    <CancelIcon />
+                                    <CancelIcon/>
                                   </IconButton>
                                 </Grid>
                               </Grid>
@@ -971,7 +1022,8 @@ const Proposal = () => {
                     </Card>
                   </Grid>
                   <Grid container item mt={2} ml={3}>
-                    <Button variant="primary" startIcon={<AddCircleRoundedIcon />} onClick={handleAddNewOption} disabled={optionList.length >= 1 && surveyValue === ""}>
+                    <Button variant="primary" startIcon={<AddCircleRoundedIcon/>} onClick={handleAddNewOption}
+                            disabled={optionList.length >= 1 && surveyValue === ""}>
                       Add Option
                     </Button>
                   </Grid>
@@ -997,7 +1049,7 @@ const Proposal = () => {
                                   displayEmpty
                                   value={name}
                                   onChange={handleChange}
-                                  input={<OutlinedInput />}
+                                  input={<OutlinedInput/>}
                                   renderValue={(selected) => {
                                     if (selected.length === 0) {
                                       return "Select a command"
@@ -1005,7 +1057,11 @@ const Proposal = () => {
                                     return selected
                                   }}
                                   MenuProps={commandTypeList}
-                                  style={{ borderRadius: "10px", background: "#111D38 0% 0% no-repeat padding-box", width: "90%" }}
+                                  style={{
+                                    borderRadius: "10px",
+                                    background: "#111D38 0% 0% no-repeat padding-box",
+                                    width: "90%"
+                                  }}
                                 >
                                   {commandTypeList.map((command) => (
                                     <MenuItem
@@ -1016,78 +1072,90 @@ const Proposal = () => {
                                   ))}
                                 </Select>
                                 <IconButton aria-label="add" onClick={(e) => handleRemoveClick(key)}>
-                                  <CancelIcon />
+                                  <CancelIcon/>
                                 </IconButton>
                               </Grid>
                               {
                                 name === commandTypeList[0].commandText ? (
-                                  // airdrop execution
-                                  <Grid container ml={1} mt={1} mb={2} spacing={2} direction="column">
-                                    <Grid item>
-                                      <Typography className={classes.cardFont}>Air drop token*</Typography>
-                                    </Grid>
-                                    <Grid item>
-                                      <Grid item>
-                                        <Select
-                                          displayEmpty
-                                          value={airDropToken}
-                                          onChange={handleAirDropTokenChange}
-                                          input={<OutlinedInput />}
-                                          renderValue={(selected) => {
-                                            if (selected.length === 0) {
-                                              return "Select a Token"
-                                            }
-                                            return selected
-                                          }}
-                                          MenuProps={tokenData}
-                                          style={{ borderRadius: "10px", background: "#111D38 0% 0% no-repeat padding-box", width: "90%" }}
-                                        >
-                                          {tokenData.map((token) => (
-                                            <MenuItem
-                                              key={token.name}
-                                              value={token.token_address}>
-                                              {token.name}
-                                            </MenuItem>
-                                          ))}
-                                        </Select>
-                                      </Grid>
-                                    </Grid>
-                                    <Grid item>
-                                      <Typography className={classes.cardFont}>Amount*</Typography>
-                                    </Grid>
-                                    <Grid item>
-                                      <TextField sx={{ width: "90%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
-                                        placeholder="0" onChange={(e) => setAirDropAmount(parseInt(e.target.value))} />
-                                    </Grid>
-                                    <Grid item>
-                                      <Typography className={classes.cardFont}>Carry fee (in %)</Typography>
-                                    </Grid>
-                                    <Grid item>
-                                      <TextField sx={{ width: "90%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
-                                        placeholder="0%" onChange={(e) => setAirDropCarryFee(parseInt(e.target.value))} />
-                                    </Grid>
-                                  </Grid>
-                                )
-                                  :
-                                  name === commandTypeList[1].commandText ? (
-                                    // mintgtto execution
+                                    // airdrop execution
                                     <Grid container ml={1} mt={1} mb={2} spacing={2} direction="column">
                                       <Grid item>
-                                        <Typography className={classes.cardFont}>User address</Typography>
+                                        <Typography className={classes.cardFont}>Air drop token*</Typography>
                                       </Grid>
                                       <Grid item>
-                                        <TextField sx={{ width: "90%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
-                                          placeholder="0x..." onChange={(e) => setMintGtAddress(e.target.value)} />
+                                        <Grid item>
+                                          <Select
+                                            displayEmpty
+                                            value={airDropToken}
+                                            onChange={handleAirDropTokenChange}
+                                            input={<OutlinedInput/>}
+                                            renderValue={(selected) => {
+                                              if (selected.length === 0) {
+                                                return "Select a Token"
+                                              }
+                                              return selected
+                                            }}
+                                            MenuProps={tokenData}
+                                            style={{
+                                              borderRadius: "10px",
+                                              background: "#111D38 0% 0% no-repeat padding-box",
+                                              width: "90%"
+                                            }}
+                                          >
+                                            {tokenData.map((token) => (
+                                              <MenuItem
+                                                key={token.name}
+                                                value={token.token_address}>
+                                                {token.name}
+                                              </MenuItem>
+                                            ))}
+                                          </Select>
+                                        </Grid>
                                       </Grid>
                                       <Grid item>
-                                        <Typography className={classes.cardFont}>MintGt Amount</Typography>
+                                        <Typography className={classes.cardFont}>Amount*</Typography>
                                       </Grid>
                                       <Grid item>
-                                        <TextField sx={{ width: "90%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
-                                          placeholder="0" onChange={(e) => setMintGtAmount(parseInt(e.target.value))} />
+                                        <TextField sx={{width: "90%", backgroundColor: "#C1D3FF40"}}
+                                                   className={classes.cardTextBox}
+                                                   placeholder="0"
+                                                   onChange={(e) => setAirDropAmount(parseInt(e.target.value))}/>
+                                      </Grid>
+                                      <Grid item>
+                                        <Typography className={classes.cardFont}>Carry fee (in %)</Typography>
+                                      </Grid>
+                                      <Grid item>
+                                        <TextField sx={{width: "90%", backgroundColor: "#C1D3FF40"}}
+                                                   className={classes.cardTextBox}
+                                                   placeholder="0%"
+                                                   onChange={(e) => setAirDropCarryFee(parseInt(e.target.value))}/>
                                       </Grid>
                                     </Grid>
                                   )
+                                  :
+                                  name === commandTypeList[1].commandText ? (
+                                      // mintgtto execution
+                                      <Grid container ml={1} mt={1} mb={2} spacing={2} direction="column">
+                                        <Grid item>
+                                          <Typography className={classes.cardFont}>User address</Typography>
+                                        </Grid>
+                                        <Grid item>
+                                          <TextField sx={{width: "90%", backgroundColor: "#C1D3FF40"}}
+                                                     className={classes.cardTextBox}
+                                                     placeholder="0x..."
+                                                     onChange={(e) => setMintGtAddress(e.target.value)}/>
+                                        </Grid>
+                                        <Grid item>
+                                          <Typography className={classes.cardFont}>MintGt Amount</Typography>
+                                        </Grid>
+                                        <Grid item>
+                                          <TextField sx={{width: "90%", backgroundColor: "#C1D3FF40"}}
+                                                     className={classes.cardTextBox}
+                                                     placeholder="0"
+                                                     onChange={(e) => setMintGtAmount(parseInt(e.target.value))}/>
+                                        </Grid>
+                                      </Grid>
+                                    )
                                     :
                                     // name === commandTypeList[0].commandText ? (
                                     //   // assign executor role execution
@@ -1109,98 +1177,116 @@ const Proposal = () => {
                                             <Typography variant="proposalBody">Quorum (in %)</Typography>
                                           </Grid>
                                           <Grid item>
-                                            <TextField sx={{ width: "90%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
-                                              placeholder="0" onChange={(e) => setQuorumValue(parseInt(e.target.value))} error={quorumValue === 0 || quorumValue >= 100} />
+                                            <TextField sx={{width: "90%", backgroundColor: "#C1D3FF40"}}
+                                                       className={classes.cardTextBox}
+                                                       placeholder="0"
+                                                       onChange={(e) => setQuorumValue(parseInt(e.target.value))}
+                                                       error={quorumValue === 0 || quorumValue >= 100}/>
                                           </Grid>
                                           <Grid item>
                                             <Typography variant="proposalBody">Threshold (in %)</Typography>
                                           </Grid>
                                           <Grid item>
-                                            <TextField sx={{ width: "90%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
-                                              placeholder="0" onChange={(e) => setThresholdValue(parseInt(e.target.value))} error={thresholdValue === 0 || thresholdValue < 50 || thresholdValue >= 100} />
+                                            <TextField sx={{width: "90%", backgroundColor: "#C1D3FF40"}}
+                                                       className={classes.cardTextBox}
+                                                       placeholder="0"
+                                                       onChange={(e) => setThresholdValue(parseInt(e.target.value))}
+                                                       error={thresholdValue === 0 || thresholdValue < 50 || thresholdValue >= 100}/>
                                           </Grid>
                                         </Grid>
                                       ) :
-                                          name === commandTypeList[3].commandText ? (
-                                            // update raise amount execution
+                                      name === commandTypeList[3].commandText ? (
+                                          // update raise amount execution
+                                          <Grid container ml={1} mt={1} mb={2} spacing={2} direction="column">
+                                            <Grid item>
+                                              <Typography variant="proposalBody">Total deposit</Typography>
+                                            </Grid>
+                                            <Grid item>
+                                              <TextField sx={{width: "90%", backgroundColor: "#C1D3FF40"}}
+                                                         className={classes.cardTextBox}
+                                                         placeholder="0"
+                                                         onChange={(e) => setTotalDeposits(parseInt(e.target.value))}/>
+                                            </Grid>
+                                          </Grid>
+                                        ) :
+                                        name === commandTypeList[4].commandText ? (
+                                            // send custom token execution
                                             <Grid container ml={1} mt={1} mb={2} spacing={2} direction="column">
                                               <Grid item>
-                                                <Typography variant="proposalBody">Total deposit</Typography>
+                                                <Typography className={classes.cardFont}>Send token to an
+                                                  address</Typography>
                                               </Grid>
                                               <Grid item>
-                                                <TextField sx={{ width: "90%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
-                                                  placeholder="0" onChange={(e) => setTotalDeposits(parseInt(e.target.value))} />
+                                                <Select
+                                                  displayEmpty
+                                                  value={customToken}
+                                                  onChange={handleTokenChange}
+                                                  input={<OutlinedInput/>}
+                                                  renderValue={(selected) => {
+                                                    if (selected.length === 0) {
+                                                      return "Select a Token"
+                                                    }
+                                                    return selected
+                                                  }}
+                                                  MenuProps={tokenData}
+                                                  style={{
+                                                    borderRadius: "10px",
+                                                    background: "#111D38 0% 0% no-repeat padding-box",
+                                                    width: "90%"
+                                                  }}
+                                                >
+                                                  {tokenData.map((token) => (
+
+                                                    <MenuItem
+                                                      key={token.name}
+                                                      value={token.token_address}>
+                                                      {token.name}
+                                                    </MenuItem>
+                                                  ))}
+                                                </Select>
+                                              </Grid>
+                                              <Grid item>
+                                                <Typography className={classes.cardFont}>Receiver&apos;s wallet
+                                                  address</Typography>
+                                              </Grid>
+                                              <Grid item>
+                                                <TextField sx={{width: "90%", backgroundColor: "#C1D3FF40"}}
+                                                           className={classes.cardTextBox}
+                                                           placeholder="0x..."
+                                                           onChange={(e) => setCustomTokenAddresses(e.target.value)}/>
+                                              </Grid>
+                                              <Grid item>
+                                                <Typography className={classes.cardFont}>Amount to be sent</Typography>
+                                              </Grid>
+                                              <Grid item>
+                                                <TextField sx={{width: "90%", backgroundColor: "#C1D3FF40"}}
+                                                           className={classes.cardTextBox}
+                                                           placeholder="0"
+                                                           onChange={(e) => setCustomTokenAmounts(e.target.value)}/>
                                               </Grid>
                                             </Grid>
-                                          ) :
-                                            name === commandTypeList[4].commandText ? (
-                                              // send custom token execution
-                                              <Grid container ml={1} mt={1} mb={2} spacing={2} direction="column">
-                                                <Grid item>
-                                                  <Typography className={classes.cardFont}>Send token to an address</Typography>
-                                                </Grid>
-                                                <Grid item>
-                                                  <Select
-                                                    displayEmpty
-                                                    value={customToken}
-                                                    onChange={handleTokenChange}
-                                                    input={<OutlinedInput />}
-                                                    renderValue={(selected) => {
-                                                      if (selected.length === 0) {
-                                                        return "Select a Token"
-                                                      }
-                                                      return selected
-                                                    }}
-                                                    MenuProps={tokenData}
-                                                    style={{ borderRadius: "10px", background: "#111D38 0% 0% no-repeat padding-box", width: "90%" }}
-                                                  >
-                                                    {tokenData.map((token) => (
-
-                                                      <MenuItem
-                                                        key={token.name}
-                                                        value={token.token_address}>
-                                                        {token.name}
-                                                      </MenuItem>
-                                                    ))}
-                                                  </Select>
-                                                </Grid>
-                                                <Grid item>
-                                                  <Typography className={classes.cardFont}>Receiver&apos;s wallet address</Typography>
-                                                </Grid>
-                                                <Grid item>
-                                                  <TextField sx={{ width: "90%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
-                                                    placeholder="0x..." onChange={(e) => setCustomTokenAddresses(e.target.value)} />
-                                                </Grid>
-                                                <Grid item>
-                                                  <Typography className={classes.cardFont}>Amount to be sent</Typography>
-                                                </Grid>
-                                                <Grid item>
-                                                  <TextField sx={{ width: "90%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
-                                                    placeholder="0" onChange={(e) => setCustomTokenAmounts(e.target.value)} />
-                                                </Grid>
-                                              </Grid>
-                                            ) 
-                                            // :
-                                              // name === commandTypeList[7].commandText ? (
-                                              //   // send eth execution
-                                              //   <Grid container ml={1} mt={1} mb={2} spacing={2} direction="column">
-                                              //     <Grid item>
-                                              //       <Typography className={classes.cardFont}>Ethereum address</Typography>
-                                              //     </Grid>
-                                              //     <Grid item>
-                                              //       <TextField sx={{ width: "90%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
-                                              //         placeholder="0" onChange={(e) => setSendEthAddresses(e.target.value)} />
-                                              //     </Grid>
-                                              //     <Grid item>
-                                              //       <Typography className={classes.cardFont}>Ethereum amount</Typography>
-                                              //     </Grid>
-                                              //     <Grid item>
-                                              //       <TextField sx={{ width: "90%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
-                                              //         placeholder="0" onChange={(e) => setSendEthAmounts(parseFloat(e.target.value))} />
-                                              //     </Grid>
-                                              //   </Grid>
-                                              // )
-                                                : null
+                                          )
+                                          // :
+                                          // name === commandTypeList[7].commandText ? (
+                                          //   // send eth execution
+                                          //   <Grid container ml={1} mt={1} mb={2} spacing={2} direction="column">
+                                          //     <Grid item>
+                                          //       <Typography className={classes.cardFont}>Ethereum address</Typography>
+                                          //     </Grid>
+                                          //     <Grid item>
+                                          //       <TextField sx={{ width: "90%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
+                                          //         placeholder="0" onChange={(e) => setSendEthAddresses(e.target.value)} />
+                                          //     </Grid>
+                                          //     <Grid item>
+                                          //       <Typography className={classes.cardFont}>Ethereum amount</Typography>
+                                          //     </Grid>
+                                          //     <Grid item>
+                                          //       <TextField sx={{ width: "90%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
+                                          //         placeholder="0" onChange={(e) => setSendEthAmounts(parseFloat(e.target.value))} />
+                                          //     </Grid>
+                                          //   </Grid>
+                                          // )
+                                          : null
                               }
                             </div>
                           )
@@ -1210,7 +1296,7 @@ const Proposal = () => {
                   </Grid>
                   {count < 1 ?
                     <Grid container item mt={2} ml={3}>
-                      <Button variant="primary" startIcon={<AddCircleRoundedIcon />} onClick={handleAddNewCommand}>
+                      <Button variant="primary" startIcon={<AddCircleRoundedIcon/>} onClick={handleAddNewCommand}>
                         Add command
                       </Button>
                     </Grid> : null
@@ -1219,7 +1305,7 @@ const Proposal = () => {
               )
             }
             <Grid container>
-              <Grid item mr={2} xs sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
+              <Grid item mr={2} xs sx={{display: "flex", justifyContent: "flex-end", alignItems: "center"}}>
                 <Grid item>
                   <Button variant="cancel" onClick={handleClose}>Cancel</Button>
                 </Grid>
@@ -1227,17 +1313,17 @@ const Proposal = () => {
                   {
                     type === proposalType[0].type ?
                       (duration === null || title === null || description === null || surveyOption.length < 2 || !enableSubmitButton) ?
-                        <Button variant="primary" onClick={handleNext} disabled >
+                        <Button variant="primary" onClick={handleNext} disabled>
                           Submit
                         </Button> :
-                        <Button variant="primary" onClick={handleNext} >
+                        <Button variant="primary" onClick={handleNext}>
                           Submit
                         </Button>
                       : (duration === null || title === null || description === null || !enableSubmitButton) ?
-                        <Button variant="primary" onClick={handleNext} disabled >
+                        <Button variant="primary" onClick={handleNext} disabled>
                           Submit
                         </Button> :
-                        <Button variant="primary" onClick={handleNext} >
+                        <Button variant="primary" onClick={handleNext}>
                           Submit
                         </Button>
                   }
@@ -1246,21 +1332,22 @@ const Proposal = () => {
             </Grid>
           </DialogContent>
         </Dialog>
-        <Snackbar open={openSnackBar} autoHideDuration={6000} onClose={handleSnackBarClose} anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
+        <Snackbar open={openSnackBar} autoHideDuration={6000} onClose={handleSnackBarClose}
+                  anchorOrigin={{vertical: 'bottom', horizontal: 'right'}}>
           {!failed ?
-            (<Alert onClose={handleSnackBarClose} severity="success" sx={{ width: '100%' }}>
+            (<Alert onClose={handleSnackBarClose} severity="success" sx={{width: '100%'}}>
               Proposal Successfully created!
             </Alert>) :
-            (<Alert onClose={handleSnackBarClose} severity="error" sx={{ width: '100%' }}>
+            (<Alert onClose={handleSnackBarClose} severity="error" sx={{width: '100%'}}>
               Proposal creation failed!
             </Alert>)
           }
         </Snackbar>
         <Backdrop
-          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+          sx={{color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1}}
           open={loaderOpen}
         >
-          <CircularProgress color="inherit" />
+          <CircularProgress color="inherit"/>
         </Backdrop>
       </Layout1>
     </>

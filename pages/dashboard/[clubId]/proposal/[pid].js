@@ -1228,8 +1228,8 @@ const ProposalDetail = () => {
                               >
                                 {fetched
                                   ? proposalData[0].commands[0].airDropAmount /
-                                  Math.pow(10, 6)
-                                  : null} USDC
+                                  Math.pow(10, parseInt(proposalData[0].commands[0].usdcTokenDecimal))
+                                  : null} {proposalData[0].commands[0].usdcTokenSymbol}
                               </Typography>
                             </Grid>
                           </Grid>
@@ -1304,7 +1304,7 @@ const ProposalDetail = () => {
                               >
                                 {fetched
                                   ? proposalData[0].commands[0].mintGTAmounts[0] /
-                                  Math.pow(10, 6)
+                                  Math.pow(10, parseInt(proposalData[0].commands[0].usdcGovernanceTokenDecimal))
                                   : null}
                               </Typography>
                             </Grid>
@@ -1412,8 +1412,8 @@ const ProposalDetail = () => {
                                 className={classes.listFont2Colourless}
                               >
                                 {fetched
-                                  ? proposalData[0].commands[0].totalDeposits / Math.pow(10, 6)
-                                  : null} USDC
+                                  ? proposalData[0].commands[0].totalDeposits / Math.pow(10, parseInt(proposalData[0].commands[0].usdcTokenDecimal))
+                                  : null} {proposalData[0].commands[0].usdcTokenSymbol}
                               </Typography>
                             </Grid>
                           </Grid>
@@ -1445,8 +1445,8 @@ const ProposalDetail = () => {
                                 {fetched
                                   ? proposalData[0].commands[0]
                                     .customTokenAmounts[0] /
-                                  Math.pow(10, 6)
-                                  : null} USDC
+                                  Math.pow(10, parseInt(proposalData[0].commands[0].usdcTokenDecimal))
+                                  : null} {proposalData[0].commands[0].usdcTokenSymbol}
                               </Typography>
                             </Grid>
                           </Grid>
