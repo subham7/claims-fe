@@ -52,12 +52,12 @@ const ClubFetch = (Component) => {
           } else {
             dispatch(setAdminUser(false))
           }
-          // if (!result[0]) {
-          //   // router.push("/")
-          // }
+          if (!result[0]) {
+            router.push("/")
+          }
         },
         (error) => {
-          // router.push("/")
+          router.push("/")
         })
       }
     }

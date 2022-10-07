@@ -1,6 +1,6 @@
-import { React, useEffect, useState } from "react"
+import {React, useEffect, useState} from "react"
 import Web3 from "web3"
-import { makeStyles } from "@mui/styles"
+import {makeStyles} from "@mui/styles"
 import Layout1 from "../../../../src/components/layouts/layout1"
 import {
   Box,
@@ -26,17 +26,17 @@ import {
   CircularProgress, Backdrop
 } from "@mui/material"
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
-import { useRouter } from "next/router"
-import Router, { withRouter } from "next/router"
+import {useRouter} from "next/router"
+import Router, {withRouter} from "next/router"
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace'
 import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded'
 import CloseIcon from '@mui/icons-material/Close'
 import ProgressBar from "../../../../src/components/progressbar"
-import { useDispatch, useSelector } from "react-redux"
-import { addProposalId } from "../../../../src/redux/reducers/create"
-import { SmartContract } from "../../../../src/api/contract"
-import { getProposalDetail, castVote, patchProposalExecuted } from "../../../../src/api/proposal"
-import { getMembersDetails } from "../../../../src/api/user"
+import {useDispatch, useSelector} from "react-redux"
+import {addProposalId} from "../../../../src/redux/reducers/create"
+import {SmartContract} from "../../../../src/api/contract"
+import {getProposalDetail, castVote, patchProposalExecuted} from "../../../../src/api/proposal"
+import {getMembersDetails} from "../../../../src/api/user"
 import ImplementationContract from "../../../../src/abis/implementationABI.json"
 import USDCContract from "../../../../src/abis/usdcTokenContract.json"
 import ClubFetch from "../../../../src/utils/clubFetch"
@@ -150,7 +150,7 @@ const useStyles = makeStyles({
 
 const ProposalDetail = () => {
   const router = useRouter()
-  const { pid, clubId } = router.query
+  const {pid, clubId} = router.query
   const classes = useStyles()
   const [voted, setVoted] = useState(false)
   const [fetched, setFetched] = useState(false)
@@ -160,14 +160,22 @@ const ProposalDetail = () => {
   const [castVoteOption, setCastVoteOption] = useState('')
   const clubID = clubId
   const [cardSelected, setCardSelected] = useState(null)
-  const walletAddress = useSelector(state => { return state.create.value })
-  const daoAddress = useSelector(state => { return state.create.daoAddress })
-  const gnosisAddress = useSelector(state => { return state.gnosis.safeAddress })
+  const walletAddress = useSelector(state => {
+    return state.create.value
+  })
+  const daoAddress = useSelector(state => {
+    return state.create.daoAddress
+  })
+  const gnosisAddress = useSelector(state => {
+    return state.gnosis.safeAddress
+  })
   const [executed, setExecuted] = useState(false)
   const [message, setMessage] = useState("")
   const [failed, setFailed] = useState(false)
   const [openSnackBar, setOpenSnackBar] = useState(false)
-  const tresuryAddress = useSelector(state => { return state.create.tresuryAddress })
+  const tresuryAddress = useSelector(state => {
+    return state.create.tresuryAddress
+  })
   const [loaderOpen, setLoaderOpen] = useState(false)
   const FACTORY_CONTRACT_ADDRESS = useSelector(state => {
     return state.gnosis.factoryContractAddress
@@ -190,6 +198,7 @@ const ProposalDetail = () => {
         setFetched(false)
       } else {
         setProposalData(result.data)
+        console.log("Proposal data", result.data)
         setFetched(true)
       }
     })
@@ -258,10 +267,10 @@ const ProposalDetail = () => {
     const voteSubmit = castVote(payload)
     voteSubmit.then((result) => {
       if (result.status !== 201) {
-        console.log(result.statusText)
         setVoted(false)
         setLoaderOpen(false)
       } else {
+        fetchData()
         setVoted(true)
         setLoaderOpen(false)
       }
@@ -311,22 +320,25 @@ const ProposalDetail = () => {
         proposalData[0].commands[0].airDropCarryFee,
         [],
       )
-      response.then((result) => {
-        const updateStatus = patchProposalExecuted(pid)
-        updateStatus.then((result) => {
-          if (result.status !== 200) {
-            setExecuted(false)
-            setOpenSnackBar(true)
-            setMessage("Airdrop execution status update failed!")
-            setFailed(true)
-            setLoaderOpen(false)
-          } else {
-            setExecuted(true)
-            setOpenSnackBar(true)
-            setMessage("Airdrop execution successful!")
-            setFailed(false)
-            setLoaderOpen(false)
-          }
+      await response.then((result) => {
+        result.promiEvent.on("confirmation", () => {
+          const updateStatus = patchProposalExecuted(pid)
+          updateStatus.then((result) => {
+            if (result.status !== 200) {
+              setExecuted(false)
+              setOpenSnackBar(true)
+              setMessage("Airdrop execution status update failed!")
+              setFailed(true)
+              setLoaderOpen(false)
+            } else {
+              fetchData()
+              setExecuted(true)
+              setOpenSnackBar(true)
+              setMessage("Airdrop execution successful!")
+              setFailed(false)
+              setLoaderOpen(false)
+            }
+          })
         })
       }, (error) => {
         setExecuted(false)
@@ -361,22 +373,26 @@ const ProposalDetail = () => {
         [],
       )
       response.then((result) => {
-        const updateStatus = patchProposalExecuted(pid)
-        updateStatus.then((result) => {
-          if (result.status !== 200) {
-            setExecuted(false)
-            setOpenSnackBar(true)
-            setMessage("MintGT execution status update failed!")
-            setFailed(true)
-            setLoaderOpen(false)
-          } else {
-            setExecuted(true)
-            setOpenSnackBar(true)
-            setMessage("MintGT execution successful!")
-            setFailed(false)
-            setLoaderOpen(false)
-          }
+        result.promiEvent.on("confirmation", () => {
+          const updateStatus = patchProposalExecuted(pid)
+          updateStatus.then((result) => {
+            if (result.status !== 200) {
+              setExecuted(false)
+              setOpenSnackBar(true)
+              setMessage("MintGT execution status update failed!")
+              setFailed(true)
+              setLoaderOpen(false)
+            } else {
+              fetchData()
+              setExecuted(true)
+              setOpenSnackBar(true)
+              setMessage("MintGT execution successful!")
+              setFailed(false)
+              setLoaderOpen(false)
+            }
+          })
         })
+
       }, (error) => {
         console.log(error)
         setExecuted(false)
@@ -464,22 +480,26 @@ const ProposalDetail = () => {
         []
       )
       response.then((result) => {
-        const updateStatus = patchProposalExecuted(pid)
-        updateStatus.then((result) => {
-          if (result.status !== 200) {
-            setExecuted(false)
-            setOpenSnackBar(true)
-            setMessage("Governance settings status update failed!")
-            setFailed(true)
-            setLoaderOpen(false)
-          } else {
-            setExecuted(true)
-            setOpenSnackBar(true)
-            setMessage("Governance settings execution successful!")
-            setFailed(false)
-            setLoaderOpen(false)
-          }
+        result.promiEvent.on("confirmation", () => {
+          const updateStatus = patchProposalExecuted(pid)
+          updateStatus.then((result) => {
+            if (result.status !== 200) {
+              setExecuted(false)
+              setOpenSnackBar(true)
+              setMessage("Governance settings status update failed!")
+              setFailed(true)
+              setLoaderOpen(false)
+            } else {
+              fetchData()
+              setExecuted(true)
+              setOpenSnackBar(true)
+              setMessage("Governance settings execution successful!")
+              setFailed(false)
+              setLoaderOpen(false)
+            }
+          })
         })
+
       }, (error) => {
         console.log(error)
         setExecuted(false)
@@ -514,22 +534,26 @@ const ProposalDetail = () => {
         [],
       )
       response.then((result) => {
-        const updateStatus = patchProposalExecuted(pid)
-        updateStatus.then((result) => {
-          if (result.status !== 200) {
-            setExecuted(false)
-            setOpenSnackBar(true)
-            setMessage("Raise amount execution status update failed!")
-            setFailed(true)
-            setLoaderOpen(false)
-          } else {
-            setExecuted(true)
-            setOpenSnackBar(true)
-            setMessage("Update raise amount execution successful!")
-            setFailed(false)
-            setLoaderOpen(false)
-          }
+        result.promiEvent.on("confirmation", () => {
+          const updateStatus = patchProposalExecuted(pid)
+          updateStatus.then((result) => {
+            if (result.status !== 200) {
+              setExecuted(false)
+              setOpenSnackBar(true)
+              setMessage("Raise amount execution status update failed!")
+              setFailed(true)
+              setLoaderOpen(false)
+            } else {
+              fetchData()
+              setExecuted(true)
+              setOpenSnackBar(true)
+              setMessage("Update raise amount execution successful!")
+              setFailed(false)
+              setLoaderOpen(false)
+            }
+          })
         })
+
       }, (error) => {
         setExecuted(false)
         setOpenSnackBar(true)
@@ -562,24 +586,27 @@ const ProposalDetail = () => {
         undefined,
         [],
       )
-      console.log(response)
       response.then((result) => {
-        const updateStatus = patchProposalExecuted(pid)
-        updateStatus.then((result) => {
-          if (result.status !== 200) {
-            setExecuted(false)
-            setOpenSnackBar(true)
-            setMessage("Send custom token execution status update failed!")
-            setFailed(true)
-            setLoaderOpen(false)
-          } else {
-            setExecuted(true)
-            setOpenSnackBar(true)
-            setMessage("Send custom token execution successful!")
-            setFailed(false)
-            setLoaderOpen(false)
-          }
+        result.promiEvent.on("confirmation", () => {
+          const updateStatus = patchProposalExecuted(pid)
+          updateStatus.then((result) => {
+            if (result.status !== 200) {
+              setExecuted(false)
+              setOpenSnackBar(true)
+              setMessage("Send custom token execution status update failed!")
+              setFailed(true)
+              setLoaderOpen(false)
+            } else {
+              fetchData()
+              setExecuted(true)
+              setOpenSnackBar(true)
+              setMessage("Send custom token execution successful!")
+              setFailed(false)
+              setLoaderOpen(false)
+            }
+          })
         })
+
       }, (error) => {
         setExecuted(false)
         setOpenSnackBar(true)
@@ -611,7 +638,7 @@ const ProposalDetail = () => {
   }
 
   const handleShowMore = () => {
-    router.push("/dashboard", undefined, { shallow: true })
+    router.push("/dashboard", undefined, {shallow: true})
   }
 
   const handleSnackBarClose = (event, reason) => {
@@ -626,11 +653,11 @@ const ProposalDetail = () => {
       <Layout1 page={2}>
         <Grid container spacing={6} paddingLeft={10} paddingTop={10}>
           <Grid item md={8.5}>
-            <Grid container spacing={1} onClick={returnHome} >
-              <Grid item mt={0.5} sx={{ "&:hover": { cursor: "pointer", } }}>
-                <KeyboardBackspaceIcon className={classes.listFont} />
+            <Grid container spacing={1} onClick={returnHome}>
+              <Grid item mt={0.5} sx={{"&:hover": {cursor: "pointer",}}}>
+                <KeyboardBackspaceIcon className={classes.listFont}/>
               </Grid>
-              <Grid item sx={{ "&:hover": { cursor: "pointer", } }}>
+              <Grid item sx={{"&:hover": {cursor: "pointer",}}}>
                 <Typography className={classes.listFont}>Back to proposals</Typography>
               </Grid>
             </Grid>
@@ -680,9 +707,11 @@ const ProposalDetail = () => {
                     proposalData[0].type === "action" ?
                       proposalData[0].status === "active" ?
                         checkUserVoted(pid) ?
-                          <Card sx={{ width: "100%" }}>
-                            <Grid container direction="column" justifyContent="center" alignItems="center" mt={10} mb={10}>
-                              <Grid item mt={0.5}><CheckCircleRoundedIcon className={classes.mainCardButtonSuccess} /></Grid>
+                          <Card sx={{width: "100%"}}>
+                            <Grid container direction="column" justifyContent="center" alignItems="center" mt={10}
+                                  mb={10}>
+                              <Grid item mt={0.5}><CheckCircleRoundedIcon
+                                className={classes.mainCardButtonSuccess}/></Grid>
                               <Grid item mt={0.5}>
                                 <Typography className={classes.successfulMessageText}>Successfully voted</Typography>
                               </Grid>
@@ -695,25 +724,32 @@ const ProposalDetail = () => {
                           </Card> :
                           <Card>
                             <Typography className={classes.cardFont1}>Cast your vote</Typography>
-                            <Divider sx={{ marginTop: 2, marginBottom: 3 }} />
+                            <Divider sx={{marginTop: 2, marginBottom: 3}}/>
                             <Stack spacing={2}>
                               {proposalData[0].votingOptions.map((data, key) => {
                                 return (
                                   <CardActionArea className={classes.mainCard} key={key} disabled={voted}>
-                                    <Card className={cardSelected == key ? classes.mainCardSelected : classes.mainCard} onClick={e => { setCastVoteOption(data.votingOptionId); setCardSelected(key) }}>
+                                    <Card className={cardSelected == key ? classes.mainCardSelected : classes.mainCard}
+                                          onClick={e => {
+                                            setCastVoteOption(data.votingOptionId);
+                                            setCardSelected(key)
+                                          }}>
                                       <Grid container item justifyContent="center" alignItems="center">
-                                        <Typography className={classes.cardFont1} >{data.text} </Typography>
+                                        <Typography className={classes.cardFont1}>{data.text} </Typography>
                                       </Grid>
                                     </Card>
                                   </CardActionArea>
                                 )
                               })}
                               <CardActionArea className={classes.mainCard} disabled={voted}>
-                                <Card className={voted ? classes.mainCardButtonSuccess : classes.mainCardButton} onClick={!voted ? submitVote : null}>
+                                <Card className={voted ? classes.mainCardButtonSuccess : classes.mainCardButton}
+                                      onClick={!voted ? submitVote : null}>
                                   <Grid container justifyContent="center" alignItems="center">
-                                    {voted ? (<Grid item><CheckCircleRoundedIcon /></Grid>) : <Grid item></Grid>}
+                                    {voted ? (<Grid item><CheckCircleRoundedIcon/></Grid>) : <Grid item></Grid>}
                                     <Grid item>
-                                      {voted ? (<Typography className={classes.cardFont1} mt={0.5} >Successfully voted</Typography>) : (<Typography className={classes.cardFont1}>Vote now</Typography>)}
+                                      {voted ? (<Typography className={classes.cardFont1} mt={0.5}>Successfully
+                                        voted</Typography>) : (
+                                        <Typography className={classes.cardFont1}>Vote now</Typography>)}
                                     </Grid>
                                   </Grid>
                                 </Card>
@@ -724,21 +760,27 @@ const ProposalDetail = () => {
                         proposalData[0].status === "passed" ?
                           isCurrentUserAdmin() ? (
                             <Card>
-                              <Card className={executed ? classes.mainCardButtonSuccess : classes.mainCardButton} onClick={executeFunction}>
+                              <Card className={executed ? classes.mainCardButtonSuccess : classes.mainCardButton}
+                                    onClick={executeFunction}>
                                 <Grid container justifyContent="center" alignItems="center">
-                                  {executed ? (<Grid item mt={0.5}><CheckCircleRoundedIcon /></Grid>) : <Grid item></Grid>}
+                                  {executed ? (<Grid item mt={0.5}><CheckCircleRoundedIcon/></Grid>) :
+                                    <Grid item></Grid>}
                                   <Grid item>
-                                    {executed ? (<Typography className={classes.cardFont1} >Executed Successfully</Typography>) : (<Typography className={classes.cardFont1}>Execute Now</Typography>)}
+                                    {executed ? (
+                                      <Typography className={classes.cardFont1}>Executed Successfully</Typography>) : (
+                                      <Typography className={classes.cardFont1}>Execute Now</Typography>)}
                                   </Grid>
                                 </Grid>
                               </Card>
                             </Card>
                           ) : (
-                            <Card sx={{ width: "100%" }}>
-                              <Grid container direction="column" justifyContent="center" alignItems="center" mt={10} mb={10}>
-                                <Grid item mt={0.5}><CheckCircleRoundedIcon className={classes.mainCardButtonSuccess} /></Grid>
+                            <Card sx={{width: "100%"}}>
+                              <Grid container direction="column" justifyContent="center" alignItems="center" mt={10}
+                                    mb={10}>
+                                <Grid item mt={0.5}><CheckCircleRoundedIcon className={classes.mainCardButtonSuccess}/></Grid>
                                 <Grid item mt={0.5}>
-                                  <Typography className={classes.successfulMessageText}>Proposal needs to be executed by Admin</Typography>
+                                  <Typography className={classes.successfulMessageText}>Proposal needs to be executed by
+                                    Admin</Typography>
                                 </Grid>
                                 <Grid item mt={0.5}>
                                   <Typography className={classes.listFont2}>
@@ -750,9 +792,10 @@ const ProposalDetail = () => {
                           )
                           :
                           proposalData[0].status === "failed" ?
-                            <Card sx={{ width: "100%" }}>
-                              <Grid container direction="column" justifyContent="center" alignItems="center" mt={10} mb={10}>
-                                <Grid item mt={0.5}><CloseIcon className={classes.mainCardButtonError} /></Grid>
+                            <Card sx={{width: "100%"}}>
+                              <Grid container direction="column" justifyContent="center" alignItems="center" mt={10}
+                                    mb={10}>
+                                <Grid item mt={0.5}><CloseIcon className={classes.mainCardButtonError}/></Grid>
                                 <Grid item mt={0.5}>
                                   <Typography className={classes.successfulMessageText}>Execution Failed</Typography>
                                 </Grid>
@@ -765,11 +808,14 @@ const ProposalDetail = () => {
                             </Card>
                             :
                             proposalData[0].status === "executed" ?
-                              <Card sx={{ width: "100%" }}>
-                                <Grid container direction="column" justifyContent="center" alignItems="center" mt={10} mb={10}>
-                                  <Grid item mt={0.5}><CheckCircleRoundedIcon className={classes.mainCardButtonSuccess} /></Grid>
+                              <Card sx={{width: "100%"}}>
+                                <Grid container direction="column" justifyContent="center" alignItems="center" mt={10}
+                                      mb={10}>
+                                  <Grid item mt={0.5}><CheckCircleRoundedIcon
+                                    className={classes.mainCardButtonSuccess}/></Grid>
                                   <Grid item mt={0.5}>
-                                    <Typography className={classes.successfulMessageText}>Successfully Executed</Typography>
+                                    <Typography className={classes.successfulMessageText}>Successfully
+                                      Executed</Typography>
                                   </Grid>
                                   <Grid item mt={0.5}>
                                     <Typography className={classes.listFont2}>
@@ -784,41 +830,51 @@ const ProposalDetail = () => {
                       proposalData[0].type === "survey" ?
                         proposalData[0].status === "active" ?
                           checkUserVoted(pid) ? (
-                            <Card sx={{ width: "100%" }}>
-                              <Grid container direction="column" justifyContent="center" alignItems="center" mt={10} mb={10}>
-                                <Grid item mt={0.5}><CheckCircleRoundedIcon className={classes.mainCardButtonSuccess} /></Grid>
-                                <Grid item mt={0.5}>
-                                  <Typography className={classes.successfulMessageText}>Successfully voted</Typography>
+                              <Card sx={{width: "100%"}}>
+                                <Grid container direction="column" justifyContent="center" alignItems="center" mt={10}
+                                      mb={10}>
+                                  <Grid item mt={0.5}><CheckCircleRoundedIcon className={classes.mainCardButtonSuccess}/></Grid>
+                                  <Grid item mt={0.5}>
+                                    <Typography className={classes.successfulMessageText}>Successfully voted</Typography>
+                                  </Grid>
+                                  <Grid item mt={0.5}>
+                                    <Typography className={classes.listFont2}>
+                                      {/* Voted for */}
+                                    </Typography>
+                                  </Grid>
                                 </Grid>
-                                <Grid item mt={0.5}>
-                                  <Typography className={classes.listFont2}>
-                                    {/* Voted for */}
-                                  </Typography>
-                                </Grid>
-                              </Grid>
-                            </Card>
-                          ) :
+                              </Card>
+                            ) :
                             <Card>
                               <Typography className={classes.cardFont1}>Cast your vote</Typography>
-                              <Divider sx={{ marginTop: 2, marginBottom: 3 }} />
+                              <Divider sx={{marginTop: 2, marginBottom: 3}}/>
                               <Stack spacing={2}>
                                 {fetched ? proposalData[0].votingOptions.map((data, key) => {
                                   return (
                                     <CardActionArea className={classes.mainCard} key={key} disabled={voted}>
-                                      <Card className={cardSelected == key ? classes.mainCardSelected : classes.mainCard} onClick={e => { setCastVoteOption(data.votingOptionId); setCardSelected(key) }}>
+                                      <Card
+                                        className={cardSelected == key ? classes.mainCardSelected : classes.mainCard}
+                                        onClick={e => {
+                                          setCastVoteOption(data.votingOptionId);
+                                          setCardSelected(key)
+                                        }}>
                                         <Grid container item justifyContent="center" alignItems="center">
-                                          <Typography className={classes.cardFont1} >{data.text} </Typography>
+                                          <Typography className={classes.cardFont1}>{data.text} </Typography>
                                         </Grid>
                                       </Card>
                                     </CardActionArea>
                                   )
                                 }) : null}
                                 <CardActionArea className={classes.mainCard} disabled={voted}>
-                                  <Card className={voted ? classes.mainCardButtonSuccess : classes.mainCardButton} onClick={submitVote}>
+                                  <Card className={voted ? classes.mainCardButtonSuccess : classes.mainCardButton}
+                                        onClick={submitVote}>
                                     <Grid container justifyContent="center" alignItems="center">
-                                      {voted ? (<Grid item mt={0.5}><CheckCircleRoundedIcon /></Grid>) : <Grid item></Grid>}
+                                      {voted ? (<Grid item mt={0.5}><CheckCircleRoundedIcon/></Grid>) :
+                                        <Grid item></Grid>}
                                       <Grid item>
-                                        {voted ? (<Typography className={classes.cardFont1} >Successfully voted</Typography>) : (<Typography className={classes.cardFont1}>Vote now</Typography>)}
+                                        {voted ? (
+                                          <Typography className={classes.cardFont1}>Successfully voted</Typography>) : (
+                                          <Typography className={classes.cardFont1}>Vote now</Typography>)}
                                       </Grid>
                                     </Grid>
                                   </Card>
@@ -827,9 +883,10 @@ const ProposalDetail = () => {
                             </Card>
                           :
                           proposalData[0].status === "failed" ?
-                            <Card sx={{ width: "100%" }}>
-                              <Grid container direction="column" justifyContent="center" alignItems="center" mt={10} mb={10}>
-                                <Grid item mt={0.5}><CloseIcon className={classes.mainCardButtonError} /></Grid>
+                            <Card sx={{width: "100%"}}>
+                              <Grid container direction="column" justifyContent="center" alignItems="center" mt={10}
+                                    mb={10}>
+                                <Grid item mt={0.5}><CloseIcon className={classes.mainCardButtonError}/></Grid>
                                 <Grid item mt={0.5}>
                                   <Typography className={classes.successfulMessageText}>Voting Closed</Typography>
                                 </Grid>
@@ -842,9 +899,10 @@ const ProposalDetail = () => {
                             </Card>
                             :
                             proposalData[0].status === "closed" ?
-                              <Card sx={{ width: "100%" }}>
-                                <Grid container direction="column" justifyContent="center" alignItems="center" mt={10} mb={10}>
-                                  <Grid item mt={0.5}><CloseIcon className={classes.mainCardButtonError} /></Grid>
+                              <Card sx={{width: "100%"}}>
+                                <Grid container direction="column" justifyContent="center" alignItems="center" mt={10}
+                                      mb={10}>
+                                  <Grid item mt={0.5}><CloseIcon className={classes.mainCardButtonError}/></Grid>
                                   <Grid item mt={0.5}>
                                     <Typography className={classes.successfulMessageText}>Voting Closed</Typography>
                                   </Grid>
@@ -865,18 +923,173 @@ const ProposalDetail = () => {
                 <Grid item md={8}>
                   <Card>
                     <Grid container item>
-                    <Typography className={classes.listFont2}>
-                      Actions
-                    </Typography>
-                    <Divider sx={{ marginTop: 2, marginBottom: 3 }} />
+                      <Typography className={classes.listFont2}>
+                        Actions
+                      </Typography>
+                      <Divider sx={{marginTop: 2, marginBottom: 3}}/>
                     </Grid>
 
-                    <Grid container item>
-                    <Typography className={classes.listFont2Colourless}>
-                      #1 Tranfer assets to a wallet
-                    </Typography>
-                    <Divider sx={{ marginTop: 2, marginBottom: 3 }} />
-                    </Grid>
+                    {fetched ? proposalData[0].commands[0].executionId == 0 ?
+                        <>
+                          <Grid container item>
+                            <Typography className={classes.listFont2Colourless}>
+                              #1 Distribute tokens to a wallet
+                            </Typography>
+                          </Grid>
+                          <Grid container>
+                            <Grid item>
+                              <Typography className={classes.listFont2}>
+                                Amount
+                              </Typography>
+                            </Grid>
+                            <Grid item xs sx={{display: "flex", justifyContent: "flex-end"}}>
+                              <Typography className={classes.listFont2Colourless}>
+                                {fetched ? proposalData[0].commands[0].airDropAmount : null}
+                              </Typography>
+                            </Grid>
+                          </Grid>
+                          <Grid container>
+                            <Grid item>
+                              <Typography className={classes.listFont2}>
+                                Sender
+                              </Typography>
+                            </Grid>
+                            <Grid item xs sx={{display: "flex", justifyContent: "flex-end"}}>
+                              <Typography className={classes.listFont2Colourless}>
+                                {fetched ? proposalData[0].createdBy : null}
+                              </Typography>
+                            </Grid>
+                          </Grid>
+                        </>
+                        :
+                        proposalData[0].commands[0].executionId == 1 ?
+                          <>
+                            <Grid container item>
+                              <Typography className={classes.listFont2Colourless}>
+                                #1 MintGT tokens to a wallet
+                              </Typography>
+                            </Grid>
+                            <Grid container>
+                              <Grid item>
+                                <Typography className={classes.listFont2}>
+                                  Amount
+                                </Typography>
+                              </Grid>
+                              <Grid item xs sx={{display: "flex", justifyContent: "flex-end"}}>
+                                <Typography className={classes.listFont2Colourless}>
+                                  {fetched ? proposalData[0].commands[0].mintGTAmounts : null}
+                                </Typography>
+                              </Grid>
+                            </Grid>
+                            <Grid container>
+                              <Grid item>
+                                <Typography className={classes.listFont2}>
+                                  Recipient
+                                </Typography>
+                              </Grid>
+                              <Grid item xs sx={{display: "flex", justifyContent: "flex-end"}}>
+                                <Typography className={classes.listFont2Colourless}>
+                                  {fetched ? proposalData[0].commands[0].mintGTAddresses : null}
+                                </Typography>
+                              </Grid>
+                            </Grid>
+                          </>
+                          :
+                          proposalData[0].commands[0].executionId == 2 ?
+                            <>
+                              <Grid container item>
+                                <Typography className={classes.listFont2Colourless}>
+                                  #1 Update governance settings of club
+                                </Typography>
+                              </Grid>
+                              <Grid container>
+                                <Grid item>
+                                  <Typography className={classes.listFont2}>
+                                    Quoram
+                                  </Typography>
+                                </Grid>
+                                <Grid item xs sx={{display: "flex", justifyContent: "flex-end"}}>
+                                  <Typography className={classes.listFont2Colourless}>
+                                    {fetched ? proposalData[0].commands[0].quorum : null}
+                                  </Typography>
+                                </Grid>
+                              </Grid>
+                              <Grid container>
+                                <Grid item>
+                                  <Typography className={classes.listFont2}>
+                                    Threshold
+                                  </Typography>
+                                </Grid>
+                                <Grid item xs sx={{display: "flex", justifyContent: "flex-end"}}>
+                                  <Typography className={classes.listFont2Colourless}>
+                                    {fetched ? proposalData[0].commands[0].threshold : null}
+                                  </Typography>
+                                </Grid>
+                              </Grid>
+                            </>
+                            :
+                            proposalData[0].commands[0].executionId == 3 ?
+                              <>
+                                <Grid container item>
+                                  <Typography className={classes.listFont2Colourless}>
+                                    #1 Update total raise amount
+                                  </Typography>
+                                </Grid>
+                                <Grid container>
+                                  <Grid item>
+                                    <Typography className={classes.listFont2}>
+                                      Total amount
+                                    </Typography>
+                                  </Grid>
+                                  <Grid item xs sx={{display: "flex", justifyContent: "flex-end"}}>
+                                    <Typography className={classes.listFont2Colourless}>
+                                      {fetched ? proposalData[0].commands[0].totalDeposits : null}
+                                    </Typography>
+                                  </Grid>
+                                </Grid>
+                              </>
+                              :
+                              proposalData[0].commands[0].executionId == 4 ?
+                                <>
+                                  <Grid container item>
+                                    <Typography className={classes.listFont2Colourless}>
+                                      #1 Send custom token to a wallet
+                                    </Typography>
+                                  </Grid>
+                                  <Grid container>
+                                    <Grid item>
+                                      <Typography className={classes.listFont2}>
+                                        Amount
+                                      </Typography>
+                                    </Grid>
+                                    <Grid item xs sx={{display: "flex", justifyContent: "flex-end"}}>
+                                      <Typography className={classes.listFont2Colourless}>
+                                        {fetched ? proposalData[0].commands[0].customTokenAmounts[0] : null}
+                                      </Typography>
+                                    </Grid>
+                                  </Grid>
+                                  <Grid container>
+                                    <Grid item>
+                                      <Typography className={classes.listFont2}>
+                                        Recipient
+                                      </Typography>
+                                    </Grid>
+                                    <Grid item xs sx={{display: "flex", justifyContent: "flex-end"}}>
+                                      <Typography className={classes.listFont2Colourless}>
+                                        {fetched ? proposalData[0].commands[0].customTokenAddresses[0] : null}
+                                      </Typography>
+                                    </Grid>
+                                  </Grid>
+                                </>
+                                :
+                                null
+                        :
+                      <Typography className={classes.listFont2Colourless}>
+                        No data available!
+                      </Typography>
+                    }
+                    {/*<Divider sx={{ marginTop: 2, marginBottom: 3 }} />*/}
+
 
                   </Card>
                 </Grid>
@@ -893,7 +1106,7 @@ const ProposalDetail = () => {
                       Proposed by
                     </Typography>
                   </Grid>
-                  <Grid item xs sx={{ display: "flex", justifyContent: "flex-end" }}>
+                  <Grid item xs sx={{display: "flex", justifyContent: "flex-end"}}>
                     <Typography className={classes.listFont2Colourless}>
                       {fetched ? proposalData[0].createdBy.substring(0, 6) + ".........." + proposalData[0].createdBy.substring(proposalData[0].createdBy.length - 4) : null}
                     </Typography>
@@ -905,7 +1118,7 @@ const ProposalDetail = () => {
                       Voting system
                     </Typography>
                   </Grid>
-                  <Grid item xs sx={{ display: "flex", justifyContent: "flex-end" }}>
+                  <Grid item xs sx={{display: "flex", justifyContent: "flex-end"}}>
                     <Typography className={classes.listFont2Colourless}>
                       Single choice
                     </Typography>
@@ -917,7 +1130,7 @@ const ProposalDetail = () => {
                       Start date
                     </Typography>
                   </Grid>
-                  <Grid item xs sx={{ display: "flex", justifyContent: "flex-end" }}>
+                  <Grid item xs sx={{display: "flex", justifyContent: "flex-end"}}>
                     <Typography className={classes.listFont2Colourless}>
                       {fetched ? new Date(String(proposalData[0].updateDate)).toLocaleDateString() : null}
                     </Typography>
@@ -929,7 +1142,7 @@ const ProposalDetail = () => {
                       End date
                     </Typography>
                   </Grid>
-                  <Grid item xs sx={{ display: "flex", justifyContent: "flex-end" }}>
+                  <Grid item xs sx={{display: "flex", justifyContent: "flex-end"}}>
                     <Typography className={classes.listFont2Colourless}>
                       {fetched ? new Date(String(proposalData[0].votingDuration)).toLocaleDateString() : null}
                     </Typography>
@@ -953,13 +1166,13 @@ const ProposalDetail = () => {
                                 {vote.text}
                               </Typography>
                             </Grid>
-                            <Grid item xs sx={{ display: "flex", justifyContent: "flex-end" }}>
+                            <Grid item xs sx={{display: "flex", justifyContent: "flex-end"}}>
                               <Typography className={classes.listFont2Colourless}>
                                 {vote.count > 0 ? calculateVotePercentage(vote.count) : 0}%
                               </Typography>
                             </Grid>
                           </Grid>
-                          <ProgressBar value={vote.count > 0 ? calculateVotePercentage(vote.count) : 0} />
+                          <ProgressBar value={vote.count > 0 ? calculateVotePercentage(vote.count) : 0}/>
                         </div>
                       )
                     })
@@ -985,7 +1198,7 @@ const ProposalDetail = () => {
                                   {voter.voterAddress.substring(0, 6) + "......" + voter.voterAddress.substring(voter.voterAddress.length - 4)}
                                 </Typography>
                               </Grid>
-                              <Grid item xs sx={{ display: "flex", justifyContent: "flex-end" }}>
+                              <Grid item xs sx={{display: "flex", justifyContent: "flex-end"}}>
                                 <Typography className={classes.listFont2Colourless}>
                                   {fetched ? proposalData[0].votingOptions[parseInt(fetchVotingOptionChoice(voter.votingOptionId))].text : null}
                                 </Typography>
@@ -997,13 +1210,13 @@ const ProposalDetail = () => {
                                   10,000 $DEMO
                                 </Typography>
                               </Grid> */}
-                              <Grid item xs sx={{ display: "flex", justifyContent: "flex-end" }}>
+                              <Grid item xs sx={{display: "flex", justifyContent: "flex-end"}}>
                                 <Typography variant="proposalSubHeading">
                                   Signed on {new Date(voter.createdAt).toLocaleDateString()}
                                 </Typography>
                               </Grid>
                             </Grid>
-                            <br />
+                            <br/>
                           </div>
                         )
                       }
@@ -1013,7 +1226,8 @@ const ProposalDetail = () => {
                 {fetched && proposalData[0].length >= 0 ? (
                   <Grid container>
                     <Grid item md={12}>
-                      <Button sx={{ width: "100%" }} variant="transparentWhite" onClick={() => handleShowMore()}>More</Button>
+                      <Button sx={{width: "100%"}} variant="transparentWhite"
+                              onClick={() => handleShowMore()}>More</Button>
                     </Grid>
                   </Grid>
                 ) : null}
@@ -1021,21 +1235,22 @@ const ProposalDetail = () => {
             </Stack>
           </Grid>
         </Grid>
-        <Snackbar open={openSnackBar} autoHideDuration={6000} onClose={handleSnackBarClose} anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
+        <Snackbar open={openSnackBar} autoHideDuration={6000} onClose={handleSnackBarClose}
+                  anchorOrigin={{vertical: 'bottom', horizontal: 'right'}}>
           {!failed ?
-            (<Alert onClose={handleSnackBarClose} severity="success" sx={{ width: '100%' }}>
+            (<Alert onClose={handleSnackBarClose} severity="success" sx={{width: '100%'}}>
               {message}
             </Alert>) :
-            (<Alert onClose={handleSnackBarClose} severity="error" sx={{ width: '100%' }}>
+            (<Alert onClose={handleSnackBarClose} severity="error" sx={{width: '100%'}}>
               {message}
             </Alert>)
           }
         </Snackbar>
         <Backdrop
-          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+          sx={{color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1}}
           open={loaderOpen}
         >
-          <CircularProgress color="inherit" />
+          <CircularProgress color="inherit"/>
         </Backdrop>
       </Layout1>
     </>
