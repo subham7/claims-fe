@@ -1336,7 +1336,7 @@ const ProposalDetail = () => {
                               >
                                 {fetched
                                   ? proposalData[0].commands[0].quorum
-                                  : null}
+                                  : null}%
                               </Typography>
                             </Grid>
                           </Grid>
@@ -1359,7 +1359,7 @@ const ProposalDetail = () => {
                               >
                                 {fetched
                                   ? proposalData[0].commands[0].threshold
-                                  : null}
+                                  : null}%
                               </Typography>
                             </Grid>
                           </Grid>
