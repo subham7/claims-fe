@@ -455,36 +455,42 @@ const Proposal = () => {
 
       if (name === commandTypeList[2].commandText) {
         // For execution of Governance settings
-        const payload = {
-          "name": title,
-          "description": description,
-          "createdBy": walletAddress,
-          "clubId": clubID,
-          "votingDuration": new Date(duration).toISOString(),
-          "votingOptions": defaultOptions,
-          "commands": [
-            {
-              "executionId": 2,
-              "quorum": quorumValue,
-              "threshold": thresholdValue,
-            }
-          ],
-          "type": "action"
-        }
-        const createRequest = createProposal(payload)
-        createRequest.then((result) => {
-          if (result.status !== 201) {
-            setOpenSnackBar(true)
-            setFailed(true)
-          } else {
-            // console.log(result.data)
-            setLoaderOpen(true)
-            fetchData()
-            setOpenSnackBar(true)
-            setFailed(false)
-            setOpen(false)
+        if (thresholdValue > 50 && thresholdValue <= 100 && quorumValue <= 100) {
+          const payload = {
+            "name": title,
+            "description": description,
+            "createdBy": walletAddress,
+            "clubId": clubID,
+            "votingDuration": new Date(duration).toISOString(),
+            "votingOptions": defaultOptions,
+            "commands": [
+              {
+                "executionId": 2,
+                "quorum": quorumValue,
+                "threshold": thresholdValue,
+              }
+            ],
+            "type": "action"
           }
-        })
+          const createRequest = createProposal(payload)
+          createRequest.then((result) => {
+            if (result.status !== 201) {
+              setOpenSnackBar(true)
+              setFailed(true)
+            } else {
+              setLoaderOpen(true)
+              fetchData()
+              setOpenSnackBar(true)
+              setFailed(false)
+              setOpen(false)
+            }
+          })
+        } else {
+          setOpenSnackBar(true)
+          setFailed(true)
+          setOpen(false)
+          setLoaderOpen(false)
+        }
       }
 
       if (name === commandTypeList[3].commandText) {
@@ -1100,18 +1106,18 @@ const Proposal = () => {
                                       (
                                         <Grid container ml={1} mt={1} mb={2} spacing={2} direction="column">
                                           <Grid item>
-                                            <Typography variant="proposalBody">Quorum</Typography>
+                                            <Typography variant="proposalBody">Quorum (in %)</Typography>
                                           </Grid>
                                           <Grid item>
                                             <TextField sx={{ width: "90%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
-                                              placeholder="0" onChange={(e) => setQuorumValue(parseInt(e.target.value))} />
+                                              placeholder="0" onChange={(e) => setQuorumValue(parseInt(e.target.value))} error={quorumValue === 0 || quorumValue >= 100} />
                                           </Grid>
                                           <Grid item>
-                                            <Typography variant="proposalBody">Threshold</Typography>
+                                            <Typography variant="proposalBody">Threshold (in %)</Typography>
                                           </Grid>
                                           <Grid item>
                                             <TextField sx={{ width: "90%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
-                                              placeholder="0" onChange={(e) => setThresholdValue(parseInt(e.target.value))} />
+                                              placeholder="0" onChange={(e) => setThresholdValue(parseInt(e.target.value))} error={thresholdValue === 0 || thresholdValue < 50 || thresholdValue >= 100} />
                                           </Grid>
                                         </Grid>
                                       ) :
