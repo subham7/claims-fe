@@ -1227,8 +1227,9 @@ const ProposalDetail = () => {
                                 className={classes.listFont2Colourless}
                               >
                                 {fetched
-                                  ? proposalData[0].commands[0].airDropAmount
-                                  : null}
+                                  ? proposalData[0].commands[0].airDropAmount/
+                                  Math.pow(10, 6)
+                                  : null} USDC
                               </Typography>
                             </Grid>
                           </Grid>
@@ -1279,7 +1280,8 @@ const ProposalDetail = () => {
                                 className={classes.listFont2Colourless}
                               >
                                 {fetched
-                                  ? proposalData[0].commands[0].mintGTAmounts
+                                  ? proposalData[0].commands[0].mintGTAmounts /
+                                  Math.pow(10, 6)
                                   : null}
                               </Typography>
                             </Grid>
@@ -1387,8 +1389,8 @@ const ProposalDetail = () => {
                                 className={classes.listFont2Colourless}
                               >
                                 {fetched
-                                  ? proposalData[0].commands[0].totalDeposits
-                                  : null}
+                                  ? proposalData[0].commands[0].totalDeposits / Math.pow(10, 6)
+                                  : null} USDC
                               </Typography>
                             </Grid>
                           </Grid>
@@ -1419,8 +1421,9 @@ const ProposalDetail = () => {
                               >
                                 {fetched
                                   ? proposalData[0].commands[0]
-                                      .customTokenAmounts[0]
-                                  : null}
+                                      .customTokenAmounts[0] /
+                                  Math.pow(10, 6)
+                                  : null} USDC
                               </Typography>
                             </Grid>
                           </Grid>
