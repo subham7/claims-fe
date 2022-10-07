@@ -226,8 +226,8 @@ const Proposal = () => {
   const [airDropToken, setAirDropToken] = useState('')
   const [airDropCarryFee, setAirDropCarryFee] = useState(0)
   const [executiveRoles, setExecutiveRoles] = useState([])
-  const [mintGtAddress, setMintGtAddress] = useState('')
-  const [mintGTAmounts, setMintGtAmount] = useState(0)
+  const [mintGtAddress, setMintGtAddress] = useState([])
+  const [mintGTAmounts, setMintGtAmount] = useState([])
   const [totalDeposits, setTotalDeposits] = useState(0)
   const [sendEthAddresses, setSendEthAddresses] = useState([])
   const [sendEthAmounts, setSendEthAmounts] = useState([])
@@ -397,8 +397,8 @@ const Proposal = () => {
           "commands": [
             {
               "executionId": 1,
-              "mintGTAddresses": mintGtAddress,
-              "mintGTAmounts": await convertToWeiUSDC(mintGTAmounts, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL),
+              "mintGTAddresses": [mintGtAddress],
+              "mintGTAmounts": [await convertToWeiUSDC(mintGTAmounts, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL)],
             }
           ],
           "type": "action"

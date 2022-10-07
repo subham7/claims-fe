@@ -1206,7 +1206,7 @@ const ProposalDetail = () => {
                         <>
                           <Grid container item>
                             <Typography className={classes.listFont2Colourless}>
-                              Distribute tokens to a wallet
+                              #1 Distribute tokens to a wallet
                             </Typography>
                           </Grid>
                           <Grid container>
@@ -1282,7 +1282,7 @@ const ProposalDetail = () => {
                         <>
                           <Grid container item>
                             <Typography className={classes.listFont2Colourless}>
-                              Mint governance tokens to a wallet
+                              #1 Mint governance tokens to a wallet
                             </Typography>
                           </Grid>
                           <Grid container>
@@ -1303,7 +1303,7 @@ const ProposalDetail = () => {
                                 className={classes.listFont2Colourless}
                               >
                                 {fetched
-                                  ? proposalData[0].commands[0].mintGTAmounts /
+                                  ? proposalData[0].commands[0].mintGTAmounts[0] /
                                   Math.pow(10, 6)
                                   : null}
                               </Typography>
@@ -1327,7 +1327,7 @@ const ProposalDetail = () => {
                                 className={classes.listFont2Colourless}
                               >
                                 {fetched
-                                  ? proposalData[0].commands[0].mintGTAddresses
+                                  ? proposalData[0].commands[0].mintGTAddresses[0]
                                   : null}
                               </Typography>
                             </Grid>
@@ -1337,7 +1337,7 @@ const ProposalDetail = () => {
                         <>
                           <Grid container item>
                             <Typography className={classes.listFont2Colourless}>
-                              Update governance settings of the club
+                              #1 Update governance settings of the club
                             </Typography>
                           </Grid>
                           <Grid container>
@@ -1391,7 +1391,7 @@ const ProposalDetail = () => {
                         <>
                           <Grid container item>
                             <Typography className={classes.listFont2Colourless}>
-                              Update total raise amount
+                              #1 Update total raise amount
                             </Typography>
                           </Grid>
                           <Grid container>
@@ -1422,7 +1422,7 @@ const ProposalDetail = () => {
                         <>
                           <Grid container item>
                             <Typography className={classes.listFont2Colourless}>
-                              Transfer token to a wallet
+                              #1 Transfer token to a wallet
                             </Typography>
                           </Grid>
                           <Grid container>
