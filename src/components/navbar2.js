@@ -88,7 +88,7 @@ export default function Navbar2(props) {
   }
 
   const handleFaucetRedirect = () => {
-    router.push(`/faucet`, undefined, {shallow: true})
+    window.open ('/faucet', '_ blank')
   }
 
 
