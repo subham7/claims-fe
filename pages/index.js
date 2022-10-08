@@ -215,7 +215,7 @@ export default function App() {
   }
 
   return (
-    <Layout>
+    <Layout faucet={false}>
         {clubFlow ? (
           <Grid container direction="row"
             justifyContent="center"

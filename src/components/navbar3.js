@@ -75,7 +75,7 @@ export default function Navbar3(props) {
   }
 
   const handleFaucetRedirect = () => {
-    router.push(`/faucet`, undefined, {shallow: true})
+    window.open ('/faucet', '_ blank')
   }
 
 
@@ -105,7 +105,7 @@ export default function Navbar3(props) {
             alt="monogram"
           />
           </Box>
-          {!props.faucet ?
+          {props.faucet ?
             <Button
               variant="primary"
               color="primary"
