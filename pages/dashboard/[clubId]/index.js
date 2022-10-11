@@ -1,5 +1,5 @@
-import { React, useEffect, useState } from "react"
-import { makeStyles } from "@mui/styles"
+import {React, useEffect, useState} from "react"
+import {makeStyles} from "@mui/styles"
 import Layout1 from "../../../src/components/layouts/layout1"
 import {
   Box,
@@ -28,16 +28,16 @@ import TextField from "@mui/material/TextField"
 import SearchIcon from "@mui/icons-material/Search"
 import ButtonDropDown from "../../../src/components/buttondropdown"
 import CollectionCard from "../../../src/components/cardcontent"
-import { useRouter } from "next/router"
+import {useRouter} from "next/router"
 import ClubFetch from "../../../src/utils/clubFetch"
-import { SmartContract } from "../../../src/api/contract"
-import { getProposal } from "../../../src/api/proposal"
-import { fetchClubbyDaoAddress } from "../../../src/api/club"
-import { getNfts, getBalance } from "../../../src/api/gnosis"
-import { getAssets } from "../../../src/api/assets"
-import { getMembersDetails } from "../../../src/api/user"
+import {SmartContract} from "../../../src/api/contract"
+import {getProposal} from "../../../src/api/proposal"
+import {fetchClubbyDaoAddress} from "../../../src/api/club"
+import {getNfts, getBalance} from "../../../src/api/gnosis"
+import {getAssets} from "../../../src/api/assets"
+import {getMembersDetails} from "../../../src/api/user"
 import ImplementationContact from "../../../src/abis/implementationABI.json"
-import { useSelector } from "react-redux"
+import {useSelector} from "react-redux"
 import {
   calculateDays,
   calculateUserSharePercentage,
@@ -46,6 +46,7 @@ import {
   convertFromWeiUSDC,
   convertToWeiUSDC,
 } from "../../../src/utils/globalFunctions"
+import {error} from "next/dist/build/output/log";
 
 const useStyles = makeStyles({
   media: {
@@ -321,10 +322,8 @@ const useStyles = makeStyles({
     right: "0",
     marginLeft: "52%",
     marginTop: "30%",
-
     width: "60%",
-
-    sx: { position: "absolute", bottom: 0 },
+    sx: {position: "absolute", bottom: 0},
   },
   valueDetailStyle: {
     color: "#81F5FF",
@@ -333,7 +332,7 @@ const useStyles = makeStyles({
 
 const Dashboard = () => {
   const router = useRouter()
-  const { clubId } = router.query
+  const {clubId} = router.query
   const classes = useStyles()
   const daoAddress = useSelector((state) => {
     return state.create.daoAddress
@@ -391,6 +390,38 @@ const Dashboard = () => {
     return state.gnosis.transactionUrl
   })
 
+  const fetchUsdcDetails = async () => {
+    if (daoAddress && USDC_CONTRACT_ADDRESS && GNOSIS_TRANSACTION_URL) {
+      const fetchBalance = new SmartContract(
+        ImplementationContact,
+        daoAddress,
+        undefined,
+        USDC_CONTRACT_ADDRESS,
+        GNOSIS_TRANSACTION_URL
+      )
+      await fetchBalance.getUsdcDetails(USDC_CONTRACT_ADDRESS).then(async (result) => {
+          let memberDeposits = await convertFromWeiUSDC(
+            result[0],
+            USDC_CONTRACT_ADDRESS,
+            GNOSIS_TRANSACTION_URL
+          )
+          let adminContribution = await convertFromWeiUSDC(
+            result[1],
+            USDC_CONTRACT_ADDRESS,
+            GNOSIS_TRANSACTION_URL
+          )
+
+          let total = memberDeposits + adminContribution
+          setMemberDeposit(
+            total
+          )
+        },
+        (error) => {
+          console.log(error)
+        })
+    }
+  }
+
   const fetchUserBalanceAPI = async () => {
     if (daoAddress && USDC_CONTRACT_ADDRESS && GNOSIS_TRANSACTION_URL) {
       const fetchUserBalance = new SmartContract(
@@ -440,7 +471,6 @@ const Dashboard = () => {
           setClubDetailsFetched(true)
         },
         (error) => {
-          console.log(error)
           setClubDetailsFetched(false)
         }
       )
@@ -498,7 +528,7 @@ const Dashboard = () => {
           setGovernorDataFetched(true)
         },
         (error) => {
-          console.log(error)
+          setGovernorDataFetched(false)
         }
       )
 
@@ -509,7 +539,7 @@ const Dashboard = () => {
           setMinDepositFetched(true)
         },
         (error) => {
-          console.log(error)
+          setMinDepositFetched(false)
         }
       )
 
@@ -520,7 +550,7 @@ const Dashboard = () => {
           setMaxDepositFetched(true)
         },
         (error) => {
-          console.log(error)
+          setMaxDepositFetched(false)
         }
       )
     }
@@ -529,7 +559,6 @@ const Dashboard = () => {
   const tokenAPIDetailsRetrieval = async () => {
     let response = await fetchClubbyDaoAddress(daoAddress)
     if (response.data.length > 0) {
-      // console.log(response.data[0])
       settokenAPIDetails(response.data[0])
       setApiTokenDetailSet(true)
     }
@@ -568,14 +597,6 @@ const Dashboard = () => {
               GNOSIS_TRANSACTION_URL
             )
           )
-          setMemberDeposit(
-            await convertFromWeiGovernance(
-              daoAddress,
-              result[2],
-              USDC_CONTRACT_ADDRESS,
-              GNOSIS_TRANSACTION_URL
-            )
-          )
           setJoinLink(
             typeof window !== "undefined" && window.location.origin
               ? `${window.location.origin}/join/${daoAddress}`
@@ -589,7 +610,7 @@ const Dashboard = () => {
           setDataFetched(true)
         },
         (error) => {
-          console.log(error)
+          setDataFetched(false)
         }
       )
     }
@@ -601,7 +622,6 @@ const Dashboard = () => {
       if (result.status != 200) {
         setMembersFetched(false)
       } else {
-        console.log(result.data)
         setMembersDetails(result.data)
         setMembers(result.data.length)
         setMembersFetched(true)
@@ -615,7 +635,6 @@ const Dashboard = () => {
       if (result.status != 200) {
         setClubAssetTokenFetched(false)
       } else {
-        // console.log(result.data)
         setClubAssetTokenData(result.data)
         setClubAssetTokenFetched(true)
       }
@@ -626,7 +645,6 @@ const Dashboard = () => {
       if (result.status != 200) {
         setNftFetched(false)
       } else {
-        // console.log(result.data)
         setNftData(result.data)
         setNftFetched(true)
       }
@@ -640,7 +658,6 @@ const Dashboard = () => {
     //   if (result.status != 200) {
     //     setTresuryWalletBalanceFetched(false)
     //   } else {
-    //     // console.log(result.data)
     //     setTresuryWalletBalance(result.data)
     //     setTresuryWalletBalanceFetched(true)
     //   }
@@ -697,16 +714,12 @@ const Dashboard = () => {
         setOpenSnackBar(true)
       }
     } catch (error) {
-      console.log(error)
       setFailed(true)
       setOpenSnackBar(true)
     }
   }
 
   useEffect(() => {
-    if (FACTORY_CONTRACT_ADDRESS) {
-      console.log("Factory contract", FACTORY_CONTRACT_ADDRESS)
-    }
 
     setLoaderOpen(true)
     if (daoAddress) {
@@ -748,6 +761,7 @@ const Dashboard = () => {
 
     if (dataFetched) {
       fetchUserBalanceAPI()
+      fetchUsdcDetails()
     }
   }, [dataFetched])
 
@@ -786,7 +800,7 @@ const Dashboard = () => {
   }
 
   const handleMoreClick = () => {
-    router.push(`${router.asPath}/proposal`, undefined, { shallow: true })
+    router.push(`${router.asPath}/proposal`, undefined, {shallow: true})
   }
 
   const handleSnackBarClose = (event, reason) => {
@@ -800,7 +814,7 @@ const Dashboard = () => {
       <Layout1 page={1} depositUrl={depositLink}>
         <Grid container spacing={1} paddingLeft={10} paddingTop={15}>
           <Grid item md={9}>
-            <Stack direction={{ xs: "column", sm: "row" }} spacing={3}>
+            <Stack direction={{xs: "column", sm: "row"}} spacing={3}>
               <Grid item xs={12}>
                 <Card className={classes.cardSharp1}>
                   <Grid container spacing={2}>
@@ -848,7 +862,7 @@ const Dashboard = () => {
                             className={classes.valueDetailStyle}
                           >
                             {governorDataFetched
-                              ? parseFloat(memberDeposit).toFixed(2)
+                              ? Number.isInteger(memberDeposit) ? parseInt(memberDeposit) : parseFloat(memberDeposit).toFixed(2)
                               : null}
                           </Typography>
                         </Grid>
@@ -883,7 +897,7 @@ const Dashboard = () => {
                             className={classes.valueDetailStyle}
                           >
                             {dataFetched
-                              ? parseFloat(clubTokenMinted).toFixed(2)
+                              ? Number.isInteger(clubTokenMinted) ? parseInt(clubTokenMinted) : parseFloat(clubTokenMinted).toFixed(2)
                               : null}
                           </Typography>
                         </Grid>
@@ -916,7 +930,7 @@ const Dashboard = () => {
                             className={classes.valueDetailStyle}
                           >
                             {governorDataFetched && dataFetched
-                              ? parseFloat(maxTokenMinted).toFixed(2)
+                              ? Number.isInteger(maxTokenMinted) ? parseInt(maxTokenMinted) : parseFloat(maxTokenMinted).toFixed(2)
                               : null}{" "}
                           </Typography>
                         </Grid>
@@ -936,8 +950,8 @@ const Dashboard = () => {
               </Grid>
               <Grid
                 container
-                spacing={{ xs: 2, sm: 5, md: 3 }}
-                direction={{ xs: "column", sm: "column", md: "column" }}
+                spacing={{xs: 2, sm: 5, md: 3}}
+                direction={{xs: "column", sm: "column", md: "column"}}
               >
                 <Card className={classes.firstCard}>
                   <Grid item mt={3} ml={5}>
@@ -956,7 +970,7 @@ const Dashboard = () => {
                         component="img"
                         className={classes.media}
                         alt="ownershipshare"
-                        sx={{ position: "absolute", bottom: 0 }}
+                        sx={{position: "absolute", bottom: 0}}
                       />
                     </Grid>
                   </Grid>
@@ -967,12 +981,12 @@ const Dashboard = () => {
                     component="img"
                     className={classes.media}
                     alt="ownershipshare"
-                    sx={{ position: "absolute", bottom: 0, paddingTop: "4px" }}
+                    sx={{position: "absolute", bottom: 0, paddingTop: "4px"}}
                   />
                   <Grid container>
                     <Grid
                       container
-                      direction={{ xs: "column", sm: "column", md: "column" }}
+                      direction={{xs: "column", sm: "column", md: "column"}}
                     >
                       <Grid item>
                         <Box className={classes.cardOverlay}>
@@ -982,27 +996,27 @@ const Dashboard = () => {
                           <Typography fontSize={"48px"} fontWeight="bold">
                             {userBalanceFetched && dataFetched
                               ? isNaN(
-                                  parseInt(
-                                    calculateUserSharePercentage(
-                                      userBalance,
-                                      userOwnershipShare
-                                    )
+                                parseInt(
+                                  calculateUserSharePercentage(
+                                    userBalance,
+                                    userOwnershipShare
                                   )
                                 )
+                              )
                                 ? 0
                                 : parseInt(
-                                    calculateUserSharePercentage(
-                                      userBalance,
-                                      userOwnershipShare
-                                    )
+                                  calculateUserSharePercentage(
+                                    userBalance,
+                                    userOwnershipShare
                                   )
+                                )
                               : 0}
                             %
                           </Typography>
                           <Typography className={classes.card2text2} mb={1}>
                             {governorDataFetched && dataFetched
-                              ? parseFloat(userOwnershipShare).toFixed(2) +
-                                (" $" + tokenDetails[1])
+                              ? Number.isInteger(userOwnershipShare) ? parseInt(userOwnershipShare) : parseFloat(userOwnershipShare).toFixed(2) +
+                              (" $" + tokenDetails[1])
                               : null}
                           </Typography>
                         </Box>
@@ -1017,8 +1031,8 @@ const Dashboard = () => {
             <Stack>
               <Grid item>
                 <Stack
-                  direction={{ xs: "column", sm: "column" }}
-                  spacing={{ xs: 1, sm: 2, md: 4 }}
+                  direction={{xs: "column", sm: "column"}}
+                  spacing={{xs: 1, sm: 2, md: 4}}
                 >
                   <Grid container item mt={8}>
                     <Typography className={classes.clubAssets}>
@@ -1027,7 +1041,7 @@ const Dashboard = () => {
                   </Grid>
                   <Grid container mt={4}>
                     <Grid item>
-                      <ButtonDropDown label="All" />
+                      <ButtonDropDown label="All"/>
                     </Grid>
                     <Grid item ml={2}>
                       <TextField
@@ -1037,10 +1051,10 @@ const Dashboard = () => {
                           endAdornment: (
                             <IconButton
                               type="submit"
-                              sx={{ p: "10px" }}
+                              sx={{p: "10px"}}
                               aria-label="search"
                             >
-                              <SearchIcon />
+                              <SearchIcon/>
                             </IconButton>
                           ),
                         }}
@@ -1054,7 +1068,7 @@ const Dashboard = () => {
                     clubAssetTokenData.tokenPriceList.length > 0 ? (
                       //  if the tokens length is > 0 and if the token[0] (by default it will be Ether) is not equal to 0, then show the table
                       <TableContainer component={Paper}>
-                        <Table sx={{ minWidth: 809 }} aria-label="simple table">
+                        <Table sx={{minWidth: 809}} aria-label="simple table">
                           <TableHead>
                             <TableRow>
                               <TableCell align="left" variant="tableHeading">
@@ -1148,7 +1162,7 @@ const Dashboard = () => {
                           md={10}
                         >
                           <img
-                            src="/assets/images/proposal_banner.png"
+                            src="/assets/images/NFT_banner.png"
                             alt="proposal-banner"
                             className={classes.banner}
                           />
@@ -1213,7 +1227,7 @@ const Dashboard = () => {
                       items
                       mr={4}
                       xs
-                      sx={{ display: "flex", justifyContent: "flex-end" }}
+                      sx={{display: "flex", justifyContent: "flex-end"}}
                     >
                       {/*TODO: add closing date*/}
                       {clubDetailsFetched ? (
@@ -1221,7 +1235,7 @@ const Dashboard = () => {
                           <Grid
                             container
                             xs
-                            sx={{ display: "flex", justifyContent: "flex-end" }}
+                            sx={{display: "flex", justifyContent: "flex-end"}}
                           >
                             <Grid item mt={1} mr={1}>
                               <div className={classes.activeIllustration}></div>
@@ -1242,7 +1256,7 @@ const Dashboard = () => {
                           <Grid
                             container
                             xs
-                            sx={{ display: "flex", justifyContent: "flex-end" }}
+                            sx={{display: "flex", justifyContent: "flex-end"}}
                           >
                             <Grid item mt={1} mr={1}>
                               <div
@@ -1312,60 +1326,60 @@ const Dashboard = () => {
                       <Grid item md={12} mr={2}>
                         {activeProposalDataFetched
                           ? activeProposalData.map((data, key) => {
-                              if (key < 3) {
-                                return (
-                                  <div key={key}>
-                                    <ListItemButton
-                                      onClick={() =>
-                                        handleProposalClick(
-                                          activeProposalData[key]
-                                        )
-                                      }
-                                      sx={{ width: "100%" }}
-                                    >
-                                      <Grid container direction="column">
-                                        <Grid item md={12}>
-                                          <Typography
-                                            className={classes.card5text1}
-                                          >
-                                            Proposed by{" "}
-                                            {data.createdBy.substring(0, 6) +
-                                              "......" +
-                                              data.createdBy.substring(
-                                                data.createdBy.length - 4
-                                              )}
-                                          </Typography>
-                                        </Grid>
-                                        <Grid item>
-                                          <Typography
-                                            className={classes.card5text2}
-                                          >
-                                            {data.name}
-                                          </Typography>
-                                        </Grid>
-                                        <Grid item>
-                                          <Typography
-                                            className={classes.card5text1}
-                                          >
-                                            Expired on{" "}
-                                            {new Date(
-                                              data.votingDuration
-                                            ).toLocaleDateString()}
-                                          </Typography>
-                                        </Grid>
+                            if (key < 3) {
+                              return (
+                                <div key={key}>
+                                  <ListItemButton
+                                    onClick={() =>
+                                      handleProposalClick(
+                                        activeProposalData[key]
+                                      )
+                                    }
+                                    sx={{width: "100%"}}
+                                  >
+                                    <Grid container direction="column">
+                                      <Grid item md={12}>
+                                        <Typography
+                                          className={classes.card5text1}
+                                        >
+                                          Proposed by{" "}
+                                          {data.createdBy.substring(0, 6) +
+                                            "......" +
+                                            data.createdBy.substring(
+                                              data.createdBy.length - 4
+                                            )}
+                                        </Typography>
                                       </Grid>
-                                    </ListItemButton>
-                                  </div>
-                                )
-                              }
-                            })
+                                      <Grid item>
+                                        <Typography
+                                          className={classes.card5text2}
+                                        >
+                                          {data.name}
+                                        </Typography>
+                                      </Grid>
+                                      <Grid item>
+                                        <Typography
+                                          className={classes.card5text1}
+                                        >
+                                          Expired on{" "}
+                                          {new Date(
+                                            data.votingDuration
+                                          ).toLocaleDateString()}
+                                        </Typography>
+                                      </Grid>
+                                    </Grid>
+                                  </ListItemButton>
+                                </div>
+                              )
+                            }
+                          })
                           : null}
                       </Grid>
                     </Grid>
                     <Grid container>
                       <Grid item md={12}>
                         <Button
-                          sx={{ width: "100%" }}
+                          sx={{width: "100%"}}
                           variant="transparentWhite"
                           onClick={() => handleMoreClick()}
                         >
@@ -1417,13 +1431,13 @@ const Dashboard = () => {
           open={openSnackBar}
           autoHideDuration={6000}
           onClose={handleSnackBarClose}
-          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+          anchorOrigin={{vertical: "bottom", horizontal: "right"}}
         >
           {!failed ? (
             <Alert
               onClose={handleSnackBarClose}
               severity="success"
-              sx={{ width: "100%" }}
+              sx={{width: "100%"}}
             >
               Token imported successfully to your wallet!
             </Alert>
@@ -1431,17 +1445,17 @@ const Dashboard = () => {
             <Alert
               onClose={handleSnackBarClose}
               severity="error"
-              sx={{ width: "100%" }}
+              sx={{width: "100%"}}
             >
               Error occured while importing token to your wallet!
             </Alert>
           )}
         </Snackbar>
         <Backdrop
-          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+          sx={{color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1}}
           open={loaderOpen}
         >
-          <CircularProgress color="inherit" />
+          <CircularProgress color="inherit"/>
         </Backdrop>
       </Layout1>
     </>
