@@ -799,7 +799,7 @@ const Proposal = () => {
                     )
                   }) :
                   <Grid item justifyContent="center" alignItems="center" md={10}>
-                    <img src="/assets/images/tokens_banner.png" alt="token-banner" className={classes.banner}/>
+                    <img src="/assets/images/proposal_banner.png" alt="token-banner" className={classes.banner}/>
                   </Grid>
                 : proposalData.length > 0 ?
                   proposalData.map((proposal, key) => {
