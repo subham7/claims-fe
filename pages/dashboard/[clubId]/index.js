@@ -328,6 +328,11 @@ const useStyles = makeStyles({
   valueDetailStyle: {
     color: "#81F5FF",
   },
+  docs: {
+    '&:hover': {
+      cursor: 'pointer'
+    },
+  }
 })
 
 const Dashboard = () => {
@@ -930,7 +935,7 @@ const Dashboard = () => {
                             className={classes.valueDetailStyle}
                           >
                             {governorDataFetched && dataFetched
-                              ? Number.isInteger(maxTokenMinted) ? parseInt(maxTokenMinted) : parseFloat(maxTokenMinted).toFixed(2)
+                              ? parseInt(maxTokenMinted)
                               : null}{" "}
                           </Typography>
                         </Grid>
@@ -1015,7 +1020,7 @@ const Dashboard = () => {
                           </Typography>
                           <Typography className={classes.card2text2} mb={1}>
                             {governorDataFetched && dataFetched
-                              ? Number.isInteger(userOwnershipShare) ? parseInt(userOwnershipShare) : parseFloat(userOwnershipShare).toFixed(2) +
+                              ? Number.isInteger(userOwnershipShare) ? parseInt(userOwnershipShare) + (" $" + tokenDetails[1]) : parseFloat(userOwnershipShare).toFixed(2) +
                               (" $" + tokenDetails[1])
                               : null}
                           </Typography>
@@ -1188,9 +1193,9 @@ const Dashboard = () => {
                     </Grid>
                     <Grid item>
                       <Link
-                        color={"#111D38 "}
+                        color={"#111D38"}
                         variant="Docs"
-                        className={classes.Docs}
+                        className={classes.docs}
                         onClick={() => {
                           window.open(
                             `https://stationx.substack.com/p/get-started-with-stationx-on-rinkeby`
