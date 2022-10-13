@@ -333,7 +333,7 @@ const Faucet = (props) => {
   }
 
   return (
-    <Layout3>
+    <Layout3 faucet={false}>
       <Grid
         container
         spacing={2}
