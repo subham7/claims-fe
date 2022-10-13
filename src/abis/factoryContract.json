@@ -1,22 +1,11 @@
 {
   "contractName": "FactoryContract",
-  "abi":
-  [
+  "abi": [
     {
       "inputs": [
         {
           "internalType": "address",
           "name": "_USDC",
-          "type": "address"
-        },
-        {
-          "internalType": "address",
-          "name": "_implementation",
-          "type": "address"
-        },
-        {
-          "internalType": "address",
-          "name": "_emitter",
           "type": "address"
         }
       ],
@@ -24,10 +13,55 @@
       "type": "constructor"
     },
     {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "previousOwner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnershipTransferred",
+      "type": "event"
+    },
+    {
+      "inputs": [],
+      "name": "ImplementationAddress",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "USDCAddress",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
       "inputs": [
         {
           "internalType": "address",
-          "name": "_newDAO",
+          "name": "_newImplementationAddress",
           "type": "address"
         }
       ],
@@ -40,20 +74,7 @@
       "inputs": [
         {
           "internalType": "address",
-          "name": "_newOrganiser",
-          "type": "address"
-        }
-      ],
-      "name": "changeOrganiser",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "_USDCAddress",
+          "name": "_newUSDCAddress",
           "type": "address"
         }
       ],
@@ -68,62 +89,62 @@
           "components": [
             {
               "internalType": "string",
-              "name": "name",
+              "name": "DaoName",
               "type": "string"
             },
             {
               "internalType": "string",
-              "name": "symbol",
+              "name": "DaoSymbol",
               "type": "string"
             },
             {
               "internalType": "uint256",
-              "name": "_totalDeposit",
+              "name": "totalRaiseAmount",
               "type": "uint256"
             },
             {
               "internalType": "uint256",
-              "name": "_minDeposit",
+              "name": "minDepositPerUser",
               "type": "uint256"
             },
             {
               "internalType": "uint256",
-              "name": "_maxDeposit",
+              "name": "maxDepositPerUser",
               "type": "uint256"
             },
             {
               "internalType": "uint256",
-              "name": "_ownerFee",
+              "name": "ownerFeePerDeposit",
               "type": "uint256"
             },
             {
               "internalType": "uint256",
-              "name": "_days",
+              "name": "depositFunctioningDays",
               "type": "uint256"
             },
             {
               "internalType": "bool",
-              "name": "_feeUSDC",
+              "name": "feeUSDC",
               "type": "bool"
             },
             {
               "internalType": "uint256",
-              "name": "_quorum",
+              "name": "quorum",
               "type": "uint256"
             },
             {
               "internalType": "uint256",
-              "name": "_threshold",
+              "name": "threshold",
               "type": "uint256"
             },
             {
               "internalType": "address",
-              "name": "_ownerAddress",
+              "name": "daoOwnerAddress",
               "type": "address"
             }
           ],
           "internalType": "struct FactoryCloneContract.DAO",
-          "name": "params",
+          "name": "_params",
           "type": "tuple"
         }
       ],
@@ -140,7 +161,7 @@
     },
     {
       "inputs": [],
-      "name": "getUSDCAddress",
+      "name": "emitterAddress",
       "outputs": [
         {
           "internalType": "address",
@@ -149,6 +170,39 @@
         }
       ],
       "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "renounceOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "transferOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
       "type": "function"
     }
   ]
