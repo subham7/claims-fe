@@ -690,7 +690,6 @@ const Proposal = () => {
     setOpenCard(true)
     setOptionList([...optionList, ""])
     setSurveyOption([...surveyOption, surveyValue])
-    console.log(surveyOption)
   }
 
   const handleRemoveClick = (index) => {
@@ -1319,7 +1318,7 @@ const Proposal = () => {
                         <Button variant="primary" onClick={handleNext}>
                           Submit
                         </Button>
-                      : (duration === null || title === null || description === null || !enableSubmitButton) ?
+                      : (duration === null || title === null || description === null || commandList.length < 1 || !enableSubmitButton) ?
                         <Button variant="primary" onClick={handleNext} disabled>
                           Submit
                         </Button> :
