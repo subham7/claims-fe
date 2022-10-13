@@ -19,26 +19,23 @@ import {
   TextField,
   DialogContent,
   Dialog,
+  CardMedia,
 } from "@mui/material"
 import Layout3 from "../../src/components/layouts/layout3"
 import ProgressBar from "../../src/components/progressbar"
 import { connectWallet, setUserChain, onboard } from "../../src/utils/wallet"
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { useRouter } from "next/router"
-import {
-  USDC_CONTRACT_ADDRESS,
-  FACTORY_CONTRACT_ADDRESS,
-} from "../../src/api"
 import { fetchClub, fetchClubbyDaoAddress } from "../../src/api/club"
-import {createUser} from "../../src/api/user"
-import {getMembersDetails, patchUserBalance, checkUserByClub} from "../../src/api/user"
+import { createUser } from "../../src/api/user"
+import { getMembersDetails, patchUserBalance, checkUserByClub } from "../../src/api/user"
 import store from "../../src/redux/store"
 import Web3 from "web3"
 import USDCContract from "../../src/abis/usdcTokenContract.json"
-import GovernorContract from "../../src/abis/governorContract.json"
+import ImplementationContract from "../../src/abis/implementationABI.json"
 import { SmartContract } from "../../src/api/contract"
 import { checkNetwork } from "../../src/utils/wallet"
-import {calculateTreasuryTargetShare, convertAmountToWei} from "../../src/utils/globalFunctions";
+import { calculateTreasuryTargetShare, convertFromWeiGovernance, convertToWeiUSDC, convertFromWeiUSDC, convertAmountToWei } from "../../src/utils/globalFunctions";
 
 const useStyles = makeStyles({
   valuesStyle: {
@@ -56,6 +53,14 @@ const useStyles = makeStyles({
     borderRadius: "10px",
     opacity: 1,
   },
+  cardJoin: {
+    backgroundColor: "#81F5FF",
+    borderRadius: "10px",
+    opacity: 1,
+    justifyContent: "space-between",
+    height: "100%",
+
+  },
   dimColor: {
     color: "#C1D3FF",
   },
@@ -72,21 +77,27 @@ const useStyles = makeStyles({
     fontSize: "21px",
   },
   cardSmall: {
-    backgroundColor: "#111D38",
+    backgroundColor: "#FFFFFF",
     borderRadius: "20px",
     opacity: 1,
+
   },
   cardSmallFont: {
     fontFamily: "Whyte",
     fontSize: "18px",
-    color: "#C1D3FF",
+    color: "#111D38",
+  },
+  JoinText: {
+    color: "#111D38",
+    fontFamily: "Whyte",
+    fontSize: "21px",
+    fontWeight: "bold",
   },
   cardLargeFont: {
     width: "150px",
     fontSize: "2em",
     fontWeight: "bold",
     fontFamily: "Whyte",
-    color: "#F5F5F5",
     borderColor: "#142243",
     borderRadius: "0px",
     "& input[type=number]": {
@@ -100,11 +111,14 @@ const useStyles = makeStyles({
       "-webkit-appearance": "none",
       margin: 0,
     },
+    color: "#3B7AFD"
   },
   cardWarning: {
     backgroundColor: "#FFB74D0D",
     borderRadius: "10px",
+    borderColor: "#111D38",
     opacity: 1,
+    border: "1px solid #C1D3FF",
   },
   textWarning: {
     textAlign: "left",
@@ -183,8 +197,7 @@ const Join = (props) => {
   const [data, setData] = useState([])
   const [fetched, setFetched] = useState(false)
   const [dataFetched, setDataFetched] = useState(false)
-  const [previouslyConnectedWallet, setPreviouslyConnectedWallet] =
-    useState(null)
+  const [previouslyConnectedWallet, setPreviouslyConnectedWallet] = useState(null)
   const [userDetails, setUserDetails] = useState(null)
   const [walletBalance, setWalletBalance] = useState(0)
   const [depositAmount, setDepositAmount] = useState(0)
@@ -201,12 +214,23 @@ const Join = (props) => {
   const [governorDataFetched, setGovernorDataFetched] = useState(false)
   const [clubId, setClubId] = useState(null)
   const [membersFetched, setMembersFetched] = useState(false)
+  const [clubTokenMinted, setClubTokenMInted] = useState(0)
   const [members, setMembers] = useState(0)
   const [depositInitiated, setDepositInitiated] = useState(false)
   const [closingDays, setClosingDays] = useState(0)
   const [imageFetched, setImageFetched] = useState(false)
   const [imageUrl, setImageUrl] = useState("")
   const [open, setOpen] = useState(false)
+  const [gnosisAddress, setGnosisAddress] = useState(null)
+  const FACTORY_CONTRACT_ADDRESS = useSelector(state => {
+    return state.gnosis.factoryContractAddress
+  })
+  const USDC_CONTRACT_ADDRESS = useSelector(state => {
+    return state.gnosis.usdcContractAddress
+  })
+  const GNOSIS_TRANSACTION_URL = useSelector(state => {
+    return state.gnosis.transactionUrl
+  })
 
   const checkConnection = async () => {
     if (window.ethereum) {
@@ -242,6 +266,7 @@ const Join = (props) => {
     if (response.data.length > 0) {
       settokenAPIDetails(response.data)
       setClubId(response.data[0].clubId)
+      setGnosisAddress(response.data[0].gnosisAddress)
       setApiTokenDetailSet(true)
     } else {
       setApiTokenDetailSet(false)
@@ -249,16 +274,17 @@ const Join = (props) => {
   }
 
   const tokenDetailsRetrieval = async () => {
-    if (tokenAPIDetails && tokenAPIDetails.length > 0) {
+    if (tokenAPIDetails && tokenAPIDetails.length > 0 && USDC_CONTRACT_ADDRESS && GNOSIS_TRANSACTION_URL) {
       const tokenDetailContract = new SmartContract(
-        USDCContract,
-        tokenAPIDetails[0].tokenAddress,
-        undefined
+        ImplementationContract,
+        tokenAPIDetails[0].daoAddress,
+        undefined, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL
       )
       await tokenDetailContract.tokenDetails().then(
-        (result) => {
-          // console.log(result)
+        async(result) => {
           settokenDetails(result)
+          setClubTokenMInted(await convertFromWeiGovernance(daoAddress, result[2], USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL))
+          setQuoram(await convertFromWeiGovernance(daoAddress, result[2], USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL))
           setDataFetched(true)
         },
         (error) => {
@@ -284,20 +310,24 @@ const Join = (props) => {
   }
 
   const contractDetailsRetrieval = async () => {
-    if (daoAddress && !governorDataFetched && !governorDetails && userDetails) {
+    if (daoAddress && !governorDataFetched && !governorDetails && userDetails &&  USDC_CONTRACT_ADDRESS && GNOSIS_TRANSACTION_URL) {
       const governorDetailContract = new SmartContract(
-        GovernorContract,
+        ImplementationContract,
         daoAddress,
-        undefined
+        undefined, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL
       )
       await governorDetailContract.getGovernorDetails().then(
-        (result) => {
+        async (result) => {
           // console.log(result)
           setGovernorDetails(result)
+          setMinDeposit(await convertFromWeiUSDC(result[1], USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL))
+          setMaxDeposit(await convertFromWeiUSDC(result[2], USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL))
+          setTotalDeposit(await convertFromWeiUSDC(result[4], USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL))
+
           setClosingDays(
             Math.round(
               (new Date(parseInt(result[0]) * 1000) - new Date()) /
-                (1000 * 60 * 60 * 24)
+              (1000 * 60 * 60 * 24)
             )
           )
           setGovernorDataFetched(true)
@@ -310,11 +340,11 @@ const Join = (props) => {
   }
 
   const obtaineWalletBallance = async () => {
-    if (!fetched && userDetails) {
+    if (!fetched && userDetails && USDC_CONTRACT_ADDRESS && GNOSIS_TRANSACTION_URL) {
       const usdc_contract = new SmartContract(
-        USDCContract,
+        ImplementationContract,
         USDC_CONTRACT_ADDRESS,
-        undefined
+        undefined, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL
       )
       await usdc_contract.balanceOf().then(
         (result) => {
@@ -342,32 +372,32 @@ const Join = (props) => {
       console.log(err)
     }
   }
-  useEffect(() => {
-    const web3 = new Web3(Web3.givenProvider)
-    const networkIdRK = "4"
-    web3.eth.net
-      .getId()
-      .then((networkId) => {
-        if (networkId != networkIdRK) {
-          setOpen(true)
-        }
-      })
-      .catch((err) => {
-        console.log(err)
-      })
-  }, [])
+  // useEffect(() => {
+  //   const web3 = new Web3(Web3.givenProvider)
+  //   const networkIdRK = "4"
+  //   web3.eth.net
+  //     .getId()
+  //     .then((networkId) => {
+  //       if (networkId != networkIdRK) {
+  //         setOpen(true)
+  //       }
+  //     })
+  //     .catch((err) => {
+  //       console.log(err)
+  //     })
+  // }, [])
 
   useEffect(() => {
     if (pid) {
       tokenAPIDetailsRetrieval()
     }
-  }, [pid])
+  }, [pid,  USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL])
 
   useEffect(() => {
-    if (tokenAPIDetails) {
+    if (tokenAPIDetails && USDC_CONTRACT_ADDRESS && GNOSIS_TRANSACTION_URL) {
       tokenDetailsRetrieval()
     }
-  }, [tokenAPIDetails])
+  }, [tokenAPIDetails, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL])
 
   useEffect(() => {
     if (clubId) {
@@ -388,33 +418,31 @@ const Join = (props) => {
   const handleDeposit = async () => {
     setDepositInitiated(true)
     const checkUserExists = checkUserByClub(userDetails, clubId)
+    const depositAmountConverted = await convertToWeiUSDC(depositAmount, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL)
     checkUserExists.then((result) => {
-      console.log("********* check user")
-      console.log(result)
       if (result.data === false) {
-        console.log("*********** User doesn't exist")
         // if the user doesn't exist
         const usdc_contract = new SmartContract(
-          USDCContract,
+          ImplementationContract,
           USDC_CONTRACT_ADDRESS,
-          undefined
+          undefined, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL
         )
         // pass governor contract
         const dao_contract = new SmartContract(
-          GovernorContract,
+          ImplementationContract,
           daoAddress,
-          undefined
+          undefined, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL
         )
         // pass governor contract
         const usdc_response = usdc_contract.approveDeposit(
           daoAddress,
-          depositAmount
+          depositAmountConverted
         )
         usdc_response.then(
           (result) => {
             const deposit_response = dao_contract.deposit(
               USDC_CONTRACT_ADDRESS,
-              depositAmount
+              depositAmountConverted
             )
             deposit_response.then((result) => {
               const data = {
@@ -423,13 +451,13 @@ const Join = (props) => {
                   {
                     clubId: clubId,
                     isAdmin: 0,
-                    balance: depositAmount,
+                    balance: depositAmountConverted,
                   },
                 ],
               }
               const createuser = createUser(data)
               createuser.then((result) => {
-                if (result.status != 200) {
+                if (result.status !== 201) {
                   console.log("Error", result)
                   setAlertStatus("error")
                   setOpenSnackBar(true)
@@ -450,35 +478,34 @@ const Join = (props) => {
           }
         )
       } else {
-        console.log("*********** User exist")
         // if user exists
         const usdc_contract = new SmartContract(
-          USDCContract,
+          ImplementationContract,
           USDC_CONTRACT_ADDRESS,
-          undefined
+          undefined, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL
         )
         // pass governor contract
         const dao_contract = new SmartContract(
-          GovernorContract,
+          ImplementationContract,
           daoAddress,
-          undefined
+          undefined, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL
         )
         // pass governor contract
         const usdc_response = usdc_contract.approveDeposit(
           daoAddress,
-          depositAmount
+          depositAmountConverted
         )
         usdc_response.then(
           (result) => {
             const deposit_response = dao_contract.deposit(
               USDC_CONTRACT_ADDRESS,
-              depositAmount
+              depositAmountConverted
             )
             deposit_response.then((result) => {
               const patchData = {
                 userAddress: userDetails,
                 clubId: clubId,
-                balance: depositAmount,
+                balance: depositAmountConverted,
               }
               const updateDepositAmount = patchUserBalance(patchData)
               updateDepositAmount.then((result) => {
@@ -510,10 +537,10 @@ const Join = (props) => {
     setDepositAmount(parseInt(newValue))
   }
 
-  const handleMaxButtonClick = (event) => {
+  const handleMaxButtonClick = async(event) => {
     // value should be the maximum deposit value
     if (governorDataFetched) {
-      setDepositAmount(parseInt(governorDetails[2]))
+      setDepositAmount(await convertFromWeiUSDC(governorDetails[2], USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL))
     }
   }
 
@@ -539,7 +566,7 @@ const Join = (props) => {
   }
 
   return (
-    <Layout3>
+    <Layout3 faucet={true}>
       <Grid
         container
         spacing={2}
@@ -646,7 +673,7 @@ const Join = (props) => {
                   <Grid item mt={2}>
                     <Typography variant="p" className={classes.valuesStyle}>
                       {governorDataFetched ? (
-                        governorDetails[1] + " USDC"
+                        minDeposit + " USDC"
                       ) : (
                         <Skeleton
                           variant="rectangular"
@@ -676,7 +703,7 @@ const Join = (props) => {
                   <Grid item mt={2}>
                     <Typography variant="p" className={classes.valuesStyle}>
                       {governorDataFetched ? (
-                        governorDetails[2] + " USDC"
+                        maxDeposit + " USDC"
                       ) : (
                         <Skeleton
                           variant="rectangular"
@@ -746,7 +773,7 @@ const Join = (props) => {
                 <ProgressBar
                   value={
                     governorDataFetched
-                      ? calculateTreasuryTargetShare(tokenDetails[2], governorDetails[4])
+                      ? calculateTreasuryTargetShare(clubTokenMinted, convertAmountToWei(governorDetails[4]))
                       : 0
                   }
                 />
@@ -779,7 +806,7 @@ const Join = (props) => {
                   <Grid item>
                     <Typography variant="p" className={classes.valuesStyle}>
                       {walletConnected ? (
-                        convertAmountToWei(tokenDetails[2]) +
+                        parseInt(quoram) +
                         " $" +
                         tokenDetails[1]
                       ) : (
@@ -811,7 +838,7 @@ const Join = (props) => {
                   <Grid item>
                     <Typography variant="p" className={classes.valuesStyle}>
                       {governorDataFetched ? (
-                        governorDetails[4] + (" $" + tokenDetails[1])
+                        totalDeposit + (" $" + tokenDetails[1])
                       ) : (
                         <Skeleton
                           variant="rectangular"
@@ -828,11 +855,12 @@ const Join = (props) => {
         </Grid>
         <Grid item md={5}>
           {walletConnected ? (
-            <Card className={classes.cardRegular}>
+            <Card className={classes.cardJoin}>
               <Grid container spacing={2}>
-                <Grid item ml={2} mt={4} mb={4}>
+                <Grid item ml={2} mt={4} mb={4} className={classes.JoinText}>
                   <Typography variant="h4">Join this Club</Typography>
                 </Grid>
+                <Divider />
                 <Grid
                   item
                   ml={1}
@@ -842,7 +870,7 @@ const Join = (props) => {
                   xs
                   sx={{ display: "flex", justifyContent: "flex-end" }}
                 >
-                  <Typography variant="h6" className={classes.dimColor}>
+                  <Typography variant="h6" className={classes.JoinText}>
                     {governorDataFetched
                       ? closingDays > 0
                         ? "Closes in " + closingDays + " days"
@@ -851,9 +879,9 @@ const Join = (props) => {
                   </Typography>
                 </Grid>
               </Grid>
-              <Divider variant="middle" />
+              <Divider variant="middle" sx={{ bgcolor: "#3B7AFD" }} />
               <Grid container spacing={2}>
-                <Grid item md={12} mt={5}>
+                <Grid item md={12} mt={2}>
                   <Card className={classes.cardSmall}>
                     <Grid container spacing={2}>
                       <Grid item ml={2} mt={2} mb={0}>
@@ -875,7 +903,7 @@ const Join = (props) => {
                       </Grid>
                     </Grid>
                     <Grid container spacing={2}>
-                      <Grid item ml={2} mt={1} mb={3} p={1}>
+                      <Grid item ml={2} mt={1} mb={2} p={1}>
                         <Input
                           type="number"
                           error={depositAmount === ""}
@@ -890,8 +918,8 @@ const Join = (props) => {
                       <Grid
                         item
                         ml={2}
-                        mt={2}
-                        mb={2}
+                        mt={1}
+                        mb={1}
                         xs
                         sx={{ display: "flex", justifyContent: "flex-end" }}
                       >
@@ -909,13 +937,13 @@ const Join = (props) => {
               <Grid container spacing={2}>
                 <Grid item md={12} mt={2}>
                   <Card className={classes.cardWarning}>
-                    <Typography className={classes.textWarning}>
+                    <Typography className={classes.JoinText}>
                       Clubs can have same names or symbols, please make sure to
                       trust the sender for the link before depositing.
                     </Typography>
                   </Card>
                 </Grid>
-                <Grid item container ml={1} mt={2} mb={1}>
+                <Grid item container ml={1} mt={1} mb={1}>
                   <Button
                     variant="primary"
                     size="large"
@@ -928,24 +956,34 @@ const Join = (props) => {
               </Grid>
             </Card>
           ) : (
-            <Card className={classes.cardRegular}>
-              <Grid container spacing={2}>
-                <Grid item ml={15} mr={15} mt={5} mb={7}>
-                  <Image
-                    src="/assets/images/connect_illustration.png"
-                    alt="connect_illustration"
-                    width="418px"
-                    height="377px"
-                  />
+            <Card className={classes.cardJoin} height={"full"} >
+              < >
+                <Grid flex flexDirection="column" container justifyContent={"space-between"} height={"100%"}>
+                  <Grid margin={"25px"}>
+                    <Typography className={classes.JoinText}> Join this station by depositing your funds </Typography>
+                  </Grid>
+                  <Grid sx={{ display: "flex", flexDirection: "row" }} >
+                    <Grid mt={"300px"} ml={4}>
+                      <Button variant="primary" onClick={handleConnectWallet}>
+                        Connect
+                      </Button>
+                    </Grid>
+                    <Grid
+                      mt={"50px"}
+                    >
+                      <CardMedia
+                        image="/assets/images/joinstation.png"
+                        component="img"
+                        alt="ownership_share"
+                        className={classes.media}
+                      />
+                    </Grid>
+                  </Grid>
                 </Grid>
-                <Grid item container ml={1} mt={2}>
-                  <Button variant="primary" onClick={handleConnectWallet}>
-                    Connect Wallet
-                  </Button>
-                </Grid>
-              </Grid>
+              </>
             </Card>
           )}
+
         </Grid>
       </Grid>
       <Snackbar

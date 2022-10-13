@@ -2,7 +2,7 @@ export const darkComponents = {
   MuiButton: {
     styleOverrides: {
       root: {
-        background: "#3181F6",
+        background: "#3B7AFD",
         "&:hover": {},
         borderRadius: "10px",
         opacity: 1,
@@ -43,7 +43,7 @@ export const darkComponents = {
           fontSize: "1.3rem",
           borderRadius: "30px",
           "&:hover": {
-            background: "#111D38 0% 0% no-repeat padding-box",
+            background: "#19274B 0% 0% no-repeat padding-box",
             boxShadow: "0px 0px 12px #3B7AFD40",
             border: "1px solid #C1D3FF40",
             opacity: "1"
@@ -89,8 +89,8 @@ export const darkComponents = {
   MuiCard: {
     styleOverrides: {
       root: {
-        background: "#19274B",
-        borderRadius: "20px",
+        background: "#142243",
+        borderRadius: "10px",
         padding: "20px",
       },
     },
@@ -107,7 +107,7 @@ export const darkComponents = {
     styleOverrides: {
       root: {
         boxShadow: "none",
-        backgroundColor: "#142243",
+        backgroundColor: "#111D38",
         backgroundImage: "none",
       },
     },
@@ -128,7 +128,7 @@ export const darkComponents = {
     styleOverrides: {
       root: {
         border: "none",
-        backgroundColor: "#142243",
+        backgroundColor: "#111D38",
       }
     },
     variants: [
@@ -300,7 +300,15 @@ export const darkComponents = {
         style: {
           fontSize: "2.125em",
           fontFamily: "Whyte",
-          color: "#FFFFFF"
+          color: "#111D38"
+        }
+      },
+      {
+        props: { variant: "Docs" },
+        style: {
+          fontSize: "1.2em",
+          fontFamily: "Whyte",
+          
         }
       }
 
@@ -371,7 +379,7 @@ export const darkComponents = {
   MuiList: {
     styleOverrides: {
       root: {
-        backgroundColor: "#142243",
+        backgroundColor: "#111D38",
       }
     }
   },

@@ -6,7 +6,6 @@ import { addDaoAddress, addClubID } from "../redux/reducers/create"
 import store from "../redux/store"
 import { SmartContract } from "../api/contract"
 import {createClub, fetchClub} from "../api/club"
-import { FACTORY_CONTRACT_ADDRESS } from "../api"
 import FactoryContract from "../abis/factoryContract.json"
 import Router from "next/router"
 import { createUser } from "../api/user"
@@ -19,16 +18,12 @@ async function gnosisSafePromise(owners, threshold, dispatch) {
       web3,
       signerAddress: safeOwner[0],
     })
-
-    console.log(ethAdapter)
     const safeFactory = await SafeFactory.create({ ethAdapter })
     const safeAccountConfig = {
       owners,
       threshold,
     }
-    console.log(safeAccountConfig)
     const safeSdk = await safeFactory.deploySafe({ safeAccountConfig })
-    console.log("Safe sdk", safeSdk)
     const newSafeAddress = safeSdk.getAddress()
     dispatch(safeConnected(newSafeAddress, safeSdk))
     return newSafeAddress
@@ -50,7 +45,10 @@ export async function initiateConnection(
   closeDate,
   feeUSDC,
   quoram,
-  formThreshold
+  formThreshold,
+  factoryContractAddress,
+  usdcContractAddress,
+  gnosisTransactionUrl
 ) {
   const web3 = new Web3(Web3.givenProvider)
   const safeOwner = await web3.eth.getAccounts()
@@ -69,12 +67,15 @@ export async function initiateConnection(
 
   const smartContract = new SmartContract(
     FactoryContract,
-    FACTORY_CONTRACT_ADDRESS,
-    undefined
+    factoryContractAddress,
+    undefined, usdcContractAddress, gnosisTransactionUrl
   )
   await gnosisSafePromise(owners, threshold, dispatch)
     .then((treasuryAddress) => {
       const value = smartContract.createDAO(
+        owners,
+        threshold,
+        dispatch,
         tokenName,
         tokenSymbol,
         totalDeposit,
@@ -89,16 +90,15 @@ export async function initiateConnection(
       )
       value.then(
         (result) => {
-          console.log(result)
-          daoAddress = result.events[1].address
-          tokenAddress = result.events[0].address
-          dispatch(addDaoAddress(result[0]))
+          daoAddress = result.events[0].address
+          dispatch(addDaoAddress(result.events[0].address))
+          // TODO: as of now, setting the tokenType to be static, by default erc20NonTransferable will be the contract
           const data = {
             name: tokenName,
-            tokenAddress: tokenAddress,
             daoAddress: daoAddress,
-            treasuryAddress: treasuryAddress,
-            networkId: networkId
+            gnosisAddress: treasuryAddress,
+            networkId: networkId,
+            tokenType: "erc20NonTransferable",
           }
           const club = createClub(data)
           club.then((result) => {

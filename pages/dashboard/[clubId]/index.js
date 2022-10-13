@@ -1,5 +1,5 @@
-import { React, useEffect, useState } from "react"
-import { makeStyles } from "@mui/styles"
+import {React, useEffect, useState} from "react"
+import {makeStyles} from "@mui/styles"
 import Layout1 from "../../../src/components/layouts/layout1"
 import {
   Box,
@@ -7,7 +7,6 @@ import {
   Grid,
   Typography,
   CardMedia,
-  Divider,
   Stack,
   Button,
   IconButton,
@@ -18,55 +17,68 @@ import {
   TableRow,
   Paper,
   Table,
-  CircularProgress, Backdrop, ListItemButton,
-  Snackbar, Alert
+  Link,
+  CircularProgress,
+  Backdrop,
+  ListItemButton,
+  Snackbar,
+  Alert,
 } from "@mui/material"
 import TextField from "@mui/material/TextField"
 import SearchIcon from "@mui/icons-material/Search"
 import ButtonDropDown from "../../../src/components/buttondropdown"
-import BasicTable from "../../../src/components/table"
 import CollectionCard from "../../../src/components/cardcontent"
-import Router, { useRouter } from "next/router"
+import {useRouter} from "next/router"
 import ClubFetch from "../../../src/utils/clubFetch"
-import { SmartContract }  from "../../../src/api/contract"
-import { USDC_CONTRACT_ADDRESS } from "../../../src/api"
+import {SmartContract} from "../../../src/api/contract"
 import {getProposal} from "../../../src/api/proposal"
 import {fetchClubbyDaoAddress} from "../../../src/api/club"
 import {getNfts, getBalance} from "../../../src/api/gnosis"
 import {getAssets} from "../../../src/api/assets"
 import {getMembersDetails} from "../../../src/api/user"
-import GovernorContract from "../../../src/abis/governorContract.json"
-import USDCContract from "../../../src/abis/usdcTokenContract.json"
-import { useSelector } from "react-redux"
-import Image from "next/image";
-import {calculateUserSharePercentage} from "../../../src/utils/globalFunctions";
+import ImplementationContact from "../../../src/abis/implementationABI.json"
+import {useSelector} from "react-redux"
+import {
+  calculateDays,
+  calculateUserSharePercentage,
+  convertAmountToWei,
+  convertFromWeiGovernance,
+  convertFromWeiUSDC,
+  convertToWeiUSDC,
+} from "../../../src/utils/globalFunctions"
+import {error} from "next/dist/build/output/log";
 
 const useStyles = makeStyles({
   media: {
     position: "absolute",
-    bottom: 0
+    bottom: 0,
   },
   firstCard: {
     position: "relative",
-    width: "32vw",
-    height: "352px",
+    width: "Infinity",
+    height: "164px",
     padding: "0px",
-    opacity: "1",
-    background: "transparent linear-gradient(120deg, #3B7AFD 0%, #011FFD 100%) 0% 0% no-repeat padding-box"
+
+    background: "#6A66FF no-repeat",
+    variant: "outlined",
   },
   secondCard: {
     position: "relative",
-    width: "32vw",
-    height: "352px",
+    width: "Infinityvw",
+    height: "164px",
     padding: "0px",
-    opacity: "1",
+    marginTop: "20px",
+
+    background: "#0ABB92 no-repeat padding-box",
   },
   thirdCard: {
     width: "22vw",
     height: "351px",
   },
   fifthCard: {
-    background: "transparent linear-gradient(132deg, #17326A 0%, #19274B 51%, #3D2652 100%) 0% 0% no-repeat padding-box"
+    width: "22vw",
+    height: "350px",
+    background: "#FFFFDD no-repeat padding-box",
   },
   cardOverlay: {
     position: "absolute",
@@ -74,6 +86,19 @@ const useStyles = makeStyles({
     left: "30px",
     right: "30px",
     bottom: "30px",
+  },
+  cardSharp1: {
+    backgroundColor: "#19274B",
+    borderRadius: "10px",
+    borderBottomLeftRadius: "0px",
+    borderBottomRightRadius: "0px",
+    opacity: 1,
+  },
+  cardSharp2: {
+    backgroundColor: "#142243",
+    borderTopLeftRadius: "0px",
+    borderTopRightRadius: "0px",
+    opacity: 1,
   },
   card1text1: {
     fontFamily: "Whyte",
@@ -88,13 +113,14 @@ const useStyles = makeStyles({
     color: "#C1D3FF",
     textTransform: "uppercase",
     opacity: "1",
+    paddingLeft: "10px",
   },
   card1text3: {
     fontFamily: "Whyte",
-    paddingTop: "70px",
-    fontSize: "22px",
+
+    fontSize: "15px",
     color: "#C1D3FF",
-    textTransform: "uppercase",
+
     opacity: "1",
   },
   card1text4: {
@@ -120,8 +146,7 @@ const useStyles = makeStyles({
   },
   card2text2: {
     fontFamily: "Whyte",
-    fontWeight: "bold",
-    fontSize: "40px",
+    fontSize: "20px",
     color: "#EFEFEF",
     opacity: "1",
   },
@@ -185,7 +210,7 @@ const useStyles = makeStyles({
   card3text4: {
     fontFamily: "Whyte",
     textAlign: "left",
-    fontSize: "19px",
+    fontSize: "6px",
     letteSpacing: "0.2px",
     color: "#C1D3FF",
     opacity: "1",
@@ -206,11 +231,10 @@ const useStyles = makeStyles({
     width: "68px",
     height: "30px",
     background: "#3B7AFD 0% 0% no-repeat padding-box",
-    borderRadius: "15px"
+    borderRadius: "15px",
   },
   linkInput: {
-    width: "18.4vw",
-    height: "auto",
+    width: "100%",
     color: "#C1D3FF",
     background: "#111D38 0% 0% no-repeat padding-box",
     border: "1px solid #C1D3FF40",
@@ -232,7 +256,7 @@ const useStyles = makeStyles({
   },
   fourthCard: {
     width: "22vw",
-    borderRadius: "20px"
+    borderRadius: "20px",
   },
   pendingIllustration: {
     height: "12px",
@@ -266,7 +290,7 @@ const useStyles = makeStyles({
     },
   },
   iconMetroCoin: {
-    width: "70%"
+    width: "70%",
   },
   tableheading: {
     fontFamily: "Whyte",
@@ -286,20 +310,41 @@ const useStyles = makeStyles({
     fontFamily: "Whyte",
     fontSize: "24px",
     color: "#FFFFFF",
-    backgroundColor: "#19274B"
+    backgroundColor: "#19274B",
   },
   banner: {
-    width: "100%"
+    width: "100%",
+  },
+  treasury: {
+    width: "100%",
+  },
+  docimg: {
+    right: "0",
+    marginLeft: "52%",
+    marginTop: "30%",
+    width: "60%",
+    sx: {position: "absolute", bottom: 0},
+  },
+  valueDetailStyle: {
+    color: "#81F5FF",
+  },
+  docs: {
+    '&:hover': {
+      cursor: 'pointer'
+    },
   }
 })
 
-const Dashboard = (props) => {
+const Dashboard = () => {
   const router = useRouter()
-  const { clubId } = router.query
+  const {clubId} = router.query
   const classes = useStyles()
-  const daoAddress = useSelector(state => {return state.create.daoAddress})
-  const walletAddress = useSelector(state => {return state.create.value})
-  const tresuryAddress = useSelector(state => { return state.create.tresuryAddress})
+  const daoAddress = useSelector((state) => {
+    return state.create.daoAddress
+  })
+  const walletAddress = useSelector((state) => {
+    return state.create.value
+  })
   const [clubDetails, setClubDetails] = useState([])
   const [clubDetailsFetched, setClubDetailsFetched] = useState(false)
   const [tokenDetails, settokenDetails] = useState(null)
@@ -307,13 +352,21 @@ const Dashboard = (props) => {
   const [tokenAPIDetails, settokenAPIDetails] = useState(null) // contains the details extracted from API
   const [apiTokenDetailSet, setApiTokenDetailSet] = useState(false)
   const [joinLink, setJoinLink] = useState(null)
+  const [depositLink, setDepositLink] = useState(null)
+  const [governorDetails, setGovernorDetails] = useState(null)
+  const [minDeposit, setMinDeposit] = useState(0)
+  const [minDepositFetched, setMinDepositFetched] = useState(false)
+  const [maxDeposit, setMaxDeposit] = useState(0)
+  const [maxDepositFetched, setMaxDepositFetched] = useState(false)
   const [membersFetched, setMembersFetched] = useState(false)
   const [members, setMembers] = useState(0)
   const [membersDetails, setMembersDetails] = useState([])
-  const [tresuryWalletBalanceFetched, setTresuryWalletBalanceFetched] = useState(false)
+  const [tresuryWalletBalanceFetched, setTresuryWalletBalanceFetched] =
+    useState(false)
   const [tresuryWalletBalance, setTresuryWalletBalance] = useState([])
   const [activeProposalData, setActiveProposalData] = useState([])
-  const [activeProposalDataFetched, setActiveProposalDataFetched] = useState(false)
+  const [activeProposalDataFetched, setActiveProposalDataFetched] =
+    useState(false)
   const [clubAssetTokenFetched, setClubAssetTokenFetched] = useState(false)
   const [clubAssetTokenData, setClubAssetTokenData] = useState([])
   const [loaderOpen, setLoaderOpen] = useState(false)
@@ -321,45 +374,119 @@ const Dashboard = (props) => {
   const [openSnackBar, setOpenSnackBar] = useState(false)
   const [ntfData, setNftData] = useState([])
   const [nftFetched, setNftFetched] = useState(false)
-  const [userBalance, setUserBalance] = useState('')
+  const [userBalance, setUserBalance] = useState("")
   const [userBalanceFetched, setUserBalanceFetched] = useState(false)
   const [closingDays, setClosingDays] = useState(0)
+  const imageUrl = useSelector((state) => {
+    return state.create.clubImageUrl
+  })
+  const [governorDataFetched, setGovernorDataFetched] = useState(false)
+  const [memberDeposit, setMemberDeposit] = useState(0)
+  const [clubTokenMinted, setClubTokenMInted] = useState(0)
+  const [maxTokenMinted, setMaxTokenMinted] = useState(0)
+  const [userOwnershipShare, setUserOwnershipShare] = useState(0)
+  const FACTORY_CONTRACT_ADDRESS = useSelector((state) => {
+    return state.gnosis.factoryContractAddress
+  })
+  const USDC_CONTRACT_ADDRESS = useSelector((state) => {
+    return state.gnosis.usdcContractAddress
+  })
+  const GNOSIS_TRANSACTION_URL = useSelector((state) => {
+    return state.gnosis.transactionUrl
+  })
+
+  const fetchUsdcDetails = async () => {
+    if (daoAddress && USDC_CONTRACT_ADDRESS && GNOSIS_TRANSACTION_URL) {
+      const fetchBalance = new SmartContract(
+        ImplementationContact,
+        daoAddress,
+        undefined,
+        USDC_CONTRACT_ADDRESS,
+        GNOSIS_TRANSACTION_URL
+      )
+      await fetchBalance.getUsdcDetails(USDC_CONTRACT_ADDRESS).then(async (result) => {
+          let memberDeposits = await convertFromWeiUSDC(
+            result[0],
+            USDC_CONTRACT_ADDRESS,
+            GNOSIS_TRANSACTION_URL
+          )
+          let adminContribution = await convertFromWeiUSDC(
+            result[1],
+            USDC_CONTRACT_ADDRESS,
+            GNOSIS_TRANSACTION_URL
+          )
+
+          let total = memberDeposits + adminContribution
+          setMemberDeposit(
+            total
+          )
+        },
+        (error) => {
+          console.log(error)
+        })
+    }
+  }
 
   const fetchUserBalanceAPI = async () => {
-    if (daoAddress) {
-      const fetchUserBalance = new SmartContract(GovernorContract, daoAddress, undefined)
-      await fetchUserBalance.checkUserBalance()
-        .then((result) => {
-            setUserBalance(web3.utils.fromWei(result, "Mwei"))
-            setUserBalanceFetched(true)
-          },
-          (error) => {
-            setUserBalanceFetched(false)
-          })
+    if (daoAddress && USDC_CONTRACT_ADDRESS && GNOSIS_TRANSACTION_URL) {
+      const fetchUserBalance = new SmartContract(
+        ImplementationContact,
+        daoAddress,
+        undefined,
+        USDC_CONTRACT_ADDRESS,
+        GNOSIS_TRANSACTION_URL
+      )
+      await fetchUserBalance.checkUserBalance().then(
+        async (result) => {
+          setUserBalance(
+            await convertFromWeiGovernance(
+              daoAddress,
+              result,
+              USDC_CONTRACT_ADDRESS,
+              GNOSIS_TRANSACTION_URL
+            )
+          )
+          setUserBalanceFetched(true)
+        },
+        (error) => {
+          setUserBalanceFetched(false)
+        }
+      )
     }
   }
 
   const fetchGovernorContractData = async () => {
-    if (daoAddress && walletAddress){
-      const fetchClubDetails = new SmartContract(GovernorContract, daoAddress, undefined)
-      await fetchClubDetails.getGovernorDetails()
-          .then((result) => {
-                // console.log(result)
-                setClubDetails(result)
-                setClosingDays(Math.round((new Date(parseInt(result[0]) * 1000) - new Date()) / (1000 * 60 * 60 * 24)))
-                setClubDetailsFetched(true)
-              },
-              (error) => {
-                console.log(error)
-                setClubDetailsFetched(false)
-              }
-          )
+    if (
+      daoAddress &&
+      walletAddress &&
+      USDC_CONTRACT_ADDRESS &&
+      GNOSIS_TRANSACTION_URL
+    ) {
+      const fetchClubDetails = new SmartContract(
+        ImplementationContact,
+        daoAddress,
+        undefined,
+        USDC_CONTRACT_ADDRESS,
+        GNOSIS_TRANSACTION_URL
+      )
+      await fetchClubDetails.getGovernorDetails().then(
+        (result) => {
+          setClubDetails(result)
+          setClosingDays(calculateDays(parseInt(result[0]) * 1000))
+          setClubDetailsFetched(true)
+        },
+        (error) => {
+          setClubDetailsFetched(false)
+        }
+      )
     }
   }
 
   const findCurrentMember = () => {
     if (membersFetched && membersDetails.length > 0 && walletAddress) {
-      let obj = membersDetails.find(member => member.userAddress === walletAddress)
+      let obj = membersDetails.find(
+        (member) => member.userAddress === walletAddress
+      )
       let pos = membersDetails.indexOf(obj)
       if (pos >= 0) {
         return membersDetails[pos].clubs[0].balance
@@ -370,7 +497,9 @@ const Dashboard = (props) => {
 
   const checkIsAdmin = () => {
     if (membersFetched && membersDetails.length > 0 && walletAddress) {
-      let obj = membersDetails.find(member => member.userAddress === walletAddress)
+      let obj = membersDetails.find(
+        (member) => member.userAddress === walletAddress
+      )
       let pos = membersDetails.indexOf(obj)
       if (pos >= 0) {
         if (membersDetails[pos].clubs[0].isAdmin) {
@@ -380,30 +509,115 @@ const Dashboard = (props) => {
       return false
     }
   }
+  const contractDetailsRetrieval = async () => {
+    if (
+      daoAddress &&
+      !governorDataFetched &&
+      !governorDetails &&
+      walletAddress &&
+      USDC_CONTRACT_ADDRESS &&
+      GNOSIS_TRANSACTION_URL
+    ) {
+      const governorDetailContract = new SmartContract(
+        ImplementationContact,
+        daoAddress,
+        undefined,
+        USDC_CONTRACT_ADDRESS,
+        GNOSIS_TRANSACTION_URL
+      )
+      await governorDetailContract.getGovernorDetails().then(
+        async (result) => {
+          setGovernorDetails(result)
+          setMaxTokenMinted(await convertAmountToWei(result[4]))
+          setClosingDays(calculateDays(parseInt(result[0]) * 1000))
+          setGovernorDataFetched(true)
+        },
+        (error) => {
+          setGovernorDataFetched(false)
+        }
+      )
+
+      // minimum deposit amount from smart contract
+      await governorDetailContract.quoram().then(
+        (result) => {
+          setMinDeposit(result)
+          setMinDepositFetched(true)
+        },
+        (error) => {
+          setMinDepositFetched(false)
+        }
+      )
+
+      // maximim deposit amount from smart contract
+      await governorDetailContract.threshold().then(
+        (result) => {
+          setMaxDeposit(result)
+          setMaxDepositFetched(true)
+        },
+        (error) => {
+          setMaxDepositFetched(false)
+        }
+      )
+    }
+  }
 
   const tokenAPIDetailsRetrieval = async () => {
     let response = await fetchClubbyDaoAddress(daoAddress)
     if (response.data.length > 0) {
-      // console.log(response.data[0])
       settokenAPIDetails(response.data[0])
       setApiTokenDetailSet(true)
     }
   }
 
   const tokenDetailsRetrieval = async () => {
-    if (tokenAPIDetails && !dataFetched) {
-      const tokenDetailContract = new SmartContract(USDCContract, tokenAPIDetails.tokenAddress, undefined)
-      await tokenDetailContract.tokenDetails()
-          .then((result) => {
-              // console.log(result)
-              settokenDetails(result)
-              setJoinLink(typeof window !== 'undefined' && window.location.origin ? `${window.location.origin}/join/${daoAddress}` : null)
-              setDataFetched(true)
-            },
-            (error) => {
-              console.log(error)
-            }
+    if (
+      tokenAPIDetails &&
+      !dataFetched &&
+      USDC_CONTRACT_ADDRESS &&
+      GNOSIS_TRANSACTION_URL
+    ) {
+      const tokenDetailContract = new SmartContract(
+        ImplementationContact,
+        tokenAPIDetails.daoAddress,
+        undefined,
+        USDC_CONTRACT_ADDRESS,
+        GNOSIS_TRANSACTION_URL
+      )
+      await tokenDetailContract.tokenDetails().then(
+        async (result) => {
+          settokenDetails(result)
+          setClubTokenMInted(
+            await convertFromWeiGovernance(
+              daoAddress,
+              result[2],
+              USDC_CONTRACT_ADDRESS,
+              GNOSIS_TRANSACTION_URL
+            )
           )
+          setUserOwnershipShare(
+            await convertFromWeiGovernance(
+              daoAddress,
+              result[2],
+              USDC_CONTRACT_ADDRESS,
+              GNOSIS_TRANSACTION_URL
+            )
+          )
+          setJoinLink(
+            typeof window !== "undefined" && window.location.origin
+              ? `${window.location.origin}/join/${daoAddress}`
+              : null
+          )
+          setDepositLink(
+            typeof window !== "undefined" && window.location.origin
+              ? `${window.location.origin}/join/${daoAddress}?dashboard=true`
+              : null
+          )
+          setDataFetched(true)
+        },
+        (error) => {
+          setDataFetched(false)
+        }
+      )
     }
   }
 
@@ -426,18 +640,16 @@ const Dashboard = (props) => {
       if (result.status != 200) {
         setClubAssetTokenFetched(false)
       } else {
-        console.log(result.data)
         setClubAssetTokenData(result.data)
         setClubAssetTokenFetched(true)
       }
     })
 
-    const nfts = getNfts(tresuryAddress)
+    const nfts = getNfts(daoAddress)
     nfts.then((result) => {
       if (result.status != 200) {
         setNftFetched(false)
       } else {
-        // console.log(result.data)
         setNftData(result.data)
         setNftFetched(true)
       }
@@ -445,27 +657,27 @@ const Dashboard = (props) => {
   }
 
   const fetchTresuryWallet = () => {
-    const tresuryWalletData = getBalance(tresuryAddress)
-    tresuryWalletData.then((result) => {
-      if (result.status != 200) {
-        setTresuryWalletBalanceFetched(false)
-      } else {
-        // console.log(result.data)
-        setTresuryWalletBalance(result.data)
-        setTresuryWalletBalanceFetched(true)
-      }
-    })
+    setTresuryWalletBalanceFetched(true)
+    // const tresuryWalletData = getBalance(daoAddress)
+    // tresuryWalletData.then((result) => {
+    //   if (result.status != 200) {
+    //     setTresuryWalletBalanceFetched(false)
+    //   } else {
+    //     setTresuryWalletBalance(result.data)
+    //     setTresuryWalletBalanceFetched(true)
+    //   }
+    // })
   }
 
   const calculateTresuryWalletBalance = () => {
     let sum = 0.0
     if (tresuryWalletBalanceFetched && tresuryWalletBalance.length > 0) {
-      console.log(tresuryWalletBalance)
       tresuryWalletBalance.forEach((data, key) => {
-        if (data.tokenAddress !== "0x484727B6151a91c0298a9D2b9fD84cE3bc6BC4E3") {
+        if (
+          data.tokenAddress !== "0x484727B6151a91c0298a9D2b9fD84cE3bc6BC4E3"
+        ) {
           sum += parseFloat(data.fiatBalance)
-        }
-        else {
+        } else {
           sum += parseFloat(data.balance) / Math.pow(10, 18)
         }
       })
@@ -488,16 +700,16 @@ const Dashboard = (props) => {
   const importTokenToMetaMask = async () => {
     try {
       const wasAdded = await ethereum.request({
-        method: 'wallet_watchAsset',
+        method: "wallet_watchAsset",
         params: {
-          type: 'ERC20',
+          type: "ERC20",
           options: {
             address: tokenAPIDetails.tokenAddress,
             symbol: tokenDetails[1],
             decimals: 18,
           },
         },
-      });
+      })
 
       if (wasAdded) {
         setFailed(false)
@@ -507,13 +719,13 @@ const Dashboard = (props) => {
         setOpenSnackBar(true)
       }
     } catch (error) {
-      console.log(error);
       setFailed(true)
       setOpenSnackBar(true)
     }
   }
 
   useEffect(() => {
+
     setLoaderOpen(true)
     if (daoAddress) {
       tokenAPIDetailsRetrieval()
@@ -521,7 +733,12 @@ const Dashboard = (props) => {
     if (walletAddress && daoAddress) {
       fetchGovernorContractData()
     }
-  }, [daoAddress])
+  }, [
+    daoAddress,
+    FACTORY_CONTRACT_ADDRESS,
+    GNOSIS_TRANSACTION_URL,
+    USDC_CONTRACT_ADDRESS,
+  ])
 
   useEffect(() => {
     if (tokenAPIDetails) {
@@ -529,13 +746,12 @@ const Dashboard = (props) => {
     }
   }, [tokenAPIDetails])
 
-
   useEffect(() => {
-    if (tresuryAddress) {
+    if (daoAddress) {
       fetchTresuryWallet()
       fetchClubAssetToken()
     }
-  }, [tresuryAddress])
+  }, [daoAddress])
 
   useEffect(() => {
     if (clubId) {
@@ -545,407 +761,709 @@ const Dashboard = (props) => {
   }, [clubId])
 
   useEffect(() => {
+    contractDetailsRetrieval()
     setLoaderOpen(true)
 
     if (dataFetched) {
       fetchUserBalanceAPI()
+      fetchUsdcDetails()
     }
   }, [dataFetched])
 
   useEffect(() => {
-    if (dataFetched && apiTokenDetailSet && membersFetched && tresuryWalletBalanceFetched && activeProposalDataFetched && clubAssetTokenFetched && clubDetailsFetched) {
+    if (
+      dataFetched &&
+      apiTokenDetailSet &&
+      membersFetched &&
+      tresuryWalletBalanceFetched &&
+      activeProposalDataFetched &&
+      clubAssetTokenFetched &&
+      clubDetailsFetched
+    ) {
       setLoaderOpen(false)
     }
-  }, [daoAddress, walletAddress, dataFetched, apiTokenDetailSet, membersFetched, tresuryWalletBalanceFetched, activeProposalDataFetched, clubAssetTokenFetched, clubDetailsFetched])
+  }, [
+    daoAddress,
+    walletAddress,
+    dataFetched,
+    apiTokenDetailSet,
+    membersFetched,
+    tresuryWalletBalanceFetched,
+    activeProposalDataFetched,
+    clubAssetTokenFetched,
+    clubDetailsFetched,
+  ])
 
   const handleCopy = () => {
     navigator.clipboard.writeText(joinLink)
   }
 
   const handleProposalClick = (proposal) => {
-    router.push(`${router.asPath}/proposal/${proposal.proposalId}`, undefined, { shallow: true })
+    router.push(`${router.asPath}/proposal/${proposal.proposalId}`, undefined, {
+      shallow: true,
+    })
   }
 
   const handleMoreClick = () => {
-    router.push(`${router.asPath}/proposal`, undefined, { shallow: true })
+    router.push(`${router.asPath}/proposal`, undefined, {shallow: true})
   }
 
   const handleSnackBarClose = (event, reason) => {
-    if (reason === 'clickaway') {
-      return;
+    if (reason === "clickaway") {
+      return
     }
     setOpenSnackBar(false)
   }
-
-
   return (
-      <>
-        <Layout1 page={1} depositUrl={joinLink}>
-          {/* <div style={{ padding: "110px 80px" }}> */}
-          <Grid container spacing={1} paddingLeft={10} paddingTop={15}>
-            <Grid item md={9}>
-              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={3}>
-                <Card className={classes.firstCard}>
-                  <CardMedia
-                      className={classes.media}
-                      component="img"
-                      image="/assets/images/card_illustration.png"
-                      alt="abstract background"
-                      sx={{ position: "absolute", bottom: 0 }}
-                  />
-                  <Box className={classes.cardOverlay}>
-                    <Typography className={classes.card1text1}>
-                      {dataFetched ? tokenDetails[0] : null}
-                    </Typography>
-                    <Typography className={classes.card1text2}>
-                      ${dataFetched ? tokenDetails[1] : null}
-                    </Typography>
-                    <Typography className={classes.card1text3}>
-                      My Share ($)
-                    </Typography>
-                    <Typography className={classes.card1text4}>
-                      {userBalanceFetched ? userBalance : 0}
-                      {/*{findCurrentMember()}*/}
-                    </Typography>
-                    <Typography className={classes.card1text5}>
-                      {userBalanceFetched && dataFetched ? isNaN(calculateUserSharePercentage(userBalance, tokenDetails[2])) ? 0 : (calculateUserSharePercentage(userBalance, tokenDetails[2])) : 0}%
-                    </Typography>
-                    <Grid container item xs sx={{ display: "flex", justifyContent: "flex-end"}}>
-                      <Button variant="transparent" onClick={importTokenToMetaMask}>Import token</Button>
+    <>
+      <Layout1 page={1} depositUrl={depositLink}>
+        <Grid container spacing={1} paddingLeft={10} paddingTop={15}>
+          <Grid item md={9}>
+            <Stack direction={{xs: "column", sm: "row"}} spacing={3}>
+              <Grid item xs={12}>
+                <Card className={classes.cardSharp1}>
+                  <Grid container spacing={2}>
+                    <Grid item ml={3} mt={2}>
+                      <img
+                        src={imageUrl ?? null}
+                        width="100vw"
+                        alt="profile_pic"
+                      />
                     </Grid>
-                  </Box>
-                </Card>
-                <Card className={classes.secondCard}>
-                  <Grid container m={4}>
-                    <Grid container spacing={{ xs:2, sm:5, md: 3}} direction={{xs: "column", sm: "column", md: "row" }}>
-                      <Grid item mt={4}>
-                        <Grid container item direction="column">
-                          <img src="/assets/icons/icon-metro-coin.svg" alt="icon-metro-coins" className={classes.iconMetroCoin} />
-                          <Typography mt={4} variant="regularText4">
-                            Treasury ($)
+                    <Grid item ml={1} mt={4}>
+                      <Stack spacing={0}>
+                        <Typography variant="h4">
+                          {apiTokenDetailSet ? tokenAPIDetails.name : null}
+                        </Typography>
+                        <Grid container item direction="row" paddingBottom={4}>
+                          <Typography variant="regularText2" mr={1}>
+                            {membersFetched ? members : 0}
                           </Typography>
-                          <Typography className={classes.card2text2}>
-                            {clubAssetTokenFetched ? clubAssetTokenData.totalBalance : null}
-                          </Typography>
-                          {/* <Typography className={classes.card2text3}>
-                          37%
-                        </Typography> */}
-                        </Grid>
-                      </Grid>
-                      <Grid item ml={4}><Divider className={classes.divider} variant="middle" orientation="vertical" /></Grid>
-                      <Grid item mt={4} ml={1}>
-                        <Grid container item direction="column">
                           <Typography variant="regularText2">
                             Members
                           </Typography>
-                          <Typography variant="regularText4">
-                            {membersFetched ? members : 0}
-                          </Typography>
-                          <Typography mt={3} variant="regularText2">
-                            Tresury Wallet
-                          </Typography>
-                          <Typography variant="regularText4">
-                            ${clubAssetTokenFetched ? clubAssetTokenData.totalBalance : null}
-                          </Typography>
-                          {/* <Typography mt={3} className={classes.card2text8}>
-                          Hot Wallet
-                        </Typography>
-                        <Typography className={classes.card2text9}>
-                          $43,206
-                        </Typography> */}
                         </Grid>
-                      </Grid>
-
-                      <Stack m={4}>
-
                       </Stack>
                     </Grid>
                   </Grid>
                 </Card>
-              </Stack>
-              <Stack>
-                <Grid item>
-                  <Stack direction={{ xs: 'column', sm: 'column' }} spacing={{ xs: 1, sm: 2, md: 4 }}>
-                    <Grid container item mt={8}>
-                      <Typography className={classes.clubAssets}>Club Assets</Typography>
-                    </Grid>
-                    <Grid container mt={4}>
-                      <Grid items>
-                        <ButtonDropDown label="All" />
+                <Card className={classes.cardSharp2}>
+                  <Grid container spacing={2}>
+                    <Grid item xs={4} mt={2} mb={3}>
+                      <Grid container direction="column">
+                        <Grid item>
+                          <Typography
+                            variant="regularText4"
+                            fontSize={"18px"}
+                            className={classes.valuesDimStyle}
+                          >
+                            Member Deposits
+                          </Typography>
+                        </Grid>
+                        <Grid item>
+                          <Typography
+                            fontWeight="bold"
+                            fontSize={"24px"}
+                            className={classes.valueDetailStyle}
+                          >
+                            {governorDataFetched
+                              ? Number.isInteger(memberDeposit) ? parseInt(memberDeposit) : parseFloat(memberDeposit).toFixed(2)
+                              : null}
+                          </Typography>
+                        </Grid>
+                        <Grid item>
+                          <Typography
+                            variant="regularText4"
+                            fontSize={"18px"}
+                            className={classes.valueDimStyle}
+                          >
+                            {" "}
+                            USDC{" "}
+                          </Typography>
+                        </Grid>
                       </Grid>
-                      <Grid items ml={2}>
-                        <TextField
-                            className={classes.searchField}
-                            placeholder="Search by name or address"
-                            InputProps={{
-                              endAdornment: <IconButton type="submit" sx={{ p: '10px' }} aria-label="search"><SearchIcon /></IconButton>
-                            }}
-                        />
+                    </Grid>
+                    <Grid item xs={4} mt={2} mb={2}>
+                      <Grid container direction="column">
+                        <Grid item>
+                          <Typography
+                            variant="regularText4"
+                            fontSize={"18px"}
+                            className={classes.valuesDimStyle}
+                          >
+                            {" "}
+                            Club tokens minted{" "}
+                          </Typography>
+                        </Grid>
+                        <Grid item>
+                          <Typography
+                            fontWeight="bold"
+                            fontSize={"24px"}
+                            className={classes.valueDetailStyle}
+                          >
+                            {dataFetched
+                              ? Number.isInteger(clubTokenMinted) ? parseInt(clubTokenMinted) : parseFloat(clubTokenMinted).toFixed(2)
+                              : null}
+                          </Typography>
+                        </Grid>
+                        <Grid item>
+                          <Typography
+                            variant="regularText4"
+                            fontSize={"18px"}
+                            className={classes.valueDimStyle}
+                          >
+                            {dataFetched ? "$" + tokenDetails[1] : null}
+                          </Typography>
+                        </Grid>
                       </Grid>
                     </Grid>
-                    <Typography mt={5} mb={5} variant="subHeading">Tokens</Typography>
-                    {clubAssetTokenFetched ? clubAssetTokenData.tokens.length > 0 ? clubAssetTokenData.tokens[0].balance !== '0' ?
+                    <Grid item xs={4} mt={2} mb={1}>
+                      <Grid>
+                        <Grid item>
+                          <Typography
+                            variant="regularText4"
+                            fontSize={"18px"}
+                            className={classes.valuesDimStyle}
+                          >
+                            Max Token Supply
+                          </Typography>
+                        </Grid>
+                        <Grid item>
+                          <Typography
+                            fontWeight="bold"
+                            fontSize={"24px"}
+                            className={classes.valueDetailStyle}
+                          >
+                            {governorDataFetched && dataFetched
+                              ? parseInt(maxTokenMinted)
+                              : null}{" "}
+                          </Typography>
+                        </Grid>
+                        <Grid item>
+                          <Typography
+                            variant="regularText4"
+                            fontSize={"18px"}
+                            className={classes.valueDimStyle}
+                          >
+                            {dataFetched ? "$" + tokenDetails[1] : null}
+                          </Typography>
+                        </Grid>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                </Card>
+              </Grid>
+              <Grid
+                container
+                spacing={{xs: 2, sm: 5, md: 3}}
+                direction={{xs: "column", sm: "column", md: "column"}}
+              >
+                <Card className={classes.firstCard}>
+                  <Grid item mt={3} ml={5}>
+                    <Grid container item direction="column">
+                      <Typography variant="regularText4" fontSize={"21px"}>
+                        Treasury wallet
+                      </Typography>
+                      <Typography fontSize={"48px"} fontWeight="bold">
+                        $
+                        {clubAssetTokenFetched
+                          ? parseInt(clubAssetTokenData.treasuryAmount)
+                          : null}
+                      </Typography>
+                      <CardMedia
+                        image="/assets/images/treasurywallet.png"
+                        component="img"
+                        className={classes.media}
+                        alt="ownershipshare"
+                        sx={{position: "absolute", bottom: 0}}
+                      />
+                    </Grid>
+                  </Grid>
+                </Card>
+                <Card className={classes.secondCard}>
+                  <CardMedia
+                    image="/assets/images/ownershipshare.png"
+                    component="img"
+                    className={classes.media}
+                    alt="ownershipshare"
+                    sx={{position: "absolute", bottom: 0, paddingTop: "4px"}}
+                  />
+                  <Grid container>
+                    <Grid
+                      container
+                      direction={{xs: "column", sm: "column", md: "column"}}
+                    >
+                      <Grid item>
+                        <Box className={classes.cardOverlay}>
+                          <Typography variant="regularText4" fontSize={"21px"}>
+                            My ownership Share
+                          </Typography>
+                          <Typography fontSize={"48px"} fontWeight="bold">
+                            {userBalanceFetched && dataFetched
+                              ? isNaN(
+                                parseInt(
+                                  calculateUserSharePercentage(
+                                    userBalance,
+                                    userOwnershipShare
+                                  )
+                                )
+                              )
+                                ? 0
+                                : parseInt(
+                                  calculateUserSharePercentage(
+                                    userBalance,
+                                    userOwnershipShare
+                                  )
+                                )
+                              : 0}
+                            %
+                          </Typography>
+                          <Typography className={classes.card2text2} mb={1}>
+                            {governorDataFetched && dataFetched
+                              ? Number.isInteger(userOwnershipShare) ? parseInt(userOwnershipShare) + (" $" + tokenDetails[1]) : parseFloat(userOwnershipShare).toFixed(2) +
+                              (" $" + tokenDetails[1])
+                              : null}
+                          </Typography>
+                        </Box>
+                      </Grid>
+                      {/* <CardMedia    className={classes.media}    component=“img”    image=“/assets/images/card_illustration.png”    alt=“abstract background”    sx={{ position: “absolute”, bottom: 0 }}                     />   */}
+                    </Grid>
+                  </Grid>
+                </Card>
+              </Grid>
+            </Stack>
+
+            <Stack>
+              <Grid item>
+                <Stack
+                  direction={{xs: "column", sm: "column"}}
+                  spacing={{xs: 1, sm: 2, md: 4}}
+                >
+                  <Grid container item mt={8}>
+                    <Typography className={classes.clubAssets}>
+                      Club Assets
+                    </Typography>
+                  </Grid>
+                  <Grid container mt={4}>
+                    <Grid item>
+                      <ButtonDropDown label="All"/>
+                    </Grid>
+                    <Grid item ml={2}>
+                      <TextField
+                        className={classes.searchField}
+                        placeholder="Search by name or address"
+                        InputProps={{
+                          endAdornment: (
+                            <IconButton
+                              type="submit"
+                              sx={{p: "10px"}}
+                              aria-label="search"
+                            >
+                              <SearchIcon/>
+                            </IconButton>
+                          ),
+                        }}
+                      />
+                    </Grid>
+                  </Grid>
+                  <Typography mt={5} mb={5} variant="subHeading">
+                    Tokens
+                  </Typography>
+                  {clubAssetTokenFetched ? (
+                    clubAssetTokenData.tokenPriceList.length > 0 ? (
                       //  if the tokens length is > 0 and if the token[0] (by default it will be Ether) is not equal to 0, then show the table
                       <TableContainer component={Paper}>
-                        <Table sx={{ minWidth: 809 }} aria-label="simple table">
+                        <Table sx={{minWidth: 809}} aria-label="simple table">
                           <TableHead>
                             <TableRow>
-                              <TableCell align="left" variant="tableHeading">Token</TableCell>
-                              <TableCell align="left" variant="tableHeading">Balance</TableCell>
-                              <TableCell align="left" variant="tableHeading">Value (USD)</TableCell>
+                              <TableCell align="left" variant="tableHeading">
+                                Token
+                              </TableCell>
+                              <TableCell align="left" variant="tableHeading">
+                                Balance
+                              </TableCell>
+                              <TableCell align="left" variant="tableHeading">
+                                Value (USD)
+                              </TableCell>
                               {/* <TableCell align="left" variant="tableHeading">Day change</TableCell> */}
                             </TableRow>
                           </TableHead>
                           <TableBody>
-                            {clubAssetTokenData.tokens.length > 0 ? clubAssetTokenData.tokens.map((data, key) => {
-                                      if (data.value !== 0) {
-                                        return (
-                                            <TableRow
-                                                key={key}
-                                                sx={{'&:last-child td, &:last-child th': {border: 0}}}
-                                            >
-                                              <TableCell align="left" variant="tableBody"><></>
-                                                {data.token.name}</TableCell>
-                                              <TableCell align="left" variant="tableBody">{data.value}</TableCell>
-                                              <TableCell align="left" variant="tableBody">${data.fiatBalance}</TableCell>
-                                              {/* <TableCell align="left" variant="tableBody" sx={row.daychange > 0 ? { color: "#0ABB92" } : { color: "#D55438" }}>{row.daychange > 0 ? "+" : ""}{row.daychange}</TableCell> */}
-                                            </TableRow>
-                                        )
-                                      }
-                                    }
-                                ) :
-                                null
-                            }
+                            {clubAssetTokenData.tokenPriceList.map(
+                              (data, key) => {
+                                if (data.value !== 0) {
+                                  return (
+                                    <TableRow
+                                      key={key}
+                                      sx={{
+                                        "&:last-child td, &:last-child th": {
+                                          border: 0,
+                                        },
+                                      }}
+                                    >
+                                      <TableCell
+                                        align="left"
+                                        variant="tableBody"
+                                      >
+                                        <></>
+                                        {data.symbol}
+                                      </TableCell>
+                                      <TableCell
+                                        align="left"
+                                        variant="tableBody"
+                                      >
+                                        {data.value}
+                                      </TableCell>
+                                      <TableCell
+                                        align="left"
+                                        variant="tableBody"
+                                      >
+                                        ${data.usd.usdValue}
+                                      </TableCell>
+                                      {/* <TableCell align="left" variant="tableBody" sx={row.daychange > 0 ? { color: "#0ABB92" } : { color: "#D55438" }}>{row.daychange > 0 ? "+" : ""}{row.daychange}</TableCell> */}
+                                    </TableRow>
+                                  )
+                                }
+                              }
+                            )}
                           </TableBody>
                         </Table>
-                      </TableContainer> :
-                        clubAssetTokenData.tokens.length > 1 ?
-                          //  if the token already have Ether, but it's value is 0 and there are other tokens, then display the table excluding the Ether
-                          <TableContainer component={Paper}>
-                            <Table sx={{ minWidth: 809 }} aria-label="simple table">
-                              <TableHead>
-                                <TableRow>
-                                  <TableCell align="left" variant="tableHeading">Token</TableCell>
-                                  <TableCell align="left" variant="tableHeading">Balance</TableCell>
-                                  <TableCell align="left" variant="tableHeading">Value (USD)</TableCell>
-                                  {/* <TableCell align="left" variant="tableHeading">Day change</TableCell> */}
-                                </TableRow>
-                              </TableHead>
-                              <TableBody>
-                                {clubAssetTokenData.tokens.length > 0 ? clubAssetTokenData.tokens.map((data, key) => {
-                                          if (data.value !== 0) {
-                                            return (
-                                                <TableRow
-                                                    key={key}
-                                                    sx={{'&:last-child td, &:last-child th': {border: 0}}}
-                                                >
-                                                  <TableCell align="left" variant="tableBody"><></>
-                                                    {data.token.name}</TableCell>
-                                                  <TableCell align="left" variant="tableBody">{data.value}</TableCell>
-                                                  <TableCell align="left" variant="tableBody">${data.fiatBalance}</TableCell>
-                                                  {/* <TableCell align="left" variant="tableBody" sx={row.daychange > 0 ? { color: "#0ABB92" } : { color: "#D55438" }}>{row.daychange > 0 ? "+" : ""}{row.daychange}</TableCell> */}
-                                                </TableRow>
-                                            )
-                                          }
-                                        }
-                                    ) :
-                                    null
-                                }
-                              </TableBody>
-                            </Table>
-                          </TableContainer> :
-                          <Grid item justifyContent="center" alignItems="center" md={10}>
-                            <img src="/assets/images/tokens_banner.png" alt="token-banner" className={classes.banner} />
-                          </Grid>
-                        : null : null}
-                    <Typography mt={16} mb={5} variant="subHeading">Collectibles</Typography>
-                    <Grid container>
-                      {nftFetched ? ntfData.length > 0 ?
+                      </TableContainer>
+                    ) : (
+                      <Grid
+                        item
+                        justifyContent="center"
+                        alignItems="center"
+                        md={10}
+                      >
+                        <img
+                          src="/assets/images/tokens_banner.png"
+                          alt="token-banner"
+                          className={classes.banner}
+                        />
+                      </Grid>
+                    )
+                  ) : null}
+                  <Typography mt={16} mb={5} variant="subHeading">
+                    Collectibles
+                  </Typography>
+                  <Grid container>
+                    {nftFetched ? (
+                      ntfData.length > 0 ? (
                         ntfData.map((data, key) => {
-                          <Grid items m={1}>
-                            <CollectionCard imageURI={data.logoUri} tokenName={data.tokenName} tokenSymbol={data.tokenSymbol}/>
+                          ;<Grid item m={1} key={key}>
+                            <CollectionCard
+                              imageURI={data.logoUri}
+                              tokenName={data.tokenName}
+                              tokenSymbol={data.tokenSymbol}
+                            />
                           </Grid>
                         })
-                        : <Grid item justifyContent="center" alignItems="center" md={10}>
-                            <img src="/assets/images/proposal_banner.png" alt="proposal-banner" className={classes.banner} />
-                          </Grid>
-                        : null
-                      }
-                    </Grid>
-                    {/* <Typography mt={16} mb={5} variant="subHeading">Off-chain investments</Typography>
+                      ) : (
+                        <Grid
+                          item
+                          justifyContent="center"
+                          alignItems="center"
+                          md={10}
+                        >
+                          <img
+                            src="/assets/images/NFT_banner.png"
+                            alt="proposal-banner"
+                            className={classes.banner}
+                          />
+                        </Grid>
+                      )
+                    ) : null}
+                  </Grid>
+                  {/* <Typography mt={16} mb={5} variant="subHeading">Off-chain investments</Typography>
                     <BasicTable /> */}
-                  </Stack>
-                </Grid>
-              </Stack>
-            </Grid>
-            <Grid item md={3}>
-              <Stack>
-                <Card className={classes.fifthCard}>
-                  <Grid container pl={2} pt={2} pr={2} pb={5}>
-                    <Grid items>
-                      <Typography variant="getStartedClub">
+                </Stack>
+              </Grid>
+            </Stack>
+          </Grid>
+          <Grid item md={3}>
+            <Stack>
+              <Card className={classes.fifthCard}>
+                <Grid>
+                  <Grid>
+                    <Grid item>
+                      <Typography variant="getStartedClub" fontSize={"36px"}>
                         Get started with your club 👋
                       </Typography>
                     </Grid>
-                    <Grid item pt={6}>
-                      <Button variant="primary" onClick={() => { window.open(`https://stationx.substack.com/p/get-started-with-stationx-on-rinkeby`)}}>Read Docs</Button>
+                    <Grid item>
+                      <Link
+                        color={"#111D38"}
+                        variant="Docs"
+                        className={classes.docs}
+                        onClick={() => {
+                          window.open(
+                            `https://stationx.substack.com/p/get-started-with-stationx-on-rinkeby`
+                          )
+                        }}
+                      >
+                        Read Docs
+                      </Link>
+
+                      <Grid>
+                        <CardMedia
+                          image="/assets/images/docs.png"
+                          component="img"
+                          alt="ownership_share"
+                          className={classes.docimg}
+                        />
+                      </Grid>
                     </Grid>
                   </Grid>
-                </Card>
-              </Stack>
+                </Grid>
+              </Card>
+            </Stack>
 
-              <Stack mt={2}>
-                {checkIsAdmin() ? <Card className={classes.thirdCard}>
+            <Stack mt={2}>
+              {checkIsAdmin() ? (
+                <Card className={classes.thirdCard}>
                   <Grid container m={2}>
                     <Grid items>
                       <Typography variant="regularText4">
                         Joining link
                       </Typography>
                     </Grid>
-                    <Grid items mr={4} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
+                    <Grid
+                      items
+                      mr={4}
+                      xs
+                      sx={{display: "flex", justifyContent: "flex-end"}}
+                    >
                       {/*TODO: add closing date*/}
-                      {clubDetailsFetched ? closingDays > 0 ?
-                        <Grid container xs sx={{display: "flex", justifyContent: "flex-end"}}>
-                          <Grid item mt={1} mr={1}>
-                            <div className={classes.activeIllustration}></div>
+                      {clubDetailsFetched ? (
+                        closingDays > 0 ? (
+                          <Grid
+                            container
+                            xs
+                            sx={{display: "flex", justifyContent: "flex-end"}}
+                          >
+                            <Grid item mt={1} mr={1}>
+                              <div className={classes.activeIllustration}></div>
+                            </Grid>
+                            <Grid item>
+                              <Typography
+                                sx={{
+                                  color: "#0ABB92",
+                                  fontSize: "1.25em",
+                                  fontFamily: "Whyte",
+                                }}
+                              >
+                                Active
+                              </Typography>
+                            </Grid>
                           </Grid>
-                          <Grid item>
-                            <Typography sx={{color: "#0ABB92", fontSize: "1.25em", fontFamily: "Whyte"}}>
-                              Active
-                            </Typography>
+                        ) : (
+                          <Grid
+                            container
+                            xs
+                            sx={{display: "flex", justifyContent: "flex-end"}}
+                          >
+                            <Grid item mt={1} mr={1}>
+                              <div
+                                className={classes.inactiveIllustration}
+                              ></div>
+                            </Grid>
+                            <Grid item>
+                              <Typography
+                                sx={{
+                                  color: "#D55438",
+                                  fontSize: "1.25em",
+                                  fontFamily: "Whyte",
+                                }}
+                              >
+                                In-active
+                              </Typography>
+                            </Grid>
                           </Grid>
-                        </Grid> :
-                        <Grid container xs sx={{display: "flex", justifyContent: "flex-end"}}>
-                          <Grid item mt={1} mr={1}>
-                            <div className={classes.inactiveIllustration}></div>
-                          </Grid>
-                          <Grid item>
-                            <Typography sx={{color: "#D55438", fontSize: "1.25em", fontFamily: "Whyte"}}>
-                              In-active
-                            </Typography>
-                          </Grid>
-                        </Grid> : null
-                      }
+                        )
+                      ) : null}
                     </Grid>
                   </Grid>
                   <Grid container>
-                    <Grid items mt={2} ml={1} mr={1} >
+                    <Grid item md={12} mt={2} ml={1} mr={1}>
                       <TextField
                         className={classes.linkInput}
                         disabled
                         value={joinLink}
                         InputProps={{
-                          endAdornment: <Button
-                            variant="contained"
-                            className={classes.copyButton}
-                            onClick={handleCopy}
-                            disabled={closingDays <= 0 ? true : false}>Copy</Button>
+                          endAdornment: (
+                            <Button
+                              variant="contained"
+                              className={classes.copyButton}
+                              onClick={handleCopy}
+                              disabled={closingDays <= 0 ? true : false}
+                            >
+                              Copy
+                            </Button>
+                          ),
                         }}
                       />
                     </Grid>
                   </Grid>
                   <Grid container>
-                    <Grid items mt={4} ml={1} mr={1} >
+                    <Grid item md={12} mt={4} ml={1} mr={1}>
                       <Typography variant="regularText5">
-                        Share this link for new members to join your club and add funds into this club.
+                        Share this link for new members to join your club and
+                        add funds into this club.
                       </Typography>
                     </Grid>
                   </Grid>
-                </Card> : null }
-
-              </Stack>
-              <Stack mt={2}>
-                <Card className={classes.fourthCard}>
-                  <Grid container m={2}>
-                    <Grid items>
-                      <Typography className={classes.card2text1}>
-                        Proposals
-                      </Typography>
-                    </Grid>
+                </Card>
+              ) : null}
+            </Stack>
+            <Stack mt={2}>
+              <Card className={classes.fourthCard}>
+                <Grid container m={2}>
+                  <Grid item>
+                    <Typography className={classes.card2text1}>
+                      Proposals
+                    </Typography>
                   </Grid>
-                  {activeProposalData.length > 0 ?
-                    <>
-                      <Grid container m={1}>
-                        <Stack >
-                          {activeProposalDataFetched ? activeProposalData.map((data, key) => {
+                </Grid>
+                {activeProposalData.length > 0 ? (
+                  <>
+                    <Grid container m={1}>
+                      <Grid item md={12} mr={2}>
+                        {activeProposalDataFetched
+                          ? activeProposalData.map((data, key) => {
                             if (key < 3) {
                               return (
-                                  <>
-                                    <ListItemButton key={key} onClick={() => handleProposalClick(activeProposalData[key])}>
-                                      <Grid container direction="column">
-                                        <Grid item>
-                                          <Typography className={classes.card5text1} >
-                                            Proposed by {data.createdBy.substring(0, 6) + "......" + data.createdBy.substring(data.createdBy.length - 4)}
-                                          </Typography>
-                                        </Grid>
-                                        <Grid item>
-                                          <Typography className={classes.card5text2}>
-                                            {data.name}
-                                          </Typography>
-                                        </Grid>
-                                        <Grid item>
-                                          <Typography className={classes.card5text1}>
-                                            Expired on {new Date(data.votingDuration).toLocaleDateString()}
-                                          </Typography>
-                                        </Grid>
+                                <div key={key}>
+                                  <ListItemButton
+                                    onClick={() =>
+                                      handleProposalClick(
+                                        activeProposalData[key]
+                                      )
+                                    }
+                                    sx={{width: "100%"}}
+                                  >
+                                    <Grid container direction="column">
+                                      <Grid item md={12}>
+                                        <Typography
+                                          className={classes.card5text1}
+                                        >
+                                          Proposed by{" "}
+                                          {data.createdBy.substring(0, 6) +
+                                            "......" +
+                                            data.createdBy.substring(
+                                              data.createdBy.length - 4
+                                            )}
+                                        </Typography>
                                       </Grid>
-                                    </ListItemButton>
-                                  </>
+                                      <Grid item>
+                                        <Typography
+                                          className={classes.card5text2}
+                                        >
+                                          {data.name}
+                                        </Typography>
+                                      </Grid>
+                                      <Grid item>
+                                        <Typography
+                                          className={classes.card5text1}
+                                        >
+                                          Expired on{" "}
+                                          {new Date(
+                                            data.votingDuration
+                                          ).toLocaleDateString()}
+                                        </Typography>
+                                      </Grid>
+                                    </Grid>
+                                  </ListItemButton>
+                                </div>
                               )
                             }
-                          }) : null}
-                        </Stack>
+                          })
+                          : null}
                       </Grid>
+                    </Grid>
                     <Grid container>
                       <Grid item md={12}>
-                        <Button sx={{ width: "100%"}} variant="transparentWhite"  onClick={() => handleMoreClick()}>More</Button>
+                        <Button
+                          sx={{width: "100%"}}
+                          variant="transparentWhite"
+                          onClick={() => handleMoreClick()}
+                        >
+                          More
+                        </Button>
                       </Grid>
-                    </Grid> </>
-                    :
-                      <Grid container pt={10} justifyContent="center" alignItems="center">
-                        <Grid item>
-                          <Typography className={classes.card2text1}>No proposals raised yet</Typography>
-                        </Grid>
-                        <Grid item pb={15}>
-                          <Button variant="primary" onClick={e => {
-                            router.push(
-                                {
-                                  pathname: `/dashboard/${clubId}/proposal`,
-                                  query: {
-                                    create_proposal: true
-                                  }},
-                                undefined,
-                                {
-                                  shallow: true
-                                })
-                          }}>Create new</Button>
-                        </Grid>
-                      </Grid>
-                  }
-
-                </Card>
-
-              </Stack>
-            </Grid>
+                    </Grid>{" "}
+                  </>
+                ) : (
+                  <Grid
+                    container
+                    pt={10}
+                    justifyContent="center"
+                    alignItems="center"
+                  >
+                    <Grid item>
+                      <Typography className={classes.card2text1}>
+                        No proposals raised yet
+                      </Typography>
+                    </Grid>
+                    <Grid item pb={15}>
+                      <Button
+                        variant="primary"
+                        onClick={(e) => {
+                          router.push(
+                            {
+                              pathname: `/dashboard/${clubId}/proposal`,
+                              query: {
+                                create_proposal: true,
+                              },
+                            },
+                            undefined,
+                            {
+                              shallow: true,
+                            }
+                          )
+                        }}
+                      >
+                        Create new
+                      </Button>
+                    </Grid>
+                  </Grid>
+                )}
+              </Card>
+            </Stack>
           </Grid>
-          <Snackbar open={openSnackBar} autoHideDuration={6000} onClose={handleSnackBarClose} anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
-            {!failed ?
-                (<Alert onClose={handleSnackBarClose} severity="success" sx={{ width: '100%' }}>
-                  Token imported successfully to your wallet!
-                </Alert>) :
-                (<Alert onClose={handleSnackBarClose} severity="error" sx={{ width: '100%' }}>
-                  Error occured while importing token to your wallet!
-                </Alert>)
-            }
-          </Snackbar>
-          <Backdrop
-              sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-              open={loaderOpen}
-          >
-            <CircularProgress color="inherit" />
-          </Backdrop>
-        </Layout1>
-      </>
+        </Grid>
+        <Snackbar
+          open={openSnackBar}
+          autoHideDuration={6000}
+          onClose={handleSnackBarClose}
+          anchorOrigin={{vertical: "bottom", horizontal: "right"}}
+        >
+          {!failed ? (
+            <Alert
+              onClose={handleSnackBarClose}
+              severity="success"
+              sx={{width: "100%"}}
+            >
+              Token imported successfully to your wallet!
+            </Alert>
+          ) : (
+            <Alert
+              onClose={handleSnackBarClose}
+              severity="error"
+              sx={{width: "100%"}}
+            >
+              Error occured while importing token to your wallet!
+            </Alert>
+          )}
+        </Snackbar>
+        <Backdrop
+          sx={{color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1}}
+          open={loaderOpen}
+        >
+          <CircularProgress color="inherit"/>
+        </Backdrop>
+      </Layout1>
+    </>
   )
 }
 

@@ -166,6 +166,15 @@ const Create = (props) => {
   const dispatch = useDispatch();
   const { wallet } = props;
   const [completed, setCompleted] = useState({});
+  const FACTORY_CONTRACT_ADDRESS = useSelector(state => {
+    return state.gnosis.factoryContractAddress
+  })
+  const USDC_CONTRACT_ADDRESS = useSelector(state => {
+    return state.gnosis.usdcContractAddress
+  })
+  const GNOSIS_TRANSACTION_URL = useSelector(state => {
+    return state.gnosis.transactionUrl
+  })
 
   let walletAddress = null;
 
@@ -262,7 +271,10 @@ const Create = (props) => {
             depositClose,
             0,
             voteForQuorum,
-            voteInFavour
+            voteInFavour,
+            FACTORY_CONTRACT_ADDRESS,
+            USDC_CONTRACT_ADDRESS,
+            GNOSIS_TRANSACTION_URL
           )
           .then((result) => {
               setLoading(false)

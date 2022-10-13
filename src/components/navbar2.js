@@ -1,15 +1,16 @@
-import { React, useEffect, useState } from "react"
-import { AppBar, Box, Toolbar, IconButton, Button, Typography } from "@mui/material"
+import {React, useEffect, useState} from "react"
+import {AppBar, Box, Toolbar, IconButton, Button, Typography} from "@mui/material"
 import MenuIcon from "@mui/icons-material/Menu"
 import Image from "next/image"
-import { makeStyles } from "@mui/styles"
-import { connectWallet, setUserChain, onboard } from "../utils/wallet"
+import {makeStyles} from "@mui/styles"
+import {connectWallet, setUserChain, onboard} from "../utils/wallet"
 import Web3 from "web3"
 import AccountButton from "./accountbutton"
+import NetworkSwitcher from "./networkSwitcher"
 import store from "../redux/store"
-import { useDispatch } from "react-redux"
+import {useDispatch} from "react-redux"
 import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment'
-import { useRouter } from "next/router"
+import {useRouter} from "next/router"
 
 const useStyles = makeStyles({
   image: {
@@ -40,15 +41,14 @@ export default function Navbar2(props) {
   const [userDetails, setUserDetails] = useState(null)
 
   useEffect(() => {
-    if ( localStorage.getItem("isWalletConnected")) {
+    if (localStorage.getItem("isWalletConnected")) {
       setPreviouslyConnectedWallet(localStorage.getItem("wallet"))
     }
     store.subscribe(() => {
-      const { create } = store.getState()
+      const {create} = store.getState()
       if (create.value) {
         setPreviouslyConnectedWallet(create.value)
-      }
-      else{
+      } else {
         setPreviouslyConnectedWallet(null)
       }
     })
@@ -57,25 +57,23 @@ export default function Navbar2(props) {
       var web3
       if (window.ethereum) {
         web3 = new Web3(window.ethereum)
-      }
-      else if (window.web3) {
+      } else if (window.web3) {
         web3 = new Web3(window.web3.currentProvider)
       }
-      try{
+      try {
         web3.eth.getAccounts()
-        .then((async) => {
-          setUserDetails(async[0])
-        }
-      );
-    }
-    catch(err){
-      setUserDetails(null)
-    }
-  };
-      
+          .then((async) => {
+              setUserDetails(async[0])
+            }
+          );
+      } catch (err) {
+        setUserDetails(null)
+      }
+    };
+
     checkConnection()
   }, [previouslyConnectedWallet])
-  
+
   const handleConnection = (event) => {
     const wallet = connectWallet(dispatch)
     wallet.then((response) => {
@@ -86,16 +84,20 @@ export default function Navbar2(props) {
   };
 
   const handleDepositRedirect = () => {
-    router.push(`${props.depositUrl}`, undefined, { shallow: true })
+    router.push(`${props.depositUrl}`, undefined, {shallow: true})
+  }
+
+  const handleFaucetRedirect = () => {
+    window.open ('/faucet', '_ blank')
   }
 
 
   return (
-    <Box sx={{ flexGrow: 1 }}>
+    <Box sx={{flexGrow: 1}}>
       <AppBar
         className={classes.root}
         position="fixed"
-        sx={{ width: "100%", zIndex: (theme) => theme.zIndex.drawer + 1, paddingBottom: "15px" }}
+        sx={{width: "100%", zIndex: (theme) => theme.zIndex.drawer + 1, paddingBottom: "15px"}}
       >
         <Toolbar>
           <IconButton
@@ -103,47 +105,60 @@ export default function Navbar2(props) {
             aria-label="open drawer"
             edge="start"
             onClick={props.handleDrawerToggle}
-            sx={{ mr: 2, display: { sm: "none" } }}
+            sx={{mr: 2, display: {sm: "none"}}}
           >
-            <MenuIcon />
+            <MenuIcon/>
           </IconButton>
-          <Box sx={{ flexGrow: 1 }}>
-          <Image
-            src="/assets/images/monogram.png"
-            height="40"
-            width="40"
-            className={classes.image}
-            alt="monogram"
-          />
+          <Box sx={{flexGrow: 1}}>
+            <Image
+              src="/assets/images/monogram.png"
+              height="40"
+              width="40"
+              className={classes.image}
+              alt="monogram"
+            />
           </Box>
-          
+
           {/* {previouslyConnectedWallet !== null ? (<Typography  variant="h6" component="div" ml={20} className={classes.navbarText}>
           </Typography>) : (
           <Typography  variant="h6" component="div" ml={20} className={classes.navbarText}>
             No wallet connected
           </Typography>)
           } */}
-          {props.page === 1 ? <Button
-              variant="primary"
-              color="primary"
-              sx={{ mr: 2, mt: 2 }}
-            // startIcon={<LocalFireDepartmentIcon />}
-            onClick={handleDepositRedirect}
-          >
-              Deposit
-            </Button> : null }
-          
+          {props.page === 1 ?
+            <>
+              <Button
+                variant="primary"
+                color="primary"
+                sx={{mr: 2, mt: 2}}
+                // startIcon={<LocalFireDepartmentIcon />}
+                onClick={handleDepositRedirect}
+              >
+                Deposit
+              </Button>
+              <Button
+                variant="primary"
+                color="primary"
+                sx={{mr: 2, mt: 2}}
+                // startIcon={<LocalFireDepartmentIcon />}
+                onClick={handleFaucetRedirect}
+              >
+                USDC Faucet
+              </Button>
+            </>
+             : null}
+          <NetworkSwitcher/>
           {previouslyConnectedWallet !== null ? (
-            <AccountButton accountDetail={userDetails} />
+            <AccountButton accountDetail={userDetails}/>
           ) : (
             <Button
-              sx={{ mr: 2, mt: 2, fontFamily: "Whyte" }}
+              sx={{mr: 2, mt: 2, fontFamily: "Whyte"}}
               className={classes.navButton}
             >
               No wallet connected
             </Button>
-          )}       
-              
+          )}
+
         </Toolbar>
       </AppBar>
     </Box>

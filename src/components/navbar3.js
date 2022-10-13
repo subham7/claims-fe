@@ -6,8 +6,10 @@ import { makeStyles } from "@mui/styles"
 import { connectWallet, setUserChain, onboard } from "../utils/wallet"
 import Web3 from "web3"
 import AccountButton from "./accountbutton"
+import NetworkSwitcher from "./networkSwitcher"
 import store from "../redux/store"
 import { useDispatch } from "react-redux"
+import {useRouter} from "next/router";
 
 const useStyles = makeStyles({
   image: {
@@ -17,6 +19,7 @@ const useStyles = makeStyles({
 })
 
 export default function Navbar3(props) {
+  const router = useRouter()
   const dispatch = useDispatch()
   const classes = useStyles()
   const [previouslyConnectedWallet, setPreviouslyConnectedWallet] = useState(null)
@@ -52,11 +55,13 @@ export default function Navbar3(props) {
       setUserDetails(null)
     }
   };
-
-  if (previouslyConnectedWallet) {
-    onboard.connectWallet({ autoSelect: previouslyConnectedWallet[0] })
+  const autoSelectWallet = async () => {
+    if (previouslyConnectedWallet) {
+    await onboard.connectWallet({ autoSelect: previouslyConnectedWallet[0], disableModals: true })
+    }
   }
-      
+ 
+    autoSelectWallet()   
     checkConnection()
   }, [previouslyConnectedWallet])
   
@@ -67,7 +72,11 @@ export default function Navbar3(props) {
         console.log("Error connecting wallet")
       }
     })
-  };
+  }
+
+  const handleFaucetRedirect = () => {
+    window.open ('/faucet', '_ blank')
+  }
 
 
   return (
@@ -96,7 +105,18 @@ export default function Navbar3(props) {
             alt="monogram"
           />
           </Box>
-          
+          {props.faucet ?
+            <Button
+              variant="primary"
+              color="primary"
+              sx={{mr: 2, mt: 2}}
+              // startIcon={<LocalFireDepartmentIcon />}
+              onClick={handleFaucetRedirect}
+            >
+              USDC Faucet
+            </Button> : null
+          }
+          <NetworkSwitcher />
           {previouslyConnectedWallet !== null ? (
             <AccountButton accountDetail={userDetails} />
           ) : (

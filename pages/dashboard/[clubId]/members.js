@@ -18,18 +18,22 @@ import {
   TableCell,
   TableRow,
   TableHead,
-  CircularProgress, Backdrop
+  CircularProgress,
+  Backdrop,
 } from "@mui/material"
 import SearchIcon from "@mui/icons-material/Search"
 import BasicTable from "../../../src/components/table"
-import {getMembersDetails} from "../../../src/api/user"
+import { getMembersDetails } from "../../../src/api/user"
 import { useSelector } from "react-redux"
-import Paper from '@mui/material/Paper';
+import Paper from "@mui/material/Paper"
 import { useRouter } from "next/router"
 import jazzicon from "@metamask/jazzicon"
 import ClubFetch from "../../../src/utils/clubFetch"
-import OpenInNewIcon from '@mui/icons-material/OpenInNew';
-
+import OpenInNewIcon from "@mui/icons-material/OpenInNew"
+import {
+  convertFromWeiGovernance,
+  convertFromWeiUSDC,
+} from "../../../src/utils/globalFunctions"
 
 const useStyles = makeStyles({
   searchField: {
@@ -48,7 +52,7 @@ const useStyles = makeStyles({
   },
   listFont: {
     fontSize: "22px",
-    color: "#C1D3FF"
+    color: "#C1D3FF",
   },
   activityLink: {
     color: "#C1D3FF",
@@ -56,7 +60,7 @@ const useStyles = makeStyles({
     "&:hover": {
       textDecoration: "none",
       cursor: "pointer",
-    }
+    },
   },
 })
 
@@ -69,16 +73,16 @@ const Members = (props) => {
   const [members, setMembers] = useState([])
   const [fetched, setFetched] = useState(false)
   const [loaderOpen, setLoaderOpen] = useState(false)
-  
+
   const avatarRef = useRef()
 
   const generateJazzIcon = (account) => {
-      if (account) {
-        const addr = account.slice(2, 10)
-        const seed = parseInt(addr, 16)
-        const icon = jazzicon(35, seed)
-        return icon
-      }
+    if (account) {
+      const addr = account.slice(2, 10)
+      const seed = parseInt(addr, 16)
+      const icon = jazzicon(35, seed)
+      return icon
+    }
   }
 
   const fetchMembers = () => {
@@ -102,7 +106,7 @@ const Members = (props) => {
   const handleAddressClick = (event, address) => {
     event.preventDefault()
     window.open(`https://rinkeby.etherscan.io/address/${address}`)
-  } 
+  }
 
   return (
     <>
@@ -114,12 +118,24 @@ const Members = (props) => {
                 <Grid item>
                   <Typography variant="title">Members</Typography>
                 </Grid>
-                <Grid item xs sx={{ display: "flex", justifyContent: "flex-end" }}>
+                <Grid
+                  item
+                  xs
+                  sx={{ display: "flex", justifyContent: "flex-end" }}
+                >
                   <TextField
                     className={classes.searchField}
                     placeholder="Search members"
                     InputProps={{
-                      endAdornment: <IconButton type="submit" sx={{ p: '10px' }} aria-label="search"><SearchIcon /></IconButton>
+                      endAdornment: (
+                        <IconButton
+                          type="submit"
+                          sx={{ p: "10px" }}
+                          aria-label="search"
+                        >
+                          <SearchIcon />
+                        </IconButton>
+                      ),
                     }}
                   />
                 </Grid>
@@ -130,7 +146,15 @@ const Members = (props) => {
                   <TableHead>
                     <TableRow>
                       {header.map((data, key) => {
-                        return <TableCell align="left" variant="tableHeading" key={key}>{data}</TableCell>
+                        return (
+                          <TableCell
+                            align="left"
+                            variant="tableHeading"
+                            key={key}
+                          >
+                            {data}
+                          </TableCell>
+                        )
                       })}
                     </TableRow>
                   </TableHead>
@@ -138,24 +162,58 @@ const Members = (props) => {
                     {members.map((data, key) => (
                       <TableRow
                         key={key}
-                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                        sx={{
+                          "&:last-child td, &:last-child th": { border: 0 },
+                        }}
                       >
                         {/* <TableCell align="left" className={classes.tablecontent}>{generateJazzIcon(data.userAddress)</TableCell> */}
-                        <TableCell align="left" variant="tableBody" >
-                          <Grid container direction="row" alignItems="center" spacing={1}>
+                        <TableCell align="left" variant="tableBody">
+                          <Grid
+                            container
+                            direction="row"
+                            alignItems="center"
+                            spacing={1}
+                          >
                             <Grid item>
-                              <a className={classes.activityLink} onClick={(e) => {handleAddressClick(e, data.userAddress)}}> {data.userAddress.substring(0, 6) + "......" + data.userAddress.substring(data.userAddress.length - 4)} </a>
+                              <a
+                                className={classes.activityLink}
+                                onClick={(e) => {
+                                  handleAddressClick(e, data.userAddress)
+                                }}
+                              >
+                                {" "}
+                                {data.userAddress.substring(0, 6) +
+                                  "......" +
+                                  data.userAddress.substring(
+                                    data.userAddress.length - 4
+                                  )}{" "}
+                              </a>
                             </Grid>
                             <Grid item>
-                              <IconButton color="primary">
-                                <OpenInNewIcon className={classes.activityLink} onClick={(e) => {handleAddressClick(e, data.userAddress)}} />
+                              <IconButton
+                                color="primary"
+                                onClick={(e) => {
+                                  handleAddressClick(e, data.userAddress)
+                                }}
+                              >
+                                <OpenInNewIcon
+                                  className={classes.activityLink}
+                                />
                               </IconButton>
                             </Grid>
                           </Grid>
                         </TableCell>
-                        <TableCell align="left" variant="tableBody">{data.clubs[0].balance}</TableCell>
-                        <TableCell align="left" variant="tableBody">${data.clubs[0].balance}</TableCell>
-                        <TableCell align="left" variant="tableBody">{new Date(data.clubs[0].joiningDate).toLocaleDateString()}</TableCell>
+                        <TableCell align="left" variant="tableBody">
+                          ${data.clubs[0].balance}
+                        </TableCell>
+                        <TableCell align="left" variant="tableBody">
+                          {data.clubs[0].balance}
+                        </TableCell>
+                        <TableCell align="left" variant="tableBody">
+                          {new Date(
+                            data.clubs[0].joiningDate
+                          ).toLocaleDateString()}
+                        </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
@@ -165,8 +223,8 @@ const Members = (props) => {
           </Grid>
         </div>
         <Backdrop
-            sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-            open={loaderOpen}
+          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+          open={loaderOpen}
         >
           <CircularProgress color="inherit" />
         </Backdrop>
