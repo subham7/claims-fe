@@ -566,7 +566,7 @@ const Join = (props) => {
   }
 
   return (
-    <Layout3>
+    <Layout3 faucet={true}>
       <Grid
         container
         spacing={2}

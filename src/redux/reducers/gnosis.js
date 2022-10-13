@@ -12,6 +12,9 @@ export const slice = createSlice({
     networkId: null,
     networkName: null,
     adminUser: false,
+    tokenSymbol: null,
+    tokenDecimal: null,
+    governanceTokenDecimal: null,
   },
   reducers: {
     safeConnected: (state, action) => {
@@ -35,6 +38,13 @@ export const slice = createSlice({
     },
     setAdminUser: (state, action) => {
       state.adminUser = action.payload;
+    },
+    setGovernanceTokenDetails: (state, action) => {
+      state.governanceTokenDecimal = action.payload;
+    },
+    setUSDCTokenDetails: (state, action) => {
+      state.tokenSymbol = action.payload.tokenSymbol;
+      state.tokenDecimal = action.payload.tokenDecimal;
     }
   }
 });
@@ -45,6 +55,8 @@ export const {
   addSafeAddress,
   addContractAddress,
   setAdminUser,
+  setGovernanceTokenDetails,
+  setUSDCTokenDetails,
 } = slice.actions
 
 export default slice.reducer
