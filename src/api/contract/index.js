@@ -56,10 +56,22 @@ export class SmartContract {
   }
 
   // create new club contract function
-  async createDAO(owners, threshold, dispatch, tokenName, tokenSymbol, totalDeposit, minDeposit, maxDeposit, ownerFee, closeDate, feeUSDC, tresuryAddress, quoram, formThreshold) {
+  async createDAO(owners, threshold, dispatch, tokenName, tokenSymbol, totalDeposit, minDeposit, maxDeposit, ownerFee, closeDate, feeUSDC, tresuryAddress, quoram, formThreshold, usdcConvertDecimal) {
     const days = Math.round(calculateDays(closeDate))
     return this.contract.methods
-      .createDAO([tokenName, tokenSymbol, convertToWei(totalDeposit), convertToWei(minDeposit), convertToWei(maxDeposit), convertToWei(ownerFee), days, convertToWei(feeUSDC), quoram, formThreshold, tresuryAddress,])
+      .createDAO([
+        tokenName,
+        tokenSymbol,
+        convertToWei(totalDeposit, usdcConvertDecimal),
+        convertToWei(minDeposit, usdcConvertDecimal),
+        convertToWei(maxDeposit, usdcConvertDecimal),
+        convertToWei(ownerFee, usdcConvertDecimal),
+        days,
+        convertToWei(feeUSDC, usdcConvertDecimal),
+        quoram,
+        formThreshold,
+        tresuryAddress,
+      ])
       .send({from: this.walletAddress})
   }
 
@@ -210,10 +222,10 @@ export class SmartContract {
     return executeTxResponse
   }
 
-  async approveDeposit(address, amount) {
-    const number = new web3.utils.BN(amount)
+  async approveDeposit(address, amount, usdcConvertDecimal) {
+    const value = convertToWei(amount, usdcConvertDecimal)
     return this.contract.methods
-      .approve(address, web3.utils.toWei(number, "Mwei"))
+      .approve(address, value)
       .send({from: this.walletAddress})
   }
 

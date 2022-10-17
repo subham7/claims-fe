@@ -1,4 +1,4 @@
-import React, {createContext, useState, useContext, useEffect} from 'react'
+import React, {useState, useEffect} from 'react'
 import Web3 from "web3"
 import Router, {useRouter} from 'next/router'
 import {useDispatch, useSelector} from "react-redux"
@@ -17,12 +17,10 @@ import {loginToken, refreshToken} from "../api/auth";
 import {getExpiryTime, getJwtToken, getRefreshToken, setExpiryTime, setJwtToken, setRefreshToken} from "./auth";
 import {addSafeAddress, setAdminUser, setGovernanceTokenDetails, setUSDCTokenDetails} from '../redux/reducers/gnosis';
 import {fetchConfig} from '../api/config'
-import {updateDynamicAddress} from '../api'
 import {fetchConfigById} from '../api/config'
 import {addContractAddress} from '../redux/reducers/gnosis'
 import {SmartContract} from "../api/contract";
 import ImplementationContract from "../abis/implementationABI.json";
-import {convertFromWeiGovernance} from "./globalFunctions";
 
 
 const ClubFetch = (Component) => {
@@ -80,7 +78,6 @@ const ClubFetch = (Component) => {
         const checkUserInClub = new SmartContract(ImplementationContract, daoAddress, undefined, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL)
         const response = checkUserInClub.userDetails()
         response.then((result) => {
-            console.log("result", result)
             if (result[2]) {
               dispatch(setAdminUser(true))
             } else {
@@ -147,7 +144,7 @@ const ClubFetch = (Component) => {
         clubData.then((result) => {
           if (result.status !== 200) {
           } else {
-            const web3 = new Web3(window.web3)
+            const web3 = new Web3(window.ethereum)
             const checkedwallet = web3.utils.toChecksumAddress(localStorage.getItem("wallet"))
             const getLoginToken = loginToken(checkedwallet)
             getLoginToken.then((response) => {

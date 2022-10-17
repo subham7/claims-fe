@@ -47,7 +47,6 @@ import {
   calculateDays,
   convertToWei,
   convertToWeiGovernance,
-  convertToWeiUSDC
 } from "../../../../src/utils/globalFunctions";
 
 
@@ -380,7 +379,7 @@ const Proposal = () => {
             {
               "executionId": 0,
               "airDropToken": airDropToken,
-              "airDropAmount": await convertToWeiUSDC(airDropAmount, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL),
+              "airDropAmount": convertToWei(airDropAmount, usdcTokenDecimal),
               "airDropCarryFee": airDropCarryFee,
               "usdcTokenSymbol": usdcTokenSymbol,
               "usdcTokenDecimal": usdcTokenDecimal,
@@ -530,7 +529,7 @@ const Proposal = () => {
           "commands": [
             {
               "executionId": 3,
-              "totalDeposits": await convertToWeiUSDC(totalDeposits, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL),
+              "totalDeposits": convertToWei(totalDeposits, usdcTokenDecimal),
               "usdcTokenSymbol": usdcTokenSymbol,
               "usdcTokenDecimal": usdcTokenDecimal,
               "usdcGovernanceTokenDecimal": usdcGovernanceTokenDecimal,
@@ -567,7 +566,7 @@ const Proposal = () => {
             {
               "executionId": 4,
               "customToken": customToken,
-              "customTokenAmounts": [await convertToWeiUSDC(customTokenAmounts, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL)],
+              "customTokenAmounts": [convertToWei(customTokenAmounts, usdcTokenDecimal)],
               "customTokenAddresses": [customTokenAddresses],
               "usdcTokenSymbol": usdcTokenSymbol,
               "usdcTokenDecimal": usdcTokenDecimal,

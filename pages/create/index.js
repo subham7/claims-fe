@@ -175,6 +175,9 @@ const Create = (props) => {
   const GNOSIS_TRANSACTION_URL = useSelector(state => {
     return state.gnosis.transactionUrl
   })
+  const usdcConvertDecimal = useSelector(state => {
+    return state.gnosis.tokenDecimal
+  })
 
   let walletAddress = null;
 
@@ -274,7 +277,8 @@ const Create = (props) => {
             voteInFavour,
             FACTORY_CONTRACT_ADDRESS,
             USDC_CONTRACT_ADDRESS,
-            GNOSIS_TRANSACTION_URL
+            GNOSIS_TRANSACTION_URL,
+            usdcConvertDecimal
           )
           .then((result) => {
               setLoading(false)

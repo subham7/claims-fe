@@ -40,37 +40,39 @@ export default function Navbar2(props) {
   const [previouslyConnectedWallet, setPreviouslyConnectedWallet] = useState(null)
   const [userDetails, setUserDetails] = useState(null)
 
+  const checkConnection = async () => {
+    let web3
+    if (window.ethereum) {
+      web3 = new Web3(window.ethereum)
+    } else if (window.web3) {
+      web3 = new Web3(window.web3.currentProvider)
+    }
+    try {
+      web3.eth.getAccounts()
+        .then((async) => {
+            setUserDetails(async[0])
+          }
+        );
+    } catch (err) {
+      setUserDetails(null)
+    }
+  }
+
   useEffect(() => {
     if (localStorage.getItem("isWalletConnected")) {
       setPreviouslyConnectedWallet(localStorage.getItem("wallet"))
     }
-    store.subscribe(() => {
-      const {create} = store.getState()
-      if (create.value) {
-        setPreviouslyConnectedWallet(create.value)
-      } else {
-        setPreviouslyConnectedWallet(null)
-      }
-    })
-    const checkConnection = async () => {
-
-      var web3
-      if (window.ethereum) {
-        web3 = new Web3(window.ethereum)
-      } else if (window.web3) {
-        web3 = new Web3(window.web3.currentProvider)
-      }
-      try {
-        web3.eth.getAccounts()
-          .then((async) => {
-              setUserDetails(async[0])
-            }
-          );
-      } catch (err) {
-        setUserDetails(null)
-      }
-    };
-
+    if (!previouslyConnectedWallet) {
+      store.subscribe(() => {
+        const {create} = store.getState()
+        if (create.value) {
+          setPreviouslyConnectedWallet(create.value)
+        } else {
+          setPreviouslyConnectedWallet(null)
+        }
+      })
+    }
+ 
     checkConnection()
   }, [previouslyConnectedWallet])
 

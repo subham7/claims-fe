@@ -48,7 +48,8 @@ export async function initiateConnection(
   formThreshold,
   factoryContractAddress,
   usdcContractAddress,
-  gnosisTransactionUrl
+  gnosisTransactionUrl,
+  usdcConvertDecimal
 ) {
   const web3 = new Web3(Web3.givenProvider)
   const safeOwner = await web3.eth.getAccounts()
@@ -86,7 +87,8 @@ export async function initiateConnection(
         feeUSDC,
         treasuryAddress,
         quoram,
-        formThreshold
+        formThreshold,
+        usdcConvertDecimal
       )
       value.then(
         (result) => {

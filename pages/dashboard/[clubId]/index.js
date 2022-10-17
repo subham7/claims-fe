@@ -41,12 +41,10 @@ import {useSelector} from "react-redux"
 import {
   calculateDays,
   calculateUserSharePercentage,
-  convertAmountToWei,
-  convertFromWeiGovernance,
-  convertFromWeiUSDC,
-  convertToWeiUSDC,
+  convertAmountToWei, convertFromWei, convertFromWeiGovernance,
+  convertToWei,
+  convertToWeiGovernance,
 } from "../../../src/utils/globalFunctions"
-import {error} from "next/dist/build/output/log";
 
 const useStyles = makeStyles({
   media: {
@@ -351,7 +349,7 @@ const Dashboard = () => {
   const [dataFetched, setDataFetched] = useState(false)
   const [tokenAPIDetails, settokenAPIDetails] = useState(null) // contains the details extracted from API
   const [apiTokenDetailSet, setApiTokenDetailSet] = useState(false)
-  const [joinLink, setJoinLink] = useState(null)
+  const [joinLink, setJoinLink] = useState("")
   const [depositLink, setDepositLink] = useState(null)
   const [governorDetails, setGovernorDetails] = useState(null)
   const [minDeposit, setMinDeposit] = useState(0)
@@ -394,9 +392,15 @@ const Dashboard = () => {
   const GNOSIS_TRANSACTION_URL = useSelector((state) => {
     return state.gnosis.transactionUrl
   })
+  const usdcConvertDecimal = useSelector(state => {
+    return state.gnosis.tokenDecimal
+  })
+  const governanceConvertDecimal = useSelector((state) => {
+    return state.gnosis.governanceTokenDecimal
+  })
 
   const fetchUsdcDetails = async () => {
-    if (daoAddress && USDC_CONTRACT_ADDRESS && GNOSIS_TRANSACTION_URL) {
+    if (daoAddress && USDC_CONTRACT_ADDRESS && GNOSIS_TRANSACTION_URL && usdcConvertDecimal) {
       const fetchBalance = new SmartContract(
         ImplementationContact,
         daoAddress,
@@ -405,15 +409,13 @@ const Dashboard = () => {
         GNOSIS_TRANSACTION_URL
       )
       await fetchBalance.getUsdcDetails(USDC_CONTRACT_ADDRESS).then(async (result) => {
-          let memberDeposits = await convertFromWeiUSDC(
+          let memberDeposits = convertFromWei(
             result[0],
-            USDC_CONTRACT_ADDRESS,
-            GNOSIS_TRANSACTION_URL
+            usdcConvertDecimal
           )
-          let adminContribution = await convertFromWeiUSDC(
+          let adminContribution = convertFromWei(
             result[1],
-            USDC_CONTRACT_ADDRESS,
-            GNOSIS_TRANSACTION_URL
+            usdcConvertDecimal
           )
 
           let total = memberDeposits + adminContribution
@@ -428,7 +430,7 @@ const Dashboard = () => {
   }
 
   const fetchUserBalanceAPI = async () => {
-    if (daoAddress && USDC_CONTRACT_ADDRESS && GNOSIS_TRANSACTION_URL) {
+    if (daoAddress && USDC_CONTRACT_ADDRESS && GNOSIS_TRANSACTION_URL && governanceConvertDecimal) {
       const fetchUserBalance = new SmartContract(
         ImplementationContact,
         daoAddress,
@@ -439,11 +441,9 @@ const Dashboard = () => {
       await fetchUserBalance.checkUserBalance().then(
         async (result) => {
           setUserBalance(
-            await convertFromWeiGovernance(
-              daoAddress,
+            convertFromWeiGovernance(
               result,
-              USDC_CONTRACT_ADDRESS,
-              GNOSIS_TRANSACTION_URL
+              governanceConvertDecimal
             )
           )
           setUserBalanceFetched(true)
@@ -574,7 +574,8 @@ const Dashboard = () => {
       tokenAPIDetails &&
       !dataFetched &&
       USDC_CONTRACT_ADDRESS &&
-      GNOSIS_TRANSACTION_URL
+      GNOSIS_TRANSACTION_URL &&
+      governanceConvertDecimal
     ) {
       const tokenDetailContract = new SmartContract(
         ImplementationContact,
@@ -584,22 +585,18 @@ const Dashboard = () => {
         GNOSIS_TRANSACTION_URL
       )
       await tokenDetailContract.tokenDetails().then(
-        async (result) => {
+        (result) => {
           settokenDetails(result)
           setClubTokenMInted(
-            await convertFromWeiGovernance(
-              daoAddress,
+            convertFromWeiGovernance(
               result[2],
-              USDC_CONTRACT_ADDRESS,
-              GNOSIS_TRANSACTION_URL
+              governanceConvertDecimal
             )
           )
           setUserOwnershipShare(
-            await convertFromWeiGovernance(
-              daoAddress,
+            convertToWeiGovernance(
               result[2],
-              USDC_CONTRACT_ADDRESS,
-              GNOSIS_TRANSACTION_URL
+              governanceConvertDecimal
             )
           )
           setJoinLink(
@@ -1020,7 +1017,7 @@ const Dashboard = () => {
                           </Typography>
                           <Typography className={classes.card2text2} mb={1}>
                             {governorDataFetched && dataFetched
-                              ? Number.isInteger(userOwnershipShare) ? parseInt(userOwnershipShare) + (" $" + tokenDetails[1]) : parseFloat(userOwnershipShare).toFixed(2) +
+                              ? Number.isInteger(userBalance) ? parseInt(userBalance) + (" $" + tokenDetails[1]) : parseFloat(userBalance).toFixed(2) +
                               (" $" + tokenDetails[1])
                               : null}
                           </Typography>
@@ -1223,13 +1220,13 @@ const Dashboard = () => {
               {checkIsAdmin() ? (
                 <Card className={classes.thirdCard}>
                   <Grid container m={2}>
-                    <Grid items>
+                    <Grid item>
                       <Typography variant="regularText4">
                         Joining link
                       </Typography>
                     </Grid>
                     <Grid
-                      items
+                      item
                       mr={4}
                       xs
                       sx={{display: "flex", justifyContent: "flex-end"}}
@@ -1239,7 +1236,6 @@ const Dashboard = () => {
                         closingDays > 0 ? (
                           <Grid
                             container
-                            xs
                             sx={{display: "flex", justifyContent: "flex-end"}}
                           >
                             <Grid item mt={1} mr={1}>
@@ -1260,7 +1256,6 @@ const Dashboard = () => {
                         ) : (
                           <Grid
                             container
-                            xs
                             sx={{display: "flex", justifyContent: "flex-end"}}
                           >
                             <Grid item mt={1} mr={1}>

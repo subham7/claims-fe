@@ -9,6 +9,9 @@ import { loginToken, refreshToken } from "../api/auth"
 import { fetchConfig } from '../api/config'
 import { updateDynamicAddress } from '../api'
 import Web3 from "web3"
+import {SmartContract} from "../api/contract";
+import ImplementationContract from "../abis/implementationABI.json";
+import {setGovernanceTokenDetails, setUSDCTokenDetails} from "../redux/reducers/gnosis";
 
 
 export default function ProtectRoute(Component) {
@@ -21,6 +24,39 @@ export default function ProtectRoute(Component) {
     const [redirect, setRedirect] = useState(false)
     const [networks, setNetworks] = useState([]);
     const [networksFetched, setNetworksFetched] = useState(false);
+    const [tokenDecimalUsdc, setTokenDecimalUsdc] = useState(0);
+    const USDC_CONTRACT_ADDRESS = useSelector(state => {
+      return state.gnosis.usdcContractAddress
+    })
+    const GNOSIS_TRANSACTION_URL = useSelector(state => {
+      return state.gnosis.transactionUrl
+    })
+
+
+    const fetchCustomTokenDecimals = async () => {
+      if (USDC_CONTRACT_ADDRESS && GNOSIS_TRANSACTION_URL) {
+        const usdcContract = new SmartContract(ImplementationContract, USDC_CONTRACT_ADDRESS, undefined, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL)
+
+        await usdcContract.obtainTokenDecimals().then(
+          (result) => {
+            setTokenDecimalUsdc(result)
+          }
+        )
+      }
+    }
+
+    useEffect(() => {
+      if (tokenDecimalUsdc) {
+        dispatch(setUSDCTokenDetails({
+          tokenSymbol: "USDC",
+          tokenDecimal: tokenDecimalUsdc,
+        }))
+      }
+    }, [tokenDecimalUsdc])
+
+    useEffect(() => {
+      fetchCustomTokenDecimals()
+    }, [USDC_CONTRACT_ADDRESS])
 
     const handleRedirectClick = () => {
       router.push('/')

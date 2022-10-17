@@ -7,22 +7,19 @@ import {
   Typography,
   Divider,
   Stack,
-  Menu,
   ListItemButton,
-  Avatar,
-  DialogContent, Dialog
+  DialogContent, 
+  Dialog
 } from "@mui/material"
 import { connectWallet } from "../src/utils/wallet"
 import { useDispatch, useSelector } from "react-redux"
 import { makeStyles } from "@mui/styles"
 import AddIcon from '@mui/icons-material/Add'
-import { style } from "@mui/system"
 import Router, { useRouter } from "next/router"
 import { fetchClubByUserAddress } from "../src/api/user"
-import store from "../src/redux/store"
 import { addClubName, addDaoAddress, addClubID, addClubRoute } from "../src/redux/reducers/create"
 import {checkNetwork} from "../src/utils/wallet"
-import Web3 from "web3";
+import Web3 from "web3"
 
 import {
   getExpiryTime,

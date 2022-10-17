@@ -4,7 +4,6 @@ import {
   Card,
   Grid,
   Typography,
-  Avatar,
   Stack,
   Divider,
   Dialog,
@@ -20,11 +19,8 @@ import {
 } from "@mui/material"
 import { makeStyles } from "@mui/styles"
 import ProgressBar from "../../../src/components/progressbar"
-import Router, { useRouter } from "next/router"
-import { useSelector, useDispatch } from "react-redux"
+import { useSelector } from "react-redux"
 import { getMembersDetails } from "../../../src/api/user"
-import Web3 from "web3"
-import USDCContract from "../../../src/abis/usdcTokenContract.json"
 import ImplementationContract from "../../../src/abis/implementationABI.json"
 import { SmartContract } from "../../../src/api/contract"
 import { fetchClubbyDaoAddress } from "../../../src/api/club"
@@ -39,10 +35,8 @@ import {
   calculateDays,
   calculateTreasuryTargetShare,
   calculateUserSharePercentage,
-  convertAmountToWei,
-  convertFromWeiGovernance,
-  convertFromWeiUSDC,
-  convertToWeiUSDC,
+  convertAmountToWei, convertFromWeiGovernance,
+  convertToWei, convertToWeiGovernance,
 } from "../../../src/utils/globalFunctions"
 import { settingsOptions } from "../../../src/data/settingsOptions"
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider"
@@ -61,7 +55,6 @@ const useStyles = makeStyles({
     fontFamily: "Whyte",
   },
   cardRegular: {
-    // height: "626px",
     borderRadius: "10px",
     opacity: 1,
   },
@@ -197,16 +190,10 @@ const useStyles = makeStyles({
 })
 
 const Settings = (props) => {
-  // const router = useRouter()
   const classes = useStyles()
   const daoAddress = useSelector((state) => {
     return state.create.daoAddress
   })
-  const tresuryAddress = useSelector((state) => {
-    return state.create.tresuryAddress
-  })
-  const dispatch = useDispatch()
-  const router = useRouter()
   const imageUrl = useSelector((state) => {
     return state.create.clubImageUrl
   })
@@ -229,9 +216,7 @@ const Settings = (props) => {
   const [thresholdValue, setThresholdValue] = useState(0)
   const [quoramFetched, setQuoramFetched] = useState(false)
   const [thresholdFetched, setThresholdFetched] = useState(false)
-  const [minDepositFetched, setMinDepositFetched] = useState(false)
   const [maxDeposit, setMaxDeposit] = useState(0)
-  const [maxDepositFetched, setMaxDepositFetched] = useState(false)
   const [performanceFee, setPerformanceFee] = useState(0)
   const [performanceFeeValue, setPerformanceFeeValue] = useState(0)
   const [membersDetails, setMembersDetails] = useState([])
@@ -252,9 +237,6 @@ const Settings = (props) => {
   const [currentMinDeposit, setCurrentMinDeposit] = useState(0)
   const [currentMaxDeposit, setCurrentMaxDeposit] = useState(0)
 
-  const FACTORY_CONTRACT_ADDRESS = useSelector((state) => {
-    return state.gnosis.factoryContractAddress
-  })
   const USDC_CONTRACT_ADDRESS = useSelector((state) => {
     return state.gnosis.usdcContractAddress
   })
@@ -264,9 +246,15 @@ const Settings = (props) => {
   const isAdminUser = useSelector((state) => {
     return state.gnosis.adminUser
   })
+  const usdcConvertDecimal = useSelector((state) => {
+    return state.gnosis.tokenDecimal
+  })
+  const governanceConvertDecimal = useSelector((state) => {
+    return state.gnosis.governanceTokenDecimal
+  })
 
   const fetchUserBalanceAPI = async () => {
-    if (daoAddress) {
+    if (daoAddress && governanceConvertDecimal) {
       const fetchUserBalance = new SmartContract(
         ImplementationContract,
         daoAddress,
@@ -275,13 +263,11 @@ const Settings = (props) => {
         GNOSIS_TRANSACTION_URL
       )
       await fetchUserBalance.checkUserBalance().then(
-        async (result) => {
+        (result) => {
           setUserBalance(
-            await convertFromWeiGovernance(
-              daoAddress,
+            convertFromWeiGovernance(
               result,
-              USDC_CONTRACT_ADDRESS,
-              GNOSIS_TRANSACTION_URL
+              governanceConvertDecimal
             )
           )
           setUserBalanceFetched(true)
@@ -323,7 +309,7 @@ const Settings = (props) => {
   }
 
   const tokenDetailsRetrieval = async () => {
-    if (tokenAPIDetails && tokenAPIDetails.length > 0) {
+    if (tokenAPIDetails && tokenAPIDetails.length > 0 && governanceConvertDecimal) {
       const tokenDetailContract = new SmartContract(
         ImplementationContract,
         tokenAPIDetails[0].daoAddress,
@@ -332,28 +318,24 @@ const Settings = (props) => {
         GNOSIS_TRANSACTION_URL
       )
       await tokenDetailContract.tokenDetails().then(
-        async (result) => {
+        (result) => {
           settokenDetails(result)
           setUserOwnershipShare(
-            await convertFromWeiGovernance(
-              daoAddress,
+            convertToWeiGovernance(
               result[2],
-              USDC_CONTRACT_ADDRESS,
-              GNOSIS_TRANSACTION_URL
+              governanceConvertDecimal
             )
           )
           setClubTokenMInted(
-            await convertFromWeiGovernance(
-              daoAddress,
+            convertFromWeiGovernance(
               result[2],
-              USDC_CONTRACT_ADDRESS,
-              GNOSIS_TRANSACTION_URL
+              governanceConvertDecimal
             )
           )
           setDataFetched(true)
         },
         (error) => {
-          console.log(error)
+          setDataFetched(false)
         }
       )
     }
@@ -568,10 +550,9 @@ const Settings = (props) => {
 
     if (settingsOptions[1].name === updateType) {
       //  case for min update
-      const convertedMinDeposit = await convertToWeiUSDC(
+      const convertedMinDeposit = convertToWei(
         minDeposit,
-        USDC_CONTRACT_ADDRESS,
-        GNOSIS_TRANSACTION_URL
+        usdcConvertDecimal
       )
       if (convertedMinDeposit >= currentMaxDeposit) {
         setLoaderOpen(false)
@@ -604,10 +585,9 @@ const Settings = (props) => {
     }
     if (settingsOptions[2].name === updateType) {
       // case for max update
-      const convertedMaxDeposit = await convertToWeiUSDC(
+      const convertedMaxDeposit = convertToWei(
         maxDeposit,
-        USDC_CONTRACT_ADDRESS,
-        GNOSIS_TRANSACTION_URL
+        usdcConvertDecimal
       )
       if (convertedMaxDeposit <= currentMinDeposit) {
         setLoaderOpen(false)
@@ -948,7 +928,6 @@ const Settings = (props) => {
                   </Grid>
                   <Grid
                     container
-                    xs
                     sx={{ display: "flex", justifyContent: "flex-end" }}
                     spacing={1}
                   >
@@ -993,7 +972,7 @@ const Settings = (props) => {
                     <Grid item >
                       <Typography variant="p" className={classes.valuesStyle}>Hot wallet address</Typography>
                     </Grid>
-                    <Grid container xs sx={{ display: "flex", justifyContent: "flex-end" }} spacing={1}>
+                    <Grid container sx={{ display: "flex", justifyContent: "flex-end" }} spacing={1}>
                       <Grid item>
                         <ContentCopyIcon className={classes.iconColor} />
                       </Grid>

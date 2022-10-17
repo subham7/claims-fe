@@ -7,15 +7,12 @@ export async function loginToken(userAddress) {
 }
 
 export async function refreshToken(refreshToken, accessToken) {
-  console.log("Refresh", refreshToken)
-  console.log("Access", accessToken)
   // authenticate and fetch users new token
   const data = JSON.stringify(
     {
       "refreshToken": refreshToken
     }
   )
-  console.log("data", data)
   return await axios.post(
     MAIN_API_URL + 'auth/refresh-tokens',
     data,
