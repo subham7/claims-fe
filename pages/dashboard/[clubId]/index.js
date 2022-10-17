@@ -1020,7 +1020,7 @@ const Dashboard = () => {
                           </Typography>
                           <Typography className={classes.card2text2} mb={1}>
                             {governorDataFetched && dataFetched
-                              ? Number.isInteger(userOwnershipShare) ? parseInt(userOwnershipShare) + (" $" + tokenDetails[1]) : parseFloat(userOwnershipShare).toFixed(2) +
+                              ? Number.isInteger(userBalance) ? parseInt(userBalance) + (" $" + tokenDetails[1]) : parseFloat(userBalance).toFixed(2) +
                               (" $" + tokenDetails[1])
                               : null}
                           </Typography>
