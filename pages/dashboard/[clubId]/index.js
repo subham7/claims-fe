@@ -343,7 +343,6 @@ const Dashboard = () => {
   const walletAddress = useSelector((state) => {
     return state.create.value
   })
-  const [clubDetails, setClubDetails] = useState([])
   const [clubDetailsFetched, setClubDetailsFetched] = useState(false)
   const [tokenDetails, settokenDetails] = useState(null)
   const [dataFetched, setDataFetched] = useState(false)
@@ -352,16 +351,11 @@ const Dashboard = () => {
   const [joinLink, setJoinLink] = useState("")
   const [depositLink, setDepositLink] = useState(null)
   const [governorDetails, setGovernorDetails] = useState(null)
-  const [minDeposit, setMinDeposit] = useState(0)
-  const [minDepositFetched, setMinDepositFetched] = useState(false)
-  const [maxDeposit, setMaxDeposit] = useState(0)
-  const [maxDepositFetched, setMaxDepositFetched] = useState(false)
   const [membersFetched, setMembersFetched] = useState(false)
   const [members, setMembers] = useState(0)
   const [membersDetails, setMembersDetails] = useState([])
   const [tresuryWalletBalanceFetched, setTresuryWalletBalanceFetched] =
     useState(false)
-  const [tresuryWalletBalance, setTresuryWalletBalance] = useState([])
   const [activeProposalData, setActiveProposalData] = useState([])
   const [activeProposalDataFetched, setActiveProposalDataFetched] =
     useState(false)
@@ -471,7 +465,6 @@ const Dashboard = () => {
       )
       await fetchClubDetails.getGovernorDetails().then(
         (result) => {
-          setClubDetails(result)
           setClosingDays(calculateDays(parseInt(result[0]) * 1000))
           setClubDetailsFetched(true)
         },
@@ -479,19 +472,6 @@ const Dashboard = () => {
           setClubDetailsFetched(false)
         }
       )
-    }
-  }
-
-  const findCurrentMember = () => {
-    if (membersFetched && membersDetails.length > 0 && walletAddress) {
-      let obj = membersDetails.find(
-        (member) => member.userAddress === walletAddress
-      )
-      let pos = membersDetails.indexOf(obj)
-      if (pos >= 0) {
-        return membersDetails[pos].clubs[0].balance
-      }
-      return 0
     }
   }
 
@@ -536,28 +516,6 @@ const Dashboard = () => {
           setGovernorDataFetched(false)
         }
       )
-
-      // minimum deposit amount from smart contract
-      await governorDetailContract.quoram().then(
-        (result) => {
-          setMinDeposit(result)
-          setMinDepositFetched(true)
-        },
-        (error) => {
-          setMinDepositFetched(false)
-        }
-      )
-
-      // maximim deposit amount from smart contract
-      await governorDetailContract.threshold().then(
-        (result) => {
-          setMaxDeposit(result)
-          setMaxDepositFetched(true)
-        },
-        (error) => {
-          setMaxDepositFetched(false)
-        }
-      )
     }
   }
 
@@ -594,7 +552,7 @@ const Dashboard = () => {
             )
           )
           setUserOwnershipShare(
-            convertToWeiGovernance(
+            convertFromWeiGovernance(
               result[2],
               governanceConvertDecimal
             )
@@ -666,22 +624,6 @@ const Dashboard = () => {
     // })
   }
 
-  const calculateTresuryWalletBalance = () => {
-    let sum = 0.0
-    if (tresuryWalletBalanceFetched && tresuryWalletBalance.length > 0) {
-      tresuryWalletBalance.forEach((data, key) => {
-        if (
-          data.tokenAddress !== "0x484727B6151a91c0298a9D2b9fD84cE3bc6BC4E3"
-        ) {
-          sum += parseFloat(data.fiatBalance)
-        } else {
-          sum += parseFloat(data.balance) / Math.pow(10, 18)
-        }
-      })
-    }
-    return sum
-  }
-
   const fetchActiveProposals = () => {
     const activeProposals = getProposal(clubId, "active")
     activeProposals.then((result) => {
@@ -694,45 +636,16 @@ const Dashboard = () => {
     })
   }
 
-  const importTokenToMetaMask = async () => {
-    try {
-      const wasAdded = await ethereum.request({
-        method: "wallet_watchAsset",
-        params: {
-          type: "ERC20",
-          options: {
-            address: tokenAPIDetails.tokenAddress,
-            symbol: tokenDetails[1],
-            decimals: 18,
-          },
-        },
-      })
-
-      if (wasAdded) {
-        setFailed(false)
-        setOpenSnackBar(true)
-      } else {
-        setFailed(true)
-        setOpenSnackBar(true)
-      }
-    } catch (error) {
-      setFailed(true)
-      setOpenSnackBar(true)
-    }
-  }
-
   useEffect(() => {
-
     setLoaderOpen(true)
     if (daoAddress) {
       tokenAPIDetailsRetrieval()
     }
-    if (walletAddress && daoAddress) {
+    if (walletAddress && daoAddress && USDC_CONTRACT_ADDRESS && GNOSIS_TRANSACTION_URL) {
       fetchGovernorContractData()
     }
   }, [
     daoAddress,
-    FACTORY_CONTRACT_ADDRESS,
     GNOSIS_TRANSACTION_URL,
     USDC_CONTRACT_ADDRESS,
   ])

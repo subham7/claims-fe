@@ -321,7 +321,7 @@ const Settings = (props) => {
         (result) => {
           settokenDetails(result)
           setUserOwnershipShare(
-            convertToWeiGovernance(
+            convertFromWeiGovernance(
               result[2],
               governanceConvertDecimal
             )
