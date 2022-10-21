@@ -172,52 +172,58 @@ export class SmartContract {
     }
     const safeTransaction = await safeSdk.createTransaction(transaction)
 
-    await safeSdk.signTransaction(safeTransaction)
+    const senderSignature = await safeSdk.signTransaction(safeTransaction)
+    console.log(senderSignature)
     const safeTxHash = await safeSdk.getTransactionHash(safeTransaction)
 
-    const senderSignature = await safeSdk.signTransactionHash(safeTxHash)
+    //const senderSignature = await safeSdk.signTransactionHash(safeTxHash)
 
-    await safeService.proposeTransaction({
-      safeAddress: gnosisAddress,
-      safeTransactionData: safeTransaction.data,
-      safeTxHash: safeTxHash,
-      senderAddress: this.walletAddress,
-      senderSignature: senderSignature.data,
-    })
-    const tx = await safeService.getTransaction(safeTxHash)
+    //let tx1 = await safeService.getTransaction(safeTxHash)
 
-    const safeTransactionData = {
-      to: tx.to,
-      value: tx.value,
-      operation: tx.operation,
-      safeTxGas: tx.safeTxGas,
-      baseGas: tx.baseGas,
-      gasPrice: tx.gasPrice,
-      gasToken: tx.gasToken,
-      refundReceiver: tx.refundReceiver,
-      nonce: tx.nonce,
-      data: tx.data,
-    }
+    // await safeService.proposeTransaction({
+    //   safeAddress: gnosisAddress,
+    //   safeTransactionData: safeTransaction.data,
+    //   safeTxHash: safeTxHash,
+    //   senderAddress: this.walletAddress,
+    //   senderSignature: senderSignature.data,
+    // })
+    // const tx = await safeService.getTransaction(safeTxHash)
+    // console.log("safeTransaction", tx)
 
-    const safeTransaction2 = await safeSdk.createTransaction(
-      safeTransactionData
-    )
-    console.log(safeTransaction2)
-    for (let i = 0; i < tx.confirmations.length; i++) {
-      const signature = new EthSignSignature(
-        tx.confirmations[i].owner,
-        tx.confirmations[i].signature
-      )
-      safeTransaction2.addSignature(signature)
-    }
-    const executeTxResponse = await safeSdk.executeTransaction(safeTransaction2)
-    console.log(executeTxResponse)
+    // const safeTransactionData = {
+    //   to: tx.to,
+    //   value: tx.value,
+    //   operation: tx.operation,
+    //   safeTxGas: tx.safeTxGas,
+    //   baseGas: tx.baseGas,
+    //   gasPrice: tx.gasPrice,
+    //   gasToken: tx.gasToken,
+    //   refundReceiver: tx.refundReceiver,
+    //   nonce: tx.nonce,
+    //   data: tx.data,
+    // }
+
+    // const safeTransaction2 = await safeSdk.createTransaction(
+    //   safeTransactionData
+    // )
+    // console.log(safeTransaction2)
+    // for (let i = 0; i < tx.confirmations.length; i++) {
+    //   const signature = new EthSignSignature(
+    //     tx.confirmations[i].owner,
+    //     tx.confirmations[i].signature
+    //   )
+    //   safeTransaction2.addSignature(signature)
+    // }
+
+    const executeTxResponse = await safeSdk.executeTransaction(safeTransaction)
+    //console.log(executeTxResponse)
     const receipt =
       executeTxResponse.transactionResponse &&
       (await executeTxResponse.transactionResponse.wait())
     return executeTxResponse
   }
 
+  // Deprecated
   async approveAndDeposit(amount, gnosisAddress) {
     // method for depositing tokens to a club
     const safeOwner = this.walletAddress
@@ -246,6 +252,7 @@ export class SmartContract {
     const safeTransaction = await safeSdk.createTransaction(transaction)
     const safeTxHash = await safeSdk.getTransactionHash(safeTransaction)
     const senderSignature = await safeSdk.signTransactionHash(safeTxHash)
+
     await safeService.proposeTransaction({
       safeAddress: gnosisAddress,
       safeTransactionData: safeTransaction.data,
@@ -260,6 +267,7 @@ export class SmartContract {
     return receipt
   }
 
+  // Deprecated
   async approveSendCustomToken(address, amount, daoAddress, gnosisAddress) {
     // method for sending custom token
     const safeOwner = this.walletAddress
@@ -293,6 +301,7 @@ export class SmartContract {
     await safeSdk.signTransaction(safeTransaction)
     const safeTxHash = await safeSdk.getTransactionHash(safeTransaction)
     const senderSignature = await safeSdk.signTransactionHash(safeTxHash)
+
     await safeService.proposeTransaction({
       safeAddress: gnosisAddress,
       safeTransactionData: safeTransaction.data,
@@ -336,8 +345,10 @@ export class SmartContract {
 
   async approveDeposit(address, amount) {
     const number = new web3.utils.BN(amount)
+    console.log("address", address)
+    console.log("number", number)
     return this.contract.methods
-      .approve(address, web3.utils.toWei(number, "Mwei"))
+      .approve(address, "2000000")
       .send({ from: this.walletAddress })
   }
 
@@ -363,7 +374,7 @@ export class SmartContract {
   async startDeposit(startTime) {
     return this.contract.methods
       .startDeposit(startTime)
-      .send({from: this.walletAddress})
+      .send({ from: this.walletAddress })
   }
 
   async deposit(address, amount) {

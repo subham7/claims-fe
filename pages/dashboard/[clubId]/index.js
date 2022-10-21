@@ -370,7 +370,7 @@ const Dashboard = () => {
   const [openSnackBar, setOpenSnackBar] = useState(false)
   const [ntfData, setNftData] = useState([])
   const [nftFetched, setNftFetched] = useState(false)
-  const [userBalance, setUserBalance] = useState("")
+  const [userBalance, setUserBalance] = useState(null)
   const [userBalanceFetched, setUserBalanceFetched] = useState(false)
   const [closingDays, setClosingDays] = useState(0)
   const imageUrl = useSelector((state) => {
@@ -390,6 +390,22 @@ const Dashboard = () => {
   const GNOSIS_TRANSACTION_URL = useSelector((state) => {
     return state.gnosis.transactionUrl
   })
+
+  const loadApiData = () => {}
+
+  const loadSmartContractData = async () => {
+    try {
+      const fetchUserBalance = new SmartContract(
+        ImplementationContact,
+        daoAddress,
+        undefined,
+        USDC_CONTRACT_ADDRESS,
+        GNOSIS_TRANSACTION_URL
+      )
+      let userBalance = await fetchUserBalance.checkUserBalance()
+      setUserBalance(userBalance)
+    } catch (e) {}
+  }
 
   const fetchUserBalanceAPI = async () => {
     if (daoAddress && USDC_CONTRACT_ADDRESS && GNOSIS_TRANSACTION_URL) {
@@ -828,6 +844,7 @@ const Dashboard = () => {
                     </Grid>
                   </Grid>
                 </Card>
+
                 <Card className={classes.cardSharp2}>
                   <Grid container spacing={2}>
                     <Grid item xs={4} mt={2} mb={3}>
