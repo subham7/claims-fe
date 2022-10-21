@@ -47,7 +47,6 @@ import {
   calculateDays,
   convertToWei,
   convertToWeiGovernance,
-  convertToWeiUSDC
 } from "../../../../src/utils/globalFunctions";
 
 
@@ -380,7 +379,7 @@ const Proposal = () => {
             {
               "executionId": 0,
               "airDropToken": airDropToken,
-              "airDropAmount": await convertToWeiUSDC(airDropAmount, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL),
+              "airDropAmount": convertToWei(airDropAmount, usdcTokenDecimal),
               "airDropCarryFee": airDropCarryFee,
               "usdcTokenSymbol": usdcTokenSymbol,
               "usdcTokenDecimal": usdcTokenDecimal,
@@ -530,7 +529,7 @@ const Proposal = () => {
           "commands": [
             {
               "executionId": 3,
-              "totalDeposits": await convertToWeiUSDC(totalDeposits, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL),
+              "totalDeposits": convertToWei(totalDeposits, usdcTokenDecimal),
               "usdcTokenSymbol": usdcTokenSymbol,
               "usdcTokenDecimal": usdcTokenDecimal,
               "usdcGovernanceTokenDecimal": usdcGovernanceTokenDecimal,
@@ -567,7 +566,7 @@ const Proposal = () => {
             {
               "executionId": 4,
               "customToken": customToken,
-              "customTokenAmounts": [await convertToWeiUSDC(customTokenAmounts, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL)],
+              "customTokenAmounts": [convertToWei(customTokenAmounts, usdcTokenDecimal)],
               "customTokenAddresses": [customTokenAddresses],
               "usdcTokenSymbol": usdcTokenSymbol,
               "usdcTokenDecimal": usdcTokenDecimal,
@@ -690,7 +689,6 @@ const Proposal = () => {
     setOpenCard(true)
     setOptionList([...optionList, ""])
     setSurveyOption([...surveyOption, surveyValue])
-    console.log(surveyOption)
   }
 
   const handleRemoveClick = (index) => {
@@ -799,7 +797,7 @@ const Proposal = () => {
                     )
                   }) :
                   <Grid item justifyContent="center" alignItems="center" md={10}>
-                    <img src="/assets/images/tokens_banner.png" alt="token-banner" className={classes.banner}/>
+                    <img src="/assets/images/proposal_banner.png" alt="token-banner" className={classes.banner}/>
                   </Grid>
                 : proposalData.length > 0 ?
                   proposalData.map((proposal, key) => {
@@ -1319,7 +1317,7 @@ const Proposal = () => {
                         <Button variant="primary" onClick={handleNext}>
                           Submit
                         </Button>
-                      : (duration === null || title === null || description === null || !enableSubmitButton) ?
+                      : (duration === null || title === null || description === null || commandList.length < 1 || !enableSubmitButton) ?
                         <Button variant="primary" onClick={handleNext} disabled>
                           Submit
                         </Button> :
