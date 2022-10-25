@@ -58,21 +58,48 @@ export class SmartContract {
   // create new club contract function
   async createDAO(owners, threshold, dispatch, tokenName, tokenSymbol, totalDeposit, minDeposit, maxDeposit, ownerFee, closeDate, feeUSDC, tresuryAddress, quoram, formThreshold, usdcConvertDecimal) {
     const days = Math.round(calculateDays(closeDate))
+    const data = [
+      tokenName,
+      tokenSymbol,
+      convertToWei(totalDeposit, usdcConvertDecimal),
+      convertToWei(minDeposit, usdcConvertDecimal),
+      convertToWei(maxDeposit, usdcConvertDecimal),
+      convertToWei(ownerFee, usdcConvertDecimal),
+      days,
+      convertToWei(feeUSDC, usdcConvertDecimal),
+      quoram,
+      formThreshold,
+      tresuryAddress,
+    ]
+    const contract = new web3.eth.Contract(FactoryContract.abi, this.contractAddress)
+    const suggestionGasFee = await web3.eth.getGasPrice()
+    const estimateGasFee = await web3.eth.estimateGas({
+      "from": this.walletAddress,
+      "to": this.usdcContractAddress,
+      "data": contract.methods.createDAO(data).encodeABI(),
+      "value": "0x00",
+    })
+    console.log("estimated Gas fee", estimateGasFee)
+    const nonce = await web3.eth.getTransactionCount(this.walletAddress, 'latest')
+    console.log("nonce", nonce)
+    const txParams = {
+      from: this.walletAddress,
+      nonce: nonce,
+      gasPrice: estimateGasFee,
+      // gasLimit: web3.utils.toHex(estimateGasFee),
+      // maxPriorityFeePerGas: web3.utils.toHex(suggestionGasFee),
+      // maxFeePerGas: web3.utils.toHex(suggestionGasFee),
+      to: this.usdcContractAddress,
+      value: '0x00',
+      data: contract.methods.createDAO(data).encodeABI(),
+    }
+    console.log("transaction parameters", txParams)
+    const transaction = await web3.eth.sendTransaction(txParams)
+    // const signedTx = await web3.eth.accounts.signTransaction(transaction)
+    console.log("send transaction", transaction)
     return this.contract.methods
-      .createDAO([
-        tokenName,
-        tokenSymbol,
-        convertToWei(totalDeposit, usdcConvertDecimal),
-        convertToWei(minDeposit, usdcConvertDecimal),
-        convertToWei(maxDeposit, usdcConvertDecimal),
-        convertToWei(ownerFee, usdcConvertDecimal),
-        days,
-        convertToWei(feeUSDC, usdcConvertDecimal),
-        quoram,
-        formThreshold,
-        tresuryAddress,
-      ])
-      .send({from: this.walletAddress})
+      .createDAO(data)
+      .send(transaction)
   }
 
   async updateProposalAndExecution(daoAddress = "", gnosisAddress = "", proposalHash = "", executionStatus = "", proposalId = 1, customToken = "0x0000000000000000000000000000000000000000", airDropToken = "0x0000000000000000000000000000000000000000", executionIds = [0, 0, 0, 0, 0, 0, 0, 0], quoram = 0, threshold = 0, totalDeposits = 0, airDropAmount = 0, mintGTAmounts = [], mintGTAddresses = [], customTokenAmounts = [], customTokenAddresses = [], ownersAirdropFees = 0, daoAdminAddresses = []) {
@@ -91,9 +118,11 @@ export class SmartContract {
     })
 
     const transaction = {
-      to: daoAddress, data: implementationContract.methods
+      to: daoAddress, 
+      data: implementationContract.methods
         .updateProposalAndExecution(parameters)
-        .encodeABI(), value: "0",
+        .encodeABI(), 
+      value: "0",
     }
     const safeTransaction = await safeSdk.createTransaction(transaction)
 
@@ -148,9 +177,11 @@ export class SmartContract {
       ethAdapter: ethAdapter, safeAddress: gnosisAddress,
     })
     const transaction = {
-      to: this.usdcContractAddress, data: usdcContract.methods
+      to: this.usdcContractAddress, 
+      data: usdcContract.methods
         .deposit(this.usdcContractAddress, amount)
-        .encodeABI(), value: "0",
+        .encodeABI(), 
+      value: "0",
     }
     const safeTransaction = await safeSdk.createTransaction(transaction)
     const safeTxHash = await safeSdk.getTransactionHash(safeTransaction)
