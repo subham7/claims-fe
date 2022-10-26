@@ -1,5 +1,5 @@
-import {React, useEffect, useState} from "react"
-import {makeStyles} from "@mui/styles"
+import { React, useEffect, useState } from "react"
+import { makeStyles } from "@mui/styles"
 import Layout1 from "../../../src/components/layouts/layout1"
 import {
   Box,
@@ -28,20 +28,22 @@ import TextField from "@mui/material/TextField"
 import SearchIcon from "@mui/icons-material/Search"
 import ButtonDropDown from "../../../src/components/buttondropdown"
 import CollectionCard from "../../../src/components/cardcontent"
-import {useRouter} from "next/router"
+import { useRouter } from "next/router"
 import ClubFetch from "../../../src/utils/clubFetch"
-import {SmartContract} from "../../../src/api/contract"
-import {getProposal} from "../../../src/api/proposal"
-import {fetchClubbyDaoAddress} from "../../../src/api/club"
-import {getNfts} from "../../../src/api/gnosis"
-import {getAssets} from "../../../src/api/assets"
-import {getMembersDetails} from "../../../src/api/user"
+import { SmartContract } from "../../../src/api/contract"
+import { getProposal } from "../../../src/api/proposal"
+import { fetchClubbyDaoAddress } from "../../../src/api/club"
+import { getNfts } from "../../../src/api/gnosis"
+import { getAssets } from "../../../src/api/assets"
+import { getMembersDetails } from "../../../src/api/user"
 import ImplementationContact from "../../../src/abis/implementationABI.json"
-import {useSelector} from "react-redux"
+import { useSelector } from "react-redux"
 import {
   calculateDays,
   calculateUserSharePercentage,
-  convertAmountToWei, convertFromWei, convertFromWeiGovernance,
+  convertAmountToWei,
+  convertFromWei,
+  convertFromWeiGovernance,
 } from "../../../src/utils/globalFunctions"
 
 const useStyles = makeStyles({
@@ -319,21 +321,21 @@ const useStyles = makeStyles({
     marginLeft: "52%",
     marginTop: "30%",
     width: "60%",
-    sx: {position: "absolute", bottom: 0},
+    sx: { position: "absolute", bottom: 0 },
   },
   valueDetailStyle: {
     color: "#81F5FF",
   },
   docs: {
-    '&:hover': {
-      cursor: 'pointer'
+    "&:hover": {
+      cursor: "pointer",
     },
-  }
+  },
 })
 
 const Dashboard = () => {
   const router = useRouter()
-  const {clubId} = router.query
+  const { clubId } = router.query
   const classes = useStyles()
   const daoAddress = useSelector((state) => {
     return state.create.daoAddress
@@ -375,13 +377,12 @@ const Dashboard = () => {
   const GNOSIS_TRANSACTION_URL = useSelector((state) => {
     return state.gnosis.transactionUrl
   })
-  const usdcConvertDecimal = useSelector(state => {
+  const usdcConvertDecimal = useSelector((state) => {
     return state.gnosis.tokenDecimal
   })
   const governanceConvertDecimal = useSelector((state) => {
     return state.gnosis.governanceTokenDecimal
   })
-
 
   const loadSmartContractData = async () => {
     try {
@@ -398,25 +399,14 @@ const Dashboard = () => {
       let getTokenDetails = await contract.tokenDetails()
 
       // user and admin contributions
-      let memberDeposits = convertFromWei(
-        usdcDetails[0],
-        usdcConvertDecimal
-      )
-      let adminContribution = convertFromWei(
-        usdcDetails[1],
-        usdcConvertDecimal
-      )
+      let memberDeposits = convertFromWei(usdcDetails[0], usdcConvertDecimal)
+      let adminContribution = convertFromWei(usdcDetails[1], usdcConvertDecimal)
 
       let total = memberDeposits + adminContribution
-      setMemberDeposit(
-        total
-      )
+      setMemberDeposit(total)
 
       setUserBalance(
-        convertFromWeiGovernance(
-          getUserBalance,
-          governanceConvertDecimal
-        )
+        convertFromWeiGovernance(getUserBalance, governanceConvertDecimal)
       )
       setClosingDays(calculateDays(parseInt(getGovernorDetails[0]) * 1000))
       setGovernorDetails(getGovernorDetails)
@@ -424,16 +414,10 @@ const Dashboard = () => {
 
       settokenDetails(getTokenDetails)
       setClubTokenMInted(
-        convertFromWeiGovernance(
-          getTokenDetails[2],
-          governanceConvertDecimal
-        )
+        convertFromWeiGovernance(getTokenDetails[2], governanceConvertDecimal)
       )
       setUserOwnershipShare(
-        convertFromWeiGovernance(
-          getTokenDetails[2],
-          governanceConvertDecimal
-        )
+        convertFromWeiGovernance(getTokenDetails[2], governanceConvertDecimal)
       )
       setDepositLink(
         typeof window !== "undefined" && window.location.origin
@@ -441,7 +425,6 @@ const Dashboard = () => {
           : null
       )
       setDataFetched(true)
-
     } catch (e) {
       setOpenSnackBar(true)
       setFailed(true)
@@ -453,7 +436,6 @@ const Dashboard = () => {
       loadSmartContractData()
     }
   }, [daoAddress, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL, dataFetched])
-
 
   const checkIsAdmin = () => {
     if (membersFetched && membersDetails.length > 0 && walletAddress) {
@@ -477,7 +459,6 @@ const Dashboard = () => {
       setApiTokenDetailSet(true)
     }
   }
-
 
   const fetchMembers = () => {
     const membersData = getMembersDetails(clubId)
@@ -531,12 +512,7 @@ const Dashboard = () => {
     if (daoAddress) {
       tokenAPIDetailsRetrieval()
     }
-  }, [
-    daoAddress,
-    GNOSIS_TRANSACTION_URL,
-    USDC_CONTRACT_ADDRESS,
-  ])
-
+  }, [daoAddress, GNOSIS_TRANSACTION_URL, USDC_CONTRACT_ADDRESS])
 
   useEffect(() => {
     if (daoAddress) {
@@ -572,9 +548,11 @@ const Dashboard = () => {
   ])
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(typeof window !== "undefined" && window.location.origin
-      ? `${window.location.origin}/join/${daoAddress}`
-      : null)
+    navigator.clipboard.writeText(
+      typeof window !== "undefined" && window.location.origin
+        ? `${window.location.origin}/join/${daoAddress}`
+        : null
+    )
   }
 
   const handleProposalClick = (proposal) => {
@@ -584,7 +562,7 @@ const Dashboard = () => {
   }
 
   const handleMoreClick = () => {
-    router.push(`${router.asPath}/proposal`, undefined, {shallow: true})
+    router.push(`${router.asPath}/proposal`, undefined, { shallow: true })
   }
 
   const handleSnackBarClose = (event, reason) => {
@@ -598,7 +576,7 @@ const Dashboard = () => {
       <Layout1 page={1} depositUrl={depositLink}>
         <Grid container spacing={1} paddingLeft={10} paddingTop={15}>
           <Grid item md={9}>
-            <Stack direction={{xs: "column", sm: "row"}} spacing={3}>
+            <Stack direction={{ xs: "column", sm: "row" }} spacing={3}>
               <Grid item xs={12}>
                 <Card className={classes.cardSharp1}>
                   <Grid container spacing={2}>
@@ -626,6 +604,7 @@ const Dashboard = () => {
                     </Grid>
                   </Grid>
                 </Card>
+
                 <Card className={classes.cardSharp2}>
                   <Grid container spacing={2}>
                     <Grid item xs={4} mt={2} mb={3}>
@@ -648,7 +627,9 @@ const Dashboard = () => {
                             {console.log(memberDeposit)}
                             {/*{Number.isInteger(memberDeposit)}*/}
                             {memberDeposit !== null
-                              ? Number.isInteger(memberDeposit) ? parseInt(memberDeposit) : parseFloat(memberDeposit).toFixed(2)
+                              ? Number.isInteger(memberDeposit)
+                                ? parseInt(memberDeposit)
+                                : parseFloat(memberDeposit).toFixed(2)
                               : null}
                           </Typography>
                         </Grid>
@@ -683,7 +664,9 @@ const Dashboard = () => {
                             className={classes.valueDetailStyle}
                           >
                             {clubTokenMinted !== null
-                              ? Number.isInteger(clubTokenMinted) ? parseInt(clubTokenMinted) : parseFloat(clubTokenMinted).toFixed(2)
+                              ? Number.isInteger(clubTokenMinted)
+                                ? parseInt(clubTokenMinted)
+                                : parseFloat(clubTokenMinted).toFixed(2)
                               : null}
                           </Typography>
                         </Grid>
@@ -693,7 +676,9 @@ const Dashboard = () => {
                             fontSize={"18px"}
                             className={classes.valueDimStyle}
                           >
-                            {tokenDetails !== null ? "$" + tokenDetails[1] : null}
+                            {tokenDetails !== null
+                              ? "$" + tokenDetails[1]
+                              : null}
                           </Typography>
                         </Grid>
                       </Grid>
@@ -726,7 +711,9 @@ const Dashboard = () => {
                             fontSize={"18px"}
                             className={classes.valueDimStyle}
                           >
-                            {tokenDetails !== null ? "$" + tokenDetails[1] : null}
+                            {tokenDetails !== null
+                              ? "$" + tokenDetails[1]
+                              : null}
                           </Typography>
                         </Grid>
                       </Grid>
@@ -736,8 +723,8 @@ const Dashboard = () => {
               </Grid>
               <Grid
                 container
-                spacing={{xs: 2, sm: 5, md: 3}}
-                direction={{xs: "column", sm: "column", md: "column"}}
+                spacing={{ xs: 2, sm: 5, md: 3 }}
+                direction={{ xs: "column", sm: "column", md: "column" }}
               >
                 <Card className={classes.firstCard}>
                   <Grid item mt={3} ml={5}>
@@ -756,7 +743,7 @@ const Dashboard = () => {
                         component="img"
                         className={classes.media}
                         alt="ownershipshare"
-                        sx={{position: "absolute", bottom: 0}}
+                        sx={{ position: "absolute", bottom: 0 }}
                       />
                     </Grid>
                   </Grid>
@@ -767,12 +754,12 @@ const Dashboard = () => {
                     component="img"
                     className={classes.media}
                     alt="ownershipshare"
-                    sx={{position: "absolute", bottom: 0, paddingTop: "4px"}}
+                    sx={{ position: "absolute", bottom: 0, paddingTop: "4px" }}
                   />
                   <Grid container>
                     <Grid
                       container
-                      direction={{xs: "column", sm: "column", md: "column"}}
+                      direction={{ xs: "column", sm: "column", md: "column" }}
                     >
                       <Grid item>
                         <Box className={classes.cardOverlay}>
@@ -782,27 +769,30 @@ const Dashboard = () => {
                           <Typography fontSize={"48px"} fontWeight="bold">
                             {userBalance !== null && userOwnershipShare !== null
                               ? isNaN(
-                                parseInt(
-                                  calculateUserSharePercentage(
-                                    userBalance,
-                                    userOwnershipShare
+                                  parseInt(
+                                    calculateUserSharePercentage(
+                                      userBalance,
+                                      userOwnershipShare
+                                    )
                                   )
                                 )
-                              )
                                 ? 0
                                 : parseInt(
-                                  calculateUserSharePercentage(
-                                    userBalance,
-                                    userOwnershipShare
+                                    calculateUserSharePercentage(
+                                      userBalance,
+                                      userOwnershipShare
+                                    )
                                   )
-                                )
                               : 0}
                             %
                           </Typography>
                           <Typography className={classes.card2text2} mb={1}>
                             {userBalance !== null && tokenDetails !== null
-                              ? Number.isInteger(userBalance) ? parseInt(userBalance) + (" $" + tokenDetails[1]) : parseFloat(userBalance).toFixed(2) +
-                                (" $" + tokenDetails[1])
+                              ? Number.isInteger(userBalance)
+                                ? parseInt(userBalance) +
+                                  (" $" + tokenDetails[1])
+                                : parseFloat(userBalance).toFixed(2) +
+                                  (" $" + tokenDetails[1])
                               : null}
                           </Typography>
                         </Box>
@@ -817,8 +807,8 @@ const Dashboard = () => {
             <Stack>
               <Grid item>
                 <Stack
-                  direction={{xs: "column", sm: "column"}}
-                  spacing={{xs: 1, sm: 2, md: 4}}
+                  direction={{ xs: "column", sm: "column" }}
+                  spacing={{ xs: 1, sm: 2, md: 4 }}
                 >
                   <Grid container item mt={8}>
                     <Typography className={classes.clubAssets}>
@@ -827,7 +817,7 @@ const Dashboard = () => {
                   </Grid>
                   <Grid container mt={4}>
                     <Grid item>
-                      <ButtonDropDown label="All"/>
+                      <ButtonDropDown label="All" />
                     </Grid>
                     <Grid item ml={2}>
                       <TextField
@@ -837,10 +827,10 @@ const Dashboard = () => {
                           endAdornment: (
                             <IconButton
                               type="submit"
-                              sx={{p: "10px"}}
+                              sx={{ p: "10px" }}
                               aria-label="search"
                             >
-                              <SearchIcon/>
+                              <SearchIcon />
                             </IconButton>
                           ),
                         }}
@@ -854,7 +844,7 @@ const Dashboard = () => {
                     clubAssetTokenData.tokenPriceList.length > 0 ? (
                       //  if the tokens length is > 0 and if the token[0] (by default it will be Ether) is not equal to 0, then show the table
                       <TableContainer component={Paper}>
-                        <Table sx={{minWidth: 809}} aria-label="simple table">
+                        <Table sx={{ minWidth: 809 }} aria-label="simple table">
                           <TableHead>
                             <TableRow>
                               <TableCell align="left" variant="tableHeading">
@@ -1013,14 +1003,14 @@ const Dashboard = () => {
                       item
                       mr={4}
                       xs
-                      sx={{display: "flex", justifyContent: "flex-end"}}
+                      sx={{ display: "flex", justifyContent: "flex-end" }}
                     >
                       {/*TODO: add closing date*/}
                       {closingDays !== null ? (
                         closingDays > 0 ? (
                           <Grid
                             container
-                            sx={{display: "flex", justifyContent: "flex-end"}}
+                            sx={{ display: "flex", justifyContent: "flex-end" }}
                           >
                             <Grid item mt={1} mr={1}>
                               <div className={classes.activeIllustration}></div>
@@ -1040,7 +1030,7 @@ const Dashboard = () => {
                         ) : (
                           <Grid
                             container
-                            sx={{display: "flex", justifyContent: "flex-end"}}
+                            sx={{ display: "flex", justifyContent: "flex-end" }}
                           >
                             <Grid item mt={1} mr={1}>
                               <div
@@ -1068,9 +1058,12 @@ const Dashboard = () => {
                       <TextField
                         className={classes.linkInput}
                         disabled
-                        value={typeof window !== "undefined" && window.location.origin
-                          ? `${window.location.origin}/join/${daoAddress}`
-                          : null}
+                        value={
+                          typeof window !== "undefined" &&
+                          window.location.origin
+                            ? `${window.location.origin}/join/${daoAddress}`
+                            : null
+                        }
                         InputProps={{
                           endAdornment: (
                             <Button
@@ -1112,60 +1105,60 @@ const Dashboard = () => {
                       <Grid item md={12} mr={2}>
                         {activeProposalDataFetched
                           ? activeProposalData.map((data, key) => {
-                            if (key < 3) {
-                              return (
-                                <div key={key}>
-                                  <ListItemButton
-                                    onClick={() =>
-                                      handleProposalClick(
-                                        activeProposalData[key]
-                                      )
-                                    }
-                                    sx={{width: "100%"}}
-                                  >
-                                    <Grid container direction="column">
-                                      <Grid item md={12}>
-                                        <Typography
-                                          className={classes.card5text1}
-                                        >
-                                          Proposed by{" "}
-                                          {data.createdBy.substring(0, 6) +
-                                            "......" +
-                                            data.createdBy.substring(
-                                              data.createdBy.length - 4
-                                            )}
-                                        </Typography>
+                              if (key < 3) {
+                                return (
+                                  <div key={key}>
+                                    <ListItemButton
+                                      onClick={() =>
+                                        handleProposalClick(
+                                          activeProposalData[key]
+                                        )
+                                      }
+                                      sx={{ width: "100%" }}
+                                    >
+                                      <Grid container direction="column">
+                                        <Grid item md={12}>
+                                          <Typography
+                                            className={classes.card5text1}
+                                          >
+                                            Proposed by{" "}
+                                            {data.createdBy.substring(0, 6) +
+                                              "......" +
+                                              data.createdBy.substring(
+                                                data.createdBy.length - 4
+                                              )}
+                                          </Typography>
+                                        </Grid>
+                                        <Grid item>
+                                          <Typography
+                                            className={classes.card5text2}
+                                          >
+                                            {data.name}
+                                          </Typography>
+                                        </Grid>
+                                        <Grid item>
+                                          <Typography
+                                            className={classes.card5text1}
+                                          >
+                                            Expired on{" "}
+                                            {new Date(
+                                              data.votingDuration
+                                            ).toLocaleDateString()}
+                                          </Typography>
+                                        </Grid>
                                       </Grid>
-                                      <Grid item>
-                                        <Typography
-                                          className={classes.card5text2}
-                                        >
-                                          {data.name}
-                                        </Typography>
-                                      </Grid>
-                                      <Grid item>
-                                        <Typography
-                                          className={classes.card5text1}
-                                        >
-                                          Expired on{" "}
-                                          {new Date(
-                                            data.votingDuration
-                                          ).toLocaleDateString()}
-                                        </Typography>
-                                      </Grid>
-                                    </Grid>
-                                  </ListItemButton>
-                                </div>
-                              )
-                            }
-                          })
+                                    </ListItemButton>
+                                  </div>
+                                )
+                              }
+                            })
                           : null}
                       </Grid>
                     </Grid>
                     <Grid container>
                       <Grid item md={12}>
                         <Button
-                          sx={{width: "100%"}}
+                          sx={{ width: "100%" }}
                           variant="transparentWhite"
                           onClick={() => handleMoreClick()}
                         >
@@ -1217,23 +1210,23 @@ const Dashboard = () => {
           open={openSnackBar}
           autoHideDuration={6000}
           onClose={handleSnackBarClose}
-          anchorOrigin={{vertical: "bottom", horizontal: "right"}}
+          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
         >
-          {failed ?
+          {failed ? (
             <Alert
               onClose={handleSnackBarClose}
               severity="error"
-              sx={{width: "100%"}}
+              sx={{ width: "100%" }}
             >
               Error fetching data!
-            </Alert> : null
-          }
+            </Alert>
+          ) : null}
         </Snackbar>
         <Backdrop
-          sx={{color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1}}
+          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
           open={loaderOpen}
         >
-          <CircularProgress color="inherit"/>
+          <CircularProgress color="inherit" />
         </Backdrop>
       </Layout1>
     </>
