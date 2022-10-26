@@ -1,6 +1,7 @@
 {
   "contractName": "FactoryContract",
-  "abi": [
+  "abi":
+  [
     {
       "inputs": [
         {
@@ -139,13 +140,8 @@
             },
             {
               "internalType": "address",
-              "name": "gnosisAddress",
+              "name": "daoOwnerAddress",
               "type": "address"
-            },
-            {
-              "internalType": "address[]",
-              "name": "daoAdmins",
-              "type": "address[]"
             }
           ],
           "internalType": "struct FactoryCloneContract.DAO",
