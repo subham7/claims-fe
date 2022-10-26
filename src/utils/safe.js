@@ -5,7 +5,7 @@ import { safeConnected, safeDisconnected } from "../redux/reducers/gnosis"
 import { addDaoAddress, addClubID } from "../redux/reducers/create"
 import store from "../redux/store"
 import { SmartContract } from "../api/contract"
-import {createClub, fetchClub} from "../api/club"
+import { createClub, fetchClub } from "../api/club"
 import FactoryContract from "../abis/factoryContract.json"
 import Router from "next/router"
 import { createUser } from "../api/user"
@@ -58,21 +58,25 @@ export async function initiateConnection(
   let walletAddress = safeOwner[0]
   let networkId = null
 
-  await web3.eth.net.getId()
+  await web3.eth.net
+    .getId()
     .then((id) => {
       networkId = id
     })
     .catch((err) => {
       console.log(err)
-    });
+    })
 
   const smartContract = new SmartContract(
     FactoryContract,
     factoryContractAddress,
-    undefined, usdcContractAddress, gnosisTransactionUrl
+    undefined,
+    usdcContractAddress,
+    gnosisTransactionUrl
   )
   await gnosisSafePromise(owners, threshold, dispatch)
     .then((treasuryAddress) => {
+      console.log("owners", owners)
       const value = smartContract.createDAO(
         owners,
         threshold,
@@ -109,17 +113,15 @@ export async function initiateConnection(
             } else {
               // create user in the API
               const data = {
-                "userAddress": walletAddress,
-                "clubs": [
+                userAddress: walletAddress,
+                clubs: [
                   {
-                    "clubId": result.data.clubId,
-                    "isAdmin": 1,
-                  }
-                ]
+                    clubId: result.data.clubId,
+                    isAdmin: 1,
+                  },
+                ],
               }
-              const createuser = createUser(
-                data
-              )
+              const createuser = createUser(data)
               createuser.then((result) => {
                 if (result.error) {
                   console.log(result.error)
@@ -131,7 +133,9 @@ export async function initiateConnection(
 
               const { pathname } = Router
               if (pathname == "/create") {
-                Router.push(`/dashboard/${result.data.clubId}`, undefined, {shallow: true})
+                Router.push(`/dashboard/${result.data.clubId}`, undefined, {
+                  shallow: true,
+                })
               }
             }
           })
