@@ -23,6 +23,7 @@ import {
   ListItemButton,
   Snackbar,
   Alert,
+  Skeleton,
 } from "@mui/material"
 import TextField from "@mui/material/TextField"
 import SearchIcon from "@mui/icons-material/Search"
@@ -357,7 +358,6 @@ const Dashboard = () => {
     useState(false)
   const [clubAssetTokenFetched, setClubAssetTokenFetched] = useState(false)
   const [clubAssetTokenData, setClubAssetTokenData] = useState([])
-  const [loaderOpen, setLoaderOpen] = useState(false)
   const [failed, setFailed] = useState(false)
   const [openSnackBar, setOpenSnackBar] = useState(false)
   const [ntfData, setNftData] = useState([])
@@ -508,7 +508,6 @@ const Dashboard = () => {
   }
 
   useEffect(() => {
-    setLoaderOpen(true)
     if (daoAddress) {
       tokenAPIDetailsRetrieval()
     }
@@ -527,25 +526,6 @@ const Dashboard = () => {
     }
   }, [clubId])
 
-  useEffect(() => {
-    if (
-      dataFetched &&
-      apiTokenDetailSet &&
-      membersFetched &&
-      activeProposalDataFetched &&
-      clubAssetTokenFetched
-    ) {
-      setLoaderOpen(false)
-    }
-  }, [
-    daoAddress,
-    walletAddress,
-    dataFetched,
-    apiTokenDetailSet,
-    membersFetched,
-    activeProposalDataFetched,
-    clubAssetTokenFetched,
-  ])
 
   const handleCopy = () => {
     navigator.clipboard.writeText(
@@ -590,7 +570,11 @@ const Dashboard = () => {
                     <Grid item ml={1} mt={4}>
                       <Stack spacing={0}>
                         <Typography variant="h4">
-                          {apiTokenDetailSet ? tokenAPIDetails.name : null}
+                          {apiTokenDetailSet ? tokenAPIDetails.name : (<Skeleton
+                                variant="rectangular"
+                                width={100}
+                                height={25}
+                              />)}
                         </Typography>
                         <Grid container item direction="row" paddingBottom={4}>
                           <Typography variant="regularText2" mr={1}>
@@ -624,13 +608,17 @@ const Dashboard = () => {
                             fontSize={"24px"}
                             className={classes.valueDetailStyle}
                           >
-                            {console.log(memberDeposit)}
-                            {/*{Number.isInteger(memberDeposit)}*/}
                             {memberDeposit !== null
                               ? Number.isInteger(memberDeposit)
                                 ? parseInt(memberDeposit)
                                 : parseFloat(memberDeposit).toFixed(2)
-                              : null}
+                              : 
+                              (<Skeleton
+                            variant="rectangular"
+                            width={100}
+                            height={25}
+                          />)
+                              }
                           </Typography>
                         </Grid>
                         <Grid item>
@@ -667,7 +655,12 @@ const Dashboard = () => {
                               ? Number.isInteger(clubTokenMinted)
                                 ? parseInt(clubTokenMinted)
                                 : parseFloat(clubTokenMinted).toFixed(2)
-                              : null}
+                              : 
+                              (<Skeleton
+                                variant="rectangular"
+                                width={100}
+                                height={25}
+                              />)}
                           </Typography>
                         </Grid>
                         <Grid item>
@@ -678,7 +671,12 @@ const Dashboard = () => {
                           >
                             {tokenDetails !== null
                               ? "$" + tokenDetails[1]
-                              : null}
+                              : 
+                              (<Skeleton
+                                variant="rectangular"
+                                width={100}
+                                height={25}
+                              />)}
                           </Typography>
                         </Grid>
                       </Grid>
@@ -702,7 +700,12 @@ const Dashboard = () => {
                           >
                             {maxTokenMinted !== null
                               ? parseInt(maxTokenMinted)
-                              : null}{" "}
+                              : (<Skeleton
+                                variant="rectangular"
+                                width={100}
+                                height={25}
+                              />)
+                              }{" "}
                           </Typography>
                         </Grid>
                         <Grid item>
@@ -713,7 +716,11 @@ const Dashboard = () => {
                           >
                             {tokenDetails !== null
                               ? "$" + tokenDetails[1]
-                              : null}
+                              : (<Skeleton
+                                variant="rectangular"
+                                width={100}
+                                height={25}
+                              />)}
                           </Typography>
                         </Grid>
                       </Grid>
@@ -736,7 +743,11 @@ const Dashboard = () => {
                         $
                         {clubAssetTokenFetched
                           ? parseInt(clubAssetTokenData.treasuryAmount)
-                          : null}
+                          : (<Skeleton
+                            variant="rectangular"
+                            width={100}
+                            height={25}
+                          />)}
                       </Typography>
                       <CardMedia
                         image="/assets/images/treasurywallet.png"
@@ -783,7 +794,12 @@ const Dashboard = () => {
                                       userOwnershipShare
                                     )
                                   )
-                              : 0}
+                              : 
+                              (<Skeleton
+                                variant="rectangular"
+                                width={100}
+                                height={25}
+                              />)}
                             %
                           </Typography>
                           <Typography className={classes.card2text2} mb={1}>
@@ -793,7 +809,11 @@ const Dashboard = () => {
                                   (" $" + tokenDetails[1])
                                 : parseFloat(userBalance).toFixed(2) +
                                   (" $" + tokenDetails[1])
-                              : null}
+                              : (<Skeleton
+                                variant="rectangular"
+                                width={100}
+                                height={25}
+                              />)}
                           </Typography>
                         </Box>
                       </Grid>
@@ -1222,12 +1242,6 @@ const Dashboard = () => {
             </Alert>
           ) : null}
         </Snackbar>
-        <Backdrop
-          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-          open={loaderOpen}
-        >
-          <CircularProgress color="inherit" />
-        </Backdrop>
       </Layout1>
     </>
   )
