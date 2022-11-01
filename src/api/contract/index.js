@@ -7,9 +7,6 @@ import { USDC_FAUCET_ADDRESS } from "../index"
 import { calculateDays, convertToWei } from "../../utils/globalFunctions"
 import FactoryContract from "../../abis/factoryContract.json"
 import ImplementationContract from "../../abis/implementationABI.json"
-import { SafeFactory } from "@gnosis.pm/safe-core-sdk"
-import { connect } from "react-redux"
-import { Component } from "react"
 
 async function syncWallet() {
   // function for validating metamask wallet
@@ -104,34 +101,29 @@ export class SmartContract {
       owners,
     ]
     const contract = new web3.eth.Contract(FactoryContract.abi, this.contractAddress)
+    console.log("Contract", contract)
     const suggestionGasFee = await web3.eth.getGasPrice()
-    const estimateGasFee = await web3.eth.estimateGas({
-      "from": this.walletAddress,
-      "to": this.usdcContractAddress,
-      "data": contract.methods.createDAO(data).encodeABI(),
-      "value": "0x00",
-    })
-    console.log("estimated Gas fee", estimateGasFee)
+    // const estimateGasFee = await web3.eth.estimateGas({
+    //   from: this.walletAddress,
+    //   to: this.contractAddress,
+    //   data: contract.methods.createDAO(data).encodeABI(),
+    //   value: "0x00",
+    // })
+    const estimateGasFee = await contract.methods.createDAO(data).estimateGas({from: this.walletAddress})
     const nonce = await web3.eth.getTransactionCount(this.walletAddress, 'latest')
+    console.log("estimated Gas fee", estimateGasFee)
+    console.log("suggestionGasFee", suggestionGasFee)
     console.log("nonce", nonce)
     const txParams = {
       from: this.walletAddress,
-      nonce: nonce,
-      gasPrice: estimateGasFee,
-      // gasLimit: web3.utils.toHex(estimateGasFee),
-      // maxPriorityFeePerGas: web3.utils.toHex(suggestionGasFee),
-      // maxFeePerGas: web3.utils.toHex(suggestionGasFee),
-      to: this.usdcContractAddress,
+      gasPrice: suggestionGasFee,
+      gas: estimateGasFee,
       value: '0x00',
-      data: contract.methods.createDAO(data).encodeABI(),
     }
     console.log("transaction parameters", txParams)
-    const transaction = await web3.eth.sendTransaction(txParams)
-    // const signedTx = await web3.eth.accounts.signTransaction(transaction)
-    console.log("send transaction", transaction)
     return this.contract.methods
       .createDAO(data)
-      .send(transaction)
+      .send(txParams)
   }
 
   async updateProposalAndExecution(

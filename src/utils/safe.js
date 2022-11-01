@@ -94,6 +94,8 @@ export async function initiateConnection(
         formThreshold,
         usdcConvertDecimal
       )
+      console.log("Called createDao")
+      console.log(value)
       value.then(
         (result) => {
           daoAddress = result.events[0].address

@@ -1,7 +1,6 @@
 {
   "contractName": "FactoryContract",
-  "abi":
-  [
+  "abi": [
     {
       "inputs": [
         {
