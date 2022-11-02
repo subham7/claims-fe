@@ -102,7 +102,7 @@ export class SmartContract {
         quoram,
         formThreshold,
         tresuryAddress,
-        //owners,
+        owners,
       ])
       .send({ from: this.walletAddress })
   }
