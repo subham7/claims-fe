@@ -2,16 +2,16 @@ import React, { createContext, useState, useContext, useEffect } from 'react'
 import Router, { useRouter } from 'next/router'
 import { connectWallet } from "../utils/wallet"
 import { useDispatch, useSelector } from "react-redux"
-import store from "../../src/redux/store"
-import { CircularProgress, Backdrop, Button, Typography } from "@mui/material"
-import { checkNetwork } from "./wallet"
+import { Backdrop, Button, Typography } from "@mui/material"
 import { loginToken, refreshToken } from "../api/auth"
 import { fetchConfig } from '../api/config'
 import { updateDynamicAddress } from '../api'
 import Web3 from "web3"
-import {SmartContract} from "../api/contract";
+import { SmartContract } from "../api/contract";
 import ImplementationContract from "../abis/implementationABI.json";
-import {setGovernanceTokenDetails, setUSDCTokenDetails} from "../redux/reducers/gnosis";
+import { setUSDCTokenDetails } from "../redux/reducers/gnosis";
+import { getAssets } from '../api/assets'
+import { checkUserByClub } from "../api/user"
 
 
 export default function ProtectRoute(Component) {
@@ -167,4 +167,61 @@ export function getRefreshToken() {
 
 export function setRefreshToken(token) {
   sessionStorage.setItem("refreshToken", token)
+}
+
+export function authenticateUser(clubId, walletAddress, daoAddress, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL) {
+  if (clubId && walletAddress && daoAddress && USDC_CONTRACT_ADDRESS && GNOSIS_TRANSACTION_URL) {
+    // check club token type
+    const tokens = getAssets(clubId)
+    tokens.then((tokenResult) => {
+      if (tokenResult.status != 200) {
+        return false
+      } else {
+        if (tokenResult.data.tokenPriceList.length != 0 && tokenResult.data.tokenPriceList[0].name === "USDC") {
+          // check if user is part of a club
+          // if yes? check whether user holds governance token in the wallet
+          const checkUser = checkUserByClub(walletAddress, clubId)
+          checkUser.then(async (user) => {
+            if (user.data) {
+              // if user is a part of the club,
+              // check whether the user wallet holds the governance token
+              const usdc_contract = new SmartContract(
+                ImplementationContract,
+                USDC_CONTRACT_ADDRESS,
+                undefined, USDC_CONTRACT_ADDRESS,
+                GNOSIS_TRANSACTION_URL
+              )
+              await usdc_contract.balanceOf().then(
+                (result) => {
+                  if (result <= 0) {
+                    return false
+                  } else {
+                    return true
+                  }
+                },
+                (error) => {
+                  return false
+                }
+              )
+
+            } else {
+              // if user not part of club
+              // Check user is an admin?
+              const checkUserInClub = new SmartContract(ImplementationContract, daoAddress, undefined, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL)
+              const response = checkUserInClub.userDetails()
+              response.then((result) => {
+                if (result[2]) {
+                  // is admin
+                  return true
+                } else {
+                  // is not an admin
+                  return false
+                }
+              })
+            }
+          })
+        }
+      }
+    })
+  }
 }
