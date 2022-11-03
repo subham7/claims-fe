@@ -102,15 +102,16 @@ export class SmartContract {
     ]
     const contract = new web3.eth.Contract(FactoryContract.abi, this.contractAddress)
     console.log("Contract", contract)
-    const suggestionGasFee = await web3.eth.getGasPrice()
-    // const estimateGasFee = await web3.eth.estimateGas({
-    //   from: this.walletAddress,
-    //   to: this.contractAddress,
-    //   data: contract.methods.createDAO(data).encodeABI(),
-    //   value: "0x00",
-    // })
-    const estimateGasFee = await contract.methods.createDAO(data).estimateGas({from: this.walletAddress})
     const nonce = await web3.eth.getTransactionCount(this.walletAddress, 'latest')
+    const suggestionGasFee = await web3.eth.getGasPrice()
+    const estimateGasFee = await web3.eth.estimateGas({
+      // from: this.walletAddress,
+      to: this.contractAddress,
+      data: contract.methods.createDAO(data).encodeABI(),
+      // value: "0x00",
+      // nonce: nonce      
+    })
+    // const estimateGasFee = await contract.methods.createDAO(data).estimateGas({from: this.walletAddress})
     console.log("estimated Gas fee", estimateGasFee)
     console.log("suggestionGasFee", suggestionGasFee)
     console.log("nonce", nonce)

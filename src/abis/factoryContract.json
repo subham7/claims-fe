@@ -139,8 +139,13 @@
             },
             {
               "internalType": "address",
-              "name": "daoOwnerAddress",
+              "name": "gnosisAddress",
               "type": "address"
+            },
+            {
+              "internalType": "address[]",
+              "name": "daoAdmins",
+              "type": "address[]"
             }
           ],
           "internalType": "struct FactoryCloneContract.DAO",
