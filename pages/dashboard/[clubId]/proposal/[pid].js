@@ -1,7 +1,7 @@
-import { React, useEffect, useState } from "react"
-import Web3 from "web3"
-import { makeStyles } from "@mui/styles"
-import Layout1 from "../../../../src/components/layouts/layout1"
+import { React, useEffect, useState } from "react";
+import Web3 from "web3";
+import { makeStyles } from "@mui/styles";
+import Layout1 from "../../../../src/components/layouts/layout1";
 import {
   Box,
   Card,
@@ -25,26 +25,29 @@ import {
   Alert,
   CircularProgress,
   Backdrop,
-} from "@mui/material"
-import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos"
-import { useRouter } from "next/router"
-import Router, { withRouter } from "next/router"
-import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace"
-import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded"
-import CloseIcon from "@mui/icons-material/Close"
-import ProgressBar from "../../../../src/components/progressbar"
-import { useDispatch, useSelector } from "react-redux"
-import { addProposalId } from "../../../../src/redux/reducers/create"
-import { SmartContract } from "../../../../src/api/contract"
+} from "@mui/material";
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import { useRouter } from "next/router";
+import Router, { withRouter } from "next/router";
+import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
+import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
+import CloseIcon from "@mui/icons-material/Close";
+import ProgressBar from "../../../../src/components/progressbar";
+import { useDispatch, useSelector } from "react-redux";
+import { addProposalId } from "../../../../src/redux/reducers/create";
+import { SmartContract } from "../../../../src/api/contract";
 import {
   getProposalDetail,
   castVote,
   patchProposalExecuted,
-} from "../../../../src/api/proposal"
-import { getMembersDetails } from "../../../../src/api/user"
-import ImplementationContract from "../../../../src/abis/implementationABI.json"
-import USDCContract from "../../../../src/abis/usdcTokenContract.json"
-import ClubFetch from "../../../../src/utils/clubFetch"
+  getProposalTxHash,
+} from "../../../../src/api/proposal";
+import { getMembersDetails } from "../../../../src/api/user";
+import ImplementationContract from "../../../../src/abis/implementationABI.json";
+import USDCContract from "../../../../src/abis/usdcTokenContract.json";
+import ClubFetch from "../../../../src/utils/clubFetch";
+import Web3Adapter from "@gnosis.pm/safe-web3-lib";
+import Safe from "@gnosis.pm/safe-core-sdk";
 
 const useStyles = makeStyles({
   clubAssets: {
@@ -150,159 +153,205 @@ const useStyles = makeStyles({
     backgroundColor: "#19274B",
     display: "flex",
   },
-})
+});
 
 const ProposalDetail = () => {
-  const router = useRouter()
-  const { pid, clubId } = router.query
-  const classes = useStyles()
-  const [voted, setVoted] = useState(false)
-  const [fetched, setFetched] = useState(false)
-  const [members, setMembers] = useState([])
-  const [membersFetched, setMembersFetched] = useState(false)
-  const [proposalData, setProposalData] = useState([])
-  const [castVoteOption, setCastVoteOption] = useState("")
-  const clubID = clubId
-  const [cardSelected, setCardSelected] = useState(null)
+  const router = useRouter();
+  const { pid, clubId } = router.query;
+  console.log("pid", pid);
+  const classes = useStyles();
+  const [voted, setVoted] = useState(false);
+  const [fetched, setFetched] = useState(false);
+  const [members, setMembers] = useState([]);
+  const [owner, setOwner] = useState(false);
+  const [threshold, setThreshold] = useState();
+  const [txHash, setTxHash] = useState();
+  const [membersFetched, setMembersFetched] = useState(false);
+  const [proposalData, setProposalData] = useState([]);
+  const [castVoteOption, setCastVoteOption] = useState("");
+  const clubID = clubId;
+  const [cardSelected, setCardSelected] = useState(null);
   const walletAddress = useSelector((state) => {
-    return state.create.value
-  })
+    return state.create.value;
+  });
   const daoAddress = useSelector((state) => {
-    return state.create.daoAddress
-  })
+    return state.create.daoAddress;
+  });
   const gnosisAddress = useSelector((state) => {
-    return state.gnosis.safeAddress
-  })
-  const [executed, setExecuted] = useState(false)
-  const [message, setMessage] = useState("")
-  const [failed, setFailed] = useState(false)
-  const [openSnackBar, setOpenSnackBar] = useState(false)
-  const tresuryAddress = useSelector((state) => {
-    return state.create.tresuryAddress
-  })
-  const [loaderOpen, setLoaderOpen] = useState(false)
-  const FACTORY_CONTRACT_ADDRESS = useSelector((state) => {
-    return state.gnosis.factoryContractAddress
-  })
-  const USDC_CONTRACT_ADDRESS = useSelector((state) => {
-    return state.gnosis.usdcContractAddress
-  })
-  const GNOSIS_TRANSACTION_URL = useSelector((state) => {
-    return state.gnosis.transactionUrl
-  })
+    return state.gnosis.safeAddress;
+  });
 
-  let voteId = null
-  const dispatch = useDispatch()
+  const [executed, setExecuted] = useState(false);
+  const [message, setMessage] = useState("");
+  const [failed, setFailed] = useState(false);
+  const [openSnackBar, setOpenSnackBar] = useState(false);
+  const tresuryAddress = useSelector((state) => {
+    return state.create.tresuryAddress;
+  });
+  const [loaderOpen, setLoaderOpen] = useState(false);
+  const FACTORY_CONTRACT_ADDRESS = useSelector((state) => {
+    return state.gnosis.factoryContractAddress;
+  });
+  const USDC_CONTRACT_ADDRESS = useSelector((state) => {
+    return state.gnosis.usdcContractAddress;
+  });
+  const GNOSIS_TRANSACTION_URL = useSelector((state) => {
+    return state.gnosis.transactionUrl;
+  });
+
+  let voteId = null;
+  const dispatch = useDispatch();
+
+  const getSafeSdk = async () => {
+    const web3 = new Web3(window.web3);
+    const ethAdapter = new Web3Adapter({
+      web3: web3,
+      signerAddress: walletAddress,
+    });
+    const safeSdk = await Safe.create({
+      ethAdapter: ethAdapter,
+      safeAddress: gnosisAddress,
+    });
+    console.log("safeSdk", safeSdk);
+    return safeSdk;
+  };
 
   const fetchData = () => {
-    dispatch(addProposalId(pid))
-    const proposalData = getProposalDetail(pid)
+    dispatch(addProposalId(pid));
+    const proposalData = getProposalDetail(pid);
     proposalData.then((result) => {
       if (result.status !== 200) {
-        setFetched(false)
+        setFetched(false);
       } else {
-        setProposalData(result.data)
-        console.log("Proposal data", result.data)
-        setFetched(true)
+        setProposalData(result.data);
+        console.log("Proposal data", result.data);
+        setFetched(true);
       }
-    })
-  }
+    });
+  };
 
   const fetchMembersData = () => {
-    const membersData = getMembersDetails(clubID)
+    const membersData = getMembersDetails(clubID);
     membersData.then((result) => {
       if (result.status !== 200) {
-        setMembersFetched(false)
+        setMembersFetched(false);
       } else {
-        setMembers(result.data)
-        setMembersFetched(true)
+        setMembers(result.data);
+        setMembersFetched(true);
       }
-    })
-  }
+    });
+  };
 
   const calculateVotePercentage = (voteReceived) => {
-    let totalVote = 0
+    let totalVote = 0;
     proposalData[0].votingOptions.map((vote, key) => {
-      totalVote += vote.count
-    })
-    return (voteReceived / totalVote).toFixed(2) * 100
-  }
+      totalVote += vote.count;
+    });
+    return (voteReceived / totalVote).toFixed(2) * 100;
+  };
 
   const fetchVotingOptionChoice = (votingOptionAddress) => {
     let obj = proposalData[0].votingOptions.find(
       (voteOption) => voteOption.votingOptionId === votingOptionAddress
-    )
-    voteId = parseInt(proposalData[0].votingOptions.indexOf(obj))
-    return proposalData[0].votingOptions.indexOf(obj)
-  }
+    );
+    voteId = parseInt(proposalData[0].votingOptions.indexOf(obj));
+    return proposalData[0].votingOptions.indexOf(obj);
+  };
 
-  useEffect(() => {
-    setLoaderOpen(true)
+  useEffect(async () => {
+    setLoaderOpen(true);
+    await isOwner();
     if (pid) {
-      fetchData()
+      fetchData();
     }
-  }, [pid])
-
+  }, [pid]);
+  console.log("threshold", threshold);
   useEffect(() => {
-    setLoaderOpen(true)
+    setLoaderOpen(true);
     if (clubId) {
-      fetchMembersData()
+      fetchMembersData();
     }
-  }, [clubId])
+  }, [clubId]);
 
   useEffect(() => {
     if (fetched && membersFetched) {
-      setLoaderOpen(false)
+      setLoaderOpen(false);
     }
-  }, [fetched, membersFetched])
+  }, [fetched, membersFetched]);
 
   const returnHome = () => {
-    router.back()
-  }
+    router.back();
+  };
 
   const submitVote = () => {
-    setLoaderOpen(true)
-    const web3 = new Web3(window.web3)
-    const userAddress = web3.utils.toChecksumAddress(walletAddress)
+    setLoaderOpen(true);
+    const web3 = new Web3(window.web3);
+    const userAddress = web3.utils.toChecksumAddress(walletAddress);
     const payload = {
       proposalId: pid,
       votingOptionId: castVoteOption,
       voterAddress: userAddress,
       clubId: clubID,
-    }
-    const voteSubmit = castVote(payload)
+    };
+    const voteSubmit = castVote(payload);
     voteSubmit.then((result) => {
       if (result.status !== 201) {
-        setVoted(false)
-        setLoaderOpen(false)
+        setVoted(false);
+        setLoaderOpen(false);
       } else {
-        fetchData()
-        setVoted(true)
-        setLoaderOpen(false)
+        fetchData();
+        setVoted(true);
+        setLoaderOpen(false);
       }
-    })
-  }
+    });
+  };
 
   const isCurrentUserAdmin = () => {
     if (membersFetched && members.length > 0 && walletAddress) {
-      let obj = members.find((member) => member.userAddress === walletAddress)
-      let pos = members.indexOf(obj)
+      let obj = members.find((member) => member.userAddress === walletAddress);
+      let pos = members.indexOf(obj);
       if (obj.clubs[0].isAdmin) {
-        return true
+        return true;
       } else {
-        return false
+        return false;
       }
     }
-  }
+  };
 
+  const isOwner = async () => {
+    const safeSdk = await getSafeSdk();
+    const ownerAddresses = await safeSdk.getOwners();
+    console.log("ownerAddresses", ownerAddresses);
+    if (ownerAddresses.includes(walletAddress)) {
+      setOwner(true);
+    } else {
+      setOwner(false);
+    }
+    const threshold = await safeSdk.getThreshold();
+    setThreshold(threshold);
+    const proposalTxHash = getProposalTxHash(pid);
+    console.log("proposalTxHash", proposalTxHash);
+    proposalTxHash.then((result) => {
+      if (
+        result.status !== 200 ||
+        (result.status === 200 && result.data.length === 0)
+      ) {
+        setTxHash("");
+      } else {
+        setTxHash(result.data[0].txHash);
+      }
+    });
+  };
+  console.log("txhash", txHash);
   const executeNonAdminUser = () => {
-    setOpenSnackBar(true)
-    setFailed(true)
-    setMessage("Only admin of the club is able to execute the proposal!")
-  }
+    setOpenSnackBar(true);
+    setFailed(true);
+    setMessage("Only admin of the club is able to execute the proposal!");
+  };
 
-  const executeFunction = async () => {
-    setLoaderOpen(true)
+  const executeFunction = async (proposalStatus) => {
+    setLoaderOpen(true);
+    console.log("proposalStatus", proposalStatus);
     if (proposalData[0].commands[0].executionId === 0) {
       // for airdrop execution
       const updateProposal = new SmartContract(
@@ -311,12 +360,12 @@ const ProposalDetail = () => {
         undefined,
         USDC_CONTRACT_ADDRESS,
         GNOSIS_TRANSACTION_URL
-      )
+      );
       const response = updateProposal.updateProposalAndExecution(
         daoAddress,
         gnosisAddress,
         proposalData[0].ipfsHash,
-        "Executed",
+        proposalStatus,
         123444,
         undefined,
         proposalData[0].commands[0].airDropToken,
@@ -330,38 +379,40 @@ const ProposalDetail = () => {
         undefined,
         undefined,
         proposalData[0].commands[0].airDropCarryFee,
-        []
-      )
-      await response.then(
-        (result) => {
-          result.promiEvent.on("confirmation", () => {
-            const updateStatus = patchProposalExecuted(pid)
-            updateStatus.then((result) => {
-              if (result.status !== 200) {
-                setExecuted(false)
-                setOpenSnackBar(true)
-                setMessage("Airdrop execution status update failed!")
-                setFailed(true)
-                setLoaderOpen(false)
-              } else {
-                fetchData()
-                setExecuted(true)
-                setOpenSnackBar(true)
-                setMessage("Airdrop execution successful!")
-                setFailed(false)
-                setLoaderOpen(false)
-              }
-            })
-          })
-        },
-        (error) => {
-          setExecuted(false)
-          setOpenSnackBar(true)
-          setMessage("Airdrop execution failed!")
-          setFailed(true)
-          setLoaderOpen(false)
-        }
-      )
+        [],
+        txHash
+      );
+      console.log("response", response);
+      // await response.then(
+      //   (result) => {
+      //     result.promiEvent.on("confirmation", () => {
+      //       const updateStatus = patchProposalExecuted(pid);
+      //       updateStatus.then((result) => {
+      //         if (result.status !== 200) {
+      //           setExecuted(false);
+      //           setOpenSnackBar(true);
+      //           setMessage("Airdrop execution status update failed!");
+      //           setFailed(true);
+      //           setLoaderOpen(false);
+      //         } else {
+      //           fetchData();
+      //           setExecuted(true);
+      //           setOpenSnackBar(true);
+      //           setMessage("Airdrop execution successful!");
+      //           setFailed(false);
+      //           setLoaderOpen(false);
+      //         }
+      //       });
+      //     });
+      //   },
+      //   (error) => {
+      //     setExecuted(false);
+      //     setOpenSnackBar(true);
+      //     setMessage("Airdrop execution failed!");
+      //     setFailed(true);
+      //     setLoaderOpen(false);
+      //   }
+      // );
     }
 
     if (proposalData[0].commands[0].executionId === 1) {
@@ -372,12 +423,12 @@ const ProposalDetail = () => {
         undefined,
         USDC_CONTRACT_ADDRESS,
         GNOSIS_TRANSACTION_URL
-      )
+      );
       const response = updateProposal.updateProposalAndExecution(
         daoAddress,
         gnosisAddress,
         proposalData[0].ipfsHash,
-        "Executed",
+        proposalStatus,
         123444,
         undefined,
         undefined,
@@ -391,41 +442,43 @@ const ProposalDetail = () => {
         undefined,
         undefined,
         undefined,
-        []
-      )
-      response.then(
-        (result) => {
-          result.promiEvent.on("confirmation", () => {
-            const updateStatus = patchProposalExecuted(pid)
-            updateStatus.then((result) => {
-              if (result.status !== 200) {
-                setExecuted(false)
-                setOpenSnackBar(true)
-                setMessage("MintGT execution status update failed!")
-                setFailed(true)
-                setLoaderOpen(false)
-              } else {
-                fetchData()
-                setExecuted(true)
-                setOpenSnackBar(true)
-                setMessage("MintGT execution successful!")
-                setFailed(false)
-                setLoaderOpen(false)
-              }
-            })
-          })
-        },
-        (error) => {
-          console.log(error)
-          setExecuted(false)
-          setOpenSnackBar(true)
-          setMessage("MintGT execution failed!")
-          setFailed(true)
-          setLoaderOpen(false)
-        }
-      )
+        [],
+        txHash
+      );
+      console.log("response", response);
+      // response.then(
+      //   (result) => {
+      //     result.promiEvent.on("confirmation", () => {
+      //       const updateStatus = patchProposalExecuted(pid);
+      //       updateStatus.then((result) => {
+      //         if (result.status !== 200) {
+      //           setExecuted(false);
+      //           setOpenSnackBar(true);
+      //           setMessage("MintGT execution status update failed!");
+      //           setFailed(true);
+      //           setLoaderOpen(false);
+      //         } else {
+      //           fetchData();
+      //           setExecuted(true);
+      //           setOpenSnackBar(true);
+      //           setMessage("MintGT execution successful!");
+      //           setFailed(false);
+      //           setLoaderOpen(false);
+      //         }
+      //       });
+      //     });
+      //   },
+      //   (error) => {
+      //     console.log(error);
+      //     setExecuted(false);
+      //     setOpenSnackBar(true);
+      //     setMessage("MintGT execution failed!");
+      //     setFailed(true);
+      //     setLoaderOpen(false);
+      //   }
+      // );
     }
-
+    // comented from before
     // if (proposalData[0].commands[0].executionId === 2) {
     //   const web3 = new Web3(window.web3)
     //   // for assigner executor role execution
@@ -479,6 +532,8 @@ const ProposalDetail = () => {
     //     setLoaderOpen(false)
     //   })
     // }
+    //commented from before ends
+
     if (proposalData[0].commands[0].executionId === 2) {
       // For execution of Governance settings
       const updateProposal = new SmartContract(
@@ -487,12 +542,12 @@ const ProposalDetail = () => {
         undefined,
         USDC_CONTRACT_ADDRESS,
         GNOSIS_TRANSACTION_URL
-      )
+      );
       const response = updateProposal.updateProposalAndExecution(
         daoAddress,
         gnosisAddress,
         proposalData[0].ipfsHash,
-        "Executed",
+        proposalStatus,
         123444,
         undefined,
         undefined,
@@ -506,39 +561,41 @@ const ProposalDetail = () => {
         undefined,
         undefined,
         undefined,
-        []
-      )
-      response.then(
-        (result) => {
-          result.promiEvent.on("confirmation", () => {
-            const updateStatus = patchProposalExecuted(pid)
-            updateStatus.then((result) => {
-              if (result.status !== 200) {
-                setExecuted(false)
-                setOpenSnackBar(true)
-                setMessage("Governance settings status update failed!")
-                setFailed(true)
-                setLoaderOpen(false)
-              } else {
-                fetchData()
-                setExecuted(true)
-                setOpenSnackBar(true)
-                setMessage("Governance settings execution successful!")
-                setFailed(false)
-                setLoaderOpen(false)
-              }
-            })
-          })
-        },
-        (error) => {
-          console.log(error)
-          setExecuted(false)
-          setOpenSnackBar(true)
-          setMessage("Governance settings execution failed!")
-          setFailed(true)
-          setLoaderOpen(false)
-        }
-      )
+        [],
+        txHash
+      );
+      console.log("response", response);
+      // response.then(
+      //   (result) => {
+      //     result.promiEvent.on("confirmation", () => {
+      //       const updateStatus = patchProposalExecuted(pid);
+      //       updateStatus.then((result) => {
+      //         if (result.status !== 200) {
+      //           setExecuted(false);
+      //           setOpenSnackBar(true);
+      //           setMessage("Governance settings status update failed!");
+      //           setFailed(true);
+      //           setLoaderOpen(false);
+      //         } else {
+      //           fetchData();
+      //           setExecuted(true);
+      //           setOpenSnackBar(true);
+      //           setMessage("Governance settings execution successful!");
+      //           setFailed(false);
+      //           setLoaderOpen(false);
+      //         }
+      //       });
+      //     });
+      //   },
+      //   (error) => {
+      //     console.log(error);
+      //     setExecuted(false);
+      //     setOpenSnackBar(true);
+      //     setMessage("Governance settings execution failed!");
+      //     setFailed(true);
+      //     setLoaderOpen(false);
+      //   }
+      // );
     }
 
     if (proposalData[0].commands[0].executionId === 3) {
@@ -549,12 +606,12 @@ const ProposalDetail = () => {
         undefined,
         USDC_CONTRACT_ADDRESS,
         GNOSIS_TRANSACTION_URL
-      )
+      );
       const response = updateProposal.updateProposalAndExecution(
         daoAddress,
         gnosisAddress,
         proposalData[0].ipfsHash,
-        "Executed",
+        proposalStatus,
         123444,
         undefined,
         undefined,
@@ -568,38 +625,40 @@ const ProposalDetail = () => {
         undefined,
         undefined,
         undefined,
-        []
-      )
-      response.then(
-        (result) => {
-          result.promiEvent.on("confirmation", () => {
-            const updateStatus = patchProposalExecuted(pid)
-            updateStatus.then((result) => {
-              if (result.status !== 200) {
-                setExecuted(false)
-                setOpenSnackBar(true)
-                setMessage("Raise amount execution status update failed!")
-                setFailed(true)
-                setLoaderOpen(false)
-              } else {
-                fetchData()
-                setExecuted(true)
-                setOpenSnackBar(true)
-                setMessage("Update raise amount execution successful!")
-                setFailed(false)
-                setLoaderOpen(false)
-              }
-            })
-          })
-        },
-        (error) => {
-          setExecuted(false)
-          setOpenSnackBar(true)
-          setMessage("Update raise amount execution failed!")
-          setFailed(true)
-          setLoaderOpen(false)
-        }
-      )
+        [],
+        txHash
+      );
+      console.log("response", response);
+      // response.then(
+      //   (result) => {
+      //     result.promiEvent.on("confirmation", () => {
+      //       const updateStatus = patchProposalExecuted(pid);
+      //       updateStatus.then((result) => {
+      //         if (result.status !== 200) {
+      //           setExecuted(false);
+      //           setOpenSnackBar(true);
+      //           setMessage("Raise amount execution status update failed!");
+      //           setFailed(true);
+      //           setLoaderOpen(false);
+      //         } else {
+      //           fetchData();
+      //           setExecuted(true);
+      //           setOpenSnackBar(true);
+      //           setMessage("Update raise amount execution successful!");
+      //           setFailed(false);
+      //           setLoaderOpen(false);
+      //         }
+      //       });
+      //     });
+      //   },
+      //   (error) => {
+      //     setExecuted(false);
+      //     setOpenSnackBar(true);
+      //     setMessage("Update raise amount execution failed!");
+      //     setFailed(true);
+      //     setLoaderOpen(false);
+      //   }
+      // );
     }
 
     if (proposalData[0].commands[0].executionId === 4) {
@@ -610,12 +669,12 @@ const ProposalDetail = () => {
         undefined,
         USDC_CONTRACT_ADDRESS,
         GNOSIS_TRANSACTION_URL
-      )
+      );
       const response = updateProposal.updateProposalAndExecution(
         daoAddress,
         gnosisAddress,
         "proposalData[0].ipfsHash",
-        "Executed",
+        proposalStatus,
         123444,
         proposalData[0].commands[0].customToken,
         undefined,
@@ -629,75 +688,441 @@ const ProposalDetail = () => {
         proposalData[0].commands[0].customTokenAmounts,
         proposalData[0].commands[0].customTokenAddresses,
         undefined,
-        []
-      )
-      response.then(
-        (result) => {
-          result.promiEvent.on("confirmation", () => {
-            const updateStatus = patchProposalExecuted(pid)
-            updateStatus.then((result) => {
-              if (result.status !== 200) {
-                setExecuted(false)
-                setOpenSnackBar(true)
-                setMessage("Send custom token execution status update failed!")
-                setFailed(true)
-                setLoaderOpen(false)
-              } else {
-                fetchData()
-                setExecuted(true)
-                setOpenSnackBar(true)
-                setMessage("Send custom token execution successful!")
-                setFailed(false)
-                setLoaderOpen(false)
-              }
-            })
-          })
-        },
-        (error) => {
-          setExecuted(false)
-          setOpenSnackBar(true)
-          setMessage("Send custom token execution status update failed!")
-          setFailed(true)
-          setLoaderOpen(false)
-        }
-      )
+        [],
+        txHash
+      );
+      console.log("response", response);
+      // response.then(
+      //   (result) => {
+      //     result.promiEvent.on("confirmation", () => {
+      //       const updateStatus = patchProposalExecuted(pid);
+      //       updateStatus.then((result) => {
+      //         if (result.status !== 200) {
+      //           setExecuted(false);
+      //           setOpenSnackBar(true);
+      //           setMessage("Send custom token execution status update failed!");
+      //           setFailed(true);
+      //           setLoaderOpen(false);
+      //         } else {
+      //           fetchData();
+      //           setExecuted(true);
+      //           setOpenSnackBar(true);
+      //           setMessage("Send custom token execution successful!");
+      //           setFailed(false);
+      //           setLoaderOpen(false);
+      //         }
+      //       });
+      //     });
+      //   },
+      //   (error) => {
+      //     setExecuted(false);
+      //     setOpenSnackBar(true);
+      //     setMessage("Send custom token execution status update failed!");
+      //     setFailed(true);
+      //     setLoaderOpen(false);
+      //   }
+      // );
     }
-  }
+  };
+
+  // const executeFunction = async (proposalStatus) => {
+  //   setLoaderOpen(true);
+  //   console.log('proposalStatus', proposalStatus)
+  //   if (proposalData[0].commands[0].executionId === 0) {
+  //     // for airdrop execution
+  //     const updateProposal = new SmartContract(
+  //       ImplementationContract,
+  //       daoAddress,
+  //       undefined,
+  //       USDC_CONTRACT_ADDRESS,
+  //       GNOSIS_TRANSACTION_URL
+  //     );
+  //     const response = updateProposal.updateProposalAndExecution(
+  //       daoAddress,
+  //       gnosisAddress,
+  //       proposalData[0].ipfsHash,
+  //       proposalStatus,
+  //       123444,
+  //       undefined,
+  //       proposalData[0].commands[0].airDropToken,
+  //       [1, 0, 0, 0, 0, 0],
+  //       undefined,
+  //       undefined,
+  //       undefined,
+  //       proposalData[0].commands[0].airDropAmount,
+  //       undefined,
+  //       undefined,
+  //       undefined,
+  //       undefined,
+  //       proposalData[0].commands[0].airDropCarryFee,
+  //       []
+  //     );
+  //     await response.then(
+  //       (result) => {
+  //         result.promiEvent.on("confirmation", () => {
+  //           const updateStatus = patchProposalExecuted(pid);
+  //           updateStatus.then((result) => {
+  //             if (result.status !== 200) {
+  //               setExecuted(false);
+  //               setOpenSnackBar(true);
+  //               setMessage("Airdrop execution status update failed!");
+  //               setFailed(true);
+  //               setLoaderOpen(false);
+  //             } else {
+  //               fetchData();
+  //               setExecuted(true);
+  //               setOpenSnackBar(true);
+  //               setMessage("Airdrop execution successful!");
+  //               setFailed(false);
+  //               setLoaderOpen(false);
+  //             }
+  //           });
+  //         });
+  //       },
+  //       (error) => {
+  //         setExecuted(false);
+  //         setOpenSnackBar(true);
+  //         setMessage("Airdrop execution failed!");
+  //         setFailed(true);
+  //         setLoaderOpen(false);
+  //       }
+  //     );
+  //   }
+
+  //   if (proposalData[0].commands[0].executionId === 1) {
+  //     // for mintGT execution
+  //     const updateProposal = new SmartContract(
+  //       ImplementationContract,
+  //       daoAddress,
+  //       undefined,
+  //       USDC_CONTRACT_ADDRESS,
+  //       GNOSIS_TRANSACTION_URL
+  //     );
+  //     const response = updateProposal.updateProposalAndExecution(
+  //       daoAddress,
+  //       gnosisAddress,
+  //       proposalData[0].ipfsHash,
+  //       proposalStatus,
+  //       123444,
+  //       undefined,
+  //       undefined,
+  //       [0, 1, 0, 0, 0, 0],
+  //       undefined,
+  //       undefined,
+  //       undefined,
+  //       undefined,
+  //       [proposalData[0].commands[0].mintGTAmounts],
+  //       [proposalData[0].commands[0].mintGTAddresses],
+  //       undefined,
+  //       undefined,
+  //       undefined,
+  //       []
+  //     );
+  //     response.then(
+  //       (result) => {
+  //         result.promiEvent.on("confirmation", () => {
+  //           const updateStatus = patchProposalExecuted(pid);
+  //           updateStatus.then((result) => {
+  //             if (result.status !== 200) {
+  //               setExecuted(false);
+  //               setOpenSnackBar(true);
+  //               setMessage("MintGT execution status update failed!");
+  //               setFailed(true);
+  //               setLoaderOpen(false);
+  //             } else {
+  //               fetchData();
+  //               setExecuted(true);
+  //               setOpenSnackBar(true);
+  //               setMessage("MintGT execution successful!");
+  //               setFailed(false);
+  //               setLoaderOpen(false);
+  //             }
+  //           });
+  //         });
+  //       },
+  //       (error) => {
+  //         console.log(error);
+  //         setExecuted(false);
+  //         setOpenSnackBar(true);
+  //         setMessage("MintGT execution failed!");
+  //         setFailed(true);
+  //         setLoaderOpen(false);
+  //       }
+  //     );
+  //   }
+
+  //   // if (proposalData[0].commands[0].executionId === 2) {
+  //   //   const web3 = new Web3(window.web3)
+  //   //   // for assigner executor role execution
+  //   //   const updateProposal = new SmartContract(ImplementationContract, daoAddress, undefined, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL)
+  //   //   const response = updateProposal.updateProposalAndExecution(
+  //   //     daoAddress,
+  //   //     gnosisAddress,
+  //   //     proposalData[0].ipfsHash,
+  //   //     "Executed",
+  //   //     123444,
+  //   //     undefined,
+  //   //     undefined,
+  //   //     [0, 0, 1, 0, 0, 0, 0, 0],
+  //   //     undefined,
+  //   //     undefined,
+  //   //     undefined,
+  //   //     undefined,
+  //   //     undefined,
+  //   //     undefined,
+  //   //     undefined,
+  //   //     undefined,
+  //   //     undefined,
+  //   //     undefined,
+  //   //     undefined,
+  //   //     undefined,
+  //   //     undefined,
+  //   //     [web3.utils.toChecksumAddress(proposalData[0].commands[0].executiveRoles)],
+  //   //   )
+  //   //   response.then((result) => {
+  //   //     const updateStatus = patchProposalExecuted(pid)
+  //   //     updateStatus.then((result) => {
+  //   //       if (result.status !== 200) {
+  //   //         setExecuted(false)
+  //   //         setOpenSnackBar(true)
+  //   //         setMessage("Assigner executor role status update failed!")
+  //   //         setFailed(true)
+  //   //         setLoaderOpen(false)
+  //   //       } else {
+  //   //         setExecuted(true)
+  //   //         setOpenSnackBar(true)
+  //   //         setMessage("Assigner executor role allocation successful!")
+  //   //         setFailed(false)
+  //   //         setLoaderOpen(false)
+  //   //       }
+  //   //     })
+  //   //   }, (error) => {
+  //   //     setExecuted(false)
+  //   //     setOpenSnackBar(true)
+  //   //     setMessage("Assigner executor role allocation failed!")
+  //   //     setFailed(true)
+  //   //     setLoaderOpen(false)
+  //   //   })
+  //   // }
+  //   if (proposalData[0].commands[0].executionId === 2) {
+  //     // For execution of Governance settings
+  //     const updateProposal = new SmartContract(
+  //       ImplementationContract,
+  //       daoAddress,
+  //       undefined,
+  //       USDC_CONTRACT_ADDRESS,
+  //       GNOSIS_TRANSACTION_URL
+  //     );
+  //     const response = updateProposal.updateProposalAndExecution(
+  //       daoAddress,
+  //       gnosisAddress,
+  //       proposalData[0].ipfsHash,
+  //       proposalStatus,
+  //       123444,
+  //       undefined,
+  //       undefined,
+  //       [0, 0, 1, 0, 0, 0],
+  //       proposalData[0].commands[0].quorum,
+  //       proposalData[0].commands[0].threshold,
+  //       undefined,
+  //       undefined,
+  //       undefined,
+  //       undefined,
+  //       undefined,
+  //       undefined,
+  //       undefined,
+  //       []
+  //     );
+  //     response.then(
+  //       (result) => {
+  //         result.promiEvent.on("confirmation", () => {
+  //           const updateStatus = patchProposalExecuted(pid);
+  //           updateStatus.then((result) => {
+  //             if (result.status !== 200) {
+  //               setExecuted(false);
+  //               setOpenSnackBar(true);
+  //               setMessage("Governance settings status update failed!");
+  //               setFailed(true);
+  //               setLoaderOpen(false);
+  //             } else {
+  //               fetchData();
+  //               setExecuted(true);
+  //               setOpenSnackBar(true);
+  //               setMessage("Governance settings execution successful!");
+  //               setFailed(false);
+  //               setLoaderOpen(false);
+  //             }
+  //           });
+  //         });
+  //       },
+  //       (error) => {
+  //         console.log(error);
+  //         setExecuted(false);
+  //         setOpenSnackBar(true);
+  //         setMessage("Governance settings execution failed!");
+  //         setFailed(true);
+  //         setLoaderOpen(false);
+  //       }
+  //     );
+  //   }
+
+  //   if (proposalData[0].commands[0].executionId === 3) {
+  //     // update raise amount execution
+  //     const updateProposal = new SmartContract(
+  //       ImplementationContract,
+  //       daoAddress,
+  //       undefined,
+  //       USDC_CONTRACT_ADDRESS,
+  //       GNOSIS_TRANSACTION_URL
+  //     );
+  //     const response = updateProposal.updateProposalAndExecution(
+  //       daoAddress,
+  //       gnosisAddress,
+  //       proposalData[0].ipfsHash,
+  //       proposalStatus,
+  //       123444,
+  //       undefined,
+  //       undefined,
+  //       [0, 0, 0, 1, 0, 0],
+  //       undefined,
+  //       undefined,
+  //       proposalData[0].commands[0].totalDeposits,
+  //       undefined,
+  //       undefined,
+  //       undefined,
+  //       undefined,
+  //       undefined,
+  //       undefined,
+  //       []
+  //     );
+  //     response.then(
+  //       (result) => {
+  //         result.promiEvent.on("confirmation", () => {
+  //           const updateStatus = patchProposalExecuted(pid);
+  //           updateStatus.then((result) => {
+  //             if (result.status !== 200) {
+  //               setExecuted(false);
+  //               setOpenSnackBar(true);
+  //               setMessage("Raise amount execution status update failed!");
+  //               setFailed(true);
+  //               setLoaderOpen(false);
+  //             } else {
+  //               fetchData();
+  //               setExecuted(true);
+  //               setOpenSnackBar(true);
+  //               setMessage("Update raise amount execution successful!");
+  //               setFailed(false);
+  //               setLoaderOpen(false);
+  //             }
+  //           });
+  //         });
+  //       },
+  //       (error) => {
+  //         setExecuted(false);
+  //         setOpenSnackBar(true);
+  //         setMessage("Update raise amount execution failed!");
+  //         setFailed(true);
+  //         setLoaderOpen(false);
+  //       }
+  //     );
+  //   }
+
+  //   if (proposalData[0].commands[0].executionId === 4) {
+  //     // send custom token execution
+  //     const updateProposal = new SmartContract(
+  //       ImplementationContract,
+  //       daoAddress,
+  //       undefined,
+  //       USDC_CONTRACT_ADDRESS,
+  //       GNOSIS_TRANSACTION_URL
+  //     );
+  //     const response = updateProposal.updateProposalAndExecution(
+  //       daoAddress,
+  //       gnosisAddress,
+  //       "proposalData[0].ipfsHash",
+  //       proposalStatus,
+  //       123444,
+  //       proposalData[0].commands[0].customToken,
+  //       undefined,
+  //       [0, 0, 0, 0, 1, 0],
+  //       undefined,
+  //       undefined,
+  //       undefined,
+  //       undefined,
+  //       undefined,
+  //       undefined,
+  //       proposalData[0].commands[0].customTokenAmounts,
+  //       proposalData[0].commands[0].customTokenAddresses,
+  //       undefined,
+  //       []
+  //     );
+  //     response.then(
+  //       (result) => {
+  //         result.promiEvent.on("confirmation", () => {
+  //           const updateStatus = patchProposalExecuted(pid);
+  //           updateStatus.then((result) => {
+  //             if (result.status !== 200) {
+  //               setExecuted(false);
+  //               setOpenSnackBar(true);
+  //               setMessage("Send custom token execution status update failed!");
+  //               setFailed(true);
+  //               setLoaderOpen(false);
+  //             } else {
+  //               fetchData();
+  //               setExecuted(true);
+  //               setOpenSnackBar(true);
+  //               setMessage("Send custom token execution successful!");
+  //               setFailed(false);
+  //               setLoaderOpen(false);
+  //             }
+  //           });
+  //         });
+  //       },
+  //       (error) => {
+  //         setExecuted(false);
+  //         setOpenSnackBar(true);
+  //         setMessage("Send custom token execution status update failed!");
+  //         setFailed(true);
+  //         setLoaderOpen(false);
+  //       }
+  //     );
+  //   }
+  // };
 
   const checkUserVoted = (pid) => {
     if (walletAddress) {
-      const web3 = new Web3(window.web3)
-      let userAddress = walletAddress
-      userAddress = web3.utils.toChecksumAddress(userAddress)
+      const web3 = new Web3(window.web3);
+      let userAddress = walletAddress;
+      userAddress = web3.utils.toChecksumAddress(userAddress);
       let obj = proposalData[0].vote.find(
         (voteCasted) => voteCasted.voterAddress === userAddress
-      )
-      return proposalData[0].vote.indexOf(obj) >= 0
+      );
+      return proposalData[0].vote.indexOf(obj) >= 0;
     }
-  }
+  };
 
   const fetchUserVoteText = (pid) => {
     if (walletAddress) {
-      const web3 = new Web3(window.web3)
-      let userAddress = walletAddress
-      userAddress = web3.utils.toChecksumAddress(userAddress)
+      const web3 = new Web3(window.web3);
+      let userAddress = walletAddress;
+      userAddress = web3.utils.toChecksumAddress(userAddress);
       let obj = proposalData[0].vote.find(
         (voteCasted) => voteCasted.voterAddress === userAddress
-      )
-      return proposalData[0].vote.indexOf(obj) >= 0
+      );
+      return proposalData[0].vote.indexOf(obj) >= 0;
     }
-  }
+  };
 
   const handleShowMore = () => {
-    router.push("/dashboard", undefined, { shallow: true })
-  }
+    router.push("/dashboard", undefined, { shallow: true });
+  };
 
   const handleSnackBarClose = (event, reason) => {
     if (reason === "clickaway") {
-      return
+      return;
     }
-    setOpenSnackBar(false)
-  }
+    setOpenSnackBar(false);
+  };
 
   return (
     <>
@@ -822,8 +1247,8 @@ const ProposalDetail = () => {
                                         : classes.mainCard
                                     }
                                     onClick={(e) => {
-                                      setCastVoteOption(data.votingOptionId)
-                                      setCardSelected(key)
+                                      setCastVoteOption(data.votingOptionId);
+                                      setCardSelected(key);
                                     }}
                                   >
                                     <Grid
@@ -838,7 +1263,7 @@ const ProposalDetail = () => {
                                     </Grid>
                                   </Card>
                                 </CardActionArea>
-                              )
+                              );
                             })}
                             <CardActionArea
                               className={classes.mainCard}
@@ -885,9 +1310,43 @@ const ProposalDetail = () => {
                         </Card>
                       )
                     ) : proposalData[0].status === "passed" ? (
-                      isCurrentUserAdmin() ? (
+                      owner ? (
                         <Card>
                           <Card
+                            className={
+                              executed
+                                ? classes.mainCardButtonSuccess
+                                : classes.mainCardButton
+                            }
+                            onClick={() => executeFunction("passed")}
+                          >
+                            <Grid
+                              container
+                              justifyContent="center"
+                              alignItems="center"
+                            >
+                              {txHash ? (
+                                <Grid item mt={0.5}>
+                                  <CheckCircleRoundedIcon />
+                                </Grid>
+                              ) : (
+                                <Grid item></Grid>
+                              )}
+                              <Grid item>
+                                {txHash ? (
+                                  <Typography className={classes.cardFont1}>
+                                    Signed Successfully
+                                  </Typography>
+                                ) : (
+                                  <Typography className={classes.cardFont1}>
+                                    Sign Now
+                                  </Typography>
+                                )}
+                              </Grid>
+                            </Grid>
+                          </Card>
+
+                          {/* <Card
                             className={
                               executed
                                 ? classes.mainCardButtonSuccess
@@ -919,7 +1378,7 @@ const ProposalDetail = () => {
                                 )}
                               </Grid>
                             </Grid>
-                          </Card>
+                          </Card> */}
                         </Card>
                       ) : (
                         <Card sx={{ width: "100%" }}>
@@ -1066,8 +1525,8 @@ const ProposalDetail = () => {
                                           onClick={(e) => {
                                             setCastVoteOption(
                                               data.votingOptionId
-                                            )
-                                            setCardSelected(key)
+                                            );
+                                            setCardSelected(key);
                                           }}
                                         >
                                           <Grid
@@ -1084,7 +1543,7 @@ const ProposalDetail = () => {
                                           </Grid>
                                         </Card>
                                       </CardActionArea>
-                                    )
+                                    );
                                   }
                                 )
                               : null}
@@ -1672,7 +2131,7 @@ const ProposalDetail = () => {
                             }
                           />
                         </div>
-                      )
+                      );
                     })
                   ) : (
                     <Typography className={classes.listFont2Colourless}>
@@ -1750,7 +2209,7 @@ const ProposalDetail = () => {
                             </Grid>
                             <br />
                           </div>
-                        )
+                        );
                       }
                     })
                   ) : (
@@ -1808,7 +2267,7 @@ const ProposalDetail = () => {
         </Backdrop>
       </Layout1>
     </>
-  )
-}
+  );
+};
 
-export default ClubFetch(ProposalDetail)
+export default ClubFetch(ProposalDetail);
