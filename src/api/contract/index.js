@@ -10,7 +10,7 @@ import ImplementationContract from "../../abis/implementationABI.json";
 import { SafeFactory } from "@gnosis.pm/safe-core-sdk";
 import { connect } from "react-redux";
 import { Component } from "react";
-import { createProposalTxHash } from "../../api/proposal";
+import { createProposalTxHash, getProposalTxHash } from "../../api/proposal";
 
 async function syncWallet() {
   // function for validating metamask wallet
@@ -128,7 +128,8 @@ export class SmartContract {
     customTokenAddresses = [],
     ownersAirdropFees = 0,
     daoAdminAddresses = [],
-    txHash = ""
+    txHash = "",
+    pid
   ) {
     const parameters = [
       proposalHash,
@@ -149,6 +150,7 @@ export class SmartContract {
       daoAdminAddresses,
     ];
     console.log("parameters", parameters);
+    console.log("pid", pid);
     console.log("txHash in api", txHash);
     const safeOwner = this.walletAddress;
     const ethAdapter = new Web3Adapter({
@@ -168,24 +170,43 @@ export class SmartContract {
       ethAdapter: ethAdapter,
       safeAddress: gnosisAddress,
     });
+    const transaction = {
+      to: daoAddress,
+      data: implementationContract.methods
+        .updateProposalAndExecution(parameters)
+        .encodeABI(),
+      value: "0",
+    };
 
-    if (txHash === "") {
-      const transaction = {
-        to: daoAddress,
-        data: implementationContract.methods
-          .updateProposalAndExecution(parameters)
-          .encodeABI(),
-        value: "0",
-      };
+    const safeTransaction = await safeSdk.createTransaction(transaction);
+    console.log("execution Status", executionStatus);
+    if (executionStatus !== "executed") {
+      if (txHash === "") {
+        const safeTxHash = await safeSdk.getTransactionHash(safeTransaction);
+        const payload = {
+          proposalId: pid,
+          txHash: safeTxHash,
+        };
 
-      const safeTransaction = await safeSdk.createTransaction(transaction);
-      const safeTxHash = await safeSdk.getTransactionHash(safeTransaction);
-      const payload = {
-        proposalId: proposalId,
-        txHash: safeTxHash,
-      };
-
-      await createProposalTxHash(payload);
+        await createProposalTxHash(payload);
+        const txResponse = await safeSdk.approveTransactionHash(txHash);
+        await txResponse.transactionResponse?.wait();
+        console.log("txResponse", txResponse);
+      } else {
+        const proposalTxHash = await getProposalTxHash(pid);
+        console.log("proposalTxHash", proposalTxHash);
+        const txResponse = await safeSdk.approveTransactionHash(txHash);
+        await txResponse.transactionResponse?.wait();
+      }
+    } else {
+      const executeTxResponse = await safeSdk.executeTransaction(
+        safeTransaction
+      );
+      console.log("executeTxResponse", executeTxResponse);
+      const receipt =
+        executeTxResponse.transactionResponse &&
+        (await executeTxResponse.transactionResponse.wait());
+      return executeTxResponse;
     }
 
     // const senderSignature = await safeSdk.signTransaction(safeTransaction);
@@ -260,11 +281,8 @@ export class SmartContract {
     // const safeThreshold = await safeSdk.getThreshold();
     // console.log(safeThreshold);
 
-    // const executeTxResponse = await safeSdk.executeTransaction(safeTransaction)
-    // const receipt =
-    //   executeTxResponse.transactionResponse &&
-    //   (await executeTxResponse.transactionResponse.wait())
-    // return executeTxResponse
+    if (executionStatus === "executed") {
+    }
   }
 
   // Deprecated

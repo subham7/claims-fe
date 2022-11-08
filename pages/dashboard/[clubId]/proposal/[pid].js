@@ -164,8 +164,11 @@ const ProposalDetail = () => {
   const [fetched, setFetched] = useState(false);
   const [members, setMembers] = useState([]);
   const [owner, setOwner] = useState(false);
+  const [ownerAddresses, setOwnerAddresses] = useState(false);
   const [threshold, setThreshold] = useState();
+  const [signed, setSigned] = useState(false);
   const [txHash, setTxHash] = useState();
+  const [executionReady, setExecutionReady] = useState(false);
   const [membersFetched, setMembersFetched] = useState(false);
   const [proposalData, setProposalData] = useState([]);
   const [castVoteOption, setCastVoteOption] = useState("");
@@ -321,6 +324,7 @@ const ProposalDetail = () => {
   const isOwner = async () => {
     const safeSdk = await getSafeSdk();
     const ownerAddresses = await safeSdk.getOwners();
+    setOwnerAddresses(ownerAddresses);
     console.log("ownerAddresses", ownerAddresses);
     if (ownerAddresses.includes(walletAddress)) {
       setOwner(true);
@@ -331,18 +335,29 @@ const ProposalDetail = () => {
     setThreshold(threshold);
     const proposalTxHash = getProposalTxHash(pid);
     console.log("proposalTxHash", proposalTxHash);
-    proposalTxHash.then((result) => {
+    proposalTxHash.then(async (result) => {
+      let txHash;
       if (
         result.status !== 200 ||
         (result.status === 200 && result.data.length === 0)
       ) {
         setTxHash("");
       } else {
+        txHash = result.data[0].txHash;
+        console.log("txhashhhhhhhh", txHash);
         setTxHash(result.data[0].txHash);
+        const ownerAddresses = await safeSdk.getOwnersWhoApprovedTx(txHash);
+        console.log("ownerAddresses who approved", ownerAddresses);
+        if (ownerAddresses.includes(walletAddress)) {
+          setSigned(true);
+        }
+        if (ownerAddresses.length >= threshold) {
+          setExecutionReady(true);
+        }
       }
     });
   };
-  console.log("txhash", txHash);
+  console.log("execution ready", executionReady);
   const executeNonAdminUser = () => {
     setOpenSnackBar(true);
     setFailed(true);
@@ -380,39 +395,42 @@ const ProposalDetail = () => {
         undefined,
         proposalData[0].commands[0].airDropCarryFee,
         [],
-        txHash
+        txHash,
+        pid
       );
       console.log("response", response);
-      // await response.then(
-      //   (result) => {
-      //     result.promiEvent.on("confirmation", () => {
-      //       const updateStatus = patchProposalExecuted(pid);
-      //       updateStatus.then((result) => {
-      //         if (result.status !== 200) {
-      //           setExecuted(false);
-      //           setOpenSnackBar(true);
-      //           setMessage("Airdrop execution status update failed!");
-      //           setFailed(true);
-      //           setLoaderOpen(false);
-      //         } else {
-      //           fetchData();
-      //           setExecuted(true);
-      //           setOpenSnackBar(true);
-      //           setMessage("Airdrop execution successful!");
-      //           setFailed(false);
-      //           setLoaderOpen(false);
-      //         }
-      //       });
-      //     });
-      //   },
-      //   (error) => {
-      //     setExecuted(false);
-      //     setOpenSnackBar(true);
-      //     setMessage("Airdrop execution failed!");
-      //     setFailed(true);
-      //     setLoaderOpen(false);
-      //   }
-      // );
+      if (proposalStatus === "executed") {
+        await response.then(
+          (result) => {
+            result.promiEvent.on("confirmation", () => {
+              const updateStatus = patchProposalExecuted(pid);
+              updateStatus.then((result) => {
+                if (result.status !== 200) {
+                  setExecuted(false);
+                  setOpenSnackBar(true);
+                  setMessage("Airdrop execution status update failed!");
+                  setFailed(true);
+                  setLoaderOpen(false);
+                } else {
+                  fetchData();
+                  setExecuted(true);
+                  setOpenSnackBar(true);
+                  setMessage("Airdrop execution successful!");
+                  setFailed(false);
+                  setLoaderOpen(false);
+                }
+              });
+            });
+          },
+          (error) => {
+            setExecuted(false);
+            setOpenSnackBar(true);
+            setMessage("Airdrop execution failed!");
+            setFailed(true);
+            setLoaderOpen(false);
+          }
+        );
+      }
     }
 
     if (proposalData[0].commands[0].executionId === 1) {
@@ -443,40 +461,43 @@ const ProposalDetail = () => {
         undefined,
         undefined,
         [],
-        txHash
+        txHash,
+        pid
       );
       console.log("response", response);
-      // response.then(
-      //   (result) => {
-      //     result.promiEvent.on("confirmation", () => {
-      //       const updateStatus = patchProposalExecuted(pid);
-      //       updateStatus.then((result) => {
-      //         if (result.status !== 200) {
-      //           setExecuted(false);
-      //           setOpenSnackBar(true);
-      //           setMessage("MintGT execution status update failed!");
-      //           setFailed(true);
-      //           setLoaderOpen(false);
-      //         } else {
-      //           fetchData();
-      //           setExecuted(true);
-      //           setOpenSnackBar(true);
-      //           setMessage("MintGT execution successful!");
-      //           setFailed(false);
-      //           setLoaderOpen(false);
-      //         }
-      //       });
-      //     });
-      //   },
-      //   (error) => {
-      //     console.log(error);
-      //     setExecuted(false);
-      //     setOpenSnackBar(true);
-      //     setMessage("MintGT execution failed!");
-      //     setFailed(true);
-      //     setLoaderOpen(false);
-      //   }
-      // );
+      if (proposalStatus === "executed") {
+        response.then(
+          (result) => {
+            result.promiEvent.on("confirmation", () => {
+              const updateStatus = patchProposalExecuted(pid);
+              updateStatus.then((result) => {
+                if (result.status !== 200) {
+                  setExecuted(false);
+                  setOpenSnackBar(true);
+                  setMessage("MintGT execution status update failed!");
+                  setFailed(true);
+                  setLoaderOpen(false);
+                } else {
+                  fetchData();
+                  setExecuted(true);
+                  setOpenSnackBar(true);
+                  setMessage("MintGT execution successful!");
+                  setFailed(false);
+                  setLoaderOpen(false);
+                }
+              });
+            });
+          },
+          (error) => {
+            console.log(error);
+            setExecuted(false);
+            setOpenSnackBar(true);
+            setMessage("MintGT execution failed!");
+            setFailed(true);
+            setLoaderOpen(false);
+          }
+        );
+      }
     }
     // comented from before
     // if (proposalData[0].commands[0].executionId === 2) {
@@ -562,40 +583,43 @@ const ProposalDetail = () => {
         undefined,
         undefined,
         [],
-        txHash
+        txHash,
+        pid
       );
       console.log("response", response);
-      // response.then(
-      //   (result) => {
-      //     result.promiEvent.on("confirmation", () => {
-      //       const updateStatus = patchProposalExecuted(pid);
-      //       updateStatus.then((result) => {
-      //         if (result.status !== 200) {
-      //           setExecuted(false);
-      //           setOpenSnackBar(true);
-      //           setMessage("Governance settings status update failed!");
-      //           setFailed(true);
-      //           setLoaderOpen(false);
-      //         } else {
-      //           fetchData();
-      //           setExecuted(true);
-      //           setOpenSnackBar(true);
-      //           setMessage("Governance settings execution successful!");
-      //           setFailed(false);
-      //           setLoaderOpen(false);
-      //         }
-      //       });
-      //     });
-      //   },
-      //   (error) => {
-      //     console.log(error);
-      //     setExecuted(false);
-      //     setOpenSnackBar(true);
-      //     setMessage("Governance settings execution failed!");
-      //     setFailed(true);
-      //     setLoaderOpen(false);
-      //   }
-      // );
+      if (proposalStatus === "executed") {
+        response.then(
+          (result) => {
+            result.promiEvent.on("confirmation", () => {
+              const updateStatus = patchProposalExecuted(pid);
+              updateStatus.then((result) => {
+                if (result.status !== 200) {
+                  setExecuted(false);
+                  setOpenSnackBar(true);
+                  setMessage("Governance settings status update failed!");
+                  setFailed(true);
+                  setLoaderOpen(false);
+                } else {
+                  fetchData();
+                  setExecuted(true);
+                  setOpenSnackBar(true);
+                  setMessage("Governance settings execution successful!");
+                  setFailed(false);
+                  setLoaderOpen(false);
+                }
+              });
+            });
+          },
+          (error) => {
+            console.log(error);
+            setExecuted(false);
+            setOpenSnackBar(true);
+            setMessage("Governance settings execution failed!");
+            setFailed(true);
+            setLoaderOpen(false);
+          }
+        );
+      }
     }
 
     if (proposalData[0].commands[0].executionId === 3) {
@@ -626,39 +650,42 @@ const ProposalDetail = () => {
         undefined,
         undefined,
         [],
-        txHash
+        txHash,
+        pid
       );
       console.log("response", response);
-      // response.then(
-      //   (result) => {
-      //     result.promiEvent.on("confirmation", () => {
-      //       const updateStatus = patchProposalExecuted(pid);
-      //       updateStatus.then((result) => {
-      //         if (result.status !== 200) {
-      //           setExecuted(false);
-      //           setOpenSnackBar(true);
-      //           setMessage("Raise amount execution status update failed!");
-      //           setFailed(true);
-      //           setLoaderOpen(false);
-      //         } else {
-      //           fetchData();
-      //           setExecuted(true);
-      //           setOpenSnackBar(true);
-      //           setMessage("Update raise amount execution successful!");
-      //           setFailed(false);
-      //           setLoaderOpen(false);
-      //         }
-      //       });
-      //     });
-      //   },
-      //   (error) => {
-      //     setExecuted(false);
-      //     setOpenSnackBar(true);
-      //     setMessage("Update raise amount execution failed!");
-      //     setFailed(true);
-      //     setLoaderOpen(false);
-      //   }
-      // );
+      if (proposalStatus === "executed") {
+        response.then(
+          (result) => {
+            result.promiEvent.on("confirmation", () => {
+              const updateStatus = patchProposalExecuted(pid);
+              updateStatus.then((result) => {
+                if (result.status !== 200) {
+                  setExecuted(false);
+                  setOpenSnackBar(true);
+                  setMessage("Raise amount execution status update failed!");
+                  setFailed(true);
+                  setLoaderOpen(false);
+                } else {
+                  fetchData();
+                  setExecuted(true);
+                  setOpenSnackBar(true);
+                  setMessage("Update raise amount execution successful!");
+                  setFailed(false);
+                  setLoaderOpen(false);
+                }
+              });
+            });
+          },
+          (error) => {
+            setExecuted(false);
+            setOpenSnackBar(true);
+            setMessage("Update raise amount execution failed!");
+            setFailed(true);
+            setLoaderOpen(false);
+          }
+        );
+      }
     }
 
     if (proposalData[0].commands[0].executionId === 4) {
@@ -689,39 +716,45 @@ const ProposalDetail = () => {
         proposalData[0].commands[0].customTokenAddresses,
         undefined,
         [],
-        txHash
+        txHash,
+        pid
       );
       console.log("response", response);
-      // response.then(
-      //   (result) => {
-      //     result.promiEvent.on("confirmation", () => {
-      //       const updateStatus = patchProposalExecuted(pid);
-      //       updateStatus.then((result) => {
-      //         if (result.status !== 200) {
-      //           setExecuted(false);
-      //           setOpenSnackBar(true);
-      //           setMessage("Send custom token execution status update failed!");
-      //           setFailed(true);
-      //           setLoaderOpen(false);
-      //         } else {
-      //           fetchData();
-      //           setExecuted(true);
-      //           setOpenSnackBar(true);
-      //           setMessage("Send custom token execution successful!");
-      //           setFailed(false);
-      //           setLoaderOpen(false);
-      //         }
-      //       });
-      //     });
-      //   },
-      //   (error) => {
-      //     setExecuted(false);
-      //     setOpenSnackBar(true);
-      //     setMessage("Send custom token execution status update failed!");
-      //     setFailed(true);
-      //     setLoaderOpen(false);
-      //   }
-      // );
+
+      if (proposalStatus === "executed") {
+        response.then(
+          (result) => {
+            result.promiEvent.on("confirmation", () => {
+              const updateStatus = patchProposalExecuted(pid);
+              updateStatus.then((result) => {
+                if (result.status !== 200) {
+                  setExecuted(false);
+                  setOpenSnackBar(true);
+                  setMessage(
+                    "Send custom token execution status update failed!"
+                  );
+                  setFailed(true);
+                  setLoaderOpen(false);
+                } else {
+                  fetchData();
+                  setExecuted(true);
+                  setOpenSnackBar(true);
+                  setMessage("Send custom token execution successful!");
+                  setFailed(false);
+                  setLoaderOpen(false);
+                }
+              });
+            });
+          },
+          (error) => {
+            setExecuted(false);
+            setOpenSnackBar(true);
+            setMessage("Send custom token execution status update failed!");
+            setFailed(true);
+            setLoaderOpen(false);
+          }
+        );
+      }
     }
   };
 
@@ -1318,7 +1351,18 @@ const ProposalDetail = () => {
                                 ? classes.mainCardButtonSuccess
                                 : classes.mainCardButton
                             }
-                            onClick={() => executeFunction("passed")}
+                            // onClick={() => executeFunction("passed")}
+                            onClick={
+                              executionReady
+                                ? () => {
+                                    console.log("executed in here");
+                                    executeFunction("executed");
+                                  }
+                                : () => {
+                                    console.log("passed in here");
+                                    executeFunction("passed");
+                                  }
+                            }
                           >
                             <Grid
                               container
@@ -1335,11 +1379,17 @@ const ProposalDetail = () => {
                               <Grid item>
                                 {txHash ? (
                                   <Typography className={classes.cardFont1}>
-                                    Signed Successfully
+                                    {executed
+                                      ? "Executed Successfully"
+                                      : executionReady
+                                      ? "Execute Now"
+                                      : signed
+                                      ? "Signed Succesfully"
+                                      : "Sign Now"}
                                   </Typography>
                                 ) : (
                                   <Typography className={classes.cardFont1}>
-                                    Sign Now
+                                    {signed ? "Signed Succesfully" : "Sign Now"}
                                   </Typography>
                                 )}
                               </Grid>
@@ -1650,8 +1700,8 @@ const ProposalDetail = () => {
                   ) : null
                 ) : null}
               </Grid>
-              <Grid container mt={4}>
-                <Grid item md={12}>
+              <Grid container mt={4} spacing={2}>
+                <Grid item md={8}>
                   {fetched && (
                     <>
                       {proposalData[0].commands.length && (
@@ -2002,6 +2052,19 @@ const ProposalDetail = () => {
                       )}
                     </>
                   )}
+                </Grid>
+                <Grid item md={4}>
+                  <Card>
+                    <Grid container item>
+                      <Typography className={classes.listFont2}>
+                        Signators
+                      </Typography>
+                      <Divider sx={{ marginTop: 2, marginBottom: 3 }} />
+                    </Grid>
+                    {/* {ownerAddresses.map((o, i) => {
+                      <p key={i}>{o}</p>;
+                    })} */}
+                  </Card>
                 </Grid>
               </Grid>
             </Grid>
