@@ -48,6 +48,7 @@ import USDCContract from "../../../../src/abis/usdcTokenContract.json";
 import ClubFetch from "../../../../src/utils/clubFetch";
 import Web3Adapter from "@gnosis.pm/safe-web3-lib";
 import Safe from "@gnosis.pm/safe-core-sdk";
+import SafeServiceClient from "@gnosis.pm/safe-service-client";
 
 const useStyles = makeStyles({
   clubAssets: {
@@ -219,6 +220,20 @@ const ProposalDetail = () => {
     return safeSdk;
   };
 
+  const getSafeService = async () => {
+    const web3 = new Web3(window.web3);
+    const ethAdapter = new Web3Adapter({
+      web3: web3,
+      signerAddress: walletAddress,
+    });
+    const safeService = new SafeServiceClient({
+      GNOSIS_TRANSACTION_URL,
+      ethAdapter,
+    });
+    console.log("safeService", safeService);
+    return safeService;
+  };
+
   const fetchData = () => {
     dispatch(addProposalId(pid));
     const proposalData = getProposalDetail(pid);
@@ -346,6 +361,12 @@ const ProposalDetail = () => {
         txHash = result.data[0].txHash;
         console.log("txhashhhhhhhh", txHash);
         setTxHash(result.data[0].txHash);
+
+        const safeService = await getSafeService();
+
+        const tx = await safeService.getTransaction(result.data[0].txHash);
+        console.log("txxxxx", tx);
+
         const ownerAddresses = await safeSdk.getOwnersWhoApprovedTx(txHash);
         console.log("ownerAddresses who approved", ownerAddresses);
         if (ownerAddresses.includes(walletAddress)) {
