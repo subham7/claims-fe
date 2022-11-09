@@ -299,14 +299,14 @@ export class SmartContract {
         await createProposalTxHash(payload);
         const senderSignature = await safeSdk.signTransactionHash(safeTxHash);
 
-        await safeService.proposeTransaction({
+        const proposeTxn = await safeService.proposeTransaction({
           safeAddress: gnosisAddress,
           safeTransactionData: safeTransaction.data,
           safeTxHash: safeTxHash,
           senderAddress: this.walletAddress,
           senderSignature: senderSignature.data,
         });
-
+        return proposeTxn;
         // const txResponse = await safeSdk.approveTransactionHash(txHash);
         // await txResponse.transactionResponse?.wait();
         // console.log("txResponse", txResponse);
@@ -323,7 +323,7 @@ export class SmartContract {
         const senderSignature = await safeSdk.signTransactionHash(
           proposalTxHash.data[0].txHash
         );
-        await safeService.proposeTransaction({
+        const proposeTxn = await safeService.proposeTransaction({
           safeAddress: gnosisAddress,
           safeTransactionData: safeTransaction.data,
           safeTxHash: proposalTxHash.data[0].txHash,
@@ -331,6 +331,7 @@ export class SmartContract {
           senderSignature: senderSignature.data,
         });
         console.log("senderSignature", senderSignature);
+        return proposeTxn;
 
         // const safeTransactionData = {
         //   to: tx.to,

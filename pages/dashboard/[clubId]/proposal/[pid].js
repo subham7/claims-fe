@@ -203,6 +203,8 @@ const ProposalDetail = () => {
     return state.gnosis.transactionUrl;
   });
 
+  console.log("GNOSIS_TRANSACTION_URL", GNOSIS_TRANSACTION_URL);
+
   let voteId = null;
   const dispatch = useDispatch();
 
@@ -227,7 +229,7 @@ const ProposalDetail = () => {
       signerAddress: walletAddress,
     });
     const safeService = new SafeServiceClient({
-      GNOSIS_TRANSACTION_URL,
+      txServiceUrl: GNOSIS_TRANSACTION_URL,
       ethAdapter,
     });
     console.log("safeService", safeService);
@@ -282,7 +284,7 @@ const ProposalDetail = () => {
     if (pid) {
       fetchData();
     }
-  }, [pid]);
+  }, [pid, signed]);
   console.log("threshold", threshold);
   useEffect(() => {
     setLoaderOpen(true);
@@ -363,11 +365,19 @@ const ProposalDetail = () => {
         setTxHash(result.data[0].txHash);
 
         const safeService = await getSafeService();
+        console.log("safeService", safeService);
+
+        // const confirmations = await safeService.getTransactionConfirmations(
+        //   txHash
+        // );
+        // console.log("confirmations", confirmations);
 
         const tx = await safeService.getTransaction(result.data[0].txHash);
         console.log("txxxxx", tx);
 
-        const ownerAddresses = await safeSdk.getOwnersWhoApprovedTx(txHash);
+        const ownerAddresses = tx.confirmations.map(
+          (confirmOwners) => confirmOwners.owner
+        );
         console.log("ownerAddresses who approved", ownerAddresses);
         if (ownerAddresses.includes(walletAddress)) {
           setSigned(true);
@@ -451,6 +461,12 @@ const ProposalDetail = () => {
             setLoaderOpen(false);
           }
         );
+      } else {
+        await response.then((result) => {
+          console.log("save result", result);
+          setSigned(true);
+          setLoaderOpen(false);
+        });
       }
     }
 
