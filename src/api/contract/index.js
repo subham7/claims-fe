@@ -320,29 +320,42 @@ export class SmartContract {
         );
         console.log("txxxxx", tx);
 
-        const safeTransactionData = {
-          to: tx.to,
-          value: tx.value,
-          operation: tx.operation,
-          safeTxGas: tx.safeTxGas,
-          baseGas: tx.baseGas,
-          gasPrice: tx.gasPrice,
-          gasToken: tx.gasToken,
-          refundReceiver: tx.refundReceiver,
-          nonce: tx.nonce,
-          data: tx.data,
-        };
+        const senderSignature = await safeSdk.signTransactionHash(
+          proposalTxHash.data[0].txHash
+        );
+        await safeService.proposeTransaction({
+          safeAddress: gnosisAddress,
+          safeTransactionData: safeTransaction.data,
+          safeTxHash: proposalTxHash.data[0].txHash,
+          senderAddress: this.walletAddress,
+          senderSignature: senderSignature.data,
+        });
+        console.log("senderSignature", senderSignature);
 
-        safeTransaction2 = await safeSdk.createTransaction(safeTransactionData);
+        // const safeTransactionData = {
+        //   to: tx.to,
+        //   value: tx.value,
+        //   operation: tx.operation,
+        //   safeTxGas: tx.safeTxGas,
+        //   baseGas: tx.baseGas,
+        //   gasPrice: tx.gasPrice,
+        //   gasToken: tx.gasToken,
+        //   refundReceiver: tx.refundReceiver,
+        //   nonce: tx.nonce,
+        //   data: tx.data,
+        // };
 
-        for (let i = 0; i < tx.confirmations.length; i++) {
-          const signature = new EthSignSignature(
-            tx.confirmations[i].owner,
-            tx.confirmations[i].signature
-          );
-          console.log("signatureee", signature);
-          safeTransaction2.addSignature(signature);
-        }
+        // safeTransaction2 = await safeSdk.createTransaction(safeTransactionData);
+        // console.log("safeTransaction2", safeTransaction2);
+
+        // for (let i = 0; i < tx.confirmations.length; i++) {
+        //   const signature = new EthSignSignature(
+        //     tx.confirmations[i].owner,
+        //     tx.confirmations[i].signature
+        //   );
+        //   console.log("signatureee", signature);
+        //   safeTransaction2.addSignature(signature);
+        // }
 
         // const txResponse = await safeSdk.approveTransactionHash(txHash);
         // await txResponse.transactionResponse?.wait();
