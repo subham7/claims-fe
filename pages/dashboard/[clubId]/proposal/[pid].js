@@ -27,6 +27,8 @@ import {
   Backdrop,
 } from "@mui/material";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
+import DoneIcon from "@mui/icons-material/Done";
 import { useRouter } from "next/router";
 import Router, { withRouter } from "next/router";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
@@ -49,6 +51,7 @@ import ClubFetch from "../../../../src/utils/clubFetch";
 import Web3Adapter from "@gnosis.pm/safe-web3-lib";
 import Safe from "@gnosis.pm/safe-core-sdk";
 import SafeServiceClient from "@gnosis.pm/safe-service-client";
+import { blue } from "@mui/material/colors";
 
 const useStyles = makeStyles({
   clubAssets: {
@@ -165,7 +168,8 @@ const ProposalDetail = () => {
   const [fetched, setFetched] = useState(false);
   const [members, setMembers] = useState([]);
   const [owner, setOwner] = useState(false);
-  const [ownerAddresses, setOwnerAddresses] = useState(false);
+  const [ownerAddresses, setOwnerAddresses] = useState([]);
+  const [signedOwners, setSignedOwners] = useState([]);
   const [threshold, setThreshold] = useState();
   const [signed, setSigned] = useState(false);
   const [txHash, setTxHash] = useState();
@@ -184,6 +188,7 @@ const ProposalDetail = () => {
   const gnosisAddress = useSelector((state) => {
     return state.gnosis.safeAddress;
   });
+  console.log("gnosisAddress", gnosisAddress);
 
   const [executed, setExecuted] = useState(false);
   const [message, setMessage] = useState("");
@@ -209,11 +214,13 @@ const ProposalDetail = () => {
   const dispatch = useDispatch();
 
   const getSafeSdk = async () => {
-    const web3 = new Web3(window.web3);
+    const web3 = new Web3(window.ethereum);
     const ethAdapter = new Web3Adapter({
       web3: web3,
       signerAddress: walletAddress,
     });
+    console.log("web3", web3);
+    console.log("eth adapter", ethAdapter);
     const safeSdk = await Safe.create({
       ethAdapter: ethAdapter,
       safeAddress: gnosisAddress,
@@ -236,7 +243,7 @@ const ProposalDetail = () => {
     return safeService;
   };
 
-  const fetchData = () => {
+  const fetchData = async () => {
     dispatch(addProposalId(pid));
     const proposalData = getProposalDetail(pid);
     proposalData.then((result) => {
@@ -280,11 +287,12 @@ const ProposalDetail = () => {
 
   useEffect(async () => {
     setLoaderOpen(true);
-    await isOwner();
-    if (pid) {
-      fetchData();
+
+    if (pid && gnosisAddress && GNOSIS_TRANSACTION_URL) {
+      await isOwner();
+      await fetchData();
     }
-  }, [pid]);
+  }, [pid, gnosisAddress, GNOSIS_TRANSACTION_URL]);
   console.log("threshold", threshold);
   useEffect(async () => {
     setLoaderOpen(true);
@@ -380,6 +388,7 @@ const ProposalDetail = () => {
           (confirmOwners) => confirmOwners.owner
         );
         console.log("ownerAddresses who approved", ownerAddresses);
+        setSignedOwners(ownerAddresses);
         if (ownerAddresses.includes(walletAddress)) {
           setSigned(true);
         }
@@ -1772,7 +1781,7 @@ const ProposalDetail = () => {
                 ) : null}
               </Grid>
               <Grid container mt={4} spacing={2}>
-                <Grid item md={8}>
+                <Grid item md={9}>
                   {fetched && (
                     <>
                       {proposalData[0].commands.length && (
@@ -2124,7 +2133,7 @@ const ProposalDetail = () => {
                     </>
                   )}
                 </Grid>
-                <Grid item md={4}>
+                <Grid item md={3}>
                   <Card>
                     <Grid container item>
                       <Typography className={classes.listFont2}>
@@ -2132,9 +2141,26 @@ const ProposalDetail = () => {
                       </Typography>
                       <Divider sx={{ marginTop: 2, marginBottom: 3 }} />
                     </Grid>
-                    {/* {ownerAddresses.map((o, i) => {
-                      <p key={i}>{o}</p>;
-                    })} */}
+                    {ownerAddresses.map((owner) => (
+                      <Grid
+                        sx={{
+                          display: "flex",
+                          justifyContent: "flex-start",
+                        }}
+                      >
+                        {signedOwners.includes(owner) ? (
+                          <DoneIcon
+                            fill="blue"
+                            sx={{ marginRight: 2, color: "#3B7AFD" }}
+                          />
+                        ) : (
+                          <HelpOutlineIcon sx={{ marginRight: 2 }} />
+                        )}
+                        <Typography key={owner}>
+                          {owner.slice(0, 6)}.....{owner.slice(-4)}
+                        </Typography>
+                      </Grid>
+                    ))}
                   </Card>
                 </Grid>
               </Grid>
