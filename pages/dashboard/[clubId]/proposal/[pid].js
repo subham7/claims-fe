@@ -284,10 +284,11 @@ const ProposalDetail = () => {
     if (pid) {
       fetchData();
     }
-  }, [pid, signed]);
+  }, [pid]);
   console.log("threshold", threshold);
-  useEffect(() => {
+  useEffect(async () => {
     setLoaderOpen(true);
+    // await isOwner();
     if (clubId) {
       fetchMembersData();
     }
@@ -462,11 +463,19 @@ const ProposalDetail = () => {
           }
         );
       } else {
-        await response.then((result) => {
-          console.log("save result", result);
+        console.log("response", response);
+        await response.then(() => {
+          console.log("firsttttt");
           setSigned(true);
           setLoaderOpen(false);
         });
+        // await response.then((result) => {
+        //   result.promiEvent.on("confirmation", () => {
+        //     console.log("save result", result);
+        //     setSigned(true);
+        //     setLoaderOpen(false);
+        //   });
+        // });
       }
     }
 
@@ -534,6 +543,13 @@ const ProposalDetail = () => {
             setLoaderOpen(false);
           }
         );
+      } else {
+        await response.then(async (result) => {
+          console.log("save result", result);
+          setSigned(true);
+          await isOwner();
+          setLoaderOpen(false);
+        });
       }
     }
     // comented from before
@@ -656,6 +672,12 @@ const ProposalDetail = () => {
             setLoaderOpen(false);
           }
         );
+      } else {
+        await response.then((result) => {
+          console.log("save result", result);
+          setSigned(true);
+          setLoaderOpen(false);
+        });
       }
     }
 
@@ -722,6 +744,12 @@ const ProposalDetail = () => {
             setLoaderOpen(false);
           }
         );
+      } else {
+        await response.then((result) => {
+          console.log("save result", result);
+          setSigned(true);
+          setLoaderOpen(false);
+        });
       }
     }
 
@@ -791,6 +819,12 @@ const ProposalDetail = () => {
             setLoaderOpen(false);
           }
         );
+      } else {
+        await response.then((result) => {
+          console.log("save result", result);
+          setSigned(true);
+          setLoaderOpen(false);
+        });
       }
     }
   };

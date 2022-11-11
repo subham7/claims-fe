@@ -260,6 +260,7 @@ export class SmartContract {
       ownersAirdropFees,
       daoAdminAddresses,
     ];
+    console.log("executionStatus", executionStatus);
     const safeOwner = this.walletAddress;
     const ethAdapter = new Web3Adapter({
       web3: this.web3,
@@ -285,7 +286,7 @@ export class SmartContract {
         .encodeABI(),
       value: "0",
     };
-    let safeTransaction2;
+    // let safeTransaction2;
     const safeTransaction = await safeSdk.createTransaction(transaction);
     console.log("execution Status", executionStatus);
     if (executionStatus !== "executed") {
@@ -306,6 +307,7 @@ export class SmartContract {
           senderAddress: this.walletAddress,
           senderSignature: senderSignature.data,
         });
+        console.log("proposeTxn in ifffff", proposeTxn);
         return proposeTxn;
         // const txResponse = await safeSdk.approveTransactionHash(txHash);
         // await txResponse.transactionResponse?.wait();
@@ -331,6 +333,7 @@ export class SmartContract {
           senderSignature: senderSignature.data,
         });
         console.log("senderSignature", senderSignature);
+        console.log("proposeTxn in elseeee", proposeTxn);
         return proposeTxn;
 
         // const safeTransactionData = {
@@ -362,8 +365,9 @@ export class SmartContract {
         // await txResponse.transactionResponse?.wait();
       }
     } else {
+      console.log("shfdfsjk", safeTransaction);
       const executeTxResponse = await safeSdk.executeTransaction(
-        safeTransaction2
+        safeTransaction
       );
       console.log("executeTxResponse", executeTxResponse);
       const receipt =
