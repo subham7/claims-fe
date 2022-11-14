@@ -109,117 +109,6 @@ export class SmartContract {
       .send({ from: this.walletAddress });
   }
 
-  // async updateProposalAndExecution(
-  //   daoAddress = "",
-  //   gnosisAddress = "",
-  //   proposalHash = "",
-  //   executionStatus = "",
-  //   proposalId = 1,
-  //   customToken = "0x0000000000000000000000000000000000000000",
-  //   airDropToken = "0x0000000000000000000000000000000000000000",
-  //   executionIds = [0, 0, 0, 0, 0, 0, 0, 0],
-  //   quoram = 0,
-  //   threshold = 0,
-  //   totalDeposits = 0,
-  //   airDropAmount = 0,
-  //   mintGTAmounts = [],
-  //   mintGTAddresses = [],
-  //   customTokenAmounts = [],
-  //   customTokenAddresses = [],
-  //   ownersAirdropFees = 0,
-  //   daoAdminAddresses = []
-  // ) {
-  //   const parameters = [
-  //     proposalHash,
-  //     executionStatus,
-  //     proposalId,
-  //     customToken,
-  //     airDropToken,
-  //     executionIds,
-  //     quoram,
-  //     threshold,
-  //     totalDeposits,
-  //     airDropAmount,
-  //     mintGTAmounts,
-  //     mintGTAddresses,
-  //     customTokenAmounts,
-  //     customTokenAddresses,
-  //     ownersAirdropFees,
-  //     daoAdminAddresses,
-  //   ];
-  //   const safeOwner = this.walletAddress;
-  //   const ethAdapter = new Web3Adapter({
-  //     web3: this.web3,
-  //     signerAddress: safeOwner,
-  //   });
-  //   const txServiceUrl = this.gnosisTransactionUrl;
-  //   const safeService = new SafeServiceClient({ txServiceUrl, ethAdapter });
-
-  //   const web3 = new Web3(window.web3);
-  //   const implementationContract = new web3.eth.Contract(
-  //     ImplementationContract.abi,
-  //     daoAddress
-  //   );
-  //   const safeSdk = await Safe.create({
-  //     ethAdapter: ethAdapter,
-  //     safeAddress: gnosisAddress,
-  //   });
-
-  //   const transaction = {
-  //     to: daoAddress,
-  //     data: implementationContract.methods
-  //       .updateProposalAndExecution(parameters)
-  //       .encodeABI(),
-  //     value: "0",
-  //   };
-  //   const safeTransaction = await safeSdk.createTransaction(transaction);
-
-  //   await safeSdk.signTransaction(safeTransaction);
-  //   const safeTxHash = await safeSdk.getTransactionHash(safeTransaction);
-
-  //   const senderSignature = await safeSdk.signTransactionHash(safeTxHash);
-
-  //   await safeService.proposeTransaction({
-  //     safeAddress: gnosisAddress,
-  //     safeTransactionData: safeTransaction.data,
-  //     safeTxHash: safeTxHash,
-  //     senderAddress: this.walletAddress,
-  //     senderSignature: senderSignature.data,
-  //   });
-  //   const tx = await safeService.getTransaction(safeTxHash);
-
-  //   const safeTransactionData = {
-  //     to: tx.to,
-  //     value: tx.value,
-  //     operation: tx.operation,
-  //     safeTxGas: tx.safeTxGas,
-  //     baseGas: tx.baseGas,
-  //     gasPrice: tx.gasPrice,
-  //     gasToken: tx.gasToken,
-  //     refundReceiver: tx.refundReceiver,
-  //     nonce: tx.nonce,
-  //     data: tx.data,
-  //   };
-
-  //   const safeTransaction2 = await safeSdk.createTransaction(
-  //     safeTransactionData
-  //   );
-  //   for (let i = 0; i < tx.confirmations.length; i++) {
-  //     const signature = new EthSignSignature(
-  //       tx.confirmations[i].owner,
-  //       tx.confirmations[i].signature
-  //     );
-  //     safeTransaction2.addSignature(signature);
-  //   }
-  //   const executeTxResponse = await safeSdk.executeTransaction(
-  //     safeTransaction2
-  //   );
-  //   const receipt =
-  //     executeTxResponse.transactionResponse &&
-  //     (await executeTxResponse.transactionResponse.wait());
-  //   return executeTxResponse;
-  // }
-
   async updateProposalAndExecution(
     daoAddress = "",
     gnosisAddress = "",
@@ -260,7 +149,6 @@ export class SmartContract {
       ownersAirdropFees,
       daoAdminAddresses,
     ];
-    console.log("executionStatus", executionStatus);
     const safeOwner = this.walletAddress;
     const ethAdapter = new Web3Adapter({
       web3: this.web3,
@@ -274,7 +162,6 @@ export class SmartContract {
       ImplementationContract.abi,
       daoAddress
     );
-    console.log(implementationContract);
     const safeSdk = await Safe.create({
       ethAdapter: ethAdapter,
       safeAddress: gnosisAddress,
@@ -288,7 +175,6 @@ export class SmartContract {
     };
     // let safeTransaction2;
     const safeTransaction = await safeSdk.createTransaction(transaction);
-    console.log("execution Status", executionStatus);
     if (executionStatus !== "executed") {
       if (txHash === "") {
         const safeTxHash = await safeSdk.getTransactionHash(safeTransaction);
@@ -307,20 +193,13 @@ export class SmartContract {
           senderAddress: this.walletAddress,
           senderSignature: senderSignature.data,
         });
-        console.log("proposeTxn in ifffff", proposeTxn);
         return proposeTxn;
-        // const txResponse = await safeSdk.approveTransactionHash(txHash);
-        // await txResponse.transactionResponse?.wait();
-        // console.log("txResponse", txResponse);
       } else {
         const proposalTxHash = await getProposalTxHash(pid);
-        console.log("proposalTxHash", proposalTxHash);
-        console.log("TXHASH", proposalTxHash.data[0].txHash);
 
         const tx = await safeService.getTransaction(
           proposalTxHash.data[0].txHash
         );
-        console.log("txxxxx", tx);
 
         const senderSignature = await safeSdk.signTransactionHash(
           proposalTxHash.data[0].txHash
@@ -332,123 +211,16 @@ export class SmartContract {
           senderAddress: this.walletAddress,
           senderSignature: senderSignature.data,
         });
-        console.log("senderSignature", senderSignature);
-        console.log("proposeTxn in elseeee", proposeTxn);
         return proposeTxn;
-
-        // const safeTransactionData = {
-        //   to: tx.to,
-        //   value: tx.value,
-        //   operation: tx.operation,
-        //   safeTxGas: tx.safeTxGas,
-        //   baseGas: tx.baseGas,
-        //   gasPrice: tx.gasPrice,
-        //   gasToken: tx.gasToken,
-        //   refundReceiver: tx.refundReceiver,
-        //   nonce: tx.nonce,
-        //   data: tx.data,
-        // };
-
-        // safeTransaction2 = await safeSdk.createTransaction(safeTransactionData);
-        // console.log("safeTransaction2", safeTransaction2);
-
-        // for (let i = 0; i < tx.confirmations.length; i++) {
-        //   const signature = new EthSignSignature(
-        //     tx.confirmations[i].owner,
-        //     tx.confirmations[i].signature
-        //   );
-        //   console.log("signatureee", signature);
-        //   safeTransaction2.addSignature(signature);
-        // }
-
-        // const txResponse = await safeSdk.approveTransactionHash(txHash);
-        // await txResponse.transactionResponse?.wait();
       }
     } else {
-      console.log("shfdfsjk", safeTransaction);
       const executeTxResponse = await safeSdk.executeTransaction(
         safeTransaction
       );
-      console.log("executeTxResponse", executeTxResponse);
       const receipt =
         executeTxResponse.transactionResponse &&
         (await executeTxResponse.transactionResponse.wait());
       return executeTxResponse;
-    }
-
-    // const senderSignature = await safeSdk.signTransaction(safeTransaction);
-    // console.log(senderSignature);
-
-    //const senderSignature = await safeSdk.signTransactionHash(safeTxHash)
-
-    //let tx1 = await safeService.getTransaction(safeTxHash)
-
-    // await safeService.proposeTransaction({
-    //   safeAddress: gnosisAddress,
-    //   safeTransactionData: safeTransaction.data,
-    //   safeTxHash: safeTxHash,
-    //   senderAddress: this.walletAddress,
-    //   senderSignature: senderSignature.data,
-    // })
-    // const tx = await safeService.getTransaction(safeTxHash)
-    // console.log("safeTransaction", tx)
-
-    // const safeTransactionData = {
-    //   to: tx.to,
-    //   value: tx.value,
-    //   operation: tx.operation,
-    //   safeTxGas: tx.safeTxGas,
-    //   baseGas: tx.baseGas,
-    //   gasPrice: tx.gasPrice,
-    //   gasToken: tx.gasToken,
-    //   refundReceiver: tx.refundReceiver,
-    //   nonce: tx.nonce,
-    //   data: tx.data,
-    // }
-
-    // const safeTransaction2 = await safeSdk.createTransaction(
-    //   safeTransactionData
-    // )
-    // console.log(safeTransaction2)
-    // for (let i = 0; i < tx.confirmations.length; i++) {
-    //   const signature = new EthSignSignature(
-    //     tx.confirmations[i].owner,
-    //     tx.confirmations[i].signature
-    //   )
-    //   safeTransaction2.addSignature(signature)
-    // }
-
-    // const safeTransactionData = {
-    //   to: tx.to,
-    //   value: tx.value,
-    //   operation: tx.operation,
-    //   safeTxGas: tx.safeTxGas,
-    //   baseGas: tx.baseGas,
-    //   gasPrice: tx.gasPrice,
-    //   gasToken: tx.gasToken,
-    //   refundReceiver: tx.refundReceiver,
-    //   nonce: tx.nonce,
-    //   data: tx.data,
-    // }
-
-    // const safeTransaction2 = await safeSdk.createTransaction(
-    //   safeTransactionData
-    // )
-    // for (let i = 0; i < tx.confirmations.length; i++) {
-    //   const signature = new EthSignSignature(
-    //     tx.confirmations[i].owner,
-    //     tx.confirmations[i].signature
-    //   )
-    //   safeTransaction2.addSignature(signature)
-    // }
-
-    // console.log(safeTransaction);
-    // const ownerAddresses = await safeSdk.getOwners();
-    // console.log(ownerAddresses);
-    // const safeThreshold = await safeSdk.getThreshold();
-    // console.log(safeThreshold);
-
-    if (executionStatus === "executed") {
     }
   }
 

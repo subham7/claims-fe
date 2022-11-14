@@ -3,34 +3,21 @@ import Web3 from "web3";
 import { makeStyles } from "@mui/styles";
 import Layout1 from "../../../../src/components/layouts/layout1";
 import {
-  Box,
   Card,
   Grid,
   Typography,
-  ListItemButton,
-  ListItemText,
   Divider,
   Stack,
-  TextField,
   Button,
-  IconButton,
-  Modal,
-  Select,
-  OutlinedInput,
-  MenuItem,
-  TextareaAutosize,
-  Chip,
   CardActionArea,
   Snackbar,
   Alert,
   CircularProgress,
   Backdrop,
 } from "@mui/material";
-import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import DoneIcon from "@mui/icons-material/Done";
 import { useRouter } from "next/router";
-import Router, { withRouter } from "next/router";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import CloseIcon from "@mui/icons-material/Close";
@@ -51,118 +38,14 @@ import ClubFetch from "../../../../src/utils/clubFetch";
 import Web3Adapter from "@gnosis.pm/safe-web3-lib";
 import Safe from "@gnosis.pm/safe-core-sdk";
 import SafeServiceClient from "@gnosis.pm/safe-service-client";
-import { blue } from "@mui/material/colors";
+import styles from "./proposalStyles";
 
-const useStyles = makeStyles({
-  clubAssets: {
-    fontSize: "42px",
-    color: "#FFFFFF",
-  },
-  activeIllustration: {
-    height: "12px",
-    width: "12px",
-    backgroundColor: "#0ABB92",
-    borderRadius: "50%",
-    marginRight: "15px",
-  },
-  passedIllustration: {
-    height: "12px",
-    width: "12px",
-    backgroundColor: "#FFB74D",
-    borderRadius: "50%",
-    marginRight: "15px",
-  },
-  executedIllustration: {
-    height: "12px",
-    width: "12px",
-    backgroundColor: "#F75F71",
-    borderRadius: "50%",
-    marginRight: "15px",
-  },
-  failedIllustration: {
-    height: "12px",
-    width: "12px",
-    backgroundColor: "#D55438",
-    borderRadius: "50%",
-    marginRight: "15px",
-  },
-  listFont: {
-    fontSize: "20px",
-    color: "#C1D3FF",
-  },
-  listFont2: {
-    fontSize: "19px",
-    color: "#C1D3FF",
-  },
-  listFont2Colourless: {
-    fontSize: "19px",
-    color: "#FFFFFF",
-  },
-  listFont2small: {
-    fontSize: "12px",
-    color: "#C1D3FF",
-  },
-  cardFont: {
-    fontSize: "18px",
-    color: "#C1D3FF",
-  },
-  cardFont1: {
-    fontSize: "19px",
-    color: "#EFEFEF",
-  },
-  successfulMessageText: {
-    fontSize: "28px",
-    color: "#EFEFEF",
-  },
-  cardFontYes: {
-    fontSize: "16px",
-    backgroundColor: "#0ABB92",
-    padding: "0 5px 0 5px",
-  },
-  cardFontNo: {
-    fontSize: "16px",
-    backgroundColor: "#D55438",
-    padding: "0 5px 0 5px",
-  },
-  mainCard: {
-    borderRadius: "38px",
-    border: "1px solid #C1D3FF40;",
-    backgroundColor: "#19274B",
-  },
-  mainCardSelected: {
-    borderRadius: "38px",
-    border: "1px solid #FFFFFF;",
-    backgroundColor: "#19274B",
-  },
-  mainCardButton: {
-    borderRadius: "38px",
-    border: "1px solid #C1D3FF40;",
-    backgroundColor: "#3B7AFD",
-    "&:hover": {
-      cursor: "pointer",
-    },
-  },
-  mainCardButtonSuccess: {
-    borderRadius: "38px",
-    fontSize: "50px",
-    color: "#0ABB92",
-  },
-  mainCardButtonError: {
-    fontSize: "50px",
-    color: "#D55438",
-  },
-  seeMoreButton: {
-    border: "1px solid #C1D3FF40",
-    borderRadius: "10px",
-    backgroundColor: "#19274B",
-    display: "flex",
-  },
-});
+const useStyles = makeStyles(styles);
 
 const ProposalDetail = () => {
   const router = useRouter();
   const { pid, clubId } = router.query;
-  console.log("pid", pid);
+
   const classes = useStyles();
   const [voted, setVoted] = useState(false);
   const [fetched, setFetched] = useState(false);
@@ -188,7 +71,6 @@ const ProposalDetail = () => {
   const gnosisAddress = useSelector((state) => {
     return state.gnosis.safeAddress;
   });
-  console.log("gnosisAddress", gnosisAddress);
 
   const [executed, setExecuted] = useState(false);
   const [message, setMessage] = useState("");
@@ -208,8 +90,6 @@ const ProposalDetail = () => {
     return state.gnosis.transactionUrl;
   });
 
-  console.log("GNOSIS_TRANSACTION_URL", GNOSIS_TRANSACTION_URL);
-
   let voteId = null;
   const dispatch = useDispatch();
 
@@ -219,13 +99,10 @@ const ProposalDetail = () => {
       web3: web3,
       signerAddress: walletAddress,
     });
-    console.log("web3", web3);
-    console.log("eth adapter", ethAdapter);
     const safeSdk = await Safe.create({
       ethAdapter: ethAdapter,
       safeAddress: gnosisAddress,
     });
-    console.log("safeSdk", safeSdk);
     return safeSdk;
   };
 
@@ -239,7 +116,6 @@ const ProposalDetail = () => {
       txServiceUrl: GNOSIS_TRANSACTION_URL,
       ethAdapter,
     });
-    console.log("safeService", safeService);
     return safeService;
   };
 
@@ -251,7 +127,6 @@ const ProposalDetail = () => {
         setFetched(false);
       } else {
         setProposalData(result.data);
-        console.log("Proposal data", result.data);
         setFetched(true);
       }
     });
@@ -293,7 +168,6 @@ const ProposalDetail = () => {
       await fetchData();
     }
   }, [pid, gnosisAddress, GNOSIS_TRANSACTION_URL]);
-  console.log("threshold", threshold);
   useEffect(async () => {
     setLoaderOpen(true);
     // await isOwner();
@@ -335,23 +209,10 @@ const ProposalDetail = () => {
     });
   };
 
-  const isCurrentUserAdmin = () => {
-    if (membersFetched && members.length > 0 && walletAddress) {
-      let obj = members.find((member) => member.userAddress === walletAddress);
-      let pos = members.indexOf(obj);
-      if (obj.clubs[0].isAdmin) {
-        return true;
-      } else {
-        return false;
-      }
-    }
-  };
-
   const isOwner = async () => {
     const safeSdk = await getSafeSdk();
     const ownerAddresses = await safeSdk.getOwners();
     setOwnerAddresses(ownerAddresses);
-    console.log("ownerAddresses", ownerAddresses);
     if (ownerAddresses.includes(walletAddress)) {
       setOwner(true);
     } else {
@@ -360,9 +221,7 @@ const ProposalDetail = () => {
     const threshold = await safeSdk.getThreshold();
     setThreshold(threshold);
     const proposalTxHash = getProposalTxHash(pid);
-    console.log("proposalTxHash", proposalTxHash);
     proposalTxHash.then(async (result) => {
-      let txHash;
       if (
         result.status !== 200 ||
         (result.status === 200 && result.data.length === 0)
@@ -370,24 +229,12 @@ const ProposalDetail = () => {
         setTxHash("");
       } else {
         txHash = result.data[0].txHash;
-        console.log("txhashhhhhhhh", txHash);
         setTxHash(result.data[0].txHash);
-
         const safeService = await getSafeService();
-        console.log("safeService", safeService);
-
-        // const confirmations = await safeService.getTransactionConfirmations(
-        //   txHash
-        // );
-        // console.log("confirmations", confirmations);
-
         const tx = await safeService.getTransaction(result.data[0].txHash);
-        console.log("txxxxx", tx);
-
         const ownerAddresses = tx.confirmations.map(
           (confirmOwners) => confirmOwners.owner
         );
-        console.log("ownerAddresses who approved", ownerAddresses);
         setSignedOwners(ownerAddresses);
         if (ownerAddresses.includes(walletAddress)) {
           setSigned(true);
@@ -398,16 +245,9 @@ const ProposalDetail = () => {
       }
     });
   };
-  console.log("execution ready", executionReady);
-  const executeNonAdminUser = () => {
-    setOpenSnackBar(true);
-    setFailed(true);
-    setMessage("Only admin of the club is able to execute the proposal!");
-  };
 
   const executeFunction = async (proposalStatus) => {
     setLoaderOpen(true);
-    console.log("proposalStatus", proposalStatus);
     if (proposalData[0].commands[0].executionId === 0) {
       // for airdrop execution
       const updateProposal = new SmartContract(
@@ -439,7 +279,6 @@ const ProposalDetail = () => {
         txHash,
         pid
       );
-      console.log("response", response);
       if (proposalStatus === "executed") {
         await response.then(
           (result) => {
@@ -472,19 +311,10 @@ const ProposalDetail = () => {
           }
         );
       } else {
-        console.log("response", response);
         await response.then(() => {
-          console.log("firsttttt");
           setSigned(true);
           setLoaderOpen(false);
         });
-        // await response.then((result) => {
-        //   result.promiEvent.on("confirmation", () => {
-        //     console.log("save result", result);
-        //     setSigned(true);
-        //     setLoaderOpen(false);
-        //   });
-        // });
       }
     }
 
@@ -519,7 +349,6 @@ const ProposalDetail = () => {
         txHash,
         pid
       );
-      console.log("response", response);
       if (proposalStatus === "executed") {
         response.then(
           (result) => {
@@ -554,9 +383,7 @@ const ProposalDetail = () => {
         );
       } else {
         await response.then(async (result) => {
-          console.log("save result", result);
           setSigned(true);
-          await isOwner();
           setLoaderOpen(false);
         });
       }
@@ -648,7 +475,6 @@ const ProposalDetail = () => {
         txHash,
         pid
       );
-      console.log("response", response);
       if (proposalStatus === "executed") {
         response.then(
           (result) => {
@@ -682,8 +508,7 @@ const ProposalDetail = () => {
           }
         );
       } else {
-        await response.then((result) => {
-          console.log("save result", result);
+        await response.then(async (result) => {
           setSigned(true);
           setLoaderOpen(false);
         });
@@ -721,7 +546,7 @@ const ProposalDetail = () => {
         txHash,
         pid
       );
-      console.log("response", response);
+
       if (proposalStatus === "executed") {
         response.then(
           (result) => {
@@ -755,7 +580,6 @@ const ProposalDetail = () => {
         );
       } else {
         await response.then((result) => {
-          console.log("save result", result);
           setSigned(true);
           setLoaderOpen(false);
         });
@@ -793,7 +617,6 @@ const ProposalDetail = () => {
         txHash,
         pid
       );
-      console.log("response", response);
 
       if (proposalStatus === "executed") {
         response.then(
@@ -830,377 +653,12 @@ const ProposalDetail = () => {
         );
       } else {
         await response.then((result) => {
-          console.log("save result", result);
           setSigned(true);
           setLoaderOpen(false);
         });
       }
     }
   };
-
-  // const executeFunction = async (proposalStatus) => {
-  //   setLoaderOpen(true);
-  //   console.log('proposalStatus', proposalStatus)
-  //   if (proposalData[0].commands[0].executionId === 0) {
-  //     // for airdrop execution
-  //     const updateProposal = new SmartContract(
-  //       ImplementationContract,
-  //       daoAddress,
-  //       undefined,
-  //       USDC_CONTRACT_ADDRESS,
-  //       GNOSIS_TRANSACTION_URL
-  //     );
-  //     const response = updateProposal.updateProposalAndExecution(
-  //       daoAddress,
-  //       gnosisAddress,
-  //       proposalData[0].ipfsHash,
-  //       proposalStatus,
-  //       123444,
-  //       undefined,
-  //       proposalData[0].commands[0].airDropToken,
-  //       [1, 0, 0, 0, 0, 0],
-  //       undefined,
-  //       undefined,
-  //       undefined,
-  //       proposalData[0].commands[0].airDropAmount,
-  //       undefined,
-  //       undefined,
-  //       undefined,
-  //       undefined,
-  //       proposalData[0].commands[0].airDropCarryFee,
-  //       []
-  //     );
-  //     await response.then(
-  //       (result) => {
-  //         result.promiEvent.on("confirmation", () => {
-  //           const updateStatus = patchProposalExecuted(pid);
-  //           updateStatus.then((result) => {
-  //             if (result.status !== 200) {
-  //               setExecuted(false);
-  //               setOpenSnackBar(true);
-  //               setMessage("Airdrop execution status update failed!");
-  //               setFailed(true);
-  //               setLoaderOpen(false);
-  //             } else {
-  //               fetchData();
-  //               setExecuted(true);
-  //               setOpenSnackBar(true);
-  //               setMessage("Airdrop execution successful!");
-  //               setFailed(false);
-  //               setLoaderOpen(false);
-  //             }
-  //           });
-  //         });
-  //       },
-  //       (error) => {
-  //         setExecuted(false);
-  //         setOpenSnackBar(true);
-  //         setMessage("Airdrop execution failed!");
-  //         setFailed(true);
-  //         setLoaderOpen(false);
-  //       }
-  //     );
-  //   }
-
-  //   if (proposalData[0].commands[0].executionId === 1) {
-  //     // for mintGT execution
-  //     const updateProposal = new SmartContract(
-  //       ImplementationContract,
-  //       daoAddress,
-  //       undefined,
-  //       USDC_CONTRACT_ADDRESS,
-  //       GNOSIS_TRANSACTION_URL
-  //     );
-  //     const response = updateProposal.updateProposalAndExecution(
-  //       daoAddress,
-  //       gnosisAddress,
-  //       proposalData[0].ipfsHash,
-  //       proposalStatus,
-  //       123444,
-  //       undefined,
-  //       undefined,
-  //       [0, 1, 0, 0, 0, 0],
-  //       undefined,
-  //       undefined,
-  //       undefined,
-  //       undefined,
-  //       [proposalData[0].commands[0].mintGTAmounts],
-  //       [proposalData[0].commands[0].mintGTAddresses],
-  //       undefined,
-  //       undefined,
-  //       undefined,
-  //       []
-  //     );
-  //     response.then(
-  //       (result) => {
-  //         result.promiEvent.on("confirmation", () => {
-  //           const updateStatus = patchProposalExecuted(pid);
-  //           updateStatus.then((result) => {
-  //             if (result.status !== 200) {
-  //               setExecuted(false);
-  //               setOpenSnackBar(true);
-  //               setMessage("MintGT execution status update failed!");
-  //               setFailed(true);
-  //               setLoaderOpen(false);
-  //             } else {
-  //               fetchData();
-  //               setExecuted(true);
-  //               setOpenSnackBar(true);
-  //               setMessage("MintGT execution successful!");
-  //               setFailed(false);
-  //               setLoaderOpen(false);
-  //             }
-  //           });
-  //         });
-  //       },
-  //       (error) => {
-  //         console.log(error);
-  //         setExecuted(false);
-  //         setOpenSnackBar(true);
-  //         setMessage("MintGT execution failed!");
-  //         setFailed(true);
-  //         setLoaderOpen(false);
-  //       }
-  //     );
-  //   }
-
-  //   // if (proposalData[0].commands[0].executionId === 2) {
-  //   //   const web3 = new Web3(window.web3)
-  //   //   // for assigner executor role execution
-  //   //   const updateProposal = new SmartContract(ImplementationContract, daoAddress, undefined, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL)
-  //   //   const response = updateProposal.updateProposalAndExecution(
-  //   //     daoAddress,
-  //   //     gnosisAddress,
-  //   //     proposalData[0].ipfsHash,
-  //   //     "Executed",
-  //   //     123444,
-  //   //     undefined,
-  //   //     undefined,
-  //   //     [0, 0, 1, 0, 0, 0, 0, 0],
-  //   //     undefined,
-  //   //     undefined,
-  //   //     undefined,
-  //   //     undefined,
-  //   //     undefined,
-  //   //     undefined,
-  //   //     undefined,
-  //   //     undefined,
-  //   //     undefined,
-  //   //     undefined,
-  //   //     undefined,
-  //   //     undefined,
-  //   //     undefined,
-  //   //     [web3.utils.toChecksumAddress(proposalData[0].commands[0].executiveRoles)],
-  //   //   )
-  //   //   response.then((result) => {
-  //   //     const updateStatus = patchProposalExecuted(pid)
-  //   //     updateStatus.then((result) => {
-  //   //       if (result.status !== 200) {
-  //   //         setExecuted(false)
-  //   //         setOpenSnackBar(true)
-  //   //         setMessage("Assigner executor role status update failed!")
-  //   //         setFailed(true)
-  //   //         setLoaderOpen(false)
-  //   //       } else {
-  //   //         setExecuted(true)
-  //   //         setOpenSnackBar(true)
-  //   //         setMessage("Assigner executor role allocation successful!")
-  //   //         setFailed(false)
-  //   //         setLoaderOpen(false)
-  //   //       }
-  //   //     })
-  //   //   }, (error) => {
-  //   //     setExecuted(false)
-  //   //     setOpenSnackBar(true)
-  //   //     setMessage("Assigner executor role allocation failed!")
-  //   //     setFailed(true)
-  //   //     setLoaderOpen(false)
-  //   //   })
-  //   // }
-  //   if (proposalData[0].commands[0].executionId === 2) {
-  //     // For execution of Governance settings
-  //     const updateProposal = new SmartContract(
-  //       ImplementationContract,
-  //       daoAddress,
-  //       undefined,
-  //       USDC_CONTRACT_ADDRESS,
-  //       GNOSIS_TRANSACTION_URL
-  //     );
-  //     const response = updateProposal.updateProposalAndExecution(
-  //       daoAddress,
-  //       gnosisAddress,
-  //       proposalData[0].ipfsHash,
-  //       proposalStatus,
-  //       123444,
-  //       undefined,
-  //       undefined,
-  //       [0, 0, 1, 0, 0, 0],
-  //       proposalData[0].commands[0].quorum,
-  //       proposalData[0].commands[0].threshold,
-  //       undefined,
-  //       undefined,
-  //       undefined,
-  //       undefined,
-  //       undefined,
-  //       undefined,
-  //       undefined,
-  //       []
-  //     );
-  //     response.then(
-  //       (result) => {
-  //         result.promiEvent.on("confirmation", () => {
-  //           const updateStatus = patchProposalExecuted(pid);
-  //           updateStatus.then((result) => {
-  //             if (result.status !== 200) {
-  //               setExecuted(false);
-  //               setOpenSnackBar(true);
-  //               setMessage("Governance settings status update failed!");
-  //               setFailed(true);
-  //               setLoaderOpen(false);
-  //             } else {
-  //               fetchData();
-  //               setExecuted(true);
-  //               setOpenSnackBar(true);
-  //               setMessage("Governance settings execution successful!");
-  //               setFailed(false);
-  //               setLoaderOpen(false);
-  //             }
-  //           });
-  //         });
-  //       },
-  //       (error) => {
-  //         console.log(error);
-  //         setExecuted(false);
-  //         setOpenSnackBar(true);
-  //         setMessage("Governance settings execution failed!");
-  //         setFailed(true);
-  //         setLoaderOpen(false);
-  //       }
-  //     );
-  //   }
-
-  //   if (proposalData[0].commands[0].executionId === 3) {
-  //     // update raise amount execution
-  //     const updateProposal = new SmartContract(
-  //       ImplementationContract,
-  //       daoAddress,
-  //       undefined,
-  //       USDC_CONTRACT_ADDRESS,
-  //       GNOSIS_TRANSACTION_URL
-  //     );
-  //     const response = updateProposal.updateProposalAndExecution(
-  //       daoAddress,
-  //       gnosisAddress,
-  //       proposalData[0].ipfsHash,
-  //       proposalStatus,
-  //       123444,
-  //       undefined,
-  //       undefined,
-  //       [0, 0, 0, 1, 0, 0],
-  //       undefined,
-  //       undefined,
-  //       proposalData[0].commands[0].totalDeposits,
-  //       undefined,
-  //       undefined,
-  //       undefined,
-  //       undefined,
-  //       undefined,
-  //       undefined,
-  //       []
-  //     );
-  //     response.then(
-  //       (result) => {
-  //         result.promiEvent.on("confirmation", () => {
-  //           const updateStatus = patchProposalExecuted(pid);
-  //           updateStatus.then((result) => {
-  //             if (result.status !== 200) {
-  //               setExecuted(false);
-  //               setOpenSnackBar(true);
-  //               setMessage("Raise amount execution status update failed!");
-  //               setFailed(true);
-  //               setLoaderOpen(false);
-  //             } else {
-  //               fetchData();
-  //               setExecuted(true);
-  //               setOpenSnackBar(true);
-  //               setMessage("Update raise amount execution successful!");
-  //               setFailed(false);
-  //               setLoaderOpen(false);
-  //             }
-  //           });
-  //         });
-  //       },
-  //       (error) => {
-  //         setExecuted(false);
-  //         setOpenSnackBar(true);
-  //         setMessage("Update raise amount execution failed!");
-  //         setFailed(true);
-  //         setLoaderOpen(false);
-  //       }
-  //     );
-  //   }
-
-  //   if (proposalData[0].commands[0].executionId === 4) {
-  //     // send custom token execution
-  //     const updateProposal = new SmartContract(
-  //       ImplementationContract,
-  //       daoAddress,
-  //       undefined,
-  //       USDC_CONTRACT_ADDRESS,
-  //       GNOSIS_TRANSACTION_URL
-  //     );
-  //     const response = updateProposal.updateProposalAndExecution(
-  //       daoAddress,
-  //       gnosisAddress,
-  //       "proposalData[0].ipfsHash",
-  //       proposalStatus,
-  //       123444,
-  //       proposalData[0].commands[0].customToken,
-  //       undefined,
-  //       [0, 0, 0, 0, 1, 0],
-  //       undefined,
-  //       undefined,
-  //       undefined,
-  //       undefined,
-  //       undefined,
-  //       undefined,
-  //       proposalData[0].commands[0].customTokenAmounts,
-  //       proposalData[0].commands[0].customTokenAddresses,
-  //       undefined,
-  //       []
-  //     );
-  //     response.then(
-  //       (result) => {
-  //         result.promiEvent.on("confirmation", () => {
-  //           const updateStatus = patchProposalExecuted(pid);
-  //           updateStatus.then((result) => {
-  //             if (result.status !== 200) {
-  //               setExecuted(false);
-  //               setOpenSnackBar(true);
-  //               setMessage("Send custom token execution status update failed!");
-  //               setFailed(true);
-  //               setLoaderOpen(false);
-  //             } else {
-  //               fetchData();
-  //               setExecuted(true);
-  //               setOpenSnackBar(true);
-  //               setMessage("Send custom token execution successful!");
-  //               setFailed(false);
-  //               setLoaderOpen(false);
-  //             }
-  //           });
-  //         });
-  //       },
-  //       (error) => {
-  //         setExecuted(false);
-  //         setOpenSnackBar(true);
-  //         setMessage("Send custom token execution status update failed!");
-  //         setFailed(true);
-  //         setLoaderOpen(false);
-  //       }
-  //     );
-  //   }
-  // };
 
   const checkUserVoted = (pid) => {
     if (walletAddress) {
@@ -1435,11 +893,9 @@ const ProposalDetail = () => {
                             onClick={
                               executionReady
                                 ? () => {
-                                    console.log("executed in here");
                                     executeFunction("executed");
                                   }
                                 : () => {
-                                    console.log("passed in here");
                                     executeFunction("passed");
                                   }
                             }
@@ -1449,7 +905,7 @@ const ProposalDetail = () => {
                               justifyContent="center"
                               alignItems="center"
                             >
-                              {txHash ? (
+                              {signed && !executionReady ? (
                                 <Grid item mt={0.5}>
                                   <CheckCircleRoundedIcon />
                                 </Grid>
@@ -1475,40 +931,6 @@ const ProposalDetail = () => {
                               </Grid>
                             </Grid>
                           </Card>
-
-                          {/* <Card
-                            className={
-                              executed
-                                ? classes.mainCardButtonSuccess
-                                : classes.mainCardButton
-                            }
-                            onClick={executeFunction}
-                          >
-                            <Grid
-                              container
-                              justifyContent="center"
-                              alignItems="center"
-                            >
-                              {executed ? (
-                                <Grid item mt={0.5}>
-                                  <CheckCircleRoundedIcon />
-                                </Grid>
-                              ) : (
-                                <Grid item></Grid>
-                              )}
-                              <Grid item>
-                                {executed ? (
-                                  <Typography className={classes.cardFont1}>
-                                    Executed Successfully
-                                  </Typography>
-                                ) : (
-                                  <Typography className={classes.cardFont1}>
-                                    Execute Now
-                                  </Typography>
-                                )}
-                              </Grid>
-                            </Grid>
-                          </Card> */}
                         </Card>
                       ) : (
                         <Card sx={{ width: "100%" }}>
