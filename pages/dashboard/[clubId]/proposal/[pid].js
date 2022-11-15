@@ -1569,6 +1569,7 @@ const ProposalDetail = () => {
                           display: "flex",
                           justifyContent: "flex-start",
                         }}
+                        key={owner}
                       >
                         {signedOwners.includes(owner) ? (
                           <DoneIcon
@@ -1578,7 +1579,7 @@ const ProposalDetail = () => {
                         ) : (
                           <HelpOutlineIcon sx={{ marginRight: 2 }} />
                         )}
-                        <Typography key={owner}>
+                        <Typography>
                           {owner.slice(0, 6)}.....{owner.slice(-4)}
                         </Typography>
                       </Grid>
