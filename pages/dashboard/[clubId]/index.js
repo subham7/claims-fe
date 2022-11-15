@@ -1,6 +1,6 @@
-import { React, useEffect, useState } from "react"
-import { makeStyles } from "@mui/styles"
-import Layout1 from "../../../src/components/layouts/layout1"
+import { React, useEffect, useState } from "react";
+import { makeStyles } from "@mui/styles";
+import Layout1 from "../../../src/components/layouts/layout1";
 import {
   Box,
   Card,
@@ -23,28 +23,28 @@ import {
   ListItemButton,
   Snackbar,
   Alert,
-} from "@mui/material"
-import TextField from "@mui/material/TextField"
-import SearchIcon from "@mui/icons-material/Search"
-import ButtonDropDown from "../../../src/components/buttondropdown"
-import CollectionCard from "../../../src/components/cardcontent"
-import { useRouter } from "next/router"
-import ClubFetch from "../../../src/utils/clubFetch"
-import { SmartContract } from "../../../src/api/contract"
-import { getProposal } from "../../../src/api/proposal"
-import { fetchClubbyDaoAddress } from "../../../src/api/club"
-import { getNfts } from "../../../src/api/gnosis"
-import { getAssets } from "../../../src/api/assets"
-import { getMembersDetails } from "../../../src/api/user"
-import ImplementationContact from "../../../src/abis/implementationABI.json"
-import { useSelector } from "react-redux"
+} from "@mui/material";
+import TextField from "@mui/material/TextField";
+import SearchIcon from "@mui/icons-material/Search";
+import ButtonDropDown from "../../../src/components/buttondropdown";
+import CollectionCard from "../../../src/components/cardcontent";
+import { useRouter } from "next/router";
+import ClubFetch from "../../../src/utils/clubFetch";
+import { SmartContract } from "../../../src/api/contract";
+import { getProposal } from "../../../src/api/proposal";
+import { fetchClubbyDaoAddress } from "../../../src/api/club";
+import { getNfts } from "../../../src/api/gnosis";
+import { getAssets } from "../../../src/api/assets";
+import { getMembersDetails } from "../../../src/api/user";
+import ImplementationContact from "../../../src/abis/implementationABI.json";
+import { useSelector } from "react-redux";
 import {
   calculateDays,
   calculateUserSharePercentage,
   convertAmountToWei,
   convertFromWei,
   convertFromWeiGovernance,
-} from "../../../src/utils/globalFunctions"
+} from "../../../src/utils/globalFunctions";
 
 const useStyles = makeStyles({
   media: {
@@ -331,58 +331,58 @@ const useStyles = makeStyles({
       cursor: "pointer",
     },
   },
-})
+});
 
 const Dashboard = () => {
-  const router = useRouter()
-  const { clubId } = router.query
-  const classes = useStyles()
+  const router = useRouter();
+  const { clubId } = router.query;
+  const classes = useStyles();
   const daoAddress = useSelector((state) => {
-    return state.create.daoAddress
-  })
+    return state.create.daoAddress;
+  });
   const walletAddress = useSelector((state) => {
-    return state.create.value
-  })
-  const [tokenDetails, settokenDetails] = useState(null)
-  const [dataFetched, setDataFetched] = useState(false)
-  const [tokenAPIDetails, settokenAPIDetails] = useState(null) // contains the details extracted from API
-  const [apiTokenDetailSet, setApiTokenDetailSet] = useState(false)
-  const [depositLink, setDepositLink] = useState(null)
-  const [governorDetails, setGovernorDetails] = useState(null)
-  const [membersFetched, setMembersFetched] = useState(false)
-  const [members, setMembers] = useState(0)
-  const [membersDetails, setMembersDetails] = useState([])
-  const [activeProposalData, setActiveProposalData] = useState([])
+    return state.create.value;
+  });
+  const [tokenDetails, settokenDetails] = useState(null);
+  const [dataFetched, setDataFetched] = useState(false);
+  const [tokenAPIDetails, settokenAPIDetails] = useState(null); // contains the details extracted from API
+  const [apiTokenDetailSet, setApiTokenDetailSet] = useState(false);
+  const [depositLink, setDepositLink] = useState(null);
+  const [governorDetails, setGovernorDetails] = useState(null);
+  const [membersFetched, setMembersFetched] = useState(false);
+  const [members, setMembers] = useState(0);
+  const [membersDetails, setMembersDetails] = useState([]);
+  const [activeProposalData, setActiveProposalData] = useState([]);
   const [activeProposalDataFetched, setActiveProposalDataFetched] =
-    useState(false)
-  const [clubAssetTokenFetched, setClubAssetTokenFetched] = useState(false)
-  const [clubAssetTokenData, setClubAssetTokenData] = useState([])
-  const [loaderOpen, setLoaderOpen] = useState(false)
-  const [failed, setFailed] = useState(false)
-  const [openSnackBar, setOpenSnackBar] = useState(false)
-  const [ntfData, setNftData] = useState([])
-  const [nftFetched, setNftFetched] = useState(false)
-  const [userBalance, setUserBalance] = useState(null)
-  const [closingDays, setClosingDays] = useState(null)
+    useState(false);
+  const [clubAssetTokenFetched, setClubAssetTokenFetched] = useState(false);
+  const [clubAssetTokenData, setClubAssetTokenData] = useState([]);
+  const [loaderOpen, setLoaderOpen] = useState(false);
+  const [failed, setFailed] = useState(false);
+  const [openSnackBar, setOpenSnackBar] = useState(false);
+  const [ntfData, setNftData] = useState([]);
+  const [nftFetched, setNftFetched] = useState(false);
+  const [userBalance, setUserBalance] = useState(null);
+  const [closingDays, setClosingDays] = useState(null);
   const imageUrl = useSelector((state) => {
-    return state.create.clubImageUrl
-  })
-  const [memberDeposit, setMemberDeposit] = useState(null)
-  const [clubTokenMinted, setClubTokenMInted] = useState(null)
-  const [maxTokenMinted, setMaxTokenMinted] = useState(null)
-  const [userOwnershipShare, setUserOwnershipShare] = useState(null)
+    return state.create.clubImageUrl;
+  });
+  const [memberDeposit, setMemberDeposit] = useState(null);
+  const [clubTokenMinted, setClubTokenMInted] = useState(null);
+  const [maxTokenMinted, setMaxTokenMinted] = useState(null);
+  const [userOwnershipShare, setUserOwnershipShare] = useState(null);
   const USDC_CONTRACT_ADDRESS = useSelector((state) => {
-    return state.gnosis.usdcContractAddress
-  })
+    return state.gnosis.usdcContractAddress;
+  });
   const GNOSIS_TRANSACTION_URL = useSelector((state) => {
-    return state.gnosis.transactionUrl
-  })
+    return state.gnosis.transactionUrl;
+  });
   const usdcConvertDecimal = useSelector((state) => {
-    return state.gnosis.tokenDecimal
-  })
+    return state.gnosis.tokenDecimal;
+  });
   const governanceConvertDecimal = useSelector((state) => {
-    return state.gnosis.governanceTokenDecimal
-  })
+    return state.gnosis.governanceTokenDecimal;
+  });
 
   const loadSmartContractData = async () => {
     try {
@@ -392,140 +392,143 @@ const Dashboard = () => {
         undefined,
         USDC_CONTRACT_ADDRESS,
         GNOSIS_TRANSACTION_URL
-      )
-      let usdcDetails = await contract.getUsdcDetails(USDC_CONTRACT_ADDRESS)
-      let getUserBalance = await contract.checkUserBalance()
-      let getGovernorDetails = await contract.getGovernorDetails()
-      let getTokenDetails = await contract.tokenDetails()
+      );
+      let usdcDetails = await contract.getUsdcDetails(USDC_CONTRACT_ADDRESS);
+      let getUserBalance = await contract.checkUserBalance();
+      let getGovernorDetails = await contract.getGovernorDetails();
+      let getTokenDetails = await contract.tokenDetails();
 
       // user and admin contributions
-      let memberDeposits = convertFromWei(usdcDetails[0], usdcConvertDecimal)
-      let adminContribution = convertFromWei(usdcDetails[1], usdcConvertDecimal)
+      let memberDeposits = convertFromWei(usdcDetails[0], usdcConvertDecimal);
+      let adminContribution = convertFromWei(
+        usdcDetails[1],
+        usdcConvertDecimal
+      );
 
-      let total = memberDeposits + adminContribution
-      setMemberDeposit(total)
+      let total = memberDeposits + adminContribution;
+      setMemberDeposit(total);
 
       setUserBalance(
         convertFromWeiGovernance(getUserBalance, governanceConvertDecimal)
-      )
-      setClosingDays(calculateDays(parseInt(getGovernorDetails[0]) * 1000))
-      setGovernorDetails(getGovernorDetails)
-      setMaxTokenMinted(await convertAmountToWei(getGovernorDetails[4]))
+      );
+      setClosingDays(calculateDays(parseInt(getGovernorDetails[0]) * 1000));
+      setGovernorDetails(getGovernorDetails);
+      setMaxTokenMinted(await convertAmountToWei(getGovernorDetails[4]));
 
-      settokenDetails(getTokenDetails)
+      settokenDetails(getTokenDetails);
       setClubTokenMInted(
         convertFromWeiGovernance(getTokenDetails[2], governanceConvertDecimal)
-      )
+      );
       setUserOwnershipShare(
         convertFromWeiGovernance(getTokenDetails[2], governanceConvertDecimal)
-      )
+      );
       setDepositLink(
         typeof window !== "undefined" && window.location.origin
           ? `${window.location.origin}/join/${daoAddress}?dashboard=true`
           : null
-      )
-      setDataFetched(true)
+      );
+      setDataFetched(true);
     } catch (e) {
-      setOpenSnackBar(true)
-      setFailed(true)
+      setOpenSnackBar(true);
+      setFailed(true);
     }
-  }
+  };
 
   useEffect(() => {
     if (daoAddress && USDC_CONTRACT_ADDRESS && GNOSIS_TRANSACTION_URL) {
-      loadSmartContractData()
+      loadSmartContractData();
     }
-  }, [daoAddress, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL, dataFetched])
+  }, [daoAddress, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL, dataFetched]);
 
   const checkIsAdmin = () => {
     if (membersFetched && membersDetails.length > 0 && walletAddress) {
       let obj = membersDetails.find(
         (member) => member.userAddress === walletAddress
-      )
-      let pos = membersDetails.indexOf(obj)
+      );
+      let pos = membersDetails.indexOf(obj);
       if (pos >= 0) {
         if (membersDetails[pos].clubs[0].isAdmin) {
-          return true
+          return true;
         }
       }
-      return false
+      return false;
     }
-  }
+  };
 
   const tokenAPIDetailsRetrieval = async () => {
-    let response = await fetchClubbyDaoAddress(daoAddress)
+    let response = await fetchClubbyDaoAddress(daoAddress);
     if (response.data.length > 0) {
-      settokenAPIDetails(response.data[0])
-      setApiTokenDetailSet(true)
+      settokenAPIDetails(response.data[0]);
+      setApiTokenDetailSet(true);
     }
-  }
+  };
 
   const fetchMembers = () => {
-    const membersData = getMembersDetails(clubId)
+    const membersData = getMembersDetails(clubId);
     membersData.then((result) => {
       if (result.status != 200) {
-        setMembersFetched(false)
+        setMembersFetched(false);
       } else {
-        setMembersDetails(result.data)
-        setMembers(result.data.length)
-        setMembersFetched(true)
+        setMembersDetails(result.data);
+        setMembers(result.data.length);
+        setMembersFetched(true);
       }
-    })
-  }
+    });
+  };
 
   const fetchClubAssetToken = () => {
-    const tokens = getAssets(clubId)
+    const tokens = getAssets(clubId);
     tokens.then((result) => {
       if (result.status != 200) {
-        setClubAssetTokenFetched(false)
+        setClubAssetTokenFetched(false);
       } else {
-        setClubAssetTokenData(result.data)
-        setClubAssetTokenFetched(true)
+        setClubAssetTokenData(result.data);
+        setClubAssetTokenFetched(true);
       }
-    })
+    });
 
-    const nfts = getNfts(daoAddress)
+    const nfts = getNfts(daoAddress);
     nfts.then((result) => {
       if (result.status != 200) {
-        setNftFetched(false)
+        setNftFetched(false);
       } else {
-        setNftData(result.data)
-        setNftFetched(true)
+        setNftData(result.data);
+        setNftFetched(true);
       }
-    })
-  }
+    });
+  };
 
   const fetchActiveProposals = () => {
-    const activeProposals = getProposal(clubId, "active")
+    const activeProposals = getProposal(clubId, "active");
     activeProposals.then((result) => {
       if (result.status != 200) {
-        setActiveProposalDataFetched(false)
+        setActiveProposalDataFetched(false);
       } else {
-        setActiveProposalData(result.data)
-        setActiveProposalDataFetched(true)
+        setActiveProposalData(result.data);
+        setActiveProposalDataFetched(true);
       }
-    })
-  }
+    });
+  };
 
   useEffect(() => {
-    setLoaderOpen(true)
+    setLoaderOpen(true);
     if (daoAddress) {
-      tokenAPIDetailsRetrieval()
+      tokenAPIDetailsRetrieval();
     }
-  }, [daoAddress, GNOSIS_TRANSACTION_URL, USDC_CONTRACT_ADDRESS])
+  }, [daoAddress, GNOSIS_TRANSACTION_URL, USDC_CONTRACT_ADDRESS]);
 
   useEffect(() => {
     if (daoAddress) {
-      fetchClubAssetToken()
+      fetchClubAssetToken();
     }
-  }, [daoAddress])
+  }, [daoAddress]);
 
   useEffect(() => {
     if (clubId) {
-      fetchMembers()
-      fetchActiveProposals()
+      fetchMembers();
+      fetchActiveProposals();
     }
-  }, [clubId])
+  }, [clubId]);
 
   useEffect(() => {
     if (
@@ -535,7 +538,7 @@ const Dashboard = () => {
       activeProposalDataFetched &&
       clubAssetTokenFetched
     ) {
-      setLoaderOpen(false)
+      setLoaderOpen(false);
     }
   }, [
     daoAddress,
@@ -545,32 +548,32 @@ const Dashboard = () => {
     membersFetched,
     activeProposalDataFetched,
     clubAssetTokenFetched,
-  ])
+  ]);
 
   const handleCopy = () => {
     navigator.clipboard.writeText(
       typeof window !== "undefined" && window.location.origin
         ? `${window.location.origin}/join/${daoAddress}`
         : null
-    )
-  }
+    );
+  };
 
   const handleProposalClick = (proposal) => {
     router.push(`${router.asPath}/proposal/${proposal.proposalId}`, undefined, {
       shallow: true,
-    })
-  }
+    });
+  };
 
   const handleMoreClick = () => {
-    router.push(`${router.asPath}/proposal`, undefined, { shallow: true })
-  }
+    router.push(`${router.asPath}/proposal`, undefined, { shallow: true });
+  };
 
   const handleSnackBarClose = (event, reason) => {
     if (reason === "clickaway") {
-      return
+      return;
     }
-    setOpenSnackBar(false)
-  }
+    setOpenSnackBar(false);
+  };
   return (
     <>
       <Layout1 page={1} depositUrl={depositLink}>
@@ -893,7 +896,7 @@ const Dashboard = () => {
                                       </TableCell>
                                       {/* <TableCell align="left" variant="tableBody" sx={row.daychange > 0 ? { color: "#0ABB92" } : { color: "#D55438" }}>{row.daychange > 0 ? "+" : ""}{row.daychange}</TableCell> */}
                                     </TableRow>
-                                  )
+                                  );
                                 }
                               }
                             )}
@@ -922,13 +925,13 @@ const Dashboard = () => {
                     {nftFetched ? (
                       ntfData.length > 0 ? (
                         ntfData.map((data, key) => {
-                          ;<Grid item m={1} key={key}>
+                          <Grid item m={1} key={key}>
                             <CollectionCard
                               imageURI={data.logoUri}
                               tokenName={data.tokenName}
                               tokenSymbol={data.tokenSymbol}
                             />
-                          </Grid>
+                          </Grid>;
                         })
                       ) : (
                         <Grid
@@ -970,7 +973,7 @@ const Dashboard = () => {
                         onClick={() => {
                           window.open(
                             `https://stationx.substack.com/p/get-started-with-stationx-on-rinkeby`
-                          )
+                          );
                         }}
                       >
                         Read Docs
@@ -1149,7 +1152,7 @@ const Dashboard = () => {
                                       </Grid>
                                     </ListItemButton>
                                   </div>
-                                )
+                                );
                               }
                             })
                           : null}
@@ -1194,7 +1197,7 @@ const Dashboard = () => {
                             {
                               shallow: true,
                             }
-                          )
+                          );
                         }}
                       >
                         Create new
@@ -1230,7 +1233,7 @@ const Dashboard = () => {
         </Backdrop>
       </Layout1>
     </>
-  )
-}
+  );
+};
 
-export default ClubFetch(Dashboard)
+export default ClubFetch(Dashboard);

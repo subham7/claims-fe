@@ -1,50 +1,43 @@
-import { React, useEffect, useState } from "react"
-import Web3 from "web3"
-import { makeStyles } from "@mui/styles"
-import Layout1 from "../../../../src/components/layouts/layout1"
+import { React, useEffect, useState } from "react";
+import Web3 from "web3";
+import { makeStyles } from "@mui/styles";
+import Layout1 from "../../../../src/components/layouts/layout1";
 import {
-  Box,
   Card,
   Grid,
   Typography,
-  ListItemButton,
-  ListItemText,
   Divider,
   Stack,
-  TextField,
   Button,
-  IconButton,
-  Modal,
-  Select,
-  OutlinedInput,
-  MenuItem,
-  TextareaAutosize,
-  Chip,
   CardActionArea,
   Snackbar,
   Alert,
   CircularProgress,
   Backdrop,
-} from "@mui/material"
-import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos"
-import { useRouter } from "next/router"
-import Router, { withRouter } from "next/router"
-import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace"
-import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded"
-import CloseIcon from "@mui/icons-material/Close"
-import ProgressBar from "../../../../src/components/progressbar"
-import { useDispatch, useSelector } from "react-redux"
-import { addProposalId } from "../../../../src/redux/reducers/create"
-import { SmartContract } from "../../../../src/api/contract"
+} from "@mui/material";
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
+import DoneIcon from "@mui/icons-material/Done";
+import { useRouter } from "next/router";
+import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
+import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
+import CloseIcon from "@mui/icons-material/Close";
+import ProgressBar from "../../../../src/components/progressbar";
+import { useDispatch, useSelector } from "react-redux";
+import { addProposalId } from "../../../../src/redux/reducers/create";
+import { SmartContract } from "../../../../src/api/contract";
 import {
   getProposalDetail,
   castVote,
   patchProposalExecuted,
-} from "../../../../src/api/proposal"
-import { getMembersDetails } from "../../../../src/api/user"
-import ImplementationContract from "../../../../src/abis/implementationABI.json"
-import USDCContract from "../../../../src/abis/usdcTokenContract.json"
-import ClubFetch from "../../../../src/utils/clubFetch"
+  getProposalTxHash,
+} from "../../../../src/api/proposal";
+import { getMembersDetails } from "../../../../src/api/user";
+import ImplementationContract from "../../../../src/abis/implementationABI.json";
+import USDCContract from "../../../../src/abis/usdcTokenContract.json";
+import ClubFetch from "../../../../src/utils/clubFetch";
+import Web3Adapter from "@gnosis.pm/safe-web3-lib";
+import Safe from "@gnosis.pm/safe-core-sdk";
+import SafeServiceClient from "@gnosis.pm/safe-service-client";
 
 const useStyles = makeStyles({
   clubAssets: {
@@ -150,159 +143,214 @@ const useStyles = makeStyles({
     backgroundColor: "#19274B",
     display: "flex",
   },
-})
+});
 
 const ProposalDetail = () => {
-  const router = useRouter()
-  const { pid, clubId } = router.query
-  const classes = useStyles()
-  const [voted, setVoted] = useState(false)
-  const [fetched, setFetched] = useState(false)
-  const [members, setMembers] = useState([])
-  const [membersFetched, setMembersFetched] = useState(false)
-  const [proposalData, setProposalData] = useState([])
-  const [castVoteOption, setCastVoteOption] = useState("")
-  const clubID = clubId
-  const [cardSelected, setCardSelected] = useState(null)
+  const router = useRouter();
+  const { pid, clubId } = router.query;
+
+  const classes = useStyles();
+  const [voted, setVoted] = useState(false);
+  const [fetched, setFetched] = useState(false);
+  const [members, setMembers] = useState([]);
+  const [owner, setOwner] = useState(false);
+  const [ownerAddresses, setOwnerAddresses] = useState([]);
+  const [signedOwners, setSignedOwners] = useState([]);
+  const [threshold, setThreshold] = useState();
+  const [signed, setSigned] = useState(false);
+  const [txHash, setTxHash] = useState();
+  const [executionReady, setExecutionReady] = useState(false);
+  const [membersFetched, setMembersFetched] = useState(false);
+  const [proposalData, setProposalData] = useState([]);
+  const [castVoteOption, setCastVoteOption] = useState("");
+  const clubID = clubId;
+  const [cardSelected, setCardSelected] = useState(null);
   const walletAddress = useSelector((state) => {
-    return state.create.value
-  })
+    return state.create.value;
+  });
   const daoAddress = useSelector((state) => {
-    return state.create.daoAddress
-  })
+    return state.create.daoAddress;
+  });
   const gnosisAddress = useSelector((state) => {
-    return state.gnosis.safeAddress
-  })
-  const [executed, setExecuted] = useState(false)
-  const [message, setMessage] = useState("")
-  const [failed, setFailed] = useState(false)
-  const [openSnackBar, setOpenSnackBar] = useState(false)
+    return state.gnosis.safeAddress;
+  });
+
+  const [executed, setExecuted] = useState(false);
+  const [message, setMessage] = useState("");
+  const [failed, setFailed] = useState(false);
+  const [openSnackBar, setOpenSnackBar] = useState(false);
   const tresuryAddress = useSelector((state) => {
-    return state.create.tresuryAddress
-  })
-  const [loaderOpen, setLoaderOpen] = useState(false)
+    return state.create.tresuryAddress;
+  });
+  const [loaderOpen, setLoaderOpen] = useState(false);
   const FACTORY_CONTRACT_ADDRESS = useSelector((state) => {
-    return state.gnosis.factoryContractAddress
-  })
+    return state.gnosis.factoryContractAddress;
+  });
   const USDC_CONTRACT_ADDRESS = useSelector((state) => {
-    return state.gnosis.usdcContractAddress
-  })
+    return state.gnosis.usdcContractAddress;
+  });
   const GNOSIS_TRANSACTION_URL = useSelector((state) => {
-    return state.gnosis.transactionUrl
-  })
+    return state.gnosis.transactionUrl;
+  });
 
-  let voteId = null
-  const dispatch = useDispatch()
+  let voteId = null;
+  const dispatch = useDispatch();
 
-  const fetchData = () => {
-    dispatch(addProposalId(pid))
-    const proposalData = getProposalDetail(pid)
+  const getSafeSdk = async () => {
+    const web3 = new Web3(window.ethereum);
+    const ethAdapter = new Web3Adapter({
+      web3: web3,
+      signerAddress: walletAddress,
+    });
+    const safeSdk = await Safe.create({
+      ethAdapter: ethAdapter,
+      safeAddress: gnosisAddress,
+    });
+    return safeSdk;
+  };
+
+  const getSafeService = async () => {
+    const web3 = new Web3(window.web3);
+    const ethAdapter = new Web3Adapter({
+      web3: web3,
+      signerAddress: walletAddress,
+    });
+    const safeService = new SafeServiceClient({
+      txServiceUrl: GNOSIS_TRANSACTION_URL,
+      ethAdapter,
+    });
+    return safeService;
+  };
+
+  const fetchData = async () => {
+    dispatch(addProposalId(pid));
+    const proposalData = getProposalDetail(pid);
     proposalData.then((result) => {
       if (result.status !== 200) {
-        setFetched(false)
+        setFetched(false);
       } else {
-        setProposalData(result.data)
-        console.log("Proposal data", result.data)
-        setFetched(true)
+        setProposalData(result.data);
+        setFetched(true);
       }
-    })
-  }
+    });
+  };
 
   const fetchMembersData = () => {
-    const membersData = getMembersDetails(clubID)
+    const membersData = getMembersDetails(clubID);
     membersData.then((result) => {
       if (result.status !== 200) {
-        setMembersFetched(false)
+        setMembersFetched(false);
       } else {
-        setMembers(result.data)
-        setMembersFetched(true)
+        setMembers(result.data);
+        setMembersFetched(true);
       }
-    })
-  }
+    });
+  };
 
   const calculateVotePercentage = (voteReceived) => {
-    let totalVote = 0
+    let totalVote = 0;
     proposalData[0].votingOptions.map((vote, key) => {
-      totalVote += vote.count
-    })
-    return (voteReceived / totalVote).toFixed(2) * 100
-  }
+      totalVote += vote.count;
+    });
+    return (voteReceived / totalVote).toFixed(2) * 100;
+  };
 
   const fetchVotingOptionChoice = (votingOptionAddress) => {
     let obj = proposalData[0].votingOptions.find(
       (voteOption) => voteOption.votingOptionId === votingOptionAddress
-    )
-    voteId = parseInt(proposalData[0].votingOptions.indexOf(obj))
-    return proposalData[0].votingOptions.indexOf(obj)
-  }
+    );
+    voteId = parseInt(proposalData[0].votingOptions.indexOf(obj));
+    return proposalData[0].votingOptions.indexOf(obj);
+  };
 
-  useEffect(() => {
-    setLoaderOpen(true)
-    if (pid) {
-      fetchData()
+  useEffect(async () => {
+    setLoaderOpen(true);
+
+    if (pid && gnosisAddress && GNOSIS_TRANSACTION_URL) {
+      await isOwner();
+      await fetchData();
     }
-  }, [pid])
-
-  useEffect(() => {
-    setLoaderOpen(true)
+  }, [pid, gnosisAddress, GNOSIS_TRANSACTION_URL]);
+  useEffect(async () => {
+    setLoaderOpen(true);
+    // await isOwner();
     if (clubId) {
-      fetchMembersData()
+      fetchMembersData();
     }
-  }, [clubId])
+  }, [clubId]);
 
   useEffect(() => {
     if (fetched && membersFetched) {
-      setLoaderOpen(false)
+      setLoaderOpen(false);
     }
-  }, [fetched, membersFetched])
+  }, [fetched, membersFetched]);
 
   const returnHome = () => {
-    router.back()
-  }
+    router.back();
+  };
 
   const submitVote = () => {
-    setLoaderOpen(true)
-    const web3 = new Web3(window.web3)
-    const userAddress = web3.utils.toChecksumAddress(walletAddress)
+    setLoaderOpen(true);
+    const web3 = new Web3(window.web3);
+    const userAddress = web3.utils.toChecksumAddress(walletAddress);
     const payload = {
       proposalId: pid,
       votingOptionId: castVoteOption,
       voterAddress: userAddress,
       clubId: clubID,
-    }
-    const voteSubmit = castVote(payload)
+    };
+    const voteSubmit = castVote(payload);
     voteSubmit.then((result) => {
       if (result.status !== 201) {
-        setVoted(false)
-        setLoaderOpen(false)
+        setVoted(false);
+        setLoaderOpen(false);
       } else {
-        fetchData()
-        setVoted(true)
-        setLoaderOpen(false)
+        fetchData();
+        setVoted(true);
+        setLoaderOpen(false);
       }
-    })
-  }
+    });
+  };
 
-  const isCurrentUserAdmin = () => {
-    if (membersFetched && members.length > 0 && walletAddress) {
-      let obj = members.find((member) => member.userAddress === walletAddress)
-      let pos = members.indexOf(obj)
-      if (obj.clubs[0].isAdmin) {
-        return true
-      } else {
-        return false
-      }
+  const isOwner = async () => {
+    const safeSdk = await getSafeSdk();
+    const ownerAddresses = await safeSdk.getOwners();
+    setOwnerAddresses(ownerAddresses);
+    if (ownerAddresses.includes(walletAddress)) {
+      setOwner(true);
+    } else {
+      setOwner(false);
     }
-  }
+    const threshold = await safeSdk.getThreshold();
+    setThreshold(threshold);
+    const proposalTxHash = getProposalTxHash(pid);
+    proposalTxHash.then(async (result) => {
+      if (
+        result.status !== 200 ||
+        (result.status === 200 && result.data.length === 0)
+      ) {
+        setTxHash("");
+      } else {
+        txHash = result.data[0].txHash;
+        setTxHash(result.data[0].txHash);
+        const safeService = await getSafeService();
+        const tx = await safeService.getTransaction(result.data[0].txHash);
+        const ownerAddresses = tx.confirmations.map(
+          (confirmOwners) => confirmOwners.owner
+        );
+        setSignedOwners(ownerAddresses);
+        if (ownerAddresses.includes(walletAddress)) {
+          setSigned(true);
+        }
+        if (ownerAddresses.length >= threshold) {
+          setExecutionReady(true);
+        }
+      }
+    });
+  };
 
-  const executeNonAdminUser = () => {
-    setOpenSnackBar(true)
-    setFailed(true)
-    setMessage("Only admin of the club is able to execute the proposal!")
-  }
-
-  const executeFunction = async () => {
-    setLoaderOpen(true)
+  const executeFunction = async (proposalStatus) => {
+    setLoaderOpen(true);
     if (proposalData[0].commands[0].executionId === 0) {
       // for airdrop execution
       const updateProposal = new SmartContract(
@@ -311,12 +359,12 @@ const ProposalDetail = () => {
         undefined,
         USDC_CONTRACT_ADDRESS,
         GNOSIS_TRANSACTION_URL
-      )
+      );
       const response = updateProposal.updateProposalAndExecution(
         daoAddress,
         gnosisAddress,
         proposalData[0].ipfsHash,
-        "Executed",
+        proposalStatus,
         123444,
         undefined,
         proposalData[0].commands[0].airDropToken,
@@ -330,38 +378,47 @@ const ProposalDetail = () => {
         undefined,
         undefined,
         proposalData[0].commands[0].airDropCarryFee,
-        []
-      )
-      await response.then(
-        (result) => {
-          result.promiEvent.on("confirmation", () => {
-            const updateStatus = patchProposalExecuted(pid)
-            updateStatus.then((result) => {
-              if (result.status !== 200) {
-                setExecuted(false)
-                setOpenSnackBar(true)
-                setMessage("Airdrop execution status update failed!")
-                setFailed(true)
-                setLoaderOpen(false)
-              } else {
-                fetchData()
-                setExecuted(true)
-                setOpenSnackBar(true)
-                setMessage("Airdrop execution successful!")
-                setFailed(false)
-                setLoaderOpen(false)
-              }
-            })
-          })
-        },
-        (error) => {
-          setExecuted(false)
-          setOpenSnackBar(true)
-          setMessage("Airdrop execution failed!")
-          setFailed(true)
-          setLoaderOpen(false)
-        }
-      )
+        [],
+        txHash,
+        pid
+      );
+      if (proposalStatus === "executed") {
+        await response.then(
+          (result) => {
+            result.promiEvent.on("confirmation", () => {
+              const updateStatus = patchProposalExecuted(pid);
+              updateStatus.then((result) => {
+                if (result.status !== 200) {
+                  setExecuted(false);
+                  setOpenSnackBar(true);
+                  setMessage("Airdrop execution status update failed!");
+                  setFailed(true);
+                  setLoaderOpen(false);
+                } else {
+                  fetchData();
+                  setExecuted(true);
+                  setOpenSnackBar(true);
+                  setMessage("Airdrop execution successful!");
+                  setFailed(false);
+                  setLoaderOpen(false);
+                }
+              });
+            });
+          },
+          (error) => {
+            setExecuted(false);
+            setOpenSnackBar(true);
+            setMessage("Airdrop execution failed!");
+            setFailed(true);
+            setLoaderOpen(false);
+          }
+        );
+      } else {
+        await response.then(() => {
+          setSigned(true);
+          setLoaderOpen(false);
+        });
+      }
     }
 
     if (proposalData[0].commands[0].executionId === 1) {
@@ -372,12 +429,12 @@ const ProposalDetail = () => {
         undefined,
         USDC_CONTRACT_ADDRESS,
         GNOSIS_TRANSACTION_URL
-      )
+      );
       const response = updateProposal.updateProposalAndExecution(
         daoAddress,
         gnosisAddress,
         proposalData[0].ipfsHash,
-        "Executed",
+        proposalStatus,
         123444,
         undefined,
         undefined,
@@ -391,41 +448,50 @@ const ProposalDetail = () => {
         undefined,
         undefined,
         undefined,
-        []
-      )
-      response.then(
-        (result) => {
-          result.promiEvent.on("confirmation", () => {
-            const updateStatus = patchProposalExecuted(pid)
-            updateStatus.then((result) => {
-              if (result.status !== 200) {
-                setExecuted(false)
-                setOpenSnackBar(true)
-                setMessage("MintGT execution status update failed!")
-                setFailed(true)
-                setLoaderOpen(false)
-              } else {
-                fetchData()
-                setExecuted(true)
-                setOpenSnackBar(true)
-                setMessage("MintGT execution successful!")
-                setFailed(false)
-                setLoaderOpen(false)
-              }
-            })
-          })
-        },
-        (error) => {
-          console.log(error)
-          setExecuted(false)
-          setOpenSnackBar(true)
-          setMessage("MintGT execution failed!")
-          setFailed(true)
-          setLoaderOpen(false)
-        }
-      )
+        [],
+        txHash,
+        pid
+      );
+      if (proposalStatus === "executed") {
+        response.then(
+          (result) => {
+            result.promiEvent.on("confirmation", () => {
+              const updateStatus = patchProposalExecuted(pid);
+              updateStatus.then((result) => {
+                if (result.status !== 200) {
+                  setExecuted(false);
+                  setOpenSnackBar(true);
+                  setMessage("MintGT execution status update failed!");
+                  setFailed(true);
+                  setLoaderOpen(false);
+                } else {
+                  fetchData();
+                  setExecuted(true);
+                  setOpenSnackBar(true);
+                  setMessage("MintGT execution successful!");
+                  setFailed(false);
+                  setLoaderOpen(false);
+                }
+              });
+            });
+          },
+          (error) => {
+            console.log(error);
+            setExecuted(false);
+            setOpenSnackBar(true);
+            setMessage("MintGT execution failed!");
+            setFailed(true);
+            setLoaderOpen(false);
+          }
+        );
+      } else {
+        await response.then(async (result) => {
+          setSigned(true);
+          setLoaderOpen(false);
+        });
+      }
     }
-
+    // comented from before
     // if (proposalData[0].commands[0].executionId === 2) {
     //   const web3 = new Web3(window.web3)
     //   // for assigner executor role execution
@@ -479,6 +545,8 @@ const ProposalDetail = () => {
     //     setLoaderOpen(false)
     //   })
     // }
+    //commented from before ends
+
     if (proposalData[0].commands[0].executionId === 2) {
       // For execution of Governance settings
       const updateProposal = new SmartContract(
@@ -487,12 +555,12 @@ const ProposalDetail = () => {
         undefined,
         USDC_CONTRACT_ADDRESS,
         GNOSIS_TRANSACTION_URL
-      )
+      );
       const response = updateProposal.updateProposalAndExecution(
         daoAddress,
         gnosisAddress,
         proposalData[0].ipfsHash,
-        "Executed",
+        proposalStatus,
         123444,
         undefined,
         undefined,
@@ -506,39 +574,48 @@ const ProposalDetail = () => {
         undefined,
         undefined,
         undefined,
-        []
-      )
-      response.then(
-        (result) => {
-          result.promiEvent.on("confirmation", () => {
-            const updateStatus = patchProposalExecuted(pid)
-            updateStatus.then((result) => {
-              if (result.status !== 200) {
-                setExecuted(false)
-                setOpenSnackBar(true)
-                setMessage("Governance settings status update failed!")
-                setFailed(true)
-                setLoaderOpen(false)
-              } else {
-                fetchData()
-                setExecuted(true)
-                setOpenSnackBar(true)
-                setMessage("Governance settings execution successful!")
-                setFailed(false)
-                setLoaderOpen(false)
-              }
-            })
-          })
-        },
-        (error) => {
-          console.log(error)
-          setExecuted(false)
-          setOpenSnackBar(true)
-          setMessage("Governance settings execution failed!")
-          setFailed(true)
-          setLoaderOpen(false)
-        }
-      )
+        [],
+        txHash,
+        pid
+      );
+      if (proposalStatus === "executed") {
+        response.then(
+          (result) => {
+            result.promiEvent.on("confirmation", () => {
+              const updateStatus = patchProposalExecuted(pid);
+              updateStatus.then((result) => {
+                if (result.status !== 200) {
+                  setExecuted(false);
+                  setOpenSnackBar(true);
+                  setMessage("Governance settings status update failed!");
+                  setFailed(true);
+                  setLoaderOpen(false);
+                } else {
+                  fetchData();
+                  setExecuted(true);
+                  setOpenSnackBar(true);
+                  setMessage("Governance settings execution successful!");
+                  setFailed(false);
+                  setLoaderOpen(false);
+                }
+              });
+            });
+          },
+          (error) => {
+            console.log(error);
+            setExecuted(false);
+            setOpenSnackBar(true);
+            setMessage("Governance settings execution failed!");
+            setFailed(true);
+            setLoaderOpen(false);
+          }
+        );
+      } else {
+        await response.then(async (result) => {
+          setSigned(true);
+          setLoaderOpen(false);
+        });
+      }
     }
 
     if (proposalData[0].commands[0].executionId === 3) {
@@ -549,12 +626,12 @@ const ProposalDetail = () => {
         undefined,
         USDC_CONTRACT_ADDRESS,
         GNOSIS_TRANSACTION_URL
-      )
+      );
       const response = updateProposal.updateProposalAndExecution(
         daoAddress,
         gnosisAddress,
         proposalData[0].ipfsHash,
-        "Executed",
+        proposalStatus,
         123444,
         undefined,
         undefined,
@@ -568,38 +645,48 @@ const ProposalDetail = () => {
         undefined,
         undefined,
         undefined,
-        []
-      )
-      response.then(
-        (result) => {
-          result.promiEvent.on("confirmation", () => {
-            const updateStatus = patchProposalExecuted(pid)
-            updateStatus.then((result) => {
-              if (result.status !== 200) {
-                setExecuted(false)
-                setOpenSnackBar(true)
-                setMessage("Raise amount execution status update failed!")
-                setFailed(true)
-                setLoaderOpen(false)
-              } else {
-                fetchData()
-                setExecuted(true)
-                setOpenSnackBar(true)
-                setMessage("Update raise amount execution successful!")
-                setFailed(false)
-                setLoaderOpen(false)
-              }
-            })
-          })
-        },
-        (error) => {
-          setExecuted(false)
-          setOpenSnackBar(true)
-          setMessage("Update raise amount execution failed!")
-          setFailed(true)
-          setLoaderOpen(false)
-        }
-      )
+        [],
+        txHash,
+        pid
+      );
+
+      if (proposalStatus === "executed") {
+        response.then(
+          (result) => {
+            result.promiEvent.on("confirmation", () => {
+              const updateStatus = patchProposalExecuted(pid);
+              updateStatus.then((result) => {
+                if (result.status !== 200) {
+                  setExecuted(false);
+                  setOpenSnackBar(true);
+                  setMessage("Raise amount execution status update failed!");
+                  setFailed(true);
+                  setLoaderOpen(false);
+                } else {
+                  fetchData();
+                  setExecuted(true);
+                  setOpenSnackBar(true);
+                  setMessage("Update raise amount execution successful!");
+                  setFailed(false);
+                  setLoaderOpen(false);
+                }
+              });
+            });
+          },
+          (error) => {
+            setExecuted(false);
+            setOpenSnackBar(true);
+            setMessage("Update raise amount execution failed!");
+            setFailed(true);
+            setLoaderOpen(false);
+          }
+        );
+      } else {
+        await response.then((result) => {
+          setSigned(true);
+          setLoaderOpen(false);
+        });
+      }
     }
 
     if (proposalData[0].commands[0].executionId === 4) {
@@ -610,12 +697,12 @@ const ProposalDetail = () => {
         undefined,
         USDC_CONTRACT_ADDRESS,
         GNOSIS_TRANSACTION_URL
-      )
+      );
       const response = updateProposal.updateProposalAndExecution(
         daoAddress,
         gnosisAddress,
         "proposalData[0].ipfsHash",
-        "Executed",
+        proposalStatus,
         123444,
         proposalData[0].commands[0].customToken,
         undefined,
@@ -629,75 +716,87 @@ const ProposalDetail = () => {
         proposalData[0].commands[0].customTokenAmounts,
         proposalData[0].commands[0].customTokenAddresses,
         undefined,
-        []
-      )
-      response.then(
-        (result) => {
-          result.promiEvent.on("confirmation", () => {
-            const updateStatus = patchProposalExecuted(pid)
-            updateStatus.then((result) => {
-              if (result.status !== 200) {
-                setExecuted(false)
-                setOpenSnackBar(true)
-                setMessage("Send custom token execution status update failed!")
-                setFailed(true)
-                setLoaderOpen(false)
-              } else {
-                fetchData()
-                setExecuted(true)
-                setOpenSnackBar(true)
-                setMessage("Send custom token execution successful!")
-                setFailed(false)
-                setLoaderOpen(false)
-              }
-            })
-          })
-        },
-        (error) => {
-          setExecuted(false)
-          setOpenSnackBar(true)
-          setMessage("Send custom token execution status update failed!")
-          setFailed(true)
-          setLoaderOpen(false)
-        }
-      )
+        [],
+        txHash,
+        pid
+      );
+
+      if (proposalStatus === "executed") {
+        response.then(
+          (result) => {
+            result.promiEvent.on("confirmation", () => {
+              const updateStatus = patchProposalExecuted(pid);
+              updateStatus.then((result) => {
+                if (result.status !== 200) {
+                  setExecuted(false);
+                  setOpenSnackBar(true);
+                  setMessage(
+                    "Send custom token execution status update failed!"
+                  );
+                  setFailed(true);
+                  setLoaderOpen(false);
+                } else {
+                  fetchData();
+                  setExecuted(true);
+                  setOpenSnackBar(true);
+                  setMessage("Send custom token execution successful!");
+                  setFailed(false);
+                  setLoaderOpen(false);
+                }
+              });
+            });
+          },
+          (error) => {
+            setExecuted(false);
+            setOpenSnackBar(true);
+            setMessage("Send custom token execution status update failed!");
+            setFailed(true);
+            setLoaderOpen(false);
+          }
+        );
+      } else {
+        await response.then((result) => {
+          setSigned(true);
+          setLoaderOpen(false);
+        });
+      }
     }
-  }
+  };
 
   const checkUserVoted = (pid) => {
     if (walletAddress) {
-      const web3 = new Web3(window.web3)
-      let userAddress = walletAddress
-      userAddress = web3.utils.toChecksumAddress(userAddress)
+      const web3 = new Web3(window.web3);
+      let userAddress = walletAddress;
+      userAddress = web3.utils.toChecksumAddress(userAddress);
       let obj = proposalData[0].vote.find(
         (voteCasted) => voteCasted.voterAddress === userAddress
-      )
-      return proposalData[0].vote.indexOf(obj) >= 0
+      );
+      return proposalData[0].vote.indexOf(obj) >= 0;
     }
-  }
+  };
 
   const fetchUserVoteText = (pid) => {
     if (walletAddress) {
-      const web3 = new Web3(window.web3)
-      let userAddress = walletAddress
-      userAddress = web3.utils.toChecksumAddress(userAddress)
+      const web3 = new Web3(window.web3);
+      let userAddress = walletAddress;
+      userAddress = web3.utils.toChecksumAddress(userAddress);
       let obj = proposalData[0].vote.find(
         (voteCasted) => voteCasted.voterAddress === userAddress
-      )
-      return proposalData[0].vote.indexOf(obj) >= 0
+      );
+      return proposalData[0].vote.indexOf(obj) >= 0;
     }
-  }
+  };
 
   const handleShowMore = () => {
-    router.push("/dashboard", undefined, { shallow: true })
-  }
+    router.push("/dashboard", undefined, { shallow: true });
+  };
 
   const handleSnackBarClose = (event, reason) => {
     if (reason === "clickaway") {
-      return
+      return;
     }
-    setOpenSnackBar(false)
-  }
+    setOpenSnackBar(false);
+  };
 
   return (
     <>
@@ -822,8 +921,8 @@ const ProposalDetail = () => {
                                         : classes.mainCard
                                     }
                                     onClick={(e) => {
-                                      setCastVoteOption(data.votingOptionId)
-                                      setCardSelected(key)
+                                      setCastVoteOption(data.votingOptionId);
+                                      setCardSelected(key);
                                     }}
                                   >
                                     <Grid
@@ -838,7 +937,7 @@ const ProposalDetail = () => {
                                     </Grid>
                                   </Card>
                                 </CardActionArea>
-                              )
+                              );
                             })}
                             <CardActionArea
                               className={classes.mainCard}
@@ -885,7 +984,7 @@ const ProposalDetail = () => {
                         </Card>
                       )
                     ) : proposalData[0].status === "passed" ? (
-                      isCurrentUserAdmin() ? (
+                      owner ? (
                         <Card>
                           <Card
                             className={
@@ -893,14 +992,23 @@ const ProposalDetail = () => {
                                 ? classes.mainCardButtonSuccess
                                 : classes.mainCardButton
                             }
-                            onClick={executeFunction}
+                            // onClick={() => executeFunction("passed")}
+                            onClick={
+                              executionReady
+                                ? () => {
+                                    executeFunction("executed");
+                                  }
+                                : () => {
+                                    executeFunction("passed");
+                                  }
+                            }
                           >
                             <Grid
                               container
                               justifyContent="center"
                               alignItems="center"
                             >
-                              {executed ? (
+                              {signed && !executionReady ? (
                                 <Grid item mt={0.5}>
                                   <CheckCircleRoundedIcon />
                                 </Grid>
@@ -908,13 +1016,19 @@ const ProposalDetail = () => {
                                 <Grid item></Grid>
                               )}
                               <Grid item>
-                                {executed ? (
+                                {txHash ? (
                                   <Typography className={classes.cardFont1}>
-                                    Executed Successfully
+                                    {executed
+                                      ? "Executed Successfully"
+                                      : executionReady
+                                      ? "Execute Now"
+                                      : signed
+                                      ? "Signed Succesfully"
+                                      : "Sign Now"}
                                   </Typography>
                                 ) : (
                                   <Typography className={classes.cardFont1}>
-                                    Execute Now
+                                    {signed ? "Signed Succesfully" : "Sign Now"}
                                   </Typography>
                                 )}
                               </Grid>
@@ -1066,8 +1180,8 @@ const ProposalDetail = () => {
                                           onClick={(e) => {
                                             setCastVoteOption(
                                               data.votingOptionId
-                                            )
-                                            setCardSelected(key)
+                                            );
+                                            setCardSelected(key);
                                           }}
                                         >
                                           <Grid
@@ -1084,7 +1198,7 @@ const ProposalDetail = () => {
                                           </Grid>
                                         </Card>
                                       </CardActionArea>
-                                    )
+                                    );
                                   }
                                 )
                               : null}
@@ -1191,8 +1305,8 @@ const ProposalDetail = () => {
                   ) : null
                 ) : null}
               </Grid>
-              <Grid container mt={4}>
-                <Grid item md={12}>
+              <Grid container mt={4} spacing={2}>
+                <Grid item md={9}>
                   {fetched && (
                     <>
                       {proposalData[0].commands.length && (
@@ -1544,6 +1658,37 @@ const ProposalDetail = () => {
                     </>
                   )}
                 </Grid>
+                <Grid item md={3}>
+                  <Card>
+                    <Grid container item>
+                      <Typography className={classes.listFont2}>
+                        Signators
+                      </Typography>
+                      <Divider sx={{ marginTop: 2, marginBottom: 3 }} />
+                    </Grid>
+                    {ownerAddresses.map((owner) => (
+                      <Grid
+                        sx={{
+                          display: "flex",
+                          justifyContent: "flex-start",
+                        }}
+                        key={owner}
+                      >
+                        {signedOwners.includes(owner) ? (
+                          <DoneIcon
+                            fill="blue"
+                            sx={{ marginRight: 2, color: "#3B7AFD" }}
+                          />
+                        ) : (
+                          <HelpOutlineIcon sx={{ marginRight: 2 }} />
+                        )}
+                        <Typography>
+                          {owner.slice(0, 6)}.....{owner.slice(-4)}
+                        </Typography>
+                      </Grid>
+                    ))}
+                  </Card>
+                </Grid>
               </Grid>
             </Grid>
           </Grid>
@@ -1672,7 +1817,7 @@ const ProposalDetail = () => {
                             }
                           />
                         </div>
-                      )
+                      );
                     })
                   ) : (
                     <Typography className={classes.listFont2Colourless}>
@@ -1750,7 +1895,7 @@ const ProposalDetail = () => {
                             </Grid>
                             <br />
                           </div>
-                        )
+                        );
                       }
                     })
                   ) : (
@@ -1808,7 +1953,7 @@ const ProposalDetail = () => {
         </Backdrop>
       </Layout1>
     </>
-  )
-}
+  );
+};
 
-export default ClubFetch(ProposalDetail)
+export default ClubFetch(ProposalDetail);
