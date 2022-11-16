@@ -274,10 +274,8 @@ export class SmartContract {
         safetx2.addSignature(sign)
       })
       console.log(safetx2)
-      const executeTxResponse = await safeSdk
-        .executeTransaction(safetx2)
-        .then((res) => console.log(res))
-        .catch((err) => console.log(err))
+      const executeTxResponse = await safeSdk.executeTransaction(safetx2)
+
       console.log("executeTxResponse", executeTxResponse)
       const receipt =
         executeTxResponse.transactionResponse &&
