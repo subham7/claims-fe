@@ -1,3 +1,3 @@
-import * as Navbar from "./navbar"
+import * as Navbar from "./navbar";
 
-export { Navbar }
+export { Navbar };
