@@ -172,7 +172,7 @@ const Create = (props) => {
   const clubID = useSelector((state) => {
     return state.create.clubID
   })
-  const [threshold, setThreshold] = useState(1)
+  const [threshold, setThreshold] = useState(2)
   const dispatch = useDispatch()
   const { wallet } = props
   const [completed, setCompleted] = useState({})
@@ -185,7 +185,7 @@ const Create = (props) => {
   const GNOSIS_TRANSACTION_URL = useSelector((state) => {
     return state.gnosis.transactionUrl
   })
-  const usdcConvertDecimal = useSelector(state => {
+  const usdcConvertDecimal = useSelector((state) => {
     return state.gnosis.tokenDecimal
   })
 

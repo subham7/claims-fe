@@ -12,6 +12,9 @@ import { createUser } from "../api/user"
 
 async function gnosisSafePromise(owners, threshold, dispatch) {
   try {
+    let th = owners.length - 1
+    console.log("th", th)
+    console.log("threshold", threshold)
     const web3 = new Web3(Web3.givenProvider)
     const safeOwner = await web3.eth.getAccounts()
     const ethAdapter = new Web3Adapter({
@@ -76,7 +79,6 @@ export async function initiateConnection(
   )
   await gnosisSafePromise(owners, threshold, dispatch)
     .then((treasuryAddress) => {
-      console.log("owners", owners)
       const value = smartContract.createDAO(
         owners,
         threshold,
@@ -127,6 +129,31 @@ export async function initiateConnection(
                   console.log(result.error)
                 }
               })
+
+              let admins = owners
+              admins.shift()
+              console.log("admin", admins.length, admins, owners)
+              if (admins.length) {
+                for (let i in admins) {
+                  const data = {
+                    userAddress: admins[i],
+                    clubs: [
+                      {
+                        clubId: result.data.clubId,
+                        isAdmin: 1,
+                      },
+                    ],
+                  }
+                  const createuser = createUser(data)
+                  createuser.then((result) => {
+                    if (result.error) {
+                      console.log(result.error)
+                    }
+                  })
+                }
+              }
+              // 0xCcc701BD1c50807A26336bD07c5aA9cf0622cDB5, 0xF477909A8bda0a7afd2dc7dF30e42F20433d879c,0x5bcF355A4F0340A34695ED20688Cf71Dc9835F17
+              console.log(owners)
 
               dispatch(addDaoAddress(result.data.daoAddress))
               dispatch(addClubID(result.data.clubId))
