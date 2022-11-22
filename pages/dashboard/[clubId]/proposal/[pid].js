@@ -414,10 +414,16 @@ const ProposalDetail = () => {
           }
         );
       } else {
-        await response.then(() => {
-          setSigned(true);
-          setLoaderOpen(false);
-        });
+        await response
+          .then(() => {
+            setSigned(true);
+            setLoaderOpen(false);
+          })
+          .catch((err) => {
+            setSigned(false);
+            setMessage("Signature failed!");
+            setLoaderOpen(false);
+          });
       }
     }
 
@@ -485,10 +491,16 @@ const ProposalDetail = () => {
           }
         );
       } else {
-        await response.then(async (result) => {
-          setSigned(true);
-          setLoaderOpen(false);
-        });
+        await response
+          .then(async (result) => {
+            setSigned(true);
+            setLoaderOpen(false);
+          })
+          .catch((err) => {
+            setSigned(false);
+            setMessage("Signature failed!");
+            setLoaderOpen(false);
+          });
       }
     }
     // comented from before
@@ -611,10 +623,16 @@ const ProposalDetail = () => {
           }
         );
       } else {
-        await response.then(async (result) => {
-          setSigned(true);
-          setLoaderOpen(false);
-        });
+        await response
+          .then(async (result) => {
+            setSigned(true);
+            setLoaderOpen(false);
+          })
+          .catch((err) => {
+            setSigned(false);
+            setMessage("Signature failed!");
+            setLoaderOpen(false);
+          });
       }
     }
 
@@ -682,10 +700,16 @@ const ProposalDetail = () => {
           }
         );
       } else {
-        await response.then((result) => {
-          setSigned(true);
-          setLoaderOpen(false);
-        });
+        await response
+          .then((result) => {
+            setSigned(true);
+            setLoaderOpen(false);
+          })
+          .catch((err) => {
+            setSigned(false);
+            setMessage("Signature failed!");
+            setLoaderOpen(false);
+          });
       }
     }
 
@@ -755,10 +779,16 @@ const ProposalDetail = () => {
           }
         );
       } else {
-        await response.then((result) => {
-          setSigned(true);
-          setLoaderOpen(false);
-        });
+        await response
+          .then((result) => {
+            setSigned(true);
+            setLoaderOpen(false);
+          })
+          .catch((err) => {
+            setSigned(false);
+            setMessage("Signature failed!");
+            setLoaderOpen(false);
+          });
       }
     }
   };
