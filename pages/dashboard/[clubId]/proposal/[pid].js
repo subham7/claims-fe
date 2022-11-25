@@ -160,6 +160,7 @@ const ProposalDetail = () => {
   const [signed, setSigned] = useState(false);
   const [txHash, setTxHash] = useState();
   const [executionReady, setExecutionReady] = useState(false);
+  const [pendingTxHash, setPendingTxHash] = useState("");
   const [membersFetched, setMembersFetched] = useState(false);
   const [proposalData, setProposalData] = useState([]);
   const [castVoteOption, setCastVoteOption] = useState("");
@@ -338,6 +339,15 @@ const ProposalDetail = () => {
         const ownerAddresses = tx.confirmations.map(
           (confirmOwners) => confirmOwners.owner
         );
+        console.log("ownerAddresses", ownerAddresses);
+        const pendingTxs = await safeService.getPendingTransactions(
+          gnosisAddress
+        );
+        setPendingTxHash(
+          pendingTxs.results[pendingTxs.count - 1].safeTxHash,
+          result.data[0].txHash
+        );
+
         setSignedOwners(ownerAddresses);
         if (ownerAddresses.includes(walletAddress)) {
           setSigned(true);
@@ -1024,12 +1034,21 @@ const ProposalDetail = () => {
                             }
                             // onClick={() => executeFunction("passed")}
                             onClick={
-                              executionReady
-                                ? () => {
-                                    executeFunction("executed");
-                                  }
+                              pendingTxHash === txHash
+                                ? executionReady
+                                  ? () => {
+                                      executeFunction("executed");
+                                    }
+                                  : () => {
+                                      executeFunction("passed");
+                                    }
                                 : () => {
-                                    executeFunction("passed");
+                                    console.log("rrrrrrrrrrr");
+                                    setOpenSnackBar(true);
+                                    setFailed(true);
+                                    setMessage(
+                                      "execute txns with smaller nonce first"
+                                    );
                                   }
                             }
                           >
