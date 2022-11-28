@@ -232,11 +232,11 @@ const useStyles = makeStyles({
     borderRadius: "15px",
   },
   linkInput: {
-    width: "100%",
-    color: "#C1D3FF",
-    background: "#111D38 0% 0% no-repeat padding-box",
-    border: "1px solid #C1D3FF40",
-    borderRadius: "10px",
+    "width": "100%",
+    "color": "#C1D3FF",
+    "background": "#111D38 0% 0% no-repeat padding-box",
+    "border": "1px solid #C1D3FF40",
+    "borderRadius": "10px",
     "&:hover": {
       boxShadow: "0px 0px 12px #C1D3FF40",
       border: "1px solid #C1D3FF40",
@@ -274,12 +274,12 @@ const useStyles = makeStyles({
     color: "#EFEFEF",
   },
   searchField: {
-    width: "28.5vw",
-    height: "auto",
-    color: "#C1D3FF",
-    background: "#111D38 0% 0% no-repeat padding-box",
-    border: "1px solid #C1D3FF40",
-    borderRadius: "10px",
+    "width": "28.5vw",
+    "height": "auto",
+    "color": "#C1D3FF",
+    "background": "#111D38 0% 0% no-repeat padding-box",
+    "border": "1px solid #C1D3FF40",
+    "borderRadius": "10px",
     "&:hover": {
       boxShadow: "0px 0px 12px #C1D3FF40",
       border: "1px solid #C1D3FF40",
@@ -391,7 +391,7 @@ const Dashboard = () => {
         daoAddress,
         undefined,
         USDC_CONTRACT_ADDRESS,
-        GNOSIS_TRANSACTION_URL
+        GNOSIS_TRANSACTION_URL,
       );
       let usdcDetails = await contract.getUsdcDetails(USDC_CONTRACT_ADDRESS);
       let getUserBalance = await contract.checkUserBalance();
@@ -402,14 +402,14 @@ const Dashboard = () => {
       let memberDeposits = convertFromWei(usdcDetails[0], usdcConvertDecimal);
       let adminContribution = convertFromWei(
         usdcDetails[1],
-        usdcConvertDecimal
+        usdcConvertDecimal,
       );
 
       let total = memberDeposits + adminContribution;
       setMemberDeposit(total);
 
       setUserBalance(
-        convertFromWeiGovernance(getUserBalance, governanceConvertDecimal)
+        convertFromWeiGovernance(getUserBalance, governanceConvertDecimal),
       );
       setClosingDays(calculateDays(parseInt(getGovernorDetails[0]) * 1000));
       setGovernorDetails(getGovernorDetails);
@@ -417,15 +417,15 @@ const Dashboard = () => {
 
       settokenDetails(getTokenDetails);
       setClubTokenMInted(
-        convertFromWeiGovernance(getTokenDetails[2], governanceConvertDecimal)
+        convertFromWeiGovernance(getTokenDetails[2], governanceConvertDecimal),
       );
       setUserOwnershipShare(
-        convertFromWeiGovernance(getTokenDetails[2], governanceConvertDecimal)
+        convertFromWeiGovernance(getTokenDetails[2], governanceConvertDecimal),
       );
       setDepositLink(
         typeof window !== "undefined" && window.location.origin
           ? `${window.location.origin}/join/${daoAddress}?dashboard=true`
-          : null
+          : null,
       );
       setDataFetched(true);
     } catch (e) {
@@ -443,7 +443,7 @@ const Dashboard = () => {
   const checkIsAdmin = () => {
     if (membersFetched && membersDetails.length > 0 && walletAddress) {
       let obj = membersDetails.find(
-        (member) => member.userAddress === walletAddress
+        (member) => member.userAddress === walletAddress,
       );
       let pos = membersDetails.indexOf(obj);
       if (pos >= 0) {
@@ -554,7 +554,7 @@ const Dashboard = () => {
     navigator.clipboard.writeText(
       typeof window !== "undefined" && window.location.origin
         ? `${window.location.origin}/join/${daoAddress}`
-        : null
+        : null,
     );
   };
 
@@ -775,16 +775,16 @@ const Dashboard = () => {
                                   parseInt(
                                     calculateUserSharePercentage(
                                       userBalance,
-                                      userOwnershipShare
-                                    )
-                                  )
+                                      userOwnershipShare,
+                                    ),
+                                  ),
                                 )
                                 ? 0
                                 : parseInt(
                                     calculateUserSharePercentage(
                                       userBalance,
-                                      userOwnershipShare
-                                    )
+                                      userOwnershipShare,
+                                    ),
                                   )
                               : 0}
                             %
@@ -898,7 +898,7 @@ const Dashboard = () => {
                                     </TableRow>
                                   );
                                 }
-                              }
+                              },
                             )}
                           </TableBody>
                         </Table>
@@ -972,7 +972,7 @@ const Dashboard = () => {
                         className={classes.docs}
                         onClick={() => {
                           window.open(
-                            `https://stationx.substack.com/p/get-started-with-stationx-on-rinkeby`
+                            `https://stationx.substack.com/p/get-started-with-stationx-on-rinkeby`,
                           );
                         }}
                       >
@@ -1114,7 +1114,7 @@ const Dashboard = () => {
                                     <ListItemButton
                                       onClick={() =>
                                         handleProposalClick(
-                                          activeProposalData[key]
+                                          activeProposalData[key],
                                         )
                                       }
                                       sx={{ width: "100%" }}
@@ -1128,7 +1128,7 @@ const Dashboard = () => {
                                             {data.createdBy.substring(0, 6) +
                                               "......" +
                                               data.createdBy.substring(
-                                                data.createdBy.length - 4
+                                                data.createdBy.length - 4,
                                               )}
                                           </Typography>
                                         </Grid>
@@ -1145,7 +1145,7 @@ const Dashboard = () => {
                                           >
                                             Expired on{" "}
                                             {new Date(
-                                              data.votingDuration
+                                              data.votingDuration,
                                             ).toLocaleDateString()}
                                           </Typography>
                                         </Grid>
@@ -1196,7 +1196,7 @@ const Dashboard = () => {
                             undefined,
                             {
                               shallow: true,
-                            }
+                            },
                           );
                         }}
                       >

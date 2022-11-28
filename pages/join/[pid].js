@@ -101,24 +101,24 @@ const useStyles = makeStyles({
     fontWeight: "bold",
   },
   cardLargeFont: {
-    width: "150px",
-    fontSize: "2em",
-    fontWeight: "bold",
-    fontFamily: "Whyte",
-    borderColor: "#142243",
-    borderRadius: "0px",
+    "width": "150px",
+    "fontSize": "2em",
+    "fontWeight": "bold",
+    "fontFamily": "Whyte",
+    "borderColor": "#142243",
+    "borderRadius": "0px",
     "& input[type=number]": {
       "-moz-appearance": "textfield",
     },
     "& input[type=number]::-webkit-outer-spin-button": {
       "-webkit-appearance": "none",
-      margin: 0,
+      "margin": 0,
     },
     "& input[type=number]::-webkit-inner-spin-button": {
       "-webkit-appearance": "none",
-      margin: 0,
+      "margin": 0,
     },
-    color: "#3B7AFD",
+    "color": "#3B7AFD",
   },
   cardWarning: {
     backgroundColor: "#FFB74D0D",
@@ -134,16 +134,16 @@ const useStyles = makeStyles({
     fontSize: "14px",
   },
   maxTag: {
-    borderRadius: "17px",
-    width: "98px",
-    height: "34px",
-    opacity: "1",
-    padding: "10px",
-    justifyContent: "center",
-    display: "flex",
-    alignItems: "center",
-    backgroundColor: " #3B7AFD",
-    fontSize: "20px",
+    "borderRadius": "17px",
+    "width": "98px",
+    "height": "34px",
+    "opacity": "1",
+    "padding": "10px",
+    "justifyContent": "center",
+    "display": "flex",
+    "alignItems": "center",
+    "backgroundColor": " #3B7AFD",
+    "fontSize": "20px",
     "&:hover": {
       background: "#F5F5F5",
       color: "#3B7AFD",
@@ -246,14 +246,14 @@ const Join = (props) => {
         USDC_CONTRACT_ADDRESS,
         undefined,
         USDC_CONTRACT_ADDRESS,
-        GNOSIS_TRANSACTION_URL
+        GNOSIS_TRANSACTION_URL,
       );
       const daoContract = new SmartContract(
         ImplementationContract,
         daoAddress,
         undefined,
         USDC_CONTRACT_ADDRESS,
-        GNOSIS_TRANSACTION_URL
+        GNOSIS_TRANSACTION_URL,
       );
 
       await usdcContract.obtainTokenDecimals().then((result) => {
@@ -321,7 +321,7 @@ const Join = (props) => {
         tokenAPIDetails[0].daoAddress,
         undefined,
         USDC_CONTRACT_ADDRESS,
-        GNOSIS_TRANSACTION_URL
+        GNOSIS_TRANSACTION_URL,
       );
       console.log("after tokenDetailContract");
       await tokenDetailContract.tokenDetails().then(
@@ -329,17 +329,17 @@ const Join = (props) => {
           console.log("result", result);
           settokenDetails(result);
           setClubTokenMInted(
-            convertFromWeiGovernance(result[2], governanceConvertDecimal)
+            convertFromWeiGovernance(result[2], governanceConvertDecimal),
           );
           console.log(result[2]);
           setQuoram(
-            convertFromWeiGovernance(result[2], governanceConvertDecimal)
+            convertFromWeiGovernance(result[2], governanceConvertDecimal),
           );
           setDataFetched(true);
         },
         (error) => {
           console.log(error);
-        }
+        },
       );
     }
   };
@@ -374,30 +374,30 @@ const Join = (props) => {
         daoAddress,
         undefined,
         USDC_CONTRACT_ADDRESS,
-        GNOSIS_TRANSACTION_URL
+        GNOSIS_TRANSACTION_URL,
       );
       await governorDetailContract.getGovernorDetails().then(
         (result) => {
           setGovernorDetails(result);
           setMinDeposit(
-            convertFromWei(parseFloat(result[1]), usdcTokenDecimal)
+            convertFromWei(parseFloat(result[1]), usdcTokenDecimal),
           );
           setMaxDeposit(convertFromWei(parseInt(result[2]), usdcTokenDecimal));
           setTotalDeposit(
-            convertFromWei(parseInt(result[4]), usdcTokenDecimal)
+            convertFromWei(parseInt(result[4]), usdcTokenDecimal),
           );
 
           setClosingDays(
             Math.round(
               (new Date(parseInt(result[0]) * 1000) - new Date()) /
-                (1000 * 60 * 60 * 24)
-            )
+                (1000 * 60 * 60 * 24),
+            ),
           );
           setGovernorDataFetched(true);
         },
         (error) => {
           console.log(error);
-        }
+        },
       );
     }
   };
@@ -415,7 +415,7 @@ const Join = (props) => {
         USDC_CONTRACT_ADDRESS,
         undefined,
         USDC_CONTRACT_ADDRESS,
-        GNOSIS_TRANSACTION_URL
+        GNOSIS_TRANSACTION_URL,
       );
       await usdc_contract.balanceOf().then(
         (result) => {
@@ -424,7 +424,7 @@ const Join = (props) => {
         },
         (error) => {
           console.log("Failed to fetch wallet USDC", error);
-        }
+        },
       );
     }
   };
@@ -496,7 +496,7 @@ const Join = (props) => {
     const checkUserExists = checkUserByClub(userDetails, clubId);
     const depositAmountConverted = convertToWei(
       depositAmount,
-      usdcTokenDecimal
+      usdcTokenDecimal,
     );
     checkUserExists.then((result) => {
       if (result.data === false) {
@@ -506,7 +506,7 @@ const Join = (props) => {
           USDC_CONTRACT_ADDRESS,
           undefined,
           USDC_CONTRACT_ADDRESS,
-          GNOSIS_TRANSACTION_URL
+          GNOSIS_TRANSACTION_URL,
         );
         // pass governor contract
         const dao_contract = new SmartContract(
@@ -514,19 +514,19 @@ const Join = (props) => {
           daoAddress,
           undefined,
           USDC_CONTRACT_ADDRESS,
-          GNOSIS_TRANSACTION_URL
+          GNOSIS_TRANSACTION_URL,
         );
         // pass governor contract
         const usdc_response = usdc_contract.approveDeposit(
           daoAddress,
           depositAmountConverted,
-          usdcTokenDecimal
+          usdcTokenDecimal,
         );
         usdc_response.then(
           (result) => {
             const deposit_response = dao_contract.deposit(
               USDC_CONTRACT_ADDRESS,
-              depositAmountConverted
+              depositAmountConverted,
             );
             deposit_response.then((result) => {
               const data = {
@@ -559,7 +559,7 @@ const Join = (props) => {
             console.log("Error", error);
             setAlertStatus("error");
             setOpenSnackBar(true);
-          }
+          },
         );
       } else {
         // if user exists
@@ -568,7 +568,7 @@ const Join = (props) => {
           USDC_CONTRACT_ADDRESS,
           undefined,
           USDC_CONTRACT_ADDRESS,
-          GNOSIS_TRANSACTION_URL
+          GNOSIS_TRANSACTION_URL,
         );
         // pass governor contract
         const dao_contract = new SmartContract(
@@ -576,19 +576,19 @@ const Join = (props) => {
           daoAddress,
           undefined,
           USDC_CONTRACT_ADDRESS,
-          GNOSIS_TRANSACTION_URL
+          GNOSIS_TRANSACTION_URL,
         );
         // pass governor contract
         const usdc_response = usdc_contract.approveDeposit(
           daoAddress,
           depositAmountConverted,
-          usdcTokenDecimal
+          usdcTokenDecimal,
         );
         usdc_response.then(
           (result) => {
             const deposit_response = dao_contract.deposit(
               USDC_CONTRACT_ADDRESS,
-              depositAmountConverted
+              depositAmountConverted,
             );
             deposit_response.then((result) => {
               const patchData = {
@@ -616,7 +616,7 @@ const Join = (props) => {
             console.log("Error", error);
             setAlertStatus("error");
             setOpenSnackBar(true);
-          }
+          },
         );
       }
     });
@@ -864,7 +864,7 @@ const Join = (props) => {
                     governorDataFetched
                       ? calculateTreasuryTargetShare(
                           clubTokenMinted,
-                          convertAmountToWei(governorDetails[4])
+                          convertAmountToWei(governorDetails[4]),
                         )
                       : 0
                   }

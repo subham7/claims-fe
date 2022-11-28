@@ -121,9 +121,9 @@ const useStyles = makeStyles({
     backgroundColor: "#19274B",
   },
   mainCardButton: {
-    borderRadius: "38px",
-    border: "1px solid #C1D3FF40;",
-    backgroundColor: "#3B7AFD",
+    "borderRadius": "38px",
+    "border": "1px solid #C1D3FF40;",
+    "backgroundColor": "#3B7AFD",
     "&:hover": {
       cursor: "pointer",
     },
@@ -258,7 +258,7 @@ const ProposalDetail = () => {
 
   const fetchVotingOptionChoice = (votingOptionAddress) => {
     let obj = proposalData[0].votingOptions.find(
-      (voteOption) => voteOption.votingOptionId === votingOptionAddress
+      (voteOption) => voteOption.votingOptionId === votingOptionAddress,
     );
     voteId = parseInt(proposalData[0].votingOptions.indexOf(obj));
     return proposalData[0].votingOptions.indexOf(obj);
@@ -337,15 +337,15 @@ const ProposalDetail = () => {
         const safeService = await getSafeService();
         const tx = await safeService.getTransaction(result.data[0].txHash);
         const ownerAddresses = tx.confirmations.map(
-          (confirmOwners) => confirmOwners.owner
+          (confirmOwners) => confirmOwners.owner,
         );
         console.log("ownerAddresses", ownerAddresses);
         const pendingTxs = await safeService.getPendingTransactions(
-          gnosisAddress
+          gnosisAddress,
         );
         setPendingTxHash(
           pendingTxs.results[pendingTxs.count - 1].safeTxHash,
-          result.data[0].txHash
+          result.data[0].txHash,
         );
 
         setSignedOwners(ownerAddresses);
@@ -368,7 +368,7 @@ const ProposalDetail = () => {
         daoAddress,
         undefined,
         USDC_CONTRACT_ADDRESS,
-        GNOSIS_TRANSACTION_URL
+        GNOSIS_TRANSACTION_URL,
       );
       const response = updateProposal.updateProposalAndExecution(
         daoAddress,
@@ -390,7 +390,7 @@ const ProposalDetail = () => {
         proposalData[0].commands[0].airDropCarryFee,
         [],
         txHash,
-        pid
+        pid,
       );
       if (proposalStatus === "executed") {
         await response.then(
@@ -421,7 +421,7 @@ const ProposalDetail = () => {
             setMessage("Airdrop execution failed!");
             setFailed(true);
             setLoaderOpen(false);
-          }
+          },
         );
       } else {
         await response
@@ -444,7 +444,7 @@ const ProposalDetail = () => {
         daoAddress,
         undefined,
         USDC_CONTRACT_ADDRESS,
-        GNOSIS_TRANSACTION_URL
+        GNOSIS_TRANSACTION_URL,
       );
       const response = updateProposal.updateProposalAndExecution(
         daoAddress,
@@ -466,7 +466,7 @@ const ProposalDetail = () => {
         undefined,
         [],
         txHash,
-        pid
+        pid,
       );
       if (proposalStatus === "executed") {
         response.then(
@@ -498,7 +498,7 @@ const ProposalDetail = () => {
             setMessage("MintGT execution failed!");
             setFailed(true);
             setLoaderOpen(false);
-          }
+          },
         );
       } else {
         await response
@@ -576,7 +576,7 @@ const ProposalDetail = () => {
         daoAddress,
         undefined,
         USDC_CONTRACT_ADDRESS,
-        GNOSIS_TRANSACTION_URL
+        GNOSIS_TRANSACTION_URL,
       );
       const response = updateProposal.updateProposalAndExecution(
         daoAddress,
@@ -598,7 +598,7 @@ const ProposalDetail = () => {
         undefined,
         [],
         txHash,
-        pid
+        pid,
       );
       if (proposalStatus === "executed") {
         response.then(
@@ -630,7 +630,7 @@ const ProposalDetail = () => {
             setMessage("Governance settings execution failed!");
             setFailed(true);
             setLoaderOpen(false);
-          }
+          },
         );
       } else {
         await response
@@ -653,7 +653,7 @@ const ProposalDetail = () => {
         daoAddress,
         undefined,
         USDC_CONTRACT_ADDRESS,
-        GNOSIS_TRANSACTION_URL
+        GNOSIS_TRANSACTION_URL,
       );
       const response = updateProposal.updateProposalAndExecution(
         daoAddress,
@@ -675,7 +675,7 @@ const ProposalDetail = () => {
         undefined,
         [],
         txHash,
-        pid
+        pid,
       );
 
       if (proposalStatus === "executed") {
@@ -707,7 +707,7 @@ const ProposalDetail = () => {
             setMessage("Update raise amount execution failed!");
             setFailed(true);
             setLoaderOpen(false);
-          }
+          },
         );
       } else {
         await response
@@ -730,7 +730,7 @@ const ProposalDetail = () => {
         daoAddress,
         undefined,
         USDC_CONTRACT_ADDRESS,
-        GNOSIS_TRANSACTION_URL
+        GNOSIS_TRANSACTION_URL,
       );
       const response = updateProposal.updateProposalAndExecution(
         daoAddress,
@@ -752,7 +752,7 @@ const ProposalDetail = () => {
         undefined,
         [],
         txHash,
-        pid
+        pid,
       );
 
       if (proposalStatus === "executed") {
@@ -765,7 +765,7 @@ const ProposalDetail = () => {
                   setExecuted(false);
                   setOpenSnackBar(true);
                   setMessage(
-                    "Send custom token execution status update failed!"
+                    "Send custom token execution status update failed!",
                   );
                   setFailed(true);
                   setLoaderOpen(false);
@@ -786,7 +786,7 @@ const ProposalDetail = () => {
             setMessage("Send custom token execution status update failed!");
             setFailed(true);
             setLoaderOpen(false);
-          }
+          },
         );
       } else {
         await response
@@ -809,7 +809,7 @@ const ProposalDetail = () => {
       let userAddress = walletAddress;
       userAddress = web3.utils.toChecksumAddress(userAddress);
       let obj = proposalData[0].vote.find(
-        (voteCasted) => voteCasted.voterAddress === userAddress
+        (voteCasted) => voteCasted.voterAddress === userAddress,
       );
       return proposalData[0].vote.indexOf(obj) >= 0;
     }
@@ -821,7 +821,7 @@ const ProposalDetail = () => {
       let userAddress = walletAddress;
       userAddress = web3.utils.toChecksumAddress(userAddress);
       let obj = proposalData[0].vote.find(
-        (voteCasted) => voteCasted.voterAddress === userAddress
+        (voteCasted) => voteCasted.voterAddress === userAddress,
       );
       return proposalData[0].vote.indexOf(obj) >= 0;
     }
@@ -1047,7 +1047,7 @@ const ProposalDetail = () => {
                                     setOpenSnackBar(true);
                                     setFailed(true);
                                     setMessage(
-                                      "execute txns with smaller nonce first"
+                                      "execute txns with smaller nonce first",
                                     );
                                   }
                             }
@@ -1228,7 +1228,7 @@ const ProposalDetail = () => {
                                           }
                                           onClick={(e) => {
                                             setCastVoteOption(
-                                              data.votingOptionId
+                                              data.votingOptionId,
                                             );
                                             setCardSelected(key);
                                           }}
@@ -1248,7 +1248,7 @@ const ProposalDetail = () => {
                                         </Card>
                                       </CardActionArea>
                                     );
-                                  }
+                                  },
                                 )
                               : null}
                             <CardActionArea
@@ -1401,8 +1401,8 @@ const ProposalDetail = () => {
                                             10,
                                             parseInt(
                                               proposalData[0].commands[0]
-                                                .usdcTokenDecimal
-                                            )
+                                                .usdcTokenDecimal,
+                                            ),
                                           )
                                         : null}{" "}
                                       {
@@ -1494,8 +1494,8 @@ const ProposalDetail = () => {
                                             10,
                                             parseInt(
                                               proposalData[0].commands[0]
-                                                .usdcGovernanceTokenDecimal
-                                            )
+                                                .usdcGovernanceTokenDecimal,
+                                            ),
                                           )
                                         : null}
                                     </Typography>
@@ -1617,8 +1617,8 @@ const ProposalDetail = () => {
                                             10,
                                             parseInt(
                                               proposalData[0].commands[0]
-                                                .usdcTokenDecimal
-                                            )
+                                                .usdcTokenDecimal,
+                                            ),
                                           )
                                         : null}{" "}
                                       {
@@ -1662,8 +1662,8 @@ const ProposalDetail = () => {
                                             10,
                                             parseInt(
                                               proposalData[0].commands[0]
-                                                .usdcTokenDecimal
-                                            )
+                                                .usdcTokenDecimal,
+                                            ),
                                           )
                                         : null}{" "}
                                       {
@@ -1760,7 +1760,7 @@ const ProposalDetail = () => {
                         ? proposalData[0].createdBy.substring(0, 6) +
                           ".........." +
                           proposalData[0].createdBy.substring(
-                            proposalData[0].createdBy.length - 4
+                            proposalData[0].createdBy.length - 4,
                           )
                         : null}
                     </Typography>
@@ -1796,7 +1796,7 @@ const ProposalDetail = () => {
                     <Typography className={classes.listFont2Colourless}>
                       {fetched
                         ? new Date(
-                            String(proposalData[0].updateDate)
+                            String(proposalData[0].updateDate),
                           ).toLocaleDateString()
                         : null}
                     </Typography>
@@ -1816,7 +1816,7 @@ const ProposalDetail = () => {
                     <Typography className={classes.listFont2Colourless}>
                       {fetched
                         ? new Date(
-                            String(proposalData[0].votingDuration)
+                            String(proposalData[0].votingDuration),
                           ).toLocaleDateString()
                         : null}
                     </Typography>
@@ -1893,7 +1893,7 @@ const ProposalDetail = () => {
                                   {voter.voterAddress.substring(0, 6) +
                                     "......" +
                                     voter.voterAddress.substring(
-                                      voter.voterAddress.length - 4
+                                      voter.voterAddress.length - 4,
                                     )}
                                 </Typography>
                               </Grid>
@@ -1912,8 +1912,8 @@ const ProposalDetail = () => {
                                     ? proposalData[0].votingOptions[
                                         parseInt(
                                           fetchVotingOptionChoice(
-                                            voter.votingOptionId
-                                          )
+                                            voter.votingOptionId,
+                                          ),
                                         )
                                       ].text
                                     : null}
@@ -1937,7 +1937,7 @@ const ProposalDetail = () => {
                                 <Typography variant="proposalSubHeading">
                                   Signed on{" "}
                                   {new Date(
-                                    voter.createdAt
+                                    voter.createdAt,
                                   ).toLocaleDateString()}
                                 </Typography>
                               </Grid>

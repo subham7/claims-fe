@@ -1,24 +1,24 @@
-import SafeAppsSDK from "@gnosis.pm/safe-apps-sdk"
-import { fetchConfigById } from "./config"
-import { addContractAddress } from "../redux/reducers/gnosis"
+import SafeAppsSDK from "@gnosis.pm/safe-apps-sdk";
+import { fetchConfigById } from "./config";
+import { addContractAddress } from "../redux/reducers/gnosis";
 
 const opts = {
   allowedDomains: [/gnosis-safe.io/],
-}
-const appsSdk = new SafeAppsSDK(opts)
+};
+const appsSdk = new SafeAppsSDK(opts);
 
 // Global variables
-export const MAIN_API_URL = process.env.NEXT_PUBLIC_API_HOST
-export const RINKEYBY_RPC_URL = process.env.NEXT_PUBLIC_RINKEYBY_RPC_URL
-export const GOERLI_RPC_URL = process.env.NEXT_PUBLIC_GOERLI_RPC_URL
-export const USDC_FAUCET_ADDRESS = process.env.NEXT_PUBLIC_USDC_FAUCET_ADDRESS
-export const POLYGON_RPC_URL = process.env.NEXT_PUBLIC_POLYGON_RPC_URL
+export const MAIN_API_URL = process.env.NEXT_PUBLIC_API_HOST;
+export const RINKEYBY_RPC_URL = process.env.NEXT_PUBLIC_RINKEYBY_RPC_URL;
+export const GOERLI_RPC_URL = process.env.NEXT_PUBLIC_GOERLI_RPC_URL;
+export const USDC_FAUCET_ADDRESS = process.env.NEXT_PUBLIC_USDC_FAUCET_ADDRESS;
+export const POLYGON_RPC_URL = process.env.NEXT_PUBLIC_POLYGON_RPC_URL;
 
 export function updateDynamicAddress(networkId, dispatch) {
-  const networkData = fetchConfigById(networkId)
+  const networkData = fetchConfigById(networkId);
   networkData.then((result) => {
     if (result.status != 200) {
-      console.log(result.error)
+      console.log(result.error);
     } else {
       dispatch(
         addContractAddress({
@@ -28,8 +28,8 @@ export function updateDynamicAddress(networkId, dispatch) {
           networkHex: result.data[0].networkHex,
           networkId: result.data[0].networkId,
           networkName: result.data[0].name,
-        })
-      )
+        }),
+      );
     }
-  })
+  });
 }

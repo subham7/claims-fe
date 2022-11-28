@@ -77,12 +77,12 @@ const useStyles = makeStyles({
     fontFamily: "Whyte",
   },
   searchField: {
-    width: "28.5vw",
-    height: "55px",
-    color: "#C1D3FF",
-    background: "#111D38 0% 0% no-repeat padding-box",
-    border: "1px solid #C1D3FF40",
-    borderRadius: "10px",
+    "width": "28.5vw",
+    "height": "55px",
+    "color": "#C1D3FF",
+    "background": "#111D38 0% 0% no-repeat padding-box",
+    "border": "1px solid #C1D3FF40",
+    "borderRadius": "10px",
     "&:hover": {
       boxShadow: "0px 0px 12px #C1D3FF40",
       border: "1px solid #C1D3FF40",
@@ -219,7 +219,7 @@ const Proposal = () => {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState([]);
   const [duration, setDuration] = useState(
-    new Date(new Date().getTime() + 24 * 60 * 60 * 1000)
+    new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
   );
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -330,7 +330,7 @@ const Proposal = () => {
         setProposalData(result.data);
         setFetched(true);
         const pendingTxs = await safeService.getPendingTransactions(
-          gnosisAddress
+          gnosisAddress,
         );
         const count = pendingTxs.count;
 
@@ -347,7 +347,7 @@ const Proposal = () => {
             ) {
               setExecutionTransaction(proposal);
             }
-          })
+          }),
         );
         setLoaderOpen(false);
       }
@@ -376,7 +376,7 @@ const Proposal = () => {
     setLoaderOpen(true);
     const web3 = new Web3(window.web3);
     const walletAddress = web3.utils.toChecksumAddress(
-      localStorage.getItem("wallet")
+      localStorage.getItem("wallet"),
     );
     if (type === proposalType[0].type) {
       // for execution of Survey
@@ -472,7 +472,7 @@ const Proposal = () => {
                   daoAddress,
                   mintGTAmounts,
                   USDC_CONTRACT_ADDRESS,
-                  GNOSIS_TRANSACTION_URL
+                  GNOSIS_TRANSACTION_URL,
                 ),
               ],
               usdcTokenSymbol: usdcTokenSymbol,
@@ -867,12 +867,12 @@ const Proposal = () => {
                                     {fetched
                                       ? executionTransaction.createdBy.substring(
                                           0,
-                                          6
+                                          6,
                                         ) +
                                         ".........." +
                                         executionTransaction.createdBy.substring(
                                           executionTransaction.createdBy
-                                            .length - 4
+                                            .length - 4,
                                         )
                                       : null}
                                   </Typography>
@@ -925,7 +925,7 @@ const Proposal = () => {
                                   <Typography className={classes.cardFont}>
                                     {executionTransaction.description.substring(
                                       0,
-                                      200
+                                      200,
                                     )}
                                     ...
                                   </Typography>
@@ -935,11 +935,11 @@ const Proposal = () => {
                                 <Grid item ml={2} mr={2} mt={2}>
                                   <Typography className={classes.daysFont}>
                                     {calculateDays(
-                                      executionTransaction.votingDuration
+                                      executionTransaction.votingDuration,
                                     ) <= 0
                                       ? "Voting closed"
                                       : calculateDays(
-                                          executionTransaction.votingDuration
+                                          executionTransaction.votingDuration,
                                         ) + " days left"}
                                   </Typography>
                                 </Grid>
@@ -972,7 +972,7 @@ const Proposal = () => {
                                       ? proposal.createdBy.substring(0, 6) +
                                         ".........." +
                                         proposal.createdBy.substring(
-                                          proposal.createdBy.length - 4
+                                          proposal.createdBy.length - 4,
                                         )
                                       : null}
                                   </Typography>
@@ -1075,7 +1075,7 @@ const Proposal = () => {
                                   ? proposal.createdBy.substring(0, 6) +
                                     ".........." +
                                     proposal.createdBy.substring(
-                                      proposal.createdBy.length - 4
+                                      proposal.createdBy.length - 4,
                                     )
                                   : null}
                               </Typography>
@@ -1518,7 +1518,7 @@ const Proposal = () => {
                                     placeholder="0%"
                                     onChange={(e) =>
                                       setAirDropCarryFee(
-                                        parseInt(e.target.value)
+                                        parseInt(e.target.value),
                                       )
                                     }
                                   />
@@ -1629,7 +1629,7 @@ const Proposal = () => {
                                     placeholder="0"
                                     onChange={(e) =>
                                       setThresholdValue(
-                                        parseInt(e.target.value)
+                                        parseInt(e.target.value),
                                       )
                                     }
                                     error={

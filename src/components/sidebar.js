@@ -1,11 +1,11 @@
-import React from "react"
-import PropTypes from "prop-types"
-import HomeRoundedIcon from "@mui/icons-material/HomeRounded"
-import PeopleRoundedIcon from "@mui/icons-material/PeopleRounded"
-import CompareArrowsRoundedIcon from "@mui/icons-material/CompareArrowsRounded"
-import InsertDriveFileRoundedIcon from "@mui/icons-material/InsertDriveFileRounded"
-import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded"
-import { makeStyles } from "@mui/styles"
+import React from "react";
+import PropTypes from "prop-types";
+import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
+import PeopleRoundedIcon from "@mui/icons-material/PeopleRounded";
+import CompareArrowsRoundedIcon from "@mui/icons-material/CompareArrowsRounded";
+import InsertDriveFileRoundedIcon from "@mui/icons-material/InsertDriveFileRounded";
+import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
+import { makeStyles } from "@mui/styles";
 import {
   Drawer,
   Box,
@@ -16,13 +16,13 @@ import {
   Divider,
   List,
   Tooltip,
-} from "@mui/material"
-import { tooltipClasses } from "@mui/material/Tooltip"
-import { useRouter } from "next/router"
-import { styled } from "@mui/material/styles"
-import Fade from "@mui/material/Fade"
-import Zoom from "@mui/material/Zoom"
-import Link from "next/link"
+} from "@mui/material";
+import { tooltipClasses } from "@mui/material/Tooltip";
+import { useRouter } from "next/router";
+import { styled } from "@mui/material/styles";
+import Fade from "@mui/material/Fade";
+import Zoom from "@mui/material/Zoom";
+import Link from "next/link";
 
 const useStyles = makeStyles({
   listItemIcon: {
@@ -45,7 +45,7 @@ const useStyles = makeStyles({
     justifyContent: "center",
     alignItems: "center",
   },
-})
+});
 
 const BootstrapTooltip = styled(({ className, ...props }) => (
   <Tooltip
@@ -65,17 +65,17 @@ const BootstrapTooltip = styled(({ className, ...props }) => (
     fontSize: theme.typography.pxToRem(15),
     border: "1px solid #dadde9",
   },
-}))
+}));
 
-const drawerWidth = 100
+const drawerWidth = 100;
 
 export default function Sidebar(props) {
-  const classes = useStyles()
-  const { window, page } = props
-  const router = useRouter()
-  const { clubId } = router.query
+  const classes = useStyles();
+  const { window, page } = props;
+  const router = useRouter();
+  const { clubId } = router.query;
   const container =
-    window !== undefined ? () => window().document.body : undefined
+    window !== undefined ? () => window().document.body : undefined;
 
   return (
     <Box component="nav" aria-label="mailbox folders">
@@ -90,7 +90,7 @@ export default function Sidebar(props) {
           keepMounted: true, // Better open performance on mobile.
         }}
         sx={{
-          display: { xs: "block", sm: "none" },
+          "display": { xs: "block", sm: "none" },
           "& .MuiDrawer-paper": {
             border: "none",
             boxSizing: "border-box",
@@ -204,7 +204,7 @@ export default function Sidebar(props) {
       <Drawer
         variant="permanent"
         sx={{
-          display: { xs: "none", sm: "block" },
+          "display": { xs: "none", sm: "block" },
           "& .MuiDrawer-paper": {
             border: "none",
             boxSizing: "border-box",
@@ -225,7 +225,7 @@ export default function Sidebar(props) {
               onClick={(e) => {
                 router.push(`/dashboard/${clubId}`, undefined, {
                   shallow: true,
-                })
+                });
               }}
               alignItems="center"
             >
@@ -247,7 +247,7 @@ export default function Sidebar(props) {
               onClick={(e) => {
                 router.push(`/dashboard/${clubId}/proposal`, undefined, {
                   shallow: true,
-                })
+                });
               }}
             >
               <ListItemIcon
@@ -268,7 +268,7 @@ export default function Sidebar(props) {
               onClick={(e) => {
                 router.push(`/dashboard/${clubId}/members`, undefined, {
                   shallow: true,
-                })
+                });
               }}
             >
               <ListItemIcon
@@ -297,7 +297,7 @@ export default function Sidebar(props) {
               onClick={(e) => {
                 router.push(`/dashboard/${clubId}/settings`, undefined, {
                   shallow: true,
-                })
+                });
               }}
             >
               <ListItemIcon
@@ -314,7 +314,7 @@ export default function Sidebar(props) {
         </List>
       </Drawer>
     </Box>
-  )
+  );
 }
 
 Sidebar.propTypes = {
@@ -323,4 +323,4 @@ Sidebar.propTypes = {
    * You won't need it on your project.
    */
   window: PropTypes.func,
-}
+};

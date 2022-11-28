@@ -1,6 +1,6 @@
-import { React, useEffect, useState, useRef } from "react"
-import { makeStyles } from "@mui/styles"
-import Layout1 from "../../../src/components/layouts/layout1"
+import { React, useEffect, useState, useRef } from "react";
+import { makeStyles } from "@mui/styles";
+import Layout1 from "../../../src/components/layouts/layout1";
 import {
   Box,
   Card,
@@ -20,25 +20,25 @@ import {
   TableHead,
   CircularProgress,
   Backdrop,
-} from "@mui/material"
-import SearchIcon from "@mui/icons-material/Search"
-import BasicTable from "../../../src/components/table"
-import { getMembersDetails } from "../../../src/api/user"
-import { useSelector } from "react-redux"
-import Paper from "@mui/material/Paper"
-import { useRouter } from "next/router"
-import jazzicon from "@metamask/jazzicon"
-import ClubFetch from "../../../src/utils/clubFetch"
-import OpenInNewIcon from "@mui/icons-material/OpenInNew"
+} from "@mui/material";
+import SearchIcon from "@mui/icons-material/Search";
+import BasicTable from "../../../src/components/table";
+import { getMembersDetails } from "../../../src/api/user";
+import { useSelector } from "react-redux";
+import Paper from "@mui/material/Paper";
+import { useRouter } from "next/router";
+import jazzicon from "@metamask/jazzicon";
+import ClubFetch from "../../../src/utils/clubFetch";
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 
 const useStyles = makeStyles({
   searchField: {
-    width: "548px",
-    height: "55px",
-    color: "#C1D3FF",
-    backgroundColor: "#111D38",
-    border: "1px solid #C1D3FF40",
-    borderRadius: "10px",
+    "width": "548px",
+    "height": "55px",
+    "color": "#C1D3FF",
+    "backgroundColor": "#111D38",
+    "border": "1px solid #C1D3FF40",
+    "borderRadius": "10px",
     "&:hover": {
       boxShadow: "0px 0px 12px #C1D3FF40",
       border: "1px solid #C1D3FF40",
@@ -51,58 +51,58 @@ const useStyles = makeStyles({
     color: "#C1D3FF",
   },
   activityLink: {
-    color: "#C1D3FF",
-    textDecoration: "none",
+    "color": "#C1D3FF",
+    "textDecoration": "none",
     "&:hover": {
       textDecoration: "none",
       cursor: "pointer",
     },
   },
-})
+});
 
 const Members = (props) => {
-  const router = useRouter()
-  const { clubId } = router.query
-  const classes = useStyles()
-  const clubID = clubId
-  const header = ["Name", "Deposit amount", "Club tokens", "Joined on"]
-  const [members, setMembers] = useState([])
-  const [fetched, setFetched] = useState(false)
-  const [loaderOpen, setLoaderOpen] = useState(false)
+  const router = useRouter();
+  const { clubId } = router.query;
+  const classes = useStyles();
+  const clubID = clubId;
+  const header = ["Name", "Deposit amount", "Club tokens", "Joined on"];
+  const [members, setMembers] = useState([]);
+  const [fetched, setFetched] = useState(false);
+  const [loaderOpen, setLoaderOpen] = useState(false);
 
-  const avatarRef = useRef()
+  const avatarRef = useRef();
 
   const generateJazzIcon = (account) => {
     if (account) {
-      const addr = account.slice(2, 10)
-      const seed = parseInt(addr, 16)
-      const icon = jazzicon(35, seed)
-      return icon
+      const addr = account.slice(2, 10);
+      const seed = parseInt(addr, 16);
+      const icon = jazzicon(35, seed);
+      return icon;
     }
-  }
+  };
 
   const fetchMembers = () => {
-    const membersData = getMembersDetails(clubID)
+    const membersData = getMembersDetails(clubID);
     membersData.then((result) => {
       if (result.status != 200) {
-        setFetched(false)
+        setFetched(false);
       } else {
-        setMembers(result.data)
-        setFetched(true)
-        setLoaderOpen(false)
+        setMembers(result.data);
+        setFetched(true);
+        setLoaderOpen(false);
       }
-    })
-  }
+    });
+  };
 
   useEffect(() => {
-    setLoaderOpen(true)
-    fetchMembers()
-  }, [clubID, fetched])
+    setLoaderOpen(true);
+    fetchMembers();
+  }, [clubID, fetched]);
 
   const handleAddressClick = (event, address) => {
-    event.preventDefault()
-    window.open(`https://rinkeby.etherscan.io/address/${address}`)
-  }
+    event.preventDefault();
+    window.open(`https://rinkeby.etherscan.io/address/${address}`);
+  };
 
   return (
     <>
@@ -150,7 +150,7 @@ const Members = (props) => {
                           >
                             {data}
                           </TableCell>
-                        )
+                        );
                       })}
                     </TableRow>
                   </TableHead>
@@ -174,14 +174,14 @@ const Members = (props) => {
                               <a
                                 className={classes.activityLink}
                                 onClick={(e) => {
-                                  handleAddressClick(e, data.userAddress)
+                                  handleAddressClick(e, data.userAddress);
                                 }}
                               >
                                 {" "}
                                 {data.userAddress.substring(0, 6) +
                                   "......" +
                                   data.userAddress.substring(
-                                    data.userAddress.length - 4
+                                    data.userAddress.length - 4,
                                   )}{" "}
                               </a>
                             </Grid>
@@ -189,7 +189,7 @@ const Members = (props) => {
                               <IconButton
                                 color="primary"
                                 onClick={(e) => {
-                                  handleAddressClick(e, data.userAddress)
+                                  handleAddressClick(e, data.userAddress);
                                 }}
                               >
                                 <OpenInNewIcon
@@ -207,7 +207,7 @@ const Members = (props) => {
                         </TableCell>
                         <TableCell align="left" variant="tableBody">
                           {new Date(
-                            data.clubs[0].joiningDate
+                            data.clubs[0].joiningDate,
                           ).toLocaleDateString()}
                         </TableCell>
                       </TableRow>
@@ -226,7 +226,7 @@ const Members = (props) => {
         </Backdrop>
       </Layout1>
     </>
-  )
-}
+  );
+};
 
-export default ClubFetch(Members)
+export default ClubFetch(Members);

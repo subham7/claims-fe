@@ -1,22 +1,25 @@
-import * as React from "react"
-import { Box, CssBaseline } from "@mui/material"
+import * as React from "react";
+import { Box, CssBaseline } from "@mui/material";
 
+import Navbar from "../navbar2";
+import Sidebar from "../sidebar";
 
-import Navbar from "../navbar2"
-import Sidebar from "../sidebar"
-
-const drawerWidth = 50
+const drawerWidth = 50;
 
 export default function Layout1(props) {
-  const [mobileOpen, setMobileOpen] = React.useState(false)
+  const [mobileOpen, setMobileOpen] = React.useState(false);
 
   const handleDrawerToggle = () => {
-    setMobileOpen(!mobileOpen)
-  }
+    setMobileOpen(!mobileOpen);
+  };
 
   return (
     <>
-      <Navbar handleDrawerToggle={handleDrawerToggle} page={props.page} depositUrl={props.depositUrl} />
+      <Navbar
+        handleDrawerToggle={handleDrawerToggle}
+        page={props.page}
+        depositUrl={props.depositUrl}
+      />
       <Box sx={{ display: "flex" }}>
         <CssBaseline />
         <Sidebar
@@ -35,5 +38,5 @@ export default function Layout1(props) {
         </Box>
       </Box>
     </>
-  )
+  );
 }

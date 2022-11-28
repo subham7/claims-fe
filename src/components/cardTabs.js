@@ -1,21 +1,21 @@
-import React, { useState } from "react"
-import { Tabs, Tab, Typography, Box, Grid } from "@mui/material"
-import { makeStyles } from "@mui/styles"
+import React, { useState } from "react";
+import { Tabs, Tab, Typography, Box, Grid } from "@mui/material";
+import { makeStyles } from "@mui/styles";
 
 const tabs = [
   { label: "Sale" },
   { label: "Description" },
   { label: "Tokenomics" },
-]
+];
 
 const useStyles = makeStyles((theme) => ({
   root: {
     backgroundColor: theme.palette.mode == "dark" ? "#242424" : "#F4F4F5",
   },
-}))
+}));
 
 function TabPanel(props) {
-  const { children, value, index, ...other } = props
+  const { children, value, index, ...other } = props;
 
   return (
     <div
@@ -31,23 +31,23 @@ function TabPanel(props) {
         </Box>
       )}
     </div>
-  )
+  );
 }
 
 function a11yProps(index) {
   return {
-    id: `simple-tab-${index}`,
+    "id": `simple-tab-${index}`,
     "aria-controls": `simple-tabpanel-${index}`,
-  }
+  };
 }
 
 export default function SimpleTab(props) {
-  const classes = useStyles()
-  const [value, setValue] = useState(0)
+  const classes = useStyles();
+  const [value, setValue] = useState(0);
 
   const handleChange = (event, newValue) => {
-    setValue(newValue)
-  }
+    setValue(newValue);
+  };
 
   return (
     <>
@@ -93,5 +93,5 @@ export default function SimpleTab(props) {
         </TabPanel>
       </>
     </>
-  )
+  );
 }

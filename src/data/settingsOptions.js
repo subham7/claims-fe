@@ -1,18 +1,18 @@
 export const settingsOptions = [
   {
     id: 0,
-    name: "deposit"
+    name: "deposit",
   },
   {
     id: 1,
-    name: "minDeposit"
+    name: "minDeposit",
   },
   {
     id: 2,
-    name: "maxDeposit"
+    name: "maxDeposit",
   },
   {
     id: 3,
-    name: "performanceFee"
+    name: "performanceFee",
   },
-]
+];

@@ -36,7 +36,7 @@ async function syncWallet() {
     return true;
   } else {
     window.alert(
-      "Non-Ethereum browser detected. You should consider trying MetaMask!"
+      "Non-Ethereum browser detected. You should consider trying MetaMask!",
     );
     return false;
   }
@@ -49,7 +49,7 @@ export class SmartContract {
     contractAddress,
     walletAddress = localStorage.getItem("wallet"),
     usdcContractAddress,
-    gnosisTransactionUrl
+    gnosisTransactionUrl,
   ) {
     if (
       (syncWallet() &&
@@ -87,7 +87,7 @@ export class SmartContract {
     tresuryAddress,
     quoram,
     formThreshold,
-    usdcConvertDecimal
+    usdcConvertDecimal,
   ) {
     const days = Math.round(calculateDays(closeDate));
     console.log("owners", owners);
@@ -129,7 +129,7 @@ export class SmartContract {
     ownersAirdropFees = 0,
     daoAdminAddresses = [],
     txHash = "",
-    pid
+    pid,
   ) {
     const parameters = [
       proposalHash,
@@ -161,7 +161,7 @@ export class SmartContract {
     const web3 = new Web3(window.web3);
     const implementationContract = new web3.eth.Contract(
       ImplementationContract.abi,
-      daoAddress
+      daoAddress,
     );
     console.log(implementationContract);
     const safeSdk = await Safe.create({
@@ -197,7 +197,7 @@ export class SmartContract {
     console.log("safeTransactionData", safeTransactionData);
 
     const safeTransaction = await safeSdk.createTransaction(
-      safeTransactionData
+      safeTransactionData,
     );
     // const safeTransaction = await safeSdk.createTransaction(transaction);
     console.log("execution Status", executionStatus);
@@ -232,7 +232,7 @@ export class SmartContract {
         console.log("TXHASH", proposalTxHash.data[0].txHash);
 
         const tx = await safeService.getTransaction(
-          proposalTxHash.data[0].txHash
+          proposalTxHash.data[0].txHash,
         );
         const nonce = await safeSdk.getNonce();
         console.log("nonce", nonce);
@@ -286,14 +286,14 @@ export class SmartContract {
       console.log("TXHASH", proposalTxHash.data[0].txHash);
 
       const safetx = await safeService.getTransaction(
-        proposalTxHash.data[0].txHash
+        proposalTxHash.data[0].txHash,
       );
       console.log("shfdfsjk", safetx);
       const safetx2 = await safeSdk.createTransaction(safetx);
       safetx.confirmations.forEach((confirmation) => {
         const sign = new EthSignSignature(
           confirmation.owner,
-          confirmation.signature
+          confirmation.signature,
         );
         safetx2.addSignature(sign);
       });
@@ -321,7 +321,7 @@ export class SmartContract {
     const web3 = new Web3(window.web3);
     const usdcContract = new web3.eth.Contract(
       ImplementationContract.abi,
-      this.usdcContractAddress
+      this.usdcContractAddress,
     );
     const safeSdk = await Safe.create({
       ethAdapter: ethAdapter,
@@ -366,11 +366,11 @@ export class SmartContract {
 
     const usdcContract = new web3.eth.Contract(
       USDCContract.abi,
-      this.usdcContractAddress
+      this.usdcContractAddress,
     );
     const usdcContractFaucet = new web3.eth.Contract(
       USDCContract.abi,
-      USDC_FAUCET_ADDRESS
+      USDC_FAUCET_ADDRESS,
     );
 
     const safeSdk = await Safe.create({
@@ -408,18 +408,18 @@ export class SmartContract {
       data: tx.data,
     };
     const safeTransaction2 = await safeSdk.createTransaction(
-      safeTransactionData
+      safeTransactionData,
     );
     for (let i = 0; i < tx.confirmations.length; i++) {
       const signature = new EthSignSignature(
         tx.confirmations[i].owner,
-        tx.confirmations[i].signature
+        tx.confirmations[i].signature,
       );
       safeTransaction2.addSignature(signature);
     }
 
     const executeTxResponse = await safeSdk.executeTransaction(
-      safeTransaction2
+      safeTransaction2,
     );
 
     const receipt =
@@ -581,5 +581,22 @@ export class SmartContract {
 
   async getUsdcDetails(address) {
     return this.contract.methods.getUsdcDetails(address).call();
+  }
+
+  async setupTokenGating(
+    addresses,
+    tokenAmounts,
+    tokenOperations,
+    isTokenNFTList,
+  ) {
+    console.log(addresses, tokenAmounts, tokenOperations, isTokenNFTList);
+    return this.contract.methods
+      .setupTokenGating(
+        addresses,
+        tokenAmounts,
+        tokenOperations,
+        isTokenNFTList,
+      )
+      .send({ from: this.walletAddress });
   }
 }

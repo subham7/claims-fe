@@ -1,6 +1,6 @@
-import { createTheme } from "@mui/material/styles"
-import { darkComponents } from "./darkComponent"
-import { lightComponents } from "./lightComponent"
+import { createTheme } from "@mui/material/styles";
+import { darkComponents } from "./darkComponent";
+import { lightComponents } from "./lightComponent";
 
 const theme = (mode) =>
   createTheme({
@@ -22,6 +22,6 @@ const theme = (mode) =>
     text: {
       primary: "#484848",
     },
-  })
+  });
 
-export default theme
+export default theme;
