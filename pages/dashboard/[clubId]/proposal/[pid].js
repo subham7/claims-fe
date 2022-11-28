@@ -870,12 +870,12 @@ const ProposalDetail = () => {
                           proposalData[0].status === "active"
                             ? classes.activeIllustration
                             : proposalData[0].status === "passed"
-                              ? classes.passedIllustration
-                              : proposalData[0].status === "executed"
-                                ? classes.executedIllustration
-                                : proposalData[0].status === "failed"
-                                  ? classes.failedIllustration
-                                  : classes.failedIllustration
+                            ? classes.passedIllustration
+                            : proposalData[0].status === "executed"
+                            ? classes.executedIllustration
+                            : proposalData[0].status === "failed"
+                            ? classes.failedIllustration
+                            : classes.failedIllustration
                         }
                       ></div>
                     ) : null}
@@ -884,7 +884,7 @@ const ProposalDetail = () => {
                     <Typography className={classes.listFont}>
                       {fetched
                         ? proposalData[0].status.charAt(0).toUpperCase() +
-                        proposalData[0].status.slice(1)
+                          proposalData[0].status.slice(1)
                         : null}
                     </Typography>
                   </Grid>
@@ -1037,19 +1037,19 @@ const ProposalDetail = () => {
                               pendingTxHash === txHash
                                 ? executionReady
                                   ? () => {
-                                    executeFunction("executed");
-                                  }
+                                      executeFunction("executed");
+                                    }
                                   : () => {
-                                    executeFunction("passed");
-                                  }
+                                      executeFunction("passed");
+                                    }
                                 : () => {
-                                  console.log("rrrrrrrrrrr");
-                                  setOpenSnackBar(true);
-                                  setFailed(true);
-                                  setMessage(
-                                    "execute txns with smaller nonce first",
-                                  );
-                                }
+                                    console.log("rrrrrrrrrrr");
+                                    setOpenSnackBar(true);
+                                    setFailed(true);
+                                    setMessage(
+                                      "execute txns with smaller nonce first",
+                                    );
+                                  }
                             }
                           >
                             <Grid
@@ -1070,10 +1070,10 @@ const ProposalDetail = () => {
                                     {executed
                                       ? "Executed Successfully"
                                       : executionReady
-                                        ? "Execute Now"
-                                        : signed
-                                          ? "Signed Succesfully"
-                                          : "Sign Now"}
+                                      ? "Execute Now"
+                                      : signed
+                                      ? "Signed Succesfully"
+                                      : "Sign Now"}
                                   </Typography>
                                 ) : (
                                   <Typography className={classes.cardFont1}>
@@ -1213,43 +1213,43 @@ const ProposalDetail = () => {
                           <Stack spacing={2}>
                             {fetched
                               ? proposalData[0].votingOptions.map(
-                                (data, key) => {
-                                  return (
-                                    <CardActionArea
-                                      className={classes.mainCard}
-                                      key={key}
-                                      disabled={voted}
-                                    >
-                                      <Card
-                                        className={
-                                          cardSelected == key
-                                            ? classes.mainCardSelected
-                                            : classes.mainCard
-                                        }
-                                        onClick={(e) => {
-                                          setCastVoteOption(
-                                            data.votingOptionId,
-                                          );
-                                          setCardSelected(key);
-                                        }}
+                                  (data, key) => {
+                                    return (
+                                      <CardActionArea
+                                        className={classes.mainCard}
+                                        key={key}
+                                        disabled={voted}
                                       >
-                                        <Grid
-                                          container
-                                          item
-                                          justifyContent="center"
-                                          alignItems="center"
+                                        <Card
+                                          className={
+                                            cardSelected == key
+                                              ? classes.mainCardSelected
+                                              : classes.mainCard
+                                          }
+                                          onClick={(e) => {
+                                            setCastVoteOption(
+                                              data.votingOptionId,
+                                            );
+                                            setCardSelected(key);
+                                          }}
                                         >
-                                          <Typography
-                                            className={classes.cardFont1}
+                                          <Grid
+                                            container
+                                            item
+                                            justifyContent="center"
+                                            alignItems="center"
                                           >
-                                            {data.text}{" "}
-                                          </Typography>
-                                        </Grid>
-                                      </Card>
-                                    </CardActionArea>
-                                  );
-                                },
-                              )
+                                            <Typography
+                                              className={classes.cardFont1}
+                                            >
+                                              {data.text}{" "}
+                                            </Typography>
+                                          </Grid>
+                                        </Card>
+                                      </CardActionArea>
+                                    );
+                                  },
+                                )
                               : null}
                             <CardActionArea
                               className={classes.mainCard}
@@ -1396,14 +1396,14 @@ const ProposalDetail = () => {
                                     >
                                       {fetched
                                         ? proposalData[0].commands[0]
-                                          .airDropAmount /
-                                        Math.pow(
-                                          10,
-                                          parseInt(
-                                            proposalData[0].commands[0]
-                                              .usdcTokenDecimal,
-                                          ),
-                                        )
+                                            .airDropAmount /
+                                          Math.pow(
+                                            10,
+                                            parseInt(
+                                              proposalData[0].commands[0]
+                                                .usdcTokenDecimal,
+                                            ),
+                                          )
                                         : null}{" "}
                                       {
                                         proposalData[0].commands[0]
@@ -1431,7 +1431,7 @@ const ProposalDetail = () => {
                                     >
                                       {fetched
                                         ? proposalData[0].commands[0]
-                                          .airDropCarryFee
+                                            .airDropCarryFee
                                         : null}
                                       %
                                     </Typography>
@@ -1489,14 +1489,14 @@ const ProposalDetail = () => {
                                     >
                                       {fetched
                                         ? proposalData[0].commands[0]
-                                          .mintGTAmounts[0] /
-                                        Math.pow(
-                                          10,
-                                          parseInt(
-                                            proposalData[0].commands[0]
-                                              .usdcGovernanceTokenDecimal,
-                                          ),
-                                        )
+                                            .mintGTAmounts[0] /
+                                          Math.pow(
+                                            10,
+                                            parseInt(
+                                              proposalData[0].commands[0]
+                                                .usdcGovernanceTokenDecimal,
+                                            ),
+                                          )
                                         : null}
                                     </Typography>
                                   </Grid>
@@ -1520,7 +1520,7 @@ const ProposalDetail = () => {
                                     >
                                       {fetched
                                         ? proposalData[0].commands[0]
-                                          .mintGTAddresses[0]
+                                            .mintGTAddresses[0]
                                         : null}
                                     </Typography>
                                   </Grid>
@@ -1612,14 +1612,14 @@ const ProposalDetail = () => {
                                     >
                                       {fetched
                                         ? proposalData[0].commands[0]
-                                          .totalDeposits /
-                                        Math.pow(
-                                          10,
-                                          parseInt(
-                                            proposalData[0].commands[0]
-                                              .usdcTokenDecimal,
-                                          ),
-                                        )
+                                            .totalDeposits /
+                                          Math.pow(
+                                            10,
+                                            parseInt(
+                                              proposalData[0].commands[0]
+                                                .usdcTokenDecimal,
+                                            ),
+                                          )
                                         : null}{" "}
                                       {
                                         proposalData[0].commands[0]
@@ -1657,14 +1657,14 @@ const ProposalDetail = () => {
                                     >
                                       {fetched
                                         ? proposalData[0].commands[0]
-                                          .customTokenAmounts[0] /
-                                        Math.pow(
-                                          10,
-                                          parseInt(
-                                            proposalData[0].commands[0]
-                                              .usdcTokenDecimal,
-                                          ),
-                                        )
+                                            .customTokenAmounts[0] /
+                                          Math.pow(
+                                            10,
+                                            parseInt(
+                                              proposalData[0].commands[0]
+                                                .usdcTokenDecimal,
+                                            ),
+                                          )
                                         : null}{" "}
                                       {
                                         proposalData[0].commands[0]
@@ -1692,7 +1692,7 @@ const ProposalDetail = () => {
                                     >
                                       {fetched
                                         ? proposalData[0].commands[0]
-                                          .customTokenAddresses[0]
+                                            .customTokenAddresses[0]
                                         : null}
                                     </Typography>
                                   </Grid>
@@ -1758,10 +1758,10 @@ const ProposalDetail = () => {
                     <Typography className={classes.listFont2Colourless}>
                       {fetched
                         ? proposalData[0].createdBy.substring(0, 6) +
-                        ".........." +
-                        proposalData[0].createdBy.substring(
-                          proposalData[0].createdBy.length - 4,
-                        )
+                          ".........." +
+                          proposalData[0].createdBy.substring(
+                            proposalData[0].createdBy.length - 4,
+                          )
                         : null}
                     </Typography>
                   </Grid>
@@ -1796,8 +1796,8 @@ const ProposalDetail = () => {
                     <Typography className={classes.listFont2Colourless}>
                       {fetched
                         ? new Date(
-                          String(proposalData[0].updateDate),
-                        ).toLocaleDateString()
+                            String(proposalData[0].updateDate),
+                          ).toLocaleDateString()
                         : null}
                     </Typography>
                   </Grid>
@@ -1816,8 +1816,8 @@ const ProposalDetail = () => {
                     <Typography className={classes.listFont2Colourless}>
                       {fetched
                         ? new Date(
-                          String(proposalData[0].votingDuration),
-                        ).toLocaleDateString()
+                            String(proposalData[0].votingDuration),
+                          ).toLocaleDateString()
                         : null}
                     </Typography>
                   </Grid>
@@ -1910,12 +1910,12 @@ const ProposalDetail = () => {
                                 >
                                   {fetched
                                     ? proposalData[0].votingOptions[
-                                      parseInt(
-                                        fetchVotingOptionChoice(
-                                          voter.votingOptionId,
-                                        ),
-                                      )
-                                    ].text
+                                        parseInt(
+                                          fetchVotingOptionChoice(
+                                            voter.votingOptionId,
+                                          ),
+                                        )
+                                      ].text
                                     : null}
                                 </Typography>
                               </Grid>
