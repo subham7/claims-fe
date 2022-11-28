@@ -2,31 +2,54 @@ import { React, useRef, onChange, useState } from "react";
 import { makeStyles } from "@mui/styles";
 import {
   Grid,
+  Item,
   Typography,
   TextField,
   Card,
+  Switch,
+  FormControlLabel,
   Box,
+  Stack,
+  Divider,
   Button,
   CircularProgress,
   IconButton,
   Stepper,
+  StepLabel,
   Step,
   Backdrop,
+  FormControl,
+  Select,
+  OutlinedInput,
+  Menu,
+  MenuItem,
+  Alert,
   StepButton,
 } from "@mui/material";
+import styled from "@emotion/styled";
 import Layout2 from "../../src/components/layouts/layout2";
+import CustomRoundedCard from "../../src/components/roundcard";
+import CustomCard from "../../src/components/card";
 import CustomSlider from "../../src/components/slider";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import UploadIcon from "@mui/icons-material/Upload";
 import ContractCard from "../../src/components/contractCard";
-import { contractList, tokenType } from "../../src/data/create";
+import {
+  contractList,
+  tokenType,
+  dateTill,
+  exitDates,
+} from "../../src/data/create";
+import Link from "next/link";
 import SimpleSelectButton from "../../src/components/simpleSelectButton";
 import AddCircleOutlinedIcon from "@mui/icons-material/AddCircleOutlined";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Web3 from "web3";
+import Web3Adapter from "@gnosis.pm/safe-web3-lib";
 import { initiateConnection } from "../../src/utils/safe";
 import { useDispatch, useSelector } from "react-redux";
 import ProtectRoute from "../../src/utils/auth";
+import { addClubID } from "../../src/redux/reducers/create";
 import InfoIcon from "@mui/icons-material/Info";
 import { DesktopDatePicker } from "@mui/x-date-pickers";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -125,10 +148,13 @@ const useStyles = makeStyles({
 
 const Create = (props) => {
   const classes = useStyles();
+  const uploadInputRef = useRef(null);
   const [clubName, setClubName] = useState(null);
   const [clubSymbol, setClubSymbol] = useState(null);
+  const [displayImage, setDisplayImage] = useState(null);
   const [raiseAmount, setRaiseAmount] = useState("");
   const [maxContribution, setMaxContribution] = useState("");
+  const [mandatoryProposal, setMandatoryProposal] = useState(false);
   const [voteForQuorum, setVoteForQuorum] = useState(0);
   const [depositClose, setDepositClose] = useState(
     new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
@@ -146,7 +172,7 @@ const Create = (props) => {
   const clubID = useSelector((state) => {
     return state.create.clubID;
   });
-  const [threshold, setThreshold] = useState(1);
+  const [threshold, setThreshold] = useState(2);
   const dispatch = useDispatch();
   const { wallet } = props;
   const [completed, setCompleted] = useState({});

@@ -35,7 +35,11 @@ import { fontStyle } from "@mui/system";
 import SimpleSelectButton from "../../../../src/components/simpleSelectButton";
 import { proposalType, commandTypeList } from "../../../../src/data/dashboard";
 import { getAssets } from "../../../../src/api/assets";
-import { createProposal, getProposal } from "../../../../src/api/proposal";
+import {
+  createProposal,
+  getProposal,
+  getProposalTxHash,
+} from "../../../../src/api/proposal";
 import { DesktopDatePicker } from "@mui/x-date-pickers";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
@@ -44,6 +48,8 @@ import { useSelector } from "react-redux";
 import { useRouter, withRouter } from "next/router";
 import USDCContract from "../../../../src/abis/usdcTokenContract.json";
 import ClubFetch from "../../../../src/utils/clubFetch";
+import Web3Adapter from "@gnosis.pm/safe-web3-lib";
+import SafeServiceClient from "@gnosis.pm/safe-service-client";
 import {
   calculateDays,
   convertToWei,
@@ -248,6 +254,7 @@ const Proposal = () => {
   const [selectedListItem, setSelectedListItem] = useState("");
   const [enableSubmitButton, setEnableSubmitButton] = useState(false);
   const [count, setCount] = useState(0);
+  const [executionTransaction, setExecutionTransaction] = useState();
   const defaultOptions = [
     {
       text: "Yes",
@@ -259,6 +266,11 @@ const Proposal = () => {
       text: "Abstain",
     },
   ];
+
+  const walletAddress = useSelector((state) => {
+    return state.create.value;
+  });
+
   const FACTORY_CONTRACT_ADDRESS = useSelector((state) => {
     return state.gnosis.factoryContractAddress;
   });
@@ -278,6 +290,22 @@ const Proposal = () => {
     return state.gnosis.governanceTokenDecimal;
   });
 
+  const gnosisAddress = useSelector((state) => {
+    return state.gnosis.safeAddress;
+  });
+  const getSafeService = async () => {
+    const web3 = new Web3(window.web3);
+    const ethAdapter = new Web3Adapter({
+      web3: web3,
+      signerAddress: walletAddress,
+    });
+    const safeService = new SafeServiceClient({
+      txServiceUrl: GNOSIS_TRANSACTION_URL,
+      ethAdapter,
+    });
+    return safeService;
+  };
+
   const fetchTokens = () => {
     if (clubID) {
       const tokenData = getAssets(clubId);
@@ -292,20 +320,41 @@ const Proposal = () => {
     }
   };
 
-  const fetchData = () => {
+  const fetchData = async () => {
     const proposalData = getProposal(clubID);
-    proposalData.then((result) => {
+    const safeService = await getSafeService();
+    proposalData.then(async (result) => {
       if (result.status != 200) {
         setFetched(false);
       } else {
         setProposalData(result.data);
         setFetched(true);
+        const pendingTxs = await safeService.getPendingTransactions(
+          gnosisAddress,
+        );
+        const count = pendingTxs.count;
+
+        Promise.all(
+          result.data.map(async (proposal) => {
+            const proposalTxHash = await getProposalTxHash(proposal.proposalId);
+            // console.log(proposalTxHash.data[0].txHash);
+
+            proposal["safeTxHash"] = proposalTxHash.data[0].txHash;
+
+            if (
+              proposalTxHash.data[0].txHash ===
+              pendingTxs?.results[count - 1].safeTxHash
+            ) {
+              setExecutionTransaction(proposal);
+            }
+          }),
+        );
         setLoaderOpen(false);
       }
     });
   };
-
-  const fetchFilteredData = (type) => {
+  // console.log("ProposalData", proposalData);
+  const fetchFilteredData = async (type) => {
     setSelectedListItem(type);
     if (type !== "all") {
       const proposalData = getProposal(clubID, type);
@@ -796,91 +845,200 @@ const Proposal = () => {
             <Grid container spacing={3}>
               {selectedListItem === "all" ? (
                 proposalData.length > 0 ? (
-                  proposalData.map((proposal, key) => {
-                    return (
-                      <Grid
-                        item
-                        key={proposal.id}
-                        onClick={(e) => {
-                          handleProposalClick(proposalData[key]);
-                        }}
-                        md={12}
-                      >
-                        <CardActionArea sx={{ borderRadius: "10px" }}>
-                          <Card className={classes.mainCard}>
-                            <Grid container>
-                              <Grid item ml={2} mr={2}>
-                                <Typography className={classes.cardFont}>
-                                  Proposed by{" "}
-                                  {fetched
-                                    ? proposal.createdBy.substring(0, 6) +
-                                      ".........." +
-                                      proposal.createdBy.substring(
-                                        proposal.createdBy.length - 4,
-                                      )
-                                    : null}
-                                </Typography>
+                  <>
+                    {executionTransaction && (
+                      <>
+                        <h2>Txn be executed</h2>
+                        <Grid
+                          item
+                          // key={proposal.id}
+                          onClick={(e) => {
+                            handleProposalClick(executionTransaction);
+                          }}
+                          md={12}
+                        >
+                          <CardActionArea sx={{ borderRadius: "10px" }}>
+                            <Card className={classes.mainCard}>
+                              <Grid container>
+                                <Grid item ml={2} mr={2}>
+                                  <Typography className={classes.cardFont}>
+                                    Proposed by{" "}
+                                    {fetched
+                                      ? executionTransaction.createdBy.substring(
+                                          0,
+                                          6,
+                                        ) +
+                                        ".........." +
+                                        executionTransaction.createdBy.substring(
+                                          executionTransaction.createdBy
+                                            .length - 4,
+                                        )
+                                      : null}
+                                  </Typography>
+                                </Grid>
+                                <Grid
+                                  item
+                                  ml={1}
+                                  mr={1}
+                                  xs
+                                  sx={{
+                                    display: "flex",
+                                    justifyContent: "flex-end",
+                                  }}
+                                >
+                                  {fetched ? (
+                                    <Chip
+                                      className={
+                                        executionTransaction.status === "active"
+                                          ? classes.cardFontActive
+                                          : executionTransaction.status ===
+                                            "passed"
+                                          ? classes.cardFontPassed
+                                          : executionTransaction.status ===
+                                            "executed"
+                                          ? classes.cardFontExecuted
+                                          : executionTransaction.status ===
+                                            "failed"
+                                          ? classes.cardFontFailed
+                                          : classes.cardFontFailed
+                                      }
+                                      label={
+                                        executionTransaction.status
+                                          .charAt(0)
+                                          .toUpperCase() +
+                                        executionTransaction.status.slice(1)
+                                      }
+                                    />
+                                  ) : null}
+                                </Grid>
                               </Grid>
-                              <Grid
-                                item
-                                ml={1}
-                                mr={1}
-                                xs
-                                sx={{
-                                  display: "flex",
-                                  justifyContent: "flex-end",
-                                }}
-                              >
-                                {fetched ? (
-                                  <Chip
-                                    className={
-                                      proposal.status === "active"
-                                        ? classes.cardFontActive
-                                        : proposal.status === "passed"
-                                        ? classes.cardFontPassed
-                                        : proposal.status === "executed"
-                                        ? classes.cardFontExecuted
-                                        : proposal.status === "failed"
-                                        ? classes.cardFontFailed
-                                        : classes.cardFontFailed
-                                    }
-                                    label={
-                                      proposal.status.charAt(0).toUpperCase() +
-                                      proposal.status.slice(1)
-                                    }
-                                  />
-                                ) : null}
+                              <Grid container>
+                                <Grid item ml={2} mr={2}>
+                                  <Typography className={classes.cardFont1}>
+                                    {executionTransaction.name}
+                                  </Typography>
+                                </Grid>
                               </Grid>
-                            </Grid>
-                            <Grid container>
-                              <Grid item ml={2} mr={2}>
-                                <Typography className={classes.cardFont1}>
-                                  [#{key + 1}] {proposal.name}
-                                </Typography>
+                              <Grid container>
+                                <Grid item ml={2} mr={2}>
+                                  <Typography className={classes.cardFont}>
+                                    {executionTransaction.description.substring(
+                                      0,
+                                      200,
+                                    )}
+                                    ...
+                                  </Typography>
+                                </Grid>
                               </Grid>
-                            </Grid>
-                            <Grid container>
-                              <Grid item ml={2} mr={2}>
-                                <Typography className={classes.cardFont}>
-                                  {proposal.description.substring(0, 200)}...
-                                </Typography>
+                              <Grid container>
+                                <Grid item ml={2} mr={2} mt={2}>
+                                  <Typography className={classes.daysFont}>
+                                    {calculateDays(
+                                      executionTransaction.votingDuration,
+                                    ) <= 0
+                                      ? "Voting closed"
+                                      : calculateDays(
+                                          executionTransaction.votingDuration,
+                                        ) + " days left"}
+                                  </Typography>
+                                </Grid>
                               </Grid>
-                            </Grid>
-                            <Grid container>
-                              <Grid item ml={2} mr={2} mt={2}>
-                                <Typography className={classes.daysFont}>
-                                  {calculateDays(proposal.votingDuration) <= 0
-                                    ? "Voting closed"
-                                    : calculateDays(proposal.votingDuration) +
-                                      " days left"}
-                                </Typography>
+                            </Card>
+                          </CardActionArea>
+                        </Grid>
+                      </>
+                    )}
+                    {/* {proposalData && getExecutionTransaction()} */}
+                    <h2>Proposals</h2>
+                    {proposalData.map((proposal, key) => {
+                      return (
+                        <Grid
+                          item
+                          key={proposal.id}
+                          onClick={(e) => {
+                            console.log(proposalData[key]);
+                            handleProposalClick(proposalData[key]);
+                          }}
+                          md={12}
+                        >
+                          <CardActionArea sx={{ borderRadius: "10px" }}>
+                            <Card className={classes.mainCard}>
+                              <Grid container>
+                                <Grid item ml={2} mr={2}>
+                                  <Typography className={classes.cardFont}>
+                                    Proposed by{" "}
+                                    {fetched
+                                      ? proposal.createdBy.substring(0, 6) +
+                                        ".........." +
+                                        proposal.createdBy.substring(
+                                          proposal.createdBy.length - 4,
+                                        )
+                                      : null}
+                                  </Typography>
+                                </Grid>
+                                <Grid
+                                  item
+                                  ml={1}
+                                  mr={1}
+                                  xs
+                                  sx={{
+                                    display: "flex",
+                                    justifyContent: "flex-end",
+                                  }}
+                                >
+                                  {fetched ? (
+                                    <Chip
+                                      className={
+                                        proposal.status === "active"
+                                          ? classes.cardFontActive
+                                          : proposal.status === "passed"
+                                          ? classes.cardFontPassed
+                                          : proposal.status === "executed"
+                                          ? classes.cardFontExecuted
+                                          : proposal.status === "failed"
+                                          ? classes.cardFontFailed
+                                          : classes.cardFontFailed
+                                      }
+                                      label={
+                                        proposal.status
+                                          .charAt(0)
+                                          .toUpperCase() +
+                                        proposal.status.slice(1)
+                                      }
+                                    />
+                                  ) : null}
+                                </Grid>
                               </Grid>
-                            </Grid>
-                          </Card>
-                        </CardActionArea>
-                      </Grid>
-                    );
-                  })
+                              <Grid container>
+                                <Grid item ml={2} mr={2}>
+                                  <Typography className={classes.cardFont1}>
+                                    [#{key + 1}] {proposal.name}
+                                  </Typography>
+                                </Grid>
+                              </Grid>
+                              <Grid container>
+                                <Grid item ml={2} mr={2}>
+                                  <Typography className={classes.cardFont}>
+                                    {proposal.description.substring(0, 200)}...
+                                  </Typography>
+                                </Grid>
+                              </Grid>
+                              <Grid container>
+                                <Grid item ml={2} mr={2} mt={2}>
+                                  <Typography className={classes.daysFont}>
+                                    {calculateDays(proposal.votingDuration) <= 0
+                                      ? "Voting closed"
+                                      : calculateDays(proposal.votingDuration) +
+                                        " days left"}
+                                  </Typography>
+                                </Grid>
+                              </Grid>
+                            </Card>
+                          </CardActionArea>
+                        </Grid>
+                      );
+                    })}
+                  </>
                 ) : (
                   <Grid
                     item

@@ -149,6 +149,7 @@ export class SmartContract {
       ownersAirdropFees,
       daoAdminAddresses,
     ];
+    console.log("executionStatus", executionStatus);
     const safeOwner = this.walletAddress;
     const ethAdapter = new Web3Adapter({
       web3: this.web3,
@@ -162,10 +163,12 @@ export class SmartContract {
       ImplementationContract.abi,
       daoAddress,
     );
+    console.log(implementationContract);
     const safeSdk = await Safe.create({
       ethAdapter: ethAdapter,
       safeAddress: gnosisAddress,
     });
+
     const transaction = {
       to: daoAddress,
       data: implementationContract.methods
@@ -173,8 +176,32 @@ export class SmartContract {
         .encodeABI(),
       value: "0",
     };
+    console.log("transactionnnnn", transaction);
     // let safeTransaction2;
-    const safeTransaction = await safeSdk.createTransaction(transaction);
+    const nonce = await safeService.getNextNonce(gnosisAddress);
+    console.log("nonce", nonce);
+
+    const safeTransactionData = {
+      to: transaction.to,
+      data: transaction.data,
+      value: transaction.value,
+      // operation, // Optional
+      // safeTxGas, // Optional
+      // baseGas, // Optional
+      // gasPrice, // Optional
+      // gasToken, // Optional
+      // refundReceiver, // Optional
+      nonce: nonce, // Optional
+    };
+
+    console.log("safeTransactionData", safeTransactionData);
+
+    const safeTransaction = await safeSdk.createTransaction(
+      safeTransactionData,
+    );
+    // const safeTransaction = await safeSdk.createTransaction(transaction);
+    console.log("execution Status", executionStatus);
+
     if (executionStatus !== "executed") {
       if (txHash === "") {
         const safeTxHash = await safeSdk.getTransactionHash(safeTransaction);
@@ -182,41 +209,98 @@ export class SmartContract {
           proposalId: pid,
           txHash: safeTxHash,
         };
-
+        console.log("payload", payload);
         await createProposalTxHash(payload);
-        const senderSignature = await safeSdk.signTransactionHash(safeTxHash);
 
         const proposeTxn = await safeService.proposeTransaction({
           safeAddress: gnosisAddress,
           safeTransactionData: safeTransaction.data,
           safeTxHash: safeTxHash,
           senderAddress: this.walletAddress,
-          senderSignature: senderSignature.data,
         });
+        console.log("proposeTxn", proposeTxn);
+        const senderSignature = await safeSdk.signTransactionHash(safeTxHash);
+        await safeService.confirmTransaction(safeTxHash, senderSignature.data);
+        console.log("proposeTxn in ifffff", proposeTxn);
         return proposeTxn;
+        // const txResponse = await safeSdk.approveTransactionHash(txHash);
+        // await txResponse.transactionResponse?.wait();
+        // console.log("txResponse", txResponse);
       } else {
         const proposalTxHash = await getProposalTxHash(pid);
+        console.log("proposalTxHash", proposalTxHash);
+        console.log("TXHASH", proposalTxHash.data[0].txHash);
 
         const tx = await safeService.getTransaction(
           proposalTxHash.data[0].txHash,
         );
+        const nonce = await safeSdk.getNonce();
+        console.log("nonce", nonce);
+        const safeTxHash = tx.safeTxHash;
 
-        const senderSignature = await safeSdk.signTransactionHash(
-          proposalTxHash.data[0].txHash,
-        );
-        const proposeTxn = await safeService.proposeTransaction({
-          safeAddress: gnosisAddress,
-          safeTransactionData: safeTransaction.data,
-          safeTxHash: proposalTxHash.data[0].txHash,
-          senderAddress: this.walletAddress,
-          senderSignature: senderSignature.data,
-        });
-        return proposeTxn;
+        const senderSignature = await safeSdk.signTransactionHash(safeTxHash);
+        await safeService.confirmTransaction(safeTxHash, senderSignature.data);
+        // const proposeTxn = await safeService.proposeTransaction({
+        //   safeAddress: gnosisAddress,
+        //   safeTransactionData: safeTransaction.data,
+        //   safeTxHash: proposalTxHash.data[0].txHash,
+        //   senderAddress: this.walletAddress,
+        //   senderSignature: senderSignature.data,
+        // })
+        console.log("senderSignature", senderSignature);
+        // console.log("proposeTxn in elseeee", proposeTxn)
+
+        return tx;
+
+        // const safeTransactionData = {
+        //   to: tx.to,
+        //   value: tx.value,
+        //   operation: tx.operation,
+        //   safeTxGas: tx.safeTxGas,
+        //   baseGas: tx.baseGas,
+        //   gasPrice: tx.gasPrice,
+        //   gasToken: tx.gasToken,
+        //   refundReceiver: tx.refundReceiver,
+        //   nonce: tx.nonce,
+        //   data: tx.data,
+        // };
+
+        // safeTransaction2 = await safeSdk.createTransaction(safeTransactionData);
+        // console.log("safeTransaction2", safeTransaction2);
+
+        // for (let i = 0; i < tx.confirmations.length; i++) {
+        //   const signature = new EthSignSignature(
+        //     tx.confirmations[i].owner,
+        //     tx.confirmations[i].signature
+        //   );
+        //   console.log("signatureee", signature);
+        //   safeTransaction2.addSignature(signature);
+        // }
+
+        // const txResponse = await safeSdk.approveTransactionHash(txHash);
+        // await txResponse.transactionResponse?.wait();
       }
     } else {
-      const executeTxResponse = await safeSdk.executeTransaction(
-        safeTransaction,
+      const proposalTxHash = await getProposalTxHash(pid);
+      console.log("proposalTxHash", proposalTxHash);
+      console.log("TXHASH", proposalTxHash.data[0].txHash);
+
+      const safetx = await safeService.getTransaction(
+        proposalTxHash.data[0].txHash,
       );
+      console.log("shfdfsjk", safetx);
+      const safetx2 = await safeSdk.createTransaction(safetx);
+      safetx.confirmations.forEach((confirmation) => {
+        const sign = new EthSignSignature(
+          confirmation.owner,
+          confirmation.signature,
+        );
+        safetx2.addSignature(sign);
+      });
+      console.log(safetx2);
+      const executeTxResponse = await safeSdk.executeTransaction(safetx2);
+
+      console.log("executeTxResponse", executeTxResponse);
       const receipt =
         executeTxResponse.transactionResponse &&
         (await executeTxResponse.transactionResponse.wait());
