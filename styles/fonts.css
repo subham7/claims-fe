@@ -1,17 +1,17 @@
 @font-face {
-	font-family: "Whyte";
-	src: url("/fonts/Whyte-Bold.ttf") format("truetype");
-	font-style: bold;
+  font-family: "Whyte";
+  src: url("/fonts/Whyte-Bold.ttf") format("truetype");
+  font-style: bold;
 }
 
 @font-face {
-	font-family: "Whyte";
-	src: url("/fonts/Whyte-Light.ttf") format("truetype");
-	font-style: light;
+  font-family: "Whyte";
+  src: url("/fonts/Whyte-Light.ttf") format("truetype");
+  font-style: light;
 }
 
 @font-face {
-	font-family: "Whyte";
-	src: url("/fonts/Whyte-Regular.ttf") format("truetype");
-	font-style: regular;
+  font-family: "Whyte";
+  src: url("/fonts/Whyte-Regular.ttf") format("truetype");
+  font-style: regular;
 }

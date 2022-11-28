@@ -8,13 +8,13 @@ import Faucet from "./faucet";
 import "../styles/fonts.css";
 
 function MyApp({ Component, pageProps }) {
-	return (
-		<Provider store={store}>
-			<ThemeProvider theme={theme("dark")}>
-				<Component {...pageProps} />
-			</ThemeProvider>
-		</Provider>
-	);
+  return (
+    <Provider store={store}>
+      <ThemeProvider theme={theme("dark")}>
+        <Component {...pageProps} />
+      </ThemeProvider>
+    </Provider>
+  );
 }
 
 export default MyApp;
