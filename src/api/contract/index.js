@@ -57,7 +57,7 @@ export class SmartContract {
         contractAddress &&
         walletAddress &&
         usdcContractAddress,
-      gnosisTransactionUrl)
+        gnosisTransactionUrl)
     ) {
       this.web3 = new Web3(window.web3);
       this.abi = abiFile.abi;

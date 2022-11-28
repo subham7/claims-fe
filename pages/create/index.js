@@ -1036,13 +1036,13 @@ const Create = (props) => {
                         activeStep === 0
                           ? !clubName || !clubSymbol
                           : activeStep === 2
-                          ? !raiseAmount ||
+                            ? !raiseAmount ||
                             !maxContribution ||
                             !voteForQuorum ||
                             !depositClose ||
                             !minContribution ||
                             voteInFavour < 50
-                          : // : activeStep === 2
+                            : // : activeStep === 2
                             //   ? false
                             true
                       }
