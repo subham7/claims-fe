@@ -471,12 +471,6 @@ export class SmartContract {
       .call({ from: this.walletAddress });
   }
 
-  async checkUserBalance() {
-    return this.contract.methods
-      .checkUserBalance(this.walletAddress)
-      .call({ from: this.walletAddress });
-  }
-
   async ownerAddress() {
     return this.contract.methods
       .ownerAddress()

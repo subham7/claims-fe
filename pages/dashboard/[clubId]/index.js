@@ -394,7 +394,7 @@ const Dashboard = () => {
         GNOSIS_TRANSACTION_URL,
       );
       let usdcDetails = await contract.getUsdcDetails(USDC_CONTRACT_ADDRESS);
-      let getUserBalance = await contract.checkUserBalance();
+      let getUserBalance = await contract.balanceOf();
       let getGovernorDetails = await contract.getGovernorDetails();
       let getTokenDetails = await contract.tokenDetails();
 
