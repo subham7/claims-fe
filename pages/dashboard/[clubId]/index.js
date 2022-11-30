@@ -348,7 +348,6 @@ const Dashboard = () => {
   const [tokenAPIDetails, settokenAPIDetails] = useState(null); // contains the details extracted from API
   const [apiTokenDetailSet, setApiTokenDetailSet] = useState(false);
   const [depositLink, setDepositLink] = useState(null);
-  const [governorDetails, setGovernorDetails] = useState(null);
   const [membersFetched, setMembersFetched] = useState(false);
   const [members, setMembers] = useState(0);
   const [membersDetails, setMembersDetails] = useState([]);
@@ -395,8 +394,10 @@ const Dashboard = () => {
       );
       let usdcDetails = await contract.getUsdcDetails(USDC_CONTRACT_ADDRESS);
       let getUserBalance = await contract.balanceOf();
-      let getGovernorDetails = await contract.getGovernorDetails();
+      let getDepositCloseTime = await contract.getDepositCloseTime();
+      let getTotalRaiseAmount = await contract.getTotalRaiseAmount();
       let getTokenDetails = await contract.tokenDetails();
+      console.log(getDepositCloseTime, getTotalRaiseAmount);
 
       // user and admin contributions
       let memberDeposits = convertFromWei(usdcDetails[0], usdcConvertDecimal);
@@ -411,9 +412,8 @@ const Dashboard = () => {
       setUserBalance(
         convertFromWeiGovernance(getUserBalance, governanceConvertDecimal),
       );
-      setClosingDays(calculateDays(parseInt(getGovernorDetails[0]) * 1000));
-      setGovernorDetails(getGovernorDetails);
-      setMaxTokenMinted(await convertAmountToWei(getGovernorDetails[4]));
+      setClosingDays(calculateDays(parseInt(getDepositCloseTime) * 1000));
+      setMaxTokenMinted(await convertAmountToWei(getTotalRaiseAmount));
 
       settokenDetails(getTokenDetails);
       setClubTokenMInted(
@@ -429,6 +429,7 @@ const Dashboard = () => {
       );
       setDataFetched(true);
     } catch (e) {
+      console.log(e);
       setOpenSnackBar(true);
       setFailed(true);
     }
@@ -627,7 +628,6 @@ const Dashboard = () => {
                             fontSize={"24px"}
                             className={classes.valueDetailStyle}
                           >
-                            {console.log(memberDeposit)}
                             {/*{Number.isInteger(memberDeposit)}*/}
                             {memberDeposit !== null
                               ? Number.isInteger(memberDeposit)

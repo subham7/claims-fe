@@ -217,8 +217,6 @@ const Join = (props) => {
   const [tokenDetails, settokenDetails] = useState(null);
   const [tokenAPIDetails, settokenAPIDetails] = useState(null); // contains the details extracted from API
   const [apiTokenDetailSet, setApiTokenDetailSet] = useState(false);
-  const [governorDetails, setGovernorDetails] = useState(null);
-  const [governorDataFetched, setGovernorDataFetched] = useState(false);
   const [clubId, setClubId] = useState(null);
   const [membersFetched, setMembersFetched] = useState(false);
   const [clubTokenMinted, setClubTokenMInted] = useState(0);
@@ -238,6 +236,11 @@ const Join = (props) => {
   });
   const [usdcTokenDecimal, setUsdcTokenDecimal] = useState(0);
   const [governanceConvertDecimal, setGovernanceConvertDecimal] = useState(0);
+  const [closingDataFetched, setClosingDataFetched] = useState(false);
+  const [minDepositDataFetched, setMinDepositDataFetched] = useState(false);
+  const [maxDepositDataFetched, setMaxDepositDataFetched] = useState(false);
+  const [totalRaiseAmountDataFetched, setTotalRaiseAmountDataFetched] =
+    useState(false);
 
   const fetchCustomTokenDecimals = async () => {
     if (daoAddress && USDC_CONTRACT_ADDRESS && GNOSIS_TRANSACTION_URL) {
@@ -307,7 +310,6 @@ const Join = (props) => {
   };
 
   const tokenDetailsRetrieval = async () => {
-    console.log(" in tokenDetailsRetrieval");
     if (
       tokenAPIDetails &&
       tokenAPIDetails.length > 0 &&
@@ -362,8 +364,10 @@ const Join = (props) => {
   const contractDetailsRetrieval = async () => {
     if (
       daoAddress &&
-      !governorDataFetched &&
-      !governorDetails &&
+      !closingDataFetched &&
+      !minDepositDataFetched &&
+      !maxDepositDataFetched &&
+      !totalRaiseAmountDataFetched &&
       userDetails &&
       USDC_CONTRACT_ADDRESS &&
       GNOSIS_TRANSACTION_URL &&
@@ -376,24 +380,43 @@ const Join = (props) => {
         USDC_CONTRACT_ADDRESS,
         GNOSIS_TRANSACTION_URL,
       );
-      await governorDetailContract.getGovernorDetails().then(
-        (result) => {
-          setGovernorDetails(result);
-          setMinDeposit(
-            convertFromWei(parseFloat(result[1]), usdcTokenDecimal),
-          );
-          setMaxDeposit(convertFromWei(parseInt(result[2]), usdcTokenDecimal));
-          setTotalDeposit(
-            convertFromWei(parseInt(result[4]), usdcTokenDecimal),
-          );
 
+      await governorDetailContract.getDepositCloseTime().then(
+        (result) => {
           setClosingDays(
             Math.round(
-              (new Date(parseInt(result[0]) * 1000) - new Date()) /
+              (new Date(parseInt(result) * 1000) - new Date()) /
                 (1000 * 60 * 60 * 24),
             ),
           );
-          setGovernorDataFetched(true);
+          setClosingDataFetched(true);
+        },
+        (error) => {
+          console.log(error);
+        },
+      );
+      await governorDetailContract.getMinDepositPerUser().then(
+        (result) => {
+          setMinDeposit(convertFromWei(parseFloat(result), usdcTokenDecimal));
+          setMinDepositDataFetched(true);
+        },
+        (error) => {
+          console.log(error);
+        },
+      );
+      await governorDetailContract.getMaxDepositPerUser().then(
+        (result) => {
+          setMaxDeposit(convertFromWei(parseInt(result), usdcTokenDecimal));
+          setMaxDepositDataFetched(true);
+        },
+        (error) => {
+          console.log(error);
+        },
+      );
+      await governorDetailContract.getTotalRaiseAmount().then(
+        (result) => {
+          setTotalDeposit(convertFromWei(parseInt(result), usdcTokenDecimal));
+          setTotalRaiseAmountDataFetched(true);
         },
         (error) => {
           console.log(error);
@@ -628,8 +651,8 @@ const Join = (props) => {
 
   const handleMaxButtonClick = async (event) => {
     // value should be the maximum deposit value
-    if (governorDataFetched) {
-      setDepositAmount(convertToWei(governorDetails[2], usdcTokenDecimal));
+    if (maxDepositDataFetched) {
+      setDepositAmount(maxDeposit);
     }
   };
 
@@ -701,8 +724,8 @@ const Join = (props) => {
                 <Grid container mt={2} direction="row">
                   <Grid item>
                     <Typography variant="p" className={classes.valuesStyle}>
-                      {governorDataFetched ? (
-                        new Date(parseInt(governorDetails[0]) * 1000)
+                      {closingDataFetched ? (
+                        new Date(closingDays)
                           .toJSON()
                           .slice(0, 10)
                           .split("-")
@@ -719,7 +742,7 @@ const Join = (props) => {
                   </Grid>
                   <Grid item ml={1}>
                     {walletConnected ? (
-                      governorDataFetched ? (
+                      closingDataFetched ? (
                         closingDays > 0 ? (
                           <Card className={classes.openTag}>
                             <Typography className={classes.openTagFont}>
@@ -761,7 +784,7 @@ const Join = (props) => {
                   </Grid>
                   <Grid item mt={2}>
                     <Typography variant="p" className={classes.valuesStyle}>
-                      {governorDataFetched ? (
+                      {minDepositDataFetched ? (
                         minDeposit + " USDC"
                       ) : (
                         <Skeleton
@@ -791,7 +814,7 @@ const Join = (props) => {
                   </Grid>
                   <Grid item mt={2}>
                     <Typography variant="p" className={classes.valuesStyle}>
-                      {governorDataFetched ? (
+                      {maxDepositDataFetched ? (
                         maxDeposit + " USDC"
                       ) : (
                         <Skeleton
@@ -861,10 +884,10 @@ const Join = (props) => {
               {walletConnected ? (
                 <ProgressBar
                   value={
-                    governorDataFetched
+                    totalRaiseAmountDataFetched
                       ? calculateTreasuryTargetShare(
                           clubTokenMinted,
-                          convertAmountToWei(governorDetails[4]),
+                          totalDeposit,
                         )
                       : 0
                   }
@@ -927,7 +950,7 @@ const Join = (props) => {
                   </Grid>
                   <Grid item>
                     <Typography variant="p" className={classes.valuesStyle}>
-                      {governorDataFetched ? (
+                      {totalRaiseAmountDataFetched ? (
                         totalDeposit + (" $" + tokenDetails[1])
                       ) : (
                         <Skeleton
@@ -961,7 +984,7 @@ const Join = (props) => {
                   sx={{ display: "flex", justifyContent: "flex-end" }}
                 >
                   <Typography variant="h6" className={classes.JoinText}>
-                    {governorDataFetched
+                    {closingDataFetched
                       ? closingDays > 0
                         ? "Closes in " + closingDays + " days"
                         : "Joining Closed"

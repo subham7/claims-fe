@@ -563,10 +563,24 @@ export class SmartContract {
       .call({ from: this.walletAddress });
   }
 
-  async getGovernorDetails() {
-    return this.contract.methods
-      .getGovernorDetails()
-      .call({ from: this.walletAddress });
+  async getDepositCloseTime() {
+    return this.contract.methods.depositCloseTime().call();
+  }
+
+  async getMinDepositPerUser() {
+    return this.contract.methods.minDepositPerUser().call();
+  }
+
+  async getMaxDepositPerUser() {
+    return this.contract.methods.maxDepositPerUser().call();
+  }
+
+  async getTotalRaiseAmount() {
+    return this.contract.methods.totalRaiseAmount().call();
+  }
+
+  async getTotalMembers() {
+    return this.contract.methods.getTotalMembers().call();
   }
 
   async obtainTokenDecimals() {
