@@ -587,8 +587,12 @@ export class SmartContract {
     return this.contract.methods.decimals().call({ from: this.walletAddress });
   }
 
-  async getUsdcDetails(address) {
-    return this.contract.methods.getUsdcDetails(address).call();
+  async getUsdcDeposited(address) {
+    return this.contract.methods.USDCDeposited(address).call();
+  }
+
+  async getUsdcTransferedToAdmin(address) {
+    return this.contract.methods.USDCTransferedToAdmin(address).call();
   }
 
   async setupTokenGating(

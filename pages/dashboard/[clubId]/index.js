@@ -392,17 +392,21 @@ const Dashboard = () => {
         USDC_CONTRACT_ADDRESS,
         GNOSIS_TRANSACTION_URL,
       );
-      let usdcDetails = await contract.getUsdcDetails(USDC_CONTRACT_ADDRESS);
+      let usdcDeposited = await contract.getUsdcDeposited(
+        USDC_CONTRACT_ADDRESS,
+      );
+      let usdcTransferredToAdmin = await contract.getUsdcTransferedToAdmin(
+        USDC_CONTRACT_ADDRESS,
+      );
       let getUserBalance = await contract.balanceOf();
       let getDepositCloseTime = await contract.getDepositCloseTime();
       let getTotalRaiseAmount = await contract.getTotalRaiseAmount();
       let getTokenDetails = await contract.tokenDetails();
-      console.log(getDepositCloseTime, getTotalRaiseAmount);
 
       // user and admin contributions
-      let memberDeposits = convertFromWei(usdcDetails[0], usdcConvertDecimal);
+      let memberDeposits = convertFromWei(usdcDeposited, usdcConvertDecimal);
       let adminContribution = convertFromWei(
-        usdcDetails[1],
+        usdcTransferredToAdmin,
         usdcConvertDecimal,
       );
 
