@@ -1,5 +1,5 @@
-import { React, useRef, onChange, useState } from "react"
-import { makeStyles } from "@mui/styles"
+import { React, useRef, onChange, useState } from "react";
+import { makeStyles } from "@mui/styles";
 import {
   Grid,
   Item,
@@ -25,38 +25,38 @@ import {
   MenuItem,
   Alert,
   StepButton,
-} from "@mui/material"
-import styled from "@emotion/styled"
-import Layout2 from "../../src/components/layouts/layout2"
-import CustomRoundedCard from "../../src/components/roundcard"
-import CustomCard from "../../src/components/card"
-import CustomSlider from "../../src/components/slider"
-import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined"
-import UploadIcon from "@mui/icons-material/Upload"
-import ContractCard from "../../src/components/contractCard"
+} from "@mui/material";
+import styled from "@emotion/styled";
+import Layout2 from "../../src/components/layouts/layout2";
+import CustomRoundedCard from "../../src/components/roundcard";
+import CustomCard from "../../src/components/card";
+import CustomSlider from "../../src/components/slider";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import UploadIcon from "@mui/icons-material/Upload";
+import ContractCard from "../../src/components/contractCard";
 import {
   contractList,
   tokenType,
   dateTill,
   exitDates,
-} from "../../src/data/create"
-import Link from "next/link"
-import SimpleSelectButton from "../../src/components/simpleSelectButton"
-import AddCircleOutlinedIcon from "@mui/icons-material/AddCircleOutlined"
-import DeleteIcon from "@mui/icons-material/Delete"
-import Web3 from "web3"
-import Web3Adapter from "@gnosis.pm/safe-web3-lib"
-import { initiateConnection } from "../../src/utils/safe"
-import { useDispatch, useSelector } from "react-redux"
-import ProtectRoute from "../../src/utils/auth"
-import { addClubID } from "../../src/redux/reducers/create"
-import InfoIcon from "@mui/icons-material/Info"
-import { DesktopDatePicker } from "@mui/x-date-pickers"
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider"
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns"
+} from "../../src/data/create";
+import Link from "next/link";
+import SimpleSelectButton from "../../src/components/simpleSelectButton";
+import AddCircleOutlinedIcon from "@mui/icons-material/AddCircleOutlined";
+import DeleteIcon from "@mui/icons-material/Delete";
+import Web3 from "web3";
+import Web3Adapter from "@gnosis.pm/safe-web3-lib";
+import { initiateConnection } from "../../src/utils/safe";
+import { useDispatch, useSelector } from "react-redux";
+import ProtectRoute from "../../src/utils/auth";
+import { addClubID } from "../../src/redux/reducers/create";
+import InfoIcon from "@mui/icons-material/Info";
+import { DesktopDatePicker } from "@mui/x-date-pickers";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 
-const ITEM_HEIGHT = 48
-const ITEM_PADDING_TOP = 8
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
 const MenuProps = {
   PaperProps: {
     style: {
@@ -64,7 +64,7 @@ const MenuProps = {
       width: 250,
     },
   },
-}
+};
 
 const useStyles = makeStyles({
   textField: {
@@ -144,134 +144,134 @@ const useStyles = makeStyles({
     color: "#3B7AFD",
     fontFamily: "Whyte",
   },
-})
+});
 
 const Create = (props) => {
-  const classes = useStyles()
-  const uploadInputRef = useRef(null)
-  const [clubName, setClubName] = useState(null)
-  const [clubSymbol, setClubSymbol] = useState(null)
-  const [displayImage, setDisplayImage] = useState(null)
-  const [raiseAmount, setRaiseAmount] = useState("")
-  const [maxContribution, setMaxContribution] = useState("")
-  const [mandatoryProposal, setMandatoryProposal] = useState(false)
-  const [voteForQuorum, setVoteForQuorum] = useState(0)
+  const classes = useStyles();
+  const uploadInputRef = useRef(null);
+  const [clubName, setClubName] = useState(null);
+  const [clubSymbol, setClubSymbol] = useState(null);
+  const [displayImage, setDisplayImage] = useState(null);
+  const [raiseAmount, setRaiseAmount] = useState("");
+  const [maxContribution, setMaxContribution] = useState("");
+  const [mandatoryProposal, setMandatoryProposal] = useState(false);
+  const [voteForQuorum, setVoteForQuorum] = useState(0);
   const [depositClose, setDepositClose] = useState(
-    new Date(new Date().getTime() + 24 * 60 * 60 * 1000)
-  )
-  const [membersLeaveDate, setMembersLeaveDate] = useState(null)
-  const [minContribution, setMinContribution] = useState("")
-  const [voteInFavour, setVoteInFavour] = useState(51)
-  const [addressList, setAddressList] = useState([])
-  const [activeStep, setActiveStep] = useState(0)
-  const [skipped, setSkipped] = useState(new Set())
-  const [loading, setLoading] = useState(false)
-  const [open, setOpen] = useState(false)
+    new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
+  );
+  const [membersLeaveDate, setMembersLeaveDate] = useState(null);
+  const [minContribution, setMinContribution] = useState("");
+  const [voteInFavour, setVoteInFavour] = useState(51);
+  const [addressList, setAddressList] = useState([]);
+  const [activeStep, setActiveStep] = useState(0);
+  const [skipped, setSkipped] = useState(new Set());
+  const [loading, setLoading] = useState(false);
+  const [open, setOpen] = useState(false);
   const [voteOnFavourErrorMessage, setVoteOnFavourErrorMessage] =
-    useState(false)
+    useState(false);
   const clubID = useSelector((state) => {
-    return state.create.clubID
-  })
-  const [threshold, setThreshold] = useState(1)
-  const dispatch = useDispatch()
-  const { wallet } = props
-  const [completed, setCompleted] = useState({})
+    return state.create.clubID;
+  });
+  const [threshold, setThreshold] = useState(2);
+  const dispatch = useDispatch();
+  const { wallet } = props;
+  const [completed, setCompleted] = useState({});
   const FACTORY_CONTRACT_ADDRESS = useSelector((state) => {
-    return state.gnosis.factoryContractAddress
-  })
+    return state.gnosis.factoryContractAddress;
+  });
   const USDC_CONTRACT_ADDRESS = useSelector((state) => {
-    return state.gnosis.usdcContractAddress
-  })
+    return state.gnosis.usdcContractAddress;
+  });
   const GNOSIS_TRANSACTION_URL = useSelector((state) => {
-    return state.gnosis.transactionUrl
-  })
-  const usdcConvertDecimal = useSelector(state => {
-    return state.gnosis.tokenDecimal
-  })
+    return state.gnosis.transactionUrl;
+  });
+  const usdcConvertDecimal = useSelector((state) => {
+    return state.gnosis.tokenDecimal;
+  });
 
-  let walletAddress = null
+  let walletAddress = null;
 
   const handleChange = (newValue) => {
-    setDepositClose(newValue)
-  }
+    setDepositClose(newValue);
+  };
 
   const handleDepositClose = (newValue) => {
-    setMembersLeaveDate(newValue.target.value)
-  }
+    setMembersLeaveDate(newValue.target.value);
+  };
 
   const onSetVoteForQuorum = (event, newValue) => {
-    setVoteForQuorum(newValue)
-  }
+    setVoteForQuorum(newValue);
+  };
 
   const onSetVoteOnFavourChange = (event, newValue) => {
     if (newValue < 50) {
-      setVoteOnFavourErrorMessage(true)
+      setVoteOnFavourErrorMessage(true);
     }
     if (newValue > 50) {
-      setVoteOnFavourErrorMessage(false)
-      setVoteInFavour(newValue)
+      setVoteOnFavourErrorMessage(false);
+      setVoteInFavour(newValue);
     }
-  }
+  };
 
   const minimumSignaturePercentage = (newValue) => {
     if (addressList.length === 1) {
-      setThreshold(addressList.length)
+      setThreshold(addressList.length);
     }
     if (addressList.length > 1) {
-      setThreshold(Math.ceil(addressList.length * (parseInt(newValue) / 100)))
+      setThreshold(Math.ceil(addressList.length * (parseInt(newValue) / 100)));
     }
-  }
+  };
 
   const handleLoading = (event) => {
-    setOpen(true)
-  }
+    setOpen(true);
+  };
 
   const handleClose = () => {
-    setOpen(false)
-  }
+    setOpen(false);
+  };
 
   const handleInputChange = (e, index) => {
-    const address = e.target.value
-    const list = [...addressList]
-    list[index] = address
-    setAddressList(list)
-  }
+    const address = e.target.value;
+    const list = [...addressList];
+    list[index] = address;
+    setAddressList(list);
+  };
 
   const handleRemoveClick = (index) => {
-    const list = [...addressList]
-    list.splice(index, 1)
-    setAddressList(list)
-  }
+    const list = [...addressList];
+    list.splice(index, 1);
+    setAddressList(list);
+  };
 
   const handleAddClick = () => {
-    setAddressList([...addressList, ""])
-  }
+    setAddressList([...addressList, ""]);
+  };
 
-  const steps = ["Add basic info", "Select template", "Set rules"]
+  const steps = ["Add basic info", "Select template", "Set rules"];
 
   const isStepOptional = (step) => {
-    return step === 1
-  }
+    return step === 1;
+  };
 
   const isStepSkipped = (step) => {
-    return skipped.has(step)
-  }
+    return skipped.has(step);
+  };
 
   const handleNext = () => {
-    setOpen(true)
-    let newSkipped = skipped
+    setOpen(true);
+    let newSkipped = skipped;
     if (isStepSkipped(activeStep)) {
-      newSkipped = new Set(newSkipped.values())
-      newSkipped.delete(activeStep)
+      newSkipped = new Set(newSkipped.values());
+      newSkipped.delete(activeStep);
     }
     if (activeStep === steps.length - 1) {
-      const web3 = new Web3(Web3.givenProvider)
-      const auth = web3.eth.getAccounts()
+      const web3 = new Web3(Web3.givenProvider);
+      const auth = web3.eth.getAccounts();
       auth.then(
         (result) => {
-          walletAddress = result[0]
-          addressList.unshift(walletAddress)
-          console.log("addressList", addressList)
+          walletAddress = result[0];
+          addressList.unshift(walletAddress);
+          console.log("addressList", addressList);
           initiateConnection(
             addressList,
             threshold,
@@ -289,60 +289,60 @@ const Create = (props) => {
             FACTORY_CONTRACT_ADDRESS,
             USDC_CONTRACT_ADDRESS,
             GNOSIS_TRANSACTION_URL,
-            usdcConvertDecimal
+            usdcConvertDecimal,
           )
             .then((result) => {
-              setLoading(false)
+              setLoading(false);
             })
             .catch((error) => {
-              setLoading(true)
-            })
+              setLoading(true);
+            });
         },
         (error) => {
-          console.log("Error connecting to Wallet!")
-        }
-      )
+          console.log("Error connecting to Wallet!");
+        },
+      );
     }
-    setActiveStep((prevActiveStep) => prevActiveStep + 1)
-    setSkipped(newSkipped)
-  }
+    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    setSkipped(newSkipped);
+  };
 
   const handleBack = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep - 1)
-  }
+    setActiveStep((prevActiveStep) => prevActiveStep - 1);
+  };
 
   const handleSkip = () => {
     if (!isStepOptional(activeStep)) {
       // You probably want to guard against something like this,
       // it should never occur unless someone's actively trying to break something.
-      throw new Error("You can't skip a step that isn't optional.")
+      throw new Error("You can't skip a step that isn't optional.");
     }
 
-    setActiveStep((prevActiveStep) => prevActiveStep + 1)
+    setActiveStep((prevActiveStep) => prevActiveStep + 1);
     setSkipped((prevSkipped) => {
-      const newSkipped = new Set(prevSkipped.values())
-      newSkipped.add(activeStep)
-      return newSkipped
-    })
-  }
+      const newSkipped = new Set(prevSkipped.values());
+      newSkipped.add(activeStep);
+      return newSkipped;
+    });
+  };
 
   const handleReset = () => {
-    setActiveStep(0)
-  }
+    setActiveStep(0);
+  };
 
   const handlePageLoading = () => {
-    handleLoading
-  }
+    handleLoading;
+  };
 
   const handleContractClick = (key) => {
     if (key == 0) {
-      handleNext()
+      handleNext();
     }
-  }
+  };
 
   const handleStep = (step) => () => {
-    setActiveStep(step)
-  }
+    setActiveStep(step);
+  };
 
   const step1 = () => {
     return (
@@ -412,8 +412,8 @@ const Create = (props) => {
           </Grid>
         </Grid>
       </>
-    )
-  }
+    );
+  };
 
   const step2 = () => {
     return (
@@ -451,7 +451,7 @@ const Create = (props) => {
                   inactive={data.inactive}
                 />
               </Grid>
-            )
+            );
           })}
         </Grid>
         {/*<Grid*/}
@@ -477,8 +477,8 @@ const Create = (props) => {
         {/*  /!*</Grid>*!/*/}
         {/*</Grid>*/}
       </>
-    )
-  }
+    );
+  };
 
   const step3 = () => {
     return (
@@ -711,7 +711,7 @@ const Create = (props) => {
                     }
                     variant="outlined"
                     onChange={(e) => {
-                      setMinContribution(e.target.value)
+                      setMinContribution(e.target.value);
                     }}
                     value={minContribution}
                     sx={{ m: 1, width: 443, mt: 1, borderRadius: "10px" }}
@@ -878,7 +878,7 @@ const Create = (props) => {
                           </IconButton>
                         </Grid>
                       </>
-                    )
+                    );
                   })}
                 </Grid>
               ) : null}
@@ -952,10 +952,10 @@ const Create = (props) => {
           </Grid>
         </Grid>
       </>
-    )
-  }
+    );
+  };
 
-  const components = [step1(), step2(), step3()]
+  const components = [step1(), step2(), step3()];
   return (
     <Layout2>
       <Grid
@@ -973,15 +973,15 @@ const Create = (props) => {
         >
           <Stepper activeStep={activeStep}>
             {steps.map((label, index) => {
-              const stepProps = {}
-              const labelProps = {}
+              const stepProps = {};
+              const labelProps = {};
               // if (isStepOptional(index)) {
               //   labelProps.optional = (
               //     <Typography variant="caption">Optional</Typography>
               //   )
               // }
               if (isStepSkipped(index)) {
-                stepProps.completed = false
+                stepProps.completed = false;
               }
               return (
                 <Step key={label} completed={completed[index]}>
@@ -992,7 +992,7 @@ const Create = (props) => {
                 // <Step key={label} {...stepProps}>
                 //   <StepLabel {...labelProps}>{label}</StepLabel>
                 // </Step>
-              )
+              );
             })}
           </Stepper>
 
@@ -1060,8 +1060,8 @@ const Create = (props) => {
         </Box>
       </Grid>
     </Layout2>
-  )
-}
+  );
+};
 
-export default ProtectRoute(Create)
+export default ProtectRoute(Create);
 // export default Create

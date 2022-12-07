@@ -330,19 +330,6 @@
     },
     {
       "inputs": [],
-      "name": "daoOwnerAddress",
-      "outputs": [
-        {
-          "internalType": "address",
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
       "name": "decimals",
       "outputs": [
         {
@@ -424,12 +411,89 @@
     },
     {
       "inputs": [],
+      "name": "disableTokenGating",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
       "name": "feeUSDC",
       "outputs": [
         {
           "internalType": "bool",
           "name": "",
           "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_tokenAddress",
+          "type": "address"
+        }
+      ],
+      "name": "getGatingTokenIsNFT",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getGatingTokenList",
+      "outputs": [
+        {
+          "internalType": "address[]",
+          "name": "",
+          "type": "address[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint8",
+          "name": "_i",
+          "type": "uint8"
+        }
+      ],
+      "name": "getGatingTokenOperations",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_tokenAddress",
+          "type": "address"
+        }
+      ],
+      "name": "getGatingTokenRequired",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
         }
       ],
       "stateMutability": "view",
@@ -643,6 +707,19 @@
       "type": "function"
     },
     {
+      "inputs": [],
+      "name": "gnosisAddress",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
       "inputs": [
         {
           "internalType": "bytes32",
@@ -762,7 +839,7 @@
         },
         {
           "internalType": "address",
-          "name": "_ownerAddress",
+          "name": "_gnosisAddress",
           "type": "address"
         },
         {
@@ -774,11 +851,29 @@
           "internalType": "address",
           "name": "_emitter",
           "type": "address"
+        },
+        {
+          "internalType": "address[]",
+          "name": "_daoAdmins",
+          "type": "address[]"
         }
       ],
       "name": "initializeERC20",
       "outputs": [],
       "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "isTokenGatingApplied",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
       "type": "function"
     },
     {
@@ -878,6 +973,34 @@
         }
       ],
       "name": "revokeRole",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address[]",
+          "name": "_tokenList",
+          "type": "address[]"
+        },
+        {
+          "internalType": "uint256[]",
+          "name": "_minTokenRequired",
+          "type": "uint256[]"
+        },
+        {
+          "internalType": "string[]",
+          "name": "_tokenOperations",
+          "type": "string[]"
+        },
+        {
+          "internalType": "bool[]",
+          "name": "_isTokenNFT",
+          "type": "bool[]"
+        }
+      ],
+      "name": "setupTokenGating",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"

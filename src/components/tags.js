@@ -1,5 +1,5 @@
-import React from "react"
-import { makeStyles } from "@mui/styles"
+import React from "react";
+import { makeStyles } from "@mui/styles";
 
 const useStyles = makeStyles({
   root: {
@@ -11,10 +11,10 @@ const useStyles = makeStyles({
     padding: "2px 20px",
     fontSize: "0.8em",
   },
-})
+});
 
 export default function Tags(props) {
-  const classes = useStyles()
+  const classes = useStyles();
 
-  return <div className={classes.root}>hello</div>
+  return <div className={classes.root}>hello</div>;
 }

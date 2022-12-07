@@ -1,45 +1,47 @@
-import { React, useEffect, useState } from "react"
-import { AppBar, Box, Toolbar, IconButton, Button } from "@mui/material"
-import MenuIcon from "@mui/icons-material/Menu"
-import Image from "next/image"
-import { makeStyles } from "@mui/styles"
-import { connectWallet, setUserChain, onboard } from "../utils/wallet"
-import Web3 from "web3"
-import AccountButton from "./accountbutton"
-import NetworkSwitcher from "./networkSwitcher"
-import store from "../redux/store"
-import { useDispatch, useSelector } from "react-redux"
-import { addWallet } from "../redux/reducers/create"
+import { React, useEffect, useState } from "react";
+import { AppBar, Box, Toolbar, IconButton, Button } from "@mui/material";
+import MenuIcon from "@mui/icons-material/Menu";
+import Image from "next/image";
+import { makeStyles } from "@mui/styles";
+import { connectWallet, setUserChain, onboard } from "../utils/wallet";
+import Web3 from "web3";
+import AccountButton from "./accountbutton";
+import NetworkSwitcher from "./networkSwitcher";
+import store from "../redux/store";
+import { useDispatch, useSelector } from "react-redux";
+import { addWallet } from "../redux/reducers/create";
 
 const useStyles = makeStyles({
   image: {
     height: "30px",
     width: "auto !important",
   },
-})
+});
 
 export default function Navbar(props) {
-  const dispatch = useDispatch()
-  const classes = useStyles()
-  const [previouslyConnectedWallet, setPreviouslyConnectedWallet] = useState(null)
-  const [userDetails, setUserDetails] = useState(null)
-  const wallet = useSelector(state => { return state.create.value })
+  const dispatch = useDispatch();
+  const classes = useStyles();
+  const [previouslyConnectedWallet, setPreviouslyConnectedWallet] =
+    useState(null);
+  const [userDetails, setUserDetails] = useState(null);
+  const wallet = useSelector((state) => {
+    return state.create.value;
+  });
 
   useEffect(() => {
     if (wallet !== null) {
-      setPreviouslyConnectedWallet(wallet[0][0].address)
-      setUserDetails(wallet[0][0].address)
+      setPreviouslyConnectedWallet(wallet[0][0].address);
+      setUserDetails(wallet[0][0].address);
     }
-
-  }, [previouslyConnectedWallet])
+  }, [previouslyConnectedWallet]);
 
   const handleConnection = async (event) => {
-    const wallet = connectWallet(dispatch)
+    const wallet = connectWallet(dispatch);
     wallet.then((response) => {
       if (!response) {
-        console.log("Error connecting wallet")
+        console.log("Error connecting wallet");
       }
-    })
+    });
   };
 
   //setUserChain()
@@ -49,7 +51,12 @@ export default function Navbar(props) {
       <AppBar
         className={classes.root}
         position="fixed"
-        sx={{ width: "100%", zIndex: (theme) => theme.zIndex.drawer + 1, fontFamily: "Whyte",  paddingBottom: "15px"  }}
+        sx={{
+          width: "100%",
+          zIndex: (theme) => theme.zIndex.drawer + 1,
+          fontFamily: "Whyte",
+          paddingBottom: "15px",
+        }}
       >
         <Toolbar>
           <IconButton
@@ -83,9 +90,8 @@ export default function Navbar(props) {
               Connect Wallet
             </Button>
           )}
-
         </Toolbar>
       </AppBar>
     </Box>
-  )
+  );
 }

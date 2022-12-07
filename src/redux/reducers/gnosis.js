@@ -1,4 +1,4 @@
-import {createSlice} from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 
 export const slice = createSlice({
   name: "gnosis",
@@ -45,8 +45,8 @@ export const slice = createSlice({
     setUSDCTokenDetails: (state, action) => {
       state.tokenSymbol = action.payload.tokenSymbol;
       state.tokenDecimal = action.payload.tokenDecimal;
-    }
-  }
+    },
+  },
 });
 
 export const {
@@ -57,6 +57,6 @@ export const {
   setAdminUser,
   setGovernanceTokenDetails,
   setUSDCTokenDetails,
-} = slice.actions
+} = slice.actions;
 
-export default slice.reducer
+export default slice.reducer;

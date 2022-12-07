@@ -1,5 +1,5 @@
-import { React, useEffect, useState } from "react"
-import Layout1 from "../../../src/components/layouts/layout1"
+import { React, useEffect, useState } from "react";
+import Layout1 from "../../../src/components/layouts/layout1";
 import {
   Card,
   Grid,
@@ -16,32 +16,40 @@ import {
   Alert,
   TextField,
   Paper,
-} from "@mui/material"
-import { makeStyles } from "@mui/styles"
-import ProgressBar from "../../../src/components/progressbar"
-import { useSelector } from "react-redux"
-import { getMembersDetails } from "../../../src/api/user"
-import ImplementationContract from "../../../src/abis/implementationABI.json"
-import { SmartContract } from "../../../src/api/contract"
-import { fetchClubbyDaoAddress } from "../../../src/api/club"
-import { getAssets } from "../../../src/api/assets"
-import ContentCopyIcon from "@mui/icons-material/ContentCopy"
-import ClubFetch from "../../../src/utils/clubFetch"
-import OpenInNewIcon from "@mui/icons-material/OpenInNew"
-import CancelIcon from "@mui/icons-material/Cancel"
-import CheckCircleIcon from "@mui/icons-material/CheckCircle"
-import Image from "next/image"
+  Switch,
+  FormControlLabel,
+} from "@mui/material";
+import { makeStyles } from "@mui/styles";
+import ProgressBar from "../../../src/components/progressbar";
+import { useSelector } from "react-redux";
+import { getMembersDetails } from "../../../src/api/user";
+import ImplementationContract from "../../../src/abis/implementationABI.json";
+import { SmartContract } from "../../../src/api/contract";
+import { fetchClubbyDaoAddress } from "../../../src/api/club";
+import { getAssets } from "../../../src/api/assets";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import ClubFetch from "../../../src/utils/clubFetch";
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+import CancelIcon from "@mui/icons-material/Cancel";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import Image from "next/image";
 import {
   calculateDays,
   calculateTreasuryTargetShare,
   calculateUserSharePercentage,
-  convertAmountToWei, convertFromWeiGovernance,
-  convertToWei, convertToWeiGovernance,
-} from "../../../src/utils/globalFunctions"
-import { settingsOptions } from "../../../src/data/settingsOptions"
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider"
-import { DesktopDatePicker } from "@mui/x-date-pickers"
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns"
+  convertAmountToWei,
+  convertFromWeiGovernance,
+  convertToWei,
+  convertToWeiGovernance,
+} from "../../../src/utils/globalFunctions";
+import { settingsOptions } from "../../../src/data/settingsOptions";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DesktopDatePicker } from "@mui/x-date-pickers";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import AddCircleOutlinedIcon from "@mui/icons-material/AddCircleOutlined";
+import DeleteIcon from "@mui/icons-material/Delete";
+import TokenSearch from "../../../src/components/tokenSearch";
+import styled from "@emotion/styled";
 
 const useStyles = makeStyles({
   valuesStyle: {
@@ -84,23 +92,23 @@ const useStyles = makeStyles({
     color: "#C1D3FF",
   },
   cardLargeFont: {
-    width: "150px",
-    fontSize: "38px",
-    fontWeight: "bold",
-    fontFamily: "Whyte",
-    color: "#F5F5F5",
-    borderColor: "#142243",
-    borderRadius: "0px",
+    "width": "150px",
+    "fontSize": "38px",
+    "fontWeight": "bold",
+    "fontFamily": "Whyte",
+    "color": "#F5F5F5",
+    "borderColor": "#142243",
+    "borderRadius": "0px",
     "& input[type=number]": {
       "-moz-appearance": "textfield",
     },
     "& input[type=number]::-webkit-outer-spin-button": {
       "-webkit-appearance": "none",
-      margin: 0,
+      "margin": 0,
     },
     "& input[type=number]::-webkit-inner-spin-button": {
       "-webkit-appearance": "none",
-      margin: 0,
+      "margin": 0,
     },
   },
   cardWarning: {
@@ -168,8 +176,8 @@ const useStyles = makeStyles({
     color: "#C1D3FF",
   },
   activityLink: {
-    color: "#3B7AFD",
-    textDecoration: "none",
+    "color": "#3B7AFD",
+    "textDecoration": "none",
     "&:hover": {
       textDecoration: "none",
       cursor: "pointer",
@@ -187,71 +195,111 @@ const useStyles = makeStyles({
     backgroundColor: "#111D38",
     width: "95%",
   },
-})
+});
+
+const Android12Switch = styled(Switch)(({ theme }) => ({
+  "padding": 8,
+  "& .MuiSwitch-track": {
+    "borderRadius": 22 / 2,
+    "&:before, &:after": {
+      content: '""',
+      position: "absolute",
+      top: "50%",
+      transform: "translateY(-50%)",
+      width: 16,
+      height: 16,
+    },
+    "&:before": {
+      backgroundImage: `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 0 24 24"><path fill="${encodeURIComponent(
+        theme.palette.getContrastText(theme.palette.primary.main),
+      )}" d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"/></svg>')`,
+      left: 12,
+    },
+    "&:after": {
+      backgroundImage: `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 0 24 24"><path fill="${encodeURIComponent(
+        theme.palette.getContrastText(theme.palette.primary.main),
+      )}" d="M19,13H5V11H19V13Z" /></svg>')`,
+      right: 12,
+    },
+  },
+  "& .MuiSwitch-thumb": {
+    boxShadow: "none",
+    width: 16,
+    height: 16,
+    margin: 2,
+  },
+}));
 
 const Settings = (props) => {
-  const classes = useStyles()
+  const classes = useStyles();
   const daoAddress = useSelector((state) => {
-    return state.create.daoAddress
-  })
+    return state.create.daoAddress;
+  });
   const imageUrl = useSelector((state) => {
-    return state.create.clubImageUrl
-  })
-  const [dataFetched, setDataFetched] = useState(false)
+    return state.create.clubImageUrl;
+  });
+  const [dataFetched, setDataFetched] = useState(false);
   const walletAddress = useSelector((state) => {
-    return state.create.value
-  })
-  const [tokenDetails, settokenDetails] = useState(null)
-  const [tokenAPIDetails, settokenAPIDetails] = useState(null) // contains the details extracted from API
-  const [apiTokenDetailSet, setApiTokenDetailSet] = useState(false)
-  const [governorDetails, setGovernorDetails] = useState(null)
-  const [governorDataFetched, setGovernorDataFetched] = useState(false)
-  const [clubId, setClubId] = useState(null)
-  const [membersFetched, setMembersFetched] = useState(false)
-  const [members, setMembers] = useState(0)
-  const [open, setOpen] = useState(false)
-  const [tempOpen, setTempOpen] = useState(false)
-  const [minDeposit, setMinDeposit] = useState(0)
-  const [quoramValue, setQuoramValue] = useState(0)
-  const [thresholdValue, setThresholdValue] = useState(0)
-  const [quoramFetched, setQuoramFetched] = useState(false)
-  const [thresholdFetched, setThresholdFetched] = useState(false)
-  const [maxDeposit, setMaxDeposit] = useState(0)
-  const [performanceFee, setPerformanceFee] = useState(0)
-  const [performanceFeeValue, setPerformanceFeeValue] = useState(0)
-  const [membersDetails, setMembersDetails] = useState([])
-  const [loaderOpen, setLoaderOpen] = useState(false)
-  const [closingDays, setClosingDays] = useState(0)
-  const [userBalance, setUserBalance] = useState("")
-  const [userBalanceFetched, setUserBalanceFetched] = useState(false)
-  const [clubAssetTokenFetched, setClubAssetTokenFetched] = useState(false)
-  const [clubAssetTokenData, setClubAssetTokenData] = useState([])
-  const [userOwnershipShare, setUserOwnershipShare] = useState(0)
-  const [clubTokenMinted, setClubTokenMInted] = useState(0)
-  const [message, setMessage] = useState("")
-  const [failed, setFailed] = useState(false)
-  const [openSnackBar, setOpenSnackBar] = useState(false)
-  const [enabled, setEnabled] = useState(true)
-  const [settingType, setSettingType] = useState("")
-  const [day, setDay] = useState(null)
-  const [currentMinDeposit, setCurrentMinDeposit] = useState(0)
-  const [currentMaxDeposit, setCurrentMaxDeposit] = useState(0)
+    return state.create.value;
+  });
+  const [tokenDetails, settokenDetails] = useState(null);
+  const [tokenAPIDetails, settokenAPIDetails] = useState(null); // contains the details extracted from API
+  const [apiTokenDetailSet, setApiTokenDetailSet] = useState(false);
+  const [governorDetails, setGovernorDetails] = useState(null);
+  const [governorDataFetched, setGovernorDataFetched] = useState(false);
+  const [clubId, setClubId] = useState(null);
+  const [membersFetched, setMembersFetched] = useState(false);
+  const [members, setMembers] = useState(0);
+  const [open, setOpen] = useState(false);
+  const [tempOpen, setTempOpen] = useState(false);
+  const [minDeposit, setMinDeposit] = useState(0);
+  const [quoramValue, setQuoramValue] = useState(0);
+  const [thresholdValue, setThresholdValue] = useState(0);
+  const [quoramFetched, setQuoramFetched] = useState(false);
+  const [thresholdFetched, setThresholdFetched] = useState(false);
+  const [maxDeposit, setMaxDeposit] = useState(0);
+  const [performanceFee, setPerformanceFee] = useState(0);
+  const [performanceFeeValue, setPerformanceFeeValue] = useState(0);
+  const [membersDetails, setMembersDetails] = useState([]);
+  const [loaderOpen, setLoaderOpen] = useState(false);
+  const [closingDays, setClosingDays] = useState(0);
+  const [userBalance, setUserBalance] = useState("");
+  const [userBalanceFetched, setUserBalanceFetched] = useState(false);
+  const [clubAssetTokenFetched, setClubAssetTokenFetched] = useState(false);
+  const [clubAssetTokenData, setClubAssetTokenData] = useState([]);
+  const [userOwnershipShare, setUserOwnershipShare] = useState(0);
+  const [clubTokenMinted, setClubTokenMInted] = useState(0);
+  const [message, setMessage] = useState("");
+  const [failed, setFailed] = useState(false);
+  const [openSnackBar, setOpenSnackBar] = useState(false);
+  const [enabled, setEnabled] = useState(true);
+  const [settingType, setSettingType] = useState("");
+  const [day, setDay] = useState(null);
+  const [currentMinDeposit, setCurrentMinDeposit] = useState(0);
+  const [currentMaxDeposit, setCurrentMaxDeposit] = useState(0);
+  const [tokenSearchOpen, setTokenSearchOpen] = useState(false);
+  const [searchTokenAddress, setSearchTokenAddress] = useState(null);
+  const [tokenList, setTokenList] = useState([]);
+  const [tokenMinimum, setTokenMinimum] = useState([]);
+  const [operationType, setOperationType] = useState([]);
+  const [isNFT, setIsNFT] = useState([]);
+  const [checked, setChecked] = useState(false);
 
   const USDC_CONTRACT_ADDRESS = useSelector((state) => {
-    return state.gnosis.usdcContractAddress
-  })
+    return state.gnosis.usdcContractAddress;
+  });
   const GNOSIS_TRANSACTION_URL = useSelector((state) => {
-    return state.gnosis.transactionUrl
-  })
+    return state.gnosis.transactionUrl;
+  });
   const isAdminUser = useSelector((state) => {
-    return state.gnosis.adminUser
-  })
+    return state.gnosis.adminUser;
+  });
   const usdcConvertDecimal = useSelector((state) => {
-    return state.gnosis.tokenDecimal
-  })
+    return state.gnosis.tokenDecimal;
+  });
   const governanceConvertDecimal = useSelector((state) => {
-    return state.gnosis.governanceTokenDecimal
-  })
+    return state.gnosis.governanceTokenDecimal;
+  });
 
   const fetchUserBalanceAPI = async () => {
     if (daoAddress && governanceConvertDecimal) {
@@ -260,24 +308,21 @@ const Settings = (props) => {
         daoAddress,
         undefined,
         USDC_CONTRACT_ADDRESS,
-        GNOSIS_TRANSACTION_URL
-      )
+        GNOSIS_TRANSACTION_URL,
+      );
       await fetchUserBalance.checkUserBalance().then(
         (result) => {
           setUserBalance(
-            convertFromWeiGovernance(
-              result,
-              governanceConvertDecimal
-            )
-          )
-          setUserBalanceFetched(true)
+            convertFromWeiGovernance(result, governanceConvertDecimal),
+          );
+          setUserBalanceFetched(true);
         },
         (error) => {
-          setUserBalanceFetched(false)
-        }
-      )
+          setUserBalanceFetched(false);
+        },
+      );
     }
-  }
+  };
 
   const fetchPerformanceFee = async () => {
     if (daoAddress) {
@@ -286,88 +331,86 @@ const Settings = (props) => {
         daoAddress,
         undefined,
         USDC_CONTRACT_ADDRESS,
-        GNOSIS_TRANSACTION_URL
-      )
+        GNOSIS_TRANSACTION_URL,
+      );
       try {
-        const fetched = await fetchFee.performanceFee()
-        setPerformanceFeeValue(fetched)
+        const fetched = await fetchFee.performanceFee();
+        setPerformanceFeeValue(fetched);
       } catch (e) {
-        console.log(e)
+        console.log(e);
       }
     }
-  }
+  };
 
   const tokenAPIDetailsRetrieval = async () => {
-    let response = await fetchClubbyDaoAddress(daoAddress)
+    let response = await fetchClubbyDaoAddress(daoAddress);
     if (response.data.length > 0) {
-      settokenAPIDetails(response.data)
-      setClubId(response.data[0].clubId)
-      setApiTokenDetailSet(true)
+      settokenAPIDetails(response.data);
+      setClubId(response.data[0].clubId);
+      setApiTokenDetailSet(true);
     } else {
-      setApiTokenDetailSet(false)
+      setApiTokenDetailSet(false);
     }
-  }
+  };
 
   const tokenDetailsRetrieval = async () => {
-    if (tokenAPIDetails && tokenAPIDetails.length > 0 && governanceConvertDecimal) {
+    if (
+      tokenAPIDetails &&
+      tokenAPIDetails.length > 0 &&
+      governanceConvertDecimal
+    ) {
       const tokenDetailContract = new SmartContract(
         ImplementationContract,
         tokenAPIDetails[0].daoAddress,
         undefined,
         USDC_CONTRACT_ADDRESS,
-        GNOSIS_TRANSACTION_URL
-      )
+        GNOSIS_TRANSACTION_URL,
+      );
       await tokenDetailContract.tokenDetails().then(
         (result) => {
-          settokenDetails(result)
+          settokenDetails(result);
           setUserOwnershipShare(
-            convertFromWeiGovernance(
-              result[2],
-              governanceConvertDecimal
-            )
-          )
+            convertFromWeiGovernance(result[2], governanceConvertDecimal),
+          );
           setClubTokenMInted(
-            convertFromWeiGovernance(
-              result[2],
-              governanceConvertDecimal
-            )
-          )
-          setDataFetched(true)
+            convertFromWeiGovernance(result[2], governanceConvertDecimal),
+          );
+          setDataFetched(true);
         },
         (error) => {
-          setDataFetched(false)
-        }
-      )
+          setDataFetched(false);
+        },
+      );
     }
-  }
+  };
 
   const fetchMembers = () => {
     if (clubId) {
-      const membersData = getMembersDetails(clubId)
+      const membersData = getMembersDetails(clubId);
       membersData.then((result) => {
         if (result.status != 200) {
-          console.log(result.statusText)
-          setMembersFetched(false)
+          console.log(result.statusText);
+          setMembersFetched(false);
         } else {
-          setMembersDetails(result.data)
-          setMembers(result.data.length)
-          setMembersFetched(true)
+          setMembersDetails(result.data);
+          setMembers(result.data.length);
+          setMembersFetched(true);
         }
-      })
+      });
     }
-  }
+  };
 
   const fetchClubAssetToken = () => {
-    const tokens = getAssets(clubId)
+    const tokens = getAssets(clubId);
     tokens.then((result) => {
       if (result.status != 200) {
-        setClubAssetTokenFetched(false)
+        setClubAssetTokenFetched(false);
       } else {
-        setClubAssetTokenData(result.data)
-        setClubAssetTokenFetched(true)
+        setClubAssetTokenData(result.data);
+        setClubAssetTokenFetched(true);
       }
-    })
-  }
+    });
+  };
 
   const contractDetailsRetrieval = async (refresh = false) => {
     if (
@@ -382,65 +425,65 @@ const Settings = (props) => {
         daoAddress,
         undefined,
         USDC_CONTRACT_ADDRESS,
-        GNOSIS_TRANSACTION_URL
-      )
+        GNOSIS_TRANSACTION_URL,
+      );
       await governorDetailContract.getGovernorDetails().then(
         (result) => {
           // console.log(result)
-          setGovernorDetails(result)
-          setClosingDays(calculateDays(parseInt(result[0]) * 1000))
-          setGovernorDataFetched(true)
-          setCurrentMinDeposit(result[1])
-          setCurrentMaxDeposit(result[2])
+          setGovernorDetails(result);
+          setClosingDays(calculateDays(parseInt(result[0]) * 1000));
+          setGovernorDataFetched(true);
+          setCurrentMinDeposit(result[1]);
+          setCurrentMaxDeposit(result[2]);
         },
         (error) => {
-          console.log(error)
-        }
-      )
+          console.log(error);
+        },
+      );
 
       // minimum deposit amount from smart contract
       await governorDetailContract.quoram().then(
         (result) => {
-          setQuoramValue(result)
-          setQuoramFetched(true)
+          setQuoramValue(result);
+          setQuoramFetched(true);
         },
         (error) => {
-          setQuoramFetched(false)
-        }
-      )
+          setQuoramFetched(false);
+        },
+      );
 
       // maximim deposit amount from smart contract
       await governorDetailContract.threshold().then(
         (result) => {
-          setThresholdValue(result)
-          setThresholdFetched(true)
+          setThresholdValue(result);
+          setThresholdFetched(true);
         },
         (error) => {
-          setQuoramFetched(false)
-        }
-      )
+          setQuoramFetched(false);
+        },
+      );
     }
-  }
+  };
 
   const findCurrentMember = () => {
     if (membersFetched && membersDetails.length > 0 && walletAddress) {
       let obj = membersDetails.find(
-        (member) => member.userAddress === walletAddress
-      )
-      let pos = membersDetails.indexOf(obj)
+        (member) => member.userAddress === walletAddress,
+      );
+      let pos = membersDetails.indexOf(obj);
       if (pos >= 0) {
-        return membersDetails[pos].clubs[0].balance
+        return membersDetails[pos].clubs[0].balance;
       }
-      return 0
+      return 0;
     }
-  }
+  };
 
   const loadData = () => {
-    setLoaderOpen(true)
-    tokenAPIDetailsRetrieval()
-    tokenDetailsRetrieval()
-    contractDetailsRetrieval(false)
-    fetchMembers()
+    setLoaderOpen(true);
+    tokenAPIDetailsRetrieval();
+    tokenDetailsRetrieval();
+    contractDetailsRetrieval(false);
+    fetchMembers();
 
     if (
       apiTokenDetailSet &&
@@ -448,224 +491,305 @@ const Settings = (props) => {
       governorDataFetched &&
       membersFetched
     ) {
-      setLoaderOpen(false)
+      setLoaderOpen(false);
     }
-  }
+  };
 
   useEffect(() => {
-    loadData()
+    loadData();
   }, [
     daoAddress,
     apiTokenDetailSet,
     dataFetched,
     governorDetails,
     membersFetched,
-  ])
+  ]);
 
   useEffect(() => {
-    setLoaderOpen(true)
+    setLoaderOpen(true);
 
     if (dataFetched) {
-      fetchUserBalanceAPI()
-      fetchPerformanceFee()
-      setLoaderOpen(false)
+      fetchUserBalanceAPI();
+      fetchPerformanceFee();
+      setLoaderOpen(false);
     }
-  }, [dataFetched])
+  }, [dataFetched]);
 
   useEffect(() => {
     if (clubId) {
-      fetchClubAssetToken()
+      fetchClubAssetToken();
     }
-  }, [clubId])
+  }, [clubId]);
 
   const handleDayChange = (value) => {
-    setDay(value)
-  }
+    setDay(value);
+  };
 
   const handleEnableDisableContribution = async (enabled) => {
-    setLoaderOpen(true)
-    setOpen(false)
+    setLoaderOpen(true);
+    setOpen(false);
     const contract = new SmartContract(
       ImplementationContract,
       daoAddress,
       undefined,
       USDC_CONTRACT_ADDRESS,
-      GNOSIS_TRANSACTION_URL
-    )
+      GNOSIS_TRANSACTION_URL,
+    );
     if (enabled) {
-      const response = contract.closeDeposit()
+      const response = contract.closeDeposit();
       response.then(
         (result) => {
-          setDataFetched(true)
-          setFailed(false)
-          setMessage("Contributions disabled!")
-          setOpenSnackBar(true)
-          setLoaderOpen(false)
-          contractDetailsRetrieval(true)
+          setDataFetched(true);
+          setFailed(false);
+          setMessage("Contributions disabled!");
+          setOpenSnackBar(true);
+          setLoaderOpen(false);
+          contractDetailsRetrieval(true);
         },
         (error) => {
-          setFailed(true)
-          setMessage("Contributions failed to be disabled!")
-          setOpenSnackBar(true)
-          setLoaderOpen(false)
-        }
-      )
+          setFailed(true);
+          setMessage("Contributions failed to be disabled!");
+          setOpenSnackBar(true);
+          setLoaderOpen(false);
+        },
+      );
     } else {
-      const today = new Date()
-      const calculateDay = new Date(day)
-      const difference = calculateDay.getTime() - today.getTime()
-      const dayCalculated = Math.ceil(difference / (1000 * 3600 * 24))
-      const response = contract.startDeposit(dayCalculated)
+      const today = new Date();
+      const calculateDay = new Date(day);
+      const difference = calculateDay.getTime() - today.getTime();
+      const dayCalculated = Math.ceil(difference / (1000 * 3600 * 24));
+      const response = contract.startDeposit(dayCalculated);
       response.then(
         (result) => {
-          setDataFetched(true)
-          setOpen(false)
-          setFailed(false)
-          setMessage("Contributions enabled!")
-          setOpenSnackBar(true)
-          setLoaderOpen(false)
-          contractDetailsRetrieval(true)
+          setDataFetched(true);
+          setOpen(false);
+          setFailed(false);
+          setMessage("Contributions enabled!");
+          setOpenSnackBar(true);
+          setLoaderOpen(false);
+          contractDetailsRetrieval(true);
         },
         (error) => {
-          setOpen(false)
-          setFailed(true)
-          setMessage("Contributions failed to be enabled!")
-          setOpenSnackBar(true)
-          setLoaderOpen(false)
-        }
-      )
+          setOpen(false);
+          setFailed(true);
+          setMessage("Contributions failed to be enabled!");
+          setOpenSnackBar(true);
+          setLoaderOpen(false);
+        },
+      );
     }
-  }
+  };
 
   const handleContractUpdates = async (updateType) => {
-    setLoaderOpen(true)
-    setOpen(false)
+    setLoaderOpen(true);
+    setOpen(false);
     const contract = new SmartContract(
       ImplementationContract,
       daoAddress,
       undefined,
       USDC_CONTRACT_ADDRESS,
-      GNOSIS_TRANSACTION_URL
-    )
+      GNOSIS_TRANSACTION_URL,
+    );
 
     if (settingsOptions[1].name === updateType) {
       //  case for min update
-      const convertedMinDeposit = convertToWei(
-        minDeposit,
-        usdcConvertDecimal
-      )
+      const convertedMinDeposit = convertToWei(minDeposit, usdcConvertDecimal);
       if (convertedMinDeposit >= currentMaxDeposit) {
-        setLoaderOpen(false)
-        setFailed(true)
+        setLoaderOpen(false);
+        setFailed(true);
         setMessage(
-          "Minimum deposit should not be greater than or equal to previous maximum deposit!"
-        )
-        setOpenSnackBar(true)
+          "Minimum deposit should not be greater than or equal to previous maximum deposit!",
+        );
+        setOpenSnackBar(true);
       } else {
         const response = contract.updateMinMaxDeposit(
           convertedMinDeposit,
-          currentMaxDeposit
-        )
+          currentMaxDeposit,
+        );
         response.then(
           (result) => {
-            contractDetailsRetrieval(true)
-            setLoaderOpen(false)
-            setFailed(false)
-            setMessage("Minimum deposit successfully updated!")
-            setOpenSnackBar(true)
+            contractDetailsRetrieval(true);
+            setLoaderOpen(false);
+            setFailed(false);
+            setMessage("Minimum deposit successfully updated!");
+            setOpenSnackBar(true);
           },
           (error) => {
-            setLoaderOpen(false)
-            setFailed(true)
-            setMessage("Minimum deposit failed to be updated!")
-            setOpenSnackBar(true)
-          }
-        )
+            setLoaderOpen(false);
+            setFailed(true);
+            setMessage("Minimum deposit failed to be updated!");
+            setOpenSnackBar(true);
+          },
+        );
       }
     }
     if (settingsOptions[2].name === updateType) {
       // case for max update
-      const convertedMaxDeposit = convertToWei(
-        maxDeposit,
-        usdcConvertDecimal
-      )
+      const convertedMaxDeposit = convertToWei(maxDeposit, usdcConvertDecimal);
       if (convertedMaxDeposit <= currentMinDeposit) {
-        setLoaderOpen(false)
-        setFailed(true)
+        setLoaderOpen(false);
+        setFailed(true);
         setMessage(
-          "Maximum deposit should not be less than or equal to previous minimum deposit!"
-        )
-        setOpenSnackBar(true)
+          "Maximum deposit should not be less than or equal to previous minimum deposit!",
+        );
+        setOpenSnackBar(true);
       } else {
         const response = contract.updateMinMaxDeposit(
           currentMinDeposit,
-          convertedMaxDeposit
-        )
+          convertedMaxDeposit,
+        );
         response.then(
           (result) => {
-            contractDetailsRetrieval(true)
-            setLoaderOpen(false)
-            setFailed(false)
-            setMessage("Maximum deposit successfully updated!")
-            setOpenSnackBar(true)
+            contractDetailsRetrieval(true);
+            setLoaderOpen(false);
+            setFailed(false);
+            setMessage("Maximum deposit successfully updated!");
+            setOpenSnackBar(true);
           },
           (error) => {
-            setLoaderOpen(false)
-            setFailed(true)
-            setMessage("Maximum deposit failed to be updated!")
-            setOpenSnackBar(true)
-          }
-        )
+            setLoaderOpen(false);
+            setFailed(true);
+            setMessage("Maximum deposit failed to be updated!");
+            setOpenSnackBar(true);
+          },
+        );
       }
     }
     if (settingsOptions[3].name === updateType) {
       //case for performance update
       if (performanceFee > 100) {
-        setLoaderOpen(false)
-        setFailed(false)
-        setMessage("Performance fee cannot be greater than 100%!")
-        setOpenSnackBar(true)
+        setLoaderOpen(false);
+        setFailed(false);
+        setMessage("Performance fee cannot be greater than 100%!");
+        setOpenSnackBar(true);
       } else {
-        const response = contract.updateOwnerFee(performanceFee)
+        const response = contract.updateOwnerFee(performanceFee);
         response.then(
           (result) => {
-            fetchPerformanceFee()
-            setLoaderOpen(false)
-            setFailed(false)
-            setMessage("Performance fee successfully updated!")
-            setOpenSnackBar(true)
+            fetchPerformanceFee();
+            setLoaderOpen(false);
+            setFailed(false);
+            setMessage("Performance fee successfully updated!");
+            setOpenSnackBar(true);
           },
           (error) => {
-            setLoaderOpen(false)
-            setFailed(false)
-            setMessage("Performance fee failed to be updated!")
-            setOpenSnackBar(true)
-          }
-        )
+            setLoaderOpen(false);
+            setFailed(false);
+            setMessage("Performance fee failed to be updated!");
+            setOpenSnackBar(true);
+          },
+        );
       }
     }
-  }
+  };
 
   const handleClickOpen = (e) => {
-    e.preventDefault()
-    setTempOpen(true)
-  }
+    e.preventDefault();
+    setTempOpen(true);
+  };
 
   const handleTempClose = (e) => {
-    e.preventDefault()
-    setTempOpen(false)
-  }
+    e.preventDefault();
+    setTempOpen(false);
+  };
   const handleClose = (e) => {
-    e.preventDefault()
-    setOpen(false)
-  }
+    e.preventDefault();
+    setOpen(false);
+  };
 
   const handleSnackBarClose = (event, reason) => {
     if (reason === "clickaway") {
-      return
+      return;
     }
-    setOpenSnackBar(false)
-  }
+    setOpenSnackBar(false);
+  };
+
+  const handleSetTokenType = (value) => {
+    const index = tokenList.length === 0 ? 0 : tokenList.length;
+    const list = [...isNFT];
+    if (value === "ERC20") {
+      list[index] = false;
+    } else {
+      list[index] = true;
+    }
+    setIsNFT(list);
+  };
+
+  const handleTokenInputChange = (tokenAddress) => {
+    const index = tokenList.length === 0 ? 0 : tokenList.length;
+    const list = [...tokenList];
+    list[index] = tokenAddress;
+    setTokenList(list);
+    setTokenSearchOpen(false);
+  };
+
+  const handleRemoveTokenClick = (index) => {
+    const list = [...tokenList];
+    list.splice(index, 1);
+    setTokenList(list);
+  };
+
+  const handleTokenMinimumChange = (event, key) => {
+    const list = [...tokenMinimum];
+    list[key] = parseInt(event.target.value);
+    setTokenMinimum(list);
+  };
+
+  const handleTokenSearchClose = () => {
+    setTokenSearchOpen(false);
+  };
+
+  const handleOperationTypeChange = (event) => {
+    if (checked) {
+      setChecked(false);
+    } else {
+      setChecked(true);
+    }
+    let operation;
+    if (event.target.checked) {
+      operation = "OR";
+    } else {
+      operation = "AND";
+    }
+    let list = [];
+    for (let i = 0; i < tokenList.length; i++) {
+      list.push(operation);
+    }
+    setOperationType(list);
+  };
+
+  const updateTokenList = () => {
+    setLoaderOpen(true);
+    const contract = new SmartContract(
+      ImplementationContract,
+      daoAddress,
+      undefined,
+      USDC_CONTRACT_ADDRESS,
+      GNOSIS_TRANSACTION_URL,
+    );
+    const response = contract.setupTokenGating(
+      tokenList,
+      tokenMinimum,
+      operationType,
+      isNFT,
+    );
+    response.then(
+      (result) => {
+        console.log(result);
+        setLoaderOpen(false);
+        setFailed(false);
+        setMessage("Token gating successfull!");
+        setOpenSnackBar(true);
+      },
+      (error) => {
+        console.log(error);
+        setLoaderOpen(false);
+        setFailed(true);
+        setMessage("Issue with adding token to token gating!");
+        setOpenSnackBar(true);
+      },
+    );
+  };
 
   return (
     <>
@@ -820,16 +944,16 @@ const Settings = (props) => {
                                 parseInt(
                                   calculateUserSharePercentage(
                                     userBalance,
-                                    tokenDetails[2]
-                                  )
-                                )
+                                    tokenDetails[2],
+                                  ),
+                                ),
                               )
                               ? 0
                               : parseInt(
                                   calculateUserSharePercentage(
                                     userBalance,
-                                    userOwnershipShare
-                                  )
+                                    userOwnershipShare,
+                                  ),
                                 )
                             : 0}
                           % (${userBalance})
@@ -874,7 +998,7 @@ const Settings = (props) => {
                     governorDataFetched && dataFetched
                       ? calculateTreasuryTargetShare(
                           clubTokenMinted,
-                          convertAmountToWei(governorDetails[4])
+                          convertAmountToWei(governorDetails[4]),
                         )
                       : 0
                   }
@@ -935,7 +1059,7 @@ const Settings = (props) => {
                       <IconButton
                         color="primary"
                         onClick={() => {
-                          navigator.clipboard.writeText(daoAddress)
+                          navigator.clipboard.writeText(daoAddress);
                         }}
                       >
                         <ContentCopyIcon className={classes.iconColor} />
@@ -946,8 +1070,8 @@ const Settings = (props) => {
                         color="primary"
                         onClick={() => {
                           window.open(
-                            `https://rinkeby.etherscan.io/address/${daoAddress}`
-                          )
+                            `https://rinkeby.etherscan.io/address/${daoAddress}`,
+                          );
                         }}
                       >
                         <OpenInNewIcon className={classes.iconColor} />
@@ -959,7 +1083,7 @@ const Settings = (props) => {
                           ? tokenAPIDetails[0].daoAddress.substring(0, 6) +
                             "......" +
                             tokenAPIDetails[0].daoAddress.substring(
-                              tokenAPIDetails[0].daoAddress.length - 4
+                              tokenAPIDetails[0].daoAddress.length - 4,
                             )
                           : null}
                       </Typography>
@@ -1035,9 +1159,9 @@ const Settings = (props) => {
                             <a
                               className={classes.activityLink}
                               onClick={(e) => {
-                                setSettingType("deposit")
-                                setEnabled(true)
-                                setOpen(true)
+                                setSettingType("deposit");
+                                setEnabled(true);
+                                setOpen(true);
                               }}
                             >
                               {" "}
@@ -1052,9 +1176,9 @@ const Settings = (props) => {
                             <a
                               className={classes.activityLink}
                               onClick={(e) => {
-                                setSettingType("deposit")
-                                setEnabled(false)
-                                setOpen(true)
+                                setSettingType("deposit");
+                                setEnabled(false);
+                                setOpen(true);
                               }}
                             >
                               {" "}
@@ -1089,8 +1213,8 @@ const Settings = (props) => {
                         <a
                           className={classes.activityLink}
                           onClick={(e) => {
-                            setSettingType("minDeposit")
-                            setOpen(true)
+                            setSettingType("minDeposit");
+                            setOpen(true);
                           }}
                         >
                           {" "}
@@ -1122,8 +1246,8 @@ const Settings = (props) => {
                         <a
                           className={classes.activityLink}
                           onClick={(e) => {
-                            setSettingType("maxDeposit")
-                            setOpen(true)
+                            setSettingType("maxDeposit");
+                            setOpen(true);
                           }}
                         >
                           {" "}
@@ -1171,8 +1295,8 @@ const Settings = (props) => {
                         <a
                           className={classes.activityLink}
                           onClick={(e) => {
-                            setSettingType("performanceFee")
-                            setOpen(true)
+                            setSettingType("performanceFee");
+                            setOpen(true);
                           }}
                         >
                           {" "}
@@ -1192,6 +1316,146 @@ const Settings = (props) => {
                   </Grid>
                 </Grid>
                 <Divider /> */}
+
+                <Grid container ml={3} mr={4}>
+                  <Grid item>
+                    <Typography variant="settingText">Token Gating</Typography>
+                  </Grid>
+                  <Grid container pl={3} pr={1} mt={2} mb={2}>
+                    <Grid
+                      item
+                      xs
+                      sx={{
+                        display: "flex",
+                        justifyContent: "flex-start",
+                        alignItems: "center",
+                      }}
+                    >
+                      <Typography className={classes.largeText}>
+                        Add more tokens to your club
+                      </Typography>
+                    </Grid>
+                    <Grid
+                      item
+                      xs
+                      sx={{
+                        display: "flex",
+                        justifyContent: "flex-end",
+                        alignItems: "center",
+                      }}
+                      mr={3}
+                    >
+                      <IconButton
+                        aria-label="add"
+                        onClick={() => setTokenSearchOpen(true)}
+                      >
+                        <AddCircleOutlinedIcon
+                          className={classes.addCircleColour}
+                        />
+                      </IconButton>
+                    </Grid>
+                  </Grid>
+                  {tokenList ? (
+                    <Grid container pl={3} pr={1} mt={2} mb={2}>
+                      {tokenList.map((data, key) => {
+                        return (
+                          <>
+                            <Grid
+                              item
+                              xs
+                              sx={{
+                                display: "flex",
+                                justifyContent: "flex-start",
+                                alignItems: "center",
+                              }}
+                              key={key}
+                            >
+                              <TextField
+                                label="Token address"
+                                error={
+                                  !/^0x[a-zA-Z0-9]+/gm.test(tokenList[key])
+                                }
+                                variant="outlined"
+                                value={data}
+                                onChange={(e) => handleTokenInputChange(e, key)}
+                                placeholder={"0x"}
+                                sx={{
+                                  m: 1,
+                                  width: 443,
+                                  mt: 1,
+                                  borderRadius: "10px",
+                                }}
+                              />
+                              <TextField
+                                label="Minimum Amount"
+                                error={!/^[0-9]+/gm.test(tokenMinimum[key])}
+                                variant="outlined"
+                                onChange={(e) =>
+                                  handleTokenMinimumChange(e, key)
+                                }
+                                placeholder={"0"}
+                                sx={{
+                                  m: 1,
+                                  width: 200,
+                                  mt: 1,
+                                  borderRadius: "10px",
+                                }}
+                              />
+                              <IconButton
+                                aria-label="add"
+                                onClick={handleRemoveTokenClick}
+                              >
+                                <DeleteIcon />
+                              </IconButton>
+                            </Grid>
+                          </>
+                        );
+                      })}
+                      <Grid
+                        item
+                        xs
+                        sx={{
+                          display: "flex",
+                          justifyContent: "flex-end",
+                          alignItems: "center",
+                        }}
+                        mr={3}
+                      >
+                        <FormControlLabel
+                          control={
+                            <Android12Switch
+                              checked={checked}
+                              onChange={handleOperationTypeChange}
+                            />
+                          }
+                          label={"AND / OR"}
+                          labelPlacement="top"
+                        />
+                        {isAdminUser ? (
+                          <a
+                            className={classes.activityLink}
+                            onClick={updateTokenList}
+                          >
+                            {" "}
+                            (Update)
+                          </a>
+                        ) : null}
+                      </Grid>
+                    </Grid>
+                  ) : null}
+
+                  <TokenSearch
+                    tokenSearchOpen={tokenSearchOpen}
+                    tokenSearchClose={handleTokenSearchClose}
+                    setTokenSearchOpen={setTokenSearchOpen}
+                    setSearchTokenAddress={setSearchTokenAddress}
+                    searchTokenAddress={searchTokenAddress}
+                    handleTokenInputChange={handleTokenInputChange}
+                    handleSetTokenType={handleSetTokenType}
+                    setLoaderOpen={setLoaderOpen}
+                  />
+                </Grid>
+                <Divider />
               </Stack>
             </Card>
           </Grid>
@@ -1502,7 +1766,7 @@ const Settings = (props) => {
         </Snackbar>
       </Layout1>
     </>
-  )
-}
+  );
+};
 
-export default ClubFetch(Settings)
+export default ClubFetch(Settings);

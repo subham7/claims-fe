@@ -1,9 +1,9 @@
-import * as React from 'react';
-import { useTheme } from '@mui/material/styles';
-import OutlinedInput from '@mui/material/OutlinedInput';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
+import * as React from "react";
+import { useTheme } from "@mui/material/styles";
+import OutlinedInput from "@mui/material/OutlinedInput";
+import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
+import Select from "@mui/material/Select";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -40,15 +40,16 @@ export default function SimpleSelectButton(props) {
             if (selected.length === 0) {
               return <em>{data[0]}</em>;
             }
-            return selected
+            return selected;
           }}
           MenuProps={MenuProps}
-          style={{ borderRadius: "10px", background: "#111D38 0% 0% no-repeat padding-box", }}
+          style={{
+            borderRadius: "10px",
+            background: "#111D38 0% 0% no-repeat padding-box",
+          }}
         >
           {data.map((value) => (
-            <MenuItem
-              key={value}
-              value={value}>
+            <MenuItem key={value} value={value}>
               {value}
             </MenuItem>
           ))}

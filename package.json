@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "format": "prettier --check --ignore-path .prettierignore .",
+    "format:fix": "prettier --write --ignore-path .prettierignore ."
   },
   "dependencies": {
     "@date-io/date-fns": "^2.13.2",
@@ -38,6 +40,7 @@
   "devDependencies": {
     "eslint": "8.10.0",
     "eslint-config-next": "12.1.0",
-    "eslint-config-prettier": "^8.5.0"
+    "eslint-config-prettier": "^8.5.0",
+    "prettier": "^2.7.1"
   }
 }

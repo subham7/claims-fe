@@ -571,10 +571,10 @@ const Dashboard = () => {
                       <Stack spacing={0}>
                         <Typography variant="h4">
                           {apiTokenDetailSet ? tokenAPIDetails.name : (<Skeleton
-                                variant="rectangular"
-                                width={100}
-                                height={25}
-                              />)}
+                            variant="rectangular"
+                            width={100}
+                            height={25}
+                          />)}
                         </Typography>
                         <Grid container item direction="row" paddingBottom={4}>
                           <Typography variant="regularText2" mr={1}>
@@ -612,13 +612,13 @@ const Dashboard = () => {
                               ? Number.isInteger(memberDeposit)
                                 ? parseInt(memberDeposit)
                                 : parseFloat(memberDeposit).toFixed(2)
-                              : 
+                              :
                               (<Skeleton
-                            variant="rectangular"
-                            width={100}
-                            height={25}
-                          />)
-                              }
+                                variant="rectangular"
+                                width={100}
+                                height={25}
+                              />)
+                            }
                           </Typography>
                         </Grid>
                         <Grid item>
@@ -655,7 +655,7 @@ const Dashboard = () => {
                               ? Number.isInteger(clubTokenMinted)
                                 ? parseInt(clubTokenMinted)
                                 : parseFloat(clubTokenMinted).toFixed(2)
-                              : 
+                              :
                               (<Skeleton
                                 variant="rectangular"
                                 width={100}
@@ -671,7 +671,7 @@ const Dashboard = () => {
                           >
                             {tokenDetails !== null
                               ? "$" + tokenDetails[1]
-                              : 
+                              :
                               (<Skeleton
                                 variant="rectangular"
                                 width={100}
@@ -705,7 +705,7 @@ const Dashboard = () => {
                                 width={100}
                                 height={25}
                               />)
-                              }{" "}
+                            }{" "}
                           </Typography>
                         </Grid>
                         <Grid item>
@@ -780,21 +780,21 @@ const Dashboard = () => {
                           <Typography fontSize={"48px"} fontWeight="bold">
                             {userBalance !== null && userOwnershipShare !== null
                               ? isNaN(
-                                  parseInt(
-                                    calculateUserSharePercentage(
-                                      userBalance,
-                                      userOwnershipShare
-                                    )
+                                parseInt(
+                                  calculateUserSharePercentage(
+                                    userBalance,
+                                    userOwnershipShare
                                   )
                                 )
+                              )
                                 ? 0
                                 : parseInt(
-                                    calculateUserSharePercentage(
-                                      userBalance,
-                                      userOwnershipShare
-                                    )
+                                  calculateUserSharePercentage(
+                                    userBalance,
+                                    userOwnershipShare
                                   )
-                              : 
+                                )
+                              :
                               (<Skeleton
                                 variant="rectangular"
                                 width={100}
@@ -806,9 +806,9 @@ const Dashboard = () => {
                             {userBalance !== null && tokenDetails !== null
                               ? Number.isInteger(userBalance)
                                 ? parseInt(userBalance) +
-                                  (" $" + tokenDetails[1])
+                                (" $" + tokenDetails[1])
                                 : parseFloat(userBalance).toFixed(2) +
-                                  (" $" + tokenDetails[1])
+                                (" $" + tokenDetails[1])
                               : (<Skeleton
                                 variant="rectangular"
                                 width={100}
@@ -942,7 +942,7 @@ const Dashboard = () => {
                     {nftFetched ? (
                       ntfData.length > 0 ? (
                         ntfData.map((data, key) => {
-                          ;<Grid item m={1} key={key}>
+                          ; <Grid item m={1} key={key}>
                             <CollectionCard
                               imageURI={data.logoUri}
                               tokenName={data.tokenName}
@@ -1080,7 +1080,7 @@ const Dashboard = () => {
                         disabled
                         value={
                           typeof window !== "undefined" &&
-                          window.location.origin
+                            window.location.origin
                             ? `${window.location.origin}/join/${daoAddress}`
                             : null
                         }
@@ -1125,53 +1125,53 @@ const Dashboard = () => {
                       <Grid item md={12} mr={2}>
                         {activeProposalDataFetched
                           ? activeProposalData.map((data, key) => {
-                              if (key < 3) {
-                                return (
-                                  <div key={key}>
-                                    <ListItemButton
-                                      onClick={() =>
-                                        handleProposalClick(
-                                          activeProposalData[key]
-                                        )
-                                      }
-                                      sx={{ width: "100%" }}
-                                    >
-                                      <Grid container direction="column">
-                                        <Grid item md={12}>
-                                          <Typography
-                                            className={classes.card5text1}
-                                          >
-                                            Proposed by{" "}
-                                            {data.createdBy.substring(0, 6) +
-                                              "......" +
-                                              data.createdBy.substring(
-                                                data.createdBy.length - 4
-                                              )}
-                                          </Typography>
-                                        </Grid>
-                                        <Grid item>
-                                          <Typography
-                                            className={classes.card5text2}
-                                          >
-                                            {data.name}
-                                          </Typography>
-                                        </Grid>
-                                        <Grid item>
-                                          <Typography
-                                            className={classes.card5text1}
-                                          >
-                                            Expired on{" "}
-                                            {new Date(
-                                              data.votingDuration
-                                            ).toLocaleDateString()}
-                                          </Typography>
-                                        </Grid>
+                            if (key < 3) {
+                              return (
+                                <div key={key}>
+                                  <ListItemButton
+                                    onClick={() =>
+                                      handleProposalClick(
+                                        activeProposalData[key]
+                                      )
+                                    }
+                                    sx={{ width: "100%" }}
+                                  >
+                                    <Grid container direction="column">
+                                      <Grid item md={12}>
+                                        <Typography
+                                          className={classes.card5text1}
+                                        >
+                                          Proposed by{" "}
+                                          {data.createdBy.substring(0, 6) +
+                                            "......" +
+                                            data.createdBy.substring(
+                                              data.createdBy.length - 4
+                                            )}
+                                        </Typography>
                                       </Grid>
-                                    </ListItemButton>
-                                  </div>
-                                )
-                              }
-                            })
+                                      <Grid item>
+                                        <Typography
+                                          className={classes.card5text2}
+                                        >
+                                          {data.name}
+                                        </Typography>
+                                      </Grid>
+                                      <Grid item>
+                                        <Typography
+                                          className={classes.card5text1}
+                                        >
+                                          Expired on{" "}
+                                          {new Date(
+                                            data.votingDuration
+                                          ).toLocaleDateString()}
+                                        </Typography>
+                                      </Grid>
+                                    </Grid>
+                                  </ListItemButton>
+                                </div>
+                              )
+                            }
+                          })
                           : null}
                       </Grid>
                     </Grid>
