@@ -1,16 +1,12 @@
-import Web3 from "web3";
-import Web3Adapter from "@gnosis.pm/safe-web3-lib";
-import SafeServiceClient from "@gnosis.pm/safe-service-client";
-import USDCContract from "../../abis/usdcTokenContract.json";
-import Safe, { EthSignSignature } from "@gnosis.pm/safe-core-sdk";
-import { USDC_FAUCET_ADDRESS } from "../index";
-import { calculateDays, convertToWei } from "../../utils/globalFunctions";
-import FactoryContract from "../../abis/factoryContract.json";
-import ImplementationContract from "../../abis/implementationABI.json";
-import { SafeFactory } from "@gnosis.pm/safe-core-sdk";
-import { connect } from "react-redux";
-import { Component } from "react";
-import { createProposalTxHash, getProposalTxHash } from "../../api/proposal";
+import Web3 from "web3"
+import Web3Adapter from "@gnosis.pm/safe-web3-lib"
+import SafeServiceClient from "@gnosis.pm/safe-service-client"
+import USDCContract from "../../abis/usdcTokenContract.json"
+import Safe, { EthSignSignature } from "@gnosis.pm/safe-core-sdk"
+import { USDC_FAUCET_ADDRESS } from "../index"
+import { calculateDays, convertToWei } from "../../utils/globalFunctions"
+import FactoryContract from "../../abis/factoryContract.json"
+import ImplementationContract from "../../abis/implementationABI.json"
 
 async function syncWallet() {
   // function for validating metamask wallet
@@ -57,7 +53,7 @@ export class SmartContract {
         contractAddress &&
         walletAddress &&
         usdcContractAddress,
-      gnosisTransactionUrl)
+        gnosisTransactionUrl)
     ) {
       this.web3 = new Web3(window.web3);
       this.abi = abiFile.abi;
