@@ -7,6 +7,7 @@ import { USDC_FAUCET_ADDRESS } from "../index"
 import { calculateDays, convertToWei } from "../../utils/globalFunctions"
 import FactoryContract from "../../abis/factoryContract.json"
 import ImplementationContract from "../../abis/implementationABI.json"
+import { createProposalTxHash, getProposalTxHash } from "../../api/proposal";
 
 async function syncWallet() {
   // function for validating metamask wallet
