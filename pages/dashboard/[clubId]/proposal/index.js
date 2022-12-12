@@ -338,14 +338,14 @@ const Proposal = () => {
           result.data.map(async (proposal) => {
             const proposalTxHash = await getProposalTxHash(proposal.proposalId);
             // console.log(proposalTxHash.data[0].txHash);
-
-            proposal["safeTxHash"] = proposalTxHash.data[0].txHash;
-
-            if (
-              proposalTxHash.data[0].txHash ===
-              pendingTxs?.results[count - 1].safeTxHash
-            ) {
-              setExecutionTransaction(proposal);
+            if (proposalTxHash.data[0]) {
+              proposal["safeTxHash"] = proposalTxHash?.data[0].txHash;
+              if (
+                proposalTxHash.data[0].txHash ===
+                pendingTxs?.results[count - 1]?.safeTxHash
+              ) {
+                setExecutionTransaction(proposal);
+              }
             }
           }),
         );
@@ -848,7 +848,7 @@ const Proposal = () => {
                   <>
                     {executionTransaction && (
                       <>
-                        <h2>Txn be executed</h2>
+                        <h2>Txn to be executed</h2>
                         <Grid
                           item
                           // key={proposal.id}
