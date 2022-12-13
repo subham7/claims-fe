@@ -17,6 +17,7 @@ import {
   DialogContent,
   Dialog,
   CardMedia,
+  IconButton,
 } from "@mui/material";
 import Layout3 from "../../src/components/layouts/layout3";
 import ProgressBar from "../../src/components/progressbar";
@@ -46,11 +47,22 @@ import {
   setGovernanceTokenDetails,
   setUSDCTokenDetails,
 } from "../../src/redux/reducers/gnosis";
+import ape from "../../public/assets/images/ape.png";
+import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
+import AddIcon from "@mui/icons-material/Add";
+import RemoveIcon from "@mui/icons-material/Remove";
 
 const useStyles = makeStyles({
   valuesStyle: {
     fontFamily: "Whyte",
     fontSize: "21px",
+  },
+  activeIllustration: {
+    height: "12px",
+    width: "12px",
+    backgroundColor: "#0ABB92",
+    borderRadius: "50%",
+    marginRight: 3,
   },
   valuesDimStyle: {
     fontFamily: "Whyte",
@@ -229,6 +241,8 @@ const Join = (props) => {
   const [imageUrl, setImageUrl] = useState("");
   const [open, setOpen] = useState(false);
   const [gnosisAddress, setGnosisAddress] = useState(null);
+  const [tokenType, setTokenType] = useState();
+  const [count, setCount] = useState(1);
 
   const USDC_CONTRACT_ADDRESS = useSelector((state) => {
     return state.gnosis.usdcContractAddress;
@@ -284,11 +298,13 @@ const Join = (props) => {
 
   const fetchClubData = async () => {
     const clubData = fetchClub(clubId);
+    console.log("clubData", clubData);
     clubData.then((result) => {
       if (result.status != 200) {
         setImageFetched(false);
       } else {
         setImageUrl(result.data[0].imageUrl);
+        setTokenType(result.data[0].tokenType);
         setImageFetched(true);
       }
     });
@@ -316,7 +332,7 @@ const Join = (props) => {
       usdcTokenDecimal
     ) {
       console.log("before tokenDetailContract");
-      const tokenDetailContract = new SmartContract(
+      const tokenDetailContract = await new SmartContract(
         ImplementationContract,
         tokenAPIDetails[0].daoAddress,
         undefined,
@@ -656,100 +672,50 @@ const Join = (props) => {
 
   return (
     <Layout3 faucet={true}>
-      <Grid
-        container
-        spacing={2}
-        paddingLeft={10}
-        paddingTop={15}
-        paddingRight={10}
-      >
-        <Grid item md={7}>
-          <Card className={classes.cardRegular}>
-            <Grid container spacing={2}>
-              <Grid item mt={3} ml={3}>
-                <img
-                  src={imageFetched ? imageUrl : null}
-                  alt="club-image"
-                  width="100vw"
-                />
-              </Grid>
-              <Grid item ml={1} mt={4} mb={7}>
-                <Stack spacing={0}>
-                  <Typography variant="h4">
-                    {apiTokenDetailSet ? (
-                      tokenAPIDetails[0].name
-                    ) : (
-                      <Skeleton variant="rectangular" width={100} height={25} />
-                    )}
-                  </Typography>
-                  <Typography variant="h6" className={classes.dimColor}>
-                    {dataFetched ? "$" + tokenDetails[1] : null}
-                  </Typography>
-                </Stack>
-              </Grid>
-            </Grid>
-            <Divider variant="middle" />
-            <Grid container spacing={7}>
-              <Grid item ml={4} mt={5} md={3}>
-                <Typography variant="p" className={classes.valuesDimStyle}>
-                  {walletConnected ? (
-                    "Deposits deadline"
-                  ) : (
-                    <Skeleton variant="rectangular" width={100} height={25} />
-                  )}
-                </Typography>
-                <Grid container mt={2} direction="row">
-                  <Grid item>
-                    <Typography variant="p" className={classes.valuesStyle}>
-                      {governorDataFetched ? (
-                        new Date(parseInt(governorDetails[0]) * 1000)
-                          .toJSON()
-                          .slice(0, 10)
-                          .split("-")
-                          .reverse()
-                          .join("/")
-                      ) : (
-                        <Skeleton
-                          variant="rectangular"
-                          width={100}
-                          height={25}
-                        />
-                      )}
-                    </Typography>
+      {tokenType === "erc20NonTransferable" && (
+        <>
+          <Grid
+            container
+            spacing={2}
+            paddingLeft={10}
+            paddingTop={15}
+            paddingRight={10}
+          >
+            <Grid item md={7}>
+              <Card className={classes.cardRegular}>
+                <Grid container spacing={2}>
+                  <Grid item mt={3} ml={3}>
+                    <img
+                      src={imageFetched ? imageUrl : null}
+                      alt="club-image"
+                      width="100vw"
+                    />
                   </Grid>
-                  <Grid item ml={1}>
-                    {walletConnected ? (
-                      governorDataFetched ? (
-                        closingDays > 0 ? (
-                          <Card className={classes.openTag}>
-                            <Typography className={classes.openTagFont}>
-                              Open
-                            </Typography>
-                          </Card>
+                  <Grid item ml={1} mt={4} mb={7}>
+                    <Stack spacing={0}>
+                      <Typography variant="h4">
+                        {apiTokenDetailSet ? (
+                          tokenAPIDetails[0].name
                         ) : (
-                          <Card className={classes.closeTag}>
-                            <Typography className={classes.closeTagFont}>
-                              Closed
-                            </Typography>
-                          </Card>
-                        )
-                      ) : (
-                        <Skeleton
-                          variant="rectangular"
-                          width={100}
-                          height={25}
-                        />
-                      )
-                    ) : null}
+                          <Skeleton
+                            variant="rectangular"
+                            width={100}
+                            height={25}
+                          />
+                        )}
+                      </Typography>
+                      <Typography variant="h6" className={classes.dimColor}>
+                        {dataFetched ? "$" + tokenDetails[1] : null}
+                      </Typography>
+                    </Stack>
                   </Grid>
                 </Grid>
-              </Grid>
-              <Grid item ml={4} mt={5} md={3}>
-                <Grid container>
-                  <Grid item>
+                <Divider variant="middle" />
+                <Grid container spacing={7}>
+                  <Grid item ml={4} mt={5} md={3}>
                     <Typography variant="p" className={classes.valuesDimStyle}>
                       {walletConnected ? (
-                        "Minimum Deposits"
+                        "Deposits deadline"
                       ) : (
                         <Skeleton
                           variant="rectangular"
@@ -758,394 +724,710 @@ const Join = (props) => {
                         />
                       )}
                     </Typography>
+                    <Grid container mt={2} direction="row">
+                      <Grid item>
+                        <Typography variant="p" className={classes.valuesStyle}>
+                          {governorDataFetched ? (
+                            new Date(parseInt(governorDetails[0]) * 1000)
+                              .toJSON()
+                              .slice(0, 10)
+                              .split("-")
+                              .reverse()
+                              .join("/")
+                          ) : (
+                            <Skeleton
+                              variant="rectangular"
+                              width={100}
+                              height={25}
+                            />
+                          )}
+                        </Typography>
+                      </Grid>
+                      <Grid item ml={1}>
+                        {walletConnected ? (
+                          governorDataFetched ? (
+                            closingDays > 0 ? (
+                              <Card className={classes.openTag}>
+                                <Typography className={classes.openTagFont}>
+                                  Open
+                                </Typography>
+                              </Card>
+                            ) : (
+                              <Card className={classes.closeTag}>
+                                <Typography className={classes.closeTagFont}>
+                                  Closed
+                                </Typography>
+                              </Card>
+                            )
+                          ) : (
+                            <Skeleton
+                              variant="rectangular"
+                              width={100}
+                              height={25}
+                            />
+                          )
+                        ) : null}
+                      </Grid>
+                    </Grid>
                   </Grid>
-                  <Grid item mt={2}>
-                    <Typography variant="p" className={classes.valuesStyle}>
-                      {governorDataFetched ? (
-                        minDeposit + " USDC"
-                      ) : (
-                        <Skeleton
-                          variant="rectangular"
-                          width={100}
-                          height={25}
-                        />
-                      )}
-                    </Typography>
+                  <Grid item ml={4} mt={5} md={3}>
+                    <Grid container>
+                      <Grid item>
+                        <Typography
+                          variant="p"
+                          className={classes.valuesDimStyle}
+                        >
+                          {walletConnected ? (
+                            "Minimum Deposits"
+                          ) : (
+                            <Skeleton
+                              variant="rectangular"
+                              width={100}
+                              height={25}
+                            />
+                          )}
+                        </Typography>
+                      </Grid>
+                      <Grid item mt={2}>
+                        <Typography variant="p" className={classes.valuesStyle}>
+                          {governorDataFetched ? (
+                            minDeposit + " USDC"
+                          ) : (
+                            <Skeleton
+                              variant="rectangular"
+                              width={100}
+                              height={25}
+                            />
+                          )}
+                        </Typography>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                  <Grid item ml={4} mt={5} md={3}>
+                    <Grid container>
+                      <Grid item>
+                        <Typography
+                          variant="p"
+                          className={classes.valuesDimStyle}
+                        >
+                          {walletConnected ? (
+                            "Maximum Deposit"
+                          ) : (
+                            <Skeleton
+                              variant="rectangular"
+                              width={100}
+                              height={25}
+                            />
+                          )}
+                        </Typography>
+                      </Grid>
+                      <Grid item mt={2}>
+                        <Typography variant="p" className={classes.valuesStyle}>
+                          {governorDataFetched ? (
+                            maxDeposit + " USDC"
+                          ) : (
+                            <Skeleton
+                              variant="rectangular"
+                              width={100}
+                              height={25}
+                            />
+                          )}{" "}
+                        </Typography>
+                      </Grid>
+                    </Grid>
                   </Grid>
                 </Grid>
-              </Grid>
-              <Grid item ml={4} mt={5} md={3}>
-                <Grid container>
-                  <Grid item>
-                    <Typography variant="p" className={classes.valuesDimStyle}>
-                      {walletConnected ? (
-                        "Maximum Deposit"
-                      ) : (
-                        <Skeleton
-                          variant="rectangular"
-                          width={100}
-                          height={25}
-                        />
-                      )}
-                    </Typography>
+                <Grid container mt={5}>
+                  <Grid item ml={4} md={3}>
+                    <Grid item>
+                      <Typography
+                        variant="p"
+                        className={classes.valuesDimStyle}
+                      >
+                        {walletConnected ? (
+                          "Governance"
+                        ) : (
+                          <Skeleton
+                            variant="rectangular"
+                            width={100}
+                            height={25}
+                          />
+                        )}
+                      </Typography>
+                    </Grid>
+                    <Grid item mt={2}>
+                      <Typography variant="p" className={classes.valuesStyle}>
+                        {walletConnected ? (
+                          "By Voting"
+                        ) : (
+                          <Skeleton
+                            variant="rectangular"
+                            width={100}
+                            height={25}
+                          />
+                        )}
+                      </Typography>
+                    </Grid>
                   </Grid>
-                  <Grid item mt={2}>
-                    <Typography variant="p" className={classes.valuesStyle}>
-                      {governorDataFetched ? (
-                        maxDeposit + " USDC"
-                      ) : (
-                        <Skeleton
-                          variant="rectangular"
-                          width={100}
-                          height={25}
-                        />
-                      )}{" "}
-                    </Typography>
+                  <Grid item ml={5} md={3}>
+                    <Grid container direction="column">
+                      <Grid item>
+                        <Typography
+                          variant="p"
+                          className={classes.valuesDimStyle}
+                        >
+                          {walletConnected ? (
+                            "Members"
+                          ) : (
+                            <Skeleton
+                              variant="rectangular"
+                              width={100}
+                              height={25}
+                            />
+                          )}
+                        </Typography>
+                      </Grid>
+                      <Grid item mt={2}>
+                        <Typography variant="p" className={classes.valuesStyle}>
+                          {walletConnected ? (
+                            members
+                          ) : (
+                            <Skeleton
+                              variant="rectangular"
+                              width={100}
+                              height={25}
+                            />
+                          )}
+                        </Typography>
+                      </Grid>
+                    </Grid>
                   </Grid>
                 </Grid>
-              </Grid>
+                <Grid item ml={3} mt={5} mb={2} mr={3}>
+                  {walletConnected ? (
+                    <ProgressBar
+                      value={
+                        governorDataFetched
+                          ? calculateTreasuryTargetShare(
+                              clubTokenMinted,
+                              convertAmountToWei(governorDetails[4]),
+                            )
+                          : 0
+                      }
+                    />
+                  ) : (
+                    <Skeleton variant="rectangular" />
+                  )}
+                </Grid>
+                <Grid
+                  container
+                  spacing={2}
+                  direction="row"
+                  justifyContent="space-evenly"
+                  alignItems="center"
+                >
+                  <Grid item ml={1} mt={1} mb={2} md={8}>
+                    <Grid container direction="column" spacing={2}>
+                      <Grid item>
+                        <Typography
+                          variant="p"
+                          className={classes.valuesDimStyle}
+                        >
+                          {walletConnected ? (
+                            "Club Tokens Minted so far"
+                          ) : (
+                            <Skeleton
+                              variant="rectangular"
+                              width={100}
+                              height={25}
+                            />
+                          )}
+                        </Typography>
+                      </Grid>
+                      <Grid item>
+                        <Typography variant="p" className={classes.valuesStyle}>
+                          {walletConnected ? (
+                            parseInt(quoram) + " $" + tokenDetails[1]
+                          ) : (
+                            <Skeleton
+                              variant="rectangular"
+                              width={100}
+                              height={25}
+                            />
+                          )}
+                        </Typography>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                  <Grid item mt={1} mb={2} mr={3} direction="row">
+                    <Grid container direction="column" spacing={2}>
+                      <Grid item>
+                        <Typography
+                          variant="p"
+                          className={classes.valuesDimStyle}
+                        >
+                          {walletConnected ? (
+                            "Total Supply"
+                          ) : (
+                            <Skeleton
+                              variant="rectangular"
+                              width={100}
+                              height={25}
+                            />
+                          )}
+                        </Typography>
+                      </Grid>
+                      <Grid item>
+                        <Typography variant="p" className={classes.valuesStyle}>
+                          {governorDataFetched ? (
+                            totalDeposit + (" $" + tokenDetails[1])
+                          ) : (
+                            <Skeleton
+                              variant="rectangular"
+                              width={100}
+                              height={25}
+                            />
+                          )}{" "}
+                        </Typography>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                </Grid>
+              </Card>
             </Grid>
-            <Grid container mt={5}>
-              <Grid item ml={4} md={3}>
-                <Grid item>
-                  <Typography variant="p" className={classes.valuesDimStyle}>
-                    {walletConnected ? (
-                      "Governance"
-                    ) : (
-                      <Skeleton variant="rectangular" width={100} height={25} />
-                    )}
-                  </Typography>
-                </Grid>
-                <Grid item mt={2}>
-                  <Typography variant="p" className={classes.valuesStyle}>
-                    {walletConnected ? (
-                      "By Voting"
-                    ) : (
-                      <Skeleton variant="rectangular" width={100} height={25} />
-                    )}
-                  </Typography>
-                </Grid>
-              </Grid>
-              <Grid item ml={5} md={3}>
-                <Grid container direction="column">
-                  <Grid item>
-                    <Typography variant="p" className={classes.valuesDimStyle}>
-                      {walletConnected ? (
-                        "Members"
-                      ) : (
-                        <Skeleton
-                          variant="rectangular"
-                          width={100}
-                          height={25}
-                        />
-                      )}
-                    </Typography>
-                  </Grid>
-                  <Grid item mt={2}>
-                    <Typography variant="p" className={classes.valuesStyle}>
-                      {walletConnected ? (
-                        members
-                      ) : (
-                        <Skeleton
-                          variant="rectangular"
-                          width={100}
-                          height={25}
-                        />
-                      )}
-                    </Typography>
-                  </Grid>
-                </Grid>
-              </Grid>
-            </Grid>
-            <Grid item ml={3} mt={5} mb={2} mr={3}>
+            <Grid item md={5}>
               {walletConnected ? (
-                <ProgressBar
-                  value={
-                    governorDataFetched
-                      ? calculateTreasuryTargetShare(
-                          clubTokenMinted,
-                          convertAmountToWei(governorDetails[4]),
-                        )
-                      : 0
-                  }
-                />
+                <Card className={classes.cardJoin}>
+                  <Grid container spacing={2}>
+                    <Grid
+                      item
+                      ml={2}
+                      mt={4}
+                      mb={4}
+                      className={classes.JoinText}
+                    >
+                      <Typography variant="h4">Join this Club</Typography>
+                    </Grid>
+                    <Divider />
+                    <Grid
+                      item
+                      ml={1}
+                      mt={4}
+                      mb={4}
+                      mr={2}
+                      xs
+                      sx={{ display: "flex", justifyContent: "flex-end" }}
+                    >
+                      <Typography variant="h6" className={classes.JoinText}>
+                        {governorDataFetched
+                          ? closingDays > 0
+                            ? "Closes in " + closingDays + " days"
+                            : "Joining Closed"
+                          : 0}
+                      </Typography>
+                    </Grid>
+                  </Grid>
+                  <Divider variant="middle" sx={{ bgcolor: "#3B7AFD" }} />
+                  <Grid container spacing={2}>
+                    <Grid item md={12} mt={2}>
+                      <Card className={classes.cardSmall}>
+                        <Grid container spacing={2}>
+                          <Grid item ml={2} mt={2} mb={0}>
+                            <Typography className={classes.cardSmallFont}>
+                              USDC
+                            </Typography>
+                          </Grid>
+                          <Grid
+                            item
+                            ml={2}
+                            mt={2}
+                            mb={0}
+                            xs
+                            sx={{
+                              display: "flex",
+                              justifyContent: "flex-end",
+                            }}
+                          >
+                            <Typography className={classes.cardSmallFont}>
+                              Balance: {walletBalance} USDC
+                            </Typography>
+                          </Grid>
+                        </Grid>
+                        <Grid container spacing={2}>
+                          <Grid item ml={2} mt={1} mb={2} p={1}>
+                            <Input
+                              type="number"
+                              error={depositAmount === ""}
+                              className={classes.cardLargeFont}
+                              value={depositAmount}
+                              onChange={(e) =>
+                                handleInputChange(e.target.value)
+                              }
+                              disabled={closingDays > 0 ? false : true}
+                              inputProps={{ style: { fontSize: "1em" } }}
+                              InputLabelProps={{ style: { fontSize: "1em" } }}
+                            />
+                          </Grid>
+                          <Grid
+                            item
+                            ml={2}
+                            mt={1}
+                            mb={1}
+                            xs
+                            sx={{
+                              display: "flex",
+                              justifyContent: "flex-end",
+                            }}
+                          >
+                            <Button
+                              className={classes.maxTag}
+                              onClick={handleMaxButtonClick}
+                            >
+                              Max
+                            </Button>
+                          </Grid>
+                        </Grid>
+                      </Card>
+                    </Grid>
+                  </Grid>
+                  <Grid container spacing={2}>
+                    <Grid item md={12} mt={2}>
+                      <Card className={classes.cardWarning}>
+                        <Typography className={classes.JoinText}>
+                          Clubs can have same names or symbols, please make sure
+                          to trust the sender for the link before depositing.
+                        </Typography>
+                      </Card>
+                    </Grid>
+                    <Grid item container ml={1} mt={1} mb={1}>
+                      <Button
+                        variant="primary"
+                        size="large"
+                        onClick={handleDeposit}
+                        disabled={closingDays > 0 ? false : true}
+                      >
+                        Deposit
+                      </Button>
+                    </Grid>
+                  </Grid>
+                </Card>
               ) : (
-                <Skeleton variant="rectangular" />
+                <Card className={classes.cardJoin} height={"full"}>
+                  <>
+                    <Grid
+                      flex
+                      flexDirection="column"
+                      container
+                      justifyContent={"space-between"}
+                      height={"100%"}
+                    >
+                      <Grid margin={"25px"}>
+                        <Typography className={classes.JoinText}>
+                          {" "}
+                          Join this station by depositing your funds{" "}
+                        </Typography>
+                      </Grid>
+                      <Grid sx={{ display: "flex", flexDirection: "row" }}>
+                        <Grid mt={"300px"} ml={4}>
+                          <Button
+                            variant="primary"
+                            onClick={handleConnectWallet}
+                          >
+                            Connect
+                          </Button>
+                        </Grid>
+                        <Grid mt={"50px"}>
+                          <CardMedia
+                            image="/assets/images/joinstation.png"
+                            component="img"
+                            alt="ownership_share"
+                            className={classes.media}
+                          />
+                        </Grid>
+                      </Grid>
+                    </Grid>
+                  </>
+                </Card>
               )}
             </Grid>
-            <Grid
-              container
-              spacing={2}
-              direction="row"
-              justifyContent="space-evenly"
-              alignItems="center"
+          </Grid>
+          <Snackbar
+            open={openSnackBar}
+            autoHideDuration={6000}
+            onClose={handleClose}
+            anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+          >
+            {alertStatus === "success" ? (
+              <Alert
+                onClose={handleClose}
+                severity="success"
+                sx={{ width: "100%" }}
+              >
+                Transaction Successfull!
+              </Alert>
+            ) : (
+              <Alert
+                onClose={handleClose}
+                severity="error"
+                sx={{ width: "100%" }}
+              >
+                Transaction Failed!
+              </Alert>
+            )}
+          </Snackbar>
+          <Dialog
+            open={open}
+            onClose={handleDialogClose}
+            scroll="body"
+            PaperProps={{ classes: { root: classes.modalStyle } }}
+            fullWidth
+            maxWidth="lg"
+          >
+            <DialogContent
+              sx={{ overflow: "hidden", backgroundColor: "#19274B" }}
             >
-              <Grid item ml={1} mt={1} mb={2} md={8}>
-                <Grid container direction="column" spacing={2}>
-                  <Grid item>
-                    <Typography variant="p" className={classes.valuesDimStyle}>
-                      {walletConnected ? (
-                        "Club Tokens Minted so far"
-                      ) : (
-                        <Skeleton
-                          variant="rectangular"
-                          width={100}
-                          height={25}
-                        />
-                      )}
-                    </Typography>
-                  </Grid>
-                  <Grid item>
-                    <Typography variant="p" className={classes.valuesStyle}>
-                      {walletConnected ? (
-                        parseInt(quoram) + " $" + tokenDetails[1]
-                      ) : (
-                        <Skeleton
-                          variant="rectangular"
-                          width={100}
-                          height={25}
-                        />
-                      )}
-                    </Typography>
-                  </Grid>
+              <Grid
+                container
+                justifyContent="center"
+                alignItems="center"
+                direction="column"
+                mt={3}
+              >
+                <Grid item pl={15}>
+                  <img
+                    src="/assets/images/connected_world_wuay.svg"
+                    width="80%"
+                  />
                 </Grid>
-              </Grid>
-              <Grid item mt={1} mb={2} mr={3} direction="row">
-                <Grid container direction="column" spacing={2}>
-                  <Grid item>
-                    <Typography variant="p" className={classes.valuesDimStyle}>
-                      {walletConnected ? (
-                        "Total Supply"
-                      ) : (
-                        <Skeleton
-                          variant="rectangular"
-                          width={100}
-                          height={25}
-                        />
-                      )}
-                    </Typography>
-                  </Grid>
-                  <Grid item>
-                    <Typography variant="p" className={classes.valuesStyle}>
-                      {governorDataFetched ? (
-                        totalDeposit + (" $" + tokenDetails[1])
-                      ) : (
-                        <Skeleton
-                          variant="rectangular"
-                          width={100}
-                          height={25}
-                        />
-                      )}{" "}
-                    </Typography>
-                  </Grid>
-                </Grid>
-              </Grid>
-            </Grid>
-          </Card>
-        </Grid>
-        <Grid item md={5}>
-          {walletConnected ? (
-            <Card className={classes.cardJoin}>
-              <Grid container spacing={2}>
-                <Grid item ml={2} mt={4} mb={4} className={classes.JoinText}>
-                  <Typography variant="h4">Join this Club</Typography>
-                </Grid>
-                <Divider />
-                <Grid
-                  item
-                  ml={1}
-                  mt={4}
-                  mb={4}
-                  mr={2}
-                  xs
-                  sx={{ display: "flex", justifyContent: "flex-end" }}
-                >
-                  <Typography variant="h6" className={classes.JoinText}>
-                    {governorDataFetched
-                      ? closingDays > 0
-                        ? "Closes in " + closingDays + " days"
-                        : "Joining Closed"
-                      : 0}
+                <Grid item m={3}>
+                  <Typography className={classes.dialogBox}>
+                    You are in the wrong network, please switch to the correct
+                    network by clicking the button provided below
                   </Typography>
                 </Grid>
-              </Grid>
-              <Divider variant="middle" sx={{ bgcolor: "#3B7AFD" }} />
-              <Grid container spacing={2}>
-                <Grid item md={12} mt={2}>
-                  <Card className={classes.cardSmall}>
-                    <Grid container spacing={2}>
-                      <Grid item ml={2} mt={2} mb={0}>
-                        <Typography className={classes.cardSmallFont}>
-                          USDC
-                        </Typography>
-                      </Grid>
-                      <Grid
-                        item
-                        ml={2}
-                        mt={2}
-                        mb={0}
-                        xs
-                        sx={{ display: "flex", justifyContent: "flex-end" }}
-                      >
-                        <Typography className={classes.cardSmallFont}>
-                          Balance: {walletBalance} USDC
-                        </Typography>
-                      </Grid>
-                    </Grid>
-                    <Grid container spacing={2}>
-                      <Grid item ml={2} mt={1} mb={2} p={1}>
-                        <Input
-                          type="number"
-                          error={depositAmount === ""}
-                          className={classes.cardLargeFont}
-                          value={depositAmount}
-                          onChange={(e) => handleInputChange(e.target.value)}
-                          disabled={closingDays > 0 ? false : true}
-                          inputProps={{ style: { fontSize: "1em" } }}
-                          InputLabelProps={{ style: { fontSize: "1em" } }}
-                        />
-                      </Grid>
-                      <Grid
-                        item
-                        ml={2}
-                        mt={1}
-                        mb={1}
-                        xs
-                        sx={{ display: "flex", justifyContent: "flex-end" }}
-                      >
-                        <Button
-                          className={classes.maxTag}
-                          onClick={handleMaxButtonClick}
-                        >
-                          Max
-                        </Button>
-                      </Grid>
-                    </Grid>
-                  </Card>
-                </Grid>
-              </Grid>
-              <Grid container spacing={2}>
-                <Grid item md={12} mt={2}>
-                  <Card className={classes.cardWarning}>
-                    <Typography className={classes.JoinText}>
-                      Clubs can have same names or symbols, please make sure to
-                      trust the sender for the link before depositing.
-                    </Typography>
-                  </Card>
-                </Grid>
-                <Grid item container ml={1} mt={1} mb={1}>
+                <Grid item m={3}>
                   <Button
                     variant="primary"
-                    size="large"
-                    onClick={handleDeposit}
-                    disabled={closingDays > 0 ? false : true}
+                    onClick={() => {
+                      handleSwitchNetwork();
+                    }}
                   >
-                    Deposit
+                    Switch Network
                   </Button>
                 </Grid>
               </Grid>
-            </Card>
-          ) : (
-            <Card className={classes.cardJoin} height={"full"}>
-              <>
-                <Grid
-                  flex
-                  flexDirection="column"
-                  container
-                  justifyContent={"space-between"}
-                  height={"100%"}
-                >
-                  <Grid margin={"25px"}>
-                    <Typography className={classes.JoinText}>
-                      {" "}
-                      Join this station by depositing your funds{" "}
-                    </Typography>
-                  </Grid>
-                  <Grid sx={{ display: "flex", flexDirection: "row" }}>
-                    <Grid mt={"300px"} ml={4}>
-                      <Button variant="primary" onClick={handleConnectWallet}>
-                        Connect
-                      </Button>
+            </DialogContent>
+          </Dialog>
+          <Backdrop
+            sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+            open={depositInitiated}
+          >
+            <CircularProgress color="inherit" />
+          </Backdrop>
+        </>
+      )}
+
+      {tokenType === "erc721NonTransferable" && (
+        <>
+          <Grid
+            container
+            spacing={6}
+            paddingLeft={10}
+            paddingTop={15}
+            paddingRight={10}
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              height: "100vh",
+              width: "100%",
+              justifyContent: "center",
+            }}
+          >
+            <Grid item md={5}>
+              <Image src={ape} alt="nft image" />
+            </Grid>
+            <Grid item md={5} sx={{}}>
+              <Grid container spacing={1.5}>
+                <Grid item>
+                  <Typography variant="h2" color={"white"} fontWeight="bold">
+                    HummingBird Club
+                  </Typography>
+                </Grid>
+                <Grid item>
+                  <Grid container spacing={3}>
+                    <Grid item xs="auto">
+                      <Typography
+                        sx={{
+                          background: "#0ABB9240",
+                          color: "#0ABB92",
+                          paddingTop: 0.5,
+                          paddingBottom: 0.5,
+                          paddingRight: 1,
+                          paddingLeft: 1,
+                          borderRadius: 2,
+                          display: "flex",
+
+                          alignItems: "center",
+                        }}
+                      >
+                        <div className={classes.activeIllustration}></div>
+                        Active
+                      </Typography>
                     </Grid>
-                    <Grid mt={"50px"}>
-                      <CardMedia
-                        image="/assets/images/joinstation.png"
-                        component="img"
-                        alt="ownership_share"
-                        className={classes.media}
+                    <Grid item xs="auto">
+                      <Typography
+                        sx={{
+                          background: "#142243",
+                          color: "#fff",
+                          paddingTop: 0.5,
+                          paddingBottom: 0.5,
+                          paddingRight: 1,
+                          paddingLeft: 1,
+                          borderRadius: 2,
+                        }}
+                      >
+                        Created by 0x24Y7….3R8u
+                      </Typography>
+                    </Grid>
+                    <Grid item xs="auto">
+                      <MoreHorizIcon
+                        sx={{
+                          background: "#142243",
+                          color: "#fff",
+                          paddingTop: 0.5,
+                          paddingBottom: 0.5,
+                          paddingRight: 1,
+                          paddingLeft: 1,
+                          borderRadius: 2,
+                        }}
+                        fontSize="large"
                       />
                     </Grid>
                   </Grid>
                 </Grid>
-              </>
-            </Card>
-          )}
-        </Grid>
-      </Grid>
-      <Snackbar
-        open={openSnackBar}
-        autoHideDuration={6000}
-        onClose={handleClose}
-        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-      >
-        {alertStatus === "success" ? (
-          <Alert
-            onClose={handleClose}
-            severity="success"
-            sx={{ width: "100%" }}
-          >
-            Transaction Successfull!
-          </Alert>
-        ) : (
-          <Alert onClose={handleClose} severity="error" sx={{ width: "100%" }}>
-            Transaction Failed!
-          </Alert>
-        )}
-      </Snackbar>
-      <Dialog
-        open={open}
-        onClose={handleDialogClose}
-        scroll="body"
-        PaperProps={{ classes: { root: classes.modalStyle } }}
-        fullWidth
-        maxWidth="lg"
-      >
-        <DialogContent sx={{ overflow: "hidden", backgroundColor: "#19274B" }}>
-          <Grid
-            container
-            justifyContent="center"
-            alignItems="center"
-            direction="column"
-            mt={3}
-          >
-            <Grid item pl={15}>
-              <img src="/assets/images/connected_world_wuay.svg" width="80%" />
-            </Grid>
-            <Grid item m={3}>
-              <Typography className={classes.dialogBox}>
-                You are in the wrong network, please switch to the correct
-                network by clicking the button provided below
-              </Typography>
-            </Grid>
-            <Grid item m={3}>
-              <Button
-                variant="primary"
-                onClick={() => {
-                  handleSwitchNetwork();
-                }}
-              >
-                Switch Network
-              </Button>
+                <Grid item width="100%">
+                  {" "}
+                  <Typography variant="subtitle1" color="#C1D3FF">
+                    Mint closes on 27 November2022 at 1:57pm GMT+5:30
+                  </Typography>
+                </Grid>
+
+                <Grid item width="100%">
+                  <Grid container spacing={3}>
+                    <Grid item xs={3}>
+                      <Typography
+                        variant="subtitle1"
+                        color="#fff"
+                        sx={{ fontWeight: "bold" }}
+                      >
+                        40%
+                      </Typography>
+                      <Typography variant="subtitle2" color="#C1D3FF">
+                        Quorum
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={3}>
+                      <Typography
+                        variant="subtitle1"
+                        color="#fff"
+                        sx={{ fontWeight: "bold" }}
+                      >
+                        30%
+                      </Typography>
+                      <Typography variant="subtitle2" color="#C1D3FF">
+                        Threshold
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={4} width="fit-content">
+                      <Typography
+                        variant="subtitle1"
+                        color="#fff"
+                        sx={{ fontWeight: "bold" }}
+                      >
+                        Unlimited
+                      </Typography>
+                      <Typography variant="subtitle2" color="#C1D3FF">
+                        Nfts Remaining
+                      </Typography>
+                    </Grid>
+                  </Grid>
+                </Grid>
+
+                <Grid item width="100%">
+                  <Typography variant="subtitle2" color="#C1D3FF">
+                    Price
+                  </Typography>
+                  <Typography
+                    variant="h5"
+                    color="#fff"
+                    sx={{ fontWeight: "bold" }}
+                  >
+                    100 USDC
+                  </Typography>
+                </Grid>
+
+                <Grid item width="100%">
+                  <Grid
+                    container
+                    sx={{
+                      display: "flex",
+                      // flexDirection: "column",
+                      justifyContent: "space-between",
+                      borderColor: "",
+                      border: "1px solid #C1D3FF40",
+                      borderRadius: 2,
+                      alignItems: "center",
+                      background: "#142243",
+                      padding: 4,
+                    }}
+                  >
+                    <Grid
+                      spacing={3}
+                      sx={{
+                        background: "#EFEFEF",
+                        borderRadius: 2,
+                        display: "flex",
+                        flexDirection: "inherit",
+                        alignItems: "center",
+                      }}
+                    >
+                      {" "}
+                      <IconButton onClick={() => setCount(count - 1)}>
+                        <RemoveIcon sx={{ color: "black", fontSize: 20 }} />
+                      </IconButton>
+                      <Typography
+                        variant="h6"
+                        color=""
+                        sx={{ fontWeight: "bold" }}
+                      >
+                        {count}
+                      </Typography>
+                      <IconButton
+                        onClick={() => setCount(count + 1)}
+                        color="#000"
+                      >
+                        <AddIcon sx={{ color: "black", fontSize: 20 }} />
+                      </IconButton>
+                    </Grid>
+                    <Grid item>
+                      <Button sx={{ px: 8 }}>Claim</Button>
+                    </Grid>
+                  </Grid>
+                </Grid>
+                <Grid item>
+                  <Typography
+                    variant="subtitle2"
+                    color="#6475A3"
+                    sx={{ fontWeight: "light" }}
+                  >
+                    This station allows maximum of 2 mints per member
+                  </Typography>
+                </Grid>
+              </Grid>
             </Grid>
           </Grid>
-        </DialogContent>
-      </Dialog>
-      <Backdrop
-        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={depositInitiated}
-      >
-        <CircularProgress color="inherit" />
-      </Backdrop>
+        </>
+      )}
     </Layout3>
   );
 };
