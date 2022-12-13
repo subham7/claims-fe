@@ -18,7 +18,7 @@ const MenuProps = {
 
 export default function SimpleSelectButton(props) {
   const theme = useTheme();
-  const { data } = props;
+  const { data, setClubTokenType } = props;
   const [name, setName] = React.useState([]);
 
   const handleChange = (event) => {
@@ -26,6 +26,7 @@ export default function SimpleSelectButton(props) {
       target: { value },
     } = event;
     setName(value);
+    setClubTokenType(value);
   };
 
   return (
