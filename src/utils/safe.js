@@ -21,7 +21,7 @@ async function gnosisSafePromise(owners, threshold, dispatch) {
     const safeFactory = await SafeFactory.create({ ethAdapter });
     const safeAccountConfig = {
       owners,
-      threshold,
+      threshold: owners.length,
     };
     const safeSdk = await safeFactory.deploySafe({ safeAccountConfig });
     const newSafeAddress = safeSdk.getAddress();
