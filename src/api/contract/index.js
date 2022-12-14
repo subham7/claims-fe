@@ -1,12 +1,12 @@
-import Web3 from "web3"
-import Web3Adapter from "@gnosis.pm/safe-web3-lib"
-import SafeServiceClient from "@gnosis.pm/safe-service-client"
-import USDCContract from "../../abis/usdcTokenContract.json"
-import Safe, { EthSignSignature } from "@gnosis.pm/safe-core-sdk"
-import { USDC_FAUCET_ADDRESS } from "../index"
-import { calculateDays, convertToWei } from "../../utils/globalFunctions"
-import FactoryContract from "../../abis/factoryContract.json"
-import ImplementationContract from "../../abis/implementationABI.json"
+import Web3 from "web3";
+import Web3Adapter from "@gnosis.pm/safe-web3-lib";
+import SafeServiceClient from "@gnosis.pm/safe-service-client";
+import USDCContract from "../../abis/usdcTokenContract.json";
+import Safe, { EthSignSignature } from "@gnosis.pm/safe-core-sdk";
+import { USDC_FAUCET_ADDRESS } from "../index";
+import { calculateDays, convertToWei } from "../../utils/globalFunctions";
+import FactoryContract from "../../abis/factoryContract.json";
+import ImplementationContract from "../../abis/implementationABI.json";
 
 async function syncWallet() {
   // function for validating metamask wallet
@@ -86,7 +86,6 @@ export class SmartContract {
     usdcConvertDecimal,
   ) {
     const days = Math.round(calculateDays(closeDate));
-    console.log("owners", owners);
     return this.contract.methods
       .createDAO([
         tokenName,
@@ -560,23 +559,33 @@ export class SmartContract {
   }
 
   async getDepositCloseTime() {
-    return this.contract.methods.depositCloseTime().call();
+    return this.contract.methods
+      .depositCloseTime()
+      .call({ from: this.walletAddress });
   }
 
   async getMinDepositPerUser() {
-    return this.contract.methods.minDepositPerUser().call();
+    return this.contract.methods
+      .minDepositPerUser()
+      .call({ from: this.walletAddress });
   }
 
   async getMaxDepositPerUser() {
-    return this.contract.methods.maxDepositPerUser().call();
+    return this.contract.methods
+      .maxDepositPerUser()
+      .call({ from: this.walletAddress });
   }
 
   async getTotalRaiseAmount() {
-    return this.contract.methods.totalRaiseAmount().call();
+    return this.contract.methods
+      .totalRaiseAmount()
+      .call({ from: this.walletAddress });
   }
 
   async getTotalMembers() {
-    return this.contract.methods.getTotalMembers().call();
+    return this.contract.methods
+      .getTotalMembers()
+      .call({ from: this.walletAddress });
   }
 
   async obtainTokenDecimals() {
@@ -589,6 +598,20 @@ export class SmartContract {
 
   async getUsdcTransferedToAdmin(address) {
     return this.contract.methods.USDCTransferedToAdmin(address).call();
+  }
+
+  async getClubName() {
+    return this.contract.methods.name().call({ from: this.walletAddress });
+  }
+
+  async getClubSymbol() {
+    return this.contract.methods.name().call({ from: this.walletAddress });
+  }
+
+  async getTotalSupply() {
+    return this.contract.methods
+      .totalSupply()
+      .call({ from: this.walletAddress });
   }
 
   async setupTokenGating(

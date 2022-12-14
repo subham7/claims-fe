@@ -214,7 +214,6 @@ const Join = (props) => {
   const [maxDeposit, setMaxDeposit] = useState(0);
   const [totalDeposit, setTotalDeposit] = useState(0);
   const [quoram, setQuoram] = useState(0);
-  const [tokenDetails, settokenDetails] = useState(null);
   const [tokenAPIDetails, settokenAPIDetails] = useState(null); // contains the details extracted from API
   const [apiTokenDetailSet, setApiTokenDetailSet] = useState(false);
   const [clubId, setClubId] = useState(null);
@@ -241,6 +240,8 @@ const Join = (props) => {
   const [maxDepositDataFetched, setMaxDepositDataFetched] = useState(false);
   const [totalRaiseAmountDataFetched, setTotalRaiseAmountDataFetched] =
     useState(false);
+  const [totalSupply, setTotalSupply] = useState(0);
+  const [tokenSymbol, setTokenSymbol] = useState(null);
 
   const fetchCustomTokenDecimals = async () => {
     if (daoAddress && USDC_CONTRACT_ADDRESS && GNOSIS_TRANSACTION_URL) {
@@ -317,7 +318,6 @@ const Join = (props) => {
       GNOSIS_TRANSACTION_URL &&
       usdcTokenDecimal
     ) {
-      console.log("before tokenDetailContract");
       const tokenDetailContract = new SmartContract(
         ImplementationContract,
         tokenAPIDetails[0].daoAddress,
@@ -325,22 +325,23 @@ const Join = (props) => {
         USDC_CONTRACT_ADDRESS,
         GNOSIS_TRANSACTION_URL,
       );
-      console.log("after tokenDetailContract");
-      await tokenDetailContract.tokenDetails().then(
-        async (result) => {
-          console.log("result", result);
-          settokenDetails(result);
-          setClubTokenMInted(
-            convertFromWeiGovernance(result[2], governanceConvertDecimal),
-          );
-          console.log(result[2]);
-          setQuoram(
-            convertFromWeiGovernance(result[2], governanceConvertDecimal),
-          );
-          setDataFetched(true);
+      await tokenDetailContract.getClubSymbol().then(
+        (result) => {
+          setTokenSymbol(result);
         },
         (error) => {
-          console.log(error);
+          setDataFetched(false);
+        },
+      );
+      await tokenDetailContract.getTotalSupply().then(
+        (result) => {
+          setTotalSupply(result);
+          setClubTokenMInted(
+            convertFromWeiGovernance(result, governanceConvertDecimal),
+          );
+        },
+        (error) => {
+          setDataFetched(false);
         },
       );
     }
@@ -386,7 +387,7 @@ const Join = (props) => {
           setClosingDays(
             Math.round(
               (new Date(parseInt(result) * 1000) - new Date()) /
-                (1000 * 60 * 60 * 24),
+              (1000 * 60 * 60 * 24),
             ),
           );
           setClosingDataFetched(true);
@@ -706,7 +707,7 @@ const Join = (props) => {
                     )}
                   </Typography>
                   <Typography variant="h6" className={classes.dimColor}>
-                    {dataFetched ? "$" + tokenDetails[1] : null}
+                    {dataFetched ? "$" + tokenSymbol : null}
                   </Typography>
                 </Stack>
               </Grid>
@@ -886,9 +887,9 @@ const Join = (props) => {
                   value={
                     totalRaiseAmountDataFetched
                       ? calculateTreasuryTargetShare(
-                          clubTokenMinted,
-                          totalDeposit,
-                        )
+                        clubTokenMinted,
+                        totalDeposit,
+                      )
                       : 0
                   }
                 />
@@ -921,7 +922,7 @@ const Join = (props) => {
                   <Grid item>
                     <Typography variant="p" className={classes.valuesStyle}>
                       {walletConnected ? (
-                        parseInt(quoram) + " $" + tokenDetails[1]
+                        parseInt(quoram) + " $" + tokenSymbol
                       ) : (
                         <Skeleton
                           variant="rectangular"
@@ -951,7 +952,7 @@ const Join = (props) => {
                   <Grid item>
                     <Typography variant="p" className={classes.valuesStyle}>
                       {totalRaiseAmountDataFetched ? (
-                        totalDeposit + (" $" + tokenDetails[1])
+                        totalDeposit + (" $" + tokenSymbol)
                       ) : (
                         <Skeleton
                           variant="rectangular"

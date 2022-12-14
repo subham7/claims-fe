@@ -50,6 +50,7 @@ import AddCircleOutlinedIcon from "@mui/icons-material/AddCircleOutlined";
 import DeleteIcon from "@mui/icons-material/Delete";
 import TokenSearch from "../../../src/components/tokenSearch";
 import styled from "@emotion/styled";
+import { error } from "next/dist/build/output/log";
 
 const useStyles = makeStyles({
   valuesStyle: {
@@ -242,7 +243,6 @@ const Settings = (props) => {
   const walletAddress = useSelector((state) => {
     return state.create.value;
   });
-  const [tokenDetails, settokenDetails] = useState(null);
   const [tokenAPIDetails, settokenAPIDetails] = useState(null); // contains the details extracted from API
   const [apiTokenDetailSet, setApiTokenDetailSet] = useState(false);
   const [clubId, setClubId] = useState(null);
@@ -288,6 +288,8 @@ const Settings = (props) => {
   const [maxDepositDataFetched, setMaxDepositDataFetched] = useState(false);
   const [totalRaiseAmountDataFetched, setTotalRaiseAmountDataFetched] =
     useState(false);
+  const [totalSupply, setTotalSupply] = useState(0);
+  const [tokenSymbol, setTokenSymbol] = useState(null);
 
   const USDC_CONTRACT_ADDRESS = useSelector((state) => {
     return state.gnosis.usdcContractAddress;
@@ -370,16 +372,23 @@ const Settings = (props) => {
         USDC_CONTRACT_ADDRESS,
         GNOSIS_TRANSACTION_URL,
       );
-      await tokenDetailContract.tokenDetails().then(
+      await tokenDetailContract.getClubSymbol().then(
         (result) => {
-          settokenDetails(result);
+          setTokenSymbol(result);
+        },
+        (error) => {
+          setDataFetched(false);
+        },
+      );
+      await tokenDetailContract.getTotalSupply().then(
+        (result) => {
+          setTotalSupply(result);
           setUserOwnershipShare(
-            convertFromWeiGovernance(result[2], governanceConvertDecimal),
+            convertFromWeiGovernance(result, governanceConvertDecimal),
           );
           setClubTokenMInted(
-            convertFromWeiGovernance(result[2], governanceConvertDecimal),
+            convertFromWeiGovernance(result, governanceConvertDecimal),
           );
-          setDataFetched(true);
         },
         (error) => {
           setDataFetched(false);
@@ -393,7 +402,6 @@ const Settings = (props) => {
       const membersData = getMembersDetails(clubId);
       membersData.then((result) => {
         if (result.status != 200) {
-          console.log(result.statusText);
           setMembersFetched(false);
         } else {
           setMembersDetails(result.data);
@@ -417,15 +425,7 @@ const Settings = (props) => {
   };
 
   const contractDetailsRetrieval = async (refresh = false) => {
-    if (
-      (daoAddress &&
-        !closingDays &&
-        !currentMinDeposit &&
-        !currentMaxDeposit &&
-        !totalRaiseAmount &&
-        walletAddress) ||
-      refresh
-    ) {
+    if ((daoAddress && USDC_CONTRACT_ADDRESS && GNOSIS_TRANSACTION_URL) || refresh) {
       const governorDetailContract = new SmartContract(
         ImplementationContract,
         daoAddress,
@@ -433,81 +433,121 @@ const Settings = (props) => {
         USDC_CONTRACT_ADDRESS,
         GNOSIS_TRANSACTION_URL,
       );
-      await governorDetailContract.getDepositCloseTime().then(
-        (result) => {
-          setClosingDays(calculateDays(parseInt(result) * 1000));
-          setClosingDataFetched(true);
-        },
-        (error) => {
-          console.log(error);
-        },
-      );
-      await governorDetailContract.getMinDepositPerUser().then(
-        (result) => {
-          setCurrentMinDeposit(convertAmountToWei(result));
-          setMinDepositDataFetched(true);
-        },
-        (error) => {
-          console.log(error);
-        },
-      );
-      await governorDetailContract.getMaxDepositPerUser().then(
-        (result) => {
-          setCurrentMaxDeposit(convertAmountToWei(result));
-          setMaxDepositDataFetched(true);
-        },
-        (error) => {
-          console.log(error);
-        },
-      );
-      await governorDetailContract.getTotalRaiseAmount().then(
-        (result) => {
-          setTotalRaiseAmount(convertAmountToWei(result));
-          setTotalRaiseAmountDataFetched(true);
-        },
-        (error) => {
-          console.log(error);
-        },
-      );
+      if (!closingDataFetched) {
+        await governorDetailContract.getDepositCloseTime().then(
+          (result) => {
+            console.log(result)
+            console.log(calculateDays(parseInt(result) * 1000))
+            setClosingDays(calculateDays(parseInt(result) * 1000));
+            setClosingDataFetched(true);
+          },
+          (error) => {
+            setClosingDataFetched(false);
+          }
+        );
+      }
+      if (!minDepositDataFetched) {
 
-      // minimum deposit amount from smart contract
-      await governorDetailContract.quoram().then(
-        (result) => {
-          setQuoramValue(result);
-          setQuoramFetched(true);
-        },
-        (error) => {
-          setQuoramFetched(false);
-        },
-      );
-
-      // maximim deposit amount from smart contract
-      await governorDetailContract.threshold().then(
-        (result) => {
-          setThresholdValue(result);
-          setThresholdFetched(true);
-        },
-        (error) => {
-          setQuoramFetched(false);
-        },
-      );
+        await governorDetailContract.getMinDepositPerUser().then(
+          (result) => {
+            setCurrentMinDeposit(convertAmountToWei(result));
+            setMinDepositDataFetched(true);
+          },
+          (error) => {
+            setMinDepositDataFetched(false);
+          }
+        );
+      }
+      if (!maxDepositDataFetched) {
+        await governorDetailContract.getMaxDepositPerUser().then(
+          (result) => {
+            setCurrentMaxDeposit(convertAmountToWei(result));
+            setMaxDepositDataFetched(true);
+          },
+          (error) => {
+            setMaxDepositDataFetched(false);
+          }
+        );
+      }
+      if (!totalRaiseAmountDataFetched) {
+        await governorDetailContract.getTotalRaiseAmount().then(
+          (result) => {
+            setTotalRaiseAmount(convertAmountToWei(result));
+            setTotalRaiseAmountDataFetched(true);
+          },
+          (error) => {
+            setTotalRaiseAmountDataFetched(false);
+          }
+        );
+      }
+      if (!quoramFetched) {
+        // minimum deposit amount from smart contract
+        await governorDetailContract.quoram().then(
+          (result) => {
+            setQuoramValue(result);
+            setQuoramFetched(true);
+          },
+          (error) => {
+            setQuoramFetched(false);
+          }
+        );
+      }
+      if (!thresholdFetched) {
+        // maximim deposit amount from smart contract
+        await governorDetailContract.threshold().then(
+          (result) => {
+            setThresholdValue(result);
+            setThresholdFetched(true);
+          },
+          (error) => {
+            setThresholdFetched(false);
+          }
+        );
+      }
     }
   };
+
+  const loadGovernanceData = async () => {
+    setLoaderOpen(true);
+    contractDetailsRetrieval(false);
+
+    if (
+      closingDataFetched &&
+      minDepositDataFetched &&
+      maxDepositDataFetched &&
+      totalRaiseAmountDataFetched &&
+      quoramFetched &&
+      thresholdFetched
+    ) {
+      setLoaderOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    loadGovernanceData();
+  }, [
+    daoAddress,
+    USDC_CONTRACT_ADDRESS,
+    GNOSIS_TRANSACTION_URL,
+    closingDataFetched,
+    minDepositDataFetched,
+    maxDepositDataFetched,
+    totalRaiseAmountDataFetched,
+    quoramFetched,
+    thresholdFetched
+  ]);
+
 
   const loadData = () => {
     setLoaderOpen(true);
     tokenAPIDetailsRetrieval();
     tokenDetailsRetrieval();
-    contractDetailsRetrieval(false);
     fetchMembers();
+    loadGovernanceData();
 
     if (
       apiTokenDetailSet &&
       dataFetched &&
-      closingDataFetched &&
-      minDepositDataFetched &&
-      maxDepositDataFetched &&
-      totalRaiseAmountDataFetched &&
       membersFetched
     ) {
       setLoaderOpen(false);
@@ -520,10 +560,6 @@ const Settings = (props) => {
     daoAddress,
     apiTokenDetailSet,
     dataFetched,
-    closingDataFetched,
-    minDepositDataFetched,
-    maxDepositDataFetched,
-    totalRaiseAmount,
     membersFetched,
   ]);
 
@@ -797,14 +833,12 @@ const Settings = (props) => {
     );
     response.then(
       (result) => {
-        console.log(result);
         setLoaderOpen(false);
         setFailed(false);
         setMessage("Token gating successfull!");
         setOpenSnackBar(true);
       },
       (error) => {
-        console.log(error);
         setLoaderOpen(false);
         setFailed(true);
         setMessage("Issue with adding token to token gating!");
@@ -829,7 +863,7 @@ const Settings = (props) => {
                       {apiTokenDetailSet ? tokenAPIDetails[0].name : null}
                     </Typography>
                     <Typography variant="h6" className={classes.dimColor}>
-                      {dataFetched ? "$" + tokenDetails[1] : null}
+                      {dataFetched ? "$" + tokenSymbol : null}
                     </Typography>
                   </Stack>
                 </Grid>
@@ -853,11 +887,11 @@ const Settings = (props) => {
                         <Typography variant="p" className={classes.valuesStyle}>
                           {closingDataFetched
                             ? new Date(closingDays)
-                                .toJSON()
-                                .slice(0, 10)
-                                .split("-")
-                                .reverse()
-                                .join("/")
+                              .toJSON()
+                              .slice(0, 10)
+                              .split("-")
+                              .reverse()
+                              .join("/")
                             : null}
                         </Typography>
                       </Grid>
@@ -963,20 +997,20 @@ const Settings = (props) => {
                         <Typography variant="p" className={classes.valuesStyle}>
                           {userBalanceFetched && dataFetched
                             ? isNaN(
-                                parseInt(
-                                  calculateUserSharePercentage(
-                                    userBalance,
-                                    tokenDetails[2],
-                                  ),
+                              parseInt(
+                                calculateUserSharePercentage(
+                                  userBalance,
+                                  totalSupply,
                                 ),
-                              )
+                              ),
+                            )
                               ? 0
                               : parseInt(
-                                  calculateUserSharePercentage(
-                                    userBalance,
-                                    userOwnershipShare,
-                                  ),
-                                )
+                                calculateUserSharePercentage(
+                                  userBalance,
+                                  userOwnershipShare,
+                                ),
+                              )
                             : 0}
                           % (${userBalance})
                         </Typography>
@@ -1015,9 +1049,9 @@ const Settings = (props) => {
                   value={
                     totalRaiseAmountDataFetched && dataFetched
                       ? calculateTreasuryTargetShare(
-                          clubTokenMinted,
-                          convertAmountToWei(totalRaiseAmount),
-                        )
+                        clubTokenMinted,
+                        convertAmountToWei(totalRaiseAmount),
+                      )
                       : 0
                   }
                 />
@@ -1030,7 +1064,7 @@ const Settings = (props) => {
                     </Typography>
                     <Typography variant="p" className={classes.valuesStyle}>
                       {dataFetched
-                        ? parseInt(clubTokenMinted) + " $" + tokenDetails[1]
+                        ? parseInt(clubTokenMinted) + " $" + totalSupply
                         : null}
                     </Typography>
                   </Stack>
@@ -1048,7 +1082,7 @@ const Settings = (props) => {
                     <Typography variant="settingText">Total Supply</Typography>
                     <Typography variant="p" className={classes.valuesStyle}>
                       {totalRaiseAmountDataFetched && dataFetched
-                        ? totalRaiseAmount + (" $" + tokenDetails[1])
+                        ? totalRaiseAmount + (" $" + totalSupply)
                         : null}{" "}
                     </Typography>
                   </Stack>
@@ -1098,10 +1132,10 @@ const Settings = (props) => {
                       <Typography variant="p" className={classes.valuesStyle}>
                         {apiTokenDetailSet
                           ? tokenAPIDetails[0].daoAddress.substring(0, 6) +
-                            "......" +
-                            tokenAPIDetails[0].daoAddress.substring(
-                              tokenAPIDetails[0].daoAddress.length - 4,
-                            )
+                          "......" +
+                          tokenAPIDetails[0].daoAddress.substring(
+                            tokenAPIDetails[0].daoAddress.length - 4,
+                          )
                           : null}
                       </Typography>
                     </Grid>
