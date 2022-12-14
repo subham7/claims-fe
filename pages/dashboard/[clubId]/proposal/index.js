@@ -216,6 +216,7 @@ const Proposal = () => {
   const tresuryAddress = useSelector((state) => {
     return state.create.tresuryAddress;
   });
+
   const [open, setOpen] = useState(false);
   const [name, setName] = useState([]);
   const [duration, setDuration] = useState(
@@ -313,12 +314,22 @@ const Proposal = () => {
         if (result.status != 200) {
           setTokenFetched(false);
         } else {
+          console.log("resulttt", result);
           setTokenData(result.data.tokenPriceList);
+
           setTokenFetched(true);
         }
       });
     }
   };
+
+  console.log(
+    "token data",
+    tokenData?.filter(
+      (data) =>
+        data.token_address === "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
+    )[0],
+  );
 
   const fetchData = async () => {
     const proposalData = getProposal(clubID);
@@ -419,6 +430,15 @@ const Proposal = () => {
       setOpen(false);
       if (name === commandTypeList[0].commandText) {
         // for airdrop execution
+        console.log(tokenData);
+        const airDropTokenDecimal = tokenData?.filter(
+          (data) => data.token_address === airDropToken,
+        )[0].decimals;
+
+        const airDropTokenSymbol = tokenData?.filter(
+          (data) => data.token_address === airDropToken,
+        )[0].symbol;
+        console.log("airDropAmount", airDropAmount);
         const payload = {
           name: title,
           description: description,
@@ -430,11 +450,11 @@ const Proposal = () => {
             {
               executionId: 0,
               airDropToken: airDropToken,
-              airDropAmount: convertToWei(airDropAmount, usdcTokenDecimal),
+              airDropAmount: convertToWei(airDropAmount, airDropTokenDecimal),
               airDropCarryFee: airDropCarryFee,
-              usdcTokenSymbol: usdcTokenSymbol,
-              usdcTokenDecimal: usdcTokenDecimal,
-              usdcGovernanceTokenDecimal: usdcGovernanceTokenDecimal,
+              usdcTokenSymbol: airDropTokenSymbol,
+              usdcTokenDecimal: airDropTokenDecimal,
+              usdcGovernanceTokenDecimal: airDropTokenDecimal,
             },
           ],
           type: "action",
@@ -725,6 +745,7 @@ const Proposal = () => {
     const {
       target: { value },
     } = event;
+    console.log("value", value);
     setAirDropToken(value);
   };
 
