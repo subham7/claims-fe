@@ -312,7 +312,7 @@ const Step3 = (props) => {
                 </IconButton>
               </Grid>
             </Grid>
-            {addressList.length > 0 ? (
+            {addressList?.length > 0 ? (
               <Grid container pl={3} pr={1} mt={2} mb={2}>
                 {addressList.map((data, key) => {
                   return (
