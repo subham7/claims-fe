@@ -450,7 +450,10 @@ const Proposal = () => {
             {
               executionId: 0,
               airDropToken: airDropToken,
-              airDropAmount: convertToWei(airDropAmount, airDropTokenDecimal),
+              airDropAmount: convertToWei(
+                airDropAmount,
+                airDropTokenDecimal,
+              ).toString(),
               airDropCarryFee: airDropCarryFee,
               usdcTokenSymbol: airDropTokenSymbol,
               usdcTokenDecimal: airDropTokenDecimal,
@@ -459,6 +462,10 @@ const Proposal = () => {
           ],
           type: "action",
         };
+        console.log(
+          "airdrop",
+          convertToWei(airDropAmount, airDropTokenDecimal).toString(),
+        );
         const createRequest = createProposal(payload);
         createRequest.then((result) => {
           if (result.status !== 201) {
@@ -1519,7 +1526,9 @@ const Proposal = () => {
                                     className={classes.cardTextBox}
                                     placeholder="0"
                                     onChange={(e) =>
-                                      setAirDropAmount(parseInt(e.target.value))
+                                      setAirDropAmount(
+                                        parseFloat(e.target.value),
+                                      )
                                     }
                                   />
                                 </Grid>
