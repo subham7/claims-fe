@@ -48,8 +48,8 @@ import { useSelector } from "react-redux";
 import { useRouter, withRouter } from "next/router";
 import USDCContract from "../../../../src/abis/usdcTokenContract.json";
 import ClubFetch from "../../../../src/utils/clubFetch";
-import Web3Adapter from "@gnosis.pm/safe-web3-lib";
-import SafeServiceClient from "@gnosis.pm/safe-service-client";
+import Web3Adapter from "@safe-global/safe-web3-lib";
+import SafeServiceClient from "@safe-global/safe-service-client";
 import {
   calculateDays,
   convertToWei,
@@ -314,36 +314,62 @@ const Proposal = () => {
         if (result.status != 200) {
           setTokenFetched(false);
         } else {
-          console.log("resulttt", result);
           setTokenData(result.data.tokenPriceList);
-
           setTokenFetched(true);
         }
       });
     }
   };
 
-  console.log(
-    "token data",
-    tokenData?.filter(
-      (data) =>
-        data.token_address === "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
-    )[0],
-  );
+  const getExecutionTransaction = async () => {
+    proposalData?.map(async (proposal) => {
+      const proposalTxHash = await getProposalTxHash(proposal.proposalId);
+      proposalTxHash.then(async (result) => {
+        if (
+          result.status !== 200 ||
+          (result.status === 200 && result.data.length === 0)
+        ) {
+          setExecutionTransaction();
+        } else {
+          const safeService = await getSafeService();
+          const pendingTxs = await safeService.getPendingTransactions(
+            gnosisAddress,
+          );
+          console.log("pendingTxs", pendingTxs);
+          const count = pendingTxs.count;
+          if (
+            proposalTxHash.data[0].txHash ===
+            pendingTxs?.results[count - 1]?.safeTxHash
+          ) {
+            setExecutionTransaction(proposal);
+          }
+        }
+      });
+    });
+  };
+
+  useEffect(async () => {
+    setLoaderOpen(true);
+    if (gnosisAddress) {
+      await getExecutionTransaction;
+    }
+  }, [gnosisAddress]);
 
   const fetchData = async () => {
     const proposalData = getProposal(clubID);
-    const safeService = await getSafeService();
+    // const safeService = await getSafeService();
     proposalData.then(async (result) => {
       if (result.status != 200) {
         setFetched(false);
       } else {
         setProposalData(result.data);
         setFetched(true);
-        const pendingTxs = await safeService.getPendingTransactions(
-          gnosisAddress,
-        );
-        const count = pendingTxs.count;
+        console.log("gnosisAddress", gnosisAddress);
+        // const pendingTxs = await safeService.getPendingTransactions(
+        //   gnosisAddress,
+        // );
+        // console.log("pendingTxs", pendingTxs);
+        // const count = pendingTxs.count;
 
         Promise.all(
           result.data.map(async (proposal) => {
@@ -351,12 +377,12 @@ const Proposal = () => {
             // console.log(proposalTxHash.data[0].txHash);
             if (proposalTxHash.data[0]) {
               proposal["safeTxHash"] = proposalTxHash?.data[0].txHash;
-              if (
-                proposalTxHash.data[0].txHash ===
-                pendingTxs?.results[count - 1]?.safeTxHash
-              ) {
-                setExecutionTransaction(proposal);
-              }
+              // if (
+              //   proposalTxHash.data[0].txHash ===
+              //   pendingTxs?.results[count - 1]?.safeTxHash
+              // ) {
+              //   setExecutionTransaction(proposal);
+              // }
             }
           }),
         );
@@ -719,8 +745,10 @@ const Proposal = () => {
     if (create_proposal) {
       setOpen(true);
     }
+    // if (gnosisAddress) {
     fetchFilteredData("all");
-  }, [clubID]);
+    // }
+  }, [clubID, gnosisAddress]);
 
   useEffect(() => {
     fetchTokens();

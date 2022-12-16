@@ -35,9 +35,9 @@ import { getMembersDetails } from "../../../../src/api/user";
 import ImplementationContract from "../../../../src/abis/implementationABI.json";
 import USDCContract from "../../../../src/abis/usdcTokenContract.json";
 import ClubFetch from "../../../../src/utils/clubFetch";
-import Web3Adapter from "@gnosis.pm/safe-web3-lib";
-import Safe from "@gnosis.pm/safe-core-sdk";
-import SafeServiceClient from "@gnosis.pm/safe-service-client";
+import Web3Adapter from "@safe-global/safe-web3-lib";
+import Safe from "@safe-global/safe-core-sdk";
+import SafeServiceClient from "@safe-global/safe-service-client";
 
 const useStyles = makeStyles({
   clubAssets: {
@@ -344,7 +344,7 @@ const ProposalDetail = () => {
           gnosisAddress,
         );
         setPendingTxHash(
-          pendingTxs.results[pendingTxs.count - 1].safeTxHash,
+          pendingTxs?.results[pendingTxs.count - 1]?.safeTxHash,
           result.data[0].txHash,
         );
 

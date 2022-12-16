@@ -45,7 +45,7 @@ import SimpleSelectButton from "../../src/components/simpleSelectButton";
 import AddCircleOutlinedIcon from "@mui/icons-material/AddCircleOutlined";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Web3 from "web3";
-import Web3Adapter from "@gnosis.pm/safe-web3-lib";
+import Web3Adapter from "@safe-global/safe-web3-lib";
 import { initiateConnection } from "../../src/utils/safe";
 import { useDispatch, useSelector } from "react-redux";
 import ProtectRoute from "../../src/utils/auth";

@@ -1,6 +1,6 @@
 import Web3 from "web3";
-import Web3Adapter from "@gnosis.pm/safe-web3-lib";
-import { SafeFactory } from "@gnosis.pm/safe-core-sdk";
+import Web3Adapter from "@safe-global/safe-web3-lib";
+import { SafeFactory } from "@safe-global/safe-core-sdk";
 import { safeConnected, safeDisconnected } from "../redux/reducers/gnosis";
 import { addDaoAddress, addClubID } from "../redux/reducers/create";
 import store from "../redux/store";
