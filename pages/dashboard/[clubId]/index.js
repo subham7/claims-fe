@@ -796,7 +796,7 @@ const Dashboard = () => {
                           </Typography>
                           <Typography fontSize={"48px"} fontWeight="bold">
                             {userBalance !== null &&
-                            userOwnershipShare !== null ? (
+                              userOwnershipShare !== null ? (
                               isNaN(
                                 parseInt(
                                   calculateUserSharePercentage(
@@ -1104,7 +1104,7 @@ const Dashboard = () => {
                         disabled
                         value={
                           typeof window !== "undefined" &&
-                          window.location.origin
+                            window.location.origin
                             ? `${window.location.origin}/join/${daoAddress}`
                             : null
                         }
@@ -1149,53 +1149,53 @@ const Dashboard = () => {
                       <Grid item md={12} mr={2}>
                         {activeProposalDataFetched
                           ? activeProposalData.map((data, key) => {
-                              if (key < 3) {
-                                return (
-                                  <div key={key}>
-                                    <ListItemButton
-                                      onClick={() =>
-                                        handleProposalClick(
-                                          activeProposalData[key],
-                                        )
-                                      }
-                                      sx={{ width: "100%" }}
-                                    >
-                                      <Grid container direction="column">
-                                        <Grid item md={12}>
-                                          <Typography
-                                            className={classes.card5text1}
-                                          >
-                                            Proposed by{" "}
-                                            {data.createdBy.substring(0, 6) +
-                                              "......" +
-                                              data.createdBy.substring(
-                                                data.createdBy.length - 4,
-                                              )}
-                                          </Typography>
-                                        </Grid>
-                                        <Grid item>
-                                          <Typography
-                                            className={classes.card5text2}
-                                          >
-                                            {data.name}
-                                          </Typography>
-                                        </Grid>
-                                        <Grid item>
-                                          <Typography
-                                            className={classes.card5text1}
-                                          >
-                                            Expired on{" "}
-                                            {new Date(
-                                              data.votingDuration,
-                                            ).toLocaleDateString()}
-                                          </Typography>
-                                        </Grid>
+                            if (key < 3) {
+                              return (
+                                <div key={key}>
+                                  <ListItemButton
+                                    onClick={() =>
+                                      handleProposalClick(
+                                        activeProposalData[key],
+                                      )
+                                    }
+                                    sx={{ width: "100%" }}
+                                  >
+                                    <Grid container direction="column">
+                                      <Grid item md={12}>
+                                        <Typography
+                                          className={classes.card5text1}
+                                        >
+                                          Proposed by{" "}
+                                          {data.createdBy.substring(0, 6) +
+                                            "......" +
+                                            data.createdBy.substring(
+                                              data.createdBy.length - 4,
+                                            )}
+                                        </Typography>
                                       </Grid>
-                                    </ListItemButton>
-                                  </div>
-                                );
-                              }
-                            })
+                                      <Grid item>
+                                        <Typography
+                                          className={classes.card5text2}
+                                        >
+                                          {data.name}
+                                        </Typography>
+                                      </Grid>
+                                      <Grid item>
+                                        <Typography
+                                          className={classes.card5text1}
+                                        >
+                                          Expired on{" "}
+                                          {new Date(
+                                            data.votingDuration,
+                                          ).toLocaleDateString()}
+                                        </Typography>
+                                      </Grid>
+                                    </Grid>
+                                  </ListItemButton>
+                                </div>
+                              );
+                            }
+                          })
                           : null}
                       </Grid>
                     </Grid>
