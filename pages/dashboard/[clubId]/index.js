@@ -344,9 +344,12 @@ const Dashboard = () => {
   const walletAddress = useSelector((state) => {
     return state.create.value;
   });
+  const [tokenDetails, settokenDetails] = useState(null);
+  const [dataFetched, setDataFetched] = useState(false);
   const [tokenAPIDetails, settokenAPIDetails] = useState(null); // contains the details extracted from API
   const [apiTokenDetailSet, setApiTokenDetailSet] = useState(false);
   const [depositLink, setDepositLink] = useState(null);
+  const [governorDetails, setGovernorDetails] = useState(null);
   const [membersFetched, setMembersFetched] = useState(false);
   const [members, setMembers] = useState(0);
   const [membersDetails, setMembersDetails] = useState([]);
@@ -368,8 +371,6 @@ const Dashboard = () => {
   const [clubTokenMinted, setClubTokenMInted] = useState(null);
   const [maxTokenMinted, setMaxTokenMinted] = useState(null);
   const [userOwnershipShare, setUserOwnershipShare] = useState(null);
-  const [totalSupply, setTotalSupply] = useState(0);
-  const [tokenSymbol, setTokenSymbol] = useState(null);
   const USDC_CONTRACT_ADDRESS = useSelector((state) => {
     return state.gnosis.usdcContractAddress;
   });
@@ -382,15 +383,9 @@ const Dashboard = () => {
   const governanceConvertDecimal = useSelector((state) => {
     return state.gnosis.governanceTokenDecimal;
   });
-  const [memberDepositFetched, setMemberDepositFetched] = useState(false);
-  const [userBalanceFetched, setUserBalanceFetched] = useState(false);
-  const [tokenSymbolFetched, setTokenSymbolFetched] = useState(false);
-  const [totalSupplyFetched, setTotalSupplyFetched] = useState(false);
-  const [closingDaysFetched, setClosingDaysFetched] = useState(false);
-  const [totalRaiseFetched, setTotalRaiseFetched] = useState(false);
 
   const loadSmartContractData = async () => {
-    if (daoAddress && USDC_CONTRACT_ADDRESS && GNOSIS_TRANSACTION_URL) {
+    try {
       const contract = new SmartContract(
         ImplementationContact,
         daoAddress,
@@ -398,122 +393,52 @@ const Dashboard = () => {
         USDC_CONTRACT_ADDRESS,
         GNOSIS_TRANSACTION_URL,
       );
+      let usdcDetails = await contract.getUsdcDetails(USDC_CONTRACT_ADDRESS);
+      let getUserBalance = await contract.checkUserBalance();
+      let getGovernorDetails = await contract.getGovernorDetails();
+      let getTokenDetails = await contract.tokenDetails();
 
-      await contract.balanceOf().then(
-        (result) => {
-          setUserBalance(
-            convertFromWeiGovernance(result, governanceConvertDecimal),
-          );
-          setUserBalanceFetched(true);
-        }
-        , (error) => {
-          setUserBalanceFetched(false);
-          console.log(error);
-          setOpenSnackBar(true);
-          setFailed(true);
-        }
-      )
-      await contract.getClubSymbol().then(
-        (result) => {
-          setTokenSymbol(result);
-          setTokenSymbolFetched(true);
-        }
-        , (error) => {
-          setTokenSymbolFetched(false);
-          console.log(error);
-          setOpenSnackBar(true);
-          setFailed(true);
-        }
-      )
-      await contract.getTotalSupply().then(
-        (result) => {
-          setTotalSupply(result);
-          setClubTokenMInted(
-            convertFromWeiGovernance(result, governanceConvertDecimal),
-          );
-          setUserOwnershipShare(
-            convertFromWeiGovernance(result, governanceConvertDecimal),
-          );
-          setTotalSupplyFetched(true);
-        }
-        , (error) => {
-          setTotalSupplyFetched(false);
-          console.log(error);
-          setOpenSnackBar(true);
-          setFailed(true);
-        }
-      )
-      await contract.getDepositCloseTime().then(
-        (result) => {
-          console.log(result)
-          console.log(calculateDays(parseInt(result) * 1000))
-          setClosingDays(calculateDays(parseInt(result) * 1000));
-          setClosingDaysFetched(true);
-        },
-        (error) => {
-          setClosingDaysFetched(false);
-          console.log(error);
-          setOpenSnackBar(true);
-          setFailed(true);
-        }
+      // user and admin contributions
+      let memberDeposits = convertFromWei(usdcDetails[0], usdcConvertDecimal);
+      let adminContribution = convertFromWei(
+        usdcDetails[1],
+        usdcConvertDecimal,
       );
-      await contract.getTotalRaiseAmount().then(
-        (result) => {
-          setMaxTokenMinted(
-            convertFromWeiGovernance(result, governanceConvertDecimal),
-          );
-          setTotalRaiseFetched(true);
-        }
-        , (error) => {
-          setTotalRaiseFetched(false);
-          console.log(error);
-          setOpenSnackBar(true);
-          setFailed(true);
-        }
 
-      )
-      let memberDeposits = 0;
-      let adminContribution = 0;
-      await contract.getUsdcDeposited(walletAddress).then(
-        (result) => {
-          memberDeposits = convertFromWei(result, usdcConvertDecimal);
-        },
-        (error) => {
-          console.log(error);
-          setOpenSnackBar(true);
-          setFailed(true);
-        }
-      )
-      await contract.getUsdcTransferedToAdmin(daoAddress).then(
-        (result) => {
-          adminContribution = convertFromWei(result, usdcConvertDecimal);
-        },
-        (error) => {
-          console.log(error);
-          setOpenSnackBar(true);
-          setFailed(true);
-        }
-      )
+      let total = memberDeposits + adminContribution;
+      setMemberDeposit(total);
 
-      if (memberDeposits >= 0 && adminContribution >= 0) {
-        let total = memberDeposits + adminContribution;
-        setMemberDeposit(total);
-        setMemberDepositFetched(true);
-      }
+      setUserBalance(
+        convertFromWeiGovernance(getUserBalance, governanceConvertDecimal),
+      );
+      setClosingDays(calculateDays(parseInt(getGovernorDetails[0]) * 1000));
+      setGovernorDetails(getGovernorDetails);
+      setMaxTokenMinted(await convertAmountToWei(getGovernorDetails[4]));
 
+      settokenDetails(getTokenDetails);
+      setClubTokenMInted(
+        convertFromWeiGovernance(getTokenDetails[2], governanceConvertDecimal),
+      );
+      setUserOwnershipShare(
+        convertFromWeiGovernance(getTokenDetails[2], governanceConvertDecimal),
+      );
       setDepositLink(
         typeof window !== "undefined" && window.location.origin
           ? `${window.location.origin}/join/${daoAddress}?dashboard=true`
           : null,
       );
-    };
-  }
+      setDataFetched(true);
+    } catch (e) {
+      setOpenSnackBar(true);
+      setFailed(true);
+    }
+  };
 
   useEffect(() => {
     if (daoAddress && USDC_CONTRACT_ADDRESS && GNOSIS_TRANSACTION_URL) {
       loadSmartContractData();
     }
-  }, [daoAddress, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL, memberDepositFetched, userBalanceFetched, tokenSymbolFetched, totalSupplyFetched, closingDaysFetched, totalRaiseFetched]);
+  }, [daoAddress, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL, dataFetched]);
 
   const checkIsAdmin = () => {
     if (membersFetched && membersDetails.length > 0 && walletAddress) {
@@ -755,8 +680,8 @@ const Dashboard = () => {
                             fontSize={"18px"}
                             className={classes.valueDimStyle}
                           >
-                            {tokenSymbol !== null ? (
-                              "$" + tokenSymbol
+                            {tokenDetails !== null ? (
+                              "$" + tokenDetails[1]
                             ) : (
                               <Skeleton
                                 variant="rectangular"
@@ -802,8 +727,8 @@ const Dashboard = () => {
                             fontSize={"18px"}
                             className={classes.valueDimStyle}
                           >
-                            {tokenSymbol !== null ? (
-                              "$" + tokenSymbol
+                            {tokenDetails !== null ? (
+                              "$" + tokenDetails[1]
                             ) : (
                               <Skeleton
                                 variant="rectangular"
@@ -899,12 +824,12 @@ const Dashboard = () => {
                             %
                           </Typography>
                           <Typography className={classes.card2text2} mb={1}>
-                            {userBalance !== null && tokenSymbol !== null ? (
+                            {userBalance !== null && tokenDetails !== null ? (
                               Number.isInteger(userBalance) ? (
-                                parseInt(userBalance) + (" $" + tokenSymbol)
+                                parseInt(userBalance) + (" $" + tokenDetails[1])
                               ) : (
                                 parseFloat(userBalance).toFixed(2) +
-                                (" $" + tokenSymbol)
+                                (" $" + tokenDetails[1])
                               )
                             ) : (
                               <Skeleton
