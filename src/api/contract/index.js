@@ -87,6 +87,7 @@ export class SmartContract {
     usdcConvertDecimal,
   ) {
     const days = Math.round(calculateDays(closeDate));
+    console.log("owners", owners);
     return this.contract.methods
       .createDAO([
         tokenName,
@@ -467,6 +468,12 @@ export class SmartContract {
       .call({ from: this.walletAddress });
   }
 
+  async checkUserBalance() {
+    return this.contract.methods
+      .checkUserBalance(this.walletAddress)
+      .call({ from: this.walletAddress });
+  }
+
   async ownerAddress() {
     return this.contract.methods
       .ownerAddress()
@@ -559,33 +566,9 @@ export class SmartContract {
       .call({ from: this.walletAddress });
   }
 
-  async getDepositCloseTime() {
+  async getGovernorDetails() {
     return this.contract.methods
-      .depositCloseTime()
-      .call({ from: this.walletAddress });
-  }
-
-  async getMinDepositPerUser() {
-    return this.contract.methods
-      .minDepositPerUser()
-      .call({ from: this.walletAddress });
-  }
-
-  async getMaxDepositPerUser() {
-    return this.contract.methods
-      .maxDepositPerUser()
-      .call({ from: this.walletAddress });
-  }
-
-  async getTotalRaiseAmount() {
-    return this.contract.methods
-      .totalRaiseAmount()
-      .call({ from: this.walletAddress });
-  }
-
-  async getTotalMembers() {
-    return this.contract.methods
-      .getTotalMembers()
+      .getGovernorDetails()
       .call({ from: this.walletAddress });
   }
 
@@ -593,26 +576,8 @@ export class SmartContract {
     return this.contract.methods.decimals().call({ from: this.walletAddress });
   }
 
-  async getUsdcDeposited(address) {
-    return this.contract.methods.USDCDeposited(address).call();
-  }
-
-  async getUsdcTransferedToAdmin(address) {
-    return this.contract.methods.USDCTransferedToAdmin(address).call();
-  }
-
-  async getClubName() {
-    return this.contract.methods.name().call({ from: this.walletAddress });
-  }
-
-  async getClubSymbol() {
-    return this.contract.methods.name().call({ from: this.walletAddress });
-  }
-
-  async getTotalSupply() {
-    return this.contract.methods
-      .totalSupply()
-      .call({ from: this.walletAddress });
+  async getUsdcDetails(address) {
+    return this.contract.methods.getUsdcDetails(address).call();
   }
 
   async setupTokenGating(
