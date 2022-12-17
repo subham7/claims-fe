@@ -288,23 +288,24 @@ export class SmartContract {
       const safetx = await safeService.getTransaction(
         proposalTxHash.data[0].txHash,
       );
-      console.log("safetx", safetx.to);
-      try {
-        const safetx2 = await safeSdk.createTransaction({ safetx });
-        console.log("safetx2", safetx2);
-      } catch (error) {
-        console.log(error);
-      }
+      console.log("safetx", safetx);
+      // let safetx2;
+      // try {
+      //   safetx2 = await safeSdk.createTransaction(safetx);
+      //   console.log("safetx2", safetx2);
+      // } catch (error) {
+      //   console.log(error);
+      // }
 
-      safetx.confirmations.forEach((confirmation) => {
-        const sign = new EthSignSignature(
-          confirmation.owner,
-          confirmation.signature,
-        );
-        safetx2.addSignature(sign);
-      });
-      console.log(safetx2);
-      const executeTxResponse = await safeSdk.executeTransaction(safetx2);
+      // safetx.confirmations.forEach((confirmation) => {
+      //   const sign = new EthSignSignature(
+      //     confirmation.owner,
+      //     confirmation.signature,
+      //   );
+      //   safetx2.addSignature(sign);
+      // });
+      // console.log(safetx2);
+      const executeTxResponse = await safeSdk.executeTransaction(safetx);
 
       console.log("executeTxResponse", executeTxResponse);
       const receipt =
