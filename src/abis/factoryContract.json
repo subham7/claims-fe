@@ -151,6 +151,11 @@
           "internalType": "struct FactoryCloneContract.DAO",
           "name": "_params",
           "type": "tuple"
+        },
+        {
+          "internalType": "bool",
+          "name": "_isGovernanceActive",
+          "type": "bool"
         }
       ],
       "name": "createDAO",

@@ -54,7 +54,7 @@ export class SmartContract {
         contractAddress &&
         walletAddress &&
         usdcContractAddress,
-      gnosisTransactionUrl)
+        gnosisTransactionUrl)
     ) {
       this.web3 = new Web3(window.web3);
       this.abi = abiFile.abi;
@@ -85,9 +85,24 @@ export class SmartContract {
     quoram,
     formThreshold,
     usdcConvertDecimal,
+    enableGovernance
   ) {
     const days = Math.round(calculateDays(closeDate));
-    console.log("owners", owners);
+    console.log([
+      tokenName,
+      tokenSymbol,
+      convertToWei(totalDeposit, usdcConvertDecimal),
+      convertToWei(minDeposit, usdcConvertDecimal),
+      convertToWei(maxDeposit, usdcConvertDecimal),
+      convertToWei(ownerFee, usdcConvertDecimal),
+      days,
+      convertToWei(feeUSDC, usdcConvertDecimal),
+      quoram,
+      formThreshold,
+      tresuryAddress,
+      owners,
+      enableGovernance
+    ])
     return this.contract.methods
       .createDAO([
         tokenName,
@@ -102,6 +117,7 @@ export class SmartContract {
         formThreshold,
         tresuryAddress,
         owners,
+        enableGovernance
       ])
       .send({ from: this.walletAddress });
   }
