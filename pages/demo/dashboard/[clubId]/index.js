@@ -389,7 +389,7 @@ const Dashboard = () => {
         USDC_CONTRACT_ADDRESS,
         GNOSIS_TRANSACTION_URL,
       );
-      await fetchUserBalance.checkUserBalance().then(
+      await fetchUserBalance.balanceOf().then(
         (result) => {
           setUserBalance(web3.utils.fromWei(result, "Mwei"));
           setUserBalanceFetched(true);

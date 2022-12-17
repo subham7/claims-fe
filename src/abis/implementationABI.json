@@ -303,25 +303,6 @@
       "type": "function"
     },
     {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "user",
-          "type": "address"
-        }
-      ],
-      "name": "checkUserBalance",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
       "inputs": [],
       "name": "closeDeposit",
       "outputs": [],
@@ -338,7 +319,7 @@
           "type": "uint8"
         }
       ],
-      "stateMutability": "pure",
+      "stateMutability": "view",
       "type": "function"
     },
     {
@@ -500,170 +481,6 @@
       "type": "function"
     },
     {
-      "inputs": [],
-      "name": "getGovernorDetails",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "getMembersBalances",
-      "outputs": [
-        {
-          "internalType": "uint256[]",
-          "name": "",
-          "type": "uint256[]"
-        },
-        {
-          "internalType": "address[]",
-          "name": "",
-          "type": "address[]"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "getMembersDetails",
-      "outputs": [
-        {
-          "internalType": "address[]",
-          "name": "",
-          "type": "address[]"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "getProposals",
-      "outputs": [
-        {
-          "components": [
-            {
-              "internalType": "string",
-              "name": "proposalHash",
-              "type": "string"
-            },
-            {
-              "internalType": "string",
-              "name": "proposalStatus",
-              "type": "string"
-            },
-            {
-              "internalType": "uint256",
-              "name": "proposalId",
-              "type": "uint256"
-            },
-            {
-              "internalType": "address",
-              "name": "customTokenAddress",
-              "type": "address"
-            },
-            {
-              "internalType": "address",
-              "name": "airDropTokenAddress",
-              "type": "address"
-            },
-            {
-              "internalType": "bool[]",
-              "name": "executionIds",
-              "type": "bool[]"
-            },
-            {
-              "internalType": "uint256",
-              "name": "quorum",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "threshold",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "totalRaiseAmount",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "airDropAmount",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256[]",
-              "name": "mintGTAmounts",
-              "type": "uint256[]"
-            },
-            {
-              "internalType": "address[]",
-              "name": "mintGTAddresses",
-              "type": "address[]"
-            },
-            {
-              "internalType": "uint256[]",
-              "name": "customTokenAmounts",
-              "type": "uint256[]"
-            },
-            {
-              "internalType": "address[]",
-              "name": "customTokenAddresses",
-              "type": "address[]"
-            },
-            {
-              "internalType": "uint256",
-              "name": "ownersAirdropFees",
-              "type": "uint256"
-            },
-            {
-              "internalType": "address[]",
-              "name": "daoAdminAddresses",
-              "type": "address[]"
-            }
-          ],
-          "internalType": "struct ERC20NonTransferable.Proposals[]",
-          "name": "",
-          "type": "tuple[]"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
       "inputs": [
         {
           "internalType": "bytes32",
@@ -683,20 +500,9 @@
       "type": "function"
     },
     {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "_tokenAddress",
-          "type": "address"
-        }
-      ],
-      "name": "getUsdcDetails",
+      "inputs": [],
+      "name": "getTotalMembers",
       "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        },
         {
           "internalType": "uint256",
           "name": "",
@@ -864,6 +670,72 @@
       "type": "function"
     },
     {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_ownerFee",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_days",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_quorum",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_threshold",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "_gnosisAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_USDC",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_emitter",
+          "type": "address"
+        },
+        {
+          "internalType": "address[]",
+          "name": "_daoAdmins",
+          "type": "address[]"
+        },
+        {
+          "internalType": "address",
+          "name": "_nftContractAddress",
+          "type": "address"
+        }
+      ],
+      "name": "initializeERC721",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "isTemplateErc721",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
       "inputs": [],
       "name": "isTokenGatingApplied",
       "outputs": [
@@ -910,6 +782,19 @@
           "internalType": "string",
           "name": "",
           "type": "string"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "nftContractAddress",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
         }
       ],
       "stateMutability": "view",
@@ -1067,29 +952,6 @@
       "inputs": [],
       "name": "threshold",
       "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "tokenDetails",
-      "outputs": [
-        {
-          "internalType": "string",
-          "name": "",
-          "type": "string"
-        },
-        {
-          "internalType": "string",
-          "name": "",
-          "type": "string"
-        },
         {
           "internalType": "uint256",
           "name": "",

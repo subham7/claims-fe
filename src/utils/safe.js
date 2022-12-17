@@ -168,11 +168,17 @@ export async function initiateConnection(
           });
         },
         (error) => {
-          console.log(error);
-        },
-      );
+          console.log(error)
+          Router.push(`/`, undefined, {
+            shallow: true,
+          })
+        }
+      )
     })
     .catch((errorMsg) => {
-      console.log(errorMsg);
-    });
+      console.log(errorMsg)
+      Router.push(`/`, undefined, {
+        shallow: true,
+      })
+    })
 }

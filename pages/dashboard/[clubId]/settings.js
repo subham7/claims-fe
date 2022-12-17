@@ -50,6 +50,7 @@ import AddCircleOutlinedIcon from "@mui/icons-material/AddCircleOutlined";
 import DeleteIcon from "@mui/icons-material/Delete";
 import TokenSearch from "../../../src/components/tokenSearch";
 import styled from "@emotion/styled";
+import { error } from "next/dist/build/output/log";
 
 const useStyles = makeStyles({
   valuesStyle: {
@@ -242,11 +243,8 @@ const Settings = (props) => {
   const walletAddress = useSelector((state) => {
     return state.create.value;
   });
-  const [tokenDetails, settokenDetails] = useState(null);
   const [tokenAPIDetails, settokenAPIDetails] = useState(null); // contains the details extracted from API
   const [apiTokenDetailSet, setApiTokenDetailSet] = useState(false);
-  const [governorDetails, setGovernorDetails] = useState(null);
-  const [governorDataFetched, setGovernorDataFetched] = useState(false);
   const [clubId, setClubId] = useState(null);
   const [membersFetched, setMembersFetched] = useState(false);
   const [members, setMembers] = useState(0);
@@ -277,6 +275,7 @@ const Settings = (props) => {
   const [day, setDay] = useState(null);
   const [currentMinDeposit, setCurrentMinDeposit] = useState(0);
   const [currentMaxDeposit, setCurrentMaxDeposit] = useState(0);
+  const [totalRaiseAmount, setTotalRaiseAmount] = useState(0);
   const [tokenSearchOpen, setTokenSearchOpen] = useState(false);
   const [searchTokenAddress, setSearchTokenAddress] = useState(null);
   const [tokenList, setTokenList] = useState([]);
@@ -284,6 +283,13 @@ const Settings = (props) => {
   const [operationType, setOperationType] = useState([]);
   const [isNFT, setIsNFT] = useState([]);
   const [checked, setChecked] = useState(false);
+  const [closingDataFetched, setClosingDataFetched] = useState(false);
+  const [minDepositDataFetched, setMinDepositDataFetched] = useState(false);
+  const [maxDepositDataFetched, setMaxDepositDataFetched] = useState(false);
+  const [totalRaiseAmountDataFetched, setTotalRaiseAmountDataFetched] =
+    useState(false);
+  const [totalSupply, setTotalSupply] = useState(0);
+  const [tokenSymbol, setTokenSymbol] = useState(null);
 
   const USDC_CONTRACT_ADDRESS = useSelector((state) => {
     return state.gnosis.usdcContractAddress;
@@ -310,7 +316,7 @@ const Settings = (props) => {
         USDC_CONTRACT_ADDRESS,
         GNOSIS_TRANSACTION_URL,
       );
-      await fetchUserBalance.checkUserBalance().then(
+      await fetchUserBalance.balanceOf().then(
         (result) => {
           setUserBalance(
             convertFromWeiGovernance(result, governanceConvertDecimal),
@@ -366,16 +372,23 @@ const Settings = (props) => {
         USDC_CONTRACT_ADDRESS,
         GNOSIS_TRANSACTION_URL,
       );
-      await tokenDetailContract.tokenDetails().then(
+      await tokenDetailContract.getClubSymbol().then(
         (result) => {
-          settokenDetails(result);
+          setTokenSymbol(result);
+        },
+        (error) => {
+          setDataFetched(false);
+        },
+      );
+      await tokenDetailContract.getTotalSupply().then(
+        (result) => {
+          setTotalSupply(result);
           setUserOwnershipShare(
-            convertFromWeiGovernance(result[2], governanceConvertDecimal),
+            convertFromWeiGovernance(result, governanceConvertDecimal),
           );
           setClubTokenMInted(
-            convertFromWeiGovernance(result[2], governanceConvertDecimal),
+            convertFromWeiGovernance(result, governanceConvertDecimal),
           );
-          setDataFetched(true);
         },
         (error) => {
           setDataFetched(false);
@@ -389,7 +402,6 @@ const Settings = (props) => {
       const membersData = getMembersDetails(clubId);
       membersData.then((result) => {
         if (result.status != 200) {
-          console.log(result.statusText);
           setMembersFetched(false);
         } else {
           setMembersDetails(result.data);
@@ -413,13 +425,7 @@ const Settings = (props) => {
   };
 
   const contractDetailsRetrieval = async (refresh = false) => {
-    if (
-      (daoAddress &&
-        !governorDataFetched &&
-        !governorDetails &&
-        walletAddress) ||
-      refresh
-    ) {
+    if ((daoAddress && USDC_CONTRACT_ADDRESS && GNOSIS_TRANSACTION_URL) || refresh) {
       const governorDetailContract = new SmartContract(
         ImplementationContract,
         daoAddress,
@@ -427,68 +433,121 @@ const Settings = (props) => {
         USDC_CONTRACT_ADDRESS,
         GNOSIS_TRANSACTION_URL,
       );
-      await governorDetailContract.getGovernorDetails().then(
-        (result) => {
-          // console.log(result)
-          setGovernorDetails(result);
-          setClosingDays(calculateDays(parseInt(result[0]) * 1000));
-          setGovernorDataFetched(true);
-          setCurrentMinDeposit(result[1]);
-          setCurrentMaxDeposit(result[2]);
-        },
-        (error) => {
-          console.log(error);
-        },
-      );
-
-      // minimum deposit amount from smart contract
-      await governorDetailContract.quoram().then(
-        (result) => {
-          setQuoramValue(result);
-          setQuoramFetched(true);
-        },
-        (error) => {
-          setQuoramFetched(false);
-        },
-      );
-
-      // maximim deposit amount from smart contract
-      await governorDetailContract.threshold().then(
-        (result) => {
-          setThresholdValue(result);
-          setThresholdFetched(true);
-        },
-        (error) => {
-          setQuoramFetched(false);
-        },
-      );
-    }
-  };
-
-  const findCurrentMember = () => {
-    if (membersFetched && membersDetails.length > 0 && walletAddress) {
-      let obj = membersDetails.find(
-        (member) => member.userAddress === walletAddress,
-      );
-      let pos = membersDetails.indexOf(obj);
-      if (pos >= 0) {
-        return membersDetails[pos].clubs[0].balance;
+      if (!closingDataFetched) {
+        await governorDetailContract.getDepositCloseTime().then(
+          (result) => {
+            console.log(result)
+            console.log(calculateDays(parseInt(result) * 1000))
+            setClosingDays(calculateDays(parseInt(result) * 1000));
+            setClosingDataFetched(true);
+          },
+          (error) => {
+            setClosingDataFetched(false);
+          }
+        );
       }
-      return 0;
+      if (!minDepositDataFetched) {
+
+        await governorDetailContract.getMinDepositPerUser().then(
+          (result) => {
+            setCurrentMinDeposit(convertAmountToWei(result));
+            setMinDepositDataFetched(true);
+          },
+          (error) => {
+            setMinDepositDataFetched(false);
+          }
+        );
+      }
+      if (!maxDepositDataFetched) {
+        await governorDetailContract.getMaxDepositPerUser().then(
+          (result) => {
+            setCurrentMaxDeposit(convertAmountToWei(result));
+            setMaxDepositDataFetched(true);
+          },
+          (error) => {
+            setMaxDepositDataFetched(false);
+          }
+        );
+      }
+      if (!totalRaiseAmountDataFetched) {
+        await governorDetailContract.getTotalRaiseAmount().then(
+          (result) => {
+            setTotalRaiseAmount(convertAmountToWei(result));
+            setTotalRaiseAmountDataFetched(true);
+          },
+          (error) => {
+            setTotalRaiseAmountDataFetched(false);
+          }
+        );
+      }
+      if (!quoramFetched) {
+        // minimum deposit amount from smart contract
+        await governorDetailContract.quoram().then(
+          (result) => {
+            setQuoramValue(result);
+            setQuoramFetched(true);
+          },
+          (error) => {
+            setQuoramFetched(false);
+          }
+        );
+      }
+      if (!thresholdFetched) {
+        // maximim deposit amount from smart contract
+        await governorDetailContract.threshold().then(
+          (result) => {
+            setThresholdValue(result);
+            setThresholdFetched(true);
+          },
+          (error) => {
+            setThresholdFetched(false);
+          }
+        );
+      }
     }
   };
+
+  const loadGovernanceData = async () => {
+    setLoaderOpen(true);
+    contractDetailsRetrieval(false);
+
+    if (
+      closingDataFetched &&
+      minDepositDataFetched &&
+      maxDepositDataFetched &&
+      totalRaiseAmountDataFetched &&
+      quoramFetched &&
+      thresholdFetched
+    ) {
+      setLoaderOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    loadGovernanceData();
+  }, [
+    daoAddress,
+    USDC_CONTRACT_ADDRESS,
+    GNOSIS_TRANSACTION_URL,
+    closingDataFetched,
+    minDepositDataFetched,
+    maxDepositDataFetched,
+    totalRaiseAmountDataFetched,
+    quoramFetched,
+    thresholdFetched
+  ]);
+
 
   const loadData = () => {
     setLoaderOpen(true);
     tokenAPIDetailsRetrieval();
     tokenDetailsRetrieval();
-    contractDetailsRetrieval(false);
     fetchMembers();
+    loadGovernanceData();
 
     if (
       apiTokenDetailSet &&
       dataFetched &&
-      governorDataFetched &&
       membersFetched
     ) {
       setLoaderOpen(false);
@@ -501,7 +560,6 @@ const Settings = (props) => {
     daoAddress,
     apiTokenDetailSet,
     dataFetched,
-    governorDetails,
     membersFetched,
   ]);
 
@@ -775,14 +833,12 @@ const Settings = (props) => {
     );
     response.then(
       (result) => {
-        console.log(result);
         setLoaderOpen(false);
         setFailed(false);
         setMessage("Token gating successfull!");
         setOpenSnackBar(true);
       },
       (error) => {
-        console.log(error);
         setLoaderOpen(false);
         setFailed(true);
         setMessage("Issue with adding token to token gating!");
@@ -807,7 +863,7 @@ const Settings = (props) => {
                       {apiTokenDetailSet ? tokenAPIDetails[0].name : null}
                     </Typography>
                     <Typography variant="h6" className={classes.dimColor}>
-                      {dataFetched ? "$" + tokenDetails[1] : null}
+                      {dataFetched ? "$" + tokenSymbol : null}
                     </Typography>
                   </Stack>
                 </Grid>
@@ -829,18 +885,18 @@ const Settings = (props) => {
                     <Grid container>
                       <Grid item mt={1}>
                         <Typography variant="p" className={classes.valuesStyle}>
-                          {governorDataFetched
-                            ? new Date(parseInt(governorDetails[0]) * 1000)
-                                .toJSON()
-                                .slice(0, 10)
-                                .split("-")
-                                .reverse()
-                                .join("/")
+                          {closingDataFetched
+                            ? new Date(closingDays)
+                              .toJSON()
+                              .slice(0, 10)
+                              .split("-")
+                              .reverse()
+                              .join("/")
                             : null}
                         </Typography>
                       </Grid>
                       <Grid item ml={1} mt={1}>
-                        {governorDataFetched ? (
+                        {closingDataFetched ? (
                           closingDays > 0 ? (
                             <Card className={classes.openTag}>
                               <Typography className={classes.openTagFont}>
@@ -870,8 +926,8 @@ const Settings = (props) => {
                       </Grid>
                       <Grid item mt={1}>
                         <Typography variant="p" className={classes.valuesStyle}>
-                          {governorDataFetched
-                            ? convertAmountToWei(governorDetails[1]) + " USDC"
+                          {minDepositDataFetched
+                            ? currentMinDeposit + " USDC"
                             : null}
                         </Typography>
                       </Grid>
@@ -889,8 +945,8 @@ const Settings = (props) => {
                       </Grid>
                       <Grid item mt={1}>
                         <Typography variant="p" className={classes.valuesStyle}>
-                          {governorDataFetched
-                            ? convertAmountToWei(governorDetails[2]) + " USDC"
+                          {maxDepositDataFetched
+                            ? currentMaxDeposit + " USDC"
                             : null}{" "}
                         </Typography>
                       </Grid>
@@ -941,20 +997,20 @@ const Settings = (props) => {
                         <Typography variant="p" className={classes.valuesStyle}>
                           {userBalanceFetched && dataFetched
                             ? isNaN(
-                                parseInt(
-                                  calculateUserSharePercentage(
-                                    userBalance,
-                                    tokenDetails[2],
-                                  ),
+                              parseInt(
+                                calculateUserSharePercentage(
+                                  userBalance,
+                                  totalSupply,
                                 ),
-                              )
+                              ),
+                            )
                               ? 0
                               : parseInt(
-                                  calculateUserSharePercentage(
-                                    userBalance,
-                                    userOwnershipShare,
-                                  ),
-                                )
+                                calculateUserSharePercentage(
+                                  userBalance,
+                                  userOwnershipShare,
+                                ),
+                              )
                             : 0}
                           % (${userBalance})
                         </Typography>
@@ -968,9 +1024,7 @@ const Settings = (props) => {
                       </Grid>
                       <Grid item mt={2}>
                         <Typography variant="p" className={classes.valuesStyle}>
-                          {governorDataFetched && thresholdFetched
-                            ? thresholdValue
-                            : 0}
+                          {thresholdFetched ? thresholdValue : 0}
                         </Typography>
                       </Grid>
                     </Grid>
@@ -982,9 +1036,7 @@ const Settings = (props) => {
                       </Grid>
                       <Grid item mt={2}>
                         <Typography variant="p" className={classes.valuesStyle}>
-                          {governorDataFetched && quoramFetched
-                            ? quoramValue
-                            : 0}
+                          {quoramFetched ? quoramValue : 0}
                         </Typography>
                       </Grid>
                     </Grid>
@@ -995,11 +1047,11 @@ const Settings = (props) => {
               <Grid item ml={3} mt={5} mb={2} mr={3}>
                 <ProgressBar
                   value={
-                    governorDataFetched && dataFetched
+                    totalRaiseAmountDataFetched && dataFetched
                       ? calculateTreasuryTargetShare(
-                          clubTokenMinted,
-                          convertAmountToWei(governorDetails[4]),
-                        )
+                        clubTokenMinted,
+                        convertAmountToWei(totalRaiseAmount),
+                      )
                       : 0
                   }
                 />
@@ -1012,7 +1064,7 @@ const Settings = (props) => {
                     </Typography>
                     <Typography variant="p" className={classes.valuesStyle}>
                       {dataFetched
-                        ? parseInt(clubTokenMinted) + " $" + tokenDetails[1]
+                        ? parseInt(clubTokenMinted) + " $" + totalSupply
                         : null}
                     </Typography>
                   </Stack>
@@ -1029,9 +1081,8 @@ const Settings = (props) => {
                   <Stack spacing={1}>
                     <Typography variant="settingText">Total Supply</Typography>
                     <Typography variant="p" className={classes.valuesStyle}>
-                      {governorDataFetched && dataFetched
-                        ? convertAmountToWei(governorDetails[4]) +
-                          (" $" + tokenDetails[1])
+                      {totalRaiseAmountDataFetched && dataFetched
+                        ? totalRaiseAmount + (" $" + totalSupply)
                         : null}{" "}
                     </Typography>
                   </Stack>
@@ -1081,10 +1132,10 @@ const Settings = (props) => {
                       <Typography variant="p" className={classes.valuesStyle}>
                         {apiTokenDetailSet
                           ? tokenAPIDetails[0].daoAddress.substring(0, 6) +
-                            "......" +
-                            tokenAPIDetails[0].daoAddress.substring(
-                              tokenAPIDetails[0].daoAddress.length - 4,
-                            )
+                          "......" +
+                          tokenAPIDetails[0].daoAddress.substring(
+                            tokenAPIDetails[0].daoAddress.length - 4,
+                          )
                           : null}
                       </Typography>
                     </Grid>
@@ -1151,7 +1202,7 @@ const Settings = (props) => {
                     xs
                     sx={{ display: "flex", justifyContent: "flex-end" }}
                   >
-                    {governorDataFetched ? (
+                    {closingDataFetched ? (
                       closingDays > 0 ? (
                         <Typography variant="p" className={classes.valuesStyle}>
                           Enabled
@@ -1205,10 +1256,7 @@ const Settings = (props) => {
                     sx={{ display: "flex", justifyContent: "flex-end" }}
                   >
                     <Typography variant="p" className={classes.valuesStyle}>
-                      {governorDataFetched
-                        ? convertAmountToWei(governorDetails[1])
-                        : null}{" "}
-                      USDC
+                      {minDepositDataFetched ? currentMinDeposit : null} USDC
                       {isAdminUser ? (
                         <a
                           className={classes.activityLink}
@@ -1238,10 +1286,7 @@ const Settings = (props) => {
                     sx={{ display: "flex", justifyContent: "flex-end" }}
                   >
                     <Typography variant="p" className={classes.valuesStyle}>
-                      {governorDataFetched
-                        ? convertAmountToWei(governorDetails[2])
-                        : null}{" "}
-                      USDC
+                      {maxDepositDataFetched ? currentMaxDeposit : null} USDC
                       {isAdminUser ? (
                         <a
                           className={classes.activityLink}
@@ -1307,15 +1352,6 @@ const Settings = (props) => {
                   </Grid>
                 </Grid>
                 <Divider />
-                {/* <Grid container ml={3} mr={4}>
-                  <Grid item >
-                    <Typography variant="settingText">Allow deposits till this date</Typography>
-                  </Grid>
-                  <Grid item mr={4} xs sx={{ display: "flex", justifyContent: "flex-end" }}>
-                    <Typography variant="p" className={classes.valuesStyle}>{governorDataFetched ? new Date(parseInt(governorDetails[0]) * 1000).toJSON().slice(0, 10).split('-').reverse().join('/') : null} <a className={classes.activityLink} onClick={(e) => handleClickOpen(e)}>(change)</a></Typography>
-                  </Grid>
-                </Grid>
-                <Divider /> */}
 
                 <Grid container ml={3} mr={4}>
                   <Grid item>
