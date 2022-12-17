@@ -50,6 +50,7 @@ export async function initiateConnection(
   usdcContractAddress,
   gnosisTransactionUrl,
   usdcConvertDecimal,
+  enableGovernance
 ) {
   const web3 = new Web3(Web3.givenProvider);
   const safeOwner = await web3.eth.getAccounts();
@@ -93,6 +94,7 @@ export async function initiateConnection(
         quoram,
         formThreshold,
         usdcConvertDecimal,
+        enableGovernance
       );
       console.log("Called createDao");
       console.log(value);

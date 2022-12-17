@@ -188,6 +188,7 @@ const Create = (props) => {
   const usdcConvertDecimal = useSelector((state) => {
     return state.gnosis.tokenDecimal;
   });
+  const [governance, setGovernance] = useState(false);
 
   let walletAddress = null;
 
@@ -290,6 +291,7 @@ const Create = (props) => {
             USDC_CONTRACT_ADDRESS,
             GNOSIS_TRANSACTION_URL,
             usdcConvertDecimal,
+            governance
           )
             .then((result) => {
               setLoading(false);
@@ -342,6 +344,14 @@ const Create = (props) => {
 
   const handleStep = (step) => () => {
     setActiveStep(step);
+  };
+
+  const handleOperationTypeChange = (event) => {
+    if (event.target.checked) {
+      setGovernance(false);
+    } else {
+      setGovernance(true);
+    }
   };
 
   const step1 = () => {
@@ -526,22 +536,6 @@ const Create = (props) => {
                 </Grid>
               </Grid>
             </Card>
-
-            {/* <Typography className={classes.largeText} mt={4} mb={2}>
-              Governance
-            </Typography>
-            <Card className={classes.cardPadding} mb={2}>
-              <Grid container pl={3} pr={1} mt={2} mb={2}>
-                <Grid item xs sx={{ display: "flex", justifyContent: "flex-start", alignItems: "center" }}>
-                  <Typography className={classes.largeText}>
-                    Make proposals mandatory
-                  </Typography>
-                </Grid>
-                <Grid item xs sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
-                  <FormControlLabel control={<Switch />} onChange={(e) => setMandatoryProposal(e.target.value)} value={mandatoryProposal} label="" />
-                </Grid>
-              </Grid>
-            </Card> */}
             <br />
             <Card className={classes.cardPadding} mb={2}>
               <Grid
@@ -674,6 +668,19 @@ const Create = (props) => {
                       minDate={depositClose}
                     />
                   </LocalizationProvider>
+                </Grid>
+              </Grid>
+            </Card>
+            <br />
+            <Card className={classes.cardPadding} mb={2}>
+              <Grid container pl={3} pr={1} mt={2} mb={2}>
+                <Grid item xs sx={{ display: "flex", justifyContent: "flex-start", alignItems: "center" }}>
+                  <Typography className={classes.largeText}>
+                    Do you want to enable Governance?
+                  </Typography>
+                </Grid>
+                <Grid item xs sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
+                  <FormControlLabel control={<Switch />} onChange={handleOperationTypeChange} value={governance} label="NO / YES" labelPlacement="top" />
                 </Grid>
               </Grid>
             </Card>
@@ -1036,13 +1043,11 @@ const Create = (props) => {
                         activeStep === 0
                           ? !clubName || !clubSymbol
                           : activeStep === 2
-                          ? !raiseAmount ||
+                            ? !raiseAmount ||
                             !maxContribution ||
-                            !voteForQuorum ||
                             !depositClose ||
-                            !minContribution ||
-                            voteInFavour < 50
-                          : // : activeStep === 2
+                            !minContribution
+                            : // : activeStep === 2
                             //   ? false
                             true
                       }
