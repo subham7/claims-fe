@@ -170,11 +170,15 @@ export async function initiateConnection(
           });
         },
         (error) => {
-          console.log(error);
+          Router.push(`/create`, undefined, {
+            shallow: true,
+          });
         },
       );
     })
     .catch((errorMsg) => {
-      console.log(errorMsg);
+      Router.push(`/create`, undefined, {
+        shallow: true,
+      });
     });
 }
