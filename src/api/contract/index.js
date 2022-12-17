@@ -1,12 +1,12 @@
-import Web3 from "web3"
-import Web3Adapter from "@gnosis.pm/safe-web3-lib"
-import SafeServiceClient from "@gnosis.pm/safe-service-client"
-import USDCContract from "../../abis/usdcTokenContract.json"
-import Safe, { EthSignSignature } from "@gnosis.pm/safe-core-sdk"
-import { USDC_FAUCET_ADDRESS } from "../index"
-import { calculateDays, convertToWei } from "../../utils/globalFunctions"
-import FactoryContract from "../../abis/factoryContract.json"
-import ImplementationContract from "../../abis/implementationABI.json"
+import Web3 from "web3";
+import Web3Adapter from "@safe-global/safe-web3-lib";
+import SafeServiceClient from "@safe-global/safe-service-client";
+import USDCContract from "../../abis/usdcTokenContract.json";
+import Safe, { EthSignSignature } from "@safe-global/safe-core-sdk";
+import { USDC_FAUCET_ADDRESS } from "../index";
+import { calculateDays, convertToWei } from "../../utils/globalFunctions";
+import FactoryContract from "../../abis/factoryContract.json";
+import ImplementationContract from "../../abis/implementationABI.json";
 import { createProposalTxHash, getProposalTxHash } from "../../api/proposal";
 
 async function syncWallet() {
@@ -54,7 +54,7 @@ export class SmartContract {
         contractAddress &&
         walletAddress &&
         usdcContractAddress,
-        gnosisTransactionUrl)
+      gnosisTransactionUrl)
     ) {
       this.web3 = new Web3(window.web3);
       this.abi = abiFile.abi;
@@ -193,9 +193,12 @@ export class SmartContract {
 
     console.log("safeTransactionData", safeTransactionData);
 
-    const safeTransaction = await safeSdk.createTransaction(
+    const safeTransaction = await safeSdk.createTransaction({
       safeTransactionData,
-    );
+    });
+
+    console.log("safeTransaction", safeTransaction);
+
     // const safeTransaction = await safeSdk.createTransaction(transaction);
     console.log("execution Status", executionStatus);
 
@@ -285,8 +288,14 @@ export class SmartContract {
       const safetx = await safeService.getTransaction(
         proposalTxHash.data[0].txHash,
       );
-      console.log("shfdfsjk", safetx);
-      const safetx2 = await safeSdk.createTransaction(safetx);
+      console.log("safetx", safetx.to);
+      try {
+        const safetx2 = await safeSdk.createTransaction({ safetx });
+        console.log("safetx2", safetx2);
+      } catch (error) {
+        console.log(error);
+      }
+
       safetx.confirmations.forEach((confirmation) => {
         const sign = new EthSignSignature(
           confirmation.owner,
