@@ -15,6 +15,7 @@ export const darkComponents = {
       {
         props: { variant: "primary" },
         style: {
+          height: "45px",
           "fontSize": "1.3rem",
           "borderRadius": "30px",
           "&:hover": {
@@ -37,6 +38,7 @@ export const darkComponents = {
       {
         props: { variant: "navBar" },
         style: {
+          height: "45px",
           "background": "#111D38 0% 0% no-repeat padding-box",
           "border": "1px solid #C1D3FF40",
           "opacity": "1",
