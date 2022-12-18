@@ -1,5 +1,6 @@
 import { React, useEffect, useState } from "react";
 import { makeStyles } from "@mui/styles";
+import Image from "next/image";
 import Layout1 from "../../../../src/components/layouts/layout1";
 import {
   Box,
@@ -25,6 +26,7 @@ import {
   CardActionArea,
   CircularProgress,
   Backdrop,
+  Link,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
@@ -33,7 +35,11 @@ import CancelIcon from "@mui/icons-material/Cancel";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { fontStyle } from "@mui/system";
 import SimpleSelectButton from "../../../../src/components/simpleSelectButton";
-import { proposalType, commandTypeList } from "../../../../src/data/dashboard";
+import {
+  proposalType,
+  commandTypeList,
+  proposalDisplayOptions,
+} from "../../../../src/data/dashboard";
 import { getAssets } from "../../../../src/api/assets";
 import {
   createProposal,
@@ -55,8 +61,17 @@ import {
   convertToWei,
   convertToWeiGovernance,
 } from "../../../../src/utils/globalFunctions";
+import proposalImg from "../../../../public/assets/images/proposals.png";
+import ActionChipIcon from "../../../../public/assets/icons/ionic-md-swap.js";
 
 const useStyles = makeStyles({
+  proposalInfoCard: {
+    background: proposalImg,
+    backgroundColor: "#C9CBFF",
+  },
+  proposalImg: {
+    position: "relative",
+  },
   clubAssets: {
     fontFamily: "Whyte",
     fontSize: "48px",
@@ -139,6 +154,20 @@ const useStyles = makeStyles({
     fontSize: "24px",
     color: "#EFEFEF",
     fontFamily: "Whyte",
+  },
+  actionChip: {
+    border: "1px solid #0ABB92",
+    background: "transparent",
+    textTransform: "capitalize",
+  },
+  surveyChip: {
+    border: "1px solid #6C63FF",
+    background: "transparent",
+    textTransform: "capitalize",
+  },
+  timeLeftChip: {
+    background: "#111D38",
+    borderRadius: "5px",
   },
   cardFontActive: {
     fontSize: "16px",
@@ -763,6 +792,15 @@ const Proposal = () => {
     }
   };
 
+  const handleFilterChange = (event) => {
+    const {
+      target: { value },
+    } = event;
+    setSelectedListItem(value);
+    fetchFilteredData(value);
+    console.log("value", value);
+  };
+
   const handleProposalClick = (proposal) => {
     router.push(`${router.asPath}/${proposal.proposalId}`, undefined, {
       shallow: true,
@@ -835,12 +873,12 @@ const Proposal = () => {
     }
     setOpenSnackBar(false);
   };
-
+  console.log("proposalData", proposalData);
   return (
     <>
       <Layout1 page={2}>
         <Grid container spacing={3} paddingLeft={10} paddingTop={15}>
-          <Grid item md={9}>
+          <Grid item md={8}>
             <Grid
               container
               mb={5}
@@ -852,7 +890,7 @@ const Proposal = () => {
               }}
             >
               <Grid item>
-                <Typography variant="title">Proposals</Typography>
+                <Typography variant="title">WorkStation</Typography>
               </Grid>
               <Grid
                 item
@@ -868,7 +906,7 @@ const Proposal = () => {
                     xs
                     sx={{ display: "flex", justifyContent: "flex-end" }}
                   >
-                    <TextField
+                    {/* <TextField
                       value={searchProposal}
                       onChange={(e) => setSearchProposal(e.target.value)}
                       className={classes.searchField}
@@ -884,15 +922,46 @@ const Proposal = () => {
                           </IconButton>
                         ),
                       }}
-                    />
+                    /> */}
+                    <Select
+                      sx={{ height: "80%", textTransform: "capitalize" }}
+                      value={selectedListItem}
+                      onChange={handleFilterChange}
+                      input={<OutlinedInput />}
+                      renderValue={(selected) => {
+                        if (selected.length === 0) {
+                          return "Select a command";
+                        }
+                        return selected;
+                      }}
+                      MenuProps={proposalDisplayOptions}
+                      style={{
+                        borderRadius: "10px",
+                        background: "#111D38 0% 0% no-repeat padding-box",
+                        width: "30%",
+                      }}
+                    >
+                      {proposalDisplayOptions.map((option) => (
+                        <MenuItem
+                          key={option.name}
+                          value={option.type}
+                          sx={{ textTransform: "capitalize" }}
+                        >
+                          {option.name}
+                        </MenuItem>
+                      ))}
+                    </Select>
                   </Grid>
                   <Grid item>
                     <Button
-                      variant="primary"
-                      startIcon={<AddCircleRoundedIcon />}
+                      variant="contained"
+                      size="large"
+                      sx={{
+                        height: "80%",
+                      }}
                       onClick={handleClickOpen}
                     >
-                      Create new
+                      Propose
                     </Button>
                   </Grid>
                 </Grid>
@@ -905,6 +974,7 @@ const Proposal = () => {
                     {executionTransaction && (
                       <>
                         <h2>Txn to be executed</h2>
+                        {console.log(executionTransaction)}
                         <Grid
                           item
                           // key={proposal.id}
@@ -918,7 +988,7 @@ const Proposal = () => {
                               <Grid container>
                                 <Grid item ml={2} mr={2}>
                                   <Typography className={classes.cardFont}>
-                                    Proposed by{" "}
+                                    Proposed by
                                     {fetched
                                       ? executionTransaction.createdBy.substring(
                                           0,
@@ -929,7 +999,8 @@ const Proposal = () => {
                                           executionTransaction.createdBy
                                             .length - 4,
                                         )
-                                      : null}
+                                      : null}{" "}
+                                    on {executionTransaction.updateDate}
                                   </Typography>
                                 </Grid>
                                 <Grid
@@ -942,6 +1013,12 @@ const Proposal = () => {
                                     justifyContent: "flex-end",
                                   }}
                                 >
+                                  {fetched ? (
+                                    <Chip
+                                      className={classes.cardFontActive}
+                                      label={executionTransaction.type}
+                                    />
+                                  ) : null}
                                   {fetched ? (
                                     <Chip
                                       className={
@@ -1005,7 +1082,7 @@ const Proposal = () => {
                       </>
                     )}
                     {/* {proposalData && getExecutionTransaction()} */}
-                    <h2>Proposals</h2>
+                    {/* <h2>Proposals</h2> */}
                     {proposalData.map((proposal, key) => {
                       return (
                         <Grid
@@ -1029,7 +1106,11 @@ const Proposal = () => {
                                         proposal.createdBy.substring(
                                           proposal.createdBy.length - 4,
                                         )
-                                      : null}
+                                      : null}{" "}
+                                    on{" "}
+                                    {new Date(
+                                      String(proposal.updateDate),
+                                    ).toLocaleDateString()}
                                   </Typography>
                                 </Grid>
                                 <Grid
@@ -1043,25 +1124,70 @@ const Proposal = () => {
                                   }}
                                 >
                                   {fetched ? (
-                                    <Chip
-                                      className={
-                                        proposal.status === "active"
-                                          ? classes.cardFontActive
-                                          : proposal.status === "passed"
-                                          ? classes.cardFontPassed
-                                          : proposal.status === "executed"
-                                          ? classes.cardFontExecuted
-                                          : proposal.status === "failed"
-                                          ? classes.cardFontFailed
-                                          : classes.cardFontFailed
-                                      }
-                                      label={
-                                        proposal.status
-                                          .charAt(0)
-                                          .toUpperCase() +
-                                        proposal.status.slice(1)
-                                      }
-                                    />
+                                    <Grid
+                                      container
+                                      spacing={1}
+                                      sx={{
+                                        display: "flex",
+                                        justifyContent: "flex-end",
+                                      }}
+                                    >
+                                      <Grid item>
+                                        <Chip
+                                          className={classes.timeLeftChip}
+                                          label={
+                                            calculateDays(
+                                              proposal.votingDuration,
+                                            ) <= 0
+                                              ? "Voting closed"
+                                              : calculateDays(
+                                                  proposal.votingDuration,
+                                                ) + " days left"
+                                          }
+                                        />
+                                      </Grid>
+                                      <Grid item>
+                                        <Chip
+                                          className={
+                                            proposal.type === "action"
+                                              ? classes.actionChip
+                                              : classes.surveyChip
+                                          }
+                                          label={
+                                            <>
+                                              {/* <ActionChipIcon /> */}
+                                              {/* <Image
+                                                src={ActionChipIcon}
+                                                fill="#0ABB92"
+                                              /> */}
+                                              {proposal.type}
+                                            </>
+                                          }
+                                        />
+                                      </Grid>
+                                      <Grid item>
+                                        {" "}
+                                        <Chip
+                                          className={
+                                            proposal.status === "active"
+                                              ? classes.cardFontActive
+                                              : proposal.status === "passed"
+                                              ? classes.cardFontPassed
+                                              : proposal.status === "executed"
+                                              ? classes.cardFontExecuted
+                                              : proposal.status === "failed"
+                                              ? classes.cardFontFailed
+                                              : classes.cardFontFailed
+                                          }
+                                          label={
+                                            proposal.status
+                                              .charAt(0)
+                                              .toUpperCase() +
+                                            proposal.status.slice(1)
+                                          }
+                                        />
+                                      </Grid>
+                                    </Grid>
                                   ) : null}
                                 </Grid>
                               </Grid>
@@ -1081,12 +1207,147 @@ const Proposal = () => {
                               </Grid>
                               <Grid container>
                                 <Grid item ml={2} mr={2} mt={2}>
-                                  <Typography className={classes.daysFont}>
-                                    {calculateDays(proposal.votingDuration) <= 0
-                                      ? "Voting closed"
-                                      : calculateDays(proposal.votingDuration) +
-                                        " days left"}
-                                  </Typography>
+                                  <Grid container spacing={1}>
+                                    <Grid item sx={{ display: "flex" }}>
+                                      {proposal?.commands[0]
+                                        ?.usdcTokenSymbol ? (
+                                        <Chip
+                                          className={classes.timeLeftChip}
+                                          label={
+                                            <Grid sx={{ display: "flex" }}>
+                                              {" "}
+                                              <Typography
+                                                color="#C1D3FF"
+                                                sx={{ marginRight: "5px" }}
+                                              >
+                                                Asset:
+                                              </Typography>
+                                              <Typography color="#FFFFFF">
+                                                {
+                                                  proposal.commands[0]
+                                                    .usdcTokenSymbol
+                                                }
+                                              </Typography>
+                                            </Grid>
+                                          }
+                                        ></Chip>
+                                      ) : (
+                                        <></>
+                                      )}
+                                    </Grid>
+
+                                    {proposal?.commands[0]?.airDropAmount ? (
+                                      <Grid item>
+                                        <Chip
+                                          className={classes.timeLeftChip}
+                                          label={
+                                            proposal.commands[0]
+                                              .airDropAmount ? (
+                                              <Grid sx={{ display: "flex" }}>
+                                                {" "}
+                                                <Typography
+                                                  color="#C1D3FF"
+                                                  sx={{ marginRight: "5px" }}
+                                                >
+                                                  Amount:
+                                                </Typography>
+                                                <Typography color="#FFFFFF">
+                                                  {proposal.commands[0]
+                                                    .airDropAmount /
+                                                    10 **
+                                                      proposal.commands[0]
+                                                        .usdcTokenDecimal}
+                                                </Typography>
+                                              </Grid>
+                                            ) : null
+                                          }
+                                        ></Chip>
+                                      </Grid>
+                                    ) : null}
+
+                                    {proposal?.commands[0]
+                                      ?.customTokenAmounts ? (
+                                      <Grid item>
+                                        <Chip
+                                          className={classes.timeLeftChip}
+                                          label={
+                                            <Grid sx={{ display: "flex" }}>
+                                              {" "}
+                                              <Typography
+                                                color="#C1D3FF"
+                                                sx={{ marginRight: "5px" }}
+                                              >
+                                                Amount:
+                                              </Typography>
+                                              <Typography color="#FFFFFF">
+                                                {proposal.commands[0]
+                                                  .customTokenAmounts[0] /
+                                                  10 **
+                                                    proposal.commands[0]
+                                                      .usdcTokenDecimal}
+                                              </Typography>
+                                            </Grid>
+                                          }
+                                        ></Chip>
+                                      </Grid>
+                                    ) : null}
+
+                                    {proposal?.commands[0]
+                                      ?.customTokenAddresses ? (
+                                      <Grid item>
+                                        <Chip
+                                          className={classes.timeLeftChip}
+                                          label={
+                                            <Grid sx={{ display: "flex" }}>
+                                              {" "}
+                                              <Typography
+                                                color="#C1D3FF"
+                                                sx={{ marginRight: "5px" }}
+                                              >
+                                                Recipient:
+                                              </Typography>
+                                              <Typography color="#FFFFFF">
+                                                {proposal?.commands[0]?.customTokenAddresses[0].substring(
+                                                  0,
+                                                  6,
+                                                ) +
+                                                  "....." +
+                                                  proposal?.commands[0]?.customTokenAddresses[0].substring(
+                                                    proposal?.commands[0]
+                                                      ?.customTokenAddresses[0]
+                                                      .length - 4,
+                                                  )}
+                                              </Typography>
+                                            </Grid>
+                                          }
+                                        ></Chip>
+                                      </Grid>
+                                    ) : (
+                                      <></>
+                                    )}
+
+                                    {/* <Chip
+                                        className={classes.timeLeftChip}
+                                        label={
+                                          <Grid sx={{ display: "flex" }}>
+                                            {" "}
+                                            <Typography
+                                              color="#C1D3FF"
+                                              sx={{ marginRight: "5px" }}
+                                            >
+                                              Amount:
+                                            </Typography>
+                                            <Typography color="#FFFFFF">
+                                              {proposal.commands[0]
+                                                .airDropAmount /
+                                                10 **
+                                                  proposal.commands[0]
+                                                    .usdcTokenDecimal}
+                                            </Typography>
+                                          </Grid>
+                                        }
+                                      ></Chip> */}
+                                  </Grid>
                                 </Grid>
                               </Grid>
                             </Card>
@@ -1132,7 +1393,11 @@ const Proposal = () => {
                                     proposal.createdBy.substring(
                                       proposal.createdBy.length - 4,
                                     )
-                                  : null}
+                                  : null}{" "}
+                                on{" "}
+                                {new Date(
+                                  String(proposal.updateDate),
+                                ).toLocaleDateString()}
                               </Typography>
                             </Grid>
                             <Grid
@@ -1146,23 +1411,70 @@ const Proposal = () => {
                               }}
                             >
                               {fetched ? (
-                                <Chip
-                                  className={
-                                    proposal.status === "active"
-                                      ? classes.cardFontActive
-                                      : proposal.status === "passed"
-                                      ? classes.cardFontPassed
-                                      : proposal.status === "executed"
-                                      ? classes.cardFontExecuted
-                                      : proposal.status === "failed"
-                                      ? classes.cardFontFailed
-                                      : classes.cardFontFailed
-                                  }
-                                  label={
-                                    proposal.status.charAt(0).toUpperCase() +
-                                    proposal.status.slice(1)
-                                  }
-                                />
+                                <Grid
+                                  container
+                                  spacing={1}
+                                  sx={{
+                                    display: "flex",
+                                    justifyContent: "flex-end",
+                                  }}
+                                >
+                                  <Grid item>
+                                    <Chip
+                                      className={classes.timeLeftChip}
+                                      label={
+                                        calculateDays(
+                                          proposal.votingDuration,
+                                        ) <= 0
+                                          ? "Voting closed"
+                                          : calculateDays(
+                                              proposal.votingDuration,
+                                            ) + " days left"
+                                      }
+                                    />
+                                  </Grid>
+                                  <Grid item>
+                                    <Chip
+                                      className={
+                                        proposal.type === "action"
+                                          ? classes.actionChip
+                                          : classes.surveyChip
+                                      }
+                                      label={
+                                        <>
+                                          {/* <ActionChipIcon /> */}
+                                          {/* <Image
+                                                src={ActionChipIcon}
+                                                fill="#0ABB92"
+                                              /> */}
+                                          {proposal.type}
+                                        </>
+                                      }
+                                    />
+                                  </Grid>
+                                  <Grid item>
+                                    {" "}
+                                    <Chip
+                                      className={
+                                        proposal.status === "active"
+                                          ? classes.cardFontActive
+                                          : proposal.status === "passed"
+                                          ? classes.cardFontPassed
+                                          : proposal.status === "executed"
+                                          ? classes.cardFontExecuted
+                                          : proposal.status === "failed"
+                                          ? classes.cardFontFailed
+                                          : classes.cardFontFailed
+                                      }
+                                      label={
+                                        proposal.status
+                                          .charAt(0)
+                                          .toUpperCase() +
+                                        proposal.status.slice(1)
+                                      }
+                                    />
+                                  </Grid>
+                                </Grid>
                               ) : null}
                             </Grid>
                           </Grid>
@@ -1182,12 +1494,149 @@ const Proposal = () => {
                           </Grid>
                           <Grid container>
                             <Grid item ml={2} mr={2} mt={2}>
-                              <Typography className={classes.daysFont}>
+                              <Grid container spacing={1}>
+                                <Grid item sx={{ display: "flex" }}>
+                                  {proposal?.commands[0]?.usdcTokenSymbol ? (
+                                    <Chip
+                                      className={classes.timeLeftChip}
+                                      label={
+                                        <Grid sx={{ display: "flex" }}>
+                                          {" "}
+                                          <Typography
+                                            color="#C1D3FF"
+                                            sx={{ marginRight: "5px" }}
+                                          >
+                                            Asset:
+                                          </Typography>
+                                          <Typography color="#FFFFFF">
+                                            {
+                                              proposal.commands[0]
+                                                .usdcTokenSymbol
+                                            }
+                                          </Typography>
+                                        </Grid>
+                                      }
+                                    ></Chip>
+                                  ) : (
+                                    <></>
+                                  )}
+                                </Grid>
+
+                                {proposal?.commands[0]?.airDropAmount ? (
+                                  <Grid item>
+                                    <Chip
+                                      className={classes.timeLeftChip}
+                                      label={
+                                        proposal.commands[0].airDropAmount ? (
+                                          <Grid sx={{ display: "flex" }}>
+                                            {" "}
+                                            <Typography
+                                              color="#C1D3FF"
+                                              sx={{ marginRight: "5px" }}
+                                            >
+                                              Amount:
+                                            </Typography>
+                                            <Typography color="#FFFFFF">
+                                              {proposal.commands[0]
+                                                .airDropAmount /
+                                                10 **
+                                                  proposal.commands[0]
+                                                    .usdcTokenDecimal}
+                                            </Typography>
+                                          </Grid>
+                                        ) : null
+                                      }
+                                    ></Chip>
+                                  </Grid>
+                                ) : null}
+
+                                {proposal?.commands[0]?.customTokenAmounts ? (
+                                  <Grid item>
+                                    <Chip
+                                      className={classes.timeLeftChip}
+                                      label={
+                                        <Grid sx={{ display: "flex" }}>
+                                          {" "}
+                                          <Typography
+                                            color="#C1D3FF"
+                                            sx={{ marginRight: "5px" }}
+                                          >
+                                            Amount:
+                                          </Typography>
+                                          <Typography color="#FFFFFF">
+                                            {proposal.commands[0]
+                                              .customTokenAmounts[0] /
+                                              10 **
+                                                proposal.commands[0]
+                                                  .usdcTokenDecimal}
+                                          </Typography>
+                                        </Grid>
+                                      }
+                                    ></Chip>
+                                  </Grid>
+                                ) : null}
+
+                                {proposal?.commands[0]?.customTokenAddresses ? (
+                                  <Grid item>
+                                    <Chip
+                                      className={classes.timeLeftChip}
+                                      label={
+                                        <Grid sx={{ display: "flex" }}>
+                                          {" "}
+                                          <Typography
+                                            color="#C1D3FF"
+                                            sx={{ marginRight: "5px" }}
+                                          >
+                                            Recipient:
+                                          </Typography>
+                                          <Typography color="#FFFFFF">
+                                            {proposal?.commands[0]?.customTokenAddresses[0].substring(
+                                              0,
+                                              6,
+                                            ) +
+                                              "....." +
+                                              proposal?.commands[0]?.customTokenAddresses[0].substring(
+                                                proposal?.commands[0]
+                                                  ?.customTokenAddresses[0]
+                                                  .length - 4,
+                                              )}
+                                          </Typography>
+                                        </Grid>
+                                      }
+                                    ></Chip>
+                                  </Grid>
+                                ) : (
+                                  <></>
+                                )}
+
+                                {/* <Chip
+                                        className={classes.timeLeftChip}
+                                        label={
+                                          <Grid sx={{ display: "flex" }}>
+                                            {" "}
+                                            <Typography
+                                              color="#C1D3FF"
+                                              sx={{ marginRight: "5px" }}
+                                            >
+                                              Amount:
+                                            </Typography>
+                                            <Typography color="#FFFFFF">
+                                              {proposal.commands[0]
+                                                .airDropAmount /
+                                                10 **
+                                                  proposal.commands[0]
+                                                    .usdcTokenDecimal}
+                                            </Typography>
+                                          </Grid>
+                                        }
+                                      ></Chip> */}
+                              </Grid>
+                              {/* <Typography className={classes.daysFont}>
                                 {calculateDays(proposal.votingDuration) <= 0
                                   ? "Voting closed"
                                   : calculateDays(proposal.votingDuration) +
                                     " days left"}
-                              </Typography>
+                              </Typography> */}
                             </Grid>
                           </Grid>
                         </Card>
@@ -1209,9 +1658,46 @@ const Proposal = () => {
               )}
             </Grid>
           </Grid>
-          <Grid item md={3}>
-            <Card>
-              <Grid container>
+          <Grid item md={4}>
+            <Card
+              className={classes.proposalInfoCard}
+              sx={{ padding: 0, position: "relative" }}
+            >
+              <Image
+                src={proposalImg}
+                alt="proposal image"
+                className={classes.proposalImg}
+              />
+              <Typography
+                variant="h4"
+                sx={{
+                  position: "absolute",
+                  left: 20,
+                  top: 40,
+                  color: "#111D38",
+                  fontWeight: "normal",
+                  width: "70%",
+                }}
+              >
+                Create & execute proposals
+              </Typography>
+              <Link
+                href="/"
+                sx={{
+                  position: "absolute",
+                  color: "#111D38",
+                  fontWeight: "normal",
+                  width: "70%",
+                  textDecoration: "underline",
+                  fontSize: "0.875rem",
+                  left: 20,
+                  bottom: 10,
+                }}
+              >
+                Read Docs
+              </Link>
+
+              {/* <Grid container>
                 <Grid item>
                   <Typography className={classes.listFont}>
                     Proposals
@@ -1259,7 +1745,7 @@ const Proposal = () => {
                 <div className={classes.failedIllustration}></div>
                 <ListItemText primary="Failed" className={classes.listFont} />
                 <ArrowForwardIosIcon fontSize="5px" />
-              </ListItemButton>
+              </ListItemButton> */}
             </Card>
           </Grid>
         </Grid>
