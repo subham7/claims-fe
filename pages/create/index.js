@@ -25,6 +25,7 @@ import {
   MenuItem,
   Alert,
   StepButton,
+  InputAdornment
 } from "@mui/material";
 import styled from "@emotion/styled";
 import Layout2 from "../../src/components/layouts/layout2";
@@ -85,6 +86,11 @@ const useStyles = makeStyles({
   },
   largeText1: {
     fontSize: "2.4vw",
+    color: "#FFFFFF",
+    fontFamily: "Whyte",
+  },
+  largeText2: {
+    fontSize: "18px",
     color: "#FFFFFF",
     fontFamily: "Whyte",
   },
@@ -189,7 +195,7 @@ const Create = (props) => {
   const usdcConvertDecimal = useSelector((state) => {
     return state.gnosis.tokenDecimal;
   });
-  const [governance, setGovernance] = useState(false);
+  const [governance, setGovernance] = useState(true);
 
   let walletAddress = null;
 
@@ -349,9 +355,9 @@ const Create = (props) => {
 
   const handleOperationTypeChange = (event) => {
     if (event.target.checked) {
-      setGovernance(false);
-    } else {
       setGovernance(true);
+    } else {
+      setGovernance(false);
     }
   };
 
@@ -492,7 +498,10 @@ const Create = (props) => {
             <br />
             <br />
             <Typography className={classes.largeText} mb={2}>
-              Club tokens
+              Set token type
+            </Typography>
+            <Typography className={classes.smallText} mb={2}>
+              Token type that best suits your objective. For example: ERC721 for membership based communities, Non-transferrable ERC20 for a syndicate cap-table, transferrable ERC20 for a public DAO, etc. Transferability allows trading of tokens in public markets.
             </Typography>
             <Card className={classes.cardPadding}>
               <Grid container pl={3} pr={1}>
@@ -505,8 +514,8 @@ const Create = (props) => {
                     alignItems: "center",
                   }}
                 >
-                  <Typography className={classes.largeText}>
-                    Membership token
+                  <Typography className={classes.largeText2}>
+                    Token type
                   </Typography>
                 </Grid>
                 <Grid
@@ -523,7 +532,48 @@ const Create = (props) => {
               </Grid>
             </Card>
             <br />
+            <Typography className={classes.largeText} mt={3} mb={2}>
+              Add governance
+            </Typography>
+            <Typography className={classes.smallText} mb={2}>
+              Default mechanism is one wallet = one vote irrespective of number of tokens held. Stations can raise & vote proposals to conduct surveys, know community&apos;s sentiment & execute seamless actions (such a airdrop tokens, reward members, etc) required day-to-day.
+            </Typography>
+            <br />
             <Card className={classes.cardPadding} mb={2}>
+              <Grid container pl={3} pr={1} mt={2} mb={2}>
+                <Grid
+                  item
+                  xs
+                  sx={{
+                    display: "flex",
+                    justifyContent: "flex-start",
+                    alignItems: "center",
+                  }}
+                >
+                  <Typography className={classes.largeText2}>
+                    Do you want to enable Governance?
+                  </Typography>
+                </Grid>
+                <Grid
+                  item
+                  xs
+                  sx={{
+                    display: "flex",
+                    justifyContent: "flex-end",
+                    alignItems: "center",
+                  }}
+                >
+                  <FormControlLabel
+                    control={<Switch checked={governance} onChange={handleOperationTypeChange} />}
+                    label="NO / YES"
+                    labelPlacement="top"
+                  />
+                </Grid>
+              </Grid>
+            </Card>
+            <br />
+            <Card className={classes.cardPadding} mb={2}>
+
               <Grid
                 container
                 item
@@ -538,16 +588,24 @@ const Create = (props) => {
                 mt={2}
                 mb={2}
               >
-                <Typography className={classes.largeText}>
-                  Minimum votes needed to{" "}
+                <Typography className={classes.largeText2}>
+                  Min.{" "}
                   <Box
-                    sx={{ color: "#FFFFFF" }}
+                    sx={{ color: "#3B7AFD" }}
                     fontWeight="fontWeightBold"
                     display="inline"
                   >
-                    validate
+                    % of votes needed
                   </Box>{" "}
-                  a proposal
+                  to consider any proposal raised
+                  <Box
+                    sx={{ color: "#6475A3" }}
+                    fontWeight="fontWeightBold"
+                    display="inline"
+                  >
+                    (Quorum)
+                  </Box>{" "}
+
                 </Typography>
               </Grid>
               <Grid container item md={11.3} mt={4} ml={4} mb={4}>
@@ -574,15 +632,22 @@ const Create = (props) => {
                 mb={2}
               >
                 <Typography className={classes.largeText}>
-                  Minimum votes in support to{" "}
+                  Min.{" "}
                   <Box
-                    sx={{ color: "#FFFFFF" }}
+                    sx={{ color: "#3B7AFD" }}
                     fontWeight="fontWeightBold"
                     display="inline"
                   >
-                    pass
+                    % of votes needed
                   </Box>{" "}
-                  a proposal
+                  out of all votes to pass a proposal{" "}
+                  <Box
+                    sx={{ color: "#6475A3" }}
+                    fontWeight="fontWeightBold"
+                    display="inline"
+                  >
+                    (Threshold)
+                  </Box>{" "}
                 </Typography>
               </Grid>
               <Grid container item md={11.3} mt={4} ml={4} mb={4}>
@@ -608,10 +673,17 @@ const Create = (props) => {
                 </Grid>
               ) : null}
             </Card>
+
+            <Typography className={classes.smallText} mt={3} mb={2}>
+              Threshold & quorum % can be edited later by raising a proposal.
+            </Typography>
             <br />
 
             <Typography className={classes.largeText} mt={3} mb={2}>
-              Deposits
+              Set deposit rules for members
+            </Typography>
+            <Typography className={classes.smallText} mb={2}>
+              Any new deposits will not be accepted after the last date and/or funding target is met. Admins can extend deposit dates from dashboard by an onchain transaction requiring gas.
             </Typography>
             <Card className={classes.cardPadding}>
               <Grid container pl={3} pr={1}>
@@ -625,7 +697,7 @@ const Create = (props) => {
                   }}
                 >
                   <Typography className={classes.largeText}>
-                    Accept deposits till
+                    Last date for members to deposit & join
                   </Typography>
                 </Grid>
                 <Grid
@@ -657,41 +729,7 @@ const Create = (props) => {
                 </Grid>
               </Grid>
             </Card>
-            <br />
-            <Card className={classes.cardPadding} mb={2}>
-              <Grid container pl={3} pr={1} mt={2} mb={2}>
-                <Grid
-                  item
-                  xs
-                  sx={{
-                    display: "flex",
-                    justifyContent: "flex-start",
-                    alignItems: "center",
-                  }}
-                >
-                  <Typography className={classes.largeText}>
-                    Do you want to enable Governance?
-                  </Typography>
-                </Grid>
-                <Grid
-                  item
-                  xs
-                  sx={{
-                    display: "flex",
-                    justifyContent: "flex-end",
-                    alignItems: "center",
-                  }}
-                >
-                  <FormControlLabel
-                    control={<Switch />}
-                    onChange={handleOperationTypeChange}
-                    value={governance}
-                    label="NO / YES"
-                    labelPlacement="top"
-                  />
-                </Grid>
-              </Grid>
-            </Card>
+
             <br />
             <Card className={classes.cardPadding} mb={2}>
               <Grid container pl={3} pr={1}>
@@ -705,7 +743,7 @@ const Create = (props) => {
                   }}
                 >
                   <Typography className={classes.largeText}>
-                    Minimum contribution per person
+                    Min. deposit amount per wallet
                   </Typography>
                 </Grid>
                 <Grid
@@ -724,6 +762,7 @@ const Create = (props) => {
                       minContribution % 1 !== 0 ||
                       typeof minContribution === "undefined"
                     }
+                    InputProps={{ endAdornment: <InputAdornment position="end" >USDC</InputAdornment> }}
                     variant="outlined"
                     onChange={(e) => {
                       setMinContribution(e.target.value);
@@ -749,7 +788,7 @@ const Create = (props) => {
                   }}
                 >
                   <Typography className={classes.largeText}>
-                    Maximum contribution per person
+                    Max. deposit amount per wallet
                   </Typography>
                 </Grid>
                 <Grid
@@ -769,6 +808,7 @@ const Create = (props) => {
                       typeof maxContribution === "undefined" ||
                       parseInt(maxContribution) < parseInt(minContribution)
                     }
+                    InputProps={{ endAdornment: <InputAdornment position="end" >USDC</InputAdornment> }}
                     variant="outlined"
                     onChange={(e) => setMaxContribution(e.target.value)}
                     value={maxContribution}
@@ -792,7 +832,7 @@ const Create = (props) => {
                   }}
                 >
                   <Typography className={classes.largeText}>
-                    Total amount you want to raise
+                    Total amount your Station is raising
                   </Typography>
                 </Grid>
                 <Grid
@@ -813,6 +853,7 @@ const Create = (props) => {
                       parseInt(raiseAmount) < parseInt(maxContribution) ||
                       parseInt(raiseAmount) < parseInt(minContribution)
                     }
+                    InputProps={{ endAdornment: <InputAdornment position="end" sx={{ color: "#C1D3FF" }} >USDC</InputAdornment> }}
                     variant="outlined"
                     onChange={(e) => setRaiseAmount(e.target.value)}
                     value={raiseAmount}
@@ -823,7 +864,10 @@ const Create = (props) => {
               </Grid>
             </Card>
             <Typography className={classes.largeText} mt={4} mb={2}>
-              Wallet Signators
+              Add more admins/signators who can manage setting & sign transactions
+            </Typography>
+            <Typography className={classes.smallText} mb={2}>
+              Once your Station/Community passes a proposal, StationX automatically creates an on-chain transaction of the proposal. Signers can sign and execute such transactions from the dashboard.
             </Typography>
             <Card className={classes.cardPadding} mb={2}>
               <Grid container pl={3} pr={1} mt={2} mb={2}>
@@ -837,7 +881,7 @@ const Create = (props) => {
                   }}
                 >
                   <Typography className={classes.largeText}>
-                    Add more wallets that will sign & approve final transaction
+                    Add more wallets that will sign & authorise transactions
                   </Typography>
                 </Grid>
                 <Grid
@@ -873,7 +917,7 @@ const Create = (props) => {
                           key={key}
                         >
                           <TextField
-                            label="Wallet address"
+                            label={"Signature " + (key + 1).toString()}
                             error={!/^0x[a-zA-Z0-9]+/gm.test(addressList[key])}
                             variant="outlined"
                             onChange={(e) => handleInputChange(e, key)}
@@ -899,6 +943,9 @@ const Create = (props) => {
               ) : null}
             </Card>
             <br />
+            <Typography className={classes.smallText} mt={4} mb={2}>
+              Note: Once added, admins can’t be changed in this version of the product.
+            </Typography>
 
             {/*<Card className={classes.cardPadding} mb={2}>*/}
             {/*  <Grid container item xs sx={{ display: "flex", justifyContent: "flex-start", alignItems: "center" }} pl={3} pr={1} mt={2} mb={2}>*/}
@@ -965,7 +1012,7 @@ const Create = (props) => {
               </Grid>
             </Card> */}
           </Grid>
-        </Grid>
+        </Grid >
       </>
     );
   };
@@ -1051,11 +1098,11 @@ const Create = (props) => {
                         activeStep === 0
                           ? !clubName || !clubSymbol
                           : activeStep === 2
-                          ? !raiseAmount ||
+                            ? !raiseAmount ||
                             !maxContribution ||
                             !depositClose ||
                             !minContribution
-                          : // : activeStep === 2
+                            : // : activeStep === 2
                             //   ? false
                             true
                       }
