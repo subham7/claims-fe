@@ -8,6 +8,7 @@ import {
   Typography,
   Stack,
   emphasize,
+  Box,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import StarIcon from "@mui/icons-material/Star";
@@ -19,8 +20,6 @@ const useStyles = makeStyles({
   linearGradientBackground: {
     width: "100%",
     height: "60%",
-    background:
-      "transparent linear-gradient(120deg, #17326A 0%, #19274B 51%, #3D2652 100%) 0% 0% no-repeat padding-box",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
@@ -61,8 +60,6 @@ const useStyles = makeStyles({
   linearGradientBackgroundInactive: {
     "width": "100%",
     "height": "60%",
-    "background":
-      "transparent linear-gradient(120deg, #17326A 0%, #19274B 51%, #3D2652 100%) 0% 0% no-repeat padding-box",
     "display": "flex",
     "justifyContent": "center",
     "alignItems": "center",
@@ -73,13 +70,23 @@ const useStyles = makeStyles({
 });
 
 export default function ContractCard(props) {
-  const { contractHeading, contractSubHeading, contractImage, star, inactive } =
-    props;
+  const {
+    contractHeading,
+    contractSubHeading,
+    contractImage,
+    star,
+    inactive,
+    backgroundColour,
+    comingSoonEnabled,
+  } = props;
   const classes = useStyles();
   if (!inactive) {
     return (
       <Card className={classes.contractCards}>
-        <div className={classes.linearGradientBackground}>
+        <div
+          className={classes.linearGradientBackground}
+          style={{ backgroundColor: backgroundColour }}
+        >
           <CardMedia
             className={classes.image}
             component="img"
@@ -106,7 +113,10 @@ export default function ContractCard(props) {
   } else {
     return (
       <Card className={classes.contractCardsInactive}>
-        <div className={classes.linearGradientBackgroundInactive}>
+        <div
+          className={classes.linearGradientBackgroundInactive}
+          style={{ backgroundColor: backgroundColour }}
+        >
           <CardMedia
             className={classes.image}
             component="img"
@@ -118,6 +128,18 @@ export default function ContractCard(props) {
         <CardContent>
           <Typography gutterBottom component="div" className={classes.heading}>
             {contractHeading}
+            {comingSoonEnabled ? (
+              <>
+                {" "}
+                <Box
+                  sx={{ color: "#6475A3" }}
+                  fontWeight="Normal"
+                  display="inline"
+                >
+                  (Coming soon)
+                </Box>
+              </>
+            ) : null}
             {star ? <StarIcon sx={{ color: "#FFB74D" }} /> : <></>}
           </Typography>
           <Typography

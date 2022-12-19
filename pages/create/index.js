@@ -96,8 +96,9 @@ const useStyles = makeStyles({
     display: "inline-flex",
   },
   smallText: {
-    fontSize: "14px",
+    fontSize: "16px",
     fontFamily: "Whyte",
+    color: "#6475A3",
   },
   cardWarning: {
     backgroundColor: "#FFB74D0D",
@@ -291,7 +292,7 @@ const Create = (props) => {
             USDC_CONTRACT_ADDRESS,
             GNOSIS_TRANSACTION_URL,
             usdcConvertDecimal,
-            governance
+            governance,
           )
             .then((result) => {
               setLoading(false);
@@ -364,43 +365,48 @@ const Create = (props) => {
           alignItems="center"
         >
           <Grid item md={8} mt={8}>
-            <Typography className={classes.largeText1}>
-              What&apos;s your club info?
+            <Typography className={classes.wrapTextIcon}>
+              Basic Station info
+            </Typography>
+            <Typography className={classes.smallText}>
+              Name & token symbol of your station are publicly visible on-chain
+              & can’t be changed after it is created. This can be your brand
+              name or something your community identifies with.
             </Typography>
             <br />
-            <Typography className={classes.wrapTextIcon}>
-              You&apos;ll be the admin of the club since you&apos;re creating
-              the club. &nbsp;
-              <InfoOutlinedIcon />
-            </Typography>
+            <Typography className={classes.wrapTextIcon}>Name</Typography>
             <TextField
               error={clubName === ""}
               className={classes.textField}
-              label="Club name"
+              label="Eg: Degen Collective / PurpleDAO / Phoenix club"
               variant="outlined"
               onChange={(e) => setClubName(e.target.value)}
               value={clubName}
             />
+            <br />
+            <Typography className={classes.wrapTextIcon}>
+              Symbol{" "}
+              <Box
+                sx={{ color: "#6475A3" }}
+                fontWeight="Normal"
+                display="inline"
+              >
+                (Ticker)
+              </Box>
+            </Typography>
             <TextField
               error={clubSymbol === ""}
               className={classes.textField}
-              label="Club token symbol (eg: $DEMO)"
+              label="Eg: DGC / PDAO / PXC"
               variant="outlined"
               onChange={(e) => setClubSymbol(e.target.value)}
               value={clubSymbol}
             />
             <br />
-            {/*<Typography className={classes.largeText} variant="p">*/}
-            {/*  Upload a display picture (Optional)*/}
-            {/*</Typography>*/}
-            {/*<br />*/}
-            {/*<Grid container wrap="nowrap" spacing={0} justify="center" alignItems="center" direction="row">*/}
-            {/*  <Grid item xs={0} mt={2}>*/}
-            {/*    <input ref={uploadInputRef} type="file" accept="image/*" id="file" name="file" hidden onChange={(e) => setDisplayImage(URL.createObjectURL(e.target.files[0]))} />*/}
-            {/*    <Button onClick={() => uploadInputRef.current && uploadInputRef.current.click()} startIcon={<UploadIcon />} className={classes.uploadButton}>Upload file</Button>*/}
-            {/*  </Grid>*/}
-            {/*</Grid>*/}
-            {/*<br />*/}
+            <Typography className={classes.smallText}>
+              You can choose to make your token public or private along with
+              other rules in the next steps.
+            </Typography>
             <Grid
               container
               wrap="nowrap"
@@ -437,7 +443,7 @@ const Create = (props) => {
         >
           <Grid item md={12} mt={8}>
             <Typography className={classes.largeText1}>
-              Select your club&apos;s objective
+              Select your station&apos;s objective
             </Typography>
             <br />
             <Typography className={classes.largeText}>
@@ -459,33 +465,13 @@ const Create = (props) => {
                   contractImage={data.image}
                   star={data.star}
                   inactive={data.inactive}
+                  backgroundColour={data.backgroundColour}
+                  comingSoonEnabled={data.comingSoonEnabled}
                 />
               </Grid>
             );
           })}
         </Grid>
-        {/*<Grid*/}
-        {/*  container*/}
-        {/*  direction="row"*/}
-        {/*  justifyContent="center"*/}
-        {/*  alignItems="center">*/}
-        {/*  <Grid item md={12} mt={8}>*/}
-        {/*    <Grid container rowSpacing={2} columnSpacing={{ xs: 1, sm: 2, md: 1, lg: 1 }}>*/}
-        {/*      {contractList.map((data, key) => {*/}
-        {/*        return (*/}
-        {/*          <Grid item md={6} key={key} onClick={() => handleContractClick(key)}>*/}
-        {/*            <ContractCard*/}
-        {/*              contractHeading={data.contractHeading}*/}
-        {/*              contractSubHeading={data.contractSubHeading}*/}
-        {/*              contractImage={data.image}*/}
-        {/*              star={data.star}*/}
-        {/*            />*/}
-        {/*          </Grid>*/}
-        {/*        )*/}
-        {/*      })}*/}
-        {/*  /!*  </Grid>*!/*/}
-        {/*  /!*</Grid>*!/*/}
-        {/*</Grid>*/}
       </>
     );
   };
@@ -496,12 +482,12 @@ const Create = (props) => {
         <Grid container spacing={3}>
           <Grid item md={12} mt={8}>
             <Typography className={classes.largeText1}>
-              Investment club
+              Set rules for your station
             </Typography>
             <br />
             <Typography className={classes.largeText}>
-              Collectively manage your club’s investments through governance
-              that works for you.
+              All parameters (except token name, symbol & art) can be edited
+              from the dashboard.
             </Typography>
             <br />
             <br />
@@ -674,13 +660,35 @@ const Create = (props) => {
             <br />
             <Card className={classes.cardPadding} mb={2}>
               <Grid container pl={3} pr={1} mt={2} mb={2}>
-                <Grid item xs sx={{ display: "flex", justifyContent: "flex-start", alignItems: "center" }}>
+                <Grid
+                  item
+                  xs
+                  sx={{
+                    display: "flex",
+                    justifyContent: "flex-start",
+                    alignItems: "center",
+                  }}
+                >
                   <Typography className={classes.largeText}>
                     Do you want to enable Governance?
                   </Typography>
                 </Grid>
-                <Grid item xs sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
-                  <FormControlLabel control={<Switch />} onChange={handleOperationTypeChange} value={governance} label="NO / YES" labelPlacement="top" />
+                <Grid
+                  item
+                  xs
+                  sx={{
+                    display: "flex",
+                    justifyContent: "flex-end",
+                    alignItems: "center",
+                  }}
+                >
+                  <FormControlLabel
+                    control={<Switch />}
+                    onChange={handleOperationTypeChange}
+                    value={governance}
+                    label="NO / YES"
+                    labelPlacement="top"
+                  />
                 </Grid>
               </Grid>
             </Card>
@@ -1043,11 +1051,11 @@ const Create = (props) => {
                         activeStep === 0
                           ? !clubName || !clubSymbol
                           : activeStep === 2
-                            ? !raiseAmount ||
+                          ? !raiseAmount ||
                             !maxContribution ||
                             !depositClose ||
                             !minContribution
-                            : // : activeStep === 2
+                          : // : activeStep === 2
                             //   ? false
                             true
                       }

@@ -6,54 +6,68 @@ export const contractList = [
     image: "/assets/images/investments_illustration.svg",
     star: false,
     inactive: false,
+    backgroundColour: "#A0FFE6",
+    comingSoonEnabled: false,
   },
   {
-    contractHeading: "Manage Grants (Coming soon)",
+    contractHeading: "Manage Grants ",
     contractSubHeading:
       "Give grants to ideas that matter - for protocols, accelerators, teams, foundations & more",
     image: "/assets/images/grants_illustration.svg",
     star: false,
     inactive: true,
+    backgroundColour: "#FFFFDD",
+    comingSoonEnabled: true,
   },
   {
-    contractHeading: "NFT DAO Treasury (Coming soon)",
+    contractHeading: "NFT DAO Treasury ",
     contractSubHeading:
       "Empower your NFT community in your roadmap - for creators, artists, NFT projects, crowdfunding",
     image: "/assets/images/treasury_illustration.svg",
     star: false,
     inactive: true,
+    backgroundColour: "#81F5FF",
+    comingSoonEnabled: true,
   },
   {
-    contractHeading: "NFT Collectors (Party DAO) (Coming soon)",
+    contractHeading: "NFT Collectors ",
     contractSubHeading:
       "Start your own party DAO, collect NFTs, art & everything rare, as a club - for NFT enthusiasts, artists, collectors & more.",
     image: "/assets/images/collectors_illustration.svg",
     star: false,
     inactive: true,
+    backgroundColour: "#C9CBFF",
+    comingSoonEnabled: true,
   },
   {
-    contractHeading: "Impact DAOs (Coming soon)",
+    contractHeading: "Impact DAOs ",
     contractSubHeading:
       "Work together towards causes close to your heart - for charities, crowdfunding, NGOs, philanthropists & more.",
     image: "/assets/images/charity_illustration.svg",
     star: false,
     inactive: true,
+    backgroundColour: "#FFD5E5",
+    comingSoonEnabled: true,
   },
   {
-    contractHeading: "Social DAOs (Coming soon)",
+    contractHeading: "Social DAOs ",
     contractSubHeading:
       "Empower people sharing common interests to do meet-ups, events & interact socially",
     image: "/assets/images/party_illustration.svg",
     star: false,
     inactive: true,
+    backgroundColour: "#FFFFDD",
+    comingSoonEnabled: true,
   },
   {
-    contractHeading: "Create custom (Coming soon)",
+    contractHeading: "Create custom ",
     contractSubHeading:
       "Choose custom parameters to create a club with other goals",
     image: "/assets/images/custom_illustration.svg",
     star: true,
     inactive: true,
+    backgroundColour: "#81F5FF",
+    comingSoonEnabled: true,
   },
 ];
 
