@@ -170,7 +170,12 @@ const useStyles = makeStyles({
   },
 });
 
-const ProposalCard = ({ proposal, indexKey, fetched }) => {
+const ProposalCard = ({
+  proposal,
+  indexKey,
+  fetched,
+  executionTransaction,
+}) => {
   const classes = useStyles();
   //   console.log("key in card", indexKey);
   return (
@@ -185,7 +190,7 @@ const ProposalCard = ({ proposal, indexKey, fetched }) => {
                   ".........." +
                   proposal.createdBy.substring(proposal.createdBy.length - 4)
                 : null}{" "}
-              on {new Date(String(proposal.updateDate)).toLocaleDateString()}
+              on {new Date(String(proposal?.updateDate)).toLocaleDateString()}
             </Typography>
           </Grid>
           <Grid
@@ -270,14 +275,20 @@ const ProposalCard = ({ proposal, indexKey, fetched }) => {
         <Grid container>
           <Grid item ml={2} mr={2}>
             <Typography className={classes.cardFont1}>
-              [#{indexKey + 1}] {proposal.name}
+              {executionTransaction ? (
+                <> {proposal?.name}</>
+              ) : (
+                <>
+                  [#{indexKey + 1}] {proposal?.name}
+                </>
+              )}
             </Typography>
           </Grid>
         </Grid>
         <Grid container>
           <Grid item ml={2} mr={2}>
             <Typography className={classes.cardFont}>
-              {proposal.description.substring(0, 200)}...
+              {proposal?.description.substring(0, 200)}...
             </Typography>
           </Grid>
         </Grid>

@@ -335,6 +335,15 @@ const Proposal = () => {
     });
     return safeService;
   };
+  useEffect(async () => {
+    setLoaderOpen(true);
+    if (gnosisAddress) {
+      console.log("proposalData", proposalData);
+      console.log("hereeeeee11111111111", gnosisAddress);
+
+      await getExecutionTransaction();
+    }
+  }, [gnosisAddress]);
 
   const fetchTokens = () => {
     if (clubID) {
@@ -352,36 +361,50 @@ const Proposal = () => {
 
   const getExecutionTransaction = async () => {
     console.log("hereeeeee11111111111");
-    proposalData?.map(async (proposal) => {
-      const proposalTxHash = await getProposalTxHash(proposal.proposalId);
-      console.log("proposalTxHash", proposalTxHash);
-      if (proposalTxHash?.data[0]?.txHash) {
-        const safeService = await getSafeService();
-        const pendingTxs = await safeService.getPendingTransactions(
-          gnosisAddress,
-        );
-        console.log("pendingTxs", pendingTxs);
-        const count = pendingTxs.count;
-        if (
-          proposalTxHash.data[0].txHash ===
-          pendingTxs?.results[count - 1]?.safeTxHash
-        ) {
-          setExecutionTransaction(proposal);
-        }
-      }
+    const safeService = await getSafeService();
+    const proposalData = getProposal(clubID);
+    const pendingTxs = await safeService.getPendingTransactions(gnosisAddress);
+    console.log("pendingTxs", pendingTxs);
+    const count = pendingTxs.count;
+    proposalData.then(async (result) => {
+      Promise.all(
+        result.data.map(async (proposal) => {
+          const proposalTxHash = await getProposalTxHash(proposal.proposalId);
+          console.log(proposalTxHash?.data[0]?.txHash);
+          if (proposalTxHash.data[0]) {
+            proposal["safeTxHash"] = proposalTxHash?.data[0].txHash;
+            if (
+              proposalTxHash.data[0].txHash ===
+              pendingTxs?.results[count - 1]?.safeTxHash
+            ) {
+              setExecutionTransaction(proposal);
+            }
+          }
+        }),
+      );
     });
+    // proposalData?.map(async (proposal) => {
+    //   const proposalTxHash = await getProposalTxHash(proposal.proposalId);
+    //   console.log("proposalTxHash", proposalTxHash);
+    //   if (proposalTxHash?.data[0]?.txHash) {
+    //     const safeService = await getSafeService();
+    //     const pendingTxs = await safeService.getPendingTransactions(
+    //       gnosisAddress,
+    //     );
+    //     console.log("pendingTxs", pendingTxs);
+    //     const count = pendingTxs.count;
+    //     if (
+    //       proposalTxHash.data[0].txHash ===
+    //       pendingTxs?.results[count - 1]?.safeTxHash
+    //     ) {
+    //       setExecutionTransaction(proposal);
+    //     }
+    //   }
+    // });
   };
-
-  useEffect(async () => {
-    setLoaderOpen(true);
-    if (gnosisAddress) {
-      await getExecutionTransaction();
-    }
-  }, [gnosisAddress, proposalData]);
 
   const fetchData = async () => {
     const proposalData = getProposal(clubID);
-    // const safeService = await getSafeService();
     proposalData.then(async (result) => {
       if (result.status != 200) {
         setFetched(false);
@@ -389,24 +412,12 @@ const Proposal = () => {
         setProposalData(result.data);
         setFetched(true);
         console.log("gnosisAddress", gnosisAddress);
-        // const pendingTxs = await safeService.getPendingTransactions(
-        //   gnosisAddress,
-        // );
-        // console.log("pendingTxs", pendingTxs);
-        // const count = pendingTxs.count;
 
         Promise.all(
           result.data.map(async (proposal) => {
             const proposalTxHash = await getProposalTxHash(proposal.proposalId);
-            // console.log(proposalTxHash.data[0].txHash);
             if (proposalTxHash.data[0]) {
               proposal["safeTxHash"] = proposalTxHash?.data[0].txHash;
-              // if (
-              //   proposalTxHash.data[0].txHash ===
-              //   pendingTxs?.results[count - 1]?.safeTxHash
-              // ) {
-              //   setExecutionTransaction(proposal);
-              // }
             }
           }),
         );
@@ -868,7 +879,7 @@ const Proposal = () => {
     }
     setOpenSnackBar(false);
   };
-  console.log("proposalData", proposalData);
+
   return (
     <>
       <Layout1 page={2}>
@@ -980,6 +991,7 @@ const Proposal = () => {
                           <ProposalCard
                             proposal={executionTransaction}
                             fetched={fetched}
+                            executionTransaction={true}
                           />
                         </Grid>
                       </>
