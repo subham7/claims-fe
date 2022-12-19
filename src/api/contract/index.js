@@ -88,21 +88,6 @@ export class SmartContract {
     enableGovernance
   ) {
     const days = Math.round(calculateDays(closeDate));
-    console.log([
-      tokenName,
-      tokenSymbol,
-      convertToWei(totalDeposit, usdcConvertDecimal),
-      convertToWei(minDeposit, usdcConvertDecimal),
-      convertToWei(maxDeposit, usdcConvertDecimal),
-      convertToWei(ownerFee, usdcConvertDecimal),
-      days,
-      convertToWei(feeUSDC, usdcConvertDecimal),
-      quoram,
-      formThreshold,
-      tresuryAddress,
-      owners,
-      enableGovernance
-    ])
     return this.contract.methods
       .createDAO([
         tokenName,
@@ -117,8 +102,7 @@ export class SmartContract {
         formThreshold,
         tresuryAddress,
         owners,
-        enableGovernance
-      ])
+      ], enableGovernance)
       .send({ from: this.walletAddress });
   }
 
