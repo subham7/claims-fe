@@ -74,3 +74,26 @@ export const commandTypeList = [
   //     commandText: "Send ETH"
   // },
 ];
+
+export const proposalDisplayOptions = [
+  {
+    type: "all",
+    name: "All",
+  },
+  {
+    type: "active",
+    name: "Active",
+  },
+  {
+    type: "passed",
+    name: "Passed",
+  },
+  {
+    type: "executed",
+    name: "Executed",
+  },
+  {
+    type: "failed",
+    name: "Failed",
+  },
+];
