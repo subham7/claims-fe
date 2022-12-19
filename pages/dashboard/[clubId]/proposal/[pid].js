@@ -14,6 +14,7 @@ import {
   Alert,
   CircularProgress,
   Backdrop,
+  Chip,
 } from "@mui/material";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import DoneIcon from "@mui/icons-material/Done";
@@ -38,6 +39,12 @@ import ClubFetch from "../../../../src/utils/clubFetch";
 import Web3Adapter from "@safe-global/safe-web3-lib";
 import Safe from "@safe-global/safe-core-sdk";
 import SafeServiceClient from "@safe-global/safe-service-client";
+import actionIcon from "../../../../public/assets/icons/action_icon.svg";
+import tickerIcon from "../../../../public/assets/icons/ticker_icon.svg";
+import surveyIcon from "../../../../public/assets/icons/survey_icon.svg";
+import { calculateDays } from "../../../../src/utils/globalFunctions";
+
+import Image from "next/image";
 
 const useStyles = makeStyles({
   clubAssets: {
@@ -83,6 +90,7 @@ const useStyles = makeStyles({
   listFont2Colourless: {
     fontSize: "19px",
     color: "#FFFFFF",
+    fontWeight: "bold",
   },
   listFont2small: {
     fontSize: "12px",
@@ -142,6 +150,40 @@ const useStyles = makeStyles({
     borderRadius: "10px",
     backgroundColor: "#19274B",
     display: "flex",
+  },
+  actionChip: {
+    border: "1px solid #0ABB92",
+    background: "transparent",
+    textTransform: "capitalize",
+  },
+  surveyChip: {
+    border: "1px solid #6C63FF",
+    background: "transparent",
+    textTransform: "capitalize",
+  },
+  timeLeftChip: {
+    background: "#111D38",
+    borderRadius: "5px",
+  },
+  cardFontActive: {
+    fontSize: "16px",
+    backgroundColor: "#0ABB92",
+    padding: "5px 5px 5px 5px",
+  },
+  cardFontExecuted: {
+    fontSize: "16px",
+    backgroundColor: "#F75F71",
+    padding: "5px 5px 5px 5px",
+  },
+  cardFontPassed: {
+    fontSize: "16px",
+    backgroundColor: "#FFB74D",
+    padding: "5px 5px 5px 5px",
+  },
+  cardFontFailed: {
+    fontSize: "16px",
+    backgroundColor: "#D55438",
+    padding: "5px 5px 5px 5px",
   },
 });
 
@@ -840,6 +882,7 @@ const ProposalDetail = () => {
 
   return (
     <>
+      {console.log("propsal data inside pid", proposalData)}
       <Layout1 page={2}>
         <Grid container spacing={6} paddingLeft={10} paddingTop={10}>
           <Grid item md={8.5}>
@@ -847,13 +890,13 @@ const ProposalDetail = () => {
               <Grid item mt={0.5} sx={{ "&:hover": { cursor: "pointer" } }}>
                 <KeyboardBackspaceIcon className={classes.listFont} />
               </Grid>
-              <Grid item sx={{ "&:hover": { cursor: "pointer" } }}>
+              <Grid item sx={{ "&:hover": { cursor: "pointer" } }} mb={2}>
                 <Typography className={classes.listFont}>
-                  Back to proposals
+                  Back to workstation
                 </Typography>
               </Grid>
             </Grid>
-            <Grid container mb={5}>
+            <Grid container mb={2}>
               <Grid item>
                 <Typography className={classes.clubAssets}>
                   {fetched ? proposalData[0].name : null}
@@ -862,46 +905,389 @@ const ProposalDetail = () => {
             </Grid>
             <Grid container direction="row" spacing={4}>
               <Grid item>
-                <Grid container>
-                  <Grid item mt={1.2}>
-                    {fetched ? (
-                      <div
-                        className={
-                          proposalData[0].status === "active"
-                            ? classes.activeIllustration
-                            : proposalData[0].status === "passed"
-                            ? classes.passedIllustration
-                            : proposalData[0].status === "executed"
-                            ? classes.executedIllustration
-                            : proposalData[0].status === "failed"
-                            ? classes.failedIllustration
-                            : classes.failedIllustration
-                        }
-                      ></div>
-                    ) : null}
+                <Grid container spacing={2}>
+                  <Grid item>
+                    <Chip
+                      className={classes.timeLeftChip}
+                      label={
+                        <Grid container>
+                          <Image src={tickerIcon} alt="ticker-icon" />
+                          <Typography ml={1}>
+                            {" "}
+                            {calculateDays(proposalData[0]?.votingDuration) <= 0
+                              ? "Voting closed"
+                              : calculateDays(proposalData[0]?.votingDuration) +
+                                " days left"}
+                          </Typography>
+                        </Grid>
+                      }
+                    />
                   </Grid>
                   <Grid item>
-                    <Typography className={classes.listFont}>
-                      {fetched
-                        ? proposalData[0].status.charAt(0).toUpperCase() +
-                          proposalData[0].status.slice(1)
-                        : null}
-                    </Typography>
+                    <Chip
+                      className={
+                        proposalData[0]?.type === "action"
+                          ? classes.actionChip
+                          : classes.surveyChip
+                      }
+                      label={
+                        <Grid container>
+                          {proposalData[0]?.type === "action" ? (
+                            <Image src={actionIcon} alt="action-icon" />
+                          ) : (
+                            <Image src={surveyIcon} alt="survey-icon" />
+                          )}
+                          <Typography ml={1}>
+                            {proposalData[0]?.type}
+                          </Typography>
+                        </Grid>
+                      }
+                    />
+                  </Grid>
+                  <Grid item>
+                    {" "}
+                    <Chip
+                      className={
+                        proposalData[0]?.status === "active"
+                          ? classes.cardFontActive
+                          : proposalData[0]?.status === "passed"
+                          ? classes.cardFontPassed
+                          : proposalData[0]?.status === "executed"
+                          ? classes.cardFontExecuted
+                          : proposalData[0]?.status === "failed"
+                          ? classes.cardFontFailed
+                          : classes.cardFontFailed
+                      }
+                      label={
+                        proposalData[0]?.status.charAt(0).toUpperCase() +
+                        proposalData[0]?.status.slice(1)
+                      }
+                    />
                   </Grid>
                 </Grid>
               </Grid>
-              {/* <Grid item>
-                  <Grid container>
-                    <Grid item mt={1.2}>
-                      <div className={classes.activeIllustration}></div>
-                    </Grid>
-                    <Grid item>
-                      <Typography className={classes.listFont}>
-                        Share
+            </Grid>
+            <Grid container mt={4} mb={3} spacing={2}>
+              <Grid item md={9}>
+                {fetched && (
+                  <>
+                    {proposalData[0].commands.length && (
+                      <Card>
+                        {/* <Grid container item>
+                            <Typography className={classes.listFont2}>
+                              Actions
+                            </Typography>
+                            <Divider sx={{ marginTop: 2, marginBottom: 3 }} />
+                          </Grid> */}
+
+                        <>
+                          {proposalData[0].commands[0].executionId == 0 ? (
+                            <>
+                              <Grid container item mb={1}>
+                                <Typography
+                                  className={classes.listFont2Colourless}
+                                >
+                                  Distribute tokens to a wallet
+                                </Typography>
+                              </Grid>
+                              <Divider />
+                              <Grid container mt={1}>
+                                <Grid container spacing={3}>
+                                  <Grid item xs={12} md={4}>
+                                    <Typography className={classes.listFont2}>
+                                      Token
+                                    </Typography>
+                                    <Typography
+                                      className={classes.listFont2Colourless}
+                                    >
+                                      {
+                                        proposalData[0].commands[0]
+                                          .usdcTokenSymbol
+                                      }
+                                    </Typography>
+                                  </Grid>
+                                  <Grid item xs={12} md={4}>
+                                    <Typography className={classes.listFont2}>
+                                      Amount
+                                    </Typography>
+                                    <Typography
+                                      className={classes.listFont2Colourless}
+                                    >
+                                      {fetched
+                                        ? proposalData[0].commands[0]
+                                            .airDropAmount /
+                                          Math.pow(
+                                            10,
+                                            parseInt(
+                                              proposalData[0].commands[0]
+                                                .usdcTokenDecimal,
+                                            ),
+                                          )
+                                        : null}
+                                    </Typography>
+                                  </Grid>
+                                  <Grid item xs={12} md={4}>
+                                    <Typography className={classes.listFont2}>
+                                      Carry fee
+                                    </Typography>
+                                    <Typography
+                                      className={classes.listFont2Colourless}
+                                    >
+                                      {fetched
+                                        ? proposalData[0].commands[0]
+                                            .airDropCarryFee
+                                        : null}
+                                      %
+                                    </Typography>
+                                  </Grid>
+                                </Grid>
+                              </Grid>
+                            </>
+                          ) : proposalData[0].commands[0].executionId == 1 ? (
+                            <>
+                              <Grid container item>
+                                <Typography
+                                  className={classes.listFont2Colourless}
+                                >
+                                  Mint governance tokens to a wallet
+                                </Typography>
+                              </Grid>
+                              <Grid container>
+                                <Grid item>
+                                  <Typography className={classes.listFont2}>
+                                    Amount
+                                  </Typography>
+                                </Grid>
+                                <Grid
+                                  item
+                                  xs
+                                  sx={{
+                                    display: "flex",
+                                    justifyContent: "flex-end",
+                                  }}
+                                >
+                                  <Typography
+                                    className={classes.listFont2Colourless}
+                                  >
+                                    {fetched
+                                      ? proposalData[0].commands[0]
+                                          .mintGTAmounts[0] /
+                                        Math.pow(
+                                          10,
+                                          parseInt(
+                                            proposalData[0].commands[0]
+                                              .usdcGovernanceTokenDecimal,
+                                          ),
+                                        )
+                                      : null}
+                                  </Typography>
+                                </Grid>
+                              </Grid>
+                              <Grid container>
+                                <Grid item>
+                                  <Typography className={classes.listFont2}>
+                                    Recipient
+                                  </Typography>
+                                </Grid>
+                                <Grid
+                                  item
+                                  xs
+                                  sx={{
+                                    display: "flex",
+                                    justifyContent: "flex-end",
+                                  }}
+                                >
+                                  <Typography
+                                    className={classes.listFont2Colourless}
+                                  >
+                                    {fetched
+                                      ? proposalData[0].commands[0]
+                                          .mintGTAddresses[0]
+                                      : null}
+                                  </Typography>
+                                </Grid>
+                              </Grid>
+                            </>
+                          ) : proposalData[0].commands[0].executionId == 2 ? (
+                            <>
+                              <Grid container item mb={1}>
+                                <Typography
+                                  className={classes.listFont2Colourless}
+                                >
+                                  Update governance settings of the club
+                                </Typography>
+                              </Grid>
+                              <Divider />
+                              <Grid container mt={1}>
+                                <Grid container spacing={3}>
+                                  <Grid item xs={12} md={4}>
+                                    <Typography className={classes.listFont2}>
+                                      Quoram
+                                    </Typography>
+                                    <Typography
+                                      className={classes.listFont2Colourless}
+                                    >
+                                      {fetched
+                                        ? proposalData[0].commands[0].quorum
+                                        : null}
+                                      %
+                                    </Typography>
+                                  </Grid>
+                                  <Grid item xs={12} md={4}>
+                                    <Typography className={classes.listFont2}>
+                                      Threshold
+                                    </Typography>
+                                    <Typography
+                                      className={classes.listFont2Colourless}
+                                    >
+                                      {fetched
+                                        ? proposalData[0].commands[0].threshold
+                                        : null}
+                                      %
+                                    </Typography>
+                                  </Grid>
+                                </Grid>
+                              </Grid>
+                            </>
+                          ) : proposalData[0].commands[0].executionId == 3 ? (
+                            <>
+                              <Grid container item mb={1}>
+                                <Typography
+                                  className={classes.listFont2Colourless}
+                                >
+                                  Update total raise amount
+                                </Typography>
+                              </Grid>
+                              <Divider />
+                              <Grid container mt={1}>
+                                <Grid container spacing={3}>
+                                  <Grid item xs={12} md={4}>
+                                    <Typography className={classes.listFont2}>
+                                      Total amount
+                                    </Typography>
+                                    <Typography
+                                      className={classes.listFont2Colourless}
+                                    >
+                                      {fetched
+                                        ? proposalData[0].commands[0]
+                                            .totalDeposits /
+                                          Math.pow(
+                                            10,
+                                            parseInt(
+                                              proposalData[0].commands[0]
+                                                .usdcTokenDecimal,
+                                            ),
+                                          )
+                                        : null}{" "}
+                                      {
+                                        proposalData[0].commands[0]
+                                          .usdcTokenSymbol
+                                      }
+                                    </Typography>
+                                  </Grid>
+                                </Grid>
+                              </Grid>
+                            </>
+                          ) : proposalData[0].commands[0].executionId == 4 ? (
+                            <>
+                              <Grid container item mb={1}>
+                                <Typography
+                                  className={classes.listFont2Colourless}
+                                >
+                                  Transfer token to a wallet
+                                </Typography>
+                              </Grid>
+                              <Divider />
+                              <Grid container mt={1}>
+                                <Grid container spacing={3}>
+                                  <Grid item xs={12} md={4}>
+                                    <Typography className={classes.listFont2}>
+                                      Amount
+                                    </Typography>
+                                    <Typography
+                                      className={classes.listFont2Colourless}
+                                    >
+                                      {fetched
+                                        ? proposalData[0].commands[0]
+                                            .customTokenAmounts[0] /
+                                          Math.pow(
+                                            10,
+                                            parseInt(
+                                              proposalData[0].commands[0]
+                                                .usdcTokenDecimal,
+                                            ),
+                                          )
+                                        : null}{" "}
+                                      {
+                                        proposalData[0].commands[0]
+                                          .usdcTokenSymbol
+                                      }
+                                    </Typography>
+                                  </Grid>
+                                  <Grid item xs={12} md={4}>
+                                    <Typography className={classes.listFont2}>
+                                      Recipient
+                                    </Typography>
+                                    <Typography
+                                      className={classes.listFont2Colourless}
+                                    >
+                                      {fetched
+                                        ? proposalData[0].commands[0].customTokenAddresses[0].slice(
+                                            0,
+                                            6,
+                                          ) +
+                                          "...." +
+                                          proposalData[0].commands[0].customTokenAddresses[0].slice(
+                                            proposalData[0].commands[0]
+                                              .customTokenAddresses[0].length -
+                                              4,
+                                          )
+                                        : null}
+                                    </Typography>
+                                  </Grid>
+                                </Grid>
+                              </Grid>
+                            </>
+                          ) : null}
+                        </>
+
+                        {/*<Divider sx={{ marginTop: 2, marginBottom: 3 }} />*/}
+                      </Card>
+                    )}
+                  </>
+                )}
+              </Grid>
+              <Grid item md={3}>
+                <Card>
+                  <Grid container item>
+                    <Typography className={classes.listFont2}>
+                      Signators
+                    </Typography>
+                    <Divider sx={{ marginTop: 2, marginBottom: 3 }} />
+                  </Grid>
+                  {ownerAddresses.map((owner) => (
+                    <Grid
+                      sx={{
+                        display: "flex",
+                        justifyContent: "flex-start",
+                      }}
+                      key={owner}
+                    >
+                      {signedOwners.includes(owner) ? (
+                        <DoneIcon
+                          fill="blue"
+                          sx={{ marginRight: 2, color: "#3B7AFD" }}
+                        />
+                      ) : (
+                        <HelpOutlineIcon sx={{ marginRight: 2 }} />
+                      )}
+                      <Typography>
+                        {owner.slice(0, 6)}.....{owner.slice(-4)}
                       </Typography>
                     </Grid>
-                  </Grid>
-                </Grid> */}
+                  ))}
+                </Card>
+              </Grid>
             </Grid>
             <Grid container item className={classes.listFont}>
               {fetched ? proposalData[0].description : null}
@@ -1354,391 +1740,6 @@ const ProposalDetail = () => {
                   ) : null
                 ) : null}
               </Grid>
-              <Grid container mt={4} spacing={2}>
-                <Grid item md={9}>
-                  {fetched && (
-                    <>
-                      {proposalData[0].commands.length && (
-                        <Card>
-                          <Grid container item>
-                            <Typography className={classes.listFont2}>
-                              Actions
-                            </Typography>
-                            <Divider sx={{ marginTop: 2, marginBottom: 3 }} />
-                          </Grid>
-
-                          <>
-                            {proposalData[0].commands[0].executionId == 0 ? (
-                              <>
-                                <Grid container item>
-                                  <Typography
-                                    className={classes.listFont2Colourless}
-                                  >
-                                    Distribute tokens to a wallet
-                                  </Typography>
-                                </Grid>
-                                <Grid container>
-                                  <Grid item>
-                                    <Typography className={classes.listFont2}>
-                                      Amount
-                                    </Typography>
-                                  </Grid>
-                                  <Grid
-                                    item
-                                    xs
-                                    sx={{
-                                      display: "flex",
-                                      justifyContent: "flex-end",
-                                    }}
-                                  >
-                                    <Typography
-                                      className={classes.listFont2Colourless}
-                                    >
-                                      {fetched
-                                        ? proposalData[0].commands[0]
-                                            .airDropAmount /
-                                          Math.pow(
-                                            10,
-                                            parseInt(
-                                              proposalData[0].commands[0]
-                                                .usdcTokenDecimal,
-                                            ),
-                                          )
-                                        : null}{" "}
-                                      {
-                                        proposalData[0].commands[0]
-                                          .usdcTokenSymbol
-                                      }
-                                    </Typography>
-                                  </Grid>
-                                </Grid>
-                                <Grid container>
-                                  <Grid item>
-                                    <Typography className={classes.listFont2}>
-                                      Carry fee
-                                    </Typography>
-                                  </Grid>
-                                  <Grid
-                                    item
-                                    xs
-                                    sx={{
-                                      display: "flex",
-                                      justifyContent: "flex-end",
-                                    }}
-                                  >
-                                    <Typography
-                                      className={classes.listFont2Colourless}
-                                    >
-                                      {fetched
-                                        ? proposalData[0].commands[0]
-                                            .airDropCarryFee
-                                        : null}
-                                      %
-                                    </Typography>
-                                  </Grid>
-                                </Grid>
-                                <Grid container>
-                                  <Grid item>
-                                    <Typography className={classes.listFont2}>
-                                      Sender
-                                    </Typography>
-                                  </Grid>
-                                  <Grid
-                                    item
-                                    xs
-                                    sx={{
-                                      display: "flex",
-                                      justifyContent: "flex-end",
-                                    }}
-                                  >
-                                    <Typography
-                                      className={classes.listFont2Colourless}
-                                    >
-                                      {fetched
-                                        ? proposalData[0].createdBy
-                                        : null}
-                                    </Typography>
-                                  </Grid>
-                                </Grid>
-                              </>
-                            ) : proposalData[0].commands[0].executionId == 1 ? (
-                              <>
-                                <Grid container item>
-                                  <Typography
-                                    className={classes.listFont2Colourless}
-                                  >
-                                    Mint governance tokens to a wallet
-                                  </Typography>
-                                </Grid>
-                                <Grid container>
-                                  <Grid item>
-                                    <Typography className={classes.listFont2}>
-                                      Amount
-                                    </Typography>
-                                  </Grid>
-                                  <Grid
-                                    item
-                                    xs
-                                    sx={{
-                                      display: "flex",
-                                      justifyContent: "flex-end",
-                                    }}
-                                  >
-                                    <Typography
-                                      className={classes.listFont2Colourless}
-                                    >
-                                      {fetched
-                                        ? proposalData[0].commands[0]
-                                            .mintGTAmounts[0] /
-                                          Math.pow(
-                                            10,
-                                            parseInt(
-                                              proposalData[0].commands[0]
-                                                .usdcGovernanceTokenDecimal,
-                                            ),
-                                          )
-                                        : null}
-                                    </Typography>
-                                  </Grid>
-                                </Grid>
-                                <Grid container>
-                                  <Grid item>
-                                    <Typography className={classes.listFont2}>
-                                      Recipient
-                                    </Typography>
-                                  </Grid>
-                                  <Grid
-                                    item
-                                    xs
-                                    sx={{
-                                      display: "flex",
-                                      justifyContent: "flex-end",
-                                    }}
-                                  >
-                                    <Typography
-                                      className={classes.listFont2Colourless}
-                                    >
-                                      {fetched
-                                        ? proposalData[0].commands[0]
-                                            .mintGTAddresses[0]
-                                        : null}
-                                    </Typography>
-                                  </Grid>
-                                </Grid>
-                              </>
-                            ) : proposalData[0].commands[0].executionId == 2 ? (
-                              <>
-                                <Grid container item>
-                                  <Typography
-                                    className={classes.listFont2Colourless}
-                                  >
-                                    Update governance settings of the club
-                                  </Typography>
-                                </Grid>
-                                <Grid container>
-                                  <Grid item>
-                                    <Typography className={classes.listFont2}>
-                                      Quoram
-                                    </Typography>
-                                  </Grid>
-                                  <Grid
-                                    item
-                                    xs
-                                    sx={{
-                                      display: "flex",
-                                      justifyContent: "flex-end",
-                                    }}
-                                  >
-                                    <Typography
-                                      className={classes.listFont2Colourless}
-                                    >
-                                      {fetched
-                                        ? proposalData[0].commands[0].quorum
-                                        : null}
-                                      %
-                                    </Typography>
-                                  </Grid>
-                                </Grid>
-                                <Grid container>
-                                  <Grid item>
-                                    <Typography className={classes.listFont2}>
-                                      Threshold
-                                    </Typography>
-                                  </Grid>
-                                  <Grid
-                                    item
-                                    xs
-                                    sx={{
-                                      display: "flex",
-                                      justifyContent: "flex-end",
-                                    }}
-                                  >
-                                    <Typography
-                                      className={classes.listFont2Colourless}
-                                    >
-                                      {fetched
-                                        ? proposalData[0].commands[0].threshold
-                                        : null}
-                                      %
-                                    </Typography>
-                                  </Grid>
-                                </Grid>
-                              </>
-                            ) : proposalData[0].commands[0].executionId == 3 ? (
-                              <>
-                                <Grid container item>
-                                  <Typography
-                                    className={classes.listFont2Colourless}
-                                  >
-                                    Update total raise amount
-                                  </Typography>
-                                </Grid>
-                                <Grid container>
-                                  <Grid item>
-                                    <Typography className={classes.listFont2}>
-                                      Total amount
-                                    </Typography>
-                                  </Grid>
-                                  <Grid
-                                    item
-                                    xs
-                                    sx={{
-                                      display: "flex",
-                                      justifyContent: "flex-end",
-                                    }}
-                                  >
-                                    <Typography
-                                      className={classes.listFont2Colourless}
-                                    >
-                                      {fetched
-                                        ? proposalData[0].commands[0]
-                                            .totalDeposits /
-                                          Math.pow(
-                                            10,
-                                            parseInt(
-                                              proposalData[0].commands[0]
-                                                .usdcTokenDecimal,
-                                            ),
-                                          )
-                                        : null}{" "}
-                                      {
-                                        proposalData[0].commands[0]
-                                          .usdcTokenSymbol
-                                      }
-                                    </Typography>
-                                  </Grid>
-                                </Grid>
-                              </>
-                            ) : proposalData[0].commands[0].executionId == 4 ? (
-                              <>
-                                <Grid container item>
-                                  <Typography
-                                    className={classes.listFont2Colourless}
-                                  >
-                                    Transfer token to a wallet
-                                  </Typography>
-                                </Grid>
-                                <Grid container>
-                                  <Grid item>
-                                    <Typography className={classes.listFont2}>
-                                      Amount
-                                    </Typography>
-                                  </Grid>
-                                  <Grid
-                                    item
-                                    xs
-                                    sx={{
-                                      display: "flex",
-                                      justifyContent: "flex-end",
-                                    }}
-                                  >
-                                    <Typography
-                                      className={classes.listFont2Colourless}
-                                    >
-                                      {fetched
-                                        ? proposalData[0].commands[0]
-                                            .customTokenAmounts[0] /
-                                          Math.pow(
-                                            10,
-                                            parseInt(
-                                              proposalData[0].commands[0]
-                                                .usdcTokenDecimal,
-                                            ),
-                                          )
-                                        : null}{" "}
-                                      {
-                                        proposalData[0].commands[0]
-                                          .usdcTokenSymbol
-                                      }
-                                    </Typography>
-                                  </Grid>
-                                </Grid>
-                                <Grid container>
-                                  <Grid item>
-                                    <Typography className={classes.listFont2}>
-                                      Recipient
-                                    </Typography>
-                                  </Grid>
-                                  <Grid
-                                    item
-                                    xs
-                                    sx={{
-                                      display: "flex",
-                                      justifyContent: "flex-end",
-                                    }}
-                                  >
-                                    <Typography
-                                      className={classes.listFont2Colourless}
-                                    >
-                                      {fetched
-                                        ? proposalData[0].commands[0]
-                                            .customTokenAddresses[0]
-                                        : null}
-                                    </Typography>
-                                  </Grid>
-                                </Grid>
-                              </>
-                            ) : null}
-                          </>
-
-                          {/*<Divider sx={{ marginTop: 2, marginBottom: 3 }} />*/}
-                        </Card>
-                      )}
-                    </>
-                  )}
-                </Grid>
-                <Grid item md={3}>
-                  <Card>
-                    <Grid container item>
-                      <Typography className={classes.listFont2}>
-                        Signators
-                      </Typography>
-                      <Divider sx={{ marginTop: 2, marginBottom: 3 }} />
-                    </Grid>
-                    {ownerAddresses.map((owner) => (
-                      <Grid
-                        sx={{
-                          display: "flex",
-                          justifyContent: "flex-start",
-                        }}
-                        key={owner}
-                      >
-                        {signedOwners.includes(owner) ? (
-                          <DoneIcon
-                            fill="blue"
-                            sx={{ marginRight: 2, color: "#3B7AFD" }}
-                          />
-                        ) : (
-                          <HelpOutlineIcon sx={{ marginRight: 2 }} />
-                        )}
-                        <Typography>
-                          {owner.slice(0, 6)}.....{owner.slice(-4)}
-                        </Typography>
-                      </Grid>
-                    ))}
-                  </Card>
-                </Grid>
-              </Grid>
             </Grid>
           </Grid>
           <Grid item md={3.5}>
@@ -1833,11 +1834,23 @@ const ProposalDetail = () => {
                   proposalData[0].votingOptions.length > 0 ? (
                     proposalData[0].votingOptions.map((vote, key) => {
                       return (
-                        <div key={key}>
+                        <Grid key={key} sx={{ marginBottom: "10px" }}>
                           <Grid container>
-                            <Grid item>
+                            <Grid item sx={{ display: "flex" }}>
                               <Typography className={classes.listFont2}>
                                 {vote.text}
+                              </Typography>
+                              <Typography
+                                sx={{
+                                  background: "#6475A3",
+                                  paddingX: "10px",
+                                  marginBottom: "5px",
+                                  borderRadius: "5px",
+                                }}
+                                mx={1}
+                                variant="subtitle2"
+                              >
+                                {vote.count}
                               </Typography>
                             </Grid>
                             <Grid
@@ -1865,7 +1878,7 @@ const ProposalDetail = () => {
                                 : 0
                             }
                           />
-                        </div>
+                        </Grid>
                       );
                     })
                   ) : (

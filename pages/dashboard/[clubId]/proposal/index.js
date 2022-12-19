@@ -62,7 +62,6 @@ import {
   convertToWeiGovernance,
 } from "../../../../src/utils/globalFunctions";
 import proposalImg from "../../../../public/assets/images/proposals.png";
-import ActionChipIcon from "../../../../public/assets/icons/ionic-md-swap.js";
 import ProposalCard from "./ProposalCard";
 
 const useStyles = makeStyles({
@@ -378,7 +377,7 @@ const Proposal = () => {
     if (gnosisAddress) {
       await getExecutionTransaction();
     }
-  }, [gnosisAddress]);
+  }, [gnosisAddress, proposalData]);
 
   const fetchData = async () => {
     const proposalData = getProposal(clubID);
