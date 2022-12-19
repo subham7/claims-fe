@@ -597,7 +597,7 @@ const Create = (props) => {
                   >
                     % of votes needed
                   </Box>{" "}
-                  to consider any proposal raised
+                  to consider any proposal raised{" "}
                   <Box
                     sx={{ color: "#6475A3" }}
                     fontWeight="fontWeightBold"
@@ -631,7 +631,7 @@ const Create = (props) => {
                 mt={2}
                 mb={2}
               >
-                <Typography className={classes.largeText}>
+                <Typography className={classes.largeText2}>
                   Min.{" "}
                   <Box
                     sx={{ color: "#3B7AFD" }}
@@ -696,7 +696,7 @@ const Create = (props) => {
                     alignItems: "center",
                   }}
                 >
-                  <Typography className={classes.largeText}>
+                  <Typography className={classes.largeText2}>
                     Last date for members to deposit & join
                   </Typography>
                 </Grid>
@@ -742,7 +742,7 @@ const Create = (props) => {
                     alignItems: "center",
                   }}
                 >
-                  <Typography className={classes.largeText}>
+                  <Typography className={classes.largeText2}>
                     Min. deposit amount per wallet
                   </Typography>
                 </Grid>
@@ -787,7 +787,7 @@ const Create = (props) => {
                     alignItems: "center",
                   }}
                 >
-                  <Typography className={classes.largeText}>
+                  <Typography className={classes.largeText2}>
                     Max. deposit amount per wallet
                   </Typography>
                 </Grid>
@@ -831,7 +831,7 @@ const Create = (props) => {
                     alignItems: "center",
                   }}
                 >
-                  <Typography className={classes.largeText}>
+                  <Typography className={classes.largeText2}>
                     Total amount your Station is raising
                   </Typography>
                 </Grid>
@@ -880,7 +880,7 @@ const Create = (props) => {
                     alignItems: "center",
                   }}
                 >
-                  <Typography className={classes.largeText}>
+                  <Typography className={classes.largeText2}>
                     Add more wallets that will sign & authorise transactions
                   </Typography>
                 </Grid>
