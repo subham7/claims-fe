@@ -166,6 +166,7 @@ const Create = (props) => {
   const [depositClose, setDepositClose] = useState(
     new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
   );
+  const [minDate, setMinDate] = useState(new Date(new Date().getTime() + 24 * 60 * 60 * 1000))
   const [membersLeaveDate, setMembersLeaveDate] = useState(null);
   const [minContribution, setMinContribution] = useState("");
   const [voteInFavour, setVoteInFavour] = useState(51);
@@ -728,7 +729,7 @@ const Create = (props) => {
                           sx={{ m: 1, width: 443, mt: 1, borderRadius: "10px" }}
                         />
                       )}
-                      minDate={depositClose}
+                      minDate={minDate}
                     />
                   </LocalizationProvider>
                 </Grid>
