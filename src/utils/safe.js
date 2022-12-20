@@ -1,7 +1,7 @@
 import Web3 from "web3";
 import Web3Adapter from "@safe-global/safe-web3-lib";
 import { SafeFactory } from "@safe-global/safe-core-sdk";
-import { safeConnected, safeDisconnected } from "../redux/reducers/gnosis";
+import { safeConnected, setCreateDaoAuthorized, setCreateDaoGnosisSigned } from "../redux/reducers/gnosis";
 import { addDaoAddress, addClubID } from "../redux/reducers/create";
 import store from "../redux/store";
 import { SmartContract } from "../api/contract";
@@ -52,6 +52,7 @@ export async function initiateConnection(
   usdcConvertDecimal,
   enableGovernance
 ) {
+  dispatch(setCreateDaoGnosisSigned(true));
   const web3 = new Web3(Web3.givenProvider);
   const safeOwner = await web3.eth.getAccounts();
   let daoAddress = null;
@@ -77,7 +78,8 @@ export async function initiateConnection(
   );
   await gnosisSafePromise(owners, threshold, dispatch)
     .then((treasuryAddress) => {
-      console.log("owners", owners);
+      dispatch(setCreateDaoGnosisSigned(false));
+      dispatch(setCreateDaoAuthorized(true));
       const value = smartContract.createDAO(
         owners,
         threshold,
@@ -96,8 +98,6 @@ export async function initiateConnection(
         usdcConvertDecimal,
         enableGovernance
       );
-      console.log("Called createDao");
-      console.log(value);
       value.then(
         (result) => {
           daoAddress = result.events[0].address;
@@ -154,8 +154,6 @@ export async function initiateConnection(
                   });
                 }
               }
-              // 0xCcc701BD1c50807A26336bD07c5aA9cf0622cDB5, 0xF477909A8bda0a7afd2dc7dF30e42F20433d879c,0x5bcF355A4F0340A34695ED20688Cf71Dc9835F17
-              console.log(owners);
 
               dispatch(addDaoAddress(result.data.daoAddress));
               dispatch(addClubID(result.data.clubId));
@@ -170,6 +168,8 @@ export async function initiateConnection(
           });
         },
         (error) => {
+          dispatch(setCreateDaoGnosisSigned(false));
+          dispatch(setCreateDaoAuthorized(false));
           Router.push(`/create`, undefined, {
             shallow: true,
           });
@@ -177,6 +177,8 @@ export async function initiateConnection(
       );
     })
     .catch((errorMsg) => {
+      dispatch(setCreateDaoGnosisSigned(false));
+      dispatch(setCreateDaoAuthorized(false));
       Router.push(`/create`, undefined, {
         shallow: true,
       });
