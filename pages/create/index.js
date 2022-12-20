@@ -196,6 +196,12 @@ const Create = (props) => {
     return state.gnosis.tokenDecimal;
   });
   const [governance, setGovernance] = useState(true);
+  const createDaoGnosisSigned = useSelector((state) => {
+    return state.gnosis.createDaoGnosisSigned;
+  });
+  const createDaoAuthorized = useSelector((state) => {
+    return state.gnosis.createDaoAuthorized;
+  });
 
   let walletAddress = null;
 
@@ -279,7 +285,6 @@ const Create = (props) => {
         (result) => {
           walletAddress = result[0];
           addressList.unshift(walletAddress);
-          console.log("addressList", addressList);
           initiateConnection(
             addressList,
             threshold,
@@ -1020,105 +1025,176 @@ const Create = (props) => {
   const components = [step1(), step2(), step3()];
   return (
     <Layout2>
-      <Grid
-        container
-        item
-        paddingLeft={{ xs: 5, sm: 5, md: 10, lg: 45 }}
-        paddingTop={15}
-        paddingRight={{ xs: 5, sm: 5, md: 10, lg: 45 }}
-        justifyContent="center"
-        alignItems="center"
-      >
-        <Box
-          width={{ xs: "60%", sm: "70%", md: "80%", lg: "100%" }}
-          paddingTop={10}
+      {activeStep > 2 ? (
+        <Backdrop
+          sx={{
+            color: "#fff",
+            zIndex: (theme) => theme.zIndex.drawer + 1,
+            backgroundImage: "url(assets/images/gradients.png)",
+            backgroundPosition: "center center",
+          }}
+          open={open}
         >
-          <Stepper activeStep={activeStep}>
-            {steps.map((label, index) => {
-              const stepProps = {};
-              const labelProps = {};
-              // if (isStepOptional(index)) {
-              //   labelProps.optional = (
-              //     <Typography variant="caption">Optional</Typography>
-              //   )
-              // }
-              if (isStepSkipped(index)) {
-                stepProps.completed = false;
-              }
-              return (
-                <Step key={label} completed={completed[index]}>
-                  <StepButton color="inherit" onClick={handleStep(index)}>
-                    {label}
-                  </StepButton>
-                </Step>
-                // <Step key={label} {...stepProps}>
-                //   <StepLabel {...labelProps}>{label}</StepLabel>
-                // </Step>
-              );
-            })}
-          </Stepper>
 
-          {activeStep === steps.length ? (
-            <>
+          <Card>
+            {createDaoGnosisSigned ? (
               <Grid
                 container
-                md={12}
                 justifyContent="center"
-                alignContent="center"
+                alignItems="center"
+                sx={{ padding: "10px", width: "547px" }}
+                direction="column"
               >
                 <Grid item>
-                  <Typography sx={{ color: "#FFFFFF", fontSize: "30px" }}>
-                    Please wait while we are processing your request
+                  <img src="assets/images/deployingsafe_img.svg" />
+                </Grid>
+                <Grid
+                  item
+                  paddingTop="20px"
+                  justifyContent="left"
+                  justifyItems="left"
+                >
+                  <Typography
+                    variant="h4"
+                    sx={{ color: "#fff" }}
+                  >
+                    Deploying a new safe
+                  </Typography>
+                </Grid>
+                <Grid
+                  item
+                  paddingTop="20px"
+                  justifyContent="left"
+                  justifyItems="left"
+                >
+
+                  <Typography
+                    variant="regularText4"
+                    sx={{ color: "#fff" }}
+                  >
+                    Please sign & authorise StationX to deploy a new safe for your station.
                   </Typography>
                 </Grid>
               </Grid>
-              <Backdrop
-                sx={{
-                  color: "#fff",
-                  zIndex: (theme) => theme.zIndex.drawer + 1,
-                }}
-                open={open}
-              >
-                <CircularProgress color="inherit" />
-              </Backdrop>
-            </>
-          ) : (
-            <>
-              {components[activeStep]}
-              <Box
-                width={{ xs: "100%", sm: "100%", md: "100%" }}
-                paddingTop={10}
-                paddingBottom={10}
-              >
-                {activeStep === 2 ? (
-                  <>
-                    <Button
-                      variant="wideButton"
-                      disabled={
-                        activeStep === 0
-                          ? !clubName || !clubSymbol
-                          : activeStep === 2
-                            ? !raiseAmount ||
-                            !maxContribution ||
-                            !depositClose ||
-                            !minContribution
-                            : // : activeStep === 2
-                            //   ? false
-                            true
-                      }
-                      onClick={handleNext}
+            ) : createDaoAuthorized ? (
+              (
+                <Grid
+                  container
+                  justifyContent="center"
+                  alignItems="center"
+                  sx={{ padding: "10px", width: "547px" }}
+                  direction="column"
+                >
+                  <Grid item>
+                    <img src="assets/images/settingup_img.svg" />
+                  </Grid>
+                  <Grid
+                    item
+                    paddingTop="20px"
+                    justifyContent="left"
+                    justifyItems="left"
+                  >
+                    <Typography
+                      variant="h4"
+                      sx={{ color: "#fff" }}
                     >
-                      Next
-                    </Button>
-                  </>
-                ) : (
-                  <></>
-                )}
-              </Box>
-            </>
-          )}
-        </Box>
-      </Grid>
+                      Setting up your station
+                    </Typography>
+                  </Grid>
+                  <Grid
+                    item
+                    paddingTop="20px"
+                    justifyContent="left"
+                    justifyItems="left"
+                  >
+
+                    <Typography
+                      variant="regularText4"
+                      sx={{ color: "#fff" }}
+                    >
+                      Please sign to authorise StationX to deploy this station for you.
+                    </Typography>
+                  </Grid>
+                </Grid>
+              )
+            ) : null}
+
+          </Card>
+        </Backdrop>) : (
+        <Grid
+          container
+          item
+          paddingLeft={{ xs: 5, sm: 5, md: 10, lg: 45 }}
+          paddingTop={15}
+          paddingRight={{ xs: 5, sm: 5, md: 10, lg: 45 }}
+          justifyContent="center"
+          alignItems="center"
+        >
+
+          <Box
+            width={{ xs: "60%", sm: "70%", md: "80%", lg: "100%" }}
+            paddingTop={10}
+          >
+            <Stepper activeStep={activeStep}>
+              {steps.map((label, index) => {
+                const stepProps = {};
+                const labelProps = {};
+
+                if (isStepSkipped(index)) {
+                  stepProps.completed = false;
+                }
+                return (
+                  <Step key={label} completed={completed[index]}>
+                    <StepButton color="inherit" onClick={handleStep(index)}>
+                      {label}
+                    </StepButton>
+                  </Step>
+
+                );
+              })}
+            </Stepper>
+            {activeStep === steps.length > 2 ? (
+              <></>
+            ) : (
+              <>
+                {components[activeStep]}
+                <Box
+                  width={{ xs: "100%", sm: "100%", md: "100%" }}
+                  paddingTop={10}
+                  paddingBottom={10}
+                >
+                  {activeStep === 2 ? (
+                    <>
+                      <Button
+                        variant="wideButton"
+                        disabled={
+                          activeStep === 0
+                            ? !clubName || !clubSymbol
+                            : activeStep === 2
+                              ? !raiseAmount ||
+                              !maxContribution ||
+                              !depositClose ||
+                              !minContribution
+                              : // : activeStep === 2
+                              //   ? false
+                              true
+                        }
+                        onClick={handleNext}
+                      >
+                        Next
+                      </Button>
+                    </>
+                  ) : (
+                    <></>
+                  )}
+                </Box>
+              </>
+            )}
+          </Box>
+        </Grid>
+      )}
+
+
     </Layout2>
   );
 };
