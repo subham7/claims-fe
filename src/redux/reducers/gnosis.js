@@ -15,6 +15,8 @@ export const slice = createSlice({
     tokenSymbol: null,
     tokenDecimal: null,
     governanceTokenDecimal: null,
+    createDaoGnosisSigned: false,
+    createDaoAuthorized: false,
   },
   reducers: {
     safeConnected: (state, action) => {
@@ -46,6 +48,12 @@ export const slice = createSlice({
       state.tokenSymbol = action.payload.tokenSymbol;
       state.tokenDecimal = action.payload.tokenDecimal;
     },
+    setCreateDaoGnosisSigned: (state, action) => {
+      state.createDaoGnosisSigned = action.payload;
+    },
+    setCreateDaoAuthorized: (state, action) => {
+      state.createDaoAuthorized = action.payload;
+    }
   },
 });
 
@@ -57,6 +65,8 @@ export const {
   setAdminUser,
   setGovernanceTokenDetails,
   setUSDCTokenDetails,
+  setCreateDaoGnosisSigned,
+  setCreateDaoAuthorized
 } = slice.actions;
 
 export default slice.reducer;
