@@ -15,6 +15,7 @@ export const slice = createSlice({
     tokenSymbol: null,
     tokenDecimal: null,
     governanceTokenDecimal: null,
+    governanceAllowed: null,
   },
   reducers: {
     safeConnected: (state, action) => {
@@ -46,6 +47,9 @@ export const slice = createSlice({
       state.tokenSymbol = action.payload.tokenSymbol;
       state.tokenDecimal = action.payload.tokenDecimal;
     },
+    setGovernanceAllowed: (state, action) => {
+      state.governanceAllowed = action.payload;
+    },
   },
 });
 
@@ -57,6 +61,7 @@ export const {
   setAdminUser,
   setGovernanceTokenDetails,
   setUSDCTokenDetails,
+  setGovernanceAllowed,
 } = slice.actions;
 
 export default slice.reducer;

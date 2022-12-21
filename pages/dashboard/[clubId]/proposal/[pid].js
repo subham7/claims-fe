@@ -208,8 +208,13 @@ const ProposalDetail = () => {
   const [castVoteOption, setCastVoteOption] = useState("");
   const clubID = clubId;
   const [cardSelected, setCardSelected] = useState(null);
+  const [governance, setGovernance] = useState(true);
+
   const walletAddress = useSelector((state) => {
     return state.create.value;
+  });
+  const isGovernanceActive = useSelector((state) => {
+    return state.gnosis.governanceAllowed;
   });
   const daoAddress = useSelector((state) => {
     return state.create.daoAddress;
@@ -363,6 +368,13 @@ const ProposalDetail = () => {
       setOwner(true);
     } else {
       setOwner(false);
+    }
+    if (isGovernanceActive === false) {
+      if (ownerAddresses.includes(walletAddress)) {
+        setGovernance(true);
+      } else {
+        setGovernance(false);
+      }
     }
     const threshold = await safeSdk.getThreshold();
     setThreshold(threshold);
@@ -1292,313 +1304,51 @@ const ProposalDetail = () => {
             <Grid container item className={classes.listFont}>
               {fetched ? proposalData[0].description : null}
             </Grid>
-            <Grid container mt={6}>
-              <Grid item md={12}>
-                {fetched ? (
-                  proposalData[0].type === "action" ? (
-                    proposalData[0].status === "active" ? (
-                      checkUserVoted(pid) ? (
-                        <Card sx={{ width: "100%" }}>
-                          <Grid
-                            container
-                            direction="column"
-                            justifyContent="center"
-                            alignItems="center"
-                            mt={10}
-                            mb={10}
-                          >
-                            <Grid item mt={0.5}>
-                              <CheckCircleRoundedIcon
-                                className={classes.mainCardButtonSuccess}
-                              />
-                            </Grid>
-                            <Grid item mt={0.5}>
-                              <Typography
-                                className={classes.successfulMessageText}
+            {governance ? (
+              <>
+                {" "}
+                <Grid container mt={6}>
+                  <Grid item md={12}>
+                    {fetched ? (
+                      proposalData[0].type === "action" ? (
+                        proposalData[0].status === "active" ? (
+                          checkUserVoted(pid) ? (
+                            <Card sx={{ width: "100%" }}>
+                              <Grid
+                                container
+                                direction="column"
+                                justifyContent="center"
+                                alignItems="center"
+                                mt={10}
+                                mb={10}
                               >
-                                Successfully voted
-                              </Typography>
-                            </Grid>
-                            <Grid item mt={0.5}>
-                              <Typography className={classes.listFont2}>
-                                {/* Voted for */}
-                              </Typography>
-                            </Grid>
-                          </Grid>
-                        </Card>
-                      ) : (
-                        <Card>
-                          <Typography className={classes.cardFont1}>
-                            Cast your vote
-                          </Typography>
-                          <Divider sx={{ marginTop: 2, marginBottom: 3 }} />
-                          <Stack spacing={2}>
-                            {proposalData[0].votingOptions.map((data, key) => {
-                              return (
-                                <CardActionArea
-                                  className={classes.mainCard}
-                                  key={key}
-                                  disabled={voted}
-                                >
-                                  <Card
-                                    className={
-                                      cardSelected == key
-                                        ? classes.mainCardSelected
-                                        : classes.mainCard
-                                    }
-                                    onClick={(e) => {
-                                      setCastVoteOption(data.votingOptionId);
-                                      setCardSelected(key);
-                                    }}
-                                  >
-                                    <Grid
-                                      container
-                                      item
-                                      justifyContent="center"
-                                      alignItems="center"
-                                    >
-                                      <Typography className={classes.cardFont1}>
-                                        {data.text}{" "}
-                                      </Typography>
-                                    </Grid>
-                                  </Card>
-                                </CardActionArea>
-                              );
-                            })}
-                            <CardActionArea
-                              className={classes.mainCard}
-                              disabled={voted}
-                            >
-                              <Card
-                                className={
-                                  voted
-                                    ? classes.mainCardButtonSuccess
-                                    : classes.mainCardButton
-                                }
-                                onClick={!voted ? submitVote : null}
-                              >
-                                <Grid
-                                  container
-                                  justifyContent="center"
-                                  alignItems="center"
-                                >
-                                  {voted ? (
-                                    <Grid item>
-                                      <CheckCircleRoundedIcon />
-                                    </Grid>
-                                  ) : (
-                                    <Grid item></Grid>
-                                  )}
-                                  <Grid item>
-                                    {voted ? (
-                                      <Typography
-                                        className={classes.cardFont1}
-                                        mt={0.5}
-                                      >
-                                        Successfully voted
-                                      </Typography>
-                                    ) : (
-                                      <Typography className={classes.cardFont1}>
-                                        Vote now
-                                      </Typography>
-                                    )}
-                                  </Grid>
-                                </Grid>
-                              </Card>
-                            </CardActionArea>
-                          </Stack>
-                        </Card>
-                      )
-                    ) : proposalData[0].status === "passed" ? (
-                      owner ? (
-                        <Card>
-                          <Card
-                            className={
-                              executed
-                                ? classes.mainCardButtonSuccess
-                                : classes.mainCardButton
-                            }
-                            // onClick={() => executeFunction("passed")}
-                            onClick={
-                              pendingTxHash === txHash
-                                ? executionReady
-                                  ? () => {
-                                      executeFunction("executed");
-                                    }
-                                  : () => {
-                                      executeFunction("passed");
-                                    }
-                                : () => {
-                                    console.log("rrrrrrrrrrr");
-                                    setOpenSnackBar(true);
-                                    setFailed(true);
-                                    setMessage(
-                                      "execute txns with smaller nonce first",
-                                    );
-                                  }
-                            }
-                          >
-                            <Grid
-                              container
-                              justifyContent="center"
-                              alignItems="center"
-                            >
-                              {signed && !executionReady ? (
                                 <Grid item mt={0.5}>
-                                  <CheckCircleRoundedIcon />
+                                  <CheckCircleRoundedIcon
+                                    className={classes.mainCardButtonSuccess}
+                                  />
                                 </Grid>
-                              ) : (
-                                <Grid item></Grid>
-                              )}
-                              <Grid item>
-                                {txHash ? (
-                                  <Typography className={classes.cardFont1}>
-                                    {executed
-                                      ? "Executed Successfully"
-                                      : executionReady
-                                      ? "Execute Now"
-                                      : signed
-                                      ? "Signed Succesfully"
-                                      : "Sign Now"}
+                                <Grid item mt={0.5}>
+                                  <Typography
+                                    className={classes.successfulMessageText}
+                                  >
+                                    Successfully voted
                                   </Typography>
-                                ) : (
-                                  <Typography className={classes.cardFont1}>
-                                    {signed ? "Signed Succesfully" : "Sign Now"}
+                                </Grid>
+                                <Grid item mt={0.5}>
+                                  <Typography className={classes.listFont2}>
+                                    {/* Voted for */}
                                   </Typography>
-                                )}
+                                </Grid>
                               </Grid>
-                            </Grid>
-                          </Card>
-                        </Card>
-                      ) : (
-                        <Card sx={{ width: "100%" }}>
-                          <Grid
-                            container
-                            direction="column"
-                            justifyContent="center"
-                            alignItems="center"
-                            mt={10}
-                            mb={10}
-                          >
-                            <Grid item mt={0.5}>
-                              <CheckCircleRoundedIcon
-                                className={classes.mainCardButtonSuccess}
-                              />
-                            </Grid>
-                            <Grid item mt={0.5}>
-                              <Typography
-                                className={classes.successfulMessageText}
-                              >
-                                Proposal needs to be executed by Admin
+                            </Card>
+                          ) : (
+                            <Card>
+                              <Typography className={classes.cardFont1}>
+                                Cast your vote
                               </Typography>
-                            </Grid>
-                            <Grid item mt={0.5}>
-                              <Typography className={classes.listFont2}>
-                                {/* Voted for */}
-                              </Typography>
-                            </Grid>
-                          </Grid>
-                        </Card>
-                      )
-                    ) : proposalData[0].status === "failed" ? (
-                      <Card sx={{ width: "100%" }}>
-                        <Grid
-                          container
-                          direction="column"
-                          justifyContent="center"
-                          alignItems="center"
-                          mt={10}
-                          mb={10}
-                        >
-                          <Grid item mt={0.5}>
-                            <CloseIcon
-                              className={classes.mainCardButtonError}
-                            />
-                          </Grid>
-                          <Grid item mt={0.5}>
-                            <Typography
-                              className={classes.successfulMessageText}
-                            >
-                              Execution Failed
-                            </Typography>
-                          </Grid>
-                          <Grid item mt={0.5}>
-                            <Typography className={classes.listFont2}>
-                              {/* Voted for */}
-                            </Typography>
-                          </Grid>
-                        </Grid>
-                      </Card>
-                    ) : proposalData[0].status === "executed" ? (
-                      <Card sx={{ width: "100%" }}>
-                        <Grid
-                          container
-                          direction="column"
-                          justifyContent="center"
-                          alignItems="center"
-                          mt={10}
-                          mb={10}
-                        >
-                          <Grid item mt={0.5}>
-                            <CheckCircleRoundedIcon
-                              className={classes.mainCardButtonSuccess}
-                            />
-                          </Grid>
-                          <Grid item mt={0.5}>
-                            <Typography
-                              className={classes.successfulMessageText}
-                            >
-                              Successfully Executed
-                            </Typography>
-                          </Grid>
-                          <Grid item mt={0.5}>
-                            <Typography className={classes.listFont2}>
-                              {/* Voted for */}
-                            </Typography>
-                          </Grid>
-                        </Grid>
-                      </Card>
-                    ) : null
-                  ) : proposalData[0].type === "survey" ? (
-                    proposalData[0].status === "active" ? (
-                      checkUserVoted(pid) ? (
-                        <Card sx={{ width: "100%" }}>
-                          <Grid
-                            container
-                            direction="column"
-                            justifyContent="center"
-                            alignItems="center"
-                            mt={10}
-                            mb={10}
-                          >
-                            <Grid item mt={0.5}>
-                              <CheckCircleRoundedIcon
-                                className={classes.mainCardButtonSuccess}
-                              />
-                            </Grid>
-                            <Grid item mt={0.5}>
-                              <Typography
-                                className={classes.successfulMessageText}
-                              >
-                                Successfully voted
-                              </Typography>
-                            </Grid>
-                            <Grid item mt={0.5}>
-                              <Typography className={classes.listFont2}>
-                                {/* Voted for */}
-                              </Typography>
-                            </Grid>
-                          </Grid>
-                        </Card>
-                      ) : (
-                        <Card>
-                          <Typography className={classes.cardFont1}>
-                            Cast your vote
-                          </Typography>
-                          <Divider sx={{ marginTop: 2, marginBottom: 3 }} />
-                          <Stack spacing={2}>
-                            {fetched
-                              ? proposalData[0].votingOptions.map(
+                              <Divider sx={{ marginTop: 2, marginBottom: 3 }} />
+                              <Stack spacing={2}>
+                                {proposalData[0].votingOptions.map(
                                   (data, key) => {
                                     return (
                                       <CardActionArea
@@ -1635,26 +1385,88 @@ const ProposalDetail = () => {
                                       </CardActionArea>
                                     );
                                   },
-                                )
-                              : null}
-                            <CardActionArea
-                              className={classes.mainCard}
-                              disabled={voted}
-                            >
+                                )}
+                                <CardActionArea
+                                  className={classes.mainCard}
+                                  disabled={voted}
+                                >
+                                  <Card
+                                    className={
+                                      voted
+                                        ? classes.mainCardButtonSuccess
+                                        : classes.mainCardButton
+                                    }
+                                    onClick={!voted ? submitVote : null}
+                                  >
+                                    <Grid
+                                      container
+                                      justifyContent="center"
+                                      alignItems="center"
+                                    >
+                                      {voted ? (
+                                        <Grid item>
+                                          <CheckCircleRoundedIcon />
+                                        </Grid>
+                                      ) : (
+                                        <Grid item></Grid>
+                                      )}
+                                      <Grid item>
+                                        {voted ? (
+                                          <Typography
+                                            className={classes.cardFont1}
+                                            mt={0.5}
+                                          >
+                                            Successfully voted
+                                          </Typography>
+                                        ) : (
+                                          <Typography
+                                            className={classes.cardFont1}
+                                          >
+                                            Vote now
+                                          </Typography>
+                                        )}
+                                      </Grid>
+                                    </Grid>
+                                  </Card>
+                                </CardActionArea>
+                              </Stack>
+                            </Card>
+                          )
+                        ) : proposalData[0].status === "passed" ? (
+                          owner ? (
+                            <Card>
                               <Card
                                 className={
-                                  voted
+                                  executed
                                     ? classes.mainCardButtonSuccess
                                     : classes.mainCardButton
                                 }
-                                onClick={submitVote}
+                                // onClick={() => executeFunction("passed")}
+                                onClick={
+                                  pendingTxHash === txHash
+                                    ? executionReady
+                                      ? () => {
+                                          executeFunction("executed");
+                                        }
+                                      : () => {
+                                          executeFunction("passed");
+                                        }
+                                    : () => {
+                                        console.log("rrrrrrrrrrr");
+                                        setOpenSnackBar(true);
+                                        setFailed(true);
+                                        setMessage(
+                                          "execute txns with smaller nonce first",
+                                        );
+                                      }
+                                }
                               >
                                 <Grid
                                   container
                                   justifyContent="center"
                                   alignItems="center"
                                 >
-                                  {voted ? (
+                                  {signed && !executionReady ? (
                                     <Grid item mt={0.5}>
                                       <CheckCircleRoundedIcon />
                                     </Grid>
@@ -1662,85 +1474,304 @@ const ProposalDetail = () => {
                                     <Grid item></Grid>
                                   )}
                                   <Grid item>
-                                    {voted ? (
+                                    {txHash ? (
                                       <Typography className={classes.cardFont1}>
-                                        Successfully voted
+                                        {executed
+                                          ? "Executed Successfully"
+                                          : executionReady
+                                          ? "Execute Now"
+                                          : signed
+                                          ? "Signed Succesfully"
+                                          : "Sign Now"}
                                       </Typography>
                                     ) : (
                                       <Typography className={classes.cardFont1}>
-                                        Vote now
+                                        {signed
+                                          ? "Signed Succesfully"
+                                          : "Sign Now"}
                                       </Typography>
                                     )}
                                   </Grid>
                                 </Grid>
                               </Card>
-                            </CardActionArea>
-                          </Stack>
-                        </Card>
-                      )
-                    ) : proposalData[0].status === "failed" ? (
-                      <Card sx={{ width: "100%" }}>
-                        <Grid
-                          container
-                          direction="column"
-                          justifyContent="center"
-                          alignItems="center"
-                          mt={10}
-                          mb={10}
-                        >
-                          <Grid item mt={0.5}>
-                            <CloseIcon
-                              className={classes.mainCardButtonError}
-                            />
-                          </Grid>
-                          <Grid item mt={0.5}>
-                            <Typography
-                              className={classes.successfulMessageText}
+                            </Card>
+                          ) : (
+                            <Card sx={{ width: "100%" }}>
+                              <Grid
+                                container
+                                direction="column"
+                                justifyContent="center"
+                                alignItems="center"
+                                mt={10}
+                                mb={10}
+                              >
+                                <Grid item mt={0.5}>
+                                  <CheckCircleRoundedIcon
+                                    className={classes.mainCardButtonSuccess}
+                                  />
+                                </Grid>
+                                <Grid item mt={0.5}>
+                                  <Typography
+                                    className={classes.successfulMessageText}
+                                  >
+                                    Proposal needs to be executed by Admin
+                                  </Typography>
+                                </Grid>
+                                <Grid item mt={0.5}>
+                                  <Typography className={classes.listFont2}>
+                                    {/* Voted for */}
+                                  </Typography>
+                                </Grid>
+                              </Grid>
+                            </Card>
+                          )
+                        ) : proposalData[0].status === "failed" ? (
+                          <Card sx={{ width: "100%" }}>
+                            <Grid
+                              container
+                              direction="column"
+                              justifyContent="center"
+                              alignItems="center"
+                              mt={10}
+                              mb={10}
                             >
-                              Voting Closed
-                            </Typography>
-                          </Grid>
-                          <Grid item mt={0.5}>
-                            <Typography className={classes.listFont2}>
-                              {/* Voted for */}
-                            </Typography>
-                          </Grid>
-                        </Grid>
-                      </Card>
-                    ) : proposalData[0].status === "closed" ? (
-                      <Card sx={{ width: "100%" }}>
-                        <Grid
-                          container
-                          direction="column"
-                          justifyContent="center"
-                          alignItems="center"
-                          mt={10}
-                          mb={10}
-                        >
-                          <Grid item mt={0.5}>
-                            <CloseIcon
-                              className={classes.mainCardButtonError}
-                            />
-                          </Grid>
-                          <Grid item mt={0.5}>
-                            <Typography
-                              className={classes.successfulMessageText}
+                              <Grid item mt={0.5}>
+                                <CloseIcon
+                                  className={classes.mainCardButtonError}
+                                />
+                              </Grid>
+                              <Grid item mt={0.5}>
+                                <Typography
+                                  className={classes.successfulMessageText}
+                                >
+                                  Execution Failed
+                                </Typography>
+                              </Grid>
+                              <Grid item mt={0.5}>
+                                <Typography className={classes.listFont2}>
+                                  {/* Voted for */}
+                                </Typography>
+                              </Grid>
+                            </Grid>
+                          </Card>
+                        ) : proposalData[0].status === "executed" ? (
+                          <Card sx={{ width: "100%" }}>
+                            <Grid
+                              container
+                              direction="column"
+                              justifyContent="center"
+                              alignItems="center"
+                              mt={10}
+                              mb={10}
                             >
-                              Voting Closed
-                            </Typography>
-                          </Grid>
-                          <Grid item mt={0.5}>
-                            <Typography className={classes.listFont2}>
-                              {/* Voted for */}
-                            </Typography>
-                          </Grid>
-                        </Grid>
-                      </Card>
-                    ) : null
-                  ) : null
-                ) : null}
-              </Grid>
-            </Grid>
+                              <Grid item mt={0.5}>
+                                <CheckCircleRoundedIcon
+                                  className={classes.mainCardButtonSuccess}
+                                />
+                              </Grid>
+                              <Grid item mt={0.5}>
+                                <Typography
+                                  className={classes.successfulMessageText}
+                                >
+                                  Successfully Executed
+                                </Typography>
+                              </Grid>
+                              <Grid item mt={0.5}>
+                                <Typography className={classes.listFont2}>
+                                  {/* Voted for */}
+                                </Typography>
+                              </Grid>
+                            </Grid>
+                          </Card>
+                        ) : null
+                      ) : proposalData[0].type === "survey" ? (
+                        proposalData[0].status === "active" ? (
+                          checkUserVoted(pid) ? (
+                            <Card sx={{ width: "100%" }}>
+                              <Grid
+                                container
+                                direction="column"
+                                justifyContent="center"
+                                alignItems="center"
+                                mt={10}
+                                mb={10}
+                              >
+                                <Grid item mt={0.5}>
+                                  <CheckCircleRoundedIcon
+                                    className={classes.mainCardButtonSuccess}
+                                  />
+                                </Grid>
+                                <Grid item mt={0.5}>
+                                  <Typography
+                                    className={classes.successfulMessageText}
+                                  >
+                                    Successfully voted
+                                  </Typography>
+                                </Grid>
+                                <Grid item mt={0.5}>
+                                  <Typography className={classes.listFont2}>
+                                    {/* Voted for */}
+                                  </Typography>
+                                </Grid>
+                              </Grid>
+                            </Card>
+                          ) : (
+                            <Card>
+                              <Typography className={classes.cardFont1}>
+                                Cast your vote
+                              </Typography>
+                              <Divider sx={{ marginTop: 2, marginBottom: 3 }} />
+                              <Stack spacing={2}>
+                                {fetched
+                                  ? proposalData[0].votingOptions.map(
+                                      (data, key) => {
+                                        return (
+                                          <CardActionArea
+                                            className={classes.mainCard}
+                                            key={key}
+                                            disabled={voted}
+                                          >
+                                            <Card
+                                              className={
+                                                cardSelected == key
+                                                  ? classes.mainCardSelected
+                                                  : classes.mainCard
+                                              }
+                                              onClick={(e) => {
+                                                setCastVoteOption(
+                                                  data.votingOptionId,
+                                                );
+                                                setCardSelected(key);
+                                              }}
+                                            >
+                                              <Grid
+                                                container
+                                                item
+                                                justifyContent="center"
+                                                alignItems="center"
+                                              >
+                                                <Typography
+                                                  className={classes.cardFont1}
+                                                >
+                                                  {data.text}{" "}
+                                                </Typography>
+                                              </Grid>
+                                            </Card>
+                                          </CardActionArea>
+                                        );
+                                      },
+                                    )
+                                  : null}
+                                <CardActionArea
+                                  className={classes.mainCard}
+                                  disabled={voted}
+                                >
+                                  <Card
+                                    className={
+                                      voted
+                                        ? classes.mainCardButtonSuccess
+                                        : classes.mainCardButton
+                                    }
+                                    onClick={submitVote}
+                                  >
+                                    <Grid
+                                      container
+                                      justifyContent="center"
+                                      alignItems="center"
+                                    >
+                                      {voted ? (
+                                        <Grid item mt={0.5}>
+                                          <CheckCircleRoundedIcon />
+                                        </Grid>
+                                      ) : (
+                                        <Grid item></Grid>
+                                      )}
+                                      <Grid item>
+                                        {voted ? (
+                                          <Typography
+                                            className={classes.cardFont1}
+                                          >
+                                            Successfully voted
+                                          </Typography>
+                                        ) : (
+                                          <Typography
+                                            className={classes.cardFont1}
+                                          >
+                                            Vote now
+                                          </Typography>
+                                        )}
+                                      </Grid>
+                                    </Grid>
+                                  </Card>
+                                </CardActionArea>
+                              </Stack>
+                            </Card>
+                          )
+                        ) : proposalData[0].status === "failed" ? (
+                          <Card sx={{ width: "100%" }}>
+                            <Grid
+                              container
+                              direction="column"
+                              justifyContent="center"
+                              alignItems="center"
+                              mt={10}
+                              mb={10}
+                            >
+                              <Grid item mt={0.5}>
+                                <CloseIcon
+                                  className={classes.mainCardButtonError}
+                                />
+                              </Grid>
+                              <Grid item mt={0.5}>
+                                <Typography
+                                  className={classes.successfulMessageText}
+                                >
+                                  Voting Closed
+                                </Typography>
+                              </Grid>
+                              <Grid item mt={0.5}>
+                                <Typography className={classes.listFont2}>
+                                  {/* Voted for */}
+                                </Typography>
+                              </Grid>
+                            </Grid>
+                          </Card>
+                        ) : proposalData[0].status === "closed" ? (
+                          <Card sx={{ width: "100%" }}>
+                            <Grid
+                              container
+                              direction="column"
+                              justifyContent="center"
+                              alignItems="center"
+                              mt={10}
+                              mb={10}
+                            >
+                              <Grid item mt={0.5}>
+                                <CloseIcon
+                                  className={classes.mainCardButtonError}
+                                />
+                              </Grid>
+                              <Grid item mt={0.5}>
+                                <Typography
+                                  className={classes.successfulMessageText}
+                                >
+                                  Voting Closed
+                                </Typography>
+                              </Grid>
+                              <Grid item mt={0.5}>
+                                <Typography className={classes.listFont2}>
+                                  {/* Voted for */}
+                                </Typography>
+                              </Grid>
+                            </Grid>
+                          </Card>
+                        ) : null
+                      ) : null
+                    ) : null}
+                  </Grid>
+                </Grid>
+              </>
+            ) : null}
           </Grid>
           <Grid item md={3.5}>
             <Stack spacing={3}>
