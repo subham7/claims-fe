@@ -17,7 +17,7 @@ export const slice = createSlice({
     governanceTokenDecimal: null,
     createDaoGnosisSigned: false,
     createDaoAuthorized: false,
-    governanceAllowed: null,
+    governanceAllowed: true,
   },
   reducers: {
     safeConnected: (state, action) => {
