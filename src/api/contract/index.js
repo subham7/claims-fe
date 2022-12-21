@@ -88,6 +88,29 @@ export class SmartContract {
     enableGovernance,
   ) {
     const days = Math.round(calculateDays(closeDate));
+    const gasPrice = await web3.eth.getGasPrice();
+    const gasAmount = this.contract.methods
+      .createDAO(
+        [
+          tokenName,
+          tokenSymbol,
+          convertToWei(totalDeposit, usdcConvertDecimal),
+          convertToWei(minDeposit, usdcConvertDecimal),
+          convertToWei(maxDeposit, usdcConvertDecimal),
+          convertToWei(ownerFee, usdcConvertDecimal),
+          days,
+          convertToWei(feeUSDC, usdcConvertDecimal),
+          quoram,
+          formThreshold,
+          tresuryAddress,
+          owners,
+        ],
+        enableGovernance,
+      )
+      .estimateGas({ from: this.walletAddress });
+    const gas = gasAmount * gasPrice;
+    console.log(gasPrice, gas);
+
     return this.contract.methods
       .createDAO(
         [
@@ -106,7 +129,7 @@ export class SmartContract {
         ],
         enableGovernance,
       )
-      .send({ from: this.walletAddress });
+      .send({ from: this.walletAddress, gasPrice });
   }
 
   async updateProposalAndExecution(
@@ -440,9 +463,16 @@ export class SmartContract {
 
   async approveDeposit(address, amount, usdcConvertDecimal) {
     const value = convertToWei(amount, usdcConvertDecimal);
+    const gasPrice = await web3.eth.getGasPrice();
+    const gasAmount = await this.contract.methods
+      .approve(address, value)
+      .estimateGas({ from: this.walletAddress });
+    const gas = gasAmount * gasPrice;
+    console.log(gasPrice, gas);
+
     return this.contract.methods
       .approve(address, value)
-      .send({ from: this.walletAddress });
+      .send({ from: this.walletAddress, gasPrice });
   }
 
   async performanceFee() {
@@ -470,9 +500,15 @@ export class SmartContract {
   }
 
   async deposit(address, amount) {
+    const gasPrice = await web3.eth.getGasPrice();
+    const gasAmount = await this.contract.methods
+      .deposit(address, amount)
+      .estimateGas({ from: this.walletAddress });
+    const gas = gasAmount * gasPrice;
+
     return this.contract.methods
       .deposit(address, amount)
-      .send({ from: this.walletAddress });
+      .send({ from: this.walletAddress, gasPrice });
   }
 
   async balanceOf() {
