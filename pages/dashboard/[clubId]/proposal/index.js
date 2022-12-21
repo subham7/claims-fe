@@ -253,6 +253,7 @@ const Proposal = () => {
   const [duration, setDuration] = useState(
     new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
   );
+  const [minDate, setMinDate] = useState(new Date(new Date().getTime() + 24 * 60 * 60 * 1000))
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [type, setType] = useState(proposalType[0].type);
@@ -1258,7 +1259,7 @@ const Proposal = () => {
                         className={classes.datePicker}
                       />
                     )}
-                    minDate={duration}
+                    minDate={minDate}
                   />
                 </LocalizationProvider>
               </Grid>
@@ -1555,206 +1556,206 @@ const Proposal = () => {
                                 </Grid>
                               </Grid>
                             ) : // name === commandTypeList[0].commandText ? (
-                            //   // assign executor role execution
-                            //   <Grid container ml={1} mt={1} mb={2} spacing={2} direction="column">
-                            //     <Grid item>
-                            //       <Typography variant="proposalBody">Executor role address</Typography>
-                            //     </Grid>
-                            //     <Grid item>
-                            //       <TextField sx={{ width: "90%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
-                            //         placeholder="0x..." onChange={(e) => setExecutiveRoles(e.target.value)} />
-                            //     </Grid>
-                            //   </Grid>
-                            // ) :
-                            name === commandTypeList[2].commandText ? (
-                              // update governance settings execution
-                              <Grid
-                                container
-                                ml={1}
-                                mt={1}
-                                mb={2}
-                                spacing={2}
-                                direction="column"
-                              >
-                                <Grid item>
-                                  <Typography variant="proposalBody">
-                                    Quorum (in %)
-                                  </Typography>
-                                </Grid>
-                                <Grid item>
-                                  <TextField
-                                    sx={{
-                                      width: "90%",
-                                      backgroundColor: "#C1D3FF40",
-                                    }}
-                                    className={classes.cardTextBox}
-                                    placeholder="0"
-                                    onChange={(e) =>
-                                      setQuorumValue(parseInt(e.target.value))
-                                    }
-                                    error={
-                                      quorumValue === 0 || quorumValue >= 100
-                                    }
-                                  />
-                                </Grid>
-                                <Grid item>
-                                  <Typography variant="proposalBody">
-                                    Threshold (in %)
-                                  </Typography>
-                                </Grid>
-                                <Grid item>
-                                  <TextField
-                                    sx={{
-                                      width: "90%",
-                                      backgroundColor: "#C1D3FF40",
-                                    }}
-                                    className={classes.cardTextBox}
-                                    placeholder="0"
-                                    onChange={(e) =>
-                                      setThresholdValue(
-                                        parseInt(e.target.value),
-                                      )
-                                    }
-                                    error={
-                                      thresholdValue === 0 ||
-                                      thresholdValue < 50 ||
-                                      thresholdValue >= 100
-                                    }
-                                  />
-                                </Grid>
-                              </Grid>
-                            ) : name === commandTypeList[3].commandText ? (
-                              // update raise amount execution
-                              <Grid
-                                container
-                                ml={1}
-                                mt={1}
-                                mb={2}
-                                spacing={2}
-                                direction="column"
-                              >
-                                <Grid item>
-                                  <Typography variant="proposalBody">
-                                    Total deposit
-                                  </Typography>
-                                </Grid>
-                                <Grid item>
-                                  <TextField
-                                    sx={{
-                                      width: "90%",
-                                      backgroundColor: "#C1D3FF40",
-                                    }}
-                                    className={classes.cardTextBox}
-                                    placeholder="0"
-                                    onChange={(e) =>
-                                      setTotalDeposits(parseInt(e.target.value))
-                                    }
-                                  />
-                                </Grid>
-                              </Grid>
-                            ) : name === commandTypeList[4].commandText ? (
-                              // send custom token execution
-                              <Grid
-                                container
-                                ml={1}
-                                mt={1}
-                                mb={2}
-                                spacing={2}
-                                direction="column"
-                              >
-                                <Grid item>
-                                  <Typography className={classes.cardFont}>
-                                    Send token to an address
-                                  </Typography>
-                                </Grid>
-                                <Grid item>
-                                  <Select
-                                    displayEmpty
-                                    value={customToken}
-                                    onChange={handleTokenChange}
-                                    input={<OutlinedInput />}
-                                    renderValue={(selected) => {
-                                      if (selected.length === 0) {
-                                        return "Select a Token";
+                              //   // assign executor role execution
+                              //   <Grid container ml={1} mt={1} mb={2} spacing={2} direction="column">
+                              //     <Grid item>
+                              //       <Typography variant="proposalBody">Executor role address</Typography>
+                              //     </Grid>
+                              //     <Grid item>
+                              //       <TextField sx={{ width: "90%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
+                              //         placeholder="0x..." onChange={(e) => setExecutiveRoles(e.target.value)} />
+                              //     </Grid>
+                              //   </Grid>
+                              // ) :
+                              name === commandTypeList[2].commandText ? (
+                                // update governance settings execution
+                                <Grid
+                                  container
+                                  ml={1}
+                                  mt={1}
+                                  mb={2}
+                                  spacing={2}
+                                  direction="column"
+                                >
+                                  <Grid item>
+                                    <Typography variant="proposalBody">
+                                      Quorum (in %)
+                                    </Typography>
+                                  </Grid>
+                                  <Grid item>
+                                    <TextField
+                                      sx={{
+                                        width: "90%",
+                                        backgroundColor: "#C1D3FF40",
+                                      }}
+                                      className={classes.cardTextBox}
+                                      placeholder="0"
+                                      onChange={(e) =>
+                                        setQuorumValue(parseInt(e.target.value))
                                       }
-                                      return selected;
-                                    }}
-                                    MenuProps={tokenData}
-                                    style={{
-                                      borderRadius: "10px",
-                                      background:
-                                        "#111D38 0% 0% no-repeat padding-box",
-                                      width: "90%",
-                                    }}
-                                  >
-                                    {tokenData.map((token) => (
-                                      <MenuItem
-                                        key={token.name}
-                                        value={token.token_address}
-                                      >
-                                        {token.name}
-                                      </MenuItem>
-                                    ))}
-                                  </Select>
+                                      error={
+                                        quorumValue === 0 || quorumValue >= 100
+                                      }
+                                    />
+                                  </Grid>
+                                  <Grid item>
+                                    <Typography variant="proposalBody">
+                                      Threshold (in %)
+                                    </Typography>
+                                  </Grid>
+                                  <Grid item>
+                                    <TextField
+                                      sx={{
+                                        width: "90%",
+                                        backgroundColor: "#C1D3FF40",
+                                      }}
+                                      className={classes.cardTextBox}
+                                      placeholder="0"
+                                      onChange={(e) =>
+                                        setThresholdValue(
+                                          parseInt(e.target.value),
+                                        )
+                                      }
+                                      error={
+                                        thresholdValue === 0 ||
+                                        thresholdValue < 50 ||
+                                        thresholdValue >= 100
+                                      }
+                                    />
+                                  </Grid>
                                 </Grid>
-                                <Grid item>
-                                  <Typography className={classes.cardFont}>
-                                    Receiver&apos;s wallet address
-                                  </Typography>
+                              ) : name === commandTypeList[3].commandText ? (
+                                // update raise amount execution
+                                <Grid
+                                  container
+                                  ml={1}
+                                  mt={1}
+                                  mb={2}
+                                  spacing={2}
+                                  direction="column"
+                                >
+                                  <Grid item>
+                                    <Typography variant="proposalBody">
+                                      Total deposit
+                                    </Typography>
+                                  </Grid>
+                                  <Grid item>
+                                    <TextField
+                                      sx={{
+                                        width: "90%",
+                                        backgroundColor: "#C1D3FF40",
+                                      }}
+                                      className={classes.cardTextBox}
+                                      placeholder="0"
+                                      onChange={(e) =>
+                                        setTotalDeposits(parseInt(e.target.value))
+                                      }
+                                    />
+                                  </Grid>
                                 </Grid>
-                                <Grid item>
-                                  <TextField
-                                    sx={{
-                                      width: "90%",
-                                      backgroundColor: "#C1D3FF40",
-                                    }}
-                                    className={classes.cardTextBox}
-                                    placeholder="0x..."
-                                    onChange={(e) =>
-                                      setCustomTokenAddresses(e.target.value)
-                                    }
-                                  />
+                              ) : name === commandTypeList[4].commandText ? (
+                                // send custom token execution
+                                <Grid
+                                  container
+                                  ml={1}
+                                  mt={1}
+                                  mb={2}
+                                  spacing={2}
+                                  direction="column"
+                                >
+                                  <Grid item>
+                                    <Typography className={classes.cardFont}>
+                                      Send token to an address
+                                    </Typography>
+                                  </Grid>
+                                  <Grid item>
+                                    <Select
+                                      displayEmpty
+                                      value={customToken}
+                                      onChange={handleTokenChange}
+                                      input={<OutlinedInput />}
+                                      renderValue={(selected) => {
+                                        if (selected.length === 0) {
+                                          return "Select a Token";
+                                        }
+                                        return selected;
+                                      }}
+                                      MenuProps={tokenData}
+                                      style={{
+                                        borderRadius: "10px",
+                                        background:
+                                          "#111D38 0% 0% no-repeat padding-box",
+                                        width: "90%",
+                                      }}
+                                    >
+                                      {tokenData.map((token) => (
+                                        <MenuItem
+                                          key={token.name}
+                                          value={token.token_address}
+                                        >
+                                          {token.name}
+                                        </MenuItem>
+                                      ))}
+                                    </Select>
+                                  </Grid>
+                                  <Grid item>
+                                    <Typography className={classes.cardFont}>
+                                      Receiver&apos;s wallet address
+                                    </Typography>
+                                  </Grid>
+                                  <Grid item>
+                                    <TextField
+                                      sx={{
+                                        width: "90%",
+                                        backgroundColor: "#C1D3FF40",
+                                      }}
+                                      className={classes.cardTextBox}
+                                      placeholder="0x..."
+                                      onChange={(e) =>
+                                        setCustomTokenAddresses(e.target.value)
+                                      }
+                                    />
+                                  </Grid>
+                                  <Grid item>
+                                    <Typography className={classes.cardFont}>
+                                      Amount to be sent
+                                    </Typography>
+                                  </Grid>
+                                  <Grid item>
+                                    <TextField
+                                      sx={{
+                                        width: "90%",
+                                        backgroundColor: "#C1D3FF40",
+                                      }}
+                                      className={classes.cardTextBox}
+                                      placeholder="0"
+                                      onChange={(e) =>
+                                        setCustomTokenAmounts(e.target.value)
+                                      }
+                                    />
+                                  </Grid>
                                 </Grid>
-                                <Grid item>
-                                  <Typography className={classes.cardFont}>
-                                    Amount to be sent
-                                  </Typography>
-                                </Grid>
-                                <Grid item>
-                                  <TextField
-                                    sx={{
-                                      width: "90%",
-                                      backgroundColor: "#C1D3FF40",
-                                    }}
-                                    className={classes.cardTextBox}
-                                    placeholder="0"
-                                    onChange={(e) =>
-                                      setCustomTokenAmounts(e.target.value)
-                                    }
-                                  />
-                                </Grid>
-                              </Grid>
-                            ) : // :
-                            // name === commandTypeList[7].commandText ? (
-                            //   // send eth execution
-                            //   <Grid container ml={1} mt={1} mb={2} spacing={2} direction="column">
-                            //     <Grid item>
-                            //       <Typography className={classes.cardFont}>Ethereum address</Typography>
-                            //     </Grid>
-                            //     <Grid item>
-                            //       <TextField sx={{ width: "90%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
-                            //         placeholder="0" onChange={(e) => setSendEthAddresses(e.target.value)} />
-                            //     </Grid>
-                            //     <Grid item>
-                            //       <Typography className={classes.cardFont}>Ethereum amount</Typography>
-                            //     </Grid>
-                            //     <Grid item>
-                            //       <TextField sx={{ width: "90%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
-                            //         placeholder="0" onChange={(e) => setSendEthAmounts(parseFloat(e.target.value))} />
-                            //     </Grid>
-                            //   </Grid>
-                            // )
-                            null}
+                              ) : // :
+                                // name === commandTypeList[7].commandText ? (
+                                //   // send eth execution
+                                //   <Grid container ml={1} mt={1} mb={2} spacing={2} direction="column">
+                                //     <Grid item>
+                                //       <Typography className={classes.cardFont}>Ethereum address</Typography>
+                                //     </Grid>
+                                //     <Grid item>
+                                //       <TextField sx={{ width: "90%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
+                                //         placeholder="0" onChange={(e) => setSendEthAddresses(e.target.value)} />
+                                //     </Grid>
+                                //     <Grid item>
+                                //       <Typography className={classes.cardFont}>Ethereum amount</Typography>
+                                //     </Grid>
+                                //     <Grid item>
+                                //       <TextField sx={{ width: "90%", backgroundColor: "#C1D3FF40" }} className={classes.cardTextBox}
+                                //         placeholder="0" onChange={(e) => setSendEthAmounts(parseFloat(e.target.value))} />
+                                //     </Grid>
+                                //   </Grid>
+                                // )
+                                null}
                           </div>
                         );
                       })}
@@ -1795,10 +1796,10 @@ const Proposal = () => {
                 <Grid item ml={2}>
                   {type === proposalType[0].type ? (
                     duration === null ||
-                    title === null ||
-                    description === null ||
-                    surveyOption.length < 2 ||
-                    !enableSubmitButton ? (
+                      title === null ||
+                      description === null ||
+                      surveyOption.length < 2 ||
+                      !enableSubmitButton ? (
                       <Button variant="primary" onClick={handleNext} disabled>
                         Submit
                       </Button>
