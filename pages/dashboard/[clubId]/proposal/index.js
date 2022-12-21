@@ -63,6 +63,8 @@ import {
 } from "../../../../src/utils/globalFunctions";
 import proposalImg from "../../../../public/assets/images/proposals.png";
 import ProposalCard from "./ProposalCard";
+import Safe from "@safe-global/safe-core-sdk";
+import { setGovernanceAllowed } from "../../../../src/redux/reducers/gnosis";
 
 const useStyles = makeStyles({
   proposalInfoCard: {
@@ -286,6 +288,7 @@ const Proposal = () => {
   const [enableSubmitButton, setEnableSubmitButton] = useState(false);
   const [count, setCount] = useState(0);
   const [executionTransaction, setExecutionTransaction] = useState();
+  const [governance, setGovernance] = useState(true);
   const defaultOptions = [
     {
       text: "Yes",
@@ -300,6 +303,9 @@ const Proposal = () => {
 
   const walletAddress = useSelector((state) => {
     return state.create.value;
+  });
+  const isGovernanceActive = useSelector((state) => {
+    return state.gnosis.governanceAllowed;
   });
 
   const FACTORY_CONTRACT_ADDRESS = useSelector((state) => {
@@ -339,9 +345,6 @@ const Proposal = () => {
   useEffect(async () => {
     setLoaderOpen(true);
     if (gnosisAddress) {
-      console.log("proposalData", proposalData);
-      console.log("hereeeeee11111111111", gnosisAddress);
-
       await getExecutionTransaction();
     }
   }, [gnosisAddress]);
@@ -357,6 +360,32 @@ const Proposal = () => {
           setTokenFetched(true);
         }
       });
+    }
+  };
+
+  const getSafeSdk = async () => {
+    const web3 = new Web3(window.ethereum);
+    const ethAdapter = new Web3Adapter({
+      web3: web3,
+      signerAddress: walletAddress,
+    });
+    const safeSdk = await Safe.create({
+      ethAdapter: ethAdapter,
+      safeAddress: gnosisAddress,
+    });
+    return safeSdk;
+  };
+
+  const isGovernanceAllowed = async () => {
+    const safeSdk = await getSafeSdk();
+    const ownerAddresses = await safeSdk.getOwners();
+    console.log(ownerAddresses);
+    if (isGovernanceActive === false) {
+      if (ownerAddresses.includes(walletAddress)) {
+        setGovernance(true);
+      } else {
+        setGovernance(false);
+      }
     }
   };
 
@@ -787,7 +816,9 @@ const Proposal = () => {
   }, [clubID, gnosisAddress]);
 
   useEffect(() => {
+    setLoaderOpen(true);
     fetchTokens();
+    isGovernanceAllowed();
   }, [clubID]);
 
   const handleTypeChange = (event) => {
@@ -959,18 +990,20 @@ const Proposal = () => {
                       ))}
                     </Select>
                   </Grid>
-                  <Grid item>
-                    <Button
-                      variant="contained"
-                      size="large"
-                      sx={{
-                        height: "80%",
-                      }}
-                      onClick={handleClickOpen}
-                    >
-                      Propose
-                    </Button>
-                  </Grid>
+                  {governance ? (
+                    <Grid item>
+                      <Button
+                        variant="contained"
+                        size="large"
+                        sx={{
+                          height: "80%",
+                        }}
+                        onClick={handleClickOpen}
+                      >
+                        Propose
+                      </Button>
+                    </Grid>
+                  ) : null}
                 </Grid>
               </Grid>
             </Grid>

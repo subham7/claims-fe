@@ -54,7 +54,7 @@ export class SmartContract {
         contractAddress &&
         walletAddress &&
         usdcContractAddress,
-        gnosisTransactionUrl)
+      gnosisTransactionUrl)
     ) {
       this.web3 = new Web3(window.web3);
       this.abi = abiFile.abi;
@@ -85,24 +85,27 @@ export class SmartContract {
     quoram,
     formThreshold,
     usdcConvertDecimal,
-    enableGovernance
+    enableGovernance,
   ) {
     const days = Math.round(calculateDays(closeDate));
     return this.contract.methods
-      .createDAO([
-        tokenName,
-        tokenSymbol,
-        convertToWei(totalDeposit, usdcConvertDecimal),
-        convertToWei(minDeposit, usdcConvertDecimal),
-        convertToWei(maxDeposit, usdcConvertDecimal),
-        convertToWei(ownerFee, usdcConvertDecimal),
-        days,
-        convertToWei(feeUSDC, usdcConvertDecimal),
-        quoram,
-        formThreshold,
-        tresuryAddress,
-        owners,
-      ], enableGovernance)
+      .createDAO(
+        [
+          tokenName,
+          tokenSymbol,
+          convertToWei(totalDeposit, usdcConvertDecimal),
+          convertToWei(minDeposit, usdcConvertDecimal),
+          convertToWei(maxDeposit, usdcConvertDecimal),
+          convertToWei(ownerFee, usdcConvertDecimal),
+          days,
+          convertToWei(feeUSDC, usdcConvertDecimal),
+          quoram,
+          formThreshold,
+          tresuryAddress,
+          owners,
+        ],
+        enableGovernance,
+      )
       .send({ from: this.walletAddress });
   }
 
@@ -523,6 +526,21 @@ export class SmartContract {
   async userDetails() {
     return this.contract.methods
       .userDetails(this.walletAddress)
+      .call({ from: this.walletAddress });
+  }
+
+  async governanceDetails() {
+    console.log(
+      "hereee",
+      this.contract.methods
+        .isGovernanceActive()
+        .call({ from: this.walletAddress })
+        .then((res, err) => {
+          console.log("res", res);
+        }),
+    );
+    return this.contract.methods
+      .isGovernanceActive()
       .call({ from: this.walletAddress });
   }
 
