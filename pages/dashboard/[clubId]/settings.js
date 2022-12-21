@@ -235,6 +235,9 @@ const Settings = (props) => {
   const daoAddress = useSelector((state) => {
     return state.create.daoAddress;
   });
+  const isGovernanceActive = useSelector((state) => {
+    return state.gnosis.governanceAllowed;
+  });
   const imageUrl = useSelector((state) => {
     return state.create.clubImageUrl;
   });
@@ -961,34 +964,49 @@ const Settings = (props) => {
                       </Grid>
                     </Grid>
                   </Grid>
-                  <Grid item md={3}>
-                    <Grid container direction="column">
-                      <Grid item>
-                        <Typography variant="settingText">Threshold</Typography>
+                  {isGovernanceActive ? (
+                    <>
+                      {" "}
+                      <Grid item md={3}>
+                        <Grid container direction="column">
+                          <Grid item>
+                            <Typography variant="settingText">
+                              Threshold
+                            </Typography>
+                          </Grid>
+                          <Grid item mt={2}>
+                            <Typography
+                              variant="p"
+                              className={classes.valuesStyle}
+                            >
+                              {governorDataFetched && thresholdFetched
+                                ? thresholdValue
+                                : 0}
+                            </Typography>
+                          </Grid>
+                        </Grid>
                       </Grid>
-                      <Grid item mt={2}>
-                        <Typography variant="p" className={classes.valuesStyle}>
-                          {governorDataFetched && thresholdFetched
-                            ? thresholdValue
-                            : 0}
-                        </Typography>
+                      <Grid item md={3}>
+                        <Grid container direction="column">
+                          <Grid item>
+                            <Typography variant="settingText">
+                              Quoram
+                            </Typography>
+                          </Grid>
+                          <Grid item mt={2}>
+                            <Typography
+                              variant="p"
+                              className={classes.valuesStyle}
+                            >
+                              {governorDataFetched && quoramFetched
+                                ? quoramValue
+                                : 0}
+                            </Typography>
+                          </Grid>
+                        </Grid>
                       </Grid>
-                    </Grid>
-                  </Grid>
-                  <Grid item md={3}>
-                    <Grid container direction="column">
-                      <Grid item>
-                        <Typography variant="settingText">Quoram</Typography>
-                      </Grid>
-                      <Grid item mt={2}>
-                        <Typography variant="p" className={classes.valuesStyle}>
-                          {governorDataFetched && quoramFetched
-                            ? quoramValue
-                            : 0}
-                        </Typography>
-                      </Grid>
-                    </Grid>
-                  </Grid>
+                    </>
+                  ) : null}
                 </Grid>
               </Paper>
 
