@@ -1,4 +1,4 @@
-import { React, useRef, onChange, useState } from "react";
+import { React, useRef, onChange, useState, useEffect } from "react";
 import { makeStyles } from "@mui/styles";
 import {
   Grid,
@@ -55,6 +55,7 @@ import InfoIcon from "@mui/icons-material/Info";
 import { DesktopDatePicker } from "@mui/x-date-pickers";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import Router from "next/router";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -203,8 +204,18 @@ const Create = (props) => {
   const createDaoAuthorized = useSelector((state) => {
     return state.gnosis.createDaoAuthorized;
   });
+  const redirectToCreate = useSelector((state) => {
+    return state.gnosis.redirectToCreate;
+  });
 
   let walletAddress = null;
+
+  useEffect(() => {
+    if (redirectToCreate) {
+      setActiveStep(0);
+      step1();
+    }
+  }, [redirectToCreate]);
 
   const handleChange = (newValue) => {
     setDepositClose(newValue);
@@ -1036,49 +1047,9 @@ const Create = (props) => {
           }}
           open={open}
         >
-
-          <Card>
-            {createDaoGnosisSigned ? (
-              <Grid
-                container
-                justifyContent="center"
-                alignItems="center"
-                sx={{ padding: "10px", width: "547px" }}
-                direction="column"
-              >
-                <Grid item>
-                  <img src="assets/images/deployingsafe_img.svg" />
-                </Grid>
-                <Grid
-                  item
-                  paddingTop="20px"
-                  justifyContent="left"
-                  justifyItems="left"
-                >
-                  <Typography
-                    variant="h4"
-                    sx={{ color: "#fff" }}
-                  >
-                    Deploying a new safe
-                  </Typography>
-                </Grid>
-                <Grid
-                  item
-                  paddingTop="20px"
-                  justifyContent="left"
-                  justifyItems="left"
-                >
-
-                  <Typography
-                    variant="regularText4"
-                    sx={{ color: "#fff" }}
-                  >
-                    Please sign & authorise StationX to deploy a new safe for your station.
-                  </Typography>
-                </Grid>
-              </Grid>
-            ) : createDaoAuthorized ? (
-              (
+          {
+            createDaoGnosisSigned ? (
+              <Card>
                 <Grid
                   container
                   justifyContent="center"
@@ -1087,7 +1058,7 @@ const Create = (props) => {
                   direction="column"
                 >
                   <Grid item>
-                    <img src="assets/images/settingup_img.svg" />
+                    <img src="assets/images/deployingsafe_img.svg" />
                   </Grid>
                   <Grid
                     item
@@ -1099,7 +1070,7 @@ const Create = (props) => {
                       variant="h4"
                       sx={{ color: "#fff" }}
                     >
-                      Setting up your station
+                      Deploying a new safe
                     </Typography>
                   </Grid>
                   <Grid
@@ -1108,20 +1079,67 @@ const Create = (props) => {
                     justifyContent="left"
                     justifyItems="left"
                   >
-
                     <Typography
                       variant="regularText4"
                       sx={{ color: "#fff" }}
                     >
-                      Please sign to authorise StationX to deploy this station for you.
+                      Please sign & authorise StationX to deploy a new safe for your station.
                     </Typography>
                   </Grid>
+                  <Grid item paddingTop="30px">
+                    <CircularProgress color="inherit" />
+                  </Grid>
                 </Grid>
-              )
-            ) : null}
+              </Card>
+            ) : createDaoAuthorized ? (
+              (
+                <Card>
+                  <Grid
+                    container
+                    justifyContent="center"
+                    alignItems="center"
+                    sx={{ padding: "10px", width: "547px" }}
+                    direction="column"
+                  >
+                    <Grid item>
+                      <img src="assets/images/settingup_img.svg" />
+                    </Grid>
+                    <Grid
+                      item
+                      paddingTop="20px"
+                      justifyContent="left"
+                      justifyItems="left"
+                    >
+                      <Typography
+                        variant="h4"
+                        sx={{ color: "#fff" }}
+                      >
+                        Setting up your station
+                      </Typography>
+                    </Grid>
+                    <Grid
+                      item
+                      paddingTop="20px"
+                      justifyContent="left"
+                      justifyItems="left"
+                    >
 
-          </Card>
-        </Backdrop>) : (
+                      <Typography
+                        variant="regularText4"
+                        sx={{ color: "#fff" }}
+                      >
+                        Please sign to authorise StationX to deploy this station for you.
+                      </Typography>
+                    </Grid>
+                    <Grid item paddingTop="30px">
+                      <CircularProgress color="inherit" />
+                    </Grid>
+                  </Grid>
+                </Card>
+              )
+            ) : null
+          }
+        </Backdrop >) : (
         <Grid
           container
           item
@@ -1194,9 +1212,7 @@ const Create = (props) => {
           </Box>
         </Grid>
       )}
-
-
-    </Layout2>
+    </Layout2 >
   );
 };
 

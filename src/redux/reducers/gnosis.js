@@ -18,6 +18,7 @@ export const slice = createSlice({
     createDaoGnosisSigned: false,
     createDaoAuthorized: false,
     governanceAllowed: true,
+    redirectToCreate: false,
   },
   reducers: {
     safeConnected: (state, action) => {
@@ -58,6 +59,9 @@ export const slice = createSlice({
     setGovernanceAllowed: (state, action) => {
       state.governanceAllowed = action.payload;
     },
+    setRedirectToCreate: (state, action) => {
+      state.redirectToCreate = action.payload;
+    }
   },
 });
 
@@ -72,6 +76,7 @@ export const {
   setCreateDaoGnosisSigned,
   setCreateDaoAuthorized,
   setGovernanceAllowed,
+  setRedirectToCreate,
 } = slice.actions;
 
 export default slice.reducer;
