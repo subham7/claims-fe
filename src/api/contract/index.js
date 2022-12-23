@@ -566,15 +566,6 @@ export class SmartContract {
   }
 
   async governanceDetails() {
-    console.log(
-      "hereee",
-      this.contract.methods
-        .isGovernanceActive()
-        .call({ from: this.walletAddress })
-        .then((res, err) => {
-          console.log("res", res);
-        }),
-    );
     return this.contract.methods
       .isGovernanceActive()
       .call({ from: this.walletAddress });

@@ -133,7 +133,7 @@ const ClubFetch = (Component) => {
           GNOSIS_TRANSACTION_URL,
         );
         const response = checkGovernance.governanceDetails();
-        console.log(response);
+        // console.log(response);
         response.then((result) => {
           console.log(result);
           dispatch(setGovernanceAllowed(result));
