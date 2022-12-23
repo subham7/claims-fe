@@ -1,7 +1,9 @@
 import Web3 from "web3";
 import Web3Adapter from "@safe-global/safe-web3-lib";
 import { SafeFactory } from "@safe-global/safe-core-sdk";
+
 import { safeConnected, setCreateDaoAuthorized, setCreateDaoGnosisSigned, setRedirectToCreate } from "../redux/reducers/gnosis";
+
 import { addDaoAddress, addClubID } from "../redux/reducers/create";
 import store from "../redux/store";
 import { SmartContract } from "../api/contract";
@@ -23,7 +25,22 @@ async function gnosisSafePromise(owners, threshold, dispatch) {
       owners,
       threshold: owners.length,
     };
-    const safeSdk = await safeFactory.deploySafe({ safeAccountConfig });
+    const options = {
+      maxPriorityFeePerGas: null,
+      maxFeePerGas: null,
+      // from, // Optional
+      // gas, // Optional
+      // gasPrice, // Optional
+      // maxFeePerGas, // Optional
+      // maxPriorityFeePerGas // Optional
+      // nonce // Optional
+    };
+
+    const safeSdk = await safeFactory.deploySafe({
+      safeAccountConfig,
+      options,
+    });
+    // const safeSdk = await safeFactory.deploySafe({ safeAccountConfig });
     const newSafeAddress = safeSdk.getAddress();
     dispatch(safeConnected(newSafeAddress, safeSdk));
     return newSafeAddress;
@@ -50,7 +67,7 @@ export async function initiateConnection(
   usdcContractAddress,
   gnosisTransactionUrl,
   usdcConvertDecimal,
-  enableGovernance
+  enableGovernance,
 ) {
   dispatch(setCreateDaoGnosisSigned(true));
   const web3 = new Web3(Web3.givenProvider);
@@ -96,7 +113,7 @@ export async function initiateConnection(
         quoram,
         formThreshold,
         usdcConvertDecimal,
-        enableGovernance
+        enableGovernance,
       );
       value.then(
         (result) => {
