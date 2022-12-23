@@ -1,11 +1,9 @@
 import Web3 from "web3";
 import Web3Adapter from "@safe-global/safe-web3-lib";
 import { SafeFactory } from "@safe-global/safe-core-sdk";
-import {
-  safeConnected,
-  setCreateDaoAuthorized,
-  setCreateDaoGnosisSigned,
-} from "../redux/reducers/gnosis";
+
+import { safeConnected, setCreateDaoAuthorized, setCreateDaoGnosisSigned, setRedirectToCreate } from "../redux/reducers/gnosis";
+
 import { addDaoAddress, addClubID } from "../redux/reducers/create";
 import store from "../redux/store";
 import { SmartContract } from "../api/contract";
@@ -187,6 +185,7 @@ export async function initiateConnection(
           });
         },
         (error) => {
+          dispatch(setRedirectToCreate(true));
           dispatch(setCreateDaoGnosisSigned(false));
           dispatch(setCreateDaoAuthorized(false));
           Router.push(`/create`, undefined, {
@@ -196,6 +195,7 @@ export async function initiateConnection(
       );
     })
     .catch((errorMsg) => {
+      dispatch(setRedirectToCreate(true));
       dispatch(setCreateDaoGnosisSigned(false));
       dispatch(setCreateDaoAuthorized(false));
       Router.push(`/create`, undefined, {
