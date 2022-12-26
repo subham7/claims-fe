@@ -10,6 +10,7 @@ import {
   ListItemButton,
   DialogContent,
   Dialog,
+  CircularProgress,
 } from "@mui/material";
 import { connectWallet } from "../src/utils/wallet";
 import { useDispatch, useSelector } from "react-redux";
@@ -39,6 +40,14 @@ import { fetchConfig } from "../src/api/config";
 import { updateDynamicAddress } from "../src/api/index";
 
 const useStyles = makeStyles({
+  backgroundGradient: {
+    paddingTop: "10%",
+    opacity: 1,
+    background:
+      "transparent url('assets/images/gradients.png') 0% 0% no-repeat padding-box",
+    backgroundSize: "cover",
+    overflow: "hidden"
+  },
   yourClubText: {
     fontSize: "30px",
     color: "#F5F5F5",
@@ -67,7 +76,7 @@ const useStyles = makeStyles({
     fontFamily: "Whyte",
   },
   bannerImage: {
-    width: "60vh",
+    width: "20vh",
   },
   modalStyle: {
     width: "792px",
@@ -75,6 +84,16 @@ const useStyles = makeStyles({
   },
   dialogBox: {
     fontSize: "28px",
+  },
+  smallText: {
+    fontSize: "18px",
+    color: "#C1D3FF",
+    fontFamily: "Whyte",
+  },
+  smallText2: {
+    fontSize: "18px",
+    color: "#FFFFFF",
+    fontFamily: "Whyte",
   },
 });
 
@@ -135,10 +154,10 @@ export default function App() {
             setClubData(Array.from(result.data.clubs));
             setClubOwnerAddress(
               result.data.userAddress.substring(0, 6) +
-                ".........." +
-                result.data.userAddress.substring(
-                  result.data.userAddress.length - 4,
-                ),
+              ".........." +
+              result.data.userAddress.substring(
+                result.data.userAddress.length - 4,
+              ),
             );
             setFetched(true);
           }
@@ -327,38 +346,161 @@ export default function App() {
           </Grid>
         </Grid>
       ) : (
-        <Grid
-          container
-          direction="column"
-          justifyContent="center"
-          alignItems="center"
-        >
-          <Grid item mt={15}>
-            <img
-              className={classes.bannerImage}
-              src="/assets/images/start_illustration.svg"
-            />
+        <div className={classes.backgroundGradient}>
+          <Grid container justifyContent="center"
+            alignItems="center" direction="column">
+            <Grid item>
+              <Typography variant="h4" sx={{ color: "#fff" }} >
+                Connect to StationX
+              </Typography>
+            </Grid>
+            <Grid item>
+              <Typography className={classes.smallText} >
+                Create a station to turn into a powerful DAO in less than 60 seconds
+              </Typography>
+            </Grid>
           </Grid>
-          <Grid item mt={4}>
-            <Typography variant="mainHeading">Do more together</Typography>
+          <Grid
+            container
+            direction="row"
+            justifyContent="center"
+            alignItems="center"
+            spacing={3}
+          >
+            <Grid item mt={15} md={2}>
+              <Card sx={{ height: "33vh" }}>
+                <Grid
+                  container
+                  justifyContent="center"
+                  alignItems="center"
+                  direction="column"
+                >
+                  <Grid item>
+                    <img
+                      src="assets/images/token_image.svg"
+                      className={classes.bannerImage}
+                    />
+                  </Grid>
+                  <Grid
+                    item
+                    paddingTop="20px"
+                    justifyContent="left"
+                    justifyItems="left"
+                  >
+                    <Typography variant="h5" sx={{ color: "#fff" }}>
+                      Create a token
+                    </Typography>
+                  </Grid>
+                  <Grid
+                    item
+                    paddingTop="5px"
+                    justifyContent="left"
+                    justifyItems="left"
+                  >
+                    <Typography className={classes.smallText2}>
+                      Configure ERC20 tokens / NFTs
+                    </Typography>
+                  </Grid>
+                </Grid>
+              </Card>
+            </Grid>
+            <Grid item mt={15} md={2}>
+              <Card sx={{ height: "33vh" }}>
+                <Grid
+                  container
+                  justifyContent="center"
+                  alignItems="center"
+                  direction="column"
+                >
+                  <Grid item>
+                    <img
+                      src="assets/images/gov_image.svg"
+                      className={classes.bannerImage}
+                    />
+                  </Grid>
+                  <Grid
+                    item
+                    paddingTop="20px"
+                    justifyContent="left"
+                    justifyItems="left"
+                  >
+                    <Typography variant="h5" sx={{ color: "#fff" }}>
+                      Simple governance
+                    </Typography>
+                  </Grid>
+                  <Grid
+                    item
+                    paddingTop="5px"
+                    justifyContent="left"
+                    justifyItems="left"
+                  >
+                    <Typography className={classes.smallText2}>
+                      Configure ERC20 tokens / NFTs
+                    </Typography>
+                  </Grid>
+                </Grid>
+              </Card>
+            </Grid>
+            <Grid item mt={15} md={2}>
+              <Card sx={{ height: "33vh" }}>
+                <Grid
+                  container
+                  justifyContent="center"
+                  alignItems="center"
+                  direction="column"
+                >
+                  <Grid item>
+                    <img
+                      src="assets/images/treasury_image.svg"
+                      className={classes.bannerImage}
+                    />
+                  </Grid>
+                  <Grid
+                    item
+                    paddingTop="20px"
+                    justifyContent="left"
+                    justifyItems="left"
+                  >
+                    <Typography variant="h5" sx={{ color: "#fff" }}>
+                      Manage treasury
+                    </Typography>
+                  </Grid>
+                  <Grid
+                    item
+                    paddingTop="5px"
+                    justifyContent="left"
+                    justifyItems="left"
+                  >
+                    <Typography className={classes.smallText2}>
+                      Configure ERC20 tokens / NFTs
+                    </Typography>
+                  </Grid>
+                </Grid>
+              </Card>
+            </Grid>
           </Grid>
-          <Grid item mt={4}>
-            <Typography variant="regularText">
-              Create or join a club in less than 60 seconds using StationX
-            </Typography>
+          <Grid container ml="40%" mt={10} pb={18}>
+            <Grid item>
+              <Button
+                variant="primary"
+                color="primary"
+                sx={{ mr: 2 }}
+                onClick={() => handleConnection()}
+              >
+                Connect Wallet
+              </Button>
+            </Grid>
+            <Grid item ml={3}>
+              <Button
+                variant="transparentCrystal"
+              >
+                View Demo
+              </Button>
+            </Grid>
           </Grid>
-          <Grid item m={4}>
-            <Button
-              variant="primary"
-              color="primary"
-              sx={{ mr: 2 }}
-              onClick={() => handleConnection()}
-            >
-              Connect Wallet
-            </Button>
-          </Grid>
-        </Grid>
-      )}
+        </div>
+      )
+      }
       <Dialog
         open={open}
         onClose={handleClose}
@@ -397,6 +539,6 @@ export default function App() {
           </Grid>
         </DialogContent>
       </Dialog>
-    </Layout>
+    </Layout >
   );
 }
