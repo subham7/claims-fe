@@ -25,7 +25,7 @@ import {
   MenuItem,
   Alert,
   StepButton,
-  InputAdornment
+  InputAdornment,
 } from "@mui/material";
 import styled from "@emotion/styled";
 import Layout2 from "../../src/components/layouts/layout2";
@@ -163,11 +163,13 @@ const Create = (props) => {
   const [raiseAmount, setRaiseAmount] = useState("");
   const [maxContribution, setMaxContribution] = useState("");
   const [mandatoryProposal, setMandatoryProposal] = useState(false);
-  const [voteForQuorum, setVoteForQuorum] = useState(0);
+  const [voteForQuorum, setVoteForQuorum] = useState(1);
   const [depositClose, setDepositClose] = useState(
     new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
   );
-  const [minDate, setMinDate] = useState(new Date(new Date().getTime() + 24 * 60 * 60 * 1000))
+  const [minDate, setMinDate] = useState(
+    new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
+  );
   const [membersLeaveDate, setMembersLeaveDate] = useState(null);
   const [minContribution, setMinContribution] = useState("");
   const [voteInFavour, setVoteInFavour] = useState(51);
@@ -518,7 +520,10 @@ const Create = (props) => {
               Set token type
             </Typography>
             <Typography className={classes.smallText} mb={2}>
-              Token type that best suits your objective. For example: ERC721 for membership based communities, Non-transferrable ERC20 for a syndicate cap-table, transferrable ERC20 for a public DAO, etc. Transferability allows trading of tokens in public markets.
+              Token type that best suits your objective. For example: ERC721 for
+              membership based communities, Non-transferrable ERC20 for a
+              syndicate cap-table, transferrable ERC20 for a public DAO, etc.
+              Transferability allows trading of tokens in public markets.
             </Typography>
             <Card className={classes.cardPadding}>
               <Grid container pl={3} pr={1}>
@@ -553,7 +558,11 @@ const Create = (props) => {
               Add governance
             </Typography>
             <Typography className={classes.smallText} mb={2}>
-              Default mechanism is one wallet = one vote irrespective of number of tokens held. Stations can raise & vote proposals to conduct surveys, know community&apos;s sentiment & execute seamless actions (such a airdrop tokens, reward members, etc) required day-to-day.
+              Default mechanism is one wallet = one vote irrespective of number
+              of tokens held. Stations can raise & vote proposals to conduct
+              surveys, know community&apos;s sentiment & execute seamless
+              actions (such a airdrop tokens, reward members, etc) required
+              day-to-day.
             </Typography>
             <br />
             <Card className={classes.cardPadding} mb={2}>
@@ -581,7 +590,12 @@ const Create = (props) => {
                   }}
                 >
                   <FormControlLabel
-                    control={<Switch checked={governance} onChange={handleOperationTypeChange} />}
+                    control={
+                      <Switch
+                        checked={governance}
+                        onChange={handleOperationTypeChange}
+                      />
+                    }
                     label="NO / YES"
                     labelPlacement="top"
                   />
@@ -590,7 +604,6 @@ const Create = (props) => {
             </Card>
             <br />
             <Card className={classes.cardPadding} mb={2}>
-
               <Grid
                 container
                 item
@@ -622,7 +635,6 @@ const Create = (props) => {
                   >
                     (Quorum)
                   </Box>{" "}
-
                 </Typography>
               </Grid>
               <Grid container item md={11.3} mt={4} ml={4} mb={4}>
@@ -700,7 +712,9 @@ const Create = (props) => {
               Set deposit rules for members
             </Typography>
             <Typography className={classes.smallText} mb={2}>
-              Any new deposits will not be accepted after the last date and/or funding target is met. Admins can extend deposit dates from dashboard by an onchain transaction requiring gas.
+              Any new deposits will not be accepted after the last date and/or
+              funding target is met. Admins can extend deposit dates from
+              dashboard by an onchain transaction requiring gas.
             </Typography>
             <Card className={classes.cardPadding}>
               <Grid container pl={3} pr={1}>
@@ -779,7 +793,11 @@ const Create = (props) => {
                       minContribution % 1 !== 0 ||
                       typeof minContribution === "undefined"
                     }
-                    InputProps={{ endAdornment: <InputAdornment position="end" >USDC</InputAdornment> }}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">USDC</InputAdornment>
+                      ),
+                    }}
                     variant="outlined"
                     onChange={(e) => {
                       setMinContribution(e.target.value);
@@ -825,7 +843,11 @@ const Create = (props) => {
                       typeof maxContribution === "undefined" ||
                       parseInt(maxContribution) < parseInt(minContribution)
                     }
-                    InputProps={{ endAdornment: <InputAdornment position="end" >USDC</InputAdornment> }}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">USDC</InputAdornment>
+                      ),
+                    }}
                     variant="outlined"
                     onChange={(e) => setMaxContribution(e.target.value)}
                     value={maxContribution}
@@ -870,7 +892,16 @@ const Create = (props) => {
                       parseInt(raiseAmount) < parseInt(maxContribution) ||
                       parseInt(raiseAmount) < parseInt(minContribution)
                     }
-                    InputProps={{ endAdornment: <InputAdornment position="end" sx={{ color: "#C1D3FF" }} >USDC</InputAdornment> }}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment
+                          position="end"
+                          sx={{ color: "#C1D3FF" }}
+                        >
+                          USDC
+                        </InputAdornment>
+                      ),
+                    }}
                     variant="outlined"
                     onChange={(e) => setRaiseAmount(e.target.value)}
                     value={raiseAmount}
@@ -881,10 +912,13 @@ const Create = (props) => {
               </Grid>
             </Card>
             <Typography className={classes.largeText} mt={4} mb={2}>
-              Add more admins/signators who can manage setting & sign transactions
+              Add more admins/signators who can manage setting & sign
+              transactions
             </Typography>
             <Typography className={classes.smallText} mb={2}>
-              Once your Station/Community passes a proposal, StationX automatically creates an on-chain transaction of the proposal. Signers can sign and execute such transactions from the dashboard.
+              Once your Station/Community passes a proposal, StationX
+              automatically creates an on-chain transaction of the proposal.
+              Signers can sign and execute such transactions from the dashboard.
             </Typography>
             <Card className={classes.cardPadding} mb={2}>
               <Grid container pl={3} pr={1} mt={2} mb={2}>
@@ -961,7 +995,8 @@ const Create = (props) => {
             </Card>
             <br />
             <Typography className={classes.smallText} mt={4} mb={2}>
-              Note: Once added, admins can’t be changed in this version of the product.
+              Note: Once added, admins can’t be changed in this version of the
+              product.
             </Typography>
 
             {/*<Card className={classes.cardPadding} mb={2}>*/}
@@ -1029,7 +1064,7 @@ const Create = (props) => {
               </Grid>
             </Card> */}
           </Grid>
-        </Grid >
+        </Grid>
       </>
     );
   };
@@ -1047,99 +1082,85 @@ const Create = (props) => {
           }}
           open={open}
         >
-          {
-            createDaoGnosisSigned ? (
-              <Card>
-                <Grid
-                  container
-                  justifyContent="center"
-                  alignItems="center"
-                  sx={{ padding: "10px", width: "547px" }}
-                  direction="column"
-                >
-                  <Grid item>
-                    <img src="assets/images/deployingsafe_img.svg" />
-                  </Grid>
-                  <Grid
-                    item
-                    paddingTop="20px"
-                    justifyContent="left"
-                    justifyItems="left"
-                  >
-                    <Typography
-                      variant="h4"
-                      sx={{ color: "#fff" }}
-                    >
-                      Deploying a new safe
-                    </Typography>
-                  </Grid>
-                  <Grid
-                    item
-                    paddingTop="20px"
-                    justifyContent="left"
-                    justifyItems="left"
-                  >
-                    <Typography
-                      variant="regularText4"
-                      sx={{ color: "#fff" }}
-                    >
-                      Please sign & authorise StationX to deploy a new safe for your station.
-                    </Typography>
-                  </Grid>
-                  <Grid item paddingTop="30px">
-                    <CircularProgress color="inherit" />
-                  </Grid>
+          {createDaoGnosisSigned ? (
+            <Card>
+              <Grid
+                container
+                justifyContent="center"
+                alignItems="center"
+                sx={{ padding: "10px", width: "547px" }}
+                direction="column"
+              >
+                <Grid item>
+                  <img src="assets/images/deployingsafe_img.svg" />
                 </Grid>
-              </Card>
-            ) : createDaoAuthorized ? (
-              (
-                <Card>
-                  <Grid
-                    container
-                    justifyContent="center"
-                    alignItems="center"
-                    sx={{ padding: "10px", width: "547px" }}
-                    direction="column"
-                  >
-                    <Grid item>
-                      <img src="assets/images/settingup_img.svg" />
-                    </Grid>
-                    <Grid
-                      item
-                      paddingTop="20px"
-                      justifyContent="left"
-                      justifyItems="left"
-                    >
-                      <Typography
-                        variant="h4"
-                        sx={{ color: "#fff" }}
-                      >
-                        Setting up your station
-                      </Typography>
-                    </Grid>
-                    <Grid
-                      item
-                      paddingTop="20px"
-                      justifyContent="left"
-                      justifyItems="left"
-                    >
-
-                      <Typography
-                        variant="regularText4"
-                        sx={{ color: "#fff" }}
-                      >
-                        Please sign to authorise StationX to deploy this station for you.
-                      </Typography>
-                    </Grid>
-                    <Grid item paddingTop="30px">
-                      <CircularProgress color="inherit" />
-                    </Grid>
-                  </Grid>
-                </Card>
-              )
-            ) : null
-          }
-        </Backdrop >) : (
+                <Grid
+                  item
+                  paddingTop="20px"
+                  justifyContent="left"
+                  justifyItems="left"
+                >
+                  <Typography variant="h4" sx={{ color: "#fff" }}>
+                    Deploying a new safe
+                  </Typography>
+                </Grid>
+                <Grid
+                  item
+                  paddingTop="20px"
+                  justifyContent="left"
+                  justifyItems="left"
+                >
+                  <Typography variant="regularText4" sx={{ color: "#fff" }}>
+                    Please sign & authorise StationX to deploy a new safe for
+                    your station.
+                  </Typography>
+                </Grid>
+                <Grid item paddingTop="30px">
+                  <CircularProgress color="inherit" />
+                </Grid>
+              </Grid>
+            </Card>
+          ) : createDaoAuthorized ? (
+            <Card>
+              <Grid
+                container
+                justifyContent="center"
+                alignItems="center"
+                sx={{ padding: "10px", width: "547px" }}
+                direction="column"
+              >
+                <Grid item>
+                  <img src="assets/images/settingup_img.svg" />
+                </Grid>
+                <Grid
+                  item
+                  paddingTop="20px"
+                  justifyContent="left"
+                  justifyItems="left"
+                >
+                  <Typography variant="h4" sx={{ color: "#fff" }}>
+                    Setting up your station
+                  </Typography>
+                </Grid>
+                <Grid
+                  item
+                  paddingTop="20px"
+                  justifyContent="left"
+                  justifyItems="left"
+                >
+                  <Typography variant="regularText4" sx={{ color: "#fff" }}>
+                    Please sign to authorise StationX to deploy this station for
+                    you.
+                  </Typography>
+                </Grid>
+                <Grid item paddingTop="30px">
+                  <CircularProgress color="inherit" />
+                </Grid>
+              </Grid>
+            </Card>
+          ) : null}
+        </Backdrop>
+      ) : (
         <Grid
           container
           item
@@ -1149,7 +1170,6 @@ const Create = (props) => {
           justifyContent="center"
           alignItems="center"
         >
-
           <Box
             width={{ xs: "60%", sm: "70%", md: "80%", lg: "100%" }}
             paddingTop={10}
@@ -1168,7 +1188,6 @@ const Create = (props) => {
                       {label}
                     </StepButton>
                   </Step>
-
                 );
               })}
             </Stepper>
@@ -1190,11 +1209,11 @@ const Create = (props) => {
                           activeStep === 0
                             ? !clubName || !clubSymbol
                             : activeStep === 2
-                              ? !raiseAmount ||
+                            ? !raiseAmount ||
                               !maxContribution ||
                               !depositClose ||
                               !minContribution
-                              : // : activeStep === 2
+                            : // : activeStep === 2
                               //   ? false
                               true
                         }
@@ -1212,7 +1231,7 @@ const Create = (props) => {
           </Box>
         </Grid>
       )}
-    </Layout2 >
+    </Layout2>
   );
 };
 
