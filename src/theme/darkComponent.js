@@ -17,7 +17,7 @@ export const darkComponents = {
         style: {
           height: "45px",
           "fontSize": "1.3rem",
-          "borderRadius": "10px",
+          "borderRadius": "30px",
           "&:hover": {
             background: "#F5F5F5",
             color: "#3B7AFD",
@@ -38,13 +38,12 @@ export const darkComponents = {
       {
         props: { variant: "navBar" },
         style: {
-          "color": "#C1D3FF",
-          "height": "45px",
+          height: "45px",
           "background": "#111D38 0% 0% no-repeat padding-box",
           "border": "1px solid #C1D3FF40",
           "opacity": "1",
           "fontSize": "1.3rem",
-          "borderRadius": "10px",
+          "borderRadius": "30px",
           "&:hover": {
             background: "#19274B 0% 0% no-repeat padding-box",
             boxShadow: "0px 0px 12px #3B7AFD40",
@@ -59,7 +58,7 @@ export const darkComponents = {
           "paddingLeft": "3.125vw",
           "paddingRight": "3.125vw",
           "fontSize": "1.3rem",
-          "borderRadius": "10px",
+          "borderRadius": "30px",
           "&:hover": {
             background: "#F5F5F5",
             color: "#3B7AFD",
@@ -80,23 +79,11 @@ export const darkComponents = {
           "border": "1px solid #C1D3FF40",
           "background": "#19274B",
           "fontSize": "1.3rem",
-          "borderRadius": "10px",
+          "borderRadius": "30px",
           "&:hover": {
             background: "#F5F5F5",
             color: "#3B7AFD",
           },
-        },
-      },
-      {
-        props: { variant: "transparentCrystal" },
-        style: {
-          "height": "45px",
-          "border": "1px solid #c1d3ff40",
-          "background": "#C1D3FF1A 0% 0% no-repeat padding-box",
-          "fontSize": "1.3rem",
-          "border": "1px solid #C1D3FF40",
-          "borderRadius": "10px",
-          "opacity": 1,
         },
       },
     ],
