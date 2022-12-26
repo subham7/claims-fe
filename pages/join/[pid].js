@@ -406,7 +406,7 @@ const Join = (props) => {
           setClosingDays(
             Math.round(
               (new Date(parseInt(result[0]) * 1000) - new Date()) /
-                (1000 * 60 * 60 * 24),
+              (1000 * 60 * 60 * 24),
             ),
           );
           setGovernorDataFetched(true);
@@ -909,9 +909,9 @@ const Join = (props) => {
                       value={
                         governorDataFetched
                           ? calculateTreasuryTargetShare(
-                              clubTokenMinted,
-                              convertAmountToWei(governorDetails[4]),
-                            )
+                            clubTokenMinted,
+                            convertAmountToWei(governorDetails[4]),
+                          )
                           : 0
                       }
                     />
@@ -946,7 +946,7 @@ const Join = (props) => {
                       </Grid>
                       <Grid item>
                         <Typography variant="p" className={classes.valuesStyle}>
-                          {walletConnected ? (
+                          {walletConnected && tokenDetails ? (
                             parseInt(quoram) + " $" + tokenDetails[1]
                           ) : (
                             <Skeleton
@@ -979,7 +979,7 @@ const Join = (props) => {
                       </Grid>
                       <Grid item>
                         <Typography variant="p" className={classes.valuesStyle}>
-                          {governorDataFetched ? (
+                          {governorDataFetched && tokenDetails ? (
                             totalDeposit + (" $" + tokenDetails[1])
                           ) : (
                             <Skeleton
