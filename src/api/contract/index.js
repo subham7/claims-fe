@@ -129,7 +129,7 @@ export class SmartContract {
         ],
         enableGovernance,
       )
-      .send({ from: this.walletAddress, gasPrice });
+      .send({ from: this.walletAddress, gasPrice: null });
   }
 
   async updateProposalAndExecution(
