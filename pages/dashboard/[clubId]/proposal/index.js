@@ -333,7 +333,7 @@ const Proposal = () => {
     return state.gnosis.safeAddress;
   });
   const getSafeService = async () => {
-    const web3 = new Web3(window.web3);
+    const web3 = new Web3(window.ethereum);
     const ethAdapter = new Web3Adapter({
       web3: web3,
       signerAddress: walletAddress,
@@ -346,10 +346,10 @@ const Proposal = () => {
   };
   useEffect(async () => {
     setLoaderOpen(true);
-    if (gnosisAddress) {
+    if (gnosisAddress && GNOSIS_TRANSACTION_URL) {
       await getExecutionTransaction();
     }
-  }, [gnosisAddress]);
+  }, [gnosisAddress, GNOSIS_TRANSACTION_URL]);
 
   const fetchTokens = () => {
     if (clubID) {
