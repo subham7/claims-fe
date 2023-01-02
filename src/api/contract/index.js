@@ -331,7 +331,20 @@ export class SmartContract {
       //   safetx2.addSignature(sign);
       // });
       // console.log(safetx2);
-      const executeTxResponse = await safeSdk.executeTransaction(safetx);
+      const options = {
+        maxPriorityFeePerGas: null,
+        maxFeePerGas: null,
+        // from, // Optional
+        // gas, // Optional
+        // gasPrice, // Optional
+        // maxFeePerGas, // Optional
+        // maxPriorityFeePerGas // Optional
+        // nonce // Optional
+      };
+      const executeTxResponse = await safeSdk.executeTransaction(
+        safetx,
+        options,
+      );
 
       console.log("executeTxResponse", executeTxResponse);
       const receipt =
