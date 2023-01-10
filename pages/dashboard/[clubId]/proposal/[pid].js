@@ -765,7 +765,8 @@ const ProposalDetail = () => {
         );
       } else {
         await response
-          .then((result) => {
+          .then(async (result) => {
+            await isOwner();
             setSigned(true);
             setLoaderOpen(false);
           })
@@ -983,7 +984,7 @@ const ProposalDetail = () => {
               <Grid item md={9}>
                 {fetched && (
                   <>
-                    {proposalData[0].commands.length && (
+                    {proposalData[0].commands.length ? (
                       <Card>
                         {/* <Grid container item>
                             <Typography className={classes.listFont2}>
@@ -1265,7 +1266,7 @@ const ProposalDetail = () => {
 
                         {/*<Divider sx={{ marginTop: 2, marginBottom: 3 }} />*/}
                       </Card>
-                    )}
+                    ) : null}
                   </>
                 )}
               </Grid>
@@ -1473,16 +1474,51 @@ const ProposalDetail = () => {
                                   ) : (
                                     <Grid item></Grid>
                                   )}
-                                  <Grid item>
-                                    {txHash ? (
+
+                                  {executed ? (
+                                    <Grid item>
                                       <Typography className={classes.cardFont1}>
-                                        {executed
-                                          ? "Executed Successfully"
-                                          : executionReady
-                                          ? "Execute Now"
-                                          : signed
+                                        Executed Successfully
+                                      </Typography>
+                                    </Grid>
+                                  ) : null}
+                                  {executionReady ? (
+                                    <Grid item>
+                                      <Typography className={classes.cardFont1}>
+                                        Execute Now
+                                      </Typography>
+                                    </Grid>
+                                  ) : null}
+                                  <Grid item>
+                                    {signed && !executionReady && !executed ? (
+                                      <Grid item>
+                                        <Typography
+                                          className={classes.cardFont1}
+                                        >
+                                          {signed
+                                            ? "Signed Succesfully"
+                                            : "Sign Now"}
+                                        </Typography>
+                                      </Grid>
+                                    ) : null}
+                                    {!signed && !executionReady && !executed ? (
+                                      <Grid item>
+                                        <Typography
+                                          className={classes.cardFont1}
+                                        >
+                                          {signed
+                                            ? "Signed Succesfully"
+                                            : "Sign Now"}
+                                        </Typography>
+                                      </Grid>
+                                    ) : null}
+                                    {/* {txHash ? (
+                                      <Typography className={classes.cardFont1}>
+                                        {signed
                                           ? "Signed Succesfully"
                                           : "Sign Now"}
+
+                                       
                                       </Typography>
                                     ) : (
                                       <Typography className={classes.cardFont1}>
@@ -1490,7 +1526,7 @@ const ProposalDetail = () => {
                                           ? "Signed Succesfully"
                                           : "Sign Now"}
                                       </Typography>
-                                    )}
+                                    )} */}
                                   </Grid>
                                 </Grid>
                               </Card>

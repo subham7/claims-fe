@@ -603,110 +603,116 @@ const Create = (props) => {
               </Grid>
             </Card>
             <br />
-            <Card className={classes.cardPadding} mb={2}>
-              <Grid
-                container
-                item
-                xs
-                sx={{
-                  display: "flex",
-                  justifyContent: "flex-start",
-                  alignItems: "center",
-                }}
-                pl={3}
-                pr={1}
-                mt={2}
-                mb={2}
-              >
-                <Typography className={classes.largeText2}>
-                  Min.{" "}
-                  <Box
-                    sx={{ color: "#3B7AFD" }}
-                    fontWeight="fontWeightBold"
-                    display="inline"
+            {governance ? (
+              <>
+                <Card className={classes.cardPadding} mb={2}>
+                  <Grid
+                    container
+                    item
+                    xs
+                    sx={{
+                      display: "flex",
+                      justifyContent: "flex-start",
+                      alignItems: "center",
+                    }}
+                    pl={3}
+                    pr={1}
+                    mt={2}
+                    mb={2}
                   >
-                    % of votes needed
-                  </Box>{" "}
-                  to consider any proposal raised{" "}
-                  <Box
-                    sx={{ color: "#6475A3" }}
-                    fontWeight="fontWeightBold"
-                    display="inline"
-                  >
-                    (Quorum)
-                  </Box>{" "}
-                </Typography>
-              </Grid>
-              <Grid container item md={11.3} mt={4} ml={4} mb={4}>
-                <CustomSlider
-                  onChange={onSetVoteForQuorum}
-                  value={voteForQuorum}
-                />
-              </Grid>
-            </Card>
-            <br />
-            <Card className={classes.cardPadding} mb={2}>
-              <Grid
-                container
-                item
-                xs
-                sx={{
-                  display: "flex",
-                  justifyContent: "flex-start",
-                  alignItems: "center",
-                }}
-                pl={3}
-                pr={1}
-                mt={2}
-                mb={2}
-              >
-                <Typography className={classes.largeText2}>
-                  Min.{" "}
-                  <Box
-                    sx={{ color: "#3B7AFD" }}
-                    fontWeight="fontWeightBold"
-                    display="inline"
-                  >
-                    % of votes needed
-                  </Box>{" "}
-                  out of all votes to pass a proposal{" "}
-                  <Box
-                    sx={{ color: "#6475A3" }}
-                    fontWeight="fontWeightBold"
-                    display="inline"
-                  >
-                    (Threshold)
-                  </Box>{" "}
-                </Typography>
-              </Grid>
-              <Grid container item md={11.3} mt={4} ml={4} mb={4}>
-                <CustomSlider
-                  onChange={onSetVoteOnFavourChange}
-                  value={voteInFavour}
-                  defaultValue={voteInFavour}
-                  min={51}
-                  max={100}
-                />
-              </Grid>
-              {voteOnFavourErrorMessage ? (
-                <Grid container md={11.3} mt={4} ml={4} mb={4}>
-                  <Grid item>
-                    <InfoIcon sx={{ color: "#D55438" }} />
-                  </Grid>
-                  <Grid item mt={0.2} ml={0.5}>
-                    <Typography variant="p" sx={{ color: "#D55438" }}>
-                      Minumum votes in support to pass a proposal should be
-                      greater than 50%
+                    <Typography className={classes.largeText2}>
+                      Min.{" "}
+                      <Box
+                        sx={{ color: "#3B7AFD" }}
+                        fontWeight="fontWeightBold"
+                        display="inline"
+                      >
+                        % of votes needed
+                      </Box>{" "}
+                      to consider any proposal raised{" "}
+                      <Box
+                        sx={{ color: "#6475A3" }}
+                        fontWeight="fontWeightBold"
+                        display="inline"
+                      >
+                        (Quorum)
+                      </Box>{" "}
                     </Typography>
                   </Grid>
-                </Grid>
-              ) : null}
-            </Card>
+                  <Grid container item md={11.3} mt={4} ml={4} mb={4}>
+                    <CustomSlider
+                      onChange={onSetVoteForQuorum}
+                      value={voteForQuorum}
+                      min={1}
+                    />
+                  </Grid>
+                </Card>
+                <br />
+                <Card className={classes.cardPadding} mb={2}>
+                  <Grid
+                    container
+                    item
+                    xs
+                    sx={{
+                      display: "flex",
+                      justifyContent: "flex-start",
+                      alignItems: "center",
+                    }}
+                    pl={3}
+                    pr={1}
+                    mt={2}
+                    mb={2}
+                  >
+                    <Typography className={classes.largeText2}>
+                      Min.{" "}
+                      <Box
+                        sx={{ color: "#3B7AFD" }}
+                        fontWeight="fontWeightBold"
+                        display="inline"
+                      >
+                        % of votes needed
+                      </Box>{" "}
+                      out of all votes to pass a proposal{" "}
+                      <Box
+                        sx={{ color: "#6475A3" }}
+                        fontWeight="fontWeightBold"
+                        display="inline"
+                      >
+                        (Threshold)
+                      </Box>{" "}
+                    </Typography>
+                  </Grid>
+                  <Grid container item md={11.3} mt={4} ml={4} mb={4}>
+                    <CustomSlider
+                      onChange={onSetVoteOnFavourChange}
+                      value={voteInFavour}
+                      defaultValue={voteInFavour}
+                      min={51}
+                      max={100}
+                    />
+                  </Grid>
+                  {voteOnFavourErrorMessage ? (
+                    <Grid container md={11.3} mt={4} ml={4} mb={4}>
+                      <Grid item>
+                        <InfoIcon sx={{ color: "#D55438" }} />
+                      </Grid>
+                      <Grid item mt={0.2} ml={0.5}>
+                        <Typography variant="p" sx={{ color: "#D55438" }}>
+                          Minumum votes in support to pass a proposal should be
+                          greater than 50%
+                        </Typography>
+                      </Grid>
+                    </Grid>
+                  ) : null}
+                </Card>
 
-            <Typography className={classes.smallText} mt={3} mb={2}>
-              Threshold & quorum % can be edited later by raising a proposal.
-            </Typography>
-            <br />
+                <Typography className={classes.smallText} mt={3} mb={2}>
+                  Threshold & quorum % can be edited later by raising a
+                  proposal.
+                </Typography>
+                <br />
+              </>
+            ) : null}
 
             <Typography className={classes.largeText} mt={3} mb={2}>
               Set deposit rules for members

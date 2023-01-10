@@ -786,7 +786,7 @@ const Proposal = () => {
                 }}
               >
                 <Grid container direction="row" spacing={2}>
-                  <Grid
+                  {/* <Grid
                     item
                     xs
                     sx={{ display: "flex", justifyContent: "flex-end" }}
@@ -808,7 +808,7 @@ const Proposal = () => {
                         ),
                       }}
                     />
-                  </Grid>
+                  </Grid> */}
                   <Grid item>
                     <Button
                       variant="primary"
