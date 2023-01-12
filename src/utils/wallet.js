@@ -147,6 +147,7 @@ export async function connectWallet(dispatch) {
       wallets.map(({ accounts }) => accounts)[0][0].address,
     );
     localStorage.setItem("isWalletConnected", true);
+    console.log("labbbeeelll", wallets[0].label);
     localStorage.setItem("label", wallets[0].label);
     return true;
   }
