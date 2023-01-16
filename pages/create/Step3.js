@@ -116,13 +116,6 @@ const useStyles = makeStyles({
 
 const Step3 = (props) => {
   const classes = useStyles();
-  // const handleOperationTypeChange = (event) => {
-  //   if (event.target.checked) {
-  //     setGovernance(true);
-  //   } else {
-  //     setGovernance(false);
-  //   }
-  // };
   const {
     voteForQuorum,
     setVoteForQuorum,
