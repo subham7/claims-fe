@@ -501,15 +501,18 @@ export class SmartContract {
   }
 
   async closeDeposit() {
+    const gasPrice = await web3.eth.getGasPrice();
+
     return this.contract.methods
       .closeDeposit()
-      .send({ from: this.walletAddress });
+      .send({ from: this.walletAddress, gasPrice });
   }
 
   async startDeposit(startTime) {
+    const gasPrice = await web3.eth.getGasPrice();
     return this.contract.methods
       .startDeposit(startTime)
-      .send({ from: this.walletAddress });
+      .send({ from: this.walletAddress, gasPrice });
   }
 
   async deposit(address, amount) {
@@ -561,15 +564,17 @@ export class SmartContract {
   }
 
   async updateMinMaxDeposit(minValue, maxValue) {
+    const gasPrice = await web3.eth.getGasPrice();
     return this.contract.methods
       .updateMinMaxDeposit(minValue, maxValue)
-      .send({ from: this.walletAddress });
+      .send({ from: this.walletAddress, gasPrice });
   }
 
   async updateOwnerFee(performanceFee) {
+    const gasPrice = await web3.eth.getGasPrice();
     return this.contract.methods
       .updateOwnerFee(performanceFee)
-      .send({ from: this.walletAddress });
+      .send({ from: this.walletAddress, gasPrice });
   }
 
   async userDetails() {

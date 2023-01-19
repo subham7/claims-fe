@@ -27,6 +27,7 @@ import {
   CircularProgress,
   Backdrop,
   Link,
+  InputAdornment,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
@@ -290,7 +291,7 @@ const Proposal = () => {
   const [enableSubmitButton, setEnableSubmitButton] = useState(false);
   const [count, setCount] = useState(0);
   const [executionTransaction, setExecutionTransaction] = useState();
-  const [governance, setGovernance] = useState(true);
+  const [governance, setGovernance] = useState();
   const defaultOptions = [
     {
       text: "Yes",
@@ -380,14 +381,19 @@ const Proposal = () => {
 
   const isGovernanceAllowed = async () => {
     const safeSdk = await getSafeSdk();
+    console.log("innnnnn is governanceeee allloweedddd");
     const ownerAddresses = await safeSdk.getOwners();
     console.log(ownerAddresses);
     if (isGovernanceActive === false) {
       if (ownerAddresses.includes(walletAddress)) {
+        console.log("issss adminnnnnn");
         setGovernance(true);
       } else {
+        console.log("noooottt governance");
         setGovernance(false);
       }
+    } else {
+      setGovernance(true);
     }
   };
 
@@ -1015,7 +1021,7 @@ const Proposal = () => {
                   <>
                     {executionTransaction && (
                       <>
-                        <h2>Txn to be executed</h2>
+                        <h2>Queued Transactions</h2>
                         {console.log(executionTransaction)}
                         <Grid
                           item
@@ -1567,7 +1573,7 @@ const Proposal = () => {
                                 </Grid>
                                 <Grid item>
                                   <Typography className={classes.cardFont}>
-                                    MintGt Amount
+                                    Amount of Tokens
                                   </Typography>
                                 </Grid>
                                 <Grid item>
@@ -1679,6 +1685,16 @@ const Proposal = () => {
                                     onChange={(e) =>
                                       setTotalDeposits(parseInt(e.target.value))
                                     }
+                                    InputProps={{
+                                      endAdornment: (
+                                        <InputAdornment
+                                          position="end"
+                                          sx={{ color: "#C1D3FF" }}
+                                        >
+                                          USDC
+                                        </InputAdornment>
+                                      ),
+                                    }}
                                   />
                                 </Grid>
                               </Grid>

@@ -974,7 +974,7 @@ const Dashboard = () => {
                       Club Assets
                     </Typography>
                   </Grid>
-                  <Grid container mt={4}>
+                  {/* <Grid container mt={4}>
                     <Grid item>
                       <ButtonDropDown label="All" />
                     </Grid>
@@ -995,7 +995,7 @@ const Dashboard = () => {
                         }}
                       />
                     </Grid>
-                  </Grid>
+                  </Grid> */}
                   <Typography mt={5} mb={5} variant="subHeading">
                     Tokens
                   </Typography>

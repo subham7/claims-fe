@@ -100,7 +100,7 @@ const Members = (props) => {
                 <Grid item>
                   <Typography variant="title">Members</Typography>
                 </Grid>
-                <Grid
+                {/* <Grid
                   item
                   xs
                   sx={{ display: "flex", justifyContent: "flex-end" }}
@@ -120,7 +120,7 @@ const Members = (props) => {
                       ),
                     }}
                   />
-                </Grid>
+                </Grid> */}
               </Grid>
 
               <TableContainer component={Paper}>

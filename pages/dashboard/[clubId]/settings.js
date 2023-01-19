@@ -834,11 +834,11 @@ const Settings = (props) => {
                         <Typography variant="p" className={classes.valuesStyle}>
                           {governorDataFetched
                             ? new Date(parseInt(governorDetails[0]) * 1000)
-                              .toJSON()
-                              .slice(0, 10)
-                              .split("-")
-                              .reverse()
-                              .join("/")
+                                .toJSON()
+                                .slice(0, 10)
+                                .split("-")
+                                .reverse()
+                                .join("/")
                             : null}
                         </Typography>
                       </Grid>
@@ -944,20 +944,20 @@ const Settings = (props) => {
                         <Typography variant="p" className={classes.valuesStyle}>
                           {userBalanceFetched && dataFetched
                             ? isNaN(
-                              parseInt(
-                                calculateUserSharePercentage(
-                                  userBalance,
-                                  tokenDetails[2],
-                                ),
-                              ),
-                            )
-                              ? 0
-                              : parseInt(
-                                calculateUserSharePercentage(
-                                  userBalance,
-                                  userOwnershipShare,
+                                parseInt(
+                                  calculateUserSharePercentage(
+                                    userBalance,
+                                    tokenDetails[2],
+                                  ),
                                 ),
                               )
+                              ? 0
+                              : parseInt(
+                                  calculateUserSharePercentage(
+                                    userBalance,
+                                    userOwnershipShare,
+                                  ),
+                                )
                             : 0}
                           % (${userBalance})
                         </Typography>
@@ -1015,9 +1015,9 @@ const Settings = (props) => {
                   value={
                     governorDataFetched && dataFetched
                       ? calculateTreasuryTargetShare(
-                        clubTokenMinted,
-                        convertAmountToWei(governorDetails[4]),
-                      )
+                          clubTokenMinted,
+                          convertAmountToWei(governorDetails[4]),
+                        )
                       : 0
                   }
                 />
@@ -1049,7 +1049,7 @@ const Settings = (props) => {
                     <Typography variant="p" className={classes.valuesStyle}>
                       {governorDataFetched && dataFetched
                         ? convertAmountToWei(governorDetails[4]) +
-                        (" $" + tokenDetails[1])
+                          (" $" + tokenDetails[1])
                         : null}{" "}
                     </Typography>
                   </Stack>
@@ -1099,10 +1099,10 @@ const Settings = (props) => {
                       <Typography variant="p" className={classes.valuesStyle}>
                         {apiTokenDetailSet
                           ? tokenAPIDetails[0].daoAddress.substring(0, 6) +
-                          "......" +
-                          tokenAPIDetails[0].daoAddress.substring(
-                            tokenAPIDetails[0].daoAddress.length - 4,
-                          )
+                            "......" +
+                            tokenAPIDetails[0].daoAddress.substring(
+                              tokenAPIDetails[0].daoAddress.length - 4,
+                            )
                           : null}
                       </Typography>
                     </Grid>
@@ -1317,8 +1317,7 @@ const Settings = (props) => {
                             setOpen(true);
                           }}
                         >
-                          {" "}
-                          (change)
+                          <span style={{ color: "#fff" }}>%</span> (change)
                         </a>
                       ) : null}
                     </Typography>

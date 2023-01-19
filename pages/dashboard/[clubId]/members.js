@@ -30,6 +30,8 @@ import { useRouter } from "next/router";
 import jazzicon from "@metamask/jazzicon";
 import ClubFetch from "../../../src/utils/clubFetch";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+import ImplementationContract from "../../../src/abis/implementationABI.json";
+import { SmartContract } from "../../../src/api/contract";
 
 const useStyles = makeStyles({
   searchField: {
@@ -69,6 +71,16 @@ const Members = (props) => {
   const [members, setMembers] = useState([]);
   const [fetched, setFetched] = useState(false);
   const [loaderOpen, setLoaderOpen] = useState(false);
+  const [clubTokenMinted, setClubTokenMinted] = useState(null);
+  const daoAddress = useSelector((state) => {
+    return state.create.daoAddress;
+  });
+  const USDC_CONTRACT_ADDRESS = useSelector((state) => {
+    return state.gnosis.usdcContractAddress;
+  });
+  const GNOSIS_TRANSACTION_URL = useSelector((state) => {
+    return state.gnosis.transactionUrl;
+  });
 
   const avatarRef = useRef();
 
@@ -80,6 +92,29 @@ const Members = (props) => {
       return icon;
     }
   };
+  const loadSmartContractData = async () => {
+    try {
+      const contract = new SmartContract(
+        ImplementationContract,
+        daoAddress,
+        undefined,
+        USDC_CONTRACT_ADDRESS,
+        GNOSIS_TRANSACTION_URL,
+      );
+
+      let getTokenDetails = await contract.tokenDetails();
+
+      setClubTokenMinted(getTokenDetails[1]);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  useEffect(() => {
+    if (daoAddress && USDC_CONTRACT_ADDRESS && GNOSIS_TRANSACTION_URL) {
+      loadSmartContractData();
+    }
+  }, [daoAddress, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL]);
 
   const fetchMembers = () => {
     const membersData = getMembersDetails(clubID);
@@ -114,7 +149,7 @@ const Members = (props) => {
                 <Grid item>
                   <Typography variant="title">Members</Typography>
                 </Grid>
-                <Grid
+                {/* <Grid
                   item
                   xs
                   sx={{ display: "flex", justifyContent: "flex-end" }}
@@ -134,7 +169,7 @@ const Members = (props) => {
                       ),
                     }}
                   />
-                </Grid>
+                </Grid> */}
               </Grid>
 
               <TableContainer component={Paper}>
@@ -200,10 +235,10 @@ const Members = (props) => {
                           </Grid>
                         </TableCell>
                         <TableCell align="left" variant="tableBody">
-                          ${data.clubs[0].balance}
+                          {data.clubs[0].balance} USDC
                         </TableCell>
                         <TableCell align="left" variant="tableBody">
-                          {data.clubs[0].balance}
+                          {data.clubs[0].balance} {clubTokenMinted}
                         </TableCell>
                         <TableCell align="left" variant="tableBody">
                           {new Date(

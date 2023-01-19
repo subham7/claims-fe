@@ -752,7 +752,7 @@ const Dashboard = () => {
                   <Grid item mt={3} ml={5}>
                     <Grid container item direction="column">
                       <Typography variant="regularText4" fontSize={"21px"}>
-                        Treasury wallet
+                        Treasury value
                       </Typography>
                       <Typography fontSize={"48px"} fontWeight="bold">
                         $
@@ -796,7 +796,7 @@ const Dashboard = () => {
                           </Typography>
                           <Typography fontSize={"48px"} fontWeight="bold">
                             {userBalance !== null &&
-                              userOwnershipShare !== null ? (
+                            userOwnershipShare !== null ? (
                               isNaN(
                                 parseInt(
                                   calculateUserSharePercentage(
@@ -859,7 +859,7 @@ const Dashboard = () => {
                       Club Assets
                     </Typography>
                   </Grid>
-                  <Grid container mt={4}>
+                  {/* <Grid container mt={4}>
                     <Grid item>
                       <ButtonDropDown label="All" />
                     </Grid>
@@ -880,7 +880,7 @@ const Dashboard = () => {
                         }}
                       />
                     </Grid>
-                  </Grid>
+                  </Grid> */}
                   <Typography mt={5} mb={5} variant="subHeading">
                     Tokens
                   </Typography>
@@ -1104,7 +1104,7 @@ const Dashboard = () => {
                         disabled
                         value={
                           typeof window !== "undefined" &&
-                            window.location.origin
+                          window.location.origin
                             ? `${window.location.origin}/join/${daoAddress}`
                             : null
                         }
@@ -1149,53 +1149,53 @@ const Dashboard = () => {
                       <Grid item md={12} mr={2}>
                         {activeProposalDataFetched
                           ? activeProposalData.map((data, key) => {
-                            if (key < 3) {
-                              return (
-                                <div key={key}>
-                                  <ListItemButton
-                                    onClick={() =>
-                                      handleProposalClick(
-                                        activeProposalData[key],
-                                      )
-                                    }
-                                    sx={{ width: "100%" }}
-                                  >
-                                    <Grid container direction="column">
-                                      <Grid item md={12}>
-                                        <Typography
-                                          className={classes.card5text1}
-                                        >
-                                          Proposed by{" "}
-                                          {data.createdBy.substring(0, 6) +
-                                            "......" +
-                                            data.createdBy.substring(
-                                              data.createdBy.length - 4,
-                                            )}
-                                        </Typography>
+                              if (key < 3) {
+                                return (
+                                  <div key={key}>
+                                    <ListItemButton
+                                      onClick={() =>
+                                        handleProposalClick(
+                                          activeProposalData[key],
+                                        )
+                                      }
+                                      sx={{ width: "100%" }}
+                                    >
+                                      <Grid container direction="column">
+                                        <Grid item md={12}>
+                                          <Typography
+                                            className={classes.card5text1}
+                                          >
+                                            Proposed by{" "}
+                                            {data.createdBy.substring(0, 6) +
+                                              "......" +
+                                              data.createdBy.substring(
+                                                data.createdBy.length - 4,
+                                              )}
+                                          </Typography>
+                                        </Grid>
+                                        <Grid item>
+                                          <Typography
+                                            className={classes.card5text2}
+                                          >
+                                            {data.name}
+                                          </Typography>
+                                        </Grid>
+                                        <Grid item>
+                                          <Typography
+                                            className={classes.card5text1}
+                                          >
+                                            Expired on{" "}
+                                            {new Date(
+                                              data.votingDuration,
+                                            ).toLocaleDateString()}
+                                          </Typography>
+                                        </Grid>
                                       </Grid>
-                                      <Grid item>
-                                        <Typography
-                                          className={classes.card5text2}
-                                        >
-                                          {data.name}
-                                        </Typography>
-                                      </Grid>
-                                      <Grid item>
-                                        <Typography
-                                          className={classes.card5text1}
-                                        >
-                                          Expired on{" "}
-                                          {new Date(
-                                            data.votingDuration,
-                                          ).toLocaleDateString()}
-                                        </Typography>
-                                      </Grid>
-                                    </Grid>
-                                  </ListItemButton>
-                                </div>
-                              );
-                            }
-                          })
+                                    </ListItemButton>
+                                  </div>
+                                );
+                              }
+                            })
                           : null}
                       </Grid>
                     </Grid>
@@ -1223,27 +1223,29 @@ const Dashboard = () => {
                         No proposals raised yet
                       </Typography>
                     </Grid>
-                    <Grid item pb={15}>
-                      <Button
-                        variant="primary"
-                        onClick={(e) => {
-                          router.push(
-                            {
-                              pathname: `/dashboard/${clubId}/proposal`,
-                              query: {
-                                create_proposal: true,
+                    {checkIsAdmin() ? (
+                      <Grid item pb={15}>
+                        <Button
+                          variant="primary"
+                          onClick={(e) => {
+                            router.push(
+                              {
+                                pathname: `/dashboard/${clubId}/proposal`,
+                                query: {
+                                  create_proposal: true,
+                                },
                               },
-                            },
-                            undefined,
-                            {
-                              shallow: true,
-                            },
-                          );
-                        }}
-                      >
-                        Create new
-                      </Button>
-                    </Grid>
+                              undefined,
+                              {
+                                shallow: true,
+                              },
+                            );
+                          }}
+                        >
+                          Create new
+                        </Button>
+                      </Grid>
+                    ) : null}
                   </Grid>
                 )}
               </Card>

@@ -35,6 +35,7 @@ import { fetchConfigById } from "../api/config";
 import { addContractAddress } from "../redux/reducers/gnosis";
 import { SmartContract } from "../api/contract";
 import ImplementationContract from "../abis/implementationABI.json";
+import { disconnectWallet, onboard } from "./wallet";
 
 const ClubFetch = (Component) => {
   const RetrieveDataComponent = () => {
@@ -55,6 +56,60 @@ const ClubFetch = (Component) => {
     const GNOSIS_TRANSACTION_URL = useSelector((state) => {
       return state.gnosis.transactionUrl;
     });
+    // const dispatch = useDispatch();
+    // const [address, setAddress] = useState(null);
+
+    // useEffect(() => {
+    //   const web3 = new Web3(Web3.givenProvider);
+    //   web3.eth.getProvider().on("accountsChanged", function (accounts) {
+    //     console.log("Accounts changed : ", accounts);
+    //     setAddress(accounts[0]);
+    //     //call your function here
+    //   });
+    // }, []);
+
+    async function redirectUser() {
+      console.log("redirect user", localStorage.getItem("label"));
+
+      // await onboard.disconnectWallet({ label: localStorage.getItem("label") });
+      // await disconnectWallet(dispatch);
+
+      if (router.pathname === "/") {
+        router.reload();
+      } else {
+        router.push("/");
+      }
+    }
+
+    useEffect(async () => {
+      await window.ethereum.on("accountsChanged", function () {
+        redirectUser();
+      });
+    }, []);
+
+    // useEffect(() => {
+    //   const web3 = new Web3(Web3.givenProvider);
+
+    //   async function detectWalletChange() {
+    //     // get the user's current address
+    //     const [newAddress] = await web3.eth.getAccounts();
+    //     //console.log("address", address, newAddress);
+
+    //     // check if the address has changed
+    //     if (newAddress !== address && address !== null) {
+    //       clearTimeout(detectWalletChangeTimeout);
+    //       setAddress(newAddress);
+    //       redirectUser();
+    //       return;
+    //     }
+    //     setAddress(newAddress);
+
+    //     // call the function again in 1 second
+    //     let detectWalletChangeTimeout = setTimeout(detectWalletChange, 1000);
+    //   }
+
+    //   detectWalletChange();
+    // }, [address]);
 
     const fetchCustomTokenDecimals = async () => {
       if (daoAddress && USDC_CONTRACT_ADDRESS && GNOSIS_TRANSACTION_URL) {
