@@ -13,7 +13,8 @@ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import React, { useRef } from "react";
 import UploadIcon from "@mui/icons-material/Upload";
 import Image from "next/image";
-import ape from "../../public/assets/images/ape.png";
+import empty_nft from "../../public/assets/icons/empty_nft.svg";
+import { width } from "@mui/system";
 
 const useStyles = makeStyles({
   textField: {
@@ -93,6 +94,14 @@ const useStyles = makeStyles({
     color: "#3B7AFD",
     fontFamily: "Whyte",
   },
+  emptyImage: {
+    height: "200px !important",
+    width: "200px !important",
+  },
+  nftImage: {
+    height: "400px !important",
+    width: "400px !important",
+  },
 });
 
 const ERC721NonTransferableStep2 = (props) => {
@@ -121,6 +130,13 @@ const ERC721NonTransferableStep2 = (props) => {
     activeStep,
     handleNext,
   } = props;
+
+  const generateRandomNFTImage = () => {
+    const randInt = Math.floor(Math.random() * (15 - 1 + 1) + 1);
+    console.log("random Image", randInt);
+    setImageUrl(`/assets/NFT_IMAGES/${randInt}.png`);
+    setSelectedImage(null);
+  };
   return (
     <>
       <Grid container spacing={3}>
@@ -162,7 +178,11 @@ const ERC721NonTransferableStep2 = (props) => {
 
                 <Grid container spacing={2} mb={2}>
                   <Grid item>
-                    <Button variant="contained" sx={{ fontWeight: "light" }}>
+                    <Button
+                      variant="contained"
+                      sx={{ fontWeight: "light" }}
+                      onClick={generateRandomNFTImage}
+                    >
                       Generate random
                     </Button>
                   </Grid>
@@ -172,9 +192,12 @@ const ERC721NonTransferableStep2 = (props) => {
                     <Button
                       startIcon={<UploadIcon />}
                       sx={{
-                        fontWeight: "light",
-                        backgroundColor: "#81F5FF",
-                        color: "#3B7AFD",
+                        "fontWeight": "light",
+                        "backgroundColor": "#81F5FF",
+                        "color": "#3B7AFD",
+                        ":hover": {
+                          backgroundColor: "#81F5FF",
+                        },
                       }}
                       onClick={(e) => {
                         uploadInputRef.current.click();
@@ -188,7 +211,10 @@ const ERC721NonTransferableStep2 = (props) => {
                       id="select-image"
                       style={{ display: "none" }}
                       ref={uploadInputRef}
-                      onChange={(e) => setSelectedImage(e.target.files[0])}
+                      onChange={(e) => {
+                        setSelectedImage(e.target.files[0]);
+                        setImageUrl(null);
+                      }}
                     />
                   </Grid>
                 </Grid>
@@ -207,21 +233,35 @@ const ERC721NonTransferableStep2 = (props) => {
                 xs
                 sx={{
                   display: "flex",
-                  justifyContent: "flex-end",
+                  justifyContent: "center",
                   alignItems: "center",
-                  height: "100%",
+                  height: "400px",
                   borderRadius: "10px",
+                  backgroundColor: "#19274B",
                 }}
                 mr={3}
               >
-                <Image
-                  src={imageUrl ? imageUrl : ape}
-                  alt={selectedImage ? selectedImage.name : ""}
-                  // layout="fill"
-                  height="400px"
-                  width="400px"
-                  sx={{ borderRadius: "10px" }}
-                />
+                {imageUrl ? (
+                  <Image
+                    src={imageUrl}
+                    alt={selectedImage ? selectedImage.name : ""}
+                    // className={imageUrl ? classes.nftImage : classes.emptyImage}
+                    // layout="fill"
+                    height="400px"
+                    width="400px"
+                    sx={{ borderRadius: "10px" }}
+                  />
+                ) : (
+                  <Image
+                    src={empty_nft}
+                    alt={selectedImage ? selectedImage.name : ""}
+                    className={classes.emptyImage}
+                    // layout="fill"
+                    // height="400px"
+                    // width="400px"
+                    sx={{ borderRadius: "10px" }}
+                  />
+                )}
               </Grid>
             </Grid>
           </Card>
@@ -512,7 +552,7 @@ const ERC721NonTransferableStep2 = (props) => {
               variant="wideButton"
               disabled={
                 activeStep === 1
-                  ? !selectedImage ||
+                  ? !imageUrl ||
                     !nftPrice ||
                     !mintLimit ||
                     !tokenSupply ||

@@ -21,6 +21,7 @@ import Step1 from "./Step1";
 import Step3 from "./Step3";
 import ERC721NonTransferableStep2 from "./ERC721NonTransferableStep2";
 import ERC20NonTransferableStep2 from "./ERC20NonTransferableStep2";
+import { NFTStorage, File, Blob } from "nft.storage";
 
 const Create = (props) => {
   const uploadInputRef = useRef(null);
@@ -168,7 +169,7 @@ const Create = (props) => {
     return skipped.has(step);
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     setOpen(true);
     let newSkipped = skipped;
     if (isStepSkipped(activeStep)) {
@@ -176,43 +177,76 @@ const Create = (props) => {
       newSkipped.delete(activeStep);
     }
     if (activeStep === steps.length - 1) {
-      const web3 = new Web3(Web3.givenProvider);
-      const auth = web3.eth.getAccounts();
-      auth.then(
-        (result) => {
-          walletAddress = result[0];
-          addressList.unshift(walletAddress);
-          initiateConnection(
-            addressList,
-            threshold,
-            dispatch,
-            clubName,
-            clubSymbol,
-            raiseAmount,
-            minContribution,
-            maxContribution,
-            0,
-            depositClose,
-            0,
-            voteForQuorum,
-            voteInFavour,
-            FACTORY_CONTRACT_ADDRESS,
-            USDC_CONTRACT_ADDRESS,
-            GNOSIS_TRANSACTION_URL,
-            usdcConvertDecimal,
-            governance,
-          )
-            .then((result) => {
-              setLoading(false);
-            })
-            .catch((error) => {
-              setLoading(true);
-            });
-        },
-        (error) => {
-          console.log("Error connecting to Wallet!");
-        },
-      );
+      if (clubTokenType === "NFT (Coming soon!)") {
+        console.log("nft");
+        const client = new NFTStorage({
+          token:
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweDlhMWRFQjEyMjQyYTBlN0VmNTUwNjFlOTAwMTYyMDcxNEFENDBlNDgiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTY3NDEyOTI3MzM5MSwibmFtZSI6InN0YXRpb25YIG5mdCJ9.1w-RC7qZ43T2NhjHrtsO_Gmb0Mw1BjJo7GXMciqX5jY",
+        });
+        // console.log(selectedImage);
+        let metadata;
+        if (selectedImage) {
+          metadata = await client.storeBlob(selectedImage);
+        } else {
+          // const imageFile = new File([imageUrl.blob()], imageUrl, {
+          //   type: "image/png",
+          // });
+          const response = await fetch(imageUrl);
+          const blob = await response.blob();
+          const file = new File([blob], imageUrl, {
+            type: blob.type,
+          });
+          metadata = await client.storeBlob(file);
+        }
+        // const imageFile = new File([], selectedImage.name, {
+        //   type: "image/png",
+        // });
+        // console.log("imagefile", imageFile);
+        // const metadata = await client.storeBlob(selectedImage);
+        // const metadata = await client.storeBlob(
+        //   new Blob([imageUrl], { type: "image/png" }),
+        //   // new File([], imageUrl, { type: "image/png" }),
+        // );
+        console.log("meta data urllll", metadata);
+      } else {
+        const web3 = new Web3(Web3.givenProvider);
+        const auth = web3.eth.getAccounts();
+        auth.then(
+          (result) => {
+            walletAddress = result[0];
+            addressList.unshift(walletAddress);
+            initiateConnection(
+              addressList,
+              threshold,
+              dispatch,
+              clubName,
+              clubSymbol,
+              raiseAmount,
+              minContribution,
+              maxContribution,
+              0,
+              depositClose,
+              0,
+              voteForQuorum,
+              voteInFavour,
+              FACTORY_CONTRACT_ADDRESS,
+              USDC_CONTRACT_ADDRESS,
+              GNOSIS_TRANSACTION_URL,
+              usdcConvertDecimal,
+              governance,
+            )
+              .then((result) => {
+                setLoading(false);
+              })
+              .catch((error) => {
+                setLoading(true);
+              });
+          },
+          (error) => {
+            console.log("Error connecting to Wallet!");
+          },
+        );
+      }
     }
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
     setSkipped(newSkipped);
@@ -484,11 +518,11 @@ const Create = (props) => {
                         activeStep === 0
                           ? !clubName || !clubSymbol
                           : activeStep === 2
-                          ? !raiseAmount ||
-                            !maxContribution ||
+                          ? // !raiseAmount ||
+                            // !maxContribution ||
                             !voteForQuorum ||
                             !depositClose ||
-                            !minContribution ||
+                            // !minContribution ||
                             voteInFavour < 50
                           : // : activeStep === 2
                             //   ? false
