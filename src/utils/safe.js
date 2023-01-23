@@ -2,7 +2,12 @@ import Web3 from "web3";
 import Web3Adapter from "@safe-global/safe-web3-lib";
 import { SafeFactory } from "@safe-global/safe-core-sdk";
 
-import { safeConnected, setCreateDaoAuthorized, setCreateDaoGnosisSigned, setRedirectToCreate } from "../redux/reducers/gnosis";
+import {
+  safeConnected,
+  setCreateDaoAuthorized,
+  setCreateDaoGnosisSigned,
+  setRedirectToCreate,
+} from "../redux/reducers/gnosis";
 
 import { addDaoAddress, addClubID } from "../redux/reducers/create";
 import store from "../redux/store";
@@ -50,6 +55,7 @@ async function gnosisSafePromise(owners, threshold, dispatch) {
 }
 
 export async function initiateConnection(
+  clubTokenType,
   owners,
   threshold,
   dispatch,
@@ -68,6 +74,12 @@ export async function initiateConnection(
   gnosisTransactionUrl,
   usdcConvertDecimal,
   enableGovernance,
+  isTemplateErc721,
+  mintsPerUser = 0,
+  totalSupplyOfToken,
+  nftPrice,
+  transferableMembership,
+  isNftSupplyUnlimited,
 ) {
   dispatch(setCreateDaoGnosisSigned(true));
   const web3 = new Web3(Web3.givenProvider);
@@ -93,28 +105,78 @@ export async function initiateConnection(
     usdcContractAddress,
     gnosisTransactionUrl,
   );
+  console.log("smartContract", smartContract);
   await gnosisSafePromise(owners, threshold, dispatch)
     .then((treasuryAddress) => {
+      console.log("treasuryAddress", treasuryAddress);
       dispatch(setCreateDaoGnosisSigned(false));
       dispatch(setCreateDaoAuthorized(true));
-      const value = smartContract.createDAO(
-        owners,
-        threshold,
-        dispatch,
-        tokenName,
-        tokenSymbol,
-        totalDeposit,
-        minDeposit,
-        maxDeposit,
-        ownerFee,
-        closeDate,
-        feeUSDC,
-        treasuryAddress,
-        quoram,
-        formThreshold,
-        usdcConvertDecimal,
-        enableGovernance,
-      );
+      let value;
+      if (clubTokenType === "Non Transferable ERC20 Token") {
+        value = smartContract.createDAO(
+          owners,
+          threshold,
+          dispatch,
+          tokenName,
+          tokenSymbol,
+          totalDeposit,
+          minDeposit,
+          maxDeposit,
+          ownerFee,
+          closeDate,
+          feeUSDC,
+          treasuryAddress,
+          quoram,
+          formThreshold,
+          usdcConvertDecimal,
+          enableGovernance,
+        );
+      } else if (clubTokenType === "NFT (Coming soon!)") {
+        value = smartContract.createDAO(
+          owners,
+          threshold,
+          dispatch,
+          tokenName,
+          tokenSymbol,
+          totalDeposit,
+          minDeposit,
+          maxDeposit,
+          ownerFee,
+          closeDate,
+          feeUSDC,
+          treasuryAddress,
+          quoram,
+          formThreshold,
+          usdcConvertDecimal,
+          enableGovernance,
+          isTemplateErc721,
+          mintsPerUser,
+          totalSupplyOfToken,
+          nftPrice,
+          transferableMembership,
+          isNftSupplyUnlimited,
+          // owners,
+          // threshold,
+          // dispatch,
+          // tokenName,
+          // tokenSymbol,
+          // totalDeposit,
+          // minDeposit,
+          // maxDeposit,
+          // ownerFee,
+          // closeDate,
+          // feeUSDC,
+          // treasuryAddress,
+          // quoram,
+          // formThreshold,
+          // usdcConvertDecimal,
+          // enableGovernance,
+          // isTemplateErc721,
+          // mintsPerUser,
+          // totalSupplyOfToken,
+        );
+      }
+      console.log("value", value);
       value.then(
         (result) => {
           daoAddress = result.events[0].address;
@@ -125,7 +187,10 @@ export async function initiateConnection(
             daoAddress: daoAddress,
             gnosisAddress: treasuryAddress,
             networkId: networkId,
-            tokenType: "erc20NonTransferable",
+            tokenType:
+              clubTokenType === "Non Transferable ERC20 Token"
+                ? "erc20NonTransferable"
+                : "erc721",
           };
           const club = createClub(data);
           club.then((result) => {

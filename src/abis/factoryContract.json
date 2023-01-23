@@ -146,6 +146,36 @@
               "internalType": "address[]",
               "name": "daoAdmins",
               "type": "address[]"
+            },
+            {
+              "internalType": "bool",
+              "name": "isTemplateErc721",
+              "type": "bool"
+            },
+            {
+              "internalType": "uint256",
+              "name": "maxTokensPerUser",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "totalSupplyOfToken",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "priceOfNft",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bool",
+              "name": "isNftTransferable",
+              "type": "bool"
+            },
+            {
+              "internalType": "bool",
+              "name": "isNftTotalSupplyUnlimited",
+              "type": "bool"
             }
           ],
           "internalType": "struct FactoryCloneContract.DAO",

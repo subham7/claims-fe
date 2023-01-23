@@ -12,6 +12,7 @@ import {
   InputAdornment,
   Card,
 } from "@mui/material";
+import Router, { useRouter } from "next/router";
 import Layout2 from "../../src/components/layouts/layout2";
 import Web3 from "web3";
 import { initiateConnection } from "../../src/utils/safe";
@@ -24,6 +25,7 @@ import ERC20NonTransferableStep2 from "./ERC20NonTransferableStep2";
 import { NFTStorage, File, Blob } from "nft.storage";
 
 const Create = (props) => {
+  const router = useRouter();
   const uploadInputRef = useRef(null);
   const [clubName, setClubName] = useState(null);
   const [clubSymbol, setClubSymbol] = useState(null);
@@ -99,7 +101,8 @@ const Create = (props) => {
   useEffect(() => {
     if (redirectToCreate) {
       setActiveStep(0);
-      step1();
+      // step1();
+      router.push("/create");
     }
   }, [redirectToCreate]);
 
@@ -177,6 +180,7 @@ const Create = (props) => {
       newSkipped.delete(activeStep);
     }
     if (activeStep === steps.length - 1) {
+      setLoading(true);
       if (clubTokenType === "NFT (Coming soon!)") {
         console.log("nft");
         const client = new NFTStorage({
@@ -208,6 +212,51 @@ const Create = (props) => {
         //   // new File([], imageUrl, { type: "image/png" }),
         // );
         console.log("meta data urllll", metadata);
+
+        const web3 = new Web3(Web3.givenProvider);
+        const auth = web3.eth.getAccounts();
+        auth.then(
+          (result) => {
+            walletAddress = result[0];
+            addressList.unshift(walletAddress);
+            initiateConnection(
+              clubTokenType,
+              addressList,
+              threshold,
+              dispatch,
+              clubName,
+              clubSymbol,
+              0,
+              0,
+              0,
+              0,
+              depositClose,
+              0,
+              voteForQuorum,
+              voteInFavour,
+              FACTORY_CONTRACT_ADDRESS,
+              USDC_CONTRACT_ADDRESS,
+              GNOSIS_TRANSACTION_URL,
+              usdcConvertDecimal,
+              governance,
+              true,
+              mintLimit,
+              tokenSupply,
+              nftPrice,
+              transferableMembership,
+              false,
+            )
+              .then((result) => {
+                setLoading(false);
+              })
+              .catch((error) => {
+                setLoading(true);
+              });
+          },
+          (error) => {
+            console.log("Error connecting to Wallet!");
+          },
+        );
       } else {
         const web3 = new Web3(Web3.givenProvider);
         const auth = web3.eth.getAccounts();
@@ -216,6 +265,7 @@ const Create = (props) => {
             walletAddress = result[0];
             addressList.unshift(walletAddress);
             initiateConnection(
+              clubTokenType,
               addressList,
               threshold,
               dispatch,
