@@ -15,7 +15,7 @@ import Web3 from "web3";
 import AccountButton from "./accountbutton";
 import NetworkSwitcher from "./networkSwitcher";
 import store from "../redux/store";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/router";
 
 const useStyles = makeStyles({
@@ -132,6 +132,7 @@ export default function Navbar3(props) {
               variant="navBar"
               sx={{ mr: 2, mt: 2 }}
               className={classes.navButton}
+              onClick={handleConnection}
             >
               No wallet connected
             </Button>

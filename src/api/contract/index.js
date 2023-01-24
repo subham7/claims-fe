@@ -515,6 +515,7 @@ export class SmartContract {
 
   async approveDeposit(address, amount, usdcConvertDecimal) {
     const value = convertToWei(amount, usdcConvertDecimal);
+    // const value = amount;
     const gasPrice = await web3.eth.getGasPrice();
     const gasAmount = await this.contract.methods
       .approve(address, value)
@@ -554,10 +555,10 @@ export class SmartContract {
       .send({ from: this.walletAddress, gasPrice });
   }
 
-  async deposit(address, amount) {
+  async deposit(address, amount, tokenUri) {
     const gasPrice = await web3.eth.getGasPrice();
     const gasAmount = await this.contract.methods
-      .deposit(address, amount)
+      .deposit(address, amount, tokenUri)
       .estimateGas({ from: this.walletAddress });
     const gas = gasAmount * gasPrice;
 
@@ -690,6 +691,18 @@ export class SmartContract {
 
   async getUsdcDetails(address) {
     return this.contract.methods.getUsdcDetails(address).call();
+  }
+
+  async priceOfNft() {
+    return this.contract.methods
+      .priceOfNft()
+      .call({ from: this.walletAddress });
+  }
+
+  async totalNftSupply() {
+    return this.contract.methods
+      .totalSupply()
+      .call({ from: this.walletAddress });
   }
 
   async setupTokenGating(

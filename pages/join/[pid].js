@@ -226,6 +226,7 @@ const Join = (props) => {
   const [maxDeposit, setMaxDeposit] = useState(0);
   const [totalDeposit, setTotalDeposit] = useState(0);
   const [quoram, setQuoram] = useState(0);
+  const [threshold, setThreshold] = useState(0);
   const [tokenDetails, settokenDetails] = useState(null);
   const [tokenAPIDetails, settokenAPIDetails] = useState(null); // contains the details extracted from API
   const [apiTokenDetailSet, setApiTokenDetailSet] = useState(false);
@@ -243,6 +244,7 @@ const Join = (props) => {
   const [gnosisAddress, setGnosisAddress] = useState(null);
   const [tokenType, setTokenType] = useState();
   const [count, setCount] = useState(1);
+  const [priceOfNft, setPriceOfNft] = useState();
 
   const USDC_CONTRACT_ADDRESS = useSelector((state) => {
     return state.gnosis.usdcContractAddress;
@@ -250,6 +252,10 @@ const Join = (props) => {
   const GNOSIS_TRANSACTION_URL = useSelector((state) => {
     return state.gnosis.transactionUrl;
   });
+  const wallet = useSelector((state) => {
+    return state.create.value;
+  });
+
   const [usdcTokenDecimal, setUsdcTokenDecimal] = useState(0);
   const [governanceConvertDecimal, setGovernanceConvertDecimal] = useState(0);
 
@@ -280,6 +286,7 @@ const Join = (props) => {
   };
 
   const checkConnection = async () => {
+    console.log("wallet connection check");
     if (window.ethereum) {
       window.web3 = new Web3(window.ethereum);
     } else if (window.web3) {
@@ -287,11 +294,14 @@ const Join = (props) => {
     }
     try {
       window.web3.eth.getAccounts().then((async) => {
+        console.log("async");
         setUserDetails(async[0]);
+        setWalletConnected(true);
       });
       return true;
     } catch (err) {
       setUserDetails(null);
+      setWalletConnected(false);
       return false;
     }
   };
@@ -375,6 +385,26 @@ const Join = (props) => {
     }
   };
 
+  const erc721ContractDetails = async () => {
+    const erc721DetailContract = new SmartContract(
+      ImplementationContract,
+      daoAddress,
+      undefined,
+      USDC_CONTRACT_ADDRESS,
+      GNOSIS_TRANSACTION_URL,
+    );
+    console.log("erc721DetailContract", erc721DetailContract.contract.methods);
+
+    await erc721DetailContract.quoram().then((result) => setQuoram(result));
+    await erc721DetailContract
+      .threshold()
+      .then((result) => setThreshold(result));
+    await erc721DetailContract.priceOfNft().then((result) => {
+      console.log(result);
+      setPriceOfNft(result);
+    });
+  };
+
   const contractDetailsRetrieval = async () => {
     if (
       daoAddress &&
@@ -394,6 +424,7 @@ const Join = (props) => {
       );
       await governorDetailContract.getGovernorDetails().then(
         (result) => {
+          console.log(result);
           setGovernorDetails(result);
           setMinDeposit(
             convertFromWei(parseFloat(result[1]), usdcTokenDecimal),
@@ -406,7 +437,7 @@ const Join = (props) => {
           setClosingDays(
             Math.round(
               (new Date(parseInt(result[0]) * 1000) - new Date()) /
-              (1000 * 60 * 60 * 24),
+                (1000 * 60 * 60 * 24),
             ),
           );
           setGovernorDataFetched(true);
@@ -481,31 +512,164 @@ const Join = (props) => {
   }, [pid, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL]);
 
   useEffect(() => {
-    if (tokenAPIDetails && USDC_CONTRACT_ADDRESS && GNOSIS_TRANSACTION_URL) {
+    if (
+      tokenAPIDetails &&
+      USDC_CONTRACT_ADDRESS &&
+      GNOSIS_TRANSACTION_URL &&
+      tokenType === "erc20NonTransferable"
+    ) {
       console.log("first");
       tokenDetailsRetrieval();
     }
   }, [tokenAPIDetails, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL]);
 
   useEffect(() => {
+    if (wallet !== null) {
+      setPreviouslyConnectedWallet(wallet[0][0].address);
+      setUserDetails(wallet[0][0].address);
+    }
+  }, [previouslyConnectedWallet]);
+
+  useEffect(() => {
     if (clubId) {
+      console.log("club data");
       fetchClubData();
     }
 
     if (previouslyConnectedWallet) {
-      onboard.connectWallet({ autoSelect: walletAddress });
+      console.log("previously connected wallet");
+      onboard.connectWallet({ autoSelect: wallet });
     }
 
     if (checkConnection() && walletConnected) {
+      console.log("wallet connected");
       obtaineWalletBallance();
-      contractDetailsRetrieval();
+
+      if (tokenType === "erc721") {
+        erc721ContractDetails();
+      } else {
+        contractDetailsRetrieval();
+      }
       fetchMembers();
     }
-  }, [previouslyConnectedWallet, walletConnected, clubId]);
+  }, [previouslyConnectedWallet, walletConnected, clubId, wallet]);
 
   useEffect(() => {
     fetchCustomTokenDecimals();
   }, [daoAddress, USDC_CONTRACT_ADDRESS]);
+
+  const handleClaimNft = async () => {
+    const checkUserExists = checkUserByClub(userDetails, clubId);
+    console.log("checkUserExists", checkUserExists);
+    // const priceOfNftConverted = convertToWei(
+    //   priceOfNft,
+    //   usdcTokenDecimal,
+    // ).toString();
+    const priceOfNftConverted = 1;
+    checkUserExists.then((result) => {
+      if (result.data === false) {
+        // if the user doesn't exist
+        const usdc_contract = new SmartContract(
+          ImplementationContract,
+          USDC_CONTRACT_ADDRESS,
+          undefined,
+          USDC_CONTRACT_ADDRESS,
+          GNOSIS_TRANSACTION_URL,
+        );
+        console.log("usdc contract", usdc_contract);
+        // pass governor contract
+        const dao_contract = new SmartContract(
+          ImplementationContract,
+          daoAddress,
+          undefined,
+          USDC_CONTRACT_ADDRESS,
+          GNOSIS_TRANSACTION_URL,
+        );
+        console.log("dao_contract", dao_contract);
+
+        // pass governor contract
+        // const usdc_response = usdc_contract.approveDeposit(
+        //   daoAddress,
+        //   priceOfNftConverted,
+        //   usdcTokenDecimal,
+        // );
+        // console.log("usdc_response", usdc_response);
+        const deposit_response = dao_contract.deposit(
+          USDC_CONTRACT_ADDRESS,
+          priceOfNftConverted,
+          "https://bafybeieftd6z6cxfuwf2vuysxyp7ubiqop5kubjb7ugwpvv2enhrnveaom.ipfs.nftstorage.link",
+        );
+        deposit_response.then((result) => {
+          console.log("deposit response", result);
+          const data = {
+            userAddress: userDetails,
+            clubs: [
+              {
+                clubId: clubId,
+                isAdmin: 0,
+                balance: depositAmountConverted,
+              },
+            ],
+          };
+          const createuser = createUser(data);
+          createuser.then((result) => {
+            if (result.status !== 201) {
+              console.log("Error", result);
+              setAlertStatus("error");
+              setOpenSnackBar(true);
+            } else {
+              setAlertStatus("success");
+              setOpenSnackBar(true);
+              router.push(`/dashboard/${clubId}`, undefined, {
+                shallow: true,
+              });
+            }
+          });
+        });
+        // usdc_response.then(
+        //   (result) => {
+        //     const deposit_response = dao_contract.deposit(
+        //       USDC_CONTRACT_ADDRESS,
+        //       priceOfNftConverted,
+        //       "https://bafybeieftd6z6cxfuwf2vuysxyp7ubiqop5kubjb7ugwpvv2enhrnveaom.ipfs.nftstorage.link",
+        //     );
+        //     deposit_response.then((result) => {
+        //       console.log("deposit response", result);
+        //       const data = {
+        //         userAddress: userDetails,
+        //         clubs: [
+        //           {
+        //             clubId: clubId,
+        //             isAdmin: 0,
+        //             balance: depositAmountConverted,
+        //           },
+        //         ],
+        //       };
+        //       const createuser = createUser(data);
+        //       createuser.then((result) => {
+        //         if (result.status !== 201) {
+        //           console.log("Error", result);
+        //           setAlertStatus("error");
+        //           setOpenSnackBar(true);
+        //         } else {
+        //           setAlertStatus("success");
+        //           setOpenSnackBar(true);
+        //           router.push(`/dashboard/${clubId}`, undefined, {
+        //             shallow: true,
+        //           });
+        //         }
+        //       });
+        //     });
+        //   },
+        //   (error) => {
+        //     console.log("Error", error);
+        //     setAlertStatus("error");
+        //     setOpenSnackBar(true);
+        //   },
+        // );
+      }
+    });
+  };
 
   const handleDeposit = async () => {
     setDepositInitiated(true);
@@ -909,9 +1073,9 @@ const Join = (props) => {
                       value={
                         governorDataFetched
                           ? calculateTreasuryTargetShare(
-                            clubTokenMinted,
-                            convertAmountToWei(governorDetails[4]),
-                          )
+                              clubTokenMinted,
+                              convertAmountToWei(governorDetails[4]),
+                            )
                           : 0
                       }
                     />
@@ -1227,7 +1391,7 @@ const Join = (props) => {
         </>
       )}
 
-      {tokenType === "erc721NonTransferable" && (
+      {tokenType === "erc721" && (
         <>
           <Grid
             container
@@ -1320,7 +1484,7 @@ const Join = (props) => {
                         color="#fff"
                         sx={{ fontWeight: "bold" }}
                       >
-                        40%
+                        {quoram}%
                       </Typography>
                       <Typography variant="subtitle2" color="#C1D3FF">
                         Quorum
@@ -1332,7 +1496,7 @@ const Join = (props) => {
                         color="#fff"
                         sx={{ fontWeight: "bold" }}
                       >
-                        30%
+                        {threshold}%
                       </Typography>
                       <Typography variant="subtitle2" color="#C1D3FF">
                         Threshold
@@ -1362,7 +1526,7 @@ const Join = (props) => {
                     color="#fff"
                     sx={{ fontWeight: "bold" }}
                   >
-                    100 USDC
+                    {priceOfNft} USDC
                   </Typography>
                 </Grid>
 
@@ -1410,7 +1574,9 @@ const Join = (props) => {
                       </IconButton>
                     </Grid>
                     <Grid item>
-                      <Button sx={{ px: 8 }}>Claim</Button>
+                      <Button onClick={handleClaimNft} sx={{ px: 8 }}>
+                        Claim
+                      </Button>
                     </Grid>
                   </Grid>
                 </Grid>
