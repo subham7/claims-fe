@@ -588,85 +588,54 @@ const Join = (props) => {
         console.log("dao_contract", dao_contract);
 
         // pass governor contract
-        // const usdc_response = usdc_contract.approveDeposit(
-        //   daoAddress,
-        //   priceOfNftConverted,
-        //   usdcTokenDecimal,
-        // );
-        // console.log("usdc_response", usdc_response);
-        const deposit_response = dao_contract.deposit(
-          USDC_CONTRACT_ADDRESS,
+        const usdc_response = usdc_contract.approveDeposit(
+          daoAddress,
           priceOfNftConverted,
-          "https://bafybeieftd6z6cxfuwf2vuysxyp7ubiqop5kubjb7ugwpvv2enhrnveaom.ipfs.nftstorage.link",
+          usdcTokenDecimal,
         );
-        deposit_response.then((result) => {
-          console.log("deposit response", result);
-          const data = {
-            userAddress: userDetails,
-            clubs: [
-              {
-                clubId: clubId,
-                isAdmin: 0,
-                balance: depositAmountConverted,
-              },
-            ],
-          };
-          const createuser = createUser(data);
-          createuser.then((result) => {
-            if (result.status !== 201) {
-              console.log("Error", result);
-              setAlertStatus("error");
-              setOpenSnackBar(true);
-            } else {
-              setAlertStatus("success");
-              setOpenSnackBar(true);
-              router.push(`/dashboard/${clubId}`, undefined, {
-                shallow: true,
+        console.log("usdc_response", usdc_response);
+
+        usdc_response.then(
+          (result) => {
+            const deposit_response = dao_contract.deposit(
+              USDC_CONTRACT_ADDRESS,
+              priceOfNftConverted,
+              "https://bafybeieftd6z6cxfuwf2vuysxyp7ubiqop5kubjb7ugwpvv2enhrnveaom.ipfs.nftstorage.link",
+            );
+            deposit_response.then((result) => {
+              console.log("deposit response", result);
+              const data = {
+                userAddress: userDetails,
+                clubs: [
+                  {
+                    clubId: clubId,
+                    isAdmin: 0,
+                    balance: depositAmountConverted,
+                  },
+                ],
+              };
+              const createuser = createUser(data);
+              createuser.then((result) => {
+                if (result.status !== 201) {
+                  console.log("Error", result);
+                  setAlertStatus("error");
+                  setOpenSnackBar(true);
+                } else {
+                  setAlertStatus("success");
+                  setOpenSnackBar(true);
+                  router.push(`/dashboard/${clubId}`, undefined, {
+                    shallow: true,
+                  });
+                }
               });
-            }
-          });
-        });
-        // usdc_response.then(
-        //   (result) => {
-        //     const deposit_response = dao_contract.deposit(
-        //       USDC_CONTRACT_ADDRESS,
-        //       priceOfNftConverted,
-        //       "https://bafybeieftd6z6cxfuwf2vuysxyp7ubiqop5kubjb7ugwpvv2enhrnveaom.ipfs.nftstorage.link",
-        //     );
-        //     deposit_response.then((result) => {
-        //       console.log("deposit response", result);
-        //       const data = {
-        //         userAddress: userDetails,
-        //         clubs: [
-        //           {
-        //             clubId: clubId,
-        //             isAdmin: 0,
-        //             balance: depositAmountConverted,
-        //           },
-        //         ],
-        //       };
-        //       const createuser = createUser(data);
-        //       createuser.then((result) => {
-        //         if (result.status !== 201) {
-        //           console.log("Error", result);
-        //           setAlertStatus("error");
-        //           setOpenSnackBar(true);
-        //         } else {
-        //           setAlertStatus("success");
-        //           setOpenSnackBar(true);
-        //           router.push(`/dashboard/${clubId}`, undefined, {
-        //             shallow: true,
-        //           });
-        //         }
-        //       });
-        //     });
-        //   },
-        //   (error) => {
-        //     console.log("Error", error);
-        //     setAlertStatus("error");
-        //     setOpenSnackBar(true);
-        //   },
-        // );
+            });
+          },
+          (error) => {
+            console.log("Error", error);
+            setAlertStatus("error");
+            setOpenSnackBar(true);
+          },
+        );
       }
     });
   };

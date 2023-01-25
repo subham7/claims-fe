@@ -131,7 +131,7 @@ export async function initiateConnection(
           usdcConvertDecimal,
           enableGovernance,
         );
-      } else if (clubTokenType === "NFT (Coming soon!)") {
+      } else if (clubTokenType === "NFT") {
         value = smartContract.createDAO(
           owners,
           threshold,

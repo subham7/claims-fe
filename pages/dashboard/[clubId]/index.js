@@ -66,7 +66,7 @@ const useStyles = makeStyles({
     width: "Infinityvw",
     height: "164px",
     padding: "0px",
-    marginTop: "20px",
+    // marginTop: "20px",
 
     background: "#0ABB92 no-repeat padding-box",
   },
@@ -92,6 +92,7 @@ const useStyles = makeStyles({
     borderBottomLeftRadius: "0px",
     borderBottomRightRadius: "0px",
     opacity: 1,
+    width: "100%",
   },
   cardSharp2: {
     backgroundColor: "#142243",
@@ -556,46 +557,38 @@ const Dashboard = () => {
   return (
     <>
       <Layout1 page={1} depositUrl={depositLink}>
-        <Grid container spacing={1} paddingLeft={10} paddingTop={15}>
-          <Grid item md={9}>
-            <Stack direction={{ xs: "column", sm: "row" }} spacing={3}>
-              <Grid item xs={12}>
-                <Card className={classes.cardSharp1}>
-                  <Grid container spacing={2}>
-                    <Grid item ml={3} mt={2}>
-                      <img
-                        src={imageUrl ?? null}
-                        width="100vw"
-                        alt="profile_pic"
-                      />
+        <Grid container paddingLeft={10} paddingTop={15} spacing={1}>
+          <Grid item spacing={1} xs={9}>
+            <Card className={classes.cardSharp1}>
+              <Grid container spacing={2}>
+                <Grid item ml={3} mt={2}>
+                  <img src={imageUrl ?? null} width="100vw" alt="profile_pic" />
+                </Grid>
+                <Grid item ml={1} mt={4}>
+                  <Stack spacing={0}>
+                    <Typography variant="h4">
+                      {apiTokenDetailSet ? (
+                        tokenAPIDetails.name
+                      ) : (
+                        <Skeleton
+                          variant="rectangular"
+                          width={100}
+                          height={25}
+                        />
+                      )}
+                    </Typography>
+                    <Grid container item direction="row" paddingBottom={4}>
+                      <Typography variant="regularText2" mr={1}>
+                        {membersFetched ? members : 0}
+                      </Typography>
+                      <Typography variant="regularText2">Members</Typography>
                     </Grid>
-                    <Grid item ml={1} mt={4}>
-                      <Stack spacing={0}>
-                        <Typography variant="h4">
-                          {apiTokenDetailSet ? (
-                            tokenAPIDetails.name
-                          ) : (
-                            <Skeleton
-                              variant="rectangular"
-                              width={100}
-                              height={25}
-                            />
-                          )}
-                        </Typography>
-                        <Grid container item direction="row" paddingBottom={4}>
-                          <Typography variant="regularText2" mr={1}>
-                            {membersFetched ? members : 0}
-                          </Typography>
-                          <Typography variant="regularText2">
-                            Members
-                          </Typography>
-                        </Grid>
-                      </Stack>
-                    </Grid>
-                  </Grid>
-                </Card>
-
-                <Card className={classes.cardSharp2}>
+                  </Stack>
+                </Grid>
+              </Grid>
+              <Stack direction={{ xs: "column", sm: "row" }} spacing={3}>
+                <Grid item xs={12}>
+                  {/* <Card className={classes.cardSharp2}>
                   <Grid container spacing={2}>
                     <Grid item xs={4} mt={2} mb={3}>
                       <Grid container direction="column">
@@ -741,125 +734,135 @@ const Dashboard = () => {
                       </Grid>
                     </Grid>
                   </Grid>
-                </Card>
-              </Grid>
-              <Grid
-                container
-                spacing={{ xs: 2, sm: 5, md: 3 }}
-                direction={{ xs: "column", sm: "column", md: "column" }}
-              >
-                <Card className={classes.firstCard}>
-                  <Grid item mt={3} ml={5}>
-                    <Grid container item direction="column">
-                      <Typography variant="regularText4" fontSize={"21px"}>
-                        Treasury value
-                      </Typography>
-                      <Typography fontSize={"48px"} fontWeight="bold">
-                        $
-                        {clubAssetTokenFetched ? (
-                          parseInt(clubAssetTokenData.treasuryAmount)
-                        ) : (
-                          <Skeleton
-                            variant="rectangular"
-                            width={100}
-                            height={25}
-                          />
-                        )}
-                      </Typography>
-                      <CardMedia
-                        image="/assets/images/treasurywallet.png"
-                        component="img"
-                        className={classes.media}
-                        alt="ownershipshare"
-                        sx={{ position: "absolute", bottom: 0 }}
-                      />
-                    </Grid>
-                  </Grid>
-                </Card>
-                <Card className={classes.secondCard}>
-                  <CardMedia
-                    image="/assets/images/ownershipshare.png"
-                    component="img"
-                    className={classes.media}
-                    alt="ownershipshare"
-                    sx={{ position: "absolute", bottom: 0, paddingTop: "4px" }}
-                  />
-                  <Grid container>
-                    <Grid
-                      container
-                      direction={{ xs: "column", sm: "column", md: "column" }}
-                    >
-                      <Grid item>
-                        <Box className={classes.cardOverlay}>
-                          <Typography variant="regularText4" fontSize={"21px"}>
-                            My ownership Share
-                          </Typography>
-                          <Typography fontSize={"48px"} fontWeight="bold">
-                            {userBalance !== null &&
-                            userOwnershipShare !== null ? (
-                              isNaN(
-                                parseInt(
-                                  calculateUserSharePercentage(
-                                    userBalance,
-                                    userOwnershipShare,
-                                  ),
-                                ),
-                              ) ? (
-                                0
-                              ) : (
-                                parseInt(
-                                  calculateUserSharePercentage(
-                                    userBalance,
-                                    userOwnershipShare,
-                                  ),
-                                )
-                              )
-                            ) : (
-                              <Skeleton
-                                variant="rectangular"
-                                width={100}
-                                height={25}
-                              />
-                            )}
-                            %
-                          </Typography>
-                          <Typography className={classes.card2text2} mb={1}>
-                            {userBalance !== null && tokenDetails !== null ? (
-                              Number.isInteger(userBalance) ? (
-                                parseInt(userBalance) + (" $" + tokenDetails[1])
-                              ) : (
-                                parseFloat(userBalance).toFixed(2) +
-                                (" $" + tokenDetails[1])
-                              )
-                            ) : (
-                              <Skeleton
-                                variant="rectangular"
-                                width={100}
-                                height={25}
-                              />
-                            )}
-                          </Typography>
-                        </Box>
-                      </Grid>
-                      {/* <CardMedia    className={classes.media}    component=“img”    image=“/assets/images/card_illustration.png”    alt=“abstract background”    sx={{ position: “absolute”, bottom: 0 }}                     />   */}
-                    </Grid>
-                  </Grid>
-                </Card>
-              </Grid>
-            </Stack>
+                </Card> */}
 
-            <Stack>
-              <Grid item>
-                <Stack
-                  direction={{ xs: "column", sm: "column" }}
-                  spacing={{ xs: 1, sm: 2, md: 4 }}
+                  <Card className={classes.firstCard}>
+                    <Grid item mt={3} ml={5}>
+                      <Grid container item direction="column">
+                        <Typography variant="regularText4" fontSize={"21px"}>
+                          Treasury value
+                        </Typography>
+                        <Typography fontSize={"48px"} fontWeight="bold">
+                          $
+                          {clubAssetTokenFetched ? (
+                            parseInt(clubAssetTokenData.treasuryAmount)
+                          ) : (
+                            <Skeleton
+                              variant="rectangular"
+                              width={100}
+                              height={25}
+                            />
+                          )}
+                        </Typography>
+                        <CardMedia
+                          image="/assets/images/treasurywallet.png"
+                          component="img"
+                          className={classes.media}
+                          alt="ownershipshare"
+                          sx={{ position: "absolute", bottom: 0 }}
+                        />
+                      </Grid>
+                    </Grid>
+                  </Card>
+                </Grid>
+                <Grid
+                  container
+                  spacing={{ xs: 2, sm: 5, md: 3 }}
+                  direction={{ xs: "column", sm: "column", md: "column" }}
                 >
-                  <Grid container item mt={8}>
-                    <Typography className={classes.clubAssets}>
-                      Club Assets
-                    </Typography>
-                  </Grid>
-                  {/* <Grid container mt={4}>
+                  <Card className={classes.secondCard}>
+                    <CardMedia
+                      image="/assets/images/ownershipshare.png"
+                      component="img"
+                      className={classes.media}
+                      alt="ownershipshare"
+                      sx={{
+                        position: "absolute",
+                        bottom: 0,
+                        paddingTop: "4px",
+                      }}
+                    />
+                    <Grid container>
+                      <Grid
+                        container
+                        direction={{ xs: "column", sm: "column", md: "column" }}
+                      >
+                        <Grid item>
+                          <Box className={classes.cardOverlay}>
+                            <Typography
+                              variant="regularText4"
+                              fontSize={"21px"}
+                            >
+                              My ownership Share
+                            </Typography>
+                            <Typography fontSize={"48px"} fontWeight="bold">
+                              {userBalance !== null &&
+                              userOwnershipShare !== null ? (
+                                isNaN(
+                                  parseInt(
+                                    calculateUserSharePercentage(
+                                      userBalance,
+                                      userOwnershipShare,
+                                    ),
+                                  ),
+                                ) ? (
+                                  0
+                                ) : (
+                                  parseInt(
+                                    calculateUserSharePercentage(
+                                      userBalance,
+                                      userOwnershipShare,
+                                    ),
+                                  )
+                                )
+                              ) : (
+                                <Skeleton
+                                  variant="rectangular"
+                                  width={100}
+                                  height={25}
+                                />
+                              )}
+                              %
+                            </Typography>
+                            <Typography className={classes.card2text2} mb={1}>
+                              {userBalance !== null && tokenDetails !== null ? (
+                                Number.isInteger(userBalance) ? (
+                                  parseInt(userBalance) +
+                                  (" $" + tokenDetails[1])
+                                ) : (
+                                  parseFloat(userBalance).toFixed(2) +
+                                  (" $" + tokenDetails[1])
+                                )
+                              ) : (
+                                <Skeleton
+                                  variant="rectangular"
+                                  width={100}
+                                  height={25}
+                                />
+                              )}
+                            </Typography>
+                          </Box>
+                        </Grid>
+                        {/* <CardMedia    className={classes.media}    component=“img”    image=“/assets/images/card_illustration.png”    alt=“abstract background”    sx={{ position: “absolute”, bottom: 0 }}                     />   */}
+                      </Grid>
+                    </Grid>
+                  </Card>
+                </Grid>
+              </Stack>
+            </Card>
+            <Grid item md={9}>
+              <Stack>
+                <Grid item>
+                  <Stack
+                    direction={{ xs: "column", sm: "column" }}
+                    spacing={{ xs: 1, sm: 2, md: 4 }}
+                  >
+                    <Grid container item mt={8}>
+                      <Typography className={classes.clubAssets}>
+                        Club Assets
+                      </Typography>
+                    </Grid>
+                    {/* <Grid container mt={4}>
                     <Grid item>
                       <ButtonDropDown label="All" />
                     </Grid>
@@ -881,99 +884,72 @@ const Dashboard = () => {
                       />
                     </Grid>
                   </Grid> */}
-                  <Typography mt={5} mb={5} variant="subHeading">
-                    Tokens
-                  </Typography>
-                  {clubAssetTokenFetched ? (
-                    clubAssetTokenData.tokenPriceList.length > 0 ? (
-                      //  if the tokens length is > 0 and if the token[0] (by default it will be Ether) is not equal to 0, then show the table
-                      <TableContainer component={Paper}>
-                        <Table sx={{ minWidth: 809 }} aria-label="simple table">
-                          <TableHead>
-                            <TableRow>
-                              <TableCell align="left" variant="tableHeading">
-                                Token
-                              </TableCell>
-                              <TableCell align="left" variant="tableHeading">
-                                Balance
-                              </TableCell>
-                              <TableCell align="left" variant="tableHeading">
-                                Value (USD)
-                              </TableCell>
-                              {/* <TableCell align="left" variant="tableHeading">Day change</TableCell> */}
-                            </TableRow>
-                          </TableHead>
-                          <TableBody>
-                            {clubAssetTokenData.tokenPriceList.map(
-                              (data, key) => {
-                                if (data.value !== 0) {
-                                  return (
-                                    <TableRow
-                                      key={key}
-                                      sx={{
-                                        "&:last-child td, &:last-child th": {
-                                          border: 0,
-                                        },
-                                      }}
-                                    >
-                                      <TableCell
-                                        align="left"
-                                        variant="tableBody"
+                    <Typography mt={5} mb={5} variant="subHeading">
+                      Tokens
+                    </Typography>
+                    {clubAssetTokenFetched ? (
+                      clubAssetTokenData.tokenPriceList.length > 0 ? (
+                        //  if the tokens length is > 0 and if the token[0] (by default it will be Ether) is not equal to 0, then show the table
+                        <TableContainer component={Paper}>
+                          <Table
+                            sx={{ minWidth: 809 }}
+                            aria-label="simple table"
+                          >
+                            <TableHead>
+                              <TableRow>
+                                <TableCell align="left" variant="tableHeading">
+                                  Token
+                                </TableCell>
+                                <TableCell align="left" variant="tableHeading">
+                                  Balance
+                                </TableCell>
+                                <TableCell align="left" variant="tableHeading">
+                                  Value (USD)
+                                </TableCell>
+                                {/* <TableCell align="left" variant="tableHeading">Day change</TableCell> */}
+                              </TableRow>
+                            </TableHead>
+                            <TableBody>
+                              {clubAssetTokenData.tokenPriceList.map(
+                                (data, key) => {
+                                  if (data.value !== 0) {
+                                    return (
+                                      <TableRow
+                                        key={key}
+                                        sx={{
+                                          "&:last-child td, &:last-child th": {
+                                            border: 0,
+                                          },
+                                        }}
                                       >
-                                        <></>
-                                        {data.symbol}
-                                      </TableCell>
-                                      <TableCell
-                                        align="left"
-                                        variant="tableBody"
-                                      >
-                                        {data.value}
-                                      </TableCell>
-                                      <TableCell
-                                        align="left"
-                                        variant="tableBody"
-                                      >
-                                        ${data.usd.usdValue}
-                                      </TableCell>
-                                      {/* <TableCell align="left" variant="tableBody" sx={row.daychange > 0 ? { color: "#0ABB92" } : { color: "#D55438" }}>{row.daychange > 0 ? "+" : ""}{row.daychange}</TableCell> */}
-                                    </TableRow>
-                                  );
-                                }
-                              },
-                            )}
-                          </TableBody>
-                        </Table>
-                      </TableContainer>
-                    ) : (
-                      <Grid
-                        item
-                        justifyContent="center"
-                        alignItems="center"
-                        md={10}
-                      >
-                        <img
-                          src="/assets/images/tokens_banner.png"
-                          alt="token-banner"
-                          className={classes.banner}
-                        />
-                      </Grid>
-                    )
-                  ) : null}
-                  <Typography mt={16} mb={5} variant="subHeading">
-                    Collectibles
-                  </Typography>
-                  <Grid container>
-                    {nftFetched ? (
-                      ntfData.length > 0 ? (
-                        ntfData.map((data, key) => {
-                          <Grid item m={1} key={key}>
-                            <CollectionCard
-                              imageURI={data.logoUri}
-                              tokenName={data.tokenName}
-                              tokenSymbol={data.tokenSymbol}
-                            />
-                          </Grid>;
-                        })
+                                        <TableCell
+                                          align="left"
+                                          variant="tableBody"
+                                        >
+                                          <></>
+                                          {data.symbol}
+                                        </TableCell>
+                                        <TableCell
+                                          align="left"
+                                          variant="tableBody"
+                                        >
+                                          {data.value}
+                                        </TableCell>
+                                        <TableCell
+                                          align="left"
+                                          variant="tableBody"
+                                        >
+                                          ${data.usd.usdValue}
+                                        </TableCell>
+                                        {/* <TableCell align="left" variant="tableBody" sx={row.daychange > 0 ? { color: "#0ABB92" } : { color: "#D55438" }}>{row.daychange > 0 ? "+" : ""}{row.daychange}</TableCell> */}
+                                      </TableRow>
+                                    );
+                                  }
+                                },
+                              )}
+                            </TableBody>
+                          </Table>
+                        </TableContainer>
                       ) : (
                         <Grid
                           item
@@ -982,19 +958,50 @@ const Dashboard = () => {
                           md={10}
                         >
                           <img
-                            src="/assets/images/NFT_banner.png"
-                            alt="proposal-banner"
+                            src="/assets/images/tokens_banner.png"
+                            alt="token-banner"
                             className={classes.banner}
                           />
                         </Grid>
                       )
                     ) : null}
-                  </Grid>
-                  {/* <Typography mt={16} mb={5} variant="subHeading">Off-chain investments</Typography>
+                    <Typography mt={16} mb={5} variant="subHeading">
+                      Collectibles
+                    </Typography>
+                    <Grid container>
+                      {nftFetched ? (
+                        ntfData.length > 0 ? (
+                          ntfData.map((data, key) => {
+                            <Grid item m={1} key={key}>
+                              <CollectionCard
+                                imageURI={data.logoUri}
+                                tokenName={data.tokenName}
+                                tokenSymbol={data.tokenSymbol}
+                              />
+                            </Grid>;
+                          })
+                        ) : (
+                          <Grid
+                            item
+                            justifyContent="center"
+                            alignItems="center"
+                            md={10}
+                          >
+                            <img
+                              src="/assets/images/NFT_banner.png"
+                              alt="proposal-banner"
+                              className={classes.banner}
+                            />
+                          </Grid>
+                        )
+                      ) : null}
+                    </Grid>
+                    {/* <Typography mt={16} mb={5} variant="subHeading">Off-chain investments</Typography>
                     <BasicTable /> */}
-                </Stack>
-              </Grid>
-            </Stack>
+                  </Stack>
+                </Grid>
+              </Stack>
+            </Grid>
           </Grid>
           <Grid item md={3}>
             <Stack>
@@ -1252,6 +1259,7 @@ const Dashboard = () => {
             </Stack>
           </Grid>
         </Grid>
+
         <Snackbar
           open={openSnackBar}
           autoHideDuration={6000}

@@ -129,6 +129,7 @@ const ERC721NonTransferableStep2 = (props) => {
     uploadInputRef,
     activeStep,
     handleNext,
+    minDate,
   } = props;
 
   const generateRandomNFTImage = () => {
@@ -442,47 +443,49 @@ const ERC721NonTransferableStep2 = (props) => {
           </Card>
 
           {/* set total token supply input */}
-          <Card className={classes.cardPadding} mb={2}>
-            <Grid container pl={3} pr={1} mt={1} mb={1}>
-              <Grid
-                item
-                xs
-                sx={{
-                  display: "flex",
-                  justifyContent: "flex-start",
-                  alignItems: "center",
-                }}
-              >
-                <Typography
-                  className={classes.largeText}
-                  color="white !important"
+          {limitSupply ? (
+            <Card className={classes.cardPadding} mb={2}>
+              <Grid container pl={3} pr={1} mt={1} mb={1}>
+                <Grid
+                  item
+                  xs
+                  sx={{
+                    display: "flex",
+                    justifyContent: "flex-start",
+                    alignItems: "center",
+                  }}
                 >
-                  Set total token supply
-                </Typography>
+                  <Typography
+                    className={classes.largeText}
+                    color="white !important"
+                  >
+                    Set total token supply
+                  </Typography>
+                </Grid>
+                <Grid
+                  item
+                  xs
+                  sx={{
+                    display: "flex",
+                    justifyContent: "flex-end",
+                    alignItems: "center",
+                  }}
+                  mr={3}
+                >
+                  <TextField
+                    error={tokenSupply === ""}
+                    className={classes.textField}
+                    type="number"
+                    placeholder="-"
+                    // label="price"
+                    variant="outlined"
+                    onChange={(e) => setTokenSupply(e.target.value)}
+                    value={tokenSupply}
+                  />
+                </Grid>
               </Grid>
-              <Grid
-                item
-                xs
-                sx={{
-                  display: "flex",
-                  justifyContent: "flex-end",
-                  alignItems: "center",
-                }}
-                mr={3}
-              >
-                <TextField
-                  error={tokenSupply === ""}
-                  className={classes.textField}
-                  type="number"
-                  placeholder="-"
-                  // label="price"
-                  variant="outlined"
-                  onChange={(e) => setTokenSupply(e.target.value)}
-                  value={tokenSupply}
-                />
-              </Grid>
-            </Grid>
-          </Card>
+            </Card>
+          ) : null}
 
           {/* accept deposits till x date input */}
           <Card className={classes.cardPadding} mb={2}>
@@ -527,7 +530,7 @@ const ERC721NonTransferableStep2 = (props) => {
                         sx={{ m: 1, width: 443, mt: 1, borderRadius: "10px" }}
                       />
                     )}
-                    minDate={depositClose}
+                    minDate={minDate}
                   />
                 </LocalizationProvider>
               </Grid>
@@ -552,11 +555,7 @@ const ERC721NonTransferableStep2 = (props) => {
               variant="wideButton"
               disabled={
                 activeStep === 1
-                  ? !imageUrl ||
-                    !nftPrice ||
-                    !mintLimit ||
-                    !tokenSupply ||
-                    !depositClose
+                  ? !imageUrl || !nftPrice || !mintLimit || !depositClose
                   : false
               }
               onClick={handleNext}

@@ -23,6 +23,7 @@ import Step3 from "./Step3";
 import ERC721NonTransferableStep2 from "./ERC721NonTransferableStep2";
 import ERC20NonTransferableStep2 from "./ERC20NonTransferableStep2";
 import { NFTStorage, File, Blob } from "nft.storage";
+import { convertFromWei } from "../../src/utils/globalFunctions";
 
 const Create = (props) => {
   const router = useRouter();
@@ -85,6 +86,7 @@ const Create = (props) => {
   const usdcConvertDecimal = useSelector((state) => {
     return state.gnosis.tokenDecimal;
   });
+  console.log("usdcConvertDecimal", usdcConvertDecimal);
   const [governance, setGovernance] = useState(true);
   const createDaoGnosisSigned = useSelector((state) => {
     return state.gnosis.createDaoGnosisSigned;
@@ -181,7 +183,7 @@ const Create = (props) => {
     }
     if (activeStep === steps.length - 1) {
       setLoading(true);
-      if (clubTokenType === "NFT (Coming soon!)") {
+      if (clubTokenType === "NFT") {
         console.log("nft");
         const client = new NFTStorage({
           token:
@@ -242,9 +244,9 @@ const Create = (props) => {
               true,
               mintLimit,
               tokenSupply,
-              nftPrice,
+              convertFromWei(nftPrice, usdcConvertDecimal),
               transferableMembership,
-              false,
+              limitSupply ? false : true,
             )
               .then((result) => {
                 setLoading(false);
@@ -498,7 +500,7 @@ const Create = (props) => {
                   setClubTokenType={setClubTokenType}
                 />
               ) : activeStep === 1 ? (
-                clubTokenType === "NFT (Coming soon!)" ? (
+                clubTokenType === "NFT" ? (
                   <ERC721NonTransferableStep2
                     transferableMembership={transferableMembership}
                     setTransferableMembership={setTransferableMembership}
@@ -520,6 +522,7 @@ const Create = (props) => {
                     uploadInputRef={uploadInputRef}
                     activeStep={activeStep}
                     handleNext={handleNext}
+                    minDate={minDate}
                   />
                 ) : (
                   <ERC20NonTransferableStep2
@@ -730,7 +733,7 @@ const Create = (props) => {
     //               setClubTokenType={setClubTokenType}
     //             />
     //           ) : activeStep === 1 ? (
-    //             clubTokenType === "NFT (Coming soon!)" ? (
+    //             clubTokenType === "NFT" ? (
     //               <ERC721NonTransferableStep2
     //                 transferableMembership={transferableMembership}
     //                 setTransferableMembership={setTransferableMembership}
