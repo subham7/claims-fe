@@ -37,7 +37,8 @@ import { fetchClubbyDaoAddress } from "../../../src/api/club";
 import { getNfts } from "../../../src/api/gnosis";
 import { getAssets } from "../../../src/api/assets";
 import { getMembersDetails } from "../../../src/api/user";
-import ImplementationContact from "../../../src/abis/implementationABI.json";
+import ImplementationContact from "../../../src/abis/nft.json";
+import nft from "../../../src/abis/implementationABI.json";
 import { useSelector } from "react-redux";
 import {
   calculateDays,
@@ -372,6 +373,8 @@ const Dashboard = () => {
   const [clubTokenMinted, setClubTokenMInted] = useState(null);
   const [maxTokenMinted, setMaxTokenMinted] = useState(null);
   const [userOwnershipShare, setUserOwnershipShare] = useState(null);
+  const [tokenType, setTokenType] = useState(null);
+  const [nftBalance, setNftBalance] = useState(null);
   const USDC_CONTRACT_ADDRESS = useSelector((state) => {
     return state.gnosis.usdcContractAddress;
   });
@@ -385,7 +388,30 @@ const Dashboard = () => {
     return state.gnosis.governanceTokenDecimal;
   });
 
+  const loadNftContractData = async () => {
+    try {
+      let response = await fetchClubbyDaoAddress(daoAddress);
+      console.log("ressss", response);
+      const nftAddress = response.data[0].nftAddress;
+      console.log("res", nftAddress);
+      const nftContract = new SmartContract(
+        nft,
+        daoAddress,
+        undefined,
+        USDC_CONTRACT_ADDRESS,
+        GNOSIS_TRANSACTION_URL,
+      );
+      console.log("nft contract", nftContract);
+      const nftBalance = await nftContract.nftBalance(walletAddress);
+      setNftBalance(nftBalance);
+      console.log("nftBalance", nftBalance);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const loadSmartContractData = async () => {
+    console.log("here");
     try {
       const contract = new SmartContract(
         ImplementationContact,
@@ -394,18 +420,22 @@ const Dashboard = () => {
         USDC_CONTRACT_ADDRESS,
         GNOSIS_TRANSACTION_URL,
       );
+      console.log(
+        "contract",
+        calculateDays(parseInt(await contract.depositCloseTime()) * 1000),
+      );
       let usdcDetails = await contract.getUsdcDetails(USDC_CONTRACT_ADDRESS);
       let getUserBalance = await contract.checkUserBalance();
       let getGovernorDetails = await contract.getGovernorDetails();
       let getTokenDetails = await contract.tokenDetails();
-
+      console.log(getGovernerDetails);
       // user and admin contributions
       let memberDeposits = convertFromWei(usdcDetails[0], usdcConvertDecimal);
       let adminContribution = convertFromWei(
         usdcDetails[1],
         usdcConvertDecimal,
       );
-
+      console.log(calculateDays(parseInt(getGovernorDetails[0]) * 1000));
       let total = memberDeposits + adminContribution;
       setMemberDeposit(total);
 
@@ -430,6 +460,7 @@ const Dashboard = () => {
       );
       setDataFetched(true);
     } catch (e) {
+      console.log("error");
       setOpenSnackBar(true);
       setFailed(true);
     }
@@ -437,7 +468,9 @@ const Dashboard = () => {
 
   useEffect(() => {
     if (daoAddress && USDC_CONTRACT_ADDRESS && GNOSIS_TRANSACTION_URL) {
+      if (tokenType === "erc721") loadNftContractData();
       loadSmartContractData();
+      // console.log("token type", tokenType);
     }
   }, [daoAddress, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL, dataFetched]);
 
@@ -510,6 +543,19 @@ const Dashboard = () => {
       }
     });
   };
+
+  const fetchTokenType = async () => {
+    const response = await fetchClubbyDaoAddress(daoAddress);
+    if (response.data.length > 0) {
+      setTokenType(response.data[0].tokenType);
+    }
+  };
+
+  useEffect(() => {
+    if (daoAddress) {
+      fetchTokenType();
+    }
+  }, [daoAddress, GNOSIS_TRANSACTION_URL, USDC_CONTRACT_ADDRESS]);
 
   useEffect(() => {
     if (daoAddress) {
@@ -796,33 +842,38 @@ const Dashboard = () => {
                               My ownership Share
                             </Typography>
                             <Typography fontSize={"48px"} fontWeight="bold">
-                              {userBalance !== null &&
-                              userOwnershipShare !== null ? (
-                                isNaN(
-                                  parseInt(
-                                    calculateUserSharePercentage(
-                                      userBalance,
-                                      userOwnershipShare,
-                                    ),
-                                  ),
-                                ) ? (
-                                  0
-                                ) : (
-                                  parseInt(
-                                    calculateUserSharePercentage(
-                                      userBalance,
-                                      userOwnershipShare,
-                                    ),
-                                  )
-                                )
+                              {tokenType === "erc721" ? (
+                                nftBalance
                               ) : (
-                                <Skeleton
-                                  variant="rectangular"
-                                  width={100}
-                                  height={25}
-                                />
+                                <>
+                                  {userBalance !== null &&
+                                  userOwnershipShare !== null ? (
+                                    isNaN(
+                                      parseInt(
+                                        calculateUserSharePercentage(
+                                          userBalance,
+                                          userOwnershipShare,
+                                        ),
+                                      ),
+                                    ) ? (
+                                      0
+                                    ) : (
+                                      parseInt(
+                                        calculateUserSharePercentage(
+                                          userBalance,
+                                          userOwnershipShare,
+                                        ),
+                                      )
+                                    )
+                                  ) : (
+                                    <Skeleton
+                                      variant="rectangular"
+                                      width={100}
+                                      height={25}
+                                    />
+                                  )}
+                                </>
                               )}
-                              %
                             </Typography>
                             <Typography className={classes.card2text2} mb={1}>
                               {userBalance !== null && tokenDetails !== null ? (

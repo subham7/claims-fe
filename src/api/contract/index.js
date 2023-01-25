@@ -655,6 +655,12 @@ export class SmartContract {
       .call({ from: this.walletAddress });
   }
 
+  async depositCloseTime() {
+    return this.contract.methods
+      .depositCloseTime()
+      .call({ from: this.walletAddress });
+  }
+
   async tresuryAddress() {
     return this.contract.methods
       .tresuryAddress()
@@ -703,6 +709,10 @@ export class SmartContract {
     return this.contract.methods
       .totalSupply()
       .call({ from: this.walletAddress });
+  }
+
+  async nftBalance(address) {
+    return this.contract.methods.balanceOf(address).call();
   }
 
   async setupTokenGating(
