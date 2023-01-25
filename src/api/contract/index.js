@@ -162,7 +162,7 @@ export class SmartContract {
           isTemplateErc721,
           mintsPerUser,
           totalSupplyOfToken,
-          nftPrice,
+          nftPrice * Math.pow(10, 6),
           transferableMembership,
           isNftSupplyUnlimited,
         ],
