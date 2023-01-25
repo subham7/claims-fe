@@ -593,7 +593,7 @@ const Join = (props) => {
     //   priceOfNft,
     //   usdcTokenDecimal,
     // ).toString();
-    const priceOfNftConverted = 1;
+    const priceOfNftConverted = nftPrice;
     checkUserExists.then((result) => {
       if (result.data === false) {
         // if the user doesn't exist
@@ -1415,12 +1415,17 @@ const Join = (props) => {
                   />
                 </Grid>
                 <Grid item md={5} sx={{}}>
-                  <Grid container spacing={1.5}>
-                    <Grid item>
+                  <Grid
+                    container
+                    spacing={1.5}
+                    sx={{ display: "flex", flexDirection: "column" }}
+                  >
+                    <Grid item sx={{ width: "100%" }}>
                       <Typography
                         variant="h2"
                         color={"white"}
                         fontWeight="bold"
+                        sx={{ width: "100%" }}
                       >
                         {clubName}
                       </Typography>
