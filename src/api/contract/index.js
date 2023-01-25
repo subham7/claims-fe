@@ -585,7 +585,7 @@ export class SmartContract {
 
   async ownerAddress() {
     return this.contract.methods
-      .ownerAddress()
+      .deployerAddress()
       .call({ from: this.walletAddress });
   }
 
@@ -634,7 +634,9 @@ export class SmartContract {
   }
 
   async closeDate() {
-    return this.contract.methods.closeDate().call({ from: this.walletAddress });
+    return this.contract.methods
+      .depositCloseTime()
+      .call({ from: this.walletAddress });
   }
 
   async ownerFee() {
@@ -717,6 +719,14 @@ export class SmartContract {
 
   async nftBalance(address) {
     return this.contract.methods.balanceOf(address).call();
+  }
+
+  async nftContractOwner() {
+    return this.contract.methods.owner().call({ from: this.walletAddress });
+  }
+
+  async nftUri() {
+    return this.contract.methods.tokenURI(0).call({ from: this.walletAddress });
   }
 
   async setupTokenGating(

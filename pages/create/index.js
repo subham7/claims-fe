@@ -248,6 +248,7 @@ const Create = (props) => {
               nftPrice,
               transferableMembership,
               limitSupply ? false : true,
+              metadata,
             )
               .then((result) => {
                 setLoading(false);

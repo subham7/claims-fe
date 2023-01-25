@@ -33,6 +33,7 @@ import {
 } from "../../src/api/user";
 import Web3 from "web3";
 import ImplementationContract from "../../src/abis/implementationABI.json";
+import nft from "../../src/abis/nft.json";
 import { SmartContract } from "../../src/api/contract";
 import { checkNetwork } from "../../src/utils/wallet";
 import {
@@ -51,6 +52,7 @@ import ape from "../../public/assets/images/ape.png";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
+import { loadGetInitialProps } from "next/dist/shared/lib/utils";
 
 const useStyles = makeStyles({
   valuesStyle: {
@@ -245,6 +247,11 @@ const Join = (props) => {
   const [tokenType, setTokenType] = useState();
   const [count, setCount] = useState(1);
   const [priceOfNft, setPriceOfNft] = useState();
+  const [clubName, setClubName] = useState();
+  const [nftContractAddress, setnftContractAddress] = useState();
+  const [nftContractOwner, setnftContractOwner] = useState();
+  const [depositCloseDate, setDepositCloseDate] = useState();
+  const [nftImageUrl, setnftImageUrl] = useState();
 
   const USDC_CONTRACT_ADDRESS = useSelector((state) => {
     return state.gnosis.usdcContractAddress;
@@ -255,7 +262,7 @@ const Join = (props) => {
   const wallet = useSelector((state) => {
     return state.create.value;
   });
-
+  console.log("wallet address", wallet);
   const [usdcTokenDecimal, setUsdcTokenDecimal] = useState(0);
   const [governanceConvertDecimal, setGovernanceConvertDecimal] = useState(0);
 
@@ -326,6 +333,11 @@ const Join = (props) => {
       settokenAPIDetails(response.data);
       setClubId(response.data[0].clubId);
       setGnosisAddress(response.data[0].gnosisAddress);
+      setClubName(response.data[0].name);
+      setnftContractAddress(response.data[0].nftAddress);
+      setnftImageUrl(
+        `https://${response.data[0].nftImageUrl}.ipfs.nftstorage.link`,
+      );
       setApiTokenDetailSet(true);
     } else {
       setApiTokenDetailSet(false);
@@ -403,6 +415,22 @@ const Join = (props) => {
       console.log(result);
       setPriceOfNft(result);
     });
+    const nftContract = new SmartContract(
+      nft,
+      daoAddress,
+      undefined,
+      USDC_CONTRACT_ADDRESS,
+      GNOSIS_TRANSACTION_URL,
+    );
+    console.log("nftContract", nftContract.contract.methods);
+    await erc721DetailContract
+      .ownerAddress()
+      .then((result) => setnftContractOwner(result));
+    await erc721DetailContract
+      .closeDate()
+      .then((result) =>
+        setDepositCloseDate(new Date(parseInt(result) * 1000).toString()),
+      );
   };
 
   const contractDetailsRetrieval = async () => {
@@ -541,7 +569,7 @@ const Join = (props) => {
       onboard.connectWallet({ autoSelect: wallet });
     }
 
-    if (checkConnection() && walletConnected) {
+    if (checkConnection() && walletConnected && wallet) {
       console.log("wallet connected");
       obtaineWalletBallance();
 
@@ -555,7 +583,7 @@ const Join = (props) => {
   }, [previouslyConnectedWallet, walletConnected, clubId, wallet]);
 
   useEffect(() => {
-    fetchCustomTokenDecimals();
+    if (tokenType !== "erc721") fetchCustomTokenDecimals();
   }, [daoAddress, USDC_CONTRACT_ADDRESS]);
 
   const handleClaimNft = async () => {
@@ -600,7 +628,7 @@ const Join = (props) => {
             const deposit_response = dao_contract.deposit(
               USDC_CONTRACT_ADDRESS,
               priceOfNftConverted,
-              "https://bafybeieftd6z6cxfuwf2vuysxyp7ubiqop5kubjb7ugwpvv2enhrnveaom.ipfs.nftstorage.link",
+              nftImageUrl,
             );
             deposit_response.then((result) => {
               console.log("deposit response", result);
@@ -1376,190 +1404,220 @@ const Join = (props) => {
               justifyContent: "center",
             }}
           >
-            <Grid item md={5}>
-              <Image src={ape} alt="nft image" />
-            </Grid>
-            <Grid item md={5} sx={{}}>
-              <Grid container spacing={1.5}>
-                <Grid item>
-                  <Typography variant="h2" color={"white"} fontWeight="bold">
-                    HummingBird Club
-                  </Typography>
+            {wallet ? (
+              <>
+                <Grid item md={5}>
+                  <img
+                    src={nftImageUrl}
+                    alt="nft image"
+                    height="400px"
+                    width="400px"
+                  />
                 </Grid>
-                <Grid item>
-                  <Grid container spacing={3}>
-                    <Grid item xs="auto">
+                <Grid item md={5} sx={{}}>
+                  <Grid container spacing={1.5}>
+                    <Grid item>
                       <Typography
-                        sx={{
-                          background: "#0ABB9240",
-                          color: "#0ABB92",
-                          paddingTop: 0.5,
-                          paddingBottom: 0.5,
-                          paddingRight: 1,
-                          paddingLeft: 1,
-                          borderRadius: 2,
-                          display: "flex",
-
-                          alignItems: "center",
-                        }}
+                        variant="h2"
+                        color={"white"}
+                        fontWeight="bold"
                       >
-                        <div className={classes.activeIllustration}></div>
-                        Active
+                        {clubName}
                       </Typography>
-                    </Grid>
-                    <Grid item xs="auto">
-                      <Typography
-                        sx={{
-                          background: "#142243",
-                          color: "#fff",
-                          paddingTop: 0.5,
-                          paddingBottom: 0.5,
-                          paddingRight: 1,
-                          paddingLeft: 1,
-                          borderRadius: 2,
-                        }}
-                      >
-                        Created by 0x24Y7….3R8u
-                      </Typography>
-                    </Grid>
-                    <Grid item xs="auto">
-                      <MoreHorizIcon
-                        sx={{
-                          background: "#142243",
-                          color: "#fff",
-                          paddingTop: 0.5,
-                          paddingBottom: 0.5,
-                          paddingRight: 1,
-                          paddingLeft: 1,
-                          borderRadius: 2,
-                        }}
-                        fontSize="large"
-                      />
-                    </Grid>
-                  </Grid>
-                </Grid>
-                <Grid item width="100%">
-                  {" "}
-                  <Typography variant="subtitle1" color="#C1D3FF">
-                    Mint closes on 27 November2022 at 1:57pm GMT+5:30
-                  </Typography>
-                </Grid>
-
-                <Grid item width="100%">
-                  <Grid container spacing={3}>
-                    <Grid item xs={3}>
-                      <Typography
-                        variant="subtitle1"
-                        color="#fff"
-                        sx={{ fontWeight: "bold" }}
-                      >
-                        {quoram}%
-                      </Typography>
-                      <Typography variant="subtitle2" color="#C1D3FF">
-                        Quorum
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={3}>
-                      <Typography
-                        variant="subtitle1"
-                        color="#fff"
-                        sx={{ fontWeight: "bold" }}
-                      >
-                        {threshold}%
-                      </Typography>
-                      <Typography variant="subtitle2" color="#C1D3FF">
-                        Threshold
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={4} width="fit-content">
-                      <Typography
-                        variant="subtitle1"
-                        color="#fff"
-                        sx={{ fontWeight: "bold" }}
-                      >
-                        Unlimited
-                      </Typography>
-                      <Typography variant="subtitle2" color="#C1D3FF">
-                        Nfts Remaining
-                      </Typography>
-                    </Grid>
-                  </Grid>
-                </Grid>
-
-                <Grid item width="100%">
-                  <Typography variant="subtitle2" color="#C1D3FF">
-                    Price
-                  </Typography>
-                  <Typography
-                    variant="h5"
-                    color="#fff"
-                    sx={{ fontWeight: "bold" }}
-                  >
-                    {priceOfNft} USDC
-                  </Typography>
-                </Grid>
-
-                <Grid item width="100%">
-                  <Grid
-                    container
-                    sx={{
-                      display: "flex",
-                      // flexDirection: "column",
-                      justifyContent: "space-between",
-                      borderColor: "",
-                      border: "1px solid #C1D3FF40",
-                      borderRadius: 2,
-                      alignItems: "center",
-                      background: "#142243",
-                      padding: 4,
-                    }}
-                  >
-                    <Grid
-                      spacing={3}
-                      sx={{
-                        background: "#EFEFEF",
-                        borderRadius: 2,
-                        display: "flex",
-                        flexDirection: "inherit",
-                        alignItems: "center",
-                      }}
-                    >
-                      {" "}
-                      <IconButton onClick={() => setCount(count - 1)}>
-                        <RemoveIcon sx={{ color: "black", fontSize: 20 }} />
-                      </IconButton>
-                      <Typography
-                        variant="h6"
-                        color=""
-                        sx={{ fontWeight: "bold" }}
-                      >
-                        {count}
-                      </Typography>
-                      <IconButton
-                        onClick={() => setCount(count + 1)}
-                        color="#000"
-                      >
-                        <AddIcon sx={{ color: "black", fontSize: 20 }} />
-                      </IconButton>
                     </Grid>
                     <Grid item>
-                      <Button onClick={handleClaimNft} sx={{ px: 8 }}>
-                        Claim
-                      </Button>
+                      <Grid container spacing={3}>
+                        <Grid item xs="auto">
+                          <Typography
+                            sx={{
+                              background: "#0ABB9240",
+                              color: "#0ABB92",
+                              paddingTop: 0.5,
+                              paddingBottom: 0.5,
+                              paddingRight: 1,
+                              paddingLeft: 1,
+                              borderRadius: 2,
+                              display: "flex",
+
+                              alignItems: "center",
+                            }}
+                          >
+                            <div className={classes.activeIllustration}></div>
+                            Active
+                          </Typography>
+                        </Grid>
+                        <Grid item xs="auto">
+                          <Typography
+                            sx={{
+                              background: "#142243",
+                              color: "#fff",
+                              paddingTop: 0.5,
+                              paddingBottom: 0.5,
+                              paddingRight: 1,
+                              paddingLeft: 1,
+                              borderRadius: 2,
+                            }}
+                          >
+                            Created by{" "}
+                            {`${nftContractOwner?.slice(
+                              0,
+                              5,
+                            )}...${nftContractOwner?.slice(-5)}`}
+                          </Typography>
+                        </Grid>
+                        <Grid item xs="auto">
+                          <MoreHorizIcon
+                            sx={{
+                              background: "#142243",
+                              color: "#fff",
+                              paddingTop: 0.5,
+                              paddingBottom: 0.5,
+                              paddingRight: 1,
+                              paddingLeft: 1,
+                              borderRadius: 2,
+                            }}
+                            fontSize="large"
+                          />
+                        </Grid>
+                      </Grid>
+                    </Grid>
+                    <Grid item width="100%">
+                      {" "}
+                      <Typography variant="subtitle1" color="#C1D3FF">
+                        Mint closes on {depositCloseDate}
+                      </Typography>
+                    </Grid>
+
+                    <Grid item width="100%">
+                      <Grid container spacing={3}>
+                        <Grid item xs={3}>
+                          <Typography
+                            variant="subtitle1"
+                            color="#fff"
+                            sx={{ fontWeight: "bold" }}
+                          >
+                            {quoram}%
+                          </Typography>
+                          <Typography variant="subtitle2" color="#C1D3FF">
+                            Quorum
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={3}>
+                          <Typography
+                            variant="subtitle1"
+                            color="#fff"
+                            sx={{ fontWeight: "bold" }}
+                          >
+                            {threshold}%
+                          </Typography>
+                          <Typography variant="subtitle2" color="#C1D3FF">
+                            Threshold
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={4} width="fit-content">
+                          <Typography
+                            variant="subtitle1"
+                            color="#fff"
+                            sx={{ fontWeight: "bold" }}
+                          >
+                            Unlimited
+                          </Typography>
+                          <Typography variant="subtitle2" color="#C1D3FF">
+                            Nfts Remaining
+                          </Typography>
+                        </Grid>
+                      </Grid>
+                    </Grid>
+
+                    <Grid item width="100%">
+                      <Typography variant="subtitle2" color="#C1D3FF">
+                        Price
+                      </Typography>
+                      <Typography
+                        variant="h5"
+                        color="#fff"
+                        sx={{ fontWeight: "bold" }}
+                      >
+                        {priceOfNft} USDC
+                      </Typography>
+                    </Grid>
+
+                    <Grid item width="100%">
+                      <Grid
+                        container
+                        sx={{
+                          display: "flex",
+                          // flexDirection: "column",
+                          justifyContent: "space-between",
+                          borderColor: "",
+                          border: "1px solid #C1D3FF40",
+                          borderRadius: 2,
+                          alignItems: "center",
+                          background: "#142243",
+                          padding: 4,
+                        }}
+                      >
+                        <Grid
+                          spacing={3}
+                          sx={{
+                            background: "#EFEFEF",
+                            borderRadius: 2,
+                            display: "flex",
+                            flexDirection: "inherit",
+                            alignItems: "center",
+                          }}
+                        >
+                          {" "}
+                          <IconButton onClick={() => setCount(count - 1)}>
+                            <RemoveIcon sx={{ color: "black", fontSize: 20 }} />
+                          </IconButton>
+                          <Typography
+                            variant="h6"
+                            color=""
+                            sx={{ fontWeight: "bold" }}
+                          >
+                            {count}
+                          </Typography>
+                          <IconButton
+                            onClick={() => setCount(count + 1)}
+                            color="#000"
+                          >
+                            <AddIcon sx={{ color: "black", fontSize: 20 }} />
+                          </IconButton>
+                        </Grid>
+                        <Grid item>
+                          <Button onClick={handleClaimNft} sx={{ px: 8 }}>
+                            Claim
+                          </Button>
+                        </Grid>
+                      </Grid>
+                    </Grid>
+                    <Grid item>
+                      <Typography
+                        variant="subtitle2"
+                        color="#6475A3"
+                        sx={{ fontWeight: "light" }}
+                      >
+                        This station allows maximum of 2 mints per member
+                      </Typography>
                     </Grid>
                   </Grid>
                 </Grid>
-                <Grid item>
-                  <Typography
-                    variant="subtitle2"
-                    color="#6475A3"
-                    sx={{ fontWeight: "light" }}
-                  >
-                    This station allows maximum of 2 mints per member
-                  </Typography>
-                </Grid>
+              </>
+            ) : (
+              <Grid
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                {" "}
+                <Typography variant="h5" color={"white"} fontWeight="bold">
+                  Please connect your wallet
+                </Typography>
               </Grid>
-            </Grid>
+            )}
           </Grid>
         </>
       )}

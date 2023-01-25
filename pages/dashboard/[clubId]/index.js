@@ -468,7 +468,8 @@ const Dashboard = () => {
 
   useEffect(() => {
     if (daoAddress && USDC_CONTRACT_ADDRESS && GNOSIS_TRANSACTION_URL) {
-      if (tokenType === "erc721") loadNftContractData();
+      // if (tokenType === "erc721") loadNftContractData();
+      loadNftContractData();
       loadSmartContractData();
       // console.log("token type", tokenType);
     }

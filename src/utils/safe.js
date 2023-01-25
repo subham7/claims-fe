@@ -80,6 +80,7 @@ export async function initiateConnection(
   nftPrice,
   transferableMembership,
   isNftSupplyUnlimited,
+  tokenURI,
 ) {
   dispatch(setCreateDaoGnosisSigned(true));
   const web3 = new Web3(Web3.givenProvider);
@@ -191,6 +192,8 @@ export async function initiateConnection(
               clubTokenType === "Non Transferable ERC20 Token"
                 ? "erc20NonTransferable"
                 : "erc721",
+            nftImageUrl:
+              clubTokenType !== "Non Transferable ERC20 Token" ? tokenURI : "",
           };
           const club = createClub(data);
           club.then((result) => {
