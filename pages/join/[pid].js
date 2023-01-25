@@ -593,7 +593,7 @@ const Join = (props) => {
     //   priceOfNft,
     //   usdcTokenDecimal,
     // ).toString();
-    const priceOfNftConverted = nftPrice;
+    const priceOfNftConverted = priceOfNft;
     checkUserExists.then((result) => {
       if (result.data === false) {
         // if the user doesn't exist
