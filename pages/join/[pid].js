@@ -610,7 +610,7 @@ const Join = (props) => {
                   {
                     clubId: clubId,
                     isAdmin: 0,
-                    balance: depositAmountConverted,
+                    // balance: depositAmountConverted,
                   },
                 ],
               };

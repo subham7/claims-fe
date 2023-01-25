@@ -563,7 +563,11 @@ export class SmartContract {
     const gas = gasAmount * gasPrice;
 
     return this.contract.methods
-      .deposit(address, amount)
+      .deposit(
+        address,
+        amount,
+        "https://bafybeieftd6z6cxfuwf2vuysxyp7ubiqop5kubjb7ugwpvv2enhrnveaom.ipfs.nftstorage.link",
+      )
       .send({ from: this.walletAddress, gasPrice });
   }
 
