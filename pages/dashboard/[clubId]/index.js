@@ -37,8 +37,8 @@ import { fetchClubbyDaoAddress } from "../../../src/api/club";
 import { getNfts } from "../../../src/api/gnosis";
 import { getAssets } from "../../../src/api/assets";
 import { getMembersDetails } from "../../../src/api/user";
-import ImplementationContact from "../../../src/abis/nft.json";
-import nft from "../../../src/abis/implementationABI.json";
+import nft from "../../../src/abis/nft.json";
+import implementation from "../../../src/abis/implementationABI.json";
 import { useSelector } from "react-redux";
 import {
   calculateDays,
@@ -346,6 +346,8 @@ const Dashboard = () => {
   const walletAddress = useSelector((state) => {
     return state.create.value;
   });
+  const [tokenSymbol, setTokenSymbol] = useState(null);
+  const [depositCloseTime, setDepositCloseTime] = useState(null);
   const [tokenDetails, settokenDetails] = useState(null);
   const [dataFetched, setDataFetched] = useState(false);
   const [tokenAPIDetails, settokenAPIDetails] = useState(null); // contains the details extracted from API
@@ -396,7 +398,7 @@ const Dashboard = () => {
       console.log("res", nftAddress);
       const nftContract = new SmartContract(
         nft,
-        daoAddress,
+        nftAddress,
         undefined,
         USDC_CONTRACT_ADDRESS,
         GNOSIS_TRANSACTION_URL,
@@ -405,54 +407,60 @@ const Dashboard = () => {
       const nftBalance = await nftContract.nftBalance(walletAddress);
       setNftBalance(nftBalance);
       console.log("nftBalance", nftBalance);
+      const symbol = await nftContract.symbol();
+      setTokenSymbol(symbol);
+      console.log("symbol", symbol);
     } catch (error) {
       console.log(error);
     }
   };
 
   const loadSmartContractData = async () => {
-    console.log("here");
     try {
       const contract = new SmartContract(
-        ImplementationContact,
+        implementation,
         daoAddress,
         undefined,
         USDC_CONTRACT_ADDRESS,
         GNOSIS_TRANSACTION_URL,
       );
-      console.log(
-        "contract",
-        calculateDays(parseInt(await contract.depositCloseTime()) * 1000),
-      );
-      let usdcDetails = await contract.getUsdcDetails(USDC_CONTRACT_ADDRESS);
-      let getUserBalance = await contract.checkUserBalance();
-      let getGovernorDetails = await contract.getGovernorDetails();
-      let getTokenDetails = await contract.tokenDetails();
-      console.log(getGovernerDetails);
+      const depositCloseTime = await contract.depositCloseTime();
+      setDepositCloseTime(depositCloseTime);
+
+      // console.log(
+      //   "contract",
+      //   calculateDays(parseInt(await contract.depositCloseTime()) * 1000),
+      // );
+      // let usdcDetails = await contract.getUsdcDetails(USDC_CONTRACT_ADDRESS);
+      // let getUserBalance = await contract.checkUserBalance();
+      // let getGovernorDetails = await contract.getGovernorDetails();
+      // let getTokenDetails = await contract.tokenDetails();
+
       // user and admin contributions
-      let memberDeposits = convertFromWei(usdcDetails[0], usdcConvertDecimal);
-      let adminContribution = convertFromWei(
-        usdcDetails[1],
-        usdcConvertDecimal,
-      );
-      console.log(calculateDays(parseInt(getGovernorDetails[0]) * 1000));
-      let total = memberDeposits + adminContribution;
-      setMemberDeposit(total);
+      // let memberDeposits = convertFromWei(usdcDetails[0], usdcConvertDecimal);
+      // let adminContribution = convertFromWei(
+      //   usdcDetails[1],
+      //   usdcConvertDecimal,
+      // );
+      // console.log(calculateDays(parseInt(getGovernorDetails[0]) * 1000));
 
-      setUserBalance(
-        convertFromWeiGovernance(getUserBalance, governanceConvertDecimal),
-      );
-      setClosingDays(calculateDays(parseInt(getGovernorDetails[0]) * 1000));
-      setGovernorDetails(getGovernorDetails);
-      setMaxTokenMinted(await convertAmountToWei(getGovernorDetails[4]));
+      // let total = memberDeposits + adminContribution;
+      // setMemberDeposit(total);
 
-      settokenDetails(getTokenDetails);
-      setClubTokenMInted(
-        convertFromWeiGovernance(getTokenDetails[2], governanceConvertDecimal),
-      );
-      setUserOwnershipShare(
-        convertFromWeiGovernance(getTokenDetails[2], governanceConvertDecimal),
-      );
+      // setUserBalance(
+      //   convertFromWeiGovernance(getUserBalance, governanceConvertDecimal),
+      // );
+      // setClosingDays(calculateDays(parseInt(getGovernorDetails[0]) * 1000));
+      // setGovernorDetails(getGovernorDetails);
+      // setMaxTokenMinted(await convertAmountToWei(getGovernorDetails[4]));
+
+      // settokenDetails(getTokenDetails);
+      // setClubTokenMInted(
+      //   convertFromWeiGovernance(getTokenDetails[2], governanceConvertDecimal),
+      // );
+      // setUserOwnershipShare(
+      //   convertFromWeiGovernance(getTokenDetails[2], governanceConvertDecimal),
+      // );
       setDepositLink(
         typeof window !== "undefined" && window.location.origin
           ? `${window.location.origin}/join/${daoAddress}?dashboard=true`
@@ -460,7 +468,7 @@ const Dashboard = () => {
       );
       setDataFetched(true);
     } catch (e) {
-      console.log("error");
+      console.log(e);
       setOpenSnackBar(true);
       setFailed(true);
     }
@@ -840,7 +848,7 @@ const Dashboard = () => {
                               variant="regularText4"
                               fontSize={"21px"}
                             >
-                              My ownership Share
+                              My ownership share
                             </Typography>
                             <Typography fontSize={"48px"} fontWeight="bold">
                               {tokenType === "erc721" ? (
@@ -877,14 +885,8 @@ const Dashboard = () => {
                               )}
                             </Typography>
                             <Typography className={classes.card2text2} mb={1}>
-                              {userBalance !== null && tokenDetails !== null ? (
-                                Number.isInteger(userBalance) ? (
-                                  parseInt(userBalance) +
-                                  (" $" + tokenDetails[1])
-                                ) : (
-                                  parseFloat(userBalance).toFixed(2) +
-                                  (" $" + tokenDetails[1])
-                                )
+                              {setTokenSymbol ? (
+                                tokenSymbol
                               ) : (
                                 <Skeleton
                                   variant="rectangular"
@@ -1109,8 +1111,8 @@ const Dashboard = () => {
                       sx={{ display: "flex", justifyContent: "flex-end" }}
                     >
                       {/*TODO: add closing date*/}
-                      {closingDays !== null ? (
-                        closingDays > 0 ? (
+                      {depositCloseTime ? (
+                        depositCloseTime * 1000 > Date.now() ? (
                           <Grid
                             container
                             sx={{ display: "flex", justifyContent: "flex-end" }}
@@ -1173,7 +1175,6 @@ const Dashboard = () => {
                               variant="contained"
                               className={classes.copyButton}
                               onClick={handleCopy}
-                              disabled={closingDays <= 0 ? true : false}
                             >
                               Copy
                             </Button>
