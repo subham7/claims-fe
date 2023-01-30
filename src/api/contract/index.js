@@ -732,6 +732,27 @@ export class SmartContract {
     return this.contract.methods.tokenURI(0).call({ from: this.walletAddress });
   }
 
+  async maxTokensPerUser() {
+    return this.contract.methods
+      .maxTokensPerUser()
+      .call({ from: this.walletAddress });
+  }
+
+  async balanceOfNft(address) {
+    return this.contract.methods
+      .balanceOf(address)
+      .call({ from: this.walletAddress });
+  }
+
+  async nftOwnersCount() {
+    return this.contract.methods
+      ._tokenIdTracker()
+      .call({ from: this.walletAddress });
+  }
+
+  async totalNftSupply() {
+    return this.contract.methods.totalSupplyOfToken();
+  }
   async symbol() {
     return this.contract.methods.symbol().call({ from: this.walletAddress });
   }
