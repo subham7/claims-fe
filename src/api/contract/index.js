@@ -125,7 +125,7 @@ export class SmartContract {
           convertToWei(minDeposit, usdcConvertDecimal),
           convertToWei(maxDeposit, usdcConvertDecimal),
           convertToWei(ownerFee, usdcConvertDecimal),
-          days,
+          7,
           convertToWei(feeUSDC, usdcConvertDecimal),
           quoram,
           formThreshold,
@@ -144,6 +144,7 @@ export class SmartContract {
     const gas = gasAmount * gasPrice;
     console.log(gasPrice, gas);
 
+    console.log("owners", owners);
     return this.contract.methods
       .createDAO(
         [
