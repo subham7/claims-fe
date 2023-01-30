@@ -750,7 +750,9 @@ export class SmartContract {
   }
 
   async totalNftSupply() {
-    return this.contract.methods.totalSupplyOfToken();
+    return this.contract.methods
+      .totalSupplyOfToken()
+      .call({ from: this.walletAddress });
   }
   async symbol() {
     return this.contract.methods.symbol().call({ from: this.walletAddress });
