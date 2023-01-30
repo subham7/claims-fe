@@ -252,6 +252,12 @@ const Join = (props) => {
   const [nftContractOwner, setnftContractOwner] = useState();
   const [depositCloseDate, setDepositCloseDate] = useState();
   const [nftImageUrl, setnftImageUrl] = useState();
+  const [isDepositActive, setIsDepositActive] = useState();
+  const [loading, setLoading] = useState(false);
+  const [maxTokensPerUser, setMaxTokensPerUser] = useState();
+  const [userNftBalance, setUserNftBalance] = useState();
+  const [totalNftMinted, setTotalNftMinted] = useState();
+  const [totalNftSupply, setTotalNftSupply] = useState();
 
   const USDC_CONTRACT_ADDRESS = useSelector((state) => {
     return state.gnosis.usdcContractAddress;
@@ -263,6 +269,7 @@ const Join = (props) => {
     return state.create.value;
   });
   console.log("wallet address", wallet);
+  // console.log("wallet addresssssss", wallet[0][0].address);
   const [usdcTokenDecimal, setUsdcTokenDecimal] = useState(0);
   const [governanceConvertDecimal, setGovernanceConvertDecimal] = useState(0);
 
@@ -405,6 +412,13 @@ const Join = (props) => {
       USDC_CONTRACT_ADDRESS,
       GNOSIS_TRANSACTION_URL,
     );
+    const nftContract = new SmartContract(
+      nft,
+      nftContractAddress,
+      undefined,
+      USDC_CONTRACT_ADDRESS,
+      GNOSIS_TRANSACTION_URL,
+    );
     console.log("erc721DetailContract", erc721DetailContract.contract.methods);
 
     await erc721DetailContract.quoram().then((result) => setQuoram(result));
@@ -415,14 +429,7 @@ const Join = (props) => {
       console.log(result);
       setPriceOfNft(result);
     });
-    const nftContract = new SmartContract(
-      nft,
-      daoAddress,
-      undefined,
-      USDC_CONTRACT_ADDRESS,
-      GNOSIS_TRANSACTION_URL,
-    );
-    console.log("nftContract", nftContract.contract.methods);
+
     await erc721DetailContract
       .ownerAddress()
       .then((result) => setnftContractOwner(result));
@@ -431,7 +438,33 @@ const Join = (props) => {
       .then((result) =>
         setDepositCloseDate(new Date(parseInt(result) * 1000).toString()),
       );
+    await erc721DetailContract.closeDate().then((result) => {
+      if (result >= Date.now()) {
+        setIsDepositActive(false);
+      } else {
+        setIsDepositActive(true);
+      }
+    });
+
+    console.log("nftContract", nftContract.contract.methods);
+    await nftContract
+      .maxTokensPerUser()
+      .then((result) => setMaxTokensPerUser(result));
+
+    await nftContract
+      .balanceOfNft(wallet[0][0].address)
+      .then((result) => setUserNftBalance(result));
+
+    await nftContract
+      .nftOwnersCount()
+      .then((result) => setTotalNftMinted(result));
+
+    await nftContract
+      .totalNftSupply()
+      .then((result) => setTotalNftSupply(result));
   };
+
+  console.log("setMaxTokensPerUser", maxTokensPerUser);
 
   const contractDetailsRetrieval = async () => {
     if (
@@ -595,75 +628,97 @@ const Join = (props) => {
     // ).toString();
     const priceOfNftConverted = priceOfNft;
     checkUserExists.then((result) => {
-      if (result.data === false) {
-        // if the user doesn't exist
-        const usdc_contract = new SmartContract(
-          ImplementationContract,
-          USDC_CONTRACT_ADDRESS,
-          undefined,
-          USDC_CONTRACT_ADDRESS,
-          GNOSIS_TRANSACTION_URL,
-        );
-        console.log("usdc contract", usdc_contract);
-        // pass governor contract
-        const dao_contract = new SmartContract(
-          ImplementationContract,
-          daoAddress,
-          undefined,
-          USDC_CONTRACT_ADDRESS,
-          GNOSIS_TRANSACTION_URL,
-        );
-        console.log("dao_contract", dao_contract);
+      if (userNftBalance < maxTokensPerUser) {
+        if (result.data === false) {
+          setLoading(true);
+          // if the user doesn't exist
+          const usdc_contract = new SmartContract(
+            ImplementationContract,
+            USDC_CONTRACT_ADDRESS,
+            undefined,
+            USDC_CONTRACT_ADDRESS,
+            GNOSIS_TRANSACTION_URL,
+          );
+          console.log("usdc contract", usdc_contract);
+          // pass governor contract
+          const dao_contract = new SmartContract(
+            ImplementationContract,
+            daoAddress,
+            undefined,
+            USDC_CONTRACT_ADDRESS,
+            GNOSIS_TRANSACTION_URL,
+          );
+          console.log("dao_contract", dao_contract);
 
-        // pass governor contract
-        const usdc_response = usdc_contract.approveDeposit(
-          daoAddress,
-          priceOfNftConverted,
-          usdcTokenDecimal,
-        );
-        console.log("usdc_response", usdc_response);
+          // pass governor contract
+          const usdc_response = usdc_contract.approveDeposit(
+            daoAddress,
+            priceOfNftConverted,
+            usdcTokenDecimal,
+          );
+          console.log("usdc_response", usdc_response);
 
-        usdc_response.then(
-          (result) => {
-            const deposit_response = dao_contract.deposit(
-              USDC_CONTRACT_ADDRESS,
-              priceOfNftConverted,
-              nftImageUrl,
-            );
-            deposit_response.then((result) => {
-              console.log("deposit response", result);
-              const data = {
-                userAddress: userDetails,
-                clubs: [
-                  {
-                    clubId: clubId,
-                    isAdmin: 0,
-                    // balance: depositAmountConverted,
-                  },
-                ],
-              };
-              const createuser = createUser(data);
-              createuser.then((result) => {
-                if (result.status !== 201) {
-                  console.log("Error", result);
-                  setAlertStatus("error");
-                  setOpenSnackBar(true);
-                } else {
-                  setAlertStatus("success");
-                  setOpenSnackBar(true);
-                  router.push(`/dashboard/${clubId}`, undefined, {
-                    shallow: true,
-                  });
-                }
+          usdc_response.then(
+            (result) => {
+              const deposit_response = dao_contract.deposit(
+                USDC_CONTRACT_ADDRESS,
+                priceOfNftConverted,
+                nftImageUrl,
+              );
+              deposit_response.then((result) => {
+                console.log("deposit response", result);
+                const data = {
+                  userAddress: userDetails,
+                  clubs: [
+                    {
+                      clubId: clubId,
+                      isAdmin: 0,
+                      // balance: depositAmountConverted,
+                    },
+                  ],
+                };
+                const createuser = createUser(data);
+                createuser.then((result) => {
+                  if (result.status !== 201) {
+                    console.log("Error", result);
+                    setAlertStatus("error");
+                    setOpenSnackBar(true);
+                  } else {
+                    setAlertStatus("success");
+                    setOpenSnackBar(true);
+                    setLoading(false);
+                    router.push(`/dashboard/${clubId}`, undefined, {
+                      shallow: true,
+                    });
+                  }
+                });
               });
-            });
-          },
-          (error) => {
-            console.log("Error", error);
-            setAlertStatus("error");
-            setOpenSnackBar(true);
-          },
-        );
+            },
+            (error) => {
+              console.log("Error", error);
+              setAlertStatus("error");
+              setLoading(false);
+              setOpenSnackBar(true);
+            },
+          );
+        }
+      } else {
+        console.log("herrez");
+        setAlertStatus("error");
+        setOpenSnackBar(true);
+        // {
+        //   console.log("here");
+        // }
+        // <Snackbar
+        //   open
+        //   autoHideDuration={6000}
+        //   onClose={handleClose}
+        //   anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+        // >
+        //   <Alert onClose={handleClose} severity="error" sx={{ width: "100%" }}>
+        //     Limit exceeded
+        //   </Alert>
+        // </Snackbar>;
       }
     });
   };
@@ -1433,23 +1488,45 @@ const Join = (props) => {
                     <Grid item>
                       <Grid container spacing={3}>
                         <Grid item xs="auto">
-                          <Typography
-                            sx={{
-                              background: "#0ABB9240",
-                              color: "#0ABB92",
-                              paddingTop: 0.5,
-                              paddingBottom: 0.5,
-                              paddingRight: 1,
-                              paddingLeft: 1,
-                              borderRadius: 2,
-                              display: "flex",
+                          {isDepositActive ? (
+                            <Typography
+                              sx={{
+                                background: "#0ABB9240",
+                                color: "#0ABB92",
+                                paddingTop: 0.5,
+                                paddingBottom: 0.5,
+                                paddingRight: 1,
+                                paddingLeft: 1,
+                                borderRadius: 2,
+                                display: "flex",
 
-                              alignItems: "center",
-                            }}
-                          >
-                            <div className={classes.activeIllustration}></div>
-                            Active
-                          </Typography>
+                                alignItems: "center",
+                              }}
+                            >
+                              <div className={classes.activeIllustration}></div>
+                              Active
+                            </Typography>
+                          ) : (
+                            <Typography
+                              sx={{
+                                background: "#0ABB9240",
+                                color: "#0ABB92",
+                                paddingTop: 0.5,
+                                paddingBottom: 0.5,
+                                paddingRight: 1,
+                                paddingLeft: 1,
+                                borderRadius: 2,
+                                display: "flex",
+
+                                alignItems: "center",
+                              }}
+                            >
+                              <div
+                                className={classes.executedIllustration}
+                              ></div>
+                              Finished
+                            </Typography>
+                          )}
                         </Grid>
                         <Grid item xs="auto">
                           <Typography
@@ -1525,7 +1602,7 @@ const Join = (props) => {
                             color="#fff"
                             sx={{ fontWeight: "bold" }}
                           >
-                            Unlimited
+                            {totalNftSupply - totalNftMinted}
                           </Typography>
                           <Typography variant="subtitle2" color="#C1D3FF">
                             Nfts Remaining
@@ -1591,8 +1668,12 @@ const Join = (props) => {
                           </IconButton>
                         </Grid>
                         <Grid item>
-                          <Button onClick={handleClaimNft} sx={{ px: 8 }}>
-                            Claim
+                          <Button
+                            onClick={handleClaimNft}
+                            disabled={loading}
+                            sx={{ px: 8 }}
+                          >
+                            {loading ? <CircularProgress /> : "Claim"}
                           </Button>
                         </Grid>
                       </Grid>
@@ -1603,7 +1684,8 @@ const Join = (props) => {
                         color="#6475A3"
                         sx={{ fontWeight: "light" }}
                       >
-                        This station allows maximum of 2 mints per member
+                        This station allows maximum of {maxTokensPerUser} mints
+                        per member
                       </Typography>
                     </Grid>
                   </Grid>
