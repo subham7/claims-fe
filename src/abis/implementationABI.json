@@ -725,11 +725,6 @@
           "internalType": "uint256",
           "name": "_priceOfNft",
           "type": "uint256"
-        },
-        {
-          "internalType": "address",
-          "name": "_nftContractAddress",
-          "type": "address"
         }
       ],
       "name": "initializeERC721",
@@ -933,6 +928,19 @@
         }
       ],
       "name": "revokeRole",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_nftContractAddress",
+          "type": "address"
+        }
+      ],
+      "name": "setNftAddressFunction",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"

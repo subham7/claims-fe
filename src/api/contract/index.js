@@ -134,7 +134,7 @@ export class SmartContract {
           isTemplateErc721,
           mintsPerUser,
           totalSupplyOfToken,
-          nftPrice,
+          nftPrice * Math.pow(10, 6),
           transferableMembership,
           isNftSupplyUnlimited,
         ],
@@ -162,7 +162,7 @@ export class SmartContract {
           isTemplateErc721,
           mintsPerUser,
           totalSupplyOfToken,
-          nftPrice,
+          nftPrice * Math.pow(10, 6),
           transferableMembership,
           isNftSupplyUnlimited,
         ],
@@ -718,7 +718,9 @@ export class SmartContract {
   }
 
   async nftBalance(address) {
-    return this.contract.methods.balanceOf(address).call();
+    return this.contract.methods
+      .balanceOf(address)
+      .call({ from: this.walletAddress });
   }
 
   async nftContractOwner() {
@@ -748,8 +750,17 @@ export class SmartContract {
   }
 
   async totalNftSupply() {
+    return this.contract.methods.totalSupplyOfToken();
+  }
+  async symbol() {
+    return this.contract.methods.symbol().call({ from: this.walletAddress });
+  }
+
+  async depositCloseTime() {
+    console.log("contractAddress", this.contractAddress);
+    console.log(this.contract.methods);
     return this.contract.methods
-      .totalSupplyOfToken()
+      .depositCloseTime()
       .call({ from: this.walletAddress });
   }
 
