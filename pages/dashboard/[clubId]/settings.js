@@ -18,6 +18,7 @@ import {
   Paper,
   Switch,
   FormControlLabel,
+  Skeleton,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import ProgressBar from "../../../src/components/progressbar";
@@ -482,7 +483,7 @@ const Settings = (props) => {
   };
 
   const loadData = () => {
-    setLoaderOpen(true);
+    // setLoaderOpen(true);
     tokenAPIDetailsRetrieval();
     tokenDetailsRetrieval();
     contractDetailsRetrieval(false);
@@ -494,7 +495,7 @@ const Settings = (props) => {
       governorDataFetched &&
       membersFetched
     ) {
-      setLoaderOpen(false);
+      // setLoaderOpen(false);
     }
   };
 
@@ -509,7 +510,7 @@ const Settings = (props) => {
   ]);
 
   useEffect(() => {
-    setLoaderOpen(true);
+    // setLoaderOpen(true);
 
     if (dataFetched) {
       fetchUserBalanceAPI();
@@ -832,14 +833,20 @@ const Settings = (props) => {
                     <Grid container>
                       <Grid item mt={1}>
                         <Typography variant="p" className={classes.valuesStyle}>
-                          {governorDataFetched
-                            ? new Date(parseInt(governorDetails[0]) * 1000)
-                                .toJSON()
-                                .slice(0, 10)
-                                .split("-")
-                                .reverse()
-                                .join("/")
-                            : null}
+                          {governorDataFetched ? (
+                            new Date(parseInt(governorDetails[0]) * 1000)
+                              .toJSON()
+                              .slice(0, 10)
+                              .split("-")
+                              .reverse()
+                              .join("/")
+                          ) : (
+                            <Skeleton
+                              variant="rectangular"
+                              width={100}
+                              height={25}
+                            />
+                          )}
                         </Typography>
                       </Grid>
                       <Grid item ml={1} mt={1}>
@@ -873,9 +880,15 @@ const Settings = (props) => {
                       </Grid>
                       <Grid item mt={1}>
                         <Typography variant="p" className={classes.valuesStyle}>
-                          {governorDataFetched
-                            ? convertAmountToWei(governorDetails[1]) + " USDC"
-                            : null}
+                          {governorDataFetched ? (
+                            convertAmountToWei(governorDetails[1]) + " USDC"
+                          ) : (
+                            <Skeleton
+                              variant="rectangular"
+                              width={100}
+                              height={25}
+                            />
+                          )}
                         </Typography>
                       </Grid>
                     </Grid>
@@ -892,9 +905,15 @@ const Settings = (props) => {
                       </Grid>
                       <Grid item mt={1}>
                         <Typography variant="p" className={classes.valuesStyle}>
-                          {governorDataFetched
-                            ? convertAmountToWei(governorDetails[2]) + " USDC"
-                            : null}{" "}
+                          {governorDataFetched ? (
+                            convertAmountToWei(governorDetails[2]) + " USDC"
+                          ) : (
+                            <Skeleton
+                              variant="rectangular"
+                              width={100}
+                              height={25}
+                            />
+                          )}{" "}
                         </Typography>
                       </Grid>
                     </Grid>
@@ -926,9 +945,15 @@ const Settings = (props) => {
                       <Grid item mt={2}>
                         <Typography variant="p" className={classes.valuesStyle}>
                           $
-                          {clubAssetTokenFetched
-                            ? clubAssetTokenData.treasuryAmount
-                            : null}
+                          {clubAssetTokenFetched ? (
+                            clubAssetTokenData.treasuryAmount
+                          ) : (
+                            <Skeleton
+                              variant="rectangular"
+                              width={100}
+                              height={25}
+                            />
+                          )}
                         </Typography>
                       </Grid>
                     </Grid>
@@ -1029,9 +1054,15 @@ const Settings = (props) => {
                       Club Tokens Minted so far
                     </Typography>
                     <Typography variant="p" className={classes.valuesStyle}>
-                      {dataFetched
-                        ? parseInt(clubTokenMinted) + " $" + tokenDetails[1]
-                        : null}
+                      {dataFetched ? (
+                        parseInt(clubTokenMinted) + " $" + tokenDetails[1]
+                      ) : (
+                        <Skeleton
+                          variant="rectangular"
+                          width={100}
+                          height={25}
+                        />
+                      )}
                     </Typography>
                   </Stack>
                 </Grid>
@@ -1047,10 +1078,16 @@ const Settings = (props) => {
                   <Stack spacing={1}>
                     <Typography variant="settingText">Total Supply</Typography>
                     <Typography variant="p" className={classes.valuesStyle}>
-                      {governorDataFetched && dataFetched
-                        ? convertAmountToWei(governorDetails[4]) +
-                          (" $" + tokenDetails[1])
-                        : null}{" "}
+                      {governorDataFetched && dataFetched ? (
+                        convertAmountToWei(governorDetails[4]) +
+                        (" $" + tokenDetails[1])
+                      ) : (
+                        <Skeleton
+                          variant="rectangular"
+                          width={100}
+                          height={25}
+                        />
+                      )}{" "}
                     </Typography>
                   </Stack>
                 </Grid>
@@ -1097,13 +1134,19 @@ const Settings = (props) => {
                     </Grid>
                     <Grid item mr={4}>
                       <Typography variant="p" className={classes.valuesStyle}>
-                        {apiTokenDetailSet
-                          ? tokenAPIDetails[0].daoAddress.substring(0, 6) +
-                            "......" +
-                            tokenAPIDetails[0].daoAddress.substring(
-                              tokenAPIDetails[0].daoAddress.length - 4,
-                            )
-                          : null}
+                        {apiTokenDetailSet ? (
+                          tokenAPIDetails[0].daoAddress.substring(0, 6) +
+                          "......" +
+                          tokenAPIDetails[0].daoAddress.substring(
+                            tokenAPIDetails[0].daoAddress.length - 4,
+                          )
+                        ) : (
+                          <Skeleton
+                            variant="rectangular"
+                            width={100}
+                            height={25}
+                          />
+                        )}
                       </Typography>
                     </Grid>
                   </Grid>
@@ -1205,7 +1248,9 @@ const Settings = (props) => {
                           ) : null}
                         </Typography>
                       )
-                    ) : null}
+                    ) : (
+                      <Skeleton variant="rectangular" width={100} height={25} />
+                    )}
                   </Grid>
                 </Grid>
 
@@ -1223,9 +1268,15 @@ const Settings = (props) => {
                     sx={{ display: "flex", justifyContent: "flex-end" }}
                   >
                     <Typography variant="p" className={classes.valuesStyle}>
-                      {governorDataFetched
-                        ? convertAmountToWei(governorDetails[1])
-                        : null}{" "}
+                      {governorDataFetched ? (
+                        convertAmountToWei(governorDetails[1])
+                      ) : (
+                        <Skeleton
+                          variant="rectangular"
+                          width={100}
+                          height={25}
+                        />
+                      )}{" "}
                       USDC
                       {isAdminUser ? (
                         <a
@@ -1256,9 +1307,15 @@ const Settings = (props) => {
                     sx={{ display: "flex", justifyContent: "flex-end" }}
                   >
                     <Typography variant="p" className={classes.valuesStyle}>
-                      {governorDataFetched
-                        ? convertAmountToWei(governorDetails[2])
-                        : null}{" "}
+                      {governorDataFetched ? (
+                        convertAmountToWei(governorDetails[2])
+                      ) : (
+                        <Skeleton
+                          variant="rectangular"
+                          width={100}
+                          height={25}
+                        />
+                      )}{" "}
                       USDC
                       {isAdminUser ? (
                         <a
