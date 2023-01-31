@@ -754,13 +754,30 @@ export class SmartContract {
       .totalSupplyOfToken()
       .call({ from: this.walletAddress });
   }
+
+  async isNftTransferable() {
+    return this.contract.methods
+      .isNftTransferable()
+      .call({ from: this.walletAddress });
+  }
+
+  async isNftTotalSupplyUnlimited() {
+    return this.contract.methods
+      .isNftTotalSupplyUnlimited()
+      .call({ from: this.walletAddress });
+  }
+
+  async updateMaxTokensPerUser(tokenValue) {
+    return this.contract.methods
+      .updateMaxTokensPerUser(tokenValue)
+      .send({ from: this.walletAddress });
+  }
+
   async symbol() {
     return this.contract.methods.symbol().call({ from: this.walletAddress });
   }
 
   async depositCloseTime() {
-    console.log("contractAddress", this.contractAddress);
-    console.log(this.contract.methods);
     return this.contract.methods
       .depositCloseTime()
       .call({ from: this.walletAddress });

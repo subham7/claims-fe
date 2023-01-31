@@ -15,4 +15,16 @@ export const settingsOptions = [
     id: 3,
     name: "performanceFee",
   },
+  {
+    id: 4,
+    name: "maxTokenPerUser",
+  },
+  {
+    id: 5,
+    name: "totalNFTSupply",
+  },
+  {
+    id: 6,
+    name: "isNFTtransferable",
+  },
 ];

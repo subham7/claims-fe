@@ -51,6 +51,7 @@ import AddCircleOutlinedIcon from "@mui/icons-material/AddCircleOutlined";
 import DeleteIcon from "@mui/icons-material/Delete";
 import TokenSearch from "../../../src/components/tokenSearch";
 import styled from "@emotion/styled";
+import nft from "../../../src/abis/nft.json";
 
 const useStyles = makeStyles({
   valuesStyle: {
@@ -288,6 +289,15 @@ const Settings = (props) => {
   const [operationType, setOperationType] = useState([]);
   const [isNFT, setIsNFT] = useState([]);
   const [checked, setChecked] = useState(false);
+  const [tokenType, setTokenType] = useState(null);
+  const [depositCloseDate, setDepositCloseDate] = useState();
+  const [maxTokensPerUser, setMaxTokensPerUser] = useState(null);
+  const [totalNftMinted, setTotalNftMinted] = useState(null);
+  const [totalNftSupply, setTotalNftSupply] = useState(null);
+  const [nftContractAddress, setNftContractAddress] = useState(null);
+  const [isNftTransferable, setIsNftTransferable] = useState(null);
+  const [isNftTotalSupplyUnlimited, setIsNftTotalSupplyUnlimited] =
+    useState(null);
 
   const USDC_CONTRACT_ADDRESS = useSelector((state) => {
     return state.gnosis.usdcContractAddress;
@@ -345,6 +355,19 @@ const Settings = (props) => {
       }
     }
   };
+
+  const fetchTokenType = async () => {
+    const response = await fetchClubbyDaoAddress(daoAddress);
+    if (response.data.length > 0) {
+      setTokenType(response.data[0].tokenType);
+    }
+  };
+
+  useEffect(() => {
+    if (daoAddress) {
+      fetchTokenType();
+    }
+  }, [daoAddress, GNOSIS_TRANSACTION_URL, USDC_CONTRACT_ADDRESS]);
 
   const tokenAPIDetailsRetrieval = async () => {
     let response = await fetchClubbyDaoAddress(daoAddress);
@@ -416,6 +439,61 @@ const Settings = (props) => {
     });
   };
 
+  const nftContractDetails = async () => {
+    // console.log("hereeeee");
+    try {
+      let response = await fetchClubbyDaoAddress(daoAddress);
+      console.log("ressss", response);
+      const nftAddress = response.data[0].nftAddress;
+      setNftContractAddress(nftAddress);
+      console.log("res", nftAddress);
+      const erc721DetailContract = new SmartContract(
+        ImplementationContract,
+        daoAddress,
+        undefined,
+        USDC_CONTRACT_ADDRESS,
+        GNOSIS_TRANSACTION_URL,
+      );
+      const nftContract = new SmartContract(
+        nft,
+        nftAddress,
+        undefined,
+        USDC_CONTRACT_ADDRESS,
+        GNOSIS_TRANSACTION_URL,
+      );
+      console.log(
+        "erc721DetailContract",
+        erc721DetailContract.contract.methods,
+      );
+      console.log("nft contract", nftContract.contract.methods);
+      await erc721DetailContract.closeDate().then((result) => {
+        setDepositCloseDate(result);
+        setClosingDays(calculateDays(parseInt(depositCloseDate) * 1000));
+      });
+      await nftContract
+        .maxTokensPerUser()
+        .then((result) => setMaxTokensPerUser(result));
+
+      await nftContract
+        .nftOwnersCount()
+        .then((result) => setTotalNftMinted(result));
+
+      await nftContract
+        .totalNftSupply()
+        .then((result) => setTotalNftSupply(result));
+
+      await nftContract
+        .isNftTransferable()
+        .then((result) => setIsNftTransferable(result));
+
+      await nftContract
+        .isNftTotalSupplyUnlimited()
+        .then((result) => setIsNftTotalSupplyUnlimited(result));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  console.log("isNftTransferable", isNftTransferable);
   const contractDetailsRetrieval = async (refresh = false) => {
     if (
       (daoAddress &&
@@ -486,7 +564,13 @@ const Settings = (props) => {
     // setLoaderOpen(true);
     tokenAPIDetailsRetrieval();
     tokenDetailsRetrieval();
-    contractDetailsRetrieval(false);
+    console.log("token typeee", tokenType);
+    if (tokenType === "erc721") {
+      nftContractDetails();
+    } else {
+      contractDetailsRetrieval(false);
+    }
+
     fetchMembers();
 
     if (
@@ -579,6 +663,38 @@ const Settings = (props) => {
           setMessage("Contributions failed to be enabled!");
           setOpenSnackBar(true);
           setLoaderOpen(false);
+        },
+      );
+    }
+  };
+
+  const handleNFTContractUpdates = async (updateType) => {
+    setLoaderOpen(true);
+    setOpen(false);
+    const contract = new SmartContract(
+      nft,
+      nftContractAddress,
+      undefined,
+      USDC_CONTRACT_ADDRESS,
+      GNOSIS_TRANSACTION_URL,
+    );
+    console.log("nftContract", contract);
+    if (settingsOptions[4].name === updateType) {
+      console.log("maxToken", maxTokensPerUser);
+      const response = contract.updateMaxTokensPerUser(maxTokensPerUser);
+      response.then(
+        (result) => {
+          nftContractDetails(true);
+          setLoaderOpen(false);
+          setFailed(false);
+          setMessage("Max token per user successfully updated!");
+          setOpenSnackBar(true);
+        },
+        (error) => {
+          setLoaderOpen(false);
+          setFailed(true);
+          setMessage("Max token per user failed to be updated!");
+          setOpenSnackBar(true);
         },
       );
     }
@@ -833,7 +949,14 @@ const Settings = (props) => {
                     <Grid container>
                       <Grid item mt={1}>
                         <Typography variant="p" className={classes.valuesStyle}>
-                          {governorDataFetched ? (
+                          {tokenType === "erc721" && depositCloseDate ? (
+                            new Date(parseInt(depositCloseDate) * 1000)
+                              ?.toJSON()
+                              ?.slice(0, 10)
+                              .split("-")
+                              .reverse()
+                              .join("/")
+                          ) : governorDataFetched ? (
                             new Date(parseInt(governorDetails[0]) * 1000)
                               .toJSON()
                               .slice(0, 10)
@@ -850,7 +973,7 @@ const Settings = (props) => {
                         </Typography>
                       </Grid>
                       <Grid item ml={1} mt={1}>
-                        {governorDataFetched ? (
+                        {governorDataFetched || tokenType === "erc721" ? (
                           closingDays > 0 ? (
                             <Card className={classes.openTag}>
                               <Typography className={classes.openTagFont}>
@@ -870,52 +993,124 @@ const Settings = (props) => {
                   </Grid>
                   <Grid item md={3}>
                     <Grid container>
-                      <Grid item>
-                        <Typography
-                          variant="p"
-                          className={classes.valuesDimStyle}
-                        >
-                          Minimum Deposits
-                        </Typography>
-                      </Grid>
-                      <Grid item mt={1}>
-                        <Typography variant="p" className={classes.valuesStyle}>
-                          {governorDataFetched ? (
-                            convertAmountToWei(governorDetails[1]) + " USDC"
-                          ) : (
-                            <Skeleton
-                              variant="rectangular"
-                              width={100}
-                              height={25}
-                            />
-                          )}
-                        </Typography>
-                      </Grid>
+                      {tokenType === "erc721" ? (
+                        <>
+                          <Grid item>
+                            <Typography
+                              variant="p"
+                              className={classes.valuesDimStyle}
+                            >
+                              Max Token Per User
+                            </Typography>
+                          </Grid>
+                          <Grid item mt={1}>
+                            <Typography
+                              variant="p"
+                              className={classes.valuesStyle}
+                            >
+                              {maxTokensPerUser !== null ? (
+                                maxTokensPerUser
+                              ) : (
+                                <Skeleton
+                                  variant="rectangular"
+                                  width={100}
+                                  height={25}
+                                />
+                              )}
+                            </Typography>
+                          </Grid>
+                        </>
+                      ) : (
+                        <>
+                          <Grid item>
+                            <Typography
+                              variant="p"
+                              className={classes.valuesDimStyle}
+                            >
+                              Minimum Deposits
+                            </Typography>
+                          </Grid>
+                          <Grid item mt={1}>
+                            <Typography
+                              variant="p"
+                              className={classes.valuesStyle}
+                            >
+                              {governorDataFetched ? (
+                                convertAmountToWei(governorDetails[1]) + " USDC"
+                              ) : (
+                                <Skeleton
+                                  variant="rectangular"
+                                  width={100}
+                                  height={25}
+                                />
+                              )}
+                            </Typography>
+                          </Grid>
+                        </>
+                      )}
                     </Grid>
                   </Grid>
                   <Grid item md={3}>
                     <Grid container>
-                      <Grid item>
-                        <Typography
-                          variant="p"
-                          className={classes.valuesDimStyle}
-                        >
-                          Maximum Deposit
-                        </Typography>
-                      </Grid>
-                      <Grid item mt={1}>
-                        <Typography variant="p" className={classes.valuesStyle}>
-                          {governorDataFetched ? (
-                            convertAmountToWei(governorDetails[2]) + " USDC"
-                          ) : (
-                            <Skeleton
-                              variant="rectangular"
-                              width={100}
-                              height={25}
-                            />
-                          )}{" "}
-                        </Typography>
-                      </Grid>
+                      {tokenType === "erc721" ? (
+                        <>
+                          <Grid item>
+                            <Typography
+                              variant="p"
+                              className={classes.valuesDimStyle}
+                            >
+                              Is NFT Tranferable
+                            </Typography>
+                          </Grid>
+                          <Grid item mt={1}>
+                            <Typography
+                              variant="p"
+                              className={classes.valuesStyle}
+                            >
+                              {isNftTransferable !== null ? (
+                                isNftTransferable ? (
+                                  "true"
+                                ) : (
+                                  "false"
+                                )
+                              ) : (
+                                <Skeleton
+                                  variant="rectangular"
+                                  width={100}
+                                  height={25}
+                                />
+                              )}
+                            </Typography>
+                          </Grid>
+                        </>
+                      ) : (
+                        <>
+                          <Grid item>
+                            <Typography
+                              variant="p"
+                              className={classes.valuesDimStyle}
+                            >
+                              Maximum Deposit
+                            </Typography>
+                          </Grid>
+                          <Grid item mt={1}>
+                            <Typography
+                              variant="p"
+                              className={classes.valuesStyle}
+                            >
+                              {governorDataFetched ? (
+                                convertAmountToWei(governorDetails[2]) + " USDC"
+                              ) : (
+                                <Skeleton
+                                  variant="rectangular"
+                                  width={100}
+                                  height={25}
+                                />
+                              )}{" "}
+                            </Typography>
+                          </Grid>
+                        </>
+                      )}
                     </Grid>
                   </Grid>
                   <Grid item md={3}>
@@ -959,35 +1154,40 @@ const Settings = (props) => {
                     </Grid>
                   </Grid>
                   <Grid item md={3}>
-                    <Grid container direction="column">
-                      <Grid item>
-                        <Typography variant="settingText">
-                          Your ownership
-                        </Typography>
-                      </Grid>
-                      <Grid item mt={2}>
-                        <Typography variant="p" className={classes.valuesStyle}>
-                          {userBalanceFetched && dataFetched
-                            ? isNaN(
-                                parseInt(
-                                  calculateUserSharePercentage(
-                                    userBalance,
-                                    tokenDetails[2],
-                                  ),
-                                ),
-                              )
-                              ? 0
-                              : parseInt(
-                                  calculateUserSharePercentage(
-                                    userBalance,
-                                    userOwnershipShare,
+                    {tokenType === "erc721" ? null : (
+                      <Grid container direction="column">
+                        <Grid item>
+                          <Typography variant="settingText">
+                            Your ownership
+                          </Typography>
+                        </Grid>
+                        <Grid item mt={2}>
+                          <Typography
+                            variant="p"
+                            className={classes.valuesStyle}
+                          >
+                            {userBalanceFetched && dataFetched
+                              ? isNaN(
+                                  parseInt(
+                                    calculateUserSharePercentage(
+                                      userBalance,
+                                      tokenDetails[2],
+                                    ),
                                   ),
                                 )
-                            : 0}
-                          % (${userBalance})
-                        </Typography>
+                                ? 0
+                                : parseInt(
+                                    calculateUserSharePercentage(
+                                      userBalance,
+                                      userOwnershipShare,
+                                    ),
+                                  )
+                              : 0}
+                            % (${userBalance})
+                          </Typography>
+                        </Grid>
                       </Grid>
-                    </Grid>
+                    )}
                   </Grid>
                   {isGovernanceActive ? (
                     <>
@@ -1035,37 +1235,64 @@ const Settings = (props) => {
                 </Grid>
               </Paper>
 
-              <Grid item ml={3} mt={5} mb={2} mr={3}>
-                <ProgressBar
-                  value={
-                    governorDataFetched && dataFetched
-                      ? calculateTreasuryTargetShare(
-                          clubTokenMinted,
-                          convertAmountToWei(governorDetails[4]),
-                        )
-                      : 0
-                  }
-                />
-              </Grid>
-              <Grid container spacing={2}>
-                <Grid item ml={4} mt={1} mb={2}>
-                  <Stack spacing={1}>
-                    <Typography variant="settingText">
-                      Club Tokens Minted so far
-                    </Typography>
-                    <Typography variant="p" className={classes.valuesStyle}>
-                      {dataFetched ? (
-                        parseInt(clubTokenMinted) + " $" + tokenDetails[1]
-                      ) : (
-                        <Skeleton
-                          variant="rectangular"
-                          width={100}
-                          height={25}
-                        />
-                      )}
-                    </Typography>
-                  </Stack>
+              {tokenType === "erc721" ? null : (
+                <Grid item ml={3} mt={5} mb={2} mr={3}>
+                  <ProgressBar
+                    value={
+                      governorDataFetched && dataFetched
+                        ? calculateTreasuryTargetShare(
+                            clubTokenMinted,
+                            convertAmountToWei(governorDetails[4]),
+                          )
+                        : 0
+                    }
+                  />
                 </Grid>
+              )}
+
+              <Grid container spacing={2}>
+                {tokenType === "erc721" ? (
+                  <Grid item ml={4} mt={1} mb={2}>
+                    <Stack spacing={1}>
+                      <Typography variant="settingText">
+                        NFTs Minted so far
+                      </Typography>
+                      <Typography variant="p" className={classes.valuesStyle}>
+                        {totalNftMinted !== null ? (
+                          totalNftMinted
+                        ) : isNftTotalSupplyUnlimited ? (
+                          "unlimited"
+                        ) : (
+                          <Skeleton
+                            variant="rectangular"
+                            width={100}
+                            height={25}
+                          />
+                        )}
+                      </Typography>
+                    </Stack>
+                  </Grid>
+                ) : (
+                  <Grid item ml={4} mt={1} mb={2}>
+                    <Stack spacing={1}>
+                      <Typography variant="settingText">
+                        Club Tokens Minted so far
+                      </Typography>
+                      <Typography variant="p" className={classes.valuesStyle}>
+                        {dataFetched ? (
+                          parseInt(clubTokenMinted) + " $" + tokenDetails[1]
+                        ) : (
+                          <Skeleton
+                            variant="rectangular"
+                            width={100}
+                            height={25}
+                          />
+                        )}
+                      </Typography>
+                    </Stack>
+                  </Grid>
+                )}
+
                 <Grid
                   item
                   ml={4}
@@ -1077,18 +1304,32 @@ const Settings = (props) => {
                 >
                   <Stack spacing={1}>
                     <Typography variant="settingText">Total Supply</Typography>
-                    <Typography variant="p" className={classes.valuesStyle}>
-                      {governorDataFetched && dataFetched ? (
-                        convertAmountToWei(governorDetails[4]) +
-                        (" $" + tokenDetails[1])
-                      ) : (
-                        <Skeleton
-                          variant="rectangular"
-                          width={100}
-                          height={25}
-                        />
-                      )}{" "}
-                    </Typography>
+                    {tokenType === "erc721" ? (
+                      <Typography variant="p" className={classes.valuesStyle}>
+                        {totalNftSupply !== null ? (
+                          totalNftSupply
+                        ) : (
+                          <Skeleton
+                            variant="rectangular"
+                            width={100}
+                            height={25}
+                          />
+                        )}{" "}
+                      </Typography>
+                    ) : (
+                      <Typography variant="p" className={classes.valuesStyle}>
+                        {governorDataFetched && dataFetched ? (
+                          convertAmountToWei(governorDetails[4]) +
+                          (" $" + tokenDetails[1])
+                        ) : (
+                          <Skeleton
+                            variant="rectangular"
+                            width={100}
+                            height={25}
+                          />
+                        )}{" "}
+                      </Typography>
+                    )}
                   </Stack>
                 </Grid>
               </Grid>
@@ -1099,6 +1340,61 @@ const Settings = (props) => {
                 <Typography variant="h4">Additional Details</Typography>
               </Grid>
               <Stack spacing={3} ml={3}>
+                {tokenType === "erc721" ? (
+                  <Grid container>
+                    <Grid item>
+                      <Typography variant="settingText">
+                        NFT contract address
+                      </Typography>
+                    </Grid>
+                    <Grid
+                      container
+                      sx={{ display: "flex", justifyContent: "flex-end" }}
+                      spacing={1}
+                    >
+                      <Grid item>
+                        <IconButton
+                          color="primary"
+                          onClick={() => {
+                            navigator.clipboard.writeText(nftContractAddress);
+                          }}
+                        >
+                          <ContentCopyIcon className={classes.iconColor} />
+                        </IconButton>
+                      </Grid>
+                      <Grid item>
+                        <IconButton
+                          color="primary"
+                          onClick={() => {
+                            window.open(
+                              `https://rinkeby.etherscan.io/address/${nftContractAddress}`,
+                            );
+                          }}
+                        >
+                          <OpenInNewIcon className={classes.iconColor} />
+                        </IconButton>
+                      </Grid>
+                      <Grid item mr={4}>
+                        <Typography variant="p" className={classes.valuesStyle}>
+                          {nftContractAddress !== null ? (
+                            nftContractAddress.substring(0, 6) +
+                            "......" +
+                            nftContractAddress.substring(
+                              nftContractAddress.length - 4,
+                            )
+                          ) : (
+                            <Skeleton
+                              variant="rectangular"
+                              width={100}
+                              height={25}
+                            />
+                          )}
+                        </Typography>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                ) : null}
+                <Divider />
                 <Grid container>
                   <Grid item>
                     <Typography variant="settingText">
@@ -1151,6 +1447,7 @@ const Settings = (props) => {
                     </Grid>
                   </Grid>
                 </Grid>
+
                 <Divider />
 
                 {/* <Grid container ml={3} mr={4}>
@@ -1212,7 +1509,7 @@ const Settings = (props) => {
                     xs
                     sx={{ display: "flex", justifyContent: "flex-end" }}
                   >
-                    {governorDataFetched ? (
+                    {governorDataFetched || tokenType === "erc721" ? (
                       closingDays > 0 ? (
                         <Typography variant="p" className={classes.valuesStyle}>
                           Enabled
@@ -1258,7 +1555,9 @@ const Settings = (props) => {
                 <Grid container ml={3} mr={4}>
                   <Grid item>
                     <Typography variant="settingText">
-                      Minimum deposit amount for new members
+                      {tokenType === "erc721"
+                        ? "Maximum Tokens Per User"
+                        : "Minimum deposit amount for new members"}
                     </Typography>
                   </Grid>
                   <Grid
@@ -1268,21 +1567,22 @@ const Settings = (props) => {
                     sx={{ display: "flex", justifyContent: "flex-end" }}
                   >
                     <Typography variant="p" className={classes.valuesStyle}>
-                      {governorDataFetched ? (
-                        convertAmountToWei(governorDetails[1])
+                      {tokenType === "erc721" ? (
+                        maxTokensPerUser
+                      ) : governorDataFetched ? (
+                        `${convertAmountToWei(governorDetails[1])}   USDC`
                       ) : (
                         <Skeleton
                           variant="rectangular"
                           width={100}
                           height={25}
                         />
-                      )}{" "}
-                      USDC
+                      )}
                       {isAdminUser ? (
                         <a
                           className={classes.activityLink}
                           onClick={(e) => {
-                            setSettingType("minDeposit");
+                            setSettingType("maxTokenPerUser");
                             setOpen(true);
                           }}
                         >
@@ -1297,7 +1597,9 @@ const Settings = (props) => {
                 <Grid container ml={3} mr={4}>
                   <Grid item>
                     <Typography variant="settingText">
-                      Maximum deposit amount for new members
+                      {tokenType === "erc721"
+                        ? "Total Supply of NFTs"
+                        : "Maximum deposit amount for new members"}
                     </Typography>
                   </Grid>
                   <Grid
@@ -1307,16 +1609,18 @@ const Settings = (props) => {
                     sx={{ display: "flex", justifyContent: "flex-end" }}
                   >
                     <Typography variant="p" className={classes.valuesStyle}>
-                      {governorDataFetched ? (
-                        convertAmountToWei(governorDetails[2])
+                      {tokenType === "erc721" ? (
+                        totalNftSupply
+                      ) : governorDataFetched ? (
+                        `${convertAmountToWei(governorDetails[2])}   USDC`
                       ) : (
                         <Skeleton
                           variant="rectangular"
                           width={100}
                           height={25}
                         />
-                      )}{" "}
-                      USDC
+                      )}
+
                       {isAdminUser ? (
                         <a
                           className={classes.activityLink}
@@ -1754,6 +2058,45 @@ const Settings = (props) => {
                           variant="primary"
                           startIcon={<CheckCircleIcon />}
                           onClick={() => handleContractUpdates(settingType)}
+                        >
+                          Update
+                        </Button>
+                      </Grid>
+                      <Grid item m={3}>
+                        <Button
+                          variant="primary"
+                          startIcon={<CancelIcon />}
+                          onClick={handleClose}
+                        >
+                          Cancel
+                        </Button>
+                      </Grid>
+                    </Grid>
+                  </>
+                ) : settingsOptions[4].name === settingType ? (
+                  <>
+                    <Typography className={classes.dialogBox}>
+                      Update Max Token per User
+                    </Typography>
+                    <Grid
+                      container
+                      direction="row"
+                      justifyContent="center"
+                      alignItems="center"
+                    >
+                      <Grid container item>
+                        <TextField
+                          sx={{ width: "95%", backgroundColor: "#C1D3FF40" }}
+                          className={classes.cardTextBox}
+                          placeholder="Enter new token allowed per user"
+                          onChange={(e) => setMaxTokensPerUser(e.target.value)}
+                        />
+                      </Grid>
+                      <Grid item m={3}>
+                        <Button
+                          variant="primary"
+                          startIcon={<CheckCircleIcon />}
+                          onClick={() => handleNFTContractUpdates(settingType)}
                         >
                           Update
                         </Button>
