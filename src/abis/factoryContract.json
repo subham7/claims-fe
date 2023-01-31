@@ -86,101 +86,64 @@
     {
       "inputs": [
         {
-          "components": [
-            {
-              "internalType": "string",
-              "name": "DaoName",
-              "type": "string"
-            },
-            {
-              "internalType": "string",
-              "name": "DaoSymbol",
-              "type": "string"
-            },
-            {
-              "internalType": "uint256",
-              "name": "totalRaiseAmount",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "minDepositPerUser",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "maxDepositPerUser",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "ownerFeePerDeposit",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "depositFunctioningDays",
-              "type": "uint256"
-            },
-            {
-              "internalType": "bool",
-              "name": "feeUSDC",
-              "type": "bool"
-            },
-            {
-              "internalType": "uint256",
-              "name": "quorum",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "threshold",
-              "type": "uint256"
-            },
-            {
-              "internalType": "address",
-              "name": "gnosisAddress",
-              "type": "address"
-            },
-            {
-              "internalType": "address[]",
-              "name": "daoAdmins",
-              "type": "address[]"
-            },
-            {
-              "internalType": "bool",
-              "name": "isTemplateErc721",
-              "type": "bool"
-            },
-            {
-              "internalType": "uint256",
-              "name": "maxTokensPerUser",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "totalSupplyOfToken",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "priceOfNft",
-              "type": "uint256"
-            },
-            {
-              "internalType": "bool",
-              "name": "isNftTransferable",
-              "type": "bool"
-            },
-            {
-              "internalType": "bool",
-              "name": "isNftTotalSupplyUnlimited",
-              "type": "bool"
-            }
-          ],
-          "internalType": "struct FactoryCloneContract.DAO",
-          "name": "_params",
-          "type": "tuple"
+          "internalType": "string",
+          "name": "_DaoName",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_DaoSymbol",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_totalRaiseAmount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_minDepositPerUser",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_maxDepositPerUser",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_ownerFeePerDeposit",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_depositFunctioningDays",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "_feeUSDC",
+          "type": "bool"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_quorum",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_threshold",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "_gnosisAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "address[]",
+          "name": "_daoAdmins",
+          "type": "address[]"
         },
         {
           "internalType": "bool",
@@ -189,6 +152,90 @@
         }
       ],
       "name": "createDAO",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_DaoName",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_DaoSymbol",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_ownerFeePerDeposit",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_depositFunctioningDays",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_quorum",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_threshold",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "_gnosisAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "address[]",
+          "name": "_daoAdmins",
+          "type": "address[]"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_maxTokensPerUser",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_totalSupplyOfToken",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_priceOfNft",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "_isNftTransferable",
+          "type": "bool"
+        },
+        {
+          "internalType": "bool",
+          "name": "_isNftTotalSupplyUnlimited",
+          "type": "bool"
+        },
+        {
+          "internalType": "bool",
+          "name": "_isGovernanceActive",
+          "type": "bool"
+        }
+      ],
+      "name": "createDaoERC721",
       "outputs": [
         {
           "internalType": "address",

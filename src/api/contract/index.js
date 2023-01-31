@@ -93,61 +93,58 @@ export class SmartContract {
     transferableMembership,
     isNftSupplyUnlimited,
   ) {
-    console.log(
-      "in create dao samrt contract",
-      tokenName,
-      tokenSymbol,
-      convertToWei(totalDeposit, usdcConvertDecimal),
-      convertToWei(minDeposit, usdcConvertDecimal),
-      convertToWei(maxDeposit, usdcConvertDecimal),
-      convertToWei(ownerFee, usdcConvertDecimal),
-      days,
-      convertToWei(feeUSDC, usdcConvertDecimal),
-      quoram,
-      formThreshold,
-      tresuryAddress,
-      owners,
-      isTemplateErc721,
-      mintsPerUser,
-      totalSupplyOfToken,
-      nftPrice,
-      transferableMembership,
-      isNftSupplyUnlimited,
-    );
     const days = Math.round(calculateDays(closeDate));
     const gasPrice = await web3.eth.getGasPrice();
-    const gasAmount = this.contract.methods
-      .createDAO(
-        [
+    // const gasAmount = this.contract.methods
+    //   .createDAO(
+    //     [
+    //       tokenName,
+    //       tokenSymbol,
+    //       convertToWei(totalDeposit, usdcConvertDecimal),
+    //       convertToWei(minDeposit, usdcConvertDecimal),
+    //       convertToWei(maxDeposit, usdcConvertDecimal),
+    //       convertToWei(ownerFee, usdcConvertDecimal),
+    //       days,
+    //       convertToWei(feeUSDC, usdcConvertDecimal),
+    //       quoram,
+    //       formThreshold,
+    //       tresuryAddress,
+    //       owners,
+    //       isTemplateErc721,
+    //       mintsPerUser,
+    //       totalSupplyOfToken,
+    //       nftPrice * Math.pow(10, 6),
+    //       transferableMembership,
+    //       isNftSupplyUnlimited,
+    //     ],
+    //     enableGovernance,
+    //   )
+    //   .estimateGas({ from: this.walletAddress });
+    // const gas = gasAmount * gasPrice;
+    // console.log(gasPrice, gas);
+
+    if (isTemplateErc721) {
+      return this.contract.methods
+        .createDaoERC721(
           tokenName,
           tokenSymbol,
-          convertToWei(totalDeposit, usdcConvertDecimal),
-          convertToWei(minDeposit, usdcConvertDecimal),
-          convertToWei(maxDeposit, usdcConvertDecimal),
           convertToWei(ownerFee, usdcConvertDecimal),
-          7,
-          convertToWei(feeUSDC, usdcConvertDecimal),
+          days,
           quoram,
           formThreshold,
           tresuryAddress,
           owners,
-          isTemplateErc721,
           mintsPerUser,
           totalSupplyOfToken,
           nftPrice * Math.pow(10, 6),
           transferableMembership,
           isNftSupplyUnlimited,
-        ],
-        enableGovernance,
-      )
-      .estimateGas({ from: this.walletAddress });
-    const gas = gasAmount * gasPrice;
-    console.log(gasPrice, gas);
-
-    console.log("owners", owners);
-    return this.contract.methods
-      .createDAO(
-        [
+          enableGovernance,
+        )
+        .send({ from: this.walletAddress, gasPrice });
+    } else
+      return this.contract.methods
+        .createDAO(
           tokenName,
           tokenSymbol,
           convertToWei(totalDeposit, usdcConvertDecimal),
@@ -160,16 +157,9 @@ export class SmartContract {
           formThreshold,
           tresuryAddress,
           owners,
-          isTemplateErc721,
-          mintsPerUser,
-          totalSupplyOfToken,
-          nftPrice * Math.pow(10, 6),
-          transferableMembership,
-          isNftSupplyUnlimited,
-        ],
-        enableGovernance,
-      )
-      .send({ from: this.walletAddress, gasPrice });
+          enableGovernance,
+        )
+        .send({ from: this.walletAddress, gasPrice });
   }
 
   async updateProposalAndExecution(

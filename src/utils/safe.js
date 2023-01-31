@@ -177,11 +177,11 @@ export async function initiateConnection(
           usdcConvertDecimal,
           enableGovernance,
           (isTemplateErc721 = false),
-          (mintsPerUser = 0),
-          (totalSupplyOfToken = 0),
-          (nftPrice = 0),
-          (transferableMembership = false),
-          (isNftSupplyUnlimited = false),
+          (mintsPerUser = 1),
+          (totalSupplyOfToken = 1),
+          (nftPrice = 1),
+          (transferableMembership = true),
+          (isNftSupplyUnlimited = true),
         );
       }
       console.log("value", value);
