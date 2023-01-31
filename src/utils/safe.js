@@ -113,26 +113,8 @@ export async function initiateConnection(
       dispatch(setCreateDaoGnosisSigned(false));
       dispatch(setCreateDaoAuthorized(true));
       let value;
-      if (clubTokenType === "Non Transferable ERC20 Token") {
-        value = smartContract.createDAO(
-          owners,
-          threshold,
-          dispatch,
-          tokenName,
-          tokenSymbol,
-          totalDeposit,
-          minDeposit,
-          maxDeposit,
-          ownerFee,
-          closeDate,
-          feeUSDC,
-          treasuryAddress,
-          quoram,
-          formThreshold,
-          usdcConvertDecimal,
-          enableGovernance,
-        );
-      } else if (clubTokenType === "NFT") {
+      console.log("clubTokenType", clubTokenType);
+      if (clubTokenType === "NFT") {
         value = smartContract.createDAO(
           owners,
           threshold,
@@ -175,6 +157,31 @@ export async function initiateConnection(
           // isTemplateErc721,
           // mintsPerUser,
           // totalSupplyOfToken,
+        );
+      } else {
+        value = smartContract.createDAO(
+          owners,
+          threshold,
+          dispatch,
+          tokenName,
+          tokenSymbol,
+          totalDeposit,
+          minDeposit,
+          maxDeposit,
+          (ownerFee = 0),
+          closeDate,
+          feeUSDC,
+          treasuryAddress,
+          quoram,
+          formThreshold,
+          usdcConvertDecimal,
+          enableGovernance,
+          (isTemplateErc721 = false),
+          (mintsPerUser = 1),
+          (totalSupplyOfToken = 1),
+          (nftPrice = 1),
+          (transferableMembership = true),
+          (isNftSupplyUnlimited = true),
         );
       }
       console.log("value", value);
@@ -253,21 +260,23 @@ export async function initiateConnection(
           });
         },
         (error) => {
-          dispatch(setRedirectToCreate(true));
-          dispatch(setCreateDaoGnosisSigned(false));
-          dispatch(setCreateDaoAuthorized(false));
-          Router.push(`/create`, undefined, {
-            shallow: true,
-          });
+          console.log(error);
+          // dispatch(setRedirectToCreate(true));
+          // dispatch(setCreateDaoGnosisSigned(false));
+          // dispatch(setCreateDaoAuthorized(false));
+          // Router.push(`/create`, undefined, {
+          //   shallow: true,
+          // });
         },
       );
     })
     .catch((errorMsg) => {
-      dispatch(setRedirectToCreate(true));
-      dispatch(setCreateDaoGnosisSigned(false));
-      dispatch(setCreateDaoAuthorized(false));
-      Router.push(`/create`, undefined, {
-        shallow: true,
-      });
+      console.log("error2", error);
+      // dispatch(setRedirectToCreate(true));
+      // dispatch(setCreateDaoGnosisSigned(false));
+      // dispatch(setCreateDaoAuthorized(false));
+      // Router.push(`/create`, undefined, {
+      //   shallow: true,
+      // });
     });
 }
