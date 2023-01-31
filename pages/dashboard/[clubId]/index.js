@@ -350,7 +350,9 @@ const Dashboard = () => {
   const [depositCloseTime, setDepositCloseTime] = useState(null);
   const [tokenDetails, settokenDetails] = useState(null);
   const [dataFetched, setDataFetched] = useState(false);
-  const [tokenAPIDetails, settokenAPIDetails] = useState(null); // contains the details extracted from API
+  const [tokenAPIDetails, settokenAPIDetails] = useState(null);
+  const [totalTokenMinted, setTotalTokenMinted] = useState(null);
+  // contains the details extracted from API
   const [apiTokenDetailSet, setApiTokenDetailSet] = useState(false);
   const [depositLink, setDepositLink] = useState(null);
   const [governorDetails, setGovernorDetails] = useState(null);
@@ -425,7 +427,12 @@ const Dashboard = () => {
         GNOSIS_TRANSACTION_URL,
       );
       const depositCloseTime = await contract.depositCloseTime();
+      const userDetail = await contract.userDetails();
+      const tokensMintedSoFar = await contract.erc20TokensMinted();
+
       setDepositCloseTime(depositCloseTime);
+      setUserBalance(userDetail[1]);
+      setTotalTokenMinted(tokensMintedSoFar);
 
       // console.log(
       //   "contract",
@@ -643,154 +650,6 @@ const Dashboard = () => {
               </Grid>
               <Stack direction={{ xs: "column", sm: "row" }} spacing={3}>
                 <Grid item xs={12}>
-                  {/* <Card className={classes.cardSharp2}>
-                  <Grid container spacing={2}>
-                    <Grid item xs={4} mt={2} mb={3}>
-                      <Grid container direction="column">
-                        <Grid item>
-                          <Typography
-                            variant="regularText4"
-                            fontSize={"18px"}
-                            className={classes.valuesDimStyle}
-                          >
-                            Member Deposits
-                          </Typography>
-                        </Grid>
-                        <Grid item>
-                          <Typography
-                            fontWeight="bold"
-                            fontSize={"24px"}
-                            className={classes.valueDetailStyle}
-                          >
-                            {memberDeposit !== null ? (
-                              Number.isInteger(memberDeposit) ? (
-                                parseInt(memberDeposit)
-                              ) : (
-                                parseFloat(memberDeposit).toFixed(2)
-                              )
-                            ) : (
-                              <Skeleton
-                                variant="rectangular"
-                                width={100}
-                                height={25}
-                              />
-                            )}
-                          </Typography>
-                        </Grid>
-                        <Grid item>
-                          <Typography
-                            variant="regularText4"
-                            fontSize={"18px"}
-                            className={classes.valueDimStyle}
-                          >
-                            {" "}
-                            USDC{" "}
-                          </Typography>
-                        </Grid>
-                      </Grid>
-                    </Grid>
-                    <Grid item xs={4} mt={2} mb={2}>
-                      <Grid container direction="column">
-                        <Grid item>
-                          <Typography
-                            variant="regularText4"
-                            fontSize={"18px"}
-                            className={classes.valuesDimStyle}
-                          >
-                            {" "}
-                            Club tokens minted{" "}
-                          </Typography>
-                        </Grid>
-                        <Grid item>
-                          <Typography
-                            fontWeight="bold"
-                            fontSize={"24px"}
-                            className={classes.valueDetailStyle}
-                          >
-                            {clubTokenMinted !== null ? (
-                              Number.isInteger(clubTokenMinted) ? (
-                                parseInt(clubTokenMinted)
-                              ) : (
-                                parseFloat(clubTokenMinted).toFixed(2)
-                              )
-                            ) : (
-                              <Skeleton
-                                variant="rectangular"
-                                width={100}
-                                height={25}
-                              />
-                            )}
-                          </Typography>
-                        </Grid>
-                        <Grid item>
-                          <Typography
-                            variant="regularText4"
-                            fontSize={"18px"}
-                            className={classes.valueDimStyle}
-                          >
-                            {tokenDetails !== null ? (
-                              "$" + tokenDetails[1]
-                            ) : (
-                              <Skeleton
-                                variant="rectangular"
-                                width={100}
-                                height={25}
-                              />
-                            )}
-                          </Typography>
-                        </Grid>
-                      </Grid>
-                    </Grid>
-                    <Grid item xs={4} mt={2} mb={1}>
-                      <Grid>
-                        <Grid item>
-                          <Typography
-                            variant="regularText4"
-                            fontSize={"18px"}
-                            className={classes.valuesDimStyle}
-                          >
-                            Max Token Supply
-                          </Typography>
-                        </Grid>
-                        <Grid item>
-                          <Typography
-                            fontWeight="bold"
-                            fontSize={"24px"}
-                            className={classes.valueDetailStyle}
-                          >
-                            {maxTokenMinted !== null ? (
-                              parseInt(maxTokenMinted)
-                            ) : (
-                              <Skeleton
-                                variant="rectangular"
-                                width={100}
-                                height={25}
-                              />
-                            )}{" "}
-                          </Typography>
-                        </Grid>
-                        <Grid item>
-                          <Typography
-                            variant="regularText4"
-                            fontSize={"18px"}
-                            className={classes.valueDimStyle}
-                          >
-                            {tokenDetails !== null ? (
-                              "$" + tokenDetails[1]
-                            ) : (
-                              <Skeleton
-                                variant="rectangular"
-                                width={100}
-                                height={25}
-                              />
-                            )}
-                          </Typography>
-                        </Grid>
-                      </Grid>
-                    </Grid>
-                  </Grid>
-                </Card> */}
-
                   <Card className={classes.firstCard}>
                     <Grid item mt={3} ml={5}>
                       <Grid container item direction="column">
@@ -856,12 +715,12 @@ const Dashboard = () => {
                               ) : (
                                 <>
                                   {userBalance !== null &&
-                                  userOwnershipShare !== null ? (
+                                  totalTokenMinted !== null ? (
                                     isNaN(
                                       parseInt(
                                         calculateUserSharePercentage(
                                           userBalance,
-                                          userOwnershipShare,
+                                          totalTokenMinted,
                                         ),
                                       ),
                                     ) ? (
@@ -870,7 +729,7 @@ const Dashboard = () => {
                                       parseInt(
                                         calculateUserSharePercentage(
                                           userBalance,
-                                          userOwnershipShare,
+                                          totalTokenMinted,
                                         ),
                                       )
                                     )

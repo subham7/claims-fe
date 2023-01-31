@@ -745,8 +745,15 @@ export class SmartContract {
       .totalSupplyOfToken()
       .call({ from: this.walletAddress });
   }
+
   async symbol() {
     return this.contract.methods.symbol().call({ from: this.walletAddress });
+  }
+
+  async erc20TokensMinted() {
+    return this.contract.methods
+      .totalTokensMinted()
+      .call({ from: this.walletAddress });
   }
 
   async depositCloseTime() {
