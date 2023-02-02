@@ -465,7 +465,9 @@ const Settings = (props) => {
       console.log("nft contract", nftContract.contract.methods);
       await erc721DetailContract.closeDate().then((result) => {
         setDepositCloseDate(result);
-        setClosingDays(calculateDays(parseInt(depositCloseDate) * 1000));
+        console.log(calculateDays(parseInt(result) * 1000));
+
+        setClosingDays(calculateDays(parseInt(result) * 1000));
       });
       await nftContract
         .maxTokensPerUser()
@@ -583,7 +585,6 @@ const Settings = (props) => {
       );
     }
   };
-  console.log("totalERC20Supply", totalERC20Supply);
   const findCurrentMember = () => {
     if (membersFetched && membersDetails.length > 0 && walletAddress) {
       let obj = membersDetails.find(
@@ -1024,12 +1025,14 @@ const Settings = (props) => {
                           closingDays > 0 ? (
                             <Card className={classes.openTag}>
                               <Typography className={classes.openTagFont}>
+                                {console.log(depositCloseDate)}
                                 Open
                               </Typography>
                             </Card>
                           ) : (
                             <Card className={classes.closeTag}>
                               <Typography className={classes.closeTagFont}>
+                                {console.log(depositCloseDate)}
                                 Closed
                               </Typography>
                             </Card>
