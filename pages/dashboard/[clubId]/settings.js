@@ -469,6 +469,17 @@ const Settings = (props) => {
 
         setClosingDays(calculateDays(parseInt(result) * 1000));
       });
+
+      await erc721DetailContract.quoram().then((result) => {
+        setQuoramValue(result);
+        setQuoramFetched(true);
+      });
+
+      await erc721DetailContract.threshold().then((result) => {
+        setThresholdValue(result);
+        setThresholdFetched(true);
+      });
+
       await nftContract
         .maxTokensPerUser()
         .then((result) => setMaxTokensPerUser(result));
@@ -1258,9 +1269,15 @@ const Settings = (props) => {
                               variant="p"
                               className={classes.valuesStyle}
                             >
-                              {governorDataFetched && thresholdFetched
-                                ? thresholdValue
-                                : 0}
+                              {thresholdFetched ? (
+                                thresholdValue
+                              ) : (
+                                <Skeleton
+                                  variant="rectangular"
+                                  width={100}
+                                  height={25}
+                                />
+                              )}
                             </Typography>
                           </Grid>
                         </Grid>
@@ -1269,7 +1286,7 @@ const Settings = (props) => {
                         <Grid container direction="column">
                           <Grid item>
                             <Typography variant="settingText">
-                              Quoram
+                              Quorum
                             </Typography>
                           </Grid>
                           <Grid item mt={2}>
@@ -1277,9 +1294,15 @@ const Settings = (props) => {
                               variant="p"
                               className={classes.valuesStyle}
                             >
-                              {governorDataFetched && quoramFetched
-                                ? quoramValue
-                                : 0}
+                              {quoramFetched ? (
+                                quoramValue
+                              ) : (
+                                <Skeleton
+                                  variant="rectangular"
+                                  width={100}
+                                  height={25}
+                                />
+                              )}
                             </Typography>
                           </Grid>
                         </Grid>
