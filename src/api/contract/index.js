@@ -554,11 +554,7 @@ export class SmartContract {
     const gas = gasAmount * gasPrice;
 
     return this.contract.methods
-      .deposit(
-        address,
-        amount,
-        "https://bafybeieftd6z6cxfuwf2vuysxyp7ubiqop5kubjb7ugwpvv2enhrnveaom.ipfs.nftstorage.link",
-      )
+      .deposit(address, amount, tokenUri)
       .send({ from: this.walletAddress, gasPrice });
   }
 
@@ -580,9 +576,9 @@ export class SmartContract {
       .call({ from: this.walletAddress });
   }
 
-  async totalDeposit() {
+  async totalRaiseAmount() {
     return this.contract.methods
-      .totalDeposit()
+      .totalRaiseAmount()
       .call({ from: this.walletAddress });
   }
 
@@ -645,6 +641,17 @@ export class SmartContract {
   async threshold() {
     return this.contract.methods.threshold().call({ from: this.walletAddress });
   }
+  async minDepositPerUser() {
+    return this.contract.methods
+      .minDepositPerUser()
+      .call({ from: this.walletAddress });
+  }
+
+  async maxDepositPerUser() {
+    return this.contract.methods
+      .maxDepositPerUser()
+      .call({ from: this.walletAddress });
+  }
 
   async depositClosed() {
     return this.contract.methods
@@ -680,6 +687,10 @@ export class SmartContract {
     return this.contract.methods
       .tokenDetails()
       .call({ from: this.walletAddress });
+  }
+
+  async obtainSymbol() {
+    return this.contract.methods.symbol().call({ from: this.walletAddress });
   }
 
   async getGovernorDetails() {
@@ -769,6 +780,12 @@ export class SmartContract {
   }
 
   async erc20TokensMinted() {
+    console.log(
+      "first",
+      this.contract.methods
+        .totalTokensMinted()
+        .call({ from: this.walletAddress }),
+    );
     return this.contract.methods
       .totalTokensMinted()
       .call({ from: this.walletAddress });

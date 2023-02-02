@@ -725,6 +725,11 @@
           "internalType": "uint256",
           "name": "_priceOfNft",
           "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "_isGovernanceActive",
+          "type": "bool"
         }
       ],
       "name": "initializeERC721",

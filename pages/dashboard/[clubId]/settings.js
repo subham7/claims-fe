@@ -285,6 +285,7 @@ const Settings = (props) => {
   const [tokenSearchOpen, setTokenSearchOpen] = useState(false);
   const [searchTokenAddress, setSearchTokenAddress] = useState(null);
   const [tokenList, setTokenList] = useState([]);
+  const [tokenSymbol, setTokenSymbol] = useState([]);
   const [tokenMinimum, setTokenMinimum] = useState([]);
   const [operationType, setOperationType] = useState([]);
   const [isNFT, setIsNFT] = useState([]);
@@ -294,6 +295,7 @@ const Settings = (props) => {
   const [maxTokensPerUser, setMaxTokensPerUser] = useState(null);
   const [totalNftMinted, setTotalNftMinted] = useState(null);
   const [totalNftSupply, setTotalNftSupply] = useState(null);
+  const [totalERC20Supply, setTotalERC20Supply] = useState(null);
   const [nftContractAddress, setNftContractAddress] = useState(null);
   const [isNftTransferable, setIsNftTransferable] = useState(null);
   const [isNftTotalSupplyUnlimited, setIsNftTotalSupplyUnlimited] =
@@ -363,12 +365,6 @@ const Settings = (props) => {
     }
   };
 
-  useEffect(() => {
-    if (daoAddress) {
-      fetchTokenType();
-    }
-  }, [daoAddress, GNOSIS_TRANSACTION_URL, USDC_CONTRACT_ADDRESS]);
-
   const tokenAPIDetailsRetrieval = async () => {
     let response = await fetchClubbyDaoAddress(daoAddress);
     if (response.data.length > 0) {
@@ -393,15 +389,16 @@ const Settings = (props) => {
         USDC_CONTRACT_ADDRESS,
         GNOSIS_TRANSACTION_URL,
       );
+
       await tokenDetailContract.tokenDetails().then(
         (result) => {
           settokenDetails(result);
           setUserOwnershipShare(
             convertFromWeiGovernance(result[2], governanceConvertDecimal),
           );
-          setClubTokenMInted(
-            convertFromWeiGovernance(result[2], governanceConvertDecimal),
-          );
+          // setClubTokenMInted(
+          //   convertFromWeiGovernance(result[2], governanceConvertDecimal),
+          // );
           setDataFetched(true);
         },
         (error) => {
@@ -493,7 +490,6 @@ const Settings = (props) => {
       console.log(error);
     }
   };
-  console.log("isNftTransferable", isNftTransferable);
   const contractDetailsRetrieval = async (refresh = false) => {
     if (
       (daoAddress &&
@@ -502,6 +498,13 @@ const Settings = (props) => {
         walletAddress) ||
       refresh
     ) {
+      // const governorDetailContract = new SmartContract(
+      //   ImplementationContract,
+      //   daoAddress,
+      //   undefined,
+      //   USDC_CONTRACT_ADDRESS,
+      //   GNOSIS_TRANSACTION_URL,
+      // );
       const governorDetailContract = new SmartContract(
         ImplementationContract,
         daoAddress,
@@ -509,19 +512,53 @@ const Settings = (props) => {
         USDC_CONTRACT_ADDRESS,
         GNOSIS_TRANSACTION_URL,
       );
-      await governorDetailContract.getGovernorDetails().then(
-        (result) => {
-          // console.log(result)
-          setGovernorDetails(result);
-          setClosingDays(calculateDays(parseInt(result[0]) * 1000));
-          setGovernorDataFetched(true);
-          setCurrentMinDeposit(result[1]);
-          setCurrentMaxDeposit(result[2]);
-        },
-        (error) => {
-          console.log(error);
-        },
-      );
+      console.log("governorDetailContract", governorDetailContract);
+      setGovernorDataFetched(true);
+      await governorDetailContract.closeDate().then((result) => {
+        setDepositCloseDate(result);
+        setClosingDays(calculateDays(parseInt(result) * 1000));
+      });
+
+      await governorDetailContract.minDepositPerUser().then((result) => {
+        setCurrentMinDeposit(result);
+      });
+
+      await governorDetailContract.maxDepositPerUser().then((result) => {
+        setCurrentMaxDeposit(result);
+      });
+      console.log("result");
+      await governorDetailContract.totalRaiseAmount().then((result) => {
+        setTotalERC20Supply(
+          convertFromWeiGovernance(result, governanceConvertDecimal),
+        );
+      });
+
+      await governorDetailContract.obtainSymbol().then((result) => {
+        console.log("result", result);
+        setTokenSymbol(result);
+      });
+
+      await governorDetailContract.balanceOf().then((result) => {
+        console.log(
+          "result",
+          convertFromWeiGovernance(result, governanceConvertDecimal),
+        );
+        // setTokenSymbol(result);
+      });
+
+      // await governorDetailContract.getGovernorDetails().then(
+      //   (result) => {
+      //     // console.log(result)
+      //     setGovernorDetails(result);
+      //     // setClosingDays(calculateDays(parseInt(result[0]) * 1000));
+      //     setGovernorDataFetched(true);
+      //     setCurrentMinDeposit(result[1]);
+      //     setCurrentMaxDeposit(result[2]);
+      //   },
+      //   (error) => {
+      //     console.log(error);
+      //   },
+      // );
 
       // minimum deposit amount from smart contract
       await governorDetailContract.quoram().then(
@@ -546,7 +583,7 @@ const Settings = (props) => {
       );
     }
   };
-
+  console.log("totalERC20Supply", totalERC20Supply);
   const findCurrentMember = () => {
     if (membersFetched && membersDetails.length > 0 && walletAddress) {
       let obj = membersDetails.find(
@@ -562,12 +599,13 @@ const Settings = (props) => {
 
   const loadData = () => {
     // setLoaderOpen(true);
-    tokenAPIDetailsRetrieval();
-    tokenDetailsRetrieval();
+
     console.log("token typeee", tokenType);
     if (tokenType === "erc721") {
       nftContractDetails();
-    } else {
+    } else if (tokenType === "erc20NonTransferable") {
+      tokenAPIDetailsRetrieval();
+      tokenDetailsRetrieval();
       contractDetailsRetrieval(false);
     }
 
@@ -584,13 +622,22 @@ const Settings = (props) => {
   };
 
   useEffect(() => {
-    loadData();
+    if (daoAddress) {
+      fetchTokenType();
+    }
+  }, [daoAddress, GNOSIS_TRANSACTION_URL, USDC_CONTRACT_ADDRESS]);
+
+  useEffect(() => {
+    if (tokenType !== null) {
+      loadData();
+    }
   }, [
     daoAddress,
     apiTokenDetailSet,
     dataFetched,
     governorDetails,
     membersFetched,
+    tokenType,
   ]);
 
   useEffect(() => {
@@ -957,9 +1004,9 @@ const Settings = (props) => {
                               .reverse()
                               .join("/")
                           ) : governorDataFetched ? (
-                            new Date(parseInt(governorDetails[0]) * 1000)
-                              .toJSON()
-                              .slice(0, 10)
+                            new Date(parseInt(depositCloseDate) * 1000)
+                              ?.toJSON()
+                              ?.slice(0, 10)
                               .split("-")
                               .reverse()
                               .join("/")
@@ -1036,7 +1083,9 @@ const Settings = (props) => {
                               className={classes.valuesStyle}
                             >
                               {governorDataFetched ? (
-                                convertAmountToWei(governorDetails[1]) + " USDC"
+                                convertAmountToWei(
+                                  currentMinDeposit.toString(),
+                                ) + " USDC"
                               ) : (
                                 <Skeleton
                                   variant="rectangular"
@@ -1099,7 +1148,9 @@ const Settings = (props) => {
                               className={classes.valuesStyle}
                             >
                               {governorDataFetched ? (
-                                convertAmountToWei(governorDetails[2]) + " USDC"
+                                convertAmountToWei(
+                                  currentMaxDeposit.toString(),
+                                ) + " USDC"
                               ) : (
                                 <Skeleton
                                   variant="rectangular"
@@ -1318,9 +1369,11 @@ const Settings = (props) => {
                       </Typography>
                     ) : (
                       <Typography variant="p" className={classes.valuesStyle}>
-                        {governorDataFetched && dataFetched ? (
-                          convertAmountToWei(governorDetails[4]) +
-                          (" $" + tokenDetails[1])
+                        {governorDataFetched ? (
+                          // convertAmountToWei(totalERC20Supply?.toString()) +
+                          // (" $" + tokenDetails[1])
+                          // convertAmountToWei(String(totalERC20Supply))
+                          ` ${totalERC20Supply / 10 ** 6} ${tokenSymbol}`
                         ) : (
                           <Skeleton
                             variant="rectangular"
@@ -1570,7 +1623,9 @@ const Settings = (props) => {
                       {tokenType === "erc721" ? (
                         maxTokensPerUser
                       ) : governorDataFetched ? (
-                        `${convertAmountToWei(governorDetails[1])}   USDC`
+                        `${convertAmountToWei(
+                          currentMinDeposit.toString(),
+                        )}   USDC`
                       ) : (
                         <Skeleton
                           variant="rectangular"
@@ -1612,7 +1667,9 @@ const Settings = (props) => {
                       {tokenType === "erc721" ? (
                         totalNftSupply
                       ) : governorDataFetched ? (
-                        `${convertAmountToWei(governorDetails[2])}   USDC`
+                        `${convertAmountToWei(
+                          currentMaxDeposit.toString(),
+                        )}   USDC`
                       ) : (
                         <Skeleton
                           variant="rectangular"
