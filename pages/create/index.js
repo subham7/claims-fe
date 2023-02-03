@@ -24,6 +24,7 @@ import ERC721NonTransferableStep2 from "./ERC721NonTransferableStep2";
 import ERC20NonTransferableStep2 from "./ERC20NonTransferableStep2";
 import { NFTStorage, File, Blob } from "nft.storage";
 import { convertFromWei } from "../../src/utils/globalFunctions";
+import { CleaningServices } from "@mui/icons-material";
 
 const Create = (props) => {
   const router = useRouter();
@@ -192,7 +193,14 @@ const Create = (props) => {
         // console.log(selectedImage);
         let metadata;
         if (selectedImage) {
-          metadata = await client.storeBlob(selectedImage);
+          // const image = await client.storeBlob(selectedImage);
+          // console.log("image", image);
+
+          metadata = await client.store({
+            name: clubName,
+            description: "nft image",
+            image: selectedImage,
+          });
         } else {
           // const imageFile = new File([imageUrl.blob()], imageUrl, {
           //   type: "image/png",
@@ -202,7 +210,15 @@ const Create = (props) => {
           const file = new File([blob], imageUrl, {
             type: blob.type,
           });
-          metadata = await client.storeBlob(file);
+          // const image = await client.storeBlob(file);
+          // console.log("image", image);
+          metadata = await client.store({
+            name: clubName,
+            description: "nft image",
+            image: new File([blob], imageUrl, {
+              type: blob.type,
+            }),
+          });
         }
         // const imageFile = new File([], selectedImage.name, {
         //   type: "image/png",
@@ -248,7 +264,8 @@ const Create = (props) => {
               nftPrice,
               transferableMembership,
               limitSupply ? false : true,
-              metadata,
+              metadata.data.image.pathname,
+              metadata.url,
             )
               .then((result) => {
                 setLoading(false);

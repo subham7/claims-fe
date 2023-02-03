@@ -37,6 +37,7 @@ import {
 import { loginToken, refreshToken } from "../src/api/auth";
 import { fetchConfig } from "../src/api/config";
 import { updateDynamicAddress } from "../src/api/index";
+import { CleaningServices } from "@mui/icons-material";
 
 const useStyles = makeStyles({
   yourClubText: {
@@ -226,6 +227,12 @@ export default function App() {
     }
   };
 
+  const getNFTImage = async (nftUrl) => {
+    let imgUrl = await nftUrl?.split("//");
+    console.log("imgUrl, ", `https://${imgUrl[1]}.ipfs.dweb.link/${imgUrl[2]}`);
+    return `https://${imgUrl[1]}.ipfs.dweb.link/${imgUrl[2]}`;
+  };
+
   return (
     <Layout faucet={false}>
       {clubFlow ? (
@@ -271,13 +278,23 @@ export default function App() {
                           handleItemClick(clubData[key]);
                         }}
                       >
+                        {console.log(club)}
                         <Grid container>
                           <Grid item md={2}>
-                            <img
-                              src={club.imageUrl}
-                              width="80vw"
-                              alt="club_image"
-                            />
+                            {club.imageUrl.startsWith("//") ? (
+                              // const image= getNFTImage(club.imageUrl)
+                              <img
+                                src={getNFTImage(club.imageUrl)}
+                                width="80vw"
+                                alt="club_image"
+                              />
+                            ) : (
+                              <img
+                                src={club.imageUrl}
+                                width="80vw"
+                                alt="club_image"
+                              />
+                            )}
                           </Grid>
                           <Grid item md={6}>
                             <Stack spacing={0}>

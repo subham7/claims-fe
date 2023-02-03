@@ -254,6 +254,7 @@ const Join = (props) => {
   const [nftContractOwner, setnftContractOwner] = useState();
   const [depositCloseDate, setDepositCloseDate] = useState();
   const [nftImageUrl, setnftImageUrl] = useState();
+  const [nftMetadata, setnftMetadata] = useState();
   const [isDepositActive, setIsDepositActive] = useState();
   const [loading, setLoading] = useState(false);
   const [maxTokensPerUser, setMaxTokensPerUser] = useState();
@@ -345,14 +346,30 @@ const Join = (props) => {
       setGnosisAddress(response.data[0].gnosisAddress);
       setClubName(response.data[0].name);
       setnftContractAddress(response.data[0].nftAddress);
-      setnftImageUrl(
-        `https://${response.data[0].nftImageUrl}.ipfs.nftstorage.link`,
-      );
+      setnftMetadata(response.data[0].nftMetadataUrl);
+      let imgUrl = response.data[0].nftImageUrl?.split("//");
+      console.log("imgUrl, ", imgUrl);
+      setnftImageUrl(`https://${imgUrl[1]}.ipfs.dweb.link/${imgUrl[2]}`);
       setApiTokenDetailSet(true);
     } else {
       setApiTokenDetailSet(false);
     }
   };
+  console.log("setnftImageUrl", nftImageUrl);
+
+  // let imgUrl = nftImageUrl?.slice(
+  //   nftImageUrl.indexOf("//"),
+  //   nftImageUrl?.lastIndexOf("//"),
+  // );
+  // let imgUrl = nftImageUrl?.split("//");
+  // console.log("imgUrl, ", imgUrl);
+  // let slice = nftImageUrl?.slice(
+  //   nftImageUrl.lastIndexOf("//"),
+  //   nftImageUrl?.length,
+  // );
+  // console.log("slice, ", slice);
+  // let renderURL = `https://${imgUrl[1]}.ipfs.dweb.link/${imgUrl[2]}`;
+  // console.log(renderURL);
 
   const tokenDetailsRetrieval = async () => {
     console.log(" in tokenDetailsRetrieval");
@@ -697,7 +714,7 @@ const Join = (props) => {
               const deposit_response = dao_contract.deposit(
                 USDC_CONTRACT_ADDRESS,
                 priceOfNftConverted,
-                nftImageUrl,
+                nftMetadata,
               );
               deposit_response.then((result) => {
                 console.log("deposit response", result);

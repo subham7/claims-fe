@@ -36,6 +36,7 @@ import { addContractAddress } from "../redux/reducers/gnosis";
 import { SmartContract } from "../api/contract";
 import ImplementationContract from "../abis/implementationABI.json";
 import { disconnectWallet, onboard } from "./wallet";
+import { CleaningServices } from "@mui/icons-material";
 
 const ClubFetch = (Component) => {
   const RetrieveDataComponent = () => {
@@ -304,6 +305,7 @@ const ClubFetch = (Component) => {
                   }
                 }
               });
+              console.log(result.data[0]);
               dispatch(addWallet(checkedwallet));
               dispatch(addClubID(result.data[0].clubId));
               dispatch(addClubName(result.data[0].name));
