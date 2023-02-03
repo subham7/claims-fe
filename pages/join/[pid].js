@@ -399,9 +399,7 @@ const Join = (props) => {
       .then((result) => setThreshold(result));
     await erc721DetailContract.priceOfNft().then((result) => {
       // console.log(result);
-      setPriceOfNft(
-        convertFromWei(parseInt(result) / Math.pow(10, 6), usdcTokenDecimal),
-      );
+      setPriceOfNft(convertFromWei(parseInt(result), usdcTokenDecimal));
     });
 
     await erc721DetailContract
@@ -1681,7 +1679,7 @@ const Join = (props) => {
                         color="#fff"
                         sx={{ fontWeight: "bold" }}
                       >
-                        {priceOfNft} USDC
+                        {priceOfNft / Math.pow(10, 6)} USDC
                       </Typography>
                     </Grid>
 
