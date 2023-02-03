@@ -656,11 +656,11 @@ const Join = (props) => {
   const handleClaimNft = async () => {
     const checkUserExists = checkUserByClub(userDetails, clubId);
     console.log("checkUserExists", checkUserExists);
-    // const priceOfNftConverted = convertToWei(
-    //   priceOfNft,
-    //   usdcTokenDecimal,
-    // ).toString();
-    const priceOfNftConverted = priceOfNft;
+    const priceOfNftConverted = convertToWei(
+      priceOfNft,
+      usdcTokenDecimal,
+    ).toString();
+    // const priceOfNftConverted = priceOfNft;
     checkUserExists.then((result) => {
       if (userNftBalance < maxTokensPerUser) {
         if (result.data === false) {

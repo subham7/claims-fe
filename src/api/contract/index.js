@@ -647,6 +647,10 @@ export class SmartContract {
       .call({ from: this.walletAddress });
   }
 
+  async getTokenURI() {
+    return this.contract.methods.tokenURI().call({ from: this.walletAddress });
+  }
+
   async maxDepositPerUser() {
     return this.contract.methods
       .maxDepositPerUser()
