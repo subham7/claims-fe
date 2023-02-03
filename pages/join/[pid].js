@@ -1,60 +1,29 @@
-import { React, useState, useEffect } from "react";
-import Image from "next/image";
+import { CleanHands } from "@mui/icons-material";
+import AddIcon from "@mui/icons-material/Add";
+import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
+import RemoveIcon from "@mui/icons-material/Remove";
+import { Alert, Backdrop, Button, Card, CardMedia, CircularProgress, Dialog, DialogContent, Divider, Grid, IconButton, Input, Skeleton, Snackbar, Stack, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
-import {
-  Grid,
-  Typography,
-  Card,
-  Button,
-  Stack,
-  Divider,
-  Input,
-  Snackbar,
-  Alert,
-  Skeleton,
-  Backdrop,
-  CircularProgress,
-  DialogContent,
-  Dialog,
-  CardMedia,
-  IconButton,
-} from "@mui/material";
-import Layout3 from "../../src/components/layouts/layout3";
-import ProgressBar from "../../src/components/progressbar";
-import { connectWallet, onboard } from "../../src/utils/wallet";
-import { useDispatch, useSelector } from "react-redux";
+import { loadGetInitialProps } from "next/dist/shared/lib/utils";
+import Image from "next/image";
 import { useRouter } from "next/router";
-import { fetchClub, fetchClubbyDaoAddress } from "../../src/api/club";
-import { createUser } from "../../src/api/user";
-import {
-  getMembersDetails,
-  patchUserBalance,
-  checkUserByClub,
-} from "../../src/api/user";
+import { React, useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import Web3 from "web3";
+
+import ape from "../../public/assets/images/ape.png";
 import ImplementationContract from "../../src/abis/implementationABI.json";
 import nft from "../../src/abis/nft.json";
+import { fetchClub, fetchClubbyDaoAddress } from "../../src/api/club";
 import { SmartContract } from "../../src/api/contract";
+import { createUser } from "../../src/api/user";
+import { checkUserByClub, getMembersDetails, patchUserBalance } from "../../src/api/user";
+import Layout3 from "../../src/components/layouts/layout3";
+import ProgressBar from "../../src/components/progressbar";
+import { setGovernanceTokenDetails, setUSDCTokenDetails } from "../../src/redux/reducers/gnosis";
+import { calculateDays, calculateTreasuryTargetShare, convertAmountToWei, convertFromWei, convertFromWeiGovernance, convertToWei, convertToWeiGovernance } from "../../src/utils/globalFunctions";
+import { connectWallet, onboard } from "../../src/utils/wallet";
 import { checkNetwork } from "../../src/utils/wallet";
-import {
-  calculateDays,
-  calculateTreasuryTargetShare,
-  convertAmountToWei,
-  convertFromWei,
-  convertFromWeiGovernance,
-  convertToWei,
-  convertToWeiGovernance,
-} from "../../src/utils/globalFunctions";
-import {
-  setGovernanceTokenDetails,
-  setUSDCTokenDetails,
-} from "../../src/redux/reducers/gnosis";
-import ape from "../../public/assets/images/ape.png";
-import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
-import AddIcon from "@mui/icons-material/Add";
-import RemoveIcon from "@mui/icons-material/Remove";
-import { loadGetInitialProps } from "next/dist/shared/lib/utils";
-import { CleanHands } from "@mui/icons-material";
 
 const useStyles = makeStyles({
   valuesStyle: {
@@ -1727,7 +1696,7 @@ const Join = (props) => {
                         color="#fff"
                         sx={{ fontWeight: "bold" }}
                       >
-                        {priceOfNft} USDC
+                        {priceOfNft / Math.pow(10, 6)} USDC
                       </Typography>
                     </Grid>
 
