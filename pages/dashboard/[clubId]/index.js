@@ -1,52 +1,24 @@
-import { React, useEffect, useState } from "react";
-import { makeStyles } from "@mui/styles";
-import Layout1 from "../../../src/components/layouts/layout1";
-import {
-  Box,
-  Card,
-  Grid,
-  Typography,
-  CardMedia,
-  Stack,
-  Button,
-  IconButton,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  Table,
-  Link,
-  CircularProgress,
-  Backdrop,
-  ListItemButton,
-  Snackbar,
-  Alert,
-  Skeleton,
-} from "@mui/material";
-import TextField from "@mui/material/TextField";
 import SearchIcon from "@mui/icons-material/Search";
+import { Alert, Backdrop, Box, Button, Card, CardMedia, CircularProgress, Grid, IconButton, Link, ListItemButton, Paper, Skeleton, Snackbar, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
+import TextField from "@mui/material/TextField";
+import { makeStyles } from "@mui/styles";
+import { useRouter } from "next/router";
+import { React, useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+
+import implementation from "../../../src/abis/implementationABI.json";
+import nft from "../../../src/abis/nft.json";
+import { getAssets } from "../../../src/api/assets";
+import { fetchClubbyDaoAddress } from "../../../src/api/club";
+import { SmartContract } from "../../../src/api/contract";
+import { getNfts } from "../../../src/api/gnosis";
+import { getProposal } from "../../../src/api/proposal";
+import { getMembersDetails } from "../../../src/api/user";
 import ButtonDropDown from "../../../src/components/buttondropdown";
 import CollectionCard from "../../../src/components/cardcontent";
-import { useRouter } from "next/router";
+import Layout1 from "../../../src/components/layouts/layout1";
 import ClubFetch from "../../../src/utils/clubFetch";
-import { SmartContract } from "../../../src/api/contract";
-import { getProposal } from "../../../src/api/proposal";
-import { fetchClubbyDaoAddress } from "../../../src/api/club";
-import { getNfts } from "../../../src/api/gnosis";
-import { getAssets } from "../../../src/api/assets";
-import { getMembersDetails } from "../../../src/api/user";
-import nft from "../../../src/abis/nft.json";
-import implementation from "../../../src/abis/implementationABI.json";
-import { useSelector } from "react-redux";
-import {
-  calculateDays,
-  calculateUserSharePercentage,
-  convertAmountToWei,
-  convertFromWei,
-  convertFromWeiGovernance,
-} from "../../../src/utils/globalFunctions";
+import { calculateDays, calculateUserSharePercentage, convertAmountToWei, convertFromWei, convertFromWeiGovernance } from "../../../src/utils/globalFunctions";
 
 const useStyles = makeStyles({
   media: {
@@ -352,6 +324,7 @@ const Dashboard = () => {
   const [dataFetched, setDataFetched] = useState(false);
   const [tokenAPIDetails, settokenAPIDetails] = useState(null);
   const [totalTokenMinted, setTotalTokenMinted] = useState(null);
+  const [nftMinted, setNftMinted] = useState(null);
   // contains the details extracted from API
   const [apiTokenDetailSet, setApiTokenDetailSet] = useState(false);
   const [depositLink, setDepositLink] = useState(null);
@@ -405,13 +378,12 @@ const Dashboard = () => {
         USDC_CONTRACT_ADDRESS,
         GNOSIS_TRANSACTION_URL,
       );
-      console.log("nft contract", nftContract);
       const nftBalance = await nftContract.nftBalance(walletAddress);
       setNftBalance(nftBalance);
-      console.log("nftBalance", nftBalance);
       const symbol = await nftContract.symbol();
       setTokenSymbol(symbol);
-      console.log("symbol", symbol);
+      const nftMinted = await nftContract.nftOwnersCount();
+      setNftMinted(nftMinted);
     } catch (error) {
       console.log(error);
     }
@@ -433,41 +405,6 @@ const Dashboard = () => {
       setDepositCloseTime(depositCloseTime);
       setUserBalance(userDetail[1]);
       setTotalTokenMinted(tokensMintedSoFar);
-
-      // console.log(
-      //   "contract",
-      //   calculateDays(parseInt(await contract.depositCloseTime()) * 1000),
-      // );
-      // let usdcDetails = await contract.getUsdcDetails(USDC_CONTRACT_ADDRESS);
-      // let getUserBalance = await contract.checkUserBalance();
-      // let getGovernorDetails = await contract.getGovernorDetails();
-      // let getTokenDetails = await contract.tokenDetails();
-
-      // user and admin contributions
-      // let memberDeposits = convertFromWei(usdcDetails[0], usdcConvertDecimal);
-      // let adminContribution = convertFromWei(
-      //   usdcDetails[1],
-      //   usdcConvertDecimal,
-      // );
-      // console.log(calculateDays(parseInt(getGovernorDetails[0]) * 1000));
-
-      // let total = memberDeposits + adminContribution;
-      // setMemberDeposit(total);
-
-      // setUserBalance(
-      //   convertFromWeiGovernance(getUserBalance, governanceConvertDecimal),
-      // );
-      // setClosingDays(calculateDays(parseInt(getGovernorDetails[0]) * 1000));
-      // setGovernorDetails(getGovernorDetails);
-      // setMaxTokenMinted(await convertAmountToWei(getGovernorDetails[4]));
-
-      // settokenDetails(getTokenDetails);
-      // setClubTokenMInted(
-      //   convertFromWeiGovernance(getTokenDetails[2], governanceConvertDecimal),
-      // );
-      // setUserOwnershipShare(
-      //   convertFromWeiGovernance(getTokenDetails[2], governanceConvertDecimal),
-      // );
       setDepositLink(
         typeof window !== "undefined" && window.location.origin
           ? `${window.location.origin}/join/${daoAddress}?dashboard=true`
@@ -711,28 +648,44 @@ const Dashboard = () => {
                             </Typography>
                             <Typography fontSize={"48px"} fontWeight="bold">
                               {tokenType === "erc721" ? (
-                                nftBalance
+                                <>
+                                  {nftMinted && nftBalance ? (
+                                    <>
+                                      {isNaN((nftBalance / nftMinted) * 100)
+                                        ? 0
+                                        : (nftBalance / nftMinted) * 100}
+                                      %
+                                    </>
+                                  ) : (
+                                    <Skeleton
+                                      variant="rectangular"
+                                      width={100}
+                                      height={25}
+                                    />
+                                  )}
+                                </>
                               ) : (
                                 <>
                                   {userBalance !== null &&
                                   totalTokenMinted !== null ? (
-                                    isNaN(
-                                      parseInt(
-                                        calculateUserSharePercentage(
-                                          userBalance,
-                                          totalTokenMinted,
-                                        ),
-                                      ),
-                                    ) ? (
-                                      0
-                                    ) : (
-                                      parseInt(
-                                        calculateUserSharePercentage(
-                                          userBalance,
-                                          totalTokenMinted,
+                                    <>
+                                      {isNaN(
+                                        parseInt(
+                                          calculateUserSharePercentage(
+                                            userBalance,
+                                            totalTokenMinted,
+                                          ),
                                         ),
                                       )
-                                    )
+                                        ? 0
+                                        : parseInt(
+                                            calculateUserSharePercentage(
+                                              userBalance,
+                                              totalTokenMinted,
+                                            ),
+                                          )}
+                                      %
+                                    </>
                                   ) : (
                                     <Skeleton
                                       variant="rectangular"
@@ -743,7 +696,7 @@ const Dashboard = () => {
                                 </>
                               )}
                             </Typography>
-                            <Typography className={classes.card2text2} mb={1}>
+                            {/* <Typography className={classes.card2text2} mb={1}>
                               {setTokenSymbol ? (
                                 tokenSymbol
                               ) : (
@@ -753,7 +706,7 @@ const Dashboard = () => {
                                   height={25}
                                 />
                               )}
-                            </Typography>
+                            </Typography> */}
                           </Box>
                         </Grid>
                         {/* <CardMedia    className={classes.media}    component=“img”    image=“/assets/images/card_illustration.png”    alt=“abstract background”    sx={{ position: “absolute”, bottom: 0 }}                     />   */}
