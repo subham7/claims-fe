@@ -1,37 +1,19 @@
-import { React, useEffect, useState, useRef } from "react";
-import { makeStyles } from "@mui/styles";
-import Layout1 from "../../../src/components/layouts/layout1";
-import {
-  Box,
-  Card,
-  Grid,
-  Typography,
-  ListItemButton,
-  Avatar,
-  Stack,
-  TextField,
-  Button,
-  IconButton,
-  Table,
-  TableContainer,
-  TableBody,
-  TableCell,
-  TableRow,
-  TableHead,
-  CircularProgress,
-  Backdrop,
-} from "@mui/material";
-import SearchIcon from "@mui/icons-material/Search";
-import BasicTable from "../../../src/components/table";
-import { getMembersDetails } from "../../../src/api/user";
-import { useSelector } from "react-redux";
-import Paper from "@mui/material/Paper";
-import { useRouter } from "next/router";
 import jazzicon from "@metamask/jazzicon";
-import ClubFetch from "../../../src/utils/clubFetch";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+import SearchIcon from "@mui/icons-material/Search";
+import { Avatar, Backdrop, Box, Button, Card, CircularProgress, Grid, IconButton, ListItemButton, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from "@mui/material";
+import Paper from "@mui/material/Paper";
+import { makeStyles } from "@mui/styles";
+import { useRouter } from "next/router";
+import { React, useEffect, useRef, useState } from "react";
+import { useSelector } from "react-redux";
+
 import ImplementationContract from "../../../src/abis/implementationABI.json";
 import { SmartContract } from "../../../src/api/contract";
+import { getMembersDetails } from "../../../src/api/user";
+import Layout1 from "../../../src/components/layouts/layout1";
+import BasicTable from "../../../src/components/table";
+import ClubFetch from "../../../src/utils/clubFetch";
 
 const useStyles = makeStyles({
   searchField: {
@@ -238,7 +220,7 @@ const Members = (props) => {
                           {data.clubs[0].balance} USDC
                         </TableCell>
                         <TableCell align="left" variant="tableBody">
-                          {data.clubs[0].balance} {clubTokenMinted}
+                          {data.clubs[0].tokenBalance} {clubTokenMinted}
                         </TableCell>
                         <TableCell align="left" variant="tableBody">
                           {new Date(
