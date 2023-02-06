@@ -260,8 +260,9 @@ const Join = (props) => {
   const [loading, setLoading] = useState(false);
   const [maxTokensPerUser, setMaxTokensPerUser] = useState();
   const [userNftBalance, setUserNftBalance] = useState();
-  const [totalNftMinted, setTotalNftMinted] = useState();
+  const [totalNftMinted, setTotalNftMinted] = useState(0);
   const [totalNftSupply, setTotalNftSupply] = useState();
+  const [isNftSupplyUnlimited, setIsNftSupplyUnlimited] = useState();
   const [tokenSymbol, setTokenSymbol] = useState();
 
   const USDC_CONTRACT_ADDRESS = useSelector((state) => {
@@ -483,6 +484,10 @@ const Join = (props) => {
     await nftContract
       .totalNftSupply()
       .then((result) => setTotalNftSupply(result));
+
+    await nftContract
+      .isNftTotalSupplyUnlimited()
+      .then((result) => setIsNftSupplyUnlimited(result));
   };
 
   const contractDetailsRetrieval = async () => {
@@ -1710,7 +1715,9 @@ const Join = (props) => {
                             color="#fff"
                             sx={{ fontWeight: "bold" }}
                           >
-                            {totalNftSupply - totalNftMinted}
+                            {isNftSupplyUnlimited
+                              ? "unlimited"
+                              : totalNftSupply - totalNftMinted}
                           </Typography>
                           <Typography variant="subtitle2" color="#C1D3FF">
                             Nfts Remaining
@@ -1728,7 +1735,7 @@ const Join = (props) => {
                         color="#fff"
                         sx={{ fontWeight: "bold" }}
                       >
-                        {priceOfNft / Math.pow(10, 6)} USDC
+                        {priceOfNft} USDC
                       </Typography>
                     </Grid>
 

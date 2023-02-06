@@ -259,7 +259,7 @@ const Create = (props) => {
               governance,
               true,
               mintLimit,
-              limitSupply ? tokenSupply : 0,
+              limitSupply ? tokenSupply : 1,
               // convertFromWei(nftPrice, usdcConvertDecimal).toString(),
               nftPrice,
               transferableMembership,

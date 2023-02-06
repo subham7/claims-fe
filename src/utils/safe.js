@@ -16,6 +16,7 @@ import { createClub, fetchClub } from "../api/club";
 import FactoryContract from "../abis/factoryContract.json";
 import Router from "next/router";
 import { createUser } from "../api/user";
+import { CleaningServices } from "@mui/icons-material";
 
 async function gnosisSafePromise(owners, threshold, dispatch) {
   try {
@@ -84,6 +85,7 @@ export async function initiateConnection(
   metadataURL,
 ) {
   dispatch(setCreateDaoGnosisSigned(true));
+  console.log(isNftSupplyUnlimited, totalSupplyOfToken);
   const web3 = new Web3(Web3.givenProvider);
   const safeOwner = await web3.eth.getAccounts();
   let daoAddress = null;

@@ -1420,8 +1420,6 @@ const Settings = (props) => {
                       <Typography variant="p" className={classes.valuesStyle}>
                         {totalNftMinted !== null ? (
                           totalNftMinted
-                        ) : isNftTotalSupplyUnlimited ? (
-                          "unlimited"
                         ) : (
                           <Skeleton
                             variant="rectangular"
@@ -1467,7 +1465,11 @@ const Settings = (props) => {
                     {tokenType === "erc721" ? (
                       <Typography variant="p" className={classes.valuesStyle}>
                         {totalNftSupply !== null ? (
-                          totalNftSupply
+                          isNftTotalSupplyUnlimited ? (
+                            "Unlimited"
+                          ) : (
+                            totalNftSupply
+                          )
                         ) : (
                           <Skeleton
                             variant="rectangular"
@@ -1782,7 +1784,11 @@ const Settings = (props) => {
                   >
                     <Typography variant="p" className={classes.valuesStyle}>
                       {tokenType === "erc721" ? (
-                        totalNftSupply
+                        isNftTotalSupplyUnlimited ? (
+                          "Unlimited"
+                        ) : (
+                          totalNftSupply
+                        )
                       ) : governorDataFetched ? (
                         `${convertAmountToWei(
                           currentMaxDeposit.toString(),
