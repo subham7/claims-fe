@@ -190,6 +190,25 @@ export async function initiateConnection(
         (result) => {
           daoAddress = result.events[0].address;
           dispatch(addDaoAddress(result.events[0].address));
+          //change the type of url for ipfs token uri
+          let modifiedTokenURI;
+          if (
+            tokenURI.slice(tokenURI.indexOf("/"), tokenURI?.lastIndexOf("//"))
+          ) {
+            let imgUrl = tokenURI?.split("//");
+            modifiedTokenURI = `https://${imgUrl[1]}.ipfs.dweb.link/${imgUrl[2]}`;
+            console.log(
+              "imgUrl, ",
+              `https://${imgUrl[1]}.ipfs.dweb.link/${imgUrl[2]}`,
+            );
+          } else {
+            let imgUrl = tokenURI?.split("/");
+            modifiedTokenURI = `https://${imgUrl[2]}.ipfs.dweb.link/${imgUrl[3]}`;
+            console.log(
+              "imgUrl, ",
+              `https://${imgUrl[2]}.ipfs.dweb.link/${imgUrl[3]}`,
+            );
+          }
           // TODO: as of now, setting the tokenType to be static, by default erc20NonTransferable will be the contract
           const data = {
             name: tokenName,
@@ -201,7 +220,9 @@ export async function initiateConnection(
                 ? "erc20NonTransferable"
                 : "erc721",
             nftImageUrl:
-              clubTokenType !== "Non Transferable ERC20 Token" ? tokenURI : "",
+              clubTokenType !== "Non Transferable ERC20 Token"
+                ? modifiedTokenURI
+                : "",
             nftMetadataUrl: metadataURL,
           };
           const club = createClub(data);

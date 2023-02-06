@@ -334,6 +334,9 @@ const useStyles = makeStyles({
       cursor: "pointer",
     },
   },
+  profilePic: {
+    borderRadius: "50%",
+  },
 });
 
 const Dashboard = () => {
@@ -624,7 +627,12 @@ const Dashboard = () => {
             <Card className={classes.cardSharp1}>
               <Grid container spacing={2}>
                 <Grid item ml={3} mt={2}>
-                  <img src={imageUrl ?? null} width="100vw" alt="profile_pic" />
+                  <img
+                    src={imageUrl ?? null}
+                    width="100vw"
+                    alt="profile_pic"
+                    className={classes.profilePic}
+                  />
                 </Grid>
                 <Grid item ml={1} mt={4}>
                   <Stack spacing={0}>

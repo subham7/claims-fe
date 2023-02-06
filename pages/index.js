@@ -77,6 +77,9 @@ const useStyles = makeStyles({
   dialogBox: {
     fontSize: "28px",
   },
+  profilePic: {
+    borderRadius: "50%",
+  },
 });
 
 export default function App() {
@@ -227,10 +230,9 @@ export default function App() {
     }
   };
 
-  const getNFTImage = async (nftUrl) => {
-    let imgUrl = await nftUrl?.split("//");
-    console.log("imgUrl, ", `https://${imgUrl[1]}.ipfs.dweb.link/${imgUrl[2]}`);
-    return `https://${imgUrl[1]}.ipfs.dweb.link/${imgUrl[2]}`;
+  const getImageURL = (tokenURI) => {
+    let imgUrl = tokenURI?.split("/");
+    console.log("imgUrl, ", imgUrl);
   };
 
   return (
@@ -278,23 +280,15 @@ export default function App() {
                           handleItemClick(clubData[key]);
                         }}
                       >
-                        {console.log(club)}
+                        {getImageURL(club.imageUrl)}
                         <Grid container>
                           <Grid item md={2}>
-                            {club.imageUrl.startsWith("//") ? (
-                              // const image= getNFTImage(club.imageUrl)
-                              <img
-                                src={getNFTImage(club.imageUrl)}
-                                width="80vw"
-                                alt="club_image"
-                              />
-                            ) : (
-                              <img
-                                src={club.imageUrl}
-                                width="80vw"
-                                alt="club_image"
-                              />
-                            )}
+                            <img
+                              src={club.imageUrl}
+                              width="80vw"
+                              alt="club_image"
+                              className={classes.profilePic}
+                            />
                           </Grid>
                           <Grid item md={6}>
                             <Stack spacing={0}>
