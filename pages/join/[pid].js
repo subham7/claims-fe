@@ -264,6 +264,7 @@ const Join = (props) => {
   const [totalNftSupply, setTotalNftSupply] = useState();
   const [isNftSupplyUnlimited, setIsNftSupplyUnlimited] = useState();
   const [tokenSymbol, setTokenSymbol] = useState();
+  const [isGovernanceActive, setIsGovernanceActive] = useState();
 
   const USDC_CONTRACT_ADDRESS = useSelector((state) => {
     return state.gnosis.usdcContractAddress;
@@ -444,9 +445,15 @@ const Join = (props) => {
     console.log("erc721DetailContract", erc721DetailContract.contract.methods);
 
     await erc721DetailContract.quoram().then((result) => setQuoram(result));
+
     await erc721DetailContract
       .threshold()
       .then((result) => setThreshold(result));
+
+    await erc721DetailContract
+      .governanceDetails()
+      .then((result) => setIsGovernanceActive(result));
+
     await erc721DetailContract.priceOfNft().then((result) => {
       // console.log(result);
       setPriceOfNft(convertFromWei(parseInt(result), usdcTokenDecimal));
@@ -1693,30 +1700,36 @@ const Join = (props) => {
 
                     <Grid item width="100%">
                       <Grid container spacing={3}>
-                        <Grid item xs={3}>
-                          <Typography
-                            variant="subtitle1"
-                            color="#fff"
-                            sx={{ fontWeight: "bold" }}
-                          >
-                            {quoram}%
-                          </Typography>
-                          <Typography variant="subtitle2" color="#C1D3FF">
-                            Quorum
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={3}>
-                          <Typography
-                            variant="subtitle1"
-                            color="#fff"
-                            sx={{ fontWeight: "bold" }}
-                          >
-                            {threshold}%
-                          </Typography>
-                          <Typography variant="subtitle2" color="#C1D3FF">
-                            Threshold
-                          </Typography>
-                        </Grid>
+                        {isGovernanceActive && (
+                          <>
+                            {" "}
+                            <Grid item xs={3}>
+                              <Typography
+                                variant="subtitle1"
+                                color="#fff"
+                                sx={{ fontWeight: "bold" }}
+                              >
+                                {quoram}%
+                              </Typography>
+                              <Typography variant="subtitle2" color="#C1D3FF">
+                                Quorum
+                              </Typography>
+                            </Grid>{" "}
+                            <Grid item xs={3}>
+                              <Typography
+                                variant="subtitle1"
+                                color="#fff"
+                                sx={{ fontWeight: "bold" }}
+                              >
+                                {threshold}%
+                              </Typography>
+                              <Typography variant="subtitle2" color="#C1D3FF">
+                                Threshold
+                              </Typography>
+                            </Grid>
+                          </>
+                        )}
+
                         <Grid item xs={4} width="fit-content">
                           <Typography
                             variant="subtitle1"
@@ -1753,7 +1766,8 @@ const Join = (props) => {
                         sx={{
                           display: "flex",
                           // flexDirection: "column",
-                          justifyContent: "space-between",
+                          // justifyContent: "space-between",
+                          justifyContent: "center",
                           borderColor: "",
                           border: "1px solid #C1D3FF40",
                           borderRadius: 2,
@@ -1762,7 +1776,7 @@ const Join = (props) => {
                           padding: 4,
                         }}
                       >
-                        <Grid
+                        {/* <Grid
                           spacing={3}
                           sx={{
                             background: "#EFEFEF",
@@ -1789,7 +1803,7 @@ const Join = (props) => {
                           >
                             <AddIcon sx={{ color: "black", fontSize: 20 }} />
                           </IconButton>
-                        </Grid>
+                        </Grid> */}
                         <Grid item>
                           <Button
                             onClick={handleClaimNft}
