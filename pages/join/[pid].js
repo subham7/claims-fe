@@ -677,63 +677,65 @@ const Join = (props) => {
   }, [daoAddress, USDC_CONTRACT_ADDRESS]);
 
   const handleClaimNft = async () => {
-    const checkUserExists = checkUserByClub(userDetails, clubId);
-    console.log("checkUserExists", checkUserExists);
+    // const checkUserExists = checkUserByClub(userDetails, clubId);
+    // console.log("checkUserExists", checkUserExists);
+    const usdc_contract = new SmartContract(
+      ImplementationContract,
+      USDC_CONTRACT_ADDRESS,
+      undefined,
+      USDC_CONTRACT_ADDRESS,
+      GNOSIS_TRANSACTION_URL,
+    );
+    console.log("usdc contract", usdc_contract);
+    // pass governor contract
+    const dao_contract = new SmartContract(
+      ImplementationContract,
+      daoAddress,
+      undefined,
+      USDC_CONTRACT_ADDRESS,
+      GNOSIS_TRANSACTION_URL,
+    );
+    console.log("dao_contract", dao_contract);
+
     const priceOfNftConverted = convertToWei(
       priceOfNft,
       usdcTokenDecimal,
     ).toString();
     // const priceOfNftConverted = priceOfNft;
-    checkUserExists.then((result) => {
-      if (userNftBalance < maxTokensPerUser) {
-        if (result.data === false) {
-          setLoading(true);
-          // if the user doesn't exist
-          const usdc_contract = new SmartContract(
-            ImplementationContract,
-            USDC_CONTRACT_ADDRESS,
-            undefined,
-            USDC_CONTRACT_ADDRESS,
-            GNOSIS_TRANSACTION_URL,
-          );
-          console.log("usdc contract", usdc_contract);
-          // pass governor contract
-          const dao_contract = new SmartContract(
-            ImplementationContract,
-            daoAddress,
-            undefined,
-            USDC_CONTRACT_ADDRESS,
-            GNOSIS_TRANSACTION_URL,
-          );
-          console.log("dao_contract", dao_contract);
 
-          // pass governor contract
-          const usdc_response = usdc_contract.approveDeposit(
-            daoAddress,
+    if (userNftBalance < maxTokensPerUser) {
+      setLoading(true);
+      // if the user doesn't exist
+
+      // pass governor contract
+      const usdc_response = usdc_contract.approveDeposit(
+        daoAddress,
+        priceOfNftConverted,
+        usdcTokenDecimal,
+      );
+      console.log("usdc_response", usdc_response);
+      usdc_response.then(
+        (result) => {
+          const deposit_response = dao_contract.deposit(
+            USDC_CONTRACT_ADDRESS,
             priceOfNftConverted,
-            usdcTokenDecimal,
+            nftMetadata,
           );
-          console.log("usdc_response", usdc_response);
-
-          usdc_response.then(
-            (result) => {
-              const deposit_response = dao_contract.deposit(
-                USDC_CONTRACT_ADDRESS,
-                priceOfNftConverted,
-                nftMetadata,
-              );
-              deposit_response.then((result) => {
-                console.log("deposit response", result);
-                const data = {
-                  userAddress: userDetails,
-                  clubs: [
-                    {
-                      clubId: clubId,
-                      isAdmin: 0,
-                      // balance: depositAmountConverted,
-                    },
-                  ],
-                };
+          deposit_response.then((result) => {
+            console.log("deposit response", result);
+            const data = {
+              userAddress: userDetails,
+              clubs: [
+                {
+                  clubId: clubId,
+                  isAdmin: 0,
+                  // balance: depositAmountConverted,
+                },
+              ],
+            };
+            const checkUserExists = checkUserByClub(userDetails, clubId);
+            checkUserExists.then((result) => {
+              if (result === false) {
                 const createuser = createUser(data);
                 createuser.then((result) => {
                   if (result.status !== 201) {
@@ -749,35 +751,41 @@ const Join = (props) => {
                     });
                   }
                 });
-              });
-            },
-            (error) => {
-              console.log("Error", error);
-              setAlertStatus("error");
-              setLoading(false);
-              setOpenSnackBar(true);
-            },
-          );
-        }
-      } else {
-        console.log("herrez");
-        setAlertStatus("error");
-        setOpenSnackBar(true);
-        // {
-        //   console.log("here");
-        // }
-        // <Snackbar
-        //   open
-        //   autoHideDuration={6000}
-        //   onClose={handleClose}
-        //   anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-        // >
-        //   <Alert onClose={handleClose} severity="error" sx={{ width: "100%" }}>
-        //     Limit exceeded
-        //   </Alert>
-        // </Snackbar>;
-      }
-    });
+              } else {
+                setLoading(false);
+                setAlertStatus("success");
+                router.push(`/dashboard/${clubId}`, undefined, {
+                  shallow: true,
+                });
+              }
+            });
+          });
+        },
+        (error) => {
+          console.log("Error", error);
+          setAlertStatus("error");
+          setLoading(false);
+          setOpenSnackBar(true);
+        },
+      );
+    } else {
+      console.log("herrez");
+      setAlertStatus("error");
+      setOpenSnackBar(true);
+      // {
+      //   console.log("here");
+      // }
+      // <Snackbar
+      //   open
+      //   autoHideDuration={6000}
+      //   onClose={handleClose}
+      //   anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+      // >
+      //   <Alert onClose={handleClose} severity="error" sx={{ width: "100%" }}>
+      //     Limit exceeded
+      //   </Alert>
+      // </Snackbar>;
+    }
   };
 
   const handleDeposit = async () => {
