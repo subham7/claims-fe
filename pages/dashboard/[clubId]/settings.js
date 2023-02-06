@@ -1399,12 +1399,12 @@ const Settings = (props) => {
                 <Grid item ml={3} mt={5} mb={2} mr={3}>
                   <ProgressBar
                     value={
-                      governorDataFetched && dataFetched
+                      clubTokenMinted && totalERC20Supply
                         ? calculateTreasuryTargetShare(
                             clubTokenMinted,
-                            convertAmountToWei(governorDetails[4]),
+                            totalERC20Supply / 1000000,
                           )
-                        : 0
+                        : 50
                     }
                   />
                 </Grid>

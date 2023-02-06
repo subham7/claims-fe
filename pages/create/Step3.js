@@ -142,6 +142,7 @@ const Step3 = (props) => {
     governance,
     // setGovernance,
     handleOperationTypeChange,
+    loading,
   } = props;
 
   return (

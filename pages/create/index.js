@@ -259,7 +259,7 @@ const Create = (props) => {
               governance,
               true,
               mintLimit,
-              tokenSupply,
+              limitSupply ? tokenSupply : 0,
               // convertFromWei(nftPrice, usdcConvertDecimal).toString(),
               nftPrice,
               transferableMembership,
@@ -575,6 +575,7 @@ const Create = (props) => {
                   handleRemoveClick={handleRemoveClick}
                   governance={governance}
                   handleOperationTypeChange={handleOperationTypeChange}
+                  loading={loading}
                 />
               )}
               <Box
@@ -584,26 +585,32 @@ const Create = (props) => {
               >
                 {activeStep === 2 ? (
                   <>
-                    <Button
-                      variant="wideButton"
-                      disabled={
-                        activeStep === 0
-                          ? !clubName || !clubSymbol
-                          : activeStep === 2
-                          ? // !raiseAmount ||
-                            // !maxContribution ||
-                            !voteForQuorum ||
-                            !depositClose ||
-                            // !minContribution ||
-                            voteInFavour < 50
-                          : // : activeStep === 2
-                            //   ? false
-                            true
-                      }
-                      onClick={handleNext}
-                    >
-                      Next
-                    </Button>
+                    {loading ? (
+                      <Button variant="wideButton" disabled>
+                        <CircularProgress />
+                      </Button>
+                    ) : (
+                      <Button
+                        variant="wideButton"
+                        disabled={
+                          activeStep === 0
+                            ? !clubName || !clubSymbol
+                            : activeStep === 2
+                            ? // !raiseAmount ||
+                              // !maxContribution ||
+                              !voteForQuorum ||
+                              !depositClose ||
+                              // !minContribution ||
+                              voteInFavour < 50
+                            : // : activeStep === 2
+                              //   ? false
+                              true
+                        }
+                        onClick={handleNext}
+                      >
+                        Next
+                      </Button>
+                    )}
                   </>
                 ) : (
                   <></>
