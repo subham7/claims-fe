@@ -779,17 +779,23 @@ export class SmartContract {
       .send({ from: this.walletAddress });
   }
 
+  async updateTotalSupplyOfToken(newSupplyValue) {
+    return this.contract.methods
+      .updateTotalSupplyOfToken(newSupplyValue)
+      .send({ from: this.walletAddress });
+  }
+
+  async updateNftTransferability(value) {
+    return this.contract.methods
+      .updateNftTransferability(value)
+      .send({ from: this.walletAddress });
+  }
+
   async symbol() {
     return this.contract.methods.symbol().call({ from: this.walletAddress });
   }
 
   async erc20TokensMinted() {
-    console.log(
-      "first",
-      this.contract.methods
-        .totalTokensMinted()
-        .call({ from: this.walletAddress }),
-    );
     return this.contract.methods
       .totalTokensMinted()
       .call({ from: this.walletAddress });

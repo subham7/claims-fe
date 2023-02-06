@@ -295,9 +295,12 @@ const Settings = (props) => {
   const [maxTokensPerUser, setMaxTokensPerUser] = useState(null);
   const [totalNftMinted, setTotalNftMinted] = useState(null);
   const [totalNftSupply, setTotalNftSupply] = useState(null);
+  const [changedNftSupply, setChangedNftSupply] = useState(null);
+
   const [totalERC20Supply, setTotalERC20Supply] = useState(null);
   const [nftContractAddress, setNftContractAddress] = useState(null);
   const [isNftTransferable, setIsNftTransferable] = useState(null);
+  const [changeNtTransferability, setChangeNtTransferability] = useState(null);
   const [isNftTotalSupplyUnlimited, setIsNftTotalSupplyUnlimited] =
     useState(null);
 
@@ -594,6 +597,12 @@ const Settings = (props) => {
           setQuoramFetched(false);
         },
       );
+
+      await governorDetailContract.erc20TokensMinted().then((result) => {
+        setClubTokenMInted(
+          convertFromWeiGovernance(result, governanceConvertDecimal),
+        );
+      });
     }
   };
   const findCurrentMember = () => {
@@ -727,6 +736,36 @@ const Settings = (props) => {
     }
   };
 
+  const handleNftTransferability = (val) => {
+    console.log(val);
+    setLoaderOpen(true);
+    setOpen(false);
+    const contract = new SmartContract(
+      nft,
+      nftContractAddress,
+      undefined,
+      USDC_CONTRACT_ADDRESS,
+      GNOSIS_TRANSACTION_URL,
+    );
+    const response = contract.updateNftTransferability(val);
+    response.then(
+      (result) => {
+        nftContractDetails(true);
+        setLoaderOpen(false);
+        setFailed(false);
+        setIsNftTransferable(val);
+        setMessage(" NFT Transferablity successfully updated!");
+        setOpenSnackBar(true);
+      },
+      (error) => {
+        setLoaderOpen(false);
+        setFailed(true);
+        setMessage(" NFT Transferablity failed to be updated!");
+        setOpenSnackBar(true);
+      },
+    );
+  };
+
   const handleNFTContractUpdates = async (updateType) => {
     setLoaderOpen(true);
     setOpen(false);
@@ -757,11 +796,54 @@ const Settings = (props) => {
         },
       );
     }
+    if (settingsOptions[5].name === updateType) {
+      // console.log("maxToken", maxTokensPerUser);
+      const response = contract.updateTotalSupplyOfToken(changedNftSupply);
+      response.then(
+        (result) => {
+          nftContractDetails(true);
+          setLoaderOpen(false);
+          setFailed(false);
+          setTotalNftSupply(changedNftSupply);
+          setMessage("Total NFT Supply successfully updated!");
+          setOpenSnackBar(true);
+        },
+        (error) => {
+          setLoaderOpen(false);
+          setFailed(true);
+          setMessage("Total NFT Supply failed to be updated!");
+          setOpenSnackBar(true);
+        },
+      );
+    }
+    if (settingsOptions[5].name === updateType) {
+      // console.log("maxToken", maxTokensPerUser);
+      const response = contract.updateTotalSupplyOfToken(
+        changeNtTransferability,
+      );
+      response.then(
+        (result) => {
+          nftContractDetails(true);
+          setLoaderOpen(false);
+          setFailed(false);
+          setIsNftTransferable(changeNtTransferability);
+          setMessage(" NFT Transferablity successfully updated!");
+          setOpenSnackBar(true);
+        },
+        (error) => {
+          setLoaderOpen(false);
+          setFailed(true);
+          setMessage(" NFT Transferablity failed to be updated!");
+          setOpenSnackBar(true);
+        },
+      );
+    }
   };
 
   const handleContractUpdates = async (updateType) => {
     setLoaderOpen(true);
     setOpen(false);
+    console.log("hereee");
     const contract = new SmartContract(
       ImplementationContract,
       daoAddress,
@@ -769,7 +851,7 @@ const Settings = (props) => {
       USDC_CONTRACT_ADDRESS,
       GNOSIS_TRANSACTION_URL,
     );
-
+    console.log(contract);
     if (settingsOptions[1].name === updateType) {
       //  case for min update
       const convertedMinDeposit = convertToWei(minDeposit, usdcConvertDecimal);
@@ -1036,7 +1118,6 @@ const Settings = (props) => {
                           closingDays > 0 ? (
                             <Card className={classes.openTag}>
                               <Typography className={classes.openTagFont}>
-                                {console.log(depositCloseDate)}
                                 Open
                               </Typography>
                             </Card>
@@ -1053,32 +1134,34 @@ const Settings = (props) => {
                     </Grid>
                   </Grid>
                   <Grid item md={3}>
-                    <Grid container>
+                    <Grid container direction="column">
                       {tokenType === "erc721" ? (
                         <>
-                          <Grid item>
-                            <Typography
-                              variant="p"
-                              className={classes.valuesDimStyle}
-                            >
-                              Max Token Per User
-                            </Typography>
-                          </Grid>
-                          <Grid item mt={1}>
-                            <Typography
-                              variant="p"
-                              className={classes.valuesStyle}
-                            >
-                              {maxTokensPerUser !== null ? (
-                                maxTokensPerUser
-                              ) : (
-                                <Skeleton
-                                  variant="rectangular"
-                                  width={100}
-                                  height={25}
-                                />
-                              )}
-                            </Typography>
+                          <Grid container direction="column">
+                            <Grid item>
+                              <Typography
+                                variant="p"
+                                className={classes.valuesDimStyle}
+                              >
+                                Max Token Per User
+                              </Typography>
+                            </Grid>
+                            <Grid item mt={1}>
+                              <Typography
+                                variant="p"
+                                className={classes.valuesStyle}
+                              >
+                                {maxTokensPerUser !== null ? (
+                                  maxTokensPerUser
+                                ) : (
+                                  <Skeleton
+                                    variant="rectangular"
+                                    width={100}
+                                    height={25}
+                                  />
+                                )}
+                              </Typography>
+                            </Grid>
                           </Grid>
                         </>
                       ) : (
@@ -1114,7 +1197,7 @@ const Settings = (props) => {
                     </Grid>
                   </Grid>
                   <Grid item md={3}>
-                    <Grid container>
+                    <Grid container direction="column">
                       {tokenType === "erc721" ? (
                         <>
                           <Grid item>
@@ -1356,8 +1439,8 @@ const Settings = (props) => {
                         Club Tokens Minted so far
                       </Typography>
                       <Typography variant="p" className={classes.valuesStyle}>
-                        {dataFetched ? (
-                          parseInt(clubTokenMinted) + " $" + tokenDetails[1]
+                        {governorDataFetched ? (
+                          parseInt(clubTokenMinted) + " $" + tokenSymbol
                         ) : (
                           <Skeleton
                             variant="rectangular"
@@ -1515,6 +1598,10 @@ const Settings = (props) => {
                           tokenAPIDetails[0].daoAddress.substring(
                             tokenAPIDetails[0].daoAddress.length - 4,
                           )
+                        ) : tokenType === "erc721" ? (
+                          daoAddress.substring(0, 6) +
+                          "......" +
+                          daoAddress.substring(daoAddress.length - 4)
                         ) : (
                           <Skeleton
                             variant="rectangular"
@@ -1663,7 +1750,11 @@ const Settings = (props) => {
                         <a
                           className={classes.activityLink}
                           onClick={(e) => {
-                            setSettingType("maxTokenPerUser");
+                            if (tokenType === "erc721") {
+                              setSettingType("maxTokenPerUser");
+                            } else {
+                              setSettingType("minDeposit");
+                            }
                             setOpen(true);
                           }}
                         >
@@ -1708,7 +1799,11 @@ const Settings = (props) => {
                         <a
                           className={classes.activityLink}
                           onClick={(e) => {
-                            setSettingType("maxDeposit");
+                            if (tokenType === "erc721") {
+                              setSettingType("totalNFTSupply");
+                            } else {
+                              setSettingType("maxDeposit");
+                            }
                             setOpen(true);
                           }}
                         >
@@ -1719,6 +1814,55 @@ const Settings = (props) => {
                     </Typography>
                   </Grid>
                 </Grid>
+
+                {tokenType === "erc721" && (
+                  <>
+                    <Divider />
+                    <Grid container ml={3} mr={4}>
+                      <Grid item>
+                        <Typography variant="settingText">
+                          Is NFT transferable
+                        </Typography>
+                      </Grid>
+                      <Grid
+                        item
+                        mr={4}
+                        xs
+                        sx={{ display: "flex", justifyContent: "flex-end" }}
+                      >
+                        <Typography variant="p" className={classes.valuesStyle}>
+                          {isNftTransferable !== null ? (
+                            isNftTransferable ? (
+                              "true"
+                            ) : (
+                              "false"
+                            )
+                          ) : (
+                            <Skeleton
+                              variant="rectangular"
+                              width={100}
+                              height={25}
+                            />
+                          )}
+
+                          {isAdminUser ? (
+                            <a
+                              className={classes.activityLink}
+                              onClick={(e) => {
+                                setSettingType("isNFTtransferable");
+                                setOpen(true);
+                              }}
+                            >
+                              {" "}
+                              (change)
+                            </a>
+                          ) : null}
+                        </Typography>
+                      </Grid>
+                    </Grid>
+                  </>
+                )}
+
                 {/*<Divider />
                 <Grid container ml={3} mr={4}>
                   <Grid item >
@@ -2195,6 +2339,113 @@ const Settings = (props) => {
                       </Grid>
                     </Grid>
                   </>
+                ) : settingsOptions[5].name === settingType ? (
+                  <>
+                    <Typography className={classes.dialogBox}>
+                      Update Total NFT Supply
+                    </Typography>
+                    <Grid
+                      container
+                      direction="row"
+                      justifyContent="center"
+                      alignItems="center"
+                    >
+                      <Grid container item>
+                        <TextField
+                          sx={{ width: "95%", backgroundColor: "#C1D3FF40" }}
+                          className={classes.cardTextBox}
+                          placeholder="Enter new NFT Supply"
+                          onChange={(e) => setChangedNftSupply(e.target.value)}
+                        />
+                      </Grid>
+                      <Grid item m={3}>
+                        <Button
+                          variant="primary"
+                          startIcon={<CheckCircleIcon />}
+                          onClick={() => handleNFTContractUpdates(settingType)}
+                        >
+                          Update
+                        </Button>
+                      </Grid>
+                      <Grid item m={3}>
+                        <Button
+                          variant="primary"
+                          startIcon={<CancelIcon />}
+                          onClick={handleClose}
+                        >
+                          Cancel
+                        </Button>
+                      </Grid>
+                    </Grid>
+                  </>
+                ) : settingsOptions[6].name === settingType ? (
+                  isNftTransferable ? (
+                    <>
+                      <Typography className={classes.dialogBox}>
+                        Do you want to make NFT non-transferable?
+                      </Typography>
+                      <Grid
+                        container
+                        direction="row"
+                        justifyContent="center"
+                        alignItems="center"
+                      >
+                        <Grid item m={3}>
+                          <Button
+                            variant="primary"
+                            startIcon={<CheckCircleIcon />}
+                            onClick={() => {
+                              handleNftTransferability(false);
+                            }}
+                          >
+                            Disable
+                          </Button>
+                        </Grid>
+                        <Grid item m={3}>
+                          <Button
+                            variant="primary"
+                            startIcon={<CancelIcon />}
+                            onClick={handleClose}
+                          >
+                            Cancel
+                          </Button>
+                        </Grid>
+                      </Grid>
+                    </>
+                  ) : (
+                    <>
+                      <Typography className={classes.dialogBox}>
+                        Do you want to make NFT transferable?
+                      </Typography>
+                      <Grid
+                        container
+                        direction="row"
+                        justifyContent="center"
+                        alignItems="center"
+                      >
+                        <Grid item m={3}>
+                          <Button
+                            variant="primary"
+                            startIcon={<CheckCircleIcon />}
+                            onClick={() => {
+                              handleNftTransferability(true);
+                            }}
+                          >
+                            Enable
+                          </Button>
+                        </Grid>
+                        <Grid item m={3}>
+                          <Button
+                            variant="primary"
+                            startIcon={<CancelIcon />}
+                            onClick={handleClose}
+                          >
+                            Cancel
+                          </Button>
+                        </Grid>
+                      </Grid>
+                    </>
+                  )
                 ) : null}
               </Grid>
             </Grid>
