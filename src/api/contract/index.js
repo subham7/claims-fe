@@ -544,10 +544,14 @@ export class SmartContract {
   }
 
   async deposit(address, amount, tokenUri) {
+    console.log(address, amount, tokenUri);
     const gasPrice = await web3.eth.getGasPrice();
-    const gasAmount = await this.contract.methods
-      .deposit(address, amount, tokenUri)
-      .estimateGas({ from: this.walletAddress });
+    const gasAmount = await this.contract.methods.deposit(
+      address,
+      amount,
+      tokenUri,
+    );
+    // .estimateGas({ from: this.walletAddress });
     const gas = gasAmount * gasPrice;
 
     return this.contract.methods.deposit(address, amount, tokenUri).send({

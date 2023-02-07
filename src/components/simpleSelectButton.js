@@ -34,7 +34,7 @@ export default function SimpleSelectButton(props) {
       <FormControl sx={{ m: 1, width: 443, mt: 1 }}>
         <Select
           displayEmpty
-          value={name}
+          value={name || data[0].value}
           onChange={handleChange}
           input={<OutlinedInput />}
           renderValue={(selected) => {

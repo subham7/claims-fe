@@ -25,13 +25,14 @@ import ERC20NonTransferableStep2 from "./ERC20NonTransferableStep2";
 import { NFTStorage, File, Blob } from "nft.storage";
 import { convertFromWei } from "../../src/utils/globalFunctions";
 import { CleaningServices } from "@mui/icons-material";
+import { tokenType } from "../../src/data/create";
 
 const Create = (props) => {
   const router = useRouter();
   const uploadInputRef = useRef(null);
   const [clubName, setClubName] = useState(null);
   const [clubSymbol, setClubSymbol] = useState(null);
-  const [clubTokenType, setClubTokenType] = useState(null);
+  const [clubTokenType, setClubTokenType] = useState(tokenType[0]);
   const [displayImage, setDisplayImage] = useState(null);
   const [raiseAmount, setRaiseAmount] = useState("");
   const [maxContribution, setMaxContribution] = useState("");
@@ -61,7 +62,7 @@ const Create = (props) => {
 
   const [selectedImage, setSelectedImage] = useState(null);
   const [imageUrl, setImageUrl] = useState(null);
-
+  console.log("clubTokenType", clubTokenType);
   useEffect(() => {
     if (selectedImage) {
       setImageUrl(URL.createObjectURL(selectedImage));
