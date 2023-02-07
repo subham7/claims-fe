@@ -1,13 +1,14 @@
-import Web3 from "web3";
-import Web3Adapter from "@safe-global/safe-web3-lib";
-import SafeServiceClient from "@safe-global/safe-service-client";
-import USDCContract from "../../abis/usdcTokenContract.json";
 import Safe, { EthSignSignature } from "@safe-global/safe-core-sdk";
-import { USDC_FAUCET_ADDRESS } from "../index";
-import { calculateDays, convertToWei } from "../../utils/globalFunctions";
+import SafeServiceClient from "@safe-global/safe-service-client";
+import Web3Adapter from "@safe-global/safe-web3-lib";
+import Web3 from "web3";
+
 import FactoryContract from "../../abis/factoryContract.json";
 import ImplementationContract from "../../abis/implementationABI.json";
+import USDCContract from "../../abis/usdcTokenContract.json";
 import { createProposalTxHash, getProposalTxHash } from "../../api/proposal";
+import { calculateDays, convertToWei } from "../../utils/globalFunctions";
+import { USDC_FAUCET_ADDRESS } from "../index";
 
 async function syncWallet() {
   // function for validating metamask wallet
@@ -94,29 +95,22 @@ export class SmartContract {
     isNftSupplyUnlimited,
   ) {
     const days = Math.round(calculateDays(closeDate));
-    const gasPrice = await web3.eth.getGasPrice();
+    // const gasPrice = await web3.eth.getGasPrice();
     // const gasAmount = this.contract.methods
-    //   .createDAO(
-    //     [
-    //       tokenName,
-    //       tokenSymbol,
-    //       convertToWei(totalDeposit, usdcConvertDecimal),
-    //       convertToWei(minDeposit, usdcConvertDecimal),
-    //       convertToWei(maxDeposit, usdcConvertDecimal),
-    //       convertToWei(ownerFee, usdcConvertDecimal),
-    //       days,
-    //       convertToWei(feeUSDC, usdcConvertDecimal),
-    //       quoram,
-    //       formThreshold,
-    //       tresuryAddress,
-    //       owners,
-    //       isTemplateErc721,
-    //       mintsPerUser,
-    //       totalSupplyOfToken,
-    //       nftPrice * Math.pow(10, 6),
-    //       transferableMembership,
-    //       isNftSupplyUnlimited,
-    //     ],
+    //   .createDaoERC721(
+    //     tokenName,
+    //     tokenSymbol,
+    //     convertToWei(ownerFee, usdcConvertDecimal),
+    //     days,
+    //     quoram,
+    //     formThreshold,
+    //     tresuryAddress,
+    //     owners,
+    //     mintsPerUser,
+    //     totalSupplyOfToken,
+    //     nftPrice * Math.pow(10, 6),
+    //     transferableMembership,
+    //     isNftSupplyUnlimited,
     //     enableGovernance,
     //   )
     //   .estimateGas({ from: this.walletAddress });
@@ -141,7 +135,7 @@ export class SmartContract {
           isNftSupplyUnlimited,
           enableGovernance,
         )
-        .send({ from: this.walletAddress, gasPrice });
+        .send({ from: this.walletAddress });
     } else
       return this.contract.methods
         .createDAO(
@@ -159,7 +153,7 @@ export class SmartContract {
           owners,
           enableGovernance,
         )
-        .send({ from: this.walletAddress, gasPrice });
+        .send({ from: this.walletAddress });
   }
 
   async updateProposalAndExecution(
@@ -514,9 +508,10 @@ export class SmartContract {
     const gas = gasAmount * gasPrice;
     console.log(gasPrice, gas);
 
-    return this.contract.methods
-      .approve(address, value)
-      .send({ from: this.walletAddress, gasPrice });
+    return this.contract.methods.approve(address, value).send({
+      from: this.walletAddress,
+      //  , gasPrice
+    });
   }
 
   async performanceFee() {
@@ -534,16 +529,18 @@ export class SmartContract {
   async closeDeposit() {
     const gasPrice = await web3.eth.getGasPrice();
 
-    return this.contract.methods
-      .closeDeposit()
-      .send({ from: this.walletAddress, gasPrice });
+    return this.contract.methods.closeDeposit().send({
+      from: this.walletAddress,
+      //  , gasPrice
+    });
   }
 
   async startDeposit(startTime) {
     const gasPrice = await web3.eth.getGasPrice();
-    return this.contract.methods
-      .startDeposit(startTime)
-      .send({ from: this.walletAddress, gasPrice });
+    return this.contract.methods.startDeposit(startTime).send({
+      from: this.walletAddress,
+      //  , gasPrice
+    });
   }
 
   async deposit(address, amount, tokenUri) {
@@ -553,9 +550,10 @@ export class SmartContract {
       .estimateGas({ from: this.walletAddress });
     const gas = gasAmount * gasPrice;
 
-    return this.contract.methods
-      .deposit(address, amount, tokenUri)
-      .send({ from: this.walletAddress, gasPrice });
+    return this.contract.methods.deposit(address, amount, tokenUri).send({
+      from: this.walletAddress,
+      //  , gasPrice
+    });
   }
 
   async balanceOf() {
@@ -596,16 +594,18 @@ export class SmartContract {
 
   async updateMinMaxDeposit(minValue, maxValue) {
     const gasPrice = await web3.eth.getGasPrice();
-    return this.contract.methods
-      .updateMinMaxDeposit(minValue, maxValue)
-      .send({ from: this.walletAddress, gasPrice });
+    return this.contract.methods.updateMinMaxDeposit(minValue, maxValue).send({
+      from: this.walletAddress,
+      //  , gasPrice
+    });
   }
 
   async updateOwnerFee(performanceFee) {
     const gasPrice = await web3.eth.getGasPrice();
-    return this.contract.methods
-      .updateOwnerFee(performanceFee)
-      .send({ from: this.walletAddress, gasPrice });
+    return this.contract.methods.updateOwnerFee(performanceFee).send({
+      from: this.walletAddress,
+      //  , gasPrice
+    });
   }
 
   async userDetails() {
