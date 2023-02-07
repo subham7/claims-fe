@@ -265,6 +265,7 @@ const Join = (props) => {
   const [isNftSupplyUnlimited, setIsNftSupplyUnlimited] = useState();
   const [tokenSymbol, setTokenSymbol] = useState();
   const [isGovernanceActive, setIsGovernanceActive] = useState();
+  const [message, setMessage] = useState("");
 
   const USDC_CONTRACT_ADDRESS = useSelector((state) => {
     return state.gnosis.usdcContractAddress;
@@ -275,7 +276,6 @@ const Join = (props) => {
   const wallet = useSelector((state) => {
     return state.create.value;
   });
-  console.log("wallet address", wallet);
   // console.log("wallet addresssssss", wallet[0][0].address);
   const [usdcTokenDecimal, setUsdcTokenDecimal] = useState(0);
   const [governanceConvertDecimal, setGovernanceConvertDecimal] = useState(0);
@@ -315,7 +315,6 @@ const Join = (props) => {
     }
     try {
       window.web3.eth.getAccounts().then((async) => {
-        console.log("async");
         setUserDetails(async[0]);
         setWalletConnected(true);
       });
@@ -329,7 +328,6 @@ const Join = (props) => {
 
   const fetchClubData = async () => {
     const clubData = fetchClub(clubId);
-    console.log("clubData", clubData);
     clubData.then((result) => {
       if (result.status != 200) {
         setImageFetched(false);
@@ -351,31 +349,14 @@ const Join = (props) => {
       setnftContractAddress(response.data[0].nftAddress);
       setnftMetadata(response.data[0].nftMetadataUrl);
       let imgUrl = response.data[0].nftImageUrl?.split("//");
-      console.log("imgUrl, ", imgUrl);
       setnftImageUrl(response.data[0].nftImageUrl);
       setApiTokenDetailSet(true);
     } else {
       setApiTokenDetailSet(false);
     }
   };
-  console.log("setnftImageUrl", nftImageUrl);
-
-  // let imgUrl = nftImageUrl?.slice(
-  //   nftImageUrl.indexOf("//"),
-  //   nftImageUrl?.lastIndexOf("//"),
-  // );
-  // let imgUrl = nftImageUrl?.split("//");
-  // console.log("imgUrl, ", imgUrl);
-  // let slice = nftImageUrl?.slice(
-  //   nftImageUrl.lastIndexOf("//"),
-  //   nftImageUrl?.length,
-  // );
-  // console.log("slice, ", slice);
-  // let renderURL = `https://${imgUrl[1]}.ipfs.dweb.link/${imgUrl[2]}`;
-  // console.log(renderURL);
 
   const tokenDetailsRetrieval = async () => {
-    console.log(" in tokenDetailsRetrieval");
     if (
       tokenAPIDetails &&
       tokenAPIDetails.length > 0 &&
@@ -383,7 +364,6 @@ const Join = (props) => {
       GNOSIS_TRANSACTION_URL &&
       usdcTokenDecimal
     ) {
-      console.log("before tokenDetailContract");
       const tokenDetailContract = await new SmartContract(
         ImplementationContract,
         tokenAPIDetails[0].daoAddress,
@@ -391,15 +371,12 @@ const Join = (props) => {
         USDC_CONTRACT_ADDRESS,
         GNOSIS_TRANSACTION_URL,
       );
-      console.log("after tokenDetailContract");
       await tokenDetailContract.tokenDetails().then(
         async (result) => {
-          console.log("result", result);
           settokenDetails(result);
           setClubTokenMInted(
             convertFromWeiGovernance(result[2], governanceConvertDecimal),
           );
-          console.log(result[2]);
           setQuoram(
             convertFromWeiGovernance(result[2], governanceConvertDecimal),
           );
@@ -417,7 +394,6 @@ const Join = (props) => {
       const membersData = getMembersDetails(clubId);
       membersData.then((result) => {
         if (result.status != 200) {
-          console.log(result.statusText);
           setMembersFetched(false);
         } else {
           setMembers(result.data.length);
@@ -442,7 +418,6 @@ const Join = (props) => {
       USDC_CONTRACT_ADDRESS,
       GNOSIS_TRANSACTION_URL,
     );
-    console.log("erc721DetailContract", erc721DetailContract.contract.methods);
 
     await erc721DetailContract.quoram().then((result) => setQuoram(result));
 
@@ -455,8 +430,9 @@ const Join = (props) => {
       .then((result) => setIsGovernanceActive(result));
 
     await erc721DetailContract.priceOfNft().then((result) => {
-      // console.log(result);
-      setPriceOfNft(convertFromWei(parseInt(result), usdcTokenDecimal));
+      console.log("price of nfffftttt", result);
+      // setPriceOfNft(convertFromWei(parseInt(result), usdcTokenDecimal));
+      setPriceOfNft(result);
     });
 
     await erc721DetailContract
@@ -475,7 +451,6 @@ const Join = (props) => {
       }
     });
 
-    console.log("nftContract", nftContract.contract.methods);
     await nftContract
       .maxTokensPerUser()
       .then((result) => setMaxTokensPerUser(result));
@@ -514,7 +489,6 @@ const Join = (props) => {
         USDC_CONTRACT_ADDRESS,
         GNOSIS_TRANSACTION_URL,
       );
-      console.log("governorDetailContract", governorDetailContract);
       setGovernorDataFetched(true);
       await governorDetailContract.obtainTokenDecimals().then((result) => {
         setGovernanceConvertDecimal(result);
@@ -641,7 +615,6 @@ const Join = (props) => {
       GNOSIS_TRANSACTION_URL &&
       tokenType === "erc20NonTransferable"
     ) {
-      console.log("first");
       contractDetailsRetrieval();
       // tokenDetailsRetrieval();
     }
@@ -656,23 +629,19 @@ const Join = (props) => {
 
   useEffect(() => {
     if (clubId) {
-      console.log("club data");
       fetchClubData();
     }
 
     if (previouslyConnectedWallet) {
-      console.log("previously connected wallet");
       onboard.connectWallet({ autoSelect: wallet });
     }
 
     if (checkConnection() && walletConnected && wallet) {
-      console.log("wallet connected", tokenType);
       obtaineWalletBallance();
 
       if (tokenType === "erc721") {
         erc721ContractDetails();
       } else if (tokenType === "erc20NonTransferable") {
-        console.log("heeereeee");
         contractDetailsRetrieval();
       }
       fetchMembers();
@@ -684,8 +653,6 @@ const Join = (props) => {
   }, [daoAddress, USDC_CONTRACT_ADDRESS]);
 
   const handleClaimNft = async () => {
-    // const checkUserExists = checkUserByClub(userDetails, clubId);
-    // console.log("checkUserExists", checkUserExists);
     const usdc_contract = new SmartContract(
       ImplementationContract,
       USDC_CONTRACT_ADDRESS,
@@ -693,7 +660,6 @@ const Join = (props) => {
       USDC_CONTRACT_ADDRESS,
       GNOSIS_TRANSACTION_URL,
     );
-    console.log("usdc contract", usdc_contract);
     // pass governor contract
     const dao_contract = new SmartContract(
       ImplementationContract,
@@ -702,13 +668,12 @@ const Join = (props) => {
       USDC_CONTRACT_ADDRESS,
       GNOSIS_TRANSACTION_URL,
     );
-    console.log("dao_contract", dao_contract);
 
-    const priceOfNftConverted = convertToWei(
-      priceOfNft,
-      usdcTokenDecimal,
-    ).toString();
-    // const priceOfNftConverted = priceOfNft;
+    // const priceOfNftConverted = convertToWei(
+    //   priceOfNft,
+    //   usdcTokenDecimal,
+    // ).toString();
+    const priceOfNftConverted = priceOfNft;
 
     if (userNftBalance < maxTokensPerUser) {
       setLoading(true);
@@ -720,64 +685,71 @@ const Join = (props) => {
         priceOfNftConverted,
         usdcTokenDecimal,
       );
-      console.log("usdc_response", usdc_response);
-      usdc_response.then(
-        (result) => {
-          const deposit_response = dao_contract.deposit(
-            USDC_CONTRACT_ADDRESS,
-            priceOfNftConverted,
-            nftMetadata,
-          );
-          deposit_response.then((result) => {
-            console.log("deposit response", result);
-            const data = {
-              userAddress: userDetails,
-              clubs: [
-                {
-                  clubId: clubId,
-                  isAdmin: 0,
-                  // balance: depositAmountConverted,
-                },
-              ],
-            };
-            const checkUserExists = checkUserByClub(userDetails, clubId);
-            checkUserExists.then((result) => {
-              if (result === false) {
-                const createuser = createUser(data);
-                createuser.then((result) => {
-                  if (result.status !== 201) {
-                    console.log("Error", result);
-                    setAlertStatus("error");
-                    setOpenSnackBar(true);
-                  } else {
-                    setAlertStatus("success");
-                    setOpenSnackBar(true);
-                    setLoading(false);
-                    router.push(`/dashboard/${clubId}`, undefined, {
-                      shallow: true,
-                    });
-                  }
-                });
-              } else {
-                setLoading(false);
-                setAlertStatus("success");
-                router.push(`/dashboard/${clubId}`, undefined, {
-                  shallow: true,
-                });
-              }
+      usdc_response
+        .then(
+          (result) => {
+            const deposit_response = dao_contract.deposit(
+              USDC_CONTRACT_ADDRESS,
+              priceOfNftConverted,
+              nftMetadata,
+            );
+            deposit_response.then((result) => {
+              const data = {
+                userAddress: userDetails,
+                clubs: [
+                  {
+                    clubId: clubId,
+                    isAdmin: 0,
+                    // balance: depositAmountConverted,
+                  },
+                ],
+              };
+              const checkUserExists = checkUserByClub(userDetails, clubId);
+              checkUserExists.then((result) => {
+                if (result === false) {
+                  const createuser = createUser(data);
+                  createuser.then((result) => {
+                    if (result.status !== 201) {
+                      console.log("Error", result);
+                      setAlertStatus("error");
+                      setOpenSnackBar(true);
+                    } else {
+                      setAlertStatus("success");
+                      setOpenSnackBar(true);
+                      setLoading(false);
+                      router.push(`/dashboard/${clubId}`, undefined, {
+                        shallow: true,
+                      });
+                    }
+                  });
+                } else {
+                  setLoading(false);
+                  setAlertStatus("success");
+                  setMessage("NFT minted successfully");
+                  router.push(`/dashboard/${clubId}`, undefined, {
+                    shallow: true,
+                  });
+                }
+              });
             });
-          });
-        },
-        (error) => {
-          console.log("Error", error);
+          },
+          (error) => {
+            console.log("Error", error);
+            setAlertStatus("error");
+            setMessage(error);
+            setLoading(false);
+            setOpenSnackBar(true);
+          },
+        )
+        .catch((err) => {
           setAlertStatus("error");
+          setMessage(error);
           setLoading(false);
           setOpenSnackBar(true);
-        },
-      );
+        });
     } else {
-      console.log("herrez");
       setAlertStatus("error");
+      setMessage("Mint Limit Reached");
       setOpenSnackBar(true);
       // {
       //   console.log("here");
@@ -1486,7 +1458,6 @@ const Join = (props) => {
                     alignItems: "center",
                   }}
                 >
-                  {console.log("hereee")}
                   <Typography variant="h5" color={"white"} fontWeight="bold">
                     Please connect your wallet
                   </Typography>
@@ -1494,7 +1465,7 @@ const Join = (props) => {
               </Grid>
             </>
           )}
-
+          {/* 
           <Snackbar
             open={openSnackBar}
             autoHideDuration={6000}
@@ -1518,7 +1489,7 @@ const Join = (props) => {
                 Transaction Failed!
               </Alert>
             )}
-          </Snackbar>
+          </Snackbar> */}
           <Dialog
             open={open}
             onClose={handleDialogClose}
@@ -1756,7 +1727,7 @@ const Join = (props) => {
                         color="#fff"
                         sx={{ fontWeight: "bold" }}
                       >
-                        {priceOfNft} USDC
+                        {convertFromWei(priceOfNft, usdcTokenDecimal)} USDC
                       </Typography>
                     </Grid>
 
@@ -1845,6 +1816,26 @@ const Join = (props) => {
           </Grid>
         </>
       )}
+      <Snackbar
+        open={openSnackBar}
+        autoHideDuration={6000}
+        onClose={handleClose}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+      >
+        {alertStatus === "success" ? (
+          <Alert
+            onClose={handleClose}
+            severity="success"
+            sx={{ width: "100%" }}
+          >
+            {message}
+          </Alert>
+        ) : (
+          <Alert onClose={handleClose} severity="error" sx={{ width: "100%" }}>
+            {message}
+          </Alert>
+        )}
+      </Snackbar>
     </Layout3>
   );
 };
