@@ -674,7 +674,7 @@ const Join = (props) => {
               };
               const checkUserExists = checkUserByClub(userDetails, clubId);
               checkUserExists.then((result) => {
-                if (result === false) {
+                if (result.data === false) {
                   const createuser = createUser(data);
                   createuser.then((result) => {
                     if (result.status !== 201) {
