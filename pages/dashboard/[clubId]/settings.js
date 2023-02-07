@@ -429,6 +429,7 @@ const Settings = (props) => {
 
   const fetchClubAssetToken = () => {
     const tokens = getAssets(clubId);
+    console.log("hereeee");
     tokens.then((result) => {
       if (result.status != 200) {
         setClubAssetTokenFetched(false);
@@ -625,11 +626,10 @@ const Settings = (props) => {
     if (tokenType === "erc721") {
       nftContractDetails();
     } else if (tokenType === "erc20NonTransferable") {
-      tokenAPIDetailsRetrieval();
       tokenDetailsRetrieval();
       contractDetailsRetrieval(false);
     }
-
+    tokenAPIDetailsRetrieval();
     fetchMembers();
 
     if (
@@ -672,6 +672,7 @@ const Settings = (props) => {
   }, [dataFetched]);
 
   useEffect(() => {
+    console.log("club id", clubId);
     if (clubId) {
       fetchClubAssetToken();
     }
@@ -1395,7 +1396,9 @@ const Settings = (props) => {
                 </Grid>
               </Paper>
 
-              {tokenType === "erc721" ? null : (
+              {tokenType === "erc721" ? (
+                <br />
+              ) : (
                 <Grid item ml={3} mt={5} mb={2} mr={3}>
                   <ProgressBar
                     value={
