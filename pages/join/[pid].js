@@ -2,24 +2,7 @@ import { CleanHands } from "@mui/icons-material";
 import AddIcon from "@mui/icons-material/Add";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import RemoveIcon from "@mui/icons-material/Remove";
-import {
-  Alert,
-  Backdrop,
-  Button,
-  Card,
-  CardMedia,
-  CircularProgress,
-  Dialog,
-  DialogContent,
-  Divider,
-  Grid,
-  IconButton,
-  Input,
-  Skeleton,
-  Snackbar,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Alert, Backdrop, Button, Card, CardMedia, CircularProgress, Dialog, DialogContent, Divider, Grid, IconButton, Input, Skeleton, Snackbar, Stack, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { loadGetInitialProps } from "next/dist/shared/lib/utils";
 import Image from "next/image";
@@ -34,26 +17,11 @@ import nft from "../../src/abis/nft.json";
 import { fetchClub, fetchClubbyDaoAddress } from "../../src/api/club";
 import { SmartContract } from "../../src/api/contract";
 import { createUser } from "../../src/api/user";
-import {
-  checkUserByClub,
-  getMembersDetails,
-  patchUserBalance,
-} from "../../src/api/user";
+import { checkUserByClub, getMembersDetails, patchUserBalance } from "../../src/api/user";
 import Layout3 from "../../src/components/layouts/layout3";
 import ProgressBar from "../../src/components/progressbar";
-import {
-  setGovernanceTokenDetails,
-  setUSDCTokenDetails,
-} from "../../src/redux/reducers/gnosis";
-import {
-  calculateDays,
-  calculateTreasuryTargetShare,
-  convertAmountToWei,
-  convertFromWei,
-  convertFromWeiGovernance,
-  convertToWei,
-  convertToWeiGovernance,
-} from "../../src/utils/globalFunctions";
+import { setGovernanceTokenDetails, setUSDCTokenDetails } from "../../src/redux/reducers/gnosis";
+import { calculateDays, calculateTreasuryTargetShare, convertAmountToWei, convertFromWei, convertFromWeiGovernance, convertToWei, convertToWeiGovernance } from "../../src/utils/globalFunctions";
 import { connectWallet, onboard } from "../../src/utils/wallet";
 import { checkNetwork } from "../../src/utils/wallet";
 
@@ -1727,7 +1695,7 @@ const Join = (props) => {
                         color="#fff"
                         sx={{ fontWeight: "bold" }}
                       >
-                        {convertFromWei(priceOfNft, usdcTokenDecimal)} USDC
+                        {priceOfNft / Math.pow(10, 6)} USDC
                       </Typography>
                     </Grid>
 

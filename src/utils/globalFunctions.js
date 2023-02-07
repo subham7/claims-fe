@@ -1,5 +1,5 @@
-import { SmartContract } from "../api/contract";
 import ImplementationContract from "../abis/implementationABI.json";
+import { SmartContract } from "../api/contract";
 
 // function for calculating the balance percentage of the users share
 export const calculateUserSharePercentage = (balance, total) => {
