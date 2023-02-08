@@ -1402,111 +1402,276 @@ const Settings = (props) => {
               </Paper>
 
               {tokenType === "erc721" ? (
-                <br />
-              ) : (
-                <Grid item ml={3} mt={5} mb={2} mr={3}>
-                  <ProgressBar
-                    value={
-                      clubTokenMinted && totalERC20Supply
-                        ? calculateTreasuryTargetShare(
-                            clubTokenMinted,
-                            totalERC20Supply / 1000000,
-                          )
-                        : 50
-                    }
-                  />
-                </Grid>
-              )}
-
-              <Grid container spacing={2}>
-                {tokenType === "erc721" ? (
-                  <Grid item ml={4} mt={1} mb={2}>
-                    <Stack spacing={1}>
-                      <Typography variant="settingText">
-                        NFTs Minted so far
-                      </Typography>
-                      <Typography variant="p" className={classes.valuesStyle}>
-                        {totalNftMinted !== null ? (
-                          totalNftMinted
-                        ) : (
-                          <Skeleton
-                            variant="rectangular"
-                            width={100}
-                            height={25}
-                          />
-                        )}
-                      </Typography>
-                    </Stack>
-                  </Grid>
-                ) : (
-                  <Grid item ml={4} mt={1} mb={2}>
-                    <Stack spacing={1}>
-                      <Typography variant="settingText">
-                        Club Tokens Minted so far
-                      </Typography>
-                      <Typography variant="p" className={classes.valuesStyle}>
-                        {governorDataFetched ? (
-                          parseInt(clubTokenMinted) + " $" + tokenSymbol
-                        ) : (
-                          <Skeleton
-                            variant="rectangular"
-                            width={100}
-                            height={25}
-                          />
-                        )}
-                      </Typography>
-                    </Stack>
-                  </Grid>
-                )}
-
-                <Grid
-                  item
-                  ml={4}
-                  mt={1}
-                  mb={2}
-                  mr={4}
-                  xs
-                  sx={{ display: "flex", justifyContent: "flex-end" }}
-                >
-                  <Stack spacing={1}>
-                    <Typography variant="settingText">Total Supply</Typography>
+                <>
+                  <br />
+                  <Grid container spacing={7}>
                     {tokenType === "erc721" ? (
-                      <Typography variant="p" className={classes.valuesStyle}>
-                        {totalNftSupply !== null ? (
-                          isNftTotalSupplyUnlimited ? (
-                            "Unlimited"
-                          ) : (
-                            totalNftSupply
-                          )
-                        ) : (
-                          <Skeleton
-                            variant="rectangular"
-                            width={100}
-                            height={25}
-                          />
-                        )}{" "}
-                      </Typography>
+                      <>
+                        <Grid item md={3} ml={4}>
+                          <Stack spacing={1}>
+                            <Typography variant="settingText">
+                              NFTs Minted so far
+                            </Typography>
+                            <Typography
+                              variant="p"
+                              className={classes.valuesStyle}
+                            >
+                              {totalNftMinted !== null ? (
+                                totalNftMinted
+                              ) : (
+                                <Skeleton
+                                  variant="rectangular"
+                                  width={100}
+                                  height={25}
+                                />
+                              )}
+                            </Typography>
+                          </Stack>
+                        </Grid>
+                        <Grid item>
+                          <Stack spacing={1}>
+                            <Typography variant="settingText">
+                              Total Supply
+                            </Typography>
+                            {tokenType === "erc721" ? (
+                              <Typography
+                                variant="p"
+                                className={classes.valuesStyle}
+                              >
+                                {totalNftSupply !== null ? (
+                                  isNftTotalSupplyUnlimited ? (
+                                    "Unlimited"
+                                  ) : (
+                                    totalNftSupply
+                                  )
+                                ) : (
+                                  <Skeleton
+                                    variant="rectangular"
+                                    width={100}
+                                    height={25}
+                                  />
+                                )}{" "}
+                              </Typography>
+                            ) : (
+                              <Typography
+                                variant="p"
+                                className={classes.valuesStyle}
+                              >
+                                {governorDataFetched ? (
+                                  // convertAmountToWei(totalERC20Supply?.toString()) +
+                                  // (" $" + tokenDetails[1])
+                                  // convertAmountToWei(String(totalERC20Supply))
+                                  ` ${
+                                    totalERC20Supply / Math.pow(10, 6)
+                                  } ${tokenSymbol}`
+                                ) : (
+                                  <Skeleton
+                                    variant="rectangular"
+                                    width={100}
+                                    height={25}
+                                  />
+                                )}{" "}
+                              </Typography>
+                            )}
+                          </Stack>
+                        </Grid>
+                      </>
                     ) : (
-                      <Typography variant="p" className={classes.valuesStyle}>
-                        {governorDataFetched ? (
-                          // convertAmountToWei(totalERC20Supply?.toString()) +
-                          // (" $" + tokenDetails[1])
-                          // convertAmountToWei(String(totalERC20Supply))
-                          ` ${
-                            totalERC20Supply / Math.pow(10, 6)
-                          } ${tokenSymbol}`
-                        ) : (
-                          <Skeleton
-                            variant="rectangular"
-                            width={100}
-                            height={25}
-                          />
-                        )}{" "}
-                      </Typography>
+                      <>
+                        <Grid item md={3} ml={4}>
+                          <Stack spacing={1}>
+                            <Typography variant="settingText">
+                              Club Tokens Minted so far
+                            </Typography>
+                            <Typography
+                              variant="p"
+                              className={classes.valuesStyle}
+                            >
+                              {governorDataFetched ? (
+                                parseInt(clubTokenMinted) + " $" + tokenSymbol
+                              ) : (
+                                <Skeleton
+                                  variant="rectangular"
+                                  width={100}
+                                  height={25}
+                                />
+                              )}
+                            </Typography>
+                          </Stack>
+                        </Grid>
+                        <Grid item>
+                          <Stack spacing={1}>
+                            <Typography variant="settingText">
+                              Total Supply
+                            </Typography>
+                            {tokenType === "erc721" ? (
+                              <Typography
+                                variant="p"
+                                className={classes.valuesStyle}
+                              >
+                                {totalNftSupply !== null ? (
+                                  isNftTotalSupplyUnlimited ? (
+                                    "Unlimited"
+                                  ) : (
+                                    totalNftSupply
+                                  )
+                                ) : (
+                                  <Skeleton
+                                    variant="rectangular"
+                                    width={100}
+                                    height={25}
+                                  />
+                                )}{" "}
+                              </Typography>
+                            ) : (
+                              <Typography
+                                variant="p"
+                                className={classes.valuesStyle}
+                              >
+                                {governorDataFetched ? (
+                                  // convertAmountToWei(totalERC20Supply?.toString()) +
+                                  // (" $" + tokenDetails[1])
+                                  // convertAmountToWei(String(totalERC20Supply))
+                                  ` ${
+                                    totalERC20Supply / Math.pow(10, 6)
+                                  } ${tokenSymbol}`
+                                ) : (
+                                  <Skeleton
+                                    variant="rectangular"
+                                    width={100}
+                                    height={25}
+                                  />
+                                )}{" "}
+                              </Typography>
+                            )}
+                          </Stack>
+                        </Grid>
+                      </>
                     )}
-                  </Stack>
-                </Grid>
-              </Grid>
+                  </Grid>
+                </>
+              ) : (
+                <>
+                  <Grid item ml={3} mt={5} mb={2} mr={3}>
+                    <ProgressBar
+                      value={
+                        clubTokenMinted && totalERC20Supply
+                          ? calculateTreasuryTargetShare(
+                              clubTokenMinted,
+                              totalERC20Supply / 1000000,
+                            )
+                          : 50
+                      }
+                    />
+                  </Grid>
+
+                  <Grid container spacing={2}>
+                    {tokenType === "erc721" ? (
+                      <>
+                        <Grid item ml={4} mt={1} mb={2}>
+                          <Stack spacing={1}>
+                            <Typography variant="settingText">
+                              NFTs Minted so far
+                            </Typography>
+                            <Typography
+                              variant="p"
+                              className={classes.valuesStyle}
+                            >
+                              {totalNftMinted !== null ? (
+                                totalNftMinted
+                              ) : (
+                                <Skeleton
+                                  variant="rectangular"
+                                  width={100}
+                                  height={25}
+                                />
+                              )}
+                            </Typography>
+                          </Stack>
+                        </Grid>
+                      </>
+                    ) : (
+                      <Grid item ml={4} mt={1} mb={2}>
+                        <Stack spacing={1}>
+                          <Typography variant="settingText">
+                            Club Tokens Minted so far
+                          </Typography>
+                          <Typography
+                            variant="p"
+                            className={classes.valuesStyle}
+                          >
+                            {governorDataFetched ? (
+                              parseInt(clubTokenMinted) + " $" + tokenSymbol
+                            ) : (
+                              <Skeleton
+                                variant="rectangular"
+                                width={100}
+                                height={25}
+                              />
+                            )}
+                          </Typography>
+                        </Stack>
+                      </Grid>
+                    )}
+
+                    <Grid
+                      item
+                      ml={4}
+                      mt={1}
+                      mb={2}
+                      mr={4}
+                      xs
+                      sx={{ display: "flex", justifyContent: "flex-end" }}
+                    >
+                      <Stack spacing={1}>
+                        <Typography variant="settingText">
+                          Total Supply
+                        </Typography>
+                        {tokenType === "erc721" ? (
+                          <Typography
+                            variant="p"
+                            className={classes.valuesStyle}
+                          >
+                            {totalNftSupply !== null ? (
+                              isNftTotalSupplyUnlimited ? (
+                                "Unlimited"
+                              ) : (
+                                totalNftSupply
+                              )
+                            ) : (
+                              <Skeleton
+                                variant="rectangular"
+                                width={100}
+                                height={25}
+                              />
+                            )}{" "}
+                          </Typography>
+                        ) : (
+                          <Typography
+                            variant="p"
+                            className={classes.valuesStyle}
+                          >
+                            {governorDataFetched ? (
+                              // convertAmountToWei(totalERC20Supply?.toString()) +
+                              // (" $" + tokenDetails[1])
+                              // convertAmountToWei(String(totalERC20Supply))
+                              ` ${
+                                totalERC20Supply / Math.pow(10, 6)
+                              } ${tokenSymbol}`
+                            ) : (
+                              <Skeleton
+                                variant="rectangular"
+                                width={100}
+                                height={25}
+                              />
+                            )}{" "}
+                          </Typography>
+                        )}
+                      </Stack>
+                    </Grid>
+                  </Grid>
+                </>
+              )}
             </Card>
             <br />
             <Card className={classes.cardRegular}>

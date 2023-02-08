@@ -547,6 +547,7 @@ const Join = (props) => {
   };
 
   const obtaineWalletBallance = async () => {
+    console.log(usdcTokenDecimal);
     if (
       !fetched &&
       userDetails &&
@@ -554,6 +555,7 @@ const Join = (props) => {
       GNOSIS_TRANSACTION_URL &&
       usdcTokenDecimal
     ) {
+      console.log("in heree");
       const usdc_contract = new SmartContract(
         ImplementationContract,
         USDC_CONTRACT_ADDRESS,
@@ -563,6 +565,7 @@ const Join = (props) => {
       );
       await usdc_contract.balanceOf().then(
         (result) => {
+          console.log("wallet usdc balance", result);
           setWalletBalance(convertFromWei(parseInt(result), usdcTokenDecimal));
           setFetched(true);
         },
@@ -637,6 +640,7 @@ const Join = (props) => {
     }
 
     if (checkConnection() && walletConnected && wallet) {
+      console.log("herrreeeeee");
       obtaineWalletBallance();
 
       if (tokenType === "erc721") {
@@ -649,7 +653,7 @@ const Join = (props) => {
   }, [previouslyConnectedWallet, walletConnected, clubId, wallet]);
 
   useEffect(() => {
-    if (tokenType !== "erc721") fetchCustomTokenDecimals();
+    fetchCustomTokenDecimals();
   }, [daoAddress, USDC_CONTRACT_ADDRESS]);
 
   const handleClaimNft = async () => {
@@ -675,7 +679,11 @@ const Join = (props) => {
     // ).toString();
     const priceOfNftConverted = priceOfNft;
 
-    if (userNftBalance < maxTokensPerUser) {
+    if (
+      userNftBalance < maxTokensPerUser &&
+      walletBalance >= priceOfNftConverted
+    ) {
+      console.log("wallet balance", walletBalance);
       setLoading(true);
       // if the user doesn't exist
 
@@ -734,22 +742,24 @@ const Join = (props) => {
             });
           },
           (error) => {
-            console.log("Error", error);
+            // console.log("Error", error);
             setAlertStatus("error");
-            setMessage(error);
+            setMessage(error.message);
             setLoading(false);
             setOpenSnackBar(true);
           },
         )
         .catch((err) => {
           setAlertStatus("error");
-          setMessage(error);
+          setMessage(err.message);
           setLoading(false);
           setOpenSnackBar(true);
         });
     } else {
       setAlertStatus("error");
-      setMessage("Mint Limit Reached");
+      if (walletBalance < priceOfNftConverted) {
+        setMessage("usdc balance is less that mint price");
+      } else setMessage("Mint Limit Reached");
       setOpenSnackBar(true);
       // {
       //   console.log("here");
