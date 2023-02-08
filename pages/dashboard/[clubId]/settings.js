@@ -303,6 +303,7 @@ const Settings = (props) => {
   const [changeNtTransferability, setChangeNtTransferability] = useState(null);
   const [isNftTotalSupplyUnlimited, setIsNftTotalSupplyUnlimited] =
     useState(null);
+  const [balanceOfToken, setbalanceOfToken] = useState(null);
 
   const USDC_CONTRACT_ADDRESS = useSelector((state) => {
     return state.gnosis.usdcContractAddress;
@@ -402,10 +403,10 @@ const Settings = (props) => {
           // setClubTokenMInted(
           //   convertFromWeiGovernance(result[2], governanceConvertDecimal),
           // );
-          setDataFetched(true);
+          // setDataFetched(true);
         },
         (error) => {
-          setDataFetched(false);
+          // setDataFetched(false);
         },
       );
     }
@@ -531,6 +532,7 @@ const Settings = (props) => {
       );
       console.log("governorDetailContract", governorDetailContract);
       setGovernorDataFetched(true);
+      setDataFetched(true);
       await governorDetailContract.closeDate().then((result) => {
         setDepositCloseDate(result);
         setClosingDays(calculateDays(parseInt(result) * 1000));
@@ -543,16 +545,19 @@ const Settings = (props) => {
       await governorDetailContract.maxDepositPerUser().then((result) => {
         setCurrentMaxDeposit(result);
       });
-      console.log("result");
+
       await governorDetailContract.totalRaiseAmount().then((result) => {
-        setTotalERC20Supply(
-          convertFromWeiGovernance(result, governanceConvertDecimal),
-        );
+        setTotalERC20Supply(result);
       });
 
       await governorDetailContract.obtainSymbol().then((result) => {
-        console.log("result", result);
         setTokenSymbol(result);
+      });
+
+      await governorDetailContract.balanceOf().then((result) => {
+        setbalanceOfToken(
+          convertFromWeiGovernance(result, governanceConvertDecimal),
+        );
       });
 
       await governorDetailContract.balanceOf().then((result) => {
@@ -663,7 +668,7 @@ const Settings = (props) => {
 
   useEffect(() => {
     // setLoaderOpen(true);
-
+    console.log("data fetched", dataFetched);
     if (dataFetched) {
       fetchUserBalanceAPI();
       fetchPerformanceFee();
@@ -1069,7 +1074,7 @@ const Settings = (props) => {
                       {apiTokenDetailSet ? tokenAPIDetails[0].name : null}
                     </Typography>
                     <Typography variant="h6" className={classes.dimColor}>
-                      {dataFetched ? "$" + tokenDetails[1] : null}
+                      {dataFetched ? "$" + tokenSymbol : null}
                     </Typography>
                   </Stack>
                 </Grid>
@@ -1315,24 +1320,24 @@ const Settings = (props) => {
                             variant="p"
                             className={classes.valuesStyle}
                           >
-                            {userBalanceFetched && dataFetched
+                            {balanceOfToken !== null && clubTokenMinted !== null
                               ? isNaN(
                                   parseInt(
                                     calculateUserSharePercentage(
-                                      userBalance,
-                                      tokenDetails[2],
+                                      balanceOfToken,
+                                      clubTokenMinted,
                                     ),
                                   ),
                                 )
                                 ? 0
                                 : parseInt(
                                     calculateUserSharePercentage(
-                                      userBalance,
-                                      userOwnershipShare,
+                                      balanceOfToken,
+                                      clubTokenMinted,
                                     ),
                                   )
                               : 0}
-                            % (${userBalance})
+                            % ({balanceOfToken} {tokenSymbol})
                           </Typography>
                         </Grid>
                       </Grid>
@@ -1487,7 +1492,9 @@ const Settings = (props) => {
                           // convertAmountToWei(totalERC20Supply?.toString()) +
                           // (" $" + tokenDetails[1])
                           // convertAmountToWei(String(totalERC20Supply))
-                          ` ${totalERC20Supply / 10 ** 6} ${tokenSymbol}`
+                          ` ${
+                            totalERC20Supply / Math.pow(10, 6)
+                          } ${tokenSymbol}`
                         ) : (
                           <Skeleton
                             variant="rectangular"

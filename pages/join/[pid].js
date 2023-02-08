@@ -907,7 +907,7 @@ const Join = (props) => {
   const handleMaxButtonClick = async (event) => {
     // value should be the maximum deposit value
     if (governorDataFetched) {
-      setDepositAmount(convertToWei(governorDetails[2], usdcTokenDecimal));
+      setDepositAmount(maxDeposit);
     }
   };
 
@@ -1197,14 +1197,15 @@ const Join = (props) => {
                     <Skeleton variant="rectangular" />
                   )}
                 </Grid> */}
+                  <br />
                   <Grid
                     container
                     spacing={2}
                     direction="row"
-                    justifyContent="space-evenly"
+                    justifyContent="space-between"
                     alignItems="center"
                   >
-                    <Grid item ml={1} mt={1} mb={2} md={8}>
+                    <Grid item ml={4} mt={1} mb={2} md={8}>
                       <Grid container direction="column" spacing={2}>
                         <Grid item>
                           <Typography

@@ -3,7 +3,7 @@ import { SmartContract } from "../api/contract";
 
 // function for calculating the balance percentage of the users share
 export const calculateUserSharePercentage = (balance, total) => {
-  return (parseFloat(balance) / parseFloat(total)) * 100;
+  return ((parseFloat(balance) / parseFloat(total)) * 100).toFixed(2);
 };
 
 // function for converting the amount from Wei format
@@ -13,7 +13,7 @@ export const convertAmountToWei = (value) => {
 
 // function for calculating the percentage of current tokens minted so far from the total target token supply
 export const calculateTreasuryTargetShare = (treasuryBalance, totalSupply) => {
-  return (parseInt(treasuryBalance) / parseInt(totalSupply)) * 100;
+  return ((parseInt(treasuryBalance) / parseInt(totalSupply)) * 100).toFixed(2);
 };
 
 // function for calculating the number of days
