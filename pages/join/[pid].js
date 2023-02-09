@@ -309,12 +309,15 @@ const Join = (props) => {
   const checkConnection = async () => {
     console.log("wallet connection check");
     if (window.ethereum) {
+      console.log("in hereeee");
       window.web3 = new Web3(window.ethereum);
     } else if (window.web3) {
+      console.log("in elsee");
       window.web3 = new Web3(window.web3.currentProvider);
     }
     try {
       window.web3.eth.getAccounts().then((async) => {
+        console.log("in hereeee", async);
         setUserDetails(async[0]);
         setWalletConnected(true);
       });
@@ -456,7 +459,7 @@ const Join = (props) => {
       .then((result) => setMaxTokensPerUser(result));
 
     await nftContract
-      .balanceOfNft(wallet[0][0].address)
+      .balanceOfNft(userDetails)
       .then((result) => setUserNftBalance(result));
 
     await nftContract
@@ -547,7 +550,6 @@ const Join = (props) => {
   };
 
   const obtaineWalletBallance = async () => {
-    console.log(usdcTokenDecimal);
     if (
       !fetched &&
       userDetails &&
@@ -555,7 +557,6 @@ const Join = (props) => {
       GNOSIS_TRANSACTION_URL &&
       usdcTokenDecimal
     ) {
-      console.log("in heree");
       const usdc_contract = new SmartContract(
         ImplementationContract,
         USDC_CONTRACT_ADDRESS,
@@ -565,7 +566,6 @@ const Join = (props) => {
       );
       await usdc_contract.balanceOf().then(
         (result) => {
-          console.log("wallet usdc balance", result);
           setWalletBalance(convertFromWei(parseInt(result), usdcTokenDecimal));
           setFetched(true);
         },
@@ -640,7 +640,6 @@ const Join = (props) => {
     }
 
     if (checkConnection() && walletConnected && wallet) {
-      console.log("herrreeeeee");
       obtaineWalletBallance();
 
       if (tokenType === "erc721") {
@@ -650,7 +649,7 @@ const Join = (props) => {
       }
       fetchMembers();
     }
-  }, [previouslyConnectedWallet, walletConnected, clubId, wallet]);
+  }, [previouslyConnectedWallet, walletConnected, clubId, wallet, tokenType]);
 
   useEffect(() => {
     fetchCustomTokenDecimals();
@@ -683,7 +682,6 @@ const Join = (props) => {
       userNftBalance < maxTokensPerUser &&
       walletBalance >= priceOfNftConverted
     ) {
-      console.log("wallet balance", walletBalance);
       setLoading(true);
       // if the user doesn't exist
 
