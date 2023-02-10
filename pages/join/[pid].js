@@ -566,6 +566,7 @@ const Join = (props) => {
       );
       await usdc_contract.balanceOf().then(
         (result) => {
+          console.log(result);
           setWalletBalance(convertFromWei(parseInt(result), usdcTokenDecimal));
           setFetched(true);
         },
@@ -680,7 +681,7 @@ const Join = (props) => {
 
     if (
       userNftBalance < maxTokensPerUser &&
-      walletBalance >= priceOfNftConverted
+      walletBalance >= convertFromWei(priceOfNft, 6)
     ) {
       setLoading(true);
       // if the user doesn't exist
