@@ -66,9 +66,17 @@ import proposalImg from "../../../../public/assets/images/proposals.png";
 import ProposalCard from "./ProposalCard";
 import Safe from "@safe-global/safe-core-sdk";
 import { setGovernanceAllowed } from "../../../../src/redux/reducers/gnosis";
-import ReactQuill from "react-quill";
+
+import dynamic from "next/dynamic";
+
+const QuillEditor = dynamic(
+  () => {
+    return import("../../../../src/components/quillEditor");
+  },
+  { ssr: false },
+);
 import "react-quill/dist/quill.snow.css";
-import QuillEditor from "../../../../src/components/quillEditor";
+// import QuillEditor from "../../../../src/components/quillEditor";
 
 const useStyles = makeStyles({
   proposalInfoCard: {

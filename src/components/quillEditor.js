@@ -1,7 +1,9 @@
-import React from "react";
+"use client";
+import React, { useMemo } from "react";
 import PropTypes from "prop-types";
 import clsx from "clsx";
-import ReactQuill from "react-quill";
+import dynamic from "next/dynamic";
+
 import { makeStyles } from "@mui/styles";
 import "react-quill/dist/quill.snow.css";
 
@@ -81,8 +83,13 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const QuillEditor = ({ className, ...rest }) => {
+  // const ReactQuill =
+  //   typeof window === "object" ? require("react-quill") : () => false;
   const classes = useStyles();
-
+  const ReactQuill = useMemo(
+    () => dynamic(() => import("react-quill"), { ssr: false }),
+    [],
+  );
   return <ReactQuill className={clsx(classes.root, className)} {...rest} />;
 };
 
