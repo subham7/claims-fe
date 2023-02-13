@@ -66,6 +66,7 @@ import proposalImg from "../../../../public/assets/images/proposals.png";
 import ProposalCard from "./ProposalCard";
 import Safe from "@safe-global/safe-core-sdk";
 import { setGovernanceAllowed } from "../../../../src/redux/reducers/gnosis";
+import { fetchClubbyDaoAddress } from "../../../../src/api/club";
 
 const useStyles = makeStyles({
   proposalInfoCard: {
@@ -291,6 +292,7 @@ const Proposal = () => {
   const [enableSubmitButton, setEnableSubmitButton] = useState(false);
   const [count, setCount] = useState(0);
   const [executionTransaction, setExecutionTransaction] = useState();
+  const [tokenType, setTokenType] = useState(null);
   const [governance, setGovernance] = useState();
   const defaultOptions = [
     {
@@ -351,6 +353,19 @@ const Proposal = () => {
       await getExecutionTransaction();
     }
   }, [gnosisAddress, GNOSIS_TRANSACTION_URL]);
+
+  const fetchTokenType = async () => {
+    const response = await fetchClubbyDaoAddress(daoAddress);
+    if (response.data.length > 0) {
+      setTokenType(response.data[0].tokenType);
+    }
+  };
+
+  useEffect(() => {
+    if (daoAddress) {
+      fetchTokenType();
+    }
+  }, [daoAddress, GNOSIS_TRANSACTION_URL, USDC_CONTRACT_ADDRESS]);
 
   const fetchTokens = () => {
     if (clubID) {
@@ -1412,7 +1427,7 @@ const Proposal = () => {
                                   width: "90%",
                                 }}
                               >
-                                {!isGovernanceActive
+                                {/* {!isGovernanceActive
                                   ? commandTypeList
                                       .filter((command) => {
                                         return command.commandId !== 2;
@@ -1438,7 +1453,7 @@ const Proposal = () => {
                                       >
                                         {command.commandText}
                                       </MenuItem>
-                                    ))}
+                                    ))} */}
                                 {/* {commandTypeList.map((command) => (
                                   <MenuItem
                                     key={command.commandId}
@@ -1447,6 +1462,38 @@ const Proposal = () => {
                                     {command.commandText}
                                   </MenuItem>
                                 ))} */}
+                                <MenuItem
+                                  key={0}
+                                  value="Distribute token to members"
+                                >
+                                  Distribute token to members
+                                </MenuItem>
+                                <MenuItem key={1} value="Mint club token">
+                                  Mint club token
+                                </MenuItem>
+                                {isGovernanceActive ? (
+                                  <MenuItem
+                                    key={2}
+                                    value="Update Governance Settings"
+                                  >
+                                    Update Governance Settings
+                                  </MenuItem>
+                                ) : null}
+                                {tokenType !== "erc721" ? (
+                                  <MenuItem
+                                    key={3}
+                                    value="Change total raise amount"
+                                  >
+                                    Change total raise amount
+                                  </MenuItem>
+                                ) : null}
+
+                                <MenuItem
+                                  key={4}
+                                  value="Send token to an address"
+                                >
+                                  Send token to an address
+                                </MenuItem>
                               </Select>
                               <IconButton
                                 aria-label="add"
