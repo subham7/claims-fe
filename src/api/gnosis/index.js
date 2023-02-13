@@ -1,21 +1,18 @@
 import axios from "axios";
-import {MAIN_API_URL} from "../index";
-import {getJwtToken} from "../../utils/auth";
+import { MAIN_API_URL } from "../index";
+import { getJwtToken } from "../../utils/auth";
 
 export async function getTokens(gnosisAddress) {
   // fetch tokens associated with the gnosis wallet
-  return await axios.get(
-    MAIN_API_URL + "gnosis/getTokens",
-    {
-      params : {
-        gnosisAddress: `${gnosisAddress}`
-      },
-      headers: {
-        'Authorization': 'Bearer ' + getJwtToken(),
-          'Content-Type': 'application/json'
-      }
-    }
-  )
+  return await axios.get(MAIN_API_URL + "gnosis/getTokens", {
+    params: {
+      gnosisAddress: `${gnosisAddress}`,
+    },
+    headers: {
+      "Authorization": "Bearer " + getJwtToken(),
+      "Content-Type": "application/json",
+    },
+  });
 }
 
 export async function getNfts(gnosisAddress) {
@@ -24,11 +21,11 @@ export async function getNfts(gnosisAddress) {
     MAIN_API_URL + `gnosis/getNFT?gnosisAddress=${gnosisAddress}`,
     {
       headers: {
-        'Authorization': 'Bearer ' + getJwtToken(),
-        'Content-Type': 'application/json'
-      }
-    }
-  )
+        "Authorization": "Bearer " + getJwtToken(),
+        "Content-Type": "application/json",
+      },
+    },
+  );
 }
 
 export async function getBalance(gnosisAddress) {
@@ -37,10 +34,9 @@ export async function getBalance(gnosisAddress) {
     MAIN_API_URL + `gnosis/getAssets?gnosisAddress=${gnosisAddress}`,
     {
       headers: {
-        'Authorization': 'Bearer ' + getJwtToken(),
-        'Content-Type': 'application/json'
-      }
-    }
-  )
+        "Authorization": "Bearer " + getJwtToken(),
+        "Content-Type": "application/json",
+      },
+    },
+  );
 }
-

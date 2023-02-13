@@ -1,4 +1,4 @@
-import {createSlice} from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 
 export const slice = createSlice({
   name: "gnosis",
@@ -15,6 +15,10 @@ export const slice = createSlice({
     tokenSymbol: null,
     tokenDecimal: null,
     governanceTokenDecimal: null,
+    createDaoGnosisSigned: false,
+    createDaoAuthorized: false,
+    governanceAllowed: true,
+    redirectToCreate: false,
   },
   reducers: {
     safeConnected: (state, action) => {
@@ -45,8 +49,20 @@ export const slice = createSlice({
     setUSDCTokenDetails: (state, action) => {
       state.tokenSymbol = action.payload.tokenSymbol;
       state.tokenDecimal = action.payload.tokenDecimal;
+    },
+    setCreateDaoGnosisSigned: (state, action) => {
+      state.createDaoGnosisSigned = action.payload;
+    },
+    setCreateDaoAuthorized: (state, action) => {
+      state.createDaoAuthorized = action.payload;
+    },
+    setGovernanceAllowed: (state, action) => {
+      state.governanceAllowed = action.payload;
+    },
+    setRedirectToCreate: (state, action) => {
+      state.redirectToCreate = action.payload;
     }
-  }
+  },
 });
 
 export const {
@@ -57,6 +73,10 @@ export const {
   setAdminUser,
   setGovernanceTokenDetails,
   setUSDCTokenDetails,
-} = slice.actions
+  setCreateDaoGnosisSigned,
+  setCreateDaoAuthorized,
+  setGovernanceAllowed,
+  setRedirectToCreate,
+} = slice.actions;
 
-export default slice.reducer
+export default slice.reducer;
