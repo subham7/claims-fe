@@ -25,3 +25,12 @@ export async function fetchTokenMetaData(tokenAddress, networkId) {
     },
   );
 }
+
+export async function getNFTs(clubId) {
+  return await axios.get(MAIN_API_URL + `assets/${clubId}/nft`, {
+    headers: {
+      "Authorization": "Bearer " + getJwtToken(),
+      "Content-Type": "application/json",
+    },
+  });
+}
