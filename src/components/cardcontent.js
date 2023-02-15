@@ -33,8 +33,13 @@ export default function CollectionCard(props) {
     // console.log("imgUrl, ", `https://${imgUrl[1]}.ipfs.dweb.link/${imgUrl[2]}`);
   } else {
     let imgUrl = tokenURI?.split("/");
-    modifiedTokenURI = `https://${imgUrl[2]}.ipfs.dweb.link/${imgUrl[3]}`;
-    // console.log("imgUrl, ", `https://${imgUrl[2]}.ipfs.dweb.link/${imgUrl[3]}`);
+    if (imgUrl[3] === undefined) {
+      modifiedTokenURI = tokenURI.replace("ipfs://", "https://ipfs.io/ipfs/");
+      console.log(modifiedTokenURI);
+    } else {
+      modifiedTokenURI = `https://${imgUrl[2]}.ipfs.dweb.link/${imgUrl[3]}`;
+      // console.log("imgUrl, ", `https://${imgUrl[2]}.ipfs.dweb.link/${imgUrl[3]}`);
+    }
   }
 
   return (
@@ -45,6 +50,8 @@ export default function CollectionCard(props) {
         alt="green iguana"
         image={modifiedTokenURI}
       />
+      {/* <MediaRenderer src={tokenURI} alt="A mp4 video" /> */}
+      {/* <IpfsImage hash={tokenURI}></IpfsImage> */}
       <CardContent>
         <Typography gutterBottom component="div" variant="cardFont1">
           {tokenName}
