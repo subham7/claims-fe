@@ -66,6 +66,7 @@ const useStyles = makeStyles((theme) => ({
       },
     },
     "& .ql-container": {
+      "height": "16vh",
       //   "border": "none",
       "border": `2px solid ${theme.palette.divider}`,
       "borderBottomRightRadius": "12px",
