@@ -302,6 +302,11 @@ const Proposal = () => {
   const [airdropError, setAirdropError] = useState(false);
   const [airdropErrorMessage, setAirdropErrorMesage] = useState();
   const [carryFeeError, setCarryFeeError] = useState();
+  const [quorumError, setQuorumError] = useState();
+  const [thresholdError, setThresholdError] = useState();
+  const [customTokenError, setCustomTokenError] = useState();
+  const [customTokenAddressesError, setCustomTokenAddressesError] = useState();
+  const [customTokenErrorMesage, setCustomTokenErrorMesage] = useState();
   const defaultOptions = [
     {
       text: "Yes",
@@ -720,11 +725,25 @@ const Proposal = () => {
 
       if (name === commandTypeList[2].commandText) {
         // For execution of Governance settings
-        if (
-          thresholdValue > 50 &&
-          thresholdValue <= 100 &&
-          quorumValue <= 100
+        if (title.length === 0) {
+          console.log("ttitle");
+          setTitleError(true);
+          setOpen(true);
+        } else if (
+          quorumValue.length === 0 ||
+          quorumValue <= 0 ||
+          quorumValue > 100
         ) {
+          setQuorumError(true);
+          setOpen(true);
+        } else if (
+          thresholdValue.length === 0 ||
+          thresholdValue < 51 ||
+          thresholdValue > 100
+        ) {
+          setThresholdError(true);
+          setOpen(true);
+        } else {
           const payload = {
             name: title,
             description: description,
@@ -757,12 +776,20 @@ const Proposal = () => {
               setOpen(false);
             }
           });
-        } else {
-          setOpenSnackBar(true);
-          setFailed(true);
-          setOpen(false);
-          setLoaderOpen(false);
         }
+        // // For execution of Governance settings
+        // if (
+        //   thresholdValue > 50 &&
+        //   thresholdValue <= 100 &&
+        //   quorumValue <= 100
+        // ) {
+
+        // } else {
+        //   setOpenSnackBar(true);
+        //   setFailed(true);
+        //   setOpen(false);
+        //   setLoaderOpen(false);
+        // }
       }
 
       if (name === commandTypeList[3].commandText) {
@@ -803,41 +830,65 @@ const Proposal = () => {
 
       if (name === commandTypeList[4].commandText) {
         // for execution of sending custom token
-        const payload = {
-          name: title,
-          description: description,
-          createdBy: walletAddress,
-          clubId: clubID,
-          votingDuration: new Date(duration).toISOString(),
-          votingOptions: defaultOptions,
-          commands: [
-            {
-              executionId: 4,
-              customToken: customToken,
-              customTokenAmounts: [
-                convertToWei(customTokenAmounts, usdcTokenDecimal),
-              ],
-              customTokenAddresses: [customTokenAddresses],
-              usdcTokenSymbol: usdcTokenSymbol,
-              usdcTokenDecimal: usdcTokenDecimal,
-              usdcGovernanceTokenDecimal: usdcGovernanceTokenDecimal,
-            },
-          ],
-          type: "action",
-        };
-        const createRequest = createProposal(payload);
-        createRequest.then((result) => {
-          if (result.status !== 201) {
-            setOpenSnackBar(true);
-            setFailed(true);
+        if (title.length === 0) {
+          titleError(true);
+          setOpen(true);
+        } else if (customToken.length === 0) {
+          setCustomTokenError(true);
+          setOpen(true);
+        } else if (customTokenAddresses.length === 0) {
+          setCustomTokenAddressesError(true);
+          setOpen(true);
+        } else if (customTokenError || customTokenAmounts === 0) {
+          console.log("airdrop token error", customTokenAmounts);
+          setCustomTokenError(true);
+          if (customTokenAmounts === 0 || customTokenAmounts.length === 0) {
+            console.log("herreee");
+            setCustomTokenErrorMesage("Custom Token is required");
           } else {
-            // console.log(result.data)
-            fetchData();
-            setOpenSnackBar(true);
-            setFailed(false);
-            setOpen(false);
+            console.log(" in  herreee");
+            setCustomTokenErrorMesage(
+              "Custom amount should be less than token balane",
+            );
           }
-        });
+          setOpen(true);
+        } else {
+          const payload = {
+            name: title,
+            description: description,
+            createdBy: walletAddress,
+            clubId: clubID,
+            votingDuration: new Date(duration).toISOString(),
+            votingOptions: defaultOptions,
+            commands: [
+              {
+                executionId: 4,
+                customToken: customToken,
+                customTokenAmounts: [
+                  convertToWei(customTokenAmounts, usdcTokenDecimal),
+                ],
+                customTokenAddresses: [customTokenAddresses],
+                usdcTokenSymbol: usdcTokenSymbol,
+                usdcTokenDecimal: usdcTokenDecimal,
+                usdcGovernanceTokenDecimal: usdcGovernanceTokenDecimal,
+              },
+            ],
+            type: "action",
+          };
+          const createRequest = createProposal(payload);
+          createRequest.then((result) => {
+            if (result.status !== 201) {
+              setOpenSnackBar(true);
+              setFailed(true);
+            } else {
+              // console.log(result.data)
+              fetchData();
+              setOpenSnackBar(true);
+              setFailed(false);
+              setOpen(false);
+            }
+          });
+        }
       }
 
       // if (name === commandTypeList[7].commandText) {
@@ -918,7 +969,9 @@ const Proposal = () => {
     const {
       target: { value },
     } = event;
-    setCustomToken(value);
+    setCustomToken(
+      tokenData.find((token) => token.name === value).token_address,
+    );
   };
 
   const handleAirDropTokenChange = (event) => {
@@ -1605,7 +1658,7 @@ const Proposal = () => {
                                     </Select>
                                     {airdropTokenError && (
                                       <FormHelperText error focused>
-                                        Airdrop token is require
+                                        Airdrop token is required
                                       </FormHelperText>
                                     )}
                                   </Grid>
@@ -1759,13 +1812,22 @@ const Proposal = () => {
                                     }}
                                     className={classes.cardTextBox}
                                     placeholder="0"
-                                    onChange={(e) =>
-                                      setQuorumValue(parseInt(e.target.value))
-                                    }
-                                    error={
-                                      quorumValue === 0 || quorumValue >= 100
-                                    }
+                                    onChange={(e) => {
+                                      setQuorumValue(parseInt(e.target.value));
+                                      if (
+                                        e.target.value <= 0 ||
+                                        e.target.value > 100
+                                      )
+                                        setQuorumError(true);
+                                      else setQuorumError(false);
+                                    }}
+                                    error={quorumError}
                                   />
+                                  {quorumError && (
+                                    <FormHelperText error focused>
+                                      Quorum should be between 1-100
+                                    </FormHelperText>
+                                  )}
                                 </Grid>
                                 <Grid item>
                                   <Typography variant="proposalBody">
@@ -1780,17 +1842,25 @@ const Proposal = () => {
                                     }}
                                     className={classes.cardTextBox}
                                     placeholder="0"
-                                    onChange={(e) =>
+                                    onChange={(e) => {
                                       setThresholdValue(
                                         parseInt(e.target.value),
-                                      )
-                                    }
-                                    error={
-                                      thresholdValue === 0 ||
-                                      thresholdValue < 50 ||
-                                      thresholdValue >= 100
-                                    }
+                                      );
+                                      if (
+                                        e.target.value < 51 ||
+                                        e.target.value > 100
+                                      ) {
+                                        console.log(e.target.value);
+                                        setThresholdError(true);
+                                      } else setThresholdError(false);
+                                    }}
+                                    error={thresholdError}
                                   />
+                                  {thresholdError && (
+                                    <FormHelperText error focused>
+                                      Threshold should be between 51-100
+                                    </FormHelperText>
+                                  )}
                                 </Grid>
                               </Grid>
                             ) : name === commandTypeList[3].commandText ? (
@@ -1866,16 +1936,22 @@ const Proposal = () => {
                                         "#111D38 0% 0% no-repeat padding-box",
                                       width: "90%",
                                     }}
+                                    error={customToken.length === 0}
                                   >
                                     {tokenData.map((token) => (
                                       <MenuItem
                                         key={token.name}
-                                        value={token.token_address}
+                                        value={token.name}
                                       >
                                         {token.name}
                                       </MenuItem>
                                     ))}
                                   </Select>
+                                  {customTokenError && (
+                                    <FormHelperText error focused>
+                                      Custom token is required
+                                    </FormHelperText>
+                                  )}
                                 </Grid>
                                 <Grid item>
                                   <Typography className={classes.cardFont}>
@@ -1890,10 +1966,19 @@ const Proposal = () => {
                                     }}
                                     className={classes.cardTextBox}
                                     placeholder="0x..."
-                                    onChange={(e) =>
-                                      setCustomTokenAddresses(e.target.value)
-                                    }
+                                    onChange={(e) => {
+                                      setCustomTokenAddresses(e.target.value);
+                                      if (e.target.value.length === 0)
+                                        setCustomTokenAddressesError(true);
+                                      else setCustomTokenAddressesError(false);
+                                    }}
+                                    error={customTokenAddressesError}
                                   />
+                                  {customTokenAddressesError && (
+                                    <FormHelperText error>
+                                      Wallet address required
+                                    </FormHelperText>
+                                  )}
                                 </Grid>
                                 <Grid item>
                                   <Typography className={classes.cardFont}>
@@ -1908,10 +1993,26 @@ const Proposal = () => {
                                     }}
                                     className={classes.cardTextBox}
                                     placeholder="0"
-                                    onChange={(e) =>
-                                      setCustomTokenAmounts(e.target.value)
-                                    }
+                                    onChange={(e) => {
+                                      setCustomTokenAmounts(e.target.value);
+                                      if (
+                                        e.target.value >
+                                          tokenData?.filter(
+                                            (data) =>
+                                              data.token_address ===
+                                              customToken,
+                                          )[0]?.value ||
+                                        e.target.value === ""
+                                      ) {
+                                        setCustomTokenError(true);
+                                      } else setCustomTokenError(false);
+                                    }}
                                   />
+                                  {customTokenError && (
+                                    <FormHelperText error focused>
+                                      {customTokenErrorMesage}
+                                    </FormHelperText>
+                                  )}
                                 </Grid>
                               </Grid>
                             ) : // :
