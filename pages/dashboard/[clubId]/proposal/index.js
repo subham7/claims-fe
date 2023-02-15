@@ -28,6 +28,7 @@ import {
   Backdrop,
   Link,
   InputAdornment,
+  FormHelperText,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
@@ -276,6 +277,7 @@ const Proposal = () => {
   const [searchProposal, setSearchProposal] = useState("");
   const [airDropAmount, setAirDropAmount] = useState(0);
   const [airDropToken, setAirDropToken] = useState("");
+  const [airDropTokenValue, setAirDropTokenValue] = useState("");
   const [airDropCarryFee, setAirDropCarryFee] = useState(0);
   const [executiveRoles, setExecutiveRoles] = useState([]);
   const [mintGtAddress, setMintGtAddress] = useState([]);
@@ -294,6 +296,12 @@ const Proposal = () => {
   const [executionTransaction, setExecutionTransaction] = useState();
   const [tokenType, setTokenType] = useState(null);
   const [governance, setGovernance] = useState();
+  const [titleError, setTitleError] = useState(false);
+  const [descriptionError, setDescriptionError] = useState(false);
+  const [airdropTokenError, setairdropTokenError] = useState(false);
+  const [airdropError, setAirdropError] = useState(false);
+  const [airdropErrorMessage, setAirdropErrorMesage] = useState();
+  const [carryFeeError, setCarryFeeError] = useState();
   const defaultOptions = [
     {
       text: "Yes",
@@ -543,56 +551,94 @@ const Proposal = () => {
     } else {
       setOpen(false);
       if (name === commandTypeList[0].commandText) {
-        // for airdrop execution
-        console.log(tokenData);
-        const airDropTokenDecimal = tokenData?.filter(
-          (data) => data.token_address === airDropToken,
-        )[0].decimals;
-
-        const airDropTokenSymbol = tokenData?.filter(
-          (data) => data.token_address === airDropToken,
-        )[0].symbol;
-        console.log("airDropAmount", airDropAmount);
-        const payload = {
-          name: title,
-          description: description,
-          createdBy: walletAddress,
-          clubId: clubID,
-          votingDuration: new Date(duration).toISOString(),
-          votingOptions: defaultOptions,
-          commands: [
-            {
-              executionId: 0,
-              airDropToken: airDropToken,
-              airDropAmount: convertToWei(
-                airDropAmount,
-                airDropTokenDecimal,
-              ).toString(),
-              airDropCarryFee: airDropCarryFee,
-              usdcTokenSymbol: airDropTokenSymbol,
-              usdcTokenDecimal: airDropTokenDecimal,
-              usdcGovernanceTokenDecimal: airDropTokenDecimal,
-            },
-          ],
-          type: "action",
-        };
-        console.log(
-          "airdrop",
-          convertToWei(airDropAmount, airDropTokenDecimal).toString(),
-        );
-        const createRequest = createProposal(payload);
-        createRequest.then((result) => {
-          if (result.status !== 201) {
-            setOpenSnackBar(true);
-            setFailed(true);
+        //errors
+        if (title.length === 0) {
+          console.log("ttitle");
+          setTitleError(true);
+          setOpen(true);
+        } else if (airDropTokenValue.length === 0) {
+          console.log("airdrop token error");
+          setairdropTokenError(true);
+          setOpen(true);
+        } else if (airdropError || airDropAmount === 0) {
+          console.log("airdrop token error");
+          setAirdropError(true);
+          if (airDropAmount === 0 || airDropAmount.length === 0) {
+            console.log("herreee");
+            setAirdropErrorMesage("Airdrop Token is required");
           } else {
-            // console.log(result.data)
-            fetchData();
-            setOpenSnackBar(true);
-            setFailed(false);
-            setOpen(false);
+            console.log(" in  herreee");
+            setAirdropErrorMesage(
+              "Airdrop amount should be less than token balane",
+            );
           }
-        });
+          setOpen(true);
+        } else if (
+          airDropCarryFee.length === 0 ||
+          airDropCarryFee <= 0 ||
+          airDropCarryFee > 100
+        ) {
+          console.log("carry fee  error");
+          setCarryFeeError(true);
+          setOpen(true);
+        } else {
+          // for airdrop execution
+          console.log("airDropTokenValue", airDropTokenValue);
+          const airDropTokenDecimal = tokenData?.filter(
+            (data) => data.token_address === airDropTokenValue,
+          )[0].decimals;
+
+          const airDropTokenSymbol = tokenData?.filter(
+            (data) => data.token_address === airDropTokenValue,
+          )[0].symbol;
+
+          const airdropTokenBalance = tokenData?.filter(
+            (data) => data.token_address === airDropTokenValue,
+          )[0]?.value;
+          console.log("airdropTokenBalance", airdropTokenBalance);
+
+          console.log("airDropAmount", airDropAmount);
+          const payload = {
+            name: title,
+            description: description,
+            createdBy: walletAddress,
+            clubId: clubID,
+            votingDuration: new Date(duration).toISOString(),
+            votingOptions: defaultOptions,
+            commands: [
+              {
+                executionId: 0,
+                airDropToken: airDropToken,
+                airDropAmount: convertToWei(
+                  airDropAmount,
+                  airDropTokenDecimal,
+                ).toString(),
+                airDropCarryFee: airDropCarryFee,
+                usdcTokenSymbol: airDropTokenSymbol,
+                usdcTokenDecimal: airDropTokenDecimal,
+                usdcGovernanceTokenDecimal: airDropTokenDecimal,
+              },
+            ],
+            type: "action",
+          };
+          console.log(
+            "airdrop",
+            convertToWei(airDropAmount, airDropTokenDecimal).toString(),
+          );
+          const createRequest = createProposal(payload);
+          createRequest.then((result) => {
+            if (result.status !== 201) {
+              setOpenSnackBar(true);
+              setFailed(true);
+            } else {
+              // console.log(result.data)
+              fetchData();
+              setOpenSnackBar(true);
+              setFailed(false);
+              setOpen(false);
+            }
+          });
+        }
       }
 
       if (name === commandTypeList[1].commandText) {
@@ -881,6 +927,9 @@ const Proposal = () => {
     } = event;
     console.log("value", value);
     setAirDropToken(value);
+    setAirDropTokenValue(
+      tokenData.find((token) => token.name === value).token_address,
+    );
   };
 
   const handleChange = (event) => {
@@ -1296,7 +1345,13 @@ const Proposal = () => {
                 className={classes.cardTextBox}
                 placeholder="Add your one line description here"
                 onChange={(e) => setTitle(e.target.value)}
+                error={titleError}
               />
+              {titleError && (
+                <FormHelperText error focused>
+                  Title is required
+                </FormHelperText>
+              )}
             </Grid>
             <Grid container item ml={3} mt={2}>
               <Typography variant="proposalBody">
@@ -1537,16 +1592,22 @@ const Proposal = () => {
                                           "#111D38 0% 0% no-repeat padding-box",
                                         width: "90%",
                                       }}
+                                      error={airDropTokenValue.length === 0}
                                     >
                                       {tokenData.map((token) => (
                                         <MenuItem
                                           key={token.name}
-                                          value={token.token_address}
+                                          value={token.name}
                                         >
                                           {token.name}
                                         </MenuItem>
                                       ))}
                                     </Select>
+                                    {airdropTokenError && (
+                                      <FormHelperText error focused>
+                                        Airdrop token is require
+                                      </FormHelperText>
+                                    )}
                                   </Grid>
                                 </Grid>
                                 <Grid item>
@@ -1562,12 +1623,27 @@ const Proposal = () => {
                                     }}
                                     className={classes.cardTextBox}
                                     placeholder="0"
-                                    onChange={(e) =>
+                                    onChange={(e) => {
                                       setAirDropAmount(
                                         parseFloat(e.target.value),
+                                      );
+                                      if (
+                                        parseFloat(e.target.value) >
+                                        tokenData?.filter(
+                                          (data) =>
+                                            data.token_address ===
+                                            airDropTokenValue,
+                                        )[0]?.value
                                       )
-                                    }
+                                        setAirdropError(true);
+                                      else setAirdropError(false);
+                                    }}
                                   />
+                                  {airdropError && (
+                                    <FormHelperText error focused>
+                                      {airdropErrorMessage}
+                                    </FormHelperText>
+                                  )}
                                 </Grid>
                                 <Grid item>
                                   <Typography className={classes.cardFont}>
@@ -1582,12 +1658,23 @@ const Proposal = () => {
                                     }}
                                     className={classes.cardTextBox}
                                     placeholder="0%"
-                                    onChange={(e) =>
+                                    onChange={(e) => {
                                       setAirDropCarryFee(
                                         parseInt(e.target.value),
+                                      );
+                                      if (
+                                        e.target.value <= 0 ||
+                                        e.target.value > 100
                                       )
-                                    }
+                                        setCarryFeeError(true);
+                                      else setCarryFeeError(false);
+                                    }}
                                   />
+                                  {carryFeeError && (
+                                    <FormHelperText error focused>
+                                      Carry Fee should be between 1-100
+                                    </FormHelperText>
+                                  )}
                                 </Grid>
                               </Grid>
                             ) : name === commandTypeList[1].commandText ? (
