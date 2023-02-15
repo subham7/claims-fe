@@ -561,6 +561,10 @@ const Proposal = () => {
           console.log("ttitle");
           setTitleError(true);
           setOpen(true);
+        } else if (description.length === 0) {
+          console.log("airdrop token error");
+          setDescriptionError(true);
+          setOpen(true);
         } else if (airDropTokenValue.length === 0) {
           console.log("airdrop token error");
           setairdropTokenError(true);
@@ -729,6 +733,10 @@ const Proposal = () => {
           console.log("ttitle");
           setTitleError(true);
           setOpen(true);
+        } else if (description.length === 0) {
+          console.log("airdrop token error");
+          setDescriptionError(true);
+          setOpen(true);
         } else if (
           quorumValue.length === 0 ||
           quorumValue <= 0 ||
@@ -794,44 +802,58 @@ const Proposal = () => {
 
       if (name === commandTypeList[3].commandText) {
         // For execution of update raise amount
-        const payload = {
-          name: title,
-          description: description,
-          createdBy: walletAddress,
-          clubId: clubID,
-          votingDuration: new Date(duration).toISOString(),
-          votingOptions: defaultOptions,
-          commands: [
-            {
-              executionId: 3,
-              totalDeposits: convertToWei(totalDeposits, usdcTokenDecimal),
-              usdcTokenSymbol: usdcTokenSymbol,
-              usdcTokenDecimal: usdcTokenDecimal,
-              usdcGovernanceTokenDecimal: usdcGovernanceTokenDecimal,
-            },
-          ],
-          type: "action",
-        };
-        const createRequest = createProposal(payload);
-        createRequest.then((result) => {
-          if (result.status !== 201) {
-            setOpenSnackBar(true);
-            setFailed(true);
-          } else {
-            // console.log(result.data)
-            setLoaderOpen(true);
-            fetchData();
-            setOpenSnackBar(true);
-            setFailed(false);
-            setOpen(false);
-          }
-        });
+        if (title.length === 0) {
+          console.log("ttitle");
+          setTitleError(true);
+          setOpen(true);
+        } else if (description.length === 0) {
+          console.log("airdrop token error");
+          setDescriptionError(true);
+          setOpen(true);
+        } else {
+          const payload = {
+            name: title,
+            description: description,
+            createdBy: walletAddress,
+            clubId: clubID,
+            votingDuration: new Date(duration).toISOString(),
+            votingOptions: defaultOptions,
+            commands: [
+              {
+                executionId: 3,
+                totalDeposits: convertToWei(totalDeposits, usdcTokenDecimal),
+                usdcTokenSymbol: usdcTokenSymbol,
+                usdcTokenDecimal: usdcTokenDecimal,
+                usdcGovernanceTokenDecimal: usdcGovernanceTokenDecimal,
+              },
+            ],
+            type: "action",
+          };
+          const createRequest = createProposal(payload);
+          createRequest.then((result) => {
+            if (result.status !== 201) {
+              setOpenSnackBar(true);
+              setFailed(true);
+            } else {
+              // console.log(result.data)
+              setLoaderOpen(true);
+              fetchData();
+              setOpenSnackBar(true);
+              setFailed(false);
+              setOpen(false);
+            }
+          });
+        }
       }
 
       if (name === commandTypeList[4].commandText) {
         // for execution of sending custom token
         if (title.length === 0) {
           titleError(true);
+          setOpen(true);
+        } else if (description.length === 0) {
+          console.log("airdrop token error");
+          setDescriptionError(true);
           setOpen(true);
         } else if (customToken.length === 0) {
           setCustomTokenError(true);
@@ -1427,7 +1449,13 @@ const Proposal = () => {
                   color: "#C1D3FF",
                   fontFamily: "Whyte",
                 }}
+                error={descriptionError}
               />
+              {descriptionError && (
+                <FormHelperText error focused>
+                  Description is required
+                </FormHelperText>
+              )}
             </Grid>
             {type === proposalType[0].type ? (
               <>
