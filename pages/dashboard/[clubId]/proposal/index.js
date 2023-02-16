@@ -78,6 +78,7 @@ const QuillEditor = dynamic(
   { ssr: false },
 );
 import "react-quill/dist/quill.snow.css";
+import ReactHtmlParser from "react-html-parser";
 // import QuillEditor from "../../../../src/components/quillEditor";
 
 const useStyles = makeStyles({
@@ -523,6 +524,7 @@ const Proposal = () => {
 
   const handleNext = async (event) => {
     setLoaderOpen(true);
+    setDescriptionError(false);
     const web3 = new Web3(window.web3);
     const walletAddress = web3.utils.toChecksumAddress(
       localStorage.getItem("wallet"),
@@ -568,12 +570,13 @@ const Proposal = () => {
       setOpen(false);
       if (name === commandTypeList[0].commandText) {
         //errors
+        // console.log("description", description);
         if (title.length === 0) {
           console.log("ttitle");
           setTitleError(true);
           setOpen(true);
-        } else if (description.length === 0) {
-          console.log("airdrop token error");
+        } else if (description?.length === 0 || description === undefined) {
+          console.log("description", description);
           setDescriptionError(true);
           setOpen(true);
         } else if (airDropTokenValue.length === 0) {
@@ -744,7 +747,7 @@ const Proposal = () => {
           console.log("ttitle");
           setTitleError(true);
           setOpen(true);
-        } else if (description.length === 0) {
+        } else if (description?.length === 0 || description === undefined) {
           console.log("airdrop token error");
           setDescriptionError(true);
           setOpen(true);
@@ -817,7 +820,7 @@ const Proposal = () => {
           console.log("ttitle");
           setTitleError(true);
           setOpen(true);
-        } else if (description.length === 0) {
+        } else if (description?.length === 0 || description === undefined) {
           console.log("airdrop token error");
           setDescriptionError(true);
           setOpen(true);
@@ -862,7 +865,7 @@ const Proposal = () => {
         if (title.length === 0) {
           titleError(true);
           setOpen(true);
-        } else if (description.length === 0) {
+        } else if (description?.length === 0 || description === undefined) {
           console.log("airdrop token error");
           setDescriptionError(true);
           setOpen(true);
@@ -1016,6 +1019,7 @@ const Proposal = () => {
     setAirDropTokenValue(
       tokenData.find((token) => token.name === value).token_address,
     );
+    setairdropTokenError(false);
   };
 
   const handleChange = (event) => {
@@ -1430,7 +1434,14 @@ const Proposal = () => {
                 sx={{ width: "95%", backgroundColor: "#C1D3FF40" }}
                 className={classes.cardTextBox}
                 placeholder="Add your one line description here"
-                onChange={(e) => setTitle(e.target.value)}
+                onChange={(e) => {
+                  setTitle(e.target.value);
+                  if (e.target.value.length < 0) {
+                    setTitleError(true);
+                  } else {
+                    setTitleError(false);
+                  }
+                }}
                 error={titleError}
               />
               {titleError && (
@@ -1458,7 +1469,13 @@ const Proposal = () => {
                   color: "#C1D3FF",
                   fontFamily: "Whyte",
                 }}
+                error={descriptionError}
               />
+              {descriptionError && (
+                <FormHelperText error focused mt={10}>
+                  Description is required
+                </FormHelperText>
+              )}
               {/* <TextField
                 onChange={(e) => setDescription(e.target.value)}
                 multiline
@@ -1692,7 +1709,7 @@ const Proposal = () => {
                                           "#111D38 0% 0% no-repeat padding-box",
                                         width: "90%",
                                       }}
-                                      error={airDropTokenValue.length === 0}
+                                      error={airdropTokenError}
                                     >
                                       {tokenData.map((token) => (
                                         <MenuItem

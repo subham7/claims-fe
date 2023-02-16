@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
       //   "borderLeft": "none",
       //   "borderTop": "none",
       //   "borderRight": "none",
-      "border": `2px solid ${theme.palette.divider}`,
+      "border": `1px solid ${theme.palette.divider}`,
       "borderTopRightRadius": "12px",
       "borderTopLeftRadius": "12px",
       "borderBottom": `1px solid ${theme.palette.divider}`,
@@ -68,7 +68,7 @@ const useStyles = makeStyles((theme) => ({
     "& .ql-container": {
       "height": "16vh",
       //   "border": "none",
-      "border": `2px solid ${theme.palette.divider}`,
+      "border": `1px solid ${theme.palette.divider}`,
       "borderBottomRightRadius": "12px",
       "borderBottomLeftRadius": "12px",
       "& .ql-editor": {
@@ -81,9 +81,30 @@ const useStyles = makeStyles((theme) => ({
       },
     },
   },
+  error: {
+    "& .ql-container": {
+      "height": "16vh",
+      //   "border": "none",
+
+      "border": `1px solid #d32f2f`,
+      "borderBottomRightRadius": "12px",
+      "borderBottomLeftRadius": "12px",
+      "& .ql-editor": {
+        "fontFamily": theme.typography.fontFamily,
+        "fontSize": 16,
+        "color": theme.palette.text.primary,
+        "&.ql-blank::before": {
+          color: theme.palette.text.secondary,
+        },
+      },
+    },
+    "& .ql-toolbar": {
+      border: `1px solid #d32f2f`,
+    },
+  },
 }));
 
-const QuillEditor = ({ className, ...rest }) => {
+const QuillEditor = ({ className, error, ...rest }) => {
   // const ReactQuill =
   //   typeof window === "object" ? require("react-quill") : () => false;
   const classes = useStyles();
@@ -91,7 +112,12 @@ const QuillEditor = ({ className, ...rest }) => {
     () => dynamic(() => import("react-quill"), { ssr: false }),
     [],
   );
-  return <ReactQuill className={clsx(classes.root, className)} {...rest} />;
+  return (
+    <ReactQuill
+      className={clsx(classes.root, className, error ? classes.error : null)}
+      {...rest}
+    />
+  );
 };
 
 // QuillEditor.propTypes = {
