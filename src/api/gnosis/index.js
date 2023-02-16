@@ -17,15 +17,12 @@ export async function getTokens(gnosisAddress) {
 
 export async function getNfts(gnosisAddress) {
   // fetch nfts associated with the gnosis wallet
-  return await axios.get(
-    MAIN_API_URL + `gnosis/getNFT?gnosisAddress=${gnosisAddress}`,
-    {
-      headers: {
-        "Authorization": "Bearer " + getJwtToken(),
-        "Content-Type": "application/json",
-      },
+  return await axios.get(MAIN_API_URL + `assets/${gnosisAddress}/nft`, {
+    headers: {
+      "Authorization": "Bearer " + getJwtToken(),
+      "Content-Type": "application/json",
     },
-  );
+  });
 }
 
 export async function getBalance(gnosisAddress) {
