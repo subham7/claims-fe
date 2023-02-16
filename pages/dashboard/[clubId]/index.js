@@ -1,5 +1,28 @@
 import SearchIcon from "@mui/icons-material/Search";
-import { Alert, Backdrop, Box, Button, Card, CardMedia, CircularProgress, Grid, IconButton, Link, ListItemButton, Paper, Skeleton, Snackbar, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
+import {
+  Alert,
+  Backdrop,
+  Box,
+  Button,
+  Card,
+  CardMedia,
+  CircularProgress,
+  Grid,
+  IconButton,
+  Link,
+  ListItemButton,
+  Paper,
+  Skeleton,
+  Snackbar,
+  Stack,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography,
+} from "@mui/material";
 import TextField from "@mui/material/TextField";
 import { makeStyles } from "@mui/styles";
 import { useRouter } from "next/router";
@@ -18,7 +41,13 @@ import ButtonDropDown from "../../../src/components/buttondropdown";
 import CollectionCard from "../../../src/components/cardcontent";
 import Layout1 from "../../../src/components/layouts/layout1";
 import ClubFetch from "../../../src/utils/clubFetch";
-import { calculateDays, calculateUserSharePercentage, convertAmountToWei, convertFromWei, convertFromWeiGovernance } from "../../../src/utils/globalFunctions";
+import {
+  calculateDays,
+  calculateUserSharePercentage,
+  convertAmountToWei,
+  convertFromWei,
+  convertFromWeiGovernance,
+} from "../../../src/utils/globalFunctions";
 
 const useStyles = makeStyles({
   media: {
@@ -477,8 +506,9 @@ const Dashboard = () => {
       }
     });
 
-    const nfts = getNfts(daoAddress);
+    const nfts = getNfts(clubId);
     nfts.then((result) => {
+      console.log(result);
       if (result.status != 200) {
         setNftFetched(false);
       } else {
@@ -845,15 +875,16 @@ const Dashboard = () => {
                     <Grid container>
                       {nftFetched ? (
                         ntfData.length > 0 ? (
-                          ntfData.map((data, key) => {
+                          ntfData.map((data, key) => (
                             <Grid item m={1} key={key}>
+                              {/* {console.log(data.metadata)} */}
                               <CollectionCard
-                                imageURI={data.logoUri}
-                                tokenName={data.tokenName}
-                                tokenSymbol={data.tokenSymbol}
+                                metadata={data.metadata}
+                                tokenName={data.name}
+                                tokenSymbol={data.symbol}
                               />
-                            </Grid>;
-                          })
+                            </Grid>
+                          ))
                         ) : (
                           <Grid
                             item

@@ -69,6 +69,17 @@ import Safe from "@safe-global/safe-core-sdk";
 import { setGovernanceAllowed } from "../../../../src/redux/reducers/gnosis";
 import { fetchClubbyDaoAddress } from "../../../../src/api/club";
 
+import dynamic from "next/dynamic";
+
+const QuillEditor = dynamic(
+  () => {
+    return import("../../../../src/components/quillEditor");
+  },
+  { ssr: false },
+);
+import "react-quill/dist/quill.snow.css";
+// import QuillEditor from "../../../../src/components/quillEditor";
+
 const useStyles = makeStyles({
   proposalInfoCard: {
     background: proposalImg,
@@ -260,7 +271,7 @@ const Proposal = () => {
     new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
   );
   const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
+  const [description, setDescription] = useState();
   const [type, setType] = useState(proposalType[0].type);
   const [openCard, setOpenCard] = useState(false);
   const [commandList, setCommandList] = useState([]);
@@ -1434,7 +1445,21 @@ const Proposal = () => {
               </Typography>
             </Grid>
             <Grid container item ml={3} mt={3} mb={3}>
-              <TextField
+              <QuillEditor
+                onChange={setDescription}
+                multiline
+                rows={10}
+                placeholder="Add full description here"
+                style={{
+                  width: "95%",
+                  height: "auto",
+                  backgroundColor: "#19274B",
+                  fontSize: "18px",
+                  color: "#C1D3FF",
+                  fontFamily: "Whyte",
+                }}
+              />
+              {/* <TextField
                 onChange={(e) => setDescription(e.target.value)}
                 multiline
                 rows={10}
@@ -1449,13 +1474,7 @@ const Proposal = () => {
                   color: "#C1D3FF",
                   fontFamily: "Whyte",
                 }}
-                error={descriptionError}
-              />
-              {descriptionError && (
-                <FormHelperText error focused>
-                  Description is required
-                </FormHelperText>
-              )}
+              /> */}
             </Grid>
             {type === proposalType[0].type ? (
               <>

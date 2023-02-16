@@ -43,6 +43,7 @@ import actionIcon from "../../../../public/assets/icons/action_icon.svg";
 import tickerIcon from "../../../../public/assets/icons/ticker_icon.svg";
 import surveyIcon from "../../../../public/assets/icons/survey_icon.svg";
 import { calculateDays } from "../../../../src/utils/globalFunctions";
+import ReactHtmlParser from "react-html-parser";
 
 import Image from "next/image";
 
@@ -1303,7 +1304,16 @@ const ProposalDetail = () => {
               </Grid>
             </Grid>
             <Grid container item className={classes.listFont}>
-              {fetched ? proposalData[0].description : null}
+              {fetched ? (
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: ReactHtmlParser(proposalData[0].description),
+                  }}
+                >
+                  {/* {console.log(ReactHtmlParser(proposalData[0].description))}
+                  {ReactHtmlParser(proposalData[0].description)} */}
+                </div>
+              ) : null}
             </Grid>
             {governance ? (
               <>
