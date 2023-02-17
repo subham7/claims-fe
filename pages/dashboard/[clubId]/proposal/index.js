@@ -631,7 +631,7 @@ const Proposal = () => {
             commands: [
               {
                 executionId: 0,
-                airDropToken: airDropToken,
+                airDropToken: airDropTokenValue,
                 airDropAmount: convertToWei(
                   airDropAmount,
                   airDropTokenDecimal,
