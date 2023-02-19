@@ -1476,23 +1476,22 @@ const ProposalDetail = () => {
                                     ? classes.mainCardButtonSuccess
                                     : classes.mainCardButton
                                 }
-                                // onClick={() => executeFunction("passed")}
                                 onClick={
-                                  pendingTxHash === txHash
-                                    ? executionReady
+                                  executionReady
+                                    ? pendingTxHash === txHash
                                       ? () => {
                                           executeFunction("executed");
                                         }
                                       : () => {
-                                          executeFunction("passed");
+                                          console.log("rrrrrrrrrrr");
+                                          setOpenSnackBar(true);
+                                          setFailed(true);
+                                          setMessage(
+                                            "execute txns with smaller nonce first",
+                                          );
                                         }
                                     : () => {
-                                        console.log("rrrrrrrrrrr");
-                                        setOpenSnackBar(true);
-                                        setFailed(true);
-                                        setMessage(
-                                          "execute txns with smaller nonce first",
-                                        );
+                                        executeFunction("passed");
                                       }
                                 }
                               >
