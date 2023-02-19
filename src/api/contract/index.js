@@ -200,6 +200,7 @@ export class SmartContract {
     console.log("executionStatus", executionStatus);
     console.log("airDropToken", airDropToken);
     console.log("tokenData", tokenData);
+    console.log("airDropAmount", airDropAmount);
     const safeOwner = this.walletAddress;
     const ethAdapter = new Web3Adapter({
       web3: this.web3,
@@ -257,22 +258,24 @@ export class SmartContract {
 
     if (executionStatus !== "executed") {
       console.log(
-        tokenData?.filter((data) => data.token_address === airDropToken)[0]
-          ?.value,
-      );
-      console.log(
         "blaance greater or not",
         airDropAmount >
           tokenData?.filter((data) => data.token_address === airDropToken)[0]
-            ?.value,
+            ?.balance,
       );
-      if (
-        airDropAmount >
-        tokenData?.filter((data) => data.token_address === airDropToken)[0]
-          ?.value
-      ) {
-        return Promise.reject("Balance is less than the airdrop amount");
-      } else if (txHash === "") {
+      if (txHash === "") {
+        if (
+          Number(airDropAmount) >
+            Number(
+              tokenData?.filter(
+                (data) => data.token_address === airDropToken,
+              )[0]?.balance,
+            ) &&
+          tokenData.length > 0
+        ) {
+          console.log(5000000 > 29000002);
+          return Promise.reject("Balance is less than the airdrop amount");
+        }
         const safeTxHash = await safeSdk.getTransactionHash(safeTransaction);
         const payload = {
           proposalId: pid,
