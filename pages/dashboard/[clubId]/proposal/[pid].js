@@ -842,6 +842,7 @@ const ProposalDetail = () => {
         [],
         txHash,
         pid,
+        tokenFetched ? tokenData : "",
       );
 
       if (proposalStatus === "executed") {
@@ -885,7 +886,18 @@ const ProposalDetail = () => {
           })
           .catch((err) => {
             setSigned(false);
-            setMessage("Signature failed!");
+            setOpenSnackBar(true);
+            setFailed(true);
+            // err
+            //   ? setMessage(err)
+            //   : err.message
+            //   ? setMessage(message)
+            //   : setMessage("Signature failed!");
+            err.message
+              ? setMessage(err.message)
+              : err
+              ? setMessage(err)
+              : setMessage("Signature failed!");
             setLoaderOpen(false);
           });
       }

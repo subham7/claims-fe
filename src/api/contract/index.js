@@ -257,21 +257,25 @@ export class SmartContract {
     console.log("execution Status", executionStatus);
 
     if (executionStatus !== "executed") {
-      console.log(
-        "blaance greater or not",
-        Number(airDropAmount) >
-          Number(
-            tokenData?.filter((data) => data.token_address === airDropToken)[0]
-              ?.balance,
-          ),
-      );
+      // console.log(
+      //   "blaance greater or not",
+      //   Number(airDropAmount) >
+      //     Number(
+      //       tokenData?.filter((data) => data.token_address === airDropToken)[0]
+      //         ?.balance,
+      //     ),
+      // );
+
+      // console.log(tokenData.length);
       if (txHash === "") {
         if (
           Number(airDropAmount) >
-          Number(
-            tokenData?.filter((data) => data.token_address === airDropToken)[0]
-              ?.balance,
-          )
+            Number(
+              tokenData?.filter(
+                (data) => data.token_address === airDropToken,
+              )[0]?.balance,
+            ) &&
+          tokenData.length > 0
         ) {
           return Promise.reject("Balance is less than the airdrop amount");
         }

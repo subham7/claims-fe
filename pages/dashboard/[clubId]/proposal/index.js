@@ -317,6 +317,7 @@ const Proposal = () => {
   const [quorumError, setQuorumError] = useState();
   const [thresholdError, setThresholdError] = useState();
   const [customTokenError, setCustomTokenError] = useState();
+  const [customTokenAmountError, setCustomTokenAmountError] = useState();
   const [customTokenAddressesError, setCustomTokenAddressesError] = useState();
   const [customTokenErrorMesage, setCustomTokenErrorMesage] = useState();
   const defaultOptions = [
@@ -862,14 +863,21 @@ const Proposal = () => {
 
       if (name === commandTypeList[4].commandText) {
         // for execution of sending custom token
+        console.log("custom token", customToken.length);
         if (title.length === 0) {
-          titleError(true);
+          setTitleError(true);
           setOpen(true);
         } else if (description?.length === 0 || description === undefined) {
           console.log("airdrop token error");
           setDescriptionError(true);
           setOpen(true);
-        } else if (customToken.length === 0) {
+        } else if (
+          customToken.length === 0 ||
+          customToken === null ||
+          customToken === undefined ||
+          customToken === ""
+        ) {
+          console.log(customToken);
           setCustomTokenError(true);
           setOpen(true);
         } else if (customTokenAddresses.length === 0) {
@@ -877,7 +885,7 @@ const Proposal = () => {
           setOpen(true);
         } else if (customTokenError || customTokenAmounts === 0) {
           console.log("airdrop token error", customTokenAmounts);
-          setCustomTokenError(true);
+          setCustomTokenAmountError(true);
           if (customTokenAmounts === 0 || customTokenAmounts.length === 0) {
             console.log("herreee");
             setCustomTokenErrorMesage("Custom Token is required");
@@ -889,6 +897,7 @@ const Proposal = () => {
           }
           setOpen(true);
         } else {
+          console.log("here");
           const payload = {
             name: title,
             description: description,
@@ -1005,6 +1014,11 @@ const Proposal = () => {
     const {
       target: { value },
     } = event;
+    console.log("target", value);
+    console.log(
+      "token address",
+      tokenData.find((token) => token.name === value).token_address,
+    );
     setCustomToken(
       tokenData.find((token) => token.name === value).token_address,
     );
@@ -2000,7 +2014,7 @@ const Proposal = () => {
                                         "#111D38 0% 0% no-repeat padding-box",
                                       width: "90%",
                                     }}
-                                    error={customToken.length === 0}
+                                    error={customTokenError}
                                   >
                                     {tokenData.map((token) => (
                                       <MenuItem
@@ -2068,13 +2082,17 @@ const Proposal = () => {
                                           )[0]?.value ||
                                         e.target.value === ""
                                       ) {
-                                        setCustomTokenError(true);
-                                      } else setCustomTokenError(false);
+                                        setCustomTokenAmountError(true);
+                                      } else setCustomTokenAmountError(false);
                                     }}
                                   />
-                                  {customTokenError && (
+                                  {customTokenAmountError && (
                                     <FormHelperText error focused>
-                                      {customTokenErrorMesage}
+                                      {(customTokenAmounts === 0 ||
+                                        customTokenAmounts.length === 0) &&
+                                      customTokenAmountError
+                                        ? "Custom Token is required"
+                                        : "Custom amount should be less than token balane"}
                                     </FormHelperText>
                                   )}
                                 </Grid>
