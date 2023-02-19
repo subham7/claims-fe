@@ -510,7 +510,16 @@ const ProposalDetail = () => {
             setSigned(false);
             setOpenSnackBar(true);
             setFailed(true);
-            err ? setMessage(err) : setMessage("Signature failed!");
+            // err
+            //   ? setMessage(err)
+            //   : err.message
+            //   ? setMessage(message)
+            //   : setMessage("Signature failed!");
+            err.message
+              ? setMessage(err.message)
+              : err
+              ? setMessage(err)
+              : setMessage("Signature failed!");
             setLoaderOpen(false);
           });
       }

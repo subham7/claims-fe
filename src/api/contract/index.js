@@ -259,21 +259,20 @@ export class SmartContract {
     if (executionStatus !== "executed") {
       console.log(
         "blaance greater or not",
-        airDropAmount >
-          tokenData?.filter((data) => data.token_address === airDropToken)[0]
-            ?.balance,
+        Number(airDropAmount) >
+          Number(
+            tokenData?.filter((data) => data.token_address === airDropToken)[0]
+              ?.balance,
+          ),
       );
       if (txHash === "") {
         if (
           Number(airDropAmount) >
-            Number(
-              tokenData?.filter(
-                (data) => data.token_address === airDropToken,
-              )[0]?.balance,
-            ) &&
-          tokenData.length > 0
+          Number(
+            tokenData?.filter((data) => data.token_address === airDropToken)[0]
+              ?.balance,
+          )
         ) {
-          console.log(5000000 > 29000002);
           return Promise.reject("Balance is less than the airdrop amount");
         }
         const safeTxHash = await safeSdk.getTransactionHash(safeTransaction);
