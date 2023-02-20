@@ -46,6 +46,7 @@ import { calculateDays } from "../../../../src/utils/globalFunctions";
 import ReactHtmlParser from "react-html-parser";
 
 import Image from "next/image";
+import { getAssets } from "../../../../src/api/assets";
 
 const useStyles = makeStyles({
   clubAssets: {
@@ -210,6 +211,8 @@ const ProposalDetail = () => {
   const clubID = clubId;
   const [cardSelected, setCardSelected] = useState(null);
   const [governance, setGovernance] = useState(true);
+  const [tokenData, setTokenData] = useState([]);
+  const [tokenFetched, setTokenFetched] = useState(false);
 
   const walletAddress = useSelector((state) => {
     return state.create.value;
@@ -284,6 +287,20 @@ const ProposalDetail = () => {
     });
   };
 
+  const fetchTokens = () => {
+    if (clubID) {
+      const tokenData = getAssets(clubId);
+      tokenData.then((result) => {
+        if (result.status != 200) {
+          setTokenFetched(false);
+        } else {
+          setTokenData(result.data.tokenPriceList);
+          setTokenFetched(true);
+        }
+      });
+    }
+  };
+
   const fetchMembersData = () => {
     const membersData = getMembersDetails(clubID);
     membersData.then((result) => {
@@ -325,6 +342,7 @@ const ProposalDetail = () => {
     // await isOwner();
     if (clubId) {
       fetchMembersData();
+      fetchTokens();
     }
   }, [clubId]);
 
@@ -425,6 +443,7 @@ const ProposalDetail = () => {
         USDC_CONTRACT_ADDRESS,
         GNOSIS_TRANSACTION_URL,
       );
+      console.log(proposalData[0].commands[0].airDropToken);
       const response = updateProposal.updateProposalAndExecution(
         daoAddress,
         gnosisAddress,
@@ -446,6 +465,7 @@ const ProposalDetail = () => {
         [],
         txHash,
         pid,
+        tokenFetched ? tokenData : "",
       );
       if (proposalStatus === "executed") {
         await response.then(
@@ -481,12 +501,25 @@ const ProposalDetail = () => {
       } else {
         await response
           .then(() => {
+            console.log("in response", response);
             setSigned(true);
             setLoaderOpen(false);
           })
           .catch((err) => {
+            // console.log("in response error", err);
             setSigned(false);
-            setMessage("Signature failed!");
+            setOpenSnackBar(true);
+            setFailed(true);
+            // err
+            //   ? setMessage(err)
+            //   : err.message
+            //   ? setMessage(message)
+            //   : setMessage("Signature failed!");
+            err.message
+              ? setMessage(err.message)
+              : err
+              ? setMessage(err)
+              : setMessage("Signature failed!");
             setLoaderOpen(false);
           });
       }
@@ -809,6 +842,7 @@ const ProposalDetail = () => {
         [],
         txHash,
         pid,
+        tokenFetched ? tokenData : "",
       );
 
       if (proposalStatus === "executed") {
@@ -852,7 +886,18 @@ const ProposalDetail = () => {
           })
           .catch((err) => {
             setSigned(false);
-            setMessage("Signature failed!");
+            setOpenSnackBar(true);
+            setFailed(true);
+            // err
+            //   ? setMessage(err)
+            //   : err.message
+            //   ? setMessage(message)
+            //   : setMessage("Signature failed!");
+            err.message
+              ? setMessage(err.message)
+              : err
+              ? setMessage(err)
+              : setMessage("Signature failed!");
             setLoaderOpen(false);
           });
       }
@@ -1452,23 +1497,22 @@ const ProposalDetail = () => {
                                     ? classes.mainCardButtonSuccess
                                     : classes.mainCardButton
                                 }
-                                // onClick={() => executeFunction("passed")}
                                 onClick={
-                                  pendingTxHash === txHash
-                                    ? executionReady
+                                  executionReady
+                                    ? pendingTxHash === txHash
                                       ? () => {
                                           executeFunction("executed");
                                         }
                                       : () => {
-                                          executeFunction("passed");
+                                          console.log("rrrrrrrrrrr");
+                                          setOpenSnackBar(true);
+                                          setFailed(true);
+                                          setMessage(
+                                            "execute txns with smaller nonce first",
+                                          );
                                         }
                                     : () => {
-                                        console.log("rrrrrrrrrrr");
-                                        setOpenSnackBar(true);
-                                        setFailed(true);
-                                        setMessage(
-                                          "execute txns with smaller nonce first",
-                                        );
+                                        executeFunction("passed");
                                       }
                                 }
                               >
