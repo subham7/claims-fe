@@ -1,5 +1,5 @@
 import { React, useEffect, useState } from "react";
-import Layout from "../src/components/layouts/layout3";
+import Layout2 from "../src/components/layouts/layout2";
 import {
   Grid,
   Button,
@@ -236,7 +236,7 @@ export default function App() {
   };
 
   return (
-    <Layout faucet={false}>
+    <Layout2 faucet={false}>
       {clubFlow ? (
         <Grid
           container
@@ -408,6 +408,6 @@ export default function App() {
           </Grid>
         </DialogContent>
       </Dialog>
-    </Layout>
+    </Layout2>
   );
 }

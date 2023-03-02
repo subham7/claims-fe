@@ -39,7 +39,7 @@ import {
   getMembersDetails,
   patchUserBalance,
 } from "../../src/api/user";
-import Layout3 from "../../src/components/layouts/layout3";
+import Layout2 from "../../src/components/layouts/layout2";
 import ProgressBar from "../../src/components/progressbar";
 import {
   setGovernanceTokenDetails,
@@ -942,7 +942,7 @@ const Join = (props) => {
   };
 
   return (
-    <Layout3 faucet={true}>
+    <Layout2 faucet={true}>
       {tokenType === "erc20NonTransferable" && (
         <>
           {wallet !== null ? (
@@ -1847,7 +1847,7 @@ const Join = (props) => {
           </Alert>
         )}
       </Snackbar>
-    </Layout3>
+    </Layout2>
   );
 };
 
