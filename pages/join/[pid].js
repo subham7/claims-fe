@@ -39,6 +39,7 @@ import {
   getMembersDetails,
   patchUserBalance,
 } from "../../src/api/user";
+import SnackbarComp from "../../src/components/depositPageComps/SnackbarComp";
 import Layout3 from "../../src/components/layouts/layout3";
 import ProgressBar from "../../src/components/progressbar";
 import {
@@ -1351,8 +1352,9 @@ const Join = (props) => {
                             <Grid item ml={2} mt={1} mb={2} p={1}>
                               <Input
                                 type="number"
-                                error={depositAmount === ""}
+                                error={depositAmount <= 0}
                                 className={classes.cardLargeFont}
+                                placeholder="0"
                                 value={depositAmount}
                                 onChange={(e) =>
                                   handleInputChange(e.target.value)
@@ -1399,7 +1401,10 @@ const Join = (props) => {
                           variant="primary"
                           size="large"
                           onClick={handleDeposit}
-                          disabled={closingDays > 0 ? false : true}
+                          disabled={
+                            (closingDays > 0 ? false : true) ||
+                            (depositAmount <= 0 ? true : false)
+                          }
                         >
                           Deposit
                         </Button>
@@ -1552,7 +1557,6 @@ const Join = (props) => {
           </Backdrop>
         </>
       )}
-
       {tokenType === "erc721" && (
         <>
           <Grid
@@ -1827,26 +1831,14 @@ const Join = (props) => {
           </Grid>
         </>
       )}
-      <Snackbar
-        open={openSnackBar}
-        autoHideDuration={6000}
-        onClose={handleClose}
-        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-      >
-        {alertStatus === "success" ? (
-          <Alert
-            onClose={handleClose}
-            severity="success"
-            sx={{ width: "100%" }}
-          >
-            {message}
-          </Alert>
-        ) : (
-          <Alert onClose={handleClose} severity="error" sx={{ width: "100%" }}>
-            {message}
-          </Alert>
-        )}
-      </Snackbar>
+
+      {/* Snackbar Comp */}
+      <SnackbarComp
+        openSnackBar={openSnackBar}
+        handleClose={handleClose}
+        alertStatus={alertStatus}
+        message={message}
+      />
     </Layout3>
   );
 };
