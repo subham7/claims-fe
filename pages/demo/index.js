@@ -1,5 +1,5 @@
 import { React, useEffect, useState } from "react";
-import Layout from "../../src/components/layouts/layout3";
+import Layout from "../../src/components/layouts/layout2";
 import {
   Grid,
   Button,
