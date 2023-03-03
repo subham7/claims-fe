@@ -2,13 +2,19 @@ import { Button, CircularProgress, Grid, Typography } from "@mui/material";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { ERC721Styles } from "./ERC721CompStyles";
 
+import { SmartContract } from "../../../api/contract";
+import { checkUserByClub, createUser } from "../../../api/user";
+import ImplementationContract from "../../../abis/implementationABI.json";
+import { useSelector } from "react-redux";
+import { convertFromWei } from "../../../utils/globalFunctions";
+import { useRouter } from "next/router";
+
 const ERC721Comp = ({
   wallet,
   nftImageUrl,
   clubName,
   isDepositActive,
   nftContractOwner,
-  handleClaimNft,
   loading,
   priceOfNft,
   totalNftSupply,
@@ -19,8 +25,135 @@ const ERC721Comp = ({
   isGovernanceActive,
   maxTokensPerUser,
   depositCloseDate,
+  daoAddress,
+  userNftBalance,
+  walletBalance,
+  setLoading,
+  setAlertStatus,
+  setOpenSnackBar,
+  usdcTokenDecimal,
+  nftMetadata,
+  userDetails,
+  clubId,
+  setMessage,
 }) => {
   const classes = ERC721Styles();
+  const router = useRouter();
+
+  const USDC_CONTRACT_ADDRESS = useSelector((state) => {
+    return state.gnosis.usdcContractAddress;
+  });
+  const GNOSIS_TRANSACTION_URL = useSelector((state) => {
+    return state.gnosis.transactionUrl;
+  });
+
+  const handleClaimNft = async () => {
+    const usdc_contract = new SmartContract(
+      ImplementationContract,
+      USDC_CONTRACT_ADDRESS,
+      undefined,
+      USDC_CONTRACT_ADDRESS,
+      GNOSIS_TRANSACTION_URL,
+    );
+    // pass governor contract
+    const dao_contract = new SmartContract(
+      ImplementationContract,
+      daoAddress,
+      undefined,
+      USDC_CONTRACT_ADDRESS,
+      GNOSIS_TRANSACTION_URL,
+    );
+
+    // const priceOfNftConverted = convertToWei(
+    //   priceOfNft,
+    //   usdcTokenDecimal,
+    // ).toString();
+    const priceOfNftConverted = priceOfNft;
+    // console.log(userNftBalance, maxTokensPerUser);
+    if (
+      userNftBalance < maxTokensPerUser &&
+      walletBalance >= convertFromWei(priceOfNft, 6)
+    ) {
+      setLoading(true);
+      // if the user doesn't exist
+
+      // pass governor contract
+      const usdc_response = usdc_contract.approveDeposit(
+        daoAddress,
+        priceOfNftConverted,
+        usdcTokenDecimal,
+      );
+      usdc_response
+        .then(
+          (result) => {
+            const deposit_response = dao_contract.deposit(
+              USDC_CONTRACT_ADDRESS,
+              priceOfNftConverted,
+              nftMetadata,
+            );
+            deposit_response.then((result) => {
+              const data = {
+                userAddress: userDetails,
+                clubs: [
+                  {
+                    clubId: clubId,
+                    isAdmin: 0,
+                    // balance: depositAmountConverted,
+                  },
+                ],
+              };
+              const checkUserExists = checkUserByClub(userDetails, clubId);
+              checkUserExists.then((result) => {
+                if (result.data === false) {
+                  const createuser = createUser(data);
+                  createuser.then((result) => {
+                    if (result.status !== 201) {
+                      console.log("Error", result);
+                      setAlertStatus("error");
+                      setOpenSnackBar(true);
+                    } else {
+                      setAlertStatus("success");
+                      setOpenSnackBar(true);
+                      setLoading(false);
+                      router.push(`/dashboard/${clubId}`, undefined, {
+                        shallow: true,
+                      });
+                    }
+                  });
+                } else {
+                  setLoading(false);
+                  setAlertStatus("success");
+                  setMessage("NFT minted successfully");
+                  router.push(`/dashboard/${clubId}`, undefined, {
+                    shallow: true,
+                  });
+                }
+              });
+            });
+          },
+          (error) => {
+            // console.log("Error", error);
+            setAlertStatus("error");
+            setMessage(error.message);
+            setLoading(false);
+            setOpenSnackBar(true);
+          },
+        )
+        .catch((err) => {
+          setAlertStatus("error");
+          setMessage(err.message);
+          setLoading(false);
+          setOpenSnackBar(true);
+        });
+    } else {
+      setAlertStatus("error");
+      // console.log("wallet balance less", walletBalance, priceOfNftConverted);
+      if (walletBalance < convertFromWei(priceOfNftConverted, 6)) {
+        setMessage("usdc balance is less that mint price");
+      } else setMessage("Mint Limit Reached");
+      setOpenSnackBar(true);
+    }
+  };
 
   return (
     <>

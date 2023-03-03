@@ -492,114 +492,6 @@ const Join = (props) => {
     fetchCustomTokenDecimals();
   }, [daoAddress, USDC_CONTRACT_ADDRESS]);
 
-  const handleClaimNft = async () => {
-    const usdc_contract = new SmartContract(
-      ImplementationContract,
-      USDC_CONTRACT_ADDRESS,
-      undefined,
-      USDC_CONTRACT_ADDRESS,
-      GNOSIS_TRANSACTION_URL,
-    );
-    // pass governor contract
-    const dao_contract = new SmartContract(
-      ImplementationContract,
-      daoAddress,
-      undefined,
-      USDC_CONTRACT_ADDRESS,
-      GNOSIS_TRANSACTION_URL,
-    );
-
-    // const priceOfNftConverted = convertToWei(
-    //   priceOfNft,
-    //   usdcTokenDecimal,
-    // ).toString();
-    const priceOfNftConverted = priceOfNft;
-    // console.log(userNftBalance, maxTokensPerUser);
-    if (
-      userNftBalance < maxTokensPerUser &&
-      walletBalance >= convertFromWei(priceOfNft, 6)
-    ) {
-      setLoading(true);
-      // if the user doesn't exist
-
-      // pass governor contract
-      const usdc_response = usdc_contract.approveDeposit(
-        daoAddress,
-        priceOfNftConverted,
-        usdcTokenDecimal,
-      );
-      usdc_response
-        .then(
-          (result) => {
-            const deposit_response = dao_contract.deposit(
-              USDC_CONTRACT_ADDRESS,
-              priceOfNftConverted,
-              nftMetadata,
-            );
-            deposit_response.then((result) => {
-              const data = {
-                userAddress: userDetails,
-                clubs: [
-                  {
-                    clubId: clubId,
-                    isAdmin: 0,
-                    // balance: depositAmountConverted,
-                  },
-                ],
-              };
-              const checkUserExists = checkUserByClub(userDetails, clubId);
-              checkUserExists.then((result) => {
-                if (result.data === false) {
-                  const createuser = createUser(data);
-                  createuser.then((result) => {
-                    if (result.status !== 201) {
-                      console.log("Error", result);
-                      setAlertStatus("error");
-                      setOpenSnackBar(true);
-                    } else {
-                      setAlertStatus("success");
-                      setOpenSnackBar(true);
-                      setLoading(false);
-                      router.push(`/dashboard/${clubId}`, undefined, {
-                        shallow: true,
-                      });
-                    }
-                  });
-                } else {
-                  setLoading(false);
-                  setAlertStatus("success");
-                  setMessage("NFT minted successfully");
-                  router.push(`/dashboard/${clubId}`, undefined, {
-                    shallow: true,
-                  });
-                }
-              });
-            });
-          },
-          (error) => {
-            // console.log("Error", error);
-            setAlertStatus("error");
-            setMessage(error.message);
-            setLoading(false);
-            setOpenSnackBar(true);
-          },
-        )
-        .catch((err) => {
-          setAlertStatus("error");
-          setMessage(err.message);
-          setLoading(false);
-          setOpenSnackBar(true);
-        });
-    } else {
-      setAlertStatus("error");
-      // console.log("wallet balance less", walletBalance, priceOfNftConverted);
-      if (walletBalance < convertFromWei(priceOfNftConverted, 6)) {
-        setMessage("usdc balance is less that mint price");
-      } else setMessage("Mint Limit Reached");
-      setOpenSnackBar(true);
-    }
-  };
-
   const handleDeposit = async () => {
     setDepositInitiated(true);
     const checkUserExists = checkUserByClub(userDetails, clubId);
@@ -807,7 +699,6 @@ const Join = (props) => {
           quoram={quoram}
           threshold={threshold}
           clubName={clubName}
-          handleClaimNft={handleClaimNft}
           maxTokensPerUser={maxTokensPerUser}
           isDepositActive={isDepositActive}
           isGovernanceActive={isGovernanceActive}
@@ -818,6 +709,17 @@ const Join = (props) => {
           totalNftMinted={totalNftMinted}
           totalNftSupply={totalNftSupply}
           depositCloseDate={depositCloseDate}
+          clubId={clubId}
+          daoAddress={daoAddress}
+          nftMetadata={nftMetadata}
+          setAlertStatus={setAlertStatus}
+          setLoading={setLoading}
+          setMessage={setMessage}
+          setOpenSnackBar={setOpenSnackBar}
+          usdcTokenDecimal={usdcTokenDecimal}
+          userDetails={userDetails}
+          userNftBalance={userNftBalance}
+          walletBalance={walletBalance}
         />
       )}
       <SnackbarComp
