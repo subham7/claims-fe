@@ -9,12 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 // api imports
 import { fetchClub, fetchClubbyDaoAddress } from "../../src/api/club";
 import { SmartContract } from "../../src/api/contract";
-import { createUser } from "../../src/api/user";
-import {
-  checkUserByClub,
-  getMembersDetails,
-  patchUserBalance,
-} from "../../src/api/user";
+import { getMembersDetails } from "../../src/api/user";
 
 // abi imports
 import ImplementationContract from "../../src/abis/implementationABI.json";
@@ -29,12 +24,8 @@ import Layout2 from "../../src/components/layouts/layout2";
 // utils import
 import {
   calculateDays,
-  calculateTreasuryTargetShare,
-  convertAmountToWei,
   convertFromWei,
   convertFromWeiGovernance,
-  convertToWei,
-  convertToWeiGovernance,
 } from "../../src/utils/globalFunctions";
 import { connectWallet, onboard } from "../../src/utils/wallet";
 import { checkNetwork } from "../../src/utils/wallet";
@@ -189,39 +180,6 @@ const Join = (props) => {
     }
   };
 
-  const tokenDetailsRetrieval = async () => {
-    if (
-      tokenAPIDetails &&
-      tokenAPIDetails.length > 0 &&
-      USDC_CONTRACT_ADDRESS &&
-      GNOSIS_TRANSACTION_URL &&
-      usdcTokenDecimal
-    ) {
-      const tokenDetailContract = await new SmartContract(
-        ImplementationContract,
-        tokenAPIDetails[0].daoAddress,
-        undefined,
-        USDC_CONTRACT_ADDRESS,
-        GNOSIS_TRANSACTION_URL,
-      );
-      await tokenDetailContract.tokenDetails().then(
-        async (result) => {
-          settokenDetails(result);
-          setClubTokenMInted(
-            convertFromWeiGovernance(result[2], governanceConvertDecimal),
-          );
-          setQuoram(
-            convertFromWeiGovernance(result[2], governanceConvertDecimal),
-          );
-          setDataFetched(true);
-        },
-        (error) => {
-          console.log(error);
-        },
-      );
-    }
-  };
-
   const fetchMembers = () => {
     if (clubId) {
       const membersData = getMembersDetails(clubId);
@@ -352,31 +310,6 @@ const Join = (props) => {
           convertFromWeiGovernance(result, governanceConvertDecimal),
         );
       });
-
-      // await governorDetailContract.getGovernorDetails().then(
-      //   (result) => {
-      //     console.log(result);
-      //     setGovernorDetails(result);
-      //     setMinDeposit(
-      //       convertFromWei(parseFloat(result[1]), usdcTokenDecimal),
-      //     );
-      //     setMaxDeposit(convertFromWei(parseInt(result[2]), usdcTokenDecimal));
-      //     setTotalDeposit(
-      //       convertFromWei(parseInt(result[4]), usdcTokenDecimal),
-      //     );
-
-      //     setClosingDays(
-      //       Math.round(
-      //         (new Date(parseInt(result[0]) * 1000) - new Date()) /
-      //           (1000 * 60 * 60 * 24),
-      //       ),
-      //     );
-      //     setGovernorDataFetched(true);
-      //   },
-      //   (error) => {
-      //     console.log(error);
-      //   },
-      // );
     }
   };
 
@@ -423,20 +356,6 @@ const Join = (props) => {
       console.log(err);
     }
   };
-  // useEffect(() => {
-  //   const web3 = new Web3(Web3.givenProvider)
-  //   const networkIdRK = "4"
-  //   web3.eth.net
-  //     .getId()
-  //     .then((networkId) => {
-  //       if (networkId != networkIdRK) {
-  //         setOpen(true)
-  //       }
-  //     })
-  //     .catch((err) => {
-  //       console.log(err)
-  //     })
-  // }, [])
 
   useEffect(() => {
     if (pid) {
@@ -491,139 +410,6 @@ const Join = (props) => {
   useEffect(() => {
     fetchCustomTokenDecimals();
   }, [daoAddress, USDC_CONTRACT_ADDRESS]);
-
-  const handleDeposit = async () => {
-    setDepositInitiated(true);
-    const checkUserExists = checkUserByClub(userDetails, clubId);
-    const depositAmountConverted = convertToWei(
-      depositAmount,
-      usdcTokenDecimal,
-    );
-    checkUserExists.then((result) => {
-      if (result.data === false) {
-        // if the user doesn't exist
-        const usdc_contract = new SmartContract(
-          ImplementationContract,
-          USDC_CONTRACT_ADDRESS,
-          undefined,
-          USDC_CONTRACT_ADDRESS,
-          GNOSIS_TRANSACTION_URL,
-        );
-        // pass governor contract
-        const dao_contract = new SmartContract(
-          ImplementationContract,
-          daoAddress,
-          undefined,
-          USDC_CONTRACT_ADDRESS,
-          GNOSIS_TRANSACTION_URL,
-        );
-        // pass governor contract
-        const usdc_response = usdc_contract.approveDeposit(
-          daoAddress,
-          depositAmountConverted,
-          usdcTokenDecimal,
-        );
-        usdc_response.then(
-          (result) => {
-            const deposit_response = dao_contract.deposit(
-              USDC_CONTRACT_ADDRESS,
-              depositAmountConverted,
-              "",
-            );
-            deposit_response.then((result) => {
-              const data = {
-                userAddress: userDetails,
-                clubs: [
-                  {
-                    clubId: clubId,
-                    isAdmin: 0,
-                    balance: depositAmountConverted,
-                  },
-                ],
-              };
-              const createuser = createUser(data);
-              createuser.then((result) => {
-                if (result.status !== 201) {
-                  console.log("Error", result);
-                  setAlertStatus("error");
-                  setOpenSnackBar(true);
-                } else {
-                  setAlertStatus("success");
-                  setOpenSnackBar(true);
-                  router.push(`/dashboard/${clubId}`, undefined, {
-                    shallow: true,
-                  });
-                }
-              });
-            });
-          },
-          (error) => {
-            console.log("Error", error);
-            setAlertStatus("error");
-            setOpenSnackBar(true);
-          },
-        );
-      } else {
-        // if user exists
-        const usdc_contract = new SmartContract(
-          ImplementationContract,
-          USDC_CONTRACT_ADDRESS,
-          undefined,
-          USDC_CONTRACT_ADDRESS,
-          GNOSIS_TRANSACTION_URL,
-        );
-        // pass governor contract
-        const dao_contract = new SmartContract(
-          ImplementationContract,
-          daoAddress,
-          undefined,
-          USDC_CONTRACT_ADDRESS,
-          GNOSIS_TRANSACTION_URL,
-        );
-        // pass governor contract
-        const usdc_response = usdc_contract.approveDeposit(
-          daoAddress,
-          depositAmountConverted,
-          usdcTokenDecimal,
-        );
-        usdc_response.then(
-          (result) => {
-            const deposit_response = dao_contract.deposit(
-              USDC_CONTRACT_ADDRESS,
-              depositAmountConverted,
-              "",
-            );
-            deposit_response.then((result) => {
-              const patchData = {
-                userAddress: userDetails,
-                clubId: clubId,
-                balance: depositAmountConverted,
-              };
-              const updateDepositAmount = patchUserBalance(patchData);
-              updateDepositAmount.then((result) => {
-                if (result.status != 200) {
-                  console.log("Error", result);
-                  setAlertStatus("error");
-                  setOpenSnackBar(true);
-                } else {
-                  setAlertStatus("success");
-                  setOpenSnackBar(true);
-                  router.push(`/dashboard/${clubId}`, undefined, {
-                    shallow: true,
-                  });
-                }
-              });
-            });
-          },
-          (error) => {
-            console.log("Error", error);
-            setAlertStatus("error");
-            setOpenSnackBar(true);
-          },
-        );
-      }
-    });
-  };
 
   const handleInputChange = (newValue) => {
     setDepositAmount(parseInt(newValue));
