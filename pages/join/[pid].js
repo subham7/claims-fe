@@ -671,7 +671,6 @@ const Join = (props) => {
           depositInitiated={depositInitiated}
           governorDataFetched={governorDataFetched}
           handleConnectWallet={handleConnectWallet}
-          handleDeposit={handleDeposit}
           handleDialogClose={handleDialogClose}
           handleInputChange={handleInputChange}
           handleMaxButtonClick={handleMaxButtonClick}
@@ -689,6 +688,13 @@ const Join = (props) => {
           wallet={wallet}
           walletBalance={walletBalance}
           walletConnected={walletConnected}
+          clubId={clubId}
+          daoAddress={daoAddress}
+          setAlertStatus={setAlertStatus}
+          setDepositInitiated={setDepositInitiated}
+          setOpenSnackBar={setOpenSnackBar}
+          usdcTokenDecimal={usdcTokenDecimal}
+          userDetails={userDetails}
         />
       )}
       {tokenType === "erc721" && (

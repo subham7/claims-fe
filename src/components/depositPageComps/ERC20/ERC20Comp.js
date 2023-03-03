@@ -15,6 +15,16 @@ import {
 } from "@mui/material";
 
 import { ERC20Styles } from "./ERC20CompStyles";
+import {
+  checkUserByClub,
+  createUser,
+  patchUserBalance,
+} from "../../../api/user";
+import { convertToWei } from "../../../utils/globalFunctions";
+import { SmartContract } from "../../../api/contract";
+import ImplementationContract from "../../../abis/implementationABI.json";
+import { useSelector } from "react-redux";
+import { useRouter } from "next/router";
 
 const ERC20Comp = ({
   wallet,
@@ -31,7 +41,6 @@ const ERC20Comp = ({
   depositInitiated,
   handleMaxButtonClick,
   handleInputChange,
-  handleDeposit,
   handleConnectWallet,
   handleDialogClose,
   handleSwitchNetwork,
@@ -44,11 +53,163 @@ const ERC20Comp = ({
   tokenSymbol,
   totalDeposit,
   walletBalance,
+  setDepositInitiated,
+  setAlertStatus,
+  setOpenSnackBar,
+  userDetails,
+  clubId,
+  usdcTokenDecimal,
+  daoAddress,
 }) => {
   const classes = ERC20Styles();
-
+  const router = useRouter();
   const tokenName = tokenAPIDetails[0].name;
-  const tokenDetail = tokenDetails[1];
+
+  let tokenDetail;
+
+  if (dataFetched) {
+    tokenDetail = tokenDetails[1];
+  }
+
+  const USDC_CONTRACT_ADDRESS = useSelector((state) => {
+    return state.gnosis.usdcContractAddress;
+  });
+  const GNOSIS_TRANSACTION_URL = useSelector((state) => {
+    return state.gnosis.transactionUrl;
+  });
+
+  const handleDeposit = async () => {
+    setDepositInitiated(true);
+    const checkUserExists = checkUserByClub(userDetails, clubId);
+    const depositAmountConverted = convertToWei(
+      depositAmount,
+      usdcTokenDecimal,
+    );
+    checkUserExists.then((result) => {
+      if (result.data === false) {
+        // if the user doesn't exist
+        const usdc_contract = new SmartContract(
+          ImplementationContract,
+          USDC_CONTRACT_ADDRESS,
+          undefined,
+          USDC_CONTRACT_ADDRESS,
+          GNOSIS_TRANSACTION_URL,
+        );
+        // pass governor contract
+        const dao_contract = new SmartContract(
+          ImplementationContract,
+          daoAddress,
+          undefined,
+          USDC_CONTRACT_ADDRESS,
+          GNOSIS_TRANSACTION_URL,
+        );
+        // pass governor contract
+        const usdc_response = usdc_contract.approveDeposit(
+          daoAddress,
+          depositAmountConverted,
+          usdcTokenDecimal,
+        );
+        usdc_response.then(
+          (result) => {
+            const deposit_response = dao_contract.deposit(
+              USDC_CONTRACT_ADDRESS,
+              depositAmountConverted,
+              "",
+            );
+            deposit_response.then((result) => {
+              const data = {
+                userAddress: userDetails,
+                clubs: [
+                  {
+                    clubId: clubId,
+                    isAdmin: 0,
+                    balance: depositAmountConverted,
+                  },
+                ],
+              };
+              const createuser = createUser(data);
+              createuser.then((result) => {
+                if (result.status !== 201) {
+                  console.log("Error", result);
+                  setAlertStatus("error");
+                  setOpenSnackBar(true);
+                } else {
+                  setAlertStatus("success");
+                  setOpenSnackBar(true);
+                  router.push(`/dashboard/${clubId}`, undefined, {
+                    shallow: true,
+                  });
+                }
+              });
+            });
+          },
+          (error) => {
+            console.log("Error", error);
+            setAlertStatus("error");
+            setOpenSnackBar(true);
+          },
+        );
+      } else {
+        // if user exists
+        const usdc_contract = new SmartContract(
+          ImplementationContract,
+          USDC_CONTRACT_ADDRESS,
+          undefined,
+          USDC_CONTRACT_ADDRESS,
+          GNOSIS_TRANSACTION_URL,
+        );
+        // pass governor contract
+        const dao_contract = new SmartContract(
+          ImplementationContract,
+          daoAddress,
+          undefined,
+          USDC_CONTRACT_ADDRESS,
+          GNOSIS_TRANSACTION_URL,
+        );
+        // pass governor contract
+        const usdc_response = usdc_contract.approveDeposit(
+          daoAddress,
+          depositAmountConverted,
+          usdcTokenDecimal,
+        );
+        usdc_response.then(
+          (result) => {
+            const deposit_response = dao_contract.deposit(
+              USDC_CONTRACT_ADDRESS,
+              depositAmountConverted,
+              "",
+            );
+            deposit_response.then((result) => {
+              const patchData = {
+                userAddress: userDetails,
+                clubId: clubId,
+                balance: depositAmountConverted,
+              };
+              const updateDepositAmount = patchUserBalance(patchData);
+              updateDepositAmount.then((result) => {
+                if (result.status != 200) {
+                  console.log("Error", result);
+                  setAlertStatus("error");
+                  setOpenSnackBar(true);
+                } else {
+                  setAlertStatus("success");
+                  setOpenSnackBar(true);
+                  router.push(`/dashboard/${clubId}`, undefined, {
+                    shallow: true,
+                  });
+                }
+              });
+            });
+          },
+          (error) => {
+            console.log("Error", error);
+            setAlertStatus("error");
+            setOpenSnackBar(true);
+          },
+        );
+      }
+    });
+  };
 
   return (
     <>
