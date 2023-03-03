@@ -12,6 +12,12 @@ export const ERC721Styles = makeStyles({
     justifyContent: "center",
     alignItems: "center",
   },
+
+  nftImg: {
+    height: "450px",
+    width: "450px",
+    borderRadius: "20px",
+  },
   depositActive: {
     background: "#0ABB9240",
     color: "#0ABB92",

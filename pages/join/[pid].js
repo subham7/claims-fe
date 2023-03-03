@@ -1,36 +1,12 @@
-import { CleanHands } from "@mui/icons-material";
-import AddIcon from "@mui/icons-material/Add";
-import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
-import RemoveIcon from "@mui/icons-material/Remove";
-import {
-  Alert,
-  Backdrop,
-  Button,
-  Card,
-  CardMedia,
-  CircularProgress,
-  Dialog,
-  DialogContent,
-  Divider,
-  Grid,
-  IconButton,
-  Input,
-  Skeleton,
-  Snackbar,
-  Stack,
-  Typography,
-} from "@mui/material";
-import { makeStyles } from "@mui/styles";
-import { loadGetInitialProps } from "next/dist/shared/lib/utils";
-import Image from "next/image";
+// external imports
+import Web3 from "web3";
+
+// react imports
 import { useRouter } from "next/router";
 import { React, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import Web3 from "web3";
 
-import ape from "../../public/assets/images/ape.png";
-import ImplementationContract from "../../src/abis/implementationABI.json";
-import nft from "../../src/abis/nft.json";
+// api imports
 import { fetchClub, fetchClubbyDaoAddress } from "../../src/api/club";
 import { SmartContract } from "../../src/api/contract";
 import { createUser } from "../../src/api/user";
@@ -39,15 +15,18 @@ import {
   getMembersDetails,
   patchUserBalance,
 } from "../../src/api/user";
+
+// abi imports
+import ImplementationContract from "../../src/abis/implementationABI.json";
+import nft from "../../src/abis/nft.json";
+
+// component imports
 import ERC20Comp from "../../src/components/depositPageComps/ERC20/ERC20Comp";
 import ERC721Comp from "../../src/components/depositPageComps/ERC721/ERC721Comp";
 import SnackbarComp from "../../src/components/depositPageComps/Snackbar/SnackbarComp";
 import Layout2 from "../../src/components/layouts/layout2";
-import ProgressBar from "../../src/components/progressbar";
-import {
-  setGovernanceTokenDetails,
-  setUSDCTokenDetails,
-} from "../../src/redux/reducers/gnosis";
+
+// utils import
 import {
   calculateDays,
   calculateTreasuryTargetShare,

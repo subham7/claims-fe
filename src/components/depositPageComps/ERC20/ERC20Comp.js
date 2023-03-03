@@ -47,6 +47,9 @@ const ERC20Comp = ({
 }) => {
   const classes = ERC20Styles();
 
+  const tokenName = tokenAPIDetails[0].name;
+  const tokenDetail = tokenDetails[1];
+
   return (
     <>
       {wallet !== null ? (
@@ -71,7 +74,7 @@ const ERC20Comp = ({
                   <Stack spacing={0}>
                     <Typography variant="h4">
                       {apiTokenDetailSet ? (
-                        tokenAPIDetails[0].name
+                        tokenName
                       ) : (
                         <Skeleton
                           variant="rectangular"
@@ -81,7 +84,15 @@ const ERC20Comp = ({
                       )}
                     </Typography>
                     <Typography variant="h6" className={classes.dimColor}>
-                      {dataFetched ? "$" + tokenDetails[1] : null}
+                      {dataFetched ? (
+                        "$" + tokenDetail
+                      ) : (
+                        <Skeleton
+                          variant="rectangular"
+                          width={100}
+                          height={25}
+                        />
+                      )}
                     </Typography>
                   </Stack>
                 </Grid>

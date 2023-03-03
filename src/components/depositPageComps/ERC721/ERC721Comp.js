@@ -31,8 +31,7 @@ const ERC721Comp = ({
               <img
                 src={nftImageUrl}
                 alt="nft image"
-                height="400px"
-                width="400px"
+                className={classes.nftImg}
               />
             </Grid>
             <Grid item md={5}>
