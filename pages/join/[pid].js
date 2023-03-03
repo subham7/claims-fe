@@ -124,7 +124,7 @@ const Join = (props) => {
   const wallet = useSelector((state) => {
     return state.create.value;
   });
-  // console.log("wallet addresssssss", wallet[0][0].address);
+  // console.log("wallet addresssssss", wallet);
   const [usdcTokenDecimal, setUsdcTokenDecimal] = useState(0);
   const [governanceConvertDecimal, setGovernanceConvertDecimal] = useState(0);
 
@@ -153,22 +153,25 @@ const Join = (props) => {
       });
     }
   };
-
+  // console.log(walletConnected);
   const checkConnection = async () => {
-    console.log("wallet connection check");
+    // console.log("wallet connection check");
     if (window.ethereum) {
-      console.log("in hereeee");
+      // console.log("in hereeee");
       window.web3 = new Web3(window.ethereum);
     } else if (window.web3) {
-      console.log("in elsee");
+      // console.log("in elsee");
       window.web3 = new Web3(window.web3.currentProvider);
     }
+
     try {
-      window.web3.eth.getAccounts().then((async) => {
-        console.log("in hereeee", async);
-        setUserDetails(async[0]);
-        setWalletConnected(true);
-      });
+      let accounts = await window.web3.eth.getAccounts();
+      // console.log("in hereeee", accounts);
+      localStorage.setItem("wallet", accounts[0]);
+      setUserDetails(accounts[0]);
+
+      setWalletConnected(true);
+
       return true;
     } catch (err) {
       setUserDetails(null);
@@ -281,7 +284,7 @@ const Join = (props) => {
       .then((result) => setIsGovernanceActive(result));
 
     await erc721DetailContract.priceOfNft().then((result) => {
-      console.log("price of nfffftttt", result);
+      // console.log("price of nfffftttt", result);
       // setPriceOfNft(convertFromWei(parseInt(result), usdcTokenDecimal));
       setPriceOfNft(result);
     });
@@ -324,6 +327,7 @@ const Join = (props) => {
   };
 
   const contractDetailsRetrieval = async () => {
+    // console.log("in contract details retrival");
     if (
       daoAddress &&
       !governorDataFetched &&
@@ -397,9 +401,9 @@ const Join = (props) => {
     }
   };
 
-  const obtaineWalletBallance = async () => {
+  const obtainWalletBalance = async () => {
     if (
-      !fetched &&
+      // !fetched &&
       userDetails &&
       USDC_CONTRACT_ADDRESS &&
       GNOSIS_TRANSACTION_URL &&
@@ -414,7 +418,7 @@ const Join = (props) => {
       );
       await usdc_contract.balanceOf().then(
         (result) => {
-          console.log(result);
+          // console.log("wallet balance", result);
           setWalletBalance(convertFromWei(parseInt(result), usdcTokenDecimal));
           setFetched(true);
         },
@@ -426,6 +430,7 @@ const Join = (props) => {
   };
 
   const handleConnectWallet = () => {
+    // console.log("in handleConnectWallet");
     try {
       const wallet = connectWallet(dispatch);
       wallet.then((response) => {
@@ -473,7 +478,9 @@ const Join = (props) => {
   }, [tokenAPIDetails, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL]);
 
   useEffect(() => {
+    // console.log("wallet", wallet);
     if (wallet !== null) {
+      console.log("wallet", wallet);
       setPreviouslyConnectedWallet(wallet[0][0].address);
       setUserDetails(wallet[0][0].address);
     }
@@ -485,11 +492,13 @@ const Join = (props) => {
     }
 
     if (previouslyConnectedWallet) {
+      // console.log("previously connected wallet");
       onboard.connectWallet({ autoSelect: wallet });
     }
-
+    // console.log("wallettttt", wallet);
     if (checkConnection() && walletConnected && wallet) {
-      obtaineWalletBallance();
+      // console.log("does it run?");
+      obtainWalletBalance();
 
       if (tokenType === "erc721") {
         erc721ContractDetails();
@@ -526,7 +535,7 @@ const Join = (props) => {
     //   usdcTokenDecimal,
     // ).toString();
     const priceOfNftConverted = priceOfNft;
-
+    // console.log(userNftBalance, maxTokensPerUser);
     if (
       userNftBalance < maxTokensPerUser &&
       walletBalance >= convertFromWei(priceOfNft, 6)
@@ -604,23 +613,11 @@ const Join = (props) => {
         });
     } else {
       setAlertStatus("error");
-      if (walletBalance < priceOfNftConverted) {
+      // console.log("wallet balance less", walletBalance, priceOfNftConverted);
+      if (walletBalance < convertFromWei(priceOfNftConverted, 6)) {
         setMessage("usdc balance is less that mint price");
       } else setMessage("Mint Limit Reached");
       setOpenSnackBar(true);
-      // {
-      //   console.log("here");
-      // }
-      // <Snackbar
-      //   open
-      //   autoHideDuration={6000}
-      //   onClose={handleClose}
-      //   anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-      // >
-      //   <Alert onClose={handleClose} severity="error" sx={{ width: "100%" }}>
-      //     Limit exceeded
-      //   </Alert>
-      // </Snackbar>;
     }
   };
 
@@ -844,13 +841,11 @@ const Join = (props) => {
           depositCloseDate={depositCloseDate}
         />
       )}
-
-      {/* Snackbar Comp */}
       <SnackbarComp
-        openSnackBar={openSnackBar}
-        handleClose={handleClose}
         alertStatus={alertStatus}
+        handleClose={handleClose}
         message={message}
+        openSnackBar={openSnackBar}
       />
     </Layout3>
   );
