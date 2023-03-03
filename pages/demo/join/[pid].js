@@ -21,7 +21,7 @@ import {
   Dialog,
   CardMedia,
 } from "@mui/material";
-import Layout3 from "../../../src/components/layouts/layout3";
+import Layout2 from "../../../src/components/layouts/layout2";
 import ProgressBar from "../../../src/components/progressbar";
 import {
   connectWallet,
@@ -582,7 +582,7 @@ const Join = (props) => {
   };
 
   return (
-    <Layout3>
+    <Layout2>
       <Grid
         container
         spacing={2}
@@ -1070,7 +1070,7 @@ const Join = (props) => {
       >
         <CircularProgress color="inherit" />
       </Backdrop>
-    </Layout3>
+    </Layout2>
   );
 };
 
