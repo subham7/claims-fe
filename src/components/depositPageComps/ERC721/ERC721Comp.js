@@ -1,16 +1,6 @@
 import { Button, CircularProgress, Grid, Typography } from "@mui/material";
-import { makeStyles } from "@mui/styles";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
-
-const useStyles = makeStyles({
-  activeIllustration: {
-    height: "12px",
-    width: "12px",
-    backgroundColor: "#0ABB92",
-    borderRadius: "50%",
-    marginRight: 3,
-  },
-});
+import { ERC721Styles } from "./ERC721CompStyles";
 
 const ERC721Comp = ({
   wallet,
@@ -29,7 +19,7 @@ const ERC721Comp = ({
   isGovernanceActive,
   maxTokensPerUser,
 }) => {
-  const classes = useStyles();
+  const classes = ERC721Styles();
 
   return (
     <>
