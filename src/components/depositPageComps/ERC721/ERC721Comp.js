@@ -18,26 +18,13 @@ const ERC721Comp = ({
   isNftSupplyUnlimited,
   isGovernanceActive,
   maxTokensPerUser,
-  depositCloseDate
+  depositCloseDate,
 }) => {
   const classes = ERC721Styles();
 
   return (
     <>
-      <Grid
-        container
-        spacing={6}
-        paddingLeft={10}
-        paddingTop={15}
-        paddingRight={10}
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          height: "100vh",
-          width: "100%",
-          justifyContent: "center",
-        }}
-      >
+      <Grid className={classes.topGrid} container spacing={6}>
         {wallet ? (
           <>
             <Grid item md={5}>
@@ -48,19 +35,14 @@ const ERC721Comp = ({
                 width="400px"
               />
             </Grid>
-            <Grid item md={5} sx={{}}>
+            <Grid item md={5}>
               <Grid
                 container
                 spacing={1.5}
                 sx={{ display: "flex", flexDirection: "column" }}
               >
                 <Grid item sx={{ width: "100%" }}>
-                  <Typography
-                    variant="h2"
-                    color={"white"}
-                    fontWeight="bold"
-                    sx={{ width: "100%" }}
-                  >
+                  <Typography variant="h2" className={classes.clubName}>
                     {clubName}
                   </Typography>
                 </Grid>
@@ -68,56 +50,20 @@ const ERC721Comp = ({
                   <Grid container spacing={3}>
                     <Grid item xs="auto">
                       {isDepositActive ? (
-                        <Typography
-                          sx={{
-                            background: "#0ABB9240",
-                            color: "#0ABB92",
-                            paddingTop: 0.5,
-                            paddingBottom: 0.5,
-                            paddingRight: 1,
-                            paddingLeft: 1,
-                            borderRadius: 2,
-                            display: "flex",
-
-                            alignItems: "center",
-                          }}
-                        >
+                        <Typography className={classes.depositActive}>
                           <div className={classes.activeIllustration}></div>
                           Active
                         </Typography>
                       ) : (
-                        <Typography
-                          sx={{
-                            background: "#0ABB9240",
-                            color: "#0ABB92",
-                            paddingTop: 0.5,
-                            paddingBottom: 0.5,
-                            paddingRight: 1,
-                            paddingLeft: 1,
-                            borderRadius: 2,
-                            display: "flex",
-
-                            alignItems: "center",
-                          }}
-                        >
+                        <Typography className={classes.depositActive}>
                           <div className={classes.executedIllustration}></div>
                           Finished
                         </Typography>
                       )}
                     </Grid>
                     <Grid item xs="auto">
-                      <Typography
-                        sx={{
-                          background: "#142243",
-                          color: "#fff",
-                          paddingTop: 0.5,
-                          paddingBottom: 0.5,
-                          paddingRight: 1,
-                          paddingLeft: 1,
-                          borderRadius: 2,
-                        }}
-                      >
-                        Created by{" "}
+                      <Typography className={classes.createdBy}>
+                        Created by
                         {`${nftContractOwner?.slice(
                           0,
                           5,
@@ -141,7 +87,6 @@ const ERC721Comp = ({
                   </Grid>
                 </Grid>
                 <Grid item width="100%">
-                  {" "}
                   <Typography variant="subtitle1" color="#C1D3FF">
                     Mint closes on {depositCloseDate}
                   </Typography>
@@ -151,24 +96,21 @@ const ERC721Comp = ({
                   <Grid container spacing={3}>
                     {isGovernanceActive && (
                       <>
-                        {" "}
                         <Grid item xs={3}>
                           <Typography
                             variant="subtitle1"
-                            color="#fff"
-                            sx={{ fontWeight: "bold" }}
+                            className={classes.quoramTxt}
                           >
                             {quoram}%
                           </Typography>
                           <Typography variant="subtitle2" color="#C1D3FF">
                             Quorum
                           </Typography>
-                        </Grid>{" "}
+                        </Grid>
                         <Grid item xs={3}>
                           <Typography
                             variant="subtitle1"
-                            color="#fff"
-                            sx={{ fontWeight: "bold" }}
+                            className={classes.quoramTxt}
                           >
                             {threshold}%
                           </Typography>
@@ -182,8 +124,7 @@ const ERC721Comp = ({
                     <Grid item xs={4} width="fit-content">
                       <Typography
                         variant="subtitle1"
-                        color="#fff"
-                        sx={{ fontWeight: "bold" }}
+                        className={classes.quoramTxt}
                       >
                         {isNftSupplyUnlimited
                           ? "unlimited"
@@ -200,31 +141,13 @@ const ERC721Comp = ({
                   <Typography variant="subtitle2" color="#C1D3FF">
                     Price
                   </Typography>
-                  <Typography
-                    variant="h5"
-                    color="#fff"
-                    sx={{ fontWeight: "bold" }}
-                  >
+                  <Typography variant="h5" className={classes.quoramTxt}>
                     {priceOfNft / Math.pow(10, 6)} USDC
                   </Typography>
                 </Grid>
 
                 <Grid item width="100%">
-                  <Grid
-                    container
-                    sx={{
-                      display: "flex",
-                      // flexDirection: "column",
-                      // justifyContent: "space-between",
-                      justifyContent: "center",
-                      borderColor: "",
-                      border: "1px solid #C1D3FF40",
-                      borderRadius: 2,
-                      alignItems: "center",
-                      background: "#142243",
-                      padding: 4,
-                    }}
-                  >
+                  <Grid container className={classes.claimGrid}>
                     {/* <Grid
                           spacing={3}
                           sx={{
@@ -235,7 +158,7 @@ const ERC721Comp = ({
                             alignItems: "center",
                           }}
                         >
-                          {" "}
+                          
                           <IconButton onClick={() => setCount(count - 1)}>
                             <RemoveIcon sx={{ color: "black", fontSize: 20 }} />
                           </IconButton>
@@ -267,8 +190,7 @@ const ERC721Comp = ({
                 <Grid item>
                   <Typography
                     variant="subtitle2"
-                    color="#6475A3"
-                    sx={{ fontWeight: "light" }}
+                    className={classes.maxTokensTxt}
                   >
                     This station allows maximum of {maxTokensPerUser} mints per
                     member
@@ -278,15 +200,8 @@ const ERC721Comp = ({
             </Grid>
           </>
         ) : (
-          <Grid
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            {" "}
-            <Typography variant="h5" color={"white"} fontWeight="bold">
+          <Grid className={classes.connectWalletTxtGrid}>
+            <Typography variant="h5" className={classes.quoramTxt}>
               Please connect your wallet
             </Typography>
           </Grid>

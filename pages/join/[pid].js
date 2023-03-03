@@ -42,7 +42,7 @@ import {
 import ERC20Comp from "../../src/components/depositPageComps/ERC20/ERC20Comp";
 import ERC721Comp from "../../src/components/depositPageComps/ERC721/ERC721Comp";
 import SnackbarComp from "../../src/components/depositPageComps/Snackbar/SnackbarComp";
-import Layout3 from "../../src/components/layouts/layout3";
+import Layout2 from "../../src/components/layouts/layout2";
 import ProgressBar from "../../src/components/progressbar";
 import {
   setGovernanceTokenDetails,
@@ -787,7 +787,7 @@ const Join = (props) => {
   };
 
   return (
-    <Layout3 faucet={true}>
+    <Layout2 faucet={true}>
       {tokenType === "erc20NonTransferable" && (
         // ERC20
         <ERC20Comp
@@ -847,7 +847,7 @@ const Join = (props) => {
         message={message}
         openSnackBar={openSnackBar}
       />
-    </Layout3>
+    </Layout2>
   );
 };
 
