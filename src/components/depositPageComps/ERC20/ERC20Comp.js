@@ -13,6 +13,7 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
+import { ERC20Styles } from "./ERC20CompStyles";
 
 const ERC20Comp = ({
   wallet,
@@ -44,6 +45,8 @@ const ERC20Comp = ({
   totalDeposit,
   walletBalance,
 }) => {
+  const classes = ERC20Styles();
+
   return (
     <>
       {wallet !== null ? (
