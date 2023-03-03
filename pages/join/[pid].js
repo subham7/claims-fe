@@ -281,6 +281,7 @@ const Join = (props) => {
         USDC_CONTRACT_ADDRESS,
         GNOSIS_TRANSACTION_URL,
       );
+      setDataFetched(true);
       setGovernorDataFetched(true);
       await governorDetailContract.obtainTokenDecimals().then((result) => {
         setGovernanceConvertDecimal(result);
