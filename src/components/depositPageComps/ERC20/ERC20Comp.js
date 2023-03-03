@@ -29,7 +29,6 @@ const ERC20Comp = ({
   depositCloseDate,
   depositAmount,
   depositInitiated,
-  maxDeposit,
   handleMaxButtonClick,
   handleInputChange,
   handleDeposit,
