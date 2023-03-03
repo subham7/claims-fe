@@ -18,6 +18,7 @@ const ERC721Comp = ({
   isNftSupplyUnlimited,
   isGovernanceActive,
   maxTokensPerUser,
+  depositCloseDate
 }) => {
   const classes = ERC721Styles();
 

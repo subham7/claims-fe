@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Backdrop,
   Button,
@@ -9,10 +8,12 @@ import {
   DialogContent,
   Divider,
   Grid,
+  Input,
   Skeleton,
   Stack,
   Typography,
 } from "@mui/material";
+
 import { ERC20Styles } from "./ERC20CompStyles";
 
 const ERC20Comp = ({
