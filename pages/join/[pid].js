@@ -3,7 +3,7 @@ import Web3 from "web3";
 
 // react imports
 import { useRouter } from "next/router";
-import { React, useEffect, useState } from "react";
+import { React, useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 // api imports
@@ -37,7 +37,6 @@ const Join = (props) => {
   const dispatch = useDispatch();
   const [walletConnected, setWalletConnected] = useState(false);
   const [fetched, setFetched] = useState(false);
-  const [dataFetched, setDataFetched] = useState(false);
   const [previouslyConnectedWallet, setPreviouslyConnectedWallet] =
     useState(null);
   const [userDetails, setUserDetails] = useState(null);
@@ -50,10 +49,8 @@ const Join = (props) => {
   const [totalDeposit, setTotalDeposit] = useState(0);
   const [quoram, setQuoram] = useState(0);
   const [threshold, setThreshold] = useState(0);
-  const [tokenDetails, settokenDetails] = useState(null);
   const [tokenAPIDetails, settokenAPIDetails] = useState(null); // contains the details extracted from API
   const [apiTokenDetailSet, setApiTokenDetailSet] = useState(false);
-  const [governorDetails, setGovernorDetails] = useState(null);
   const [governorDataFetched, setGovernorDataFetched] = useState(false);
   const [clubId, setClubId] = useState(null);
   const [membersFetched, setMembersFetched] = useState(false);
@@ -66,7 +63,6 @@ const Join = (props) => {
   const [open, setOpen] = useState(false);
   const [gnosisAddress, setGnosisAddress] = useState(null);
   const [tokenType, setTokenType] = useState();
-  const [count, setCount] = useState(1);
   const [priceOfNft, setPriceOfNft] = useState();
   const [clubName, setClubName] = useState();
   const [nftContractAddress, setnftContractAddress] = useState();
@@ -85,6 +81,14 @@ const Join = (props) => {
   const [isGovernanceActive, setIsGovernanceActive] = useState();
   const [message, setMessage] = useState("");
 
+
+  // unwanted states
+  // const [dataFetched, setDataFetched] = useState(false);
+  // const [tokenDetails, settokenDetails] = useState(null);
+  // const [count, setCount] = useState(1);
+  // const [governorDetails, setGovernorDetails] = useState(null);
+
+
   const USDC_CONTRACT_ADDRESS = useSelector((state) => {
     return state.gnosis.usdcContractAddress;
   });
@@ -98,22 +102,17 @@ const Join = (props) => {
   const [usdcTokenDecimal, setUsdcTokenDecimal] = useState(0);
   const [governanceConvertDecimal, setGovernanceConvertDecimal] = useState(0);
 
+  // helper function
+  const newContract = (_customContractAddress, _implementationContract = ImplementationContract) => {
+
+    const contract = new SmartContract(_implementationContract, _customContractAddress, undefined, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL)
+    return contract;
+  }
+
   const fetchCustomTokenDecimals = async () => {
     if (daoAddress && USDC_CONTRACT_ADDRESS && GNOSIS_TRANSACTION_URL) {
-      const usdcContract = new SmartContract(
-        ImplementationContract,
-        USDC_CONTRACT_ADDRESS,
-        undefined,
-        USDC_CONTRACT_ADDRESS,
-        GNOSIS_TRANSACTION_URL,
-      );
-      const daoContract = new SmartContract(
-        ImplementationContract,
-        daoAddress,
-        undefined,
-        USDC_CONTRACT_ADDRESS,
-        GNOSIS_TRANSACTION_URL,
-      );
+      const usdcContract = newContract(USDC_CONTRACT_ADDRESS)
+      const daoContract = newContract(daoAddress)
 
       await usdcContract.obtainTokenDecimals().then((result) => {
         setUsdcTokenDecimal(result);
@@ -121,8 +120,12 @@ const Join = (props) => {
       await daoContract.obtainTokenDecimals().then((result) => {
         setGovernanceConvertDecimal(result);
       });
+
+      console.log("Run sucessfully!")
     }
   };
+
+
   // console.log(walletConnected);
   const checkConnection = async () => {
     // console.log("wallet connection check");
@@ -195,20 +198,8 @@ const Join = (props) => {
   };
 
   const erc721ContractDetails = async () => {
-    const erc721DetailContract = new SmartContract(
-      ImplementationContract,
-      daoAddress,
-      undefined,
-      USDC_CONTRACT_ADDRESS,
-      GNOSIS_TRANSACTION_URL,
-    );
-    const nftContract = new SmartContract(
-      nft,
-      nftContractAddress,
-      undefined,
-      USDC_CONTRACT_ADDRESS,
-      GNOSIS_TRANSACTION_URL,
-    );
+    const erc721DetailContract = newContract(daoAddress)
+    const nftContract = newContract(nftContractAddress, nft)
 
     await erc721DetailContract.quoram().then((result) => setQuoram(result));
 
@@ -268,20 +259,14 @@ const Join = (props) => {
     if (
       daoAddress &&
       !governorDataFetched &&
-      !governorDetails &&
+      // !governorDetails &&
       userDetails &&
       USDC_CONTRACT_ADDRESS &&
       GNOSIS_TRANSACTION_URL &&
       usdcTokenDecimal
     ) {
-      const governorDetailContract = new SmartContract(
-        ImplementationContract,
-        daoAddress,
-        undefined,
-        USDC_CONTRACT_ADDRESS,
-        GNOSIS_TRANSACTION_URL,
-      );
-      setDataFetched(true);
+      const governorDetailContract = newContract(daoAddress)
+      // setDataFetched(true);
       setGovernorDataFetched(true);
       await governorDetailContract.obtainTokenDecimals().then((result) => {
         setGovernanceConvertDecimal(result);
@@ -294,7 +279,6 @@ const Join = (props) => {
       await governorDetailContract.minDepositPerUser().then((result) => {
         setMinDeposit(convertFromWei(parseFloat(result), usdcTokenDecimal));
       });
-
       await governorDetailContract.maxDepositPerUser().then((result) => {
         setMaxDeposit(convertFromWei(parseInt(result), usdcTokenDecimal));
       });
@@ -305,7 +289,6 @@ const Join = (props) => {
         // console.log("result", result);
         setTokenSymbol(result);
       });
-
       await governorDetailContract.erc20TokensMinted().then((result) => {
         setClubTokenMInted(
           convertFromWeiGovernance(result, governanceConvertDecimal),
@@ -322,13 +305,7 @@ const Join = (props) => {
       GNOSIS_TRANSACTION_URL &&
       usdcTokenDecimal
     ) {
-      const usdc_contract = new SmartContract(
-        ImplementationContract,
-        USDC_CONTRACT_ADDRESS,
-        undefined,
-        USDC_CONTRACT_ADDRESS,
-        GNOSIS_TRANSACTION_URL,
-      );
+      const usdc_contract = newContract(USDC_CONTRACT_ADDRESS)
       await usdc_contract.balanceOf().then(
         (result) => {
           // console.log("wallet balance", result);
@@ -362,7 +339,7 @@ const Join = (props) => {
     if (pid) {
       tokenAPIDetailsRetrieval();
     }
-  }, [pid, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL]);
+  }, [pid]);
 
   useEffect(() => {
     if (
@@ -374,7 +351,7 @@ const Join = (props) => {
       contractDetailsRetrieval();
       // tokenDetailsRetrieval();
     }
-  }, [tokenAPIDetails, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL]);
+  }, [tokenAPIDetails, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL, tokenType]);
 
   useEffect(() => {
     // console.log("wallet", wallet);
@@ -383,7 +360,7 @@ const Join = (props) => {
       setPreviouslyConnectedWallet(wallet[0][0].address);
       setUserDetails(wallet[0][0].address);
     }
-  }, [previouslyConnectedWallet]);
+  }, [wallet]);
 
   useEffect(() => {
     if (clubId) {
@@ -410,7 +387,11 @@ const Join = (props) => {
 
   useEffect(() => {
     fetchCustomTokenDecimals();
-  }, [daoAddress, USDC_CONTRACT_ADDRESS]);
+  }, [daoAddress, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL]);
+
+  // useEffect(()=> {
+  //   fetchCustomTokenDecimals()
+  // }, [])
 
   const handleInputChange = (newValue) => {
     setDepositAmount(parseInt(newValue));
@@ -469,7 +450,7 @@ const Join = (props) => {
           minDeposit={minDeposit}
           open={open}
           tokenAPIDetails={tokenAPIDetails}
-          tokenDetails={tokenDetails}
+          // tokenDetails={tokenDetails}
           tokenSymbol={tokenSymbol}
           totalDeposit={totalDeposit}
           wallet={wallet}
@@ -482,6 +463,7 @@ const Join = (props) => {
           setOpenSnackBar={setOpenSnackBar}
           usdcTokenDecimal={usdcTokenDecimal}
           userDetails={userDetails}
+          newContract={newContract}
         />
       )}
       {tokenType === "erc721" && (
@@ -513,6 +495,7 @@ const Join = (props) => {
           userDetails={userDetails}
           userNftBalance={userNftBalance}
           walletBalance={walletBalance}
+          newContract={newContract}
         />
       )}
       <SnackbarComp
