@@ -82,8 +82,8 @@ const Join = (props) => {
   const [message, setMessage] = useState("");
 
 
-  // unwanted states
-  // const [dataFetched, setDataFetched] = useState(false);
+  // unused states
+  const [dataFetched, setDataFetched] = useState(false);
   // const [tokenDetails, settokenDetails] = useState(null);
   // const [count, setCount] = useState(1);
   // const [governorDetails, setGovernorDetails] = useState(null);
