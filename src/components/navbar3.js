@@ -17,6 +17,8 @@ import NetworkSwitcher from "./networkSwitcher";
 import store from "../redux/store";
 import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/router";
+import { useAccountCenter, useConnectWallet } from "@web3-onboard/react";
+// import "../../styles/globals.css";
 
 const useStyles = makeStyles({
   image: {
@@ -29,71 +31,83 @@ export default function Navbar3(props) {
   const router = useRouter();
   const dispatch = useDispatch();
   const classes = useStyles();
-  const [previouslyConnectedWallet, setPreviouslyConnectedWallet] =
-    useState(null);
-  const [userDetails, setUserDetails] = useState(null);
+  // const [previouslyConnectedWallet, setPreviouslyConnectedWallet] =
+  //   useState(null);
+  // const [userDetails, setUserDetails] = useState(null);
 
-  useEffect(() => {
-    store.subscribe(() => {
-      const { create } = store.getState();
-      if (create.value) {
-        setPreviouslyConnectedWallet(create.value);
-      } else {
-        setPreviouslyConnectedWallet(null);
-      }
-    });
-    const checkConnection = async () => {
-      var web3;
-      if (window.ethereum) {
-        web3 = new Web3(window.ethereum);
-      } else if (window.web3) {
-        web3 = new Web3(window.web3.currentProvider);
-      }
-      try {
-        web3.eth.getAccounts().then((async) => {
-          setUserDetails(async[0]);
-        });
-      } catch (err) {
-        setUserDetails(null);
-      }
-    };
-    const autoSelectWallet = async () => {
-      if (previouslyConnectedWallet) {
-        await onboard.connectWallet({
-          autoSelect: previouslyConnectedWallet[0],
-          disableModals: true,
-        });
-      }
-    };
+  // useEffect(() => {
+  //   store.subscribe(() => {
+  //     const { create } = store.getState();
+  //     if (create.value) {
+  //       setPreviouslyConnectedWallet(create.value);
+  //     } else {
+  //       setPreviouslyConnectedWallet(null);
+  //     }
+  //   });
+  //   const checkConnection = async () => {
+  //     var web3;
+  //     if (window.ethereum) {
+  //       web3 = new Web3(window.ethereum);
+  //     } else if (window.web3) {
+  //       web3 = new Web3(window.web3.currentProvider);
+  //     }
+  //     try {
+  //       web3.eth.getAccounts().then((async) => {
+  //         setUserDetails(async[0]);
+  //       });
+  //     } catch (err) {
+  //       setUserDetails(null);
+  //     }
+  //   };
+  //   const autoSelectWallet = async () => {
+  //     if (previouslyConnectedWallet) {
+  //       await onboard.connectWallet({
+  //         autoSelect: previouslyConnectedWallet[0],
+  //         disableModals: true,
+  //       });
+  //     }
+  //   };
 
-    autoSelectWallet();
-    checkConnection();
-  }, [previouslyConnectedWallet]);
+  //   autoSelectWallet();
+  //   checkConnection();
+  // }, [previouslyConnectedWallet]);
 
-  const handleConnection = (event) => {
-    const wallet = connectWallet(dispatch);
-    wallet.then((response) => {
-      if (!response) {
-        console.log("Error connecting wallet");
-      }
-    });
-  };
+  // const handleConnection = (event) => {
+  //   const wallet = connectWallet(dispatch);
+  //   wallet.then((response) => {
+  //     if (!response) {
+  //       console.log("Error connecting wallet");
+  //     }
+  //   });
+  // };
 
-  const handleFaucetRedirect = () => {
-    window.open("/faucet", "_ blank");
-  };
+  // const handleFaucetRedirect = () => {
+  //   window.open("/faucet", "_ blank");
+  // };
+
+  const [{ wallet, connecting }, connect, disconnect] = useConnectWallet();
+  const updateAccountCenter = useAccountCenter();
+
+  // create an ethers provider
+  let ethersProvider;
+
+  if (wallet) {
+    // ethersProvider = new ethers.providers.Web3Provider(wallet.provider, 'any')
+    if (window.ethereum) {
+      console.log("in hereeee");
+      window.web3 = new Web3(window.ethereum);
+    } else if (window.web3) {
+      console.log("in elsee");
+      window.web3 = new Web3(window.web3.currentProvider);
+    }
+  }
+  // return (
+
+  // )
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar
-        className={classes.root}
-        position="fixed"
-        sx={{
-          width: "100%",
-          zIndex: (theme) => theme.zIndex.drawer + 1,
-          paddingBottom: "15px",
-        }}
-      >
+      <AppBar position="static">
         <Toolbar>
           <IconButton
             color="inherit"
@@ -124,17 +138,24 @@ export default function Navbar3(props) {
               USDC Faucet
             </Button>
           ) : null}
-          <NetworkSwitcher />
-          {previouslyConnectedWallet !== null ? (
-            <AccountButton accountDetail={userDetails} />
-          ) : (
+          {connecting ? (
             <Button
-              variant="navBar"
+              // variant="navBar"
               sx={{ mr: 2, mt: 2 }}
               className={classes.navButton}
-              onClick={handleConnection}
             >
-              No wallet connected
+              Connecting
+            </Button>
+          ) : wallet ? (
+            <></>
+          ) : (
+            <Button
+              // variant="navBar"
+              sx={{ mr: 2, mt: 2 }}
+              className={classes.navButton}
+              onClick={() => (wallet ? disconnect(wallet) : connect())}
+            >
+              Connect wallet
             </Button>
           )}
         </Toolbar>

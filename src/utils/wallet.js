@@ -1,8 +1,8 @@
-import "../styles/globals.css";
+// import "../styles/globals.css";
 import { init } from "@web3-onboard/react";
 import injectedModule from "@web3-onboard/injected-wallets";
 
-const INFURA_KEY = "sdf";
+const INFURA_ID = "sdf";
 
 const MATIC_MAINNET_RPC = "https://matic-mainnet.chainstacklabs.com";
 const ETH_MAINNET_RPC = `https://mainnet.infura.io/v3/${INFURA_ID}`;
