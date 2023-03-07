@@ -7,7 +7,11 @@ export const slice = createSlice({
   },
   reducers: {
     addWalletAddress: (state, action) => {
-      state.wallet = action.payload.safeAddress;
+      state.wallet = action.payload;
     },
   },
 });
+
+export const { addWalletAddress } = slice.actions;
+
+export default slice.reducer;

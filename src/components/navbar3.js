@@ -18,6 +18,7 @@ import store from "../redux/store";
 import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/router";
 import { useAccountCenter, useConnectWallet } from "@web3-onboard/react";
+import { addWalletAddress } from "../redux/reducers/user";
 // import "../../styles/globals.css";
 
 const useStyles = makeStyles({
@@ -86,23 +87,23 @@ export default function Navbar3(props) {
   // };
 
   const [{ wallet, connecting }, connect, disconnect] = useConnectWallet();
-
+  console.log(wallet);
   // create an ethers provider
   let ethersProvider;
 
   if (wallet) {
     // ethersProvider = new ethers.providers.Web3Provider(wallet.provider, 'any')
     if (window.ethereum) {
-      console.log("in hereeee");
       window.web3 = new Web3(window.ethereum);
     } else if (window.web3) {
-      console.log("in elsee");
       window.web3 = new Web3(window.web3.currentProvider);
     }
   }
-  // return (
-
-  // )
+  useEffect(() => {
+    if (wallet) {
+      dispatch(addWalletAddress(wallet ? wallet.accounts[0].address : null));
+    }
+  }, [dispatch, wallet]);
 
   return (
     <Box sx={{ flexGrow: 1 }}>
