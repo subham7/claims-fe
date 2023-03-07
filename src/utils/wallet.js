@@ -33,6 +33,9 @@ const chains = [ethereumMainnet, ethereumGoerli, polygonMainnet];
 const wallets = [injectedModule()];
 
 export const web3Onboard = init({
+  connect: {
+    autoConnectLastWallet: true,
+  },
   wallets,
   chains,
   appMetadata: {

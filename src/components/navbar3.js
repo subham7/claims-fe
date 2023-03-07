@@ -86,7 +86,6 @@ export default function Navbar3(props) {
   // };
 
   const [{ wallet, connecting }, connect, disconnect] = useConnectWallet();
-  const updateAccountCenter = useAccountCenter();
 
   // create an ethers provider
   let ethersProvider;
