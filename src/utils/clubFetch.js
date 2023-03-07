@@ -57,6 +57,9 @@ const ClubFetch = (Component) => {
     const GNOSIS_TRANSACTION_URL = useSelector((state) => {
       return state.gnosis.transactionUrl;
     });
+    const wallet = useSelector((state) => {
+      return state.gnosis.wallet;
+    });
     // const dispatch = useDispatch();
     // const [address, setAddress] = useState(null);
 
@@ -262,12 +265,11 @@ const ClubFetch = (Component) => {
         clubData.then((result) => {
           if (result.status !== 200) {
           } else {
-            if (localStorage.getItem("isWalletConnected") === "false") {
+            if (wallet) {
               router.push("/");
             } else {
-              const web3 = new Web3(window.ethereum);
-              const checkedwallet = web3.utils.toChecksumAddress(
-                localStorage.getItem("wallet"),
+              const checkedwallet = Web3.utils.toChecksumAddress(
+                wallet?.accounts[0].address,
               );
               const getLoginToken = loginToken(checkedwallet);
               getLoginToken.then((response) => {

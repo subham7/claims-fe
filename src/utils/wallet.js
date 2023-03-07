@@ -39,10 +39,11 @@ export const web3Onboard = init({
   wallets,
   chains,
   appMetadata: {
-    name: "Web3-Onboard Demo",
+    name: "StaionX",
     icon: "<svg>My App Icon</svg>",
-    description: "A demo of Web3-Onboard.",
+    description: "create DAO in 60 secs",
   },
+  // disconnect: disconnectWallet({ label: primaryWallet.label }),
 });
 
 // import React from "react";
