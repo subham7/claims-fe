@@ -58,7 +58,7 @@ const ClubFetch = (Component) => {
       return state.gnosis.transactionUrl;
     });
     const wallet = useSelector((state) => {
-      return state.gnosis.wallet;
+      return state.user.wallet;
     });
     // const dispatch = useDispatch();
     // const [address, setAddress] = useState(null);
@@ -271,7 +271,7 @@ const ClubFetch = (Component) => {
               const checkedwallet = Web3.utils.toChecksumAddress(
                 wallet?.accounts[0].address,
               );
-              const getLoginToken = loginToken(checkedwallet);
+              const getLoginToken = loginToken(wallet);
               getLoginToken.then((response) => {
                 if (response.status !== 200) {
                   console.log(response.data.error);

@@ -13,7 +13,7 @@ import { makeStyles } from "@mui/styles";
 import { connectWallet, setUserChain, onboard } from "../utils/wallet";
 import Web3 from "web3";
 import AccountButton from "./accountbutton";
-import NetworkSwitcher from "./networkSwitcher";
+
 import store from "../redux/store";
 import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/router";
@@ -29,70 +29,11 @@ const useStyles = makeStyles({
 });
 
 export default function Navbar3(props) {
-  const router = useRouter();
   const dispatch = useDispatch();
   const classes = useStyles();
-  // const [previouslyConnectedWallet, setPreviouslyConnectedWallet] =
-  //   useState(null);
-  // const [userDetails, setUserDetails] = useState(null);
-
-  // useEffect(() => {
-  //   store.subscribe(() => {
-  //     const { create } = store.getState();
-  //     if (create.value) {
-  //       setPreviouslyConnectedWallet(create.value);
-  //     } else {
-  //       setPreviouslyConnectedWallet(null);
-  //     }
-  //   });
-  //   const checkConnection = async () => {
-  //     var web3;
-  //     if (window.ethereum) {
-  //       web3 = new Web3(window.ethereum);
-  //     } else if (window.web3) {
-  //       web3 = new Web3(window.web3.currentProvider);
-  //     }
-  //     try {
-  //       web3.eth.getAccounts().then((async) => {
-  //         setUserDetails(async[0]);
-  //       });
-  //     } catch (err) {
-  //       setUserDetails(null);
-  //     }
-  //   };
-  //   const autoSelectWallet = async () => {
-  //     if (previouslyConnectedWallet) {
-  //       await onboard.connectWallet({
-  //         autoSelect: previouslyConnectedWallet[0],
-  //         disableModals: true,
-  //       });
-  //     }
-  //   };
-
-  //   autoSelectWallet();
-  //   checkConnection();
-  // }, [previouslyConnectedWallet]);
-
-  // const handleConnection = (event) => {
-  //   const wallet = connectWallet(dispatch);
-  //   wallet.then((response) => {
-  //     if (!response) {
-  //       console.log("Error connecting wallet");
-  //     }
-  //   });
-  // };
-
-  // const handleFaucetRedirect = () => {
-  //   window.open("/faucet", "_ blank");
-  // };
-
   const [{ wallet, connecting }, connect, disconnect] = useConnectWallet();
-  console.log(wallet);
-  // create an ethers provider
-  let ethersProvider;
 
   if (wallet) {
-    // ethersProvider = new ethers.providers.Web3Provider(wallet.provider, 'any')
     if (window.ethereum) {
       window.web3 = new Web3(window.ethereum);
     } else if (window.web3) {
@@ -132,25 +73,19 @@ export default function Navbar3(props) {
               variant="primary"
               color="primary"
               sx={{ mr: 2, mt: 2 }}
-              // startIcon={<LocalFireDepartmentIcon />}
               onClick={handleFaucetRedirect}
             >
               USDC Faucet
             </Button>
           ) : null}
           {connecting ? (
-            <Button
-              // variant="navBar"
-              sx={{ mr: 2, mt: 2 }}
-              className={classes.navButton}
-            >
+            <Button sx={{ mr: 2, mt: 2 }} className={classes.navButton}>
               Connecting
             </Button>
           ) : wallet ? (
             <></>
           ) : (
             <Button
-              // variant="navBar"
               sx={{ mr: 2, mt: 2 }}
               className={classes.navButton}
               onClick={() => (wallet ? disconnect(wallet) : connect())}

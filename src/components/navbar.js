@@ -77,7 +77,7 @@ export default function Navbar(props) {
               alt="monogram"
             />
           </Box>
-          <NetworkSwitcher />
+          {/* <NetworkSwitcher /> */}
           {previouslyConnectedWallet !== null ? (
             <AccountButton accountDetail={userDetails} />
           ) : (

@@ -17,10 +17,10 @@ export default function ProtectRoute(Component) {
   const AuthenticatedComponent = () => {
     const router = useRouter();
     const dispatch = useDispatch();
-    const [walletAddress, setWalletAddress] = useState(null);
+    // const [walletAddress, setWalletAddress] = useState(null);
     const [walletLoaded, setWalletLoaded] = useState(false);
     const wallet = useSelector((state) => {
-      return state.create.value;
+      return state.user.value;
     });
     const [redirect, setRedirect] = useState(false);
     const [networks, setNetworks] = useState([]);
@@ -101,11 +101,13 @@ export default function ProtectRoute(Component) {
           });
       }
       // const switched = checkNetwork()
+
       const handleMount = async () => {
+        console.log("wallet in handle mount", wallet);
         if (wallet !== null) {
-          setWalletAddress(wallet[0][0].address);
+          // setWalletAddress(wallet[0][0].address);
           setWalletLoaded(true);
-          const getLoginToken = loginToken(wallet[0][0].address);
+          const getLoginToken = loginToken(wallet);
           getLoginToken.then((response) => {
             if (response.status !== 200) {
               console.log(response.data.error);
@@ -138,7 +140,7 @@ export default function ProtectRoute(Component) {
             }
           });
         }
-        if (walletAddress === null && !walletLoaded) {
+        if (wallet === null && !walletLoaded) {
           setRedirect(true);
         }
         if (redirect) {

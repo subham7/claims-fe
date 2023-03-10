@@ -161,7 +161,8 @@ export default function App() {
         });
     }
     if (walletAddress) {
-      console.log("trueeee");
+      const getLoginToken = loginToken(walletAddress);
+      getLoginToken.then((response) => {});
       setClubFlow(true);
     } else {
       setClubFlow(false);
