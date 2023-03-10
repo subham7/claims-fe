@@ -50,6 +50,7 @@ import {
 } from "../../../src/utils/globalFunctions";
 import {BsArrowRight} from 'react-icons/bs'
 import CreateLegalEntity from "../../../src/components/modals/createLegalEntity";
+import LegalEntityModal from "../../../src/components/modals/createLegalEntity";
 
 const useStyles = makeStyles({
   media: {
@@ -1221,7 +1222,7 @@ const Dashboard = () => {
         </Snackbar>
       </Layout1>
 
-      {showlegalEntityModal && <CreateLegalEntity onClose={closeModalHandler} />}
+      {showlegalEntityModal && <LegalEntityModal isCreating={false} isInvite={false} isSuccess={true} onClose={closeModalHandler} />}
     </>
   );
 };
