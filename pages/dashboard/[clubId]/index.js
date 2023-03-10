@@ -48,6 +48,8 @@ import {
   convertFromWei,
   convertFromWeiGovernance,
 } from "../../../src/utils/globalFunctions";
+import {BsArrowRight} from 'react-icons/bs'
+import CreateLegalEntity from "../../../src/components/modals/createLegalEntity";
 
 const useStyles = makeStyles({
   media: {
@@ -338,6 +340,23 @@ const useStyles = makeStyles({
   profilePic: {
     borderRadius: "50%",
   },
+
+  legalEntityDiv: {
+    padding: "10px 30px",
+    marginTop : "20px",
+    borderRadius: "12px",
+    background:"transparent linear-gradient(108deg, #6C63FF 0%, #0ABB92 100%) 0% 0% no-repeat padding-box",
+    cursor: 'pointer',
+    display:'flex',
+    alignItems: 'center',
+    gap:"10px"
+  },
+  legalEntityText : {
+    fontSize: "20px",
+    fontFamily:"sans-serif",
+    
+  }
+
 });
 
 const Dashboard = () => {
@@ -384,6 +403,8 @@ const Dashboard = () => {
   const [userOwnershipShare, setUserOwnershipShare] = useState(null);
   const [tokenType, setTokenType] = useState(null);
   const [nftBalance, setNftBalance] = useState(null);
+  const [showlegalEntityModal, setShowLegalEntityModal] = useState(false)
+
   const USDC_CONTRACT_ADDRESS = useSelector((state) => {
     return state.gnosis.usdcContractAddress;
   });
@@ -420,6 +441,8 @@ const Dashboard = () => {
       console.log(error);
     }
   };
+
+
 
   const loadSmartContractData = async () => {
     try {
@@ -586,6 +609,17 @@ const Dashboard = () => {
     }
     setOpenSnackBar(false);
   };
+
+  // open legal entity modal
+  const legalEntityModalHandler = () => {
+    setShowLegalEntityModal(true)
+  }
+
+  // closing legal entity modal
+  const closeModalHandler = () => {
+    setShowLegalEntityModal(false)
+  }
+
   return (
     <>
       <Layout1 page={1} depositUrl={depositLink}>
@@ -946,6 +980,11 @@ const Dashboard = () => {
               </Card>
             </Stack>
 
+            <div onClick={legalEntityModalHandler} className={classes.legalEntityDiv}>
+              <p className={classes.legalEntityText}>Create a legal entity </p>
+              <BsArrowRight size={20}/>
+            </div>
+
             <Stack mt={2}>
               {checkIsAdmin() ? (
                 <Card className={classes.thirdCard}>
@@ -1181,6 +1220,8 @@ const Dashboard = () => {
           ) : null}
         </Snackbar>
       </Layout1>
+
+      {showlegalEntityModal && <CreateLegalEntity onClose={closeModalHandler} />}
     </>
   );
 };
