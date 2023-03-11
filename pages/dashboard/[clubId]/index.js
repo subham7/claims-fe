@@ -1222,7 +1222,7 @@ const Dashboard = () => {
         </Snackbar>
       </Layout1>
 
-      {showlegalEntityModal && <LegalEntityModal isCreating={false} isInvite={false} isSuccess={true} onClose={closeModalHandler} />}
+      {showlegalEntityModal && <LegalEntityModal isCreating={true} isInvite={false} isSuccess={false} onClose={closeModalHandler} />}
     </>
   );
 };
