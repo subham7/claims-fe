@@ -106,7 +106,7 @@ const LegalEntityModal = ({onClose, isCreating, isSuccess, isInvite }) => {
                                 <p>http://localhost:3000/legal/0x5880d77F07312ad5a3221200b48C60eD1eE2A0eE</p>
                                 <button className={classes.copy}>Copy Link</button>
                             </div>)}
-                {isCreating && <button onClick={createLegalEntityHandler} className={classes.btn}>Let's Start</button>}
+                {isCreating && <button onClick={createLegalEntityHandler} className={classes.btn}>Let&apos;s Start</button>}
                 {isSuccess && <button onClick={dashboardHandler} className={classes.btn}>Dashboard</button>}
                 <IoMdClose onClick={onClose} className={classes.icon} size={20} />
             </div>

@@ -62,7 +62,7 @@ const validationSchema = yup.object({
   general_purpose: yup.string('Enter general purpose')
 })
 
-const index = () => {
+const Homepage = () => {
   const classes = useStyles()
 
   const formik = useFormik({
@@ -100,7 +100,7 @@ const index = () => {
               className={classes.input} />
 
             {/* Admin Name */}
-            <Typography className={classes.label}>Administrative member's name</Typography>
+            <Typography className={classes.label}>Administrative member&apos;s name</Typography>
             <TextField 
               placeholder="Admin's full name" 
               variant='outlined' 
@@ -162,4 +162,4 @@ const index = () => {
   )
 }
 
-export default index
+export default Homepage

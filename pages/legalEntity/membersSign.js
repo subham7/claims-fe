@@ -60,7 +60,7 @@ const validationSchema = yup.object({
     amount: yup.number().required('Enter amount of USDC to deposit in station').moreThan(0, 'Amount should be greater than 0')
 })
 
-const membersSign = () => {
+const MembersSign = () => {
     
     const classes = useStyles()
 
@@ -85,7 +85,7 @@ const membersSign = () => {
             <Typography className={classes.title}>Sign legal document</Typography>
 
             {/* Member's Name */}
-            <Typography className={classes.label}>Member's Name</Typography>
+            <Typography className={classes.label}>Member&apos;s Name</Typography>
             <TextField 
                 placeholder="Member's full name" 
                 variant='outlined' 
@@ -117,7 +117,7 @@ const membersSign = () => {
                 helperText={formik.touched.amount && formik.errors.amount}
             />
 
-            <Typography className={classes.text}>What is the amount of USDC you're going to deposit into this station?</Typography>
+            <Typography className={classes.text}>What is the amount of USDC you&apos;re going to deposit into this station?</Typography>
 
             {/* Email */}
             <Typography className={classes.label}>E-mail</Typography>
@@ -139,4 +139,4 @@ const membersSign = () => {
   )
 }
 
-export default membersSign
+export default MembersSign
