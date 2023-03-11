@@ -12,7 +12,7 @@ import {
   CircularProgress,
   TextField,
 } from "@mui/material";
-import Layout3 from "../../src/components/layouts/layout3";
+import Layout2 from "../../src/components/layouts/layout2";
 import { connectWallet, setUserChain, onboard } from "../../src/utils/wallet";
 import { useDispatch, useSelector } from "react-redux";
 import store from "../../src/redux/store";
@@ -334,7 +334,7 @@ const Faucet = (props) => {
   };
 
   return (
-    <Layout3 faucet={false}>
+    <Layout2 faucet={false}>
       <Grid
         container
         spacing={2}
@@ -460,7 +460,7 @@ const Faucet = (props) => {
       >
         <CircularProgress color="inherit" />
       </Backdrop>
-    </Layout3>
+    </Layout2>
   );
 };
 
