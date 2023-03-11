@@ -347,6 +347,9 @@ const Dashboard = () => {
   const daoAddress = useSelector((state) => {
     return state.create.daoAddress;
   });
+  const walletAddress = useSelector((state) => {
+    return state.create.wallet;
+  });
   const [tokenSymbol, setTokenSymbol] = useState(null);
   const [depositCloseTime, setDepositCloseTime] = useState(null);
   const [tokenDetails, settokenDetails] = useState(null);
@@ -393,9 +396,6 @@ const Dashboard = () => {
   const governanceConvertDecimal = useSelector((state) => {
     return state.gnosis.governanceTokenDecimal;
   });
-  const walletAddress = useSelector((state) => {
-    return state.user.wallet;
-  });
 
   const loadNftContractData = async () => {
     try {
@@ -410,6 +410,7 @@ const Dashboard = () => {
         USDC_CONTRACT_ADDRESS,
         GNOSIS_TRANSACTION_URL,
       );
+      console.log("nffttt contracttt", nftContract);
       const nftBalance = await nftContract.nftBalance(walletAddress);
       setNftBalance(nftBalance);
       const symbol = await nftContract.symbol();
@@ -426,7 +427,7 @@ const Dashboard = () => {
       const contract = new SmartContract(
         implementation,
         daoAddress,
-        walletAddress,
+        undefined,
         USDC_CONTRACT_ADDRESS,
         GNOSIS_TRANSACTION_URL,
       );

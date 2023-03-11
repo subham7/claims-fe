@@ -95,44 +95,11 @@ export default function App() {
   const [noWalletMessage, setNoWalletMessage] = useState(null);
   const [open, setOpen] = useState(false);
   const router = useRouter();
-  const [networks, setNetworks] = useState([]);
-  const [networksFetched, setNetworksFetched] = useState(false);
   const walletAddress = wallet?.accounts[0].address;
 
   console.log(walletAddress);
-  // const fetchNetworks = () => {
-  //   const networkData = fetchConfig();
-  //   networkData.then((result) => {
-  //     if (result.status != 200) {
-  //       setNetworksFetched(false);
-  //     } else {
-  //       setNetworks(result.data);
-  //       setNetworksFetched(true);
-  //     }
-  //   });
-  // };
 
   useEffect(() => {
-    // fetchNetworks();
-    // if (networksFetched) {
-    //   const networksAvailable = [];
-    //   networks.forEach((network) => {
-    //     networksAvailable.push(network.networkId);
-    //   });
-    //   const web3 = new Web3(Web3.givenProvider);
-    //   web3.eth.net
-    //     .getId()
-    //     .then((networkId) => {
-    //       if (!networksAvailable.includes(networkId)) {
-    //         setOpen(true);
-    //       }
-    //       updateDynamicAddress(networkId, dispatch);
-    //     })
-    //     .catch((err) => {
-    //       console.log(err);
-    //     });
-    // }
-    console.log("changeeeee");
     if (walletAddress) {
       console.log("hereee");
       const getClubs = fetchClubByUserAddress(walletAddress);
@@ -162,7 +129,40 @@ export default function App() {
     }
     if (walletAddress) {
       const getLoginToken = loginToken(walletAddress);
-      getLoginToken.then((response) => {});
+
+      getLoginToken.then((response) => {
+        console.log("responseee", response);
+        if (response.status !== 200) {
+          console.log(response.data.error);
+        } else {
+          // setExpiryTime(response.data.tokens.access.expires);
+          setExpiryTime("2023-03-19T11:07:20.810Z");
+          const expiryTime = getExpiryTime();
+          const currentDate = Date();
+          setJwtToken(response.data.tokens.access.token);
+          setRefreshToken(response.data.tokens.refresh.token);
+          if (expiryTime < currentDate) {
+            console.log("changeeeee", getJwtToken());
+            const obtainNewToken = refreshToken(
+              getRefreshToken(),
+              getJwtToken(),
+            );
+            obtainNewToken
+              .then((tokenResponse) => {
+                if (response.status !== 200) {
+                  console.log(tokenResponse.data.error);
+                } else {
+                  setExpiryTime(tokenResponse.data.tokens.access.expires);
+                  setJwtToken(tokenResponse.data.tokens.access.token);
+                  setRefreshToken(tokenResponse.data.tokens.refresh.token);
+                }
+              })
+              .catch((error) => {
+                console.log(error);
+              });
+          }
+        }
+      });
       setClubFlow(true);
     } else {
       setClubFlow(false);
@@ -221,7 +221,6 @@ export default function App() {
   };
 
   const handleItemClick = (data) => {
-    console.log(data);
     dispatch(addClubName(data.name));
     dispatch(addDaoAddress(data.daoAddress));
     dispatch(addClubID(data.clubId));
@@ -233,15 +232,6 @@ export default function App() {
     e.preventDefault();
     setOpen(false);
   };
-
-  // const handleSwitchNetwork = async () => {
-  //   const switched = await checkNetwork();
-  //   if (switched) {
-  //     setOpen(false);
-  //   } else {
-  //     setOpen(true);
-  //   }
-  // };
 
   const getImageURL = (tokenURI) => {
     let imgUrl = tokenURI?.split("/");

@@ -17,22 +17,22 @@ export default function ProtectRoute(Component) {
   const AuthenticatedComponent = () => {
     const router = useRouter();
     const dispatch = useDispatch();
+    const [{ wallet }] = useConnectWallet();
     // const [walletAddress, setWalletAddress] = useState(null);
-    const [walletLoaded, setWalletLoaded] = useState(false);
-    const wallet = useSelector((state) => {
-      return state.user.value;
-    });
+
     const [redirect, setRedirect] = useState(false);
     const [networks, setNetworks] = useState([]);
     const [networksFetched, setNetworksFetched] = useState(false);
     const [tokenDecimalUsdc, setTokenDecimalUsdc] = useState(0);
+
     const USDC_CONTRACT_ADDRESS = useSelector((state) => {
       return state.gnosis.usdcContractAddress;
     });
     const GNOSIS_TRANSACTION_URL = useSelector((state) => {
       return state.gnosis.transactionUrl;
     });
-
+    const walletAddress = wallet?.accounts[0].address;
+    console.log("walllleettttt", wallet);
     const fetchCustomTokenDecimals = async () => {
       if (USDC_CONTRACT_ADDRESS && GNOSIS_TRANSACTION_URL) {
         const usdcContract = new SmartContract(
@@ -65,7 +65,7 @@ export default function ProtectRoute(Component) {
     }, [USDC_CONTRACT_ADDRESS]);
 
     const handleRedirectClick = () => {
-      router.push("/");
+      // router.push("/");
     };
 
     const fetchNetworks = () => {
@@ -107,11 +107,11 @@ export default function ProtectRoute(Component) {
         if (wallet !== null) {
           // setWalletAddress(wallet[0][0].address);
           setWalletLoaded(true);
-          const getLoginToken = loginToken(wallet);
+          const getLoginToken = loginToken(walletAddress);
           getLoginToken.then((response) => {
             if (response.status !== 200) {
               console.log(response.data.error);
-              router.push("/");
+              // router.push("/");
             } else {
               setExpiryTime(response.data.tokens.access.expires);
               const expiryTime = getExpiryTime();
@@ -144,12 +144,12 @@ export default function ProtectRoute(Component) {
           setRedirect(true);
         }
         if (redirect) {
-          router.push("/");
+          // router.push("/");
           setRedirect(false);
         }
       };
       handleMount();
-    }, []);
+    }, [dispatch, networks, networksFetched, redirect, wallet, walletAddress]);
 
     return walletLoaded ? (
       <Component wallet={walletAddress} />

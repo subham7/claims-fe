@@ -44,7 +44,8 @@ export default function Navbar2(props) {
   useEffect(() => {
     console.log("wallet in navbar2", wallet);
     if (!wallet) {
-      router.push(`/`, undefined, { shallow: true });
+      console.log("hereeee??????");
+      // router.push(`/`, undefined, { shallow: true });
     }
   }, [router, wallet]);
 

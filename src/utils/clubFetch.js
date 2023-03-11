@@ -73,47 +73,16 @@ const ClubFetch = (Component) => {
     // }, []);
 
     async function redirectUser() {
-      console.log("redirect user", localStorage.getItem("label"));
-
-      // await onboard.disconnectWallet({ label: localStorage.getItem("label") });
-      // await disconnectWallet(dispatch);
-
       if (router.pathname === "/") {
         router.reload();
       } else {
-        router.push("/");
+        // router.push("/");
       }
     }
 
     useEffect(async () => {
-      await window.ethereum.on("accountsChanged", function () {
-        redirectUser();
-      });
-    }, []);
-
-    // useEffect(() => {
-    //   const web3 = new Web3(Web3.givenProvider);
-
-    //   async function detectWalletChange() {
-    //     // get the user's current address
-    //     const [newAddress] = await web3.eth.getAccounts();
-    //     //console.log("address", address, newAddress);
-
-    //     // check if the address has changed
-    //     if (newAddress !== address && address !== null) {
-    //       clearTimeout(detectWalletChangeTimeout);
-    //       setAddress(newAddress);
-    //       redirectUser();
-    //       return;
-    //     }
-    //     setAddress(newAddress);
-
-    //     // call the function again in 1 second
-    //     let detectWalletChangeTimeout = setTimeout(detectWalletChange, 1000);
-    //   }
-
-    //   detectWalletChange();
-    // }, [address]);
+      redirectUser();
+    }, [wallet]);
 
     const fetchCustomTokenDecimals = async () => {
       if (daoAddress && USDC_CONTRACT_ADDRESS && GNOSIS_TRANSACTION_URL) {
@@ -166,17 +135,19 @@ const ClubFetch = (Component) => {
         const response = checkUserInClub.userDetails();
         response.then(
           (result) => {
+            console.log("is user exists", result);
+
             if (result[2]) {
               dispatch(setAdminUser(true));
             } else {
               dispatch(setAdminUser(false));
             }
             if (!result[0]) {
-              router.push("/");
+              // router.push("/");
             }
           },
           (error) => {
-            router.push("/");
+            // router.push("/");
           },
         );
       }
@@ -213,7 +184,7 @@ const ClubFetch = (Component) => {
           GNOSIS_TRANSACTION_URL,
         )
       ) {
-        router.push("/");
+        // router.push("/");
       }
     }, [daoAddress, USDC_CONTRACT_ADDRESS]);
 
@@ -241,6 +212,7 @@ const ClubFetch = (Component) => {
                   if (result.status != 200) {
                     console.log(result.error);
                   } else {
+                    console.log("asdfasdfasdf");
                     dispatch(
                       addContractAddress({
                         factoryContractAddress:
@@ -266,7 +238,7 @@ const ClubFetch = (Component) => {
           if (result.status !== 200) {
           } else {
             if (wallet) {
-              router.push("/");
+              // router.push("/");
             } else {
               const checkedwallet = Web3.utils.toChecksumAddress(
                 wallet?.accounts[0].address,
@@ -275,7 +247,7 @@ const ClubFetch = (Component) => {
               getLoginToken.then((response) => {
                 if (response.status !== 200) {
                   console.log(response.data.error);
-                  router.push("/");
+                  // router.push("/");
                 } else {
                   setExpiryTime(response.data.tokens.access.expires);
                   const expiryTime = getExpiryTime();

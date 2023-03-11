@@ -84,7 +84,7 @@ export default function AccountButton(props) {
     if (router.pathname === "/") {
       router.reload();
     } else {
-      router.push("/");
+      // router.push("/");
     }
   };
 
