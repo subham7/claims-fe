@@ -218,7 +218,7 @@ import {
     }
   });
   
-  const PdfFile = ({ data, title, srcArr, signedAcc }) => {
+  const PdfFile = ({ data, title, srcArr, signedAcc, signedHash }) => {
     return (
       <Document>
         <Page style={styles.page} wrap>
@@ -493,6 +493,8 @@ import {
           {signedAcc && (
           <View style={styles.signedDiv}>
             <Text>Signed By: <Text style={styles.signedAcc}>{signedAcc.slice(0, 8)}...{signedAcc.slice(signedAcc.length - 6)}</Text></Text>
+            <Text>Signed Hash: <Text style={styles.signedAcc}>{signedHash.slice(0, 26)}....{signedHash.slice(signedHash.length - 12)}</Text></Text>
+
           </View>
           )}
 
@@ -509,16 +511,14 @@ import {
     );
   };
   
-  const PDFView = ({signedAcc}) => {
-    console.log('pdf view', signedAcc)
+  const PDFView = ({signedAcc, signedHash}) => {
     const [client, setClient] = useState(false);
     useEffect(() => {
       setClient(true);
     }, []);
     return (
       <PDFViewer height='80%' width='65%' >
-      
-        <PdfFile signedAcc={signedAcc} />
+        <PdfFile signedAcc={signedAcc} signedHash={signedHash} />
       </PDFViewer>
     );
   };

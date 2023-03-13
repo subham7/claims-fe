@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import { makeStyles } from "@mui/styles";
 import Web3 from "web3";
 import { PDFDownloadLink } from "@react-pdf/renderer";
+import { useRouter } from "next/router";
 const DocumentPDF = dynamic(() => import("../../../../pdfGenerator"), {
   ssr: false,
 });
@@ -65,6 +66,10 @@ const SignDoc = () => {
     const classes = useStyles()
     const [signedAcc, setSignedAcc] = useState('')
     const [signDoc, setSignDoc] = useState(false)
+    const [signedHash, setSignedHash] = useState('')
+
+    const router = useRouter()
+    const {clubId} = router.query
 
     const signDocumentHandler = async() => {
 
@@ -87,11 +92,16 @@ const SignDoc = () => {
 
             setSignedAcc(currentAccount)
             setSignDoc(true)
+            setSignedHash(signedMessage)
 
           } catch (error) {
             console.log(error)
           }
+    }
 
+    const uploadToLightHouseHandler = () => {
+      alert('Lighthouse not integrated yet!')
+      router.push(`/dashboard/${clubId}`)
     }
 
 //   const [formData, setFormData] = useState({
@@ -127,11 +137,11 @@ const SignDoc = () => {
                 <div className={classes.signDiv}> 
                     <h2 className={classes.title}>Review and Confirm</h2>
                     {!signDoc && <button onClick={signDocumentHandler} className={classes.btn}>Sign PDF</button>}
-                    {/* {signDoc && <button onClick={signDocumentHandler} className={classes.btn}>Download PDF</button>} */}
+                    {signDoc && <button onClick={uploadToLightHouseHandler} className={classes.btn}>Finish</button>}
 
                 </div>
 
-                <DocumentPDF signedAcc={signedAcc} />
+                <DocumentPDF signedAcc={signedAcc} signedHash={signedHash} />
 
 
         {/* <PDFViewer

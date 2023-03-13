@@ -92,7 +92,6 @@ const Documents = () => {
 
     const createDocHandler = () => {
         router.push(`/dashboard/${clubId}/documents/legalEntity`)
-
     }
 
   return (

@@ -981,11 +981,6 @@ const Dashboard = () => {
               </Card>
             </Stack>
 
-            <div onClick={legalEntityModalHandler} className={classes.legalEntityDiv}>
-              <p className={classes.legalEntityText}>Create a legal entity </p>
-              <BsArrowRight size={20}/>
-            </div>
-
             <Stack mt={2}>
               {checkIsAdmin() ? (
                 <Card className={classes.thirdCard}>
