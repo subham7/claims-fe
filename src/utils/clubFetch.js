@@ -148,11 +148,11 @@ const ClubFetch = (Component) => {
               dispatch(setAdminUser(false));
             }
             if (!result[0]) {
-              // router.push("/");
+              router.push("/");
             }
           },
           (error) => {
-            // router.push("/");
+            router.push("/");
           },
         );
       }
@@ -246,7 +246,7 @@ const ClubFetch = (Component) => {
           if (result.status !== 200) {
           } else {
             if (!wallet) {
-              // router.push("/");
+              router.push("/");
             } else {
               const checkedwallet = wallet?.accounts[0].address;
 
