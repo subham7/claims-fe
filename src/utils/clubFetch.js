@@ -156,7 +156,7 @@ const ClubFetch = (Component) => {
           },
         );
       }
-    });
+    }, []);
 
     const checkGovernanceExists = () => {
       if (daoAddress && USDC_CONTRACT_ADDRESS && GNOSIS_TRANSACTION_URL) {
@@ -246,7 +246,7 @@ const ClubFetch = (Component) => {
           if (result.status !== 200) {
           } else {
             if (!wallet) {
-              router.push("/");
+              // router.push("/");
             } else {
               const checkedwallet = wallet?.accounts[0].address;
 
