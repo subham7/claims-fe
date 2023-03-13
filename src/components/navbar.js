@@ -46,6 +46,10 @@ export default function Navbar3(props) {
     }
   }, [dispatch, wallet]);
 
+  const handleFaucetRedirect = () => {
+    window.open("/faucet", "_ blank");
+  };
+
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static">

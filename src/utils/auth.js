@@ -12,6 +12,7 @@ import ImplementationContract from "../abis/implementationABI.json";
 import { setUSDCTokenDetails } from "../redux/reducers/gnosis";
 import { getAssets } from "../api/assets";
 import { checkUserByClub } from "../api/user";
+import { useConnectWallet } from "@web3-onboard/react";
 
 export default function ProtectRoute(Component) {
   const AuthenticatedComponent = () => {
@@ -140,7 +141,7 @@ export default function ProtectRoute(Component) {
             }
           });
         }
-        if (wallet === null && !walletLoaded) {
+        if (!wallet) {
           setRedirect(true);
         }
         if (redirect) {
@@ -151,7 +152,7 @@ export default function ProtectRoute(Component) {
       handleMount();
     }, [dispatch, networks, networksFetched, redirect, wallet, walletAddress]);
 
-    return walletLoaded ? (
+    return wallet ? (
       <Component wallet={walletAddress} />
     ) : (
       <Backdrop
