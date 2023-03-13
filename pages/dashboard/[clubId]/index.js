@@ -25,6 +25,7 @@ import {
 } from "@mui/material";
 import TextField from "@mui/material/TextField";
 import { makeStyles } from "@mui/styles";
+import { useConnectWallet } from "@web3-onboard/react";
 import { useRouter } from "next/router";
 import { React, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
@@ -347,9 +348,11 @@ const Dashboard = () => {
   const daoAddress = useSelector((state) => {
     return state.create.daoAddress;
   });
-  const walletAddress = useSelector((state) => {
-    return state.create.wallet;
-  });
+  // const walletAddress = useSelector((state) => {
+  //   return state.create.wallet;
+  // });
+  const [{ wallet }] = useConnectWallet();
+
   const [tokenSymbol, setTokenSymbol] = useState(null);
   const [depositCloseTime, setDepositCloseTime] = useState(null);
   const [tokenDetails, settokenDetails] = useState(null);
@@ -396,13 +399,16 @@ const Dashboard = () => {
   const governanceConvertDecimal = useSelector((state) => {
     return state.gnosis.governanceTokenDecimal;
   });
+  const walletAddress = wallet?.accounts[0].address;
+  console.log(wallet);
+  console.log(walletAddress);
 
   const loadNftContractData = async () => {
     try {
       let response = await fetchClubbyDaoAddress(daoAddress);
-      console.log("ressss", response);
+
       const nftAddress = response.data[0].nftAddress;
-      console.log("res", nftAddress);
+
       const nftContract = new SmartContract(
         nft,
         nftAddress,
@@ -410,7 +416,6 @@ const Dashboard = () => {
         USDC_CONTRACT_ADDRESS,
         GNOSIS_TRANSACTION_URL,
       );
-      console.log("nffttt contracttt", nftContract);
       const nftBalance = await nftContract.nftBalance(walletAddress);
       setNftBalance(nftBalance);
       const symbol = await nftContract.symbol();
@@ -423,11 +428,12 @@ const Dashboard = () => {
   };
 
   const loadSmartContractData = async () => {
+    console.log(walletAddress);
     try {
       const contract = new SmartContract(
         implementation,
         daoAddress,
-        undefined,
+        walletAddress,
         USDC_CONTRACT_ADDRESS,
         GNOSIS_TRANSACTION_URL,
       );
@@ -458,7 +464,13 @@ const Dashboard = () => {
       loadSmartContractData();
       // console.log("token type", tokenType);
     }
-  }, [daoAddress, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL, dataFetched]);
+  }, [
+    daoAddress,
+    USDC_CONTRACT_ADDRESS,
+    GNOSIS_TRANSACTION_URL,
+    dataFetched,
+    wallet,
+  ]);
 
   const checkIsAdmin = () => {
     if (membersFetched && membersDetails.length > 0 && walletAddress) {
@@ -509,7 +521,6 @@ const Dashboard = () => {
 
     const nfts = getNfts(clubId);
     nfts.then((result) => {
-      console.log(result);
       if (result.status != 200) {
         setNftFetched(false);
       } else {

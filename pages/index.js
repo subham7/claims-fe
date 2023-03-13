@@ -11,7 +11,6 @@ import {
   DialogContent,
   Dialog,
 } from "@mui/material";
-import { connectWallet } from "../src/utils/wallet";
 import { useDispatch, useSelector } from "react-redux";
 import { makeStyles } from "@mui/styles";
 import AddIcon from "@mui/icons-material/Add";
@@ -23,8 +22,6 @@ import {
   addClubID,
   addClubRoute,
 } from "../src/redux/reducers/create";
-import { checkNetwork } from "../src/utils/wallet";
-import Web3 from "web3";
 
 import {
   getExpiryTime,
@@ -35,9 +32,6 @@ import {
   setRefreshToken,
 } from "../src/utils/auth";
 import { loginToken, refreshToken } from "../src/api/auth";
-import { fetchConfig } from "../src/api/config";
-import { updateDynamicAddress } from "../src/api/index";
-import { CleaningServices } from "@mui/icons-material";
 import { useConnectWallet } from "@web3-onboard/react";
 
 const useStyles = makeStyles({
@@ -87,11 +81,9 @@ export default function App() {
   const dispatch = useDispatch();
   const [clubFlow, setClubFlow] = useState(false);
   const classes = useStyles();
-  const [walletID, setWalletID] = useState(null);
   const [{ wallet }] = useConnectWallet();
   const [clubData, setClubData] = useState([]);
   const [clubOwnerAddress, setClubOwnerAddress] = useState(null);
-  const [fetched, setFetched] = useState(false);
   const [noWalletMessage, setNoWalletMessage] = useState(null);
   const [open, setOpen] = useState(false);
   const router = useRouter();
@@ -128,6 +120,7 @@ export default function App() {
         });
     }
     if (walletAddress) {
+      console.log("walllleeettt addresss", walletAddress);
       const getLoginToken = loginToken(walletAddress);
 
       getLoginToken.then((response) => {
@@ -168,49 +161,6 @@ export default function App() {
       setClubFlow(false);
     }
   }, [walletAddress]);
-
-  // const handleConnection = async (event) => {
-  //   let wallet = connectWallet(dispatch);
-  //   wallet.then((response) => {
-  //     if (response) {
-  //       const getLoginToken = loginToken(localStorage.getItem("wallet"));
-  //       getLoginToken.then((response) => {
-  //         if (response.status !== 200) {
-  //           console.log(response.data.error);
-  //         } else {
-  //           setExpiryTime(response.data.tokens.access.expires);
-  //           const expiryTime = getExpiryTime();
-  //           const currentDate = Date();
-  //           setJwtToken(response.data.tokens.access.token);
-  //           setRefreshToken(response.data.tokens.refresh.token);
-  //           if (expiryTime < currentDate) {
-  //             const obtainNewToken = refreshToken(
-  //               getRefreshToken(),
-  //               getJwtToken(),
-  //             );
-  //             obtainNewToken
-  //               .then((tokenResponse) => {
-  //                 if (response.status !== 200) {
-  //                   console.log(tokenResponse.data.error);
-  //                 } else {
-  //                   setExpiryTime(tokenResponse.data.tokens.access.expires);
-  //                   setJwtToken(tokenResponse.data.tokens.access.token);
-  //                   setRefreshToken(tokenResponse.data.tokens.refresh.token);
-  //                 }
-  //               })
-  //               .catch((error) => {
-  //                 console.log(error);
-  //               });
-  //           }
-  //         }
-  //       });
-  //       setWalletID(localStorage.getItem("wallet"));
-  //       setClubFlow(true);
-  //     } else {
-  //       setClubFlow(false);
-  //     }
-  //   });
-  // };
 
   const handleCreateButtonClick = async (event) => {
     const { pathname } = Router;

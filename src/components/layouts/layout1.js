@@ -34,8 +34,7 @@ export default function Layout1(props) {
             width: { sm: `calc(100% - ${drawerWidth}px)` },
           }}
         >
-          {console.log("xxxxxxxx")}
-          <div style={{ padding: "15px 50px" }}>{props.children}</div>
+          \<div style={{ padding: "15px 50px" }}>{props.children}</div>
         </Box>
       </Box>
     </>

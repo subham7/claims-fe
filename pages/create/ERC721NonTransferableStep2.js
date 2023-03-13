@@ -134,7 +134,6 @@ const ERC721NonTransferableStep2 = (props) => {
 
   const generateRandomNFTImage = () => {
     const randInt = Math.floor(Math.random() * (15 - 1 + 1) + 1);
-    console.log("random Image", randInt);
     setImageUrl(`/assets/NFT_IMAGES/${randInt}.png`);
     setSelectedImage(null);
   };
