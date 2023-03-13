@@ -194,9 +194,31 @@ import {
       left: "0%",
       zIndex: "-1",
     },
+    signedDiv: {
+      marginTop: '50px',
+      fontSize: '14px',
+      color: '#1e1e1e60'
+    },
+
+    signedView: {
+      border: '1px',
+      background: '#1e1e1e',
+      padding: '4px',
+      borderRadius: '10px',
+      height: '40px'
+    },
+    
+    signedAcc: {
+      color: 'black',
+      fontSize: '16px',
+      border: '1 solid grey',
+      textDecoration: 'underline',
+      display: 'block',
+      padding: '40px'
+    }
   });
   
-  const PdfFile = ({ data, title, srcArr }) => {
+  const PdfFile = ({ data, title, srcArr, signedAcc }) => {
     return (
       <Document>
         <Page style={styles.page} wrap>
@@ -467,6 +489,14 @@ import {
               Ipsum.
             </Text>
           </View>
+
+          {signedAcc && (
+          <View style={styles.signedDiv}>
+            <Text>Signed By: <Text style={styles.signedAcc}>{signedAcc.slice(0, 8)}...{signedAcc.slice(signedAcc.length - 6)}</Text></Text>
+          </View>
+          )}
+
+
           <Text
             style={styles.pageNumber}
             render={({ pageNumber, totalPages }) =>
@@ -479,14 +509,16 @@ import {
     );
   };
   
-  const PDFView = () => {
+  const PDFView = ({signedAcc}) => {
+    console.log('pdf view', signedAcc)
     const [client, setClient] = useState(false);
     useEffect(() => {
       setClient(true);
     }, []);
     return (
-      <PDFViewer height='70%' width='65%' style={{}} >
-        <PdfFile />
+      <PDFViewer height='80%' width='65%' >
+      
+        <PdfFile signedAcc={signedAcc} />
       </PDFViewer>
     );
   };

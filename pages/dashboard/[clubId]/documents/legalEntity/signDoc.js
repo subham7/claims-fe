@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import { pdf, PDFDownloadLink, PDFViewer } from "@react-pdf/renderer";
-import Layout1 from '../../src/components/layouts/layout1'
+import Layout1 from '../../../../../src/components/layouts/layout1'
 import html2canvas from "html2canvas";
-import MyDocument from "../pdfGenerator";
 import dynamic from "next/dynamic";
 import { makeStyles } from "@mui/styles";
-const DocumentPDF = dynamic(() => import("../pdfGenerator"), {
+import Web3 from "web3";
+import { PDFDownloadLink } from "@react-pdf/renderer";
+const DocumentPDF = dynamic(() => import("../../../../pdfGenerator"), {
   ssr: false,
 });
 
@@ -63,6 +63,37 @@ const htmltoImage = () => {
 
 const SignDoc = () => {
     const classes = useStyles()
+    const [signedAcc, setSignedAcc] = useState('')
+    const [signDoc, setSignDoc] = useState(false)
+
+    const signDocumentHandler = async() => {
+
+        try {
+            const web3 = new Web3(window.ethereum);
+
+            // current account
+            const accounts = await web3.eth.getAccounts()
+            const currentAccount = accounts[0]
+    
+            console.log(currentAccount)
+            const originalMessage = "YOUR_MESSAGE";
+      
+            // Signed message
+            const signedMessage = await web3.eth.personal.sign(
+              originalMessage,
+              currentAccount,
+              "test password!" // configure your own password here.
+            );
+
+            setSignedAcc(currentAccount)
+            setSignDoc(true)
+
+          } catch (error) {
+            console.log(error)
+          }
+
+    }
+
 //   const [formData, setFormData] = useState({
 //     firstName: "",
 //     lastName: "",
@@ -95,10 +126,12 @@ const SignDoc = () => {
             <div className={classes.container}>
                 <div className={classes.signDiv}> 
                     <h2 className={classes.title}>Review and Confirm</h2>
-                    <button className={classes.btn}>Sign PDF</button>
+                    {!signDoc && <button onClick={signDocumentHandler} className={classes.btn}>Sign PDF</button>}
+                    {/* {signDoc && <button onClick={signDocumentHandler} className={classes.btn}>Download PDF</button>} */}
+
                 </div>
 
-                <DocumentPDF />
+                <DocumentPDF signedAcc={signedAcc} />
 
 
         {/* <PDFViewer

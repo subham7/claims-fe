@@ -1,9 +1,10 @@
 import { Button, InputAdornment, TextField, Typography } from '@mui/material'
 import { makeStyles } from '@mui/styles'
 import React from 'react'
-import Layout1 from '../../src/components/layouts/layout1'
+import Layout1 from '../../../../../src/components/layouts/layout1'
 import * as yup from 'yup'
 import { useFormik } from 'formik'
+import { useRouter } from 'next/router'
 
 const useStyles = makeStyles({
   form: {
@@ -64,6 +65,9 @@ const validationSchema = yup.object({
 
 const Homepage = () => {
   const classes = useStyles()
+  const router = useRouter()
+
+  const {clubId} = router.query
 
   const formik = useFormik({
     initialValues : {
@@ -76,6 +80,8 @@ const Homepage = () => {
     validationSchema : validationSchema, 
     onSubmit: (values) => {
       console.log(values)
+      router.push(`/dashboard/${clubId}/documents/legalEntity/signDoc`)
+
     }
   })
 
