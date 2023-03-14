@@ -218,7 +218,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const PdfFile = ({ data, title, srcArr, signedAcc, signedHash }) => {
+const PdfFile = ({ data, title, srcArr, signedAcc, signedHash, admin_name, LLC_name, email, location, general_purpose }) => {
   return (
     <Document>
       <Page style={styles.page} wrap>
@@ -258,7 +258,16 @@ const PdfFile = ({ data, title, srcArr, signedAcc, signedHash }) => {
             );
           })} */}
         <View>
+
+          <View>
+            <Text>LLC Name: {LLC_name}</Text>
+            <Text>Admin Name: {admin_name}</Text>
+            <Text>Email: {email}</Text>
+            <Text>Location: {location}</Text>
+            <Text>General Purpose: {general_purpose} </Text>
+          </View>
           <Text>
+
             Lorem Ipsum is simply dummy text of the printing and typesetting
             industry. Lorem Ipsum has been the industry&apos;s standard dummy
             text ever since the 1500s, when an unknown printer took a galley of
@@ -521,7 +530,7 @@ const PdfFile = ({ data, title, srcArr, signedAcc, signedHash }) => {
   );
 };
 
-const PDFView = ({ signedAcc, signedHash }) => {
+const PDFView = ({ signedAcc, signedHash, location, email, admin_name, LLC_name, general_purpose }) => {
   const [client, setClient] = useState(false);
   useEffect(() => {
     setClient(true);
@@ -531,7 +540,15 @@ const PDFView = ({ signedAcc, signedHash }) => {
   }
   return (
     <PDFViewer height="80%" width="65%">
-      <PdfFile signedAcc={signedAcc} signedHash={signedHash} />
+      <PdfFile 
+        signedAcc={signedAcc}  
+        signedHash={signedHash} 
+        location={location} 
+        email={email} 
+        LLC_name={LLC_name} 
+        general_purpose={general_purpose} 
+        admin_name={admin_name}
+       />
     </PDFViewer>
   );
 };

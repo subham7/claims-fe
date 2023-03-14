@@ -6,6 +6,8 @@ import { makeStyles } from "@mui/styles";
 import Web3 from "web3";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import { useRouter } from "next/router";
+import CryptoJS from "crypto-js";
+import LegalEntityModal from "../../../../../src/components/modals/LegalEntityModal";
 const DocumentPDF = dynamic(() => import("../pdfGenerator"), {
   ssr: false,
 });
@@ -67,10 +69,13 @@ const SignDoc = () => {
   const [signedAcc, setSignedAcc] = useState("");
   const [signDoc, setSignDoc] = useState(false);
   const [signedHash, setSignedHash] = useState("");
+  const [encryptedString, setEncryptedString] = useState('')
+  const [showModal, setShowModal] = useState(false)
 
   const router = useRouter();
-  const { clubId } = router.query;
+  const { clubId, LLC_name, admin_name, email, location, general_purpose } = router.query;
 
+  // signDocument
   const signDocumentHandler = async () => {
     try {
       const web3 = new Web3(window.ethereum);
@@ -97,41 +102,44 @@ const SignDoc = () => {
     }
   };
 
-  const uploadToLightHouseHandler = () => {
-    alert("Lighthouse not integrated yet!");
-    router.push(`/dashboard/${clubId}`);
-  };
+  const finishHandler = () => {
+    // Convert data into a JSON string
+    const data = JSON.stringify({
+      LLC_name: LLC_name,
+      admin_name: admin_name,
+      email: email,
+      location: location,
+      general_purpose: general_purpose,
+      signedAcc: signedAcc,
+      signedMessage: signedHash
+    })
+
+    const secretKey = ''
+    // Encrypt it using crypto-JS
+    const encryptUserData = CryptoJS.AES.encrypt(data, secretKey).toString()
+    console.log(encryptUserData)
+    setEncryptedString(encryptUserData)
+
+
+    // decrypting data
+    // const bytes = CryptoJS.AES.decrypt(encryptUserData, secretKey)
+    // const decryptedData = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
+    // console.log(decryptedData)
+    
+    // setShowModal(true)
+    router.push({
+      pathname: `/dashboard/${clubId}`,
+      query: {
+        encryptedLink: encryptUserData
+      }
+    })
+  }
 
   const [client, setClient] = useState(false);
   useEffect(() => {
     setClient(true);
   }, []);
 
-  //   const [formData, setFormData] = useState({
-  //     firstName: "",
-  //     lastName: "",
-  //     email: "",
-  //     password: "",
-  //   });
-
-  // const checkForEmptyFields = () => {
-  //   for (const key of Object.keys(formData)) {
-  //     if (formData[key] === "") return false;
-  //   }
-  //   return true;
-  // };
-
-  //   const handleSubmit = (e) => {
-  //     e.preventDefault();
-  //   };
-
-  //   const updateFormData = (event) =>
-  //     setFormData({
-  //       ...formData,
-  //       [event.target.name]: event.target.value,
-  //     });
-
-  //   const { firstName, lastName, email, password } = formData;
 
   return (
     <div>
@@ -146,7 +154,7 @@ const SignDoc = () => {
             )}
             {signDoc && (
               <button
-                onClick={uploadToLightHouseHandler}
+                onClick={finishHandler}
                 className={classes.btn}
               >
                 Finish
@@ -154,7 +162,15 @@ const SignDoc = () => {
             )}
           </div>
 
-          <DocumentPDF signedAcc={signedAcc} signedHash={signedHash} />
+          <DocumentPDF 
+            signedAcc={signedAcc} 
+            signedHash={signedHash} 
+            LLC_name={LLC_name} 
+            admin_name={admin_name} 
+            email={email} 
+            location={location} 
+            general_purpose={general_purpose} 
+          />
 
           {/* <PDFViewer
         //   showToolbar={false}
@@ -222,6 +238,8 @@ const SignDoc = () => {
       )} */}
         {/* <LineGraph /> */}
       </Layout1>
+
+      {showModal && <LegalEntityModal isInvite={true} encryptedLink={encryptedString} />}
     </div>
   );
 };

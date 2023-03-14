@@ -1,6 +1,6 @@
 import { makeStyles } from '@mui/styles'
 import { useRouter } from 'next/router'
-import React from 'react'
+import React, { useState } from 'react'
 import {IoMdClose} from 'react-icons/io'
 
 const useStyles = makeStyles({
@@ -75,6 +75,7 @@ const useStyles = makeStyles({
         background: 'white',
         padding: '8px 14px',
         borderRadius: '100px',
+        cursor:'pointer',
     },
 })
 
@@ -84,16 +85,39 @@ const Backdrop = ({onClose}) => {
     return <div onClick={onClose} className={classes.backdrop}></div>
 }
 
-const LegalEntityModal = ({onClose, isCreating, isSuccess, isInvite }) => {
+const LegalEntityModal = ({onClose, isCreating = false, isSuccess = false, isInvite = false, encryptedLink }) => {
+
+    const [isCopy, setIsCopy] = useState(false)
     const classes = useStyles()
     const router = useRouter()
+
+    const {clubId} = router.query
+
+    // create legal Entity
     const createLegalEntityHandler = () =>{
         router.push('/legalEntity')
     }
+
+    // back to dashboard
     const dashboardHandler = () => {
         // add dynamic link
         router.push('/dashboard/')
     }
+
+    // copy link
+    const copyHandler = () => {
+        navigator.clipboard.writeText(
+          `http://localhost:3000/legal/${replacedEncrytedLink}`
+        );
+
+        setIsCopy(true)
+        setTimeout(() => {
+            setIsCopy(false)
+        }, 3000)
+    }
+
+    const replacedEncrytedLink = encryptedLink.replaceAll('/', 'HELLLLLL')
+    console.log(replacedEncrytedLink)
 
   return (
     <>
@@ -103,8 +127,8 @@ const LegalEntityModal = ({onClose, isCreating, isSuccess, isInvite }) => {
                 <h2 className={classes.title}>{isCreating && 'Create a legal entity'} {isInvite && 'Invite members to sign'} {isSuccess && 'Success'}</h2>    
                 <p className={classes.subtitle}>{isCreating && 'Create a legal entity for this Station & invite members to sign the document by sharing a private link. (Sharing publicly may violate security laws)'} {isInvite && 'Share this link privately with members who should sign the legal document of the Station (Sharing publicly may violate security laws)'} {isSuccess && 'You’ve successfully signed the legal doc inside your Station & have been added as a member in the agreement.'}</p>
                 {isInvite && (<div className={classes.inviteLink}>
-                                <p>http://localhost:3000/legal/0x5880d77F07312ad5a3221200b48C60eD1eE2A0eE</p>
-                                <button className={classes.copy}>Copy Link</button>
+                                <p>http://localhost:3000/legal/{replacedEncrytedLink}</p>
+                                <button onClick={copyHandler} className={classes.copy}>{isCopy ? 'Copied' : "Copy Link"}</button>
                             </div>)}
                 {isCreating && <button onClick={createLegalEntityHandler} className={classes.btn}>Let&apos;s Start</button>}
                 {isSuccess && <button onClick={dashboardHandler} className={classes.btn}>Dashboard</button>}

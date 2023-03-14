@@ -49,8 +49,7 @@ import {
   convertFromWeiGovernance,
 } from "../../../src/utils/globalFunctions";
 import {BsArrowRight} from 'react-icons/bs'
-import CreateLegalEntity from "../../../src/components/modals/createLegalEntity";
-import LegalEntityModal from "../../../src/components/modals/createLegalEntity";
+import LegalEntityModal from "../../../src/components/modals/LegalEntityModal";
 
 const useStyles = makeStyles({
   media: {
@@ -362,7 +361,9 @@ const useStyles = makeStyles({
 
 const Dashboard = () => {
   const router = useRouter();
-  const { clubId } = router.query;
+  const { clubId, encryptedLink } = router.query;
+
+  console.log(router.query)
   const classes = useStyles();
   const daoAddress = useSelector((state) => {
     return state.create.daoAddress;
@@ -405,6 +406,7 @@ const Dashboard = () => {
   const [tokenType, setTokenType] = useState(null);
   const [nftBalance, setNftBalance] = useState(null);
   const [showlegalEntityModal, setShowLegalEntityModal] = useState(false)
+  const [showInviteModal, setShowInviteModal] = useState(false)
 
   const USDC_CONTRACT_ADDRESS = useSelector((state) => {
     return state.gnosis.usdcContractAddress;
@@ -586,6 +588,12 @@ const Dashboard = () => {
     }
   }, [clubId]);
 
+  useEffect(() =>{
+    if(encryptedLink?.length){
+      setShowInviteModal(true)
+    }
+  }, [encryptedLink])
+
   const handleCopy = () => {
     navigator.clipboard.writeText(
       typeof window !== "undefined" && window.location.origin
@@ -611,14 +619,10 @@ const Dashboard = () => {
     setOpenSnackBar(false);
   };
 
-  // open legal entity modal
-  const legalEntityModalHandler = () => {
-    setShowLegalEntityModal(true)
-  }
-
+  
   // closing legal entity modal
   const closeModalHandler = () => {
-    setShowLegalEntityModal(false)
+    setShowInviteModal(false)
   }
 
   return (
@@ -1217,7 +1221,7 @@ const Dashboard = () => {
         </Snackbar>
       </Layout1>
 
-      {showlegalEntityModal && <LegalEntityModal isCreating={true} isInvite={false} isSuccess={false} onClose={closeModalHandler} />}
+      {showInviteModal && <LegalEntityModal encryptedLink={encryptedLink} isInvite={true} onClose={closeModalHandler} />}
     </>
   );
 };

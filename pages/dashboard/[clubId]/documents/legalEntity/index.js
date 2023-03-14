@@ -5,6 +5,7 @@ import Layout1 from '../../../../../src/components/layouts/layout1'
 import * as yup from 'yup'
 import { useFormik } from 'formik'
 import { useRouter } from 'next/router'
+import Link from 'next/link'
 
 const useStyles = makeStyles({
   form: {
@@ -80,8 +81,12 @@ const Homepage = () => {
     validationSchema : validationSchema, 
     onSubmit: (values) => {
       console.log(values)
-      router.push(`/dashboard/${clubId}/documents/legalEntity/signDoc`)
+      // router.push(`/dashboard/${clubId}/documents/legalEntity/signDoc`)
 
+      router.push({
+        pathname: `/dashboard/${clubId}/documents/legalEntity/signDoc`,
+        query: values
+      })
     }
   })
 
@@ -161,7 +166,8 @@ const Homepage = () => {
               className={classes.input}  />
 
             {/* Next */}
-            <Button type='submit' variant='contained' className={classes.btn} >Next</Button>
+            <Button type='submit' variant='contained' className={classes.btn} >Next
+            </Button>
         </form>
         </Layout1>
     </>

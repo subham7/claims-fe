@@ -65,11 +65,7 @@ const ERC20Comp = ({
   const router = useRouter();
   const tokenName = tokenAPIDetails[0].name;
 
-  let tokenDetail;
-
-  if (dataFetched) {
-    tokenDetail = tokenDetails[1];
-  }
+  
 
   const USDC_CONTRACT_ADDRESS = useSelector((state) => {
     return state.gnosis.usdcContractAddress;
@@ -246,7 +242,7 @@ const ERC20Comp = ({
                     </Typography>
                     <Typography variant="h6" className={classes.dimColor}>
                       {dataFetched ? (
-                        "$" + tokenDetail
+                        "$" 
                       ) : (
                         <Skeleton
                           variant="rectangular"

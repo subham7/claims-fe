@@ -3,7 +3,8 @@ import { useFormik } from 'formik'
 import * as yup from 'yup'
 import { Button, InputAdornment, TextField, Typography } from '@mui/material'
 import { makeStyles } from '@mui/styles'
-import Layout1 from '../../../../../src/components/layouts/layout1'
+import Layout1 from '../../src/components/layouts/layout1'
+import { useRouter } from 'next/router'
 
 const useStyles = makeStyles({
     form: {
@@ -61,6 +62,11 @@ const validationSchema = yup.object({
 })
 
 const MembersSign = () => {
+
+    const router = useRouter()
+    const {membersSign} = router.query
+
+    console.log(membersSign)
     
     const classes = useStyles()
 
