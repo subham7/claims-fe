@@ -61,7 +61,7 @@ const ClubFetch = (Component) => {
     //   return state.user.wallet;
     // });
     const [{ wallet }] = useConnectWallet();
-    console.log("wwwwaalllletttt", wallet);
+
     if (wallet) {
       localStorage.setItem("wallet", wallet?.accounts[0].address);
     }
@@ -77,17 +77,17 @@ const ClubFetch = (Component) => {
     //   });
     // }, []);
 
-    async function redirectUser() {
-      if (router.pathname === "/") {
-        router.reload();
-      } else {
-        // router.push("/");
-      }
-    }
+    // async function redirectUser() {
+    //   if (router.pathname === "/") {
+    //     router.reload();
+    //   } else {
+    //     // router.push("/");
+    //   }
+    // }
 
-    useEffect(async () => {
-      redirectUser();
-    }, [wallet]);
+    // useEffect(async () => {
+    //   redirectUser();
+    // }, [wallet]);
 
     const fetchCustomTokenDecimals = async () => {
       if (daoAddress && USDC_CONTRACT_ADDRESS && GNOSIS_TRANSACTION_URL) {
@@ -140,8 +140,6 @@ const ClubFetch = (Component) => {
         const response = checkUserInClub.userDetails();
         response.then(
           (result) => {
-            console.log("is user exists", result);
-
             if (result[2]) {
               dispatch(setAdminUser(true));
             } else {
@@ -181,7 +179,6 @@ const ClubFetch = (Component) => {
       checkGovernanceExists();
       fetchCustomTokenDecimals();
       if (!wallet) {
-        console.log("dddddddddddddd");
         // router.push("/");
       }
       // if (
@@ -199,7 +196,7 @@ const ClubFetch = (Component) => {
 
     useEffect(() => {
       // const switched = checkNetwork()
-      if (clubId) {
+      if (clubId && wallet) {
         const networkData = fetchConfig();
         networkData.then((networks) => {
           if (networks.status != 200) {
@@ -246,11 +243,10 @@ const ClubFetch = (Component) => {
           if (result.status !== 200) {
           } else {
             if (!wallet) {
-              // router.push("/");
+              router.push("/");
             } else {
               const checkedwallet = wallet?.accounts[0].address;
 
-              console.log("checkkkeddd walllet", checkedwallet);
               const getLoginToken = loginToken(checkedwallet);
               getLoginToken.then((response) => {
                 if (response.status !== 200) {
@@ -287,7 +283,7 @@ const ClubFetch = (Component) => {
                   // }
                 }
               });
-              console.log(result.data[0]);
+
               dispatch(addWalletAddress(checkedwallet));
               dispatch(addClubID(result.data[0].clubId));
               dispatch(addClubName(result.data[0].name));
