@@ -158,20 +158,6 @@ const Join = (props) => {
     }
   }, [wallet]);
 
-  const fetchClubData = async () => {
-    const clubData = fetchClub(clubId);
-    clubData.then((result) => {
-      console.log("fetchClubData", result);
-      if (result.status != 200) {
-        setImageFetched(false);
-      } else {
-        setImageUrl(result.data[0].imageUrl);
-        setTokenType(result.data[0].tokenType);
-        setImageFetched(true);
-      }
-    });
-  };
-
   const tokenAPIDetailsRetrieval = async () => {
     console.log("pid", pid);
     let response = await fetchClubbyDaoAddress(pid);
@@ -190,19 +176,39 @@ const Join = (props) => {
     }
   };
 
-  const fetchMembers = () => {
-    if (clubId) {
-      const membersData = getMembersDetails(clubId);
-      membersData.then((result) => {
+  useEffect(() => {
+    const fetchMembers = () => {
+      if (clubId) {
+        const membersData = getMembersDetails(clubId);
+        membersData.then((result) => {
+          if (result.status != 200) {
+            setMembersFetched(false);
+          } else {
+            setMembers(result.data.length);
+            setMembersFetched(true);
+          }
+        });
+      }
+    };
+    const fetchClubData = async () => {
+      const clubData = fetchClub(clubId);
+      clubData.then((result) => {
+        console.log("fetchClubData", result);
         if (result.status != 200) {
-          setMembersFetched(false);
+          setImageFetched(false);
         } else {
-          setMembers(result.data.length);
-          setMembersFetched(true);
+          setImageUrl(result.data[0].imageUrl);
+          setTokenType(result.data[0].tokenType);
+          setImageFetched(true);
         }
       });
+    };
+
+    if (clubId) {
+      fetchClubData();
     }
-  };
+    fetchMembers();
+  }, [clubId]);
 
   useEffect(() => {
     if (pid) {
@@ -382,10 +388,6 @@ const Join = (props) => {
         .then((result) => setIsNftSupplyUnlimited(result));
     };
 
-    if (clubId) {
-      fetchClubData();
-    }
-
     if (wallet) {
       obtainWalletBalance();
 
@@ -394,7 +396,6 @@ const Join = (props) => {
       } else if (tokenType === "erc20NonTransferable") {
         contractDetailsRetrieval();
       }
-      fetchMembers();
     }
   }, [
     walletConnected,
@@ -408,8 +409,7 @@ const Join = (props) => {
     userDetails,
     usdcTokenDecimal,
     governanceConvertDecimal,
-    fetchClubData,
-    fetchMembers,
+
     nftContractAddress,
   ]);
 

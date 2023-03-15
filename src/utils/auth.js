@@ -33,7 +33,10 @@ export default function ProtectRoute(Component) {
       return state.gnosis.transactionUrl;
     });
     const walletAddress = wallet?.accounts[0].address;
-    localStorage.setItem("wallet", wallet?.accounts[0].address);
+    if (wallet) {
+      localStorage.setItem("wallet", wallet?.accounts[0].address);
+    }
+
     console.log("walllleettttt");
     const fetchCustomTokenDecimals = async () => {
       if (USDC_CONTRACT_ADDRESS && GNOSIS_TRANSACTION_URL) {
