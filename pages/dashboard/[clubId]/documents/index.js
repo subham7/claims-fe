@@ -95,6 +95,7 @@ const Documents = () => {
   const classes = useStyles();
   const router = useRouter();
   const {encryptedLink} = router.query
+  const [showInviteModal, setShowInviteModal] = useState(false)
 
 
   const { clubId } = router.query;
@@ -102,6 +103,17 @@ const Documents = () => {
   const createDocHandler = () => {
     router.push(`/dashboard/${clubId}/documents/legalEntity`);
   };
+
+   // closing legal entity modal
+   const closeModalHandler = () => {
+    setShowInviteModal(false)
+  }
+
+  useEffect(() =>{
+    if(encryptedLink?.length){
+      setShowInviteModal(true)
+    }
+  }, [encryptedLink])
 
   return (
     <Layout1>
@@ -171,6 +183,7 @@ const Documents = () => {
           </Grid>
           </div>
 
+      {showInviteModal && <LegalEntityModal encryptedLink={encryptedLink} isInvite={true} onClose={closeModalHandler} />}
           
       </div>
     </Layout1>

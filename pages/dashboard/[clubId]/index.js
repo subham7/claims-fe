@@ -404,8 +404,7 @@ const Dashboard = () => {
   const [userOwnershipShare, setUserOwnershipShare] = useState(null);
   const [tokenType, setTokenType] = useState(null);
   const [nftBalance, setNftBalance] = useState(null);
-  const [showlegalEntityModal, setShowLegalEntityModal] = useState(false)
-  const [showInviteModal, setShowInviteModal] = useState(false)
+
 
   const USDC_CONTRACT_ADDRESS = useSelector((state) => {
     return state.gnosis.usdcContractAddress;
@@ -1213,7 +1212,6 @@ const Dashboard = () => {
         </Snackbar>
       </Layout1>
 
-      {showInviteModal && <LegalEntityModal encryptedLink={encryptedLink} isInvite={true} onClose={closeModalHandler} />}
     </>
   );
 };
