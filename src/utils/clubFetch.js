@@ -197,6 +197,7 @@ const ClubFetch = (Component) => {
     useEffect(() => {
       // const switched = checkNetwork()
       if (clubId && wallet) {
+        console.log("clubid", clubId);
         const networkData = fetchConfig();
         networkData.then((networks) => {
           if (networks.status != 200) {
@@ -218,6 +219,10 @@ const ClubFetch = (Component) => {
                   if (result.status != 200) {
                     console.log(result.error);
                   } else {
+                    console.log(
+                      "usdcContractAddress",
+                      result.data[0].usdcContractAddress,
+                    );
                     dispatch(
                       addContractAddress({
                         factoryContractAddress:

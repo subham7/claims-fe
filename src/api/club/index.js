@@ -29,10 +29,12 @@ export async function fetchClubbyDaoAddress(daoAddress) {
     error: null,
   };
   return await fetch(MAIN_API_URL + `club/${daoAddress}`, {
+    // mode: "no-cors",
     method: "GET",
     headers: {
       "Authorization": "Bearer " + getJwtToken(),
       "Content-Type": "application/json",
+      // "Access-Control-Allow-Origin": "localhost:3000",
     },
   })
     .then((response) => response.json())

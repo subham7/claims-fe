@@ -475,9 +475,13 @@ const Dashboard = () => {
 
   const checkIsAdmin = () => {
     if (membersFetched && membersDetails.length > 0 && walletAddress) {
+      console.log("check is admin", walletAddress);
       let obj = membersDetails.find(
         (member) => member.userAddress === walletAddress,
       );
+      let obj2 = membersDetails.map((member) => {
+        console.log(member.userAddress, walletAddress);
+      });
       let pos = membersDetails.indexOf(obj);
       if (pos >= 0) {
         if (membersDetails[pos].clubs[0].isAdmin) {

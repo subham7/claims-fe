@@ -76,7 +76,7 @@ export default function Navbar3(props) {
             <Button
               variant="primary"
               color="primary"
-              sx={{ mr: 2, mt: 2 }}
+              sx={{ mr: 40, mt: 2 }}
               onClick={handleFaucetRedirect}
             >
               USDC Faucet

@@ -30,6 +30,30 @@ import {
 import { connectWallet, onboard } from "../../src/utils/wallet";
 import { checkNetwork } from "../../src/utils/wallet";
 
+import { useConnectWallet } from "@web3-onboard/react";
+import ClubFetch from "../../src/utils/clubFetch";
+import {
+  addClubID,
+  addClubImageUrl,
+  addClubName,
+  addClubRoute,
+  addDaoAddress,
+  addTokenAddress,
+} from "../../src/redux/reducers/create";
+import {
+  addContractAddress,
+  addSafeAddress,
+} from "../../src/redux/reducers/gnosis";
+import { addWalletAddress } from "../../src/redux/reducers/user";
+import {
+  getExpiryTime,
+  setExpiryTime,
+  setJwtToken,
+  setRefreshToken,
+} from "../../src/utils/auth";
+import { loginToken } from "../../src/api/auth";
+import { fetchConfig, fetchConfigById } from "../../src/api/config";
+
 const Join = (props) => {
   const router = useRouter();
   const { pid } = router.query;
@@ -38,8 +62,7 @@ const Join = (props) => {
   const [walletConnected, setWalletConnected] = useState(false);
   const [fetched, setFetched] = useState(false);
   const [dataFetched, setDataFetched] = useState(false);
-  const [previouslyConnectedWallet, setPreviouslyConnectedWallet] =
-    useState(null);
+
   const [userDetails, setUserDetails] = useState(null);
   const [walletBalance, setWalletBalance] = useState(0);
   const [depositAmount, setDepositAmount] = useState(0);
@@ -84,17 +107,17 @@ const Join = (props) => {
   const [tokenSymbol, setTokenSymbol] = useState();
   const [isGovernanceActive, setIsGovernanceActive] = useState();
   const [message, setMessage] = useState("");
-
+  const [{ wallet }, connect] = useConnectWallet();
   const USDC_CONTRACT_ADDRESS = useSelector((state) => {
     return state.gnosis.usdcContractAddress;
   });
+
+  console.log("USDC_CONTRACT_ADDRESS", USDC_CONTRACT_ADDRESS);
+
   const GNOSIS_TRANSACTION_URL = useSelector((state) => {
     return state.gnosis.transactionUrl;
   });
-  const wallet = useSelector((state) => {
-    return state.create.value;
-  });
-  // console.log("wallet addresssssss", wallet);
+
   const [usdcTokenDecimal, setUsdcTokenDecimal] = useState(0);
   const [governanceConvertDecimal, setGovernanceConvertDecimal] = useState(0);
 
@@ -123,36 +146,22 @@ const Join = (props) => {
       });
     }
   };
-  // console.log(walletConnected);
-  const checkConnection = async () => {
-    // console.log("wallet connection check");
-    if (window.ethereum) {
-      // console.log("in hereeee");
-      window.web3 = new Web3(window.ethereum);
-    } else if (window.web3) {
-      // console.log("in elsee");
-      window.web3 = new Web3(window.web3.currentProvider);
-    }
 
-    try {
-      let accounts = await window.web3.eth.getAccounts();
-      // console.log("in hereeee", accounts);
-      localStorage.setItem("wallet", accounts[0]);
-      setUserDetails(accounts[0]);
-
+  useEffect(() => {
+    if (wallet) {
+      setUserDetails(wallet.accounts[0].address);
+      localStorage.setItem("wallet", wallet.accounts[0].address);
       setWalletConnected(true);
-
-      return true;
-    } catch (err) {
+    } else {
       setUserDetails(null);
       setWalletConnected(false);
-      return false;
     }
-  };
+  }, [wallet]);
 
   const fetchClubData = async () => {
     const clubData = fetchClub(clubId);
     clubData.then((result) => {
+      console.log("fetchClubData", result);
       if (result.status != 200) {
         setImageFetched(false);
       } else {
@@ -164,6 +173,7 @@ const Join = (props) => {
   };
 
   const tokenAPIDetailsRetrieval = async () => {
+    console.log("pid", pid);
     let response = await fetchClubbyDaoAddress(pid);
     if (response.data.length > 0) {
       settokenAPIDetails(response.data);
@@ -194,209 +204,189 @@ const Join = (props) => {
     }
   };
 
-  const erc721ContractDetails = async () => {
-    const erc721DetailContract = new SmartContract(
-      ImplementationContract,
-      daoAddress,
-      undefined,
-      USDC_CONTRACT_ADDRESS,
-      GNOSIS_TRANSACTION_URL,
-    );
-    const nftContract = new SmartContract(
-      nft,
-      nftContractAddress,
-      undefined,
-      USDC_CONTRACT_ADDRESS,
-      GNOSIS_TRANSACTION_URL,
-    );
-
-    await erc721DetailContract.quoram().then((result) => setQuoram(result));
-
-    await erc721DetailContract
-      .threshold()
-      .then((result) => setThreshold(result));
-
-    await erc721DetailContract
-      .governanceDetails()
-      .then((result) => setIsGovernanceActive(result));
-
-    await erc721DetailContract.priceOfNft().then((result) => {
-      // console.log("price of nfffftttt", result);
-      // setPriceOfNft(convertFromWei(parseInt(result), usdcTokenDecimal));
-      setPriceOfNft(result);
-    });
-
-    await erc721DetailContract
-      .ownerAddress()
-      .then((result) => setnftContractOwner(result));
-    await erc721DetailContract
-      .closeDate()
-      .then((result) =>
-        setDepositCloseDate(new Date(parseInt(result) * 1000).toString()),
-      );
-    await erc721DetailContract.closeDate().then((result) => {
-      if (result >= Date.now()) {
-        setIsDepositActive(false);
-      } else {
-        setIsDepositActive(true);
-      }
-    });
-
-    await nftContract
-      .maxTokensPerUser()
-      .then((result) => setMaxTokensPerUser(result));
-
-    await nftContract
-      .balanceOfNft(userDetails)
-      .then((result) => setUserNftBalance(result));
-
-    await nftContract
-      .nftOwnersCount()
-      .then((result) => setTotalNftMinted(result));
-
-    await nftContract
-      .totalNftSupply()
-      .then((result) => setTotalNftSupply(result));
-
-    await nftContract
-      .isNftTotalSupplyUnlimited()
-      .then((result) => setIsNftSupplyUnlimited(result));
-  };
-
-  const contractDetailsRetrieval = async () => {
-    // console.log("in contract details retrival");
-    if (
-      daoAddress &&
-      !governorDataFetched &&
-      !governorDetails &&
-      userDetails &&
-      USDC_CONTRACT_ADDRESS &&
-      GNOSIS_TRANSACTION_URL &&
-      usdcTokenDecimal
-    ) {
-      const governorDetailContract = new SmartContract(
-        ImplementationContract,
-        daoAddress,
-        undefined,
-        USDC_CONTRACT_ADDRESS,
-        GNOSIS_TRANSACTION_URL,
-      );
-      setDataFetched(true);
-      setGovernorDataFetched(true);
-      await governorDetailContract.obtainTokenDecimals().then((result) => {
-        setGovernanceConvertDecimal(result);
-      });
-
-      await governorDetailContract.closeDate().then((result) => {
-        setDepositCloseDate(result);
-        setClosingDays(calculateDays(parseInt(result) * 1000));
-      });
-      await governorDetailContract.minDepositPerUser().then((result) => {
-        setMinDeposit(convertFromWei(parseFloat(result), usdcTokenDecimal));
-      });
-
-      await governorDetailContract.maxDepositPerUser().then((result) => {
-        setMaxDeposit(convertFromWei(parseInt(result), usdcTokenDecimal));
-      });
-      await governorDetailContract.totalRaiseAmount().then((result) => {
-        setTotalDeposit(convertFromWeiGovernance(result, usdcTokenDecimal));
-      });
-      await governorDetailContract.obtainSymbol().then((result) => {
-        // console.log("result", result);
-        setTokenSymbol(result);
-      });
-
-      await governorDetailContract.erc20TokensMinted().then((result) => {
-        setClubTokenMInted(
-          convertFromWeiGovernance(result, governanceConvertDecimal),
-        );
-      });
-    }
-  };
-
-  const obtainWalletBalance = async () => {
-    if (
-      // !fetched &&
-      userDetails &&
-      USDC_CONTRACT_ADDRESS &&
-      GNOSIS_TRANSACTION_URL &&
-      usdcTokenDecimal
-    ) {
-      const usdc_contract = new SmartContract(
-        ImplementationContract,
-        USDC_CONTRACT_ADDRESS,
-        undefined,
-        USDC_CONTRACT_ADDRESS,
-        GNOSIS_TRANSACTION_URL,
-      );
-      await usdc_contract.balanceOf().then(
-        (result) => {
-          // console.log("wallet balance", result);
-          setWalletBalance(convertFromWei(parseInt(result), usdcTokenDecimal));
-          setFetched(true);
-        },
-        (error) => {
-          console.log("Failed to fetch wallet USDC", error);
-        },
-      );
-    }
-  };
-
-  const handleConnectWallet = () => {
-    // console.log("in handleConnectWallet");
-    try {
-      const wallet = connectWallet(dispatch);
-      wallet.then((response) => {
-        if (response) {
-          setWalletConnected(true);
-        } else {
-          setWalletConnected(false);
-        }
-      });
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
   useEffect(() => {
     if (pid) {
       tokenAPIDetailsRetrieval();
     }
   }, [pid, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL]);
 
-  useEffect(() => {
-    if (
-      tokenAPIDetails &&
-      USDC_CONTRACT_ADDRESS &&
-      GNOSIS_TRANSACTION_URL &&
-      tokenType === "erc20NonTransferable"
-    ) {
-      contractDetailsRetrieval();
-      // tokenDetailsRetrieval();
-    }
-  }, [tokenAPIDetails, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL]);
+  // useEffect(() => {
+  //   console.log("USDC_CONTRACT_ADDRESS", USDC_CONTRACT_ADDRESS);
+  //   if (
+  //     tokenAPIDetails &&
+  //     USDC_CONTRACT_ADDRESS &&
+  //     GNOSIS_TRANSACTION_URL &&
+  //     tokenType === "erc20NonTransferable"
+  //   ) {
+  //     contractDetailsRetrieval();
+  //     // tokenDetailsRetrieval();
+  //   }
+  // }, [
+  //   tokenAPIDetails,
+  //   USDC_CONTRACT_ADDRESS,
+  //   GNOSIS_TRANSACTION_URL,
+  //   tokenType,
+  //   wallet,
+  // ]);
 
   useEffect(() => {
-    // console.log("wallet", wallet);
-    if (wallet !== null) {
-      console.log("wallet", wallet);
-      setPreviouslyConnectedWallet(wallet[0][0].address);
-      setUserDetails(wallet[0][0].address);
-    }
-  }, [previouslyConnectedWallet]);
+    const contractDetailsRetrieval = async () => {
+      // console.log("in contract details retrival");
+      console.log("hereee", governorDataFetched);
+      if (
+        daoAddress &&
+        !governorDataFetched &&
+        // !governorDetails &&
+        userDetails &&
+        USDC_CONTRACT_ADDRESS &&
+        GNOSIS_TRANSACTION_URL &&
+        usdcTokenDecimal
+      ) {
+        const governorDetailContract = new SmartContract(
+          ImplementationContract,
+          daoAddress,
+          undefined,
+          USDC_CONTRACT_ADDRESS,
+          GNOSIS_TRANSACTION_URL,
+        );
+        console.log("governorDetailContract", governorDetailContract);
+        setDataFetched(true);
+        setGovernorDataFetched(true);
+        await governorDetailContract.obtainTokenDecimals().then((result) => {
+          setGovernanceConvertDecimal(result);
+        });
 
-  useEffect(() => {
+        await governorDetailContract.closeDate().then((result) => {
+          setDepositCloseDate(result);
+          setClosingDays(calculateDays(parseInt(result) * 1000));
+        });
+        await governorDetailContract.minDepositPerUser().then((result) => {
+          setMinDeposit(convertFromWei(parseFloat(result), usdcTokenDecimal));
+        });
+
+        await governorDetailContract.maxDepositPerUser().then((result) => {
+          setMaxDeposit(convertFromWei(parseInt(result), usdcTokenDecimal));
+        });
+        await governorDetailContract.totalRaiseAmount().then((result) => {
+          setTotalDeposit(convertFromWeiGovernance(result, usdcTokenDecimal));
+        });
+        await governorDetailContract.obtainSymbol().then((result) => {
+          // console.log("result", result);
+          setTokenSymbol(result);
+        });
+
+        await governorDetailContract.erc20TokensMinted().then((result) => {
+          setClubTokenMInted(
+            convertFromWeiGovernance(result, governanceConvertDecimal),
+          );
+        });
+      }
+    };
+
+    const obtainWalletBalance = async () => {
+      if (
+        // !fetched &&
+        userDetails &&
+        USDC_CONTRACT_ADDRESS &&
+        GNOSIS_TRANSACTION_URL &&
+        usdcTokenDecimal
+      ) {
+        const usdc_contract = new SmartContract(
+          ImplementationContract,
+          USDC_CONTRACT_ADDRESS,
+          undefined,
+          USDC_CONTRACT_ADDRESS,
+          GNOSIS_TRANSACTION_URL,
+        );
+        await usdc_contract.balanceOf().then(
+          (result) => {
+            // console.log("wallet balance", result);
+            setWalletBalance(
+              convertFromWei(parseInt(result), usdcTokenDecimal),
+            );
+            setFetched(true);
+          },
+          (error) => {
+            console.log("Failed to fetch wallet USDC", error);
+          },
+        );
+      }
+    };
+
+    const erc721ContractDetails = async () => {
+      const erc721DetailContract = new SmartContract(
+        ImplementationContract,
+        daoAddress,
+        undefined,
+        USDC_CONTRACT_ADDRESS,
+        GNOSIS_TRANSACTION_URL,
+      );
+      const nftContract = new SmartContract(
+        nft,
+        nftContractAddress,
+        undefined,
+        USDC_CONTRACT_ADDRESS,
+        GNOSIS_TRANSACTION_URL,
+      );
+      console.log("erc721DetailContract", erc721DetailContract);
+      await erc721DetailContract.quoram().then((result) => setQuoram(result));
+
+      await erc721DetailContract
+        .threshold()
+        .then((result) => setThreshold(result));
+
+      await erc721DetailContract
+        .governanceDetails()
+        .then((result) => setIsGovernanceActive(result));
+
+      await erc721DetailContract.priceOfNft().then((result) => {
+        // console.log("price of nfffftttt", result);
+        // setPriceOfNft(convertFromWei(parseInt(result), usdcTokenDecimal));
+        setPriceOfNft(result);
+      });
+
+      await erc721DetailContract
+        .ownerAddress()
+        .then((result) => setnftContractOwner(result));
+      await erc721DetailContract
+        .closeDate()
+        .then((result) =>
+          setDepositCloseDate(new Date(parseInt(result) * 1000).toString()),
+        );
+      await erc721DetailContract.closeDate().then((result) => {
+        if (result >= Date.now()) {
+          setIsDepositActive(false);
+        } else {
+          setIsDepositActive(true);
+        }
+      });
+
+      await nftContract
+        .maxTokensPerUser()
+        .then((result) => setMaxTokensPerUser(result));
+
+      await nftContract
+        .balanceOfNft(userDetails)
+        .then((result) => setUserNftBalance(result));
+
+      await nftContract
+        .nftOwnersCount()
+        .then((result) => setTotalNftMinted(result));
+
+      await nftContract
+        .totalNftSupply()
+        .then((result) => setTotalNftSupply(result));
+
+      await nftContract
+        .isNftTotalSupplyUnlimited()
+        .then((result) => setIsNftSupplyUnlimited(result));
+    };
+
     if (clubId) {
       fetchClubData();
     }
 
-    if (previouslyConnectedWallet) {
-      // console.log("previously connected wallet");
-      onboard.connectWallet({ autoSelect: wallet });
-    }
-    // console.log("wallettttt", wallet);
-    if (checkConnection() && walletConnected && wallet) {
-      // console.log("does it run?");
+    if (wallet) {
       obtainWalletBalance();
 
       if (tokenType === "erc721") {
@@ -406,7 +396,22 @@ const Join = (props) => {
       }
       fetchMembers();
     }
-  }, [previouslyConnectedWallet, walletConnected, clubId, wallet, tokenType]);
+  }, [
+    walletConnected,
+    clubId,
+    wallet,
+    tokenType,
+    USDC_CONTRACT_ADDRESS,
+    GNOSIS_TRANSACTION_URL,
+    governorDataFetched,
+    daoAddress,
+    userDetails,
+    usdcTokenDecimal,
+    governanceConvertDecimal,
+    fetchClubData,
+    fetchMembers,
+    nftContractAddress,
+  ]);
 
   useEffect(() => {
     fetchCustomTokenDecimals();
@@ -444,6 +449,115 @@ const Join = (props) => {
     }
   };
 
+  useEffect(() => {
+    // const switched = checkNetwork()
+    if (clubId && wallet) {
+      console.log("clubid", clubId);
+      const networkData = fetchConfig();
+      networkData.then((networks) => {
+        if (networks.status != 200) {
+          console.log(result.error);
+        } else {
+          const networksAvailable = [];
+          networks.data.forEach((network) => {
+            networksAvailable.push(network.networkId);
+          });
+          const web3 = new Web3(Web3.givenProvider);
+          web3.eth.net
+            .getId()
+            .then((networkId) => {
+              if (!networksAvailable.includes(networkId)) {
+                setOpen(true);
+              }
+              const networkData = fetchConfigById(networkId);
+              networkData.then((result) => {
+                if (result.status != 200) {
+                  console.log(result.error);
+                } else {
+                  console.log(
+                    "usdcContractAddress",
+                    result.data[0].usdcContractAddress,
+                  );
+                  dispatch(
+                    addContractAddress({
+                      factoryContractAddress:
+                        result.data[0].factoryContractAddress,
+                      usdcContractAddress: result.data[0].usdcContractAddress,
+                      transactionUrl: result.data[0].gnosisTransactionUrl,
+                      networkHex: result.data[0].networkHex,
+                      networkId: result.data[0].networkId,
+                      networkName: result.data[0].name,
+                    }),
+                  );
+                }
+              });
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        }
+      });
+
+      const clubData = fetchClub(clubId);
+      clubData.then((result) => {
+        if (result.status !== 200) {
+        } else {
+          if (!wallet) {
+            router.push("/");
+          } else {
+            const checkedwallet = wallet?.accounts[0].address;
+
+            const getLoginToken = loginToken(checkedwallet);
+            getLoginToken.then((response) => {
+              if (response.status !== 200) {
+                console.log(response.data.error);
+                // router.push("/");
+              } else {
+                setExpiryTime(response.data.tokens.access.expires);
+                const expiryTime = getExpiryTime();
+                const currentDate = Date();
+                setJwtToken(response.data.tokens.access.token);
+                setRefreshToken(response.data.tokens.refresh.token);
+                // if (expiryTime < currentDate) {
+                //   const obtainNewToken = refreshToken(
+                //     getRefreshToken(),
+                //     getJwtToken(),
+                //   );
+                //   obtainNewToken
+                //     .then((tokenResponse) => {
+                //       if (response.status !== 200) {
+                //         console.log(tokenResponse.data.error);
+                //       } else {
+                //         setExpiryTime(
+                //           tokenResponse.data.tokens.access.expires,
+                //         );
+                //         setJwtToken(tokenResponse.data.tokens.access.token);
+                //         setRefreshToken(
+                //           tokenResponse.data.tokens.refresh.token,
+                //         );
+                //       }
+                //     })
+                //     .catch((error) => {
+                //       console.log(error);
+                //     });
+                // }
+              }
+            });
+
+            dispatch(addWalletAddress(checkedwallet));
+            dispatch(addClubID(result.data[0].clubId));
+            dispatch(addClubName(result.data[0].name));
+            dispatch(addClubRoute(result.data[0].route));
+            dispatch(addDaoAddress(result.data[0].daoAddress));
+            dispatch(addTokenAddress(result.data[0].tokenAddress));
+            dispatch(addClubImageUrl(result.data[0].imageUrl));
+            dispatch(addSafeAddress(result.data[0].gnosisAddress));
+          }
+        }
+      });
+    }
+  }, [clubId, dispatch, router, wallet]);
+
   return (
     <Layout2 faucet={true}>
       {tokenType === "erc20NonTransferable" && (
@@ -457,7 +571,7 @@ const Join = (props) => {
           depositCloseDate={depositCloseDate}
           depositInitiated={depositInitiated}
           governorDataFetched={governorDataFetched}
-          handleConnectWallet={handleConnectWallet}
+          handleConnectWallet={connect}
           handleDialogClose={handleDialogClose}
           handleInputChange={handleInputChange}
           handleMaxButtonClick={handleMaxButtonClick}

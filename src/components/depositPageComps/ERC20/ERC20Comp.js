@@ -25,6 +25,7 @@ import { SmartContract } from "../../../api/contract";
 import ImplementationContract from "../../../abis/implementationABI.json";
 import { useSelector } from "react-redux";
 import { useRouter } from "next/router";
+import ClubFetch from "../../../utils/clubFetch";
 
 const ERC20Comp = ({
   wallet,
@@ -63,14 +64,8 @@ const ERC20Comp = ({
 }) => {
   const classes = ERC20Styles();
   const router = useRouter();
-  const tokenName = tokenAPIDetails[0].name;
-
-  let tokenDetail;
-
-  if (dataFetched) {
-    tokenDetail = tokenDetails[1];
-  }
-
+  // const tokenName = tokenAPIDetails[0].name;
+  console.log(walletConnected);
   const USDC_CONTRACT_ADDRESS = useSelector((state) => {
     return state.gnosis.usdcContractAddress;
   });
@@ -235,7 +230,8 @@ const ERC20Comp = ({
                   <Stack spacing={0}>
                     <Typography variant="h4">
                       {apiTokenDetailSet ? (
-                        tokenName
+                        // tokenName
+                        "asdf"
                       ) : (
                         <Skeleton
                           variant="rectangular"
@@ -246,7 +242,7 @@ const ERC20Comp = ({
                     </Typography>
                     <Typography variant="h6" className={classes.dimColor}>
                       {dataFetched ? (
-                        "$" + tokenDetail
+                        "$"
                       ) : (
                         <Skeleton
                           variant="rectangular"

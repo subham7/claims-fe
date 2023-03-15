@@ -93,6 +93,7 @@ export default function ProtectRoute(Component) {
         web3.eth.net
           .getId()
           .then((networkId) => {
+            console.log("networkId", networkId);
             if (!networksAvailable.includes(networkId)) {
               setOpen(true);
             }
@@ -108,7 +109,7 @@ export default function ProtectRoute(Component) {
         console.log("wallet in handle mount", wallet);
         if (wallet !== null) {
           // setWalletAddress(wallet[0][0].address);
-          setWalletLoaded(true);
+          // setWalletLoaded(true);
           const getLoginToken = loginToken(walletAddress);
           getLoginToken.then((response) => {
             if (response.status !== 200) {
