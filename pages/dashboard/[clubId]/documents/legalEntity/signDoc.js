@@ -139,6 +139,8 @@ const SignDoc = () => {
     console.log(encryptUserData);
     setEncryptedString(encryptUserData);
 
+    
+
     router.push({
       pathname: `/dashboard/${clubId}`,
       query: {
