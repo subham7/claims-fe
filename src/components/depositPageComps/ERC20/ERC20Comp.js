@@ -61,6 +61,7 @@ const ERC20Comp = ({
   clubId,
   usdcTokenDecimal,
   daoAddress,
+  clubName,
 }) => {
   const classes = ERC20Styles();
   const router = useRouter();
@@ -230,8 +231,7 @@ const ERC20Comp = ({
                   <Stack spacing={0}>
                     <Typography variant="h4">
                       {apiTokenDetailSet ? (
-                        // tokenName
-                        "asdf"
+                        clubName
                       ) : (
                         <Skeleton
                           variant="rectangular"
@@ -242,7 +242,7 @@ const ERC20Comp = ({
                     </Typography>
                     <Typography variant="h6" className={classes.dimColor}>
                       {dataFetched ? (
-                        "$"
+                        "$" + tokenSymbol
                       ) : (
                         <Skeleton
                           variant="rectangular"

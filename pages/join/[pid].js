@@ -596,6 +596,7 @@ const Join = (props) => {
           setOpenSnackBar={setOpenSnackBar}
           usdcTokenDecimal={usdcTokenDecimal}
           userDetails={userDetails}
+          clubName={clubName}
         />
       )}
       {tokenType === "erc721" && (
