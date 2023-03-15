@@ -158,6 +158,8 @@ export default function App() {
 
   const handleConnection = async (event) => {
     let wallet = connectWallet(dispatch);
+
+    
     wallet.then((response) => {
       if (response) {
         const getLoginToken = loginToken(localStorage.getItem("wallet"));

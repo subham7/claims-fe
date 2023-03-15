@@ -218,7 +218,21 @@ const styles = StyleSheet.create({
   },
 });
 
-const PdfFile = ({ data, title, srcArr, signedAcc, signedHash, admin_name, LLC_name, email, location, general_purpose }) => {
+const PdfFile = ({
+  data,
+  title,
+  srcArr,
+  signedAcc,
+  signedHash,
+  admin_name,
+  LLC_name,
+  email,
+  location,
+  general_purpose,
+  member_email,
+  member_name,
+  amount,
+}) => {
   return (
     <Document>
       <Page style={styles.page} wrap>
@@ -258,7 +272,6 @@ const PdfFile = ({ data, title, srcArr, signedAcc, signedHash, admin_name, LLC_n
             );
           })} */}
         <View>
-
           <View>
             <Text>LLC Name: {LLC_name}</Text>
             <Text>Admin Name: {admin_name}</Text>
@@ -266,8 +279,16 @@ const PdfFile = ({ data, title, srcArr, signedAcc, signedHash, admin_name, LLC_n
             <Text>Location: {location}</Text>
             <Text>General Purpose: {general_purpose} </Text>
           </View>
-          <Text>
 
+          {member_name && (
+            <View>
+              <Text>Member Name: {member_name}</Text>
+              <Text>Member Email: {member_email}</Text>
+              <Text>Amount deposited: {amount}</Text>
+            </View>
+          )}
+
+          <Text>
             Lorem Ipsum is simply dummy text of the printing and typesetting
             industry. Lorem Ipsum has been the industry&apos;s standard dummy
             text ever since the 1500s, when an unknown printer took a galley of
@@ -530,7 +551,18 @@ const PdfFile = ({ data, title, srcArr, signedAcc, signedHash, admin_name, LLC_n
   );
 };
 
-const PDFView = ({ signedAcc, signedHash, location, email, admin_name, LLC_name, general_purpose }) => {
+const PDFView = ({
+  signedAcc,
+  signedHash,
+  location,
+  email,
+  admin_name,
+  LLC_name,
+  general_purpose,
+  member_name,
+  member_email,
+  amount,
+}) => {
   const [client, setClient] = useState(false);
   useEffect(() => {
     setClient(true);
@@ -540,15 +572,18 @@ const PDFView = ({ signedAcc, signedHash, location, email, admin_name, LLC_name,
   }
   return (
     <PDFViewer height="80%" width="65%">
-      <PdfFile 
-        signedAcc={signedAcc}  
-        signedHash={signedHash} 
-        location={location} 
-        email={email} 
-        LLC_name={LLC_name} 
-        general_purpose={general_purpose} 
+      <PdfFile
+        signedAcc={signedAcc}
+        signedHash={signedHash}
+        location={location}
+        email={email}
+        LLC_name={LLC_name}
+        general_purpose={general_purpose}
         admin_name={admin_name}
-       />
+        member_name={member_name}
+        member_email={member_email}
+        amount={amount}
+      />
     </PDFViewer>
   );
 };
