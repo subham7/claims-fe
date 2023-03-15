@@ -5,16 +5,17 @@ import settingsImg from "../../../../public/assets/images/settings.png";
 import { makeStyles } from "@mui/styles";
 import { useRouter } from "next/router";
 import { getDocumentsByClubId } from "../../../../src/api/document";
+import { Card, Grid, Link, Typography } from "@mui/material";
 
 const useStyles = makeStyles({
   container: {
-    marginLeft: "100px",
-    marginTop: "100px",
+    marginLeft: "80px",
+    marginTop: "120px",
     display: "flex",
     gap: "30px",
   },
   leftDiv: {
-    flex: "0.75",
+    flex: "0.65",
     margin: 0,
   },
   header: {
@@ -23,7 +24,7 @@ const useStyles = makeStyles({
     alignItems: "flex-start",
   },
   title: {
-    fontSize: "30px",
+    fontSize: "46px",
     fontWeight: "500",
     alignSelf: "flex-start",
     marginTop: "0px",
@@ -31,23 +32,21 @@ const useStyles = makeStyles({
   createDoc: {
     width: "150px",
     fontFamily: "sans-serif",
-    fontSize: "18px",
+    fontSize: "16px",
     border: "none",
-    padding: "12px 20px",
+    padding: "18px 24px",
     color: "white",
     background: "#3B7AFD",
-    borderRadius: "6px",
+    borderRadius: "12px",
     cursor: "pointer",
   },
   rightDiv: {
-    flex: "0.28",
-    background: "#81F5FF",
-    borderRadius: "12px",
-    padding: "20px 20px 0 20px",
-    height: "280px",
+    flex: "0.35",
+    
   },
   imgContainer: {
     position: "relative",
+    width:'100%'
   },
   rightDiv_title: {
     fontSize: "24px",
@@ -81,6 +80,14 @@ const useStyles = makeStyles({
     fontWeight: "400",
     color: "lightgray",
   },
+  proposalInfoCard: {
+    background: settingsImg,
+    backgroundColor: "#81f5f4",
+  },
+  proposalImg: {
+    position: "relative",
+  },
+  
 });
 
 const Documents = () => {
@@ -122,22 +129,51 @@ const Documents = () => {
         </div>
 
         {/* Right Side */}
+
         <div className={classes.rightDiv}>
-          <h3 className={classes.rightDiv_title}>
-            Sign Documents within <br /> your Station
-          </h3>
-          <div className={classes.imgContainer}>
-            <p className={classes.docLink}>Read docs</p>
-            <Image
-              className={classes.img}
-              height={200}
-              width={300}
-              src={settingsImg}
-              alt="Sign docs"
-            />
+        <Grid item md={4}>
+            <Card
+              className={classes.proposalInfoCard}
+              sx={{ padding: 0, position: "relative" }}
+            >
+              <Image
+                src={settingsImg}
+                alt="proposal image"
+                className={classes.proposalImg}
+              />
+              <Typography
+                variant="h4"
+                sx={{
+                  position: "absolute",
+                  left: 20,
+                  top: 30,
+                  color: "#111D38",
+                  fontWeight: "normal",
+                  width: "80%",
+                }}
+              >
+                Sign documents within your station
+              </Typography>
+              <Link
+                href="/"
+                sx={{
+                  position: "absolute",
+                  color: "#111D38",
+                  fontWeight: "normal",
+                  width: "70%",
+                  textDecoration: "underline",
+                  fontSize: "0.875rem",
+                  left: 20,
+                  bottom: 10,
+                }}
+              >
+                Read Docs
+              </Link>
+
+              
+            </Card>
+          </Grid>
           </div>
-        </div>
-        <div></div>
       </div>
     </Layout1>
   );

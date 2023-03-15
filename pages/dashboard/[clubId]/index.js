@@ -48,7 +48,7 @@ import {
   convertFromWei,
   convertFromWeiGovernance,
 } from "../../../src/utils/globalFunctions";
-import {BsArrowRight} from 'react-icons/bs'
+// import {BsArrowRight} from 'react-icons/bs'
 import LegalEntityModal from "../../../src/components/modals/LegalEntityModal";
 
 const useStyles = makeStyles({
