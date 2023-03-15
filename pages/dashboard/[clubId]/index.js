@@ -361,7 +361,7 @@ const useStyles = makeStyles({
 
 const Dashboard = () => {
   const router = useRouter();
-  const { clubId, encryptedLink } = router.query;
+  const { clubId } = router.query;
 
   const classes = useStyles();
   const daoAddress = useSelector((state) => {
@@ -587,11 +587,7 @@ const Dashboard = () => {
     }
   }, [clubId]);
 
-  useEffect(() =>{
-    if(encryptedLink?.length){
-      setShowInviteModal(true)
-    }
-  }, [encryptedLink])
+  
 
   const handleCopy = () => {
     navigator.clipboard.writeText(
@@ -619,10 +615,7 @@ const Dashboard = () => {
   };
 
   
-  // closing legal entity modal
-  const closeModalHandler = () => {
-    setShowInviteModal(false)
-  }
+ 
 
   return (
     <>

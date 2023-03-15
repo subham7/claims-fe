@@ -155,7 +155,7 @@ const SignDoc = () => {
     console.log(res.status);
 
     router.push({
-      pathname: `/dashboard/${clubId}`,
+      pathname: `/dashboard/${clubId}/documents`,
       query: {
         encryptedLink: replacedEncrytedLink,
       },
@@ -308,9 +308,7 @@ const SignDoc = () => {
         {/* <LineGraph /> */}
       </Layout1>
 
-      {showModal && (
-        <LegalEntityModal isInvite={true} encryptedLink={encryptedString} />
-      )}
+      
     </div>
   );
 };

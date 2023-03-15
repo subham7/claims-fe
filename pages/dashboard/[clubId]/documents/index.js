@@ -1,11 +1,12 @@
 import Image from "next/image";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Layout1 from "../../../../src/components/layouts/layout1";
 import settingsImg from "../../../../public/assets/images/settings.png";
 import { makeStyles } from "@mui/styles";
 import { useRouter } from "next/router";
 import { getDocumentsByClubId } from "../../../../src/api/document";
 import { Card, Grid, Link, Typography } from "@mui/material";
+import LegalEntityModal from "../../../../src/components/modals/LegalEntityModal";
 
 const useStyles = makeStyles({
   container: {
@@ -93,19 +94,14 @@ const useStyles = makeStyles({
 const Documents = () => {
   const classes = useStyles();
   const router = useRouter();
+  const {encryptedLink} = router.query
+
 
   const { clubId } = router.query;
 
   const createDocHandler = () => {
     router.push(`/dashboard/${clubId}/documents/legalEntity`);
   };
-
-  const fetchAdminsData = async () => {
-    const data = await getDocumentsByClubId(clubId);
-    console.log(data);
-  };
-
-  fetchAdminsData();
 
   return (
     <Layout1>
@@ -174,6 +170,8 @@ const Documents = () => {
             </Card>
           </Grid>
           </div>
+
+          
       </div>
     </Layout1>
   );
