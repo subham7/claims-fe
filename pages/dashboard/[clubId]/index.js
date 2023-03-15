@@ -363,7 +363,6 @@ const Dashboard = () => {
   const router = useRouter();
   const { clubId, encryptedLink } = router.query;
 
-  console.log(router.query)
   const classes = useStyles();
   const daoAddress = useSelector((state) => {
     return state.create.daoAddress;

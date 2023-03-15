@@ -9,6 +9,8 @@ import { useRouter } from "next/router";
 import CryptoJS from "crypto-js";
 import LegalEntityModal from "../../../../../src/components/modals/LegalEntityModal";
 import { useSelector } from "react-redux";
+import { createDocument } from "../../../../../src/api/document";
+import { MAIN_API_URL } from "../../../../../src/api";
 const DocumentPDF = dynamic(() => import("../pdfGenerator"), {
   ssr: false,
 });
@@ -75,7 +77,7 @@ const SignDoc = () => {
   const [showModal, setShowModal] = useState(false);
 
   const router = useRouter();
-  const { clubId } = router.query;
+  const { clubId, isAdmin } = router.query;
 
   console.log(router.query);
 
@@ -91,8 +93,6 @@ const SignDoc = () => {
     return state.legal.encryptedLink;
   });
 
-
-
   // signDocument
   const signDocumentHandler = async () => {
     try {
@@ -102,7 +102,7 @@ const SignDoc = () => {
       const accounts = await web3.eth.getAccounts();
       const currentAccount = accounts[0];
 
-      console.log(currentAccount);
+      // console.log(currentAccount);
       const originalMessage = "YOUR_MESSAGE";
 
       // Signed message
@@ -120,9 +120,8 @@ const SignDoc = () => {
     }
   };
 
-
   // Encrypting admin's data and converting into URL
-  const finishHandler = () => {
+  const finishHandler = async () => {
     // Convert data into a JSON string
     const data = JSON.stringify({
       LLC_name: adminFormData.LLC_name,
@@ -136,38 +135,47 @@ const SignDoc = () => {
 
     // Encrypt it using crypto-JS
     const encryptUserData = CryptoJS.AES.encrypt(data, "").toString();
-    console.log(encryptUserData);
-    setEncryptedString(encryptUserData);
+    const replacedEncrytedLink = encryptUserData.replaceAll("/", "STATION");
+    setEncryptedString(replacedEncrytedLink);
 
-    
+   const res = createDocument({
+      clubId: clubId,
+      createdBy: signedAcc,
+      fileName: "Legal Doc",
+      isPublic: false,
+      isSignable: true,
+      isTokenForSign: true,
+      docIdentifier: replacedEncrytedLink,
+    });
+    console.log(res.status);
 
     router.push({
       pathname: `/dashboard/${clubId}`,
       query: {
-        encryptedLink: encryptUserData,
+        encryptedLink: replacedEncrytedLink,
       },
     });
   };
 
-  // member signed and finished 
+  // member signed and finished
   const finishMemberSignHandler = () => {
-    alert('Successfully signed!')
-    router.push(`/dashboard/${clubId}`)
-  }
-
+    alert("Successfully signed!");
+    router.push(`/dashboard/${clubId}`);
+  };
 
   // admin data from encrypted URL
   const fetchAdminsData = () => {
     const newEncryptedLink = encryptedData?.replaceAll("STATION", "/");
-    console.log(newEncryptedLink);
+    // console.log(newEncryptedLink);
     // decrypt url
     if (newEncryptedLink) {
       const bytes = CryptoJS.AES.decrypt(newEncryptedLink, "");
       const decryptedData = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
       setDecryptedDataObj(decryptedData);
-      console.log(decryptedData);
+      // console.log(decryptedData);
     }
   };
+
 
   const [client, setClient] = useState(false);
   useEffect(() => {
@@ -189,20 +197,20 @@ const SignDoc = () => {
                 Sign PDF
               </button>
             )}
-            {signDoc && !membersData && (
+            {signDoc && isAdmin && (
               <button onClick={finishHandler} className={classes.btn}>
                 Finish
               </button>
             )}
 
-            {signDoc && membersData && (
-             <button onClick={finishMemberSignHandler} className={classes.btn}>
-             Finish
-           </button>
+            {signDoc && membersData && !isAdmin && (
+              <button onClick={finishMemberSignHandler} className={classes.btn}>
+                Finish
+              </button>
             )}
           </div>
 
-          {decryptedDataObj ? (
+          {decryptedDataObj && !isAdmin ? (
             <DocumentPDF
               signedAcc={signedAcc}
               signedHash={signedHash}

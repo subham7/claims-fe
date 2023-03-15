@@ -97,6 +97,9 @@ const Homepage = () => {
       dispatch(addAdminFormData(values))
       router.push({
         pathname: `/dashboard/${clubId}/documents/legalEntity/signDoc`,
+        query: {
+          isAdmin: true
+        }
       });
     },
   });

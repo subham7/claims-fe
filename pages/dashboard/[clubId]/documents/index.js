@@ -93,6 +93,13 @@ const Documents = () => {
     router.push(`/dashboard/${clubId}/documents/legalEntity`);
   };
 
+  const fetchAdminsData = async () => {
+    const data = await getDocumentsByClubId(clubId);
+    console.log(data);
+  };
+
+  fetchAdminsData();
+
   return (
     <Layout1>
       <div className={classes.container}>
