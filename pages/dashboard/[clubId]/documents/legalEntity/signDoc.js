@@ -8,9 +8,10 @@ import { PDFDownloadLink } from "@react-pdf/renderer";
 import { useRouter } from "next/router";
 import CryptoJS from "crypto-js";
 import LegalEntityModal from "../../../../../src/components/modals/LegalEntityModal";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { createDocument } from "../../../../../src/api/document";
 import { MAIN_API_URL } from "../../../../../src/api";
+import { addAdminFormData, addMembersData } from "../../../../../src/redux/reducers/legal";
 const DocumentPDF = dynamic(() => import("../pdfGenerator"), {
   ssr: false,
 });
@@ -78,8 +79,7 @@ const SignDoc = () => {
 
   const router = useRouter();
   const { clubId, isAdmin } = router.query;
-
-  console.log(router.query);
+  const dispatch = useDispatch()
 
   const adminFormData = useSelector((state) => {
     return state.legal.adminFormData;
@@ -115,6 +115,9 @@ const SignDoc = () => {
       setSignedAcc(currentAccount);
       setSignDoc(true);
       setSignedHash(signedMessage);
+
+      
+
     } catch (error) {
       console.log(error);
     }
@@ -129,14 +132,16 @@ const SignDoc = () => {
       email: adminFormData.email,
       location: adminFormData.location,
       general_purpose: adminFormData.general_purpose,
-      signedAcc: adminFormData.signedAcc,
-      signedMessage: adminFormData.signedHash,
+      signedAcc: signedAcc,
+      signedMessage: signedHash,
     });
+
 
     // Encrypt it using crypto-JS
     const encryptUserData = CryptoJS.AES.encrypt(data, "").toString();
     const replacedEncrytedLink = encryptUserData.replaceAll("/", "STATION");
     setEncryptedString(replacedEncrytedLink);
+    console.log(replacedEncrytedLink)
 
    const res = createDocument({
       clubId: clubId,
@@ -172,7 +177,7 @@ const SignDoc = () => {
       const bytes = CryptoJS.AES.decrypt(newEncryptedLink, "");
       const decryptedData = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
       setDecryptedDataObj(decryptedData);
-      // console.log(decryptedData);
+      console.log(decryptedData);
     }
   };
 
@@ -222,6 +227,7 @@ const SignDoc = () => {
               member_name={membersData.member_name}
               amount={membersData.amount}
               member_email={membersData.member_email}
+              admin_sign={decryptedDataObj.signedAcc}
             />
           ) : (
             <DocumentPDF

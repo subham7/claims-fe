@@ -231,6 +231,7 @@ const PdfFile = ({
   general_purpose,
   member_email,
   member_name,
+  admin_sign,
   amount,
 }) => {
   return (
@@ -518,6 +519,13 @@ const PdfFile = ({
             publishing software like Aldus PageMaker including versions of Lorem
             Ipsum.
           </Text>
+
+          {member_name && (
+            <View>
+              <Text>{admin_name}</Text>
+              <Text>{admin_sign}</Text>
+            </View>
+          )}
         </View>
 
         {signedAcc && (
@@ -562,6 +570,7 @@ const PDFView = ({
   member_name,
   member_email,
   amount,
+  admin_sign,
 }) => {
   const [client, setClient] = useState(false);
   useEffect(() => {
@@ -573,6 +582,7 @@ const PDFView = ({
   return (
     <PDFViewer height="80%" width="65%">
       <PdfFile
+        admin_sign={admin_sign}
         signedAcc={signedAcc}
         signedHash={signedHash}
         location={location}

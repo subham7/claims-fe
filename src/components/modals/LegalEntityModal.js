@@ -112,9 +112,10 @@ const LegalEntityModal = ({onClose, isCreating = false, isSuccess = false, isInv
     // copy link
     const copyHandler = () => {
         navigator.clipboard.writeText(
-          `http://localhost:3000/dashboard/${clubId}/documents/legal/${encryptedLink}`
-        );
-
+            typeof window !== "undefined" && window.location.origin
+              ? `${window.location.origin}/dashboard/${clubId}/documents/legal/${encryptedLink}`
+              : null,
+          );
         setIsCopy(true)
         setTimeout(() => {
             setIsCopy(false)
@@ -131,7 +132,7 @@ const LegalEntityModal = ({onClose, isCreating = false, isSuccess = false, isInv
                 <h2 className={classes.title}>{isCreating && 'Create a legal entity'} {isInvite && 'Invite members to sign'} {isSuccess && 'Success'}</h2>    
                 <p className={classes.subtitle}>{isCreating && 'Create a legal entity for this Station & invite members to sign the document by sharing a private link. (Sharing publicly may violate security laws)'} {isInvite && 'Share this link privately with members who should sign the legal document of the Station (Sharing publicly may violate security laws)'} {isSuccess && 'You’ve successfully signed the legal doc inside your Station & have been added as a member in the agreement.'}</p>
                 {isInvite && (<div className={classes.inviteLink}>
-                                <p className={classes.link}>http://localhost:3000/dashboard/{clubId}/documents/legal/{encryptedLink}</p>
+                                <p className={classes.link}>{window.location.origin}/dashboard/${clubId}/documents/legal/${encryptedLink}</p>
                                 <button onClick={copyHandler} className={classes.copy}>{isCopy ? 'Copied' : "Copy Link"}</button>
                             </div>)}
                 {isCreating && <button onClick={createLegalEntityHandler} className={classes.btn}>Let&apos;s Start</button>}
