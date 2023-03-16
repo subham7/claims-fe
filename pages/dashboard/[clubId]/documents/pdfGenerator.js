@@ -212,10 +212,16 @@ const styles = StyleSheet.create({
     color: "black",
     fontSize: "16px",
     border: "1 solid grey",
-    textDecoration: "underline",
+    textDecoration: "none",
     display: "block",
     padding: "40px",
+    borderRadius: '20px',
+    backgroundColor: 'lightgray'
   },
+
+  adminDetails: {
+    marginTop: '50px'
+  }
 });
 
 const PdfFile = ({
@@ -522,28 +528,31 @@ const PdfFile = ({
 
           {member_name && (
             <View>
-              <Text>{admin_name}</Text>
-              <Text>{admin_sign}</Text>
+            <Text style={styles.adminDetails}>Admin</Text>
+            <View style={styles.signedAcc}>
+              <Text >{admin_name}</Text>
+              <Text >{admin_sign}</Text>
+            </View>
             </View>
           )}
         </View>
 
         {signedAcc && (
-          <View style={styles.signedDiv}>
-            <Text>
-              Signed By:{" "}
-              <Text style={styles.signedAcc}>
+
+        <View>
+        <Text style={styles.adminDetails}>Your Sign</Text>
+          <View style={styles.signedAcc}>  
+              <Text>Signed By: 
                 {signedAcc.slice(0, 8)}...
                 {signedAcc.slice(signedAcc.length - 6)}
               </Text>
-            </Text>
+            
             <Text>
               Signed Hash:{" "}
-              <Text style={styles.signedAcc}>
-                {signedHash.slice(0, 26)}....
+                {signedHash.slice(0, 12)}....
                 {signedHash.slice(signedHash.length - 12)}
-              </Text>
             </Text>
+          </View>
           </View>
         )}
 

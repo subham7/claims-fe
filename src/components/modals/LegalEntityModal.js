@@ -1,3 +1,4 @@
+import { Button, Grid, TextField } from '@mui/material'
 import { makeStyles } from '@mui/styles'
 import { useRouter } from 'next/router'
 import React, { useState } from 'react'
@@ -70,18 +71,24 @@ const useStyles = makeStyles({
         paddingRight: '20px',
     },
     copy: {
-        position:'absolute',
-        right: 10,
-        bottom : 10,
-        background: 'white',
-        padding: '8px 14px',
-        borderRadius: '100px',
-        cursor:'pointer',
-
+        width: "68px",
+        height: "30px",
+        background: "#3B7AFD 0% 0% no-repeat padding-box",
+        borderRadius: "15px",
+      },
+     linkInput: {
+    "width": "100%",
+    "color": "#C1D3FF",
+    "background": "#111D38 0% 0% no-repeat padding-box",
+    "border": "1px solid #C1D3FF40",
+    "borderRadius": "10px",
+    "&:hover": {
+      boxShadow: "0px 0px 12px #C1D3FF40",
+      border: "1px solid #C1D3FF40",
+      borderRadius: "10px",
+      opacity: 1,
     },
-    link:{
-        width: '100%',
-    }
+  },
 })
 
 const Backdrop = ({onClose}) => {
@@ -131,10 +138,31 @@ const LegalEntityModal = ({onClose, isCreating = false, isSuccess = false, isInv
             <div className={classes.relative}>
                 <h2 className={classes.title}>{isCreating && 'Create a legal entity'} {isInvite && 'Invite members to sign'} {isSuccess && 'Success'}</h2>    
                 <p className={classes.subtitle}>{isCreating && 'Create a legal entity for this Station & invite members to sign the document by sharing a private link. (Sharing publicly may violate security laws)'} {isInvite && 'Share this link privately with members who should sign the legal document of the Station (Sharing publicly may violate security laws)'} {isSuccess && 'You’ve successfully signed the legal doc inside your Station & have been added as a member in the agreement.'}</p>
-                {isInvite && (<div className={classes.inviteLink}>
-                                <p className={classes.link}>{window.location.origin}/dashboard/${clubId}/documents/legal/${encryptedLink}</p>
-                                <button onClick={copyHandler} className={classes.copy}>{isCopy ? 'Copied' : "Copy Link"}</button>
-                            </div>)}
+                {isInvite && (<Grid container>
+                    <Grid item md={12} mt={2} ml={1} mr={1}>
+                      <TextField
+                        className={classes.linkInput}
+                        disabled
+                        value={
+                          typeof window !== "undefined" &&
+                          window.location.origin
+                            ? `${window.location.origin}/dashboard/${clubId}/documents/legal/${encryptedLink}`
+                            : null
+                        }
+                        InputProps={{
+                          endAdornment: (
+                            <Button
+                              variant="contained"
+                              className={classes.copy}
+                              onClick={copyHandler}
+                            >
+                              {isCopy ? 'Copied': 'Copy'}
+                            </Button>
+                          ),
+                        }}
+                      />
+                    </Grid>
+                  </Grid>)}
                 {isCreating && <button onClick={createLegalEntityHandler} className={classes.btn}>Let&apos;s Start</button>}
                 {isSuccess && <button onClick={dashboardHandler} className={classes.btn}>Dashboard</button>}
                 <IoMdClose onClick={onClose} className={classes.icon} size={20} />
