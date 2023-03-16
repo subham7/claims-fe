@@ -184,9 +184,7 @@ const useStyles = makeStyles({
 const Faucet = (props) => {
   const dispatch = useDispatch();
   const classes = useStyles();
-  const [{ wallet }] = useConnectWallet();
-  const walletAddress = wallet?.accounts[0].address;
-  console.log(wallet);
+
   const [openSnackBar, setOpenSnackBar] = useState(false);
   const [failed, setFailed] = useState(false);
 
@@ -205,16 +203,18 @@ const Faucet = (props) => {
   const GNOSIS_TRANSACTION_URL = useSelector((state) => {
     return state.gnosis.transactionUrl;
   });
+  const [{ wallet }] = useConnectWallet();
+  const walletAddress = wallet?.accounts[0].address;
 
   useEffect(() => {
     if (wallet) {
-      console.log("waaallllet adddreesss", walletAddress);
-      setFaucetAddress(walletAddress);
       updateDynamicAddress(wallet.chains[0].id, dispatch);
-    } else {
-      setFaucetAddress(null);
     }
-  }, [dispatch, wallet, walletAddress]);
+  }, [dispatch, wallet]);
+
+  useEffect(() => {
+    setFaucetAddress(walletAddress);
+  }, [walletAddress]);
 
   const handleFaucet = async (faucetAddress, FaucetAmount) => {
     setOpen(true);
@@ -283,7 +283,6 @@ const Faucet = (props) => {
       setOpenSnackBar(true);
     }
   };
-  console.log("faucet address", faucetAddress);
   return (
     <Layout2 faucet={false}>
       <Grid
@@ -304,7 +303,7 @@ const Faucet = (props) => {
         <Grid item md={8} mt={8}>
           <br />
           <Typography className={classes.wrapTextIcon}>
-            You can now mint USDC tokens to your wallet address. {faucetAddress}
+            You can now mint USDC tokens to your wallet address.
           </Typography>
           <TextField
             id="outlined-basic"
