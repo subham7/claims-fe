@@ -310,7 +310,7 @@ export default function App() {
               Create or join a club in less than 60 seconds using StationX
             </Typography>
           </Grid>
-          <Grid item m={4}>
+          {/* <Grid item m={4}>
             <Button
               variant="primary"
               color="primary"
@@ -319,7 +319,7 @@ export default function App() {
             >
               Connect Wallet
             </Button>
-          </Grid>
+          </Grid> */}
         </Grid>
       )}
       <Dialog
