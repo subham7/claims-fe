@@ -27,32 +27,12 @@ import {
   convertFromWei,
   convertFromWeiGovernance,
 } from "../../src/utils/globalFunctions";
-import { connectWallet, onboard } from "../../src/utils/wallet";
+
 import { checkNetwork } from "../../src/utils/wallet";
 
 import { useConnectWallet } from "@web3-onboard/react";
-import ClubFetch from "../../src/utils/clubFetch";
-import {
-  addClubID,
-  addClubImageUrl,
-  addClubName,
-  addClubRoute,
-  addDaoAddress,
-  addTokenAddress,
-} from "../../src/redux/reducers/create";
-import {
-  addContractAddress,
-  addSafeAddress,
-} from "../../src/redux/reducers/gnosis";
-import { addWalletAddress } from "../../src/redux/reducers/user";
-import {
-  getExpiryTime,
-  setExpiryTime,
-  setJwtToken,
-  setRefreshToken,
-} from "../../src/utils/auth";
-import { loginToken } from "../../src/api/auth";
-import { fetchConfig, fetchConfigById } from "../../src/api/config";
+
+import { updateDynamicAddress } from "../../src/api";
 
 const Join = (props) => {
   const router = useRouter();
@@ -107,74 +87,86 @@ const Join = (props) => {
   const [tokenSymbol, setTokenSymbol] = useState();
   const [isGovernanceActive, setIsGovernanceActive] = useState();
   const [message, setMessage] = useState("");
+
   const [{ wallet }, connect] = useConnectWallet();
+
   const USDC_CONTRACT_ADDRESS = useSelector((state) => {
     return state.gnosis.usdcContractAddress;
   });
 
-  console.log("USDC_CONTRACT_ADDRESS", USDC_CONTRACT_ADDRESS);
-
   const GNOSIS_TRANSACTION_URL = useSelector((state) => {
     return state.gnosis.transactionUrl;
   });
+  const walletAddress = wallet?.accounts[0].address;
 
   const [usdcTokenDecimal, setUsdcTokenDecimal] = useState(0);
   const [governanceConvertDecimal, setGovernanceConvertDecimal] = useState(0);
 
-  const fetchCustomTokenDecimals = async () => {
-    if (daoAddress && USDC_CONTRACT_ADDRESS && GNOSIS_TRANSACTION_URL) {
-      const usdcContract = new SmartContract(
-        ImplementationContract,
-        USDC_CONTRACT_ADDRESS,
-        undefined,
-        USDC_CONTRACT_ADDRESS,
-        GNOSIS_TRANSACTION_URL,
-      );
-      const daoContract = new SmartContract(
-        ImplementationContract,
-        daoAddress,
-        undefined,
-        USDC_CONTRACT_ADDRESS,
-        GNOSIS_TRANSACTION_URL,
-      );
+  useEffect(() => {
+    if (wallet?.chains) updateDynamicAddress(wallet?.chains[0].id, dispatch);
 
-      await usdcContract.obtainTokenDecimals().then((result) => {
-        setUsdcTokenDecimal(result);
-      });
-      await daoContract.obtainTokenDecimals().then((result) => {
-        setGovernanceConvertDecimal(result);
-      });
-    }
-  };
+    setUserDetails(walletAddress);
+    localStorage.setItem("wallet", walletAddress);
+    setWalletConnected(true);
+  }, [dispatch, wallet?.chains, walletAddress]);
 
   useEffect(() => {
-    if (wallet) {
-      setUserDetails(wallet.accounts[0].address);
-      localStorage.setItem("wallet", wallet.accounts[0].address);
-      setWalletConnected(true);
-    } else {
-      setUserDetails(null);
-      setWalletConnected(false);
-    }
-  }, [wallet]);
+    const fetchCustomTokenDecimals = async () => {
+      if (daoAddress && USDC_CONTRACT_ADDRESS && GNOSIS_TRANSACTION_URL) {
+        const usdcContract = new SmartContract(
+          ImplementationContract,
+          USDC_CONTRACT_ADDRESS,
+          undefined,
+          USDC_CONTRACT_ADDRESS,
+          GNOSIS_TRANSACTION_URL,
+        );
+        const daoContract = new SmartContract(
+          ImplementationContract,
+          daoAddress,
+          undefined,
+          USDC_CONTRACT_ADDRESS,
+          GNOSIS_TRANSACTION_URL,
+        );
 
-  const tokenAPIDetailsRetrieval = async () => {
-    console.log("pid", pid);
-    let response = await fetchClubbyDaoAddress(pid);
-    if (response.data.length > 0) {
-      settokenAPIDetails(response.data);
-      setClubId(response.data[0].clubId);
-      setGnosisAddress(response.data[0].gnosisAddress);
-      setClubName(response.data[0].name);
-      setnftContractAddress(response.data[0].nftAddress);
-      setnftMetadata(response.data[0].nftMetadataUrl);
-      let imgUrl = response.data[0].nftImageUrl?.split("//");
-      setnftImageUrl(response.data[0].nftImageUrl);
-      setApiTokenDetailSet(true);
-    } else {
-      setApiTokenDetailSet(false);
-    }
-  };
+        await usdcContract.obtainTokenDecimals().then((result) => {
+          setUsdcTokenDecimal(result);
+        });
+        await daoContract.obtainTokenDecimals().then((result) => {
+          setGovernanceConvertDecimal(result);
+        });
+      }
+    };
+    fetchCustomTokenDecimals();
+  }, [daoAddress, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL]);
+
+  useEffect(() => {
+    const obtainWalletBalance = async () => {
+      const usdc_contract = new SmartContract(
+        ImplementationContract,
+        USDC_CONTRACT_ADDRESS,
+        undefined,
+        USDC_CONTRACT_ADDRESS,
+        GNOSIS_TRANSACTION_URL,
+      );
+      await usdc_contract.balanceOf().then(
+        (result) => {
+          setWalletBalance(convertFromWei(parseInt(result), usdcTokenDecimal));
+          setFetched(true);
+        },
+        (error) => {
+          console.log("Failed to fetch wallet USDC", error);
+        },
+      );
+    };
+
+    obtainWalletBalance();
+  }, [
+    GNOSIS_TRANSACTION_URL,
+    USDC_CONTRACT_ADDRESS,
+    usdcTokenDecimal,
+    userDetails,
+    // walletAddress,
+  ]);
 
   useEffect(() => {
     const fetchMembers = () => {
@@ -193,7 +185,6 @@ const Join = (props) => {
     const fetchClubData = async () => {
       const clubData = fetchClub(clubId);
       clubData.then((result) => {
-        console.log("fetchClubData", result);
         if (result.status != 200) {
           setImageFetched(false);
         } else {
@@ -211,34 +202,29 @@ const Join = (props) => {
   }, [clubId]);
 
   useEffect(() => {
+    const tokenAPIDetailsRetrieval = async () => {
+      let response = await fetchClubbyDaoAddress(pid);
+      if (response.data.length > 0) {
+        settokenAPIDetails(response.data);
+        setClubId(response.data[0].clubId);
+        setGnosisAddress(response.data[0].gnosisAddress);
+        setClubName(response.data[0].name);
+        setnftContractAddress(response.data[0].nftAddress);
+        setnftMetadata(response.data[0].nftMetadataUrl);
+        let imgUrl = response.data[0].nftImageUrl?.split("//");
+        setnftImageUrl(response.data[0].nftImageUrl);
+        setApiTokenDetailSet(true);
+      } else {
+        setApiTokenDetailSet(false);
+      }
+    };
     if (pid) {
       tokenAPIDetailsRetrieval();
     }
   }, [pid, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL]);
 
-  // useEffect(() => {
-  //   console.log("USDC_CONTRACT_ADDRESS", USDC_CONTRACT_ADDRESS);
-  //   if (
-  //     tokenAPIDetails &&
-  //     USDC_CONTRACT_ADDRESS &&
-  //     GNOSIS_TRANSACTION_URL &&
-  //     tokenType === "erc20NonTransferable"
-  //   ) {
-  //     contractDetailsRetrieval();
-  //     // tokenDetailsRetrieval();
-  //   }
-  // }, [
-  //   tokenAPIDetails,
-  //   USDC_CONTRACT_ADDRESS,
-  //   GNOSIS_TRANSACTION_URL,
-  //   tokenType,
-  //   wallet,
-  // ]);
-
   useEffect(() => {
     const contractDetailsRetrieval = async () => {
-      // console.log("in contract details retrival");
-      console.log("hereee", governorDataFetched);
       if (
         daoAddress &&
         !governorDataFetched &&
@@ -255,7 +241,7 @@ const Join = (props) => {
           USDC_CONTRACT_ADDRESS,
           GNOSIS_TRANSACTION_URL,
         );
-        console.log("governorDetailContract", governorDetailContract);
+
         setDataFetched(true);
         setGovernorDataFetched(true);
         await governorDetailContract.obtainTokenDecimals().then((result) => {
@@ -277,7 +263,6 @@ const Join = (props) => {
           setTotalDeposit(convertFromWeiGovernance(result, usdcTokenDecimal));
         });
         await governorDetailContract.obtainSymbol().then((result) => {
-          // console.log("result", result);
           setTokenSymbol(result);
         });
 
@@ -286,36 +271,6 @@ const Join = (props) => {
             convertFromWeiGovernance(result, governanceConvertDecimal),
           );
         });
-      }
-    };
-
-    const obtainWalletBalance = async () => {
-      if (
-        // !fetched &&
-        userDetails &&
-        USDC_CONTRACT_ADDRESS &&
-        GNOSIS_TRANSACTION_URL &&
-        usdcTokenDecimal
-      ) {
-        const usdc_contract = new SmartContract(
-          ImplementationContract,
-          USDC_CONTRACT_ADDRESS,
-          undefined,
-          USDC_CONTRACT_ADDRESS,
-          GNOSIS_TRANSACTION_URL,
-        );
-        await usdc_contract.balanceOf().then(
-          (result) => {
-            // console.log("wallet balance", result);
-            setWalletBalance(
-              convertFromWei(parseInt(result), usdcTokenDecimal),
-            );
-            setFetched(true);
-          },
-          (error) => {
-            console.log("Failed to fetch wallet USDC", error);
-          },
-        );
       }
     };
 
@@ -334,7 +289,6 @@ const Join = (props) => {
         USDC_CONTRACT_ADDRESS,
         GNOSIS_TRANSACTION_URL,
       );
-      console.log("erc721DetailContract", erc721DetailContract);
       await erc721DetailContract.quoram().then((result) => setQuoram(result));
 
       await erc721DetailContract
@@ -346,8 +300,6 @@ const Join = (props) => {
         .then((result) => setIsGovernanceActive(result));
 
       await erc721DetailContract.priceOfNft().then((result) => {
-        // console.log("price of nfffftttt", result);
-        // setPriceOfNft(convertFromWei(parseInt(result), usdcTokenDecimal));
         setPriceOfNft(result);
       });
 
@@ -389,8 +341,6 @@ const Join = (props) => {
     };
 
     if (wallet) {
-      obtainWalletBalance();
-
       if (tokenType === "erc721") {
         erc721ContractDetails();
       } else if (tokenType === "erc20NonTransferable") {
@@ -412,10 +362,6 @@ const Join = (props) => {
 
     nftContractAddress,
   ]);
-
-  useEffect(() => {
-    fetchCustomTokenDecimals();
-  }, [daoAddress, USDC_CONTRACT_ADDRESS]);
 
   const handleInputChange = (newValue) => {
     setDepositAmount(parseInt(newValue));
@@ -448,115 +394,6 @@ const Join = (props) => {
       setOpen(true);
     }
   };
-
-  useEffect(() => {
-    // const switched = checkNetwork()
-    if (clubId && wallet) {
-      console.log("clubid", clubId);
-      const networkData = fetchConfig();
-      networkData.then((networks) => {
-        if (networks.status != 200) {
-          console.log(result.error);
-        } else {
-          const networksAvailable = [];
-          networks.data.forEach((network) => {
-            networksAvailable.push(network.networkId);
-          });
-          const web3 = new Web3(Web3.givenProvider);
-          web3.eth.net
-            .getId()
-            .then((networkId) => {
-              if (!networksAvailable.includes(networkId)) {
-                setOpen(true);
-              }
-              const networkData = fetchConfigById(networkId);
-              networkData.then((result) => {
-                if (result.status != 200) {
-                  console.log(result.error);
-                } else {
-                  console.log(
-                    "usdcContractAddress",
-                    result.data[0].usdcContractAddress,
-                  );
-                  dispatch(
-                    addContractAddress({
-                      factoryContractAddress:
-                        result.data[0].factoryContractAddress,
-                      usdcContractAddress: result.data[0].usdcContractAddress,
-                      transactionUrl: result.data[0].gnosisTransactionUrl,
-                      networkHex: result.data[0].networkHex,
-                      networkId: result.data[0].networkId,
-                      networkName: result.data[0].name,
-                    }),
-                  );
-                }
-              });
-            })
-            .catch((err) => {
-              console.log(err);
-            });
-        }
-      });
-
-      const clubData = fetchClub(clubId);
-      clubData.then((result) => {
-        if (result.status !== 200) {
-        } else {
-          if (!wallet) {
-            router.push("/");
-          } else {
-            const checkedwallet = wallet?.accounts[0].address;
-
-            const getLoginToken = loginToken(checkedwallet);
-            getLoginToken.then((response) => {
-              if (response.status !== 200) {
-                console.log(response.data.error);
-                // router.push("/");
-              } else {
-                setExpiryTime(response.data.tokens.access.expires);
-                const expiryTime = getExpiryTime();
-                const currentDate = Date();
-                setJwtToken(response.data.tokens.access.token);
-                setRefreshToken(response.data.tokens.refresh.token);
-                // if (expiryTime < currentDate) {
-                //   const obtainNewToken = refreshToken(
-                //     getRefreshToken(),
-                //     getJwtToken(),
-                //   );
-                //   obtainNewToken
-                //     .then((tokenResponse) => {
-                //       if (response.status !== 200) {
-                //         console.log(tokenResponse.data.error);
-                //       } else {
-                //         setExpiryTime(
-                //           tokenResponse.data.tokens.access.expires,
-                //         );
-                //         setJwtToken(tokenResponse.data.tokens.access.token);
-                //         setRefreshToken(
-                //           tokenResponse.data.tokens.refresh.token,
-                //         );
-                //       }
-                //     })
-                //     .catch((error) => {
-                //       console.log(error);
-                //     });
-                // }
-              }
-            });
-
-            dispatch(addWalletAddress(checkedwallet));
-            dispatch(addClubID(result.data[0].clubId));
-            dispatch(addClubName(result.data[0].name));
-            dispatch(addClubRoute(result.data[0].route));
-            dispatch(addDaoAddress(result.data[0].daoAddress));
-            dispatch(addTokenAddress(result.data[0].tokenAddress));
-            dispatch(addClubImageUrl(result.data[0].imageUrl));
-            dispatch(addSafeAddress(result.data[0].gnosisAddress));
-          }
-        }
-      });
-    }
-  }, [clubId, dispatch, router, wallet]);
 
   return (
     <Layout2 faucet={true}>

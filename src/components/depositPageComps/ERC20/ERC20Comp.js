@@ -65,8 +65,7 @@ const ERC20Comp = ({
 }) => {
   const classes = ERC20Styles();
   const router = useRouter();
-  // const tokenName = tokenAPIDetails[0].name;
-  console.log(walletConnected);
+
   const USDC_CONTRACT_ADDRESS = useSelector((state) => {
     return state.gnosis.usdcContractAddress;
   });
