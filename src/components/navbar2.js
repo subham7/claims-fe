@@ -11,6 +11,7 @@ const useStyles = makeStyles({
   image: {
     height: "30px",
     width: "auto !important",
+    zIndex: "2000",
   },
   navbarText: {
     flexGrow: 1,
