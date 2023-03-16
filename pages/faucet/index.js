@@ -23,6 +23,8 @@ import {
   convertAmountToWei,
   convertToWei,
 } from "../../src/utils/globalFunctions";
+import { useConnectWallet } from "@web3-onboard/react";
+import { updateDynamicAddress } from "../../src/api";
 
 const useStyles = makeStyles({
   valuesStyle: {
@@ -182,16 +184,19 @@ const useStyles = makeStyles({
 const Faucet = (props) => {
   const dispatch = useDispatch();
   const classes = useStyles();
+  const [{ wallet }] = useConnectWallet();
+  console.log(wallet);
   const [openSnackBar, setOpenSnackBar] = useState(false);
   const [failed, setFailed] = useState(false);
   const [walletConnected, setWalletConnected] = useState(false);
-  const [previouslyConnectedWallet, setPreviouslyConnectedWallet] =
-    useState(null);
+  // const [previouslyConnectedWallet, setPreviouslyConnectedWallet] =
+  //   useState(null);
   const [depositInitiated, setDepositInitiated] = useState(false);
   const [open, setOpen] = useState(false);
   const [FaucetAmount, setFaucetAmount] = useState(5000);
   const [FaucetAddress, setFaucetAddress] = useState(null);
   const [statusMessage, setStatusMessage] = useState("");
+
   const FACTORY_CONTRACT_ADDRESS = useSelector((state) => {
     return state.gnosis.factoryContractAddress;
   });
@@ -202,20 +207,20 @@ const Faucet = (props) => {
     return state.gnosis.transactionUrl;
   });
 
-  const handleConnectWallet = () => {
-    try {
-      const wallet = connectWallet(dispatch);
-      wallet.then((response) => {
-        if (response) {
-          setWalletConnected(true);
-        } else {
-          setWalletConnected(false);
-        }
-      });
-    } catch (err) {
-      console.log(err);
-    }
-  };
+  // const handleConnectWallet = () => {
+  //   try {
+  //     const wallet = connectWallet(dispatch);
+  //     wallet.then((response) => {
+  //       if (response) {
+  //         setWalletConnected(true);
+  //       } else {
+  //         setWalletConnected(false);
+  //       }
+  //     });
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  // };
   // useEffect(() => {
   //   const web3 = new Web3(Web3.givenProvider)
   //   const networkIdRK = "4"
@@ -231,46 +236,54 @@ const Faucet = (props) => {
   //     })
   // }, [])
 
-  const getAccount = async () => {
-    if (localStorage.getItem("isWalletConnected")) {
-      setPreviouslyConnectedWallet(localStorage.getItem("wallet"));
-    }
-    store.subscribe(async () => {
-      const { create } = await store.getState();
-      if (create.value) {
-        setPreviouslyConnectedWallet(create.value);
-      } else {
-        setPreviouslyConnectedWallet(null);
-      }
-    });
-  };
-  const getFaucetAddress = async () => {
-    var web3;
-    if (window.ethereum) {
-      web3 = new Web3(window.ethereum);
-    } else if (window.web3) {
-      web3 = new Web3(window.web3.currentProvider);
-    }
-    try {
-      web3.eth.getAccounts().then((async) => {
-        setFaucetAddress(async[0]);
-      });
-    } catch (err) {
-      setFaucetAddress(null);
-    }
-  };
+  // const getAccount = async () => {
+  //   if (localStorage.getItem("isWalletConnected")) {
+  //     setPreviouslyConnectedWallet(localStorage.getItem("wallet"));
+  //   }
+  //   store.subscribe(async () => {
+  //     const { create } = await store.getState();
+  //     if (create.value) {
+  //       setPreviouslyConnectedWallet(create.value);
+  //     } else {
+  //       setPreviouslyConnectedWallet(null);
+  //     }
+  //   });
+  // };
+  // const getFaucetAddress = async () => {
+  //   var web3;
+  //   if (window.ethereum) {
+  //     web3 = new Web3(window.ethereum);
+  //   } else if (window.web3) {
+  //     web3 = new Web3(window.web3.currentProvider);
+  //   }
+  //   try {
+  //     web3.eth.getAccounts().then((async) => {
+  //       setFaucetAddress(async[0]);
+  //     });
+  //   } catch (err) {
+  //     setFaucetAddress(null);
+  //   }
+  // };
 
   useEffect(() => {
-    handleConnectWallet();
-    getFaucetAddress();
-  }, []);
+    if (wallet) {
+      setWalletConnected(true);
+      setFaucetAddress(wallet.accounts[0].address);
+      updateDynamicAddress(wallet.chains[0].id, dispatch);
+    } else {
+      setWalletConnected(false);
+      setFaucetAddress(null);
+    }
+    // handleConnectWallet();
+    // getFaucetAddress();
+  }, [dispatch, wallet]);
 
   const handleFaucet = async (FaucetAddress, FaucetAmount) => {
     setOpen(true);
     const usdcFaucet = new SmartContract(
       USDCContract,
       USDC_CONTRACT_ADDRESS,
-      undefined,
+      wallet?.accounts[0].address,
       USDC_CONTRACT_ADDRESS,
       GNOSIS_TRANSACTION_URL,
     );
