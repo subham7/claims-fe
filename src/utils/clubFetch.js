@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Web3 from "web3";
 import Router, { useRouter } from "next/router";
 import { useDispatch, useSelector } from "react-redux";
@@ -12,7 +12,6 @@ import {
   addTokenAddress,
   addClubImageUrl,
 } from "../redux/reducers/create";
-import { checkNetwork } from "./wallet";
 import { loginToken, refreshToken } from "../api/auth";
 import { authenticateUser } from "./auth";
 import {
@@ -35,8 +34,9 @@ import { fetchConfigById } from "../api/config";
 import { addContractAddress } from "../redux/reducers/gnosis";
 import { SmartContract } from "../api/contract";
 import ImplementationContract from "../abis/implementationABI.json";
-import { disconnectWallet, onboard } from "./wallet";
-import { CleaningServices } from "@mui/icons-material";
+
+import { useConnectWallet } from "@web3-onboard/react";
+import { addWalletAddress } from "../redux/reducers/user";
 
 const ClubFetch = (Component) => {
   const RetrieveDataComponent = () => {
@@ -57,6 +57,14 @@ const ClubFetch = (Component) => {
     const GNOSIS_TRANSACTION_URL = useSelector((state) => {
       return state.gnosis.transactionUrl;
     });
+    // const wallet = useSelector((state) => {
+    //   return state.user.wallet;
+    // });
+    const [{ wallet }] = useConnectWallet();
+
+    if (wallet) {
+      localStorage.setItem("wallet", wallet?.accounts[0].address);
+    }
     // const dispatch = useDispatch();
     // const [address, setAddress] = useState(null);
 
@@ -69,48 +77,17 @@ const ClubFetch = (Component) => {
     //   });
     // }, []);
 
-    async function redirectUser() {
-      console.log("redirect user", localStorage.getItem("label"));
-
-      // await onboard.disconnectWallet({ label: localStorage.getItem("label") });
-      // await disconnectWallet(dispatch);
-
-      if (router.pathname === "/") {
-        router.reload();
-      } else {
-        router.push("/");
-      }
-    }
-
-    useEffect(async () => {
-      await window.ethereum.on("accountsChanged", function () {
-        redirectUser();
-      });
-    }, []);
-
-    // useEffect(() => {
-    //   const web3 = new Web3(Web3.givenProvider);
-
-    //   async function detectWalletChange() {
-    //     // get the user's current address
-    //     const [newAddress] = await web3.eth.getAccounts();
-    //     //console.log("address", address, newAddress);
-
-    //     // check if the address has changed
-    //     if (newAddress !== address && address !== null) {
-    //       clearTimeout(detectWalletChangeTimeout);
-    //       setAddress(newAddress);
-    //       redirectUser();
-    //       return;
-    //     }
-    //     setAddress(newAddress);
-
-    //     // call the function again in 1 second
-    //     let detectWalletChangeTimeout = setTimeout(detectWalletChange, 1000);
+    // async function redirectUser() {
+    //   if (router.pathname === "/") {
+    //     router.reload();
+    //   } else {
+    //     // router.push("/");
     //   }
+    // }
 
-    //   detectWalletChange();
-    // }, [address]);
+    // useEffect(async () => {
+    //   redirectUser();
+    // }, [wallet]);
 
     const fetchCustomTokenDecimals = async () => {
       if (daoAddress && USDC_CONTRACT_ADDRESS && GNOSIS_TRANSACTION_URL) {
@@ -149,9 +126,9 @@ const ClubFetch = (Component) => {
           }),
         );
       }
-    }, [tokenDecimalGovernance, tokenDecimalUsdc]);
+    }, [dispatch, tokenDecimalGovernance, tokenDecimalUsdc]);
 
-    const checkUserExists = () => {
+    const checkUserExists = useCallback(() => {
       if (daoAddress && USDC_CONTRACT_ADDRESS && GNOSIS_TRANSACTION_URL) {
         const checkUserInClub = new SmartContract(
           ImplementationContract,
@@ -177,7 +154,7 @@ const ClubFetch = (Component) => {
           },
         );
       }
-    };
+    }, []);
 
     const checkGovernanceExists = () => {
       if (daoAddress && USDC_CONTRACT_ADDRESS && GNOSIS_TRANSACTION_URL) {
@@ -201,22 +178,26 @@ const ClubFetch = (Component) => {
       checkUserExists();
       checkGovernanceExists();
       fetchCustomTokenDecimals();
-      if (
-        authenticateUser(
-          clubId,
-          localStorage.getItem("wallet"),
-          daoAddress,
-          USDC_CONTRACT_ADDRESS,
-          GNOSIS_TRANSACTION_URL,
-        )
-      ) {
-        router.push("/");
+      if (!wallet) {
+        // router.push("/");
       }
-    }, [daoAddress, USDC_CONTRACT_ADDRESS]);
+      // if (
+      //   authenticateUser(
+      //     clubId,
+      //     wallet?.accounts[0].address,
+      //     daoAddress,
+      //     USDC_CONTRACT_ADDRESS,
+      //     GNOSIS_TRANSACTION_URL,
+      //   )
+      // ) {
+      //   router.push("/");
+      // }
+    }, [daoAddress, USDC_CONTRACT_ADDRESS, wallet]);
 
     useEffect(() => {
       // const switched = checkNetwork()
-      if (clubId) {
+      if (clubId && wallet) {
+        console.log("clubid", clubId);
         const networkData = fetchConfig();
         networkData.then((networks) => {
           if (networks.status != 200) {
@@ -238,6 +219,10 @@ const ClubFetch = (Component) => {
                   if (result.status != 200) {
                     console.log(result.error);
                   } else {
+                    console.log(
+                      "usdcContractAddress",
+                      result.data[0].usdcContractAddress,
+                    );
                     dispatch(
                       addContractAddress({
                         factoryContractAddress:
@@ -262,51 +247,49 @@ const ClubFetch = (Component) => {
         clubData.then((result) => {
           if (result.status !== 200) {
           } else {
-            if (localStorage.getItem("isWalletConnected") === "false") {
+            if (!wallet) {
               router.push("/");
             } else {
-              const web3 = new Web3(window.ethereum);
-              const checkedwallet = web3.utils.toChecksumAddress(
-                localStorage.getItem("wallet"),
-              );
+              const checkedwallet = wallet?.accounts[0].address;
+
               const getLoginToken = loginToken(checkedwallet);
               getLoginToken.then((response) => {
                 if (response.status !== 200) {
                   console.log(response.data.error);
-                  router.push("/");
+                  // router.push("/");
                 } else {
                   setExpiryTime(response.data.tokens.access.expires);
                   const expiryTime = getExpiryTime();
                   const currentDate = Date();
                   setJwtToken(response.data.tokens.access.token);
                   setRefreshToken(response.data.tokens.refresh.token);
-                  if (expiryTime < currentDate) {
-                    const obtainNewToken = refreshToken(
-                      getRefreshToken(),
-                      getJwtToken(),
-                    );
-                    obtainNewToken
-                      .then((tokenResponse) => {
-                        if (response.status !== 200) {
-                          console.log(tokenResponse.data.error);
-                        } else {
-                          setExpiryTime(
-                            tokenResponse.data.tokens.access.expires,
-                          );
-                          setJwtToken(tokenResponse.data.tokens.access.token);
-                          setRefreshToken(
-                            tokenResponse.data.tokens.refresh.token,
-                          );
-                        }
-                      })
-                      .catch((error) => {
-                        console.log(error);
-                      });
-                  }
+                  // if (expiryTime < currentDate) {
+                  //   const obtainNewToken = refreshToken(
+                  //     getRefreshToken(),
+                  //     getJwtToken(),
+                  //   );
+                  //   obtainNewToken
+                  //     .then((tokenResponse) => {
+                  //       if (response.status !== 200) {
+                  //         console.log(tokenResponse.data.error);
+                  //       } else {
+                  //         setExpiryTime(
+                  //           tokenResponse.data.tokens.access.expires,
+                  //         );
+                  //         setJwtToken(tokenResponse.data.tokens.access.token);
+                  //         setRefreshToken(
+                  //           tokenResponse.data.tokens.refresh.token,
+                  //         );
+                  //       }
+                  //     })
+                  //     .catch((error) => {
+                  //       console.log(error);
+                  //     });
+                  // }
                 }
               });
-              console.log(result.data[0]);
-              dispatch(addWallet(checkedwallet));
+
+              dispatch(addWalletAddress(checkedwallet));
               dispatch(addClubID(result.data[0].clubId));
               dispatch(addClubName(result.data[0].name));
               dispatch(addClubRoute(result.data[0].route));
@@ -319,7 +302,7 @@ const ClubFetch = (Component) => {
         });
       }
       checkUserExists();
-    }, [clubId]);
+    }, [checkUserExists, clubId, dispatch, router, wallet]);
 
     return <Component />;
   };
