@@ -49,6 +49,8 @@ import {
   convertFromWei,
   convertFromWeiGovernance,
 } from "../../../src/utils/globalFunctions";
+// import {BsArrowRight} from 'react-icons/bs'
+import LegalEntityModal from "../../../src/components/modals/LegalEntityModal";
 
 const useStyles = makeStyles({
   media: {
@@ -339,11 +341,28 @@ const useStyles = makeStyles({
   profilePic: {
     borderRadius: "50%",
   },
+
+  legalEntityDiv: {
+    padding: "10px 30px",
+    marginTop: "20px",
+    borderRadius: "12px",
+    background:
+      "transparent linear-gradient(108deg, #6C63FF 0%, #0ABB92 100%) 0% 0% no-repeat padding-box",
+    cursor: "pointer",
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
+  },
+  legalEntityText: {
+    fontSize: "20px",
+    fontFamily: "sans-serif",
+  },
 });
 
 const Dashboard = () => {
   const router = useRouter();
   const { clubId } = router.query;
+
   const classes = useStyles();
   const daoAddress = useSelector((state) => {
     return state.create.daoAddress;
@@ -387,6 +406,7 @@ const Dashboard = () => {
   const [userOwnershipShare, setUserOwnershipShare] = useState(null);
   const [tokenType, setTokenType] = useState(null);
   const [nftBalance, setNftBalance] = useState(null);
+
   const USDC_CONTRACT_ADDRESS = useSelector((state) => {
     return state.gnosis.usdcContractAddress;
   });
@@ -603,6 +623,7 @@ const Dashboard = () => {
     }
     setOpenSnackBar(false);
   };
+
   return (
     <>
       <Layout1 page={1} depositUrl={depositLink}>
@@ -1026,6 +1047,7 @@ const Dashboard = () => {
                       ) : null}
                     </Grid>
                   </Grid>
+
                   <Grid container>
                     <Grid item md={12} mt={2} ml={1} mr={1}>
                       <TextField
@@ -1051,6 +1073,7 @@ const Dashboard = () => {
                       />
                     </Grid>
                   </Grid>
+
                   <Grid container>
                     <Grid item md={12} mt={4} ml={1} mr={1}>
                       <Typography variant="regularText5">
@@ -1062,6 +1085,7 @@ const Dashboard = () => {
                 </Card>
               ) : null}
             </Stack>
+
             <Stack mt={2}>
               <Card className={classes.fourthCard}>
                 <Grid container m={2}>
