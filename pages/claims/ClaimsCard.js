@@ -12,7 +12,7 @@ const useStyles = makeStyles({
     textAlign: "center",
     border: "1px solid #FFFFFF1A",
     borderRadius: "10px",
-    padding: "20px 30px",
+    padding: "20px",
     marginTop: "20px",
     color: "white",
     cursor: 'pointer'
