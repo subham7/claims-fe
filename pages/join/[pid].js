@@ -99,6 +99,14 @@ const Join = (props) => {
   const [usdcTokenDecimal, setUsdcTokenDecimal] = useState(0);
   const [governanceConvertDecimal, setGovernanceConvertDecimal] = useState(0);
 
+  useEffect(() => {
+    if (wallet?.chains) updateDynamicAddress(wallet?.chains[0].id, dispatch);
+
+    setUserDetails(walletAddress);
+    localStorage.setItem("wallet", walletAddress);
+    setWalletConnected(true);
+  }, [dispatch, wallet?.chains, walletAddress]);
+
   // helper function
   const newContract = useCallback(
     (
