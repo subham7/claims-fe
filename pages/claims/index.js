@@ -125,8 +125,8 @@ const Claims = () => {
         )}
         {/* No claims exist */}
 
-        {DUMMY_DATA.map((item) => (
-          <ClaimsCard />
+        {DUMMY_DATA.map((item, i) => (
+          <ClaimsCard key={i} />
         ))}
       </div>
 
