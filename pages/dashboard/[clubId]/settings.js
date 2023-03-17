@@ -52,6 +52,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import TokenSearch from "../../../src/components/tokenSearch";
 import styled from "@emotion/styled";
 import nft from "../../../src/abis/nft.json";
+import { useConnectWallet } from "@web3-onboard/react";
 
 const useStyles = makeStyles({
   valuesStyle: {
@@ -244,9 +245,8 @@ const Settings = (props) => {
     return state.create.clubImageUrl;
   });
   const [dataFetched, setDataFetched] = useState(false);
-  const walletAddress = useSelector((state) => {
-    return state.create.value;
-  });
+  const [{ wallet }] = useConnectWallet();
+  const walletAddress = wallet?.accounts[0].address;
   const [tokenDetails, settokenDetails] = useState(null);
   const [tokenAPIDetails, settokenAPIDetails] = useState(null); // contains the details extracted from API
   const [apiTokenDetailSet, setApiTokenDetailSet] = useState(false);

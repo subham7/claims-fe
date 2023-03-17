@@ -9,6 +9,7 @@ export async function loginToken(userAddress) {
 }
 
 export async function refreshToken(refreshToken, accessToken) {
+  console.log(accessToken);
   // authenticate and fetch users new token
   const data = JSON.stringify({
     refreshToken: refreshToken,

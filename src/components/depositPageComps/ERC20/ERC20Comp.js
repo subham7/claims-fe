@@ -21,10 +21,9 @@ import {
   patchUserBalance,
 } from "../../../api/user";
 import { convertToWei } from "../../../utils/globalFunctions";
-import { SmartContract } from "../../../api/contract";
-import ImplementationContract from "../../../abis/implementationABI.json";
 import { useSelector } from "react-redux";
 import { useRouter } from "next/router";
+import ClubFetch from "../../../utils/clubFetch";
 
 const ERC20Comp = ({
   wallet,
@@ -32,7 +31,8 @@ const ERC20Comp = ({
   imageUrl,
   apiTokenDetailSet,
   tokenAPIDetails,
-  tokenDetails,
+  // tokenDetails,
+  newContract,
   dataFetched,
   walletConnected,
   governorDataFetched,
@@ -60,18 +60,13 @@ const ERC20Comp = ({
   clubId,
   usdcTokenDecimal,
   daoAddress,
+  clubName,
 }) => {
   const classes = ERC20Styles();
   const router = useRouter();
-  const tokenName = tokenAPIDetails[0].name;
-
-  
 
   const USDC_CONTRACT_ADDRESS = useSelector((state) => {
     return state.gnosis.usdcContractAddress;
-  });
-  const GNOSIS_TRANSACTION_URL = useSelector((state) => {
-    return state.gnosis.transactionUrl;
   });
 
   const handleDeposit = async () => {
@@ -84,21 +79,9 @@ const ERC20Comp = ({
     checkUserExists.then((result) => {
       if (result.data === false) {
         // if the user doesn't exist
-        const usdc_contract = new SmartContract(
-          ImplementationContract,
-          USDC_CONTRACT_ADDRESS,
-          undefined,
-          USDC_CONTRACT_ADDRESS,
-          GNOSIS_TRANSACTION_URL,
-        );
+        const usdc_contract = newContract(USDC_CONTRACT_ADDRESS);
         // pass governor contract
-        const dao_contract = new SmartContract(
-          ImplementationContract,
-          daoAddress,
-          undefined,
-          USDC_CONTRACT_ADDRESS,
-          GNOSIS_TRANSACTION_URL,
-        );
+        const dao_contract = newContract(daoAddress);
         // pass governor contract
         const usdc_response = usdc_contract.approveDeposit(
           daoAddress,
@@ -147,21 +130,9 @@ const ERC20Comp = ({
         );
       } else {
         // if user exists
-        const usdc_contract = new SmartContract(
-          ImplementationContract,
-          USDC_CONTRACT_ADDRESS,
-          undefined,
-          USDC_CONTRACT_ADDRESS,
-          GNOSIS_TRANSACTION_URL,
-        );
+        const usdc_contract = newContract(USDC_CONTRACT_ADDRESS);
         // pass governor contract
-        const dao_contract = new SmartContract(
-          ImplementationContract,
-          daoAddress,
-          undefined,
-          USDC_CONTRACT_ADDRESS,
-          GNOSIS_TRANSACTION_URL,
-        );
+        const dao_contract = newContract(daoAddress);
         // pass governor contract
         const usdc_response = usdc_contract.approveDeposit(
           daoAddress,
@@ -231,7 +202,7 @@ const ERC20Comp = ({
                   <Stack spacing={0}>
                     <Typography variant="h4">
                       {apiTokenDetailSet ? (
-                        tokenName
+                        clubName
                       ) : (
                         <Skeleton
                           variant="rectangular"
@@ -242,7 +213,7 @@ const ERC20Comp = ({
                     </Typography>
                     <Typography variant="h6" className={classes.dimColor}>
                       {dataFetched ? (
-                        "$" 
+                        "$" + tokenSymbol
                       ) : (
                         <Skeleton
                           variant="rectangular"

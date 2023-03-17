@@ -12,27 +12,32 @@ import ImplementationContract from "../abis/implementationABI.json";
 import { setUSDCTokenDetails } from "../redux/reducers/gnosis";
 import { getAssets } from "../api/assets";
 import { checkUserByClub } from "../api/user";
+import { useConnectWallet } from "@web3-onboard/react";
 
 export default function ProtectRoute(Component) {
   const AuthenticatedComponent = () => {
     const router = useRouter();
     const dispatch = useDispatch();
-    const [walletAddress, setWalletAddress] = useState(null);
-    const [walletLoaded, setWalletLoaded] = useState(false);
-    const wallet = useSelector((state) => {
-      return state.create.value;
-    });
+    const [{ wallet }] = useConnectWallet();
+    // const [walletAddress, setWalletAddress] = useState(null);
+
     const [redirect, setRedirect] = useState(false);
     const [networks, setNetworks] = useState([]);
     const [networksFetched, setNetworksFetched] = useState(false);
     const [tokenDecimalUsdc, setTokenDecimalUsdc] = useState(0);
+
     const USDC_CONTRACT_ADDRESS = useSelector((state) => {
       return state.gnosis.usdcContractAddress;
     });
     const GNOSIS_TRANSACTION_URL = useSelector((state) => {
       return state.gnosis.transactionUrl;
     });
+    const walletAddress = wallet?.accounts[0].address;
+    if (wallet) {
+      localStorage.setItem("wallet", wallet?.accounts[0].address);
+    }
 
+    console.log("walllleettttt");
     const fetchCustomTokenDecimals = async () => {
       if (USDC_CONTRACT_ADDRESS && GNOSIS_TRANSACTION_URL) {
         const usdcContract = new SmartContract(
@@ -65,7 +70,7 @@ export default function ProtectRoute(Component) {
     }, [USDC_CONTRACT_ADDRESS]);
 
     const handleRedirectClick = () => {
-      router.push("/");
+      // router.push("/");
     };
 
     const fetchNetworks = () => {
@@ -91,6 +96,7 @@ export default function ProtectRoute(Component) {
         web3.eth.net
           .getId()
           .then((networkId) => {
+            console.log("networkId", networkId);
             if (!networksAvailable.includes(networkId)) {
               setOpen(true);
             }
@@ -101,15 +107,17 @@ export default function ProtectRoute(Component) {
           });
       }
       // const switched = checkNetwork()
+
       const handleMount = async () => {
+        console.log("wallet in handle mount", wallet);
         if (wallet !== null) {
-          setWalletAddress(wallet[0][0].address);
-          setWalletLoaded(true);
-          const getLoginToken = loginToken(wallet[0][0].address);
+          // setWalletAddress(wallet[0][0].address);
+          // setWalletLoaded(true);
+          const getLoginToken = loginToken(walletAddress);
           getLoginToken.then((response) => {
             if (response.status !== 200) {
               console.log(response.data.error);
-              router.push("/");
+              // router.push("/");
             } else {
               setExpiryTime(response.data.tokens.access.expires);
               const expiryTime = getExpiryTime();
@@ -138,18 +146,18 @@ export default function ProtectRoute(Component) {
             }
           });
         }
-        if (walletAddress === null && !walletLoaded) {
+        if (!wallet) {
           setRedirect(true);
         }
         if (redirect) {
-          router.push("/");
+          // router.push("/");
           setRedirect(false);
         }
       };
       handleMount();
-    }, []);
+    }, [dispatch, networks, networksFetched, redirect, wallet, walletAddress]);
 
-    return walletLoaded ? (
+    return wallet ? (
       <Component wallet={walletAddress} />
     ) : (
       <Backdrop

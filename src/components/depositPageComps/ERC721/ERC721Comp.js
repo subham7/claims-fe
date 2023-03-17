@@ -2,9 +2,7 @@ import { Button, CircularProgress, Grid, Typography } from "@mui/material";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { ERC721Styles } from "./ERC721CompStyles";
 
-import { SmartContract } from "../../../api/contract";
 import { checkUserByClub, createUser } from "../../../api/user";
-import ImplementationContract from "../../../abis/implementationABI.json";
 import { useSelector } from "react-redux";
 import { convertFromWei } from "../../../utils/globalFunctions";
 import { useRouter } from "next/router";
@@ -36,6 +34,7 @@ const ERC721Comp = ({
   userDetails,
   clubId,
   setMessage,
+  newContract
 }) => {
   const classes = ERC721Styles();
   const router = useRouter();
@@ -43,26 +42,11 @@ const ERC721Comp = ({
   const USDC_CONTRACT_ADDRESS = useSelector((state) => {
     return state.gnosis.usdcContractAddress;
   });
-  const GNOSIS_TRANSACTION_URL = useSelector((state) => {
-    return state.gnosis.transactionUrl;
-  });
 
   const handleClaimNft = async () => {
-    const usdc_contract = new SmartContract(
-      ImplementationContract,
-      USDC_CONTRACT_ADDRESS,
-      undefined,
-      USDC_CONTRACT_ADDRESS,
-      GNOSIS_TRANSACTION_URL,
-    );
+    const usdc_contract = newContract(USDC_CONTRACT_ADDRESS)
     // pass governor contract
-    const dao_contract = new SmartContract(
-      ImplementationContract,
-      daoAddress,
-      undefined,
-      USDC_CONTRACT_ADDRESS,
-      GNOSIS_TRANSACTION_URL,
-    );
+    const dao_contract = newContract(daoAddress)
 
     // const priceOfNftConverted = convertToWei(
     //   priceOfNft,

@@ -37,7 +37,6 @@ const useStyles = makeStyles({
 });
 
 const Step1 = (props) => {
-  console.log(props);
   const {
     clubName,
     setClubName,

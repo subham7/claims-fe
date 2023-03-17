@@ -13,10 +13,13 @@ import { makeStyles } from "@mui/styles";
 import { connectWallet, setUserChain, onboard } from "../utils/wallet";
 import Web3 from "web3";
 import AccountButton from "./accountbutton";
-import NetworkSwitcher from "./networkSwitcher";
+
 import store from "../redux/store";
 import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/router";
+import { useAccountCenter, useConnectWallet } from "@web3-onboard/react";
+import { addWalletAddress } from "../redux/reducers/user";
+// import "../../styles/globals.css";
 
 const useStyles = makeStyles({
   image: {
@@ -25,59 +28,23 @@ const useStyles = makeStyles({
   },
 });
 
-export default function Navbar(props) {
-  const router = useRouter();
+export default function Navbar3(props) {
   const dispatch = useDispatch();
   const classes = useStyles();
-  const [previouslyConnectedWallet, setPreviouslyConnectedWallet] =
-    useState(null);
-  const [userDetails, setUserDetails] = useState(null);
+  const [{ wallet, connecting }, connect, disconnect] = useConnectWallet();
 
+  if (wallet) {
+    if (window.ethereum) {
+      window.web3 = new Web3(window.ethereum);
+    } else if (window.web3) {
+      window.web3 = new Web3(window.web3.currentProvider);
+    }
+  }
   useEffect(() => {
-    store.subscribe(() => {
-      const { create } = store.getState();
-      if (create.value) {
-        setPreviouslyConnectedWallet(create.value);
-      } else {
-        setPreviouslyConnectedWallet(null);
-      }
-    });
-    const checkConnection = async () => {
-      var web3;
-      if (window.ethereum) {
-        web3 = new Web3(window.ethereum);
-      } else if (window.web3) {
-        web3 = new Web3(window.web3.currentProvider);
-      }
-      try {
-        web3.eth.getAccounts().then((async) => {
-          setUserDetails(async[0]);
-        });
-      } catch (err) {
-        setUserDetails(null);
-      }
-    };
-    const autoSelectWallet = async () => {
-      if (previouslyConnectedWallet) {
-        await onboard.connectWallet({
-          autoSelect: previouslyConnectedWallet[0],
-          disableModals: true,
-        });
-      }
-    };
-
-    autoSelectWallet();
-    checkConnection();
-  }, [previouslyConnectedWallet]);
-
-  const handleConnection = (event) => {
-    const wallet = connectWallet(dispatch);
-    wallet.then((response) => {
-      if (!response) {
-        console.log("Error connecting wallet");
-      }
-    });
-  };
+    if (wallet) {
+      dispatch(addWalletAddress(wallet ? wallet.accounts[0].address : null));
+    }
+  }, [dispatch, wallet]);
 
   const handleFaucetRedirect = () => {
     window.open("/faucet", "_ blank");
@@ -85,15 +52,7 @@ export default function Navbar(props) {
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar
-        className={classes.root}
-        position="fixed"
-        sx={{
-          width: "100%",
-          zIndex: (theme) => theme.zIndex.drawer + 1,
-          paddingBottom: "15px",
-        }}
-      >
+      <AppBar position="static">
         <Toolbar>
           <IconButton
             color="inherit"
@@ -117,24 +76,25 @@ export default function Navbar(props) {
             <Button
               variant="primary"
               color="primary"
-              sx={{ mr: 2, mt: 2 }}
-              // startIcon={<LocalFireDepartmentIcon />}
+              sx={{ mr: 40, mt: 2 }}
               onClick={handleFaucetRedirect}
             >
               USDC Faucet
             </Button>
           ) : null}
-          <NetworkSwitcher />
-          {previouslyConnectedWallet !== null ? (
-            <AccountButton accountDetail={userDetails} />
+          {connecting ? (
+            <Button sx={{ mr: 2, mt: 2 }} className={classes.navButton}>
+              Connecting
+            </Button>
+          ) : wallet ? (
+            <></>
           ) : (
             <Button
-              variant="navBar"
               sx={{ mr: 2, mt: 2 }}
               className={classes.navButton}
-              onClick={handleConnection}
+              onClick={() => (wallet ? disconnect(wallet) : connect())}
             >
-              No wallet connected
+              Connect wallet
             </Button>
           )}
         </Toolbar>
