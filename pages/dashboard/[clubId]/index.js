@@ -25,6 +25,7 @@ import {
 } from "@mui/material";
 import TextField from "@mui/material/TextField";
 import { makeStyles } from "@mui/styles";
+import { useConnectWallet } from "@web3-onboard/react";
 import { useRouter } from "next/router";
 import { React, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
@@ -347,9 +348,11 @@ const Dashboard = () => {
   const daoAddress = useSelector((state) => {
     return state.create.daoAddress;
   });
-  const walletAddress = useSelector((state) => {
-    return state.create.value;
-  });
+  // const walletAddress = useSelector((state) => {
+  //   return state.create.wallet;
+  // });
+  const [{ wallet }] = useConnectWallet();
+
   const [tokenSymbol, setTokenSymbol] = useState(null);
   const [depositCloseTime, setDepositCloseTime] = useState(null);
   const [tokenDetails, settokenDetails] = useState(null);
@@ -396,74 +399,89 @@ const Dashboard = () => {
   const governanceConvertDecimal = useSelector((state) => {
     return state.gnosis.governanceTokenDecimal;
   });
-
-  const loadNftContractData = async () => {
-    try {
-      let response = await fetchClubbyDaoAddress(daoAddress);
-      console.log("ressss", response);
-      const nftAddress = response.data[0].nftAddress;
-      console.log("res", nftAddress);
-      const nftContract = new SmartContract(
-        nft,
-        nftAddress,
-        undefined,
-        USDC_CONTRACT_ADDRESS,
-        GNOSIS_TRANSACTION_URL,
-      );
-      const nftBalance = await nftContract.nftBalance(walletAddress);
-      setNftBalance(nftBalance);
-      const symbol = await nftContract.symbol();
-      setTokenSymbol(symbol);
-      const nftMinted = await nftContract.nftOwnersCount();
-      setNftMinted(nftMinted);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const loadSmartContractData = async () => {
-    try {
-      const contract = new SmartContract(
-        implementation,
-        daoAddress,
-        undefined,
-        USDC_CONTRACT_ADDRESS,
-        GNOSIS_TRANSACTION_URL,
-      );
-      const depositCloseTime = await contract.depositCloseTime();
-      const userDetail = await contract.userDetails();
-      const tokensMintedSoFar = await contract.erc20TokensMinted();
-
-      setDepositCloseTime(depositCloseTime);
-      setUserBalance(userDetail[1]);
-      setTotalTokenMinted(tokensMintedSoFar);
-      setDepositLink(
-        typeof window !== "undefined" && window.location.origin
-          ? `${window.location.origin}/join/${daoAddress}?dashboard=true`
-          : null,
-      );
-      setDataFetched(true);
-    } catch (e) {
-      console.log(e);
-      setOpenSnackBar(true);
-      setFailed(true);
-    }
-  };
+  const walletAddress = wallet?.accounts[0].address;
+  console.log(wallet);
+  console.log(walletAddress);
 
   useEffect(() => {
     if (daoAddress && USDC_CONTRACT_ADDRESS && GNOSIS_TRANSACTION_URL) {
       // if (tokenType === "erc721") loadNftContractData();
+      const loadNftContractData = async () => {
+        try {
+          let response = await fetchClubbyDaoAddress(daoAddress);
+
+          const nftAddress = response.data[0].nftAddress;
+
+          const nftContract = new SmartContract(
+            nft,
+            nftAddress,
+            walletAddress,
+            USDC_CONTRACT_ADDRESS,
+            GNOSIS_TRANSACTION_URL,
+          );
+          const nftBalance = await nftContract.nftBalance(walletAddress);
+          setNftBalance(nftBalance);
+          const symbol = await nftContract.symbol();
+          setTokenSymbol(symbol);
+          const nftMinted = await nftContract.nftOwnersCount();
+          setNftMinted(nftMinted);
+        } catch (error) {
+          console.log(error);
+        }
+      };
+
+      const loadSmartContractData = async () => {
+        console.log(walletAddress);
+        try {
+          const contract = new SmartContract(
+            implementation,
+            daoAddress,
+            walletAddress,
+            USDC_CONTRACT_ADDRESS,
+            GNOSIS_TRANSACTION_URL,
+          );
+          const depositCloseTime = await contract.depositCloseTime();
+          const userDetail = await contract.userDetails();
+          const tokensMintedSoFar = await contract.erc20TokensMinted();
+
+          setDepositCloseTime(depositCloseTime);
+          setUserBalance(userDetail[1]);
+          setTotalTokenMinted(tokensMintedSoFar);
+          setDepositLink(
+            typeof window !== "undefined" && window.location.origin
+              ? `${window.location.origin}/join/${daoAddress}?dashboard=true`
+              : null,
+          );
+          setDataFetched(true);
+        } catch (e) {
+          console.log(e);
+          setOpenSnackBar(true);
+          setFailed(true);
+        }
+      };
+
       loadNftContractData();
       loadSmartContractData();
       // console.log("token type", tokenType);
     }
-  }, [daoAddress, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL, dataFetched]);
+  }, [
+    daoAddress,
+    USDC_CONTRACT_ADDRESS,
+    GNOSIS_TRANSACTION_URL,
+    dataFetched,
+    wallet,
+    walletAddress,
+  ]);
 
   const checkIsAdmin = () => {
     if (membersFetched && membersDetails.length > 0 && walletAddress) {
+      console.log("check is admin", walletAddress);
       let obj = membersDetails.find(
         (member) => member.userAddress === walletAddress,
       );
+      let obj2 = membersDetails.map((member) => {
+        console.log(member.userAddress, walletAddress);
+      });
       let pos = membersDetails.indexOf(obj);
       if (pos >= 0) {
         if (membersDetails[pos].clubs[0].isAdmin) {
@@ -508,7 +526,6 @@ const Dashboard = () => {
 
     const nfts = getNfts(clubId);
     nfts.then((result) => {
-      console.log(result);
       if (result.status != 200) {
         setNftFetched(false);
       } else {

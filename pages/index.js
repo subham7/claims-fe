@@ -11,7 +11,6 @@ import {
   DialogContent,
   Dialog,
 } from "@mui/material";
-import { connectWallet } from "../src/utils/wallet";
 import { useDispatch, useSelector } from "react-redux";
 import { makeStyles } from "@mui/styles";
 import AddIcon from "@mui/icons-material/Add";
@@ -23,8 +22,6 @@ import {
   addClubID,
   addClubRoute,
 } from "../src/redux/reducers/create";
-import { checkNetwork } from "../src/utils/wallet";
-import Web3 from "web3";
 
 import {
   getExpiryTime,
@@ -35,9 +32,7 @@ import {
   setRefreshToken,
 } from "../src/utils/auth";
 import { loginToken, refreshToken } from "../src/api/auth";
-import { fetchConfig } from "../src/api/config";
-import { updateDynamicAddress } from "../src/api/index";
-import { CleaningServices } from "@mui/icons-material";
+import { useConnectWallet } from "@web3-onboard/react";
 
 const useStyles = makeStyles({
   yourClubText: {
@@ -86,53 +81,23 @@ export default function App() {
   const dispatch = useDispatch();
   const [clubFlow, setClubFlow] = useState(false);
   const classes = useStyles();
-  const [walletID, setWalletID] = useState(null);
+  const [{ wallet }] = useConnectWallet();
   const [clubData, setClubData] = useState([]);
   const [clubOwnerAddress, setClubOwnerAddress] = useState(null);
-  const [fetched, setFetched] = useState(false);
   const [noWalletMessage, setNoWalletMessage] = useState(null);
   const [open, setOpen] = useState(false);
   const router = useRouter();
-  const [networks, setNetworks] = useState([]);
-  const [networksFetched, setNetworksFetched] = useState(false);
+  const walletAddress = wallet?.accounts[0].address;
 
-  const fetchNetworks = () => {
-    const networkData = fetchConfig();
-    networkData.then((result) => {
-      if (result.status != 200) {
-        setNetworksFetched(false);
-      } else {
-        setNetworks(result.data);
-        setNetworksFetched(true);
-      }
-    });
-  };
+  console.log(walletAddress);
 
   useEffect(() => {
-    fetchNetworks();
-    if (networksFetched) {
-      const networksAvailable = [];
-      networks.forEach((network) => {
-        networksAvailable.push(network.networkId);
-      });
-      const web3 = new Web3(Web3.givenProvider);
-      web3.eth.net
-        .getId()
-        .then((networkId) => {
-          if (!networksAvailable.includes(networkId)) {
-            setOpen(true);
-          }
-          updateDynamicAddress(networkId, dispatch);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    }
-
-    if (!fetched && walletID) {
-      const getClubs = fetchClubByUserAddress(walletID);
+    if (walletAddress) {
+      console.log("hereee");
+      const getClubs = fetchClubByUserAddress(walletAddress);
       getClubs
         .then((result) => {
+          console.log(result);
           if (result.status != 200) {
             console.log(result.statusText);
           } else {
@@ -144,7 +109,7 @@ export default function App() {
                   result.data.userAddress.length - 4,
                 ),
             );
-            setFetched(true);
+            // setFetched(true);
           }
         })
         .catch((error) => {
@@ -154,50 +119,48 @@ export default function App() {
           console.log(error);
         });
     }
-  }, [walletID]);
+    if (walletAddress) {
+      console.log("walllleeettt addresss", walletAddress);
+      const getLoginToken = loginToken(walletAddress);
 
-  const handleConnection = async (event) => {
-    let wallet = connectWallet(dispatch);
-    wallet.then((response) => {
-      if (response) {
-        const getLoginToken = loginToken(localStorage.getItem("wallet"));
-        getLoginToken.then((response) => {
-          if (response.status !== 200) {
-            console.log(response.data.error);
-          } else {
-            setExpiryTime(response.data.tokens.access.expires);
-            const expiryTime = getExpiryTime();
-            const currentDate = Date();
-            setJwtToken(response.data.tokens.access.token);
-            setRefreshToken(response.data.tokens.refresh.token);
-            if (expiryTime < currentDate) {
-              const obtainNewToken = refreshToken(
-                getRefreshToken(),
-                getJwtToken(),
-              );
-              obtainNewToken
-                .then((tokenResponse) => {
-                  if (response.status !== 200) {
-                    console.log(tokenResponse.data.error);
-                  } else {
-                    setExpiryTime(tokenResponse.data.tokens.access.expires);
-                    setJwtToken(tokenResponse.data.tokens.access.token);
-                    setRefreshToken(tokenResponse.data.tokens.refresh.token);
-                  }
-                })
-                .catch((error) => {
-                  console.log(error);
-                });
-            }
+      getLoginToken.then((response) => {
+        console.log("responseee", response);
+        if (response.status !== 200) {
+          console.log(response.data.error);
+        } else {
+          // setExpiryTime(response.data.tokens.access.expires);
+          setExpiryTime("2023-03-19T11:07:20.810Z");
+          const expiryTime = getExpiryTime();
+          const currentDate = Date();
+          setJwtToken(response.data.tokens.access.token);
+          setRefreshToken(response.data.tokens.refresh.token);
+          if (expiryTime < currentDate) {
+            console.log("changeeeee", getJwtToken());
+            const obtainNewToken = refreshToken(
+              getRefreshToken(),
+              getJwtToken(),
+            );
+            obtainNewToken
+              .then((tokenResponse) => {
+                if (response.status !== 200) {
+                  console.log(tokenResponse.data.error);
+                } else {
+                  setExpiryTime(tokenResponse.data.tokens.access.expires);
+                  setJwtToken(tokenResponse.data.tokens.access.token);
+                  setRefreshToken(tokenResponse.data.tokens.refresh.token);
+                }
+              })
+              .catch((error) => {
+                console.log(error);
+              });
           }
-        });
-        setWalletID(localStorage.getItem("wallet"));
-        setClubFlow(true);
-      } else {
-        setClubFlow(false);
-      }
-    });
-  };
+        }
+      });
+      setClubFlow(true);
+    } else {
+      setClubFlow(false);
+    }
+  }, [walletAddress]);
 
   const handleCreateButtonClick = async (event) => {
     const { pathname } = Router;
@@ -208,7 +171,6 @@ export default function App() {
   };
 
   const handleItemClick = (data) => {
-    console.log(data);
     dispatch(addClubName(data.name));
     dispatch(addDaoAddress(data.daoAddress));
     dispatch(addClubID(data.clubId));
@@ -221,18 +183,8 @@ export default function App() {
     setOpen(false);
   };
 
-  const handleSwitchNetwork = async () => {
-    const switched = await checkNetwork();
-    if (switched) {
-      setOpen(false);
-    } else {
-      setOpen(true);
-    }
-  };
-
   const getImageURL = (tokenURI) => {
     let imgUrl = tokenURI?.split("/");
-    console.log("imgUrl, ", imgUrl);
   };
 
   return (
@@ -270,7 +222,7 @@ export default function App() {
               </Grid>
               <Divider className={classes.divider} />
               <Stack spacing={3}>
-                {fetched ? (
+                {walletAddress ? (
                   clubData.map((club, key) => {
                     return (
                       <ListItemButton
@@ -358,7 +310,7 @@ export default function App() {
               Create or join a club in less than 60 seconds using StationX
             </Typography>
           </Grid>
-          <Grid item m={4}>
+          {/* <Grid item m={4}>
             <Button
               variant="primary"
               color="primary"
@@ -367,7 +319,7 @@ export default function App() {
             >
               Connect Wallet
             </Button>
-          </Grid>
+          </Grid> */}
         </Grid>
       )}
       <Dialog
