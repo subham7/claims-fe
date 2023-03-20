@@ -5,7 +5,6 @@ import Layout1 from "../../../../../src/components/layouts/layout1";
 import * as yup from "yup";
 import { useFormik } from "formik";
 import { useRouter } from "next/router";
-import Link from "next/link";
 import { useDispatch } from "react-redux";
 import { addAdminFormData } from "../../../../../src/redux/reducers/legal";
 
