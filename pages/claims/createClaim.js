@@ -201,6 +201,7 @@ const CreateClaim = () => {
   const [tokensInWallet, setTokensInWallet] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedToken, setSelectedToken] = useState("");
+  const [currentAccount, setCurrentAccount] = useState("");
 
   const dispatch = useDispatch();
 
@@ -219,9 +220,11 @@ const CreateClaim = () => {
         ...values,
         recieveTokens: recieveTokens,
         airdropTokens: selectedToken.tokenName,
+        walletAddress: currentAccount,
+        airdropTokenAddress: selectedToken.tokenAddress
       };
 
-      // console.log(data)
+      console.log(data)
 
       dispatch(addUserData(data));
       router.push("/claims/Step2");
@@ -238,6 +241,7 @@ const CreateClaim = () => {
 
     // current account
     const accounts = await web3.eth.getAccounts();
+    setCurrentAccount(accounts[0]);
     const data = await getTokensFromWallet(accounts[0]);
     setTokensInWallet(data);
     setIsLoading(false);

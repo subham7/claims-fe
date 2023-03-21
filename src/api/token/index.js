@@ -29,6 +29,7 @@ export const getTokensFromWallet = async (address) => {
     let response = await axios(config);
     response = response["data"];
 
+    // tokens.map(token => console.log(token.contractAddress))
     // Getting balances
     const balances = response["result"];
 
@@ -44,6 +45,7 @@ export const getTokensFromWallet = async (address) => {
     for (let token of nonZeroBalances) {
       // Get balance of token
       let balance = token.tokenBalance;
+      let address = token.contractAddress
 
       // options for making a request to get the token metadata
       const options = {
@@ -69,12 +71,14 @@ export const getTokensFromWallet = async (address) => {
 
       tokenName = metadata["data"]["result"].name;
       tokenSymbol = metadata["data"]["result"].symbol;
+      // console.log(metadata["data"])
       // Print name, balance, and symbol of token
 
       tokenData.push({
         tokenName: tokenName,
         tokenBalance: tokenBalance,
         tokenSymbol: tokenSymbol,
+        tokenAddress: address
       });
 
       //   console.log(`${i++}. ${tokenName}: ${tokenBalance} ${tokenSymbol}`);

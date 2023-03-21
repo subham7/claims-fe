@@ -20,6 +20,10 @@ import * as yup from "yup";
 import { useFormik } from "formik";
 import { useRouter } from "next/router";
 import { useSelector } from "react-redux";
+import { SmartContract } from "../../src/api/contract";
+import claimContract from "../../src/abis/claimContract.json";
+import usdcTokenContract from "../../src/abis/usdcTokenContract.json";
+import { convertToWeiGovernance } from "../../src/utils/globalFunctions";
 
 const useStyles = makeStyles({
   form: {
@@ -121,11 +125,19 @@ const Step2 = () => {
     return state.createClaim.userData;
   });
 
+  const USDC_CONTRACT_ADDRESS = useSelector((state) => {
+    return state.gnosis.usdcContractAddress;
+  });
+
+  console.log(USDC_CONTRACT_ADDRESS);
+
   const hiddenFileInput = useRef(null);
 
   const backHandler = () => {
     router.push("/claims/createClaim");
   };
+
+  const claimsContractAddress = "0x02E76052ad6eE3be0759a8211215ab8B97e59285";
 
   const handleChange = (event) => {
     const fileUploaded = event.target.files[0];
@@ -158,16 +170,93 @@ const Step2 = () => {
         eligible: eligible,
         tokenAddress: tokenAddress,
         maximumToken: maximumToken,
-        customAmount: customAmount,
+        customAmount: maximumToken === "custom" ? customAmount : 0,
       };
+
+      // checking maximum claim is prorata or custom
+      let maximumClaim;
+
+      if (data.maximumToken === "custom") {
+        maximumClaim = true;
+      } else {
+        maximumClaim = false;
+      }
+
+      // console.log(data.customAmount);
+
+      const loadClaimsContractData = async () => {
+        try {
+          const claimsContract = new SmartContract(
+            claimContract,
+            claimsContractAddress,
+            userData.walletAddress,
+            undefined,
+            undefined,
+          );
+
+          const erc20contract = new SmartContract(
+            usdcTokenContract,
+            data.airdropTokenAddress,
+            data.walletAddress,
+            undefined,
+            undefined,
+          );
+
+          console.log(data);
+
+          console.log(erc20contract);
+
+          const decimals = await erc20contract.decimals();
+          console.log(decimals);
+
+          // const value = convertFromWeiGovernance(data.numberOfTokens, decimals);
+          // console.log(value);
+
+          // approve erc20
+          // loading true
+          await erc20contract.approveDeposit(
+            claimsContractAddress,
+            data.numberOfTokens,
+            decimals, // decimal
+          );
+
+          const claimsSettings = [
+            data.walletAddress,
+            data.airdropTokenAddress,
+            "0x0000000000000000000000000000000000000000",
+            false, // false if token approved function called
+            false,
+            0,
+            true,
+            new Date(data.startDate).getTime() / 1000,
+            new Date(data.endDate).getTime() / 1000,
+            data.walletAddress,
+            "0x0000000000000000000000000000000000000000000000000000000000000001",
+            3,
+            [
+              maximumClaim,
+              convertToWeiGovernance(data.customAmount, decimals),
+              convertToWeiGovernance(data.numberOfTokens, decimals),
+              [],
+            ],
+            [false, 0],
+          ];
+
+          const response = await claimsContract.claimContract(claimsSettings);
+          // loading false
+          console.log(response);
+        } catch (err) {
+          console.log(err);
+        }
+      };
+
+      loadClaimsContractData();
     } else if (eligible === "csv") {
       const data = {
         ...userData,
         eligible: eligible,
       };
     }
-
-    console.log(data);
   };
 
   return (
@@ -246,7 +335,8 @@ const Step2 = () => {
                 <TextField
                   className={classes.input}
                   onChange={(event) => {
-                    setCustomAmount(event.target.value);
+                    setCustomAmount(Number(event.target.value));
+                    // console.log(Number(event.target.value))
                   }}
                   type="number"
                 />
