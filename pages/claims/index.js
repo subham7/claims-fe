@@ -9,6 +9,10 @@ import { Card, Grid, Link, Typography } from "@mui/material";
 import LegalEntityModal from "../../src/components/modals/LegalEntityModal";
 import claimsBanner from "../../public/assets/images/claimsBanner.png";
 import ClaimsCard from "./ClaimsCard";
+import { getClaimsByUserAddress } from "../../src/api/claims";
+import { useConnectWallet } from "@web3-onboard/react";
+import { useDispatch } from "react-redux";
+import { addClaimContractData } from "../../src/redux/reducers/createClaim";
 
 const useStyles = makeStyles({
   container: {
@@ -93,15 +97,29 @@ const useStyles = makeStyles({
   },
 });
 
-const DUMMY_DATA = [0, 1, 2];
-
 const Claims = () => {
   const classes = useStyles();
   const router = useRouter();
+  const [claimData, setClaimData] = useState([]);
 
   const createClaimHandler = () => {
     router.push("/claims/createClaim");
   };
+
+  // const dispatch = useDispatch();
+
+  const [{ wallet }] = useConnectWallet();
+  const walletAddress = wallet?.accounts[0].address;
+
+  useEffect(() => {
+    const getData = async () => {
+      const data = await getClaimsByUserAddress(walletAddress);
+      console.log(data);
+      setClaimData(data);
+    };
+
+    getData();
+  }, [walletAddress]);
 
   return (
     <div className={classes.container}>
@@ -114,7 +132,7 @@ const Claims = () => {
           </button>
         </div>
 
-        {!DUMMY_DATA && (
+        {!claimData.length && (
           <div className={classes.noClaim}>
             <p className={classes.noClaim_heading}>No claims found</p>
             <p className={classes.noClaim_para}>
@@ -125,8 +143,19 @@ const Claims = () => {
         )}
         {/* No claims exist */}
 
-        {DUMMY_DATA.map((item, i) => (
-          <ClaimsCard key={i} />
+        {claimData.map((item, i) => (
+          <ClaimsCard
+            key={i}
+            i={i}
+            description={item?.description}
+            airdropTokenSymbol={item?.airdropTokenSymbol}
+            totalAmount={item?.totalAmount}
+            startDate={item?.startDate}
+            endDate={item?.endDate}
+            updatedDate={item?.updateDate}
+            claimContract={item?.claimContract}
+            createdBy={item?.createdBy}
+          />
         ))}
       </div>
 

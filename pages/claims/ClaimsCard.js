@@ -4,6 +4,9 @@ import { BsLink45Deg, BsFillSendFill } from "react-icons/bs";
 import { BiPencil } from "react-icons/bi";
 import { AiFillCalendar } from "react-icons/ai";
 import { FaCoins } from "react-icons/fa";
+import { useRouter } from "next/router";
+import { useDispatch } from "react-redux";
+import { addClaimContractData } from "../../src/redux/reducers/createClaim";
 
 const useStyles = makeStyles({
   container: {
@@ -15,7 +18,7 @@ const useStyles = makeStyles({
     padding: "20px",
     marginTop: "20px",
     color: "white",
-    cursor: 'pointer'
+    cursor: "pointer",
   },
   topLine: {
     display: "flex",
@@ -62,15 +65,56 @@ const useStyles = makeStyles({
   },
 });
 
-const ClaimsCard = () => {
+const ClaimsCard = ({
+  description,
+  i,
+  airdropTokenSymbol,
+  totalAmount,
+  updatedDate,
+  startDate,
+  endDate,
+  claimContract,
+  createdBy,
+}) => {
   const classes = useStyles();
+  const router = useRouter();
+  const dispatch = useDispatch();
+
+  const convertedStartDay = new Date(startDate * 1000).getDate();
+  const convertedStartMonth = new Date(startDate * 1000).toLocaleString(
+    "default",
+    { month: "short" },
+  );
+  const convertedEndDate = new Date(endDate * 1000).getDate();
+  const convertedEndMonth = new Date(endDate * 1000).toLocaleString("default", {
+    month: "short",
+  });
+
+  const convertedData = new Date(updatedDate).toLocaleDateString();
+
+  const claimContractData = {
+    description,
+    airdropTokenSymbol,
+    totalAmount,
+    claimContract,
+    createdBy,
+    endDate,
+  };
+
+  console.log(claimContractData);
+
+  dispatch(addClaimContractData(claimContractData));
+
+  const claimHandler = () => {
+    router.push(`/claims/${claimContract}`);
+  };
 
   return (
-    <div className={classes.container}>
+    <div onClick={claimHandler} className={classes.container}>
       <div className={classes.topLine}>
         <h4 className={classes.createdBy}>
           Created by <span className={classes.span}>me</span> on{" "}
-          <span className={classes.span}>03/12/2022</span>
+          <span className={classes.span}>{convertedData}</span>
         </h4>
         <div className={classes.iconContainer}>
           <BsLink45Deg size={25} className={classes.icons} />
@@ -79,27 +123,29 @@ const ClaimsCard = () => {
       </div>
 
       <h2 className={classes.title}>
-        <span className={classes.span}># 1</span> Monthly STX rewards to AAB
-        holders
+        <span className={classes.span}>#{i + 1} </span>
+        {description}
       </h2>
 
       <div className={classes.iconContainer}>
         {/* Token */}
         <div className={classes.icons}>
           <BsFillSendFill color="#6475A3" size={12} />
-          <p className={classes.para}>STX</p>
+          <p className={classes.para}>{airdropTokenSymbol}</p>
         </div>
 
         {/* No. of Tokens */}
         <div className={classes.icons}>
           <FaCoins color="#6475A3" size={12} />
-          <p className={classes.para}>100000</p>
+          <p className={classes.para}>{totalAmount}</p>
         </div>
 
         {/* Date */}
         <div className={classes.icons}>
           <AiFillCalendar color="#6475A3" size={12} />
-          <p className={classes.para}>Mar 7 - Mar 14</p>
+          <p className={classes.para}>
+            {`${convertedStartDay} ${convertedStartMonth} - ${convertedEndDate} ${convertedEndMonth}`}
+          </p>
         </div>
       </div>
     </div>

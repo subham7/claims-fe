@@ -84,6 +84,16 @@ export class SmartContract {
       .send({ from: this.walletAddress });
   }
 
+  async claimSettings() {
+    return this.contract.methods.claimSettings().call();
+  }
+
+  async claim(amount, merkleData) {
+    return this.contract.methods.claim(amount, merkleData).send({
+      from: this.walletAddress,
+    });
+  }
+
   // create new club contract function
   async createDAO(
     owners,

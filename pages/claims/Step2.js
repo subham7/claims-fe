@@ -1,5 +1,6 @@
 import {
   Button,
+  CircularProgress,
   FormControl,
   FormControlLabel,
   FormLabel,
@@ -24,6 +25,7 @@ import { SmartContract } from "../../src/api/contract";
 import claimContract from "../../src/abis/claimContract.json";
 import usdcTokenContract from "../../src/abis/usdcTokenContract.json";
 import { convertToWeiGovernance } from "../../src/utils/globalFunctions";
+import { createClaim } from "../../src/api/claims";
 
 const useStyles = makeStyles({
   form: {
@@ -120,6 +122,8 @@ const Step2 = () => {
   const [tokenAddress, setTokenAddress] = useState("");
   const [customAmount, setCustomAmount] = useState(0);
   const [claimAllowed, setClaimAllowed] = useState("equalTokens");
+  const [generatedClaimContract, setGeneratedClaimContract] = useState("");
+  const [loading, setLoading] = useState("");
 
   const userData = useSelector((state) => {
     return state.createClaim.userData;
@@ -182,8 +186,6 @@ const Step2 = () => {
         maximumClaim = false;
       }
 
-      // console.log(data.customAmount);
-
       const loadClaimsContractData = async () => {
         try {
           const claimsContract = new SmartContract(
@@ -203,17 +205,10 @@ const Step2 = () => {
           );
 
           console.log(data);
-
-          console.log(erc20contract);
-
           const decimals = await erc20contract.decimals();
-          console.log(decimals);
-
-          // const value = convertFromWeiGovernance(data.numberOfTokens, decimals);
-          // console.log(value);
+          setLoading(true);
 
           // approve erc20
-          // loading true
           await erc20contract.approveDeposit(
             claimsContractAddress,
             data.numberOfTokens,
@@ -221,7 +216,7 @@ const Step2 = () => {
           );
 
           const claimsSettings = [
-            data.walletAddress,
+            data.walletAddress.toLowerCase(),
             data.airdropTokenAddress,
             "0x0000000000000000000000000000000000000000",
             false, // false if token approved function called
@@ -230,7 +225,7 @@ const Step2 = () => {
             true,
             new Date(data.startDate).getTime() / 1000,
             new Date(data.endDate).getTime() / 1000,
-            data.walletAddress,
+            data.walletAddress.toLowerCase(),
             "0x0000000000000000000000000000000000000000000000000000000000000001",
             3,
             [
@@ -243,10 +238,35 @@ const Step2 = () => {
           ];
 
           const response = await claimsContract.claimContract(claimsSettings);
-          // loading false
-          console.log(response);
+
+          setLoading(false);
+          setGeneratedClaimContract(
+            response.events.ClaimContractDeployed.returnValues._claimContract,
+          );
+
+          // post data in api
+
+          const postData = JSON.stringify({
+            description: data.description,
+            airdropTokenContract: data.airdropTokenAddress,
+            airdropTokenSymbol: data.airdropTokens,
+            claimContract:
+              response.events.ClaimContractDeployed.returnValues._claimContract,
+            totalAmount: data.numberOfTokens,
+            endDate: new Date(data.endDate).getTime() / 1000,
+            startDate: new Date(data.startDate).getTime() / 1000,
+            createdBy: data.walletAddress.toLowerCase(),
+          });
+
+          // console.log(typeof(postData))
+
+          const res = createClaim(postData)
+          console.log(res)
+
         } catch (err) {
+          setLoading(true);
           console.log(err);
+          setLoading(false);
         }
       };
 
@@ -393,7 +413,7 @@ const Step2 = () => {
 
         {/* Next */}
         <Button type="submit" variant="contained" className={classes.btn}>
-          Finish
+          {loading ? <CircularProgress/> : 'Finish'}
         </Button>
       </form>
     </>

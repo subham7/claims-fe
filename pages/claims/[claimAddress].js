@@ -1,7 +1,13 @@
 import { makeStyles } from "@mui/styles";
-import { fontWeight } from "@mui/system";
-import React from "react";
+import React, { useEffect, useReducer, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { SmartContract } from "../../src/api/contract";
 import Navbar2 from "../../src/components/navbar2";
+import claimContractABI from "../../src/abis/singleClaimContract.json";
+
+import { addClaimContractAddress } from "../../src/redux/reducers/createClaim";
+import { useRouter } from "next/router";
+import { useConnectWallet } from "@web3-onboard/react";
 
 const useStyles = makeStyles({
   container: {
@@ -102,12 +108,73 @@ const useStyles = makeStyles({
     background: "#3B7AFD",
     borderRadius: "8px",
     cursor: "pointer",
-    marginTop: '20px'
+    marginTop: "20px",
   },
 });
 
 const ClaimAddress = () => {
   const classes = useStyles();
+  const dispatch = useDispatch();
+  const router = useRouter();
+
+  const [contractData, setContractData] = useState([]);
+
+  const claimContractData = useSelector((state) => {
+    return state.createClaim.claimContractData;
+  });
+
+  const [{ wallet }] = useConnectWallet();
+  const walletAddress = wallet?.accounts[0].address;
+
+  const { claimAddress } = router.query;
+
+  const endDateString = new Date(contractData.endTime * 1000).toString();
+
+  useEffect(() => {
+    dispatch(addClaimContractAddress(claimContractData.claimContract));
+  }, [claimContractData]);
+
+  const fetchContractDetails = async () => {
+    try {
+      const claimContract = new SmartContract(
+        claimContractABI,
+        claimAddress,
+        walletAddress,
+        undefined,
+        undefined,
+      );
+
+      const desc = await claimContract.claimSettings();
+      setContractData(desc);
+      // console.log(desc);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const claimHandler = async () => {
+    try {
+      const claimContract = new SmartContract(
+        claimContractABI,
+        claimAddress,
+        walletAddress,
+        undefined,
+        undefined,
+      );
+
+      const res = await claimContract.claim(0, []);
+      console.log(res);
+      // console.log(desc);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  console.log(contractData);
+
+  useEffect(() => {
+    fetchContractDetails();
+  }, [claimAddress, walletAddress]);
 
   return (
     <>
@@ -115,9 +182,7 @@ const ClaimAddress = () => {
       <div className={classes.container}>
         {/* left */}
         <div className={classes.lefContainer}>
-          <h2 className={classes.heading}>
-            Monthly STX rewards to AAB holders
-          </h2>
+          <h2 className={classes.heading}>{claimContractData.description}</h2>
 
           <div className={classes.addressLine}>
             <div className={classes.activeContainer}>
@@ -125,26 +190,29 @@ const ClaimAddress = () => {
 
               <div className={classes.createdBy}>
                 <p>Created By</p>
-                <p className={classes.address}>0x1232...9900</p>
+                <p className={classes.address}>
+                  {contractData.rollbackAddress?.slice(0, 5)}...
+                  {contractData.rollbackAddress?.slice(
+                    contractData.rollbackAddress?.length - 5,
+                  )}
+                </p>
               </div>
             </div>
 
             <p className={classes.claimCloses}>
               Claim closes on{" "}
-              <span className={classes.time}>
-                27 November 2022 at 1:57 pm GMT+5:30
-              </span>
+              <span className={classes.time}>{endDateString}</span>
             </p>
           </div>
 
           <div className={classes.airdropContainer}>
             <div>
-              <h3>STX</h3>
+              <h3>{claimContractData.airdropTokenSymbol}</h3>
               <p className={classes.para}>Airdrop</p>
             </div>
 
             <div>
-              <h3>1000000</h3>
+              <h3>{claimContractData.totalAmount}</h3>
               <p className={classes.para}>Size</p>
             </div>
           </div>
@@ -156,10 +224,14 @@ const ClaimAddress = () => {
 
           <div className={classes.claimContainer}>
             <p className={classes.amount}>100</p>
-            <p className={classes.amount}>STX</p>
+            <p className={classes.amount}>
+              {claimContractData.airdropTokenSymbol}
+            </p>
           </div>
 
-          <button className={classes.btn}>Claim</button>
+          <button onClick={claimHandler} className={classes.btn}>
+            Claim
+          </button>
         </div>
       </div>
     </>
