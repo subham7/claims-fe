@@ -5,7 +5,6 @@ import { SmartContract } from "../../src/api/contract";
 import Navbar2 from "../../src/components/navbar2";
 import claimContractABI from "../../src/abis/singleClaimContract.json";
 
-import { addClaimContractAddress } from "../../src/redux/reducers/createClaim";
 import { useRouter } from "next/router";
 import { useConnectWallet } from "@web3-onboard/react";
 
@@ -130,10 +129,6 @@ const ClaimAddress = () => {
 
   const endDateString = new Date(contractData.endTime * 1000).toString();
 
-  useEffect(() => {
-    dispatch(addClaimContractAddress(claimContractData.claimContract));
-  }, [claimContractData]);
-
   const fetchContractDetails = async () => {
     try {
       const claimContract = new SmartContract(
@@ -182,7 +177,7 @@ const ClaimAddress = () => {
       <div className={classes.container}>
         {/* left */}
         <div className={classes.lefContainer}>
-          <h2 className={classes.heading}>{claimContractData.description}</h2>
+          <h2 className={classes.heading}>{claimContractData?.description}</h2>
 
           <div className={classes.addressLine}>
             <div className={classes.activeContainer}>
@@ -207,12 +202,12 @@ const ClaimAddress = () => {
 
           <div className={classes.airdropContainer}>
             <div>
-              <h3>{claimContractData.airdropTokenSymbol}</h3>
+              <h3>{claimContractData?.airdropTokenSymbol}</h3>
               <p className={classes.para}>Airdrop</p>
             </div>
 
             <div>
-              <h3>{claimContractData.totalAmount}</h3>
+              <h3>{claimContractData?.totalAmount}</h3>
               <p className={classes.para}>Size</p>
             </div>
           </div>
@@ -225,7 +220,7 @@ const ClaimAddress = () => {
           <div className={classes.claimContainer}>
             <p className={classes.amount}>100</p>
             <p className={classes.amount}>
-              {claimContractData.airdropTokenSymbol}
+              {claimContractData?.airdropTokenSymbol}
             </p>
           </div>
 

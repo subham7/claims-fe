@@ -221,10 +221,10 @@ const CreateClaim = () => {
         recieveTokens: recieveTokens,
         airdropTokens: selectedToken.tokenName,
         walletAddress: currentAccount,
-        airdropTokenAddress: selectedToken.tokenAddress
+        airdropTokenAddress: selectedToken.tokenAddress,
       };
 
-      console.log(data)
+      console.log(data);
 
       dispatch(addUserData(data));
       router.push("/claims/Step2");
@@ -375,8 +375,8 @@ const CreateClaim = () => {
                 displayEmpty
                 inputProps={{ "aria-label": "Without label" }}
               >
-                {tokensInWallet?.map((token) => (
-                  <MenuItem value={token}>
+                {tokensInWallet?.map((token, i) => (
+                  <MenuItem key={i} value={token}>
                     {/* {console.log(token)} */}
                     {token?.tokenSymbol}
                   </MenuItem>
