@@ -39,7 +39,7 @@ import NewCard from "../src/components/cards/card";
 
 const useStyles = makeStyles({
   container: {
-    background: "url(/assets/images/gradients.png)",
+    // background: "url(/assets/images/gradients.png)",
     minHeight: "100vh",
   },
   yourClubText: {

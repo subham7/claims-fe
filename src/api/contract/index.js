@@ -94,6 +94,22 @@ export class SmartContract {
     });
   }
 
+  async name() {
+    return this.contract.methods.name().call({
+      from: this.walletAddress,
+    });
+  }
+
+  async hasClaimed(walletAddress) {
+    return this.contract.methods.hasClaimed(walletAddress).call();
+  }
+
+  async checkAmount(walletAddress) {
+    return this.contract.methods.checkAmount(walletAddress).call({
+      from: this.walletAddress,
+    });
+  }
+
   // create new club contract function
   async createDAO(
     owners,

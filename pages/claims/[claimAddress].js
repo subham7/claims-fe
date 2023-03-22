@@ -4,9 +4,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { SmartContract } from "../../src/api/contract";
 import Navbar2 from "../../src/components/navbar2";
 import claimContractABI from "../../src/abis/singleClaimContract.json";
+import USDCContract from "../../src/abis/usdcTokenContract.json";
+import { convertFromWeiGovernance } from "../../src/utils/globalFunctions";
 
 import { useRouter } from "next/router";
 import { useConnectWallet } from "@web3-onboard/react";
+import { Alert, CircularProgress } from "@mui/material";
+import { getClaimsByUserAddress } from "../../src/api/claims";
 
 const useStyles = makeStyles({
   container: {
@@ -113,23 +117,33 @@ const useStyles = makeStyles({
 
 const ClaimAddress = () => {
   const classes = useStyles();
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
   const router = useRouter();
 
   const [contractData, setContractData] = useState([]);
-
-  const claimContractData = useSelector((state) => {
-    return state.createClaim.claimContractData;
-  });
+  // const [erc20Decimal, setDecimals] = useState(null);
+  const [airdropAmountInNum, setAirdropAmountInNum] = useState(0);
+  const [totalAmountofTokens, setTotalAmountOfTokens] = useState(0);
+  const [airdropTokenName, setAirdropTokenName] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [description, setDescription] = useState("");
+  const [isClaiming, setIsClaiming] = useState(false);
+  const [message, setMessage] = useState("");
+  const [claimed, setClaimed] = useState(false);
+  const [alreadyClaimed, setAlreadyClaimed] = useState(false);
+  const [claimableAmt, setClaimableAmt] = useState(0);
+  const [decimalOfToken, setDecimalofToken] = useState(0);
 
   const [{ wallet }] = useConnectWallet();
   const walletAddress = wallet?.accounts[0].address;
 
   const { claimAddress } = router.query;
 
+  // claims end date
   const endDateString = new Date(contractData.endTime * 1000).toString();
 
   const fetchContractDetails = async () => {
+    setIsLoading(true);
     try {
       const claimContract = new SmartContract(
         claimContractABI,
@@ -141,13 +155,69 @@ const ClaimAddress = () => {
 
       const desc = await claimContract.claimSettings();
       setContractData(desc);
-      // console.log(desc);
+      console.log(desc);
+
+      // check if token is already claimed
+      const hasClaimed = await claimContract.hasClaimed(walletAddress);
+      setAlreadyClaimed(hasClaimed);
+
+      const erc20Contract = new SmartContract(
+        USDCContract,
+        desc.airdropToken,
+        walletAddress,
+        undefined,
+        undefined,
+      );
+
+      // aridropToken Name
+      const name = await erc20Contract.name();
+      setAirdropTokenName(name);
+
+      // decimals of airdrop token
+      const decimals = await erc20Contract.decimals();
+      setDecimalofToken(decimals);
+
+      // totalAmount of tokens
+      const totalAmountInNumber = convertFromWeiGovernance(
+        desc.claimAmountDetails[2],
+        decimals,
+      );
+      setTotalAmountOfTokens(totalAmountInNumber);
+
+      // claimable amount
+      const airdropAmount = convertFromWeiGovernance(
+        desc.claimAmountDetails[1],
+        decimals,
+      );
+      setAirdropAmountInNum(airdropAmount);
+
+      const amount = await claimContract.checkAmount(walletAddress);
+      const data = convertFromWeiGovernance(amount, decimals);
+
+      console.log(data);
+      setClaimableAmt(data);
+
+      // fetching description
+      const dataFromAPI = await getClaimsByUserAddress(
+        desc.rollbackAddress.toLowerCase(),
+      );
+      // console.log(dataFromAPI);
+
+      const computedData = dataFromAPI.filter(
+        (data) => data.claimContract === claimAddress,
+      );
+
+      setDescription(computedData[0].description);
+
+      setIsLoading(false);
     } catch (err) {
       console.log(err);
+      // setMessage(err.message);
     }
   };
 
   const claimHandler = async () => {
+    setIsClaiming(true);
     try {
       const claimContract = new SmartContract(
         claimContractABI,
@@ -159,76 +229,148 @@ const ClaimAddress = () => {
 
       const res = await claimContract.claim(0, []);
       console.log(res);
+      setIsClaiming(false);
+      setClaimed(true);
+      setMessage("Successfully Claimed!");
       // console.log(desc);
     } catch (err) {
       console.log(err);
+      setIsClaiming(false);
+      setMessage("err.message");
     }
   };
-
-  console.log(contractData);
 
   useEffect(() => {
     fetchContractDetails();
   }, [claimAddress, walletAddress]);
 
+  // useEffect(() => {
+  //   const claimableAmountOfToken = async () => {
+  //     try {
+  //       const claimContract = new SmartContract(
+  //         claimContractABI,
+  //         claimAddress,
+  //         walletAddress,
+  //         undefined,
+  //         undefined,
+  //       );
+
+  //       const amount = await claimContract.checkAmount(walletAddress);
+  //       const data = convertFromWeiGovernance(amount, decimalOfToken);
+  //       setClaimableAmt(data);
+  //     } catch (err) {
+  //       console.err;
+  //     }
+  //   };
+
+  //   claimableAmountOfToken();
+  // }, [claimAddress, walletAddress]);
+
   return (
     <>
       <Navbar2 />
-      <div className={classes.container}>
-        {/* left */}
-        <div className={classes.lefContainer}>
-          <h2 className={classes.heading}>{claimContractData?.description}</h2>
 
-          <div className={classes.addressLine}>
-            <div className={classes.activeContainer}>
-              <p className={classes.active}>Active</p>
+      {isLoading ? (
+        <div
+          style={{
+            display: "flex",
+            height: "100vh",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <CircularProgress />
+        </div>
+      ) : (
+        <div className={classes.container}>
+          {/* left */}
+          <div className={classes.lefContainer}>
+            <h2 className={classes.heading}>{description}</h2>
 
-              <div className={classes.createdBy}>
-                <p>Created By</p>
-                <p className={classes.address}>
-                  {contractData.rollbackAddress?.slice(0, 5)}...
-                  {contractData.rollbackAddress?.slice(
-                    contractData.rollbackAddress?.length - 5,
-                  )}
-                </p>
+            <div className={classes.addressLine}>
+              <div className={classes.activeContainer}>
+                <p className={classes.active}>Active</p>
+
+                <div className={classes.createdBy}>
+                  <p>Created By</p>
+                  <p className={classes.address}>
+                    {contractData.rollbackAddress?.slice(0, 5)}...
+                    {contractData.rollbackAddress?.slice(
+                      contractData.rollbackAddress?.length - 5,
+                    )}
+                  </p>
+                </div>
+              </div>
+
+              <p className={classes.claimCloses}>
+                Claim closes on{" "}
+                <span className={classes.time}>{endDateString}</span>
+              </p>
+            </div>
+
+            <div className={classes.airdropContainer}>
+              <div>
+                <h3>{airdropTokenName}</h3>
+                <p className={classes.para}>Airdrop</p>
+              </div>
+
+              <div>
+                <h3>{totalAmountofTokens}</h3>
+                <p className={classes.para}>Size</p>
               </div>
             </div>
-
-            <p className={classes.claimCloses}>
-              Claim closes on{" "}
-              <span className={classes.time}>{endDateString}</span>
-            </p>
           </div>
 
-          <div className={classes.airdropContainer}>
-            <div>
-              <h3>{claimContractData?.airdropTokenSymbol}</h3>
-              <p className={classes.para}>Airdrop</p>
+          {/* Right */}
+          <div className={classes.rightContainer}>
+            <p className={classes.myClaim}>My Claim</p>
+
+            <div className={classes.claimContainer}>
+              <p className={classes.amount}>{claimableAmt}</p>
+              <p className={classes.amount}>{airdropTokenName}</p>
             </div>
 
-            <div>
-              <h3>{claimContractData?.totalAmount}</h3>
-              <p className={classes.para}>Size</p>
-            </div>
+            {!claimed && !alreadyClaimed ? (
+              <button
+                disabled={!walletAddress || claimableAmt === 0 ? true : false}
+                onClick={claimHandler}
+                className={classes.btn}
+                style={
+                  !walletAddress
+                    ? { cursor: "not-allowed" }
+                    : { cursor: "pointer" }
+                }
+              >
+                {isClaiming ? <CircularProgress /> : "Claim"}
+              </button>
+            ) : (
+              <button
+                disabled={true}
+                style={{ cursor: "not-allowed" }}
+                className={classes.btn}
+              >
+                Claimed!
+              </button>
+            )}
           </div>
         </div>
+      )}
 
-        {/* Right */}
-        <div className={classes.rightContainer}>
-          <p className={classes.myClaim}>My Claim</p>
-
-          <div className={classes.claimContainer}>
-            <p className={classes.amount}>100</p>
-            <p className={classes.amount}>
-              {claimContractData?.airdropTokenSymbol}
-            </p>
-          </div>
-
-          <button onClick={claimHandler} className={classes.btn}>
-            Claim
-          </button>
-        </div>
-      </div>
+      {claimed && (
+        <Alert
+          // onClose={handleSnackBarClose}
+          severity="success"
+          sx={{
+            width: "250px",
+            position: "absolute",
+            bottom: "30px",
+            right: "20px",
+            borderRadius: "8px",
+          }}
+        >
+          {message}
+        </Alert>
+      )}
     </>
   );
 };

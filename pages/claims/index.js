@@ -115,7 +115,7 @@ const Claims = () => {
     const getData = async () => {
       const data = await getClaimsByUserAddress(walletAddress);
       console.log(data);
-      setClaimData(data);
+      setClaimData(data.reverse());
     };
 
     getData();
@@ -146,7 +146,7 @@ const Claims = () => {
         {claimData.map((item, i) => (
           <ClaimsCard
             key={i}
-            i={i}
+            i={claimData.length - i - 1}
             description={item?.description}
             airdropTokenSymbol={item?.airdropTokenSymbol}
             totalAmount={item?.totalAmount}

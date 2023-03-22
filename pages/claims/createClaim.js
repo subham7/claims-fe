@@ -263,224 +263,209 @@ const CreateClaim = () => {
 
   return (
     <>
-      {isLoading ? (
-        <div className={classes.loaderDiv}>
-          <CircularProgress size={80} />
+      <Typography onClick={backHandler} className={classes.back}>
+        <BsArrowLeft /> Back to claims
+      </Typography>
+
+      {/* <Typography className={classes.step}>Step 1/2</Typography> */}
+
+      <form onSubmit={formik.handleSubmit} className={classes.form}>
+        <Typography className={classes.title}>
+          Create a new claim page
+        </Typography>
+
+        {/* Description of claim page */}
+        <Typography className={classes.label}>
+          Add a one-liner description
+        </Typography>
+        <TextField
+          variant="outlined"
+          className={classes.input}
+          name="description"
+          id="description"
+          value={formik.values.description}
+          onChange={formik.handleChange}
+          error={
+            formik.touched.description && Boolean(formik.errors.description)
+          }
+          helperText={formik.touched.description && formik.errors.description}
+        />
+
+        <Typography className={classes.label}>
+          Where do you want to airdrop tokens from?{" "}
+        </Typography>
+
+        <div className={classes.selectContainer}>
+          <div
+            onClick={() => {
+              setSelectedContract(false);
+              setSelectedWallet(true);
+            }}
+            className={`${
+              selectedWallet ? classes.selectedContainer : classes.leftContainer
+            }`}
+          >
+            <IoWalletSharp size={20} />
+            <p>My Wallet</p>
+          </div>
+
+          <div
+            onClick={() => {
+              setSelectedWallet(false);
+              setSelectedContract(true);
+            }}
+            className={`${
+              selectedContract
+                ? classes.selectedContainer
+                : classes.rightContainer
+            }`}
+          >
+            <BsFillSendFill size={20} />
+            <p>StationX Contract</p>
+          </div>
         </div>
-      ) : (
-        <>
-          <Typography onClick={backHandler} className={classes.back}>
-            <BsArrowLeft /> Back to claims
-          </Typography>
 
-          {/* <Typography className={classes.step}>Step 1/2</Typography> */}
-
-          <form onSubmit={formik.handleSubmit} className={classes.form}>
-            <Typography className={classes.title}>
-              Create a new claim page
-            </Typography>
-
-            {/* Description of claim page */}
+        {/* Roll back address */}
+        {selectedContract && (
+          <>
             <Typography className={classes.label}>
-              Add a one-liner description
+              Add a roll back Adress
             </Typography>
             <TextField
               variant="outlined"
               className={classes.input}
-              name="description"
-              id="description"
-              value={formik.values.description}
+              name="rollbackAddress"
+              id="rollbackAddress"
+              value={formik.values.rollbackAddress}
               onChange={formik.handleChange}
-              error={
-                formik.touched.description && Boolean(formik.errors.description)
-              }
+              // error={
+              //   formik.touched.rollbackAddress &&
+              //   Boolean(formik.errors.rollbackAddress)
+              // }
               helperText={
-                formik.touched.description && formik.errors.description
+                formik.touched.rollbackAddress && formik.errors.rollbackAddress
               }
             />
-
-            <Typography className={classes.label}>
-              Where do you want to airdrop tokens from?{" "}
-            </Typography>
-
-            <div className={classes.selectContainer}>
-              <div
-                onClick={() => {
-                  setSelectedContract(false);
-                  setSelectedWallet(true);
-                }}
-                className={`${
-                  selectedWallet
-                    ? classes.selectedContainer
-                    : classes.leftContainer
-                }`}
-              >
-                <IoWalletSharp size={20} />
-                <p>My Wallet</p>
-              </div>
-
-              <div
-                onClick={() => {
-                  setSelectedWallet(false);
-                  setSelectedContract(true);
-                }}
-                className={`${
-                  selectedContract
-                    ? classes.selectedContainer
-                    : classes.rightContainer
-                }`}
-              >
-                <BsFillSendFill size={20} />
-                <p>StationX Contract</p>
-              </div>
-            </div>
-
-            {/* Roll back address */}
-            {selectedContract && (
-              <>
-                <Typography className={classes.label}>
-                  Add a roll back Adress
-                </Typography>
-                <TextField
-                  variant="outlined"
-                  className={classes.input}
-                  name="rollbackAddress"
-                  id="rollbackAddress"
-                  value={formik.values.rollbackAddress}
-                  onChange={formik.handleChange}
-                  // error={
-                  //   formik.touched.rollbackAddress &&
-                  //   Boolean(formik.errors.rollbackAddress)
-                  // }
-                  helperText={
-                    formik.touched.rollbackAddress &&
-                    formik.errors.rollbackAddress
-                  }
-                />
-                <Typography className={classes.text}>
-                  Tokens that remain in the contract are sent to this address
-                  automatically after the drop. You can roll back tokens anytime
-                  via the dashboard too.
-                </Typography>
-              </>
-            )}
-
-            {/* Choose Token */}
-            <Typography className={classes.label}>
-              Choose token to airdrop
-            </Typography>
-            <FormControl sx={{ width: "100%" }}>
-              <Select
-                onChange={changeSelectedTokenHandler}
-                displayEmpty
-                inputProps={{ "aria-label": "Without label" }}
-              >
-                {tokensInWallet?.map((token, i) => (
-                  <MenuItem key={i} value={token}>
-                    {/* {console.log(token)} */}
-                    {token?.tokenSymbol}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
             <Typography className={classes.text}>
-              You can choose any token held in your wallet connected to StationX
+              Tokens that remain in the contract are sent to this address
+              automatically after the drop. You can roll back tokens anytime via
+              the dashboard too.
             </Typography>
+          </>
+        )}
 
-            {/* Number of Tokens */}
-            <Typography className={classes.label}>Number of Tokens</Typography>
+        {/* Choose Token */}
+        <Typography className={classes.label}>
+          Choose token to airdrop
+        </Typography>
+        <FormControl sx={{ width: "100%" }}>
+          {isLoading ? (
+            <TextField className={classes.text} disabled placeholder='Loading tokens...' />
+          ) : (
+            <Select
+              onChange={changeSelectedTokenHandler}
+              displayEmpty
+              inputProps={{ "aria-label": "Without label" }}
+            >
+              {tokensInWallet?.map((token, i) => (
+                <MenuItem key={i} value={token}>
+                  {/* {console.log(token)} */}
+                  {token?.tokenSymbol}
+                </MenuItem>
+              ))}
+            </Select>
+          )}
+        </FormControl>
+        <Typography className={classes.text}>
+          You can choose any token held in your wallet connected to StationX
+        </Typography>
+
+        {/* Number of Tokens */}
+        <Typography className={classes.label}>Number of Tokens</Typography>
+        <TextField
+          className={classes.input}
+          type="number"
+          InputProps={{
+            endAdornment: (
+              <InputAdornment style={{ color: "#6475A3" }} position="end">
+                Balance: {selectedToken ? selectedToken.tokenBalance : "0"}
+              </InputAdornment>
+            ),
+          }}
+          name="numberOfTokens"
+          id="numberOfTokens"
+          value={formik.values.numberOfTokens}
+          onChange={formik.handleChange}
+          error={
+            formik.touched.numberOfTokens &&
+            Boolean(formik.errors.numberOfTokens)
+          }
+          helperText={
+            formik.touched.numberOfTokens && formik.errors.numberOfTokens
+          }
+        />
+
+        <div style={{ display: "flex", gap: "30px", alignItems: "center" }}>
+          {/* Claim Start */}
+
+          <div style={{ width: "100%" }}>
+            <Typography className={classes.label}>Claims start on</Typography>
             <TextField
               className={classes.input}
-              type="number"
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment style={{ color: "#6475A3" }} position="end">
-                    Balance: {selectedToken ? selectedToken.tokenBalance : "0"}
-                  </InputAdornment>
-                ),
-              }}
-              name="numberOfTokens"
-              id="numberOfTokens"
-              value={formik.values.numberOfTokens}
+              type="datetime-local"
+              name="startDate"
+              id="startDate"
+              value={formik.values.startDate}
               onChange={formik.handleChange}
               error={
-                formik.touched.numberOfTokens &&
-                Boolean(formik.errors.numberOfTokens)
+                formik.touched.startDate && Boolean(formik.errors.startDate)
               }
-              helperText={
-                formik.touched.numberOfTokens && formik.errors.numberOfTokens
-              }
+              helperText={formik.touched.startDate && formik.errors.startDate}
             />
+          </div>
 
-            <div style={{ display: "flex", gap: "30px", alignItems: "center" }}>
-              {/* Claim Start */}
+          {/* Claim End */}
 
-              <div style={{ width: "100%" }}>
-                <Typography className={classes.label}>
-                  Claims start on
-                </Typography>
-                <TextField
-                  className={classes.input}
-                  type="datetime-local"
-                  name="startDate"
-                  id="startDate"
-                  value={formik.values.startDate}
-                  onChange={formik.handleChange}
-                  error={
-                    formik.touched.startDate && Boolean(formik.errors.startDate)
-                  }
-                  helperText={
-                    formik.touched.startDate && formik.errors.startDate
-                  }
-                />
-              </div>
+          <div style={{ width: "100%" }}>
+            <Typography className={classes.label}>Claims end on</Typography>
+            <TextField
+              className={classes.input}
+              type="datetime-local"
+              name="endDate"
+              id="endDate"
+              value={formik.values.endDate}
+              onChange={formik.handleChange}
+              error={formik.touched.endDate && Boolean(formik.errors.endDate)}
+              helperText={formik.touched.endDate && formik.errors.endDate}
+            />
+          </div>
+        </div>
 
-              {/* Claim End */}
+        {/* when to receive */}
+        <Typography className={classes.label}>
+          When do they receive tokens after claiming?
+        </Typography>
+        <FormControl sx={{ width: "100%" }}>
+          <Select
+            onChange={recieveTokenHandler}
+            value={recieveTokens}
+            inputProps={{ "aria-label": "Without label" }}
+          >
+            <MenuItem value={"week"}>After 1 week </MenuItem>
+            <MenuItem value={"immediately"}>Immediately</MenuItem>
+          </Select>
+        </FormControl>
 
-              <div style={{ width: "100%" }}>
-                <Typography className={classes.label}>Claims end on</Typography>
-                <TextField
-                  className={classes.input}
-                  type="datetime-local"
-                  name="endDate"
-                  id="endDate"
-                  value={formik.values.endDate}
-                  onChange={formik.handleChange}
-                  error={
-                    formik.touched.endDate && Boolean(formik.errors.endDate)
-                  }
-                  helperText={formik.touched.endDate && formik.errors.endDate}
-                />
-              </div>
-            </div>
-
-            {/* when to receive */}
-            <Typography className={classes.label}>
-              When do they receive tokens after claiming?
-            </Typography>
-            <FormControl sx={{ width: "100%" }}>
-              <Select
-                onChange={recieveTokenHandler}
-                value={recieveTokens}
-                inputProps={{ "aria-label": "Without label" }}
-              >
-                <MenuItem value={"week"}>After 1 week </MenuItem>
-                <MenuItem value={"immediately"}>Immediately</MenuItem>
-              </Select>
-            </FormControl>
-
-            {/* Next */}
-            <Button
-              // onClick={nextHandler}
-              type="submit"
-              variant="contained"
-              className={classes.btn}
-            >
-              Next
-            </Button>
-          </form>
-        </>
-      )}
+        {/* Next */}
+        <Button
+          // onClick={nextHandler}
+          type="submit"
+          variant="contained"
+          className={classes.btn}
+        >
+          Next
+        </Button>
+      </form>
     </>
   );
 };

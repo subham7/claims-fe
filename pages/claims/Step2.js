@@ -22,10 +22,11 @@ import { useFormik } from "formik";
 import { useRouter } from "next/router";
 import { useSelector } from "react-redux";
 import { SmartContract } from "../../src/api/contract";
-import claimContract from "../../src/abis/claimContract.json";
+import claimContractFactory from "../../src/abis/claimContractFactory.json";
 import usdcTokenContract from "../../src/abis/usdcTokenContract.json";
 import { convertToWeiGovernance } from "../../src/utils/globalFunctions";
 import { createClaim } from "../../src/api/claims";
+import { CLAIM_FACTORY_ADDRESS } from "../../src/api";
 
 const useStyles = makeStyles({
   form: {
@@ -119,21 +120,16 @@ const Step2 = () => {
   const [file, setFile] = useState("");
   const [eligible, setEligible] = useState("token");
   const [maximumToken, setMaximumToken] = useState("custom");
-  const [tokenAddress, setTokenAddress] = useState("");
+  const [daoToken, setDaoToken] = useState("");
   const [customAmount, setCustomAmount] = useState(0);
-  const [claimAllowed, setClaimAllowed] = useState("equalTokens");
-  const [generatedClaimContract, setGeneratedClaimContract] = useState("");
+  const [message, setMessage] = useState(false);
+  // const [claimAllowed, setClaimAllowed] = useState("equalTokens");
+  // const [generatedClaimContract, setGeneratedClaimContract] = useState("");
   const [loading, setLoading] = useState("");
 
   const userData = useSelector((state) => {
     return state.createClaim.userData;
   });
-
-  const USDC_CONTRACT_ADDRESS = useSelector((state) => {
-    return state.gnosis.usdcContractAddress;
-  });
-
-  console.log(USDC_CONTRACT_ADDRESS);
 
   const hiddenFileInput = useRef(null);
 
@@ -141,7 +137,8 @@ const Step2 = () => {
     router.push("/claims/createClaim");
   };
 
-  const claimsContractAddress = "0x02E76052ad6eE3be0759a8211215ab8B97e59285";
+  const claimsContractAddress = CLAIM_FACTORY_ADDRESS;
+  console.log(claimsContractAddress)
 
   const handleChange = (event) => {
     const fileUploaded = event.target.files[0];
@@ -172,29 +169,38 @@ const Step2 = () => {
       const data = {
         ...userData,
         eligible: eligible,
-        tokenAddress: tokenAddress,
+        daoToken: daoToken
+          ? daoToken
+          : "0x0000000000000000000000000000000000000000",
         maximumToken: maximumToken,
         customAmount: maximumToken === "custom" ? customAmount : 0,
       };
+
+      console.log(data);
 
       // checking maximum claim is prorata or custom
       let maximumClaim;
 
       if (data.maximumToken === "custom") {
         maximumClaim = true;
+        // daoToken = "0x0000000000000000000000000000000000000000";
       } else {
         maximumClaim = false;
       }
 
+      // console.log(data);
+
       const loadClaimsContractData = async () => {
         try {
           const claimsContract = new SmartContract(
-            claimContract,
+            claimContractFactory,
             claimsContractAddress,
-            userData.walletAddress,
+            data.walletAddress,
             undefined,
             undefined,
           );
+
+          // console.log(data.walletAddress, claimsContractAddress)
 
           const erc20contract = new SmartContract(
             usdcTokenContract,
@@ -218,7 +224,7 @@ const Step2 = () => {
           const claimsSettings = [
             data.walletAddress.toLowerCase(),
             data.airdropTokenAddress,
-            "0x0000000000000000000000000000000000000000",
+            data.daoToken,
             false, // false if token approved function called
             false,
             0,
@@ -240,9 +246,6 @@ const Step2 = () => {
           const response = await claimsContract.claimContract(claimsSettings);
 
           setLoading(false);
-          setGeneratedClaimContract(
-            response.events.ClaimContractDeployed.returnValues._claimContract,
-          );
 
           // post data in api
 
@@ -260,9 +263,9 @@ const Step2 = () => {
 
           // console.log(typeof(postData))
 
-          const res = createClaim(postData)
-          console.log(res)
-
+          const res = createClaim(postData);
+          console.log(res);
+          // router.push("/claims");
         } catch (err) {
           setLoading(true);
           console.log(err);
@@ -320,7 +323,7 @@ const Step2 = () => {
             </Typography>
             <TextField
               onChange={(event) => {
-                setTokenAddress(event.target.value);
+                setDaoToken(event.target.value);
               }}
               variant="outlined"
               className={classes.input}
@@ -413,7 +416,7 @@ const Step2 = () => {
 
         {/* Next */}
         <Button type="submit" variant="contained" className={classes.btn}>
-          {loading ? <CircularProgress/> : 'Finish'}
+          {loading ? <CircularProgress /> : "Finish"}
         </Button>
       </form>
     </>

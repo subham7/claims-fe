@@ -8,7 +8,7 @@ const useStyles = makeStyles({
     flexDirection: 'column',
     padding: '40px 30px 30px 30px',
     borderRadius: '10px',
-    boxShadow: 'rgba(99, 99, 99, 0.2) 0px 2px 8px 0px',
+    // boxShadow: 'rgba(99, 99, 99, 0.2) 0px 2px 8px 0px',
     // margin: '0 auto',
     width: '381px',
     background: '#142243',

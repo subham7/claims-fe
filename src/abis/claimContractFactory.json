@@ -1,5 +1,5 @@
 {
-  "contractName": "ClaimContract",
+  "contractName": "ClaimFactory",
   "abi": [
     { "inputs": [], "name": "InvalidAddress", "type": "error" },
     { "inputs": [], "name": "InvalidAmount", "type": "error" },
@@ -8,13 +8,13 @@
       "anonymous": false,
       "inputs": [
         {
-          "indexed": true,
+          "indexed": false,
           "internalType": "address",
           "name": "_tokenAddress",
           "type": "address"
         },
         {
-          "indexed": true,
+          "indexed": false,
           "internalType": "address",
           "name": "_claimContract",
           "type": "address"
