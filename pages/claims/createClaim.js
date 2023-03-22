@@ -182,18 +182,26 @@ const validationSchema = yup.object({
     .string("Enter one-liner description")
     .required("description is required"),
   rollbackAddress: yup.string("Enter rollback address"),
-  //   .required("Rollback address is required"),
+  // .required("Rollback address is required"),
   numberOfTokens: yup
     .number()
     .required("Enter amount of tokens")
     .moreThan(0, "Amount should be greater than 0"),
-  startDate: yup.date().required("start date is required"),
-  endDate: yup.date().required("end date is required"),
+  startDate: yup
+    .date()
+    .required("start date is required")
+    .min(new Date().toISOString()),
+  endDate: yup
+    .date()
+    .required("end date is required")
+    .min(yup.ref("startDate")),
 });
 
 const CreateClaim = () => {
   const classes = useStyles();
   const router = useRouter();
+
+  // const todayDate = console.log(todayDate);
 
   const [selectedWallet, setSelectedWallet] = useState(false);
   const [selectedContract, setSelectedContract] = useState(false);
@@ -241,7 +249,7 @@ const CreateClaim = () => {
 
     // current account
     const accounts = await web3.eth.getAccounts();
-    setCurrentAccount(accounts[0]);
+    setCurrentAccount(accounts[0].toLowerCase());
     const data = await getTokensFromWallet(accounts[0]);
     setTokensInWallet(data);
     setIsLoading(false);
@@ -360,7 +368,11 @@ const CreateClaim = () => {
         </Typography>
         <FormControl sx={{ width: "100%" }}>
           {isLoading ? (
-            <TextField className={classes.text} disabled placeholder='Loading tokens...' />
+            <TextField
+              className={classes.text}
+              disabled
+              placeholder="Loading tokens..."
+            />
           ) : (
             <Select
               onChange={changeSelectedTokenHandler}
@@ -397,11 +409,13 @@ const CreateClaim = () => {
           value={formik.values.numberOfTokens}
           onChange={formik.handleChange}
           error={
-            formik.touched.numberOfTokens &&
-            Boolean(formik.errors.numberOfTokens)
+            (formik.touched.numberOfTokens &&
+              Boolean(formik.errors.numberOfTokens)) ||
+            formik.values.numberOfTokens > selectedToken.tokenBalance
           }
           helperText={
-            formik.touched.numberOfTokens && formik.errors.numberOfTokens
+            (formik.touched.numberOfTokens && formik.errors.numberOfTokens) ||
+            formik.values.numberOfTokens > selectedToken.tokenBalance
           }
         />
 

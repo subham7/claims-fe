@@ -111,6 +111,13 @@ const useStyles = makeStyles({
     border: "1px solid lightgray",
     background: "transparent",
   },
+
+  finish: {
+    width: "200px",
+    fontFamily: "sans-serif",
+    fontSize: "16px",
+    marginTop: "20px",
+  },
 });
 
 const Step2 = () => {
@@ -119,10 +126,11 @@ const Step2 = () => {
 
   const [file, setFile] = useState("");
   const [eligible, setEligible] = useState("token");
-  const [maximumToken, setMaximumToken] = useState("custom");
+  const [maximumTokenType, setMaximumTokenType] = useState("custom");
   const [daoToken, setDaoToken] = useState("");
   const [customAmount, setCustomAmount] = useState(0);
-  const [message, setMessage] = useState(false);
+  const [finish, setFinish] = useState(false);
+  // const [message, setMessage] = useState(false);
   // const [claimAllowed, setClaimAllowed] = useState("equalTokens");
   // const [generatedClaimContract, setGeneratedClaimContract] = useState("");
   const [loading, setLoading] = useState("");
@@ -138,7 +146,7 @@ const Step2 = () => {
   };
 
   const claimsContractAddress = CLAIM_FACTORY_ADDRESS;
-  console.log(claimsContractAddress)
+  console.log(claimsContractAddress);
 
   const handleChange = (event) => {
     const fileUploaded = event.target.files[0];
@@ -158,7 +166,7 @@ const Step2 = () => {
   };
 
   const maximumClaimAllowedHandler = (event) => {
-    setMaximumToken(event.target.value);
+    setMaximumTokenType(event.target.value);
     console.log(event.target.value);
   };
 
@@ -172,8 +180,8 @@ const Step2 = () => {
         daoToken: daoToken
           ? daoToken
           : "0x0000000000000000000000000000000000000000",
-        maximumToken: maximumToken,
-        customAmount: maximumToken === "custom" ? customAmount : 0,
+        maximumTokenType: maximumTokenType,
+        customAmount: maximumTokenType === "custom" ? customAmount : 0,
       };
 
       console.log(data);
@@ -181,7 +189,7 @@ const Step2 = () => {
       // checking maximum claim is prorata or custom
       let maximumClaim;
 
-      if (data.maximumToken === "custom") {
+      if (data.maximumTokenType === "custom") {
         maximumClaim = true;
         // daoToken = "0x0000000000000000000000000000000000000000";
       } else {
@@ -265,6 +273,7 @@ const Step2 = () => {
 
           const res = createClaim(postData);
           console.log(res);
+          setFinish(true);
           // router.push("/claims");
         } catch (err) {
           setLoading(true);
@@ -322,6 +331,8 @@ const Step2 = () => {
               Add token (or) NFT
             </Typography>
             <TextField
+              required={maximumTokenType === "proRata" ? true : false}
+              error={maximumTokenType === "proRata" && !daoToken.length}
               onChange={(event) => {
                 setDaoToken(event.target.value);
               }}
@@ -335,7 +346,7 @@ const Step2 = () => {
             <RadioGroup
               aria-labelledby="demo-controlled-radio-buttons-group"
               name="controlled-radio-buttons-group"
-              value={maximumToken}
+              value={maximumTokenType}
               onChange={maximumClaimAllowedHandler}
             >
               <FormControlLabel
@@ -352,10 +363,12 @@ const Step2 = () => {
 
             {/* Number of Tokens */}
 
-            {maximumToken === "custom" && (
+            {maximumTokenType === "custom" && (
               <>
                 <Typography className={classes.label}>Enter Amount</Typography>
                 <TextField
+                  required
+                  error={userData?.numberOfTokens < customAmount}
                   className={classes.input}
                   onChange={(event) => {
                     setCustomAmount(Number(event.target.value));
@@ -415,9 +428,19 @@ const Step2 = () => {
         )}
 
         {/* Next */}
-        <Button type="submit" variant="contained" className={classes.btn}>
-          {loading ? <CircularProgress /> : "Finish"}
-        </Button>
+
+        {finish ? (
+          <Button type="button" onClick={() => {
+            router.push('/claims')
+          }} variant="contained" className={classes.finish}>
+            Go back to claims
+          </Button>
+        ) : (
+          <Button type="submit" variant="contained" className={classes.btn}>
+            {loading ? <CircularProgress /> : "Finish"}
+          </Button>
+        )}
+        
       </form>
     </>
   );
