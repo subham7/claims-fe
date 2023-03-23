@@ -16,7 +16,7 @@ import {
 } from "@mui/material";
 import { BsArrowLeft } from "react-icons/bs";
 import { makeStyles } from "@mui/styles";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import * as yup from "yup";
 import { useFormik } from "formik";
 import { useRouter } from "next/router";
@@ -125,6 +125,7 @@ const Step2 = () => {
   const router = useRouter();
 
   const [file, setFile] = useState("");
+  const [csvData, setCsvData] = useState([]);
   const [eligible, setEligible] = useState("token");
   const [maximumTokenType, setMaximumTokenType] = useState("custom");
   const [daoToken, setDaoToken] = useState("");
@@ -146,12 +147,31 @@ const Step2 = () => {
   };
 
   const claimsContractAddress = CLAIM_FACTORY_ADDRESS;
-  console.log(claimsContractAddress);
 
   const handleChange = (event) => {
     const fileUploaded = event.target.files[0];
     console.log(fileUploaded);
     setFile(fileUploaded);
+
+    const reader = new FileReader();
+
+    if (fileUploaded) {
+      reader.readAsText(fileUploaded);
+
+      reader.onload = (event) => {
+        const csvData = event.target.result;
+        const csvArr = csvData
+          .split("\r\n")
+          .map((data) => data.split(","))
+          .map((data) => ({
+            address: data[0],
+            amount: +data[1],
+          }));
+
+        console.log(csvArr);
+        setCsvData(csvArr);
+      };
+    }
     // props.handleFile(fileUploaded);
   };
 
@@ -184,7 +204,7 @@ const Step2 = () => {
         customAmount: maximumTokenType === "custom" ? customAmount : 0,
       };
 
-      console.log(data);
+      // console.log(data);
 
       // checking maximum claim is prorata or custom
       let maximumClaim;
@@ -218,7 +238,7 @@ const Step2 = () => {
             undefined,
           );
 
-          console.log(data);
+          // console.log(data);
           const decimals = await erc20contract.decimals();
           setLoading(true);
 
@@ -290,6 +310,10 @@ const Step2 = () => {
       };
     }
   };
+
+  useEffect(() => {
+    console.log(file);
+  }, [file]);
 
   return (
     <>
@@ -412,13 +436,14 @@ const Step2 = () => {
                 onChange={handleChange}
                 disabled
                 //   value={hiddenFileInput.current.value}
-                value={file.name}
+                value={file?.name}
               />
               <Button onClick={handleClick} className={classes.uploadBtn}>
                 Upload
               </Button>
               <input
                 type="file"
+                accept=".csv"
                 ref={hiddenFileInput}
                 onChange={handleChange}
                 style={{ display: "none" }}
@@ -430,9 +455,14 @@ const Step2 = () => {
         {/* Next */}
 
         {finish ? (
-          <Button type="button" onClick={() => {
-            router.push('/claims')
-          }} variant="contained" className={classes.finish}>
+          <Button
+            type="button"
+            onClick={() => {
+              router.push("/claims");
+            }}
+            variant="contained"
+            className={classes.finish}
+          >
             Go back to claims
           </Button>
         ) : (
@@ -440,7 +470,6 @@ const Step2 = () => {
             {loading ? <CircularProgress /> : "Finish"}
           </Button>
         )}
-        
       </form>
     </>
   );
