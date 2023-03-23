@@ -47,6 +47,7 @@ import ReactHtmlParser from "react-html-parser";
 
 import Image from "next/image";
 import { getAssets } from "../../../../src/api/assets";
+import { useConnectWallet } from "@web3-onboard/react";
 
 const useStyles = makeStyles({
   clubAssets: {
@@ -192,7 +193,8 @@ const useStyles = makeStyles({
 const ProposalDetail = () => {
   const router = useRouter();
   const { pid, clubId } = router.query;
-
+  const [{ wallet }] = useConnectWallet();
+  const walletAddress = wallet?.accounts[0].address;
   const classes = useStyles();
   const [voted, setVoted] = useState(false);
   const [fetched, setFetched] = useState(false);
@@ -214,9 +216,6 @@ const ProposalDetail = () => {
   const [tokenData, setTokenData] = useState([]);
   const [tokenFetched, setTokenFetched] = useState(false);
 
-  const walletAddress = useSelector((state) => {
-    return state.create.value;
-  });
   const isGovernanceActive = useSelector((state) => {
     return state.gnosis.governanceAllowed;
   });
@@ -382,14 +381,18 @@ const ProposalDetail = () => {
   const isOwner = async () => {
     const safeSdk = await getSafeSdk();
     const ownerAddresses = await safeSdk.getOwners();
-    setOwnerAddresses(ownerAddresses);
-    if (ownerAddresses.includes(walletAddress)) {
+    const ownerAddressesArray = ownerAddresses.map((value) =>
+      value.toLowerCase(),
+    );
+
+    setOwnerAddresses(ownerAddressesArray);
+    if (ownerAddressesArray.includes(walletAddress)) {
       setOwner(true);
     } else {
       setOwner(false);
     }
     if (isGovernanceActive === false) {
-      if (ownerAddresses.includes(walletAddress)) {
+      if (ownerAddressesArray.includes(walletAddress)) {
         setGovernance(true);
       } else {
         setGovernance(false);
@@ -941,7 +944,6 @@ const ProposalDetail = () => {
 
   return (
     <>
-      {console.log("propsal data inside pid", proposalData)}
       <Layout1 page={2}>
         <Grid container spacing={6} paddingLeft={10} paddingTop={10}>
           <Grid item md={8.5}>
