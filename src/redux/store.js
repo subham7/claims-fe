@@ -3,6 +3,7 @@ import createReducer from "./reducers/create";
 import gnosisReducer from "./reducers/gnosis";
 import userReducer from "./reducers/user";
 import legalReducer from "./reducers/legal";
+import createClaimReducer from "./reducers/createClaim";
 
 export default configureStore({
   reducer: {
@@ -10,5 +11,6 @@ export default configureStore({
     gnosis: gnosisReducer,
     legal: legalReducer,
     user: userReducer,
+    createClaim: createClaimReducer,
   },
 });

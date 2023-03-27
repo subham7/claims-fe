@@ -67,6 +67,53 @@ export class SmartContract {
       this.gnosisTransactionUrl = gnosisTransactionUrl;
       // this.usdcContractFaucet = usdcFaucetAddress
     }
+
+    if (syncWallet() && abiFile && contractAddress && walletAddress) {
+      this.web3 = new Web3(window.web3);
+      this.abi = abiFile.abi;
+      this.contractAddress = contractAddress;
+      this.checkSum = this.web3.utils.toChecksumAddress(this.contractAddress);
+      this.contract = new this.web3.eth.Contract(this.abi, this.checkSum);
+      this.walletAddress = this.web3.utils.toChecksumAddress(walletAddress);
+    }
+  }
+
+  async claimContract(claimSettings) {
+    return this.contract.methods
+      .deployClaimContract(claimSettings)
+      .send({ from: this.walletAddress });
+  }
+
+  async claimSettings() {
+    return this.contract.methods.claimSettings().call();
+  }
+
+  async claim(amount, merkleData) {
+    return this.contract.methods.claim(amount, merkleData).send({
+      from: this.walletAddress,
+    });
+  }
+
+  async name() {
+    return this.contract.methods.name().call({
+      from: this.walletAddress,
+    });
+  }
+
+  async hasClaimed(walletAddress) {
+    return this.contract.methods.hasClaimed(walletAddress).call();
+  }
+
+  async checkAmount(walletAddress) {
+    return this.contract.methods.checkAmount(walletAddress).call({
+      from: this.walletAddress,
+    });
+  }
+
+  async encode(address, amount) {
+    return this.contract.methods.encode(address, amount).call({
+      from: this.walletAddress,
+    });
   }
 
   // create new club contract function
@@ -505,6 +552,14 @@ export class SmartContract {
     return this.contract.methods
       .balanceOf(this.walletAddress)
       .call({ from: this.walletAddress });
+  }
+
+  async decimals() {
+    return this.contract.methods.decimals().call({ from: this.walletAddress });
+  }
+
+  async approve() {
+    return this.contract.methods.decimals().call({ from: this.walletAddress });
   }
 
   async checkUserBalance() {

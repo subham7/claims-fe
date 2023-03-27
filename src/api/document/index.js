@@ -1,4 +1,3 @@
-import axios from "axios";
 import { MAIN_API_URL } from "../index";
 
 export const createDocument = async (jsonData) => {
