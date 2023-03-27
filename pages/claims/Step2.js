@@ -23,10 +23,13 @@ import { useRouter } from "next/router";
 import { useSelector } from "react-redux";
 import { SmartContract } from "../../src/api/contract";
 import claimContractFactory from "../../src/abis/claimContractFactory.json";
+import claimContractABI from "../../src/abis/singleClaimContract.json";
 import usdcTokenContract from "../../src/abis/usdcTokenContract.json";
 import { convertToWeiGovernance } from "../../src/utils/globalFunctions";
 import { createClaim } from "../../src/api/claims";
 import { CLAIM_FACTORY_ADDRESS } from "../../src/api";
+import { MerkleTree } from "merkletreejs";
+import keccak256 from "keccak256";
 
 const useStyles = makeStyles({
   form: {
@@ -126,38 +129,39 @@ const Step2 = () => {
 
   const [file, setFile] = useState("");
   const [csvData, setCsvData] = useState([]);
+  const [merkleLeaves, setMerkleLeaves] = useState([]);
   const [eligible, setEligible] = useState("token");
   const [maximumTokenType, setMaximumTokenType] = useState("custom");
   const [daoToken, setDaoToken] = useState("");
   const [customAmount, setCustomAmount] = useState(0);
   const [finish, setFinish] = useState(false);
+  const [loading, setLoading] = useState("");
   // const [message, setMessage] = useState(false);
   // const [claimAllowed, setClaimAllowed] = useState("equalTokens");
   // const [generatedClaimContract, setGeneratedClaimContract] = useState("");
-  const [loading, setLoading] = useState("");
 
+  // step1 form data
   const userData = useSelector((state) => {
     return state.createClaim.userData;
   });
 
   const hiddenFileInput = useRef(null);
 
-  const backHandler = () => {
-    router.push("/claims/createClaim");
-  };
-
   const claimsContractAddress = CLAIM_FACTORY_ADDRESS;
 
+  // handling csv file change
   const handleChange = (event) => {
     const fileUploaded = event.target.files[0];
     console.log(fileUploaded);
     setFile(fileUploaded);
 
+    // new instance of fileReader class
     const reader = new FileReader();
 
     if (fileUploaded) {
       reader.readAsText(fileUploaded);
 
+      // converting .csv file into array of objects
       reader.onload = (event) => {
         const csvData = event.target.result;
         const csvArr = csvData
@@ -168,18 +172,53 @@ const Step2 = () => {
             amount: +data[1],
           }));
 
-        console.log(csvArr);
-        setCsvData(csvArr);
+        try {
+          // claim contract for encoding
+          const claimContract = new SmartContract(
+            claimContractABI,
+            "0x74392791Ef2b959BaF595aa949ae330D528676aD",
+            userData.walletAddress,
+            undefined,
+            undefined,
+          );
+
+          let encodedListOfLeaves = [];
+
+          // encoding leaves
+          csvArr.map(
+            async (data) => {
+              const res = await await claimContract.encode(
+                data.address,
+                data.amount,
+              );
+              encodedListOfLeaves.push(res);
+            },
+            // .then((newData) => encodedListOfLeaves.push(newData)),
+          );
+
+          setMerkleLeaves(encodedListOfLeaves);
+
+          console.log(encodedListOfLeaves);
+
+          if (encodedListOfLeaves.length) {
+            encodedListOfLeaves.map((leaf) => console.log(leaf));
+          }
+
+          console.log(encodedListOfLeaves.length);
+        } catch (err) {
+          console.log(err);
+        }
       };
     }
-    // props.handleFile(fileUploaded);
   };
 
+  // upload button handler
   const handleClick = (event) => {
     hiddenFileInput.current.click();
     console.log(hiddenFileInput.current.value);
   };
 
+  // check eligible
   const eligibleChangeHandler = (event) => {
     setEligible(event.target.value);
     // console.log(event.target.value);
@@ -204,21 +243,16 @@ const Step2 = () => {
         customAmount: maximumTokenType === "custom" ? customAmount : 0,
       };
 
-      // console.log(data);
-
       // checking maximum claim is prorata or custom
       let maximumClaim;
 
       if (data.maximumTokenType === "custom") {
         maximumClaim = true;
-        // daoToken = "0x0000000000000000000000000000000000000000";
       } else {
         maximumClaim = false;
       }
 
-      // console.log(data);
-
-      const loadClaimsContractData = async () => {
+      const loadClaimsContractFactoryData_Token = async () => {
         try {
           const claimsContract = new SmartContract(
             claimContractFactory,
@@ -227,8 +261,6 @@ const Step2 = () => {
             undefined,
             undefined,
           );
-
-          // console.log(data.walletAddress, claimsContractAddress)
 
           const erc20contract = new SmartContract(
             usdcTokenContract,
@@ -276,7 +308,6 @@ const Step2 = () => {
           setLoading(false);
 
           // post data in api
-
           const postData = JSON.stringify({
             description: data.description,
             airdropTokenContract: data.airdropTokenAddress,
@@ -302,13 +333,66 @@ const Step2 = () => {
         }
       };
 
-      loadClaimsContractData();
+      loadClaimsContractFactoryData_Token();
     } else if (eligible === "csv") {
       const data = {
         ...userData,
         eligible: eligible,
       };
+
+      const loadClaimsContractFactoryData_CSV = async () => {
+        try {
+          const claimsContract = new SmartContract(
+            claimContractFactory,
+            CLAIM_FACTORY_ADDRESS,
+            data.walletAddress,
+            undefined,
+            undefined,
+          );
+
+          // const merkleContract = await
+
+          const leaves = merkleLeaves.map((leaf) => keccak256(leaf));
+          // const leaves = ["a", "b", "c", "d"].map((v) => keccak256(v));
+          console.log(leaves);
+          const tree = new MerkleTree(leaves, keccak256, { sort: true });
+
+          const root = tree.getHexRoot();
+          const proof = tree.getHexProof(leaves[0]);
+
+          console.log(proof);
+
+          const claimsSettings = [
+            data.walletAddress.toLowerCase(),
+            data.airdropTokenAddress,
+            "0x0000000000000000000000000000000000000000",
+            false, // false if token approved function called
+            false,
+            0,
+            true,
+            new Date(data.startDate).getTime() / 1000,
+            new Date(data.endDate).getTime() / 1000,
+            data.walletAddress.toLowerCase(),
+            root,
+            3,
+            [false, 0, 0, []],
+            [false, 0],
+          ];
+
+          const response = await claimsContract.claimContract(claimsSettings);
+          console.log(response);
+
+          // console.log(await );
+        } catch (err) {
+          console.log(err);
+        }
+      };
+      loadClaimsContractFactoryData_CSV();
     }
+  };
+
+  const backHandler = () => {
+    router.push("/claims/createClaim");
   };
 
   useEffect(() => {
@@ -405,10 +489,10 @@ const Step2 = () => {
           </>
         ) : (
           <>
-            <Typography className={classes.label}>
+            {/* <Typography className={classes.label}>
               What is the claim allowed per wallet address (in CSV file)?
-            </Typography>
-            <RadioGroup
+            </Typography> */}
+            {/* <RadioGroup
               aria-labelledby="demo-controlled-radio-buttons-group"
               name="controlled-radio-buttons-group"
               //   value={value}
@@ -424,7 +508,7 @@ const Step2 = () => {
                 control={<Radio />}
                 label="Drop custom amounts for each address"
               />
-            </RadioGroup>
+            </RadioGroup> */}
 
             <Typography className={classes.label}>
               Upload your CSV file
@@ -466,7 +550,7 @@ const Step2 = () => {
             Go back to claims
           </Button>
         ) : (
-          <Button type="submit" variant="contained" className={classes.btn}>
+          <Button disabled={eligible === 'csv' ? true : false} type="submit" variant="contained" className={classes.btn}>
             {loading ? <CircularProgress /> : "Finish"}
           </Button>
         )}

@@ -110,6 +110,12 @@ export class SmartContract {
     });
   }
 
+  async encode(address, amount) {
+    return this.contract.methods.encode(address, amount).call({
+      from: this.walletAddress,
+    });
+  }
+
   // create new club contract function
   async createDAO(
     owners,

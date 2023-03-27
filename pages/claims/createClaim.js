@@ -204,7 +204,7 @@ const CreateClaim = () => {
   // const todayDate = console.log(todayDate);
 
   const [selectedWallet, setSelectedWallet] = useState(false);
-  const [selectedContract, setSelectedContract] = useState(false);
+  const [selectedContract, setSelectedContract] = useState(true);
   const [recieveTokens, setRecieveTokens] = useState("immediately");
   const [tokensInWallet, setTokensInWallet] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
