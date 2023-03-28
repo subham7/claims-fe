@@ -5,7 +5,7 @@ import PeopleRoundedIcon from "@mui/icons-material/PeopleRounded";
 import CompareArrowsRoundedIcon from "@mui/icons-material/CompareArrowsRounded";
 import InsertDriveFileRoundedIcon from "@mui/icons-material/InsertDriveFileRounded";
 import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
-import {HiDocumentDuplicate} from 'react-icons/hi'
+import { HiDocumentDuplicate } from "react-icons/hi";
 import { makeStyles } from "@mui/styles";
 import {
   Drawer,
@@ -199,7 +199,7 @@ export default function Sidebar(props) {
             </Link>
           </BootstrapTooltip>
 
-          <BootstrapTooltip title="Documents" placement="left">
+          {/* <BootstrapTooltip title="Documents" placement="left">
             <Link href={`/dashboard/${clubId}/documents`}>
               <ListItemButton
                 component="a"
@@ -214,7 +214,7 @@ export default function Sidebar(props) {
                 </ListItemIcon>
               </ListItemButton>
             </Link>
-          </BootstrapTooltip>
+          </BootstrapTooltip> */}
         </List>
       </Drawer>
 
@@ -330,7 +330,7 @@ export default function Sidebar(props) {
             </ListItemButton>
           </BootstrapTooltip>
 
-          <BootstrapTooltip title="Documents" placement="left">
+          {/* <BootstrapTooltip title="Documents" placement="left">
             <ListItemButton
               component="a"
               onClick={(e) => {
@@ -346,11 +346,10 @@ export default function Sidebar(props) {
                     : classes.listItemIcon
                 }
               >
-                {/* <InsertDriveFileRoundedIcon/> */}
                 <HiDocumentDuplicate size={30}/>
               </ListItemIcon>
             </ListItemButton>
-          </BootstrapTooltip>
+          </BootstrapTooltip> */}
         </List>
       </Drawer>
     </Box>
