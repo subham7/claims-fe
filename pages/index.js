@@ -106,11 +106,8 @@ export default function App() {
   const router = useRouter();
   const walletAddress = wallet?.accounts[0].address;
 
-  console.log(walletAddress);
-
   useEffect(() => {
     if (walletAddress) {
-      console.log("hereee");
       const getClubs = fetchClubByUserAddress(walletAddress);
       getClubs
         .then((result) => {
