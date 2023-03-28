@@ -111,6 +111,7 @@ const LegalEntityModal = ({
   const classes = useStyles();
   const router = useRouter();
 
+  console.log(daoAddress);
   const { clubId } = router.query;
 
   // create legal Entity
@@ -205,7 +206,7 @@ const LegalEntityModal = ({
                       text: `Just created a Station on `,
                       via: "stationxnetwork",
                     }}
-                    url={`stationx.network/join/${daoAddress}`}
+                    url={`https://test.stationx.network/join/${daoAddress}`}
                   />
                 </div>
               </div>

@@ -245,7 +245,7 @@ const ERC20Comp = ({
                           text: `Just joined ${clubName} Station on `,
                           via: "stationxnetwork",
                         }}
-                        url={`stationx.network/join/${daoAddress}`}
+                        url={`https://test.stationx.network/join/${daoAddress}`}
                       />
                     </div>
                   </div>
