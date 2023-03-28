@@ -108,7 +108,7 @@ const Create = (props) => {
       // step1();
       router.push("/create");
     }
-  }, [redirectToCreate]);
+  }, [redirectToCreate, router]);
 
   const handleChange = (newValue) => {
     setDepositClose(newValue);
@@ -852,4 +852,4 @@ const Create = (props) => {
   );
 };
 
-export default ProtectRoute(Create);
+export default Create;
