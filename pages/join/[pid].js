@@ -137,7 +137,6 @@ const Join = (props) => {
         await daoContract.obtainTokenDecimals().then((result) => {
           setGovernanceConvertDecimal(result);
         });
-
         console.log("Run sucessfully!");
       }
     };
@@ -258,11 +257,12 @@ const Join = (props) => {
           // console.log("result", result);
           setTokenSymbol(result);
         });
-        await governorDetailContract.erc20TokensMinted().then((result) => {
-          setClubTokenMInted(
-            convertFromWeiGovernance(result, governanceConvertDecimal),
-          );
-        });
+
+        const decimal =
+          await await governorDetailContract.obtainTokenDecimals();
+        const res = await await governorDetailContract.erc20TokensMinted();
+
+        setClubTokenMInted(convertFromWeiGovernance(res, decimal));
       }
     };
 

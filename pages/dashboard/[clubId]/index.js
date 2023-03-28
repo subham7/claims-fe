@@ -361,7 +361,8 @@ const useStyles = makeStyles({
 
 const Dashboard = () => {
   const router = useRouter();
-  const { clubId } = router.query;
+  console.log("router query", router.query);
+  const { clubCreate, clubId } = router.query;
 
   const classes = useStyles();
   const daoAddress = useSelector((state) => {
@@ -406,6 +407,7 @@ const Dashboard = () => {
   const [userOwnershipShare, setUserOwnershipShare] = useState(null);
   const [tokenType, setTokenType] = useState(null);
   const [nftBalance, setNftBalance] = useState(null);
+  const [tweetModal, setTweetModal] = useState(false);
 
   const USDC_CONTRACT_ADDRESS = useSelector((state) => {
     return state.gnosis.usdcContractAddress;
@@ -422,6 +424,12 @@ const Dashboard = () => {
   const walletAddress = wallet?.accounts[0].address;
   console.log(wallet);
   console.log(walletAddress);
+
+  useEffect(() => {
+    if (clubCreate === "true") {
+      setTweetModal(true);
+    }
+  }, [clubCreate]);
 
   useEffect(() => {
     if (daoAddress && USDC_CONTRACT_ADDRESS && GNOSIS_TRANSACTION_URL) {
@@ -495,13 +503,10 @@ const Dashboard = () => {
 
   const checkIsAdmin = () => {
     if (membersFetched && membersDetails.length > 0 && walletAddress) {
-      console.log("check is admin", walletAddress);
       let obj = membersDetails.find(
-        (member) => member.userAddress === walletAddress,
+        (member) => member.userAddress.toLocaleLowerCase() === walletAddress,
       );
-      let obj2 = membersDetails.map((member) => {
-        console.log(member.userAddress, walletAddress);
-      });
+
       let pos = membersDetails.indexOf(obj);
       if (pos >= 0) {
         if (membersDetails[pos].clubs[0].isAdmin) {
@@ -1221,6 +1226,14 @@ const Dashboard = () => {
             </Alert>
           ) : null}
         </Snackbar>
+
+        {tweetModal && (
+          <LegalEntityModal
+            isTwitter={true}
+            daoAddress={daoAddress}
+            onClose={() => setTweetModal(false)}
+          />
+        )}
       </Layout1>
     </>
   );
