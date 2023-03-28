@@ -191,7 +191,9 @@ export default function App() {
     dispatch(addDaoAddress(data.daoAddress));
     dispatch(addClubID(data.clubId));
     dispatch(addClubRoute(data.route));
-    router.push(`/dashboard/${data.clubId}`, undefined, { shallow: true });
+    router.push(`/dashboard/${data.clubId}`, undefined, {
+      shallow: true,
+    });
   };
 
   const handleClose = (e) => {
@@ -214,8 +216,6 @@ export default function App() {
   return (
     <Layout2 faucet={false}>
       <div className={classes.container}>
-
-
         {!manageStation && clubFlow && (
           <div className={classes.cardContainer}>
             <NewCard
