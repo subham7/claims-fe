@@ -20,10 +20,10 @@ import {
   createUser,
   patchUserBalance,
 } from "../../../api/user";
-import { convertToWei } from "../../../utils/globalFunctions";
 import { useSelector } from "react-redux";
 import { useRouter } from "next/router";
 import ClubFetch from "../../../utils/clubFetch";
+import { TwitterShareButton } from "react-twitter-embed";
 
 const ERC20Comp = ({
   wallet,
@@ -190,41 +190,68 @@ const ERC20Comp = ({
         >
           <Grid item md={7}>
             <Card className={classes.cardRegular}>
-              <Grid container spacing={2}>
-                <Grid item mt={3} ml={3}>
-                  <img
-                    src={imageFetched ? imageUrl : null}
-                    alt="club-image"
-                    width="100vw"
-                  />
+              <Grid container>
+                <Grid item xs={12} md={9}>
+                  <Grid container spacing={2}>
+                    <Grid item mt={3} ml={3}>
+                      <img
+                        src={imageFetched ? imageUrl : null}
+                        alt="club-image"
+                        width="100vw"
+                      />
+                    </Grid>
+                    <Grid item ml={1} mt={4} mb={7}>
+                      <Stack spacing={0}>
+                        <Typography variant="h4">
+                          {apiTokenDetailSet ? (
+                            clubName
+                          ) : (
+                            <Skeleton
+                              variant="rectangular"
+                              width={100}
+                              height={25}
+                            />
+                          )}
+                        </Typography>
+                        <Typography variant="h6" className={classes.dimColor}>
+                          {apiTokenDetailSet ? (
+                            "$" + tokenSymbol
+                          ) : (
+                            <Skeleton
+                              variant="rectangular"
+                              width={100}
+                              height={25}
+                            />
+                          )}
+                        </Typography>
+                      </Stack>
+                    </Grid>
+                  </Grid>
                 </Grid>
-                <Grid item ml={1} mt={4} mb={7}>
-                  <Stack spacing={0}>
-                    <Typography variant="h4">
-                      {apiTokenDetailSet ? (
-                        clubName
-                      ) : (
-                        <Skeleton
-                          variant="rectangular"
-                          width={100}
-                          height={25}
-                        />
-                      )}
-                    </Typography>
-                    <Typography variant="h6" className={classes.dimColor}>
-                      {dataFetched ? (
-                        "$" + tokenSymbol
-                      ) : (
-                        <Skeleton
-                          variant="rectangular"
-                          width={100}
-                          height={25}
-                        />
-                      )}
-                    </Typography>
-                  </Stack>
+                <Grid
+                  item
+                  xs={12}
+                  md={3}
+                  sx={{ display: "flex", alignItems: "center" }}
+                >
+                  {/* enter your code here */}
+
+                  <div className="centerContent">
+                    <div className="selfCenter spaceBetween">
+                      <TwitterShareButton
+                        onLoad={function noRefCheck() {}}
+                        options={{
+                          size: "large",
+                          text: `Just joined ${clubName} Station on `,
+                          via: "stationxnetwork",
+                        }}
+                        url={`stationx.network/join/${daoAddress}`}
+                      />
+                    </div>
+                  </div>
                 </Grid>
               </Grid>
+
               <Divider variant="middle" />
               <Grid container spacing={7}>
                 <Grid item ml={4} mt={5} md={3}>

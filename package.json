@@ -45,6 +45,7 @@
     "react-pdf-html": "^1.1.18",
     "react-quill": "^2.0.0",
     "react-redux": "^7.2.6",
+    "react-twitter-embed": "^4.0.4",
     "redux": "^4.1.2",
     "redux-thunk": "^2.4.1",
     "web3": "^1.7.3",
