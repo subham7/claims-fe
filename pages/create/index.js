@@ -166,7 +166,7 @@ const Create = (props) => {
     setAddressList([...addressList, ""]);
   };
 
-  const steps = ["Add basic info", "Select template", "Set rules"];
+  const steps = ["Add basic info", "Set token rules", "Governance"];
 
   const isStepOptional = (step) => {
     return step === 1;
