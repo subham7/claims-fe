@@ -9,7 +9,12 @@ import { createClub, fetchClub } from "../api/club";
 import { SmartContract } from "../api/contract";
 import { createUser } from "../api/user";
 import { addClubID, addDaoAddress } from "../redux/reducers/create";
-import { safeConnected, setCreateDaoAuthorized, setCreateDaoGnosisSigned, setRedirectToCreate } from "../redux/reducers/gnosis";
+import {
+  safeConnected,
+  setCreateDaoAuthorized,
+  setCreateDaoGnosisSigned,
+  setRedirectToCreate,
+} from "../redux/reducers/gnosis";
 import store from "../redux/store";
 
 async function gnosisSafePromise(owners, threshold, dispatch) {
@@ -274,9 +279,13 @@ export async function initiateConnection(
 
               const { pathname } = Router;
               if (pathname == "/create") {
-                Router.push(`/dashboard/${result.data.clubId}`, undefined, {
-                  shallow: true,
-                });
+                Router.push(
+                  `/dashboard/${result.data.clubId}?clubCreate=true`,
+                  undefined,
+                  {
+                    shallow: true,
+                  },
+                );
               }
             }
           });

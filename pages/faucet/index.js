@@ -12,7 +12,7 @@ import {
   CircularProgress,
   TextField,
 } from "@mui/material";
-import Layout3 from "../../src/components/layouts/layout3";
+import Layout2 from "../../src/components/layouts/layout2";
 import { connectWallet, setUserChain, onboard } from "../../src/utils/wallet";
 import { useDispatch, useSelector } from "react-redux";
 import store from "../../src/redux/store";
@@ -23,6 +23,8 @@ import {
   convertAmountToWei,
   convertToWei,
 } from "../../src/utils/globalFunctions";
+import { useConnectWallet } from "@web3-onboard/react";
+import { updateDynamicAddress } from "../../src/api";
 
 const useStyles = makeStyles({
   valuesStyle: {
@@ -182,16 +184,16 @@ const useStyles = makeStyles({
 const Faucet = (props) => {
   const dispatch = useDispatch();
   const classes = useStyles();
+
   const [openSnackBar, setOpenSnackBar] = useState(false);
   const [failed, setFailed] = useState(false);
-  const [walletConnected, setWalletConnected] = useState(false);
-  const [previouslyConnectedWallet, setPreviouslyConnectedWallet] =
-    useState(null);
+
   const [depositInitiated, setDepositInitiated] = useState(false);
   const [open, setOpen] = useState(false);
   const [FaucetAmount, setFaucetAmount] = useState(5000);
-  const [FaucetAddress, setFaucetAddress] = useState(null);
+  const [faucetAddress, setFaucetAddress] = useState(null);
   const [statusMessage, setStatusMessage] = useState("");
+
   const FACTORY_CONTRACT_ADDRESS = useSelector((state) => {
     return state.gnosis.factoryContractAddress;
   });
@@ -201,80 +203,29 @@ const Faucet = (props) => {
   const GNOSIS_TRANSACTION_URL = useSelector((state) => {
     return state.gnosis.transactionUrl;
   });
-
-  const handleConnectWallet = () => {
-    try {
-      const wallet = connectWallet(dispatch);
-      wallet.then((response) => {
-        if (response) {
-          setWalletConnected(true);
-        } else {
-          setWalletConnected(false);
-        }
-      });
-    } catch (err) {
-      console.log(err);
-    }
-  };
-  // useEffect(() => {
-  //   const web3 = new Web3(Web3.givenProvider)
-  //   const networkIdRK = "4"
-  //   web3.eth.net
-  //     .getId()
-  //     .then((networkId) => {
-  //       if (networkId != networkIdRK) {
-  //         setOpen(true)
-  //       }
-  //     })
-  //     .catch((err) => {
-  //       console.log(err)
-  //     })
-  // }, [])
-
-  const getAccount = async () => {
-    if (localStorage.getItem("isWalletConnected")) {
-      setPreviouslyConnectedWallet(localStorage.getItem("wallet"));
-    }
-    store.subscribe(async () => {
-      const { create } = await store.getState();
-      if (create.value) {
-        setPreviouslyConnectedWallet(create.value);
-      } else {
-        setPreviouslyConnectedWallet(null);
-      }
-    });
-  };
-  const getFaucetAddress = async () => {
-    var web3;
-    if (window.ethereum) {
-      web3 = new Web3(window.ethereum);
-    } else if (window.web3) {
-      web3 = new Web3(window.web3.currentProvider);
-    }
-    try {
-      web3.eth.getAccounts().then((async) => {
-        setFaucetAddress(async[0]);
-      });
-    } catch (err) {
-      setFaucetAddress(null);
-    }
-  };
+  const [{ wallet }] = useConnectWallet();
+  const walletAddress = wallet?.accounts[0].address;
 
   useEffect(() => {
-    handleConnectWallet();
-    getFaucetAddress();
-  }, []);
+    if (wallet) {
+      updateDynamicAddress(wallet.chains[0].id, dispatch);
+    }
+  }, [dispatch, wallet]);
 
-  const handleFaucet = async (FaucetAddress, FaucetAmount) => {
+  useEffect(() => {
+    setFaucetAddress(walletAddress);
+  }, [walletAddress]);
+
+  const handleFaucet = async (faucetAddress, FaucetAmount) => {
     setOpen(true);
     const usdcFaucet = new SmartContract(
       USDCContract,
       USDC_CONTRACT_ADDRESS,
-      undefined,
+      faucetAddress,
       USDC_CONTRACT_ADDRESS,
       GNOSIS_TRANSACTION_URL,
     );
-    const transaction = usdcFaucet.mint(FaucetAddress, FaucetAmount.toString());
+    const transaction = usdcFaucet.mint(faucetAddress, FaucetAmount.toString());
     transaction.then(
       (response) => {
         setStatusMessage("Token minted successfully!!");
@@ -332,9 +283,8 @@ const Faucet = (props) => {
       setOpenSnackBar(true);
     }
   };
-
   return (
-    <Layout3 faucet={false}>
+    <Layout2 faucet={false}>
       <Grid
         container
         spacing={2}
@@ -361,7 +311,7 @@ const Faucet = (props) => {
             disabled
             marginTop={10}
             variant="outlined"
-            value={FaucetAddress}
+            value={faucetAddress}
           />
           <TextField
             id="outlined-basic"
@@ -382,7 +332,7 @@ const Faucet = (props) => {
             >
               <Button
                 variant="wideButton"
-                onClick={() => handleFaucet(FaucetAddress, FaucetAmount)}
+                onClick={() => handleFaucet(faucetAddress, FaucetAmount)}
               >
                 Mint
               </Button>
@@ -460,7 +410,7 @@ const Faucet = (props) => {
       >
         <CircularProgress color="inherit" />
       </Backdrop>
-    </Layout3>
+    </Layout2>
   );
 };
 

@@ -5,6 +5,7 @@ import PeopleRoundedIcon from "@mui/icons-material/PeopleRounded";
 import CompareArrowsRoundedIcon from "@mui/icons-material/CompareArrowsRounded";
 import InsertDriveFileRoundedIcon from "@mui/icons-material/InsertDriveFileRounded";
 import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
+import { HiDocumentDuplicate } from "react-icons/hi";
 import { makeStyles } from "@mui/styles";
 import {
   Drawer,
@@ -197,6 +198,23 @@ export default function Sidebar(props) {
               </ListItemButton>
             </Link>
           </BootstrapTooltip>
+
+          {/* <BootstrapTooltip title="Documents" placement="left">
+            <Link href={`/dashboard/${clubId}/documents`}>
+              <ListItemButton
+                component="a"
+                // onClick={(e) => {
+                //   router.push(`/dashboard/${clubId}/settings`, undefined, {
+                //     shallow: true,
+                //   })
+                // }}
+              >
+                <ListItemIcon className={classes.listItemIcon}>
+                  <HiDocumentDuplicate size={30} />
+                </ListItemIcon>
+              </ListItemButton>
+            </Link>
+          </BootstrapTooltip> */}
         </List>
       </Drawer>
 
@@ -311,6 +329,27 @@ export default function Sidebar(props) {
               </ListItemIcon>
             </ListItemButton>
           </BootstrapTooltip>
+
+          {/* <BootstrapTooltip title="Documents" placement="left">
+            <ListItemButton
+              component="a"
+              onClick={(e) => {
+                router.push(`/dashboard/${clubId}/documents`, undefined, {
+                  shallow: true,
+                });
+              }}
+            >
+              <ListItemIcon
+                className={
+                  page == 6
+                    ? classes.listItemIconSelected
+                    : classes.listItemIcon
+                }
+              >
+                <HiDocumentDuplicate size={30}/>
+              </ListItemIcon>
+            </ListItemButton>
+          </BootstrapTooltip> */}
         </List>
       </Drawer>
     </Box>

@@ -43,8 +43,11 @@ import actionIcon from "../../../../public/assets/icons/action_icon.svg";
 import tickerIcon from "../../../../public/assets/icons/ticker_icon.svg";
 import surveyIcon from "../../../../public/assets/icons/survey_icon.svg";
 import { calculateDays } from "../../../../src/utils/globalFunctions";
+import ReactHtmlParser from "react-html-parser";
 
 import Image from "next/image";
+import { getAssets } from "../../../../src/api/assets";
+import { useConnectWallet } from "@web3-onboard/react";
 
 const useStyles = makeStyles({
   clubAssets: {
@@ -190,7 +193,8 @@ const useStyles = makeStyles({
 const ProposalDetail = () => {
   const router = useRouter();
   const { pid, clubId } = router.query;
-
+  const [{ wallet }] = useConnectWallet();
+  const walletAddress = wallet?.accounts[0].address;
   const classes = useStyles();
   const [voted, setVoted] = useState(false);
   const [fetched, setFetched] = useState(false);
@@ -209,10 +213,9 @@ const ProposalDetail = () => {
   const clubID = clubId;
   const [cardSelected, setCardSelected] = useState(null);
   const [governance, setGovernance] = useState(true);
+  const [tokenData, setTokenData] = useState([]);
+  const [tokenFetched, setTokenFetched] = useState(false);
 
-  const walletAddress = useSelector((state) => {
-    return state.create.value;
-  });
   const isGovernanceActive = useSelector((state) => {
     return state.gnosis.governanceAllowed;
   });
@@ -283,6 +286,20 @@ const ProposalDetail = () => {
     });
   };
 
+  const fetchTokens = () => {
+    if (clubID) {
+      const tokenData = getAssets(clubId);
+      tokenData.then((result) => {
+        if (result.status != 200) {
+          setTokenFetched(false);
+        } else {
+          setTokenData(result.data.tokenPriceList);
+          setTokenFetched(true);
+        }
+      });
+    }
+  };
+
   const fetchMembersData = () => {
     const membersData = getMembersDetails(clubID);
     membersData.then((result) => {
@@ -324,6 +341,7 @@ const ProposalDetail = () => {
     // await isOwner();
     if (clubId) {
       fetchMembersData();
+      fetchTokens();
     }
   }, [clubId]);
 
@@ -363,14 +381,18 @@ const ProposalDetail = () => {
   const isOwner = async () => {
     const safeSdk = await getSafeSdk();
     const ownerAddresses = await safeSdk.getOwners();
-    setOwnerAddresses(ownerAddresses);
-    if (ownerAddresses.includes(walletAddress)) {
+    const ownerAddressesArray = ownerAddresses.map((value) =>
+      value.toLowerCase(),
+    );
+
+    setOwnerAddresses(ownerAddressesArray);
+    if (ownerAddressesArray.includes(walletAddress)) {
       setOwner(true);
     } else {
       setOwner(false);
     }
     if (isGovernanceActive === false) {
-      if (ownerAddresses.includes(walletAddress)) {
+      if (ownerAddressesArray.includes(walletAddress)) {
         setGovernance(true);
       } else {
         setGovernance(false);
@@ -424,6 +446,7 @@ const ProposalDetail = () => {
         USDC_CONTRACT_ADDRESS,
         GNOSIS_TRANSACTION_URL,
       );
+      console.log(proposalData[0].commands[0].airDropToken);
       const response = updateProposal.updateProposalAndExecution(
         daoAddress,
         gnosisAddress,
@@ -445,6 +468,7 @@ const ProposalDetail = () => {
         [],
         txHash,
         pid,
+        tokenFetched ? tokenData : "",
       );
       if (proposalStatus === "executed") {
         await response.then(
@@ -480,12 +504,25 @@ const ProposalDetail = () => {
       } else {
         await response
           .then(() => {
+            console.log("in response", response);
             setSigned(true);
             setLoaderOpen(false);
           })
           .catch((err) => {
+            // console.log("in response error", err);
             setSigned(false);
-            setMessage("Signature failed!");
+            setOpenSnackBar(true);
+            setFailed(true);
+            // err
+            //   ? setMessage(err)
+            //   : err.message
+            //   ? setMessage(message)
+            //   : setMessage("Signature failed!");
+            err.message
+              ? setMessage(err.message)
+              : err
+              ? setMessage(err)
+              : setMessage("Signature failed!");
             setLoaderOpen(false);
           });
       }
@@ -808,6 +845,7 @@ const ProposalDetail = () => {
         [],
         txHash,
         pid,
+        tokenFetched ? tokenData : "",
       );
 
       if (proposalStatus === "executed") {
@@ -851,7 +889,18 @@ const ProposalDetail = () => {
           })
           .catch((err) => {
             setSigned(false);
-            setMessage("Signature failed!");
+            setOpenSnackBar(true);
+            setFailed(true);
+            // err
+            //   ? setMessage(err)
+            //   : err.message
+            //   ? setMessage(message)
+            //   : setMessage("Signature failed!");
+            err.message
+              ? setMessage(err.message)
+              : err
+              ? setMessage(err)
+              : setMessage("Signature failed!");
             setLoaderOpen(false);
           });
       }
@@ -895,7 +944,6 @@ const ProposalDetail = () => {
 
   return (
     <>
-      {console.log("propsal data inside pid", proposalData)}
       <Layout1 page={2}>
         <Grid container spacing={6} paddingLeft={10} paddingTop={10}>
           <Grid item md={8.5}>
@@ -1303,7 +1351,16 @@ const ProposalDetail = () => {
               </Grid>
             </Grid>
             <Grid container item className={classes.listFont}>
-              {fetched ? proposalData[0].description : null}
+              {fetched ? (
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: ReactHtmlParser(proposalData[0].description),
+                  }}
+                >
+                  {/* {console.log(ReactHtmlParser(proposalData[0].description))}
+                  {ReactHtmlParser(proposalData[0].description)} */}
+                </div>
+              ) : null}
             </Grid>
             {governance ? (
               <>
@@ -1442,23 +1499,22 @@ const ProposalDetail = () => {
                                     ? classes.mainCardButtonSuccess
                                     : classes.mainCardButton
                                 }
-                                // onClick={() => executeFunction("passed")}
                                 onClick={
-                                  pendingTxHash === txHash
-                                    ? executionReady
+                                  executionReady
+                                    ? pendingTxHash === txHash
                                       ? () => {
                                           executeFunction("executed");
                                         }
                                       : () => {
-                                          executeFunction("passed");
+                                          console.log("rrrrrrrrrrr");
+                                          setOpenSnackBar(true);
+                                          setFailed(true);
+                                          setMessage(
+                                            "execute txns with smaller nonce first",
+                                          );
                                         }
                                     : () => {
-                                        console.log("rrrrrrrrrrr");
-                                        setOpenSnackBar(true);
-                                        setFailed(true);
-                                        setMessage(
-                                          "execute txns with smaller nonce first",
-                                        );
+                                        executeFunction("passed");
                                       }
                                 }
                               >

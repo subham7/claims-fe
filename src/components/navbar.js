@@ -1,15 +1,25 @@
 import { React, useEffect, useState } from "react";
-import { AppBar, Box, Toolbar, IconButton, Button } from "@mui/material";
+import {
+  AppBar,
+  Box,
+  Toolbar,
+  IconButton,
+  Button,
+  Typography,
+} from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import Image from "next/image";
 import { makeStyles } from "@mui/styles";
 import { connectWallet, setUserChain, onboard } from "../utils/wallet";
 import Web3 from "web3";
 import AccountButton from "./accountbutton";
-import NetworkSwitcher from "./networkSwitcher";
+
 import store from "../redux/store";
 import { useDispatch, useSelector } from "react-redux";
-import { addWallet } from "../redux/reducers/create";
+import { useRouter } from "next/router";
+import { useAccountCenter, useConnectWallet } from "@web3-onboard/react";
+import { addWalletAddress } from "../redux/reducers/user";
+// import "../../styles/globals.css";
 
 const useStyles = makeStyles({
   image: {
@@ -18,46 +28,31 @@ const useStyles = makeStyles({
   },
 });
 
-export default function Navbar(props) {
+export default function Navbar3(props) {
   const dispatch = useDispatch();
   const classes = useStyles();
-  const [previouslyConnectedWallet, setPreviouslyConnectedWallet] =
-    useState(null);
-  const [userDetails, setUserDetails] = useState(null);
-  const wallet = useSelector((state) => {
-    return state.create.value;
-  });
+  const [{ wallet, connecting }, connect, disconnect] = useConnectWallet();
 
-  useEffect(() => {
-    if (wallet !== null) {
-      setPreviouslyConnectedWallet(wallet[0][0].address);
-      setUserDetails(wallet[0][0].address);
+  if (wallet) {
+    if (window.ethereum) {
+      window.web3 = new Web3(window.ethereum);
+    } else if (window.web3) {
+      window.web3 = new Web3(window.web3.currentProvider);
     }
-  }, [previouslyConnectedWallet]);
+  }
+  useEffect(() => {
+    if (wallet) {
+      dispatch(addWalletAddress(wallet ? wallet.accounts[0].address : null));
+    }
+  }, [dispatch, wallet]);
 
-  const handleConnection = async (event) => {
-    const wallet = connectWallet(dispatch);
-    wallet.then((response) => {
-      if (!response) {
-        console.log("Error connecting wallet");
-      }
-    });
+  const handleFaucetRedirect = () => {
+    window.open("/faucet", "_ blank");
   };
-
-  //setUserChain()
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar
-        className={classes.root}
-        position="fixed"
-        sx={{
-          width: "100%",
-          zIndex: (theme) => theme.zIndex.drawer + 1,
-          fontFamily: "Whyte",
-          paddingBottom: "15px",
-        }}
-      >
+      <AppBar position="static">
         <Toolbar>
           <IconButton
             color="inherit"
@@ -77,17 +72,29 @@ export default function Navbar(props) {
               alt="monogram"
             />
           </Box>
-          <NetworkSwitcher />
-          {previouslyConnectedWallet !== null ? (
-            <AccountButton accountDetail={userDetails} />
+          {props.faucet ? (
+            <Button
+              variant="primary"
+              color="primary"
+              sx={{ mr: 40, mt: 2 }}
+              onClick={handleFaucetRedirect}
+            >
+              USDC Faucet
+            </Button>
+          ) : null}
+          {connecting ? (
+            <Button sx={{ mr: 2, mt: 2 }} className={classes.navButton}>
+              Connecting
+            </Button>
+          ) : wallet ? (
+            <></>
           ) : (
             <Button
-              variant="contained"
-              color="primary"
-              sx={{ mr: 2, fontFamily: "Whyte" }}
-              onClick={() => handleConnection()}
+              sx={{ mr: 2, mt: 2 }}
+              className={classes.navButton}
+              onClick={() => (wallet ? disconnect(wallet) : connect())}
             >
-              Connect Wallet
+              Connect wallet
             </Button>
           )}
         </Toolbar>

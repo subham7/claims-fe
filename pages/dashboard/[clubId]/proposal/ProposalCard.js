@@ -288,7 +288,7 @@ const ProposalCard = ({
         <Grid container>
           <Grid item ml={2} mr={2}>
             <Typography className={classes.cardFont}>
-              {proposal?.description.substring(0, 200)}...
+              {/* {proposal?.description.substring(0, 200)}... */}
             </Typography>
           </Grid>
         </Grid>

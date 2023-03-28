@@ -62,7 +62,7 @@ const Create = (props) => {
 
   const [selectedImage, setSelectedImage] = useState(null);
   const [imageUrl, setImageUrl] = useState(null);
-  console.log("clubTokenType", clubTokenType);
+
   useEffect(() => {
     if (selectedImage) {
       setImageUrl(URL.createObjectURL(selectedImage));
@@ -88,7 +88,7 @@ const Create = (props) => {
   const usdcConvertDecimal = useSelector((state) => {
     return state.gnosis.tokenDecimal;
   });
-  console.log("usdcConvertDecimal", usdcConvertDecimal);
+
   const [governance, setGovernance] = useState(true);
   const createDaoGnosisSigned = useSelector((state) => {
     return state.gnosis.createDaoGnosisSigned;
@@ -108,7 +108,7 @@ const Create = (props) => {
       // step1();
       router.push("/create");
     }
-  }, [redirectToCreate]);
+  }, [redirectToCreate, router]);
 
   const handleChange = (newValue) => {
     setDepositClose(newValue);
@@ -166,7 +166,7 @@ const Create = (props) => {
     setAddressList([...addressList, ""]);
   };
 
-  const steps = ["Add basic info", "Select template", "Set rules"];
+  const steps = ["Add basic info", "Set token rules", "Governance"];
 
   const isStepOptional = (step) => {
     return step === 1;
@@ -186,7 +186,6 @@ const Create = (props) => {
     if (activeStep === steps.length - 1) {
       setLoading(true);
       if (clubTokenType === "NFT") {
-        console.log("nft");
         const client = new NFTStorage({
           token:
             "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweDlhMWRFQjEyMjQyYTBlN0VmNTUwNjFlOTAwMTYyMDcxNEFENDBlNDgiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTY3NDEyOTI3MzM5MSwibmFtZSI6InN0YXRpb25YIG5mdCJ9.1w-RC7qZ43T2NhjHrtsO_Gmb0Mw1BjJo7GXMciqX5jY",
@@ -230,7 +229,6 @@ const Create = (props) => {
         //   new Blob([imageUrl], { type: "image/png" }),
         //   // new File([], imageUrl, { type: "image/png" }),
         // );
-        console.log("meta data urllll", metadata);
 
         const web3 = new Web3(Web3.givenProvider);
         const auth = web3.eth.getAccounts();
