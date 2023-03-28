@@ -5,6 +5,7 @@ import { ERC721Styles } from "./ERC721CompStyles";
 import { checkUserByClub, createUser } from "../../../api/user";
 import { useSelector } from "react-redux";
 import { convertFromWei } from "../../../utils/globalFunctions";
+import { TwitterShareButton } from "react-twitter-embed";
 import { useRouter } from "next/router";
 
 const ERC721Comp = ({
@@ -34,7 +35,7 @@ const ERC721Comp = ({
   userDetails,
   clubId,
   setMessage,
-  newContract
+  newContract,
 }) => {
   const classes = ERC721Styles();
   const router = useRouter();
@@ -44,9 +45,9 @@ const ERC721Comp = ({
   });
 
   const handleClaimNft = async () => {
-    const usdc_contract = newContract(USDC_CONTRACT_ADDRESS)
+    const usdc_contract = newContract(USDC_CONTRACT_ADDRESS);
     // pass governor contract
-    const dao_contract = newContract(daoAddress)
+    const dao_contract = newContract(daoAddress);
 
     // const priceOfNftConverted = convertToWei(
     //   priceOfNft,
@@ -158,9 +159,36 @@ const ERC721Comp = ({
                 sx={{ display: "flex", flexDirection: "column" }}
               >
                 <Grid item sx={{ width: "100%" }}>
-                  <Typography variant="h2" className={classes.clubName}>
-                    {clubName}
-                  </Typography>
+                  <Grid container>
+                    <Grid item xs={12} md={9}>
+                      <Typography variant="h2" className={classes.clubName}>
+                        {clubName}
+                      </Typography>
+                    </Grid>
+
+                    <Grid
+                      item
+                      xs={12}
+                      md={3}
+                      sx={{ display: "flex", alignItems: "center" }}
+                    >
+                      {/* enter your code here */}
+
+                      <div className="centerContent">
+                        <div className="selfCenter spaceBetween">
+                          <TwitterShareButton
+                            onLoad={function noRefCheck() {}}
+                            options={{
+                              size: "large",
+                              text: `Just joined ${clubName} Station on `,
+                              via: "stationxnetwork",
+                            }}
+                            url={`stationx.network/join/${daoAddress}`}
+                          />
+                        </div>
+                      </div>
+                    </Grid>
+                  </Grid>
                 </Grid>
                 <Grid item>
                   <Grid container spacing={3}>
