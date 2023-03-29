@@ -204,6 +204,7 @@ const ClaimAddress = () => {
       );
       setDescription(computedData[0].description);
 
+      // if merkleRoot present (whitelisted)
       if (
         desc.merkleRoot !==
         "0x0000000000000000000000000000000000000000000000000000000000000001"
@@ -236,14 +237,14 @@ const ClaimAddress = () => {
         // setting merkleLeaves
         setMerkleLeaves(encodedListOfLeaves);
         setIsLoading(false);
-      } else {
+      }
+      // free for all (no merkleRoot)
+      else {
         // claimable amount
         const airdropAmount = convertFromWeiGovernance(
           desc.claimAmountDetails[1],
           decimals,
         );
-
-        // console.log(airdropAmount);
 
         const amount = await claimContract.checkAmount(walletAddress);
         const data = convertFromWeiGovernance(amount, decimals);
@@ -275,7 +276,6 @@ const ClaimAddress = () => {
         contractData.merkleRoot !==
         "0x0000000000000000000000000000000000000000000000000000000000000001"
       ) {
-        // console.log(merkleLeaves);
         const leaves = merkleLeaves.map((leaf) => keccak256(leaf));
         const tree = new MerkleTree(leaves, keccak256, { sortPairs: true });
 
@@ -289,9 +289,8 @@ const ClaimAddress = () => {
 
         const amt = convertToWeiGovernance(claimableAmt, decimalOfToken);
         console.log(amt, proof);
-
-        const res = await claimContract.claim(amt, proof);
-
+        
+        const res = await claimContract.claim(amt, proof, leaf);
         console.log(res);
       } else {
         const res = await claimContract.claim(0, []);
@@ -311,28 +310,6 @@ const ClaimAddress = () => {
   useEffect(() => {
     fetchContractDetails();
   }, [claimAddress, walletAddress]);
-
-  // useEffect(() => {
-  //   const claimableAmountOfToken = async () => {
-  //     try {
-  //       const claimContract = new SmartContract(
-  //         claimContractABI,
-  //         claimAddress,
-  //         walletAddress,
-  //         undefined,
-  //         undefined,
-  //       );
-
-  //       const amount = await claimContract.checkAmount(walletAddress);
-  //       const data = convertFromWeiGovernance(amount, decimalOfToken);
-  //       setClaimableAmt(data);
-  //     } catch (err) {
-  //       console.err;
-  //     }
-  //   };
-
-  //   claimableAmountOfToken();
-  // }, [claimAddress, walletAddress]);
 
   return (
     <>
