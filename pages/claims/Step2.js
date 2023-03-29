@@ -201,14 +201,6 @@ const Step2 = () => {
           );
 
           setMerkleLeaves(encodedListOfLeaves);
-
-          console.log(encodedListOfLeaves);
-
-          if (encodedListOfLeaves.length) {
-            encodedListOfLeaves.map((leaf) => console.log(leaf));
-          }
-
-          console.log(encodedListOfLeaves.length);
         } catch (err) {
           console.log(err);
         }
@@ -286,6 +278,7 @@ const Step2 = () => {
           );
 
           const claimsSettings = [
+            data.walletAddress.toLowerCase(),
             data.walletAddress.toLowerCase(),
             data.airdropTokenAddress,
             data.daoToken,
@@ -379,8 +372,10 @@ const Step2 = () => {
           const leaves = merkleLeaves.map((leaf) => keccak256(leaf));
           const tree = new MerkleTree(leaves, keccak256, { sort: true });
           const root = tree.getHexRoot();
+          console.log(root);
 
           const claimsSettings = [
+            data.walletAddress.toLowerCase(),
             data.walletAddress.toLowerCase(),
             data.airdropTokenAddress,
             "0x0000000000000000000000000000000000000000",
@@ -392,8 +387,13 @@ const Step2 = () => {
             new Date(data.endDate).getTime() / 1000,
             data.walletAddress.toLowerCase(),
             root,
-            3,
-            [false, 0, 0, []],
+            2,
+            [
+              false,
+              0,
+              convertToWeiGovernance(data.numberOfTokens, decimals),
+              [],
+            ],
             [false, 0],
           ];
 

@@ -5,12 +5,20 @@ import { SmartContract } from "../../src/api/contract";
 import Navbar2 from "../../src/components/navbar2";
 import claimContractABI from "../../src/abis/singleClaimContract.json";
 import USDCContract from "../../src/abis/usdcTokenContract.json";
-import { convertFromWeiGovernance } from "../../src/utils/globalFunctions";
+import {
+  convertFromWeiGovernance,
+  convertToWeiGovernance,
+} from "../../src/utils/globalFunctions";
 
 import { useRouter } from "next/router";
 import { useConnectWallet } from "@web3-onboard/react";
 import { Alert, CircularProgress } from "@mui/material";
-import { getClaimsByUserAddress } from "../../src/api/claims";
+import {
+  getClaimAmountForUser,
+  getClaimsByUserAddress,
+} from "../../src/api/claims";
+import MerkleTree from "merkletreejs";
+import keccak256 from "keccak256";
 
 const useStyles = makeStyles({
   container: {
@@ -123,6 +131,7 @@ const ClaimAddress = () => {
   const [contractData, setContractData] = useState([]);
   // const [erc20Decimal, setDecimals] = useState(null);
   const [airdropAmountInNum, setAirdropAmountInNum] = useState(0);
+
   const [totalAmountofTokens, setTotalAmountOfTokens] = useState(0);
   const [airdropTokenName, setAirdropTokenName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -133,6 +142,7 @@ const ClaimAddress = () => {
   const [alreadyClaimed, setAlreadyClaimed] = useState(false);
   const [claimableAmt, setClaimableAmt] = useState(0);
   const [decimalOfToken, setDecimalofToken] = useState(0);
+  const [merkleLeaves, setMerkleLeaves] = useState([]);
 
   const [{ wallet }] = useConnectWallet();
   const walletAddress = wallet?.accounts[0].address;
@@ -143,7 +153,8 @@ const ClaimAddress = () => {
   const endDateString = new Date(contractData.endTime * 1000).toString();
 
   const fetchContractDetails = async () => {
-    setIsLoading(true);
+    // setIsLoading(true);
+
     try {
       const claimContract = new SmartContract(
         claimContractABI,
@@ -184,31 +195,64 @@ const ClaimAddress = () => {
       );
       setTotalAmountOfTokens(totalAmountInNumber);
 
-      // claimable amount
-      const airdropAmount = convertFromWeiGovernance(
-        desc.claimAmountDetails[1],
-        decimals,
-      );
-      setAirdropAmountInNum(airdropAmount);
-
-      const amount = await claimContract.checkAmount(walletAddress);
-      const data = convertFromWeiGovernance(amount, decimals);
-
-      console.log(data);
-      setClaimableAmt(data);
-
       // fetching description
       const dataFromAPI = await getClaimsByUserAddress(
-        desc.rollbackAddress.toLowerCase(),
+        desc.creatorAddress.toLowerCase(),
       );
-      // console.log(dataFromAPI);
-
       const computedData = dataFromAPI.filter(
         (data) => data.claimContract === claimAddress,
       );
-
       setDescription(computedData[0].description);
 
+      if (
+        desc.merkleRoot !==
+        "0x0000000000000000000000000000000000000000000000000000000000000001"
+      ) {
+        // console.log(desc.merkleRoot);
+
+        // getting claim amount from API
+        const { amount } = await getClaimAmountForUser(
+          walletAddress, // wallet address aayega
+          claimAddress,
+        );
+        setClaimableAmt(amount);
+        console.log(walletAddress);
+
+        // converting the CSV data into merkleLeaves
+        const csvData = await getClaimsByUserAddress(walletAddress);
+        const { addresses } = csvData[csvData.length - 1];
+
+        const encodedListOfLeaves = [];
+
+        addresses.map(async (data) => {
+          const res = await await claimContract.encode(
+            data.address,
+            data.amount,
+          );
+
+          encodedListOfLeaves.push(res);
+        });
+
+        // setting merkleLeaves
+        setMerkleLeaves(encodedListOfLeaves);
+        setIsLoading(false);
+      } else {
+        // claimable amount
+        const airdropAmount = convertFromWeiGovernance(
+          desc.claimAmountDetails[1],
+          decimals,
+        );
+
+        // console.log(airdropAmount);
+
+        const amount = await claimContract.checkAmount(walletAddress);
+        const data = convertFromWeiGovernance(amount, decimals);
+
+        console.log(data);
+        setClaimableAmt(data);
+      }
+
+      console.log(claimableAmt);
       setIsLoading(false);
     } catch (err) {
       console.log(err);
@@ -227,8 +271,32 @@ const ClaimAddress = () => {
         undefined,
       );
 
-      const res = await claimContract.claim(0, []);
-      console.log(res);
+      if (
+        contractData.merkleRoot !==
+        "0x0000000000000000000000000000000000000000000000000000000000000001"
+      ) {
+        // console.log(merkleLeaves);
+        const leaves = merkleLeaves.map((leaf) => keccak256(leaf));
+        const tree = new MerkleTree(leaves, keccak256, { sortPairs: true });
+
+        const encodedLeaf = await claimContract.encode(
+          walletAddress,
+          claimableAmt,
+        );
+
+        const leaf = keccak256(encodedLeaf);
+        const proof = tree.getHexProof(leaf);
+
+        const amt = convertToWeiGovernance(claimableAmt, decimalOfToken);
+        console.log(amt, proof);
+
+        const res = await claimContract.claim(amt, proof);
+
+        console.log(res);
+      } else {
+        const res = await claimContract.claim(0, []);
+        console.log(res);
+      }
       setIsClaiming(false);
       setClaimed(true);
       setMessage("Successfully Claimed!");
@@ -294,9 +362,9 @@ const ClaimAddress = () => {
                 <div className={classes.createdBy}>
                   <p>Created By</p>
                   <p className={classes.address}>
-                    {contractData.rollbackAddress?.slice(0, 5)}...
-                    {contractData.rollbackAddress?.slice(
-                      contractData.rollbackAddress?.length - 5,
+                    {contractData.creatorAddress?.slice(0, 5)}...
+                    {contractData.creatorAddress?.slice(
+                      contractData.creatorAddress?.length - 5,
                     )}
                   </p>
                 </div>
