@@ -21,6 +21,11 @@ import { BsFillSendFill } from "react-icons/bs";
 import { addUserData } from "../../src/redux/reducers/createClaim";
 import { getTokensFromWallet } from "../../src/api/token";
 import Web3 from "web3";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
+import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import dayjs from "dayjs";
 
 const useStyles = makeStyles({
   form: {
@@ -159,24 +164,6 @@ const useStyles = makeStyles({
   },
 });
 
-// const validationSchema = yup.object({
-//   email: yup
-//     .string("Enter your email")
-//     .email("Enter a valid email")
-//     .required("Email is required"),
-//   LLC_name: yup
-//     .string("Enter LLC Name")
-//     .required("LLC name is required")
-//     .min(3, "LLC Name should be atleast 3 characters long"),
-//   admin_name: yup
-//     .string("Enter Admin's name")
-//     .required("Admin name is required"),
-//   location: yup
-//     .string("Enter arbitration location")
-//     .required("Arbitration location is required"),
-//   general_purpose: yup.string("Enter general purpose"),
-// });
-
 const validationSchema = yup.object({
   description: yup
     .string("Enter one-liner description")
@@ -210,22 +197,28 @@ const CreateClaim = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [selectedToken, setSelectedToken] = useState("");
   const [currentAccount, setCurrentAccount] = useState("");
+  const [value, setValue] = React.useState(dayjs("2022-04-17T15:30"));
 
   const dispatch = useDispatch();
-
+  console.log(dayjs(new Date()).format());
   const formik = useFormik({
     initialValues: {
       description: "",
       rollbackAddress: "",
       numberOfTokens: "",
-      startDate: "",
-      endDate: "",
+      startDate: dayjs(Date.now()),
+      endDate: dayjs(Date.now()),
       airdropTokens: "",
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
       const data = {
-        ...values,
+        description: values.description,
+        rollbackAddress: values.rollbackAddress,
+        numberOfTokens: values.numberOfTokens,
+        startDate: dayjs(values.startDate).format(),
+        endDate: values.endDate,
+        airdropTokens: values.airdropTokens,
         recieveTokens: recieveTokens,
         airdropTokens: selectedToken.tokenName,
         walletAddress: currentAccount,
@@ -234,7 +227,7 @@ const CreateClaim = () => {
 
       console.log(data);
 
-      dispatch(addUserData(data));
+      // dispatch(addUserData(data));
       router.push("/claims/Step2");
     },
   });
@@ -424,34 +417,36 @@ const CreateClaim = () => {
 
           <div style={{ width: "100%" }}>
             <Typography className={classes.label}>Claims start on</Typography>
-            <TextField
-              className={classes.input}
-              type="datetime-local"
-              name="startDate"
-              id="startDate"
-              value={formik.values.startDate}
-              onChange={formik.handleChange}
-              error={
-                formik.touched.startDate && Boolean(formik.errors.startDate)
-              }
-              helperText={formik.touched.startDate && formik.errors.startDate}
-            />
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DemoContainer components={["DateTimePicker", "DateTimePicker"]}>
+                <DateTimePicker
+                  // label="Controlled picker"
+                  value={formik.values.startDate}
+                  minDate={dayjs(Date.now())}
+                  onChange={(value) => {
+                    formik.setFieldValue("startDate", value);
+                  }}
+                />
+              </DemoContainer>
+            </LocalizationProvider>
           </div>
 
           {/* Claim End */}
 
           <div style={{ width: "100%" }}>
             <Typography className={classes.label}>Claims end on</Typography>
-            <TextField
-              className={classes.input}
-              type="datetime-local"
-              name="endDate"
-              id="endDate"
-              value={formik.values.endDate}
-              onChange={formik.handleChange}
-              error={formik.touched.endDate && Boolean(formik.errors.endDate)}
-              helperText={formik.touched.endDate && formik.errors.endDate}
-            />
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DemoContainer components={["DateTimePicker", "DateTimePicker"]}>
+                <DateTimePicker
+                  // label="Controlled picker"
+                  value={formik.values.endDate}
+                  minDateTime={formik.values.startDate}
+                  onChange={(value) => {
+                    formik.setFieldValue("endDate", value);
+                  }}
+                />
+              </DemoContainer>
+            </LocalizationProvider>
           </div>
         </div>
 
