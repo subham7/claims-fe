@@ -136,6 +136,7 @@ const Step2 = () => {
   const [customAmount, setCustomAmount] = useState(0);
   const [finish, setFinish] = useState(false);
   const [loading, setLoading] = useState("");
+  const [CSVObject, setCSVObject] = useState([]);
   // const [message, setMessage] = useState(false);
   // const [claimAllowed, setClaimAllowed] = useState("equalTokens");
   // const [generatedClaimContract, setGeneratedClaimContract] = useState("");
@@ -168,9 +169,12 @@ const Step2 = () => {
           .split("\r\n")
           .map((data) => data.split(","))
           .map((data) => ({
-            address: data[0],
+            address: data[0].toLowerCase(),
             amount: +data[1],
           }));
+
+        setCSVObject(csvArr);
+        console.log(csvArr);
 
         try {
           // claim contract for encoding
@@ -318,6 +322,7 @@ const Step2 = () => {
             endDate: new Date(data.endDate).getTime() / 1000,
             startDate: new Date(data.startDate).getTime() / 1000,
             createdBy: data.walletAddress.toLowerCase(),
+            addresses: [],
           });
 
           // console.log(typeof(postData))
@@ -340,6 +345,8 @@ const Step2 = () => {
         eligible: eligible,
       };
 
+      console.log(data);
+
       const loadClaimsContractFactoryData_CSV = async () => {
         try {
           const claimsContract = new SmartContract(
@@ -350,17 +357,28 @@ const Step2 = () => {
             undefined,
           );
 
-          // const merkleContract = await
+          const erc20contract = new SmartContract(
+            usdcTokenContract,
+            data.airdropTokenAddress,
+            data.walletAddress,
+            undefined,
+            undefined,
+          );
+
+          // console.log(data);
+          const decimals = await erc20contract.decimals();
+          setLoading(true);
+
+          // approve erc20
+          await erc20contract.approveDeposit(
+            claimsContractAddress,
+            data.numberOfTokens,
+            decimals, // decimal
+          );
 
           const leaves = merkleLeaves.map((leaf) => keccak256(leaf));
-          // const leaves = ["a", "b", "c", "d"].map((v) => keccak256(v));
-          console.log(leaves);
           const tree = new MerkleTree(leaves, keccak256, { sort: true });
-
           const root = tree.getHexRoot();
-          const proof = tree.getHexProof(leaves[0]);
-
-          console.log(proof);
 
           const claimsSettings = [
             data.walletAddress.toLowerCase(),
@@ -380,11 +398,29 @@ const Step2 = () => {
           ];
 
           const response = await claimsContract.claimContract(claimsSettings);
-          console.log(response);
+          setLoading(false);
 
-          // console.log(await );
+          // post data in api
+          const postData = JSON.stringify({
+            description: data.description,
+            airdropTokenContract: data.airdropTokenAddress,
+            airdropTokenSymbol: data.airdropTokens,
+            claimContract:
+              response.events.ClaimContractDeployed.returnValues._claimContract,
+            totalAmount: data.numberOfTokens,
+            endDate: new Date(data.endDate).getTime() / 1000,
+            startDate: new Date(data.startDate).getTime() / 1000,
+            createdBy: data.walletAddress.toLowerCase(),
+            addresses: CSVObject,
+          });
+
+          console.log(postData);
+          const res = createClaim(postData);
+          console.log(res);
         } catch (err) {
+          setLoading(true);
           console.log(err);
+          setLoading(false);
         }
       };
       loadClaimsContractFactoryData_CSV();
@@ -550,7 +586,12 @@ const Step2 = () => {
             Go back to claims
           </Button>
         ) : (
-          <Button disabled={eligible === 'csv' ? true : false} type="submit" variant="contained" className={classes.btn}>
+          <Button
+            // disabled={eligible === "csv" ? true : false}
+            type="submit"
+            variant="contained"
+            className={classes.btn}
+          >
             {loading ? <CircularProgress /> : "Finish"}
           </Button>
         )}
