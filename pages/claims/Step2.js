@@ -163,7 +163,7 @@ const Step2 = () => {
       reader.readAsText(fileUploaded);
 
       // converting .csv file into array of objects
-      reader.onload = (event) => {
+      reader.onload = async (event) => {
         const csvData = event.target.result;
         const csvArr = csvData
           .split("\r\n")
@@ -180,27 +180,40 @@ const Step2 = () => {
           // claim contract for encoding
           const claimContract = new SmartContract(
             claimContractABI,
-            "0x74392791Ef2b959BaF595aa949ae330D528676aD",
+            "0xD1AcdB31870e3d8c228981469b76001a410Ba2fF",
             userData.walletAddress,
             undefined,
             undefined,
           );
 
-          let encodedListOfLeaves = [];
-
-          // encoding leaves
-          csvArr.map(
-            async (data) => {
-              const res = await await claimContract.encode(
-                data.address,
-                data.amount,
-              );
-              encodedListOfLeaves.push(res);
-            },
-            // .then((newData) => encodedListOfLeaves.push(newData)),
+          const erc20contract = new SmartContract(
+            usdcTokenContract,
+            userData.airdropTokenAddress,
+            userData.walletAddress,
+            undefined,
+            undefined,
           );
 
+          const decimals = await erc20contract.decimals();
+
+          let encodedListOfLeaves = [];
+          // encoding leaves
+          csvArr.map(async (data) => {
+            // const res = await await claimContract.encode(
+            //   data.address,
+            //   convertToWeiGovernance(data.amount, decimals),
+            // );
+
+            const res = await claimContract.encode(
+              data.address,
+              convertToWeiGovernance(data.amount, decimals),
+            );
+            // console.log(res);
+            encodedListOfLeaves.push(keccak256(res));
+          });
+
           setMerkleLeaves(encodedListOfLeaves);
+          // console.log(encodedListOfLeaves);
         } catch (err) {
           console.log(err);
         }
@@ -309,8 +322,8 @@ const Step2 = () => {
             description: data.description,
             airdropTokenContract: data.airdropTokenAddress,
             airdropTokenSymbol: data.airdropTokens,
-            claimContract:
-              response.events.ClaimContractDeployed.returnValues._claimContract,
+            // claimContract:
+            //   response.events.ClaimContractDeployed.returnValues._claimContract,
             totalAmount: data.numberOfTokens,
             endDate: new Date(data.endDate).getTime() / 1000,
             startDate: new Date(data.startDate).getTime() / 1000,
@@ -369,8 +382,8 @@ const Step2 = () => {
             decimals, // decimal
           );
 
-          const leaves = merkleLeaves.map((leaf) => keccak256(leaf));
-          const tree = new MerkleTree(leaves, keccak256, { sort: true });
+          console.log(merkleLeaves);
+          const tree = new MerkleTree(merkleLeaves, keccak256, { sort: true });
           const root = tree.getHexRoot();
           console.log(root);
 
@@ -397,7 +410,8 @@ const Step2 = () => {
             [false, 0],
           ];
 
-          const response = await claimsContract.claimContract(claimsSettings);
+          // const response = await claimsContract.claimContract(claimsSettings);
+          console.log(response);
           setLoading(false);
 
           // post data in api
@@ -406,7 +420,7 @@ const Step2 = () => {
             airdropTokenContract: data.airdropTokenAddress,
             airdropTokenSymbol: data.airdropTokens,
             claimContract:
-              response.events.ClaimContractDeployed.returnValues._claimContract,
+              response.events.NewClaimContract.returnValues._newClaimContract,
             totalAmount: data.numberOfTokens,
             endDate: new Date(data.endDate).getTime() / 1000,
             startDate: new Date(data.startDate).getTime() / 1000,

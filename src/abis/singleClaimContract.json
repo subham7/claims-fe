@@ -107,7 +107,8 @@
           "internalType": "struct ClaimSettings",
           "name": "_claimSettings",
           "type": "tuple"
-        }
+        },
+        { "internalType": "address", "name": "_emitter", "type": "address" }
       ],
       "stateMutability": "nonpayable",
       "type": "constructor"
@@ -117,161 +118,6 @@
     { "inputs": [], "name": "ClaimLimitReached", "type": "error" },
     { "inputs": [], "name": "ClaimNotStarted", "type": "error" },
     { "inputs": [], "name": "InvalidAmount", "type": "error" },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": false,
-          "internalType": "address",
-          "name": "_user",
-          "type": "address"
-        },
-        {
-          "indexed": false,
-          "internalType": "address",
-          "name": "_token",
-          "type": "address"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "_airdropAmount",
-          "type": "uint256"
-        }
-      ],
-      "name": "AirdropClaimed",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "components": [
-            {
-              "internalType": "bool",
-              "name": "isMaxClaimable",
-              "type": "bool"
-            },
-            {
-              "internalType": "uint256",
-              "name": "maxClaimable",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "totalClaimAmount",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256[]",
-              "name": "tokenIds",
-              "type": "uint256[]"
-            }
-          ],
-          "indexed": false,
-          "internalType": "struct ClaimAmountDetails",
-          "name": "_claimAmountDetails",
-          "type": "tuple"
-        }
-      ],
-      "name": "ChangeClaimAmountDetails",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "components": [
-            {
-              "internalType": "bool",
-              "name": "hasCooldownPeriod",
-              "type": "bool"
-            },
-            {
-              "internalType": "uint256",
-              "name": "cooldownPeriod",
-              "type": "uint256"
-            }
-          ],
-          "indexed": false,
-          "internalType": "struct CooldownDetails",
-          "name": "_cooldownDetails",
-          "type": "tuple"
-        }
-      ],
-      "name": "ChangeCooldownDetails",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": false,
-          "internalType": "address",
-          "name": "_newAddress",
-          "type": "address"
-        }
-      ],
-      "name": "ChangeRollbackAddress",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": false,
-          "internalType": "bytes32",
-          "name": "_newRoot",
-          "type": "bytes32"
-        }
-      ],
-      "name": "ChangeRoot",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "_newStartTime",
-          "type": "uint256"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "_newEndTime",
-          "type": "uint256"
-        }
-      ],
-      "name": "ChangeStartAndEndTime",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": false,
-          "internalType": "address",
-          "name": "_user",
-          "type": "address"
-        },
-        {
-          "indexed": false,
-          "internalType": "address",
-          "name": "_token",
-          "type": "address"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "_claimAmount",
-          "type": "uint256"
-        }
-      ],
-      "name": "ClaimAmountSet",
-      "type": "event"
-    },
     {
       "anonymous": false,
       "inputs": [
@@ -348,52 +194,10 @@
       "type": "event"
     },
     {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": false,
-          "internalType": "address",
-          "name": "_rollbackAddress",
-          "type": "address"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "_amount",
-          "type": "uint256"
-        }
-      ],
-      "name": "RollbackTokens",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": false,
-          "internalType": "bool",
-          "name": "_status",
-          "type": "bool"
-        }
-      ],
-      "name": "ToggleClaim",
-      "type": "event"
-    },
-    {
       "inputs": [],
       "name": "DEFAULT_ADMIN_ROLE",
       "outputs": [{ "internalType": "bytes32", "name": "", "type": "bytes32" }],
       "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        { "internalType": "address", "name": "_user", "type": "address" },
-        { "internalType": "uint256", "name": "_amount", "type": "uint256" }
-      ],
-      "name": "airdropTokens",
-      "outputs": [],
-      "stateMutability": "nonpayable",
       "type": "function"
     },
     {
@@ -491,7 +295,8 @@
           "internalType": "bytes32[]",
           "name": "_merkleProof",
           "type": "bytes32[]"
-        }
+        },
+        { "internalType": "bytes", "name": "_encodedData", "type": "bytes" }
       ],
       "name": "claim",
       "outputs": [],
@@ -612,6 +417,13 @@
       ],
       "name": "claimTokenIds",
       "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "emitterContract",
+      "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
       "stateMutability": "view",
       "type": "function"
     },

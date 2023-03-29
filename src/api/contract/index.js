@@ -88,8 +88,8 @@ export class SmartContract {
     return this.contract.methods.claimSettings().call();
   }
 
-  async claim(amount, merkleData) {
-    return this.contract.methods.claim(amount, merkleData).send({
+  async claim(amount, merkleData, leaf) {
+    return this.contract.methods.claim(amount, merkleData, leaf).send({
       from: this.walletAddress,
     });
   }
