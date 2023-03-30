@@ -1560,7 +1560,7 @@ const Settings = (props) => {
                               clubTokenMinted,
                               totalERC20Supply / 1000000,
                             )
-                          : 50
+                          : 0
                       }
                     />
                   </Grid>

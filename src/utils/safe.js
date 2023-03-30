@@ -236,7 +236,7 @@ export async function initiateConnection(
             } else {
               // create user in the API
               const data = {
-                userAddress: walletAddress,
+                userAddress: walletAddress.toLocaleLowerCase(),
                 clubs: [
                   {
                     clubId: result.data.clubId,
@@ -257,7 +257,7 @@ export async function initiateConnection(
               if (admins.length) {
                 for (let i in admins) {
                   const data = {
-                    userAddress: admins[i],
+                    userAddress: admins[i].toLocaleLowerCase(),
                     clubs: [
                       {
                         clubId: result.data.clubId,
