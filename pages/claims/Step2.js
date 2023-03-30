@@ -30,6 +30,7 @@ import { createClaim } from "../../src/api/claims";
 import { CLAIM_FACTORY_ADDRESS } from "../../src/api";
 import { MerkleTree } from "merkletreejs";
 import keccak256 from "keccak256";
+import { useConnectWallet } from "@web3-onboard/react";
 
 const useStyles = makeStyles({
   form: {
@@ -146,6 +147,11 @@ const Step2 = () => {
     return state.createClaim.userData;
   });
 
+  console.log(userData);
+  console.log(userData?.airdropTokenAddress);
+  const [{ wallet }] = useConnectWallet();
+  const walletAddress = wallet?.accounts[0].address;
+
   const hiddenFileInput = useRef(null);
 
   const claimsContractAddress = CLAIM_FACTORY_ADDRESS;
@@ -165,6 +171,8 @@ const Step2 = () => {
       // converting .csv file into array of objects
       reader.onload = async (event) => {
         const csvData = event.target.result;
+        const csvArray = csvData.split("\r\n").map((data) => console.log(data));
+
         const csvArr = csvData
           .split("\r\n")
           .map((data) => data.split(","))
@@ -174,17 +182,19 @@ const Step2 = () => {
           }));
 
         setCSVObject(csvArr);
-        console.log(csvArr);
+        console.log("csv arrr", csvArr);
 
         try {
           // claim contract for encoding
           const claimContract = new SmartContract(
             claimContractABI,
-            "0xD1AcdB31870e3d8c228981469b76001a410Ba2fF",
-            userData.walletAddress,
+            "0x9517a0de2c29C926684F88FDA6E5c5cCa4c47633",
+            walletAddress,
             undefined,
             undefined,
           );
+
+          console.log(claimContract);
 
           const erc20contract = new SmartContract(
             usdcTokenContract,
@@ -196,6 +206,8 @@ const Step2 = () => {
 
           const decimals = await erc20contract.decimals();
 
+          console.log("decimals", decimals);
+
           let encodedListOfLeaves = [];
           // encoding leaves
           csvArr.map(async (data) => {
@@ -203,15 +215,20 @@ const Step2 = () => {
             //   data.address,
             //   convertToWeiGovernance(data.amount, decimals),
             // );
+            console.log("address", data.address);
+            console.log(
+              "amount",
+              convertToWeiGovernance(data.amount, decimals),
+            );
 
             const res = await claimContract.encode(
               data.address,
               convertToWeiGovernance(data.amount, decimals),
             );
-            // console.log(res);
+            console.log(keccak256(res));
             encodedListOfLeaves.push(keccak256(res));
           });
-
+          console.log(encodedListOfLeaves);
           setMerkleLeaves(encodedListOfLeaves);
           // console.log(encodedListOfLeaves);
         } catch (err) {
@@ -266,15 +283,15 @@ const Step2 = () => {
           const claimsContract = new SmartContract(
             claimContractFactory,
             claimsContractAddress,
-            data.walletAddress,
+            userData.walletAddress,
             undefined,
             undefined,
           );
 
           const erc20contract = new SmartContract(
             usdcTokenContract,
-            data.airdropTokenAddress,
-            data.walletAddress,
+            userData.airdropTokenAddress,
+            userData.walletAddress,
             undefined,
             undefined,
           );
@@ -410,7 +427,7 @@ const Step2 = () => {
             [false, 0],
           ];
 
-          // const response = await claimsContract.claimContract(claimsSettings);
+          const response = await claimsContract.claimContract(claimsSettings);
           console.log(response);
           setLoading(false);
 

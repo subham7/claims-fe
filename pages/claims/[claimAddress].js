@@ -209,8 +209,6 @@ const ClaimAddress = () => {
         desc.merkleRoot !==
         "0x0000000000000000000000000000000000000000000000000000000000000001"
       ) {
-        // console.log(desc.merkleRoot);
-
         // getting claim amount from API
         const { amount } = await getClaimAmountForUser(
           walletAddress, // wallet address aayega
@@ -221,6 +219,7 @@ const ClaimAddress = () => {
 
         // converting the CSV data into merkleLeaves
         const csvData = await getClaimsByUserAddress(walletAddress);
+        console.log("hereeeeee", csvData);
         const { addresses } = csvData[csvData.length - 1];
         console.log(addresses);
 
@@ -228,7 +227,7 @@ const ClaimAddress = () => {
 
         console.log(decimals);
         addresses.map(async (data) => {
-          const res = await await claimContract.encode(
+          const res = await claimContract.encode(
             data.address,
             convertToWeiGovernance(data.amount, decimals),
           );
@@ -281,40 +280,12 @@ const ClaimAddress = () => {
         console.log(merkleLeaves);
         // const leaves = merkleLeaves.map((leaf) => keccak256(leaf));
 
-        let leaf1 = await claimContract.encode(
-          "0x3f6C3Bc1679731825d457541bD27C1d713698306",
-          convertToWeiGovernance(100, 6),
-        );
-        let leaf2 = await claimContract.encode(
-          "0x8E9e20b90efa7d0A072bfc8b0C74D96104F1F6FE",
-          convertToWeiGovernance(200, 6),
-        );
-        let leaf3 = await claimContract.encode(
-          "0x99A0950FF93C026Cfa1955AdEbDc9677C67FEE01",
-          convertToWeiGovernance(100, 6),
-        );
-        let leaf4 = await claimContract.encode(
-          "0xd31Efa8F0f53e7EB8187694a12B3413A63f6b284",
-          convertToWeiGovernance(120, 6),
-        );
-        let leaf5 = await claimContract.encode(
-          "0x51EEBc7765b246a4D16d02b28CEAC61299AB7d9d",
-          convertToWeiGovernance(90, 6),
-        );
-        let leaf6 = await claimContract.encode(
-          "0x47b517225f39Bb1853416D1d57Da9Afeb1460cDd",
-          convertToWeiGovernance(201, 6),
-        );
-        console.log(leaf1, leaf2, leaf3, leaf4, leaf5, leaf6);
-        const leaves = [leaf1, leaf2, leaf3, leaf4, leaf5, leaf6].map((v) =>
-          keccak256(v),
-        );
         const tree = new MerkleTree(merkleLeaves, keccak256, { sort: true });
-        console.log(merkleLeaves)
+        console.log(merkleLeaves);
 
-        // const root = tree.getHexRoot();
-        // console.log("current root", root);
-        // console.log("contract root", contractData.merkleRoot);
+        const root = tree.getHexRoot();
+        console.log("current root", root);
+        console.log("contract root", contractData.merkleRoot);
 
         const encodedLeaf = await claimContract.encode(
           walletAddress,

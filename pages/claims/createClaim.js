@@ -227,7 +227,7 @@ const CreateClaim = () => {
 
       console.log(data);
 
-      // dispatch(addUserData(data));
+      dispatch(addUserData(data));
       router.push("/claims/Step2");
     },
   });
