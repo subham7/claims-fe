@@ -448,6 +448,7 @@ const Step2 = () => {
           console.log(postData);
           const res = createClaim(postData);
           console.log(res);
+          setFinish(true);
         } catch (err) {
           setLoading(true);
           console.log(err);

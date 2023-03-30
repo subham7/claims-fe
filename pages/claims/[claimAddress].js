@@ -389,28 +389,28 @@ const ClaimAddress = () => {
               <p className={classes.amount}>{airdropTokenName}</p>
             </div>
 
-            {/* {!claimed && !alreadyClaimed ? ( */}
-            <button
-              // disabled={!walletAddress || claimableAmt === 0 ? true : false}
-              onClick={claimHandler}
-              className={classes.btn}
-              style={
-                !walletAddress
-                  ? { cursor: "not-allowed" }
-                  : { cursor: "pointer" }
-              }
-            >
-              {isClaiming ? <CircularProgress /> : "Claim"}
-            </button>
-            {/* ) : (
+            {!claimed && !alreadyClaimed ? (
               <button
-                // disabled={true}
+                disabled={!walletAddress || claimableAmt === 0 ? true : false}
+                onClick={claimHandler}
+                className={classes.btn}
+                style={
+                  !walletAddress
+                    ? { cursor: "not-allowed" }
+                    : { cursor: "pointer" }
+                }
+              >
+                {isClaiming ? <CircularProgress /> : "Claim"}
+              </button>
+            ) : (
+              <button
+                disabled={true}
                 style={{ cursor: "not-allowed" }}
                 className={classes.btn}
               >
                 Claimed!
               </button>
-            )} */}
+            )}
           </div>
         </div>
       )}
