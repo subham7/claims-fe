@@ -138,9 +138,6 @@ const Step2 = () => {
   const [finish, setFinish] = useState(false);
   const [loading, setLoading] = useState("");
   const [CSVObject, setCSVObject] = useState([]);
-  // const [message, setMessage] = useState(false);
-  // const [claimAllowed, setClaimAllowed] = useState("equalTokens");
-  // const [generatedClaimContract, setGeneratedClaimContract] = useState("");
 
   // step1 form data
   const userData = useSelector((state) => {
@@ -153,7 +150,6 @@ const Step2 = () => {
   const walletAddress = wallet?.accounts[0].address;
 
   const hiddenFileInput = useRef(null);
-
   const claimsContractAddress = CLAIM_FACTORY_ADDRESS;
 
   // handling csv file change
@@ -271,11 +267,17 @@ const Step2 = () => {
 
       // checking maximum claim is prorata or custom
       let maximumClaim;
-
       if (data.maximumTokenType === "custom") {
         maximumClaim = true;
       } else {
         maximumClaim = false;
+      }
+
+      let hasAllowanceMechanism;
+      if (data.airdropFrom === "wallet") {
+        hasAllowanceMechanism = true;
+      } else {
+        hasAllowanceMechanism = false;
       }
 
       const loadClaimsContractFactoryData_Token = async () => {
@@ -300,19 +302,23 @@ const Step2 = () => {
           const decimals = await erc20contract.decimals();
           setLoading(true);
 
-          // approve erc20
-          await erc20contract.approveDeposit(
-            claimsContractAddress,
-            data.numberOfTokens,
-            decimals, // decimal
-          );
+          // if airdroping from contract then approve erc20
+          if (!hasAllowanceMechanism) {
+            // approve erc20
+            await erc20contract.approveDeposit(
+              claimsContractAddress,
+              data.numberOfTokens,
+              decimals, // decimal
+            );
+          }
 
+          // console.log(hasAllowanceMechanism);
           const claimsSettings = [
             data.walletAddress.toLowerCase(),
             data.walletAddress.toLowerCase(),
             data.airdropTokenAddress,
             data.daoToken,
-            false, // false if token approved function called
+            hasAllowanceMechanism, // false if token approved function called
             false,
             0,
             true,
@@ -332,6 +338,17 @@ const Step2 = () => {
 
           const response = await claimsContract.claimContract(claimsSettings);
 
+          const newClaimContract =
+            response.events.NewClaimContract.returnValues._newClaimContract;
+
+          if (hasAllowanceMechanism) {
+            await erc20contract.approveDeposit(
+              newClaimContract,
+              data.numberOfTokens,
+              decimals,
+            );
+          }
+
           setLoading(false);
 
           // post data in api
@@ -339,8 +356,7 @@ const Step2 = () => {
             description: data.description,
             airdropTokenContract: data.airdropTokenAddress,
             airdropTokenSymbol: data.airdropTokens,
-            // claimContract:
-            //   response.events.ClaimContractDeployed.returnValues._claimContract,
+            claimContract: newClaimContract,
             totalAmount: data.numberOfTokens,
             endDate: new Date(data.endDate).getTime() / 1000,
             startDate: new Date(data.startDate).getTime() / 1000,
@@ -370,6 +386,13 @@ const Step2 = () => {
 
       console.log(data);
 
+      let hasAllowanceMechanism;
+      if (data.airdropFrom === "wallet") {
+        hasAllowanceMechanism = true;
+      } else {
+        hasAllowanceMechanism = false;
+      }
+
       const loadClaimsContractFactoryData_CSV = async () => {
         try {
           const claimsContract = new SmartContract(
@@ -382,22 +405,25 @@ const Step2 = () => {
 
           const erc20contract = new SmartContract(
             usdcTokenContract,
-            data.airdropTokenAddress,
-            data.walletAddress,
+            userData.airdropTokenAddress,
+            userData.walletAddress,
             undefined,
             undefined,
           );
+
+          // if airdroping from contract then approve erc20
+          if (!hasAllowanceMechanism) {
+            // approve erc20
+            await erc20contract.approveDeposit(
+              claimsContractAddress,
+              data.numberOfTokens,
+              decimals, // decimal
+            );
+          }
 
           // console.log(data);
           const decimals = await erc20contract.decimals();
           setLoading(true);
-
-          // approve erc20
-          await erc20contract.approveDeposit(
-            claimsContractAddress,
-            data.numberOfTokens,
-            decimals, // decimal
-          );
 
           console.log(merkleLeaves);
           const tree = new MerkleTree(merkleLeaves, keccak256, { sort: true });
@@ -409,7 +435,7 @@ const Step2 = () => {
             data.walletAddress.toLowerCase(),
             data.airdropTokenAddress,
             "0x0000000000000000000000000000000000000000",
-            false, // false if token approved function called
+            hasAllowanceMechanism, // false if token approved function called
             false,
             0,
             true,
@@ -429,15 +455,24 @@ const Step2 = () => {
 
           const response = await claimsContract.claimContract(claimsSettings);
           console.log(response);
-          setLoading(false);
+
+          const newClaimContract =
+            response.events.NewClaimContract.returnValues._newClaimContract;
+
+          if (hasAllowanceMechanism) {
+            await erc20contract.approveDeposit(
+              newClaimContract,
+              data.numberOfTokens,
+              decimals,
+            );
+          }
 
           // post data in api
           const postData = JSON.stringify({
             description: data.description,
             airdropTokenContract: data.airdropTokenAddress,
             airdropTokenSymbol: data.airdropTokens,
-            claimContract:
-              response.events.NewClaimContract.returnValues._newClaimContract,
+            claimContract: newClaimContract,
             totalAmount: data.numberOfTokens,
             endDate: new Date(data.endDate).getTime() / 1000,
             startDate: new Date(data.startDate).getTime() / 1000,
@@ -447,7 +482,9 @@ const Step2 = () => {
 
           console.log(postData);
           const res = createClaim(postData);
+
           console.log(res);
+          setLoading(false);
           setFinish(true);
         } catch (err) {
           setLoading(true);

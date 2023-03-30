@@ -269,11 +269,11 @@ const ClaimAddress = () => {
           decimals,
         );
 
-        const amount = await claimContract.checkAmount(walletAddress);
-        const data = convertFromWeiGovernance(amount, decimals);
+        // const amount = await claimContract.checkAmount(walletAddress);
+        // const data = convertFromWeiGovernance(amount, decimals);
 
-        console.log(data);
-        setClaimableAmt(data);
+        console.log(airdropAmount);
+        setClaimableAmt(airdropAmount);
       }
 
       console.log(claimableAmt);
@@ -329,7 +329,11 @@ const ClaimAddress = () => {
 
         // console.log(res);
       } else {
-        const res = await claimContract.claim(0, []);
+        const res = await claimContract.claim(
+          convertToWeiGovernance(claimableAmt, decimalOfToken),
+          [],
+          [],
+        );
         console.log(res);
       }
       setIsClaiming(false);

@@ -197,6 +197,7 @@ const CreateClaim = () => {
   const [selectedToken, setSelectedToken] = useState("");
   const [currentAccount, setCurrentAccount] = useState("");
   const [value, setValue] = React.useState(dayjs("2022-04-17T15:30"));
+  const [airdropFrom, setAirdropFrom] = useState("");
 
   const dispatch = useDispatch();
   console.log(dayjs(new Date()).format());
@@ -217,11 +218,11 @@ const CreateClaim = () => {
         numberOfTokens: values.numberOfTokens,
         startDate: dayjs(values.startDate).format(),
         endDate: dayjs(values.endDate).format(),
-        airdropTokens: values.airdropTokens,
         recieveTokens: recieveTokens,
         airdropTokens: selectedToken.tokenName,
         walletAddress: currentAccount,
         airdropTokenAddress: selectedToken.tokenAddress,
+        airdropFrom: airdropFrom,
       };
 
       console.log(data);
@@ -300,6 +301,7 @@ const CreateClaim = () => {
             onClick={() => {
               setSelectedContract(false);
               setSelectedWallet(true);
+              setAirdropFrom("wallet");
             }}
             className={`${
               selectedWallet ? classes.selectedContainer : classes.leftContainer
@@ -313,6 +315,7 @@ const CreateClaim = () => {
             onClick={() => {
               setSelectedWallet(false);
               setSelectedContract(true);
+              setAirdropFrom("contract");
             }}
             className={`${
               selectedContract
@@ -417,7 +420,7 @@ const CreateClaim = () => {
           <div style={{ width: "100%" }}>
             <Typography className={classes.label}>Claims start on</Typography>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
-              {/* <DemoContainer components={["DatePicker", "TimePicker"]}> */}
+              {/* <DemoContainer components={["DateTimePicker", "DateTimePicker"]}> */}
               <DateTimePicker
                 // label="Controlled picker"
                 value={formik.values.startDate}
