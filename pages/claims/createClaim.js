@@ -22,7 +22,6 @@ import { addUserData } from "../../src/redux/reducers/createClaim";
 import { getTokensFromWallet } from "../../src/api/token";
 import Web3 from "web3";
 import { LocalizationProvider } from "@mui/x-date-pickers";
-import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
@@ -217,7 +216,7 @@ const CreateClaim = () => {
         rollbackAddress: values.rollbackAddress,
         numberOfTokens: values.numberOfTokens,
         startDate: dayjs(values.startDate).format(),
-        endDate: values.endDate,
+        endDate: dayjs(values.startDate).format(),
         airdropTokens: values.airdropTokens,
         recieveTokens: recieveTokens,
         airdropTokens: selectedToken.tokenName,
@@ -418,16 +417,16 @@ const CreateClaim = () => {
           <div style={{ width: "100%" }}>
             <Typography className={classes.label}>Claims start on</Typography>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DemoContainer components={["DateTimePicker", "DateTimePicker"]}>
-                <DateTimePicker
-                  // label="Controlled picker"
-                  value={formik.values.startDate}
-                  minDate={dayjs(Date.now())}
-                  onChange={(value) => {
-                    formik.setFieldValue("startDate", value);
-                  }}
-                />
-              </DemoContainer>
+              {/* <DemoContainer components={["DatePicker", "TimePicker"]}> */}
+              <DateTimePicker
+                // label="Controlled picker"
+                value={formik.values.startDate}
+                minDate={dayjs(Date.now())}
+                onChange={(value) => {
+                  formik.setFieldValue("startDate", value);
+                }}
+              />
+              {/* </DemoContainer> */}
             </LocalizationProvider>
           </div>
 
@@ -436,16 +435,16 @@ const CreateClaim = () => {
           <div style={{ width: "100%" }}>
             <Typography className={classes.label}>Claims end on</Typography>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DemoContainer components={["DateTimePicker", "DateTimePicker"]}>
-                <DateTimePicker
-                  // label="Controlled picker"
-                  value={formik.values.endDate}
-                  minDateTime={formik.values.startDate}
-                  onChange={(value) => {
-                    formik.setFieldValue("endDate", value);
-                  }}
-                />
-              </DemoContainer>
+              {/* <DemoContainer components={["DateTimePicker", "DateTimePicker"]}> */}
+              <DateTimePicker
+                // label="Controlled picker"
+                value={formik.values.endDate}
+                minDateTime={formik.values.startDate}
+                onChange={(value) => {
+                  formik.setFieldValue("endDate", value);
+                }}
+              />
+              {/* </DemoContainer> */}
             </LocalizationProvider>
           </div>
         </div>
