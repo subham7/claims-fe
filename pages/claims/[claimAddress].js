@@ -57,6 +57,13 @@ const useStyles = makeStyles({
     color: "#0ABB92",
   },
 
+  inactive: {
+    background: "#F75F71",
+    padding: "10px 20px",
+    borderRadius: "10px",
+    // color: "",
+  },
+
   airdropContainer: {
     display: "flex",
     gap: "50px",
@@ -143,6 +150,7 @@ const ClaimAddress = () => {
   const [claimableAmt, setClaimableAmt] = useState(0);
   const [decimalOfToken, setDecimalofToken] = useState(0);
   const [merkleLeaves, setMerkleLeaves] = useState([]);
+  const [claimActive, setClaimActive] = useState(false);
 
   const [{ wallet }] = useConnectWallet();
   const walletAddress = wallet?.accounts[0].address;
@@ -151,6 +159,20 @@ const ClaimAddress = () => {
 
   // claims end date
   const endDateString = new Date(contractData.endTime * 1000).toString();
+  // const startTimeInEpoch = new Date(contractData.startTime).toString();
+  const currentTime = Date.now() / 1000;
+  console.log(contractData.startTime);
+
+  useEffect(() => {
+    if (
+      +contractData.startTime > currentTime ||
+      +contractData.endTime < currentTime
+    ) {
+      setClaimActive(false);
+    } else {
+      setClaimActive(true);
+    }
+  }, [contractData.endTime, contractData.startTime, currentTime]);
 
   const fetchContractDetails = async () => {
     // setIsLoading(true);
@@ -348,7 +370,13 @@ const ClaimAddress = () => {
 
             <div className={classes.addressLine}>
               <div className={classes.activeContainer}>
-                <p className={classes.active}>Active</p>
+                <p
+                  className={
+                    claimActive ? `${classes.active}` : `${classes.inactive}`
+                  }
+                >
+                  {claimActive ? "Active" : "Inactive"}
+                </p>
 
                 <div className={classes.createdBy}>
                   <p>Created By</p>
@@ -391,7 +419,11 @@ const ClaimAddress = () => {
 
             {!claimed && !alreadyClaimed ? (
               <button
-                disabled={!walletAddress || claimableAmt === 0 ? true : false}
+                disabled={
+                  !walletAddress || !claimActive || claimableAmt === 0
+                    ? true
+                    : false
+                }
                 onClick={claimHandler}
                 className={classes.btn}
                 style={
