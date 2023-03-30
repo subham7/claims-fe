@@ -216,7 +216,7 @@ const CreateClaim = () => {
         rollbackAddress: values.rollbackAddress,
         numberOfTokens: values.numberOfTokens,
         startDate: dayjs(values.startDate).format(),
-        endDate: dayjs(values.startDate).format(),
+        endDate: dayjs(values.endDate).format(),
         airdropTokens: values.airdropTokens,
         recieveTokens: recieveTokens,
         airdropTokens: selectedToken.tokenName,
