@@ -418,6 +418,8 @@ const Join = (props) => {
           userDetails={userDetails}
           newContract={newContract}
           clubName={clubName}
+          loading={loading}
+          setLoading={setLoading}
         />
       )}
       {tokenType === "erc721" && (

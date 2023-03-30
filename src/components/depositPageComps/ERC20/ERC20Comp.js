@@ -62,6 +62,8 @@ const ERC20Comp = ({
   usdcTokenDecimal,
   daoAddress,
   clubName,
+  loading,
+  setLoading,
 }) => {
   const classes = ERC20Styles();
   const router = useRouter();
@@ -89,46 +91,61 @@ const ERC20Comp = ({
           depositAmountConverted,
           usdcTokenDecimal,
         );
-        usdc_response.then(
-          (result) => {
-            const deposit_response = dao_contract.deposit(
-              USDC_CONTRACT_ADDRESS,
-              depositAmountConverted,
-              "",
-            );
-            deposit_response.then((result) => {
-              const data = {
-                userAddress: userDetails,
-                clubs: [
-                  {
-                    clubId: clubId,
-                    isAdmin: 0,
-                    balance: depositAmountConverted,
-                  },
-                ],
-              };
-              const createuser = createUser(data);
-              createuser.then((result) => {
-                if (result.status !== 201) {
-                  console.log("Error", result);
+        usdc_response
+          .then(
+            (result) => {
+              const deposit_response = dao_contract.deposit(
+                USDC_CONTRACT_ADDRESS,
+                depositAmountConverted,
+                "",
+              );
+              deposit_response
+                .then((result) => {
+                  const data = {
+                    userAddress: userDetails,
+                    clubs: [
+                      {
+                        clubId: clubId,
+                        isAdmin: 0,
+                        balance: depositAmountConverted,
+                      },
+                    ],
+                  };
+                  const createuser = createUser(data);
+                  createuser.then((result) => {
+                    if (result.status !== 201) {
+                      console.log("Error", result);
+                      setAlertStatus("error");
+                      setOpenSnackBar(true);
+                    } else {
+                      setAlertStatus("success");
+                      setOpenSnackBar(true);
+                      router.push(`/dashboard/${clubId}`, undefined, {
+                        shallow: true,
+                      });
+                    }
+                  });
+                })
+                .catch((error) => {
+                  console.log("Error", error.message);
                   setAlertStatus("error");
                   setOpenSnackBar(true);
-                } else {
-                  setAlertStatus("success");
-                  setOpenSnackBar(true);
-                  router.push(`/dashboard/${clubId}`, undefined, {
-                    shallow: true,
-                  });
-                }
-              });
-            });
-          },
-          (error) => {
+                  setDepositInitiated(false);
+                });
+            },
+            (error) => {
+              console.log("Error", error.message);
+              setAlertStatus("error");
+              setOpenSnackBar(true);
+              setDepositInitiated(false);
+            },
+          )
+          .catch((error) => {
             console.log("Error", error);
             setAlertStatus("error");
             setOpenSnackBar(true);
-          },
-        );
+            setDepositInitiated(false);
+          });
       } else {
         // if user exists
         const usdc_contract = newContract(USDC_CONTRACT_ADDRESS);
@@ -140,41 +157,56 @@ const ERC20Comp = ({
           depositAmountConverted,
           usdcTokenDecimal,
         );
-        usdc_response.then(
-          (result) => {
-            const deposit_response = dao_contract.deposit(
-              USDC_CONTRACT_ADDRESS,
-              depositAmountConverted,
-              "",
-            );
-            deposit_response.then((result) => {
-              const patchData = {
-                userAddress: userDetails,
-                clubId: clubId,
-                balance: depositAmountConverted,
-              };
-              const updateDepositAmount = patchUserBalance(patchData);
-              updateDepositAmount.then((result) => {
-                if (result.status != 200) {
-                  console.log("Error", result);
+        usdc_response
+          .then(
+            (result) => {
+              const deposit_response = dao_contract.deposit(
+                USDC_CONTRACT_ADDRESS,
+                depositAmountConverted,
+                "",
+              );
+              deposit_response
+                .then((result) => {
+                  const patchData = {
+                    userAddress: userDetails,
+                    clubId: clubId,
+                    balance: depositAmountConverted,
+                  };
+                  const updateDepositAmount = patchUserBalance(patchData);
+                  updateDepositAmount.then((result) => {
+                    if (result.status != 200) {
+                      console.log("Error", result);
+                      setAlertStatus("error");
+                      setOpenSnackBar(true);
+                    } else {
+                      setAlertStatus("success");
+                      setOpenSnackBar(true);
+                      router.push(`/dashboard/${clubId}`, undefined, {
+                        shallow: true,
+                      });
+                    }
+                  });
+                })
+                .catch((error) => {
+                  console.log("Error", error);
                   setAlertStatus("error");
                   setOpenSnackBar(true);
-                } else {
-                  setAlertStatus("success");
-                  setOpenSnackBar(true);
-                  router.push(`/dashboard/${clubId}`, undefined, {
-                    shallow: true,
-                  });
-                }
-              });
-            });
-          },
-          (error) => {
-            console.log("Error", error);
+                  setDepositInitiated(false);
+                });
+            },
+            (error) => {
+              console.log("Error", error);
+              setAlertStatus("error");
+              setOpenSnackBar(true);
+              setDepositInitiated(false);
+            },
+          )
+          .catch((error) => {
+            console.log("Error", error.message);
             setAlertStatus("error");
             setOpenSnackBar(true);
-          },
-        );
+            setDepositInitiated(false);
+          });
       }
     });
   };
@@ -597,6 +629,14 @@ const ERC20Comp = ({
                             inputProps={{ style: { fontSize: "1em" } }}
                             InputLabelProps={{ style: { fontSize: "1em" } }}
                           />
+                          <Typography sx={{ color: "red" }}>
+                            {depositAmount < minDeposit
+                              ? "Deposit amount should be greater than min deposit"
+                              : ""}
+                            {depositAmount > maxDeposit
+                              ? "Deposit amount should be less than max deposit"
+                              : ""}
+                          </Typography>
                         </Grid>
                         <Grid
                           item
@@ -629,6 +669,7 @@ const ERC20Comp = ({
                       </Typography>
                     </Card>
                   </Grid>
+
                   <Grid item container ml={1} mt={1} mb={1}>
                     <Button
                       variant="primary"
@@ -636,7 +677,11 @@ const ERC20Comp = ({
                       onClick={handleDeposit}
                       disabled={
                         (closingDays > 0 ? false : true) ||
-                        (depositAmount <= 0 ? true : false)
+                        (depositAmount <= 0 ||
+                        depositAmount < minDeposit ||
+                        depositAmount > maxDeposit
+                          ? true
+                          : false)
                       }
                     >
                       Deposit
