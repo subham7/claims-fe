@@ -24,6 +24,7 @@ import { useSelector } from "react-redux";
 import { useRouter } from "next/router";
 import ClubFetch from "../../../utils/clubFetch";
 import { TwitterShareButton } from "react-twitter-embed";
+import { convertToWei } from "../../../utils/globalFunctions";
 
 const ERC20Comp = ({
   wallet,
