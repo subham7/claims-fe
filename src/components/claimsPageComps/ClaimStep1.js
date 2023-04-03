@@ -12,19 +12,17 @@ import {
 import { BsArrowLeft } from "react-icons/bs";
 import { makeStyles } from "@mui/styles";
 import React, { useEffect, useState } from "react";
-import * as yup from "yup";
-import { useFormik } from "formik";
-import { useRouter } from "next/router";
-import { useDispatch, useSelector } from "react-redux";
 import { IoWalletSharp } from "react-icons/io5";
 import { BsFillSendFill } from "react-icons/bs";
-import { addUserData } from "../../src/redux/reducers/createClaim";
-import { getTokensFromWallet } from "../../src/api/token";
-import Web3 from "web3";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
+import { useRouter } from "next/router";
+import { route } from "next/dist/server/router";
+import Web3 from "web3";
+import { useConnectWallet } from "@web3-onboard/react";
+import { getTokensFromWallet } from "../../api/token";
 
 const useStyles = makeStyles({
   form: {
@@ -163,136 +161,33 @@ const useStyles = makeStyles({
   },
 });
 
-const validationSchema = yup.object({
-  description: yup
-    .string("Enter one-liner description")
-    .required("description is required"),
-  rollbackAddress: yup.string("Enter rollback address"),
-  // .required("Rollback address is required"),
-  numberOfTokens: yup
-    .number()
-    .required("Enter amount of tokens")
-    .moreThan(0, "Amount should be greater than 0"),
-  startDate: yup.date().required("start date is required").min(new Date()),
-  endDate: yup
-    .date()
-    .required("end date is required")
-    .min(yup.ref("startDate")),
-});
-
-const CreateClaim = () => {
+const ClaimStep1 = ({ handleNext, setActiveStep, formik, tokensInWallet }) => {
   const classes = useStyles();
   const router = useRouter();
-
-  // const todayDate = console.log(todayDate);
-  const [selectedWallet, setSelectedWallet] = useState(false);
-  const [selectedContract, setSelectedContract] = useState(true);
-  const [recieveTokens, setRecieveTokens] = useState("immediately");
-  const [tokensInWallet, setTokensInWallet] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedToken, setSelectedToken] = useState("");
-  const [currentAccount, setCurrentAccount] = useState("");
-  const [value, setValue] = React.useState(dayjs("2022-04-17T15:30"));
-  const [airdropFrom, setAirdropFrom] = useState("contract");
-  const [previousUserData, setPreviousUserData] = useState({});
-
-  // if FormData exists formData
-  const userData = useSelector((state) => {
-    return state.createClaim.userData;
-  });
-
-  console.log(userData);
-  // setPreviousUserData(userData);
-
-  const dispatch = useDispatch();
-  console.log(dayjs(new Date()).format());
-
-  let initialValues;
-
-  if (userData?.description?.length) {
-    initialValues = {
-      description: userData.description,
-      rollbackAddress: userData.rollbackAddress,
-      numberOfTokens: userData.numberOfTokens,
-      startDate: dayjs(Date.now()),
-      endDate: dayjs(Date.now()),
-      airdropFrom: userData.airdropFrom,
-      airdropTokens: userData.airdropTokens,
-    };
-    // setSelectedToken(userData.airdropTokens);
-  } else {
-    initialValues = {
-      description: "",
-      rollbackAddress: "",
-      numberOfTokens: "",
-      startDate: dayjs(Date.now()),
-      endDate: dayjs(Date.now()),
-      airdropTokens: "",
-    };
-  }
-  const formik = useFormik({
-    initialValues: initialValues,
-    validationSchema: validationSchema,
-    onSubmit: (values) => {
-      const data = {
-        description: values.description,
-        rollbackAddress: values.rollbackAddress,
-        numberOfTokens: values.numberOfTokens,
-        startDate: dayjs(values.startDate).format(),
-        endDate: dayjs(values.endDate).format(),
-        recieveTokens: recieveTokens,
-        airdropTokens: selectedToken.tokenName,
-        walletAddress: currentAccount,
-        airdropTokenAddress: selectedToken.tokenAddress,
-        airdropFrom: airdropFrom,
-      };
-
-      console.log(data);
-
-      dispatch(addUserData(data));
-      router.push("/claims/Step2");
-    },
-  });
-
-  const backHandler = () => {
-    router.push("/claims");
-  };
-
-  const getCurrentAccount = async () => {
-    setIsLoading(true);
-    const web3 = new Web3(window.ethereum);
-
-    // current account
-    const accounts = await web3.eth.getAccounts();
-    setCurrentAccount(accounts[0].toLowerCase());
-    const data = await getTokensFromWallet(accounts[0]);
-    setTokensInWallet(data);
-    setIsLoading(false);
-  };
-
-  // when to recieve tokens
-  const recieveTokenHandler = (event) => {
-    setRecieveTokens(event.target.value);
-  };
-
-  const changeSelectedTokenHandler = (event) => {
-    setSelectedToken(event.target.value);
-    // console.log(event.target.value);
-  };
+  const [selectedContract, setSelectedContract] = useState(false);
+  const [selectedWallet, setSelectedWallet] = useState(false);
+  // const [tokensInWallet, setTokensInWallet] = useState(null);
 
   useEffect(() => {
-    getCurrentAccount();
-  }, []);
+    formik.values.airdropTokenAddress =
+      formik.values.selectedToken.tokenAddress;
+  }, [formik.values]);
 
   return (
     <>
-      <Typography onClick={backHandler} className={classes.back}>
+      <Typography
+        onClick={() => {
+          router.push("/claims");
+        }}
+        className={classes.back}
+      >
         <BsArrowLeft /> Back to claims
       </Typography>
 
       {/* <Typography className={classes.step}>Step 1/2</Typography> */}
 
-      <form onSubmit={formik.handleSubmit} className={classes.form}>
+      <form className={classes.form}>
         <Typography className={classes.title}>
           Create a new claim page
         </Typography>
@@ -318,12 +213,18 @@ const CreateClaim = () => {
           Where do you want to airdrop tokens from?{" "}
         </Typography>
 
-        <div className={classes.selectContainer}>
+        <div
+          // onChange={formik.handleChange}
+          // id="airdropFrom"
+          className={classes.selectContainer}
+          // value={formik.values.airdropFrom}
+        >
           <div
             onClick={() => {
               setSelectedContract(false);
               setSelectedWallet(true);
-              setAirdropFrom("wallet");
+              formik.values.airdropFrom = "wallet";
+              // setAirdropFrom("wallet");
             }}
             className={`${
               selectedWallet ? classes.selectedContainer : classes.leftContainer
@@ -337,7 +238,8 @@ const CreateClaim = () => {
             onClick={() => {
               setSelectedWallet(false);
               setSelectedContract(true);
-              setAirdropFrom("contract");
+              formik.values.airdropFrom = "contract";
+              // setAirdropFrom("contract");
             }}
             className={`${
               selectedContract
@@ -363,10 +265,10 @@ const CreateClaim = () => {
               id="rollbackAddress"
               value={formik.values.rollbackAddress}
               onChange={formik.handleChange}
-              // error={
-              //   formik.touched.rollbackAddress &&
-              //   Boolean(formik.errors.rollbackAddress)
-              // }
+              error={
+                formik.touched.rollbackAddress &&
+                Boolean(formik.errors.rollbackAddress)
+              }
               helperText={
                 formik.touched.rollbackAddress && formik.errors.rollbackAddress
               }
@@ -391,18 +293,32 @@ const CreateClaim = () => {
               placeholder="Loading tokens..."
             />
           ) : (
-            <Select
-              onChange={changeSelectedTokenHandler}
-              displayEmpty
-              inputProps={{ "aria-label": "Without label" }}
+            <TextField
+              variant="outlined"
+              className={classes.input}
+              name="selectedToken"
+              id="selectedToken"
+              value={formik.values.selectedToken}
+              onChange={formik.handleChange}
+              placeholder="Loading Tokens..."
+              select
+              error={
+                formik.touched.selectedToken &&
+                Boolean(formik.errors.selectedToken)
+              }
+              helperText={
+                formik.touched.selectedToken && formik.errors.selectedToken
+              }
             >
+              <MenuItem key={""} value={""}>
+                No Selected // Or Empty
+              </MenuItem>
               {tokensInWallet?.map((token, i) => (
                 <MenuItem key={i} value={token}>
-                  {/* {console.log(token)} */}
                   {token?.tokenSymbol}
                 </MenuItem>
               ))}
-            </Select>
+            </TextField>
           )}
         </FormControl>
         <Typography className={classes.text}>
@@ -417,7 +333,10 @@ const CreateClaim = () => {
           InputProps={{
             endAdornment: (
               <InputAdornment style={{ color: "#6475A3" }} position="end">
-                Balance: {selectedToken ? selectedToken.tokenBalance : "0"}
+                Balance:{" "}
+                {formik.values.selectedToken
+                  ? formik.values.selectedToken.tokenBalance
+                  : "0"}
               </InputAdornment>
             ),
           }}
@@ -428,11 +347,13 @@ const CreateClaim = () => {
           error={
             (formik.touched.numberOfTokens &&
               Boolean(formik.errors.numberOfTokens)) ||
-            formik.values.numberOfTokens > selectedToken.tokenBalance
+            formik.values.numberOfTokens >
+              formik.values.selectedToken?.tokenBalance
           }
           helperText={
             (formik.touched.numberOfTokens && formik.errors.numberOfTokens) ||
-            formik.values.numberOfTokens > selectedToken.tokenBalance
+            formik.values.numberOfTokens >
+              formik.values.selectedToken.tokenBalance
           }
         />
 
@@ -474,14 +395,16 @@ const CreateClaim = () => {
           </div>
         </div>
 
-        {/* when to receive */}
+        {/* when to receive  */}
         <Typography className={classes.label}>
           When do they receive tokens after claiming?
         </Typography>
         <FormControl sx={{ width: "100%" }}>
           <Select
-            onChange={recieveTokenHandler}
-            value={recieveTokens}
+            onChange={formik.handleChange}
+            id="recieveTokens"
+            name="recieveTokens"
+            value={formik.values.recieveTokens}
             inputProps={{ "aria-label": "Without label" }}
           >
             <MenuItem value={"week"}>After 1 week </MenuItem>
@@ -489,9 +412,9 @@ const CreateClaim = () => {
           </Select>
         </FormControl>
 
-        {/* Next */}
+        {/* {/* Next */}
         <Button
-          // onClick={nextHandler}
+          onClick={formik.handleSubmit}
           type="submit"
           variant="contained"
           className={classes.btn}
@@ -503,4 +426,4 @@ const CreateClaim = () => {
   );
 };
 
-export default CreateClaim;
+export default ClaimStep1;
