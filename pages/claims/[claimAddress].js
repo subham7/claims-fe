@@ -107,13 +107,17 @@ const useStyles = makeStyles({
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    padding: "8px 20px",
+    padding: "28px 20px",
     border: "0.5px solid #6475A3",
     borderRadius: "12px",
   },
   amount: {
     fontSize: "24px",
     fontWeight: "400",
+    padding: 0,
+    margin: 0,
+
+    // margin:
   },
 
   btn: {
@@ -127,6 +131,48 @@ const useStyles = makeStyles({
     borderRadius: "8px",
     cursor: "pointer",
     marginTop: "20px",
+  },
+  claimAmt: {
+    fontSize: "30px",
+    margin: 0,
+    padding: 0,
+  },
+  myClaim: {
+    margin: 0,
+    padding: 0,
+    color: "#C1D3FF",
+    fontSize: "14px",
+  },
+  claims: {
+    display: "flex",
+    marginTop: "10px",
+    alignItems: "center",
+    gap: "10px",
+    marginBottom: "20px",
+  },
+  input: {
+    fontSize: "30px",
+    outline: "none",
+    background: "transparent",
+    border: "none",
+    color: "white",
+  },
+  max: {
+    padding: "4px 12px",
+    background: "#3B7AFD",
+    borderRadius: "4px",
+    color: "white",
+    border: "none",
+    cursor: "pointer",
+  },
+  remainingClaim: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  error: {
+    color: "red",
+    fontSize: "14px",
   },
 });
 
@@ -151,6 +197,9 @@ const ClaimAddress = () => {
   const [decimalOfToken, setDecimalofToken] = useState(0);
   const [merkleLeaves, setMerkleLeaves] = useState([]);
   const [claimActive, setClaimActive] = useState(false);
+  const [claimInput, setClaimInput] = useState(0);
+  const [showInputError, setShowInputError] = useState(false);
+  const [claimRemaining, setClaimRemaining] = useState(claimableAmt);
 
   const [{ wallet }] = useConnectWallet();
   const walletAddress = wallet?.accounts[0].address;
@@ -193,6 +242,10 @@ const ClaimAddress = () => {
       // check if token is already claimed
       const hasClaimed = await claimContract.hasClaimed(walletAddress);
       setAlreadyClaimed(hasClaimed);
+
+      const remainingAmt = await claimContract.claimAmount(walletAddress);
+      setClaimRemaining(remainingAmt);
+      console.log(remainingAmt);
 
       const erc20Contract = new SmartContract(
         USDCContract,
@@ -320,17 +373,14 @@ const ClaimAddress = () => {
         const proof = tree.getHexProof(leaf);
         console.log(encodedLeaf);
 
-        const amt = convertToWeiGovernance(claimableAmt, decimalOfToken);
-        console.log("proof", proof);
-        console.log("amt", amt);
-        console.log("leaf", leaf);
+        const amt = convertToWeiGovernance(claimInput, decimalOfToken);
+        console.log(amt);
 
         const res = await claimContract.claim(amt, proof, encodedLeaf);
-
-        // console.log(res);
+        console.log(res);
       } else {
         const res = await claimContract.claim(
-          convertToWeiGovernance(claimableAmt, decimalOfToken),
+          convertToWeiGovernance(claimInput, decimalOfToken),
           [],
           [],
         );
@@ -347,9 +397,21 @@ const ClaimAddress = () => {
     }
   };
 
+  const maxHandler = () => {
+    if (claimRemaining === 0 && !alreadyClaimed) {
+      setClaimInput(claimableAmt);
+    } else {
+      setClaimInput(convertFromWeiGovernance(claimRemaining, decimalOfToken));
+    }
+  };
+
   useEffect(() => {
     fetchContractDetails();
   }, [claimAddress, walletAddress]);
+
+  useEffect(() => {
+    console.log(claimRemaining);
+  }, [claimRemaining]);
 
   return (
     <>
@@ -414,13 +476,69 @@ const ClaimAddress = () => {
 
           {/* Right */}
           <div className={classes.rightContainer}>
-            <p className={classes.myClaim}>My Claim</p>
-
-            <div className={classes.claimContainer}>
-              <p className={classes.amount}>{claimableAmt}</p>
-              <p className={classes.amount}>{airdropTokenName}</p>
+            <div className={classes.remainingClaim}>
+              <div>
+                <p className={classes.myClaim}>My Claim</p>
+                <div className={classes.claims}>
+                  <p className={classes.claimAmt}>{claimableAmt}</p>
+                  <p className={classes.amount}>{airdropTokenName}</p>
+                </div>
+              </div>
+              <div>
+                <p className={classes.myClaim}>Remaining Amt</p>
+                <div className={classes.claims}>
+                  <p className={classes.claimAmt}>
+                    {convertFromWeiGovernance(claimRemaining, decimalOfToken)}
+                  </p>
+                  <p className={classes.amount}>{airdropTokenName}</p>
+                </div>
+              </div>
             </div>
 
+            <div className={classes.claimContainer}>
+              <input
+                onChange={(event) => {
+                  setClaimInput(event.target.value);
+
+                  if (
+                    event.target.value >
+                      convertFromWeiGovernance(
+                        claimRemaining,
+                        decimalOfToken,
+                      ) ||
+                    claimInput >
+                      convertFromWeiGovernance(claimRemaining, decimalOfToken)
+                  ) {
+                    setShowInputError(true);
+                  } else {
+                    setShowInputError(false);
+                  }
+                }}
+                disabled={!claimActive || claimRemaining === 0 ? true : false}
+                value={claimInput}
+                placeholder="0"
+                type="number"
+                className={classes.input}
+              />
+              <button
+                disabled={!claimActive && true}
+                style={
+                  !claimActive
+                    ? { cursor: "not-allowed" }
+                    : { cursor: "pointer" }
+                }
+                onClick={maxHandler}
+                className={classes.max}
+              >
+                Max
+              </button>
+            </div>
+
+            {showInputError && (
+              <p className={classes.error}>
+                Please enter number lesser than the remaining Amt
+              </p>
+            )}
             {!claimed && !alreadyClaimed ? (
               <button
                 disabled={
@@ -431,7 +549,7 @@ const ClaimAddress = () => {
                 onClick={claimHandler}
                 className={classes.btn}
                 style={
-                  !walletAddress
+                  !walletAddress || !claimActive || claimableAmt === 0
                     ? { cursor: "not-allowed" }
                     : { cursor: "pointer" }
                 }
@@ -439,13 +557,26 @@ const ClaimAddress = () => {
                 {isClaiming ? <CircularProgress /> : "Claim"}
               </button>
             ) : (
-              <button
-                disabled={true}
-                style={{ cursor: "not-allowed" }}
-                className={classes.btn}
-              >
-                Claimed!
-              </button>
+              <>
+                {(claimed || alreadyClaimed) && claimRemaining === 0 ? (
+                  <button
+                    disabled={true}
+                    style={{ cursor: "not-allowed" }}
+                    className={classes.btn}
+                  >
+                    Claimed!
+                  </button>
+                ) : (
+                  <button
+                    // disabled={true}
+                    // style={{ cursor: "not-allowed" }}
+                    className={classes.btn}
+                    onClick={claimHandler}
+                  >
+                    Claim
+                  </button>
+                )}
+              </>
             )}
           </div>
         </div>

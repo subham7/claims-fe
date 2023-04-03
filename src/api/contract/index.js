@@ -104,6 +104,10 @@ export class SmartContract {
     return this.contract.methods.hasClaimed(walletAddress).call();
   }
 
+  async claimAmount(walletAddress) {
+    return this.contract.methods.claimAmount(walletAddress).call();
+  }
+
   async checkAmount(walletAddress) {
     return this.contract.methods.checkAmount(walletAddress).call({
       from: this.walletAddress,

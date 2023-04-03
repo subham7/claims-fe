@@ -393,6 +393,8 @@ const Step2 = () => {
         hasAllowanceMechanism = false;
       }
 
+      console.log(hasAllowanceMechanism);
+
       const loadClaimsContractFactoryData_CSV = async () => {
         try {
           const claimsContract = new SmartContract(
@@ -411,6 +413,10 @@ const Step2 = () => {
             undefined,
           );
 
+          // console.log(data);
+          const decimals = await erc20contract.decimals();
+          setLoading(true);
+
           // if airdroping from contract then approve erc20
           if (!hasAllowanceMechanism) {
             // approve erc20
@@ -420,10 +426,6 @@ const Step2 = () => {
               decimals, // decimal
             );
           }
-
-          // console.log(data);
-          const decimals = await erc20contract.decimals();
-          setLoading(true);
 
           console.log(merkleLeaves);
           const tree = new MerkleTree(merkleLeaves, keccak256, { sort: true });
