@@ -15,7 +15,7 @@ import React, { useEffect, useState } from "react";
 import * as yup from "yup";
 import { useFormik } from "formik";
 import { useRouter } from "next/router";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { IoWalletSharp } from "react-icons/io5";
 import { BsFillSendFill } from "react-icons/bs";
 import { addUserData } from "../../src/redux/reducers/createClaim";
@@ -185,7 +185,6 @@ const CreateClaim = () => {
   const router = useRouter();
 
   // const todayDate = console.log(todayDate);
-
   const [selectedWallet, setSelectedWallet] = useState(false);
   const [selectedContract, setSelectedContract] = useState(true);
   const [recieveTokens, setRecieveTokens] = useState("immediately");
@@ -194,7 +193,14 @@ const CreateClaim = () => {
   const [selectedToken, setSelectedToken] = useState("");
   const [currentAccount, setCurrentAccount] = useState("");
   const [value, setValue] = React.useState(dayjs("2022-04-17T15:30"));
-  const [airdropFrom, setAirdropFrom] = useState("");
+  const [airdropFrom, setAirdropFrom] = useState("contract");
+
+  // if FormData exists formData
+  const userData = useSelector((state) => {
+    return state.createClaim.userData;
+  });
+
+  console.log(userData);
 
   const dispatch = useDispatch();
   console.log(dayjs(new Date()).format());
@@ -421,7 +427,7 @@ const CreateClaim = () => {
               <DateTimePicker
                 // label="Controlled picker"
                 value={formik.values.startDate}
-                minDateTime={dayjs(Date.now())}
+                minDateTime={dayjs(Date.now() - 10000)}
                 onChange={(value) => {
                   formik.setFieldValue("startDate", value);
                 }}
