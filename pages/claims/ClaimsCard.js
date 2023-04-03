@@ -1,5 +1,5 @@
 import { makeStyles } from "@mui/styles";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { BsLink45Deg, BsFillSendFill } from "react-icons/bs";
 import { BiPencil } from "react-icons/bi";
 import { AiFillCalendar } from "react-icons/ai";
@@ -63,6 +63,20 @@ const useStyles = makeStyles({
     margin: 0,
     fontSize: "12px",
   },
+  active: {
+    padding: "4px 10px",
+    background: "#17454E",
+    color: "#0ABB91",
+    border: "none",
+    borderRadius: "5px",
+  },
+  inactive: {
+    padding: "4px 10px",
+    background: "#F75F71",
+    color: "white",
+    border: "none",
+    borderRadius: "5px",
+  },
 });
 
 const ClaimsCard = ({
@@ -79,6 +93,7 @@ const ClaimsCard = ({
   const classes = useStyles();
   const router = useRouter();
   const dispatch = useDispatch();
+  const [isActive, setIsActive] = useState(false);
 
   const convertedStartDay = new Date(startDate * 1000).getDate();
   const convertedStartMonth = new Date(startDate * 1000).toLocaleString(
@@ -90,7 +105,16 @@ const ClaimsCard = ({
     month: "short",
   });
 
-  const convertedData = new Date(updatedDate).toLocaleDateString();
+  const convertedDate = new Date(updatedDate).toLocaleDateString();
+  const currentTime = Date.now() / 1000;
+
+  useEffect(() => {
+    if (+startDate > currentTime || +endDate < currentTime) {
+      setIsActive(false);
+    } else {
+      setIsActive(true);
+    }
+  }, [currentTime]);
 
   const claimContractData = {
     description,
@@ -114,10 +138,19 @@ const ClaimsCard = ({
       <div className={classes.topLine}>
         <h4 className={classes.createdBy}>
           Created by <span className={classes.span}>me</span> on{" "}
-          <span className={classes.span}>{convertedData}</span>
+          <span className={classes.span}>{convertedDate}</span>
         </h4>
         <div className={classes.iconContainer}>
-          <BsLink45Deg size={25} className={classes.icons} />
+          {/* <div className={classes.active}>Active</div> */}
+          <BsLink45Deg
+            onClick={() => {
+              navigator.clipboard.writeText(
+                `${window.location.origin}/claims/${claimContract}`,
+              );
+            }}
+            size={25}
+            className={classes.icons}
+          />
           <BiPencil size={25} className={classes.icons} />
         </div>
       </div>

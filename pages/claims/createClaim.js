@@ -173,10 +173,7 @@ const validationSchema = yup.object({
     .number()
     .required("Enter amount of tokens")
     .moreThan(0, "Amount should be greater than 0"),
-  startDate: yup
-    .date()
-    .required("start date is required")
-    .min(new Date().toISOString()),
+  startDate: yup.date().required("start date is required").min(new Date()),
   endDate: yup
     .date()
     .required("end date is required")
@@ -424,7 +421,7 @@ const CreateClaim = () => {
               <DateTimePicker
                 // label="Controlled picker"
                 value={formik.values.startDate}
-                minDate={dayjs(Date.now())}
+                minDateTime={dayjs(Date.now())}
                 onChange={(value) => {
                   formik.setFieldValue("startDate", value);
                 }}

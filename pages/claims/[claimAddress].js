@@ -1,5 +1,5 @@
 import { makeStyles } from "@mui/styles";
-import React, { useEffect, useReducer, useState } from "react";
+import React, { useCallback, useEffect, useReducer, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { SmartContract } from "../../src/api/contract";
 import Navbar2 from "../../src/components/navbar2";
@@ -12,7 +12,7 @@ import {
 
 import { useRouter } from "next/router";
 import { useConnectWallet } from "@web3-onboard/react";
-import { Alert, CircularProgress } from "@mui/material";
+import { Alert, CircularProgress, Snackbar } from "@mui/material";
 import {
   getClaimAmountForUser,
   getClaimsByUserAddress,
@@ -199,7 +199,8 @@ const ClaimAddress = () => {
   const [claimActive, setClaimActive] = useState(false);
   const [claimInput, setClaimInput] = useState(0);
   const [showInputError, setShowInputError] = useState(false);
-  const [claimRemaining, setClaimRemaining] = useState(claimableAmt);
+  const [claimRemaining, setClaimRemaining] = useState(0);
+  const [showMessage, setShowMessage] = useState(false);
 
   const [{ wallet }] = useConnectWallet();
   const walletAddress = wallet?.accounts[0].address;
@@ -223,7 +224,7 @@ const ClaimAddress = () => {
     }
   }, [contractData.endTime, contractData.startTime, currentTime]);
 
-  const fetchContractDetails = async () => {
+  const fetchContractDetails = useCallback(async () => {
     // setIsLoading(true);
 
     try {
@@ -244,7 +245,14 @@ const ClaimAddress = () => {
       setAlreadyClaimed(hasClaimed);
 
       const remainingAmt = await claimContract.claimAmount(walletAddress);
-      setClaimRemaining(remainingAmt);
+
+      if (!hasClaimed) {
+        console.log(claimableAmt);
+        setClaimRemaining(convertToWeiGovernance(claimableAmt, decimalOfToken));
+        // console.log(hasClaimed);
+      } else {
+        setClaimRemaining(remainingAmt);
+      }
       console.log(remainingAmt);
 
       const erc20Contract = new SmartContract(
@@ -335,7 +343,7 @@ const ClaimAddress = () => {
       console.log(err);
       // setMessage(err.message);
     }
-  };
+  }, [claimAddress, claimableAmt, decimalOfToken, walletAddress]);
 
   const claimHandler = async () => {
     setIsClaiming(true);
@@ -377,6 +385,10 @@ const ClaimAddress = () => {
         console.log(amt);
 
         const res = await claimContract.claim(amt, proof, encodedLeaf);
+
+        const remainingAmt = await claimContract.claimAmount(walletAddress);
+        setClaimRemaining(remainingAmt);
+        setClaimInput(0);
         console.log(res);
       } else {
         const res = await claimContract.claim(
@@ -388,13 +400,23 @@ const ClaimAddress = () => {
       }
       setIsClaiming(false);
       setClaimed(true);
+
+      showMessageHandler();
       setMessage("Successfully Claimed!");
       // console.log(desc);
     } catch (err) {
       console.log(err);
+      showMessageHandler();
+      setMessage(err.message);
       setIsClaiming(false);
-      setMessage("err.message");
     }
+  };
+
+  const showMessageHandler = () => {
+    setShowMessage(true);
+    setTimeout(() => {
+      setShowMessage(false);
+    }, 4000);
   };
 
   const maxHandler = () => {
@@ -404,14 +426,11 @@ const ClaimAddress = () => {
       setClaimInput(convertFromWeiGovernance(claimRemaining, decimalOfToken));
     }
   };
+  console.log(+claimRemaining);
 
   useEffect(() => {
     fetchContractDetails();
-  }, [claimAddress, walletAddress]);
-
-  useEffect(() => {
-    console.log(claimRemaining);
-  }, [claimRemaining]);
+  }, [fetchContractDetails]);
 
   return (
     <>
@@ -514,7 +533,11 @@ const ClaimAddress = () => {
                     setShowInputError(false);
                   }
                 }}
-                disabled={!claimActive || claimRemaining === 0 ? true : false}
+                disabled={
+                  !claimActive || (+claimRemaining === 0 && alreadyClaimed)
+                    ? true
+                    : false
+                }
                 value={claimInput}
                 placeholder="0"
                 type="number"
@@ -539,52 +562,37 @@ const ClaimAddress = () => {
                 Please enter number lesser than the remaining Amt
               </p>
             )}
-            {!claimed && !alreadyClaimed ? (
-              <button
-                disabled={
-                  !walletAddress || !claimActive || claimableAmt === 0
-                    ? true
-                    : false
-                }
-                onClick={claimHandler}
-                className={classes.btn}
-                style={
-                  !walletAddress || !claimActive || claimableAmt === 0
-                    ? { cursor: "not-allowed" }
-                    : { cursor: "pointer" }
-                }
-              >
-                {isClaiming ? <CircularProgress /> : "Claim"}
-              </button>
-            ) : (
-              <>
-                {(claimed || alreadyClaimed) && claimRemaining === 0 ? (
-                  <button
-                    disabled={true}
-                    style={{ cursor: "not-allowed" }}
-                    className={classes.btn}
-                  >
-                    Claimed!
-                  </button>
-                ) : (
-                  <button
-                    // disabled={true}
-                    // style={{ cursor: "not-allowed" }}
-                    className={classes.btn}
-                    onClick={claimHandler}
-                  >
-                    Claim
-                  </button>
-                )}
-              </>
-            )}
+
+            <button
+              onClick={claimHandler}
+              className={classes.btn}
+              disabled={
+                (+claimRemaining === 0 && alreadyClaimed) ||
+                !claimActive ||
+                +claimInput <= 0
+                  ? true
+                  : false
+              }
+              style={
+                (alreadyClaimed && +claimRemaining === 0) || +claimInput <= 0
+                  ? { cursor: "not-allowed" }
+                  : { cursor: "pointer" }
+              }
+            >
+              {isClaiming ? (
+                <CircularProgress />
+              ) : alreadyClaimed && +claimRemaining === 0 ? (
+                "Claimed"
+              ) : (
+                "Claim"
+              )}
+            </button>
           </div>
         </div>
       )}
 
-      {claimed && (
+      {claimed && showMessage ? (
         <Alert
-          // onClose={handleSnackBarClose}
           severity="success"
           sx={{
             width: "250px",
@@ -596,6 +604,22 @@ const ClaimAddress = () => {
         >
           {message}
         </Alert>
+      ) : (
+        !claimed &&
+        showMessage && (
+          <Alert
+            severity="error"
+            sx={{
+              width: "350px",
+              position: "absolute",
+              bottom: "30px",
+              right: "20px",
+              borderRadius: "8px",
+            }}
+          >
+            {message}
+          </Alert>
+        )
       )}
     </>
   );
