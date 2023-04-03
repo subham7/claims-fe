@@ -201,22 +201,17 @@ const ClaimStep2 = ({ handleBack, formik }) => {
           //   console.log(typeof res);
           //   return null
           // ));
-
-          let newArr = [];
+          let encodedListOfLeaves = [];
           csvArr.map(async (data) => {
+            console.log("claimContract", data.address);
             const res = await claimContract.encode(
               data.address,
-              convertToWeiGovernance(data.amount, decimals),
+              convertToWeiGovernance(data.amount, decimals).toString(),
             );
-
             console.log(res);
-            newArr.push(keccak256(res));
-            console.log(newArr);
-            return newArr;
+            encodedListOfLeaves.push(keccak256(res));
           });
-
-          console.log(newArr);
-
+          console.log("encodedListOfLeaves", encodedListOfLeaves);
           // encoding leaves
           // csvArr.map(async (data) => {
           //   console.log("address", data.address);
@@ -240,8 +235,8 @@ const ClaimStep2 = ({ handleBack, formik }) => {
           // });
 
           // console.log(encodedListOfLeaves);
-          setMerkleLeaves(newArr);
-          dispatch(addMerkleLeaves(newArr));
+          // setMerkleLeaves(newArr);
+          // dispatch(addMerkleLeaves(newArr));
 
           // console.log(encodedListOfLeaves);
         } catch (err) {
