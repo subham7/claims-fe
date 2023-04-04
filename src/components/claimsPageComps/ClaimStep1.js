@@ -357,7 +357,15 @@ const ClaimStep1 = ({ handleNext, setActiveStep, formik, tokensInWallet }) => {
           }
         />
 
-        <div style={{ display: "flex", gap: "30px", alignItems: "center" }}>
+        <div
+          style={{
+            display: "flex",
+            gap: "30px",
+            alignItems: "center",
+            justifyContent: "space-between",
+            width: "100%",
+          }}
+        >
           {/* Claim Start */}
 
           <div style={{ width: "100%" }}>
@@ -367,7 +375,7 @@ const ClaimStep1 = ({ handleNext, setActiveStep, formik, tokensInWallet }) => {
               <DateTimePicker
                 // label="Controlled picker"
                 value={formik.values.startDate}
-                minDateTime={dayjs(Date.now() - 10000)}
+                minDateTime={dayjs(Date.now() - 60000)}
                 onChange={(value) => {
                   formik.setFieldValue("startDate", value);
                 }}
@@ -396,7 +404,7 @@ const ClaimStep1 = ({ handleNext, setActiveStep, formik, tokensInWallet }) => {
         </div>
 
         {/* when to receive  */}
-        <Typography className={classes.label}>
+        {/* <Typography className={classes.label}>
           When do they receive tokens after claiming?
         </Typography>
         <FormControl sx={{ width: "100%" }}>
@@ -410,7 +418,7 @@ const ClaimStep1 = ({ handleNext, setActiveStep, formik, tokensInWallet }) => {
             <MenuItem value={"week"}>After 1 week </MenuItem>
             <MenuItem value={"immediately"}>Immediately</MenuItem>
           </Select>
-        </FormControl>
+        </FormControl> */}
 
         {/* {/* Next */}
         <Button

@@ -13,4 +13,10 @@ export default configureStore({
     user: userReducer,
     createClaim: createClaimReducer,
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: ["your/action/type"],
+      },
+    }),
 });

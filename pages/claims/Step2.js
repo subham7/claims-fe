@@ -226,6 +226,7 @@ const Step2 = () => {
           });
           console.log(encodedListOfLeaves);
           setMerkleLeaves(encodedListOfLeaves);
+
           // console.log(encodedListOfLeaves);
         } catch (err) {
           console.log(err);

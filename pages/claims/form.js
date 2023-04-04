@@ -28,6 +28,7 @@ import { MerkleTree } from "merkletreejs";
 import keccak256 from "keccak256";
 import Web3 from "web3";
 import { useSelector } from "react-redux";
+import { useConnectWallet } from "@web3-onboard/react";
 
 const steps = ["Step1", "Step2"];
 
@@ -55,7 +56,7 @@ const validationSchema = yup.object({
     .date()
     .required("end date is required")
     .min(yup.ref("startDate")),
-  // selectedToken: yup.object({}).required("Token is required"),
+  selectedToken: yup.object({}).required("Token is required"),
   // daoTokenAddress: yup.string().when("eligible", {
   //   is: (v) => v === "token",
   //   then: (schema) => schema.required("dao token address is required"),
@@ -69,6 +70,8 @@ const Form = () => {
   const [loading, setLoading] = useState(false);
   const [finish, setFinish] = useState(false);
   const classes = useStyles();
+  const [{ wallet }] = useConnectWallet();
+  const walletAddress = wallet?.accounts[0].address;
 
   const handleBack = () => {
     setActiveStep((prevStep) => prevStep - 1);
@@ -113,6 +116,8 @@ const Form = () => {
       daoTokenAddress: "", // tokenGated
       maximumClaim: "custom", // prorata or custom
       customAmount: 0,
+      merkleData: [],
+      csvObject: [],
     },
     validationSchema: validationSchema,
 
@@ -123,13 +128,15 @@ const Form = () => {
 
       const data = {
         description: values.description,
-        rollbackAddress: values.rollbackAddress,
+        rollbackAddress: values.rollbackAddress
+          ? values.rollbackAddress
+          : walletAddress.toLowerCase(),
         numberOfTokens: values.numberOfTokens,
         startDate: dayjs(values.startDate).format(),
         endDate: dayjs(values.endDate).format(),
         recieveTokens: values.recieveTokens,
         selectedToken: values.selectedToken,
-        walletAddress: currentAccount,
+        walletAddress: walletAddress.toLowerCase(),
         airdropTokenAddress: values.airdropTokenAddress,
         airdropFrom: values.airdropFrom,
         eligible: values.eligible,
@@ -139,10 +146,12 @@ const Form = () => {
         maximumClaim: values.maximumClaim,
         customAmount:
           values.maximumClaim === "custom" ? values.customAmount : 0,
+        merkleData: values.merkleData,
+        csvObject: values.csvObject,
       };
 
       if (activeStep === steps.length - 1) {
-        if (data.eligible === "token") {
+        if (data.eligible === "token" || data.eligible === "everyone") {
           // checking maximum claim is prorata or custom
           let maximumClaim;
           if (data.maximumClaim === "custom") {
@@ -235,7 +244,7 @@ const Form = () => {
               const postData = JSON.stringify({
                 description: data.description,
                 airdropTokenContract: data.airdropTokenAddress,
-                airdropTokenSymbol: data.selectedToken,
+                airdropTokenSymbol: data.selectedToken.tokenSymbol,
                 claimContract: newClaimContract,
                 totalAmount: data.numberOfTokens,
                 endDate: new Date(data.endDate).getTime() / 1000,
@@ -246,6 +255,7 @@ const Form = () => {
 
               // console.log(typeof(postData))
               const res = createClaim(postData);
+              console.log(postData);
               console.log(res);
               setLoading(false);
 
@@ -253,6 +263,8 @@ const Form = () => {
               // router.push("/claims");
             } catch (err) {
               console.log(err);
+              setLoading(false);
+              // alert(err.message);
             }
           };
 
@@ -301,8 +313,8 @@ const Form = () => {
                 );
               }
 
-              console.log(MERKLE_LEAVES);
-              const tree = new MerkleTree(MERKLE_LEAVES, keccak256, {
+              console.log(data.merkleData);
+              const tree = new MerkleTree(data.merkleData, keccak256, {
                 sort: true,
               });
               const root = tree.getHexRoot();
@@ -351,13 +363,13 @@ const Form = () => {
               const postData = JSON.stringify({
                 description: data.description,
                 airdropTokenContract: data.airdropTokenAddress,
-                airdropTokenSymbol: data.selectedToken,
+                airdropTokenSymbol: data.selectedToken.tokenSymbol,
                 claimContract: newClaimContract,
                 totalAmount: data.numberOfTokens,
                 endDate: new Date(data.endDate).getTime() / 1000,
                 startDate: new Date(data.startDate).getTime() / 1000,
                 createdBy: data.walletAddress.toLowerCase(),
-                addresses: CSVObject,
+                addresses: data.csvObject,
               });
 
               console.log(postData);
@@ -395,6 +407,8 @@ const Form = () => {
             formik={formik}
             handleBack={handleBack}
             setActiveStep={setActiveStep}
+            finish={finish}
+            loading={loading}
           />
         );
     }

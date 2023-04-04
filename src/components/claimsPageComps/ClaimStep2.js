@@ -118,7 +118,7 @@ const useStyles = makeStyles({
   },
 });
 
-const ClaimStep2 = ({ handleBack, formik }) => {
+const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
   const { values } = formik;
 
   // console.log(data);
@@ -132,12 +132,24 @@ const ClaimStep2 = ({ handleBack, formik }) => {
   // const claimsContractAddress = CLAIM_FACTORY_ADDRESS;
 
   const [file, setFile] = useState("");
-  const [merkleLeaves, setMerkleLeaves] = useState([]);
-  const [CSVObject, setCSVObject] = useState([]);
-
   const handleClick = (event) => {
     hiddenFileInput.current.click();
     console.log(hiddenFileInput.current.value);
+  };
+
+  const helper = async (csvArr, claimContract, decimals) => {
+    let encodedListOfLeaves = [];
+    csvArr.map(async (data) => {
+      console.log("claimContract", data.address);
+      const res = await claimContract.encode(
+        data.address,
+        convertToWeiGovernance(data.amount, decimals).toString(),
+      );
+      console.log(res);
+      encodedListOfLeaves.push(keccak256(res));
+    });
+
+    return encodedListOfLeaves;
   };
 
   const handleChange = (event) => {
@@ -164,8 +176,9 @@ const ClaimStep2 = ({ handleBack, formik }) => {
             amount: +data[1],
           }));
 
-        setCSVObject(csvArr);
+        // setCSVObject(csvArr);
         console.log("csv arrr", csvArr);
+        formik.values.csvObject = csvArr;
 
         try {
           // claim contract for encoding
@@ -192,53 +205,8 @@ const ClaimStep2 = ({ handleBack, formik }) => {
 
           console.log("decimals", decimals);
 
-          // csvArr.map(async (data) => (
-          //   const res = await claimContract.encode(
-          //     data.address,
-          //     convertToWeiGovernance(data.amount, decimals),
-          //   );
-          //   encodedListOfLeaves.push(2);
-          //   console.log(typeof res);
-          //   return null
-          // ));
-          let encodedListOfLeaves = [];
-          csvArr.map(async (data) => {
-            console.log("claimContract", data.address);
-            const res = await claimContract.encode(
-              data.address,
-              convertToWeiGovernance(data.amount, decimals).toString(),
-            );
-            console.log(res);
-            encodedListOfLeaves.push(keccak256(res));
-          });
-          console.log("encodedListOfLeaves", encodedListOfLeaves);
-          // encoding leaves
-          // csvArr.map(async (data) => {
-          //   console.log("address", data.address);
-          //   console.log(
-          //     "amount",
-          //     convertToWeiGovernance(data.amount, decimals),
-          //   );
-
-          //   const res = await claimContract.encode(
-          //     data.address,
-          //     convertToWeiGovernance(data.amount, decimals),
-          //   );
-          //   // console.log(keccak256(res));
-
-          //   // console.log(encodedListOfLeaves.length);
-          //   if (encodedListOfLeaves.length <= 0) {
-          //     encodedListOfLeaves = [keccak256(res)];
-          //   } else {
-          //     encodedListOfLeaves.push(keccak256(res));
-          //   }
-          // });
-
-          // console.log(encodedListOfLeaves);
-          // setMerkleLeaves(newArr);
-          // dispatch(addMerkleLeaves(newArr));
-
-          // console.log(encodedListOfLeaves);
+          const list = await helper(csvArr, claimContract, decimals);
+          formik.values.merkleData = list;
         } catch (err) {
           console.log(err);
         }
@@ -272,7 +240,7 @@ const ClaimStep2 = ({ handleBack, formik }) => {
             name="eligible"
             id="eligible"
           >
-            <MenuItem value={"everyone"}>Everyone</MenuItem>
+            <MenuItem value={"everyone"}>Everyone can claim</MenuItem>
             <MenuItem value={"token"}>Anyone with certain token/NFT</MenuItem>
             <MenuItem value={"csv"}>Upload custom CSV file</MenuItem>
           </Select>
@@ -281,23 +249,27 @@ const ClaimStep2 = ({ handleBack, formik }) => {
           Only wallets that hold certain token/NFT can claim the drop.
         </Typography>
         {/* if token/nft selected  */}
-        {values.eligible === "token" ? (
+        {values.eligible === "everyone" || values.eligible === "token" ? (
           <>
             {/* Token/NFT address */}
 
-            <Typography className={classes.label}>
-              Add token (or) NFT
-            </Typography>
-            <TextField
-              // required={maximumTokenType === "proRata" ? true : false}
-              // error={maximumTokenType === "proRata" && !daoToken.length}
-              onChange={formik.handleChange}
-              value={values.daoTokenAddress}
-              name="daoTokenAddress"
-              id="daoTokenAddress"
-              variant="outlined"
-              className={classes.input}
-            />
+            {values.eligible === "token" && (
+              <>
+                <Typography className={classes.label}>
+                  Add token (or) NFT
+                </Typography>
+                <TextField
+                  // required={maximumTokenType === "proRata" ? true : false}
+                  // error={maximumTokenType === "proRata" && !daoToken.length}
+                  onChange={formik.handleChange}
+                  value={values.daoTokenAddress}
+                  name="daoTokenAddress"
+                  id="daoTokenAddress"
+                  variant="outlined"
+                  className={classes.input}
+                />
+              </>
+            )}
 
             <Typography className={classes.label}>
               What is the maximum claim allowed per token holder?
@@ -368,7 +340,7 @@ const ClaimStep2 = ({ handleBack, formik }) => {
         )}
 
         {/* Next */}
-        {/* {finish ? (
+        {finish ? (
           <Button
             type="button"
             onClick={() => {
@@ -382,21 +354,21 @@ const ClaimStep2 = ({ handleBack, formik }) => {
         ) : (
           <Button
             // disabled={eligible === "csv" ? true : false}
-            type="submit"
+            onClick={formik.handleSubmit}
             variant="contained"
             className={classes.btn}
           >
             {loading ? <CircularProgress /> : "Finish"}
           </Button>
-        )} */}
+        )}
 
-        <Button
+        {/* <Button
           variant="contained"
           onClick={formik.handleSubmit}
           className={classes.finish}
         >
           Finish
-        </Button>
+        </Button> */}
       </form>
     </>
   );
