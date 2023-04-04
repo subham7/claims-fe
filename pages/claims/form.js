@@ -9,6 +9,7 @@ import {
   Grid,
   FormHelperText,
   Button,
+  Alert,
 } from "@mui/material";
 import ClaimStep1 from "../../src/components/claimsPageComps/ClaimStep1";
 import ClaimStep2 from "../../src/components/claimsPageComps/ClaimStep2";
@@ -41,34 +42,15 @@ const useStyles = makeStyles({
   },
 });
 
-const validationSchema = yup.object({
-  description: yup
-    .string("Enter one-liner description")
-    .required("description is required"),
-  rollbackAddress: yup.string("Enter rollback address"),
-  // .required("Rollback address is required"),
-  numberOfTokens: yup
-    .number()
-    .required("Enter amount of tokens")
-    .moreThan(0, "Amount should be greater than 0"),
-  startDate: yup.date().required("start date is required").min(new Date()),
-  endDate: yup
-    .date()
-    .required("end date is required")
-    .min(yup.ref("startDate")),
-  selectedToken: yup.object({}).required("Token is required"),
-  // daoTokenAddress: yup.string().when("eligible", {
-  //   is: (v) => v === "token",
-  //   then: (schema) => schema.required("dao token address is required"),
-  // }),
-});
-
 const Form = () => {
   const [activeStep, setActiveStep] = useState(0);
   const [tokensInWallet, setTokensInWallet] = useState(null);
   const [currentAccount, setCurrentAccount] = useState("");
+  const [showError, setShowError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [finish, setFinish] = useState(false);
+  const [errMsg, setErrMsg] = useState("");
+
   const classes = useStyles();
   const [{ wallet }] = useConnectWallet();
   const walletAddress = wallet?.accounts[0].address;
@@ -96,10 +78,6 @@ const Form = () => {
     getCurrentAccount();
   }, []);
 
-  const MERKLE_LEAVES = useSelector((state) => {
-    return state.createClaim.merkleLeaves;
-  });
-
   const formik = useFormik({
     initialValues: {
       description: "",
@@ -112,14 +90,54 @@ const Form = () => {
       walletAddress: "",
       airdropTokenAddress: "", // tokenAddress
       airdropFrom: "wallet", // wallet or contract,
-      eligible: "token", // token || csv || everyone
+      eligible: "csv", // token || csv || everyone
       daoTokenAddress: "", // tokenGated
-      maximumClaim: "custom", // prorata or custom
-      customAmount: 0,
+      maximumClaim: "proRata", // prorata or custom
+      customAmount: null,
       merkleData: [],
       csvObject: [],
     },
-    validationSchema: validationSchema,
+    validationSchema: Yup.object().shape({
+      description: yup
+        .string("Enter one-liner description")
+        .required("description is required"),
+      rollbackAddress: yup
+        .string("Enter rollback address")
+        .when("airdropFrom", {
+          is: "contract",
+          then: () => yup.string().required("Please enter rollback address"),
+        }),
+      // .required("Rollback address is required"),
+      numberOfTokens: yup
+        .number()
+        .required("Enter amount of tokens")
+        .moreThan(0, "Amount should be greater than 0"),
+      startDate: yup.date().required("start date is required"),
+      endDate: yup
+        .date()
+        .required("end date is required")
+        .min(yup.ref("startDate")),
+      selectedToken: yup.object({}).required("Token is required"),
+      daoTokenAddress: yup
+        .string("Enter dao address")
+        .notRequired()
+        .when("eligible", {
+          is: "token",
+          then: () => yup.string().required("Please enter token address"),
+        }),
+      customAmount: yup
+        .number("Enter custom Amount")
+        .notRequired()
+        .when("maximumClaim", {
+          is: "custom",
+          then: () =>
+            yup
+              .number("Enter custom Amount")
+              .required("Please enter custom amount")
+              .moreThan(0, "Amount should be greater than 0")
+              .lessThan(yup.ref("numberOfTokens")),
+        }),
+    }),
 
     onSubmit: (values) => {
       console.log(values);
@@ -264,7 +282,8 @@ const Form = () => {
             } catch (err) {
               console.log(err);
               setLoading(false);
-              // alert(err.message);
+              showMessageHandler();
+              setErrMsg(err.message);
             }
           };
 
@@ -380,6 +399,8 @@ const Form = () => {
               setFinish(true);
             } catch (err) {
               console.log(err);
+              showMessageHandler();
+              setErrMsg(err.message);
             }
           };
           loadClaimsContractFactoryData_CSV();
@@ -414,6 +435,13 @@ const Form = () => {
     }
   };
 
+  const showMessageHandler = () => {
+    setShowError(true);
+    setTimeout(() => {
+      setShowError(false);
+    }, 4000);
+  };
+
   return (
     <div className={classes.container}>
       <Grid container>
@@ -426,6 +454,21 @@ const Form = () => {
           </Grid>
         )}
       </Grid>
+
+      {showError && (
+        <Alert
+          severity="error"
+          sx={{
+            width: "350px",
+            position: "absolute",
+            bottom: "30px",
+            right: "20px",
+            borderRadius: "8px",
+          }}
+        >
+          {errMsg}
+        </Alert>
+      )}
     </div>
   );
 };

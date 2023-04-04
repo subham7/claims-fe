@@ -25,6 +25,7 @@ import keccak256 from "keccak256";
 import { useConnectWallet } from "@web3-onboard/react";
 import { useDispatch } from "react-redux";
 import { addMerkleLeaves } from "../../redux/reducers/createClaim";
+import { useRouter } from "next/router";
 
 const useStyles = makeStyles({
   form: {
@@ -126,9 +127,11 @@ const useStyles = makeStyles({
 
 const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
   const { values } = formik;
+  const router = useRouter();
 
   // console.log(data);
   const [csvError, setCsvError] = useState(false);
+  const [loadingCsv, setLoadingCsv] = useState(false);
 
   const classes = useStyles();
   const [{ wallet }] = useConnectWallet();
@@ -175,6 +178,7 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
         const csvData = event.target.result;
         // const csvArray = csvData.split("\r\n").map((data) => console.log(data));
 
+        setLoadingCsv(true);
         const csvArr = csvData
           .split("\r\n")
           .map((data) => data.split(","))
@@ -226,6 +230,8 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
 
           const list = await helper(csvArr, claimContract, decimals);
           formik.values.merkleData = list;
+
+          setLoadingCsv(false);
         } catch (err) {
           console.log(err);
         }
@@ -278,15 +284,14 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
                   Add token (or) NFT
                 </Typography>
                 <TextField
-                  // required={maximumTokenType === "proRata" ? true : false}
-                  // error={
-                  //   values.eligible === "token" &&
-                  //   !values.daoTokenAddress.length
-                  // }
-                  // error={
-                  //   formik.touched.daoTokenAddress &&
-                  //   Boolean(formik.errors.daoTokenAddress)
-                  // }
+                  error={
+                    formik.touched.daoTokenAddress &&
+                    Boolean(formik.errors.daoTokenAddress)
+                  }
+                  helperText={
+                    formik.touched.daoTokenAddress &&
+                    formik.errors.daoTokenAddress
+                  }
                   onChange={formik.handleChange}
                   value={values.daoTokenAddress}
                   name="daoTokenAddress"
@@ -309,6 +314,8 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
               id="maximumClaim"
             >
               <FormControlLabel
+                // disabled={values.eligible === "everyone"}
+                disabled
                 value="proRata"
                 control={<Radio />}
                 label="Pro-rata as per share of tokens held"
@@ -326,11 +333,17 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
               <>
                 <Typography className={classes.label}>Enter Amount</Typography>
                 <TextField
-                  required
                   // error={userData?.numberOfTokens < customAmount}
                   className={classes.input}
                   value={values.customAmount}
                   onChange={formik.handleChange}
+                  error={
+                    formik.touched.customAmount &&
+                    Boolean(formik.errors.customAmount)
+                  }
+                  helperText={
+                    formik.touched.customAmount && formik.errors.customAmount
+                  }
                   type="number"
                   name="customAmount"
                   id="customAmount"
@@ -386,12 +399,17 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
           </Button>
         ) : (
           <Button
-            disabled={csvError ? true : false}
+            disabled={
+              csvError ||
+              (values.eligible === "csv" && values.csvObject.length === 0)
+                ? true
+                : false
+            }
             onClick={formik.handleSubmit}
             variant="contained"
             className={classes.btn}
           >
-            {loading ? <CircularProgress /> : "Finish"}
+            {loading || loadingCsv ? <CircularProgress /> : "Finish"}
           </Button>
         )}
 

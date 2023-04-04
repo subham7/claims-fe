@@ -117,7 +117,7 @@ const Claims = () => {
       console.log(data);
       setClaimData(data.reverse());
     };
-
+    
     getData();
   }, [walletAddress]);
 

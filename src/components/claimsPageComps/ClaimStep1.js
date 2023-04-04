@@ -8,6 +8,8 @@ import {
   TextField,
   Typography,
   CircularProgress,
+  ToggleButtonGroup,
+  ToggleButton,
 } from "@mui/material";
 import { BsArrowLeft } from "react-icons/bs";
 import { makeStyles } from "@mui/styles";
@@ -94,44 +96,32 @@ const useStyles = makeStyles({
     borderRadius: "10px",
   },
   leftContainer: {
-    "flex": "0.5",
-    "display": "flex",
-    "alignItems": "center",
-    "justifyContent": "center",
-    "padding": "20px",
-    "flexDirection": "column",
-    "borderRadius": "10px",
-    "cursor": "pointer",
-    "border": "1px solid none",
-
-    "&:hover": {
-      border: "1px solid #3B7AFD",
-      borderRadius: "10px",
-      opacity: 1,
-    },
+    flex: "0.5",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: "50px",
+    flexDirection: "column",
+    borderRadius: "10px",
+    cursor: "pointer",
+    border: "1px solid none",
   },
   rightContainer: {
-    "flex": "0.5",
-    "display": "flex",
-    "alignItems": "center",
-    "justifyContent": "center",
-    "padding": "20px",
-    "flexDirection": "column",
-    "borderRadius": "10px",
-    "cursor": "pointer",
-    "border": "1px solid none",
-    "&:hover": {
-      border: "1px solid #3B7AFD",
-      borderRadius: "10px",
-      opacity: 1,
-    },
+    flex: "0.5",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: "50px",
+    flexDirection: "column",
+    borderRadius: "10px",
+    cursor: "pointer",
+    border: "1px solid none",
   },
   selectedContainer: {
     flex: "0.5",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    padding: "20px",
     flexDirection: "column",
     cursor: "pointer",
     border: "1px solid #3B7AFD",
@@ -213,7 +203,7 @@ const ClaimStep1 = ({ handleNext, setActiveStep, formik, tokensInWallet }) => {
           Where do you want to airdrop tokens from?{" "}
         </Typography>
 
-        <div
+        {/* <div
           // onChange={formik.handleChange}
           // id="airdropFrom"
           className={classes.selectContainer}
@@ -250,10 +240,36 @@ const ClaimStep1 = ({ handleNext, setActiveStep, formik, tokensInWallet }) => {
             <BsFillSendFill size={20} />
             <p>StationX Contract</p>
           </div>
-        </div>
+        </div> */}
+
+        <ToggleButtonGroup
+          color="primary"
+          value={formik.values.airdropFrom}
+          exclusive
+          onChange={formik.handleChange}
+          aria-label="airdropFrom"
+          name="airdropFrom"
+          id="airdropFrom"
+          className={classes.selectContainer}
+        >
+          <ToggleButton
+            className={classes.leftContainer}
+            name="airdropFrom"
+            value="wallet"
+          >
+            Wallet
+          </ToggleButton>
+          <ToggleButton
+            className={classes.rightContainer}
+            name="airdropFrom"
+            value="contract"
+          >
+            Smart Contract
+          </ToggleButton>
+        </ToggleButtonGroup>
 
         {/* Roll back address */}
-        {selectedContract && (
+        {formik.values.airdropFrom === "contract" && (
           <>
             <Typography className={classes.label}>
               Add a roll back Adress
@@ -375,7 +391,7 @@ const ClaimStep1 = ({ handleNext, setActiveStep, formik, tokensInWallet }) => {
               <DateTimePicker
                 // label="Controlled picker"
                 value={formik.values.startDate}
-                minDateTime={dayjs(Date.now() - 60000)}
+                minDateTime={dayjs(Date.now() - 300000)}
                 onChange={(value) => {
                   formik.setFieldValue("startDate", value);
                 }}

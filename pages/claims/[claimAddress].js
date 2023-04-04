@@ -211,7 +211,7 @@ const ClaimAddress = () => {
   const endDateString = new Date(contractData.endTime * 1000).toString();
   // const startTimeInEpoch = new Date(contractData.startTime).toString();
   const currentTime = Date.now() / 1000;
-  console.log(contractData.startTime);
+  // console.log(contractData.startTime);
 
   useEffect(() => {
     if (
@@ -330,8 +330,10 @@ const ClaimAddress = () => {
           decimals,
         );
 
-        // const amount = await claimContract.checkAmount(walletAddress);
-        // const data = convertFromWeiGovernance(amount, decimals);
+        const amount = await claimContract.checkAmount(walletAddress);
+        
+        const data = convertFromWeiGovernance(amount, decimals);
+        console.log(data);
 
         console.log(airdropAmount);
         setClaimableAmt(airdropAmount);
