@@ -225,6 +225,8 @@ export class SmartContract {
     txHash = "",
     pid,
     tokenData,
+    nftDetails,
+    contractCallDetails,
   ) {
     const parameters = [
       proposalHash,
@@ -243,7 +245,10 @@ export class SmartContract {
       customTokenAddresses,
       ownersAirdropFees,
       daoAdminAddresses,
+      nftDetails,
+      contractCallDetails,
     ];
+    console.log(parameters);
     const safeOwner = this.walletAddress;
     const ethAdapter = new Web3Adapter({
       web3: this.web3,
@@ -262,6 +267,7 @@ export class SmartContract {
       ethAdapter: ethAdapter,
       safeAddress: gnosisAddress,
     });
+    console.log("here");
 
     const transaction = {
       to: daoAddress,
@@ -270,6 +276,8 @@ export class SmartContract {
         .encodeABI(),
       value: "0",
     };
+    console.log("transaction", transaction);
+
     const nonce = await safeService.getNextNonce(gnosisAddress);
     console.log("nonce", nonce);
 
@@ -355,7 +363,7 @@ export class SmartContract {
       };
       const executeTxResponse = await safeSdk.executeTransaction(
         safetx,
-        options,
+        // options,
       );
 
       console.log("executeTxResponse", executeTxResponse);

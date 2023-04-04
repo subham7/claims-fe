@@ -450,12 +450,12 @@ const ProposalDetail = () => {
       const response = updateProposal.updateProposalAndExecution(
         daoAddress,
         gnosisAddress,
-        proposalData[0].ipfsHash,
+        proposalData[0].cid,
         proposalStatus,
         123444,
         undefined,
         proposalData[0].commands[0].airDropToken,
-        [1, 0, 0, 0, 0, 0],
+        [1, 0, 0, 0, 0, 0, 0, 0],
         undefined,
         undefined,
         undefined,
@@ -469,6 +469,12 @@ const ProposalDetail = () => {
         txHash,
         pid,
         tokenFetched ? tokenData : "",
+        [
+          "0x0000000000000000000000000000000000000000",
+          "0x0000000000000000000000000000000000000000",
+          0,
+        ],
+        ["0x0000000000000000000000000000000000000000", "0x"],
       );
       if (proposalStatus === "executed") {
         await response.then(
@@ -540,24 +546,31 @@ const ProposalDetail = () => {
       const response = updateProposal.updateProposalAndExecution(
         daoAddress,
         gnosisAddress,
-        proposalData[0].ipfsHash,
+        proposalData[0].cid,
         proposalStatus,
         123444,
         undefined,
         undefined,
-        [0, 1, 0, 0, 0, 0],
+        [0, 1, 0, 0, 0, 0, 0, 0],
         undefined,
         undefined,
         undefined,
         undefined,
-        [proposalData[0].commands[0].mintGTAmounts],
-        [proposalData[0].commands[0].mintGTAddresses],
+        [proposalData[0].commands[0].mintGTAmounts.toString()],
+        proposalData[0].commands[0].mintGTAddresses,
         undefined,
         undefined,
         undefined,
         [],
         txHash,
         pid,
+        tokenFetched ? tokenData : "",
+        [
+          "0x0000000000000000000000000000000000000000",
+          "0x0000000000000000000000000000000000000000",
+          0,
+        ],
+        ["0x0000000000000000000000000000000000000000", "0x"],
       );
       if (proposalStatus === "executed") {
         response.then(
@@ -672,12 +685,12 @@ const ProposalDetail = () => {
       const response = updateProposal.updateProposalAndExecution(
         daoAddress,
         gnosisAddress,
-        proposalData[0].ipfsHash,
+        proposalData[0].cid,
         proposalStatus,
         123444,
         undefined,
         undefined,
-        [0, 0, 1, 0, 0, 0],
+        [0, 0, 1, 0, 0, 0, 0, 0],
         proposalData[0].commands[0].quorum,
         proposalData[0].commands[0].threshold,
         undefined,
@@ -690,6 +703,13 @@ const ProposalDetail = () => {
         [],
         txHash,
         pid,
+        tokenFetched ? tokenData : "",
+        [
+          "0x0000000000000000000000000000000000000000",
+          "0x0000000000000000000000000000000000000000",
+          0,
+        ],
+        ["0x0000000000000000000000000000000000000000", "0x"],
       );
       if (proposalStatus === "executed") {
         response.then(
@@ -749,12 +769,12 @@ const ProposalDetail = () => {
       const response = updateProposal.updateProposalAndExecution(
         daoAddress,
         gnosisAddress,
-        proposalData[0].ipfsHash,
+        proposalData[0].cid,
         proposalStatus,
         123444,
         undefined,
         undefined,
-        [0, 0, 0, 1, 0, 0],
+        [0, 0, 0, 1, 0, 0, 0, 0],
         undefined,
         undefined,
         proposalData[0].commands[0].totalDeposits,
@@ -767,6 +787,13 @@ const ProposalDetail = () => {
         [],
         txHash,
         pid,
+        tokenFetched ? tokenData : "",
+        [
+          "0x0000000000000000000000000000000000000000",
+          "0x0000000000000000000000000000000000000000",
+          0,
+        ],
+        ["0x0000000000000000000000000000000000000000", "0x"],
       );
 
       if (proposalStatus === "executed") {
@@ -827,12 +854,12 @@ const ProposalDetail = () => {
       const response = updateProposal.updateProposalAndExecution(
         daoAddress,
         gnosisAddress,
-        "proposalData[0].ipfsHash",
+        proposalData[0].cid,
         proposalStatus,
         123444,
         proposalData[0].commands[0].customToken,
         undefined,
-        [0, 0, 0, 0, 1, 0],
+        [0, 0, 0, 0, 1, 0, 0, 0],
         undefined,
         undefined,
         undefined,
@@ -846,6 +873,12 @@ const ProposalDetail = () => {
         txHash,
         pid,
         tokenFetched ? tokenData : "",
+        [
+          "0x0000000000000000000000000000000000000000",
+          "0x0000000000000000000000000000000000000000",
+          0,
+        ],
+        ["0x0000000000000000000000000000000000000000", "0x"],
       );
 
       if (proposalStatus === "executed") {

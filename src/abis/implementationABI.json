@@ -2,6 +2,106 @@
   "contractName": "ImplementationContract",
   "abi": [
     {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_param",
+          "type": "string"
+        },
+        {
+          "internalType": "address",
+          "name": "_address",
+          "type": "address"
+        }
+      ],
+      "name": "AddressInvalid",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_param",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "AmountInvalid",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_length1",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_length2",
+          "type": "uint256"
+        }
+      ],
+      "name": "ArrayLengthMismatch",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_maxDepositPerUser",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_minDepositPerUser",
+          "type": "uint256"
+        }
+      ],
+      "name": "DepositAmountInvalid",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "DepositClosed",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "DepositStarted",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "InsufficientFunds",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "InvalidData",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_length",
+          "type": "uint256"
+        }
+      ],
+      "name": "Max4TokensAllowed",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "NotERC20Template",
+      "type": "error"
+    },
+    {
       "anonymous": false,
       "inputs": [
         {
@@ -306,7 +406,7 @@
       "inputs": [],
       "name": "closeDeposit",
       "outputs": [],
-      "stateMutability": "nonpayable",
+      "stateMutability": "payable",
       "type": "function"
     },
     {
@@ -397,89 +497,12 @@
     },
     {
       "inputs": [],
-      "name": "disableTokenGating",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [],
       "name": "feeUSDC",
       "outputs": [
         {
           "internalType": "bool",
           "name": "",
           "type": "bool"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "_tokenAddress",
-          "type": "address"
-        }
-      ],
-      "name": "getGatingTokenIsNFT",
-      "outputs": [
-        {
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "getGatingTokenList",
-      "outputs": [
-        {
-          "internalType": "address[]",
-          "name": "",
-          "type": "address[]"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "uint8",
-          "name": "_i",
-          "type": "uint8"
-        }
-      ],
-      "name": "getGatingTokenOperations",
-      "outputs": [
-        {
-          "internalType": "string",
-          "name": "",
-          "type": "string"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "_tokenAddress",
-          "type": "address"
-        }
-      ],
-      "name": "getGatingTokenRequired",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
         }
       ],
       "stateMutability": "view",
@@ -765,19 +788,6 @@
     },
     {
       "inputs": [],
-      "name": "isTokenGatingApplied",
-      "outputs": [
-        {
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
       "name": "maxDepositPerUser",
       "outputs": [
         {
@@ -951,34 +961,6 @@
       "type": "function"
     },
     {
-      "inputs": [
-        {
-          "internalType": "address[]",
-          "name": "_tokenList",
-          "type": "address[]"
-        },
-        {
-          "internalType": "uint256[]",
-          "name": "_minTokenRequired",
-          "type": "uint256[]"
-        },
-        {
-          "internalType": "string[]",
-          "name": "_tokenOperations",
-          "type": "string[]"
-        },
-        {
-          "internalType": "bool[]",
-          "name": "_isTokenNFT",
-          "type": "bool[]"
-        }
-      ],
-      "name": "setupTokenGating",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
       "inputs": [],
       "name": "stableCoinDecimals",
       "outputs": [
@@ -1001,7 +983,7 @@
       ],
       "name": "startDeposit",
       "outputs": [],
-      "stateMutability": "nonpayable",
+      "stateMutability": "payable",
       "type": "function"
     },
     {
@@ -1039,6 +1021,19 @@
     {
       "inputs": [],
       "name": "threshold",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "totalNFTsMinted",
       "outputs": [
         {
           "internalType": "uint256",
@@ -1151,7 +1146,7 @@
       ],
       "name": "updateGovernanceActive",
       "outputs": [],
-      "stateMutability": "nonpayable",
+      "stateMutability": "payable",
       "type": "function"
     },
     {
@@ -1169,7 +1164,7 @@
       ],
       "name": "updateMinMaxDeposit",
       "outputs": [],
-      "stateMutability": "nonpayable",
+      "stateMutability": "payable",
       "type": "function"
     },
     {
@@ -1182,7 +1177,7 @@
       ],
       "name": "updateOwnerFee",
       "outputs": [],
-      "stateMutability": "nonpayable",
+      "stateMutability": "payable",
       "type": "function"
     },
     {
@@ -1268,6 +1263,45 @@
               "internalType": "address[]",
               "name": "daoAdminAddresses",
               "type": "address[]"
+            },
+            {
+              "components": [
+                {
+                  "internalType": "address",
+                  "name": "nftAddress",
+                  "type": "address"
+                },
+                {
+                  "internalType": "address",
+                  "name": "receiver",
+                  "type": "address"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "tokenId",
+                  "type": "uint256"
+                }
+              ],
+              "internalType": "struct ERC20NonTransferable.NftDetails",
+              "name": "nftDetails",
+              "type": "tuple"
+            },
+            {
+              "components": [
+                {
+                  "internalType": "address",
+                  "name": "to",
+                  "type": "address"
+                },
+                {
+                  "internalType": "bytes",
+                  "name": "data",
+                  "type": "bytes"
+                }
+              ],
+              "internalType": "struct ERC20NonTransferable.ContractCallDetails",
+              "name": "contractCallDetails",
+              "type": "tuple"
             }
           ],
           "internalType": "struct ERC20NonTransferable.Proposals",
@@ -1277,7 +1311,7 @@
       ],
       "name": "updateProposalAndExecution",
       "outputs": [],
-      "stateMutability": "nonpayable",
+      "stateMutability": "payable",
       "type": "function"
     },
     {
