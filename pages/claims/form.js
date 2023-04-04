@@ -111,7 +111,7 @@ const Form = () => {
       recieveTokens: "immediately", // immediately or later
       walletAddress: "",
       airdropTokenAddress: "", // tokenAddress
-      airdropFrom: "contract", // wallet or contract,
+      airdropFrom: "wallet", // wallet or contract,
       eligible: "token", // token || csv || everyone
       daoTokenAddress: "", // tokenGated
       maximumClaim: "custom", // prorata or custom
@@ -153,6 +153,7 @@ const Form = () => {
       if (activeStep === steps.length - 1) {
         if (data.eligible === "token" || data.eligible === "everyone") {
           // checking maximum claim is prorata or custom
+          setLoading(true);
           let maximumClaim;
           if (data.maximumClaim === "custom") {
             maximumClaim = true;
@@ -189,7 +190,6 @@ const Form = () => {
 
               // console.log(data);
               const decimals = await erc20contract.decimals();
-              setLoading(true);
 
               // if airdroping from contract then approve erc20
               if (!hasAllowanceMechanism) {

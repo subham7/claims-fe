@@ -74,6 +74,12 @@ const useStyles = makeStyles({
     fontSize: "15px",
     marginTop: "8px",
   },
+  error: {
+    color: "red",
+    fontSize: "15px",
+    marginTop: "8px",
+    fontWeight: "400",
+  },
 
   back: {
     marginTop: "30px",
@@ -122,6 +128,7 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
   const { values } = formik;
 
   // console.log(data);
+  const [csvError, setCsvError] = useState(false);
 
   const classes = useStyles();
   const [{ wallet }] = useConnectWallet();
@@ -179,6 +186,18 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
         // setCSVObject(csvArr);
         console.log("csv arrr", csvArr);
         formik.values.csvObject = csvArr;
+
+        const initialValue = 0;
+        const sumOfAmt = csvArr.reduce(
+          (acc, curr) => acc + curr.amount,
+          initialValue,
+        );
+        console.log(sumOfAmt);
+
+        if (sumOfAmt > values.numberOfTokens) {
+          console.log(values.numberOfTokens);
+          setCsvError(true);
+        }
 
         try {
           // claim contract for encoding
@@ -260,7 +279,14 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
                 </Typography>
                 <TextField
                   // required={maximumTokenType === "proRata" ? true : false}
-                  // error={maximumTokenType === "proRata" && !daoToken.length}
+                  // error={
+                  //   values.eligible === "token" &&
+                  //   !values.daoTokenAddress.length
+                  // }
+                  // error={
+                  //   formik.touched.daoTokenAddress &&
+                  //   Boolean(formik.errors.daoTokenAddress)
+                  // }
                   onChange={formik.handleChange}
                   value={values.daoTokenAddress}
                   name="daoTokenAddress"
@@ -336,6 +362,13 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
                 style={{ display: "none" }}
               />
             </div>
+
+            {csvError && (
+              <Typography className={classes.error}>
+                Your tokens for airdrops are lesser than the number of tokens in
+                CSV.
+              </Typography>
+            )}
           </>
         )}
 
@@ -353,7 +386,7 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
           </Button>
         ) : (
           <Button
-            // disabled={eligible === "csv" ? true : false}
+            disabled={csvError ? true : false}
             onClick={formik.handleSubmit}
             variant="contained"
             className={classes.btn}

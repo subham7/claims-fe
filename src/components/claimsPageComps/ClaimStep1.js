@@ -166,7 +166,7 @@ const ClaimStep1 = ({ handleNext, setActiveStep, formik, tokensInWallet }) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [selectedContract, setSelectedContract] = useState(false);
-  const [selectedWallet, setSelectedWallet] = useState(false);
+  const [selectedWallet, setSelectedWallet] = useState(true);
   // const [tokensInWallet, setTokensInWallet] = useState(null);
 
   useEffect(() => {
