@@ -671,7 +671,10 @@ const ERC20Comp = ({
                         onClick={handleDeposit}
                         disabled={
                           (closingDays > 0 ? false : true) ||
-                          (depositAmount <= 0 ? true : false)
+                          (depositAmount <= 0 ? true : false) ||
+                          (tokenGatingAddress !==
+                            "0x0000000000000000000000000000000000000000" &&
+                            userTokenBalance < tokenGatingAmount)
                         }
                       >
                         Deposit
