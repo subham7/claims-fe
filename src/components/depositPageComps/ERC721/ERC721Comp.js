@@ -348,7 +348,12 @@ const ERC721Comp = ({
                     <Grid item>
                       <Button
                         onClick={handleClaimNft}
-                        disabled={loading}
+                        disabled={
+                          loading ||
+                          (tokenGatingAddress !==
+                            "0x0000000000000000000000000000000000000000" &&
+                            userTokenBalance < tokenGatingAmount)
+                        }
                         sx={{ px: 8 }}
                       >
                         {loading ? <CircularProgress /> : "Claim"}
