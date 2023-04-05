@@ -26,6 +26,7 @@ import {
   calculateDays,
   convertFromWei,
   convertFromWeiGovernance,
+  convertToWeiGovernance,
 } from "../../src/utils/globalFunctions";
 
 import { checkNetwork } from "../../src/utils/wallet";
@@ -33,7 +34,10 @@ import { checkNetwork } from "../../src/utils/wallet";
 import { useConnectWallet } from "@web3-onboard/react";
 
 import { updateDynamicAddress } from "../../src/api";
-import { getBalanceOfToken } from "../../src/api/token";
+import {
+  getBalanceOfToken,
+  getTokensDecimalFromAddress,
+} from "../../src/api/token";
 
 const Join = (props) => {
   const router = useRouter();
@@ -274,13 +278,15 @@ const Join = (props) => {
               );
 
               setUserTokenBalance(gatedTokenUserBalance);
+              const tokenDecimals = await getTokensDecimalFromAddress(result);
+              await governorDetailContract
+                .gatingTokenBalanceRequired()
+                .then((result) => {
+                  setTokenGatingAmount(
+                    convertFromWeiGovernance(result, tokenDecimals),
+                  );
+                });
             }
-          });
-
-        await governorDetailContract
-          .gatingTokenBalanceRequired()
-          .then((result) => {
-            setTokenGatingAmount(result);
           });
 
         const decimal =
@@ -304,11 +310,15 @@ const Join = (props) => {
           );
 
           setUserTokenBalance(gatedTokenUserBalance);
+          const tokenDecimals = await getTokensDecimalFromAddress(result);
+          await erc721DetailContract
+            .gatingTokenBalanceRequired()
+            .then((result) => {
+              setTokenGatingAmount(
+                convertFromWeiGovernance(result, tokenDecimals),
+              );
+            });
         }
-      });
-
-      await erc721DetailContract.gatingTokenBalanceRequired().then((result) => {
-        setTokenGatingAmount(result);
       });
 
       await erc721DetailContract.quoram().then((result) => setQuoram(result));
