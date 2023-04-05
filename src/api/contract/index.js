@@ -638,6 +638,36 @@ export class SmartContract {
       .call({ from: this.walletAddress });
   }
 
+  async closeDate() {
+    return this.contract.methods
+      .depositCloseTime()
+      .call({ from: this.walletAddress });
+  }
+
+  async gatingTokenAddress() {
+    return this.contract.methods
+      .gatingTokenAddress()
+      .call({ from: this.walletAddress });
+  }
+
+  async gatingTokenBalanceRequired() {
+    return this.contract.methods
+      .gatingTokenBalanceRequired()
+      .call({ from: this.walletAddress });
+  }
+
+  async enableTokenGating(address, amount) {
+    return this.contract.methods
+      .enableTokenGating(address, amount)
+      .call({ from: this.walletAddress });
+  }
+
+  async disableTokenGating() {
+    return this.contract.methods
+      .disableTokenGating()
+      .call({ from: this.walletAddress });
+  }
+
   async ownerFee() {
     return this.contract.methods.ownerFee().call({ from: this.walletAddress });
   }
