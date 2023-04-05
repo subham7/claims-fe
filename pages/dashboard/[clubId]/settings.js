@@ -698,6 +698,35 @@ const Settings = (props) => {
     setDay(value);
   };
 
+  const handleDisableTokenGating = async () => {
+    setLoaderOpen(true);
+    setOpen(false);
+    const contract = new SmartContract(
+      ImplementationContract,
+      daoAddress,
+      undefined,
+      USDC_CONTRACT_ADDRESS,
+      GNOSIS_TRANSACTION_URL,
+    );
+
+    const response = contract.disableTokenGating();
+    response.then(
+      (result) => {
+        contractDetailsRetrieval(true);
+        setFailed(false);
+        setMessage("Token Gating disabled successfully!");
+        setOpenSnackBar(true);
+        setLoaderOpen(false);
+        contractDetailsRetrieval(true);
+      },
+      (error) => {
+        setFailed(true);
+        setMessage("Token Gating disabled failed!");
+        setOpenSnackBar(true);
+        setLoaderOpen(false);
+      },
+    );
+  };
   const handleEnableDisableContribution = async (enabled) => {
     setLoaderOpen(true);
     setOpen(false);
@@ -987,7 +1016,6 @@ const Settings = (props) => {
             setFailed(false);
             setMessage("Token Gating successfully updated!");
             setOpenSnackBar(true);
-            setTokenGatingAddress(tempGatingAddress);
           },
           (error) => {
             setLoaderOpen(false);
@@ -2786,10 +2814,34 @@ const Settings = (props) => {
                     </>
                   ) : (
                     <>
-                      {" "}
                       <Typography className={classes.dialogBox}>
-                        Enable Token Gating - {tokenGatingAddress}
+                        Do you want to disable token gating ?
                       </Typography>
+                      <Grid
+                        container
+                        direction="row"
+                        justifyContent="center"
+                        alignItems="center"
+                      >
+                        <Grid item m={3}>
+                          <Button
+                            variant="primary"
+                            startIcon={<CheckCircleIcon />}
+                            onClick={() => handleDisableTokenGating()}
+                          >
+                            Disable
+                          </Button>
+                        </Grid>
+                        <Grid item m={3}>
+                          <Button
+                            variant="primary"
+                            startIcon={<CancelIcon />}
+                            onClick={handleClose}
+                          >
+                            Cancel
+                          </Button>
+                        </Grid>
+                      </Grid>
                     </>
                   )
                 ) : null}
