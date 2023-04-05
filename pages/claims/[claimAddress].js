@@ -171,7 +171,7 @@ const useStyles = makeStyles({
     alignItems: "center",
   },
   error: {
-    color: "red",
+    color: "#FF033E",
     fontSize: "14px",
   },
 });
@@ -184,7 +184,6 @@ const ClaimAddress = () => {
   const [contractData, setContractData] = useState([]);
   // const [erc20Decimal, setDecimals] = useState(null);
   const [airdropAmountInNum, setAirdropAmountInNum] = useState(0);
-
   const [totalAmountofTokens, setTotalAmountOfTokens] = useState(0);
   const [airdropTokenName, setAirdropTokenName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -201,6 +200,7 @@ const ClaimAddress = () => {
   const [showInputError, setShowInputError] = useState(false);
   const [claimRemaining, setClaimRemaining] = useState(0);
   const [showMessage, setShowMessage] = useState(false);
+  const [isEligibleForTokenGated, setIsEligibleForTokenGated] = useState(null);
 
   const [{ wallet }] = useConnectWallet();
   const walletAddress = wallet?.accounts[0].address;
@@ -214,6 +214,9 @@ const ClaimAddress = () => {
   // console.log(contractData.startTime);
 
   useEffect(() => {
+    console.log(+contractData.endTime);
+    console.log(currentTime);
+
     if (
       +contractData.startTime > currentTime ||
       +contractData.endTime < currentTime
@@ -271,6 +274,25 @@ const ClaimAddress = () => {
       const decimals = await erc20Contract.decimals();
       setDecimalofToken(decimals);
 
+      // if (desc.permission == 0) {
+      //   const daoTokenContract = new SmartContract(
+      //     USDCContract,
+      //     desc.daoToken,
+      //     walletAddress,
+      //     undefined,
+      //     undefined,
+      //   );
+
+      //   const daoTokenBalance = await daoTokenContract.balanceOf();
+      //   console.log("Dao token", daoTokenBalance);
+
+      //   if (+daoTokenBalance === 0) {
+      //     setIsEligibleForTokenGated(false);
+      //   } else {
+      //     setIsEligibleForTokenGated(true);
+      //   }
+      // }
+
       // totalAmount of tokens
       const totalAmountInNumber = convertFromWeiGovernance(
         desc.claimAmountDetails[2],
@@ -320,7 +342,6 @@ const ClaimAddress = () => {
         // setting merkleLeaves
         console.log("encodedLeaves", encodedListOfLeaves);
         setMerkleLeaves(encodedListOfLeaves);
-        setIsLoading(false);
       }
       // free for all (no merkleRoot)
       else {
@@ -345,9 +366,10 @@ const ClaimAddress = () => {
       console.log(claimableAmt);
       setIsLoading(false);
     } catch (err) {
-      setIsLoading(false);
       console.log(err);
-      // setMessage(err.message);
+      // setIsLoading(true);
+      setMessage(err.message);
+      setIsLoading(false);
     }
   }, [claimAddress, claimableAmt, decimalOfToken, walletAddress]);
 
@@ -393,7 +415,9 @@ const ClaimAddress = () => {
         const res = await claimContract.claim(amt, proof, encodedLeaf);
 
         const remainingAmt = await claimContract.claimAmount(walletAddress);
+        setAlreadyClaimed(true);
         setClaimRemaining(remainingAmt);
+        setClaimed(true);
         setClaimInput(0);
         console.log(res);
       } else {
@@ -406,12 +430,15 @@ const ClaimAddress = () => {
       }
       setIsClaiming(false);
       setClaimed(true);
+      setAlreadyClaimed(true);
+      setClaimInput(0);
 
       showMessageHandler();
       setMessage("Successfully Claimed!");
 
       const remainingAmt = await claimContract.claimAmount(walletAddress);
       setClaimRemaining(remainingAmt);
+
       // console.log(desc);
     } catch (err) {
       console.log(err);
@@ -440,6 +467,43 @@ const ClaimAddress = () => {
   useEffect(() => {
     fetchContractDetails();
   }, [fetchContractDetails]);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const claimContract = new SmartContract(
+          claimContractABI,
+          claimAddress,
+          walletAddress,
+          undefined,
+          undefined,
+        );
+
+        // check if token is already claimed
+        const hasClaimed = await claimContract.hasClaimed(walletAddress);
+        setAlreadyClaimed(hasClaimed);
+      } catch (err) {
+        console.log(err);
+      }
+    })();
+  }, [claimAddress, walletAddress]);
+
+  console.log(claimRemaining, alreadyClaimed);
+
+  let whoCanClaim;
+
+  if (
+    contractData.merkleRoot !==
+    "0x0000000000000000000000000000000000000000000000000000000000000001"
+  ) {
+    whoCanClaim = "Whitelisted";
+  } else if (contractData.permission === "3") {
+    whoCanClaim = "Everyone";
+  } else if (contractData.permission === "0") {
+    whoCanClaim = "Token Holders";
+  }
+
+  // console.log(isEligibleForTokenGated);
 
   return (
     <>
@@ -498,6 +562,11 @@ const ClaimAddress = () => {
               <div>
                 <h3>{totalAmountofTokens}</h3>
                 <p className={classes.para}>Size</p>
+              </div>
+
+              <div>
+                <h3>{whoCanClaim}</h3>
+                <p className={classes.para}>Who can claim?</p>
               </div>
             </div>
           </div>
@@ -560,7 +629,7 @@ const ClaimAddress = () => {
                 className={classes.input}
               />
               <button
-                disabled={!claimActive && true}
+                disabled={(!claimActive || !isEligibleForTokenGated) && true}
                 style={
                   !claimActive
                     ? { cursor: "not-allowed" }
@@ -583,16 +652,18 @@ const ClaimAddress = () => {
               onClick={claimHandler}
               className={classes.btn}
               disabled={
-                (+claimRemaining === 0 && alreadyClaimed) ||
+                (+claimRemaining === 0 && alreadyClaimed && claimed) ||
                 !claimActive ||
                 !claimableAmt ||
-                +claimInput <= 0
+                +claimInput <= 0 ||
+                (contractData.permission == 0 && !isEligibleForTokenGated)
                   ? true
                   : false
               }
               style={
                 (alreadyClaimed && +claimRemaining === 0) ||
                 +claimInput <= 0 ||
+                (contractData.permission == 0 && !isEligibleForTokenGated) ||
                 !claimableAmt
                   ? { cursor: "not-allowed" }
                   : { cursor: "pointer" }
@@ -610,6 +681,9 @@ const ClaimAddress = () => {
               <p className={classes.error}>
                 You are not eligible for the claim!
               </p>
+            )}
+            {!isEligibleForTokenGated && contractData.permission == 0 && (
+              <p className={classes.error}>Only Token Holders can claim!</p>
             )}
           </div>
         </div>

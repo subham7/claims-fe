@@ -186,6 +186,13 @@ const Form = () => {
             hasAllowanceMechanism = false;
           }
 
+          let eligible;
+          if (data.eligible === "token") {
+            eligible = 0;
+          } else if (data.eligible === "everyone") {
+            eligible = 3;
+          }
+
           const loadClaimsContractFactoryData_Token = async () => {
             try {
               const claimsContract = new SmartContract(
@@ -233,7 +240,7 @@ const Form = () => {
                 new Date(data.endDate).getTime() / 1000,
                 data.rollbackAddress.toLowerCase(),
                 "0x0000000000000000000000000000000000000000000000000000000000000001",
-                3,
+                Number(eligible),
                 [
                   maximumClaim,
                   convertToWeiGovernance(data.customAmount, decimals),
