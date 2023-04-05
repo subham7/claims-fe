@@ -225,7 +225,7 @@ const ClaimAddress = () => {
   }, [contractData.endTime, contractData.startTime, currentTime]);
 
   const fetchContractDetails = useCallback(async () => {
-    // setIsLoading(true);
+    setIsLoading(true);
 
     try {
       const claimContract = new SmartContract(
@@ -324,16 +324,19 @@ const ClaimAddress = () => {
       }
       // free for all (no merkleRoot)
       else {
+        if (desc.daoToken === "0x0000000000000000000000000000000000000000") {
+        }
+
         // claimable amount
         const airdropAmount = convertFromWeiGovernance(
           desc.claimAmountDetails[1],
           decimals,
         );
 
-        const amount = await claimContract.checkAmount(walletAddress);
-        
-        const data = convertFromWeiGovernance(amount, decimals);
-        console.log(data);
+        // const amount = await claimContract.checkAmount(walletAddress);
+
+        // const data = convertFromWeiGovernance(amount, decimals);
+        // console.log(data);
 
         console.log(airdropAmount);
         setClaimableAmt(airdropAmount);
@@ -342,6 +345,7 @@ const ClaimAddress = () => {
       console.log(claimableAmt);
       setIsLoading(false);
     } catch (err) {
+      setIsLoading(false);
       console.log(err);
       // setMessage(err.message);
     }
@@ -405,6 +409,9 @@ const ClaimAddress = () => {
 
       showMessageHandler();
       setMessage("Successfully Claimed!");
+
+      const remainingAmt = await claimContract.claimAmount(walletAddress);
+      setClaimRemaining(remainingAmt);
       // console.log(desc);
     } catch (err) {
       console.log(err);
@@ -501,7 +508,9 @@ const ClaimAddress = () => {
               <div>
                 <p className={classes.myClaim}>My Claim</p>
                 <div className={classes.claims}>
-                  <p className={classes.claimAmt}>{claimableAmt}</p>
+                  <p className={classes.claimAmt}>
+                    {claimableAmt ? claimableAmt : 0}
+                  </p>
                   <p className={classes.amount}>{airdropTokenName}</p>
                 </div>
               </div>
@@ -509,7 +518,10 @@ const ClaimAddress = () => {
                 <p className={classes.myClaim}>Remaining Amt</p>
                 <div className={classes.claims}>
                   <p className={classes.claimAmt}>
-                    {convertFromWeiGovernance(claimRemaining, decimalOfToken)}
+                    {claimRemaining
+                      ? convertFromWeiGovernance(claimRemaining, decimalOfToken)
+                      : 0}
+                    {/* {convertFromWeiGovernance(claimRemaining, decimalOfToken)} */}
                   </p>
                   <p className={classes.amount}>{airdropTokenName}</p>
                 </div>
@@ -536,7 +548,9 @@ const ClaimAddress = () => {
                   }
                 }}
                 disabled={
-                  !claimActive || (+claimRemaining === 0 && alreadyClaimed)
+                  !claimActive ||
+                  !claimableAmt ||
+                  (+claimRemaining === 0 && alreadyClaimed)
                     ? true
                     : false
                 }
@@ -571,12 +585,15 @@ const ClaimAddress = () => {
               disabled={
                 (+claimRemaining === 0 && alreadyClaimed) ||
                 !claimActive ||
+                !claimableAmt ||
                 +claimInput <= 0
                   ? true
                   : false
               }
               style={
-                (alreadyClaimed && +claimRemaining === 0) || +claimInput <= 0
+                (alreadyClaimed && +claimRemaining === 0) ||
+                +claimInput <= 0 ||
+                !claimableAmt
                   ? { cursor: "not-allowed" }
                   : { cursor: "pointer" }
               }
@@ -589,6 +606,11 @@ const ClaimAddress = () => {
                 "Claim"
               )}
             </button>
+            {!claimableAmt && (
+              <p className={classes.error}>
+                You are not eligible for the claim!
+              </p>
+            )}
           </div>
         </div>
       )}
