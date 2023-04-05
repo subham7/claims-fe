@@ -55,6 +55,7 @@ import Web3 from "web3";
 import { useSelector } from "react-redux";
 import { useRouter, withRouter } from "next/router";
 import USDCContract from "../../../../src/abis/usdcTokenContract.json";
+import ImplementationContract from "../../../../src/abis/implementationABI.json";
 import ClubFetch from "../../../../src/utils/clubFetch";
 import Web3Adapter from "@safe-global/safe-web3-lib";
 import SafeServiceClient from "@safe-global/safe-service-client";
@@ -79,6 +80,7 @@ const QuillEditor = dynamic(
 );
 import "react-quill/dist/quill.snow.css";
 import ReactHtmlParser from "react-html-parser";
+import { SmartContract } from "../../../../src/api/contract";
 // import QuillEditor from "../../../../src/components/quillEditor";
 
 const useStyles = makeStyles({
@@ -666,6 +668,19 @@ const Proposal = () => {
       }
 
       if (name === commandTypeList[1].commandText) {
+        let tokenDecimal;
+        const governorDetailContract = new SmartContract(
+          ImplementationContract,
+          daoAddress,
+          undefined,
+          USDC_CONTRACT_ADDRESS,
+          GNOSIS_TRANSACTION_URL,
+        );
+
+        await governorDetailContract.obtainTokenDecimals().then((result) => {
+          tokenDecimal = result;
+        });
+        console.log("tokenDecimal", tokenDecimal);
         // for mintGT execution
         const payload = {
           name: title,
@@ -679,12 +694,7 @@ const Proposal = () => {
               executionId: 1,
               mintGTAddresses: [mintGtAddress],
               mintGTAmounts: [
-                await convertToWeiGovernance(
-                  daoAddress,
-                  mintGTAmounts,
-                  USDC_CONTRACT_ADDRESS,
-                  GNOSIS_TRANSACTION_URL,
-                ),
+                await convertToWeiGovernance(mintGTAmounts, tokenDecimal),
               ],
               usdcTokenSymbol: usdcTokenSymbol,
               usdcTokenDecimal: usdcTokenDecimal,
