@@ -53,6 +53,7 @@ import TokenSearch from "../../../src/components/tokenSearch";
 import styled from "@emotion/styled";
 import nft from "../../../src/abis/nft.json";
 import { useConnectWallet } from "@web3-onboard/react";
+import { getTokensDecimalFromAddress } from "../../../src/api/token";
 
 const useStyles = makeStyles({
   valuesStyle: {
@@ -305,6 +306,12 @@ const Settings = (props) => {
     useState(null);
   const [balanceOfToken, setbalanceOfToken] = useState(null);
 
+  const [tokenGatingAddress, setTokenGatingAddress] = useState(
+    "0x0000000000000000000000000000000000000000",
+  );
+  const [tempGatingAddress, setTempGatingAddress] = useState();
+  const [tempGatingAmount, setTempGatingAmount] = useState(0);
+
   const USDC_CONTRACT_ADDRESS = useSelector((state) => {
     return state.gnosis.usdcContractAddress;
   });
@@ -536,6 +543,10 @@ const Settings = (props) => {
       await governorDetailContract.closeDate().then((result) => {
         setDepositCloseDate(result);
         setClosingDays(calculateDays(parseInt(result) * 1000));
+      });
+
+      await governorDetailContract.gatingTokenAddress().then((result) => {
+        setTokenGatingAddress(result);
       });
 
       await governorDetailContract.minDepositPerUser().then((result) => {
@@ -849,7 +860,7 @@ const Settings = (props) => {
   const handleContractUpdates = async (updateType) => {
     setLoaderOpen(true);
     setOpen(false);
-    console.log("hereee");
+
     const contract = new SmartContract(
       ImplementationContract,
       daoAddress,
@@ -943,6 +954,45 @@ const Settings = (props) => {
             setLoaderOpen(false);
             setFailed(false);
             setMessage("Performance fee failed to be updated!");
+            setOpenSnackBar(true);
+          },
+        );
+      }
+    }
+    if (settingsOptions[7].name === updateType) {
+      //case for enable/disable token gating
+      if (tempGatingAddress.length === 0) {
+        setLoaderOpen(false);
+        setFailed(false);
+        setMessage("Token gating address cannot be empty");
+        setOpenSnackBar(true);
+      } else if (tempGatingAmount === 0 || tempGatingAmount === "") {
+        setLoaderOpen(false);
+        setFailed(false);
+        setMessage("Token gating amount cannot be 0");
+        setOpenSnackBar(true);
+      } else {
+        const tokenDecimals = await getTokensDecimalFromAddress(
+          tempGatingAddress,
+        );
+        const response = contract.enableTokenGating(
+          tempGatingAddress,
+          convertToWeiGovernance(tempGatingAmount, tokenDecimals),
+        );
+
+        response.then(
+          (result) => {
+            contractDetailsRetrieval(true);
+            setLoaderOpen(false);
+            setFailed(false);
+            setMessage("Token Gating successfully updated!");
+            setOpenSnackBar(true);
+            setTokenGatingAddress(tempGatingAddress);
+          },
+          (error) => {
+            setLoaderOpen(false);
+            setFailed(false);
+            setMessage("Token Gating failed to be updated!");
             setOpenSnackBar(true);
           },
         );
@@ -1893,6 +1943,58 @@ const Settings = (props) => {
                     )}
                   </Grid>
                 </Grid>
+                <Divider />
+                <Grid item>
+                  <Typography variant="settingText">Token Gating</Typography>
+                </Grid>
+                <Grid
+                  item
+                  mr={4}
+                  xs
+                  sx={{ display: "flex", justifyContent: "flex-end" }}
+                >
+                  {/* {tokenGatingAddress ? ( */}
+                  {tokenGatingAddress !==
+                  "0x0000000000000000000000000000000000000000" ? (
+                    <Typography variant="p" className={classes.valuesStyle}>
+                      Enabled
+                      {isAdminUser ? (
+                        <a
+                          className={classes.activityLink}
+                          onClick={(e) => {
+                            setSettingType("token_gating");
+                            setEnabled(true);
+                            setOpen(true);
+                          }}
+                        >
+                          {" "}
+                          (Disable)
+                        </a>
+                      ) : null}
+                    </Typography>
+                  ) : (
+                    <Typography variant="p" className={classes.valuesStyle}>
+                      Disabled
+                      {isAdminUser ? (
+                        <a
+                          className={classes.activityLink}
+                          onClick={(e) => {
+                            setSettingType("token_gating");
+                            setEnabled(false);
+                            setOpen(true);
+                          }}
+                        >
+                          {" "}
+                          (Enable)
+                        </a>
+                      ) : null}
+                    </Typography>
+                  )}
+
+                  {/* : (
+                    <Skeleton variant="rectangular" width={100} height={25} />
+                  )} */}
+                </Grid>
 
                 <Divider />
                 <Grid container ml={3} mr={4}>
@@ -2625,6 +2727,69 @@ const Settings = (props) => {
                           </Button>
                         </Grid>
                       </Grid>
+                    </>
+                  )
+                ) : settingsOptions[7].name === settingType ? (
+                  tokenGatingAddress ===
+                  "0x0000000000000000000000000000000000000000" ? (
+                    <>
+                      <Typography className={classes.dialogBox}>
+                        Enable Token Gating
+                      </Typography>
+                      <Grid
+                        container
+                        direction="row"
+                        justifyContent="center"
+                        alignItems="center"
+                        spacing={3}
+                      >
+                        <Grid container item>
+                          <TextField
+                            sx={{ width: "95%", backgroundColor: "#C1D3FF40" }}
+                            className={classes.cardTextBox}
+                            placeholder="Enter token address"
+                            onChange={(e) =>
+                              setTempGatingAddress(e.target.value)
+                            }
+                          />
+                        </Grid>
+                        <Grid container item>
+                          <TextField
+                            sx={{ width: "95%", backgroundColor: "#C1D3FF40" }}
+                            className={classes.cardTextBox}
+                            placeholder="Enter token amount"
+                            type="number"
+                            onChange={(e) =>
+                              setTempGatingAmount(e.target.value)
+                            }
+                          />
+                        </Grid>
+                        <Grid item m={3}>
+                          <Button
+                            variant="primary"
+                            startIcon={<CheckCircleIcon />}
+                            onClick={() => handleContractUpdates(settingType)}
+                          >
+                            Update
+                          </Button>
+                        </Grid>
+                        <Grid item m={3}>
+                          <Button
+                            variant="primary"
+                            startIcon={<CancelIcon />}
+                            onClick={handleClose}
+                          >
+                            Cancel
+                          </Button>
+                        </Grid>
+                      </Grid>
+                    </>
+                  ) : (
+                    <>
+                      {" "}
+                      <Typography className={classes.dialogBox}>
+                        Enable Token Gating - {tokenGatingAddress}
+                      </Typography>
                     </>
                   )
                 ) : null}

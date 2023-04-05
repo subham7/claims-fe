@@ -664,7 +664,7 @@ export class SmartContract {
   async enableTokenGating(address, amount) {
     return this.contract.methods
       .enableTokenGating(address, amount)
-      .call({ from: this.walletAddress });
+      .send({ from: this.walletAddress });
   }
 
   async disableTokenGating() {
