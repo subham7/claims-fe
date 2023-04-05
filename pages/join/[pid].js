@@ -295,6 +295,22 @@ const Join = (props) => {
       const erc721DetailContract = newContract(daoAddress);
       const nftContract = newContract(nftContractAddress, nft);
 
+      await erc721DetailContract.gatingTokenAddress().then(async (result) => {
+        setTokenGatingAddress(result);
+        if (result !== "0x0000000000000000000000000000000000000000") {
+          const gatedTokenUserBalance = await getBalanceOfToken(
+            walletAddress,
+            result,
+          );
+
+          setUserTokenBalance(gatedTokenUserBalance);
+        }
+      });
+
+      await erc721DetailContract.gatingTokenBalanceRequired().then((result) => {
+        setTokenGatingAmount(result);
+      });
+
       await erc721DetailContract.quoram().then((result) => setQuoram(result));
 
       await erc721DetailContract
@@ -479,6 +495,9 @@ const Join = (props) => {
           userNftBalance={userNftBalance}
           walletBalance={walletBalance}
           newContract={newContract}
+          tokenGatingAddress={tokenGatingAddress}
+          tokenGatingAmount={tokenGatingAmount}
+          userTokenBalance={userTokenBalance}
         />
       )}
       <SnackbarComp
