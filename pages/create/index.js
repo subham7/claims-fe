@@ -234,7 +234,7 @@ const Create = (props) => {
         const auth = web3.eth.getAccounts();
         auth.then(
           (result) => {
-            walletAddress = result[0];
+            walletAddress = result[0].toLowerCase();
             addressList.unshift(walletAddress);
             initiateConnection(
               clubTokenType,
@@ -282,7 +282,7 @@ const Create = (props) => {
         const auth = web3.eth.getAccounts();
         auth.then(
           (result) => {
-            walletAddress = result[0];
+            walletAddress = result[0].toLowerCase();
             addressList.unshift(walletAddress);
             initiateConnection(
               clubTokenType,
