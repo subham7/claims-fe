@@ -335,7 +335,7 @@ export default function App() {
           </Grid>
         ) : (
           <>
-            {!manageStation && (
+            {!manageStation && !walletAddress && (
               <Grid
                 container
                 direction="column"
