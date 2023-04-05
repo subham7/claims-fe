@@ -103,7 +103,7 @@ const Claims = () => {
   const [claimData, setClaimData] = useState([]);
 
   const createClaimHandler = () => {
-    router.push("/claims/createClaim");
+    router.push("/claims/form");
   };
 
   // const dispatch = useDispatch();
@@ -117,7 +117,7 @@ const Claims = () => {
       console.log(data);
       setClaimData(data.reverse());
     };
-
+    
     getData();
   }, [walletAddress]);
 

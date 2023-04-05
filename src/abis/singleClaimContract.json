@@ -8,6 +8,11 @@
           "components": [
             {
               "internalType": "address",
+              "name": "creatorAddress",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
               "name": "walletAddress",
               "type": "address"
             },
@@ -102,7 +107,8 @@
           "internalType": "struct ClaimSettings",
           "name": "_claimSettings",
           "type": "tuple"
-        }
+        },
+        { "internalType": "address", "name": "_emitter", "type": "address" }
       ],
       "stateMutability": "nonpayable",
       "type": "constructor"
@@ -112,31 +118,6 @@
     { "inputs": [], "name": "ClaimLimitReached", "type": "error" },
     { "inputs": [], "name": "ClaimNotStarted", "type": "error" },
     { "inputs": [], "name": "InvalidAmount", "type": "error" },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": false,
-          "internalType": "address",
-          "name": "_user",
-          "type": "address"
-        },
-        {
-          "indexed": false,
-          "internalType": "address",
-          "name": "_token",
-          "type": "address"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "_amount",
-          "type": "uint256"
-        }
-      ],
-      "name": "AirdropClaimed",
-      "type": "event"
-    },
     {
       "anonymous": false,
       "inputs": [
@@ -309,23 +290,13 @@
     },
     {
       "inputs": [
-        { "internalType": "address", "name": "_user", "type": "address" }
-      ],
-      "name": "checkAmount",
-      "outputs": [
-        { "internalType": "uint256", "name": "_claimAmount", "type": "uint256" }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
         { "internalType": "uint256", "name": "_amount", "type": "uint256" },
         {
           "internalType": "bytes32[]",
           "name": "_merkleProof",
           "type": "bytes32[]"
-        }
+        },
+        { "internalType": "bytes", "name": "_encodedData", "type": "bytes" }
       ],
       "name": "claim",
       "outputs": [],
@@ -350,6 +321,11 @@
       "inputs": [],
       "name": "claimSettings",
       "outputs": [
+        {
+          "internalType": "address",
+          "name": "creatorAddress",
+          "type": "address"
+        },
         {
           "internalType": "address",
           "name": "walletAddress",
@@ -445,6 +421,13 @@
       "type": "function"
     },
     {
+      "inputs": [],
+      "name": "emitterContract",
+      "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
       "inputs": [
         {
           "internalType": "address",
@@ -496,15 +479,6 @@
       "name": "hasRole",
       "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
       "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        { "internalType": "address", "name": "_user", "type": "address" }
-      ],
-      "name": "pendingClaim",
-      "outputs": [],
-      "stateMutability": "nonpayable",
       "type": "function"
     },
     {
