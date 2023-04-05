@@ -33,6 +33,7 @@ import { checkNetwork } from "../../src/utils/wallet";
 import { useConnectWallet } from "@web3-onboard/react";
 
 import { updateDynamicAddress } from "../../src/api";
+import { getBalanceOfToken } from "../../src/api/token";
 
 const Join = (props) => {
   const router = useRouter();
@@ -84,6 +85,11 @@ const Join = (props) => {
   const [tokenSymbol, setTokenSymbol] = useState();
   const [isGovernanceActive, setIsGovernanceActive] = useState();
   const [message, setMessage] = useState("");
+  const [tokenGatingAmount, setTokenGatingAmount] = useState();
+  const [tokenGatingAddress, setTokenGatingAddress] = useState(
+    "0x0000000000000000000000000000000000000000",
+  );
+  const [userTokenBalance, setUserTokenBalance] = useState();
 
   const [{ wallet }, connect] = useConnectWallet();
 
@@ -257,6 +263,25 @@ const Join = (props) => {
           // console.log("result", result);
           setTokenSymbol(result);
         });
+        await governorDetailContract
+          .gatingTokenAddress()
+          .then(async (result) => {
+            setTokenGatingAddress(result);
+            if (result !== "0x0000000000000000000000000000000000000000") {
+              const gatedTokenUserBalance = await getBalanceOfToken(
+                walletAddress,
+                result,
+              );
+
+              setUserTokenBalance(gatedTokenUserBalance);
+            }
+          });
+
+        await governorDetailContract
+          .gatingTokenBalanceRequired()
+          .then((result) => {
+            setTokenGatingAmount(result);
+          });
 
         const decimal =
           await await governorDetailContract.obtainTokenDecimals();
@@ -344,6 +369,7 @@ const Join = (props) => {
     governanceConvertDecimal,
     nftContractAddress,
     newContract,
+    walletAddress,
   ]);
 
   const handleInputChange = (newValue) => {
@@ -418,8 +444,9 @@ const Join = (props) => {
           userDetails={userDetails}
           newContract={newContract}
           clubName={clubName}
-          loading={loading}
-          setLoading={setLoading}
+          tokenGatingAddress={tokenGatingAddress}
+          tokenGatingAmount={tokenGatingAmount}
+          userTokenBalance={userTokenBalance}
         />
       )}
       {tokenType === "erc721" && (

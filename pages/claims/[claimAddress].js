@@ -289,12 +289,14 @@ const ClaimAddress = () => {
       const decimals = await erc20Contract.decimals();
       setDecimalofToken(decimals);
 
+      // remaining Balance in contract
       const remainingBalanceInContract = await claimContract.claimBalance();
 
       const remainingBalanceInUSD = convertFromWeiGovernance(
-        +remainingBalanceInContract,
+        remainingBalanceInContract,
         decimals,
       );
+
       setClaimBalanceRemaing(remainingBalanceInUSD);
 
       // check if token is already claimed
@@ -310,7 +312,7 @@ const ClaimAddress = () => {
 
       if (
         !hasClaimed &&
-        remainingBalanceInUSD >= claimableAmt &&
+        +remainingBalanceInUSD >= +claimableAmt &&
         (desc.permission == 0
           ? isEligibleForTokenGated
           : !isEligibleForTokenGated)
@@ -318,7 +320,7 @@ const ClaimAddress = () => {
         setClaimRemaining(convertToWeiGovernance(claimableAmt, decimals));
       } else if (
         !hasClaimed &&
-        remainingBalanceInUSD < claimableAmt &&
+        +remainingBalanceInUSD < +claimableAmt &&
         (desc.permission == 0
           ? isEligibleForTokenGated
           : !isEligibleForTokenGated)
@@ -328,7 +330,7 @@ const ClaimAddress = () => {
         );
       } else if (
         hasClaimed &&
-        remainingBalanceInUSD >= convertedRemainingAmt &&
+        +remainingBalanceInUSD >= +convertedRemainingAmt &&
         (desc.permission == 0
           ? isEligibleForTokenGated
           : !isEligibleForTokenGated)
@@ -336,16 +338,16 @@ const ClaimAddress = () => {
         setClaimRemaining(remainingAmt);
       } else if (
         hasClaimed &&
-        remainingBalanceInUSD < convertedRemainingAmt &&
+        +remainingBalanceInUSD < +convertedRemainingAmt &&
         (desc.permission == 0
           ? isEligibleForTokenGated
           : !isEligibleForTokenGated)
       ) {
-        setClaimRemaining(remainingBalanceInUSD);
+        setClaimRemaining(remainingBalanceInContract);
       }
 
       // aridropToken Name
-      const name = await erc20Contract.name();
+      const name = await erc20Contract.obtainSymbol();
       setAirdropTokenName(name);
 
       if (desc.permission == 0) {
@@ -427,24 +429,17 @@ const ClaimAddress = () => {
           decimals,
         );
         console.log(desc);
-        console.log(airdropAmount);
 
         if (desc.daoToken !== "0x0000000000000000000000000000000000000000") {
           // amount for prorata
           const amount = await claimContract.checkAmount(walletAddress);
           const data = convertFromWeiGovernance(amount, decimals);
 
-          // if (remainingBalanceInUSD > data) {
           setClaimableAmt(data);
-          // } else {
-          //   setClaimableAmt(remainingBalanceInUSD);
-          // }
+         
         } else {
-          // if (remainingBalanceInUSD > airdropAmount) {
           setClaimableAmt(airdropAmount);
-          // } else {
-          //   setClaimableAmt(remainingBalanceInUSD);
-          // }
+         
         }
       }
 
@@ -489,36 +484,43 @@ const ClaimAddress = () => {
         const res = await claimContract.claim(amt, proof, encodedLeaf);
 
         const remainingAmt = await claimContract.claimAmount(walletAddress);
-        setAlreadyClaimed(true);
+        console.log("remaining", remainingAmt);
         setClaimRemaining(remainingAmt);
+        setIsClaiming(false);
+        setAlreadyClaimed(true);
         setClaimed(true);
         setClaimInput(0);
+        showMessageHandler();
+        setMessage("Successfully Claimed!");
       } else {
         const res = await claimContract.claim(
           convertToWeiGovernance(claimInput, decimalOfToken).toString(),
           [],
           [],
         );
-      }
-      setIsClaiming(false);
-      setClaimed(true);
-      setAlreadyClaimed(true);
-      setClaimInput(0);
 
-      showMessageHandler();
-      setMessage("Successfully Claimed!");
+        const remainingAmt = await claimContract.claimAmount(walletAddress);
 
-      const remainingAmt = await claimContract.claimAmount(walletAddress);
+        const convertedRemainingAmt = convertFromWeiGovernance(
+          remainingAmt,
+          decimalOfToken,
+        );
 
-      const convertedRemainingAmt = convertFromWeiGovernance(
-        remainingAmt,
-        decimalOfToken,
-      );
+        if (+claimBalanceRemaing >= +convertedRemainingAmt) {
+          setClaimRemaining(remainingAmt);
+        } else {
+          setClaimRemaining(
+            convertToWeiGovernance(claimBalanceRemaing, decimalOfToken),
+          );
+        }
 
-      if (claimBalanceRemaing >= convertedRemainingAmt) {
-        setClaimRemaining(remainingAmt);
-      } else {
-        setClaimRemaining(claimBalanceRemaing);
+        setIsClaiming(false);
+        setClaimed(true);
+        setAlreadyClaimed(true);
+        setClaimInput(0);
+
+        showMessageHandler();
+        setMessage("Successfully Claimed!");
       }
     } catch (err) {
       console.log(err);
@@ -539,7 +541,7 @@ const ClaimAddress = () => {
     if (+claimRemaining === 0 && !alreadyClaimed && claimBalanceRemaing) {
       setClaimInput(claimableAmt);
     } else {
-      setClaimInput(convertFromWeiGovernance(+claimRemaining, decimalOfToken));
+      setClaimInput(convertFromWeiGovernance(claimRemaining, decimalOfToken));
     }
   };
 
@@ -555,19 +557,7 @@ const ClaimAddress = () => {
     whoCanClaim = `Token Holders (${daoTokenSymbol})`;
   }
 
-  // useEffect(() => {
-  //   if (
-  //     +contractData.startTime > currentTime ||
-  //     +contractData.endTime < currentTime
-  //   ) {
-  //     setClaimActive(false);
-  //   } else {
-  //     setClaimActive(true);
-  //   }
-  // }, [contractData.endTime, contractData.startTime, currentTime]);
-
   useEffect(() => {
-    // if (+startDate > currentTime || +endDate < currentTime) {
     if (+contractData.startTime > currentTime) {
       setClaimActive(false);
       setIsClaimStarted(false);
@@ -603,10 +593,6 @@ const ClaimAddress = () => {
       }
     })();
   }, [claimAddress, walletAddress]);
-
-  useEffect(() => {
-    console.log("WalletAddress", walletAddress);
-  }, [walletAddress]);
 
   return (
     <Layout1 showSidebar={false}>
@@ -652,18 +638,6 @@ const ClaimAddress = () => {
                     </p>
                   </div>
                 </div>
-
-                {/* {!isClaimStarted && (
-                  <p>
-                    Starts in 
-                    <span
-                      className={classes.countdown}
-                      style={{ marginLeft: "10px" }}
-                    >
-                      <Countdown date={startingTimeInNum} />
-                    </span>{" "}
-                  </p>
-                )} */}
 
                 {!isClaimStarted ? (
                   <>
@@ -723,7 +697,7 @@ const ClaimAddress = () => {
                   <p className={classes.myClaim}>My Claim</p>
                   <div className={classes.claims}>
                     <p className={classes.claimAmt}>
-                      {claimableAmt ? claimableAmt : 0}
+                      {claimableAmt ? Number(claimableAmt).toFixed(2) : 0}
                     </p>
                     <p className={classes.amount}>{airdropTokenName}</p>
                   </div>
@@ -733,12 +707,14 @@ const ClaimAddress = () => {
                   <div className={classes.claims}>
                     <p className={classes.claimAmt}>
                       {claimRemaining
-                        ? convertFromWeiGovernance(
-                            claimRemaining,
-                            decimalOfToken,
-                          )
+                        ? Number(
+                            convertFromWeiGovernance(
+                              claimRemaining,
+                              decimalOfToken,
+                            ),
+                          ).toFixed(2)
                         : 0}
-                      {/* {convertFromWeiGovernance(claimRemaining, decimalOfToken)} */}
+                      {/* {claimRemaining ? claimRemaining : 0} */}
                     </p>
                     <p className={classes.amount}>{airdropTokenName}</p>
                   </div>
@@ -752,12 +728,19 @@ const ClaimAddress = () => {
 
                     if (
                       event.target.value >
-                        convertFromWeiGovernance(
-                          claimRemaining,
-                          decimalOfToken,
+                        Number(
+                          convertFromWeiGovernance(
+                            claimRemaining,
+                            decimalOfToken,
+                          ),
                         ) ||
                       claimInput >
-                        convertFromWeiGovernance(claimRemaining, decimalOfToken)
+                        Number(
+                          convertFromWeiGovernance(
+                            claimRemaining,
+                            decimalOfToken,
+                          ),
+                        )
                     ) {
                       setShowInputError(true);
                     } else {
@@ -767,7 +750,7 @@ const ClaimAddress = () => {
                   disabled={
                     !claimActive ||
                     !claimableAmt ||
-                    (+claimRemaining === 0 && alreadyClaimed)
+                    (claimRemaining == 0 && alreadyClaimed)
                       ? true
                       : false
                   }
@@ -800,11 +783,11 @@ const ClaimAddress = () => {
                 onClick={claimHandler}
                 className={classes.btn}
                 disabled={
-                  (+claimRemaining === 0 && alreadyClaimed && claimed) ||
+                  (claimRemaining == 0 && alreadyClaimed && claimed) ||
                   !claimActive ||
                   !claimableAmt ||
                   +claimInput <= 0 ||
-                  +claimInput >= +claimRemaining ||
+                  claimInput >= +claimRemaining ||
                   (contractData.permission == 0 && !isEligibleForTokenGated)
                     ? true
                     : false
