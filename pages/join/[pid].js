@@ -281,7 +281,7 @@ const Join = (props) => {
                 GNOSIS_TRANSACTION_URL,
               );
               console.log(contract);
-              await governorDetailContract.balanceOf().then((result) => {
+              await contract.balanceOf().then((result) => {
                 console.log("result", result);
                 setUserTokenBalance(
                   convertFromWeiGovernance(result, tokenDecimals),
@@ -297,6 +297,10 @@ const Join = (props) => {
               await governorDetailContract
                 .gatingTokenBalanceRequired()
                 .then((result) => {
+                  console.log(
+                    "balance required",
+                    convertFromWeiGovernance(result, tokenDecimals),
+                  );
                   setTokenGatingAmount(
                     convertFromWeiGovernance(result, tokenDecimals),
                   );
@@ -319,16 +323,34 @@ const Join = (props) => {
       await erc721DetailContract.gatingTokenAddress().then(async (result) => {
         setTokenGatingAddress(result);
         if (result !== "0x0000000000000000000000000000000000000000") {
-          const gatedTokenUserBalance = await getBalanceOfToken(
-            walletAddress,
-            result,
-          );
+          // const gatedTokenUserBalance = await getBalanceOfToken(
+          //   walletAddress,
+          //   result,
+          // );
 
-          setUserTokenBalance(gatedTokenUserBalance);
+          // setUserTokenBalance(gatedTokenUserBalance);
           const tokenDecimals = await getTokensDecimalFromAddress(result);
+          const contract = new SmartContract(
+            ImplementationContract,
+            result,
+            undefined,
+            USDC_CONTRACT_ADDRESS,
+            GNOSIS_TRANSACTION_URL,
+          );
+          console.log(contract);
+          await contract.balanceOf().then((result) => {
+            console.log("result", result);
+            setUserTokenBalance(
+              convertFromWeiGovernance(result, tokenDecimals),
+            );
+          });
           await erc721DetailContract
             .gatingTokenBalanceRequired()
             .then((result) => {
+              console.log(
+                "balance required",
+                convertFromWeiGovernance(result, tokenDecimals),
+              );
               setTokenGatingAmount(
                 convertFromWeiGovernance(result, tokenDecimals),
               );
