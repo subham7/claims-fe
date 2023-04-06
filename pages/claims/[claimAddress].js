@@ -321,7 +321,10 @@ const ClaimAddress = () => {
         // console.log(walletAddress);
 
         // converting the CSV data into merkleLeaves
-        const csvData = await getClaimsByUserAddress(walletAddress);
+        const csvData = await getClaimsByUserAddress(
+          desc.creatorAddress.toLowerCase(),
+        );
+
         const { addresses } = csvData
           .reverse()
           .find((address) => address.claimContract === claimAddress);
