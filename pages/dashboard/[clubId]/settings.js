@@ -1006,7 +1006,7 @@ const Settings = (props) => {
         );
         const response = contract.enableTokenGating(
           tempGatingAddress,
-          convertToWeiGovernance(tempGatingAmount, tokenDecimals),
+          convertToWeiGovernance(tempGatingAmount, tokenDecimals).toString(),
         );
 
         response.then(
