@@ -314,8 +314,8 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
               id="maximumClaim"
             >
               <FormControlLabel
-                // disabled={values.eligible === "everyone"}
-                disabled
+                disabled={values.eligible === "everyone"}
+                // disabled
                 value="proRata"
                 control={<Radio />}
                 label="Pro-rata as per share of tokens held"

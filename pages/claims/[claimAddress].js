@@ -200,6 +200,7 @@ const ClaimAddress = () => {
   const [showInputError, setShowInputError] = useState(false);
   const [claimRemaining, setClaimRemaining] = useState(0);
   const [showMessage, setShowMessage] = useState(false);
+
   const [isEligibleForTokenGated, setIsEligibleForTokenGated] = useState(null);
 
   const [{ wallet }] = useConnectWallet();
@@ -214,9 +215,6 @@ const ClaimAddress = () => {
   // console.log(contractData.startTime);
 
   useEffect(() => {
-    console.log(+contractData.endTime);
-    console.log(currentTime);
-
     if (
       +contractData.startTime > currentTime ||
       +contractData.endTime < currentTime
@@ -250,13 +248,13 @@ const ClaimAddress = () => {
       const remainingAmt = await claimContract.claimAmount(walletAddress);
 
       if (!hasClaimed) {
-        console.log(claimableAmt);
+        // console.log(claimableAmt);
         setClaimRemaining(convertToWeiGovernance(claimableAmt, decimalOfToken));
         // console.log(hasClaimed);
       } else {
         setClaimRemaining(remainingAmt);
       }
-      console.log(remainingAmt);
+      // console.log(remainingAmt);
 
       const erc20Contract = new SmartContract(
         USDCContract,
@@ -274,24 +272,24 @@ const ClaimAddress = () => {
       const decimals = await erc20Contract.decimals();
       setDecimalofToken(decimals);
 
-      // if (desc.permission == 0) {
-      //   const daoTokenContract = new SmartContract(
-      //     USDCContract,
-      //     desc.daoToken,
-      //     walletAddress,
-      //     undefined,
-      //     undefined,
-      //   );
+      if (desc.permission == 0) {
+        const daoTokenContract = new SmartContract(
+          USDCContract,
+          desc.daoToken,
+          walletAddress,
+          undefined,
+          undefined,
+        );
 
-      //   const daoTokenBalance = await daoTokenContract.balanceOf();
-      //   console.log("Dao token", daoTokenBalance);
+        const daoTokenBalance = await daoTokenContract.balanceOf(walletAddress);
+        // console.log("Dao token", daoTokenBalance);
 
-      //   if (+daoTokenBalance === 0) {
-      //     setIsEligibleForTokenGated(false);
-      //   } else {
-      //     setIsEligibleForTokenGated(true);
-      //   }
-      // }
+        if (+daoTokenBalance === 0) {
+          setIsEligibleForTokenGated(false);
+        } else {
+          setIsEligibleForTokenGated(true);
+        }
+      }
 
       // totalAmount of tokens
       const totalAmountInNumber = convertFromWeiGovernance(
@@ -320,50 +318,57 @@ const ClaimAddress = () => {
           claimAddress,
         );
         setClaimableAmt(amount);
-        console.log(walletAddress);
+        // console.log(walletAddress);
 
         // converting the CSV data into merkleLeaves
         const csvData = await getClaimsByUserAddress(walletAddress);
-        console.log("hereeeeee", csvData);
-        const { addresses } = csvData[csvData.length - 1];
+        const { addresses } = csvData
+          .reverse()
+          .find((address) => address.claimContract === claimAddress);
+
         console.log(addresses);
 
         let encodedListOfLeaves = [];
 
         console.log(decimals);
         addresses.map(async (data) => {
+          console.log("Address", data.address);
+          console.log("AMount", data.amount);
           const res = await claimContract.encode(
             data.address,
             convertToWeiGovernance(data.amount, decimals),
           );
+          // console.log(res);
           encodedListOfLeaves.push(keccak256(res));
         });
 
         // setting merkleLeaves
-        console.log("encodedLeaves", encodedListOfLeaves);
+        // console.log("encodedLeaves", encodedListOfLeaves);
         setMerkleLeaves(encodedListOfLeaves);
       }
+
       // free for all (no merkleRoot)
       else {
-        if (desc.daoToken === "0x0000000000000000000000000000000000000000") {
-        }
-
         // claimable amount
         const airdropAmount = convertFromWeiGovernance(
           desc.claimAmountDetails[1],
           decimals,
         );
 
-        // const amount = await claimContract.checkAmount(walletAddress);
+        if (desc.daoToken !== "0x0000000000000000000000000000000000000000") {
+          // amount for prorata
+          const amount = await claimContract.checkAmount(walletAddress);
+          const data = convertFromWeiGovernance(amount, decimals);
+          // console.log("NewData", data);
 
-        // const data = convertFromWeiGovernance(amount, decimals);
-        // console.log(data);
-
-        console.log(airdropAmount);
-        setClaimableAmt(airdropAmount);
+          setClaimableAmt(data);
+        } else {
+          // console.log(airdropAmount);
+          setClaimableAmt(airdropAmount);
+        }
       }
 
-      console.log(claimableAmt);
+      // console.log(claimableAmt);
       setIsLoading(false);
     } catch (err) {
       console.log(err);
@@ -390,7 +395,6 @@ const ClaimAddress = () => {
       ) {
         console.log(merkleLeaves);
         // const leaves = merkleLeaves.map((leaf) => keccak256(leaf));
-
         const tree = new MerkleTree(merkleLeaves, keccak256, { sort: true });
         console.log(merkleLeaves);
 
@@ -403,11 +407,11 @@ const ClaimAddress = () => {
           convertToWeiGovernance(claimableAmt, decimalOfToken),
         );
 
-        console.log(encodedLeaf);
+        console.log("EncodedLeaf", encodedLeaf);
 
         const leaf = keccak256(encodedLeaf);
         const proof = tree.getHexProof(leaf);
-        console.log(encodedLeaf);
+        console.log("Proof", proof);
 
         const amt = convertToWeiGovernance(claimInput, decimalOfToken);
         console.log(amt);
@@ -456,10 +460,10 @@ const ClaimAddress = () => {
   };
 
   const maxHandler = () => {
-    if (claimRemaining === 0 && !alreadyClaimed) {
+    if (+claimRemaining === 0 && !alreadyClaimed) {
       setClaimInput(claimableAmt);
     } else {
-      setClaimInput(convertFromWeiGovernance(claimRemaining, decimalOfToken));
+      setClaimInput(convertFromWeiGovernance(+claimRemaining, decimalOfToken));
     }
   };
   console.log(+claimRemaining);
@@ -629,7 +633,7 @@ const ClaimAddress = () => {
                 className={classes.input}
               />
               <button
-                disabled={(!claimActive || !isEligibleForTokenGated) && true}
+                disabled={!claimActive && true}
                 style={
                   !claimActive
                     ? { cursor: "not-allowed" }
@@ -656,6 +660,7 @@ const ClaimAddress = () => {
                 !claimActive ||
                 !claimableAmt ||
                 +claimInput <= 0 ||
+                +claimInput >= +claimRemaining ||
                 (contractData.permission == 0 && !isEligibleForTokenGated)
                   ? true
                   : false
@@ -664,6 +669,7 @@ const ClaimAddress = () => {
                 (alreadyClaimed && +claimRemaining === 0) ||
                 +claimInput <= 0 ||
                 (contractData.permission == 0 && !isEligibleForTokenGated) ||
+                +claimInput >= +claimRemaining ||
                 !claimableAmt
                   ? { cursor: "not-allowed" }
                   : { cursor: "pointer" }
