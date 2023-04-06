@@ -53,7 +53,10 @@ import TokenSearch from "../../../src/components/tokenSearch";
 import styled from "@emotion/styled";
 import nft from "../../../src/abis/nft.json";
 import { useConnectWallet } from "@web3-onboard/react";
-import { getTokensDecimalFromAddress } from "../../../src/api/token";
+import {
+  getTokenMetadata,
+  getTokensDecimalFromAddress,
+} from "../../../src/api/token";
 
 const useStyles = makeStyles({
   valuesStyle: {
@@ -989,7 +992,9 @@ const Settings = (props) => {
       }
     }
     if (settingsOptions[7].name === updateType) {
-      //case for enable/disable token gating
+      //case for enable token gating
+      const tokenMetadata = await getTokenMetadata(tempGatingAddress);
+      console.log(tokenMetadata);
       if (tempGatingAddress.length === 0) {
         setLoaderOpen(false);
         setFailed(false);
@@ -1000,7 +1005,7 @@ const Settings = (props) => {
         setFailed(false);
         setMessage("Token gating amount cannot be 0");
         setOpenSnackBar(true);
-      } else {
+      } else if (tokenMetadata.result) {
         const tokenDecimals = await getTokensDecimalFromAddress(
           tempGatingAddress,
         );
@@ -1024,6 +1029,11 @@ const Settings = (props) => {
             setOpenSnackBar(true);
           },
         );
+      } else {
+        setLoaderOpen(false);
+        setFailed(false);
+        setMessage("Enter a valid contract address");
+        setOpenSnackBar(true);
       }
     }
   };

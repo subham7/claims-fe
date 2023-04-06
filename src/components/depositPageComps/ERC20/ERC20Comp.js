@@ -290,7 +290,8 @@ const ERC20Comp = ({
                   {tokenGatingAddress !==
                     "0x0000000000000000000000000000000000000000" && (
                     <>
-                      {userTokenBalance < tokenGatingAmount ? (
+                      {userTokenBalance < tokenGatingAmount ||
+                      isNaN(userTokenBalance) ? (
                         <Typography sx={{ color: "red" }}>
                           This club is Token Gated. You don&apos;t qualify
                         </Typography>
@@ -704,7 +705,8 @@ const ERC20Comp = ({
                           (depositAmount <= 0 ? true : false) ||
                           (tokenGatingAddress !==
                             "0x0000000000000000000000000000000000000000" &&
-                            userTokenBalance < tokenGatingAmount)
+                            (userTokenBalance < tokenGatingAmount ||
+                              isNaN(userTokenBalance)))
                         }
                       >
                         Deposit
