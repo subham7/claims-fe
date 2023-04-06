@@ -272,13 +272,28 @@ const Join = (props) => {
           .then(async (result) => {
             setTokenGatingAddress(result);
             if (result !== "0x0000000000000000000000000000000000000000") {
-              const gatedTokenUserBalance = await getBalanceOfToken(
-                walletAddress,
-                result,
-              );
-
-              setUserTokenBalance(gatedTokenUserBalance);
               const tokenDecimals = await getTokensDecimalFromAddress(result);
+              const contract = new SmartContract(
+                ImplementationContract,
+                result,
+                undefined,
+                USDC_CONTRACT_ADDRESS,
+                GNOSIS_TRANSACTION_URL,
+              );
+              console.log(contract);
+              await governorDetailContract.balanceOf().then((result) => {
+                console.log("result", result);
+                setUserTokenBalance(
+                  convertFromWeiGovernance(result, tokenDecimals),
+                );
+              });
+              // const gatedTokenUserBalance = await getBalanceOfToken(
+              //   walletAddress,
+              //   result,
+              // );
+
+              // setUserTokenBalance(gatedTokenUserBalance);
+
               await governorDetailContract
                 .gatingTokenBalanceRequired()
                 .then((result) => {

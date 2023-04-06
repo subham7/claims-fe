@@ -114,12 +114,10 @@ export const getBalanceOfToken = async (walletAddress, tokenAddress) => {
     const tokenDecimal = await getTokensDecimalFromAddress(`${tokenAddress}`);
 
     const metadata = await axios.request(options);
-
     let balance = metadata.data.result.tokenBalances[0].tokenBalance;
 
     // Compute token balance in human-readable format
     balance = balance / Math.pow(10, tokenDecimal);
-
     return balance;
   };
 
@@ -160,4 +158,37 @@ export const getTokensDecimalFromAddress = async (address) => {
   const result = await main();
 
   return tokenDecimal;
+};
+
+export const getTokenMetadata = async (address) => {
+  const data = JSON.stringify({
+    jsonrpc: "2.0",
+    method: "alchemy_getTokenMetadata",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    params: [`${address}`],
+    id: 42,
+  });
+
+  const config = {
+    method: "post",
+    url: GOERLI_RPC_URL,
+    headers: {
+      "Content-Type": "application/json",
+    },
+    data: data,
+  };
+
+  const main = async () => {
+    //fetching token balance
+    let response = await axios(config);
+    response = response["data"];
+    console.log(response);
+    return response;
+    //   console.log(`${i++}. ${tokenName}: ${tokenBalance} ${tokenSymbol}`);
+  };
+  const result = await main();
+
+  return result;
 };
