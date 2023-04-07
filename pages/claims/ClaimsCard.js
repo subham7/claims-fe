@@ -114,7 +114,7 @@ const ClaimsCard = ({
     } else {
       setIsActive(true);
     }
-  }, [currentTime]);
+  }, [currentTime, endDate, startDate]);
 
   const claimContractData = {
     description,
@@ -141,7 +141,9 @@ const ClaimsCard = ({
           <span className={classes.span}>{convertedDate}</span>
         </h4>
         <div className={classes.iconContainer}>
-          {/* <div className={classes.active}>Active</div> */}
+          <div className={`${isActive ? classes.active : classes.inactive}`}>
+            {isActive ? "Active" : "Inactive"}
+          </div>
           <BsLink45Deg
             onClick={() => {
               navigator.clipboard.writeText(
