@@ -93,7 +93,7 @@ const Form = () => {
       eligible: "csv", // token || csv || everyone
       daoTokenAddress: "", // tokenGated
       maximumClaim: "proRata", // prorata or custom
-      customAmount: null,
+      customAmount: 0,
       merkleData: [],
       csvObject: [],
     },

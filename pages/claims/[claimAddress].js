@@ -241,6 +241,8 @@ const ClaimAddress = () => {
       setContractData(desc);
       console.log(desc);
 
+      console.log(desc.claimAmountDetails[1]);
+
       // check if token is already claimed
       const hasClaimed = await claimContract.hasClaimed(walletAddress);
       setAlreadyClaimed(hasClaimed);
@@ -357,6 +359,8 @@ const ClaimAddress = () => {
           desc.claimAmountDetails[1],
           decimals,
         );
+
+        console.log("AirdropAmt", airdropAmount);
 
         if (desc.daoToken !== "0x0000000000000000000000000000000000000000") {
           // amount for prorata

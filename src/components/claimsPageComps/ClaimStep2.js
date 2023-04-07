@@ -147,6 +147,10 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
     console.log(hiddenFileInput.current.value);
   };
 
+  if (values.eligible === "everyone") {
+    values.maximumClaim = "custom";
+  }
+
   const helper = async (csvArr, claimContract, decimals) => {
     let encodedListOfLeaves = [];
     csvArr.map(async (data) => {
@@ -302,11 +306,15 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
               </>
             )}
 
-            <Typography className={classes.label}>
+            <Typography
+              className={classes.label}
+              sx={values.eligible === "everyone" && { display: "none" }}
+            >
               What is the maximum claim allowed per token holder?
             </Typography>
             <RadioGroup
               aria-labelledby="demo-controlled-radio-buttons-group"
+              sx={values.eligible === "everyone" && { display: "none" }}
               // name="controlled-radio-buttons-group"
               value={values.maximumClaim}
               onChange={formik.handleChange}
@@ -318,6 +326,7 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
                 // disabled
                 value="proRata"
                 control={<Radio />}
+                // sx={values.eligible === "everyone" && { display: "none" }}
                 label="Pro-rata as per share of tokens held"
               />
               <FormControlLabel
@@ -329,7 +338,8 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
 
             {/* Number of Tokens */}
 
-            {values.maximumClaim === "custom" && (
+            {(values.maximumClaim === "custom" ||
+              values.eligible === "everyone") && (
               <>
                 <Typography className={classes.label}>Enter Amount</Typography>
                 <TextField
@@ -401,6 +411,8 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
           <Button
             disabled={
               csvError ||
+              (values.eligible === "everyone" &&
+                (values.customAmount <= 0 || !values.customAmount)) ||
               (values.eligible === "csv" && values.csvObject.length === 0)
                 ? true
                 : false
