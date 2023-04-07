@@ -123,8 +123,9 @@ const Form = () => {
         .notRequired()
         .when("eligible", {
           is: "token",
-          then: () => yup.string().required("Please enter token address"),
+          then: () => yup.string().required("Enter token address"),
         }),
+      // .required("Dao token is required"),
       customAmount: yup
         .number("Enter custom Amount")
         .notRequired()
@@ -133,10 +134,11 @@ const Form = () => {
           then: () =>
             yup
               .number("Enter custom Amount")
-              .required("Please enter custom amount")
+              // .required("Please enter custom amount")
               .moreThan(0, "Amount should be greater than 0")
               .lessThan(yup.ref("numberOfTokens")),
         }),
+      // .required("Customkjkdjas"),
     }),
 
     onSubmit: (values) => {
@@ -406,6 +408,7 @@ const Form = () => {
               setFinish(true);
             } catch (err) {
               console.log(err);
+              setLoading(false);
               showMessageHandler();
               setErrMsg(err.message);
             }
@@ -434,6 +437,7 @@ const Form = () => {
           <ClaimStep2
             formik={formik}
             handleBack={handleBack}
+            handleNext={handleNext}
             setActiveStep={setActiveStep}
             finish={finish}
             loading={loading}

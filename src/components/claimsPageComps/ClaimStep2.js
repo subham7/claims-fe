@@ -26,6 +26,7 @@ import { useConnectWallet } from "@web3-onboard/react";
 import { useDispatch } from "react-redux";
 import { addMerkleLeaves } from "../../redux/reducers/createClaim";
 import { useRouter } from "next/router";
+import { Formik } from "formik";
 
 const useStyles = makeStyles({
   form: {
@@ -413,6 +414,9 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
               csvError ||
               (values.eligible === "everyone" &&
                 (values.customAmount <= 0 || !values.customAmount)) ||
+              (values.eligible === "token" &&
+                values.maximumClaim === "custom" &&
+                values.customAmount <= 0) ||
               (values.eligible === "csv" && values.csvObject.length === 0)
                 ? true
                 : false

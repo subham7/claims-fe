@@ -2,12 +2,9 @@ import {
   Button,
   FormControl,
   InputAdornment,
-  InputLabel,
   MenuItem,
-  Select,
   TextField,
   Typography,
-  CircularProgress,
   ToggleButtonGroup,
   ToggleButton,
 } from "@mui/material";
@@ -21,10 +18,6 @@ import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import { useRouter } from "next/router";
-import { route } from "next/dist/server/router";
-import Web3 from "web3";
-import { useConnectWallet } from "@web3-onboard/react";
-import { getTokensFromWallet } from "../../api/token";
 
 const useStyles = makeStyles({
   form: {
@@ -100,7 +93,7 @@ const useStyles = makeStyles({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    padding: "50px",
+    padding: "40px",
     flexDirection: "column",
     borderRadius: "10px",
     cursor: "pointer",
@@ -111,7 +104,7 @@ const useStyles = makeStyles({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    padding: "50px",
+    padding: "40px",
     flexDirection: "column",
     borderRadius: "10px",
     cursor: "pointer",
@@ -151,13 +144,10 @@ const useStyles = makeStyles({
   },
 });
 
-const ClaimStep1 = ({ handleNext, setActiveStep, formik, tokensInWallet }) => {
+const ClaimStep1 = ({ formik, tokensInWallet }) => {
   const classes = useStyles();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedContract, setSelectedContract] = useState(false);
-  const [selectedWallet, setSelectedWallet] = useState(true);
-  // const [tokensInWallet, setTokensInWallet] = useState(null);
 
   useEffect(() => {
     formik.values.airdropTokenAddress =
@@ -174,8 +164,6 @@ const ClaimStep1 = ({ handleNext, setActiveStep, formik, tokensInWallet }) => {
       >
         <BsArrowLeft /> Back to claims
       </Typography>
-
-      {/* <Typography className={classes.step}>Step 1/2</Typography> */}
 
       <form className={classes.form}>
         <Typography className={classes.title}>
@@ -203,45 +191,6 @@ const ClaimStep1 = ({ handleNext, setActiveStep, formik, tokensInWallet }) => {
           Where do you want to airdrop tokens from?{" "}
         </Typography>
 
-        {/* <div
-          // onChange={formik.handleChange}
-          // id="airdropFrom"
-          className={classes.selectContainer}
-          // value={formik.values.airdropFrom}
-        >
-          <div
-            onClick={() => {
-              setSelectedContract(false);
-              setSelectedWallet(true);
-              formik.values.airdropFrom = "wallet";
-              // setAirdropFrom("wallet");
-            }}
-            className={`${
-              selectedWallet ? classes.selectedContainer : classes.leftContainer
-            }`}
-          >
-            <IoWalletSharp size={20} />
-            <p>My Wallet</p>
-          </div>
-
-          <div
-            onClick={() => {
-              setSelectedWallet(false);
-              setSelectedContract(true);
-              formik.values.airdropFrom = "contract";
-              // setAirdropFrom("contract");
-            }}
-            className={`${
-              selectedContract
-                ? classes.selectedContainer
-                : classes.rightContainer
-            }`}
-          >
-            <BsFillSendFill size={20} />
-            <p>StationX Contract</p>
-          </div>
-        </div> */}
-
         <ToggleButtonGroup
           color="primary"
           value={formik.values.airdropFrom}
@@ -257,14 +206,16 @@ const ClaimStep1 = ({ handleNext, setActiveStep, formik, tokensInWallet }) => {
             name="airdropFrom"
             value="wallet"
           >
-            Wallet
+            <IoWalletSharp size={20} />
+            <p>My Wallet</p>
           </ToggleButton>
           <ToggleButton
             className={classes.rightContainer}
             name="airdropFrom"
             value="contract"
           >
-            Smart Contract
+            <BsFillSendFill size={20} />
+            <p>StationX Contract</p>
           </ToggleButton>
         </ToggleButtonGroup>
 
@@ -326,9 +277,6 @@ const ClaimStep1 = ({ handleNext, setActiveStep, formik, tokensInWallet }) => {
                 formik.touched.selectedToken && formik.errors.selectedToken
               }
             >
-              <MenuItem key={""} value={""}>
-                No Selected // Or Empty
-              </MenuItem>
               {tokensInWallet?.map((token, i) => (
                 <MenuItem key={i} value={token}>
                   {token?.tokenSymbol}

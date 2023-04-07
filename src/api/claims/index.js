@@ -22,7 +22,6 @@ export const getClaimsByUserAddress = async (userAddress) => {
   try {
     const res = await fetch(`${MAIN_API_URL}/claim/user/${userAddress}`);
     const data = await res.json();
-    console.log(data);
     return data;
   } catch (err) {
     console.log(err);
