@@ -19,6 +19,8 @@ import {
 } from "../../src/api/claims";
 import MerkleTree from "merkletreejs";
 import keccak256 from "keccak256";
+import Navbar3 from "../../src/components/navbar";
+import Image from "next/image";
 
 const useStyles = makeStyles({
   container: {
@@ -174,6 +176,9 @@ const useStyles = makeStyles({
     color: "#FF033E",
     fontSize: "14px",
   },
+  nav: {
+    padding: "10px 20px",
+  },
 });
 
 const ClaimAddress = () => {
@@ -213,17 +218,6 @@ const ClaimAddress = () => {
   const endDateString = new Date(contractData.endTime * 1000).toString();
   // const startTimeInEpoch = new Date(contractData.startTime).toString();
   const currentTime = Date.now() / 1000;
-
-  useEffect(() => {
-    if (
-      +contractData.startTime > currentTime ||
-      +contractData.endTime < currentTime
-    ) {
-      setClaimActive(false);
-    } else {
-      setClaimActive(true);
-    }
-  }, [contractData.endTime, contractData.startTime, currentTime]);
 
   const fetchContractDetails = useCallback(async () => {
     setIsLoading(true);
@@ -513,6 +507,29 @@ const ClaimAddress = () => {
     }
   };
 
+  let whoCanClaim;
+  if (
+    contractData.merkleRoot !==
+    "0x0000000000000000000000000000000000000000000000000000000000000001"
+  ) {
+    whoCanClaim = "Whitelisted";
+  } else if (contractData.permission === "3") {
+    whoCanClaim = "Everyone";
+  } else if (contractData.permission === "0") {
+    whoCanClaim = "Token Holders";
+  }
+
+  useEffect(() => {
+    if (
+      +contractData.startTime > currentTime ||
+      +contractData.endTime < currentTime
+    ) {
+      setClaimActive(false);
+    } else {
+      setClaimActive(true);
+    }
+  }, [contractData.endTime, contractData.startTime, currentTime]);
+
   useEffect(() => {
     fetchContractDetails();
   }, [fetchContractDetails]);
@@ -537,23 +554,20 @@ const ClaimAddress = () => {
     })();
   }, [claimAddress, walletAddress]);
 
-  let whoCanClaim;
-
-  if (
-    contractData.merkleRoot !==
-    "0x0000000000000000000000000000000000000000000000000000000000000001"
-  ) {
-    whoCanClaim = "Whitelisted";
-  } else if (contractData.permission === "3") {
-    whoCanClaim = "Everyone";
-  } else if (contractData.permission === "0") {
-    whoCanClaim = "Token Holders";
-  }
+  useEffect(() => {
+    console.log("WalletAddress", walletAddress);
+  }, [walletAddress]);
 
   return (
     <>
-      <Navbar2 />
-
+      <nav className={classes.nav}>
+        <Image
+          alt="logo"
+          src="/assets/images/monogram.png"
+          height={50}
+          width={50}
+        />
+      </nav>
       {isLoading ? (
         <div
           style={{
