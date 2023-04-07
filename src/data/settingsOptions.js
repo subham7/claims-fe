@@ -27,4 +27,8 @@ export const settingsOptions = [
     id: 6,
     name: "isNFTtransferable",
   },
+  {
+    id: 7,
+    name: "token_gating",
+  },
 ];

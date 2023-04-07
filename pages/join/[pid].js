@@ -26,6 +26,7 @@ import {
   calculateDays,
   convertFromWei,
   convertFromWeiGovernance,
+  convertToWeiGovernance,
 } from "../../src/utils/globalFunctions";
 
 import { checkNetwork } from "../../src/utils/wallet";
@@ -33,6 +34,10 @@ import { checkNetwork } from "../../src/utils/wallet";
 import { useConnectWallet } from "@web3-onboard/react";
 
 import { updateDynamicAddress } from "../../src/api";
+import {
+  getBalanceOfToken,
+  getTokensDecimalFromAddress,
+} from "../../src/api/token";
 
 const Join = (props) => {
   const router = useRouter();
@@ -84,6 +89,11 @@ const Join = (props) => {
   const [tokenSymbol, setTokenSymbol] = useState();
   const [isGovernanceActive, setIsGovernanceActive] = useState();
   const [message, setMessage] = useState("");
+  const [tokenGatingAmount, setTokenGatingAmount] = useState();
+  const [tokenGatingAddress, setTokenGatingAddress] = useState(
+    "0x0000000000000000000000000000000000000000",
+  );
+  const [userTokenBalance, setUserTokenBalance] = useState();
 
   const [{ wallet }, connect] = useConnectWallet();
 
@@ -257,6 +267,40 @@ const Join = (props) => {
           // console.log("result", result);
           setTokenSymbol(result);
         });
+        await governorDetailContract
+          .gatingTokenAddress()
+          .then(async (result) => {
+            setTokenGatingAddress(result);
+            if (result !== "0x0000000000000000000000000000000000000000") {
+              const tokenDecimals = await getTokensDecimalFromAddress(result);
+              const contract = new SmartContract(
+                ImplementationContract,
+                result,
+                undefined,
+                USDC_CONTRACT_ADDRESS,
+                GNOSIS_TRANSACTION_URL,
+              );
+              await contract.balanceOf().then((result) => {
+                setUserTokenBalance(
+                  convertFromWeiGovernance(result, tokenDecimals),
+                );
+              });
+              // const gatedTokenUserBalance = await getBalanceOfToken(
+              //   walletAddress,
+              //   result,
+              // );
+
+              // setUserTokenBalance(gatedTokenUserBalance);
+
+              await governorDetailContract
+                .gatingTokenBalanceRequired()
+                .then((result) => {
+                  setTokenGatingAmount(
+                    convertFromWeiGovernance(result, tokenDecimals),
+                  );
+                });
+            }
+          });
 
         const decimal =
           await await governorDetailContract.obtainTokenDecimals();
@@ -269,6 +313,38 @@ const Join = (props) => {
     const erc721ContractDetails = async () => {
       const erc721DetailContract = newContract(daoAddress);
       const nftContract = newContract(nftContractAddress, nft);
+
+      await erc721DetailContract.gatingTokenAddress().then(async (result) => {
+        setTokenGatingAddress(result);
+        if (result !== "0x0000000000000000000000000000000000000000") {
+          // const gatedTokenUserBalance = await getBalanceOfToken(
+          //   walletAddress,
+          //   result,
+          // );
+
+          // setUserTokenBalance(gatedTokenUserBalance);
+          const tokenDecimals = await getTokensDecimalFromAddress(result);
+          const contract = new SmartContract(
+            ImplementationContract,
+            result,
+            undefined,
+            USDC_CONTRACT_ADDRESS,
+            GNOSIS_TRANSACTION_URL,
+          );
+          await contract.balanceOf().then((result) => {
+            setUserTokenBalance(
+              convertFromWeiGovernance(result, tokenDecimals),
+            );
+          });
+          await erc721DetailContract
+            .gatingTokenBalanceRequired()
+            .then((result) => {
+              setTokenGatingAmount(
+                convertFromWeiGovernance(result, tokenDecimals),
+              );
+            });
+        }
+      });
 
       await erc721DetailContract.quoram().then((result) => setQuoram(result));
 
@@ -344,6 +420,7 @@ const Join = (props) => {
     governanceConvertDecimal,
     nftContractAddress,
     newContract,
+    walletAddress,
   ]);
 
   const handleInputChange = (newValue) => {
@@ -418,6 +495,9 @@ const Join = (props) => {
           userDetails={userDetails}
           newContract={newContract}
           clubName={clubName}
+          tokenGatingAddress={tokenGatingAddress}
+          tokenGatingAmount={tokenGatingAmount}
+          userTokenBalance={userTokenBalance}
         />
       )}
       {tokenType === "erc721" && (
@@ -450,6 +530,9 @@ const Join = (props) => {
           userNftBalance={userNftBalance}
           walletBalance={walletBalance}
           newContract={newContract}
+          tokenGatingAddress={tokenGatingAddress}
+          tokenGatingAmount={tokenGatingAmount}
+          userTokenBalance={userTokenBalance}
         />
       )}
       <SnackbarComp
