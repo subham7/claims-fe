@@ -280,9 +280,7 @@ const Join = (props) => {
                 USDC_CONTRACT_ADDRESS,
                 GNOSIS_TRANSACTION_URL,
               );
-              console.log(contract);
               await contract.balanceOf().then((result) => {
-                console.log("result", result);
                 setUserTokenBalance(
                   convertFromWeiGovernance(result, tokenDecimals),
                 );
@@ -297,10 +295,6 @@ const Join = (props) => {
               await governorDetailContract
                 .gatingTokenBalanceRequired()
                 .then((result) => {
-                  console.log(
-                    "balance required",
-                    convertFromWeiGovernance(result, tokenDecimals),
-                  );
                   setTokenGatingAmount(
                     convertFromWeiGovernance(result, tokenDecimals),
                   );
@@ -337,9 +331,7 @@ const Join = (props) => {
             USDC_CONTRACT_ADDRESS,
             GNOSIS_TRANSACTION_URL,
           );
-          console.log(contract);
           await contract.balanceOf().then((result) => {
-            console.log("result", result);
             setUserTokenBalance(
               convertFromWeiGovernance(result, tokenDecimals),
             );
@@ -347,10 +339,6 @@ const Join = (props) => {
           await erc721DetailContract
             .gatingTokenBalanceRequired()
             .then((result) => {
-              console.log(
-                "balance required",
-                convertFromWeiGovernance(result, tokenDecimals),
-              );
               setTokenGatingAmount(
                 convertFromWeiGovernance(result, tokenDecimals),
               );

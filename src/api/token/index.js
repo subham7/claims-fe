@@ -150,7 +150,6 @@ export const getTokensDecimalFromAddress = async (address) => {
     //fetching token balance
     let response = await axios(config);
     response = response["data"];
-    console.log(response);
     tokenDecimal = response.result.decimals;
     return tokenDecimal;
     //   console.log(`${i++}. ${tokenName}: ${tokenBalance} ${tokenSymbol}`);
@@ -184,7 +183,6 @@ export const getTokenMetadata = async (address) => {
     //fetching token balance
     let response = await axios(config);
     response = response["data"];
-    console.log(response);
     return response;
     //   console.log(`${i++}. ${tokenName}: ${tokenBalance} ${tokenSymbol}`);
   };
