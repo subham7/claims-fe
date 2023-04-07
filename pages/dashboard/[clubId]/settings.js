@@ -900,7 +900,7 @@ const Settings = (props) => {
       USDC_CONTRACT_ADDRESS,
       GNOSIS_TRANSACTION_URL,
     );
-    console.log(contract);
+
     if (settingsOptions[1].name === updateType) {
       //  case for min update
       const convertedMinDeposit = convertToWei(minDeposit, usdcConvertDecimal);
@@ -994,7 +994,6 @@ const Settings = (props) => {
     if (settingsOptions[7].name === updateType) {
       //case for enable token gating
       const tokenMetadata = await getTokenMetadata(tempGatingAddress);
-      console.log(tokenMetadata);
       if (tempGatingAddress.length === 0) {
         setLoaderOpen(false);
         setFailed(false);
@@ -1130,14 +1129,12 @@ const Settings = (props) => {
     );
     response.then(
       (result) => {
-        console.log(result);
         setLoaderOpen(false);
         setFailed(false);
         setMessage("Token gating successfull!");
         setOpenSnackBar(true);
       },
       (error) => {
-        console.log(error);
         setLoaderOpen(false);
         setFailed(true);
         setMessage("Issue with adding token to token gating!");
