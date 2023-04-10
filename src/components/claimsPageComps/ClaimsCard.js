@@ -6,7 +6,7 @@ import { AiFillCalendar } from "react-icons/ai";
 import { FaCoins } from "react-icons/fa";
 import { useRouter } from "next/router";
 import { useDispatch } from "react-redux";
-import { addClaimContractData } from "../../src/redux/reducers/createClaim";
+import { addClaimContractData } from "../../redux/reducers/createClaim";
 
 const useStyles = makeStyles({
   container: {
@@ -143,7 +143,8 @@ const ClaimsCard = ({
             {isActive ? "Active" : "Inactive"}
           </div>
           <BsLink45Deg
-            onClick={() => {
+            onClick={(e) => {
+              e.stopPropagation();
               navigator.clipboard.writeText(
                 `${window.location.origin}/claims/${claimContract}`,
               );
@@ -151,7 +152,7 @@ const ClaimsCard = ({
             size={25}
             className={classes.icons}
           />
-          <BiPencil size={25} className={classes.icons} />
+          {/* <BiPencil size={25} className={classes.icons} /> */}
         </div>
       </div>
 

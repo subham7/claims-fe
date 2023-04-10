@@ -6,7 +6,7 @@ import { makeStyles } from "@mui/styles";
 import { useRouter } from "next/router";
 
 import claimsBanner from "../../public/assets/images/claimsBanner.png";
-import ClaimsCard from "./ClaimsCard";
+import ClaimsCard from "../../src/components/claimsPageComps/ClaimsCard";
 import { getClaimsByUserAddress } from "../../src/api/claims";
 import { useConnectWallet } from "@web3-onboard/react";
 
