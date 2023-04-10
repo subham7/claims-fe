@@ -543,9 +543,9 @@ const ClaimAddress = () => {
     })();
   }, [claimAddress, walletAddress]);
 
-  useEffect(() => {
-    console.log("WalletAddress", walletAddress);
-  }, [walletAddress]);
+  // useEffect(() => {
+  //   console.log("WalletAddress", walletAddress);
+  // }, [walletAddress]);
 
   return (
     <>

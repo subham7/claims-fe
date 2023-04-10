@@ -130,7 +130,6 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
   const { values } = formik;
   const router = useRouter();
 
-  // console.log(data);
   const [csvError, setCsvError] = useState(false);
   const [loadingCsv, setLoadingCsv] = useState(false);
 
@@ -145,7 +144,6 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
   const [file, setFile] = useState("");
   const handleClick = (event) => {
     hiddenFileInput.current.click();
-    console.log(hiddenFileInput.current.value);
   };
 
   if (values.eligible === "everyone") {
@@ -155,12 +153,10 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
   const helper = async (csvArr, claimContract, decimals) => {
     let encodedListOfLeaves = [];
     csvArr.map(async (data) => {
-      console.log("claimContract", data.address);
       const res = await claimContract.encode(
         data.address,
         convertToWeiGovernance(data.amount, decimals).toString(),
       );
-      console.log(res);
       encodedListOfLeaves.push(keccak256(res));
     });
 
@@ -169,7 +165,6 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
 
   const handleChange = (event) => {
     const fileUploaded = event.target.files[0];
-    console.log(fileUploaded);
     setFile(fileUploaded);
 
     // new instance of fileReader class
@@ -181,7 +176,6 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
       // converting .csv file into array of objects
       reader.onload = async (event) => {
         const csvData = event.target.result;
-        // const csvArray = csvData.split("\r\n").map((data) => console.log(data));
 
         setLoadingCsv(true);
         const csvArr = csvData
@@ -193,7 +187,6 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
           }));
 
         // setCSVObject(csvArr);
-        console.log("csv arrr", csvArr);
         formik.values.csvObject = csvArr;
 
         const initialValue = 0;
@@ -201,10 +194,8 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
           (acc, curr) => acc + curr.amount,
           initialValue,
         );
-        console.log(sumOfAmt);
 
         if (sumOfAmt > values.numberOfTokens) {
-          console.log(values.numberOfTokens);
           setCsvError(true);
         }
 
@@ -218,9 +209,6 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
             undefined,
           );
 
-          console.log(claimContract);
-          console.log(values.airdropTokenAddress);
-
           const erc20contract = new SmartContract(
             usdcTokenContract,
             values.airdropTokenAddress,
@@ -230,8 +218,6 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
           );
 
           const decimals = await erc20contract.decimals();
-
-          console.log("decimals", decimals);
 
           const list = await helper(csvArr, claimContract, decimals);
           formik.values.merkleData = list;
@@ -244,9 +230,9 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
     }
   };
 
-  useEffect(() => {
-    console.log(file);
-  }, [file]);
+  // useEffect(() => {
+  //   console.log(file);
+  // }, [file]);
 
   return (
     <>
