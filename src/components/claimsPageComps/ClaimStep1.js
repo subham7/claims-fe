@@ -25,7 +25,7 @@ const useStyles = makeStyles({
     alignItems: "center",
     justifyContent: "center",
     margin: "170px auto",
-    width: "550px",
+    width: "600px",
     color: "white",
   },
 
@@ -104,7 +104,7 @@ const useStyles = makeStyles({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    padding: "40px",
+    padding: "40px 40px",
     flexDirection: "column",
     borderRadius: "10px",
     cursor: "pointer",
@@ -142,12 +142,19 @@ const useStyles = makeStyles({
     justifyContent: "center",
     alignItems: "center",
   },
+  smallText: {
+    fontSize: "8px",
+    textTransform: "none",
+    fontWeight: "300",
+    margin: 0,
+    padding: 0,
+    width: "100%",
+  },
 });
 
-const ClaimStep1 = ({ formik, tokensInWallet }) => {
+const ClaimStep1 = ({ formik, tokensInWallet, isLoading }) => {
   const classes = useStyles();
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     formik.values.airdropTokenAddress =
@@ -172,7 +179,7 @@ const ClaimStep1 = ({ formik, tokensInWallet }) => {
 
         {/* Description of claim page */}
         <Typography className={classes.label}>
-          Add a one-liner description
+          Add a one-liner description *
         </Typography>
         <TextField
           variant="outlined"
@@ -188,7 +195,7 @@ const ClaimStep1 = ({ formik, tokensInWallet }) => {
         />
 
         <Typography className={classes.label}>
-          Where do you want to airdrop tokens from?{" "}
+          Where do you want to airdrop tokens from? *
         </Typography>
 
         <ToggleButtonGroup
@@ -202,20 +209,29 @@ const ClaimStep1 = ({ formik, tokensInWallet }) => {
           className={classes.selectContainer}
         >
           <ToggleButton
-            className={classes.leftContainer}
-            name="airdropFrom"
-            value="wallet"
-          >
-            <IoWalletSharp size={20} />
-            <p>My Wallet</p>
-          </ToggleButton>
-          <ToggleButton
             className={classes.rightContainer}
             name="airdropFrom"
             value="contract"
+            id="airdropFrom"
           >
             <BsFillSendFill size={20} />
-            <p>StationX Contract</p>
+            <p className={classes.label}>Claim Contract</p>
+            <p className={classes.smallText}>
+              Users will claim tokens from custom claim contract{" "}
+              <span>(recommended)</span>
+            </p>
+          </ToggleButton>
+          <ToggleButton
+            className={classes.leftContainer}
+            name="airdropFrom"
+            id="airdropFrom"
+            value="wallet"
+          >
+            <IoWalletSharp size={20} />
+            <p className={classes.label}>My Wallet</p>
+            <p className={classes.smallText}>
+              Users will claim tokens from your wallet
+            </p>
           </ToggleButton>
         </ToggleButtonGroup>
 
@@ -223,7 +239,7 @@ const ClaimStep1 = ({ formik, tokensInWallet }) => {
         {formik.values.airdropFrom === "contract" && (
           <>
             <Typography className={classes.label}>
-              Add a roll back Adress
+              Add a roll back Adress *
             </Typography>
             <TextField
               variant="outlined"
@@ -241,16 +257,15 @@ const ClaimStep1 = ({ formik, tokensInWallet }) => {
               }
             />
             <Typography className={classes.text}>
-              Tokens that remain in the contract are sent to this address
-              automatically after the drop. You can roll back tokens anytime via
-              the dashboard too.
+              Unclaimed tokens after end of claim period will be sent/rolled
+              back to this address.
             </Typography>
           </>
         )}
 
         {/* Choose Token */}
         <Typography className={classes.label}>
-          Choose token to airdrop
+          Choose token to airdrop *
         </Typography>
         <FormControl sx={{ width: "100%" }}>
           {isLoading ? (
@@ -290,7 +305,7 @@ const ClaimStep1 = ({ formik, tokensInWallet }) => {
         </Typography>
 
         {/* Number of Tokens */}
-        <Typography className={classes.label}>Number of Tokens</Typography>
+        <Typography className={classes.label}>Number of Tokens *</Typography>
         <TextField
           className={classes.input}
           type="number"

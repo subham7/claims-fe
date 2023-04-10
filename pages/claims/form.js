@@ -18,6 +18,7 @@ import { MerkleTree } from "merkletreejs";
 import keccak256 from "keccak256";
 import Web3 from "web3";
 import { useConnectWallet } from "@web3-onboard/react";
+import { useRouter } from "next/router";
 
 const steps = ["Step1", "Step2"];
 
@@ -38,10 +39,12 @@ const Form = () => {
   const [loading, setLoading] = useState(false);
   const [finish, setFinish] = useState(false);
   const [errMsg, setErrMsg] = useState("");
+  const [loadingTokens, setLoadingTokens] = useState(false);
 
   const classes = useStyles();
   const [{ wallet }] = useConnectWallet();
   const walletAddress = wallet?.accounts[0].address;
+  const router = useRouter();
 
   const handleBack = () => {
     setActiveStep((prevStep) => prevStep - 1);
@@ -52,11 +55,13 @@ const Form = () => {
   };
 
   const getCurrentAccount = async () => {
+    setLoadingTokens(true);
     const web3 = new Web3(window.ethereum);
     const accounts = await web3.eth.getAccounts();
     const data = await getTokensFromWallet(accounts[0]);
     setCurrentAccount(accounts[0]);
     setTokensInWallet(data);
+    setLoadingTokens(false);
   };
 
   useEffect(() => {
@@ -74,7 +79,7 @@ const Form = () => {
       recieveTokens: "immediately", // immediately or later
       walletAddress: "",
       airdropTokenAddress: "", // tokenAddress
-      airdropFrom: "wallet", // wallet or contract,
+      airdropFrom: "contract", // wallet or contract,
       eligible: "csv", // token || csv || everyone
       daoTokenAddress: "", // tokenGated
       maximumClaim: "proRata", // prorata or custom
@@ -262,11 +267,14 @@ const Form = () => {
               setLoading(false);
 
               setFinish(true);
-              // router.push("/claims");
+              showMessageHandler(setFinish);
+              setTimeout(() => {
+                router.push("/claims");
+              }, 3000);
             } catch (err) {
               console.log(err);
               setLoading(false);
-              showMessageHandler();
+              showMessageHandler(setShowError);
               setErrMsg(err.message);
             }
           };
@@ -371,10 +379,14 @@ const Form = () => {
 
               setLoading(false);
               setFinish(true);
+              showMessageHandler(setFinish);
+              setTimeout(() => {
+                router.push("/claims");
+              }, 3000);
             } catch (err) {
               console.log(err);
               setLoading(false);
-              showMessageHandler();
+              showMessageHandler(setShowError);
               setErrMsg(err.message);
             }
           };
@@ -395,6 +407,7 @@ const Form = () => {
             handleNext={handleNext}
             setActiveStep={setActiveStep}
             tokensInWallet={tokensInWallet}
+            isLoading={loadingTokens}
           />
         );
       case 1:
@@ -411,10 +424,10 @@ const Form = () => {
     }
   };
 
-  const showMessageHandler = () => {
-    setShowError(true);
+  const showMessageHandler = (setState) => {
+    setState(true);
     setTimeout(() => {
-      setShowError(false);
+      setState(false);
     }, 4000);
   };
 
@@ -443,6 +456,21 @@ const Form = () => {
           }}
         >
           {errMsg}
+        </Alert>
+      )}
+
+      {finish && (
+        <Alert
+          severity="success"
+          sx={{
+            width: "350px",
+            position: "absolute",
+            bottom: "30px",
+            right: "20px",
+            borderRadius: "8px",
+          }}
+        >
+          {"Airdrop created successfully"}
         </Alert>
       )}
     </div>

@@ -8,6 +8,8 @@ const drawerWidth = 50;
 
 export default function Layout1(props) {
   const [mobileOpen, setMobileOpen] = React.useState(false);
+  const { showSidebar = true } = props;
+  console.log(showSidebar);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -22,11 +24,14 @@ export default function Layout1(props) {
       />
       <Box sx={{ display: "flex" }}>
         <CssBaseline />
-        <Sidebar
-          mobileOpen={mobileOpen}
-          handleDrawerToggle={handleDrawerToggle}
-          page={props.page}
-        />
+        {showSidebar && (
+          <Sidebar
+            mobileOpen={mobileOpen}
+            handleDrawerToggle={handleDrawerToggle}
+            page={props.page}
+          />
+        )}
+
         <Box
           component="main"
           sx={{
@@ -34,7 +39,7 @@ export default function Layout1(props) {
             width: { sm: `calc(100% - ${drawerWidth}px)` },
           }}
         >
-          \<div style={{ padding: "15px 50px" }}>{props.children}</div>
+          <div style={{ padding: "15px 50px" }}>{props.children}</div>
         </Box>
       </Box>
     </>

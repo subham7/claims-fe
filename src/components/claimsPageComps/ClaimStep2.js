@@ -27,6 +27,7 @@ import { useDispatch } from "react-redux";
 import { addMerkleLeaves } from "../../redux/reducers/createClaim";
 import { useRouter } from "next/router";
 import { Formik } from "formik";
+import Link from "next/link";
 
 const useStyles = makeStyles({
   form: {
@@ -353,6 +354,7 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
             <Typography className={classes.label}>
               Upload your CSV file
             </Typography>
+
             <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
               <TextField
                 className={classes.input}
@@ -372,6 +374,12 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
                 style={{ display: "none" }}
               />
             </div>
+            <Typography className={classes.text}>
+              Download sample from{" "}
+              <span style={{ color: "white" }}>
+                <Link href={"/assets/csv/sample.csv"}>here</Link>
+              </span>
+            </Typography>
 
             {csvError && (
               <Typography className={classes.error}>

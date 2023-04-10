@@ -7,6 +7,7 @@ import { FaCoins } from "react-icons/fa";
 import { useRouter } from "next/router";
 import { useDispatch } from "react-redux";
 import { addClaimContractData } from "../../redux/reducers/createClaim";
+import Countdown from "react-countdown";
 
 const useStyles = makeStyles({
   container: {
@@ -77,6 +78,12 @@ const useStyles = makeStyles({
     border: "none",
     borderRadius: "5px",
   },
+  countdown: {
+    border: "1px solid #FFFFFF1A",
+    padding: "8px",
+    borderRadius: "5px",
+    margin: 0,
+  },
 });
 
 const ClaimsCard = ({
@@ -94,7 +101,9 @@ const ClaimsCard = ({
   const router = useRouter();
   const dispatch = useDispatch();
   const [isActive, setIsActive] = useState(false);
+  const [isClaimStarted, setIsClaimStarted] = useState(false);
 
+  const startingTime = new Date(+startDate * 1000);
   const convertedStartDay = new Date(startDate * 1000).getDate();
   const convertedStartMonth = new Date(startDate * 1000).toLocaleString(
     "default",
@@ -109,10 +118,16 @@ const ClaimsCard = ({
   const currentTime = Date.now() / 1000;
 
   useEffect(() => {
-    if (+startDate > currentTime || +endDate < currentTime) {
+    // if (+startDate > currentTime || +endDate < currentTime) {
+    if (+startDate > currentTime) {
       setIsActive(false);
+      setIsClaimStarted(false);
+    } else if (+endDate < currentTime) {
+      setIsActive(false);
+      setIsClaimStarted(true);
     } else {
       setIsActive(true);
+      setIsClaimStarted(true);
     }
   }, [currentTime, endDate, startDate]);
 
@@ -139,8 +154,20 @@ const ClaimsCard = ({
           <span className={classes.span}>{convertedDate}</span>
         </h4>
         <div className={classes.iconContainer}>
+          {!isClaimStarted && (
+            <p className={classes.countdown}>
+              Starts in :
+              <span style={{ marginLeft: "10px" }}>
+                <Countdown date={startingTime} />
+              </span>{" "}
+            </p>
+          )}
           <div className={`${isActive ? classes.active : classes.inactive}`}>
-            {isActive ? "Active" : "Inactive"}
+            {isActive && isClaimStarted
+              ? "Active"
+              : !isActive && isClaimStarted
+              ? "Inactive"
+              : !isActive && !isClaimStarted && "Not started yet"}
           </div>
           <BsLink45Deg
             onClick={(e) => {

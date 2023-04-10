@@ -130,8 +130,8 @@ const Claims = () => {
           <div className={classes.noClaim}>
             <p className={classes.noClaim_heading}>No claims found</p>
             <p className={classes.noClaim_para}>
-              Create a legal entity for this Station & invite members to sign
-              the doucment by sharing a private link.
+              Bulk distribute ERC20 tokens or NFTs by creating claim pages in
+              less than 60 seconds
             </p>
           </div>
         )}
