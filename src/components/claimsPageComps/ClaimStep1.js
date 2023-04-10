@@ -335,16 +335,13 @@ const ClaimStep1 = ({ formik, tokensInWallet }) => {
           <div style={{ width: "100%" }}>
             <Typography className={classes.label}>Claims start on</Typography>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
-              {/* <DemoContainer components={["DateTimePicker", "DateTimePicker"]}> */}
               <DateTimePicker
-                // label="Controlled picker"
                 value={formik.values.startDate}
-                minDateTime={dayjs(Date.now() - 300000)}
+                minDateTime={dayjs(Date.now())}
                 onChange={(value) => {
                   formik.setFieldValue("startDate", value);
                 }}
               />
-              {/* </DemoContainer> */}
             </LocalizationProvider>
           </div>
 
@@ -353,16 +350,13 @@ const ClaimStep1 = ({ formik, tokensInWallet }) => {
           <div style={{ width: "100%" }}>
             <Typography className={classes.label}>Claims end on</Typography>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
-              {/* <DemoContainer components={["DateTimePicker", "DateTimePicker"]}> */}
               <DateTimePicker
-                // label="Controlled picker"
                 value={formik.values.endDate}
                 minDateTime={formik.values.startDate}
                 onChange={(value) => {
                   formik.setFieldValue("endDate", value);
                 }}
               />
-              {/* </DemoContainer> */}
             </LocalizationProvider>
           </div>
         </div>
