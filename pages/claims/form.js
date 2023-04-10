@@ -1,26 +1,15 @@
 import { useEffect, useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import {
-  Box,
-  Stepper,
-  Step,
-  StepLabel,
-  Grid,
-  FormHelperText,
-  Button,
-  Alert,
-} from "@mui/material";
+import { Grid, FormHelperText, Alert } from "@mui/material";
 import ClaimStep1 from "../../src/components/claimsPageComps/ClaimStep1";
 import ClaimStep2 from "../../src/components/claimsPageComps/ClaimStep2";
 import dayjs from "dayjs";
 import { makeStyles } from "@mui/styles";
 import * as yup from "yup";
 import { getTokensFromWallet } from "../../src/api/token";
-// import { useConnectWallet } from "@web3-onboard/react";
 import { SmartContract } from "../../src/api/contract";
 import claimContractFactory from "../../src/abis/claimContractFactory.json";
-// import claimContractABI from "../../src/abis/singleClaimContract.json";
 import usdcTokenContract from "../../src/abis/usdcTokenContract.json";
 import { convertToWeiGovernance } from "../../src/utils/globalFunctions";
 import { createClaim } from "../../src/api/claims";
@@ -28,7 +17,6 @@ import { CLAIM_FACTORY_ADDRESS } from "../../src/api";
 import { MerkleTree } from "merkletreejs";
 import keccak256 from "keccak256";
 import Web3 from "web3";
-import { useSelector } from "react-redux";
 import { useConnectWallet } from "@web3-onboard/react";
 
 const steps = ["Step1", "Step2"];
@@ -64,14 +52,11 @@ const Form = () => {
   };
 
   const getCurrentAccount = async () => {
-    // setIsLoading(true);
     const web3 = new Web3(window.ethereum);
     const accounts = await web3.eth.getAccounts();
     const data = await getTokensFromWallet(accounts[0]);
     setCurrentAccount(accounts[0]);
     setTokensInWallet(data);
-    console.log(data);
-    // setIsLoading(false);
   };
 
   useEffect(() => {
@@ -83,8 +68,8 @@ const Form = () => {
       description: "",
       rollbackAddress: "",
       numberOfTokens: "",
-      startDate: dayjs(Date.now()),
-      endDate: dayjs(Date.now()),
+      startDate: dayjs(Date.now() + 300000),
+      endDate: dayjs(Date.now() + 600000),
       selectedToken: "", // token Name
       recieveTokens: "immediately", // immediately or later
       walletAddress: "",
@@ -138,12 +123,9 @@ const Form = () => {
               .moreThan(0, "Amount should be greater than 0")
               .lessThan(yup.ref("numberOfTokens")),
         }),
-      // .required("Customkjkdjas"),
     }),
 
     onSubmit: (values) => {
-      console.log(values);
-
       const claimsContractAddress = CLAIM_FACTORY_ADDRESS;
 
       const data = {
@@ -212,10 +194,6 @@ const Form = () => {
                 undefined,
                 undefined,
               );
-
-              // console.log(data.walletAddress)
-
-              // console.log(data);
               const decimals = await erc20contract.decimals();
 
               // if airdroping from contract then approve erc20
@@ -228,7 +206,6 @@ const Form = () => {
                 );
               }
 
-              // console.log(hasAllowanceMechanism);
               const claimsSettings = [
                 data.walletAddress.toLowerCase(),
                 data.walletAddress.toLowerCase(),
@@ -280,10 +257,8 @@ const Form = () => {
                 addresses: [],
               });
 
-              // console.log(typeof(postData))
               const res = createClaim(postData);
-              console.log(postData);
-              console.log(res);
+
               setLoading(false);
 
               setFinish(true);
@@ -298,16 +273,12 @@ const Form = () => {
 
           loadClaimsContractFactoryData_Token();
         } else if (data.eligible === "csv") {
-          // console.log(data);
-
           let hasAllowanceMechanism;
           if (data.airdropFrom === "wallet") {
             hasAllowanceMechanism = true;
           } else {
             hasAllowanceMechanism = false;
           }
-
-          console.log(hasAllowanceMechanism);
 
           const loadClaimsContractFactoryData_CSV = async () => {
             try {
@@ -327,7 +298,6 @@ const Form = () => {
                 undefined,
               );
 
-              // console.log(data);
               const decimals = await erc20contract.decimals();
               setLoading(true);
 
@@ -341,12 +311,10 @@ const Form = () => {
                 );
               }
 
-              console.log(data.merkleData);
               const tree = new MerkleTree(data.merkleData, keccak256, {
                 sort: true,
               });
               const root = tree.getHexRoot();
-              console.log(root);
 
               const claimsSettings = [
                 data.walletAddress.toLowerCase(),
@@ -374,7 +342,6 @@ const Form = () => {
               const response = await claimsContract.claimContract(
                 claimsSettings,
               );
-              console.log(response);
 
               const newClaimContract =
                 response.events.NewClaimContract.returnValues._newClaimContract;
@@ -400,10 +367,8 @@ const Form = () => {
                 addresses: data.csvObject,
               });
 
-              console.log(postData);
               const res = createClaim(postData);
 
-              console.log(res);
               setLoading(false);
               setFinish(true);
             } catch (err) {

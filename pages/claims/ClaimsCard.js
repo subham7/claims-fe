@@ -125,8 +125,6 @@ const ClaimsCard = ({
     endDate,
   };
 
-  console.log(claimContractData);
-
   dispatch(addClaimContractData(claimContractData));
 
   const claimHandler = () => {

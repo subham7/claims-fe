@@ -4,15 +4,11 @@ import Layout1 from "../../src/components/layouts/layout1";
 import settingsImg from "../../public/assets/images/settings.png";
 import { makeStyles } from "@mui/styles";
 import { useRouter } from "next/router";
-// import { getDocumentsByClubId } from "../../../../src/api/document";
-import { Card, Grid, Link, Typography } from "@mui/material";
-import LegalEntityModal from "../../src/components/modals/LegalEntityModal";
+
 import claimsBanner from "../../public/assets/images/claimsBanner.png";
 import ClaimsCard from "./ClaimsCard";
 import { getClaimsByUserAddress } from "../../src/api/claims";
 import { useConnectWallet } from "@web3-onboard/react";
-import { useDispatch } from "react-redux";
-import { addClaimContractData } from "../../src/redux/reducers/createClaim";
 
 const useStyles = makeStyles({
   container: {
@@ -106,8 +102,6 @@ const Claims = () => {
     router.push("/claims/form");
   };
 
-  // const dispatch = useDispatch();
-
   const [{ wallet }] = useConnectWallet();
   const walletAddress = wallet?.accounts[0].address;
 
@@ -117,7 +111,7 @@ const Claims = () => {
       console.log(data);
       setClaimData(data.reverse());
     };
-    
+
     getData();
   }, [walletAddress]);
 

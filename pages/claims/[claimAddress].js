@@ -233,7 +233,6 @@ const ClaimAddress = () => {
 
       const desc = await claimContract.claimSettings();
       setContractData(desc);
-      console.log(desc);
 
       const erc20Contract = new SmartContract(
         USDCContract,
@@ -253,23 +252,18 @@ const ClaimAddress = () => {
         +remainingBalanceInContract,
         decimals,
       );
-      console.log("ClaimBalance", remainingBalanceInUSD);
       setClaimBalanceRemaing(remainingBalanceInUSD);
 
       // check if token is already claimed
       const hasClaimed = await claimContract.hasClaimed(walletAddress);
       setAlreadyClaimed(hasClaimed);
-      console.log("Claimed", hasClaimed);
 
       const remainingAmt = await claimContract.claimAmount(walletAddress);
-      console.log("Remaining amt", remainingAmt);
 
       const convertedRemainingAmt = convertFromWeiGovernance(
         remainingAmt,
         decimals,
       );
-
-      console.log(convertedRemainingAmt);
 
       if (
         !hasClaimed &&
@@ -296,7 +290,6 @@ const ClaimAddress = () => {
           ? isEligibleForTokenGated
           : !isEligibleForTokenGated)
       ) {
-        console.log(convertedRemainingAmt);
         setClaimRemaining(remainingAmt);
       } else if (
         hasClaimed &&
@@ -305,7 +298,6 @@ const ClaimAddress = () => {
           ? isEligibleForTokenGated
           : !isEligibleForTokenGated)
       ) {
-        console.log(remainingBalanceInUSD);
         setClaimRemaining(remainingBalanceInUSD);
       }
 
@@ -395,7 +387,6 @@ const ClaimAddress = () => {
           const amount = await claimContract.checkAmount(walletAddress);
           const data = convertFromWeiGovernance(amount, decimals);
 
-          console.log(data);
           // if (remainingBalanceInUSD > data) {
           setClaimableAmt(data);
           // } else {
@@ -412,7 +403,6 @@ const ClaimAddress = () => {
 
       setIsLoading(false);
     } catch (err) {
-      console.log(err);
       // setIsLoading(true);
       setMessage(err.message);
       setIsLoading(false);
@@ -472,7 +462,6 @@ const ClaimAddress = () => {
       setMessage("Successfully Claimed!");
 
       const remainingAmt = await claimContract.claimAmount(walletAddress);
-      console.log("Remaining", remainingAmt);
 
       const convertedRemainingAmt = convertFromWeiGovernance(
         remainingAmt,
