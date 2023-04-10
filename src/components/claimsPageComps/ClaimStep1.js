@@ -143,7 +143,7 @@ const useStyles = makeStyles({
     alignItems: "center",
   },
   smallText: {
-    fontSize: "8px",
+    fontSize: "12px",
     textTransform: "none",
     fontWeight: "300",
     margin: 0,
