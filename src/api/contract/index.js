@@ -88,8 +88,8 @@ export class SmartContract {
     return this.contract.methods.claimSettings().call();
   }
 
-  async claim(amount, merkleData) {
-    return this.contract.methods.claim(amount, merkleData).send({
+  async claim(amount, merkleData, leaf) {
+    return this.contract.methods.claim(amount, merkleData, leaf).send({
       from: this.walletAddress,
     });
   }
@@ -102,6 +102,10 @@ export class SmartContract {
 
   async hasClaimed(walletAddress) {
     return this.contract.methods.hasClaimed(walletAddress).call();
+  }
+
+  async claimAmount(walletAddress) {
+    return this.contract.methods.claimAmount(walletAddress).call();
   }
 
   async checkAmount(walletAddress) {
@@ -632,6 +636,36 @@ export class SmartContract {
     return this.contract.methods
       .depositCloseTime()
       .call({ from: this.walletAddress });
+  }
+
+  async closeDate() {
+    return this.contract.methods
+      .depositCloseTime()
+      .call({ from: this.walletAddress });
+  }
+
+  async gatingTokenAddress() {
+    return this.contract.methods
+      .gatingTokenAddress()
+      .call({ from: this.walletAddress });
+  }
+
+  async gatingTokenBalanceRequired() {
+    return this.contract.methods
+      .gatingTokenBalanceRequired()
+      .call({ from: this.walletAddress });
+  }
+
+  async enableTokenGating(address, amount) {
+    return this.contract.methods
+      .enableTokenGating(address, amount)
+      .send({ from: this.walletAddress });
+  }
+
+  async disableTokenGating() {
+    return this.contract.methods
+      .disableTokenGating()
+      .send({ from: this.walletAddress });
   }
 
   async ownerFee() {

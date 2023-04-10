@@ -36,6 +36,9 @@ const ERC721Comp = ({
   clubId,
   setMessage,
   newContract,
+  tokenGatingAddress,
+  tokenGatingAmount,
+  userTokenBalance,
 }) => {
   const classes = ERC721Styles();
   const router = useRouter();
@@ -158,6 +161,13 @@ const ERC721Comp = ({
                 spacing={1.5}
                 sx={{ display: "flex", flexDirection: "column" }}
               >
+                <Grid
+                  sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                ></Grid>
                 <Grid item sx={{ width: "100%" }}>
                   <Grid container>
                     <Grid item xs={12} md={9}>
@@ -323,7 +333,12 @@ const ERC721Comp = ({
                     <Grid item>
                       <Button
                         onClick={handleClaimNft}
-                        disabled={loading}
+                        disabled={
+                          loading ||
+                          (tokenGatingAddress !==
+                            "0x0000000000000000000000000000000000000000" &&
+                            userTokenBalance < tokenGatingAmount)
+                        }
                         sx={{ px: 8 }}
                       >
                         {loading ? <CircularProgress /> : "Claim"}
@@ -339,6 +354,23 @@ const ERC721Comp = ({
                     This station allows maximum of {maxTokensPerUser} mints per
                     member
                   </Typography>
+                  {tokenGatingAddress !==
+                    "0x0000000000000000000000000000000000000000" && (
+                    <>
+                      {userTokenBalance < tokenGatingAmount ? (
+                        <Typography variant="subtitle2" sx={{ color: "red" }}>
+                          This club is Token Gated. You don&apos;t qualify
+                        </Typography>
+                      ) : (
+                        <Typography
+                          variant="subtitle2"
+                          sx={{ color: "#3B7AFD" }}
+                        >
+                          This club is Token Gated. You qualify
+                        </Typography>
+                      )}
+                    </>
+                  )}
                 </Grid>
               </Grid>
             </Grid>

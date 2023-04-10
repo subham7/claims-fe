@@ -6,6 +6,7 @@ export const slice = createSlice({
     userData: null,
     claimContractData: null,
     claimContractAddress: null,
+    merkleLeaves: [],
   },
   reducers: {
     addUserData: (state, action) => {
@@ -19,10 +20,18 @@ export const slice = createSlice({
     addClaimContractAddress: (state, action) => {
       state.claimContractAddress = action.payload;
     },
+
+    addMerkleLeaves: (state, action) => {
+      state.merkleLeaves = action.payload;
+    },
   },
 });
 
-export const { addUserData, addClaimContractData, addClaimContractAddress } =
-  slice.actions;
+export const {
+  addUserData,
+  addClaimContractData,
+  addClaimContractAddress,
+  addMerkleLeaves,
+} = slice.actions;
 
 export default slice.reducer;

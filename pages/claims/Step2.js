@@ -30,6 +30,7 @@ import { createClaim } from "../../src/api/claims";
 import { CLAIM_FACTORY_ADDRESS } from "../../src/api";
 import { MerkleTree } from "merkletreejs";
 import keccak256 from "keccak256";
+import { useConnectWallet } from "@web3-onboard/react";
 
 const useStyles = makeStyles({
   form: {
@@ -136,17 +137,19 @@ const Step2 = () => {
   const [customAmount, setCustomAmount] = useState(0);
   const [finish, setFinish] = useState(false);
   const [loading, setLoading] = useState("");
-  // const [message, setMessage] = useState(false);
-  // const [claimAllowed, setClaimAllowed] = useState("equalTokens");
-  // const [generatedClaimContract, setGeneratedClaimContract] = useState("");
+  const [CSVObject, setCSVObject] = useState([]);
 
   // step1 form data
   const userData = useSelector((state) => {
     return state.createClaim.userData;
   });
 
-  const hiddenFileInput = useRef(null);
+  console.log(userData);
+  console.log(userData?.airdropTokenAddress);
+  const [{ wallet }] = useConnectWallet();
+  const walletAddress = wallet?.accounts[0].address;
 
+  const hiddenFileInput = useRef(null);
   const claimsContractAddress = CLAIM_FACTORY_ADDRESS;
 
   // handling csv file change
@@ -162,49 +165,69 @@ const Step2 = () => {
       reader.readAsText(fileUploaded);
 
       // converting .csv file into array of objects
-      reader.onload = (event) => {
+      reader.onload = async (event) => {
         const csvData = event.target.result;
+        const csvArray = csvData.split("\r\n").map((data) => console.log(data));
+
         const csvArr = csvData
           .split("\r\n")
           .map((data) => data.split(","))
           .map((data) => ({
-            address: data[0],
+            address: data[0].toLowerCase(),
             amount: +data[1],
           }));
+
+        setCSVObject(csvArr);
+        console.log("csv arrr", csvArr);
 
         try {
           // claim contract for encoding
           const claimContract = new SmartContract(
             claimContractABI,
-            "0x74392791Ef2b959BaF595aa949ae330D528676aD",
+            "0x9517a0de2c29C926684F88FDA6E5c5cCa4c47633",
+            walletAddress,
+            undefined,
+            undefined,
+          );
+
+          console.log(claimContract);
+
+          const erc20contract = new SmartContract(
+            usdcTokenContract,
+            userData.airdropTokenAddress,
             userData.walletAddress,
             undefined,
             undefined,
           );
 
+          const decimals = await erc20contract.decimals();
+
+          console.log("decimals", decimals);
+
           let encodedListOfLeaves = [];
-
           // encoding leaves
-          csvArr.map(
-            async (data) => {
-              const res = await await claimContract.encode(
-                data.address,
-                data.amount,
-              );
-              encodedListOfLeaves.push(res);
-            },
-            // .then((newData) => encodedListOfLeaves.push(newData)),
-          );
+          csvArr.map(async (data) => {
+            // const res = await await claimContract.encode(
+            //   data.address,
+            //   convertToWeiGovernance(data.amount, decimals),
+            // );
+            console.log("address", data.address);
+            console.log(
+              "amount",
+              convertToWeiGovernance(data.amount, decimals),
+            );
 
+            const res = await claimContract.encode(
+              data.address,
+              convertToWeiGovernance(data.amount, decimals),
+            );
+            console.log(keccak256(res));
+            encodedListOfLeaves.push(keccak256(res));
+          });
+          console.log(encodedListOfLeaves);
           setMerkleLeaves(encodedListOfLeaves);
 
-          console.log(encodedListOfLeaves);
-
-          if (encodedListOfLeaves.length) {
-            encodedListOfLeaves.map((leaf) => console.log(leaf));
-          }
-
-          console.log(encodedListOfLeaves.length);
+          // console.log(encodedListOfLeaves);
         } catch (err) {
           console.log(err);
         }
@@ -245,11 +268,17 @@ const Step2 = () => {
 
       // checking maximum claim is prorata or custom
       let maximumClaim;
-
       if (data.maximumTokenType === "custom") {
         maximumClaim = true;
       } else {
         maximumClaim = false;
+      }
+
+      let hasAllowanceMechanism;
+      if (data.airdropFrom === "wallet") {
+        hasAllowanceMechanism = true;
+      } else {
+        hasAllowanceMechanism = false;
       }
 
       const loadClaimsContractFactoryData_Token = async () => {
@@ -257,15 +286,15 @@ const Step2 = () => {
           const claimsContract = new SmartContract(
             claimContractFactory,
             claimsContractAddress,
-            data.walletAddress,
+            userData.walletAddress,
             undefined,
             undefined,
           );
 
           const erc20contract = new SmartContract(
             usdcTokenContract,
-            data.airdropTokenAddress,
-            data.walletAddress,
+            userData.airdropTokenAddress,
+            userData.walletAddress,
             undefined,
             undefined,
           );
@@ -274,18 +303,23 @@ const Step2 = () => {
           const decimals = await erc20contract.decimals();
           setLoading(true);
 
-          // approve erc20
-          await erc20contract.approveDeposit(
-            claimsContractAddress,
-            data.numberOfTokens,
-            decimals, // decimal
-          );
+          // if airdroping from contract then approve erc20
+          if (!hasAllowanceMechanism) {
+            // approve erc20
+            await erc20contract.approveDeposit(
+              claimsContractAddress,
+              data.numberOfTokens,
+              decimals, // decimal
+            );
+          }
 
+          // console.log(hasAllowanceMechanism);
           const claimsSettings = [
+            data.walletAddress.toLowerCase(),
             data.walletAddress.toLowerCase(),
             data.airdropTokenAddress,
             data.daoToken,
-            false, // false if token approved function called
+            hasAllowanceMechanism, // false if token approved function called
             false,
             0,
             true,
@@ -305,6 +339,17 @@ const Step2 = () => {
 
           const response = await claimsContract.claimContract(claimsSettings);
 
+          const newClaimContract =
+            response.events.NewClaimContract.returnValues._newClaimContract;
+
+          if (hasAllowanceMechanism) {
+            await erc20contract.approveDeposit(
+              newClaimContract,
+              data.numberOfTokens,
+              decimals,
+            );
+          }
+
           setLoading(false);
 
           // post data in api
@@ -312,12 +357,12 @@ const Step2 = () => {
             description: data.description,
             airdropTokenContract: data.airdropTokenAddress,
             airdropTokenSymbol: data.airdropTokens,
-            claimContract:
-              response.events.ClaimContractDeployed.returnValues._claimContract,
+            claimContract: newClaimContract,
             totalAmount: data.numberOfTokens,
             endDate: new Date(data.endDate).getTime() / 1000,
             startDate: new Date(data.startDate).getTime() / 1000,
             createdBy: data.walletAddress.toLowerCase(),
+            addresses: [],
           });
 
           // console.log(typeof(postData))
@@ -340,6 +385,17 @@ const Step2 = () => {
         eligible: eligible,
       };
 
+      console.log(data);
+
+      let hasAllowanceMechanism;
+      if (data.airdropFrom === "wallet") {
+        hasAllowanceMechanism = true;
+      } else {
+        hasAllowanceMechanism = false;
+      }
+
+      console.log(hasAllowanceMechanism);
+
       const loadClaimsContractFactoryData_CSV = async () => {
         try {
           const claimsContract = new SmartContract(
@@ -350,23 +406,39 @@ const Step2 = () => {
             undefined,
           );
 
-          // const merkleContract = await
+          const erc20contract = new SmartContract(
+            usdcTokenContract,
+            userData.airdropTokenAddress,
+            userData.walletAddress,
+            undefined,
+            undefined,
+          );
 
-          const leaves = merkleLeaves.map((leaf) => keccak256(leaf));
-          // const leaves = ["a", "b", "c", "d"].map((v) => keccak256(v));
-          console.log(leaves);
-          const tree = new MerkleTree(leaves, keccak256, { sort: true });
+          // console.log(data);
+          const decimals = await erc20contract.decimals();
+          setLoading(true);
 
+          // if airdroping from contract then approve erc20
+          if (!hasAllowanceMechanism) {
+            // approve erc20
+            await erc20contract.approveDeposit(
+              claimsContractAddress,
+              data.numberOfTokens,
+              decimals, // decimal
+            );
+          }
+
+          console.log(merkleLeaves);
+          const tree = new MerkleTree(merkleLeaves, keccak256, { sort: true });
           const root = tree.getHexRoot();
-          const proof = tree.getHexProof(leaves[0]);
-
-          console.log(proof);
+          console.log(root);
 
           const claimsSettings = [
             data.walletAddress.toLowerCase(),
+            data.walletAddress.toLowerCase(),
             data.airdropTokenAddress,
             "0x0000000000000000000000000000000000000000",
-            false, // false if token approved function called
+            hasAllowanceMechanism, // false if token approved function called
             false,
             0,
             true,
@@ -374,17 +446,53 @@ const Step2 = () => {
             new Date(data.endDate).getTime() / 1000,
             data.walletAddress.toLowerCase(),
             root,
-            3,
-            [false, 0, 0, []],
+            2,
+            [
+              false,
+              0,
+              convertToWeiGovernance(data.numberOfTokens, decimals),
+              [],
+            ],
             [false, 0],
           ];
 
           const response = await claimsContract.claimContract(claimsSettings);
           console.log(response);
 
-          // console.log(await );
+          const newClaimContract =
+            response.events.NewClaimContract.returnValues._newClaimContract;
+
+          if (hasAllowanceMechanism) {
+            await erc20contract.approveDeposit(
+              newClaimContract,
+              data.numberOfTokens,
+              decimals,
+            );
+          }
+
+          // post data in api
+          const postData = JSON.stringify({
+            description: data.description,
+            airdropTokenContract: data.airdropTokenAddress,
+            airdropTokenSymbol: data.airdropTokens,
+            claimContract: newClaimContract,
+            totalAmount: data.numberOfTokens,
+            endDate: new Date(data.endDate).getTime() / 1000,
+            startDate: new Date(data.startDate).getTime() / 1000,
+            createdBy: data.walletAddress.toLowerCase(),
+            addresses: CSVObject,
+          });
+
+          console.log(postData);
+          const res = createClaim(postData);
+
+          console.log(res);
+          setLoading(false);
+          setFinish(true);
         } catch (err) {
+          setLoading(true);
           console.log(err);
+          setLoading(false);
         }
       };
       loadClaimsContractFactoryData_CSV();
@@ -550,7 +658,12 @@ const Step2 = () => {
             Go back to claims
           </Button>
         ) : (
-          <Button disabled={eligible === 'csv' ? true : false} type="submit" variant="contained" className={classes.btn}>
+          <Button
+            // disabled={eligible === "csv" ? true : false}
+            type="submit"
+            variant="contained"
+            className={classes.btn}
+          >
             {loading ? <CircularProgress /> : "Finish"}
           </Button>
         )}
