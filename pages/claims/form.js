@@ -1,26 +1,15 @@
 import { useEffect, useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import {
-  Box,
-  Stepper,
-  Step,
-  StepLabel,
-  Grid,
-  FormHelperText,
-  Button,
-  Alert,
-} from "@mui/material";
+import { Grid, FormHelperText, Alert } from "@mui/material";
 import ClaimStep1 from "../../src/components/claimsPageComps/ClaimStep1";
 import ClaimStep2 from "../../src/components/claimsPageComps/ClaimStep2";
 import dayjs from "dayjs";
 import { makeStyles } from "@mui/styles";
 import * as yup from "yup";
 import { getTokensFromWallet } from "../../src/api/token";
-// import { useConnectWallet } from "@web3-onboard/react";
 import { SmartContract } from "../../src/api/contract";
 import claimContractFactory from "../../src/abis/claimContractFactory.json";
-// import claimContractABI from "../../src/abis/singleClaimContract.json";
 import usdcTokenContract from "../../src/abis/usdcTokenContract.json";
 import { convertToWeiGovernance } from "../../src/utils/globalFunctions";
 import { createClaim } from "../../src/api/claims";
@@ -28,8 +17,8 @@ import { CLAIM_FACTORY_ADDRESS } from "../../src/api";
 import { MerkleTree } from "merkletreejs";
 import keccak256 from "keccak256";
 import Web3 from "web3";
-import { useSelector } from "react-redux";
 import { useConnectWallet } from "@web3-onboard/react";
+import { useRouter } from "next/router";
 
 const steps = ["Step1", "Step2"];
 
@@ -50,10 +39,12 @@ const Form = () => {
   const [loading, setLoading] = useState(false);
   const [finish, setFinish] = useState(false);
   const [errMsg, setErrMsg] = useState("");
+  const [loadingTokens, setLoadingTokens] = useState(false);
 
   const classes = useStyles();
   const [{ wallet }] = useConnectWallet();
   const walletAddress = wallet?.accounts[0].address;
+  const router = useRouter();
 
   const handleBack = () => {
     setActiveStep((prevStep) => prevStep - 1);
@@ -64,14 +55,13 @@ const Form = () => {
   };
 
   const getCurrentAccount = async () => {
-    // setIsLoading(true);
+    setLoadingTokens(true);
     const web3 = new Web3(window.ethereum);
     const accounts = await web3.eth.getAccounts();
     const data = await getTokensFromWallet(accounts[0]);
     setCurrentAccount(accounts[0]);
     setTokensInWallet(data);
-    console.log(data);
-    // setIsLoading(false);
+    setLoadingTokens(false);
   };
 
   useEffect(() => {
@@ -83,17 +73,17 @@ const Form = () => {
       description: "",
       rollbackAddress: "",
       numberOfTokens: "",
-      startDate: dayjs(Date.now()),
-      endDate: dayjs(Date.now()),
+      startDate: dayjs(Date.now() + 300000),
+      endDate: dayjs(Date.now() + 600000),
       selectedToken: "", // token Name
       recieveTokens: "immediately", // immediately or later
       walletAddress: "",
       airdropTokenAddress: "", // tokenAddress
-      airdropFrom: "wallet", // wallet or contract,
+      airdropFrom: "contract", // wallet or contract,
       eligible: "csv", // token || csv || everyone
       daoTokenAddress: "", // tokenGated
       maximumClaim: "proRata", // prorata or custom
-      customAmount: null,
+      customAmount: 0,
       merkleData: [],
       csvObject: [],
     },
@@ -123,8 +113,9 @@ const Form = () => {
         .notRequired()
         .when("eligible", {
           is: "token",
-          then: () => yup.string().required("Please enter token address"),
+          then: () => yup.string().required("Enter token address"),
         }),
+      // .required("Dao token is required"),
       customAmount: yup
         .number("Enter custom Amount")
         .notRequired()
@@ -133,15 +124,13 @@ const Form = () => {
           then: () =>
             yup
               .number("Enter custom Amount")
-              .required("Please enter custom amount")
+              // .required("Please enter custom amount")
               .moreThan(0, "Amount should be greater than 0")
               .lessThan(yup.ref("numberOfTokens")),
         }),
     }),
 
     onSubmit: (values) => {
-      console.log(values);
-
       const claimsContractAddress = CLAIM_FACTORY_ADDRESS;
 
       const data = {
@@ -186,6 +175,13 @@ const Form = () => {
             hasAllowanceMechanism = false;
           }
 
+          let eligible;
+          if (data.eligible === "token") {
+            eligible = 0;
+          } else if (data.eligible === "everyone") {
+            eligible = 3;
+          }
+
           const loadClaimsContractFactoryData_Token = async () => {
             try {
               const claimsContract = new SmartContract(
@@ -203,10 +199,6 @@ const Form = () => {
                 undefined,
                 undefined,
               );
-
-              // console.log(data.walletAddress)
-
-              // console.log(data);
               const decimals = await erc20contract.decimals();
 
               // if airdroping from contract then approve erc20
@@ -219,7 +211,6 @@ const Form = () => {
                 );
               }
 
-              // console.log(hasAllowanceMechanism);
               const claimsSettings = [
                 data.walletAddress.toLowerCase(),
                 data.walletAddress.toLowerCase(),
@@ -233,7 +224,7 @@ const Form = () => {
                 new Date(data.endDate).getTime() / 1000,
                 data.rollbackAddress.toLowerCase(),
                 "0x0000000000000000000000000000000000000000000000000000000000000001",
-                3,
+                Number(eligible),
                 [
                   maximumClaim,
                   convertToWeiGovernance(data.customAmount, decimals),
@@ -271,34 +262,31 @@ const Form = () => {
                 addresses: [],
               });
 
-              // console.log(typeof(postData))
               const res = createClaim(postData);
-              console.log(postData);
-              console.log(res);
+
               setLoading(false);
 
               setFinish(true);
-              // router.push("/claims");
+              showMessageHandler(setFinish);
+              setTimeout(() => {
+                router.push("/claims");
+              }, 3000);
             } catch (err) {
               console.log(err);
               setLoading(false);
-              showMessageHandler();
+              showMessageHandler(setShowError);
               setErrMsg(err.message);
             }
           };
 
           loadClaimsContractFactoryData_Token();
         } else if (data.eligible === "csv") {
-          // console.log(data);
-
           let hasAllowanceMechanism;
           if (data.airdropFrom === "wallet") {
             hasAllowanceMechanism = true;
           } else {
             hasAllowanceMechanism = false;
           }
-
-          console.log(hasAllowanceMechanism);
 
           const loadClaimsContractFactoryData_CSV = async () => {
             try {
@@ -318,7 +306,6 @@ const Form = () => {
                 undefined,
               );
 
-              // console.log(data);
               const decimals = await erc20contract.decimals();
               setLoading(true);
 
@@ -332,12 +319,10 @@ const Form = () => {
                 );
               }
 
-              console.log(data.merkleData);
               const tree = new MerkleTree(data.merkleData, keccak256, {
                 sort: true,
               });
               const root = tree.getHexRoot();
-              console.log(root);
 
               const claimsSettings = [
                 data.walletAddress.toLowerCase(),
@@ -365,7 +350,6 @@ const Form = () => {
               const response = await claimsContract.claimContract(
                 claimsSettings,
               );
-              console.log(response);
 
               const newClaimContract =
                 response.events.NewClaimContract.returnValues._newClaimContract;
@@ -391,15 +375,18 @@ const Form = () => {
                 addresses: data.csvObject,
               });
 
-              console.log(postData);
               const res = createClaim(postData);
 
-              console.log(res);
               setLoading(false);
               setFinish(true);
+              showMessageHandler(setFinish);
+              setTimeout(() => {
+                router.push("/claims");
+              }, 3000);
             } catch (err) {
               console.log(err);
-              showMessageHandler();
+              setLoading(false);
+              showMessageHandler(setShowError);
               setErrMsg(err.message);
             }
           };
@@ -420,6 +407,7 @@ const Form = () => {
             handleNext={handleNext}
             setActiveStep={setActiveStep}
             tokensInWallet={tokensInWallet}
+            isLoading={loadingTokens}
           />
         );
       case 1:
@@ -427,6 +415,7 @@ const Form = () => {
           <ClaimStep2
             formik={formik}
             handleBack={handleBack}
+            handleNext={handleNext}
             setActiveStep={setActiveStep}
             finish={finish}
             loading={loading}
@@ -435,10 +424,10 @@ const Form = () => {
     }
   };
 
-  const showMessageHandler = () => {
-    setShowError(true);
+  const showMessageHandler = (setState) => {
+    setState(true);
     setTimeout(() => {
-      setShowError(false);
+      setState(false);
     }, 4000);
   };
 
@@ -467,6 +456,21 @@ const Form = () => {
           }}
         >
           {errMsg}
+        </Alert>
+      )}
+
+      {finish && (
+        <Alert
+          severity="success"
+          sx={{
+            width: "350px",
+            position: "absolute",
+            bottom: "30px",
+            right: "20px",
+            borderRadius: "8px",
+          }}
+        >
+          {"Airdrop created successfully"}
         </Alert>
       )}
     </div>

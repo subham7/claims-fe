@@ -26,6 +26,8 @@ import { useConnectWallet } from "@web3-onboard/react";
 import { useDispatch } from "react-redux";
 import { addMerkleLeaves } from "../../redux/reducers/createClaim";
 import { useRouter } from "next/router";
+import { Formik } from "formik";
+import Link from "next/link";
 
 const useStyles = makeStyles({
   form: {
@@ -129,7 +131,6 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
   const { values } = formik;
   const router = useRouter();
 
-  // console.log(data);
   const [csvError, setCsvError] = useState(false);
   const [loadingCsv, setLoadingCsv] = useState(false);
 
@@ -144,18 +145,19 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
   const [file, setFile] = useState("");
   const handleClick = (event) => {
     hiddenFileInput.current.click();
-    console.log(hiddenFileInput.current.value);
   };
+
+  if (values.eligible === "everyone") {
+    values.maximumClaim = "custom";
+  }
 
   const helper = async (csvArr, claimContract, decimals) => {
     let encodedListOfLeaves = [];
     csvArr.map(async (data) => {
-      console.log("claimContract", data.address);
       const res = await claimContract.encode(
         data.address,
         convertToWeiGovernance(data.amount, decimals).toString(),
       );
-      console.log(res);
       encodedListOfLeaves.push(keccak256(res));
     });
 
@@ -164,7 +166,6 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
 
   const handleChange = (event) => {
     const fileUploaded = event.target.files[0];
-    console.log(fileUploaded);
     setFile(fileUploaded);
 
     // new instance of fileReader class
@@ -176,7 +177,6 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
       // converting .csv file into array of objects
       reader.onload = async (event) => {
         const csvData = event.target.result;
-        // const csvArray = csvData.split("\r\n").map((data) => console.log(data));
 
         setLoadingCsv(true);
         const csvArr = csvData
@@ -188,7 +188,6 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
           }));
 
         // setCSVObject(csvArr);
-        console.log("csv arrr", csvArr);
         formik.values.csvObject = csvArr;
 
         const initialValue = 0;
@@ -196,10 +195,8 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
           (acc, curr) => acc + curr.amount,
           initialValue,
         );
-        console.log(sumOfAmt);
 
         if (sumOfAmt > values.numberOfTokens) {
-          console.log(values.numberOfTokens);
           setCsvError(true);
         }
 
@@ -213,9 +210,6 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
             undefined,
           );
 
-          console.log(claimContract);
-          console.log(values.airdropTokenAddress);
-
           const erc20contract = new SmartContract(
             usdcTokenContract,
             values.airdropTokenAddress,
@@ -225,8 +219,6 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
           );
 
           const decimals = await erc20contract.decimals();
-
-          console.log("decimals", decimals);
 
           const list = await helper(csvArr, claimContract, decimals);
           formik.values.merkleData = list;
@@ -239,9 +231,9 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
     }
   };
 
-  useEffect(() => {
-    console.log(file);
-  }, [file]);
+  // useEffect(() => {
+  //   console.log(file);
+  // }, [file]);
 
   return (
     <>
@@ -302,11 +294,15 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
               </>
             )}
 
-            <Typography className={classes.label}>
+            <Typography
+              className={classes.label}
+              sx={values.eligible === "everyone" && { display: "none" }}
+            >
               What is the maximum claim allowed per token holder?
             </Typography>
             <RadioGroup
               aria-labelledby="demo-controlled-radio-buttons-group"
+              sx={values.eligible === "everyone" && { display: "none" }}
               // name="controlled-radio-buttons-group"
               value={values.maximumClaim}
               onChange={formik.handleChange}
@@ -314,10 +310,11 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
               id="maximumClaim"
             >
               <FormControlLabel
-                // disabled={values.eligible === "everyone"}
-                disabled
+                disabled={values.eligible === "everyone"}
+                // disabled
                 value="proRata"
                 control={<Radio />}
+                // sx={values.eligible === "everyone" && { display: "none" }}
                 label="Pro-rata as per share of tokens held"
               />
               <FormControlLabel
@@ -329,7 +326,8 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
 
             {/* Number of Tokens */}
 
-            {values.maximumClaim === "custom" && (
+            {(values.maximumClaim === "custom" ||
+              values.eligible === "everyone") && (
               <>
                 <Typography className={classes.label}>Enter Amount</Typography>
                 <TextField
@@ -356,6 +354,7 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
             <Typography className={classes.label}>
               Upload your CSV file
             </Typography>
+
             <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
               <TextField
                 className={classes.input}
@@ -375,6 +374,12 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
                 style={{ display: "none" }}
               />
             </div>
+            <Typography className={classes.text}>
+              Download sample from{" "}
+              <span style={{ color: "white" }}>
+                <Link href={"/assets/csv/sample.csv"}>here</Link>
+              </span>
+            </Typography>
 
             {csvError && (
               <Typography className={classes.error}>
@@ -401,6 +406,11 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
           <Button
             disabled={
               csvError ||
+              (values.eligible === "everyone" &&
+                (values.customAmount <= 0 || !values.customAmount)) ||
+              (values.eligible === "token" &&
+                values.maximumClaim === "custom" &&
+                values.customAmount <= 0) ||
               (values.eligible === "csv" && values.csvObject.length === 0)
                 ? true
                 : false

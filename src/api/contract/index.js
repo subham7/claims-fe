@@ -88,6 +88,10 @@ export class SmartContract {
     return this.contract.methods.claimSettings().call();
   }
 
+  async claimBalance() {
+    return this.contract.methods.claimBalance().call();
+  }
+
   async claim(amount, merkleData, leaf) {
     return this.contract.methods.claim(amount, merkleData, leaf).send({
       from: this.walletAddress,

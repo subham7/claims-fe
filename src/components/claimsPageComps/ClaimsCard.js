@@ -6,7 +6,9 @@ import { AiFillCalendar } from "react-icons/ai";
 import { FaCoins } from "react-icons/fa";
 import { useRouter } from "next/router";
 import { useDispatch } from "react-redux";
-import { addClaimContractData } from "../../src/redux/reducers/createClaim";
+import { addClaimContractData } from "../../redux/reducers/createClaim";
+import Countdown from "react-countdown";
+import { Alert } from "@mui/material";
 
 const useStyles = makeStyles({
   container: {
@@ -77,6 +79,12 @@ const useStyles = makeStyles({
     border: "none",
     borderRadius: "5px",
   },
+  countdown: {
+    border: "1px solid #FFFFFF1A",
+    padding: "8px",
+    borderRadius: "5px",
+    margin: 0,
+  },
 });
 
 const ClaimsCard = ({
@@ -94,7 +102,10 @@ const ClaimsCard = ({
   const router = useRouter();
   const dispatch = useDispatch();
   const [isActive, setIsActive] = useState(false);
+  const [isClaimStarted, setIsClaimStarted] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
 
+  const startingTime = new Date(+startDate * 1000);
   const convertedStartDay = new Date(startDate * 1000).getDate();
   const convertedStartMonth = new Date(startDate * 1000).toLocaleString(
     "default",
@@ -109,12 +120,18 @@ const ClaimsCard = ({
   const currentTime = Date.now() / 1000;
 
   useEffect(() => {
-    if (+startDate > currentTime || +endDate < currentTime) {
+    // if (+startDate > currentTime || +endDate < currentTime) {
+    if (+startDate > currentTime) {
       setIsActive(false);
+      setIsClaimStarted(false);
+    } else if (+endDate < currentTime) {
+      setIsActive(false);
+      setIsClaimStarted(true);
     } else {
       setIsActive(true);
+      setIsClaimStarted(true);
     }
-  }, [currentTime]);
+  }, [currentTime, endDate, startDate]);
 
   const claimContractData = {
     description,
@@ -124,8 +141,6 @@ const ClaimsCard = ({
     createdBy,
     endDate,
   };
-
-  console.log(claimContractData);
 
   dispatch(addClaimContractData(claimContractData));
 
@@ -141,17 +156,37 @@ const ClaimsCard = ({
           <span className={classes.span}>{convertedDate}</span>
         </h4>
         <div className={classes.iconContainer}>
-          {/* <div className={classes.active}>Active</div> */}
+          {!isClaimStarted && (
+            <p className={classes.countdown}>
+              Starts in :
+              <span style={{ marginLeft: "10px" }}>
+                <Countdown date={startingTime} />
+              </span>{" "}
+            </p>
+          )}
+          <div className={`${isActive ? classes.active : classes.inactive}`}>
+            {isActive && isClaimStarted
+              ? "Active"
+              : !isActive && isClaimStarted
+              ? "Inactive"
+              : !isActive && !isClaimStarted && "Not started yet"}
+          </div>
           <BsLink45Deg
-            onClick={() => {
+            onClick={(e) => {
+              e.stopPropagation();
               navigator.clipboard.writeText(
                 `${window.location.origin}/claims/${claimContract}`,
               );
+              setIsCopied(true);
+
+              setTimeout(() => {
+                setIsCopied(false);
+              }, 3000);
             }}
             size={25}
             className={classes.icons}
           />
-          <BiPencil size={25} className={classes.icons} />
+          {/* <BiPencil size={25} className={classes.icons} /> */}
         </div>
       </div>
 
@@ -181,6 +216,21 @@ const ClaimsCard = ({
           </p>
         </div>
       </div>
+
+      {isCopied && (
+        <Alert
+          severity="success"
+          sx={{
+            width: "150px",
+            position: "absolute",
+            bottom: "30px",
+            right: "20px",
+            borderRadius: "8px",
+          }}
+        >
+          {"Copied"}
+        </Alert>
+      )}
     </div>
   );
 };

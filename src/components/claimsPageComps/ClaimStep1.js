@@ -2,12 +2,9 @@ import {
   Button,
   FormControl,
   InputAdornment,
-  InputLabel,
   MenuItem,
-  Select,
   TextField,
   Typography,
-  CircularProgress,
   ToggleButtonGroup,
   ToggleButton,
 } from "@mui/material";
@@ -21,10 +18,6 @@ import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import { useRouter } from "next/router";
-import { route } from "next/dist/server/router";
-import Web3 from "web3";
-import { useConnectWallet } from "@web3-onboard/react";
-import { getTokensFromWallet } from "../../api/token";
 
 const useStyles = makeStyles({
   form: {
@@ -32,7 +25,7 @@ const useStyles = makeStyles({
     alignItems: "center",
     justifyContent: "center",
     margin: "170px auto",
-    width: "550px",
+    width: "600px",
     color: "white",
   },
 
@@ -100,7 +93,7 @@ const useStyles = makeStyles({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    padding: "50px",
+    padding: "40px",
     flexDirection: "column",
     borderRadius: "10px",
     cursor: "pointer",
@@ -111,7 +104,7 @@ const useStyles = makeStyles({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    padding: "50px",
+    padding: "40px 40px",
     flexDirection: "column",
     borderRadius: "10px",
     cursor: "pointer",
@@ -149,15 +142,19 @@ const useStyles = makeStyles({
     justifyContent: "center",
     alignItems: "center",
   },
+  smallText: {
+    fontSize: "12px",
+    textTransform: "none",
+    fontWeight: "300",
+    margin: 0,
+    padding: 0,
+    width: "100%",
+  },
 });
 
-const ClaimStep1 = ({ handleNext, setActiveStep, formik, tokensInWallet }) => {
+const ClaimStep1 = ({ formik, tokensInWallet, isLoading }) => {
   const classes = useStyles();
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
-  const [selectedContract, setSelectedContract] = useState(false);
-  const [selectedWallet, setSelectedWallet] = useState(true);
-  // const [tokensInWallet, setTokensInWallet] = useState(null);
 
   useEffect(() => {
     formik.values.airdropTokenAddress =
@@ -175,8 +172,6 @@ const ClaimStep1 = ({ handleNext, setActiveStep, formik, tokensInWallet }) => {
         <BsArrowLeft /> Back to claims
       </Typography>
 
-      {/* <Typography className={classes.step}>Step 1/2</Typography> */}
-
       <form className={classes.form}>
         <Typography className={classes.title}>
           Create a new claim page
@@ -184,7 +179,7 @@ const ClaimStep1 = ({ handleNext, setActiveStep, formik, tokensInWallet }) => {
 
         {/* Description of claim page */}
         <Typography className={classes.label}>
-          Add a one-liner description
+          Add a one-liner description *
         </Typography>
         <TextField
           variant="outlined"
@@ -200,47 +195,8 @@ const ClaimStep1 = ({ handleNext, setActiveStep, formik, tokensInWallet }) => {
         />
 
         <Typography className={classes.label}>
-          Where do you want to airdrop tokens from?{" "}
+          Where do you want to airdrop tokens from? *
         </Typography>
-
-        {/* <div
-          // onChange={formik.handleChange}
-          // id="airdropFrom"
-          className={classes.selectContainer}
-          // value={formik.values.airdropFrom}
-        >
-          <div
-            onClick={() => {
-              setSelectedContract(false);
-              setSelectedWallet(true);
-              formik.values.airdropFrom = "wallet";
-              // setAirdropFrom("wallet");
-            }}
-            className={`${
-              selectedWallet ? classes.selectedContainer : classes.leftContainer
-            }`}
-          >
-            <IoWalletSharp size={20} />
-            <p>My Wallet</p>
-          </div>
-
-          <div
-            onClick={() => {
-              setSelectedWallet(false);
-              setSelectedContract(true);
-              formik.values.airdropFrom = "contract";
-              // setAirdropFrom("contract");
-            }}
-            className={`${
-              selectedContract
-                ? classes.selectedContainer
-                : classes.rightContainer
-            }`}
-          >
-            <BsFillSendFill size={20} />
-            <p>StationX Contract</p>
-          </div>
-        </div> */}
 
         <ToggleButtonGroup
           color="primary"
@@ -253,18 +209,29 @@ const ClaimStep1 = ({ handleNext, setActiveStep, formik, tokensInWallet }) => {
           className={classes.selectContainer}
         >
           <ToggleButton
-            className={classes.leftContainer}
-            name="airdropFrom"
-            value="wallet"
-          >
-            Wallet
-          </ToggleButton>
-          <ToggleButton
             className={classes.rightContainer}
             name="airdropFrom"
             value="contract"
+            id="airdropFrom"
           >
-            Smart Contract
+            <BsFillSendFill size={20} />
+            <p className={classes.label}>Claim Contract</p>
+            <p className={classes.smallText}>
+              Users will claim tokens from custom claim contract{" "}
+              <span>(recommended)</span>
+            </p>
+          </ToggleButton>
+          <ToggleButton
+            className={classes.leftContainer}
+            name="airdropFrom"
+            id="airdropFrom"
+            value="wallet"
+          >
+            <IoWalletSharp size={20} />
+            <p className={classes.label}>My Wallet</p>
+            <p className={classes.smallText}>
+              Users will claim tokens from your wallet
+            </p>
           </ToggleButton>
         </ToggleButtonGroup>
 
@@ -272,7 +239,7 @@ const ClaimStep1 = ({ handleNext, setActiveStep, formik, tokensInWallet }) => {
         {formik.values.airdropFrom === "contract" && (
           <>
             <Typography className={classes.label}>
-              Add a roll back Adress
+              Add a roll back Adress *
             </Typography>
             <TextField
               variant="outlined"
@@ -290,16 +257,15 @@ const ClaimStep1 = ({ handleNext, setActiveStep, formik, tokensInWallet }) => {
               }
             />
             <Typography className={classes.text}>
-              Tokens that remain in the contract are sent to this address
-              automatically after the drop. You can roll back tokens anytime via
-              the dashboard too.
+              Unclaimed tokens after end of claim period will be sent/rolled
+              back to this address.
             </Typography>
           </>
         )}
 
         {/* Choose Token */}
         <Typography className={classes.label}>
-          Choose token to airdrop
+          Choose token to airdrop *
         </Typography>
         <FormControl sx={{ width: "100%" }}>
           {isLoading ? (
@@ -326,9 +292,6 @@ const ClaimStep1 = ({ handleNext, setActiveStep, formik, tokensInWallet }) => {
                 formik.touched.selectedToken && formik.errors.selectedToken
               }
             >
-              <MenuItem key={""} value={""}>
-                No Selected // Or Empty
-              </MenuItem>
               {tokensInWallet?.map((token, i) => (
                 <MenuItem key={i} value={token}>
                   {token?.tokenSymbol}
@@ -342,7 +305,7 @@ const ClaimStep1 = ({ handleNext, setActiveStep, formik, tokensInWallet }) => {
         </Typography>
 
         {/* Number of Tokens */}
-        <Typography className={classes.label}>Number of Tokens</Typography>
+        <Typography className={classes.label}>Number of Tokens *</Typography>
         <TextField
           className={classes.input}
           type="number"
@@ -387,16 +350,13 @@ const ClaimStep1 = ({ handleNext, setActiveStep, formik, tokensInWallet }) => {
           <div style={{ width: "100%" }}>
             <Typography className={classes.label}>Claims start on</Typography>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
-              {/* <DemoContainer components={["DateTimePicker", "DateTimePicker"]}> */}
               <DateTimePicker
-                // label="Controlled picker"
                 value={formik.values.startDate}
-                minDateTime={dayjs(Date.now() - 300000)}
+                minDateTime={dayjs(Date.now())}
                 onChange={(value) => {
                   formik.setFieldValue("startDate", value);
                 }}
               />
-              {/* </DemoContainer> */}
             </LocalizationProvider>
           </div>
 
@@ -405,16 +365,13 @@ const ClaimStep1 = ({ handleNext, setActiveStep, formik, tokensInWallet }) => {
           <div style={{ width: "100%" }}>
             <Typography className={classes.label}>Claims end on</Typography>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
-              {/* <DemoContainer components={["DateTimePicker", "DateTimePicker"]}> */}
               <DateTimePicker
-                // label="Controlled picker"
                 value={formik.values.endDate}
                 minDateTime={formik.values.startDate}
                 onChange={(value) => {
                   formik.setFieldValue("endDate", value);
                 }}
               />
-              {/* </DemoContainer> */}
             </LocalizationProvider>
           </div>
         </div>
