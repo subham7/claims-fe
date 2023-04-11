@@ -290,6 +290,17 @@
     },
     {
       "inputs": [
+        { "internalType": "address", "name": "_user", "type": "address" }
+      ],
+      "name": "checkAmount",
+      "outputs": [
+        { "internalType": "uint256", "name": "_claimAmount", "type": "uint256" }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
         { "internalType": "uint256", "name": "_amount", "type": "uint256" },
         {
           "internalType": "bytes32[]",
@@ -434,11 +445,7 @@
           "name": "_userAddress",
           "type": "address"
         },
-        {
-          "internalType": "uint256",
-          "name": "_amountOrTokenId",
-          "type": "uint256"
-        }
+        { "internalType": "uint256", "name": "_amount", "type": "uint256" }
       ],
       "name": "encode",
       "outputs": [{ "internalType": "bytes", "name": "", "type": "bytes" }],
