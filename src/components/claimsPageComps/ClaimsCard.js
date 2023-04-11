@@ -8,6 +8,7 @@ import { useRouter } from "next/router";
 import { useDispatch } from "react-redux";
 import { addClaimContractData } from "../../redux/reducers/createClaim";
 import Countdown from "react-countdown";
+import { Alert } from "@mui/material";
 
 const useStyles = makeStyles({
   container: {
@@ -102,6 +103,7 @@ const ClaimsCard = ({
   const dispatch = useDispatch();
   const [isActive, setIsActive] = useState(false);
   const [isClaimStarted, setIsClaimStarted] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
 
   const startingTime = new Date(+startDate * 1000);
   const convertedStartDay = new Date(startDate * 1000).getDate();
@@ -175,6 +177,11 @@ const ClaimsCard = ({
               navigator.clipboard.writeText(
                 `${window.location.origin}/claims/${claimContract}`,
               );
+              setIsCopied(true);
+
+              setTimeout(() => {
+                setIsCopied(false);
+              }, 3000);
             }}
             size={25}
             className={classes.icons}
@@ -209,6 +216,21 @@ const ClaimsCard = ({
           </p>
         </div>
       </div>
+
+      {isCopied && (
+        <Alert
+          severity="success"
+          sx={{
+            width: "150px",
+            position: "absolute",
+            bottom: "30px",
+            right: "20px",
+            borderRadius: "8px",
+          }}
+        >
+          {"Copied"}
+        </Alert>
+      )}
     </div>
   );
 };
