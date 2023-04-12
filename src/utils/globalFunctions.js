@@ -1,5 +1,6 @@
 import ImplementationContract from "../abis/implementationABI.json";
 import { SmartContract } from "../api/contract";
+import { ethers } from "ethers";
 
 // function for calculating the balance percentage of the users share
 export const calculateUserSharePercentage = (balance, total) => {
@@ -23,20 +24,33 @@ export const calculateDays = (dateTime) => {
 
 // function for converting the usdc token amount from decimal to Wei format
 export const convertToWei = (convertAmount, decimal) => {
-  return convertAmount * Math.pow(10, decimal);
+  console.log(ethers.parseUnits);
+  // console.log("convert amount", convertAmount * Math.pow(10, decimal));
+  // console.log(
+  //   "convert amount wei",
+  //   web3.utils.fromWei(convertAmount, Math.pow(10, decimal).toString()),
+  // );
+  console.log(decimal);
+  return ethers
+    .parseUnits(convertAmount.toString(), Number(decimal))
+    .toString();
 };
 
 // function for converting the governance token amount from decimal to Wei format
 export const convertToWeiGovernance = (convertValue, decimal) => {
-  return convertValue * Math.pow(10, decimal);
+  return ethers.parseUnits(convertValue.toString(), Number(decimal)).toString();
 };
 
 // function for converting the usdc token amount from Wei to decimal format
 export const convertFromWei = (convertAmount, decimal) => {
-  return convertAmount / Math.pow(10, decimal);
+  return ethers
+    .formatUnits(convertAmount.toString(), Number(decimal))
+    .toString();
 };
 
 // function for converting the governance token amount from Wei to decimal format
 export const convertFromWeiGovernance = (convertValue, decimal) => {
-  return convertValue / Math.pow(10, decimal);
+  return ethers
+    .formatUnits(convertValue.toString(), Number(decimal))
+    .toString();
 };

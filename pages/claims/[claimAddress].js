@@ -426,6 +426,8 @@ const ClaimAddress = () => {
           desc.claimAmountDetails[1],
           decimals,
         );
+        console.log(desc);
+        console.log(airdropAmount);
 
         if (desc.daoToken !== "0x0000000000000000000000000000000000000000") {
           // amount for prorata
@@ -493,7 +495,7 @@ const ClaimAddress = () => {
         setClaimInput(0);
       } else {
         const res = await claimContract.claim(
-          convertToWeiGovernance(claimInput, decimalOfToken),
+          convertToWeiGovernance(claimInput, decimalOfToken).toString(),
           [],
           [],
         );
