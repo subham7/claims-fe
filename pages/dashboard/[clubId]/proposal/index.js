@@ -81,6 +81,7 @@ const QuillEditor = dynamic(
 import "react-quill/dist/quill.snow.css";
 import ReactHtmlParser from "react-html-parser";
 import { SmartContract } from "../../../../src/api/contract";
+import { useConnectWallet } from "@web3-onboard/react";
 // import QuillEditor from "../../../../src/components/quillEditor";
 
 const useStyles = makeStyles({
@@ -334,9 +335,8 @@ const Proposal = () => {
     },
   ];
 
-  const walletAddress = useSelector((state) => {
-    return state.create.value;
-  });
+  const [{ wallet }] = useConnectWallet();
+  const walletAddress = wallet?.accounts[0].address;
   const isGovernanceActive = useSelector((state) => {
     return state.gnosis.governanceAllowed;
   });
@@ -427,8 +427,11 @@ const Proposal = () => {
     console.log("innnnnn is governanceeee allloweedddd");
     const ownerAddresses = await safeSdk.getOwners();
     console.log(ownerAddresses);
+    const smallOwnerAddresses = [];
+    ownerAddresses.map((w) => smallOwnerAddresses.push(w.toLowerCase()));
+
     if (isGovernanceActive === false) {
-      if (ownerAddresses.includes(walletAddress)) {
+      if (smallOwnerAddresses.includes(walletAddress)) {
         console.log("issss adminnnnnn");
         setGovernance(true);
       } else {
@@ -547,7 +550,7 @@ const Proposal = () => {
       const payload = {
         name: title,
         description: description,
-        createdBy: walletAddress,
+        createdBy: walletAddress.toLowerCase(),
         clubId: clubID,
         votingDuration: new Date(duration).toISOString(),
         votingOptions: options,
@@ -627,7 +630,7 @@ const Proposal = () => {
           const payload = {
             name: title,
             description: description,
-            createdBy: walletAddress,
+            createdBy: walletAddress.toLowerCase(),
             clubId: clubID,
             votingDuration: new Date(duration).toISOString(),
             votingOptions: defaultOptions,
@@ -648,7 +651,7 @@ const Proposal = () => {
             type: "action",
           };
           console.log(
-            "airdrop",
+            "payload",
             convertToWei(airDropAmount, airDropTokenDecimal).toString(),
           );
           const createRequest = createProposal(payload);
@@ -685,7 +688,7 @@ const Proposal = () => {
         const payload = {
           name: title,
           description: description,
-          createdBy: walletAddress,
+          createdBy: walletAddress.toLowerCase(),
           clubId: clubID,
           votingDuration: new Date(duration).toISOString(),
           votingOptions: defaultOptions,
@@ -780,7 +783,7 @@ const Proposal = () => {
           const payload = {
             name: title,
             description: description,
-            createdBy: walletAddress,
+            createdBy: walletAddress.toLowerCase(),
             clubId: clubID,
             votingDuration: new Date(duration).toISOString(),
             votingOptions: defaultOptions,
@@ -839,7 +842,7 @@ const Proposal = () => {
           const payload = {
             name: title,
             description: description,
-            createdBy: walletAddress,
+            createdBy: walletAddress.toLowerCase(),
             clubId: clubID,
             votingDuration: new Date(duration).toISOString(),
             votingOptions: defaultOptions,
@@ -911,7 +914,7 @@ const Proposal = () => {
           const payload = {
             name: title,
             description: description,
-            createdBy: walletAddress,
+            createdBy: walletAddress.toLowerCase(),
             clubId: clubID,
             votingDuration: new Date(duration).toISOString(),
             votingOptions: defaultOptions,
