@@ -32,6 +32,7 @@
     "crypto-js": "^4.1.1",
     "date-fns": "^2.28.0",
     "dayjs": "^1.11.7",
+    "ethers": "^6.3.0",
     "formik": "^2.2.9",
     "html2canvas": "^1.4.1",
     "keccak256": "^1.0.6",
