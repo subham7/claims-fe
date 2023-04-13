@@ -495,6 +495,8 @@ const Join = (props) => {
           userDetails={userDetails}
           newContract={newContract}
           clubName={clubName}
+          loading={loading}
+          setLoading={setLoading}
           tokenGatingAddress={tokenGatingAddress}
           tokenGatingAmount={tokenGatingAmount}
           userTokenBalance={userTokenBalance}

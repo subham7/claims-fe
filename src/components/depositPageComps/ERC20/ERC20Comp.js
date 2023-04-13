@@ -62,6 +62,8 @@ const ERC20Comp = ({
   usdcTokenDecimal,
   daoAddress,
   clubName,
+  loading,
+  setLoading,
   tokenGatingAddress,
   tokenGatingAmount,
   userTokenBalance,
@@ -622,6 +624,7 @@ const ERC20Comp = ({
                       </Typography>
                     </Grid>
                   </Grid>
+
                   <Divider variant="middle" sx={{ bgcolor: "#3B7AFD" }} />
                   <Grid container spacing={2}>
                     <Grid item md={12} mt={2}>
@@ -663,7 +666,16 @@ const ERC20Comp = ({
                               inputProps={{ style: { fontSize: "1em" } }}
                               InputLabelProps={{ style: { fontSize: "1em" } }}
                             />
+                            <Typography sx={{ color: "red" }}>
+                              {depositAmount < minDeposit
+                                ? "Deposit amount should be greater than min deposit"
+                                : ""}
+                              {depositAmount > maxDeposit
+                                ? "Deposit amount should be less than max deposit"
+                                : ""}
+                            </Typography>
                           </Grid>
+                          
                           <Grid
                             item
                             ml={2}
@@ -702,7 +714,11 @@ const ERC20Comp = ({
                         onClick={handleDeposit}
                         disabled={
                           (closingDays > 0 ? false : true) ||
-                          (depositAmount <= 0 ? true : false) ||
+                          (depositAmount <= 0 ||
+                          depositAmount < minDeposit ||
+                          depositAmount > maxDeposit
+                            ? true
+                            : false) ||
                           (tokenGatingAddress !==
                             "0x0000000000000000000000000000000000000000" &&
                             (userTokenBalance < tokenGatingAmount ||
