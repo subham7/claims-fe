@@ -51,6 +51,7 @@ import {
 } from "../../../src/utils/globalFunctions";
 // import {BsArrowRight} from 'react-icons/bs'
 import LegalEntityModal from "../../../src/components/modals/LegalEntityModal";
+import Web3 from "web3";
 
 const useStyles = makeStyles({
   media: {
@@ -421,9 +422,10 @@ const Dashboard = () => {
   const governanceConvertDecimal = useSelector((state) => {
     return state.gnosis.governanceTokenDecimal;
   });
-  const walletAddress = wallet?.accounts[0].address;
-  console.log(wallet);
-  console.log(walletAddress);
+  const web3 = new Web3(window.web3);
+  const walletAddress = web3.utils.toChecksumAddress(
+    wallet?.accounts[0].address,
+  );
 
   useEffect(() => {
     if (clubCreate === "true") {
@@ -504,7 +506,7 @@ const Dashboard = () => {
   const checkIsAdmin = () => {
     if (membersFetched && membersDetails.length > 0 && walletAddress) {
       let obj = membersDetails.find(
-        (member) => member.userAddress.toLocaleLowerCase() === walletAddress,
+        (member) => member.userAddress === walletAddress,
       );
 
       let pos = membersDetails.indexOf(obj);

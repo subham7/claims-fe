@@ -57,6 +57,7 @@ import {
   getTokenMetadata,
   getTokensDecimalFromAddress,
 } from "../../../src/api/token";
+import Web3 from "web3";
 
 const useStyles = makeStyles({
   valuesStyle: {
@@ -249,8 +250,13 @@ const Settings = (props) => {
     return state.create.clubImageUrl;
   });
   const [dataFetched, setDataFetched] = useState(false);
+
   const [{ wallet }] = useConnectWallet();
-  const walletAddress = wallet?.accounts[0].address;
+  const web3 = new Web3(window.web3);
+  const walletAddress = web3.utils.toChecksumAddress(
+    wallet?.accounts[0].address,
+  );
+
   const [tokenDetails, settokenDetails] = useState(null);
   const [tokenAPIDetails, settokenAPIDetails] = useState(null); // contains the details extracted from API
   const [apiTokenDetailSet, setApiTokenDetailSet] = useState(false);
