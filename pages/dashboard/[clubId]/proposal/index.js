@@ -336,7 +336,11 @@ const Proposal = () => {
   ];
 
   const [{ wallet }] = useConnectWallet();
-  const walletAddress = wallet?.accounts[0].address;
+  const web3 = new Web3(window.web3);
+  const walletAddress = web3.utils.toChecksumAddress(
+    wallet?.accounts[0].address,
+  );
+
   const isGovernanceActive = useSelector((state) => {
     return state.gnosis.governanceAllowed;
   });
@@ -531,10 +535,6 @@ const Proposal = () => {
   const handleNext = async (event) => {
     setLoaderOpen(true);
     setDescriptionError(false);
-    const web3 = new Web3(window.web3);
-    const walletAddress = web3.utils.toChecksumAddress(
-      localStorage.getItem("wallet"),
-    );
     if (type === proposalType[0].type) {
       // for execution of Survey
       const options = [];
@@ -550,7 +550,7 @@ const Proposal = () => {
       const payload = {
         name: title,
         description: description,
-        createdBy: walletAddress.toLowerCase(),
+        createdBy: walletAddress,
         clubId: clubID,
         votingDuration: new Date(duration).toISOString(),
         votingOptions: options,
@@ -626,11 +626,11 @@ const Proposal = () => {
           )[0]?.value;
           console.log("airdropTokenBalance", airdropTokenBalance);
 
-          console.log("airDropAmount", airDropAmount);
+          console.log("airDropAmount", walletAddress);
           const payload = {
             name: title,
             description: description,
-            createdBy: walletAddress.toLowerCase(),
+            createdBy: walletAddress,
             clubId: clubID,
             votingDuration: new Date(duration).toISOString(),
             votingOptions: defaultOptions,
@@ -688,7 +688,7 @@ const Proposal = () => {
         const payload = {
           name: title,
           description: description,
-          createdBy: walletAddress.toLowerCase(),
+          createdBy: walletAddress,
           clubId: clubID,
           votingDuration: new Date(duration).toISOString(),
           votingOptions: defaultOptions,
@@ -783,7 +783,7 @@ const Proposal = () => {
           const payload = {
             name: title,
             description: description,
-            createdBy: walletAddress.toLowerCase(),
+            createdBy: walletAddress,
             clubId: clubID,
             votingDuration: new Date(duration).toISOString(),
             votingOptions: defaultOptions,
@@ -842,7 +842,7 @@ const Proposal = () => {
           const payload = {
             name: title,
             description: description,
-            createdBy: walletAddress.toLowerCase(),
+            createdBy: walletAddress,
             clubId: clubID,
             votingDuration: new Date(duration).toISOString(),
             votingOptions: defaultOptions,
@@ -914,7 +914,7 @@ const Proposal = () => {
           const payload = {
             name: title,
             description: description,
-            createdBy: walletAddress.toLowerCase(),
+            createdBy: walletAddress,
             clubId: clubID,
             votingDuration: new Date(duration).toISOString(),
             votingOptions: defaultOptions,

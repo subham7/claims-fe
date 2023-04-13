@@ -194,7 +194,11 @@ const ProposalDetail = () => {
   const router = useRouter();
   const { pid, clubId } = router.query;
   const [{ wallet }] = useConnectWallet();
-  const walletAddress = wallet?.accounts[0].address;
+  const web3 = new Web3(window.web3);
+  const walletAddress = web3.utils.toChecksumAddress(
+    wallet?.accounts[0].address,
+  );
+
   const classes = useStyles();
   const [voted, setVoted] = useState(false);
   const [fetched, setFetched] = useState(false);
@@ -357,12 +361,10 @@ const ProposalDetail = () => {
 
   const submitVote = () => {
     setLoaderOpen(true);
-    const web3 = new Web3(window.web3);
-    const userAddress = web3.utils.toChecksumAddress(walletAddress);
     const payload = {
       proposalId: pid,
       votingOptionId: castVoteOption,
-      voterAddress: userAddress,
+      voterAddress: walletAddress,
       clubId: clubID,
     };
     const voteSubmit = castVote(payload);
@@ -942,11 +944,8 @@ const ProposalDetail = () => {
 
   const checkUserVoted = (pid) => {
     if (walletAddress) {
-      const web3 = new Web3(window.web3);
-      let userAddress = walletAddress;
-      userAddress = web3.utils.toChecksumAddress(userAddress);
       let obj = proposalData[0].vote.find(
-        (voteCasted) => voteCasted.voterAddress === userAddress,
+        (voteCasted) => voteCasted.voterAddress === walletAddress,
       );
       return proposalData[0].vote.indexOf(obj) >= 0;
     }
@@ -954,11 +953,8 @@ const ProposalDetail = () => {
 
   const fetchUserVoteText = (pid) => {
     if (walletAddress) {
-      const web3 = new Web3(window.web3);
-      let userAddress = walletAddress;
-      userAddress = web3.utils.toChecksumAddress(userAddress);
       let obj = proposalData[0].vote.find(
-        (voteCasted) => voteCasted.voterAddress === userAddress,
+        (voteCasted) => voteCasted.voterAddress === walletAddress,
       );
       return proposalData[0].vote.indexOf(obj) >= 0;
     }
