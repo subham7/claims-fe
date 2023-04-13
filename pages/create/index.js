@@ -11,9 +11,14 @@ import Layout2 from "../../src/components/layouts/layout2";
 import ProtectRoute from "../../src/utils/auth";
 import { Fragment, useState } from "react";
 import Step1 from "./Step1";
-import Step2 from "./Step2";
+import Step2 from "./ERC20Step2";
 import Step3 from "./Step3";
 import { useFormik } from "formik";
+import { tokenType } from "../../src/data/create";
+import * as yup from "yup";
+import ERC20Step2 from "./ERC20Step2";
+import NFTStep2 from "./NFTStep2";
+import dayjs from "dayjs";
 
 const Create = () => {
   const steps = ["Add basic info", "Set token rules", "Governance"];
@@ -25,20 +30,35 @@ const Create = () => {
     setActiveStep(step);
   };
 
+  const handleNext = () => {
+    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+  };
+
   const getStepContent = (step) => {
     switch (step) {
       case 0:
         return (
           <>
-            <Step1 />
+            <Step1 formik={formikStep1} />
           </>
         );
       case 1:
-        return (
-          <>
-            <Step2 />
-          </>
-        );
+        if (
+          formikStep1.values.clubTokenType === "Non Transferable ERC20 Token"
+        ) {
+          return (
+            <>
+              <ERC20Step2 formik={formikERC20Step2} />
+            </>
+          );
+        } else {
+          return (
+            <>
+              <NFTStep2 />
+            </>
+          );
+        }
+
       case 2:
         return (
           <>
@@ -51,20 +71,51 @@ const Create = () => {
     }
   };
 
-  const handleNext = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
-  };
+  const step1ValidationSchema = yup.object({
+    clubName: yup
+      .string("Enter club name")
+      .min(2, "Name should be of minimum 2 characters length")
+      .required("Club Name is required"),
+    clubSymbol: yup
+      .string("Enter club symbol")
+      .required("Club Symbol is required"),
+  });
+
+  const ERC20Step2ValidationSchema = yup.object({
+    depositClose: yup.date().required("deposit close date is required"),
+    minDepositPerUser: yup.number().required("min deposit amount is required"),
+    maxDepositPerUser: yup
+      .number()
+      .moreThan(
+        yup.ref("minDepositPerUser"),
+        "Amount should be greater than min deposit",
+      )
+      .required("min deposit amount is required"),
+    totalRaiseAmount: yup.number().required("raise amount is required"),
+    pricePerToken: yup.number().required("price per token is required"),
+  });
 
   const formikStep1 = useFormik({
-    initialValues: {},
-    // validationSchema: personalInfoValidationSchema,
+    initialValues: {
+      clubName: "fgf",
+      clubSymbol: "",
+      clubTokenType: tokenType[0],
+    },
+    validationSchema: step1ValidationSchema,
     onSubmit: (values) => {
+      console.log(values);
       handleNext();
     },
   });
-  const formikStep2 = useFormik({
-    initialValues: {},
-    // validationSchema: personalInfoValidationSchema,
+  const formikERC20Step2 = useFormik({
+    initialValues: {
+      depositClose: dayjs(Date.now() + 300000),
+      minDepositPerUser: "",
+      maxDepositPerUser: "",
+      totalRaiseAmount: "",
+      pricePerToken: "",
+    },
+    validationSchema: ERC20Step2ValidationSchema,
     onSubmit: (values) => {
       handleNext();
     },
@@ -83,8 +134,16 @@ const Create = () => {
         formikStep1.handleSubmit();
         break;
       case 1:
-        formikStep2.handleSubmit();
-        break;
+        if (
+          formikStep1.values.clubTokenType === "Non Transferable ERC20 Token"
+        ) {
+          formikERC20Step2.handleSubmit();
+          break;
+        } else {
+          NFTformikStep2.handleSubmit();
+          break;
+        }
+
       case 2:
         formikStep3.handleSubmit();
         break;
@@ -124,17 +183,15 @@ const Create = () => {
               </Typography>
             ) : (
               <>
-                {getStepContent(activeStep)}
                 <Fragment>
                   <Grid
                     container
-                    wrap="nowrap"
-                    spacing={0}
-                    justify="center"
-                    alignItems="center"
                     direction="row"
+                    justifyContent="center"
+                    alignItems="center"
+                    mt={2}
                   >
-                    <Grid item xs={0} mt={2}></Grid>
+                    {getStepContent(activeStep)}
                     {/* <Button
                       disabled={activeStep === 0}
                       onClick={handleBack}
@@ -146,13 +203,17 @@ const Create = () => {
                       <Button
                         variant="wideButton"
                         // disabled={!isStepValidated(activeStep) }
-
+                        mt={2}
                         onClick={handleSubmit}
                       >
                         Finish
                       </Button>
                     ) : (
-                      <Button variant="wideButton" onClick={handleSubmit}>
+                      <Button
+                        variant="wideButton"
+                        sx={{ marginTop: "2rem" }}
+                        onClick={handleSubmit}
+                      >
                         Next
                       </Button>
                     )}
