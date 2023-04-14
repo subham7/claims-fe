@@ -16,45 +16,57 @@ import {
   setRedirectToCreate,
 } from "../redux/reducers/gnosis";
 import store from "../redux/store";
+import { Alert, Snackbar } from "@mui/material";
+import SnackbarComp from "../components/depositPageComps/Snackbar/SnackbarComp";
 
 async function gnosisSafePromise(owners, threshold, dispatch) {
-  try {
-    const web3 = new Web3(Web3.givenProvider);
-    const safeOwner = await web3.eth.getAccounts();
-    const ethAdapter = new Web3Adapter({
-      web3,
-      signerAddress: safeOwner[0],
-    });
-    const safeFactory = await SafeFactory.create({ ethAdapter });
-    const safeAccountConfig = {
-      owners,
-      threshold: owners.length,
-    };
-    const options = {
-      maxPriorityFeePerGas: null,
-      maxFeePerGas: null,
-      // from, // Optional
-      // gas, // Optional
-      // gasPrice, // Optional
-      // maxFeePerGas, // Optional
-      // maxPriorityFeePerGas // Optional
-      // nonce // Optional
-    };
+  // try {
+  const web3 = new Web3(Web3.givenProvider);
+  const safeOwner = await web3.eth.getAccounts();
+  const ethAdapter = new Web3Adapter({
+    web3,
+    signerAddress: safeOwner[0],
+  });
+  const safeFactory = await SafeFactory.create({ ethAdapter });
+  const safeAccountConfig = {
+    owners,
+    threshold: owners.length,
+  };
+  const options = {
+    maxPriorityFeePerGas: null,
+    maxFeePerGas: null,
+    // from, // Optional
+    // gas, // Optional
+    // gasPrice, // Optional
+    // maxFeePerGas, // Optional
+    // maxPriorityFeePerGas // Optional
+    // nonce // Optional
+  };
 
-    const safeSdk = await safeFactory.deploySafe({
-      safeAccountConfig,
-      options,
-    });
-    // const safeSdk = await safeFactory.deploySafe({ safeAccountConfig });
-    const newSafeAddress = safeSdk.getAddress();
-    dispatch(safeConnected(newSafeAddress, safeSdk));
-    return newSafeAddress;
-  } catch {
-    dispatch(setCreateDaoGnosisSigned(false));
-    dispatch(setCreateDaoGnosisSigned(false));
-    Router.push("/");
-    return "Gnosis safe connection cannot be established!";
-  }
+  const safeSdk = await safeFactory.deploySafe({
+    safeAccountConfig,
+    options,
+  });
+  // const safeSdk = await safeFactory.deploySafe({ safeAccountConfig });
+  const newSafeAddress = safeSdk.getAddress();
+  dispatch(safeConnected(newSafeAddress, safeSdk));
+  return newSafeAddress;
+  // } catch {
+  //   dispatch(setCreateDaoGnosisSigned(false));
+  //   dispatch(setCreateDaoGnosisSigned(false));
+
+  //   return (
+  //     <>
+  //       <SnackbarComp
+  //         alertStatus="error"
+  //         // handleClose={handleClose}
+  //         message=" Error creating a club. Try again with correct data."
+  //         openSnackBar={true}
+  //       />
+  //       {/* {Router.push("/")} */}
+  //     </>
+  //   );
+  // }
 }
 
 export async function initiateConnection(
@@ -295,23 +307,26 @@ export async function initiateConnection(
         },
         (error) => {
           console.log(error);
+          dispatch(setCreateDaoGnosisSigned(false));
+          dispatch(setCreateDaoAuthorized(false));
           // dispatch(setRedirectToCreate(true));
           // dispatch(setCreateDaoGnosisSigned(false));
           // dispatch(setCreateDaoAuthorized(false));
-          // Router.push(`/create`, undefined, {
-          //   shallow: true,
-          // });
+          Router.push(`/`, undefined, {
+            shallow: true,
+          });
         },
       );
     })
     .catch((errorMsg) => {
-      console.log("error2", error);
+      console.log("error2", errorMsg);
       dispatch(setCreateDaoGnosisSigned(false));
       dispatch(setCreateDaoAuthorized(false));
+
       // dispatch(setRedirectToCreate(true));
       // dispatch(setCreateDaoGnosisSigned(false));
       // dispatch(setCreateDaoAuthorized(false));
-      Router.push(`/create`, undefined, {
+      Router.push(`/`, undefined, {
         shallow: true,
       });
     });
