@@ -23,7 +23,7 @@ import dayjs from "dayjs";
 const Create = () => {
   const steps = ["Add basic info", "Set token rules", "Governance"];
 
-  const [activeStep, setActiveStep] = useState(0);
+  const [activeStep, setActiveStep] = useState(2);
   const [completed, setCompleted] = useState({});
 
   const handleStep = (step) => () => {
@@ -62,7 +62,7 @@ const Create = () => {
       case 2:
         return (
           <>
-            <Step3 />
+            <Step3 formik={formikStep3} />
           </>
         );
 
@@ -95,10 +95,14 @@ const Create = () => {
     pricePerToken: yup.number().required("price per token is required"),
   });
 
+  const step3ValidationSchema = yup.object({
+    addressList: yup.array().of(yup.string().required("address is required")),
+  });
+
   const formikStep1 = useFormik({
     initialValues: {
       clubName: "fgf",
-      clubSymbol: "",
+      clubSymbol: "dd",
       clubTokenType: tokenType[0],
     },
     validationSchema: step1ValidationSchema,
@@ -110,10 +114,10 @@ const Create = () => {
   const formikERC20Step2 = useFormik({
     initialValues: {
       depositClose: dayjs(Date.now() + 300000),
-      minDepositPerUser: "",
-      maxDepositPerUser: "",
-      totalRaiseAmount: "",
-      pricePerToken: "",
+      minDepositPerUser: "100",
+      maxDepositPerUser: "500",
+      totalRaiseAmount: "1000",
+      pricePerToken: "10",
     },
     validationSchema: ERC20Step2ValidationSchema,
     onSubmit: (values) => {
@@ -121,9 +125,15 @@ const Create = () => {
     },
   });
   const formikStep3 = useFormik({
-    initialValues: {},
-    // validationSchema: personalInfoValidationSchema,
+    initialValues: {
+      governance: true,
+      quorum: 1,
+      threshold: 51,
+      addressList: [],
+    },
+    validationSchema: step3ValidationSchema,
     onSubmit: (values) => {
+      console.log(values);
       //   handleFormSubmit();
     },
   });
