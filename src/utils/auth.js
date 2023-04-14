@@ -37,7 +37,7 @@ export default function ProtectRoute(Component) {
       localStorage.setItem("wallet", wallet?.accounts[0].address);
     }
 
-    console.log("walllleettttt");
+    // console.log("walllleettttt");
     const fetchCustomTokenDecimals = async () => {
       if (USDC_CONTRACT_ADDRESS && GNOSIS_TRANSACTION_URL) {
         const usdcContract = new SmartContract(
