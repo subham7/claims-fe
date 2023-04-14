@@ -1,7 +1,26 @@
 import jazzicon from "@metamask/jazzicon";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import SearchIcon from "@mui/icons-material/Search";
-import { Avatar, Backdrop, Box, Button, Card, CircularProgress, Grid, IconButton, ListItemButton, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from "@mui/material";
+import {
+  Avatar,
+  Backdrop,
+  Box,
+  Button,
+  Card,
+  CircularProgress,
+  Grid,
+  IconButton,
+  ListItemButton,
+  Stack,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TextField,
+  Typography,
+} from "@mui/material";
 import Paper from "@mui/material/Paper";
 import { makeStyles } from "@mui/styles";
 import { useRouter } from "next/router";
@@ -105,6 +124,7 @@ const Members = (props) => {
         setFetched(false);
       } else {
         setMembers(result.data);
+        console.log("ALL MEMBERS", result.data);
         setFetched(true);
         setLoaderOpen(false);
       }

@@ -194,10 +194,13 @@ const ProposalDetail = () => {
   const router = useRouter();
   const { pid, clubId } = router.query;
   const [{ wallet }] = useConnectWallet();
-  const web3 = new Web3(window.web3);
-  const walletAddress = web3.utils.toChecksumAddress(
-    wallet?.accounts[0].address,
-  );
+
+  let walletAddress;
+
+  if (typeof window !== "undefined") {
+    const web3 = new Web3(window.web3);
+    walletAddress = web3.utils.toChecksumAddress(wallet?.accounts[0].address);
+  }
 
   const classes = useStyles();
   const [voted, setVoted] = useState(false);
@@ -382,9 +385,10 @@ const ProposalDetail = () => {
 
   const isOwner = async () => {
     const safeSdk = await getSafeSdk();
+    const web3 = new Web3(window.web3);
     const ownerAddresses = await safeSdk.getOwners();
     const ownerAddressesArray = ownerAddresses.map((value) =>
-      value.toLowerCase(),
+      web3.utils.toChecksumAddress(value),
     );
 
     setOwnerAddresses(ownerAddressesArray);

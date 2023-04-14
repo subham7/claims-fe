@@ -104,7 +104,12 @@ const Join = (props) => {
   const GNOSIS_TRANSACTION_URL = useSelector((state) => {
     return state.gnosis.transactionUrl;
   });
-  const walletAddress = wallet?.accounts[0].address;
+
+  let walletAddress;
+  if (typeof window !== "undefined") {
+    const web3 = new Web3(window.web3);
+    walletAddress = web3.utils.toChecksumAddress(wallet?.accounts[0].address);
+  }
 
   const [usdcTokenDecimal, setUsdcTokenDecimal] = useState(0);
   const [governanceConvertDecimal, setGovernanceConvertDecimal] = useState(0);
@@ -113,6 +118,7 @@ const Join = (props) => {
     if (wallet?.chains) updateDynamicAddress(wallet?.chains[0].id, dispatch);
 
     setUserDetails(walletAddress);
+    console.log("walletttttt", walletAddress);
     localStorage.setItem("wallet", walletAddress);
     setWalletConnected(true);
   }, [dispatch, wallet?.chains, walletAddress]);

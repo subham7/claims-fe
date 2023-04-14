@@ -336,10 +336,14 @@ const Proposal = () => {
   ];
 
   const [{ wallet }] = useConnectWallet();
-  const web3 = new Web3(window.web3);
-  const walletAddress = web3.utils.toChecksumAddress(
-    wallet?.accounts[0].address,
-  );
+
+  let walletAddress;
+  if (typeof window !== "undefined") {
+    const web3 = new Web3(window.web3);
+    walletAddress = web3.utils.toChecksumAddress(
+      wallet?.accounts[0].address,
+    );
+  }
 
   const isGovernanceActive = useSelector((state) => {
     return state.gnosis.governanceAllowed;

@@ -422,10 +422,12 @@ const Dashboard = () => {
   const governanceConvertDecimal = useSelector((state) => {
     return state.gnosis.governanceTokenDecimal;
   });
-  const web3 = new Web3(window.web3);
-  const walletAddress = web3.utils.toChecksumAddress(
-    wallet?.accounts[0].address,
-  );
+
+  let walletAddress;
+  if (typeof window !== "undefined") {
+    const web3 = new Web3(window.web3);
+    walletAddress = web3.utils.toChecksumAddress(wallet?.accounts[0].address);
+  }
 
   useEffect(() => {
     if (clubCreate === "true") {
@@ -439,8 +441,10 @@ const Dashboard = () => {
       const loadNftContractData = async () => {
         try {
           let response = await fetchClubbyDaoAddress(daoAddress);
+          console.log("respne", response);
 
           const nftAddress = response.data[0].nftAddress;
+          console.log("NEW WALLLETT", walletAddress);
 
           const nftContract = new SmartContract(
             nft,
@@ -477,6 +481,7 @@ const Dashboard = () => {
           setDepositCloseTime(depositCloseTime);
           setUserBalance(userDetail[1]);
           setTotalTokenMinted(tokensMintedSoFar);
+
           setDepositLink(
             typeof window !== "undefined" && window.location.origin
               ? `${window.location.origin}/join/${daoAddress}?dashboard=true`
@@ -612,6 +617,8 @@ const Dashboard = () => {
         ? `${window.location.origin}/join/${daoAddress}`
         : null,
     );
+
+    
   };
 
   const handleProposalClick = (proposal) => {
