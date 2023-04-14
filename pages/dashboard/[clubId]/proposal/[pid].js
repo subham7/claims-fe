@@ -3,7 +3,20 @@ import CloseIcon from "@mui/icons-material/Close";
 import DoneIcon from "@mui/icons-material/Done";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
-import { Alert, Backdrop, Button, Card, CardActionArea, Chip, CircularProgress, Divider, Grid, Snackbar, Stack, Typography } from "@mui/material";
+import {
+  Alert,
+  Backdrop,
+  Button,
+  Card,
+  CardActionArea,
+  Chip,
+  CircularProgress,
+  Divider,
+  Grid,
+  Snackbar,
+  Stack,
+  Typography,
+} from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import Safe from "@safe-global/safe-core-sdk";
 import SafeServiceClient from "@safe-global/safe-service-client";
@@ -23,7 +36,12 @@ import ImplementationContract from "../../../../src/abis/implementationABI.json"
 import USDCContract from "../../../../src/abis/usdcTokenContract.json";
 import { getAssets } from "../../../../src/api/assets";
 import { SmartContract } from "../../../../src/api/contract";
-import { castVote, getProposalDetail, getProposalTxHash, patchProposalExecuted } from "../../../../src/api/proposal";
+import {
+  castVote,
+  getProposalDetail,
+  getProposalTxHash,
+  patchProposalExecuted,
+} from "../../../../src/api/proposal";
 import { getMembersDetails } from "../../../../src/api/user";
 import Layout1 from "../../../../src/components/layouts/layout1";
 import ProgressBar from "../../../../src/components/progressbar";
@@ -924,11 +942,12 @@ const ProposalDetail = () => {
 
   const checkUserVoted = (pid) => {
     if (walletAddress) {
+      console.log(walletAddress);
       const web3 = new Web3(window.web3);
       let userAddress = walletAddress;
       userAddress = web3.utils.toChecksumAddress(userAddress);
       let obj = proposalData[0].vote.find(
-        (voteCasted) => voteCasted.voterAddress === userAddress,
+        (voteCasted) => voteCasted.voterAddress === userAddress.toLowerCase(),
       );
       return proposalData[0].vote.indexOf(obj) >= 0;
     }
