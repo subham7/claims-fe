@@ -50,6 +50,9 @@ async function gnosisSafePromise(owners, threshold, dispatch) {
     dispatch(safeConnected(newSafeAddress, safeSdk));
     return newSafeAddress;
   } catch {
+    dispatch(setCreateDaoGnosisSigned(false));
+    dispatch(setCreateDaoGnosisSigned(false));
+    Router.push("/");
     return "Gnosis safe connection cannot be established!";
   }
 }
@@ -111,7 +114,7 @@ export async function initiateConnection(
   console.log("smartContract", smartContract);
   await gnosisSafePromise(owners, threshold, dispatch)
     .then((treasuryAddress) => {
-      console.log("treasuryAddress", treasuryAddress);
+      console.log("treasuryAddress");
       dispatch(setCreateDaoGnosisSigned(false));
       dispatch(setCreateDaoAuthorized(true));
       let value;
@@ -303,11 +306,13 @@ export async function initiateConnection(
     })
     .catch((errorMsg) => {
       console.log("error2", error);
+      dispatch(setCreateDaoGnosisSigned(false));
+      dispatch(setCreateDaoAuthorized(false));
       // dispatch(setRedirectToCreate(true));
       // dispatch(setCreateDaoGnosisSigned(false));
       // dispatch(setCreateDaoAuthorized(false));
-      // Router.push(`/create`, undefined, {
-      //   shallow: true,
-      // });
+      Router.push(`/create`, undefined, {
+        shallow: true,
+      });
     });
 }
