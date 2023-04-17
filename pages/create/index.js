@@ -96,7 +96,12 @@ const Create = () => {
   });
 
   const step3ValidationSchema = yup.object({
-    addressList: yup.array().of(yup.string().required("address is required")),
+    addressList: yup.array().of(
+      yup
+        .string()
+        .matches(/^0x[a-zA-Z0-9]+/gm, " proper wallet address is required")
+        .required("wallet address is required"),
+    ),
   });
 
   const formikStep1 = useFormik({

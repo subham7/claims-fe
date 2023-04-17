@@ -106,7 +106,7 @@ const useStyles = makeStyles({
 
 export default function Step3(props) {
   const classes = useStyles();
-  console.log(props.formik.values.addressList);
+
   return (
     <>
       <Grid container spacing={3}>
@@ -301,12 +301,6 @@ export default function Step3(props) {
               >
                 <IconButton
                   aria-label="add"
-                  // onClick={() => {
-                  //   props.formik.values.addressList.push([
-                  //     ...props.formik.values.addressList,
-                  //     "",
-                  //   ]);
-                  // }}
                   onClick={(value) => {
                     props.formik.setFieldValue("addressList", [
                       ...props.formik.values.addressList,
@@ -354,12 +348,16 @@ export default function Step3(props) {
                             borderRadius: "10px",
                           }}
                           error={
-                            props.formik.touched.addressList[key] &&
-                            Boolean(props.formik.errors.addressList[key])
+                            Boolean(props.formik.errors)
+                              ? props.formik.touched.addressList &&
+                                Boolean(props.formik?.errors?.addressList[key])
+                              : null
                           }
                           helperText={
-                            props.formik.touched.addressList[key] &&
-                            props.formik.errors.addressList[key]
+                            Boolean(props.formik.errors)
+                              ? props.formik.touched.addressList &&
+                                props.formik.errors?.addressList[key]
+                              : null
                           }
                         />
                         <IconButton
