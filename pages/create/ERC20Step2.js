@@ -6,7 +6,8 @@ import {
   Typography,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
-import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 
@@ -141,10 +142,7 @@ export default function ERC20Step2(props) {
                     value={props.formik.values.depositClose}
                     minDateTime={dayjs(Date.now())}
                     onChange={(value) => {
-                      props.formik.setFieldValue(
-                        "depositClose",
-                        dayjs(value).format(),
-                      );
+                      props.formik.setFieldValue("depositClose", value);
                     }}
                   />
                 </LocalizationProvider>
