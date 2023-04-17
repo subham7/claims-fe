@@ -175,6 +175,7 @@ const ClaimsCard = ({
 
   const claimHandler = () => {
     router.push(`/claims/${claimContract}`);
+    // console.log('CLICKEDDDD')
   };
 
   const onClose = (e) => {

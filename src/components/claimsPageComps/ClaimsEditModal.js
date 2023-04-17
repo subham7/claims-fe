@@ -77,8 +77,10 @@ const ClaimsEditModal = ({ onClose, claimAddress, walletAddress }) => {
   );
 
   const claimsToggleHandler = async (e) => {
-    e.preventDefault();
+    event.stopPropagation();
+    event.preventDefault();
     setLoading(true);
+
     // setClaimsOn(!claimsOn);
     // dispatch(addClaimsOn(!claimsOn));
 
@@ -173,9 +175,13 @@ const ClaimsEditModal = ({ onClose, claimAddress, walletAddress }) => {
               <Typography className={classes.text}>
                 Do you want to turn off the claims?
               </Typography>
+
               <Switch
                 checked={isEnabled}
                 onChange={claimsToggleHandler}
+                onClick={(e) => {
+                  e.stopPropagation();
+                }}
                 inputProps={{ "aria-label": "controlled" }}
               />
             </div>
