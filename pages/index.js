@@ -36,6 +36,7 @@ import {
 import { loginToken, refreshToken } from "../src/api/auth";
 import { useConnectWallet } from "@web3-onboard/react";
 import NewCard from "../src/components/cards/card";
+import Web3 from "web3";
 
 const useStyles = makeStyles({
   container: {
@@ -104,7 +105,13 @@ export default function App() {
 
   const [open, setOpen] = useState(false);
   const router = useRouter();
-  const walletAddress = wallet?.accounts[0].address;
+
+  let walletAddress;
+
+  if (typeof window !== "undefined") {
+    const web3 = new Web3(window.web3);
+    walletAddress = web3.utils.toChecksumAddress(wallet?.accounts[0].address);
+  }
 
   useEffect(() => {
     if (walletAddress) {
@@ -133,7 +140,6 @@ export default function App() {
         });
     }
     if (walletAddress) {
-      console.log("walllleeettt addresss", walletAddress);
       const getLoginToken = loginToken(walletAddress);
 
       getLoginToken.then((response) => {

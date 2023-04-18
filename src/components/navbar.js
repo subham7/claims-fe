@@ -33,6 +33,13 @@ export default function Navbar3(props) {
   const classes = useStyles();
   const [{ wallet, connecting }, connect, disconnect] = useConnectWallet();
 
+  let walletAddress;
+
+  if (typeof window !== "undefined") {
+    const web3 = new Web3(window.web3);
+    walletAddress = web3.utils.toChecksumAddress(wallet?.accounts[0].address);
+  }
+
   if (wallet) {
     if (window.ethereum) {
       window.web3 = new Web3(window.ethereum);
@@ -42,9 +49,9 @@ export default function Navbar3(props) {
   }
   useEffect(() => {
     if (wallet) {
-      dispatch(addWalletAddress(wallet ? wallet.accounts[0].address : null));
+      dispatch(addWalletAddress(wallet ? walletAddress : null));
     }
-  }, [dispatch, wallet]);
+  }, [dispatch, wallet, walletAddress]);
 
   const handleFaucetRedirect = () => {
     window.open("/faucet", "_ blank");

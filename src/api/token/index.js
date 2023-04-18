@@ -92,6 +92,7 @@ export const getTokensFromWallet = async (address) => {
 };
 
 export const getBalanceOfToken = async (walletAddress, tokenAddress) => {
+  console.log(walletAddress);
   const main = async () => {
     //fetching token balance
 
@@ -126,6 +127,7 @@ export const getBalanceOfToken = async (walletAddress, tokenAddress) => {
 };
 
 export const getTokensDecimalFromAddress = async (address) => {
+
   const data = JSON.stringify({
     jsonrpc: "2.0",
     method: "alchemy_getTokenMetadata",
