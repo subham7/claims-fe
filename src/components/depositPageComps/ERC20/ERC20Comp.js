@@ -675,7 +675,7 @@ const ERC20Comp = ({
                                 : ""}
                             </Typography>
                           </Grid>
-
+                          
                           <Grid
                             item
                             ml={2}
