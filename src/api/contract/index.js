@@ -93,6 +93,7 @@ export class SmartContract {
   }
 
   async claim(amount, merkleData, leaf) {
+    console.log(amount);
     return this.contract.methods.claim(amount, merkleData, leaf).send({
       from: this.walletAddress,
     });
@@ -544,7 +545,7 @@ export class SmartContract {
   }
 
   async approveDeposit(address, amount, usdcConvertDecimal) {
-    const value = convertToWei(amount, usdcConvertDecimal);
+    const value = convertToWei(amount, usdcConvertDecimal).toString();
     // const value = amount;
     const gasPrice = await web3.eth.getGasPrice();
     const gasAmount = await this.contract.methods

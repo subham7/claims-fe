@@ -18,6 +18,8 @@ import {
   setRedirectToCreate,
 } from "../redux/reducers/gnosis";
 import store from "../redux/store";
+import { Alert, Snackbar } from "@mui/material";
+import SnackbarComp from "../components/depositPageComps/Snackbar/SnackbarComp";
 
 async function gnosisSafePromise(owners, threshold, dispatch) {
   console.log(owners);

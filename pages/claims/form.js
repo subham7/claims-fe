@@ -138,7 +138,7 @@ const Form = () => {
         rollbackAddress: values.rollbackAddress
           ? values.rollbackAddress
           : walletAddress.toLowerCase(),
-        numberOfTokens: values.numberOfTokens,
+        numberOfTokens: values.numberOfTokens.toString(),
         startDate: dayjs(values.startDate).format(),
         endDate: dayjs(values.endDate).format(),
         recieveTokens: values.recieveTokens,
@@ -152,11 +152,11 @@ const Form = () => {
           : "0x0000000000000000000000000000000000000000",
         maximumClaim: values.maximumClaim,
         customAmount:
-          values.maximumClaim === "custom" ? values.customAmount : 0,
+          values.maximumClaim === "custom" ? values.customAmount.toString() : 0,
         merkleData: values.merkleData,
         csvObject: values.csvObject,
       };
-
+      console.log(data.numberOfTokens);
       if (activeStep === steps.length - 1) {
         if (data.eligible === "token" || data.eligible === "everyone") {
           // checking maximum claim is prorata or custom
@@ -204,11 +204,12 @@ const Form = () => {
               // if airdroping from contract then approve erc20
               if (!hasAllowanceMechanism) {
                 // approve erc20
-                await erc20contract.approveDeposit(
+                const res = await erc20contract.approveDeposit(
                   claimsContractAddress,
                   data.numberOfTokens,
                   decimals, // decimal
                 );
+                console.log(res);
               }
 
               const claimsSettings = [
@@ -227,16 +228,24 @@ const Form = () => {
                 Number(eligible),
                 [
                   maximumClaim,
-                  convertToWeiGovernance(data.customAmount, decimals),
-                  convertToWeiGovernance(data.numberOfTokens, decimals),
+                  convertToWeiGovernance(
+                    data.customAmount,
+                    decimals,
+                  ).toString(),
+                  convertToWeiGovernance(
+                    data.numberOfTokens,
+                    decimals,
+                  ).toString(),
                   [],
                 ],
                 [false, 0],
               ];
+              console.log(claimsSettings);
 
               const response = await claimsContract.claimContract(
                 claimsSettings,
               );
+              console.log(response);
 
               const newClaimContract =
                 response.events.NewClaimContract.returnValues._newClaimContract;
@@ -244,7 +253,7 @@ const Form = () => {
               if (hasAllowanceMechanism) {
                 await erc20contract.approveDeposit(
                   newClaimContract,
-                  data.numberOfTokens,
+                  data.numberOfTokens.toString(),
                   decimals,
                 );
               }
@@ -314,7 +323,7 @@ const Form = () => {
                 // approve erc20
                 await erc20contract.approveDeposit(
                   claimsContractAddress,
-                  data.numberOfTokens,
+                  data.numberOfTokens.toString(),
                   decimals, // decimal
                 );
               }
@@ -341,7 +350,10 @@ const Form = () => {
                 [
                   false,
                   0,
-                  convertToWeiGovernance(data.numberOfTokens, decimals),
+                  convertToWeiGovernance(
+                    data.numberOfTokens,
+                    decimals,
+                  ).toString(),
                   [],
                 ],
                 [false, 0],
@@ -357,7 +369,7 @@ const Form = () => {
               if (hasAllowanceMechanism) {
                 await erc20contract.approveDeposit(
                   newClaimContract,
-                  data.numberOfTokens,
+                  data.numberOfTokens.toString(),
                   decimals,
                 );
               }

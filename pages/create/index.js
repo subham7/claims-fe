@@ -231,7 +231,7 @@ const Create = () => {
         break;
     }
   };
-
+  console.log(addressList);
   return (
     <Layout2>
       <Grid
