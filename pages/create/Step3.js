@@ -318,63 +318,61 @@ export default function Step3(props) {
                 {console.log(props.formik.values.addressList)}
                 {props.formik.values.addressList.map((data, key) => {
                   return (
-                    <>
-                      <Grid
-                        item
-                        xs
-                        sx={{
-                          display: "flex",
-                          justifyContent: "flex-start",
-                          alignItems: "center",
+                    <Grid
+                      item
+                      xs
+                      sx={{
+                        display: "flex",
+                        justifyContent: "flex-start",
+                        alignItems: "center",
+                      }}
+                      key={key}
+                    >
+                      <TextField
+                        label="Wallet address"
+                        // error={!/^0x[a-zA-Z0-9]+/gm.test(addressList[key])}
+                        variant="outlined"
+                        value={props.formik.values.addressList[key]}
+                        onChange={(e, value) => {
+                          const address = e.target.value;
+                          const list = [...props.formik.values.addressList];
+                          list[key] = address;
+                          props.formik.setFieldValue("addressList", list);
                         }}
-                        key={key}
-                      >
-                        <TextField
-                          label="Wallet address"
-                          // error={!/^0x[a-zA-Z0-9]+/gm.test(addressList[key])}
-                          variant="outlined"
-                          value={props.formik.values.addressList[key]}
-                          onChange={(e, value) => {
-                            const address = e.target.value;
-                            const list = [...props.formik.values.addressList];
-                            list[key] = address;
-                            props.formik.setFieldValue("addressList", list);
-                          }}
-                          placeholder={"0x"}
-                          sx={{
-                            m: 1,
-                            width: 443,
-                            mt: 1,
-                            borderRadius: "10px",
-                          }}
-                          error={
-                            Boolean(props.formik.errors)
-                              ? props.formik.touched.addressList &&
-                                Boolean(props.formik?.errors?.addressList[key])
-                              : null
-                          }
-                          helperText={
-                            Boolean(props.formik.errors)
-                              ? props.formik.touched.addressList &&
-                                props.formik.errors?.addressList[key]
-                              : null
-                          }
-                        />
-                        <IconButton
-                          aria-label="add"
-                          onClick={(value) => {
-                            const list = [...props.formik.values.addressList];
-                            console.log(list, key);
+                        placeholder={"0x"}
+                        sx={{
+                          m: 1,
+                          width: 443,
+                          mt: 1,
+                          borderRadius: "10px",
+                        }}
+                        error={
+                          Boolean(props.formik.errors.addressList)
+                            ? props.formik.touched.addressList &&
+                              Boolean(props.formik?.errors?.addressList[key])
+                            : null
+                        }
+                        helperText={
+                          Boolean(props.formik.errors.addressList)
+                            ? props.formik.touched.addressList &&
+                              props.formik?.errors?.addressList[key]
+                            : null
+                        }
+                      />
+                      <IconButton
+                        aria-label="add"
+                        onClick={(value) => {
+                          const list = [...props.formik.values.addressList];
+                          console.log(list, key);
 
-                            list.splice(key, 1);
-                            console.log(list);
-                            props.formik.setFieldValue("addressList", list);
-                          }}
-                        >
-                          <DeleteIcon />
-                        </IconButton>
-                      </Grid>
-                    </>
+                          list.splice(key, 1);
+                          console.log(list);
+                          props.formik.setFieldValue("addressList", list);
+                        }}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </Grid>
                   );
                 })}
               </Grid>
