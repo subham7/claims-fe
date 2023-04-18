@@ -1,379 +1,238 @@
-import { React, useRef, onChange, useState, useEffect } from "react";
 import {
-  Grid,
-  Typography,
+  Backdrop,
   Box,
   Button,
-  CircularProgress,
-  Stepper,
-  Step,
-  Backdrop,
-  StepButton,
-  InputAdornment,
   Card,
+  CircularProgress,
+  Grid,
+  Step,
+  StepButton,
+  Stepper,
+  Typography,
 } from "@mui/material";
-import Router, { useRouter } from "next/router";
 import Layout2 from "../../src/components/layouts/layout2";
-import Web3 from "web3";
-import { initiateConnection } from "../../src/utils/safe";
-import { useDispatch, useSelector } from "react-redux";
 import ProtectRoute from "../../src/utils/auth";
-import Step1 from "./Step1";
-import Step3 from "./Step3";
-import ERC721NonTransferableStep2 from "./ERC721NonTransferableStep2";
-import ERC20NonTransferableStep2 from "./ERC20NonTransferableStep2";
-import { NFTStorage, File, Blob } from "nft.storage";
-import { convertFromWei } from "../../src/utils/globalFunctions";
-import { CleaningServices } from "@mui/icons-material";
+import { Fragment, useState } from "react";
+import Step1 from "../../src/components/createClubComps/Step1";
+import Step2 from "../../src/components/createClubComps/ERC20Step2";
+import Step3 from "../../src/components/createClubComps/Step3";
+import { useFormik } from "formik";
 import { tokenType } from "../../src/data/create";
+import * as yup from "yup";
+import ERC20Step2 from "../../src/components/createClubComps/ERC20Step2";
+import NFTStep2 from "./NFTStep2";
+import dayjs from "dayjs";
+import Web3 from "web3";
+import { useSelector, useDispatch } from "react-redux";
+import { initiateConnection } from "../../src/utils/safe";
+import {
+  setCreateDaoAuthorized,
+  setCreateSafeLoading,
+} from "../../src/redux/reducers/gnosis";
+import ErrorModal from "../../src/components/createClubComps/ErrorModal";
 
-const Create = (props) => {
-  const router = useRouter();
-  const uploadInputRef = useRef(null);
-  const [clubName, setClubName] = useState(null);
-  const [clubSymbol, setClubSymbol] = useState(null);
-  const [clubTokenType, setClubTokenType] = useState(tokenType[0]);
-  const [displayImage, setDisplayImage] = useState(null);
-  const [raiseAmount, setRaiseAmount] = useState("");
-  const [maxContribution, setMaxContribution] = useState("");
-  const [mandatoryProposal, setMandatoryProposal] = useState(false);
-  const [voteForQuorum, setVoteForQuorum] = useState(1);
-  const [depositClose, setDepositClose] = useState(
-    new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
-  );
-  const [minDate, setMinDate] = useState(
-    new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
-  );
-  const [membersLeaveDate, setMembersLeaveDate] = useState(null);
-  const [minContribution, setMinContribution] = useState("");
-  const [voteInFavour, setVoteInFavour] = useState(51);
-  const [addressList, setAddressList] = useState([]);
-  const [activeStep, setActiveStep] = useState(0);
-  const [skipped, setSkipped] = useState(new Set());
-  const [loading, setLoading] = useState(false);
-  const [open, setOpen] = useState(false);
-  const [voteOnFavourErrorMessage, setVoteOnFavourErrorMessage] =
-    useState(false);
-  const [transferableMembership, setTransferableMembership] = useState(false);
-  const [nftPrice, setNftPrice] = useState();
-  const [limitSupply, setLimitSupply] = useState();
-  const [mintLimit, setMintLimit] = useState(1);
-  const [tokenSupply, setTokenSupply] = useState();
-
-  const [selectedImage, setSelectedImage] = useState(null);
-  const [imageUrl, setImageUrl] = useState(null);
-
-  useEffect(() => {
-    if (selectedImage) {
-      setImageUrl(URL.createObjectURL(selectedImage));
-    }
-  }, [selectedImage]);
-
-  const clubID = useSelector((state) => {
-    return state.create.clubID;
-  });
-  const [threshold, setThreshold] = useState(2);
+const Create = () => {
+  const steps = ["Add basic info", "Set token rules", "Governance"];
   const dispatch = useDispatch();
-  const { wallet } = props;
+  const [activeStep, setActiveStep] = useState(0);
   const [completed, setCompleted] = useState({});
-  const FACTORY_CONTRACT_ADDRESS = useSelector((state) => {
-    return state.gnosis.factoryContractAddress;
-  });
+  const [open, setOpen] = useState(false);
+
   const USDC_CONTRACT_ADDRESS = useSelector((state) => {
     return state.gnosis.usdcContractAddress;
   });
   const GNOSIS_TRANSACTION_URL = useSelector((state) => {
     return state.gnosis.transactionUrl;
   });
-  const usdcConvertDecimal = useSelector((state) => {
-    return state.gnosis.tokenDecimal;
+  const setCreateSafeLoading = useSelector((state) => {
+    return state.gnosis.setCreateSafeLoading;
   });
 
-  const [governance, setGovernance] = useState(true);
-  const createDaoGnosisSigned = useSelector((state) => {
-    return state.gnosis.createDaoGnosisSigned;
-  });
-  const createDaoAuthorized = useSelector((state) => {
+  const setCreateDaoAuthorized = useSelector((state) => {
     return state.gnosis.createDaoAuthorized;
   });
-  const redirectToCreate = useSelector((state) => {
-    return state.gnosis.redirectToCreate;
+  const setCreateSafeError = useSelector((state) => {
+    return state.gnosis.setCreateSafeError;
   });
-
-  let walletAddress = null;
-
-  useEffect(() => {
-    if (redirectToCreate) {
-      setActiveStep(0);
-      // step1();
-      router.push("/create");
-    }
-  }, [redirectToCreate, router]);
-
-  const handleChange = (newValue) => {
-    setDepositClose(newValue);
-  };
-
-  const handleDepositClose = (newValue) => {
-    setMembersLeaveDate(newValue.target.value);
-  };
-
-  const onSetVoteForQuorum = (event, newValue) => {
-    setVoteForQuorum(newValue);
-  };
-
-  const onSetVoteOnFavourChange = (event, newValue) => {
-    if (newValue < 50) {
-      setVoteOnFavourErrorMessage(true);
-    }
-    if (newValue > 50) {
-      setVoteOnFavourErrorMessage(false);
-      setVoteInFavour(newValue);
-    }
-  };
-
-  const minimumSignaturePercentage = (newValue) => {
-    if (addressList.length === 1) {
-      setThreshold(addressList.length);
-    }
-    if (addressList.length > 1) {
-      setThreshold(Math.ceil(addressList.length * (parseInt(newValue) / 100)));
-    }
-  };
-
-  const handleLoading = (event) => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
-
-  const handleInputChange = (e, index) => {
-    const address = e.target.value;
-    const list = [...addressList];
-    list[index] = address;
-    setAddressList(list);
-  };
-
-  const handleRemoveClick = (index) => {
-    const list = [...addressList];
-    list.splice(index, 1);
-    setAddressList(list);
-  };
-
-  const handleAddClick = () => {
-    setAddressList([...addressList, ""]);
-  };
-
-  const steps = ["Add basic info", "Set token rules", "Governance"];
-
-  const isStepOptional = (step) => {
-    return step === 1;
-  };
-
-  const isStepSkipped = (step) => {
-    return skipped.has(step);
-  };
-
-  const handleNext = async () => {
-    setOpen(true);
-    let newSkipped = skipped;
-    if (isStepSkipped(activeStep)) {
-      newSkipped = new Set(newSkipped.values());
-      newSkipped.delete(activeStep);
-    }
-    if (activeStep === steps.length - 1) {
-      setLoading(true);
-      if (clubTokenType === "NFT") {
-        const client = new NFTStorage({
-          token:
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweDlhMWRFQjEyMjQyYTBlN0VmNTUwNjFlOTAwMTYyMDcxNEFENDBlNDgiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTY3NDEyOTI3MzM5MSwibmFtZSI6InN0YXRpb25YIG5mdCJ9.1w-RC7qZ43T2NhjHrtsO_Gmb0Mw1BjJo7GXMciqX5jY",
-        });
-        // console.log(selectedImage);
-        let metadata;
-        if (selectedImage) {
-          // const image = await client.storeBlob(selectedImage);
-          // console.log("image", image);
-
-          metadata = await client.store({
-            name: clubName,
-            description: "nft image",
-            image: selectedImage,
-          });
-        } else {
-          // const imageFile = new File([imageUrl.blob()], imageUrl, {
-          //   type: "image/png",
-          // });
-          const response = await fetch(imageUrl);
-          const blob = await response.blob();
-          const file = new File([blob], imageUrl, {
-            type: blob.type,
-          });
-          // const image = await client.storeBlob(file);
-          // console.log("image", image);
-          metadata = await client.store({
-            name: clubName,
-            description: "nft image",
-            image: new File([blob], imageUrl, {
-              type: blob.type,
-            }),
-          });
-        }
-        // const imageFile = new File([], selectedImage.name, {
-        //   type: "image/png",
-        // });
-        // console.log("imagefile", imageFile);
-        // const metadata = await client.storeBlob(selectedImage);
-        // const metadata = await client.storeBlob(
-        //   new Blob([imageUrl], { type: "image/png" }),
-        //   // new File([], imageUrl, { type: "image/png" }),
-        // );
-
-        const web3 = new Web3(Web3.givenProvider);
-        const auth = web3.eth.getAccounts();
-
-        auth.then(
-          (result) => {
-            walletAddress = web3.utils.toChecksumAddress(result[0]);
-            console.log("WAAALLLLETTT ADDD", walletAddress);
-            addressList.unshift(walletAddress);
-            initiateConnection(
-              clubTokenType,
-              addressList,
-              threshold,
-              dispatch,
-              clubName,
-              clubSymbol,
-              0,
-              0,
-              0,
-              0,
-              depositClose,
-              0,
-              voteForQuorum,
-              voteInFavour,
-              FACTORY_CONTRACT_ADDRESS,
-              USDC_CONTRACT_ADDRESS,
-              GNOSIS_TRANSACTION_URL,
-              usdcConvertDecimal,
-              governance,
-              true,
-              mintLimit,
-              limitSupply ? tokenSupply : 1,
-              // convertFromWei(nftPrice, usdcConvertDecimal).toString(),
-              nftPrice,
-              transferableMembership,
-              limitSupply ? false : true,
-              metadata.data.image.pathname,
-              metadata.url,
-            )
-              .then((result) => {
-                setLoading(false);
-              })
-              .catch((error) => {
-                setLoading(true);
-              });
-          },
-          (error) => {
-            console.log("Error connecting to Wallet!");
-          },
-        );
-      } else {
-        const web3 = new Web3(Web3.givenProvider);
-        const auth = web3.eth.getAccounts();
-
-        auth.then(
-          (result) => {
-            walletAddress = web3.utils.toChecksumAddress(result[0]);
-
-            console.log("WALLLLET ADDRESS", walletAddress);
-            addressList.unshift(walletAddress);
-            initiateConnection(
-              clubTokenType,
-              addressList,
-              threshold,
-              dispatch,
-              clubName,
-              clubSymbol,
-              raiseAmount,
-              minContribution,
-              maxContribution,
-              0,
-              depositClose,
-              0,
-              voteForQuorum,
-              voteInFavour,
-              FACTORY_CONTRACT_ADDRESS,
-              USDC_CONTRACT_ADDRESS,
-              GNOSIS_TRANSACTION_URL,
-              usdcConvertDecimal,
-              governance,
-            )
-              .then((result) => {
-                setLoading(false);
-              })
-              .catch((error) => {
-                setLoading(false);
-                router.push("/");
-              });
-          },
-          (error) => {
-            console.log("Error connecting to Wallet!");
-            setLoading(false);
-          },
-        );
-      }
-    }
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
-    setSkipped(newSkipped);
-  };
-
-  const handleBack = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep - 1);
-  };
-
-  const handleSkip = () => {
-    if (!isStepOptional(activeStep)) {
-      // You probably want to guard against something like this,
-      // it should never occur unless someone's actively trying to break something.
-      throw new Error("You can't skip a step that isn't optional.");
-    }
-
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
-    setSkipped((prevSkipped) => {
-      const newSkipped = new Set(prevSkipped.values());
-      newSkipped.add(activeStep);
-      return newSkipped;
-    });
-  };
-
-  const handleReset = () => {
-    setActiveStep(0);
-  };
-
-  const handlePageLoading = () => {
-    handleLoading;
-  };
-
-  const handleContractClick = (key) => {
-    if (key == 0) {
-      handleNext();
-    }
-  };
+  const setCreateSafeErrorCode = useSelector((state) => {
+    return state.gnosis.setCreateSafeErrorCode;
+  });
 
   const handleStep = (step) => () => {
     setActiveStep(step);
   };
 
-  const handleOperationTypeChange = (event) => {
-    if (event.target.checked) {
-      setGovernance(true);
-    } else {
-      setGovernance(false);
+  const handleNext = () => {
+    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+  };
+
+  const getStepContent = (step) => {
+    switch (step) {
+      case 0:
+        return (
+          <>
+            <Step1 formik={formikStep1} />
+          </>
+        );
+      case 1:
+        if (
+          formikStep1.values.clubTokenType === "Non Transferable ERC20 Token"
+        ) {
+          return (
+            <>
+              <ERC20Step2 formik={formikERC20Step2} />
+            </>
+          );
+        } else {
+          return (
+            <>
+              <NFTStep2 />
+            </>
+          );
+        }
+
+      case 2:
+        return (
+          <>
+            <Step3 formik={formikStep3} />
+          </>
+        );
+
+      default:
+        return "Unknown step";
     }
   };
-  console.log(addressList);
+
+  const step1ValidationSchema = yup.object({
+    clubName: yup
+      .string("Enter club name")
+      .min(2, "Name should be of minimum 2 characters length")
+      .required("Club Name is required"),
+    clubSymbol: yup
+      .string("Enter club symbol")
+      .required("Club Symbol is required"),
+  });
+
+  const ERC20Step2ValidationSchema = yup.object({
+    depositClose: yup.date().required("deposit close date is required"),
+    minDepositPerUser: yup.number().required("min deposit amount is required"),
+    maxDepositPerUser: yup
+      .number()
+      .moreThan(
+        yup.ref("minDepositPerUser"),
+        "Amount should be greater than min deposit",
+      )
+      .required("min deposit amount is required"),
+    totalRaiseAmount: yup.number().required("raise amount is required"),
+    pricePerToken: yup.number().required("price per token is required"),
+  });
+
+  const step3ValidationSchema = yup.object({
+    addressList: yup.array().of(
+      yup
+        .string()
+        .matches(/^0x[a-zA-Z0-9]+/gm, " proper wallet address is required")
+        .required("wallet address is required"),
+    ),
+  });
+
+  const formikStep1 = useFormik({
+    initialValues: {
+      clubName: "",
+      clubSymbol: "",
+      clubTokenType: tokenType[0],
+    },
+    validationSchema: step1ValidationSchema,
+    onSubmit: (values) => {
+      handleNext();
+    },
+  });
+  const formikERC20Step2 = useFormik({
+    initialValues: {
+      depositClose: dayjs(Date.now() + 300000),
+      minDepositPerUser: "",
+      maxDepositPerUser: "",
+      totalRaiseAmount: "",
+      pricePerToken: "",
+    },
+    validationSchema: ERC20Step2ValidationSchema,
+    onSubmit: (values) => {
+      handleNext();
+    },
+  });
+  const formikStep3 = useFormik({
+    initialValues: {
+      governance: true,
+      quorum: 1,
+      threshold: 51,
+      addressList: [],
+    },
+    validationSchema: step3ValidationSchema,
+    onSubmit: (values) => {
+      setOpen(true);
+      if (formikStep1.values.clubTokenType === "NFT") {
+        console.log("nft club create");
+      } else {
+        const web3 = new Web3(Web3.givenProvider);
+        const auth = web3.eth.getAccounts();
+        auth
+          .then((result) => {
+            const walletAddress = Web3.utils.toChecksumAddress(result[0]);
+            values.addressList.unshift(walletAddress);
+            initiateConnection(
+              dispatch,
+              formikStep1.values.clubName,
+              formikStep1.values.clubSymbol,
+              formikERC20Step2.values.totalRaiseAmount /
+                formikERC20Step2.values.pricePerToken,
+              formikERC20Step2.values.pricePerToken,
+              formikERC20Step2.values.minDepositPerUser,
+              formikERC20Step2.values.maxDepositPerUser,
+              0,
+              dayjs(formikERC20Step2.values.depositClose).unix(),
+              values.quorum,
+              values.threshold,
+              USDC_CONTRACT_ADDRESS,
+              GNOSIS_TRANSACTION_URL,
+              values.governance,
+              true,
+              false,
+              "0x0000000000000000000000000000000000000000000000000000000000000001",
+              values.addressList,
+              formikStep1.values.clubTokenType,
+              "0xd4efbacb48ba952201b75afecacb82048588e44f",
+            );
+          })
+          .catch((error) => {
+            // dispatch(setCreateSafeLoading(false));
+            console.error(error);
+          });
+      }
+      //   handleFormSubmit();
+    },
+  });
+
+  const handleSubmit = () => {
+    switch (activeStep) {
+      case 0:
+        formikStep1.handleSubmit();
+        break;
+      case 1:
+        if (
+          formikStep1.values.clubTokenType === "Non Transferable ERC20 Token"
+        ) {
+          formikERC20Step2.handleSubmit();
+          break;
+        } else {
+          // NFTformikStep2.handleSubmit();
+          break;
+        }
+
+      case 2:
+        formikStep3.handleSubmit();
+        break;
+    }
+  };
   return (
     <Layout2>
       <Grid
@@ -389,33 +248,19 @@ const Create = (props) => {
           width={{ xs: "60%", sm: "70%", md: "80%", lg: "100%" }}
           paddingTop={10}
         >
-          <Stepper activeStep={activeStep}>
-            {steps.map((label, index) => {
-              const stepProps = {};
-              const labelProps = {};
-              // if (isStepOptional(index)) {
-              //   labelProps.optional = (
-              //     <Typography variant="caption">Optional</Typography>
-              //   )
-              // }
-              if (isStepSkipped(index)) {
-                stepProps.completed = false;
-              }
-              return (
-                <Step key={label} completed={completed[index]}>
-                  <StepButton color="inherit" onClick={handleStep(index)}>
-                    {label}
-                  </StepButton>
-                </Step>
-                // <Step key={label} {...stepProps}>
-                //   <StepLabel {...labelProps}>{label}</StepLabel>
-                // </Step>
-              );
-            })}
-          </Stepper>
-
-          {activeStep === steps.length ? (
-            <>
+          <form noValidate autoComplete="off">
+            <Stepper activeStep={activeStep}>
+              {steps.map((label, index) => {
+                return (
+                  <Step key={label} completed={completed[index]}>
+                    <StepButton color="inherit" onClick={handleStep(index)}>
+                      {label}
+                    </StepButton>
+                  </Step>
+                );
+              })}
+            </Stepper>
+            {activeStep === steps.length - 1 && setCreateSafeLoading ? (
               <Backdrop
                 sx={{
                   color: "#fff",
@@ -425,439 +270,144 @@ const Create = (props) => {
                 }}
                 open={open}
               >
-                {createDaoGnosisSigned ? (
-                  <Card>
-                    <Grid
-                      container
-                      justifyContent="center"
-                      alignItems="center"
-                      sx={{ padding: "10px", width: "547px" }}
-                      direction="column"
-                    >
-                      <Grid item>
-                        <img src="assets/images/deployingsafe_img.svg" />
-                      </Grid>
-                      <Grid
-                        item
-                        paddingTop="20px"
-                        justifyContent="left"
-                        justifyItems="left"
-                      >
-                        <Typography variant="h4" sx={{ color: "#fff" }}>
-                          Deploying a new safe
-                        </Typography>
-                      </Grid>
-                      <Grid
-                        item
-                        paddingTop="20px"
-                        justifyContent="left"
-                        justifyItems="left"
-                      >
-                        <Typography
-                          variant="regularText4"
-                          sx={{ color: "#fff" }}
-                        >
-                          Please sign & authorise StationX to deploy a new safe
-                          for your station.
-                        </Typography>
-                      </Grid>
-                      <Grid item paddingTop="30px">
-                        <CircularProgress color="inherit" />
-                      </Grid>
+                <Card>
+                  <Grid
+                    container
+                    justifyContent="center"
+                    alignItems="center"
+                    sx={{ padding: "10px", width: "547px" }}
+                    direction="column"
+                  >
+                    <Grid item>
+                      <img src="assets/images/deployingsafe_img.svg" />
                     </Grid>
-                  </Card>
-                ) : createDaoAuthorized ? (
-                  <Card>
                     <Grid
-                      container
-                      justifyContent="center"
-                      alignItems="center"
-                      sx={{ padding: "10px", width: "547px" }}
-                      direction="column"
+                      item
+                      paddingTop="20px"
+                      justifyContent="left"
+                      justifyItems="left"
                     >
-                      <Grid item>
-                        <img src="assets/images/settingup_img.svg" />
-                      </Grid>
-                      <Grid
-                        item
-                        paddingTop="20px"
-                        justifyContent="left"
-                        justifyItems="left"
-                      >
-                        <Typography variant="h4" sx={{ color: "#fff" }}>
-                          Setting up your station
-                        </Typography>
-                      </Grid>
-                      <Grid
-                        item
-                        paddingTop="20px"
-                        justifyContent="left"
-                        justifyItems="left"
-                      >
-                        <Typography
-                          variant="regularText4"
-                          sx={{ color: "#fff" }}
-                        >
-                          Please sign to authorise StationX to deploy this
-                          station for you.
-                        </Typography>
-                      </Grid>
-                      <Grid item paddingTop="30px">
-                        <CircularProgress color="inherit" />
-                      </Grid>
+                      <Typography variant="h4" sx={{ color: "#fff" }}>
+                        Deploying a new safe
+                      </Typography>
                     </Grid>
-                  </Card>
-                ) : null}
+                    <Grid
+                      item
+                      paddingTop="20px"
+                      justifyContent="left"
+                      justifyItems="left"
+                    >
+                      <Typography variant="regularText4" sx={{ color: "#fff" }}>
+                        Please sign & authorise StationX to deploy a new safe
+                        for your station.
+                      </Typography>
+                    </Grid>
+                    <Grid item paddingTop="30px">
+                      <CircularProgress color="inherit" />
+                    </Grid>
+                  </Grid>
+                </Card>
               </Backdrop>
-            </>
-          ) : (
-            <>
-              {/* {components[activeStep]} */}
-              {activeStep === 0 ? (
-                <Step1
-                  clubName={clubName}
-                  setClubName={setClubName}
-                  clubSymbol={clubSymbol}
-                  setClubSymbol={setClubSymbol}
-                  activeStep={activeStep}
-                  handleNext={handleNext}
-                  clubTokenType={clubTokenType}
-                  setClubTokenType={setClubTokenType}
-                />
-              ) : activeStep === 1 ? (
-                clubTokenType === "NFT" ? (
-                  <ERC721NonTransferableStep2
-                    transferableMembership={transferableMembership}
-                    setTransferableMembership={setTransferableMembership}
-                    nftPrice={nftPrice}
-                    setNftPrice={setNftPrice}
-                    limitSupply={limitSupply}
-                    setLimitSupply={setLimitSupply}
-                    mintLimit={mintLimit}
-                    setMintLimit={setMintLimit}
-                    tokenSupply={tokenSupply}
-                    setTokenSupply={setTokenSupply}
-                    depositClose={depositClose}
-                    setDepositClose={setDepositClose}
-                    handleChange={handleChange}
-                    selectedImage={selectedImage}
-                    setSelectedImage={setSelectedImage}
-                    imageUrl={imageUrl}
-                    setImageUrl={setImageUrl}
-                    uploadInputRef={uploadInputRef}
-                    activeStep={activeStep}
-                    handleNext={handleNext}
-                    minDate={minDate}
-                  />
-                ) : (
-                  <ERC20NonTransferableStep2
-                    depositClose={depositClose}
-                    setDepositClose={setDepositClose}
-                    handleChange={handleChange}
-                    minContribution={minContribution}
-                    setMinContribution={setMinContribution}
-                    maxContribution={maxContribution}
-                    setMaxContribution={setMaxContribution}
-                    raiseAmount={raiseAmount}
-                    setRaiseAmount={setRaiseAmount}
-                    activeStep={activeStep}
-                    handleNext={handleNext}
-                  />
-                )
-              ) : (
-                <Step3
-                  voteForQuorum={voteForQuorum}
-                  setVoteForQuorum={setVoteForQuorum}
-                  onSetVoteForQuorum={onSetVoteForQuorum}
-                  onSetVoteOnFavourChange={onSetVoteOnFavourChange}
-                  voteInFavour={voteInFavour}
-                  setVoteInFavour={setVoteInFavour}
-                  voteOnFavourErrorMessage={voteOnFavourErrorMessage}
-                  setVoteOnFavourErrorMessage={setVoteOnFavourErrorMessage}
-                  handleAddClick={handleAddClick}
-                  addressList={addressList}
-                  setAddressList={setAddressList}
-                  handleInputChange={handleInputChange}
-                  handleRemoveClick={handleRemoveClick}
-                  governance={governance}
-                  handleOperationTypeChange={handleOperationTypeChange}
-                  loading={loading}
-                />
-              )}
-              <Box
-                width={{ xs: "100%", sm: "100%", md: "100%" }}
-                paddingTop={10}
-                paddingBottom={10}
+            ) : activeStep === steps.length - 1 && setCreateDaoAuthorized ? (
+              <Backdrop
+                sx={{
+                  color: "#fff",
+                  zIndex: (theme) => theme.zIndex.drawer + 1,
+                  backgroundImage: "url(assets/images/gradients.png)",
+                  backgroundPosition: "center center",
+                }}
+                open={open}
               >
-                {activeStep === 2 ? (
-                  <>
-                    {loading ? (
-                      <Button variant="wideButton" disabled>
-                        <CircularProgress />
+                <Card>
+                  <Grid
+                    container
+                    justifyContent="center"
+                    alignItems="center"
+                    sx={{ padding: "10px", width: "547px" }}
+                    direction="column"
+                  >
+                    <Grid item>
+                      <img src="assets/images/settingup_img.svg" />
+                    </Grid>
+                    <Grid
+                      item
+                      paddingTop="20px"
+                      justifyContent="left"
+                      justifyItems="left"
+                    >
+                      <Typography variant="h4" sx={{ color: "#fff" }}>
+                        Setting up your station
+                      </Typography>
+                    </Grid>
+                    <Grid
+                      item
+                      paddingTop="20px"
+                      justifyContent="left"
+                      justifyItems="left"
+                    >
+                      <Typography variant="regularText4" sx={{ color: "#fff" }}>
+                        Please sign to authorise StationX to deploy this station
+                        for you.
+                      </Typography>
+                    </Grid>
+                    <Grid item paddingTop="30px">
+                      <CircularProgress color="inherit" />
+                    </Grid>
+                  </Grid>
+                </Card>
+              </Backdrop>
+            ) : activeStep === steps.length - 1 && setCreateSafeError ? (
+              <>
+                {setCreateSafeErrorCode === 4001 ? (
+                  <ErrorModal isSignRejected />
+                ) : (
+                  <ErrorModal isError />
+                )}
+              </>
+            ) : (
+              <>
+                <Fragment>
+                  <Grid
+                    container
+                    direction="row"
+                    justifyContent="center"
+                    alignItems="center"
+                    mt={2}
+                  >
+                    {getStepContent(activeStep)}
+                    {/* <Button
+                      disabled={activeStep === 0}
+                      onClick={handleBack}
+                      className={classes.button}
+                    >
+                      Back
+                    </Button> */}
+                    {activeStep === steps.length - 1 ? (
+                      <Button
+                        variant="wideButton"
+                        // disabled={!isStepValidated(activeStep) }
+                        sx={{ marginTop: "2rem" }}
+                        onClick={handleSubmit}
+                      >
+                        Finish
                       </Button>
                     ) : (
                       <Button
                         variant="wideButton"
-                        disabled={
-                          activeStep === 0
-                            ? !clubName || !clubSymbol
-                            : activeStep === 2
-                            ? // !raiseAmount ||
-                              // !maxContribution ||
-                              !voteForQuorum ||
-                              !depositClose ||
-                              // !minContribution ||
-                              voteInFavour < 50 ||
-                              addressList.includes("")
-                            : // : activeStep === 2
-                              //   ? false
-                              true
-                        }
-                        onClick={handleNext}
+                        sx={{ marginTop: "2rem" }}
+                        onClick={handleSubmit}
                       >
                         Next
                       </Button>
                     )}
-                  </>
-                ) : (
-                  <></>
-                )}
-              </Box>
-            </>
-          )}
+                  </Grid>
+                </Fragment>
+              </>
+            )}
+          </form>
         </Box>
       </Grid>
     </Layout2>
-    // <Layout2>
-
-    //   {activeStep > 2 ? (
-    //     <Backdrop
-    //       sx={{
-    //         color: "#fff",
-    //         zIndex: (theme) => theme.zIndex.drawer + 1,
-    //         backgroundImage: "url(assets/images/gradients.png)",
-    //         backgroundPosition: "center center",
-    //       }}
-    //       open={open}
-    //     >
-    //       {createDaoGnosisSigned ? (
-    //         <Card>
-    //           <Grid
-    //             container
-    //             justifyContent="center"
-    //             alignItems="center"
-    //             sx={{ padding: "10px", width: "547px" }}
-    //             direction="column"
-    //           >
-    //             <Grid item>
-    //               <img src="assets/images/deployingsafe_img.svg" />
-    //             </Grid>
-    //             <Grid
-    //               item
-    //               paddingTop="20px"
-    //               justifyContent="left"
-    //               justifyItems="left"
-    //             >
-    //               <Typography variant="h4" sx={{ color: "#fff" }}>
-    //                 Deploying a new safe
-    //               </Typography>
-    //             </Grid>
-    //             <Grid
-    //               item
-    //               paddingTop="20px"
-    //               justifyContent="left"
-    //               justifyItems="left"
-    //             >
-    //               <Typography variant="regularText4" sx={{ color: "#fff" }}>
-    //                 Please sign & authorise StationX to deploy a new safe for
-    //                 your station.
-    //               </Typography>
-    //             </Grid>
-    //             <Grid item paddingTop="30px">
-    //               <CircularProgress color="inherit" />
-    //             </Grid>
-    //           </Grid>
-    //         </Card>
-    //       ) : createDaoAuthorized ? (
-    //         <Card>
-    //           <Grid
-    //             container
-    //             justifyContent="center"
-    //             alignItems="center"
-    //             sx={{ padding: "10px", width: "547px" }}
-    //             direction="column"
-    //           >
-    //             <Grid item>
-    //               <img src="assets/images/settingup_img.svg" />
-    //             </Grid>
-    //             <Grid
-    //               item
-    //               paddingTop="20px"
-    //               justifyContent="left"
-    //               justifyItems="left"
-    //             >
-    //               <Typography variant="h4" sx={{ color: "#fff" }}>
-    //                 Setting up your station
-    //               </Typography>
-    //             </Grid>
-    //             <Grid
-    //               item
-    //               paddingTop="20px"
-    //               justifyContent="left"
-    //               justifyItems="left"
-    //             >
-    //               <Typography variant="regularText4" sx={{ color: "#fff" }}>
-    //                 Please sign to authorise StationX to deploy this station for
-    //                 you.
-    //               </Typography>
-    //             </Grid>
-    //             <Grid item paddingTop="30px">
-    //               <CircularProgress color="inherit" />
-    //             </Grid>
-    //           </Grid>
-    //         </Card>
-    //       ) : null}
-    //     </Backdrop>
-    //   ) : (
-    //     <Grid
-    //       container
-    //       item
-    //       paddingLeft={{ xs: 5, sm: 5, md: 10, lg: 45 }}
-    //       paddingTop={15}
-    //       paddingRight={{ xs: 5, sm: 5, md: 10, lg: 45 }}
-    //       justifyContent="center"
-    //       alignItems="center"
-    //     >
-    //       <Box
-    //         width={{ xs: "60%", sm: "70%", md: "80%", lg: "100%" }}
-    //         paddingTop={10}
-    //       >
-    //         <Stepper activeStep={activeStep}>
-    //           {steps.map((label, index) => {
-    //             const stepProps = {};
-    //             const labelProps = {};
-
-    //             if (isStepSkipped(index)) {
-    //               stepProps.completed = false;
-    //             }
-    //             return (
-    //               <Step key={label} completed={completed[index]}>
-    //                 <StepButton color="inherit" onClick={handleStep(index)}>
-    //                   {label}
-    //                 </StepButton>
-    //               </Step>
-    //             );
-    //           })}
-    //         </Stepper>
-    //         {activeStep === steps.length > 2 ? (
-    //           <></>
-    //         ) : (
-    //           <>
-    //             {/* {components[activeStep]} */}
-    //           {activeStep === 0 ? (
-    //             <Step1
-    //               clubName={clubName}
-    //               setClubName={setClubName}
-    //               clubSymbol={clubSymbol}
-    //               setClubSymbol={setClubSymbol}
-    //               activeStep={activeStep}
-    //               handleNext={handleNext}
-    //               clubTokenType={clubTokenType}
-    //               setClubTokenType={setClubTokenType}
-    //             />
-    //           ) : activeStep === 1 ? (
-    //             clubTokenType === "NFT" ? (
-    //               <ERC721NonTransferableStep2
-    //                 transferableMembership={transferableMembership}
-    //                 setTransferableMembership={setTransferableMembership}
-    //                 nftPrice={nftPrice}
-    //                 setNftPrice={setNftPrice}
-    //                 limitSupply={limitSupply}
-    //                 setLimitSupply={setLimitSupply}
-    //                 mintLimit={mintLimit}
-    //                 setMintLimit={setMintLimit}
-    //                 tokenSupply={tokenSupply}
-    //                 setTokenSupply={setTokenSupply}
-    //                 depositClose={depositClose}
-    //                 setDepositClose={setDepositClose}
-    //                 handleChange={handleChange}
-    //                 selectedImage={selectedImage}
-    //                 setSelectedImage={setSelectedImage}
-    //                 imageUrl={imageUrl}
-    //                 setImageUrl={setImageUrl}
-    //                 uploadInputRef={uploadInputRef}
-    //                 activeStep={activeStep}
-    //                 handleNext={handleNext}
-    //               />
-    //             ) : (
-    //               <ERC20NonTransferableStep2
-    //                 depositClose={depositClose}
-    //                 setDepositClose={setDepositClose}
-    //                 handleChange={handleChange}
-    //                 minContribution={minContribution}
-    //                 setMinContribution={setMinContribution}
-    //                 maxContribution={maxContribution}
-    //                 setMaxContribution={setMaxContribution}
-    //                 raiseAmount={raiseAmount}
-    //                 setRaiseAmount={setRaiseAmount}
-    //                 activeStep={activeStep}
-    //                 handleNext={handleNext}
-    //               />
-    //             )
-    //           ) : (
-    //             <Step3
-    //               voteForQuorum={voteForQuorum}
-    //               setVoteForQuorum={setVoteForQuorum}
-    //               onSetVoteForQuorum={onSetVoteForQuorum}
-    //               onSetVoteOnFavourChange={onSetVoteOnFavourChange}
-    //               voteInFavour={voteInFavour}
-    //               setVoteInFavour={setVoteInFavour}
-    //               voteOnFavourErrorMessage={voteOnFavourErrorMessage}
-    //               setVoteOnFavourErrorMessage={setVoteOnFavourErrorMessage}
-    //               handleAddClick={handleAddClick}
-    //               addressList={addressList}
-    //               setAddressList={setAddressList}
-    //               handleInputChange={handleInputChange}
-    //               handleRemoveClick={handleRemoveClick}
-    //             />
-    //           )}
-    //             <Box
-    //               width={{ xs: "100%", sm: "100%", md: "100%" }}
-    //               paddingTop={10}
-    //               paddingBottom={10}
-    //             >
-    //               {activeStep === 2 ? (
-    //                 <>
-    //                   <Button
-    //                     variant="wideButton"
-    //                     disabled={
-    //                       activeStep === 0
-    //                         ? !clubName || !clubSymbol
-    //                         : activeStep === 2
-    //                         ? !raiseAmount ||
-    //                           !maxContribution ||
-    //                           !depositClose ||
-    //                           !minContribution
-    //                         : // : activeStep === 2
-    //                           //   ? false
-    //                           true
-    //                     }
-    //                     onClick={handleNext}
-    //                   >
-    //                     Next
-    //                   </Button>
-    //                 </>
-    //               ) : (
-    //                 <></>
-    //               )}
-    //             </Box>
-    //           </>
-    //         )}
-    //       </Box>
-    //     </Grid>
-    //   )}
-    // </Layout2>
   );
 };
-
 export default ProtectRoute(Create);

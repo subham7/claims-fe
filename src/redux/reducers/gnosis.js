@@ -15,7 +15,9 @@ export const slice = createSlice({
     tokenSymbol: null,
     tokenDecimal: null,
     governanceTokenDecimal: null,
-    createDaoGnosisSigned: false,
+    setCreateSafeLoading: false,
+    setCreateSafeError: false,
+    setCreateSafeErrorCode: null,
     createDaoAuthorized: false,
     governanceAllowed: true,
     redirectToCreate: false,
@@ -50,8 +52,14 @@ export const slice = createSlice({
       state.tokenSymbol = action.payload.tokenSymbol;
       state.tokenDecimal = action.payload.tokenDecimal;
     },
-    setCreateDaoGnosisSigned: (state, action) => {
-      state.createDaoGnosisSigned = action.payload;
+    setCreateSafeLoading: (state, action) => {
+      state.setCreateSafeLoading = action.payload;
+    },
+    setCreateSafeError: (state, action) => {
+      state.setCreateSafeError = action.payload;
+    },
+    setCreateSafeErrorCode: (state, action) => {
+      state.setCreateSafeErrorCode = action.payload;
     },
     setCreateDaoAuthorized: (state, action) => {
       state.createDaoAuthorized = action.payload;
@@ -61,7 +69,7 @@ export const slice = createSlice({
     },
     setRedirectToCreate: (state, action) => {
       state.redirectToCreate = action.payload;
-    }
+    },
   },
 });
 
@@ -73,7 +81,9 @@ export const {
   setAdminUser,
   setGovernanceTokenDetails,
   setUSDCTokenDetails,
-  setCreateDaoGnosisSigned,
+  setCreateSafeLoading,
+  setCreateSafeError,
+  setCreateSafeErrorCode,
   setCreateDaoAuthorized,
   setGovernanceAllowed,
   setRedirectToCreate,

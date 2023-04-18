@@ -125,91 +125,131 @@ export class SmartContract {
     });
   }
 
-  // create new club contract function
-  async createDAO(
-    owners,
-    threshold,
-    dispatch,
-    tokenName,
-    tokenSymbol,
-    totalDeposit,
-    minDeposit,
-    maxDeposit,
-    ownerFee,
-    closeDate,
-    feeUSDC,
-    tresuryAddress,
-    quoram,
-    formThreshold,
-    usdcConvertDecimal,
-    enableGovernance,
-    isTemplateErc721,
-    mintsPerUser,
-    totalSupplyOfToken,
-    nftPrice,
-    transferableMembership,
-    isNftSupplyUnlimited,
-  ) {
-    const days = Math.round(calculateDays(closeDate));
-    // const gasPrice = await web3.eth.getGasPrice();
-    // const gasAmount = this.contract.methods
-    //   .createDaoERC721(
-    //     tokenName,
-    //     tokenSymbol,
-    //     convertToWei(ownerFee, usdcConvertDecimal),
-    //     days,
-    //     quoram,
-    //     formThreshold,
-    //     tresuryAddress,
-    //     owners,
-    //     mintsPerUser,
-    //     totalSupplyOfToken,
-    //     nftPrice * Math.pow(10, 6),
-    //     transferableMembership,
-    //     isNftSupplyUnlimited,
-    //     enableGovernance,
-    //   )
-    //   .estimateGas({ from: this.walletAddress });
-    // const gas = gasAmount * gasPrice;
-    // console.log(gasPrice, gas);
+  // // create new club contract function
+  // async createDAO(
+  //   owners,
+  //   threshold,
+  //   dispatch,
+  //   tokenName,
+  //   tokenSymbol,
+  //   totalDeposit,
+  //   minDeposit,
+  //   maxDeposit,
+  //   ownerFee,
+  //   closeDate,
+  //   feeUSDC,
+  //   tresuryAddress,
+  //   quoram,
+  //   formThreshold,
+  //   usdcConvertDecimal,
+  //   enableGovernance,
+  //   isTemplateErc721,
+  //   mintsPerUser,
+  //   totalSupplyOfToken,
+  //   nftPrice,
+  //   transferableMembership,
+  //   isNftSupplyUnlimited,
+  // ) {
+  //   const days = Math.round(calculateDays(closeDate));
+  //   // const gasPrice = await web3.eth.getGasPrice();
+  //   // const gasAmount = this.contract.methods
+  //   //   .createDaoERC721(
+  //   //     tokenName,
+  //   //     tokenSymbol,
+  //   //     convertToWei(ownerFee, usdcConvertDecimal),
+  //   //     days,
+  //   //     quoram,
+  //   //     formThreshold,
+  //   //     tresuryAddress,
+  //   //     owners,
+  //   //     mintsPerUser,
+  //   //     totalSupplyOfToken,
+  //   //     nftPrice * Math.pow(10, 6),
+  //   //     transferableMembership,
+  //   //     isNftSupplyUnlimited,
+  //   //     enableGovernance,
+  //   //   )
+  //   //   .estimateGas({ from: this.walletAddress });
+  //   // const gas = gasAmount * gasPrice;
+  //   // console.log(gasPrice, gas);
 
-    if (isTemplateErc721) {
-      return this.contract.methods
-        .createDaoERC721(
-          tokenName,
-          tokenSymbol,
-          convertToWei(ownerFee, usdcConvertDecimal),
-          days,
-          quoram,
-          formThreshold,
-          tresuryAddress,
-          owners,
-          mintsPerUser,
-          totalSupplyOfToken,
-          nftPrice * Math.pow(10, 6),
-          transferableMembership,
-          isNftSupplyUnlimited,
-          enableGovernance,
-        )
-        .send({ from: this.walletAddress });
-    } else
-      return this.contract.methods
-        .createDAO(
-          tokenName,
-          tokenSymbol,
-          convertToWei(totalDeposit, usdcConvertDecimal),
-          convertToWei(minDeposit, usdcConvertDecimal),
-          convertToWei(maxDeposit, usdcConvertDecimal),
-          convertToWei(ownerFee, usdcConvertDecimal),
-          days,
-          convertToWei(feeUSDC, usdcConvertDecimal),
-          quoram,
-          formThreshold,
-          tresuryAddress,
-          owners,
-          enableGovernance,
-        )
-        .send({ from: this.walletAddress });
+  //   if (isTemplateErc721) {
+  //     return this.contract.methods
+  //       .createDaoERC721(
+  //         tokenName,
+  //         tokenSymbol,
+  //         convertToWei(ownerFee, usdcConvertDecimal),
+  //         days,
+  //         quoram,
+  //         formThreshold,
+  //         tresuryAddress,
+  //         owners,
+  //         mintsPerUser,
+  //         totalSupplyOfToken,
+  //         nftPrice * Math.pow(10, 6),
+  //         transferableMembership,
+  //         isNftSupplyUnlimited,
+  //         enableGovernance,
+  //       )
+  //       .send({ from: this.walletAddress });
+  //   } else
+  //     return this.contract.methods
+  //       .createDAO(
+  //         tokenName,
+  //         tokenSymbol,
+  //         convertToWei(totalDeposit, usdcConvertDecimal),
+  //         convertToWei(minDeposit, usdcConvertDecimal),
+  //         convertToWei(maxDeposit, usdcConvertDecimal),
+  //         convertToWei(ownerFee, usdcConvertDecimal),
+  //         days,
+  //         convertToWei(feeUSDC, usdcConvertDecimal),
+  //         quoram,
+  //         formThreshold,
+  //         tresuryAddress,
+  //         owners,
+  //         enableGovernance,
+  //       )
+  //       .send({ from: this.walletAddress });
+  // }
+
+  async createERC20DAO(
+    clubName,
+    clubSymbol,
+    distributeAmount,
+    pricePerToken,
+    minDepositPerUser,
+    maxDepositPerUser,
+    ownerFeePerDepositPercent,
+    depositClose,
+    quorum,
+    threshold,
+    depositTokenAddress,
+    treasuryAddress,
+    isGovernanceActive,
+    isGtTransferable,
+    allowWhiteList,
+    merkleRoot,
+  ) {
+    return this.contract.methods
+      .createERC20DAO(
+        clubName,
+        clubSymbol,
+        distributeAmount,
+        pricePerToken,
+        minDepositPerUser,
+        maxDepositPerUser,
+        ownerFeePerDepositPercent,
+        depositClose,
+        quorum,
+        threshold,
+        depositTokenAddress,
+        treasuryAddress,
+        isGovernanceActive,
+        isGtTransferable,
+        allowWhiteList,
+        merkleRoot,
+      )
+      .send({ from: this.walletAddress });
   }
 
   async updateProposalAndExecution(

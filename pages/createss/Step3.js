@@ -391,7 +391,6 @@ const Step3 = (props) => {
                 </IconButton>
               </Grid>
             </Grid>
-
             {addressList?.length > 0 ? (
               <Grid container pl={3} pr={1} mt={2} mb={2}>
                 {addressList.map((data, key) => {
@@ -412,7 +411,6 @@ const Step3 = (props) => {
                           error={!/^0x[a-zA-Z0-9]+/gm.test(addressList[key])}
                           variant="outlined"
                           onChange={(e) => handleInputChange(e, key)}
-                          value={addressList[key]}
                           placeholder={"0x"}
                           sx={{
                             m: 1,
@@ -423,7 +421,7 @@ const Step3 = (props) => {
                         />
                         <IconButton
                           aria-label="add"
-                          onClick={() => handleRemoveClick(key)}
+                          onClick={handleRemoveClick}
                         >
                           <DeleteIcon />
                         </IconButton>
