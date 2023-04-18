@@ -138,8 +138,8 @@ const Create = () => {
 
   const formikStep1 = useFormik({
     initialValues: {
-      clubName: "fgf",
-      clubSymbol: "dd",
+      clubName: "",
+      clubSymbol: "",
       clubTokenType: tokenType[0],
     },
     validationSchema: step1ValidationSchema,
@@ -151,10 +151,10 @@ const Create = () => {
   const formikERC20Step2 = useFormik({
     initialValues: {
       depositClose: dayjs(Date.now() + 300000),
-      minDepositPerUser: "100",
-      maxDepositPerUser: "500",
-      totalRaiseAmount: "1000",
-      pricePerToken: "10",
+      minDepositPerUser: "",
+      maxDepositPerUser: "",
+      totalRaiseAmount: "",
+      pricePerToken: "",
     },
     validationSchema: ERC20Step2ValidationSchema,
     onSubmit: (values) => {
@@ -392,7 +392,7 @@ const Create = () => {
                       <Button
                         variant="wideButton"
                         // disabled={!isStepValidated(activeStep) }
-                        mt={2}
+                        sx={{ marginTop: "2rem" }}
                         onClick={handleSubmit}
                       >
                         Finish
