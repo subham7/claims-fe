@@ -62,8 +62,14 @@ const ClubFetch = (Component) => {
     // });
     const [{ wallet }] = useConnectWallet();
 
+    let walletAddress;
+
+    if (typeof window !== "undefined") {
+      const web3 = new Web3(window.web3);
+      walletAddress = web3.utils.toChecksumAddress(wallet?.accounts[0].address);
+    }
     if (wallet) {
-      localStorage.setItem("wallet", wallet?.accounts[0].address);
+      localStorage.setItem("wallet", walletAddress);
     }
     // const dispatch = useDispatch();
     // const [address, setAddress] = useState(null);
@@ -257,7 +263,10 @@ const ClubFetch = (Component) => {
             if (!wallet) {
               router.push("/");
             } else {
-              const checkedwallet = wallet?.accounts[0].address;
+              const web3 = new Web3(window.web3);
+              const checkedwallet = web3.utils.toChecksumAddress(
+                wallet?.accounts[0].address,
+              );
 
               const getLoginToken = loginToken(checkedwallet);
               getLoginToken.then((response) => {

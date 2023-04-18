@@ -232,9 +232,11 @@ const Create = (props) => {
 
         const web3 = new Web3(Web3.givenProvider);
         const auth = web3.eth.getAccounts();
+
         auth.then(
           (result) => {
-            walletAddress = result[0].toLowerCase();
+            walletAddress = web3.utils.toChecksumAddress(result[0]);
+            console.log("WAAALLLLETTT ADDD", walletAddress);
             addressList.unshift(walletAddress);
             initiateConnection(
               clubTokenType,
@@ -280,9 +282,12 @@ const Create = (props) => {
       } else {
         const web3 = new Web3(Web3.givenProvider);
         const auth = web3.eth.getAccounts();
+
         auth.then(
           (result) => {
-            walletAddress = result[0].toLowerCase();
+            walletAddress = web3.utils.toChecksumAddress(result[0]);
+
+            console.log("WALLLLET ADDRESS", walletAddress);
             addressList.unshift(walletAddress);
             initiateConnection(
               clubTokenType,

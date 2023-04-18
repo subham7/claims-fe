@@ -43,6 +43,8 @@ const ERC721Comp = ({
   const classes = ERC721Styles();
   const router = useRouter();
 
+  console.log("Userrrrrr....", userDetails);
+
   const USDC_CONTRACT_ADDRESS = useSelector((state) => {
     return state.gnosis.usdcContractAddress;
   });

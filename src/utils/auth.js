@@ -32,9 +32,15 @@ export default function ProtectRoute(Component) {
     const GNOSIS_TRANSACTION_URL = useSelector((state) => {
       return state.gnosis.transactionUrl;
     });
-    const walletAddress = wallet?.accounts[0].address;
+
+    let walletAddress;
+    if (typeof window !== "undefined") {
+      const web3 = new Web3(window.web3);
+      walletAddress = web3.utils.toChecksumAddress(wallet?.accounts[0].address);
+    }
+
     if (wallet) {
-      localStorage.setItem("wallet", wallet?.accounts[0].address);
+      localStorage.setItem("wallet", walletAddress);
     }
 
     // console.log("walllleettttt");
