@@ -13,13 +13,13 @@ import {
 import Layout2 from "../../src/components/layouts/layout2";
 import ProtectRoute from "../../src/utils/auth";
 import { Fragment, useState } from "react";
-import Step1 from "./Step1";
-import Step2 from "./ERC20Step2";
-import Step3 from "./Step3";
+import Step1 from "../../src/components/createClubComps/Step1";
+import Step2 from "../../src/components/createClubComps/ERC20Step2";
+import Step3 from "../../src/components/createClubComps/Step3";
 import { useFormik } from "formik";
 import { tokenType } from "../../src/data/create";
 import * as yup from "yup";
-import ERC20Step2 from "./ERC20Step2";
+import ERC20Step2 from "../../src/components/createClubComps/ERC20Step2";
 import NFTStep2 from "./NFTStep2";
 import dayjs from "dayjs";
 import Web3 from "web3";
@@ -29,7 +29,7 @@ import {
   setCreateDaoAuthorized,
   setCreateSafeLoading,
 } from "../../src/redux/reducers/gnosis";
-import ErrorModal from "./ErrorModal";
+import ErrorModal from "../../src/components/createClubComps/ErrorModal";
 
 const Create = () => {
   const steps = ["Add basic info", "Set token rules", "Governance"];

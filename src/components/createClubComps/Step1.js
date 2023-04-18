@@ -7,43 +7,10 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { makeStyles } from "@mui/styles";
-import SimpleSelectButton from "../../src/components/simpleSelectButton";
-import { tokenType } from "../../src/data/create";
-
-const useStyles = makeStyles({
-  textField: {
-    width: "100%",
-    margin: "16px 0 25px 0",
-    fontSize: "18px",
-    fontFamily: "Whyte",
-  },
-  largeText: {
-    fontSize: "18px",
-    color: "#C1D3FF",
-    fontFamily: "Whyte",
-  },
-  largeText1: {
-    fontSize: "2.4vw",
-    color: "#FFFFFF",
-    fontFamily: "Whyte",
-  },
-  wrapTextIcon: {
-    fontSize: "18px",
-    fontFamily: "Whyte",
-    color: "#C1D3FF",
-    verticalAlign: "middle",
-    display: "inline-flex",
-  },
-  smallText: {
-    fontSize: "16px",
-    fontFamily: "Whyte",
-    color: "#6475A3",
-  },
-});
+import { Step1Styles } from "./CreateClubStyles";
 
 export default function Step1(props) {
-  const classes = useStyles();
+  const classes = Step1Styles();
   return (
     <>
       <Grid

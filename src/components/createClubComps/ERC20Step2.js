@@ -5,99 +5,14 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { makeStyles } from "@mui/styles";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
-
-const useStyles = makeStyles({
-  textField: {
-    width: "100%",
-    margin: "16px 0 25px 0",
-    fontSize: "18px",
-    fontFamily: "Whyte",
-  },
-  image: {
-    width: "22.9vw",
-    height: "61.8vh",
-    borderRadius: "20px",
-  },
-  largeText: {
-    fontSize: "18px",
-    color: "#C1D3FF",
-    fontFamily: "Whyte",
-  },
-  largeText1: {
-    fontSize: "2.4vw",
-    color: "#FFFFFF",
-    fontFamily: "Whyte",
-  },
-  wrapTextIcon: {
-    fontSize: "18px",
-    fontFamily: "Whyte",
-    color: "#C1D3FF",
-    verticalAlign: "middle",
-    display: "inline-flex",
-  },
-  smallText: {
-    fontSize: "14px",
-    fontFamily: "Whyte",
-  },
-  cardWarning: {
-    backgroundColor: "#FFB74D0D",
-    borderRadius: "10px",
-    opacity: 1,
-  },
-  textWarning: {
-    textAlign: "left",
-    color: "#FFB74D",
-    fontSize: "14px",
-    fontFamily: "Whyte",
-  },
-  boldText: {
-    fontWeight: "bold",
-    fontFamily: "Whyte",
-  },
-  uploadButton: {
-    backgroundColor: "#111D38",
-    color: "#3B7AFD",
-    fontSize: "18px",
-    width: "208px",
-    fontFamily: "Whyte",
-  },
-  cardPadding: {
-    margin: 0,
-    padding: 0,
-    borderRadius: "10px",
-  },
-  addCircleColour: {
-    color: "#C1D3FF",
-    fontFamily: "Whyte",
-  },
-  large_button: {
-    fontSize: "18px",
-    width: "208px",
-    borderRadius: "30px",
-    fontFamily: "Whyte",
-  },
-  backButton: {
-    fontSize: "18px",
-    width: "208px",
-    borderRadius: "30px",
-    backgroundColor: "#FFFFFF",
-    color: "#3B7AFD",
-    fontFamily: "Whyte",
-  },
-  smallText: {
-    fontSize: "16px",
-    fontFamily: "Whyte",
-    color: "#6475A3",
-  },
-});
+import { ERC20Step2Styles } from "./CreateClubStyles";
 
 export default function ERC20Step2(props) {
-  const classes = useStyles();
+  const classes = ERC20Step2Styles();
 
   return (
     <>
