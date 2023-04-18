@@ -104,7 +104,7 @@ export async function initiateConnection(
   const safeOwner = await web3.eth.getAccounts();
   let daoAddress = null;
   let tokenAddress = null;
-  let walletAddress = safeOwner[0];
+  let walletAddress = web3.utils.toChecksumAddress(safeOwner[0]);
   let networkId = null;
 
   await web3.eth.net
@@ -251,7 +251,7 @@ export async function initiateConnection(
             } else {
               // create user in the API
               const data = {
-                userAddress: walletAddress.toLocaleLowerCase(),
+                userAddress: walletAddress,
                 clubs: [
                   {
                     clubId: result.data.clubId,
