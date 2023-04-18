@@ -224,7 +224,7 @@ const Create = () => {
           formikERC20Step2.handleSubmit();
           break;
         } else {
-          NFTformikStep2.handleSubmit();
+          // NFTformikStep2.handleSubmit();
           break;
         }
 
