@@ -17,6 +17,7 @@ export const slice = createSlice({
     governanceTokenDecimal: null,
     setCreateSafeLoading: false,
     setCreateSafeError: false,
+    setCreateSafeErrorCode: null,
     createDaoAuthorized: false,
     governanceAllowed: true,
     redirectToCreate: false,
@@ -57,6 +58,9 @@ export const slice = createSlice({
     setCreateSafeError: (state, action) => {
       state.setCreateSafeError = action.payload;
     },
+    setCreateSafeErrorCode: (state, action) => {
+      state.setCreateSafeErrorCode = action.payload;
+    },
     setCreateDaoAuthorized: (state, action) => {
       state.createDaoAuthorized = action.payload;
     },
@@ -79,6 +83,7 @@ export const {
   setUSDCTokenDetails,
   setCreateSafeLoading,
   setCreateSafeError,
+  setCreateSafeErrorCode,
   setCreateDaoAuthorized,
   setGovernanceAllowed,
   setRedirectToCreate,

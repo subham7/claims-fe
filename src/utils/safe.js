@@ -14,12 +14,10 @@ import {
   setCreateDaoAuthorized,
   setCreateDaoGnosisSigned,
   setCreateSafeError,
+  setCreateSafeErrorCode,
   setCreateSafeLoading,
   setRedirectToCreate,
 } from "../redux/reducers/gnosis";
-import store from "../redux/store";
-import { Alert, Snackbar } from "@mui/material";
-import SnackbarComp from "../components/depositPageComps/Snackbar/SnackbarComp";
 
 async function gnosisSafePromise(owners, threshold, dispatch) {
   console.log(owners);
@@ -45,15 +43,24 @@ async function gnosisSafePromise(owners, threshold, dispatch) {
     // maxPriorityFeePerGas // Optional
     // nonce // Optional
   };
-  console.log("here", safeAccountConfig);
-  const safeSdk = await safeFactory.deploySafe({
-    safeAccountConfig,
-    options,
-  });
-  // const safeSdk = await safeFactory.deploySafe({ safeAccountConfig });
-  const newSafeAddress = safeSdk.getAddress();
-  dispatch(safeConnected(newSafeAddress, safeSdk));
-  return newSafeAddress;
+  try {
+    const safeSdk = await safeFactory.deploySafe({
+      safeAccountConfig,
+      options,
+    });
+    // const safeSdk = await safeFactory.deploySafe({ safeAccountConfig });
+    const newSafeAddress = safeSdk.getAddress();
+    dispatch(safeConnected(newSafeAddress, safeSdk));
+    return newSafeAddress;
+    // const safeSdk = await safeFactory.deploySafe({ safeAccountConfig });
+  } catch (error) {
+    if (error.code === 4001) {
+      dispatch(setCreateSafeError(true));
+      dispatch(setCreateSafeErrorCode(4001));
+    } else {
+      dispatch(setCreateSafeError(true));
+    }
+  }
 }
 
 // export async function initiateConnection(
@@ -338,6 +345,7 @@ export async function initiateConnection(
 ) {
   console.log("first", dispatch, pricePerToken);
   dispatch(setCreateSafeLoading(true));
+  dispatch(setCreateDaoAuthorized(false));
   const web3 = new Web3(Web3.givenProvider);
   let daoAddress = null;
   let networkId = null;
@@ -473,13 +481,18 @@ export async function initiateConnection(
           })
           .catch((error) => {
             dispatch(setCreateDaoAuthorized(false));
+            dispatch(setCreateSafeError(true));
             console.error(error);
+            if (error.code === 4001) {
+              dispatch(setCreateSafeErrorCode(4001));
+            }
           });
       }
     })
     .catch((error) => {
-      console.error(error);
+      console.error("error");
       dispatch(setCreateSafeLoading(false));
+      dispatch(setCreateDaoAuthorized(false));
       dispatch(setCreateSafeError(true));
       return "Gnosis safe connection cannot be established!";
     });
