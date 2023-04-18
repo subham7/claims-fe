@@ -1,4 +1,5 @@
 import {
+  Alert,
   Button,
   CircularProgress,
   FormControlLabel,
@@ -13,6 +14,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { SmartContract } from "../../api/contract";
 import claimContractABI from "../../../src/abis/singleClaimContract.json";
 import { useRouter } from "next/router";
+import { addClaimsOn } from "../../redux/reducers/createClaim";
 
 const useStyles = makeStyles({
   backdrop: {
@@ -62,7 +64,8 @@ const Backdrop = ({ onClose }) => {
 const ClaimsEditModal = ({ onClose, claimAddress, walletAddress }) => {
   const [loading, setLoading] = useState(false);
   const [claimed, setClaimed] = useState(false);
-  const [isEnabled, setIsEnabled] = useState(false);
+  const [isEnabled, setIsEnabled] = useState(true);
+  const [showMessage, setShowMessage] = useState(null);
 
   const classes = useStyles();
   const dispatch = useDispatch();
@@ -77,12 +80,7 @@ const ClaimsEditModal = ({ onClose, claimAddress, walletAddress }) => {
   );
 
   const claimsToggleHandler = async (e) => {
-    event.stopPropagation();
-    event.preventDefault();
     setLoading(true);
-
-    // setClaimsOn(!claimsOn);
-    // dispatch(addClaimsOn(!claimsOn));
 
     try {
       const claimContract = new SmartContract(
@@ -95,11 +93,22 @@ const ClaimsEditModal = ({ onClose, claimAddress, walletAddress }) => {
 
       const res = await claimContract.toggleClaim();
       console.log(res);
+
       setLoading(false);
+      setIsEnabled(!isEnabled);
+      showMessageHandler();
     } catch (error) {
       console.log(error);
       setLoading(false);
+      showMessageHandler();
     }
+  };
+
+  const showMessageHandler = () => {
+    setShowMessage(true);
+    setTimeout(() => {
+      setShowMessage(false);
+    }, 4000);
   };
 
   const rollbackHandler = async (e) => {
@@ -123,7 +132,6 @@ const ClaimsEditModal = ({ onClose, claimAddress, walletAddress }) => {
       const res = await claimContract.rollbackTokens(claimBalance);
       console.log(res);
       setClaimed(true);
-
       setLoading(false);
     } catch (error) {
       console.log(error);
@@ -173,11 +181,11 @@ const ClaimsEditModal = ({ onClose, claimAddress, walletAddress }) => {
             <h1 style={{ marginBottom: "40px" }}>Claim Settings</h1>
             <div className={classes.switch}>
               <Typography className={classes.text}>
-                Do you want to turn off the claims?
+                Do you want to turn On/Off the claims?
               </Typography>
 
               <Switch
-                checked={isEnabled}
+                checked={!isEnabled}
                 onChange={claimsToggleHandler}
                 onClick={(e) => {
                   e.stopPropagation();
@@ -199,6 +207,38 @@ const ClaimsEditModal = ({ onClose, claimAddress, walletAddress }) => {
               </Button>
             </div>
           </div>
+
+          {showMessage && isEnabled && (
+            <Alert
+              severity="error"
+              sx={{
+                width: "350px",
+                position: "absolute",
+                bottom: "30px",
+                right: "20px",
+                borderRadius: "8px",
+                zIndex: 1000000,
+              }}
+            >
+              {"Claims turned Off"}
+            </Alert>
+          )}
+
+          {showMessage && !isEnabled && (
+            <Alert
+              severity="success"
+              sx={{
+                width: "350px",
+                position: "absolute",
+                bottom: "30px",
+                right: "20px",
+                borderRadius: "8px",
+                zIndex: 1000000,
+              }}
+            >
+              {"Claims turned On"}
+            </Alert>
+          )}
         </>
       )}
     </>

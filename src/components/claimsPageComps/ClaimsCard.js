@@ -12,6 +12,7 @@ import Countdown from "react-countdown";
 import { Alert } from "@mui/material";
 import ClaimsEditModal from "./ClaimsEditModal";
 import { useConnectWallet } from "@web3-onboard/react";
+import { SmartContract } from "../../api/contract";
 
 const useStyles = makeStyles({
   container: {
@@ -143,24 +144,24 @@ const ClaimsCard = ({
 
   const fetchContractDetails = async () => {
     try {
-      const claimContract = new SmartContract(
+      const claimSmartContract = new SmartContract(
         claimContractABI,
-        claimContractData,
-        walletAddress,
+        claimContract,
+        walletAddress.toLowerCase(),
         undefined,
         undefined,
       );
 
-      const desc = await claimContract.claimSettings();
-      console.log(desc);
+      const desc = await claimSmartContract.claimSettings();
+      setClaimEnabled(desc.isEnabled);
     } catch (error) {
       console.log(error);
     }
   };
 
   useEffect(() => {
-    fetchContractDetails;
-  }, []);
+    fetchContractDetails();
+  });
 
   const claimContractData = {
     description,
@@ -210,10 +211,14 @@ const ClaimsCard = ({
               </span>{" "}
             </p>
           )}
-          <div className={`${isActive ? classes.active : classes.inactive}`}>
-            {isActive && isClaimStarted
+          <div
+            className={`${
+              isActive && claimEnabled ? classes.active : classes.inactive
+            }`}
+          >
+            {isActive && isClaimStarted && claimEnabled
               ? "Active"
-              : !isActive && isClaimStarted
+              : (!isActive && isClaimStarted) || !claimEnabled
               ? "Inactive"
               : !isActive && !isClaimStarted && "Not started yet"}
           </div>
