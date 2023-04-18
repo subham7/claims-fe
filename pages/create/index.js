@@ -144,7 +144,6 @@ const Create = () => {
     },
     validationSchema: step1ValidationSchema,
     onSubmit: (values) => {
-      console.log(values);
       handleNext();
     },
   });
@@ -176,13 +175,10 @@ const Create = () => {
       } else {
         const web3 = new Web3(Web3.givenProvider);
         const auth = web3.eth.getAccounts();
-
-        console.log(dayjs(formikERC20Step2.values.depositClose).unix());
         auth
           .then((result) => {
             const walletAddress = Web3.utils.toChecksumAddress(result[0]);
             values.addressList.unshift(walletAddress);
-            // console.log(formikStep1.values.clubName);
             initiateConnection(
               dispatch,
               formikStep1.values.clubName,
@@ -212,7 +208,6 @@ const Create = () => {
             console.error(error);
           });
       }
-      console.log(formikStep1.values.clubName);
       //   handleFormSubmit();
     },
   });
@@ -238,7 +233,6 @@ const Create = () => {
         break;
     }
   };
-  // console.log(addressList);
   return (
     <Layout2>
       <Grid

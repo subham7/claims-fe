@@ -315,7 +315,6 @@ export default function Step3(props) {
 
             {props.formik.values.addressList?.length > 0 ? (
               <Grid container pl={3} pr={1} mt={2} mb={2}>
-                {console.log(props.formik.values.addressList)}
                 {props.formik.values.addressList.map((data, key) => {
                   return (
                     <Grid
@@ -363,10 +362,7 @@ export default function Step3(props) {
                         aria-label="add"
                         onClick={(value) => {
                           const list = [...props.formik.values.addressList];
-                          console.log(list, key);
-
                           list.splice(key, 1);
-                          console.log(list);
                           props.formik.setFieldValue("addressList", list);
                         }}
                       >

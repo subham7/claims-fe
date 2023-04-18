@@ -372,7 +372,6 @@ export async function initiateConnection(
         depositTokenAddress,
         gnosisTransactionUrl,
       );
-      console.log(smartContract);
       let value;
       if (clubTokenType === "NFT") {
         console.log("NFT");
@@ -395,7 +394,6 @@ export async function initiateConnection(
           allowWhiteList,
           merkleRoot,
         );
-        console.log(value);
         value
           .then((result) => {
             console.log(result);
