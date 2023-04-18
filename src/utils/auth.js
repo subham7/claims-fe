@@ -38,11 +38,12 @@ export default function ProtectRoute(Component) {
       const web3 = new Web3(window.web3);
       walletAddress = web3.utils.toChecksumAddress(wallet?.accounts[0].address);
     }
-    
+
     if (wallet) {
       localStorage.setItem("wallet", walletAddress);
     }
 
+    // console.log("walllleettttt");
     const fetchCustomTokenDecimals = async () => {
       if (USDC_CONTRACT_ADDRESS && GNOSIS_TRANSACTION_URL) {
         const usdcContract = new SmartContract(

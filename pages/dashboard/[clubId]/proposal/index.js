@@ -387,7 +387,9 @@ const Proposal = () => {
     setLoaderOpen(true);
     if (gnosisAddress && GNOSIS_TRANSACTION_URL) {
       await getExecutionTransaction();
+      setLoaderOpen(false);
     }
+    setLoaderOpen(false);
   }, [gnosisAddress, GNOSIS_TRANSACTION_URL]);
 
   const fetchTokenType = async () => {
@@ -431,6 +433,7 @@ const Proposal = () => {
   };
 
   const isGovernanceAllowed = async () => {
+    console.log("here");
     const safeSdk = await getSafeSdk();
     console.log("innnnnn is governanceeee allloweedddd");
     const ownerAddresses = await safeSdk.getOwners();
@@ -1000,6 +1003,7 @@ const Proposal = () => {
   useEffect(() => {
     setLoaderOpen(true);
     fetchTokens();
+
     isGovernanceAllowed();
   }, [clubID]);
 

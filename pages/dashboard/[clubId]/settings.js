@@ -1,4 +1,4 @@
-import { React, useEffect, useState } from "react";
+import { React, useCallback, useEffect, useState } from "react";
 import Layout1 from "../../../src/components/layouts/layout1";
 import {
   Card,
@@ -340,7 +340,7 @@ const Settings = (props) => {
     return state.gnosis.governanceTokenDecimal;
   });
 
-  const fetchUserBalanceAPI = async () => {
+  const fetchUserBalanceAPI = useCallback(async () => {
     if (daoAddress && governanceConvertDecimal) {
       const fetchUserBalance = new SmartContract(
         ImplementationContract,
@@ -349,8 +349,10 @@ const Settings = (props) => {
         USDC_CONTRACT_ADDRESS,
         GNOSIS_TRANSACTION_URL,
       );
+      console.log("aaaaaa", governanceConvertDecimal, fetchUserBalance);
       await fetchUserBalance.checkUserBalance().then(
         (result) => {
+          console.log("bbb", result);
           setUserBalance(
             convertFromWeiGovernance(result, governanceConvertDecimal),
           );
@@ -361,7 +363,12 @@ const Settings = (props) => {
         },
       );
     }
-  };
+  }, [
+    GNOSIS_TRANSACTION_URL,
+    USDC_CONTRACT_ADDRESS,
+    daoAddress,
+    governanceConvertDecimal,
+  ]);
 
   const fetchPerformanceFee = async () => {
     if (daoAddress) {
@@ -416,9 +423,7 @@ const Settings = (props) => {
       await tokenDetailContract.tokenDetails().then(
         (result) => {
           settokenDetails(result);
-          setUserOwnershipShare(
-            convertFromWeiGovernance(result[2], governanceConvertDecimal),
-          );
+          setUserOwnershipShare(convertFromWeiGovernance(result[2], 18));
           // setClubTokenMInted(
           //   convertFromWeiGovernance(result[2], governanceConvertDecimal),
           // );
@@ -527,113 +532,129 @@ const Settings = (props) => {
       console.log(error);
     }
   };
-  const contractDetailsRetrieval = async (refresh = false) => {
-    if (
-      (daoAddress &&
-        !governorDataFetched &&
-        !governorDetails &&
-        walletAddress) ||
-      refresh
-    ) {
-      // const governorDetailContract = new SmartContract(
-      //   ImplementationContract,
-      //   daoAddress,
-      //   undefined,
-      //   USDC_CONTRACT_ADDRESS,
-      //   GNOSIS_TRANSACTION_URL,
-      // );
-      const governorDetailContract = new SmartContract(
-        ImplementationContract,
-        daoAddress,
-        undefined,
-        USDC_CONTRACT_ADDRESS,
-        GNOSIS_TRANSACTION_URL,
-      );
-      console.log("governorDetailContract", governorDetailContract);
-      setGovernorDataFetched(true);
-      setDataFetched(true);
-      await governorDetailContract.closeDate().then((result) => {
-        setDepositCloseDate(result);
-        setClosingDays(calculateDays(parseInt(result) * 1000));
-      });
+  const contractDetailsRetrieval = useCallback(
+    async (refresh = false) => {
+      console.log("governanceConvertDecimal", governanceConvertDecimal);
+      if (
+        (daoAddress &&
+          !governorDataFetched &&
+          !governorDetails &&
+          walletAddress) ||
+        refresh
+      ) {
+        // const governorDetailContract = new SmartContract(
+        //   ImplementationContract,
+        //   daoAddress,
+        //   undefined,
+        //   USDC_CONTRACT_ADDRESS,
+        //   GNOSIS_TRANSACTION_URL,
+        // );
 
-      await governorDetailContract.gatingTokenAddress().then((result) => {
-        setTokenGatingAddress(result);
-      });
-
-      await governorDetailContract.minDepositPerUser().then((result) => {
-        setCurrentMinDeposit(result);
-      });
-
-      await governorDetailContract.maxDepositPerUser().then((result) => {
-        setCurrentMaxDeposit(result);
-      });
-
-      await governorDetailContract.totalRaiseAmount().then((result) => {
-        setTotalERC20Supply(result);
-      });
-
-      await governorDetailContract.obtainSymbol().then((result) => {
-        setTokenSymbol(result);
-      });
-
-      await governorDetailContract.balanceOf().then((result) => {
-        setbalanceOfToken(
-          convertFromWeiGovernance(result, governanceConvertDecimal),
+        const governorDetailContract = new SmartContract(
+          ImplementationContract,
+          daoAddress,
+          undefined,
+          USDC_CONTRACT_ADDRESS,
+          GNOSIS_TRANSACTION_URL,
         );
-      });
-
-      await governorDetailContract.balanceOf().then((result) => {
         console.log(
-          "result",
-          convertFromWeiGovernance(result, governanceConvertDecimal),
+          "governorDetailContract",
+          governorDetailContract,
+          governanceConvertDecimal,
         );
-        // setTokenSymbol(result);
-      });
+        setGovernorDataFetched(true);
+        setDataFetched(true);
+        await governorDetailContract.closeDate().then((result) => {
+          setDepositCloseDate(result);
+          setClosingDays(calculateDays(parseInt(result) * 1000));
+        });
 
-      // await governorDetailContract.getGovernorDetails().then(
-      //   (result) => {
-      //     // console.log(result)
-      //     setGovernorDetails(result);
-      //     // setClosingDays(calculateDays(parseInt(result[0]) * 1000));
-      //     setGovernorDataFetched(true);
-      //     setCurrentMinDeposit(result[1]);
-      //     setCurrentMaxDeposit(result[2]);
-      //   },
-      //   (error) => {
-      //     console.log(error);
-      //   },
-      // );
+        await governorDetailContract.gatingTokenAddress().then((result) => {
+          setTokenGatingAddress(result);
+        });
 
-      // minimum deposit amount from smart contract
-      await governorDetailContract.quoram().then(
-        (result) => {
-          setQuoramValue(result);
-          setQuoramFetched(true);
-        },
-        (error) => {
-          setQuoramFetched(false);
-        },
-      );
+        await governorDetailContract.minDepositPerUser().then((result) => {
+          setCurrentMinDeposit(result);
+        });
 
-      // maximim deposit amount from smart contract
-      await governorDetailContract.threshold().then(
-        (result) => {
-          setThresholdValue(result);
-          setThresholdFetched(true);
-        },
-        (error) => {
-          setQuoramFetched(false);
-        },
-      );
+        await governorDetailContract.maxDepositPerUser().then((result) => {
+          setCurrentMaxDeposit(result);
+        });
 
-      await governorDetailContract.erc20TokensMinted().then((result) => {
-        setClubTokenMInted(
-          convertFromWeiGovernance(result, governanceConvertDecimal),
+        await governorDetailContract.totalRaiseAmount().then((result) => {
+          setTotalERC20Supply(result);
+        });
+
+        await governorDetailContract.obtainSymbol().then((result) => {
+          setTokenSymbol(result);
+        });
+
+        await governorDetailContract.balanceOf().then((result) => {
+          console.log("aa", result, governanceConvertDecimal);
+          setbalanceOfToken(convertFromWeiGovernance(result, 18));
+        });
+
+        await governorDetailContract.balanceOf().then((result) => {
+          console.log(
+            "result",
+            convertFromWeiGovernance(result, governanceConvertDecimal),
+          );
+          // setTokenSymbol(result);
+        });
+
+        // await governorDetailContract.getGovernorDetails().then(
+        //   (result) => {
+        //     // console.log(result)
+        //     setGovernorDetails(result);
+        //     // setClosingDays(calculateDays(parseInt(result[0]) * 1000));
+        //     setGovernorDataFetched(true);
+        //     setCurrentMinDeposit(result[1]);
+        //     setCurrentMaxDeposit(result[2]);
+        //   },
+        //   (error) => {
+        //     console.log(error);
+        //   },
+        // );
+
+        // minimum deposit amount from smart contract
+        await governorDetailContract.quoram().then(
+          (result) => {
+            setQuoramValue(result);
+            setQuoramFetched(true);
+          },
+          (error) => {
+            setQuoramFetched(false);
+          },
         );
-      });
-    }
-  };
+
+        // maximim deposit amount from smart contract
+        await governorDetailContract.threshold().then(
+          (result) => {
+            setThresholdValue(result);
+            setThresholdFetched(true);
+          },
+          (error) => {
+            setQuoramFetched(false);
+          },
+        );
+
+        await governorDetailContract.erc20TokensMinted().then((result) => {
+          setClubTokenMInted(convertFromWeiGovernance(result, 18));
+        });
+      }
+
+      console.log("governanceConvertDecimal", governanceConvertDecimal);
+    },
+    [
+      GNOSIS_TRANSACTION_URL,
+      USDC_CONTRACT_ADDRESS,
+      daoAddress,
+      governanceConvertDecimal,
+      governorDataFetched,
+      governorDetails,
+      walletAddress,
+    ],
+  );
   const findCurrentMember = () => {
     if (membersFetched && membersDetails.length > 0 && walletAddress) {
       let obj = membersDetails.find(
@@ -655,6 +676,7 @@ const Settings = (props) => {
       nftContractDetails();
     } else if (tokenType === "erc20NonTransferable") {
       tokenDetailsRetrieval();
+
       contractDetailsRetrieval(false);
     }
     tokenAPIDetailsRetrieval();
@@ -697,7 +719,7 @@ const Settings = (props) => {
       fetchPerformanceFee();
       setLoaderOpen(false);
     }
-  }, [dataFetched]);
+  }, [dataFetched, fetchUserBalanceAPI]);
 
   useEffect(() => {
     console.log("club id", clubId);

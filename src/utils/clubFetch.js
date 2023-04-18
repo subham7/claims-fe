@@ -144,6 +144,7 @@ const ClubFetch = (Component) => {
           GNOSIS_TRANSACTION_URL,
         );
         const response = checkUserInClub.userDetails();
+        console.log("responseeeeeeee", response);
         response.then(
           (result) => {
             if (result[2]) {
@@ -160,7 +161,13 @@ const ClubFetch = (Component) => {
           },
         );
       }
-    }, []);
+    }, [
+      GNOSIS_TRANSACTION_URL,
+      USDC_CONTRACT_ADDRESS,
+      daoAddress,
+      dispatch,
+      router,
+    ]);
 
     const checkGovernanceExists = () => {
       if (daoAddress && USDC_CONTRACT_ADDRESS && GNOSIS_TRANSACTION_URL) {

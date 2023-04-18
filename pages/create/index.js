@@ -314,11 +314,13 @@ const Create = (props) => {
                 setLoading(false);
               })
               .catch((error) => {
-                setLoading(true);
+                setLoading(false);
+                router.push("/");
               });
           },
           (error) => {
             console.log("Error connecting to Wallet!");
+            setLoading(false);
           },
         );
       }
@@ -371,7 +373,7 @@ const Create = (props) => {
       setGovernance(false);
     }
   };
-
+  console.log(addressList);
   return (
     <Layout2>
       <Grid
@@ -605,7 +607,8 @@ const Create = (props) => {
                               !voteForQuorum ||
                               !depositClose ||
                               // !minContribution ||
-                              voteInFavour < 50
+                              voteInFavour < 50 ||
+                              addressList.includes("")
                             : // : activeStep === 2
                               //   ? false
                               true

@@ -1,53 +1,53 @@
-import { React, useEffect, useState } from "react";
-import Web3 from "web3";
-import { makeStyles } from "@mui/styles";
-import Layout1 from "../../../../src/components/layouts/layout1";
-import {
-  Card,
-  Grid,
-  Typography,
-  Divider,
-  Stack,
-  Button,
-  CardActionArea,
-  Snackbar,
-  Alert,
-  CircularProgress,
-  Backdrop,
-  Chip,
-} from "@mui/material";
-import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
-import DoneIcon from "@mui/icons-material/Done";
-import { useRouter } from "next/router";
-import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import CloseIcon from "@mui/icons-material/Close";
-import ProgressBar from "../../../../src/components/progressbar";
-import { useDispatch, useSelector } from "react-redux";
-import { addProposalId } from "../../../../src/redux/reducers/create";
-import { SmartContract } from "../../../../src/api/contract";
+import DoneIcon from "@mui/icons-material/Done";
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
+import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import {
-  getProposalDetail,
-  castVote,
-  patchProposalExecuted,
-  getProposalTxHash,
-} from "../../../../src/api/proposal";
-import { getMembersDetails } from "../../../../src/api/user";
-import ImplementationContract from "../../../../src/abis/implementationABI.json";
-import USDCContract from "../../../../src/abis/usdcTokenContract.json";
-import ClubFetch from "../../../../src/utils/clubFetch";
-import Web3Adapter from "@safe-global/safe-web3-lib";
+  Alert,
+  Backdrop,
+  Button,
+  Card,
+  CardActionArea,
+  Chip,
+  CircularProgress,
+  Divider,
+  Grid,
+  Snackbar,
+  Stack,
+  Typography,
+} from "@mui/material";
+import { makeStyles } from "@mui/styles";
 import Safe from "@safe-global/safe-core-sdk";
 import SafeServiceClient from "@safe-global/safe-service-client";
-import actionIcon from "../../../../public/assets/icons/action_icon.svg";
-import tickerIcon from "../../../../public/assets/icons/ticker_icon.svg";
-import surveyIcon from "../../../../public/assets/icons/survey_icon.svg";
-import { calculateDays } from "../../../../src/utils/globalFunctions";
-import ReactHtmlParser from "react-html-parser";
-
-import Image from "next/image";
-import { getAssets } from "../../../../src/api/assets";
+import Web3Adapter from "@safe-global/safe-web3-lib";
 import { useConnectWallet } from "@web3-onboard/react";
+import Image from "next/image";
+import { useRouter } from "next/router";
+import { React, useEffect, useState } from "react";
+import ReactHtmlParser from "react-html-parser";
+import { useDispatch, useSelector } from "react-redux";
+import Web3 from "web3";
+
+import actionIcon from "../../../../public/assets/icons/action_icon.svg";
+import surveyIcon from "../../../../public/assets/icons/survey_icon.svg";
+import tickerIcon from "../../../../public/assets/icons/ticker_icon.svg";
+import ImplementationContract from "../../../../src/abis/implementationABI.json";
+import USDCContract from "../../../../src/abis/usdcTokenContract.json";
+import { getAssets } from "../../../../src/api/assets";
+import { SmartContract } from "../../../../src/api/contract";
+import {
+  castVote,
+  getProposalDetail,
+  getProposalTxHash,
+  patchProposalExecuted,
+} from "../../../../src/api/proposal";
+import { getMembersDetails } from "../../../../src/api/user";
+import Layout1 from "../../../../src/components/layouts/layout1";
+import ProgressBar from "../../../../src/components/progressbar";
+import { addProposalId } from "../../../../src/redux/reducers/create";
+import ClubFetch from "../../../../src/utils/clubFetch";
+import { calculateDays } from "../../../../src/utils/globalFunctions";
 
 const useStyles = makeStyles({
   clubAssets: {
@@ -948,8 +948,12 @@ const ProposalDetail = () => {
 
   const checkUserVoted = (pid) => {
     if (walletAddress) {
+      console.log(walletAddress);
+      const web3 = new Web3(window.web3);
+      let userAddress = walletAddress;
+      userAddress = web3.utils.toChecksumAddress(userAddress);
       let obj = proposalData[0].vote.find(
-        (voteCasted) => voteCasted.voterAddress === walletAddress,
+        (voteCasted) => voteCasted.voterAddress === userAddress.toLowerCase(),
       );
       return proposalData[0].vote.indexOf(obj) >= 0;
     }
