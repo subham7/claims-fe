@@ -1,35 +1,24 @@
-import {
-  Backdrop,
-  Box,
-  Button,
-  Card,
-  CircularProgress,
-  Grid,
-  Step,
-  StepButton,
-  Stepper,
-  Typography,
-} from "@mui/material";
+import { Box, Button, Grid, Step, StepButton, Stepper } from "@mui/material";
 import Layout2 from "../../src/components/layouts/layout2";
 import ProtectRoute from "../../src/utils/auth";
 import { Fragment, useState } from "react";
 import Step1 from "../../src/components/createClubComps/Step1";
-import Step2 from "../../src/components/createClubComps/ERC20Step2";
 import Step3 from "../../src/components/createClubComps/Step3";
 import { useFormik } from "formik";
 import { tokenType } from "../../src/data/create";
-import * as yup from "yup";
 import ERC20Step2 from "../../src/components/createClubComps/ERC20Step2";
 import NFTStep2 from "./NFTStep2";
 import dayjs from "dayjs";
 import Web3 from "web3";
 import { useSelector, useDispatch } from "react-redux";
 import { initiateConnection } from "../../src/utils/safe";
-import {
-  setCreateDaoAuthorized,
-  setCreateSafeLoading,
-} from "../../src/redux/reducers/gnosis";
 import ErrorModal from "../../src/components/createClubComps/ErrorModal";
+import SafeDepositLoadingModal from "../../src/components/createClubComps/SafeDepositLoadingModal";
+import {
+  ERC20Step2ValidationSchema,
+  step1ValidationSchema,
+  step3ValidationSchema,
+} from "../../src/components/createClubComps/ValidationSchemas";
 
 const Create = () => {
   const steps = ["Add basic info", "Set token rules", "Governance"];
@@ -69,72 +58,21 @@ const Create = () => {
   const getStepContent = (step) => {
     switch (step) {
       case 0:
-        return (
-          <>
-            <Step1 formik={formikStep1} />
-          </>
-        );
+        return <Step1 formik={formikStep1} />;
       case 1:
         if (
           formikStep1.values.clubTokenType === "Non Transferable ERC20 Token"
         ) {
-          return (
-            <>
-              <ERC20Step2 formik={formikERC20Step2} />
-            </>
-          );
+          return <ERC20Step2 formik={formikERC20Step2} />;
         } else {
-          return (
-            <>
-              <NFTStep2 />
-            </>
-          );
+          return <NFTStep2 />;
         }
-
       case 2:
-        return (
-          <>
-            <Step3 formik={formikStep3} />
-          </>
-        );
-
+        return <Step3 formik={formikStep3} />;
       default:
         return "Unknown step";
     }
   };
-
-  const step1ValidationSchema = yup.object({
-    clubName: yup
-      .string("Enter club name")
-      .min(2, "Name should be of minimum 2 characters length")
-      .required("Club Name is required"),
-    clubSymbol: yup
-      .string("Enter club symbol")
-      .required("Club Symbol is required"),
-  });
-
-  const ERC20Step2ValidationSchema = yup.object({
-    depositClose: yup.date().required("deposit close date is required"),
-    minDepositPerUser: yup.number().required("min deposit amount is required"),
-    maxDepositPerUser: yup
-      .number()
-      .moreThan(
-        yup.ref("minDepositPerUser"),
-        "Amount should be greater than min deposit",
-      )
-      .required("min deposit amount is required"),
-    totalRaiseAmount: yup.number().required("raise amount is required"),
-    pricePerToken: yup.number().required("price per token is required"),
-  });
-
-  const step3ValidationSchema = yup.object({
-    addressList: yup.array().of(
-      yup
-        .string()
-        .matches(/^0x[a-zA-Z0-9]+/gm, " proper wallet address is required")
-        .required("wallet address is required"),
-    ),
-  });
 
   const formikStep1 = useFormik({
     initialValues: {
@@ -147,6 +85,7 @@ const Create = () => {
       handleNext();
     },
   });
+
   const formikERC20Step2 = useFormik({
     initialValues: {
       depositClose: dayjs(Date.now() + 300000),
@@ -160,6 +99,7 @@ const Create = () => {
       handleNext();
     },
   });
+
   const formikStep3 = useFormik({
     initialValues: {
       governance: true,
@@ -261,101 +201,19 @@ const Create = () => {
               })}
             </Stepper>
             {activeStep === steps.length - 1 && setCreateSafeLoading ? (
-              <Backdrop
-                sx={{
-                  color: "#fff",
-                  zIndex: (theme) => theme.zIndex.drawer + 1,
-                  backgroundImage: "url(assets/images/gradients.png)",
-                  backgroundPosition: "center center",
-                }}
+              <SafeDepositLoadingModal
                 open={open}
-              >
-                <Card>
-                  <Grid
-                    container
-                    justifyContent="center"
-                    alignItems="center"
-                    sx={{ padding: "10px", width: "547px" }}
-                    direction="column"
-                  >
-                    <Grid item>
-                      <img src="assets/images/deployingsafe_img.svg" />
-                    </Grid>
-                    <Grid
-                      item
-                      paddingTop="20px"
-                      justifyContent="left"
-                      justifyItems="left"
-                    >
-                      <Typography variant="h4" sx={{ color: "#fff" }}>
-                        Deploying a new safe
-                      </Typography>
-                    </Grid>
-                    <Grid
-                      item
-                      paddingTop="20px"
-                      justifyContent="left"
-                      justifyItems="left"
-                    >
-                      <Typography variant="regularText4" sx={{ color: "#fff" }}>
-                        Please sign & authorise StationX to deploy a new safe
-                        for your station.
-                      </Typography>
-                    </Grid>
-                    <Grid item paddingTop="30px">
-                      <CircularProgress color="inherit" />
-                    </Grid>
-                  </Grid>
-                </Card>
-              </Backdrop>
+                title=" Deploying a new safe"
+                description=" Please sign & authorise StationX to deploy a new safe for your
+                station."
+              />
             ) : activeStep === steps.length - 1 && setCreateDaoAuthorized ? (
-              <Backdrop
-                sx={{
-                  color: "#fff",
-                  zIndex: (theme) => theme.zIndex.drawer + 1,
-                  backgroundImage: "url(assets/images/gradients.png)",
-                  backgroundPosition: "center center",
-                }}
+              <SafeDepositLoadingModal
                 open={open}
-              >
-                <Card>
-                  <Grid
-                    container
-                    justifyContent="center"
-                    alignItems="center"
-                    sx={{ padding: "10px", width: "547px" }}
-                    direction="column"
-                  >
-                    <Grid item>
-                      <img src="assets/images/settingup_img.svg" />
-                    </Grid>
-                    <Grid
-                      item
-                      paddingTop="20px"
-                      justifyContent="left"
-                      justifyItems="left"
-                    >
-                      <Typography variant="h4" sx={{ color: "#fff" }}>
-                        Setting up your station
-                      </Typography>
-                    </Grid>
-                    <Grid
-                      item
-                      paddingTop="20px"
-                      justifyContent="left"
-                      justifyItems="left"
-                    >
-                      <Typography variant="regularText4" sx={{ color: "#fff" }}>
-                        Please sign to authorise StationX to deploy this station
-                        for you.
-                      </Typography>
-                    </Grid>
-                    <Grid item paddingTop="30px">
-                      <CircularProgress color="inherit" />
-                    </Grid>
-                  </Grid>
-                </Card>
-              </Backdrop>
+                title="Setting up your station"
+                description="Please sign to authorise StationX to deploy this station
+              for you."
+              />
             ) : activeStep === steps.length - 1 && setCreateSafeError ? (
               <>
                 {setCreateSafeErrorCode === 4001 ? (
@@ -365,44 +223,34 @@ const Create = () => {
                 )}
               </>
             ) : (
-              <>
-                <Fragment>
-                  <Grid
-                    container
-                    direction="row"
-                    justifyContent="center"
-                    alignItems="center"
-                    mt={2}
-                  >
-                    {getStepContent(activeStep)}
-                    {/* <Button
-                      disabled={activeStep === 0}
-                      onClick={handleBack}
-                      className={classes.button}
+              <Fragment>
+                <Grid
+                  container
+                  direction="row"
+                  justifyContent="center"
+                  alignItems="center"
+                  mt={2}
+                >
+                  {getStepContent(activeStep)}
+                  {activeStep === steps.length - 1 ? (
+                    <Button
+                      variant="wideButton"
+                      sx={{ marginTop: "2rem" }}
+                      onClick={handleSubmit}
                     >
-                      Back
-                    </Button> */}
-                    {activeStep === steps.length - 1 ? (
-                      <Button
-                        variant="wideButton"
-                        // disabled={!isStepValidated(activeStep) }
-                        sx={{ marginTop: "2rem" }}
-                        onClick={handleSubmit}
-                      >
-                        Finish
-                      </Button>
-                    ) : (
-                      <Button
-                        variant="wideButton"
-                        sx={{ marginTop: "2rem" }}
-                        onClick={handleSubmit}
-                      >
-                        Next
-                      </Button>
-                    )}
-                  </Grid>
-                </Fragment>
-              </>
+                      Finish
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="wideButton"
+                      sx={{ marginTop: "2rem" }}
+                      onClick={handleSubmit}
+                    >
+                      Next
+                    </Button>
+                  )}
+                </Grid>
+              </Fragment>
             )}
           </form>
         </Box>
