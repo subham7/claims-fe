@@ -1,13 +1,13 @@
 import { Box, Button, Grid, Step, StepButton, Stepper } from "@mui/material";
 import Layout2 from "../../src/components/layouts/layout2";
 import ProtectRoute from "../../src/utils/auth";
-import { Fragment, useState } from "react";
+import { Fragment, useRef, useState } from "react";
 import Step1 from "../../src/components/createClubComps/Step1";
 import Step3 from "../../src/components/createClubComps/Step3";
 import { useFormik } from "formik";
 import { tokenType } from "../../src/data/create";
 import ERC20Step2 from "../../src/components/createClubComps/ERC20Step2";
-import NFTStep2 from "./NFTStep2";
+import NFTStep2 from "../../src/components/createClubComps/NFTStep2";
 import dayjs from "dayjs";
 import Web3 from "web3";
 import { useSelector, useDispatch } from "react-redux";
@@ -23,6 +23,8 @@ import {
 const Create = () => {
   const steps = ["Add basic info", "Set token rules", "Governance"];
   const dispatch = useDispatch();
+  const uploadInputRef = useRef(null);
+
   const [activeStep, setActiveStep] = useState(0);
   const [completed, setCompleted] = useState({});
   const [open, setOpen] = useState(false);
@@ -65,7 +67,12 @@ const Create = () => {
         ) {
           return <ERC20Step2 formik={formikERC20Step2} />;
         } else {
-          return <NFTStep2 />;
+          return (
+            <NFTStep2
+              formik={formikERC721Step2}
+              uploadInputRef={uploadInputRef}
+            />
+          );
         }
       case 2:
         return <Step3 formik={formikStep3} />;
@@ -93,6 +100,23 @@ const Create = () => {
       maxDepositPerUser: "",
       totalRaiseAmount: "",
       pricePerToken: "",
+    },
+    validationSchema: ERC20Step2ValidationSchema,
+    onSubmit: (values) => {
+      handleNext();
+    },
+  });
+
+  const formikERC721Step2 = useFormik({
+    initialValues: {
+      nftImage: "",
+      isNftTransferable: false,
+      isNftTotalSupplylimited: false,
+
+      pricePerToken: "",
+      maxTokensPerUser: "",
+      totalTokenSupply: "",
+      depositClose: dayjs(Date.now() + 300000),
     },
     validationSchema: ERC20Step2ValidationSchema,
     onSubmit: (values) => {
