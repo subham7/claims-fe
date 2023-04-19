@@ -5,10 +5,14 @@ import { BiPencil } from "react-icons/bi";
 import { AiFillCalendar } from "react-icons/ai";
 import { FaCoins } from "react-icons/fa";
 import { useRouter } from "next/router";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { addClaimContractData } from "../../redux/reducers/createClaim";
+import claimContractABI from "../../../src/abis/singleClaimContract.json";
 import Countdown from "react-countdown";
 import { Alert } from "@mui/material";
+import ClaimsEditModal from "./ClaimsEditModal";
+import { useConnectWallet } from "@web3-onboard/react";
+import { SmartContract } from "../../api/contract";
 
 const useStyles = makeStyles({
   container: {
@@ -104,6 +108,11 @@ const ClaimsCard = ({
   const [isActive, setIsActive] = useState(false);
   const [isClaimStarted, setIsClaimStarted] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
+  const [showClaimsEdit, setShowClaimsEdit] = useState(false);
+  const [claimEnabled, setClaimEnabled] = useState(false);
+
+  const [{ wallet }] = useConnectWallet();
+  const walletAddress = wallet?.accounts[0].address;
 
   const startingTime = new Date(+startDate * 1000);
   const convertedStartDay = new Date(startDate * 1000).getDate();
@@ -133,6 +142,27 @@ const ClaimsCard = ({
     }
   }, [currentTime, endDate, startDate]);
 
+  const fetchContractDetails = async () => {
+    try {
+      const claimSmartContract = new SmartContract(
+        claimContractABI,
+        claimContract,
+        walletAddress.toLowerCase(),
+        undefined,
+        undefined,
+      );
+
+      const desc = await claimSmartContract.claimSettings();
+      setClaimEnabled(desc.isEnabled);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchContractDetails();
+  });
+
   const claimContractData = {
     description,
     airdropTokenSymbol,
@@ -146,7 +176,24 @@ const ClaimsCard = ({
 
   const claimHandler = () => {
     router.push(`/claims/${claimContract}`);
+    // console.log('CLICKEDDDD')
   };
+
+  const onClose = (e) => {
+    e.stopPropagation();
+    setShowClaimsEdit(false);
+  };
+
+  const editClaimsHandler = (e) => {
+    e.stopPropagation();
+    setShowClaimsEdit(true);
+  };
+
+  const IS_CLAIM_ENABLED = useSelector((state) => {
+    return state.createClaim.claimEnabled;
+  });
+
+  // console.log(IS_CLAIM_ENABLED);
 
   return (
     <div onClick={claimHandler} className={classes.container}>
@@ -164,10 +211,14 @@ const ClaimsCard = ({
               </span>{" "}
             </p>
           )}
-          <div className={`${isActive ? classes.active : classes.inactive}`}>
-            {isActive && isClaimStarted
+          <div
+            className={`${
+              isActive && claimEnabled ? classes.active : classes.inactive
+            }`}
+          >
+            {isActive && isClaimStarted && claimEnabled
               ? "Active"
-              : !isActive && isClaimStarted
+              : (!isActive && isClaimStarted) || !claimEnabled
               ? "Inactive"
               : !isActive && !isClaimStarted && "Not started yet"}
           </div>
@@ -186,7 +237,11 @@ const ClaimsCard = ({
             size={25}
             className={classes.icons}
           />
-          {/* <BiPencil size={25} className={classes.icons} /> */}
+          <BiPencil
+            size={25}
+            className={classes.icons}
+            onClick={editClaimsHandler}
+          />
         </div>
       </div>
 
@@ -230,6 +285,14 @@ const ClaimsCard = ({
         >
           {"Copied"}
         </Alert>
+      )}
+
+      {showClaimsEdit && (
+        <ClaimsEditModal
+          walletAddress={walletAddress}
+          claimAddress={claimContract}
+          onClose={onClose}
+        />
       )}
     </div>
   );
