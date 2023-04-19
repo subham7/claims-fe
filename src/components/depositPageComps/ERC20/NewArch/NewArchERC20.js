@@ -12,6 +12,7 @@ import {
   Input,
   Skeleton,
   Stack,
+  TextField,
   Typography,
 } from "@mui/material";
 import { TwitterShareButton } from "react-twitter-embed";
@@ -20,15 +21,24 @@ import { useConnectWallet } from "@web3-onboard/react";
 import { SmartContract } from "../../../../api/contract";
 import Image from "next/image";
 import erc20DaoContractABI from "../../../../abis/newArch/erc20Dao.json";
+import factoryContractABI from "../../../../abis/newArch/factoryContract.json";
+
 import erc20ABI from "../../../../abis/usdcTokenContract.json";
 import Web3 from "web3";
-import { convertFromWeiGovernance } from "../../../../utils/globalFunctions";
+import {
+  convertFromWeiGovernance,
+  convertToWeiGovernance,
+} from "../../../../utils/globalFunctions";
+import { Form, useFormik } from "formik";
+import * as yup from "yup";
+import { NEW_FACTORY_ADDRESS } from "../../../../api";
 
 const NewArchERC20 = ({ daoDetails, erc20DaoAddress }) => {
   const [erc20TokenDetails, setErc20TokenDetails] = useState({
     tokenSymbol: "",
     tokenBalance: 0,
     tokenName: "",
+    tokenDecimal: 0,
   });
   const classes = NewArchERC20Styles();
   const [{ wallet }] = useConnectWallet();
@@ -41,22 +51,6 @@ const NewArchERC20 = ({ daoDetails, erc20DaoAddress }) => {
 
   const day = Math.floor(new Date().getTime() / 1000.0);
   const remainingDays = daoDetails.depositDeadline - day;
-
-  const depositHandler = () => {
-    try {
-      const erc20DaoContract = new SmartContract(
-        erc20DaoContractABI,
-        erc20DaoAddress,
-        walletAddress,
-        undefined,
-        undefined,
-      );
-
-      console.log(erc20DaoContract);
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   const fetchTokenDetails = useCallback(async () => {
     try {
@@ -81,11 +75,68 @@ const NewArchERC20 = ({ daoDetails, erc20DaoAddress }) => {
         tokenBalance: +balanceConverted,
         tokenSymbol: symbol,
         tokenName: name,
+        tokenDecimal: decimals,
       });
     } catch (error) {
       console.log(error);
     }
   }, [daoDetails.depositTokenAddress, walletAddress]);
+
+  const formik = useFormik({
+    initialValues: {
+      tokenInput: 0,
+    },
+    validationSchema: yup.object().shape({
+      tokenInput: yup
+        .number()
+        .required("Input is required")
+        .min(
+          +daoDetails.minDeposit,
+          "Amount should be greater than min deposit",
+        )
+        .max(+daoDetails.maxDeposit, "Amount should be less than max deposit"),
+    }),
+    onSubmit: async (values) => {
+      try {
+        const factoryContract = new SmartContract(
+          factoryContractABI,
+          NEW_FACTORY_ADDRESS,
+          walletAddress,
+          undefined,
+          undefined,
+        );
+
+        const erc20Contract = new SmartContract(
+          erc20ABI,
+          daoDetails.depositTokenAddress,
+          walletAddress,
+          undefined,
+          undefined,
+        );
+
+        await erc20Contract.approveDeposit(
+          NEW_FACTORY_ADDRESS,
+          values.tokenInput,
+          erc20TokenDetails.tokenDecimal,
+        );
+
+        const deposit = await factoryContract.buyGovernanceTokenERC20DAO(
+          walletAddress,
+          erc20DaoAddress,
+          daoDetails.depositTokenAddress,
+          convertToWeiGovernance(
+            values.tokenInput,
+            erc20TokenDetails.tokenDecimal,
+          ),
+          [],
+        );
+
+        console.log(deposit);
+      } catch (error) {
+        console.log(error);
+      }
+    },
+  });
 
   useEffect(() => {
     fetchTokenDetails();
@@ -535,19 +586,27 @@ const NewArchERC20 = ({ daoDetails, erc20DaoAddress }) => {
                         </Grid>
                         <Grid container spacing={2}>
                           <Grid item ml={2} mt={1} mb={2} p={1}>
-                            <Input
-                              type="number"
-                              //   error={depositAmount <= 0}
-                              className={classes.cardLargeFont}
-                              placeholder="0"
-                              //   value={depositAmount}
-                              //   onChange={(e) =>
-                              //     handleInputChange(e.target.value)
-                              //   }
-                              //   disabled={closingDays > 0 ? false : true}
-                              inputProps={{ style: { fontSize: "1em" } }}
-                              InputLabelProps={{ style: { fontSize: "1em" } }}
-                            />
+                            <form onSubmit={formik.handleSubmit}>
+                              <TextField
+                                className={classes.cardLargeFont}
+                                type="number"
+                                name="tokenInput"
+                                id="tokenInput"
+                                disabled={remainingDays > 0 ? false : true}
+                                inputProps={{ style: { fontSize: "1em" } }}
+                                InputLabelProps={{ style: { fontSize: "1em" } }}
+                                onChange={formik.handleChange}
+                                value={formik.values.tokenInput}
+                                error={
+                                  formik.touched.tokenInput &&
+                                  Boolean(formik.errors.tokenInput)
+                                }
+                                helperText={
+                                  formik.touched.tokenInput &&
+                                  formik.errors.tokenInput
+                                }
+                              />
+                            </form>
 
                             {/* <Typography sx={{ color: "red" }}>
                               {depositAmount < minDeposit
@@ -594,7 +653,7 @@ const NewArchERC20 = ({ daoDetails, erc20DaoAddress }) => {
                       <Button
                         variant="primary"
                         size="large"
-                        onClick={depositHandler}
+                        onClick={formik.handleSubmit}
                         // disabled={
                         //   (closingDays > 0 ? false : true) ||
                         //   (depositAmount <= 0 ||

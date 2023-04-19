@@ -292,6 +292,7 @@ export class SmartContract {
       assetsStoredOnGnosis,
       merkleRoot,
     );
+
     return this.contract.methods
       .createERC20DAO(
         clubName,

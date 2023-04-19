@@ -41,43 +41,50 @@ const Join = () => {
    * Deposit function for ERC20 comp
    */
   const fetchContractDetails = useCallback(async () => {
-    const factoryContract = new SmartContract(
-      factoryContractABI,
-      NEW_FACTORY_ADDRESS,
-      walletAddress,
-      undefined,
-      undefined,
-    );
+    try {
+      const factoryContract = new SmartContract(
+        factoryContractABI,
+        NEW_FACTORY_ADDRESS,
+        walletAddress,
+        undefined,
+        undefined,
+      );
 
-    const erc20DaoContract = new SmartContract(
-      erc20DaoContractABI,
-      erc20DaoAddress,
-      walletAddress,
-      undefined,
-      undefined,
-    );
+      const erc20DaoContract = new SmartContract(
+        erc20DaoContractABI,
+        erc20DaoAddress,
+        walletAddress,
+        undefined,
+        undefined,
+      );
 
-    if (factoryContract && erc20DaoContract) {
-      const factoryData = await factoryContract.getDAOdetails(erc20DaoAddress);
-      const erc20Data = await erc20DaoContract.getERC20DAOdetails();
+      if (factoryContract && erc20DaoContract) {
+        const factoryData = await factoryContract.getDAOdetails(
+          erc20DaoAddress,
+        );
+        const erc20Data = await erc20DaoContract.getERC20DAOdetails();
+        console.log(factoryData, erc20Data);
 
-      if (erc20Data && factoryData)
-        setDaoDetails({
-          daoName: erc20Data.DaoName,
-          daoSymbol: erc20Data.DaoSymbol,
-          quorum: erc20Data.quorum,
-          threshold: erc20Data.threshold,
-          isGovernance: erc20Data.isGovernanceActive,
-          isTokenGated: factoryData.isTokenGatingApplied,
-          minDeposit: factoryData.minDepositPerUser,
-          maxDeposit: factoryData.maxDepositPerUser,
-          pricePerToken: factoryData.pricePerToken,
-          depositDeadline: factoryData.depositCloseTime,
-          depositTokenAddress: factoryData.depositTokenAddress,
-          distributionAmt: factoryData.distributionAmount,
-          totalSupply:
-            factoryData.distributionAmount * factoryData.pricePerToken,
-        });
+        if (erc20Data && factoryData)
+          setDaoDetails({
+            daoName: erc20Data.DaoName,
+            daoSymbol: erc20Data.DaoSymbol,
+            quorum: erc20Data.quorum,
+            threshold: erc20Data.threshold,
+            isGovernance: erc20Data.isGovernanceActive,
+            isTokenGated: factoryData.isTokenGatingApplied,
+            minDeposit: factoryData.minDepositPerUser,
+            maxDeposit: factoryData.maxDepositPerUser,
+            pricePerToken: factoryData.pricePerToken,
+            depositDeadline: factoryData.depositCloseTime,
+            depositTokenAddress: factoryData.depositTokenAddress,
+            distributionAmt: factoryData.distributionAmount,
+            totalSupply:
+              factoryData.distributionAmount * factoryData.pricePerToken,
+          });
+      }
+    } catch (error) {
+      console.log(error);
     }
   }, [erc20DaoAddress, walletAddress]);
 
@@ -87,10 +94,7 @@ const Join = () => {
 
   return (
     <Layout2>
-      <NewArchERC20
-        erc20DaoAddress={erc20DaoAddress}
-        daoDetails={daoDetails}
-      />
+      <NewArchERC20 erc20DaoAddress={erc20DaoAddress} daoDetails={daoDetails} />
     </Layout2>
   );
 };
