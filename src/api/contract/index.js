@@ -315,6 +315,18 @@ export class SmartContract {
       .send({ from: this.walletAddress });
   }
 
+  async getERC20DAOdetails() {
+    return this.contract?.methods.getERC20DAOdetails().call({
+      from: this.walletAddress,
+    });
+  }
+
+  async getDAOdetails(daoAddress) {
+    return this.contract?.methods.getDAOdetails(daoAddress).call({
+      from: this.walletAddress,
+    });
+  }
+
   async updateProposalAndExecution(
     daoAddress = "",
     gnosisAddress = "",
@@ -669,13 +681,13 @@ export class SmartContract {
   }
 
   async balanceOf() {
-    return this.contract.methods
+    return this.contract?.methods
       .balanceOf(this.walletAddress)
       .call({ from: this.walletAddress });
   }
 
   async decimals() {
-    return this.contract.methods.decimals().call({ from: this.walletAddress });
+    return this.contract?.methods.decimals().call({ from: this.walletAddress });
   }
 
   async approve() {
