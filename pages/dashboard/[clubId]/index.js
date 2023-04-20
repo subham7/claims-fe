@@ -495,7 +495,7 @@ const Dashboard = () => {
         }
       };
 
-      loadNftContractData();
+      if (tokenType === "erc721") loadNftContractData();
       loadSmartContractData();
       // console.log("token type", tokenType);
     }
@@ -506,6 +506,7 @@ const Dashboard = () => {
     dataFetched,
     wallet,
     walletAddress,
+    tokenType,
   ]);
 
   const checkIsAdmin = () => {
@@ -617,8 +618,6 @@ const Dashboard = () => {
         ? `${window.location.origin}/join/${daoAddress}`
         : null,
     );
-
-    
   };
 
   const handleProposalClick = (proposal) => {

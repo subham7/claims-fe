@@ -135,6 +135,7 @@ const ClubFetch = (Component) => {
     }, [dispatch, tokenDecimalGovernance, tokenDecimalUsdc]);
 
     const checkUserExists = useCallback(() => {
+      console.log("check user exists");
       if (daoAddress && USDC_CONTRACT_ADDRESS && GNOSIS_TRANSACTION_URL) {
         const checkUserInClub = new SmartContract(
           ImplementationContract,
@@ -143,6 +144,7 @@ const ClubFetch = (Component) => {
           USDC_CONTRACT_ADDRESS,
           GNOSIS_TRANSACTION_URL,
         );
+        console.log("checkUserInClub smart contract", checkUserInClub);
         const response = checkUserInClub.userDetails();
         console.log("responseeeeeeee", response);
         response.then(
@@ -210,6 +212,7 @@ const ClubFetch = (Component) => {
     useEffect(() => {
       // const switched = checkNetwork()
       if (clubId && wallet) {
+        console.log("club data workingggg");
         console.log("clubid", clubId);
         const networkData = fetchConfig();
         networkData.then((networks) => {
@@ -239,7 +242,7 @@ const ClubFetch = (Component) => {
                     dispatch(
                       addContractAddress({
                         factoryContractAddress:
-                          result.data[0].factoryContractAddress,
+                          "0xd4efbacb48ba952201b75afecacb82048588e44f",
                         usdcContractAddress: result.data[0].usdcContractAddress,
                         transactionUrl: result.data[0].gnosisTransactionUrl,
                         networkHex: result.data[0].networkHex,
@@ -258,6 +261,7 @@ const ClubFetch = (Component) => {
 
         const clubData = fetchClub(clubId);
         clubData.then((result) => {
+          console.log("club dataaaaa");
           if (result.status !== 200) {
           } else {
             if (!wallet) {
