@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import {
+  Alert,
   Backdrop,
   Button,
   Card,
@@ -42,6 +43,9 @@ const NewArchERC20 = ({ daoDetails, erc20DaoAddress }) => {
     tokenName: "",
     tokenDecimal: 0,
   });
+  const [loading, setLoading] = useState(false);
+  const [showMessage, setShowMessage] = useState(false);
+  const [depositSuccessfull, setDepositSuccessfull] = useState(false);
   const classes = NewArchERC20Styles();
   const [{ wallet }] = useConnectWallet();
 
@@ -54,6 +58,13 @@ const NewArchERC20 = ({ daoDetails, erc20DaoAddress }) => {
   const day = Math.floor(new Date().getTime() / 1000.0);
   const remainingDays = daoDetails.depositDeadline - day;
   console.log(remainingDays);
+
+  const showMessageHandler = () => {
+    setShowMessage(true);
+    setTimeout(() => {
+      setShowMessage(false);
+    }, 4000);
+  };
 
   const fetchTokenDetails = useCallback(async () => {
     try {
@@ -114,6 +125,8 @@ const NewArchERC20 = ({ daoDetails, erc20DaoAddress }) => {
     }),
     onSubmit: async (values) => {
       try {
+        setLoading(true);
+
         const factoryContract = new SmartContract(
           factoryContractABI,
           NEW_FACTORY_ADDRESS,
@@ -141,10 +154,6 @@ const NewArchERC20 = ({ daoDetails, erc20DaoAddress }) => {
           erc20TokenDetails.tokenDecimal,
         );
 
-        console.log("Input", inputValue);
-        console.log("Price", daoDetails.pricePerToken);
-        console.log(inputValue / +daoDetails.pricePerToken);
-
         const deposit = await factoryContract.buyGovernanceTokenERC20DAO(
           walletAddress,
           erc20DaoAddress,
@@ -153,9 +162,14 @@ const NewArchERC20 = ({ daoDetails, erc20DaoAddress }) => {
           [],
         );
 
-        console.log(deposit);
+        setLoading(false);
+        setDepositSuccessfull(true);
+        showMessageHandler();
+        formik.values.tokenInput = 0;
       } catch (error) {
         console.log(error);
+        setLoading(false);
+        showMessageHandler();
       }
     },
   });
@@ -222,7 +236,11 @@ const NewArchERC20 = ({ daoDetails, erc20DaoAddress }) => {
                     item
                     xs={12}
                     md={3}
-                    sx={{ display: "flex", alignItems: "center" }}
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
                   >
                     {/* enter your code here */}
 
@@ -322,7 +340,7 @@ const NewArchERC20 = ({ daoDetails, erc20DaoAddress }) => {
                     </Grid>
                   </Grid>
                   <Grid item ml={4} mt={5} md={3}>
-                    <Grid container>
+                    <Grid container direction={"column"}>
                       <Grid item>
                         <Typography
                           variant="p"
@@ -428,7 +446,7 @@ const NewArchERC20 = ({ daoDetails, erc20DaoAddress }) => {
                   </Grid>
                   <Grid item ml={5} md={3}>
                     <Grid container direction="column">
-                      <Grid item>
+                      {/* <Grid item>
                         <Typography
                           variant="p"
                           className={classes.valuesDimStyle}
@@ -443,7 +461,7 @@ const NewArchERC20 = ({ daoDetails, erc20DaoAddress }) => {
                             />
                           )}
                         </Typography>
-                      </Grid>
+                      </Grid> */}
                       <Grid item mt={2}>
                         <Typography variant="p" className={classes.valuesStyle}>
                           {/* {walletConnected ? (
@@ -461,11 +479,14 @@ const NewArchERC20 = ({ daoDetails, erc20DaoAddress }) => {
                   </Grid>
                 </Grid>
                 <Grid item ml={3} mt={5} mb={2} mr={3}>
-                  {walletAddress ? (
+                  {walletAddress && daoDetails.clubTokensMinted ? (
                     <ProgressBar
                       value={calculateTreasuryTargetShare(
-                        +daoDetails.clubTokensMinted,
-                        convertFromWeiGovernance(
+                        +convertFromWeiGovernance(
+                          daoDetails.clubTokensMinted,
+                          daoDetails.decimals,
+                        ),
+                        +convertFromWeiGovernance(
                           daoDetails.totalSupply,
                           erc20TokenDetails.tokenDecimal,
                         ),
@@ -504,7 +525,10 @@ const NewArchERC20 = ({ daoDetails, erc20DaoAddress }) => {
                       <Grid item>
                         <Typography variant="p" className={classes.valuesStyle}>
                           {walletAddress ? (
-                            parseInt(Number(daoDetails.clubTokensMinted)) +
+                            convertFromWeiGovernance(
+                              daoDetails.clubTokensMinted,
+                              daoDetails.decimals,
+                            ) +
                             " $" +
                             daoDetails.daoSymbol
                           ) : (
@@ -788,31 +812,37 @@ const NewArchERC20 = ({ daoDetails, erc20DaoAddress }) => {
           </Grid>
         </>
       )}
-      {/* 
-  <Snackbar
-    open={openSnackBar}
-    autoHideDuration={6000}
-    onClose={handleClose}
-    anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-  >
-    {alertStatus === "success" ? (
-      <Alert
-        onClose={handleClose}
-        severity="success"
-        sx={{ width: "100%" }}
-      >
-        Transaction Successfull!
-      </Alert>
-    ) : (
-      <Alert
-        onClose={handleClose}
-        severity="error"
-        sx={{ width: "100%" }}
-      >
-        Transaction Failed!
-      </Alert>
-    )}
-  </Snackbar> */}
+      {depositSuccessfull && showMessage ? (
+        <Alert
+          severity="success"
+          sx={{
+            width: "250px",
+            position: "fixed",
+            bottom: "30px",
+            right: "20px",
+            borderRadius: "8px",
+          }}
+        >
+          Transaction Successfull
+        </Alert>
+      ) : (
+        !depositSuccessfull &&
+        showMessage && (
+          <Alert
+            severity="error"
+            sx={{
+              width: "250px",
+              position: "fixed",
+              bottom: "30px",
+              right: "20px",
+              borderRadius: "8px",
+            }}
+          >
+            Transaction Failed
+          </Alert>
+        )
+      )}
+
       <Dialog
         // open={open}
         // onClose={handleDialogClose}
@@ -855,9 +885,10 @@ const NewArchERC20 = ({ daoDetails, erc20DaoAddress }) => {
           </Grid>
         </DialogContent>
       </Dialog>
+
       <Backdrop
         sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        // open={depositInitiated}
+        open={loading}
       >
         <CircularProgress color="inherit" />
       </Backdrop>
