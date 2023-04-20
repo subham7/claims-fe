@@ -12,6 +12,7 @@ export const slice = createSlice({
     networkId: null,
     networkName: null,
     adminUser: false,
+    memberUser: false,
     tokenSymbol: null,
     tokenDecimal: null,
     governanceTokenDecimal: null,
@@ -45,6 +46,9 @@ export const slice = createSlice({
     },
     setAdminUser: (state, action) => {
       state.adminUser = action.payload;
+    },
+    setMemberUser: (state, action) => {
+      state.memberUser = action.payload;
     },
     setGovernanceTokenDetails: (state, action) => {
       state.governanceTokenDecimal = action.payload;
@@ -83,6 +87,7 @@ export const {
   addSafeAddress,
   addContractAddress,
   setAdminUser,
+  setMemberUser,
   setGovernanceTokenDetails,
   setUSDCTokenDetails,
   setUploadNFTLoading,

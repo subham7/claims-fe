@@ -37,6 +37,8 @@ import ImplementationContract from "../abis/implementationABI.json";
 
 import { useConnectWallet } from "@web3-onboard/react";
 import { addWalletAddress } from "../redux/reducers/user";
+import Safe from "@safe-global/safe-core-sdk";
+import Web3Adapter from "@safe-global/safe-web3-lib";
 
 const ClubFetch = (Component) => {
   const RetrieveDataComponent = () => {
@@ -46,6 +48,9 @@ const ClubFetch = (Component) => {
     const [tokenDecimalGovernance, setTokenDecimalGovernance] = useState("");
     const daoAddress = useSelector((state) => {
       return state.create.daoAddress;
+    });
+    const gnosisAddress = useSelector((state) => {
+      return state.gnosis.safeAddress;
     });
     const dispatch = useDispatch();
     const FACTORY_CONTRACT_ADDRESS = useSelector((state) => {
@@ -61,13 +66,12 @@ const ClubFetch = (Component) => {
     //   return state.user.wallet;
     // });
     const [{ wallet }] = useConnectWallet();
+    console.log(wallet);
 
     let walletAddress;
 
-    if (typeof window !== "undefined") {
-      const web3 = new Web3(window.web3);
-      walletAddress = web3.utils.toChecksumAddress(wallet?.accounts[0].address);
-    }
+    walletAddress = Web3.utils.toChecksumAddress(wallet?.accounts[0].address);
+
     if (wallet) {
       localStorage.setItem("wallet", walletAddress);
     }
@@ -134,7 +138,21 @@ const ClubFetch = (Component) => {
       }
     }, [dispatch, tokenDecimalGovernance, tokenDecimalUsdc]);
 
+    const getSafeSdk = async () => {
+      const web3 = new Web3(window.ethereum);
+      const ethAdapter = new Web3Adapter({
+        web3: web3,
+        signerAddress: walletAddress,
+      });
+      const safeSdk = await Safe.create({
+        ethAdapter: ethAdapter,
+        safeAddress: gnosisAddress,
+      });
+      return safeSdk;
+    };
+
     const checkUserExists = useCallback(() => {
+      console.log("check user exists");
       if (daoAddress && USDC_CONTRACT_ADDRESS && GNOSIS_TRANSACTION_URL) {
         const checkUserInClub = new SmartContract(
           ImplementationContract,
@@ -143,18 +161,40 @@ const ClubFetch = (Component) => {
           USDC_CONTRACT_ADDRESS,
           GNOSIS_TRANSACTION_URL,
         );
-        const response = checkUserInClub.userDetails();
-        console.log("responseeeeeeee", response);
+        console.log("checkUserInClub smart contract", checkUserInClub);
+        const response = checkUserInClub.balanceOf();
+
         response.then(
-          (result) => {
-            if (result[2]) {
+          async (result) => {
+            console.log("responseeeeeeee", result);
+
+            const safeSdk = await getSafeSdk();
+            const ownerAddresses = await safeSdk.getOwners();
+            const ownerAddressesArray = ownerAddresses.map((value) =>
+              Web3.utils.toChecksumAddress(value),
+            );
+            console.log(ownerAddressesArray, walletAddress);
+            if (ownerAddressesArray.includes(walletAddress)) {
+              console.log("here");
               dispatch(setAdminUser(true));
             } else {
-              dispatch(setAdminUser(false));
+              if (result === "0") {
+                dispatch(setMemberUser(false));
+                router.push("/");
+              } else {
+                console.log("here");
+                dispatch(setMemberUser(true));
+              }
             }
-            if (!result[0]) {
-              router.push("/");
-            }
+
+            // if (result[2]) {
+            //   dispatch(setAdminUser(true));
+            // } else {
+            //   dispatch(setAdminUser(false));
+            // }
+            // if (!result[0]) {
+            //   router.push("/");
+            // }
           },
           (error) => {
             router.push("/");
@@ -166,7 +206,9 @@ const ClubFetch = (Component) => {
       USDC_CONTRACT_ADDRESS,
       daoAddress,
       dispatch,
+      getSafeSdk,
       router,
+      walletAddress,
     ]);
 
     const checkGovernanceExists = () => {
@@ -210,6 +252,7 @@ const ClubFetch = (Component) => {
     useEffect(() => {
       // const switched = checkNetwork()
       if (clubId && wallet) {
+        console.log("club data workingggg");
         console.log("clubid", clubId);
         const networkData = fetchConfig();
         networkData.then((networks) => {
@@ -239,7 +282,7 @@ const ClubFetch = (Component) => {
                     dispatch(
                       addContractAddress({
                         factoryContractAddress:
-                          result.data[0].factoryContractAddress,
+                          "0xd4efbacb48ba952201b75afecacb82048588e44f",
                         usdcContractAddress: result.data[0].usdcContractAddress,
                         transactionUrl: result.data[0].gnosisTransactionUrl,
                         networkHex: result.data[0].networkHex,
@@ -258,6 +301,7 @@ const ClubFetch = (Component) => {
 
         const clubData = fetchClub(clubId);
         clubData.then((result) => {
+          console.log("club dataaaaa");
           if (result.status !== 200) {
           } else {
             if (!wallet) {
