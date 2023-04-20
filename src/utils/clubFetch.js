@@ -167,25 +167,26 @@ const ClubFetch = (Component) => {
         response.then(
           async (result) => {
             console.log("responseeeeeeee", result);
-            if (result === "0") {
-              const safeSdk = await getSafeSdk();
-              const ownerAddresses = await safeSdk.getOwners();
-              const ownerAddressesArray = ownerAddresses.map((value) =>
-                Web3.utils.toChecksumAddress(value),
-              );
-              console.log(ownerAddressesArray, walletAddress);
-              if (ownerAddressesArray.includes(walletAddress)) {
-                console.log("here");
-                dispatch(setAdminUser(true));
-              } else {
-                dispatch(setAdminUser(false));
-                console.log("here");
-                router.push("/");
-              }
-            } else {
+
+            const safeSdk = await getSafeSdk();
+            const ownerAddresses = await safeSdk.getOwners();
+            const ownerAddressesArray = ownerAddresses.map((value) =>
+              Web3.utils.toChecksumAddress(value),
+            );
+            console.log(ownerAddressesArray, walletAddress);
+            if (ownerAddressesArray.includes(walletAddress)) {
               console.log("here");
               dispatch(setAdminUser(true));
+            } else {
+              if (result === "0") {
+                dispatch(setMemberUser(false));
+                router.push("/");
+              } else {
+                console.log("here");
+                dispatch(setMemberUser(true));
+              }
             }
+
             // if (result[2]) {
             //   dispatch(setAdminUser(true));
             // } else {
