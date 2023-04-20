@@ -212,6 +212,46 @@ export class SmartContract {
   //       .send({ from: this.walletAddress });
   // }
 
+  async createERC721DAO(
+    clubName,
+    clubSymbol,
+    ownerFeePerDepositPercent,
+    depositClose,
+    quorum,
+    threshold,
+    depositTokenAddress,
+    treasuryAddress,
+    maxTokensPerUser,
+    distributeAmount,
+    pricePerToken,
+    isNftTransferable,
+    isNftTotalSupplyUnlimited,
+    isGovernanceActive,
+    allowWhiteList,
+    merkleRoot,
+  ) {
+    return this.contract.methods
+      .createERC721DAO(
+        clubName,
+        clubSymbol,
+        ownerFeePerDepositPercent,
+        depositClose,
+        quorum,
+        threshold,
+        depositTokenAddress,
+        treasuryAddress,
+        maxTokensPerUser,
+        distributeAmount,
+        pricePerToken,
+        isNftTransferable,
+        isNftTotalSupplyUnlimited,
+        isGovernanceActive,
+        allowWhiteList,
+        merkleRoot,
+      )
+      .send({ from: this.walletAddress });
+  }
+
   async createERC20DAO(
     clubName,
     clubSymbol,
