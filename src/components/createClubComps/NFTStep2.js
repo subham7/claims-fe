@@ -107,6 +107,7 @@ const useStyles = makeStyles({
 });
 
 export default function NFTStep2(props) {
+  console.log(props.formik);
   const classes = useStyles();
   const [imageUrl, setImageUrl] = useState(null);
 
@@ -391,9 +392,9 @@ export default function NFTStep2(props) {
             >
               <TextField
                 name="maxTokensPerUser"
-                className={classes.textField}
                 type="number"
-                placeholder="Ex:2"
+                className={classes.textField}
+                label="Eg: 100"
                 variant="outlined"
                 onChange={props.formik.handleChange}
                 onBlur={props.formik.handleBlur}

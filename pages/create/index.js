@@ -16,9 +16,12 @@ import ErrorModal from "../../src/components/createClubComps/ErrorModal";
 import SafeDepositLoadingModal from "../../src/components/createClubComps/SafeDepositLoadingModal";
 import {
   ERC20Step2ValidationSchema,
+  ERC721Step2ValidationSchema,
   step1ValidationSchema,
   step3ValidationSchema,
 } from "../../src/components/createClubComps/ValidationSchemas";
+import { setUploadNFTLoading } from "../../src/redux/reducers/gnosis";
+import { NFTStorage } from "nft.storage";
 
 const Create = () => {
   const steps = ["Add basic info", "Set token rules", "Governance"];
@@ -47,6 +50,10 @@ const Create = () => {
   });
   const setCreateSafeErrorCode = useSelector((state) => {
     return state.gnosis.setCreateSafeErrorCode;
+  });
+
+  const uploadNFTLoading = useSelector((state) => {
+    return state.gnosis.setUploadNFTLoading;
   });
 
   const handleStep = (step) => () => {
@@ -111,15 +118,16 @@ const Create = () => {
     initialValues: {
       nftImage: "",
       isNftTransferable: false,
-      isNftTotalSupplylimited: false,
-
       pricePerToken: "",
       maxTokensPerUser: "",
+      isNftTotalSupplylimited: false,
       totalTokenSupply: "",
       depositClose: dayjs(Date.now() + 300000),
     },
-    validationSchema: ERC20Step2ValidationSchema,
+
+    validationSchema: ERC721Step2ValidationSchema,
     onSubmit: (values) => {
+      console.log(values);
       handleNext();
     },
   });
@@ -132,10 +140,67 @@ const Create = () => {
       addressList: [],
     },
     validationSchema: step3ValidationSchema,
-    onSubmit: (values) => {
+    onSubmit: async (values) => {
       setOpen(true);
       if (formikStep1.values.clubTokenType === "NFT") {
-        console.log("nft club create");
+        dispatch(setUploadNFTLoading(true));
+        const client = new NFTStorage({
+          token:
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweDlhMWRFQjEyMjQyYTBlN0VmNTUwNjFlOTAwMTYyMDcxNEFENDBlNDgiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTY3NDEyOTI3MzM5MSwibmFtZSI6InN0YXRpb25YIG5mdCJ9.1w-RC7qZ43T2NhjHrtsO_Gmb0Mw1BjJo7GXMciqX5jY",
+        });
+
+        const metadata = await client.store({
+          name: formikStep1.values.clubName,
+          description: "nft image",
+          image: formikERC721Step2.values.nftImage,
+        });
+        dispatch(setUploadNFTLoading(false));
+        console.log(metadata);
+        const web3 = new Web3(Web3.givenProvider);
+        const auth = web3.eth.getAccounts();
+        auth
+          .then((result) => {
+            const walletAddress = Web3.utils.toChecksumAddress(result[0]);
+            values.addressList.unshift(walletAddress);
+            const params = {
+              clubName: formikStep1.values.clubName,
+              clubSymbol: formikStep1.values.clubSymbol,
+              ownerFeePerDepositPercent: 0,
+              depositClose: dayjs(formikERC20Step2.values.depositClose).unix(),
+              quorum: values.quorum,
+              threshold: values.threshold,
+              depositTokenAddress: USDC_CONTRACT_ADDRESS,
+              maxTokensPerUser: formikERC721Step2.values.maxTokensPerUser,
+
+              distributeAmount: formikERC721Step2.values.isNftTotalSupplylimited
+                ? formikERC721Step2.values.totalTokenSupply /
+                  formikERC721Step2.values.pricePerToken
+                : 0,
+              pricePerToken: formikERC721Step2.values.pricePerToken,
+              isNftTransferable: formikERC721Step2.values.isNftTransferable,
+              isNftTotalSupplyUnlimited:
+                !formikERC721Step2.values.isNftTotalSupplylimited,
+              isGovernanceActive: values.governance,
+
+              allowWhiteList: false,
+              merkleRoot:
+                "0x0000000000000000000000000000000000000000000000000000000000000001",
+            };
+
+            initiateConnection(
+              params,
+              dispatch,
+              GNOSIS_TRANSACTION_URL,
+              values.addressList,
+              formikStep1.values.clubTokenType,
+              "0xd4efbacb48ba952201b75afecacb82048588e44f",
+              metadata.data.image.pathname,
+              metadata.url,
+            );
+          })
+          .catch((error) => {
+            console.error(error);
+          });
       } else {
         const web3 = new Web3(Web3.givenProvider);
         const auth = web3.eth.getAccounts();
@@ -143,36 +208,39 @@ const Create = () => {
           .then((result) => {
             const walletAddress = Web3.utils.toChecksumAddress(result[0]);
             values.addressList.unshift(walletAddress);
-            initiateConnection(
-              dispatch,
-              formikStep1.values.clubName,
-              formikStep1.values.clubSymbol,
-              formikERC20Step2.values.totalRaiseAmount /
+            const params = {
+              clubName: formikStep1.values.clubName,
+              clubSymbol: formikStep1.values.clubSymbol,
+              distributeAmount:
+                formikERC20Step2.values.totalRaiseAmount /
                 formikERC20Step2.values.pricePerToken,
-              formikERC20Step2.values.pricePerToken,
-              formikERC20Step2.values.minDepositPerUser,
-              formikERC20Step2.values.maxDepositPerUser,
-              0,
-              dayjs(formikERC20Step2.values.depositClose).unix(),
-              values.quorum,
-              values.threshold,
-              USDC_CONTRACT_ADDRESS,
+              pricePerToken: formikERC20Step2.values.pricePerToken,
+              minDepositPerUser: formikERC20Step2.values.minDepositPerUser,
+              maxDepositPerUser: formikERC20Step2.values.maxDepositPerUser,
+              ownerFeePerDepositPercent: 0,
+              depositClose: dayjs(formikERC20Step2.values.depositClose).unix(),
+              quorum: values.quorum,
+              threshold: values.threshold,
+              depositTokenAddress: USDC_CONTRACT_ADDRESS,
+              isGovernanceActive: values.governance,
+              isGtTransferable: true,
+              allowWhiteList: false,
+              merkleRoot:
+                "0x0000000000000000000000000000000000000000000000000000000000000001",
+            };
+            initiateConnection(
+              params,
+              dispatch,
               GNOSIS_TRANSACTION_URL,
-              values.governance,
-              true,
-              false,
-              "0x0000000000000000000000000000000000000000000000000000000000000001",
               values.addressList,
               formikStep1.values.clubTokenType,
               "0xd4efbacb48ba952201b75afecacb82048588e44f",
             );
           })
           .catch((error) => {
-            // dispatch(setCreateSafeLoading(false));
             console.error(error);
           });
       }
-      //   handleFormSubmit();
     },
   });
 
@@ -188,7 +256,7 @@ const Create = () => {
           formikERC20Step2.handleSubmit();
           break;
         } else {
-          // NFTformikStep2.handleSubmit();
+          formikERC721Step2.handleSubmit();
           break;
         }
 
@@ -246,6 +314,12 @@ const Create = () => {
                   <ErrorModal isError />
                 )}
               </>
+            ) : activeStep === steps.length - 1 && uploadNFTLoading ? (
+              <SafeDepositLoadingModal
+                open={open}
+                title="Uploading your NFT"
+                description="Please wait till we upload the nft."
+              />
             ) : (
               <Fragment>
                 <Grid

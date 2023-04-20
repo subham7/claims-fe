@@ -32,3 +32,17 @@ export const step3ValidationSchema = yup.object({
       .required("wallet address is required"),
   ),
 });
+
+export const ERC721Step2ValidationSchema = yup.object({
+  nftImage: yup.mixed().required("File is required"),
+  pricePerToken: yup.number().required("price per token is required"),
+  maxTokensPerUser: yup
+    .number()
+    .required("max token min limit per user is required"),
+  isNftTotalSupplylimited: yup.boolean(),
+  totalTokenSupply: yup.number().when("isNftTotalSupplylimited", {
+    is: true,
+    then: yup.number().required("total supply of nft is required"),
+  }),
+  depositClose: yup.date().required("deposit close date is required"),
+});
