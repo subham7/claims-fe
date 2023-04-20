@@ -270,6 +270,24 @@ export class SmartContract {
     allowWhiteList,
     merkleRoot,
   ) {
+    console.log(
+      clubName,
+      clubSymbol,
+      distributeAmount,
+      pricePerToken,
+      minDepositPerUser,
+      maxDepositPerUser,
+      ownerFeePerDepositPercent,
+      depositClose,
+      quorum,
+      threshold,
+      depositTokenAddress,
+      treasuryAddress,
+      isGovernanceActive,
+      isGtTransferable,
+      allowWhiteList,
+      merkleRoot,
+    );
     return this.contract.methods
       .createERC20DAO(
         clubName,

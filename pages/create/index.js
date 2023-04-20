@@ -22,6 +22,8 @@ import {
 } from "../../src/components/createClubComps/ValidationSchemas";
 import { setUploadNFTLoading } from "../../src/redux/reducers/gnosis";
 import { NFTStorage } from "nft.storage";
+import { convertAmountToWei } from "../../src/utils/globalFunctions";
+import { convertToWeiGovernance } from "../../src/utils/globalFunctions";
 
 const Create = () => {
   const steps = ["Add basic info", "Set token rules", "Governance"];
@@ -165,18 +167,24 @@ const Create = () => {
             const params = {
               clubName: formikStep1.values.clubName,
               clubSymbol: formikStep1.values.clubSymbol,
-              ownerFeePerDepositPercent: 0,
+              ownerFeePerDepositPercent: 0 * 100,
               depositClose: dayjs(formikERC20Step2.values.depositClose).unix(),
-              quorum: values.quorum,
-              threshold: values.threshold,
+              quorum: values.quorum * 100,
+              threshold: values.threshold * 100,
               depositTokenAddress: USDC_CONTRACT_ADDRESS,
               maxTokensPerUser: formikERC721Step2.values.maxTokensPerUser,
 
               distributeAmount: formikERC721Step2.values.isNftTotalSupplylimited
-                ? formikERC721Step2.values.totalTokenSupply /
-                  formikERC721Step2.values.pricePerToken
+                ? convertToWeiGovernance(
+                    formikERC721Step2.values.totalTokenSupply /
+                      formikERC721Step2.values.pricePerToken,
+                    18,
+                  )
                 : 0,
-              pricePerToken: formikERC721Step2.values.pricePerToken,
+              pricePerToken: convertToWeiGovernance(
+                formikERC721Step2.values.pricePerToken,
+                6,
+              ),
               isNftTransferable: formikERC721Step2.values.isNftTransferable,
               isNftTotalSupplyUnlimited:
                 !formikERC721Step2.values.isNftTotalSupplylimited,
@@ -211,16 +219,27 @@ const Create = () => {
             const params = {
               clubName: formikStep1.values.clubName,
               clubSymbol: formikStep1.values.clubSymbol,
-              distributeAmount:
+              distributeAmount: convertToWeiGovernance(
                 formikERC20Step2.values.totalRaiseAmount /
+                  formikERC20Step2.values.pricePerToken,
+                18,
+              ),
+              pricePerToken: convertToWeiGovernance(
                 formikERC20Step2.values.pricePerToken,
-              pricePerToken: formikERC20Step2.values.pricePerToken,
-              minDepositPerUser: formikERC20Step2.values.minDepositPerUser,
-              maxDepositPerUser: formikERC20Step2.values.maxDepositPerUser,
-              ownerFeePerDepositPercent: 0,
+                6,
+              ),
+              minDepositPerUser: convertToWeiGovernance(
+                formikERC20Step2.values.minDepositPerUser,
+                6,
+              ),
+              maxDepositPerUser: convertToWeiGovernance(
+                formikERC20Step2.values.maxDepositPerUser,
+                6,
+              ),
+              ownerFeePerDepositPercent: 0 * 100,
               depositClose: dayjs(formikERC20Step2.values.depositClose).unix(),
-              quorum: values.quorum,
-              threshold: values.threshold,
+              quorum: values.quorum * 100,
+              threshold: values.threshold * 100,
               depositTokenAddress: USDC_CONTRACT_ADDRESS,
               isGovernanceActive: values.governance,
               isGtTransferable: true,
