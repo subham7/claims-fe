@@ -422,6 +422,9 @@ const Dashboard = () => {
   const governanceConvertDecimal = useSelector((state) => {
     return state.gnosis.governanceTokenDecimal;
   });
+  const isAdmin = useSelector((state) => {
+    return state.gnosis.adminUser;
+  });
 
   let walletAddress;
   if (typeof window !== "undefined") {
@@ -495,7 +498,7 @@ const Dashboard = () => {
         }
       };
 
-      loadNftContractData();
+      if (tokenType === "erc721") loadNftContractData();
       loadSmartContractData();
       // console.log("token type", tokenType);
     }
@@ -506,23 +509,24 @@ const Dashboard = () => {
     dataFetched,
     wallet,
     walletAddress,
+    tokenType,
   ]);
 
-  const checkIsAdmin = () => {
-    if (membersFetched && membersDetails.length > 0 && walletAddress) {
-      let obj = membersDetails.find(
-        (member) => member.userAddress === walletAddress,
-      );
+  // const checkIsAdmin = () => {
+  //   if (membersFetched && membersDetails.length > 0 && walletAddress) {
+  //     let obj = membersDetails.find(
+  //       (member) => member.userAddress === walletAddress,
+  //     );
 
-      let pos = membersDetails.indexOf(obj);
-      if (pos >= 0) {
-        if (membersDetails[pos].clubs[0].isAdmin) {
-          return true;
-        }
-      }
-      return false;
-    }
-  };
+  //     let pos = membersDetails.indexOf(obj);
+  //     if (pos >= 0) {
+  //       if (membersDetails[pos].clubs[0].isAdmin) {
+  //         return true;
+  //       }
+  //     }
+  //     return false;
+  //   }
+  // };
 
   const tokenAPIDetailsRetrieval = async () => {
     let response = await fetchClubbyDaoAddress(daoAddress);
@@ -617,8 +621,6 @@ const Dashboard = () => {
         ? `${window.location.origin}/join/${daoAddress}`
         : null,
     );
-
-    
   };
 
   const handleProposalClick = (proposal) => {
@@ -666,12 +668,12 @@ const Dashboard = () => {
                         />
                       )}
                     </Typography>
-                    <Grid container item direction="row" paddingBottom={4}>
+                    {/* <Grid container item direction="row" paddingBottom={4}>
                       <Typography variant="regularText2" mr={1}>
                         {membersFetched ? members : 0}
                       </Typography>
                       <Typography variant="regularText2">Members</Typography>
-                    </Grid>
+                    </Grid> */}
                   </Stack>
                 </Grid>
               </Grid>
@@ -999,7 +1001,7 @@ const Dashboard = () => {
             </Stack>
 
             <Stack mt={2}>
-              {checkIsAdmin() ? (
+              {isAdmin ? (
                 <Card className={classes.thirdCard}>
                   <Grid container m={2}>
                     <Grid item>
@@ -1189,7 +1191,7 @@ const Dashboard = () => {
                         No proposals raised yet
                       </Typography>
                     </Grid>
-                    {checkIsAdmin() ? (
+                    {isAdmin ? (
                       <Grid item pb={15}>
                         <Button
                           variant="primary"
