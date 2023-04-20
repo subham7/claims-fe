@@ -1,6 +1,11 @@
 import { makeStyles } from "@mui/styles";
 
 export const NewArchERC20Styles = makeStyles({
+  root: {
+    "& .MuiFilledInput-root": {
+      background: "rgb(232, 241, 250)",
+    },
+  },
   valuesStyle: {
     fontFamily: "Whyte",
     fontSize: "21px",
@@ -42,7 +47,7 @@ export const NewArchERC20Styles = makeStyles({
     fontWeight: "bold",
   },
   cardLargeFont: {
-    "width": "150px",
+    "width": "300px",
     "fontSize": "2em",
     "fontWeight": "bold",
     // "fontFamily": "Whyte",
@@ -60,6 +65,7 @@ export const NewArchERC20Styles = makeStyles({
       "margin": 0,
     },
     "color": "#3B7AFD",
+    "background": "#fff",
   },
   cardWarning: {
     backgroundColor: "#FFB74D0D",

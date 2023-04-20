@@ -8,6 +8,7 @@ import {
   Dialog,
   DialogContent,
   Divider,
+  FormControl,
   Grid,
   Input,
   Skeleton,
@@ -22,10 +23,11 @@ import { SmartContract } from "../../../../api/contract";
 import Image from "next/image";
 import erc20DaoContractABI from "../../../../abis/newArch/erc20Dao.json";
 import factoryContractABI from "../../../../abis/newArch/factoryContract.json";
-
+import ProgressBar from "../../../progressbar";
 import erc20ABI from "../../../../abis/usdcTokenContract.json";
 import Web3 from "web3";
 import {
+  calculateTreasuryTargetShare,
   convertFromWeiGovernance,
   convertToWeiGovernance,
 } from "../../../../utils/globalFunctions";
@@ -51,6 +53,7 @@ const NewArchERC20 = ({ daoDetails, erc20DaoAddress }) => {
 
   const day = Math.floor(new Date().getTime() / 1000.0);
   const remainingDays = daoDetails.depositDeadline - day;
+  console.log(remainingDays);
 
   const fetchTokenDetails = useCallback(async () => {
     try {
@@ -91,10 +94,23 @@ const NewArchERC20 = ({ daoDetails, erc20DaoAddress }) => {
         .number()
         .required("Input is required")
         .min(
-          +daoDetails.minDeposit,
+          Number(
+            convertFromWeiGovernance(
+              daoDetails.minDeposit,
+              erc20TokenDetails.tokenDecimal,
+            ),
+          ),
           "Amount should be greater than min deposit",
         )
-        .max(+daoDetails.maxDeposit, "Amount should be less than max deposit"),
+        .max(
+          Number(
+            convertFromWeiGovernance(
+              daoDetails.maxDeposit,
+              erc20TokenDetails.tokenDecimal,
+            ),
+          ),
+          "Amount should be less than max deposit",
+        ),
     }),
     onSubmit: async (values) => {
       try {
@@ -114,20 +130,26 @@ const NewArchERC20 = ({ daoDetails, erc20DaoAddress }) => {
           undefined,
         );
 
-        await erc20Contract.approveDeposit(
-          NEW_FACTORY_ADDRESS,
+        const inputValue = convertToWeiGovernance(
           values.tokenInput,
           erc20TokenDetails.tokenDecimal,
         );
+
+        await erc20Contract.approveDeposit(
+          NEW_FACTORY_ADDRESS,
+          inputValue,
+          erc20TokenDetails.tokenDecimal,
+        );
+
+        console.log("Input", inputValue);
+        console.log("Price", daoDetails.pricePerToken);
+        console.log(inputValue / +daoDetails.pricePerToken);
 
         const deposit = await factoryContract.buyGovernanceTokenERC20DAO(
           walletAddress,
           erc20DaoAddress,
           daoDetails.depositTokenAddress,
-          convertToWeiGovernance(
-            values.tokenInput,
-            erc20TokenDetails.tokenDecimal,
-          ),
+          (inputValue / +daoDetails.pricePerToken).toString(),
           [],
         );
 
@@ -159,11 +181,14 @@ const NewArchERC20 = ({ daoDetails, erc20DaoAddress }) => {
                   <Grid item xs={12} md={9}>
                     <Grid container spacing={2}>
                       <Grid item mt={3} ml={3}>
-                        {/* <img
-                          src={imageFetched ? imageUrl : null}
-                          alt="club-image"
-                          width="100vw"
-                        /> */}
+                        {daoDetails.daoImage && (
+                          <Image
+                            src={daoDetails?.daoImage}
+                            alt="club-image"
+                            width={120}
+                            height={120}
+                          />
+                        )}
                       </Grid>
                       <Grid item ml={1} mt={4} mb={7}>
                         <Stack spacing={0}>
@@ -317,7 +342,10 @@ const NewArchERC20 = ({ daoDetails, erc20DaoAddress }) => {
                       <Grid item mt={2}>
                         <Typography variant="p" className={classes.valuesStyle}>
                           {daoDetails.minDeposit ? (
-                            `${daoDetails.minDeposit} ${erc20TokenDetails.tokenSymbol}`
+                            `${convertFromWeiGovernance(
+                              daoDetails.minDeposit,
+                              erc20TokenDetails.tokenDecimal,
+                            )} ${erc20TokenDetails.tokenSymbol}`
                           ) : (
                             <Skeleton
                               variant="rectangular"
@@ -350,7 +378,10 @@ const NewArchERC20 = ({ daoDetails, erc20DaoAddress }) => {
                       <Grid item mt={2}>
                         <Typography variant="p" className={classes.valuesStyle}>
                           {daoDetails.maxDeposit ? (
-                            `${daoDetails.maxDeposit} ${erc20TokenDetails.tokenSymbol}`
+                            `${convertFromWeiGovernance(
+                              daoDetails.maxDeposit,
+                              erc20TokenDetails.tokenDecimal,
+                            )} ${erc20TokenDetails.tokenSymbol}`
                           ) : (
                             <Skeleton
                               variant="rectangular"
@@ -429,22 +460,21 @@ const NewArchERC20 = ({ daoDetails, erc20DaoAddress }) => {
                     </Grid>
                   </Grid>
                 </Grid>
-                {/* <Grid item ml={3} mt={5} mb={2} mr={3}>
-          {walletConnected ? (
-            <ProgressBar
-              value={
-                governorDataFetched
-                  ? calculateTreasuryTargetShare(
-                      clubTokenMinted,
-                      convertAmountToWei(governorDetails[4]),
-                    )
-                  : 0
-              }
-            />
-          ) : (
-            <Skeleton variant="rectangular" />
-          )}
-        </Grid> */}
+                <Grid item ml={3} mt={5} mb={2} mr={3}>
+                  {walletAddress ? (
+                    <ProgressBar
+                      value={calculateTreasuryTargetShare(
+                        +daoDetails.clubTokensMinted,
+                        convertFromWeiGovernance(
+                          daoDetails.totalSupply,
+                          erc20TokenDetails.tokenDecimal,
+                        ),
+                      )}
+                    />
+                  ) : (
+                    <Skeleton variant="rectangular" />
+                  )}
+                </Grid>
                 <br />
                 <Grid
                   container
@@ -473,15 +503,17 @@ const NewArchERC20 = ({ daoDetails, erc20DaoAddress }) => {
                       </Grid>
                       <Grid item>
                         <Typography variant="p" className={classes.valuesStyle}>
-                          {/* {walletConnected ? (
-                            parseInt(clubTokenMinted) + " $" + tokenSymbol
+                          {walletAddress ? (
+                            parseInt(Number(daoDetails.clubTokensMinted)) +
+                            " $" +
+                            daoDetails.daoSymbol
                           ) : (
                             <Skeleton
                               variant="rectangular"
                               width={100}
                               height={25}
                             />
-                          )} */}
+                          )}
                         </Typography>
                       </Grid>
                     </Grid>
@@ -494,7 +526,7 @@ const NewArchERC20 = ({ daoDetails, erc20DaoAddress }) => {
                           className={classes.valuesDimStyle}
                         >
                           {walletAddress ? (
-                            "Total Supply"
+                            "Total Raise Amt"
                           ) : (
                             <Skeleton
                               variant="rectangular"
@@ -507,7 +539,10 @@ const NewArchERC20 = ({ daoDetails, erc20DaoAddress }) => {
                       <Grid item>
                         <Typography variant="p" className={classes.valuesStyle}>
                           {daoDetails.totalSupply ? (
-                            daoDetails.totalSupply +
+                            convertFromWeiGovernance(
+                              daoDetails.totalSupply,
+                              erc20TokenDetails.tokenDecimal,
+                            ) +
                             (" $" + daoDetails.daoSymbol)
                           ) : (
                             <Skeleton
@@ -586,14 +621,24 @@ const NewArchERC20 = ({ daoDetails, erc20DaoAddress }) => {
                         </Grid>
                         <Grid container spacing={2}>
                           <Grid item ml={2} mt={1} mb={2} p={1}>
-                            <form onSubmit={formik.handleSubmit}>
+                            <FormControl
+                              style={{ background: "#fff" }}
+                              onSubmit={formik.handleSubmit}
+                            >
                               <TextField
+                                variant="filled"
                                 className={classes.cardLargeFont}
                                 type="number"
                                 name="tokenInput"
                                 id="tokenInput"
                                 disabled={remainingDays > 0 ? false : true}
-                                inputProps={{ style: { fontSize: "1em" } }}
+                                inputProps={{
+                                  style: {
+                                    fontSize: "2em",
+                                    background: "#fff",
+                                    color: "#000",
+                                  },
+                                }}
                                 InputLabelProps={{ style: { fontSize: "1em" } }}
                                 onChange={formik.handleChange}
                                 value={formik.values.tokenInput}
@@ -606,7 +651,7 @@ const NewArchERC20 = ({ daoDetails, erc20DaoAddress }) => {
                                   formik.errors.tokenInput
                                 }
                               />
-                            </form>
+                            </FormControl>
 
                             {/* <Typography sx={{ color: "red" }}>
                               {depositAmount < minDeposit

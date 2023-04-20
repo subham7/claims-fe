@@ -8,11 +8,15 @@ import Web3 from "web3";
 import Layout2 from "../../src/components/layouts/layout2";
 import NewArchERC20 from "../../src/components/depositPageComps/ERC20/NewArch/NewArchERC20";
 import { useRouter } from "next/router";
+import { fetchClubbyDaoAddress } from "../../src/api/club";
 
 const Join = () => {
   const [daoDetails, setDaoDetails] = useState({
     daoName: "",
     daoSymbol: "",
+    decimals: 0,
+    daoImage: "",
+    clubTokensMinted: 0,
     quorum: 0,
     threshold: 0,
     isGovernance: false,
@@ -58,11 +62,19 @@ const Join = () => {
         undefined,
       );
 
+      const fetchedData = await fetchClubbyDaoAddress(erc20DaoAddress);
+      const fetchedImage = fetchedData?.data[0]?.imageUrl;
+
       if (factoryContract && erc20DaoContract) {
         const factoryData = await factoryContract.getDAOdetails(
           erc20DaoAddress,
         );
         const erc20Data = await erc20DaoContract.getERC20DAOdetails();
+        const erc20DaoDecimal = await erc20DaoContract.decimals();
+        const clubTokensMinted = await erc20DaoContract.totalSupply();
+
+        console.log("Minted", clubTokensMinted);
+
         console.log(factoryData, erc20Data);
 
         if (erc20Data && factoryData)
@@ -72,6 +84,9 @@ const Join = () => {
             quorum: erc20Data.quorum,
             threshold: erc20Data.threshold,
             isGovernance: erc20Data.isGovernanceActive,
+            decimals: erc20DaoDecimal,
+            clubTokensMinted: clubTokensMinted,
+            daoImage: fetchedImage,
             isTokenGated: factoryData.isTokenGatingApplied,
             minDeposit: factoryData.minDepositPerUser,
             maxDeposit: factoryData.maxDepositPerUser,

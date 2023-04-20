@@ -125,6 +125,26 @@ export class SmartContract {
     });
   }
 
+  async buyGovernanceTokenERC20DAO(
+    userAddress,
+    daoAddress,
+    depositTokenAddress,
+    numOfTokens,
+    merkleProof,
+  ) {
+    return this.contract.methods
+      .buyGovernanceTokenERC20DAO(
+        userAddress,
+        daoAddress,
+        depositTokenAddress,
+        numOfTokens,
+        merkleProof,
+      )
+      .send({
+        from: this.walletAddress,
+      });
+  }
+
   // // create new club contract function
   // async createDAO(
   //   owners,
@@ -689,6 +709,12 @@ export class SmartContract {
 
   async decimals() {
     return this.contract?.methods.decimals().call({ from: this.walletAddress });
+  }
+
+  async totalSupply() {
+    return this.contract?.methods
+      .totalSupply()
+      .call({ from: this.walletAddress });
   }
 
   async approve() {
