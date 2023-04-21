@@ -13,7 +13,8 @@ export const RINKEYBY_RPC_URL = process.env.NEXT_PUBLIC_RINKEYBY_RPC_URL;
 export const GOERLI_RPC_URL = process.env.NEXT_PUBLIC_GOERLI_RPC_URL;
 export const USDC_FAUCET_ADDRESS = process.env.NEXT_PUBLIC_USDC_FAUCET_ADDRESS;
 export const POLYGON_RPC_URL = process.env.NEXT_PUBLIC_POLYGON_RPC_URL;
-export const CLAIM_FACTORY_ADDRESS = process.env.NEXT_PUBLIC_CLAIM_FACTORY_ADDRESS
+export const CLAIM_FACTORY_ADDRESS =
+  process.env.NEXT_PUBLIC_CLAIM_FACTORY_ADDRESS;
 
 export function updateDynamicAddress(networkId, dispatch) {
   const networkData = fetchConfigById(networkId);

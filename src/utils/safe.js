@@ -381,6 +381,7 @@ export async function initiateConnection(
           params.isNftTotalSupplyUnlimited,
           params.isGovernanceActive,
           params.allowWhiteList,
+          false, // assets Stored on Gnosis
           params.merkleRoot,
         );
       } else {
@@ -400,6 +401,7 @@ export async function initiateConnection(
           params.isGovernanceActive,
           params.isGtTransferable,
           params.allowWhiteList,
+          false, // assets Stored on Gnosis
           params.merkleRoot,
         );
       }

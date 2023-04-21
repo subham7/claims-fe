@@ -228,6 +228,7 @@ export class SmartContract {
     isNftTotalSupplyUnlimited,
     isGovernanceActive,
     allowWhiteList,
+    assetsStoredOnGnosis,
     merkleRoot,
   ) {
     return this.contract.methods
@@ -247,6 +248,7 @@ export class SmartContract {
         isNftTotalSupplyUnlimited,
         isGovernanceActive,
         allowWhiteList,
+        assetsStoredOnGnosis,
         merkleRoot,
       )
       .send({ from: this.walletAddress });
@@ -268,6 +270,7 @@ export class SmartContract {
     isGovernanceActive,
     isGtTransferable,
     allowWhiteList,
+    assetsStoredOnGnosis,
     merkleRoot,
   ) {
     console.log(
@@ -286,6 +289,7 @@ export class SmartContract {
       isGovernanceActive,
       isGtTransferable,
       allowWhiteList,
+      assetsStoredOnGnosis,
       merkleRoot,
     );
     return this.contract.methods
@@ -305,6 +309,7 @@ export class SmartContract {
         isGovernanceActive,
         isGtTransferable,
         allowWhiteList,
+        assetsStoredOnGnosis,
         merkleRoot,
       )
       .send({ from: this.walletAddress });
