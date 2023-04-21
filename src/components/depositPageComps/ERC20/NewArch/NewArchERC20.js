@@ -700,7 +700,12 @@ const NewArchERC20 = ({ daoDetails, erc20DaoAddress }) => {
                           >
                             <Button
                               className={classes.maxTag}
-                              //   onClick={handleMaxButtonClick}
+                              onClick={() => {
+                                formik.setFieldValue(
+                                  "tokenInput",
+                                  erc20TokenDetails.tokenBalance.toFixed(2),
+                                );
+                              }}
                             >
                               Max
                             </Button>

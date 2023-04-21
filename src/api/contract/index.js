@@ -145,6 +145,28 @@ export class SmartContract {
       });
   }
 
+  async buyGovernanceTokenERC721DAO(
+    userAddress,
+    daoAddress,
+    depositTokenAddress,
+    tokenUriOfNFT,
+    numOfTokens,
+    merkleProof,
+  ) {
+    return this.contract.methods
+      .buyGovernanceTokenERC721DAO(
+        userAddress,
+        daoAddress,
+        depositTokenAddress,
+        tokenUriOfNFT,
+        numOfTokens,
+        merkleProof,
+      )
+      .send({
+        from: this.walletAddress,
+      });
+  }
+
   // // create new club contract function
   // async createDAO(
   //   owners,
@@ -338,6 +360,12 @@ export class SmartContract {
 
   async getERC20DAOdetails() {
     return this.contract?.methods.getERC20DAOdetails().call({
+      from: this.walletAddress,
+    });
+  }
+
+  async getERC721DAOdetails() {
+    return this.contract?.methods.getERC721DAOdetails().call({
       from: this.walletAddress,
     });
   }
