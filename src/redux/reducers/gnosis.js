@@ -16,6 +16,7 @@ export const slice = createSlice({
     tokenSymbol: null,
     tokenDecimal: null,
     governanceTokenDecimal: null,
+    setUploadNFTLoading: false,
     setCreateSafeLoading: false,
     setCreateSafeError: false,
     setCreateSafeErrorCode: null,
@@ -56,6 +57,9 @@ export const slice = createSlice({
       state.tokenSymbol = action.payload.tokenSymbol;
       state.tokenDecimal = action.payload.tokenDecimal;
     },
+    setUploadNFTLoading: (state, action) => {
+      state.setUploadNFTLoading = action.payload;
+    },
     setCreateSafeLoading: (state, action) => {
       state.setCreateSafeLoading = action.payload;
     },
@@ -86,6 +90,7 @@ export const {
   setMemberUser,
   setGovernanceTokenDetails,
   setUSDCTokenDetails,
+  setUploadNFTLoading,
   setCreateSafeLoading,
   setCreateSafeError,
   setCreateSafeErrorCode,

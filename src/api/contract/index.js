@@ -212,6 +212,46 @@ export class SmartContract {
   //       .send({ from: this.walletAddress });
   // }
 
+  async createERC721DAO(
+    clubName,
+    clubSymbol,
+    ownerFeePerDepositPercent,
+    depositClose,
+    quorum,
+    threshold,
+    depositTokenAddress,
+    treasuryAddress,
+    maxTokensPerUser,
+    distributeAmount,
+    pricePerToken,
+    isNftTransferable,
+    isNftTotalSupplyUnlimited,
+    isGovernanceActive,
+    allowWhiteList,
+    merkleRoot,
+  ) {
+    return this.contract.methods
+      .createERC721DAO(
+        clubName,
+        clubSymbol,
+        ownerFeePerDepositPercent,
+        depositClose,
+        quorum,
+        threshold,
+        depositTokenAddress,
+        treasuryAddress,
+        maxTokensPerUser,
+        distributeAmount,
+        pricePerToken,
+        isNftTransferable,
+        isNftTotalSupplyUnlimited,
+        isGovernanceActive,
+        allowWhiteList,
+        merkleRoot,
+      )
+      .send({ from: this.walletAddress });
+  }
+
   async createERC20DAO(
     clubName,
     clubSymbol,
@@ -230,6 +270,24 @@ export class SmartContract {
     allowWhiteList,
     merkleRoot,
   ) {
+    console.log(
+      clubName,
+      clubSymbol,
+      distributeAmount,
+      pricePerToken,
+      minDepositPerUser,
+      maxDepositPerUser,
+      ownerFeePerDepositPercent,
+      depositClose,
+      quorum,
+      threshold,
+      depositTokenAddress,
+      treasuryAddress,
+      isGovernanceActive,
+      isGtTransferable,
+      allowWhiteList,
+      merkleRoot,
+    );
     return this.contract.methods
       .createERC20DAO(
         clubName,

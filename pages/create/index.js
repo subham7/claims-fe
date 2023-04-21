@@ -1,39 +1,35 @@
-import {
-  Backdrop,
-  Box,
-  Button,
-  Card,
-  CircularProgress,
-  Grid,
-  Step,
-  StepButton,
-  Stepper,
-  Typography,
-} from "@mui/material";
+import { Box, Button, Grid, Step, StepButton, Stepper } from "@mui/material";
 import Layout2 from "../../src/components/layouts/layout2";
 import ProtectRoute from "../../src/utils/auth";
-import { Fragment, useState } from "react";
+import { Fragment, useRef, useState } from "react";
 import Step1 from "../../src/components/createClubComps/Step1";
-import Step2 from "../../src/components/createClubComps/ERC20Step2";
 import Step3 from "../../src/components/createClubComps/Step3";
 import { useFormik } from "formik";
 import { tokenType } from "../../src/data/create";
-import * as yup from "yup";
 import ERC20Step2 from "../../src/components/createClubComps/ERC20Step2";
-import NFTStep2 from "./NFTStep2";
+import NFTStep2 from "../../src/components/createClubComps/NFTStep2";
 import dayjs from "dayjs";
 import Web3 from "web3";
 import { useSelector, useDispatch } from "react-redux";
 import { initiateConnection } from "../../src/utils/safe";
-import {
-  setCreateDaoAuthorized,
-  setCreateSafeLoading,
-} from "../../src/redux/reducers/gnosis";
 import ErrorModal from "../../src/components/createClubComps/ErrorModal";
+import SafeDepositLoadingModal from "../../src/components/createClubComps/SafeDepositLoadingModal";
+import {
+  ERC20Step2ValidationSchema,
+  ERC721Step2ValidationSchema,
+  step1ValidationSchema,
+  step3ValidationSchema,
+} from "../../src/components/createClubComps/ValidationSchemas";
+import { setUploadNFTLoading } from "../../src/redux/reducers/gnosis";
+import { NFTStorage } from "nft.storage";
+import { convertAmountToWei } from "../../src/utils/globalFunctions";
+import { convertToWeiGovernance } from "../../src/utils/globalFunctions";
 
 const Create = () => {
   const steps = ["Add basic info", "Set token rules", "Governance"];
   const dispatch = useDispatch();
+  const uploadInputRef = useRef(null);
+
   const [activeStep, setActiveStep] = useState(0);
   const [completed, setCompleted] = useState({});
   const [open, setOpen] = useState(false);
@@ -58,6 +54,10 @@ const Create = () => {
     return state.gnosis.setCreateSafeErrorCode;
   });
 
+  const uploadNFTLoading = useSelector((state) => {
+    return state.gnosis.setUploadNFTLoading;
+  });
+
   const handleStep = (step) => () => {
     setActiveStep(step);
   };
@@ -69,72 +69,26 @@ const Create = () => {
   const getStepContent = (step) => {
     switch (step) {
       case 0:
-        return (
-          <>
-            <Step1 formik={formikStep1} />
-          </>
-        );
+        return <Step1 formik={formikStep1} />;
       case 1:
         if (
           formikStep1.values.clubTokenType === "Non Transferable ERC20 Token"
         ) {
-          return (
-            <>
-              <ERC20Step2 formik={formikERC20Step2} />
-            </>
-          );
+          return <ERC20Step2 formik={formikERC20Step2} />;
         } else {
           return (
-            <>
-              <NFTStep2 />
-            </>
+            <NFTStep2
+              formik={formikERC721Step2}
+              uploadInputRef={uploadInputRef}
+            />
           );
         }
-
       case 2:
-        return (
-          <>
-            <Step3 formik={formikStep3} />
-          </>
-        );
-
+        return <Step3 formik={formikStep3} />;
       default:
         return "Unknown step";
     }
   };
-
-  const step1ValidationSchema = yup.object({
-    clubName: yup
-      .string("Enter club name")
-      .min(2, "Name should be of minimum 2 characters length")
-      .required("Club Name is required"),
-    clubSymbol: yup
-      .string("Enter club symbol")
-      .required("Club Symbol is required"),
-  });
-
-  const ERC20Step2ValidationSchema = yup.object({
-    depositClose: yup.date().required("deposit close date is required"),
-    minDepositPerUser: yup.number().required("min deposit amount is required"),
-    maxDepositPerUser: yup
-      .number()
-      .moreThan(
-        yup.ref("minDepositPerUser"),
-        "Amount should be greater than min deposit",
-      )
-      .required("min deposit amount is required"),
-    totalRaiseAmount: yup.number().required("raise amount is required"),
-    pricePerToken: yup.number().required("price per token is required"),
-  });
-
-  const step3ValidationSchema = yup.object({
-    addressList: yup.array().of(
-      yup
-        .string()
-        .matches(/^0x[a-zA-Z0-9]+/gm, " proper wallet address is required")
-        .required("wallet address is required"),
-    ),
-  });
 
   const formikStep1 = useFormik({
     initialValues: {
@@ -147,6 +101,7 @@ const Create = () => {
       handleNext();
     },
   });
+
   const formikERC20Step2 = useFormik({
     initialValues: {
       depositClose: dayjs(Date.now() + 300000),
@@ -160,6 +115,25 @@ const Create = () => {
       handleNext();
     },
   });
+
+  const formikERC721Step2 = useFormik({
+    initialValues: {
+      nftImage: "",
+      isNftTransferable: false,
+      pricePerToken: "",
+      maxTokensPerUser: "",
+      isNftTotalSupplylimited: false,
+      totalTokenSupply: "",
+      depositClose: dayjs(Date.now() + 300000),
+    },
+
+    validationSchema: ERC721Step2ValidationSchema,
+    onSubmit: (values) => {
+      console.log(values);
+      handleNext();
+    },
+  });
+
   const formikStep3 = useFormik({
     initialValues: {
       governance: true,
@@ -168,10 +142,73 @@ const Create = () => {
       addressList: [],
     },
     validationSchema: step3ValidationSchema,
-    onSubmit: (values) => {
+    onSubmit: async (values) => {
       setOpen(true);
       if (formikStep1.values.clubTokenType === "NFT") {
-        console.log("nft club create");
+        dispatch(setUploadNFTLoading(true));
+        const client = new NFTStorage({
+          token:
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweDlhMWRFQjEyMjQyYTBlN0VmNTUwNjFlOTAwMTYyMDcxNEFENDBlNDgiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTY3NDEyOTI3MzM5MSwibmFtZSI6InN0YXRpb25YIG5mdCJ9.1w-RC7qZ43T2NhjHrtsO_Gmb0Mw1BjJo7GXMciqX5jY",
+        });
+
+        const metadata = await client.store({
+          name: formikStep1.values.clubName,
+          description: "nft image",
+          image: formikERC721Step2.values.nftImage,
+        });
+        dispatch(setUploadNFTLoading(false));
+        console.log(metadata);
+        const web3 = new Web3(Web3.givenProvider);
+        const auth = web3.eth.getAccounts();
+        auth
+          .then((result) => {
+            const walletAddress = Web3.utils.toChecksumAddress(result[0]);
+            values.addressList.unshift(walletAddress);
+            const params = {
+              clubName: formikStep1.values.clubName,
+              clubSymbol: formikStep1.values.clubSymbol,
+              ownerFeePerDepositPercent: 0 * 100,
+              depositClose: dayjs(formikERC20Step2.values.depositClose).unix(),
+              quorum: values.quorum * 100,
+              threshold: values.threshold * 100,
+              depositTokenAddress: USDC_CONTRACT_ADDRESS,
+              maxTokensPerUser: formikERC721Step2.values.maxTokensPerUser,
+
+              distributeAmount: formikERC721Step2.values.isNftTotalSupplylimited
+                ? convertToWeiGovernance(
+                    formikERC721Step2.values.totalTokenSupply /
+                      formikERC721Step2.values.pricePerToken,
+                    18,
+                  )
+                : 0,
+              pricePerToken: convertToWeiGovernance(
+                formikERC721Step2.values.pricePerToken,
+                6,
+              ),
+              isNftTransferable: formikERC721Step2.values.isNftTransferable,
+              isNftTotalSupplyUnlimited:
+                !formikERC721Step2.values.isNftTotalSupplylimited,
+              isGovernanceActive: values.governance,
+
+              allowWhiteList: false,
+              merkleRoot:
+                "0x0000000000000000000000000000000000000000000000000000000000000001",
+            };
+
+            initiateConnection(
+              params,
+              dispatch,
+              GNOSIS_TRANSACTION_URL,
+              values.addressList,
+              formikStep1.values.clubTokenType,
+              "0xd4efbacb48ba952201b75afecacb82048588e44f",
+              metadata.data.image.pathname,
+              metadata.url,
+            );
+          })
+          .catch((error) => {
+            console.error(error);
+          });
       } else {
         const web3 = new Web3(Web3.givenProvider);
         const auth = web3.eth.getAccounts();
@@ -179,36 +216,50 @@ const Create = () => {
           .then((result) => {
             const walletAddress = Web3.utils.toChecksumAddress(result[0]);
             values.addressList.unshift(walletAddress);
-            initiateConnection(
-              dispatch,
-              formikStep1.values.clubName,
-              formikStep1.values.clubSymbol,
-              formikERC20Step2.values.totalRaiseAmount /
+            const params = {
+              clubName: formikStep1.values.clubName,
+              clubSymbol: formikStep1.values.clubSymbol,
+              distributeAmount: convertToWeiGovernance(
+                formikERC20Step2.values.totalRaiseAmount /
+                  formikERC20Step2.values.pricePerToken,
+                18,
+              ),
+              pricePerToken: convertToWeiGovernance(
                 formikERC20Step2.values.pricePerToken,
-              formikERC20Step2.values.pricePerToken,
-              formikERC20Step2.values.minDepositPerUser,
-              formikERC20Step2.values.maxDepositPerUser,
-              0,
-              dayjs(formikERC20Step2.values.depositClose).unix(),
-              values.quorum,
-              values.threshold,
-              USDC_CONTRACT_ADDRESS,
+                6,
+              ),
+              minDepositPerUser: convertToWeiGovernance(
+                formikERC20Step2.values.minDepositPerUser,
+                6,
+              ),
+              maxDepositPerUser: convertToWeiGovernance(
+                formikERC20Step2.values.maxDepositPerUser,
+                6,
+              ),
+              ownerFeePerDepositPercent: 0 * 100,
+              depositClose: dayjs(formikERC20Step2.values.depositClose).unix(),
+              quorum: values.quorum * 100,
+              threshold: values.threshold * 100,
+              depositTokenAddress: USDC_CONTRACT_ADDRESS,
+              isGovernanceActive: values.governance,
+              isGtTransferable: true,
+              allowWhiteList: false,
+              merkleRoot:
+                "0x0000000000000000000000000000000000000000000000000000000000000001",
+            };
+            initiateConnection(
+              params,
+              dispatch,
               GNOSIS_TRANSACTION_URL,
-              values.governance,
-              true,
-              false,
-              "0x0000000000000000000000000000000000000000000000000000000000000001",
               values.addressList,
               formikStep1.values.clubTokenType,
               "0xd4efbacb48ba952201b75afecacb82048588e44f",
             );
           })
           .catch((error) => {
-            // dispatch(setCreateSafeLoading(false));
             console.error(error);
           });
       }
-      //   handleFormSubmit();
     },
   });
 
@@ -224,7 +275,7 @@ const Create = () => {
           formikERC20Step2.handleSubmit();
           break;
         } else {
-          // NFTformikStep2.handleSubmit();
+          formikERC721Step2.handleSubmit();
           break;
         }
 
@@ -261,101 +312,19 @@ const Create = () => {
               })}
             </Stepper>
             {activeStep === steps.length - 1 && setCreateSafeLoading ? (
-              <Backdrop
-                sx={{
-                  color: "#fff",
-                  zIndex: (theme) => theme.zIndex.drawer + 1,
-                  backgroundImage: "url(assets/images/gradients.png)",
-                  backgroundPosition: "center center",
-                }}
+              <SafeDepositLoadingModal
                 open={open}
-              >
-                <Card>
-                  <Grid
-                    container
-                    justifyContent="center"
-                    alignItems="center"
-                    sx={{ padding: "10px", width: "547px" }}
-                    direction="column"
-                  >
-                    <Grid item>
-                      <img src="assets/images/deployingsafe_img.svg" />
-                    </Grid>
-                    <Grid
-                      item
-                      paddingTop="20px"
-                      justifyContent="left"
-                      justifyItems="left"
-                    >
-                      <Typography variant="h4" sx={{ color: "#fff" }}>
-                        Deploying a new safe
-                      </Typography>
-                    </Grid>
-                    <Grid
-                      item
-                      paddingTop="20px"
-                      justifyContent="left"
-                      justifyItems="left"
-                    >
-                      <Typography variant="regularText4" sx={{ color: "#fff" }}>
-                        Please sign & authorise StationX to deploy a new safe
-                        for your station.
-                      </Typography>
-                    </Grid>
-                    <Grid item paddingTop="30px">
-                      <CircularProgress color="inherit" />
-                    </Grid>
-                  </Grid>
-                </Card>
-              </Backdrop>
+                title=" Deploying a new safe"
+                description=" Please sign & authorise StationX to deploy a new safe for your
+                station."
+              />
             ) : activeStep === steps.length - 1 && setCreateDaoAuthorized ? (
-              <Backdrop
-                sx={{
-                  color: "#fff",
-                  zIndex: (theme) => theme.zIndex.drawer + 1,
-                  backgroundImage: "url(assets/images/gradients.png)",
-                  backgroundPosition: "center center",
-                }}
+              <SafeDepositLoadingModal
                 open={open}
-              >
-                <Card>
-                  <Grid
-                    container
-                    justifyContent="center"
-                    alignItems="center"
-                    sx={{ padding: "10px", width: "547px" }}
-                    direction="column"
-                  >
-                    <Grid item>
-                      <img src="assets/images/settingup_img.svg" />
-                    </Grid>
-                    <Grid
-                      item
-                      paddingTop="20px"
-                      justifyContent="left"
-                      justifyItems="left"
-                    >
-                      <Typography variant="h4" sx={{ color: "#fff" }}>
-                        Setting up your station
-                      </Typography>
-                    </Grid>
-                    <Grid
-                      item
-                      paddingTop="20px"
-                      justifyContent="left"
-                      justifyItems="left"
-                    >
-                      <Typography variant="regularText4" sx={{ color: "#fff" }}>
-                        Please sign to authorise StationX to deploy this station
-                        for you.
-                      </Typography>
-                    </Grid>
-                    <Grid item paddingTop="30px">
-                      <CircularProgress color="inherit" />
-                    </Grid>
-                  </Grid>
-                </Card>
-              </Backdrop>
+                title="Setting up your station"
+                description="Please sign to authorise StationX to deploy this station
+              for you."
+              />
             ) : activeStep === steps.length - 1 && setCreateSafeError ? (
               <>
                 {setCreateSafeErrorCode === 4001 ? (
@@ -364,45 +333,41 @@ const Create = () => {
                   <ErrorModal isError />
                 )}
               </>
+            ) : activeStep === steps.length - 1 && uploadNFTLoading ? (
+              <SafeDepositLoadingModal
+                open={open}
+                title="Uploading your NFT"
+                description="Please wait till we upload the nft."
+              />
             ) : (
-              <>
-                <Fragment>
-                  <Grid
-                    container
-                    direction="row"
-                    justifyContent="center"
-                    alignItems="center"
-                    mt={2}
-                  >
-                    {getStepContent(activeStep)}
-                    {/* <Button
-                      disabled={activeStep === 0}
-                      onClick={handleBack}
-                      className={classes.button}
+              <Fragment>
+                <Grid
+                  container
+                  direction="row"
+                  justifyContent="center"
+                  alignItems="center"
+                  mt={2}
+                >
+                  {getStepContent(activeStep)}
+                  {activeStep === steps.length - 1 ? (
+                    <Button
+                      variant="wideButton"
+                      sx={{ marginTop: "2rem" }}
+                      onClick={handleSubmit}
                     >
-                      Back
-                    </Button> */}
-                    {activeStep === steps.length - 1 ? (
-                      <Button
-                        variant="wideButton"
-                        // disabled={!isStepValidated(activeStep) }
-                        sx={{ marginTop: "2rem" }}
-                        onClick={handleSubmit}
-                      >
-                        Finish
-                      </Button>
-                    ) : (
-                      <Button
-                        variant="wideButton"
-                        sx={{ marginTop: "2rem" }}
-                        onClick={handleSubmit}
-                      >
-                        Next
-                      </Button>
-                    )}
-                  </Grid>
-                </Fragment>
-              </>
+                      Finish
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="wideButton"
+                      sx={{ marginTop: "2rem" }}
+                      onClick={handleSubmit}
+                    >
+                      Next
+                    </Button>
+                  )}
+                </Grid>
+              </Fragment>
             )}
           </form>
         </Box>

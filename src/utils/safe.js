@@ -322,28 +322,18 @@ async function gnosisSafePromise(owners, threshold, dispatch) {
 // }
 
 export async function initiateConnection(
+  params,
   dispatch,
-  clubName,
-  clubSymbol,
-  distributeAmount,
-  pricePerToken,
-  minDepositPerUser,
-  maxDepositPerUser,
-  ownerFeePerDepositPercent,
-  depositClose,
-  quorum,
-  threshold,
-  depositTokenAddress,
+
   gnosisTransactionUrl,
-  isGovernanceActive,
-  isGtTransferable,
-  allowWhiteList,
-  merkleRoot,
+
   addressList,
   clubTokenType,
   factoryContractAddress,
+  tokenURI = "",
+  metadataURL = "",
 ) {
-  console.log("first", dispatch, pricePerToken);
+  console.log("first", dispatch, params.pricePerToken);
   dispatch(setCreateSafeLoading(true));
   dispatch(setCreateDaoAuthorized(false));
   const web3 = new Web3(Web3.givenProvider);
@@ -359,7 +349,7 @@ export async function initiateConnection(
     .catch((err) => {
       console.log(err);
     });
-  await gnosisSafePromise(addressList, threshold, dispatch)
+  await gnosisSafePromise(addressList, params.threshold, dispatch)
     .then((treasuryAddress) => {
       console.log("treasuryAddress", treasuryAddress);
       dispatch(setCreateSafeLoading(false));
@@ -369,54 +359,99 @@ export async function initiateConnection(
         FactoryContract,
         factoryContractAddress,
         undefined,
-        depositTokenAddress,
+        params.depositTokenAddress,
         gnosisTransactionUrl,
       );
       let value;
       if (clubTokenType === "NFT") {
         console.log("NFT");
+        value = smartContract.createERC721DAO(
+          params.clubName,
+          params.clubSymbol,
+          params.ownerFeePerDepositPercent,
+          params.depositClose,
+          params.quorum,
+          params.threshold,
+          params.depositTokenAddress,
+          treasuryAddress,
+          params.maxTokensPerUser,
+          params.distributeAmount,
+          params.pricePerToken,
+          params.isNftTransferable,
+          params.isNftTotalSupplyUnlimited,
+          params.isGovernanceActive,
+          params.allowWhiteList,
+          params.merkleRoot,
+        );
       } else {
         value = smartContract.createERC20DAO(
-          clubName,
-          clubSymbol,
-          distributeAmount,
-          pricePerToken,
-          minDepositPerUser,
-          maxDepositPerUser,
-          ownerFeePerDepositPercent,
-          depositClose,
-          quorum,
-          threshold,
-          depositTokenAddress,
+          params.clubName,
+          params.clubSymbol,
+          params.distributeAmount,
+          params.pricePerToken,
+          params.minDepositPerUser,
+          params.maxDepositPerUser,
+          params.ownerFeePerDepositPercent,
+          params.depositClose,
+          params.quorum,
+          params.threshold,
+          params.depositTokenAddress,
           treasuryAddress,
-          isGovernanceActive,
-          isGtTransferable,
-          allowWhiteList,
-          merkleRoot,
+          params.isGovernanceActive,
+          params.isGtTransferable,
+          params.allowWhiteList,
+          params.merkleRoot,
         );
-        value
-          .then((result) => {
-            console.log(result);
-            daoAddress = result.events[0].address;
-            dispatch(addDaoAddress(result.events[0].address));
+      }
+      console.log(value);
+      value
+        .then((result) => {
+          console.log(result);
+          daoAddress = result.events[0].address;
+          dispatch(addDaoAddress(result.events[0].address));
 
-            const data = {
-              name: clubName,
-              daoAddress: daoAddress,
-              gnosisAddress: treasuryAddress,
-              networkId: networkId,
-              tokenType:
-                clubTokenType === "Non Transferable ERC20 Token"
-                  ? "erc20NonTransferable"
-                  : "erc721",
-              nftImageUrl:
-                clubTokenType !== "Non Transferable ERC20 Token"
-                  ? modifiedTokenURI
-                  : "",
-              nftMetadataUrl: "",
-            };
-            const club = createClub(data);
-            club.then(async (result) => {
+          let modifiedTokenURI;
+          if (clubTokenType === "NFT") {
+            if (
+              tokenURI.slice(tokenURI.indexOf("/"), tokenURI?.lastIndexOf("//"))
+            ) {
+              let imgUrl = tokenURI?.split("//");
+              modifiedTokenURI = `https://${imgUrl[1]}.ipfs.dweb.link/${imgUrl[2]}`;
+              console.log(
+                "imgUrl, ",
+                `https://${imgUrl[1]}.ipfs.dweb.link/${imgUrl[2]}`,
+              );
+            } else {
+              let imgUrl = tokenURI?.split("/");
+              modifiedTokenURI = `https://${imgUrl[2]}.ipfs.dweb.link/${imgUrl[3]}`;
+              console.log(
+                "imgUrl, ",
+                `https://${imgUrl[2]}.ipfs.dweb.link/${imgUrl[3]}`,
+              );
+            }
+          }
+
+          const data = {
+            name: params.clubName,
+            daoAddress: daoAddress,
+            gnosisAddress: treasuryAddress,
+            networkId: networkId,
+            tokenType:
+              clubTokenType === "Non Transferable ERC20 Token"
+                ? "erc20NonTransferable"
+                : "erc721",
+            nftImageUrl:
+              clubTokenType !== "Non Transferable ERC20 Token"
+                ? modifiedTokenURI
+                : "",
+            nftMetadataUrl:
+              clubTokenType !== "Non Transferable ERC20 Token"
+                ? metadataURL
+                : "",
+          };
+          const club = createClub(data);
+          club
+            .then(async (result) => {
               if (result.status !== 201) {
                 console.log(result.statusText);
               } else {
@@ -475,17 +510,21 @@ export async function initiateConnection(
                   );
                 }
               }
+            })
+            .catch((error) => {
+              dispatch(setCreateDaoAuthorized(false));
+              dispatch(setCreateSafeError(true));
+              console.error(error);
             });
-          })
-          .catch((error) => {
-            dispatch(setCreateDaoAuthorized(false));
-            dispatch(setCreateSafeError(true));
-            console.error(error);
-            if (error.code === 4001) {
-              dispatch(setCreateSafeErrorCode(4001));
-            }
-          });
-      }
+        })
+        .catch((error) => {
+          dispatch(setCreateDaoAuthorized(false));
+          dispatch(setCreateSafeError(true));
+          console.error(error);
+          if (error.code === 4001) {
+            dispatch(setCreateSafeErrorCode(4001));
+          }
+        });
     })
     .catch((error) => {
       console.error("error");
