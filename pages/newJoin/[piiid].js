@@ -12,6 +12,7 @@ import NewArchERC20 from "../../src/components/depositPageComps/ERC20/NewArch/Ne
 import { useRouter } from "next/router";
 import { fetchClub, fetchClubbyDaoAddress } from "../../src/api/club";
 import NewArchERC721 from "../../src/components/depositPageComps/ERC721/NewArch/NewArchERC721";
+import { convertFromWeiGovernance } from "../../src/utils/globalFunctions";
 
 const Join = () => {
   const [daoDetails, setDaoDetails] = useState({
@@ -100,7 +101,8 @@ const Join = () => {
             depositTokenAddress: factoryData.depositTokenAddress,
             distributionAmt: factoryData.distributionAmount,
             totalSupply:
-              factoryData.distributionAmount * factoryData.pricePerToken,
+              (factoryData.distributionAmount / 10 ** 18) *
+              factoryData.pricePerToken,
           });
       }
     } catch (error) {

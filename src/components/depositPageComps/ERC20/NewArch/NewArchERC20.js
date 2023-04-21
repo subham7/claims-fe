@@ -35,6 +35,7 @@ import {
 import { Form, useFormik } from "formik";
 import * as yup from "yup";
 import { NEW_FACTORY_ADDRESS } from "../../../../api";
+import dayjs from "dayjs";
 
 const NewArchERC20 = ({ daoDetails, erc20DaoAddress }) => {
   const [erc20TokenDetails, setErc20TokenDetails] = useState({
@@ -56,8 +57,10 @@ const NewArchERC20 = ({ daoDetails, erc20DaoAddress }) => {
   }
 
   const day = Math.floor(new Date().getTime() / 1000.0);
-  const remainingDays = daoDetails.depositDeadline - day;
-  console.log(remainingDays);
+  const day1 = dayjs.unix(day);
+  const day2 = dayjs.unix(daoDetails.depositDeadline);
+
+  const remainingDays = day2.diff(day1, "day");
 
   const showMessageHandler = () => {
     setShowMessage(true);
@@ -158,7 +161,10 @@ const NewArchERC20 = ({ daoDetails, erc20DaoAddress }) => {
           walletAddress,
           erc20DaoAddress,
           daoDetails.depositTokenAddress,
-          (inputValue / +daoDetails.pricePerToken).toString(),
+          convertToWeiGovernance(
+            (inputValue / +daoDetails.pricePerToken).toString(),
+            18,
+          ),
           [],
         );
 
@@ -176,7 +182,7 @@ const NewArchERC20 = ({ daoDetails, erc20DaoAddress }) => {
 
   useEffect(() => {
     fetchTokenDetails();
-  }, [fetchTokenDetails]);
+  }, [fetchTokenDetails, daoDetails.clubTokensMinted]);
 
   return (
     <>
@@ -485,7 +491,11 @@ const NewArchERC20 = ({ daoDetails, erc20DaoAddress }) => {
                         +convertFromWeiGovernance(
                           daoDetails.clubTokensMinted,
                           daoDetails.decimals,
-                        ),
+                        ) *
+                          convertFromWeiGovernance(
+                            daoDetails.pricePerToken,
+                            erc20TokenDetails.tokenDecimal,
+                          ),
                         +convertFromWeiGovernance(
                           daoDetails.totalSupply,
                           erc20TokenDetails.tokenDecimal,
@@ -566,8 +576,8 @@ const NewArchERC20 = ({ daoDetails, erc20DaoAddress }) => {
                             convertFromWeiGovernance(
                               daoDetails.totalSupply,
                               erc20TokenDetails.tokenDecimal,
-                            ) +
-                            (" $" + daoDetails.daoSymbol)
+                            ).toString() +
+                            (" $" + erc20TokenDetails.tokenSymbol)
                           ) : (
                             <Skeleton
                               variant="rectangular"
