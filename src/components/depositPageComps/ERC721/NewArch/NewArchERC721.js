@@ -14,6 +14,8 @@ import Web3 from "web3";
 import { NewArchERC721Styles } from "./NewArchERC721Styles";
 import { useConnectWallet } from "@web3-onboard/react";
 import erc20ABI from "../../../../abis/usdcTokenContract.json";
+import erc721ABI from "../../../../abis/nft.json";
+
 import factoryContractABI from "../../../../abis/newArch/factoryContract.json";
 import { convertFromWeiGovernance } from "../../../../utils/globalFunctions";
 import { SmartContract } from "../../../../api/contract";
@@ -21,6 +23,7 @@ import { NEW_FACTORY_ADDRESS } from "../../../../api";
 
 const NewArchERC721 = ({ daoDetails, erc721DaoAddress }) => {
   const [loading, setLoading] = useState(false);
+  const [hasClaimed, setHasClaimed] = useState(false);
   const [showMessage, setShowMessage] = useState(false);
   const [claimSuccessfull, setClaimSuccessfull] = useState(false);
   const [erc20TokenDetails, setErc20TokenDetails] = useState({
@@ -43,6 +46,7 @@ const NewArchERC721 = ({ daoDetails, erc721DaoAddress }) => {
   const day = Math.floor(new Date().getTime() / 1000.0);
   const remainingDays = daoDetails.depositDeadline - day;
   console.log(remainingDays);
+  const dateSum = new Date(remainingDays).toString();
 
   const showMessageHandler = () => {
     setShowMessage(true);
@@ -61,7 +65,24 @@ const NewArchERC721 = ({ daoDetails, erc721DaoAddress }) => {
         undefined,
       );
 
-      console.log(erc20Contract);
+      const erc721Contract = new SmartContract(
+        erc721ABI,
+        erc721DaoAddress,
+        walletAddress,
+        undefined,
+        undefined,
+      );
+
+      const balanceOfNft = await erc721Contract.balanceOf();
+
+      console.log("Balance of NFT", +balanceOfNft);
+      console.log("MaxTOken", +daoDetails.maxTokensPerUser);
+
+      if (+balanceOfNft >= +daoDetails?.maxTokensPerUser) {
+        setHasClaimed(true);
+      } else {
+        setHasClaimed(false);
+      }
 
       const decimals = await erc20Contract.decimals();
       const symbol = await erc20Contract.obtainSymbol();
@@ -75,7 +96,12 @@ const NewArchERC721 = ({ daoDetails, erc721DaoAddress }) => {
     } catch (error) {
       console.log(error);
     }
-  }, [daoDetails.depositTokenAddress, walletAddress]);
+  }, [
+    daoDetails.depositTokenAddress,
+    daoDetails.maxTokensPerUser,
+    erc721DaoAddress,
+    walletAddress,
+  ]);
 
   const claimNFTHandler = async () => {
     try {
@@ -110,7 +136,7 @@ const NewArchERC721 = ({ daoDetails, erc721DaoAddress }) => {
         walletAddress,
         erc721DaoAddress,
         daoDetails.depositTokenAddress,
-        "",
+        daoDetails.nftURI,
         1,
         [],
       );
@@ -231,12 +257,7 @@ const NewArchERC721 = ({ daoDetails, erc721DaoAddress }) => {
                   <Typography variant="subtitle1" color="#C1D3FF">
                     Mint closes on{" "}
                     {daoDetails.depositDeadline ? (
-                      new Date(parseInt(daoDetails.depositDeadline) * 1000)
-                        ?.toJSON()
-                        ?.slice(0, 10)
-                        .split("-")
-                        .reverse()
-                        .join("/")
+                      dateSum
                     ) : (
                       <Skeleton variant="rectangular" width={100} height={25} />
                     )}
@@ -277,7 +298,9 @@ const NewArchERC721 = ({ daoDetails, erc721DaoAddress }) => {
                         variant="subtitle1"
                         className={classes.quoramTxt}
                       >
-                        {daoDetails.isTotalSupplyUnlinited ? "unlimited" : ""}
+                        {daoDetails.isTotalSupplyUnlinited
+                          ? "unlimited"
+                          : daoDetails.distributionAmt}
                         {/* : totalNftSupply - totalNftMinted} */}
                       </Typography>
                       <Typography variant="subtitle2" color="#C1D3FF">
@@ -334,16 +357,16 @@ const NewArchERC721 = ({ daoDetails, erc721DaoAddress }) => {
                     <Grid item>
                       <Button
                         onClick={claimNFTHandler}
-                        disabled={
-                          loading
-                          // ||
-                          // (tokenGatingAddress !==
-                          //   "0x0000000000000000000000000000000000000000" &&
-                          //   userTokenBalance < tokenGatingAmount)
-                        }
+                        disabled={hasClaimed}
                         sx={{ px: 8 }}
                       >
-                        {loading ? <CircularProgress /> : "Claim"}
+                        {loading ? (
+                          <CircularProgress />
+                        ) : hasClaimed ? (
+                          "Claimed"
+                        ) : (
+                          "Claim"
+                        )}
                       </Button>
                     </Grid>
                   </Grid>
