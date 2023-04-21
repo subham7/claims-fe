@@ -1,4 +1,5 @@
 import {
+  Alert,
   Button,
   CircularProgress,
   Grid,
@@ -105,12 +106,11 @@ const NewArchERC721 = ({ daoDetails, erc721DaoAddress }) => {
         erc20TokenDetails.tokenDecimal,
       );
 
-      
       const claimNFT = await factoryContract.buyGovernanceTokenERC721DAO(
         walletAddress,
         erc721DaoAddress,
         daoDetails.depositTokenAddress,
-        '',
+        "",
         1,
         [],
       );
@@ -383,6 +383,37 @@ const NewArchERC721 = ({ daoDetails, erc721DaoAddress }) => {
               Please connect your wallet
             </Typography>
           </Grid>
+        )}
+
+        {claimSuccessfull && showMessage ? (
+          <Alert
+            severity="success"
+            sx={{
+              width: "250px",
+              position: "fixed",
+              bottom: "30px",
+              right: "20px",
+              borderRadius: "8px",
+            }}
+          >
+            Transaction Successfull
+          </Alert>
+        ) : (
+          !claimSuccessfull &&
+          showMessage && (
+            <Alert
+              severity="error"
+              sx={{
+                width: "250px",
+                position: "fixed",
+                bottom: "30px",
+                right: "20px",
+                borderRadius: "8px",
+              }}
+            >
+              Transaction Failed
+            </Alert>
+          )
         )}
       </Grid>
     </>
