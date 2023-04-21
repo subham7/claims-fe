@@ -3,7 +3,7 @@ import SafeServiceClient from "@safe-global/safe-service-client";
 import Web3Adapter from "@safe-global/safe-web3-lib";
 import Web3 from "web3";
 
-import FactoryContract from "../../abis/factoryContract.json";
+import FactoryContract from "../../abis/newFactoryContract.json";
 import ImplementationContract from "../../abis/implementationABI.json";
 import USDCContract from "../../abis/usdcTokenContract.json";
 import { createProposalTxHash, getProposalTxHash } from "../../api/proposal";

@@ -333,7 +333,6 @@ export async function initiateConnection(
   tokenURI = "",
   metadataURL = "",
 ) {
-  console.log("first", dispatch, params.pricePerToken);
   dispatch(setCreateSafeLoading(true));
   dispatch(setCreateDaoAuthorized(false));
   const web3 = new Web3(Web3.givenProvider);
