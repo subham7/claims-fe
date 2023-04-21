@@ -20,9 +20,11 @@ import factoryContractABI from "../../../../abis/newArch/factoryContract.json";
 import { convertFromWeiGovernance } from "../../../../utils/globalFunctions";
 import { SmartContract } from "../../../../api/contract";
 import { NEW_FACTORY_ADDRESS } from "../../../../api";
+import dayjs from "dayjs";
 
 const NewArchERC721 = ({ daoDetails, erc721DaoAddress }) => {
   const [loading, setLoading] = useState(false);
+  const [active, setActive] = useState(false);
   const [hasClaimed, setHasClaimed] = useState(false);
   const [showMessage, setShowMessage] = useState(false);
   const [claimSuccessfull, setClaimSuccessfull] = useState(false);
@@ -41,12 +43,13 @@ const NewArchERC721 = ({ daoDetails, erc721DaoAddress }) => {
   }
 
   const classes = NewArchERC721Styles();
-  const isDepositActive = true;
+
+  console.log("Depositiiii", daoDetails.depositDeadline);
 
   const day = Math.floor(new Date().getTime() / 1000.0);
-  const remainingDays = daoDetails.depositDeadline - day;
-  console.log(remainingDays);
-  const dateSum = new Date(remainingDays).toString();
+  const day1 = dayjs.unix(day);
+  const day2 = dayjs.unix(daoDetails.depositDeadline);
+  const dateSum = new Date(dayjs.unix(daoDetails.depositDeadline)).toString();
 
   const showMessageHandler = () => {
     setShowMessage(true);
@@ -83,7 +86,6 @@ const NewArchERC721 = ({ daoDetails, erc721DaoAddress }) => {
       } else {
         setHasClaimed(false);
       }
-
       const decimals = await erc20Contract.decimals();
       const symbol = await erc20Contract.obtainSymbol();
       const name = await erc20Contract.name();
@@ -102,6 +104,12 @@ const NewArchERC721 = ({ daoDetails, erc721DaoAddress }) => {
     erc721DaoAddress,
     walletAddress,
   ]);
+
+  useEffect(() => {
+    if (day2 / 1000 - day1 / 1000) {
+      setActive(true);
+    }
+  }, [day2, day1]);
 
   const claimNFTHandler = async () => {
     try {
@@ -130,6 +138,15 @@ const NewArchERC721 = ({ daoDetails, erc721DaoAddress }) => {
           erc20TokenDetails.tokenDecimal,
         ),
         erc20TokenDetails.tokenDecimal,
+      );
+
+      console.log(
+        walletAddress,
+        erc721DaoAddress,
+        daoDetails.depositTokenAddress,
+        daoDetails.nftURI,
+        1,
+        [],
       );
 
       const claimNFT = await factoryContract.buyGovernanceTokenERC721DAO(
@@ -216,7 +233,7 @@ const NewArchERC721 = ({ daoDetails, erc721DaoAddress }) => {
                 <Grid item>
                   <Grid container spacing={3}>
                     <Grid item xs="auto">
-                      {isDepositActive ? (
+                      {active ? (
                         <Typography className={classes.depositActive}>
                           <div className={classes.activeIllustration}></div>
                           Active

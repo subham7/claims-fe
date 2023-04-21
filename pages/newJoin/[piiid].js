@@ -115,6 +115,7 @@ const Join = () => {
    */
   const fetchErc721ContractDetails = useCallback(async () => {
     try {
+      console.log(factoryContractABI, NEW_FACTORY_ADDRESS);
       const factoryContract = new SmartContract(
         factoryContractABI,
         NEW_FACTORY_ADDRESS,
@@ -122,6 +123,8 @@ const Join = () => {
         undefined,
         undefined,
       );
+
+      console.log(factoryContract);
 
       const erc721DaoContract = new SmartContract(
         erc721DaoContractABI,
@@ -197,6 +200,7 @@ const Join = () => {
     if (tokenType === "erc20NonTransferable") {
       fetchErc20ContractDetails();
     } else {
+      console.log("Hereee");
       fetchErc721ContractDetails();
     }
   }, [fetchErc20ContractDetails, tokenType, fetchErc721ContractDetails]);
