@@ -164,11 +164,14 @@ const Create = () => {
           .then((result) => {
             const walletAddress = Web3.utils.toChecksumAddress(result[0]);
             values.addressList.unshift(walletAddress);
+
+            console.log(dayjs(formikERC721Step2.values.depositClose).unix());
+
             const params = {
               clubName: formikStep1.values.clubName,
               clubSymbol: formikStep1.values.clubSymbol,
               ownerFeePerDepositPercent: 0 * 100,
-              depositClose: dayjs(formikERC20Step2.values.depositClose).unix(),
+              depositClose: dayjs(formikERC721Step2.values.depositClose).unix(),
               quorum: values.quorum * 100,
               threshold: values.threshold * 100,
               depositTokenAddress: USDC_CONTRACT_ADDRESS,
@@ -201,7 +204,7 @@ const Create = () => {
               GNOSIS_TRANSACTION_URL,
               values.addressList,
               formikStep1.values.clubTokenType,
-              "0xd4efbacb48ba952201b75afecacb82048588e44f",
+              "0xe0723c6573D54f6af1c621238fbba42E7F8Ee643",
               metadata.data.image.pathname,
               metadata.url,
             );
@@ -253,7 +256,7 @@ const Create = () => {
               GNOSIS_TRANSACTION_URL,
               values.addressList,
               formikStep1.values.clubTokenType,
-              "0xd4efbacb48ba952201b75afecacb82048588e44f",
+              "0xe0723c6573D54f6af1c621238fbba42E7F8Ee643",
             );
           })
           .catch((error) => {

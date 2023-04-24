@@ -200,20 +200,6 @@
     },
     {
       "inputs": [
-        {
-          "internalType": "address",
-          "name": "_newImplementationAddress",
-          "type": "address"
-        },
-        { "internalType": "bool", "name": "_isERC721", "type": "bool" }
-      ],
-      "name": "changeDAOImplementation",
-      "outputs": [],
-      "stateMutability": "payable",
-      "type": "function"
-    },
-    {
-      "inputs": [
         { "internalType": "address", "name": "_daoAddress", "type": "address" },
         {
           "internalType": "bytes32",
@@ -289,6 +275,11 @@
         {
           "internalType": "bool",
           "name": "_onlyAllowWhitelist",
+          "type": "bool"
+        },
+        {
+          "internalType": "bool",
+          "name": "_assetsStoredOnGnosis",
           "type": "bool"
         },
         { "internalType": "bytes32", "name": "_merkleRoot", "type": "bytes32" }
@@ -367,6 +358,11 @@
           "name": "_onlyAllowWhitelist",
           "type": "bool"
         },
+        {
+          "internalType": "bool",
+          "name": "_assetsStoredOnGnosis",
+          "type": "bool"
+        },
         { "internalType": "bytes32", "name": "_merkleRoot", "type": "bytes32" }
       ],
       "name": "createERC721DAO",
@@ -427,6 +423,11 @@
         {
           "internalType": "bool",
           "name": "isTokenGatingApplied",
+          "type": "bool"
+        },
+        {
+          "internalType": "bool",
+          "name": "assetsStoredOnGnosis",
           "type": "bool"
         }
       ],
@@ -534,6 +535,11 @@
               "internalType": "bool",
               "name": "isTokenGatingApplied",
               "type": "bool"
+            },
+            {
+              "internalType": "bool",
+              "name": "assetsStoredOnGnosis",
+              "type": "bool"
             }
           ],
           "internalType": "struct Helper.DAODetails",
@@ -560,38 +566,22 @@
     },
     {
       "inputs": [
+        { "internalType": "address", "name": "_tokenA", "type": "address" },
+        { "internalType": "address", "name": "_tokenB", "type": "address" },
         {
-          "internalType": "address[]",
-          "name": "_tokenList",
-          "type": "address[]"
+          "internalType": "enum Helper.Operator",
+          "name": "_operator",
+          "type": "uint8"
         },
         {
-          "internalType": "uint256[]",
-          "name": "_minTokenRequired",
-          "type": "uint256[]"
+          "internalType": "enum Helper.Comparator",
+          "name": "_comparator",
+          "type": "uint8"
         },
-        {
-          "internalType": "string[]",
-          "name": "_tokenOperations",
-          "type": "string[]"
-        },
+        { "internalType": "uint256", "name": "_value", "type": "uint256" },
         { "internalType": "address", "name": "_daoAddress", "type": "address" }
       ],
       "name": "setupTokenGating",
-      "outputs": [],
-      "stateMutability": "payable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "uint256",
-          "name": "_depositTime",
-          "type": "uint256"
-        },
-        { "internalType": "address", "name": "_daoAddress", "type": "address" }
-      ],
-      "name": "startDeposit",
       "outputs": [],
       "stateMutability": "payable",
       "type": "function"
@@ -603,6 +593,34 @@
       "name": "transferOwnership",
       "outputs": [],
       "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_depositTime",
+          "type": "uint256"
+        },
+        { "internalType": "address", "name": "_daoAddress", "type": "address" }
+      ],
+      "name": "updateDepositTime",
+      "outputs": [],
+      "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_newDistributionAmount",
+          "type": "uint256"
+        },
+        { "internalType": "address", "name": "_daoAddress", "type": "address" }
+      ],
+      "name": "updateDistributionAmount",
+      "outputs": [],
+      "stateMutability": "payable",
       "type": "function"
     },
     {
@@ -634,6 +652,20 @@
         { "internalType": "address", "name": "_daoAddress", "type": "address" }
       ],
       "name": "updateOwnerFee",
+      "outputs": [],
+      "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_newPricePerToken",
+          "type": "uint256"
+        },
+        { "internalType": "address", "name": "_daoAddress", "type": "address" }
+      ],
+      "name": "updatePricePerToken",
       "outputs": [],
       "stateMutability": "payable",
       "type": "function"

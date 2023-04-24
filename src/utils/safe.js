@@ -333,7 +333,6 @@ export async function initiateConnection(
   tokenURI = "",
   metadataURL = "",
 ) {
-  console.log("first", dispatch, params.pricePerToken);
   dispatch(setCreateSafeLoading(true));
   dispatch(setCreateDaoAuthorized(false));
   const web3 = new Web3(Web3.givenProvider);
@@ -381,6 +380,7 @@ export async function initiateConnection(
           params.isNftTotalSupplyUnlimited,
           params.isGovernanceActive,
           params.allowWhiteList,
+          false, // assets Stored on Gnosis
           params.merkleRoot,
         );
       } else {
@@ -400,6 +400,7 @@ export async function initiateConnection(
           params.isGovernanceActive,
           params.isGtTransferable,
           params.allowWhiteList,
+          false, // assets Stored on Gnosis
           params.merkleRoot,
         );
       }
