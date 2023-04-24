@@ -106,8 +106,10 @@ const NewArchERC721 = ({ daoDetails, erc721DaoAddress }) => {
   ]);
 
   useEffect(() => {
-    if (day2 / 1000 - day1 / 1000) {
+    if (day2 >= day1) {
       setActive(true);
+    } else {
+      setActive(false);
     }
   }, [day2, day1]);
 
@@ -317,7 +319,12 @@ const NewArchERC721 = ({ daoDetails, erc721DaoAddress }) => {
                       >
                         {daoDetails.isTotalSupplyUnlinited
                           ? "unlimited"
-                          : daoDetails.distributionAmt}
+                          : Number(
+                              convertFromWeiGovernance(
+                                daoDetails.distributionAmt,
+                                16,
+                              ),
+                            ).toFixed(0)}
                         {/* : totalNftSupply - totalNftMinted} */}
                       </Typography>
                       <Typography variant="subtitle2" color="#C1D3FF">

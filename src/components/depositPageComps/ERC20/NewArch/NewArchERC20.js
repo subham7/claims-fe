@@ -116,6 +116,10 @@ const NewArchERC20 = ({ daoDetails, erc20DaoAddress }) => {
           ),
           "Amount should be greater than min deposit",
         )
+        .lessThan(
+          erc20TokenDetails.tokenBalance.toFixed(2),
+          "Amount should be less than your wallet balance",
+        )
         .max(
           Number(
             convertFromWeiGovernance(
