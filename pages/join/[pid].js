@@ -1,109 +1,48 @@
-// external imports
-import Web3 from "web3";
-
-// react imports
-import { useRouter } from "next/router";
-import { React, useCallback, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-
-// api imports
-import { fetchClub, fetchClubbyDaoAddress } from "../../src/api/club";
+import React, { useCallback, useEffect, useState } from "react";
 import { SmartContract } from "../../src/api/contract";
-import { getMembersDetails } from "../../src/api/user";
+import factoryContractABI from "../../src/abis/newArch/factoryContract.json";
+import erc20DaoContractABI from "../../src/abis/newArch/erc20Dao.json";
+import erc721DaoContractABI from "../../src/abis/newArch/erc721Dao.json";
 
-// abi imports
-import ImplementationContract from "../../src/abis/implementationABI.json";
-import nft from "../../src/abis/nft.json";
-
-// component imports
-import ERC20Comp from "../../src/components/depositPageComps/ERC20/ERC20Comp";
-import ERC721Comp from "../../src/components/depositPageComps/ERC721/ERC721Comp";
-import SnackbarComp from "../../src/components/depositPageComps/Snackbar/SnackbarComp";
-import Layout2 from "../../src/components/layouts/layout2";
-
-// utils import
-import {
-  calculateDays,
-  convertFromWei,
-  convertFromWeiGovernance,
-  convertToWeiGovernance,
-} from "../../src/utils/globalFunctions";
-
-import { checkNetwork } from "../../src/utils/wallet";
-
+import { NEW_FACTORY_ADDRESS } from "../../src/api";
 import { useConnectWallet } from "@web3-onboard/react";
+import Web3 from "web3";
+import Layout2 from "../../src/components/layouts/layout2";
+import NewArchERC20 from "../../src/components/depositPageComps/ERC20/NewArch/NewArchERC20";
+import { useRouter } from "next/router";
+import { fetchClub, fetchClubbyDaoAddress } from "../../src/api/club";
+import NewArchERC721 from "../../src/components/depositPageComps/ERC721/NewArch/NewArchERC721";
+import { convertFromWeiGovernance } from "../../src/utils/globalFunctions";
 
-import { updateDynamicAddress } from "../../src/api";
-import {
-  getBalanceOfToken,
-  getTokensDecimalFromAddress,
-} from "../../src/api/token";
+const Join = () => {
+  const [daoDetails, setDaoDetails] = useState({
+    daoName: "",
+    daoSymbol: "",
+    decimals: 0,
+    daoImage: "",
+    clubTokensMinted: 0,
+    quorum: 0,
+    threshold: 0,
+    isGovernance: false,
+    isTokenGated: false,
+    isTotalSupplyUnlinited: false,
+    minDeposit: 0,
+    maxDeposit: 0,
+    totalSupply: 0,
+    depositDeadline: 0,
+    pricePerToken: 0,
+    distributionAmt: 0,
+    depositTokenAddress: "",
+    createdBy: "",
+    maxTokensPerUser: 0,
+    nftURI: "",
+  });
+  const [tokenType, setTokenType] = useState("");
 
-const Join = (props) => {
+  const [{ wallet }] = useConnectWallet();
   const router = useRouter();
-  const { pid } = router.query;
-  const daoAddress = pid;
-  const dispatch = useDispatch();
-  const [walletConnected, setWalletConnected] = useState(false);
-  const [fetched, setFetched] = useState(false);
-  const [dataFetched, setDataFetched] = useState(false);
 
-  const [userDetails, setUserDetails] = useState(null);
-  const [walletBalance, setWalletBalance] = useState(0);
-  const [depositAmount, setDepositAmount] = useState(0);
-  const [openSnackBar, setOpenSnackBar] = useState(false);
-  const [alertStatus, setAlertStatus] = useState(null);
-  const [minDeposit, setMinDeposit] = useState(0);
-  const [maxDeposit, setMaxDeposit] = useState(0);
-  const [totalDeposit, setTotalDeposit] = useState(0);
-  const [quoram, setQuoram] = useState(0);
-  const [threshold, setThreshold] = useState(0);
-  const [tokenAPIDetails, settokenAPIDetails] = useState(null); // contains the details extracted from API
-  const [apiTokenDetailSet, setApiTokenDetailSet] = useState(false);
-  const [governorDataFetched, setGovernorDataFetched] = useState(false);
-  const [clubId, setClubId] = useState(null);
-  const [membersFetched, setMembersFetched] = useState(false);
-  const [clubTokenMinted, setClubTokenMInted] = useState(0);
-  const [members, setMembers] = useState(0);
-  const [depositInitiated, setDepositInitiated] = useState(false);
-  const [closingDays, setClosingDays] = useState(0);
-  const [imageFetched, setImageFetched] = useState(false);
-  const [imageUrl, setImageUrl] = useState("");
-  const [open, setOpen] = useState(false);
-  const [gnosisAddress, setGnosisAddress] = useState(null);
-  const [tokenType, setTokenType] = useState();
-  const [priceOfNft, setPriceOfNft] = useState();
-  const [clubName, setClubName] = useState();
-  const [nftContractAddress, setnftContractAddress] = useState();
-  const [nftContractOwner, setnftContractOwner] = useState();
-  const [depositCloseDate, setDepositCloseDate] = useState();
-  const [nftImageUrl, setnftImageUrl] = useState();
-  const [nftMetadata, setnftMetadata] = useState();
-  const [isDepositActive, setIsDepositActive] = useState();
-  const [loading, setLoading] = useState(false);
-  const [maxTokensPerUser, setMaxTokensPerUser] = useState();
-  const [userNftBalance, setUserNftBalance] = useState();
-  const [totalNftMinted, setTotalNftMinted] = useState(0);
-  const [totalNftSupply, setTotalNftSupply] = useState();
-  const [isNftSupplyUnlimited, setIsNftSupplyUnlimited] = useState();
-  const [tokenSymbol, setTokenSymbol] = useState();
-  const [isGovernanceActive, setIsGovernanceActive] = useState();
-  const [message, setMessage] = useState("");
-  const [tokenGatingAmount, setTokenGatingAmount] = useState();
-  const [tokenGatingAddress, setTokenGatingAddress] = useState(
-    "0x0000000000000000000000000000000000000000",
-  );
-  const [userTokenBalance, setUserTokenBalance] = useState();
-
-  const [{ wallet }, connect] = useConnectWallet();
-
-  const USDC_CONTRACT_ADDRESS = useSelector((state) => {
-    return state.gnosis.usdcContractAddress;
-  });
-
-  const GNOSIS_TRANSACTION_URL = useSelector((state) => {
-    return state.gnosis.transactionUrl;
-  });
+  const { pid: daoAddress } = router.query;
 
   let walletAddress;
   if (typeof window !== "undefined") {
@@ -111,444 +50,168 @@ const Join = (props) => {
     walletAddress = web3.utils.toChecksumAddress(wallet?.accounts[0].address);
   }
 
-  const [usdcTokenDecimal, setUsdcTokenDecimal] = useState(0);
-  const [governanceConvertDecimal, setGovernanceConvertDecimal] = useState(0);
-
-  useEffect(() => {
-    if (wallet?.chains) updateDynamicAddress(wallet?.chains[0].id, dispatch);
-
-    setUserDetails(walletAddress);
-    console.log("walletttttt", walletAddress);
-    localStorage.setItem("wallet", walletAddress);
-    setWalletConnected(true);
-  }, [dispatch, wallet?.chains, walletAddress]);
-
-  // helper function
-  const newContract = useCallback(
-    (
-      _customContractAddress,
-      _implementationContract = ImplementationContract,
-    ) => {
-      const contract = new SmartContract(
-        _implementationContract,
-        _customContractAddress,
+  /**
+   * Fetching details for ERC20 comp
+   */
+  const fetchErc20ContractDetails = useCallback(async () => {
+    try {
+      const factoryContract = new SmartContract(
+        factoryContractABI,
+        NEW_FACTORY_ADDRESS,
+        walletAddress,
         undefined,
-        USDC_CONTRACT_ADDRESS,
-        GNOSIS_TRANSACTION_URL,
+        undefined,
       );
-      return contract;
-    },
-    [GNOSIS_TRANSACTION_URL, USDC_CONTRACT_ADDRESS],
-  );
 
-  useEffect(() => {
-    const fetchCustomTokenDecimals = async () => {
-      if (daoAddress && USDC_CONTRACT_ADDRESS && GNOSIS_TRANSACTION_URL) {
-        const usdcContract = newContract(USDC_CONTRACT_ADDRESS);
-        const daoContract = newContract(daoAddress);
-
-        await usdcContract.obtainTokenDecimals().then((result) => {
-          setUsdcTokenDecimal(result);
-        });
-        await daoContract.obtainTokenDecimals().then((result) => {
-          setGovernanceConvertDecimal(result);
-        });
-        console.log("Run sucessfully!");
-      }
-    };
-    fetchCustomTokenDecimals();
-  }, [daoAddress, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL, newContract]);
-
-  useEffect(() => {
-    const obtainWalletBalance = async () => {
-      const usdc_contract = newContract(USDC_CONTRACT_ADDRESS);
-      await usdc_contract.balanceOf().then(
-        (result) => {
-          // console.log("wallet balance", result);
-          setWalletBalance(convertFromWei(parseInt(result), usdcTokenDecimal));
-          setFetched(true);
-        },
-        (error) => {
-          console.log("Failed to fetch wallet USDC", error);
-        },
+      const erc20DaoContract = new SmartContract(
+        erc20DaoContractABI,
+        daoAddress,
+        walletAddress,
+        undefined,
+        undefined,
       );
-    };
-    obtainWalletBalance();
-  }, [
-    GNOSIS_TRANSACTION_URL,
-    USDC_CONTRACT_ADDRESS,
-    newContract,
-    usdcTokenDecimal,
-    userDetails,
-  ]);
 
-  useEffect(() => {
-    const fetchMembers = () => {
-      if (clubId) {
-        const membersData = getMembersDetails(clubId);
-        membersData.then((result) => {
-          if (result.status != 200) {
-            setMembersFetched(false);
-          } else {
-            setMembers(result.data.length);
-            setMembersFetched(true);
-          }
-        });
-      }
-    };
-    const fetchClubData = async () => {
-      const clubData = fetchClub(clubId);
-      clubData.then((result) => {
-        if (result.status != 200) {
-          setImageFetched(false);
-        } else {
-          setImageUrl(result.data[0].imageUrl);
-          setTokenType(result.data[0].tokenType);
-          setImageFetched(true);
-        }
-      });
-    };
+      const fetchedData = await fetchClubbyDaoAddress(daoAddress);
+      console.log(fetchedData);
+      const fetchedImage = fetchedData?.data[0]?.imageUrl;
 
-    if (clubId) {
-      fetchClubData();
-    }
-    fetchMembers();
-  }, [clubId]);
+      if (factoryContract && erc20DaoContract) {
+        const factoryData = await factoryContract.getDAOdetails(daoAddress);
+        const erc20Data = await erc20DaoContract.getERC20DAOdetails();
+        const erc20DaoDecimal = await erc20DaoContract.decimals();
+        const clubTokensMinted = await erc20DaoContract.totalSupply();
 
-  useEffect(() => {
-    const tokenAPIDetailsRetrieval = async () => {
-      let response = await fetchClubbyDaoAddress(pid);
-      if (response.data.length > 0) {
-        settokenAPIDetails(response.data);
-        setClubId(response.data[0].clubId);
-        setGnosisAddress(response.data[0].gnosisAddress);
-        setClubName(response.data[0].name);
-        setnftContractAddress(response.data[0].nftAddress);
-        setnftMetadata(response.data[0].nftMetadataUrl);
-        let imgUrl = response.data[0].nftImageUrl?.split("//");
-        setnftImageUrl(response.data[0].nftImageUrl);
-        setApiTokenDetailSet(true);
-      } else {
-        setApiTokenDetailSet(false);
-      }
-    };
-    if (pid) {
-      tokenAPIDetailsRetrieval();
-    }
-  }, [pid, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL]);
+        console.log(factoryData, erc20Data);
 
-  useEffect(() => {
-    const contractDetailsRetrieval = async () => {
-      // console.log("in contract details retrival");
-      if (
-        daoAddress &&
-        !governorDataFetched &&
-        // !governorDetails &&
-        userDetails &&
-        USDC_CONTRACT_ADDRESS &&
-        GNOSIS_TRANSACTION_URL &&
-        usdcTokenDecimal
-      ) {
-        const governorDetailContract = newContract(daoAddress);
-        // setDataFetched(true);
-        setGovernorDataFetched(true);
-        await governorDetailContract.obtainTokenDecimals().then((result) => {
-          setGovernanceConvertDecimal(result);
-        });
-
-        await governorDetailContract.closeDate().then((result) => {
-          setDepositCloseDate(result);
-          setClosingDays(calculateDays(parseInt(result) * 1000));
-        });
-        await governorDetailContract.minDepositPerUser().then((result) => {
-          setMinDeposit(convertFromWei(parseFloat(result), usdcTokenDecimal));
-        });
-        await governorDetailContract.maxDepositPerUser().then((result) => {
-          setMaxDeposit(convertFromWei(parseInt(result), usdcTokenDecimal));
-        });
-        await governorDetailContract.totalRaiseAmount().then((result) => {
-          setTotalDeposit(convertFromWeiGovernance(result, usdcTokenDecimal));
-        });
-        await governorDetailContract.obtainSymbol().then((result) => {
-          // console.log("result", result);
-          setTokenSymbol(result);
-        });
-        await governorDetailContract
-          .gatingTokenAddress()
-          .then(async (result) => {
-            setTokenGatingAddress(result);
-            if (result !== "0x0000000000000000000000000000000000000000") {
-              const tokenDecimals = await getTokensDecimalFromAddress(result);
-              const contract = new SmartContract(
-                ImplementationContract,
-                result,
-                undefined,
-                USDC_CONTRACT_ADDRESS,
-                GNOSIS_TRANSACTION_URL,
-              );
-              await contract.balanceOf().then((result) => {
-                setUserTokenBalance(
-                  convertFromWeiGovernance(result, tokenDecimals),
-                );
-              });
-              // const gatedTokenUserBalance = await getBalanceOfToken(
-              //   walletAddress,
-              //   result,
-              // );
-
-              // setUserTokenBalance(gatedTokenUserBalance);
-
-              await governorDetailContract
-                .gatingTokenBalanceRequired()
-                .then((result) => {
-                  setTokenGatingAmount(
-                    convertFromWeiGovernance(result, tokenDecimals),
-                  );
-                });
-            }
+        if (erc20Data && factoryData)
+          setDaoDetails({
+            daoName: erc20Data.DaoName,
+            daoSymbol: erc20Data.DaoSymbol,
+            quorum: erc20Data.quorum,
+            threshold: erc20Data.threshold,
+            isGovernance: erc20Data.isGovernanceActive,
+            decimals: erc20DaoDecimal,
+            clubTokensMinted: clubTokensMinted,
+            daoImage: fetchedImage,
+            isTokenGated: factoryData.isTokenGatingApplied,
+            minDeposit: factoryData.minDepositPerUser,
+            maxDeposit: factoryData.maxDepositPerUser,
+            pricePerToken: factoryData.pricePerToken,
+            depositDeadline: factoryData.depositCloseTime,
+            depositTokenAddress: factoryData.depositTokenAddress,
+            distributionAmt: factoryData.distributionAmount,
+            totalSupply:
+              (factoryData.distributionAmount / 10 ** 18) *
+              factoryData.pricePerToken,
           });
-
-        const decimal =
-          await await governorDetailContract.obtainTokenDecimals();
-        const res = await await governorDetailContract.erc20TokensMinted();
-
-        setClubTokenMInted(convertFromWeiGovernance(res, decimal));
       }
-    };
+    } catch (error) {
+      console.log(error);
+    }
+  }, [daoAddress, walletAddress]);
 
-    const erc721ContractDetails = async () => {
-      const erc721DetailContract = newContract(daoAddress);
-      const nftContract = newContract(nftContractAddress, nft);
+  /**
+   * Fetching details for ERC721 comp
+   */
+  const fetchErc721ContractDetails = useCallback(async () => {
+    try {
+      console.log(factoryContractABI, NEW_FACTORY_ADDRESS);
+      const factoryContract = new SmartContract(
+        factoryContractABI,
+        NEW_FACTORY_ADDRESS,
+        walletAddress,
+        undefined,
+        undefined,
+      );
 
-      await erc721DetailContract.gatingTokenAddress().then(async (result) => {
-        setTokenGatingAddress(result);
-        if (result !== "0x0000000000000000000000000000000000000000") {
-          // const gatedTokenUserBalance = await getBalanceOfToken(
-          //   walletAddress,
-          //   result,
-          // );
+      console.log(factoryContract);
 
-          // setUserTokenBalance(gatedTokenUserBalance);
-          const tokenDecimals = await getTokensDecimalFromAddress(result);
-          const contract = new SmartContract(
-            ImplementationContract,
-            result,
-            undefined,
-            USDC_CONTRACT_ADDRESS,
-            GNOSIS_TRANSACTION_URL,
-          );
-          await contract.balanceOf().then((result) => {
-            setUserTokenBalance(
-              convertFromWeiGovernance(result, tokenDecimals),
-            );
+      const erc721DaoContract = new SmartContract(
+        erc721DaoContractABI,
+        daoAddress,
+        walletAddress,
+        undefined,
+        undefined,
+      );
+
+      console.log(erc721DaoContract);
+
+      const fetchedData = await fetchClubbyDaoAddress(daoAddress);
+      console.log("Fetched Data", fetchedData);
+      const fetchedImage = fetchedData?.data[0]?.nftImageUrl;
+      const nftURI = fetchedData?.data[0]?.nftMetadataUrl;
+
+      if (factoryContract && erc721DaoContract) {
+        const factoryData = await factoryContract.getDAOdetails(daoAddress);
+        console.log("Factory Data", factoryData);
+
+        const erc721Data = await erc721DaoContract.getERC721DAOdetails();
+        console.log(erc721Data);
+
+        if (erc721Data && factoryData) {
+          setDaoDetails({
+            daoName: erc721Data.DaoName,
+            daoSymbol: erc721Data.DaoSymbol,
+            quorum: erc721Data.quorum,
+            threshold: erc721Data.threshold,
+            isGovernance: erc721Data.isGovernanceActive,
+            maxTokensPerUser: erc721Data.maxTokensPerUser,
+            isTotalSupplyUnlinited: erc721Data.isNftTotalSupplyUnlimited,
+            // decimals: erc20DaoDecimal,
+            // clubTokensMinted: clubTokensMinted,
+            createdBy: erc721Data.ownerAddress,
+            daoImage: fetchedImage,
+            nftURI: nftURI,
+            isTokenGated: factoryData.isTokenGatingApplied,
+            minDeposit: factoryData.minDepositPerUser,
+            maxDeposit: factoryData.maxDepositPerUser,
+            pricePerToken: factoryData.pricePerToken,
+            depositDeadline: factoryData.depositCloseTime,
+            depositTokenAddress: factoryData.depositTokenAddress,
+            distributionAmt: factoryData.distributionAmount,
+            totalSupply:
+              factoryData.distributionAmount * factoryData.pricePerToken,
           });
-          await erc721DetailContract
-            .gatingTokenBalanceRequired()
-            .then((result) => {
-              setTokenGatingAmount(
-                convertFromWeiGovernance(result, tokenDecimals),
-              );
-            });
         }
-      });
-
-      await erc721DetailContract.quoram().then((result) => setQuoram(result));
-
-      await erc721DetailContract
-        .threshold()
-        .then((result) => setThreshold(result));
-
-      await erc721DetailContract
-        .governanceDetails()
-        .then((result) => setIsGovernanceActive(result));
-
-      await erc721DetailContract.priceOfNft().then((result) => {
-        // console.log("price of nfffftttt", result);
-        // setPriceOfNft(convertFromWei(parseInt(result), usdcTokenDecimal));
-        setPriceOfNft(result);
-      });
-
-      await erc721DetailContract
-        .ownerAddress()
-        .then((result) => setnftContractOwner(result));
-      await erc721DetailContract
-        .closeDate()
-        .then((result) =>
-          setDepositCloseDate(new Date(parseInt(result) * 1000).toString()),
-        );
-      await erc721DetailContract.closeDate().then((result) => {
-        if (result >= Date.now()) {
-          setIsDepositActive(false);
-        } else {
-          setIsDepositActive(true);
-        }
-      });
-
-      await nftContract
-        .maxTokensPerUser()
-        .then((result) => setMaxTokensPerUser(result));
-
-      await nftContract
-        .balanceOfNft(userDetails)
-        .then((result) => setUserNftBalance(result));
-
-      await nftContract
-        .nftOwnersCount()
-        .then((result) => setTotalNftMinted(result));
-
-      await nftContract
-        .totalNftSupply()
-        .then((result) => setTotalNftSupply(result));
-
-      await nftContract
-        .isNftTotalSupplyUnlimited()
-        .then((result) => setIsNftSupplyUnlimited(result));
-    };
-
-    if (wallet) {
-      if (tokenType === "erc721") {
-        erc721ContractDetails();
-      } else if (tokenType === "erc20NonTransferable") {
-        contractDetailsRetrieval();
       }
+    } catch (error) {
+      console.log(error);
     }
-  }, [
-    walletConnected,
-    clubId,
-    wallet,
-    tokenType,
-    USDC_CONTRACT_ADDRESS,
-    GNOSIS_TRANSACTION_URL,
-    governorDataFetched,
-    daoAddress,
-    userDetails,
-    usdcTokenDecimal,
-    governanceConvertDecimal,
-    nftContractAddress,
-    newContract,
-    walletAddress,
-  ]);
+  }, [daoAddress, walletAddress]);
 
-  const handleInputChange = (newValue) => {
-    setDepositAmount(parseInt(newValue));
-  };
-
-  const handleMaxButtonClick = async (event) => {
-    // value should be the maximum deposit value
-    if (governorDataFetched) {
-      setDepositAmount(maxDeposit);
+  /**
+   * Fetching tokenType from API
+   */
+  const fetchDataFromApi = useCallback(async () => {
+    try {
+      const data = await fetchClubbyDaoAddress(daoAddress);
+      console.log(data?.data[0]?.tokenType);
+      setTokenType(data?.data[0]?.tokenType);
+    } catch (error) {
+      console.log(error);
     }
-  };
+  }, [daoAddress]);
 
-  const handleClose = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-    setOpenSnackBar(false);
-  };
+  useEffect(() => {
+    fetchDataFromApi();
+  }, [fetchDataFromApi]);
 
-  const handleDialogClose = (e) => {
-    e.preventDefault();
-    setOpen(false);
-  };
-
-  const handleSwitchNetwork = async () => {
-    const switched = await checkNetwork();
-    if (switched) {
-      setOpen(false);
+  useEffect(() => {
+    if (tokenType === "erc20NonTransferable") {
+      fetchErc20ContractDetails();
     } else {
-      setOpen(true);
+      console.log("Hereee");
+      fetchErc721ContractDetails();
     }
-  };
+  }, [fetchErc20ContractDetails, tokenType, fetchErc721ContractDetails]);
 
   return (
-    <Layout2 faucet={true}>
-      {tokenType === "erc20NonTransferable" && (
-        // ERC20
-        <ERC20Comp
-          apiTokenDetailSet={apiTokenDetailSet}
-          closingDays={closingDays}
-          clubTokenMinted={clubTokenMinted}
-          dataFetched={dataFetched}
-          depositAmount={depositAmount}
-          depositCloseDate={depositCloseDate}
-          depositInitiated={depositInitiated}
-          governorDataFetched={governorDataFetched}
-          handleConnectWallet={connect}
-          handleDialogClose={handleDialogClose}
-          handleInputChange={handleInputChange}
-          handleMaxButtonClick={handleMaxButtonClick}
-          handleSwitchNetwork={handleSwitchNetwork}
-          imageFetched={imageFetched}
-          imageUrl={imageUrl}
-          maxDeposit={maxDeposit}
-          members={members}
-          minDeposit={minDeposit}
-          open={open}
-          tokenAPIDetails={tokenAPIDetails}
-          // tokenDetails={tokenDetails}
-          tokenSymbol={tokenSymbol}
-          totalDeposit={totalDeposit}
-          wallet={wallet}
-          walletBalance={walletBalance}
-          walletConnected={walletConnected}
-          clubId={clubId}
-          daoAddress={daoAddress}
-          setAlertStatus={setAlertStatus}
-          setDepositInitiated={setDepositInitiated}
-          setOpenSnackBar={setOpenSnackBar}
-          usdcTokenDecimal={usdcTokenDecimal}
-          userDetails={userDetails}
-          newContract={newContract}
-          clubName={clubName}
-          loading={loading}
-          setLoading={setLoading}
-          tokenGatingAddress={tokenGatingAddress}
-          tokenGatingAmount={tokenGatingAmount}
-          userTokenBalance={userTokenBalance}
-        />
+    <Layout2>
+      {tokenType === "erc20NonTransferable" ? (
+        <NewArchERC20 erc20DaoAddress={daoAddress} daoDetails={daoDetails} />
+      ) : (
+        <NewArchERC721 erc721DaoAddress={daoAddress} daoDetails={daoDetails} />
       )}
-      {tokenType === "erc721" && (
-        // erc721 comp
-        <ERC721Comp
-          wallet={wallet}
-          loading={loading}
-          quoram={quoram}
-          threshold={threshold}
-          clubName={clubName}
-          maxTokensPerUser={maxTokensPerUser}
-          isDepositActive={isDepositActive}
-          isGovernanceActive={isGovernanceActive}
-          isNftSupplyUnlimited={isNftSupplyUnlimited}
-          nftContractOwner={nftContractOwner}
-          nftImageUrl={nftImageUrl}
-          priceOfNft={priceOfNft}
-          totalNftMinted={totalNftMinted}
-          totalNftSupply={totalNftSupply}
-          depositCloseDate={depositCloseDate}
-          clubId={clubId}
-          daoAddress={daoAddress}
-          nftMetadata={nftMetadata}
-          setAlertStatus={setAlertStatus}
-          setLoading={setLoading}
-          setMessage={setMessage}
-          setOpenSnackBar={setOpenSnackBar}
-          usdcTokenDecimal={usdcTokenDecimal}
-          userDetails={userDetails}
-          userNftBalance={userNftBalance}
-          walletBalance={walletBalance}
-          newContract={newContract}
-          tokenGatingAddress={tokenGatingAddress}
-          tokenGatingAmount={tokenGatingAmount}
-          userTokenBalance={userTokenBalance}
-        />
-      )}
-      <SnackbarComp
-        alertStatus={alertStatus}
-        handleClose={handleClose}
-        message={message}
-        openSnackBar={openSnackBar}
-      />
     </Layout2>
   );
 };

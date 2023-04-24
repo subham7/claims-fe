@@ -125,6 +125,48 @@ export class SmartContract {
     });
   }
 
+  async buyGovernanceTokenERC20DAO(
+    userAddress,
+    daoAddress,
+    depositTokenAddress,
+    numOfTokens,
+    merkleProof,
+  ) {
+    return this.contract.methods
+      .buyGovernanceTokenERC20DAO(
+        userAddress,
+        daoAddress,
+        depositTokenAddress,
+        numOfTokens,
+        merkleProof,
+      )
+      .send({
+        from: this.walletAddress,
+      });
+  }
+
+  async buyGovernanceTokenERC721DAO(
+    userAddress,
+    daoAddress,
+    depositTokenAddress,
+    tokenUriOfNFT,
+    numOfTokens,
+    merkleProof,
+  ) {
+    return this.contract.methods
+      .buyGovernanceTokenERC721DAO(
+        userAddress,
+        daoAddress,
+        depositTokenAddress,
+        tokenUriOfNFT,
+        numOfTokens,
+        merkleProof,
+      )
+      .send({
+        from: this.walletAddress,
+      });
+  }
+
   // // create new club contract function
   // async createDAO(
   //   owners,
@@ -292,6 +334,7 @@ export class SmartContract {
       assetsStoredOnGnosis,
       merkleRoot,
     );
+
     return this.contract.methods
       .createERC20DAO(
         clubName,
@@ -313,6 +356,24 @@ export class SmartContract {
         merkleRoot,
       )
       .send({ from: this.walletAddress });
+  }
+
+  async getERC20DAOdetails() {
+    return this.contract?.methods.getERC20DAOdetails().call({
+      from: this.walletAddress,
+    });
+  }
+
+  async getERC721DAOdetails() {
+    return this.contract?.methods.getERC721DAOdetails().call({
+      from: this.walletAddress,
+    });
+  }
+
+  async getDAOdetails(daoAddress) {
+    return this.contract?.methods.getDAOdetails(daoAddress).call({
+      from: this.walletAddress,
+    });
   }
 
   async updateProposalAndExecution(
@@ -669,13 +730,19 @@ export class SmartContract {
   }
 
   async balanceOf() {
-    return this.contract.methods
+    return this.contract?.methods
       .balanceOf(this.walletAddress)
       .call({ from: this.walletAddress });
   }
 
   async decimals() {
-    return this.contract.methods.decimals().call({ from: this.walletAddress });
+    return this.contract?.methods.decimals().call({ from: this.walletAddress });
+  }
+
+  async totalSupply() {
+    return this.contract?.methods
+      .totalSupply()
+      .call({ from: this.walletAddress });
   }
 
   async approve() {
