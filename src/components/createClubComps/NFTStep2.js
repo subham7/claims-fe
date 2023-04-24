@@ -448,7 +448,6 @@ export default function NFTStep2(props) {
                     checked={props.formik.values.isNftTotalSupplylimited}
                     // onChange={handleOperationTypeChange}
                     onChange={(value) => {
-                      console.log(value.target.checked);
                       props.formik.setFieldValue(
                         "isNftTotalSupplylimited",
                         value.target.checked,

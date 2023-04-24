@@ -42,7 +42,7 @@ export const ERC721Step2ValidationSchema = yup.object({
   isNftTotalSupplylimited: yup.boolean(),
   totalTokenSupply: yup.number().when("isNftTotalSupplylimited", {
     is: true,
-    then: yup.number().required("total supply of nft is required"),
+    then: () => yup.number().required("total supply of nft is required"),
   }),
   depositClose: yup.date().required("deposit close date is required"),
 });
