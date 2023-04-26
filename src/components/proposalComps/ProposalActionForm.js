@@ -16,6 +16,7 @@ const useStyles = makeStyles({
   textField: {
     width: "100%",
     // margin: "16px 0 25px 0",
+    marginTop: "0.5rem",
     fontSize: "18px",
     fontFamily: "Whyte",
   },
@@ -25,7 +26,7 @@ const ProposalActionForm = ({ formik }) => {
   console.log(formik);
   const classes = useStyles();
   return (
-    <Stack>
+    <Stack sx={{ marginTop: "1rem" }}>
       <Typography variant="proposalBody">
         Choose a command for this proposal to execute
       </Typography>
@@ -44,7 +45,8 @@ const ProposalActionForm = ({ formik }) => {
         style={{
           borderRadius: "10px",
           background: "#111D38 0% 0% no-repeat padding-box",
-          width: "90%",
+          width: "100%",
+          marginTop: "0.5rem",
         }}
         error={
           formik.touched.actionCommand && Boolean(formik.errors.actionCommand)
