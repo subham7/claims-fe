@@ -1,6 +1,7 @@
 import SafeAppsSDK from "@gnosis.pm/safe-apps-sdk";
 import { fetchConfigById } from "./config";
 import { addContractAddress } from "../redux/reducers/gnosis";
+import { ApolloClient, InMemoryCache } from "@apollo/client";
 
 const opts = {
   allowedDomains: [/gnosis-safe.io/],
@@ -16,6 +17,12 @@ export const POLYGON_RPC_URL = process.env.NEXT_PUBLIC_POLYGON_RPC_URL;
 export const CLAIM_FACTORY_ADDRESS =
   process.env.NEXT_PUBLIC_CLAIM_FACTORY_ADDRESS;
 export const NEW_FACTORY_ADDRESS = process.env.NEXT_PUBLIC_NEW_FACTORY_ADDRESS;
+export const SUBGRAPH_URL = process.env.NEXT_PUBLIC_SUBGRAPH_API_ENDPOINT;
+
+export const SUBGRAPH_CLIENT = new ApolloClient({
+  uri: process.env.NEXT_PUBLIC_SUBGRAPH_API_ENDPOINT,
+  cache: new InMemoryCache(),
+});
 
 export function updateDynamicAddress(networkId, dispatch) {
   const networkData = fetchConfigById(networkId);
