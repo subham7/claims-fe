@@ -56,9 +56,13 @@ export const proposalValidationSchema = yup.object({
     .string("Enter proposal description")
     .required("Description is required"),
   optionList: yup.array().of(yup.string().required("option is required")),
-  actionCommand: yup
-    .string("Enter proposal title")
-    .required("action command is required"),
+  actionCommand: yup.string("Enter proposal action").when("typeOfProposal", {
+    is: "action",
+    then: () =>
+      yup
+        .string("Enter proposal action")
+        .required("action command is required"),
+  }),
   userAddress: yup
     .string("Please enter user address")
 

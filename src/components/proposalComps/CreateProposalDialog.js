@@ -51,11 +51,11 @@ const CreateProposalDialog = ({ open, onClose }) => {
 
   const createProposal = useFormik({
     initialValues: {
-      typeOfProposal: "action",
+      typeOfProposal: "survey",
       proposalDeadline: dayjs(Date.now() + 300000),
       proposalTitle: "",
       proposalDescription: "",
-      optionList: [],
+      optionList: ["yes", "no"],
       actionCommand: "",
       userAddress: "",
       amountOfTokens: 0,
@@ -70,6 +70,7 @@ const CreateProposalDialog = ({ open, onClose }) => {
       console.log(values);
     },
   });
+
   return (
     <Dialog
       open={open}
@@ -213,7 +214,7 @@ const CreateProposalDialog = ({ open, onClose }) => {
             <>
               <Stack mt={3}>
                 {createProposal.values.optionList?.length > 0 ? (
-                  <Grid container pl={3} pr={1} mt={2} mb={2}>
+                  <Grid container pr={1} mt={2} mb={2}>
                     {createProposal.values.optionList.map((data, key) => {
                       return (
                         <Grid
@@ -263,6 +264,11 @@ const CreateProposalDialog = ({ open, onClose }) => {
                           />
                           <IconButton
                             aria-label="add"
+                            disabled={
+                              createProposal.values.optionList.indexOf(
+                                createProposal.values.optionList[key],
+                              ) < 2
+                            }
                             onClick={(value) => {
                               const list = [
                                 ...createProposal.values.optionList,
