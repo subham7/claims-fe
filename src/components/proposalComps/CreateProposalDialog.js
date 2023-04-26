@@ -331,7 +331,15 @@ const CreateProposalDialog = ({ open, onClose }) => {
                 alignItems: "center",
               }}
             >
-              <Button variant="primary">Cancel</Button>
+              <Button
+                variant="primary"
+                onClick={() => {
+                  createProposal.resetForm();
+                  onClose(event, "cancel");
+                }}
+              >
+                Cancel
+              </Button>
             </Grid>
             <Grid item>
               <Button variant="primary" type="submit">
