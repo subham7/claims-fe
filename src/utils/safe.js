@@ -497,13 +497,19 @@ export async function initiateConnection(
                   }
                 }
 
-                dispatch(addDaoAddress(result.data.daoAddress));
+                dispatch(
+                  addDaoAddress(
+                    Web3.utils.toChecksumAddress(result.data.daoAddress),
+                  ),
+                );
                 dispatch(addClubID(result.data.clubId));
 
                 const { pathname } = Router;
                 if (pathname == "/create") {
                   Router.push(
-                    `/dashboard/${result.data.clubId}?clubCreate=true`,
+                    `/dashboard/${Web3.utils.toChecksumAddress(
+                      result.data.daoAddress,
+                    )}?clubCreate=true`,
                     undefined,
                     {
                       shallow: true,

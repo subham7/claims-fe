@@ -1,4 +1,3 @@
-import { gql } from "@apollo/client";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import {
   Backdrop,
@@ -17,7 +16,6 @@ import {
 import { makeStyles } from "@mui/styles";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
-import { fetchClub } from "../../../src/api/club";
 import { QUERY_ALL_MEMBERS } from "../../../src/api/graphql/queries";
 import Layout1 from "../../../src/components/layouts/layout1";
 import { convertFromWeiGovernance } from "../../../src/utils/globalFunctions";
@@ -59,7 +57,7 @@ const Test = () => {
   const header = ["Name", "Deposit amount", "Club tokens", "Joined on"];
   const router = useRouter();
   const classes = useStyles();
-  const { clubId } = router.query;
+  const { clubId: daoAddress } = router.query;
 
   const handleAddressClick = (event, address) => {
     event.preventDefault();
@@ -70,16 +68,9 @@ const Test = () => {
     try {
       setLoading(true);
       const fetchData = async () => {
-        if (clubId) {
-          const res = await fetchClub(clubId);
-          console.log("Hello");
-          if (res?.data[0]?.daoAddress) {
-            const data = await subgraphQuery(
-              QUERY_ALL_MEMBERS(res?.data[0]?.daoAddress),
-            );
-            setMembersData(data?.users);
-            console.log(data.users);
-          }
+        if (daoAddress) {
+          const data = await subgraphQuery(QUERY_ALL_MEMBERS(daoAddress));
+          setMembersData(data?.users);
         }
       };
       fetchData();
@@ -88,7 +79,7 @@ const Test = () => {
       console.log(error);
       setLoading(false);
     }
-  }, [clubId]);
+  }, [daoAddress]);
 
   return (
     <>
