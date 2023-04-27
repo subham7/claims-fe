@@ -1,9 +1,8 @@
-import React from 'react'
+import React from "react";
+import DashboardIndex from "../../../src/components/dashboardComps/DashboardIndex";
 
 const newIndex = () => {
-  return (
-    <div>newIndex</div>
-  )
-}
+  return <DashboardIndex />;
+};
 
-export default newIndex
+export default newIndex;

@@ -456,7 +456,10 @@ export async function initiateConnection(
               if (result.status !== 201) {
                 console.log(result.statusText);
               } else {
-                let walletAddress = await web3.eth.getAccounts();
+                const walletAddressInLowercase = await web3.eth.getAccounts();
+                let walletAddress = web3.utils.toChecksumAddress(
+                  walletAddressInLowercase,
+                );
 
                 const data = {
                   userAddress: walletAddress,

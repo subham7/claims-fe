@@ -28,3 +28,18 @@ export const QUERY_CLUBS_FROM_WALLET_ADDRESS = (userAddress) => {
         }
     }`;
 };
+
+export const QUERY_CLUB_DETAILS = (daoAddress) => {
+  return `query{
+            stations(where: {daoAddress: "${daoAddress}"}) {
+              id
+              ownerAddress
+              daoAddress
+              gnosisAddress
+              name
+              tokenType
+              symbol
+              isGtTransferable
+            }
+    }`;
+};
