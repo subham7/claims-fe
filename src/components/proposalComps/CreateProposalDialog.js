@@ -1,5 +1,7 @@
 import {
+  Alert,
   Button,
+  CircularProgress,
   Dialog,
   DialogContent,
   FormControl,
@@ -7,15 +9,15 @@ import {
   Grid,
   IconButton,
   MenuItem,
-  OutlinedInput,
   Select,
+  Snackbar,
   Stack,
   TextField,
   Typography,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { useFormik } from "formik";
-import React from "react";
+import React, { useState } from "react";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -25,6 +27,11 @@ import AddCircleRoundedIcon from "@mui/icons-material/AddCircleRounded";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ProposalActionForm from "./ProposalActionForm";
 import { proposalValidationSchema } from "../createClubComps/ValidationSchemas";
+import { convertToWeiGovernance } from "../../utils/globalFunctions";
+import { useConnectWallet } from "@web3-onboard/react";
+import { useRouter } from "next/router";
+import Web3 from "web3";
+import { createProposal } from "../../api/proposal";
 
 const useStyles = makeStyles({
   modalStyle: {
@@ -48,14 +55,32 @@ const useStyles = makeStyles({
 });
 const CreateProposalDialog = ({ open, onClose }) => {
   const classes = useStyles();
+  const router = useRouter();
 
-  const createProposal = useFormik({
+  const { clubId } = router.query;
+  const [{ wallet }] = useConnectWallet();
+  const walletAddress = Web3.utils.toChecksumAddress(
+    wallet?.accounts[0].address,
+  );
+
+  const [loaderOpen, setLoaderOpen] = useState(false);
+  const [openSnackBar, setOpenSnackBar] = useState(false);
+  const [failed, setFailed] = useState(false);
+
+  const handleSnackBarClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpenSnackBar(false);
+  };
+
+  const proposal = useFormik({
     initialValues: {
       typeOfProposal: "survey",
       proposalDeadline: dayjs(Date.now() + 300000),
       proposalTitle: "",
       proposalDescription: "",
-      optionList: ["yes", "no"],
+      optionList: [{ text: "yes" }, { text: "no" }],
       actionCommand: "",
       userAddress: "",
       amountOfTokens: 0,
@@ -68,244 +93,287 @@ const CreateProposalDialog = ({ open, onClose }) => {
     validationSchema: proposalValidationSchema,
     onSubmit: (values) => {
       console.log(values);
+      let commands;
+      setLoaderOpen(true);
+      if (values.actionCommand === "Mint club token") {
+        commands = [
+          {
+            executionId: 0,
+            mintGTAddresses: [values.userAddress],
+            mintGTAmounts: [convertToWeiGovernance(values.amountOfTokens, 18)],
+            usdcTokenSymbol: "USDC",
+            usdcTokenDecimal: 18,
+            usdcGovernanceTokenDecimal: 18,
+          },
+        ];
+      }
+      const payload = {
+        name: values.proposalTitle,
+        description: values.proposalDescription,
+        createdBy: walletAddress,
+        clubId: clubId,
+        votingDuration: dayjs(values.proposalDeadline).unix(),
+        votingOptions: values.optionList,
+        commands: commands,
+        type: "action",
+      };
+
+      const createRequest = createProposal(payload);
+      createRequest.then((result) => {
+        if (result.status !== 201) {
+          setOpenSnackBar(true);
+          setFailed(true);
+          setLoaderOpen(false);
+        } else {
+          // console.log(result.data)
+          // fetchData();
+          setOpenSnackBar(true);
+          setFailed(false);
+          setOpen(false);
+          setLoaderOpen(false);
+        }
+      });
     },
   });
 
   return (
-    <Dialog
-      open={open}
-      onClose={onClose}
-      scroll="body"
-      PaperProps={{ classes: { root: classes.modalStyle } }}
-      fullWidth
-      maxWidth="lg"
-    >
-      <DialogContent
-        sx={{ overflow: "hidden", backgroundColor: "#19274B", padding: "3rem" }}
+    <>
+      <Dialog
+        open={open}
+        onClose={onClose}
+        scroll="body"
+        PaperProps={{ classes: { root: classes.modalStyle } }}
+        fullWidth
+        maxWidth="lg"
       >
-        <form onSubmit={createProposal.handleSubmit} className={classes.form}>
-          {/* <Grid container>
+        <DialogContent
+          sx={{
+            overflow: "hidden",
+            backgroundColor: "#19274B",
+            padding: "3rem",
+          }}
+        >
+          <form onSubmit={proposal.handleSubmit} className={classes.form}>
+            {/* <Grid container>
             <Grid item m={3}> */}
-          <Typography className={classes.dialogBox}>Create proposal</Typography>
-          {/* </Grid>
+            <Typography className={classes.dialogBox}>
+              Create proposal
+            </Typography>
+            {/* </Grid>
           </Grid> */}
 
-          {/* type of proposal and end time */}
-          <Grid container spacing={3} ml={0}>
-            <Grid item md={6} sx={{ paddingLeft: "0 !important" }}>
-              <Typography variant="proposalBody">Type of Proposal</Typography>
-              <FormControl sx={{ width: "100%", marginTop: "0.5rem" }}>
-                <Select
-                  value={createProposal.values.typeOfProposal}
-                  onChange={createProposal.handleChange}
-                  inputProps={{ "aria-label": "Without label" }}
-                  name="typeOfProposal"
-                  id="typeOfProposal"
-                >
-                  <MenuItem value={"survey"}>Survey</MenuItem>
-                  <MenuItem value={"action"}>Action</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item md={6}>
-              <Typography variant="proposalBody">Proposal deadline</Typography>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DateTimePicker
-                  fullWidth
-                  sx={{
-                    width: "90%",
-                    marginTop: "0.5rem",
-                  }}
-                  value={createProposal.values.proposalDeadline}
-                  minDateTime={dayjs(Date.now())}
-                  onChange={(value) => {
-                    createProposal.setFieldValue("proposalDeadline", value);
-                  }}
-                />
-              </LocalizationProvider>
-            </Grid>
-          </Grid>
-
-          {/* proposal title */}
-          <Grid
-            container
-            direction={"column"}
-            ml={3}
-            mt={2}
-            sx={{ marginLeft: "0 !important" }}
-          >
-            <Typography variant="proposalBody">Proposal Title*</Typography>
-
-            <TextField
-              variant="outlined"
-              className={classes.textField}
-              placeholder="Add a one liner title here"
-              name="proposalTitle"
-              id="proposalTitle"
-              value={createProposal.values.proposalTitle}
-              onChange={createProposal.handleChange}
-              error={
-                createProposal.touched.proposalTitle &&
-                Boolean(createProposal.errors.proposalTitle)
-              }
-              helperText={
-                createProposal.touched.proposalTitle &&
-                createProposal.errors.proposalTitle
-              }
-            />
-          </Grid>
-
-          {/* proposal description */}
-          <Grid
-            container
-            direction={"column"}
-            ml={3}
-            mt={2}
-            sx={{ marginLeft: "0 !important" }}
-          >
-            <Typography variant="proposalBody">
-              Proposal Description*
-            </Typography>
-
-            <QuillEditor
-              //   onChange={setDescription}
-              multiline
-              rows={10}
-              placeholder="Add full description here"
-              style={{
-                width: "100%",
-                height: "auto",
-                backgroundColor: "#19274B",
-                fontSize: "18px",
-                color: "#C1D3FF",
-                fontFamily: "Whyte",
-                marginBottom: "0.5rem",
-              }}
-              name="proposalDescription"
-              id="proposalDescription"
-              value={createProposal.values.proposalDescription}
-              onChange={(value) =>
-                createProposal.setFieldValue("proposalDescription", value)
-              }
-              error={
-                createProposal.touched.proposalDescription &&
-                Boolean(createProposal.errors.proposalDescription)
-              }
-              helperText={
-                createProposal.touched.proposalDescription &&
-                createProposal.errors.proposalDescription
-              }
-            />
-            {createProposal.touched.proposalDescription &&
-              Boolean(createProposal.errors.proposalDescription) && (
-                <FormHelperText
-                  error
-                  focused
-                  mt={10}
-                  sx={{ marginLeft: "1rem" }}
-                >
-                  Description is required
-                </FormHelperText>
-              )}
-          </Grid>
-
-          {/* add options button */}
-          {createProposal.values.typeOfProposal === "survey" ? (
-            <>
-              <Stack mt={3}>
-                {createProposal.values.optionList?.length > 0 ? (
-                  <Grid container pr={1} mt={2} mb={2}>
-                    {createProposal.values.optionList.map((data, key) => {
-                      return (
-                        <Grid
-                          item
-                          xs
-                          sx={{
-                            display: "flex",
-                            justifyContent: "flex-start",
-                            alignItems: "center",
-                          }}
-                          key={key}
-                        >
-                          <TextField
-                            label="option"
-                            // error={!/^0x[a-zA-Z0-9]+/gm.test(addressList[key])}
-                            variant="outlined"
-                            value={createProposal.values.optionList[key]}
-                            onChange={(e, value) => {
-                              const option = e.target.value;
-                              const list = [
-                                ...createProposal.values.optionList,
-                              ];
-                              list[key] = option;
-                              createProposal.setFieldValue("optionList", list);
-                            }}
-                            placeholder={"yes, no"}
-                            sx={{
-                              m: 1,
-                              width: 443,
-                              mt: 1,
-                              borderRadius: "10px",
-                            }}
-                            error={
-                              Boolean(createProposal.errors.optionList)
-                                ? createProposal.touched.optionList &&
-                                  Boolean(
-                                    createProposal?.errors?.optionList[key],
-                                  )
-                                : null
-                            }
-                            helperText={
-                              Boolean(createProposal.errors.optionList)
-                                ? createProposal.touched.optionList &&
-                                  createProposal?.errors?.optionList[key]
-                                : null
-                            }
-                          />
-                          <IconButton
-                            aria-label="add"
-                            disabled={
-                              createProposal.values.optionList.indexOf(
-                                createProposal.values.optionList[key],
-                              ) < 2
-                            }
-                            onClick={(value) => {
-                              const list = [
-                                ...createProposal.values.optionList,
-                              ];
-                              list.splice(key, 1);
-                              createProposal.setFieldValue("optionList", list);
-                            }}
-                          >
-                            <DeleteIcon />
-                          </IconButton>
-                        </Grid>
-                      );
-                    })}
-                  </Grid>
-                ) : null}
-                <Button
-                  variant={"primary"}
-                  //   className={classes.btn}
-                  sx={{ width: "30%" }}
-                  onClick={(value) => {
-                    createProposal.setFieldValue("optionList", [
-                      ...createProposal.values.optionList,
-                      "",
-                    ]);
-                  }}
-                  startIcon={<AddCircleRoundedIcon />}
-                >
-                  Add Option
-                </Button>
+            {/* type of proposal and end time */}
+            <Grid container spacing={3} ml={0}>
+              <Grid item md={6} sx={{ paddingLeft: "0 !important" }}>
+                <Typography variant="proposalBody">Type of Proposal</Typography>
+                <FormControl sx={{ width: "100%", marginTop: "0.5rem" }}>
+                  <Select
+                    value={proposal.values.typeOfProposal}
+                    onChange={proposal.handleChange}
+                    inputProps={{ "aria-label": "Without label" }}
+                    name="typeOfProposal"
+                    id="typeOfProposal"
+                  >
+                    <MenuItem value={"survey"}>Survey</MenuItem>
+                    <MenuItem value={"action"}>Action</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item md={6}>
                 <Typography variant="proposalBody">
-                  (Minimum 2 options needed *)
+                  Proposal deadline
                 </Typography>
-              </Stack>
-            </>
-          ) : (
-            <Stack>
-              {/* <Typography variant="proposalBody">
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DateTimePicker
+                    fullWidth
+                    sx={{
+                      width: "90%",
+                      marginTop: "0.5rem",
+                    }}
+                    value={proposal.values.proposalDeadline}
+                    minDateTime={dayjs(Date.now())}
+                    onChange={(value) => {
+                      proposal.setFieldValue("proposalDeadline", value);
+                    }}
+                  />
+                </LocalizationProvider>
+              </Grid>
+            </Grid>
+
+            {/* proposal title */}
+            <Grid
+              container
+              direction={"column"}
+              ml={3}
+              mt={2}
+              sx={{ marginLeft: "0 !important" }}
+            >
+              <Typography variant="proposalBody">Proposal Title*</Typography>
+
+              <TextField
+                variant="outlined"
+                className={classes.textField}
+                placeholder="Add a one liner title here"
+                name="proposalTitle"
+                id="proposalTitle"
+                value={proposal.values.proposalTitle}
+                onChange={proposal.handleChange}
+                error={
+                  proposal.touched.proposalTitle &&
+                  Boolean(proposal.errors.proposalTitle)
+                }
+                helperText={
+                  proposal.touched.proposalTitle &&
+                  proposal.errors.proposalTitle
+                }
+              />
+            </Grid>
+
+            {/* proposal description */}
+            <Grid
+              container
+              direction={"column"}
+              ml={3}
+              mt={2}
+              sx={{ marginLeft: "0 !important" }}
+            >
+              <Typography variant="proposalBody">
+                Proposal Description*
+              </Typography>
+
+              <QuillEditor
+                //   onChange={setDescription}
+                multiline
+                rows={10}
+                placeholder="Add full description here"
+                style={{
+                  width: "100%",
+                  height: "auto",
+                  backgroundColor: "#19274B",
+                  fontSize: "18px",
+                  color: "#C1D3FF",
+                  fontFamily: "Whyte",
+                  marginBottom: "0.5rem",
+                }}
+                name="proposalDescription"
+                id="proposalDescription"
+                value={proposal.values.proposalDescription}
+                onChange={(value) =>
+                  proposal.setFieldValue("proposalDescription", value)
+                }
+                error={
+                  proposal.touched.proposalDescription &&
+                  Boolean(proposal.errors.proposalDescription)
+                }
+                helperText={
+                  proposal.touched.proposalDescription &&
+                  proposal.errors.proposalDescription
+                }
+              />
+              {proposal.touched.proposalDescription &&
+                Boolean(proposal.errors.proposalDescription) && (
+                  <FormHelperText
+                    error
+                    focused
+                    mt={10}
+                    sx={{ marginLeft: "1rem" }}
+                  >
+                    Description is required
+                  </FormHelperText>
+                )}
+            </Grid>
+
+            {/* add options button */}
+            {proposal.values.typeOfProposal === "survey" ? (
+              <>
+                <Stack mt={3}>
+                  {proposal.values.optionList?.length > 0 ? (
+                    <Grid container pr={1} mt={2} mb={2}>
+                      {proposal.values.optionList.map((data, key) => {
+                        return (
+                          <Grid
+                            item
+                            xs
+                            sx={{
+                              display: "flex",
+                              justifyContent: "flex-start",
+                              alignItems: "center",
+                            }}
+                            key={key}
+                          >
+                            <TextField
+                              label="option"
+                              // error={!/^0x[a-zA-Z0-9]+/gm.test(addressList[key])}
+                              variant="outlined"
+                              value={proposal.values.optionList[key].text}
+                              onChange={(e, value) => {
+                                const option = e.target.value;
+                                const list = [...proposal.values.optionList];
+                                list[key].text = option;
+                                proposal.setFieldValue("optionList", list);
+                              }}
+                              placeholder={"yes, no"}
+                              sx={{
+                                m: 1,
+                                width: 443,
+                                mt: 1,
+                                borderRadius: "10px",
+                              }}
+                              error={
+                                Boolean(proposal.errors.optionList)
+                                  ? proposal.touched.optionList &&
+                                    Boolean(proposal?.errors?.optionList[key])
+                                  : null
+                              }
+                              helperText={
+                                Boolean(proposal.errors.optionList)
+                                  ? proposal.touched.optionList &&
+                                    proposal?.errors?.optionList[key]
+                                  : null
+                              }
+                            />
+                            <IconButton
+                              aria-label="add"
+                              disabled={
+                                proposal.values.optionList.indexOf(
+                                  proposal.values.optionList[key],
+                                ) < 2
+                              }
+                              onClick={(value) => {
+                                const list = [...proposal.values.optionList];
+                                list.splice(key, 1);
+                                proposal.setFieldValue("optionList", list);
+                              }}
+                            >
+                              <DeleteIcon />
+                            </IconButton>
+                          </Grid>
+                        );
+                      })}
+                    </Grid>
+                  ) : null}
+                  <Button
+                    variant={"primary"}
+                    //   className={classes.btn}
+                    sx={{ width: "30%" }}
+                    onClick={(value) => {
+                      proposal.setFieldValue("optionList", [
+                        ...proposal.values.optionList,
+                        { text: "" },
+                      ]);
+                    }}
+                    startIcon={<AddCircleRoundedIcon />}
+                  >
+                    Add Option
+                  </Button>
+                  <Typography variant="proposalBody">
+                    (Minimum 2 options needed *)
+                  </Typography>
+                </Stack>
+              </>
+            ) : (
+              <Stack>
+                {/* <Typography variant="proposalBody">
                 Choose a command for this proposal to execute
               </Typography>
               <Button
@@ -316,40 +384,65 @@ const CreateProposalDialog = ({ open, onClose }) => {
               >
                 Add command
               </Button> */}
-              <ProposalActionForm formik={createProposal} />
-            </Stack>
-          )}
+                <ProposalActionForm formik={proposal} />
+              </Stack>
+            )}
 
-          {/* Submit Button */}
-          <Grid container mt={2} spacing={3}>
-            <Grid
-              item
-              xs
-              sx={{
-                display: "flex",
-                justifyContent: "flex-end",
-                alignItems: "center",
-              }}
-            >
-              <Button
-                variant="primary"
-                onClick={() => {
-                  createProposal.resetForm();
-                  onClose(event, "cancel");
+            {/* Submit Button */}
+            <Grid container mt={2} spacing={3}>
+              <Grid
+                item
+                xs
+                sx={{
+                  display: "flex",
+                  justifyContent: "flex-end",
+                  alignItems: "center",
                 }}
               >
-                Cancel
-              </Button>
+                <Button
+                  variant="primary"
+                  onClick={() => {
+                    proposal.resetForm();
+                    onClose(event, "cancel");
+                  }}
+                >
+                  Cancel
+                </Button>
+              </Grid>
+              <Grid item>
+                <Button variant="primary" type="submit">
+                  {loaderOpen ? <CircularProgress color="inherit" /> : "Submit"}
+                </Button>
+              </Grid>
             </Grid>
-            <Grid item>
-              <Button variant="primary" type="submit">
-                Submit
-              </Button>
-            </Grid>
-          </Grid>
-        </form>
-      </DialogContent>
-    </Dialog>
+          </form>
+        </DialogContent>
+      </Dialog>
+      <Snackbar
+        open={openSnackBar}
+        autoHideDuration={6000}
+        onClose={handleSnackBarClose}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+      >
+        {!failed ? (
+          <Alert
+            onClose={handleSnackBarClose}
+            severity="success"
+            sx={{ width: "100%" }}
+          >
+            Proposal Successfully created!
+          </Alert>
+        ) : (
+          <Alert
+            onClose={handleSnackBarClose}
+            severity="error"
+            sx={{ width: "100%" }}
+          >
+            Proposal creation failed!
+          </Alert>
+        )}
+      </Snackbar>
+    </>
   );
 };
 
