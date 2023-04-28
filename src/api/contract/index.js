@@ -377,51 +377,16 @@ export class SmartContract {
   }
 
   async updateProposalAndExecution(
+    data,
     daoAddress = "",
     gnosisAddress = "",
-    proposalHash = "",
-    executionStatus = "",
-    proposalId = 1,
-    customToken = "0x0000000000000000000000000000000000000000",
-    airDropToken = "0x0000000000000000000000000000000000000000",
-    executionIds = [0, 0, 0, 0, 0, 0, 0, 0],
-    quoram = 0,
-    threshold = 0,
-    totalDeposits = 0,
-    airDropAmount = 0,
-    mintGTAmounts = [],
-    mintGTAddresses = [],
-    customTokenAmounts = [],
-    customTokenAddresses = [],
-    ownersAirdropFees = 0,
-    daoAdminAddresses = [],
     txHash = "",
     pid,
     tokenData,
-    nftDetails,
-    contractCallDetails,
+    executionStatus,
   ) {
-    const parameters = [
-      proposalHash,
-      executionStatus,
-      proposalId,
-      customToken,
-      airDropToken,
-      executionIds,
-      quoram,
-      threshold,
-      totalDeposits,
-      airDropAmount,
-      mintGTAmounts,
-      mintGTAddresses,
-      customTokenAmounts,
-      customTokenAddresses,
-      ownersAirdropFees,
-      daoAdminAddresses,
-      nftDetails,
-      contractCallDetails,
-    ];
-    console.log(parameters);
+    const parameters = data;
+    console.log("executionStatus", executionStatus);
     const safeOwner = this.walletAddress;
     const ethAdapter = new Web3Adapter({
       web3: this.web3,
@@ -472,17 +437,6 @@ export class SmartContract {
 
     if (executionStatus !== "executed") {
       if (txHash === "") {
-        if (
-          Number(airDropAmount) >
-            Number(
-              tokenData?.filter(
-                (data) => data.token_address === airDropToken,
-              )[0]?.balance,
-            ) &&
-          tokenData.length > 0
-        ) {
-          return Promise.reject("Balance is less than the airdrop amount");
-        }
         const safeTxHash = await safeSdk.getTransactionHash(safeTransaction);
         const payload = {
           proposalId: pid,

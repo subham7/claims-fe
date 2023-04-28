@@ -32,6 +32,7 @@ import { useConnectWallet } from "@web3-onboard/react";
 import { useRouter } from "next/router";
 import Web3 from "web3";
 import { createProposal } from "../../api/proposal";
+import { fetchProposals } from "../../utils/proposal";
 
 const useStyles = makeStyles({
   modalStyle: {
@@ -53,7 +54,7 @@ const useStyles = makeStyles({
     marginTop: "0.5rem",
   },
 });
-const CreateProposalDialog = ({ open, onClose }) => {
+const CreateProposalDialog = ({ open, setOpen, onClose }) => {
   const classes = useStyles();
   const router = useRouter();
 
@@ -119,7 +120,7 @@ const CreateProposalDialog = ({ open, onClose }) => {
       };
 
       const createRequest = createProposal(payload);
-      createRequest.then((result) => {
+      createRequest.then(async (result) => {
         if (result.status !== 201) {
           setOpenSnackBar(true);
           setFailed(true);
@@ -127,6 +128,8 @@ const CreateProposalDialog = ({ open, onClose }) => {
         } else {
           // console.log(result.data)
           // fetchData();
+          const proposalData = await fetchProposals(clubId);
+          console.log(proposalData);
           setOpenSnackBar(true);
           setFailed(false);
           setOpen(false);

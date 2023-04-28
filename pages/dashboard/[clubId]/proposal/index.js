@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Layout1 from "../../../../src/components/layouts/layout1";
 import {
   Button,
@@ -11,11 +11,19 @@ import {
 import { proposalDisplayOptions } from "../../../../src/data/dashboard";
 import DocsCard from "../../../../src/components/proposalComps/DocsCard";
 import CreateProposalDialog from "../../../../src/components/proposalComps/CreateProposalDialog";
+import { fetchProposals } from "../../../../src/utils/proposal";
+import { useRouter } from "next/router";
+import ProposalCard from "../proposalsss/ProposalCard";
 
 const Proposal = () => {
+  const router = useRouter();
+  const { clubId } = router.query;
+
   const [selectedListItem, setSelectedListItem] = useState(
     proposalDisplayOptions[0].type,
   );
+
+  const [proposalList, setProposalList] = useState();
   const [open, setOpen] = useState(false);
 
   const handleClickOpen = () => {
@@ -27,6 +35,25 @@ const Proposal = () => {
       setOpen(false);
     }
   };
+
+  const handleProposalClick = (proposal) => {
+    router.push(`${router.asPath}/${proposal.proposalId}`, undefined, {
+      shallow: true,
+    });
+  };
+
+  const fetchProposalList = async () => {
+    const data = await fetchProposals(clubId);
+    console.log(data);
+
+    setProposalList(data);
+  };
+
+  useEffect(() => {
+    if (clubId) {
+      fetchProposalList();
+    }
+  }, [clubId]);
 
   return (
     <Layout1 page={2}>
@@ -100,6 +127,29 @@ const Proposal = () => {
                     Propose
                   </Button>
                 </Grid>
+
+                <Grid container spacing={3}>
+                  {proposalList?.length > 0
+                    ? proposalList.map((proposal, key) => {
+                        return (
+                          <Grid
+                            item
+                            key={proposal.id}
+                            onClick={(e) => {
+                              handleProposalClick(proposalList[key]);
+                            }}
+                            md={12}
+                          >
+                            <ProposalCard
+                              proposal={proposal}
+                              indexKey={key}
+                              // fetched={fetched}
+                            />
+                          </Grid>
+                        );
+                      })
+                    : null}
+                </Grid>
               </Grid>
             </Grid>
           </Grid>
@@ -108,7 +158,11 @@ const Proposal = () => {
           <DocsCard />
         </Grid>
       </Grid>
-      <CreateProposalDialog open={open} onClose={handleClose} />
+      <CreateProposalDialog
+        open={open}
+        setOpen={setOpen}
+        onClose={handleClose}
+      />
     </Layout1>
   );
 };
