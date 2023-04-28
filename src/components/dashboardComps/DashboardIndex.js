@@ -44,6 +44,7 @@ import {
   QUERY_ALL_MEMBERS,
   QUERY_CLUB_DETAILS,
 } from "../../api/graphql/queries";
+import ClubFetch from "../../utils/clubFetch";
 
 const DashboardIndex = () => {
   const [clubDetails, setClubDetails] = useState({
@@ -64,6 +65,7 @@ const DashboardIndex = () => {
   const router = useRouter();
   const classes = DashboardStyles();
   const { clubId: daoAddress } = router.query;
+
   const isAdmin = useSelector((state) => {
     return state.gnosis.adminUser;
   });
@@ -80,13 +82,13 @@ const DashboardIndex = () => {
     try {
       if (daoAddress) {
         const clubData = await subgraphQuery(QUERY_CLUB_DETAILS(daoAddress));
-        const imageUrl = await fetchClubbyDaoAddress(daoAddress);
+        // const imageUrl = await fetchClubbyDaoAddress(daoAddress);
         const membersData = await subgraphQuery(QUERY_ALL_MEMBERS(daoAddress));
         console.log("Clubdata", clubData);
         setClubDetails({
           clubName: clubData?.stations[0]?.name,
           daoAddress: clubData?.stations[0]?.daoAddress,
-          clubImageUrl: imageUrl?.data[0]?.imageUrl,
+          // clubImageUrl: imageUrl?.data[0]?.imageUrl,
           tokenType: clubData?.stations[0]?.tokenType,
           noOfMembers: membersData?.users?.length,
         });
@@ -821,4 +823,4 @@ const DashboardIndex = () => {
   );
 };
 
-export default DashboardIndex;
+export default ClubFetch(DashboardIndex);

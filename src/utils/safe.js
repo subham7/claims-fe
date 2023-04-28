@@ -24,6 +24,7 @@ async function gnosisSafePromise(owners, threshold, dispatch) {
   dispatch(setCreateSafeLoading(true));
   const web3 = new Web3(Web3.givenProvider);
   const safeOwner = await web3.eth.getAccounts();
+
   const ethAdapter = new Web3Adapter({
     web3,
     signerAddress: safeOwner[0],
@@ -456,10 +457,7 @@ export async function initiateConnection(
               if (result.status !== 201) {
                 console.log(result.statusText);
               } else {
-                const walletAddressInLowercase = await web3.eth.getAccounts();
-                let walletAddress = web3.utils.toChecksumAddress(
-                  walletAddressInLowercase,
-                );
+                let walletAddress = await web3.eth.getAccounts();
 
                 const data = {
                   userAddress: walletAddress,

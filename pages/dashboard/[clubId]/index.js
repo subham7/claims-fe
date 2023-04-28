@@ -426,6 +426,8 @@ const Dashboard = () => {
     return state.gnosis.adminUser;
   });
 
+  console.log('IS Admin')
+
   let walletAddress;
   if (typeof window !== "undefined") {
     const web3 = new Web3(window.web3);

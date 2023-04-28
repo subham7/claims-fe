@@ -5,4 +5,4 @@ const newIndex = () => {
   return <DashboardIndex />;
 };
 
-export default newIndex;
+export default  newIndex;

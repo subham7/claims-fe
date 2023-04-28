@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import Web3 from "web3";
 import Router, { useRouter } from "next/router";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchClub } from "../api/club";
+import { fetchClub, fetchClubbyDaoAddress } from "../api/club";
 import {
   addClubID,
   addClubName,
@@ -43,12 +43,12 @@ import Web3Adapter from "@safe-global/safe-web3-lib";
 const ClubFetch = (Component) => {
   const RetrieveDataComponent = () => {
     const router = useRouter();
-    const { clubId } = router.query;
+    const { clubId: daoAddress } = router.query;
     const [tokenDecimalUsdc, setTokenDecimalUsdc] = useState("");
     const [tokenDecimalGovernance, setTokenDecimalGovernance] = useState("");
-    const daoAddress = useSelector((state) => {
-      return state.create.daoAddress;
-    });
+    // const daoAddress = useSelector((state) => {
+    //   return state.create.daoAddress;
+    // });
     const gnosisAddress = useSelector((state) => {
       return state.gnosis.safeAddress;
     });
@@ -153,6 +153,13 @@ const ClubFetch = (Component) => {
 
     const checkUserExists = useCallback(() => {
       console.log("check user exists");
+
+      console.log(
+        "Daoooo",
+        daoAddress,
+        USDC_CONTRACT_ADDRESS,
+        GNOSIS_TRANSACTION_URL,
+      );
       if (daoAddress && USDC_CONTRACT_ADDRESS && GNOSIS_TRANSACTION_URL) {
         const checkUserInClub = new SmartContract(
           ImplementationContract,
@@ -247,13 +254,18 @@ const ClubFetch = (Component) => {
       // ) {
       //   router.push("/");
       // }
-    }, [daoAddress, USDC_CONTRACT_ADDRESS, wallet]);
+    }, [
+      checkGovernanceExists,
+      checkUserExists,
+      fetchCustomTokenDecimals,
+      wallet,
+    ]);
 
     useEffect(() => {
       // const switched = checkNetwork()
-      if (clubId && wallet) {
+      if (daoAddress && wallet) {
         console.log("club data workingggg");
-        console.log("clubid", clubId);
+        console.log("daoAddress", daoAddress);
         const networkData = fetchConfig();
         networkData.then((networks) => {
           if (networks.status != 200) {
@@ -299,7 +311,7 @@ const ClubFetch = (Component) => {
           }
         });
 
-        const clubData = fetchClub(clubId);
+        const clubData = fetchClubbyDaoAddress(daoAddress);
         clubData.then((result) => {
           console.log("club dataaaaa");
           if (result.status !== 200) {
@@ -362,7 +374,7 @@ const ClubFetch = (Component) => {
         });
       }
       checkUserExists();
-    }, [checkUserExists, clubId, dispatch, router, wallet]);
+    }, [checkUserExists, dispatch, router, wallet, daoAddress]);
 
     return <Component />;
   };
