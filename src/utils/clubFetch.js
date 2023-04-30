@@ -294,7 +294,7 @@ const ClubFetch = (Component) => {
                     dispatch(
                       addContractAddress({
                         factoryContractAddress:
-                          "0xe0723c6573D54f6af1c621238fbba42E7F8Ee643",
+                          "0x3926dd96C6421c7390E4C2C14323C5026bD30D91",
                         usdcContractAddress: result.data[0].usdcContractAddress,
                         transactionUrl: result.data[0].gnosisTransactionUrl,
                         networkHex: result.data[0].networkHex,

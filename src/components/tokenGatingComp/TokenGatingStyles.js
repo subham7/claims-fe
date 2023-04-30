@@ -51,6 +51,7 @@ export const TokenGatingStyle = makeStyles({
     borderRadius: "50px",
     fontSize: "30px",
     border: "none",
+    cursor: "pointer",
   },
 
   match: {
@@ -74,10 +75,15 @@ export const TokenGatingStyle = makeStyles({
     marginTop: "20px",
     color: "white",
     background: "#D83C8A",
+    cursor: "pointer",
   },
   tokensList: {
     display: "flex",
     alignItems: "center",
     gap: "20px",
+  },
+
+  inputList: {
+    backgroundColor: "#ffffff",
   },
 });

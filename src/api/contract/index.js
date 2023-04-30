@@ -1024,20 +1024,42 @@ export class SmartContract {
       .call({ from: this.walletAddress });
   }
 
+  // async setupTokenGating(
+  //   addresses,
+  //   tokenAmounts,
+  //   tokenOperations,
+  //   isTokenNFTList,
+  // ) {
+  //   console.log(addresses, tokenAmounts, tokenOperations, isTokenNFTList);
+  //   return this.contract.methods
+  //     .setupTokenGating(
+  //       addresses,
+  //       tokenAmounts,
+  //       tokenOperations,
+  //       isTokenNFTList,
+  //     )
+  //     .send({ from: this.walletAddress });
+  // }
+
   async setupTokenGating(
-    addresses,
-    tokenAmounts,
-    tokenOperations,
-    isTokenNFTList,
+    tokenA,
+    tokenB,
+    operator,
+    comparator,
+    value,
+    daoAddress,
   ) {
-    console.log(addresses, tokenAmounts, tokenOperations, isTokenNFTList);
+    console.log(tokenA, tokenB, operator, comparator, value, daoAddress);
     return this.contract.methods
-      .setupTokenGating(
-        addresses,
-        tokenAmounts,
-        tokenOperations,
-        isTokenNFTList,
-      )
-      .send({ from: this.walletAddress });
+      .setupTokenGating(tokenA, tokenB, operator, comparator, value, daoAddress)
+      .send({
+        from: this.walletAddress,
+      });
+  }
+
+  async getTokenGatingDetails(daoAddress, amount) {
+    return this.contract.methods.tokenGatingDetails(daoAddress, amount).call({
+      from: this.walletAddress,
+    });
   }
 }

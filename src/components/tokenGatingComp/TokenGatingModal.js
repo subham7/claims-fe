@@ -91,7 +91,7 @@ const Backdrop = ({ onClick }) => {
   return <div onClick={onClick} className={classes.backdrop}></div>;
 };
 
-const TokenGatingModal = ({ closeModal, addTokens }) => {
+const TokenGatingModal = ({ closeModal, chooseTokens }) => {
   const [notValid, setNotValid] = useState(false);
   const [{ wallet }] = useConnectWallet();
   const classes = useStyles();
@@ -128,39 +128,49 @@ const TokenGatingModal = ({ closeModal, addTokens }) => {
             );
 
             tokenSymbol = await erc20contract.obtainSymbol();
+            const tokenDecimal = await erc20contract.decimals();
             console.log("Token Symbol", tokenSymbol);
-
+            chooseTokens({
+              tokenSymbol: tokenSymbol,
+              tokenAddress: values.address,
+              tokenAmount: values.noOfTokens,
+              tokenDecimal: tokenDecimal,
+            });
             closeModal();
           } catch (error) {
             console.log(error);
+            setTimeout(() => {
+              setNotValid(false);
+            }, 3000);
+            setNotValid(true);
           }
 
-          if (!tokenSymbol) {
-            try {
-              const erc721Contract = new SmartContract(
-                ERC721ABI,
-                values.address,
-                walletAddress,
-                undefined,
-                undefined,
-              );
+          // if (!tokenSymbol) {
+          //   try {
+          //     const erc721Contract = new SmartContract(
+          //       ERC721ABI,
+          //       values.address,
+          //       walletAddress,
+          //       undefined,
+          //       undefined,
+          //     );
 
-              tokenSymbol = await erc721Contract.obtainSymbol();
-              console.log("NFT token Symbol", tokenSymbol);
-              closeModal();
-            } catch (error) {
-              console.log(error);
+          //     tokenSymbol = await erc721Contract.obtainSymbol();
+          //     console.log("NFT token Symbol", tokenSymbol);
+          //     chooseTokens({
+          //       tokenSymbol: tokenSymbol,
+          //       tokenAddress: values.address,
+          //       tokenAmount: values.noOfTokens,
+          //     });
+          //     closeModal();
+          //   } catch (error) {
+          //     console.log(error);
 
-              setTimeout(() => {
-                setNotValid(false);
-              }, 3000);
-              setNotValid(true);
-            }
-          }
+          //   }
+          // }
         };
         checkTokenGating();
       }
-
     },
   });
 
@@ -218,14 +228,14 @@ const TokenGatingModal = ({ closeModal, addTokens }) => {
         <Alert
           severity="error"
           sx={{
-            width: "200px",
+            width: "250px",
             position: "absolute",
             bottom: "30px",
             right: "20px",
             borderRadius: "8px",
           }}
         >
-          Not a valid address!
+          Not a valid token address!
         </Alert>
       )}
     </>
