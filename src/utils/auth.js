@@ -97,7 +97,7 @@ export default function ProtectRoute(Component) {
         // setWalletAddress(wallet[0][0].address);
         // setWalletLoaded(true);
         const getLoginToken = loginToken(walletAddress);
-        getLoginToken.then((response) => {
+        getLoginToken?.then((response) => {
           if (response.status !== 200) {
             console.log(response.data.error);
             // router.push("/");

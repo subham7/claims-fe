@@ -578,12 +578,35 @@
           "name": "_comparator",
           "type": "uint8"
         },
-        { "internalType": "uint256", "name": "_value", "type": "uint256" },
+        { "internalType": "uint256[]", "name": "_value", "type": "uint256[]" },
         { "internalType": "address", "name": "_daoAddress", "type": "address" }
       ],
       "name": "setupTokenGating",
       "outputs": [],
       "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        { "internalType": "address", "name": "", "type": "address" },
+        { "internalType": "uint256", "name": "", "type": "uint256" }
+      ],
+      "name": "tokenGatingDetails",
+      "outputs": [
+        { "internalType": "address", "name": "tokenA", "type": "address" },
+        { "internalType": "address", "name": "tokenB", "type": "address" },
+        {
+          "internalType": "enum Helper.Operator",
+          "name": "operator",
+          "type": "uint8"
+        },
+        {
+          "internalType": "enum Helper.Comparator",
+          "name": "comparator",
+          "type": "uint8"
+        }
+      ],
+      "stateMutability": "view",
       "type": "function"
     },
     {

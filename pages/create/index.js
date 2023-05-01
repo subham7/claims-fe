@@ -204,7 +204,7 @@ const Create = () => {
               GNOSIS_TRANSACTION_URL,
               values.addressList,
               formikStep1.values.clubTokenType,
-              "0xe0723c6573D54f6af1c621238fbba42E7F8Ee643",
+              "0x43d087bE7aa873B3F7cF012E6650b14042CF5129",
               metadata.data.image.pathname,
               metadata.url,
             );
@@ -256,7 +256,7 @@ const Create = () => {
               GNOSIS_TRANSACTION_URL,
               values.addressList,
               formikStep1.values.clubTokenType,
-              "0xe0723c6573D54f6af1c621238fbba42E7F8Ee643",
+              "0x43d087bE7aa873B3F7cF012E6650b14042CF5129",
             );
           })
           .catch((error) => {
