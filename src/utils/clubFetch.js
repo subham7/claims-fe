@@ -38,7 +38,7 @@ const ClubFetch = (Component) => {
     const { clubId: daoAddress } = router.query;
     console.log(router.query);
 
-    dispatch(addDaoAddress(daoAddress));
+    dispatch(addDaoAddress(Web3.utils.toChecksumAddress(daoAddress)));
     const USDC_CONTRACT_ADDRESS = useSelector((state) => {
       return state.gnosis.usdcContractAddress;
     });

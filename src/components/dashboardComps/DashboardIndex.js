@@ -82,7 +82,10 @@ const DashboardIndex = () => {
   const fetchClubDetails = useCallback(async () => {
     try {
       if (daoAddress) {
-        const imageUrl = await fetchClubbyDaoAddress(daoAddress);
+        const imageUrl = await fetchClubbyDaoAddress(
+          Web3.utils.toChecksumAddress(daoAddress),
+        );
+
         const membersData = await subgraphQuery(QUERY_ALL_MEMBERS(daoAddress));
 
         setClubDetails({
