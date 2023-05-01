@@ -66,6 +66,7 @@ const DashboardIndex = () => {
   const router = useRouter();
   const classes = DashboardStyles();
   const { clubId: daoAddress } = router.query;
+
   const isAdmin = useSelector((state) => {
     return state.gnosis.adminUser;
   });
