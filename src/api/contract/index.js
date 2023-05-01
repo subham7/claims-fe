@@ -735,6 +735,18 @@ export class SmartContract {
       .call({ from: this.walletAddress });
   }
 
+  async getERC20DAOdetails() {
+    return this.contract?.methods
+      .getERC20DAOdetails()
+      .call({ from: this.walletAddress });
+  }
+
+  async getERC721DAOdetails() {
+    return this.contract?.methods
+      .getERC721DAOdetails()
+      .call({ from: this.walletAddress });
+  }
+
   async decimals() {
     return this.contract?.methods.decimals().call({ from: this.walletAddress });
   }

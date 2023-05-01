@@ -118,11 +118,10 @@ export default function App() {
 
   useEffect(() => {
     if (walletAddress) {
-      (async () => {
-        const getClubs = await fetchClubByUserAddress(walletAddress);
-        console.log(getClubs.data.clubs);
-      })();
-
+      // (async () => {
+      //   const getClubs = await fetchClubByUserAddress(walletAddress);
+      //   console.log(getClubs.data.clubs);
+      // })();
       // getClubs
       //   .then((result) => {
       //     console.log(result);
@@ -219,6 +218,7 @@ export default function App() {
   const handleItemClick = (data) => {
     dispatch(addClubName(data.daoName));
     dispatch(addDaoAddress(data.daoAddress));
+
     // dispatch(addClubID(data.clubId));
     // dispatch(addClubRoute(data.route));
     router.push(`/dashboard/${data.daoAddress}`, undefined, {
