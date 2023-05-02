@@ -24,6 +24,7 @@ async function gnosisSafePromise(owners, threshold, dispatch) {
   dispatch(setCreateSafeLoading(true));
   const web3 = new Web3(Web3.givenProvider);
   const safeOwner = await web3.eth.getAccounts();
+
   const ethAdapter = new Web3Adapter({
     web3,
     signerAddress: safeOwner[0],
@@ -457,6 +458,7 @@ export async function initiateConnection(
                 console.log(result.statusText);
               } else {
                 let walletAddress = await web3.eth.getAccounts();
+                console.log("walletAddress", walletAddress);
 
                 const data = {
                   userAddress: walletAddress,
@@ -497,13 +499,19 @@ export async function initiateConnection(
                   }
                 }
 
-                dispatch(addDaoAddress(result.data.daoAddress));
+                dispatch(
+                  addDaoAddress(
+                    Web3.utils.toChecksumAddress(result.data.daoAddress),
+                  ),
+                );
                 dispatch(addClubID(result.data.clubId));
 
                 const { pathname } = Router;
                 if (pathname == "/create") {
                   Router.push(
-                    `/dashboard/${result.data.clubId}?clubCreate=true`,
+                    `/dashboard/${Web3.utils.toChecksumAddress(
+                      result.data.daoAddress,
+                    )}?clubCreate=true`,
                     undefined,
                     {
                       shallow: true,

@@ -11,6 +11,7 @@
     "format:fix": "prettier --write --ignore-path .prettierignore ."
   },
   "dependencies": {
+    "@apollo/client": "^3.7.12",
     "@date-io/date-fns": "^2.13.2",
     "@emotion/react": "^11.8.1",
     "@emotion/styled": "^11.8.1",
@@ -32,6 +33,7 @@
     "dayjs": "^1.11.7",
     "ethers": "^6.3.0",
     "formik": "^2.2.9",
+    "graphql": "^16.6.0",
     "html2canvas": "^1.4.1",
     "keccak256": "^1.0.6",
     "merkletreejs": "^0.3.9",

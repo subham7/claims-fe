@@ -37,6 +37,8 @@ import { loginToken, refreshToken } from "../src/api/auth";
 import { useConnectWallet } from "@web3-onboard/react";
 import NewCard from "../src/components/cards/card";
 import Web3 from "web3";
+import { subgraphQuery } from "../src/utils/subgraphs";
+import { QUERY_CLUBS_FROM_WALLET_ADDRESS } from "../src/api/graphql/queries";
 
 const useStyles = makeStyles({
   container: {
@@ -100,6 +102,7 @@ export default function App() {
   const [clubData, setClubData] = useState([]);
   const [clubOwnerAddress, setClubOwnerAddress] = useState(null);
   const [noWalletMessage, setNoWalletMessage] = useState(null);
+  const [clubListData, setClubListData] = useState([]);
 
   const [manageStation, setManageStation] = useState(false);
 
@@ -115,37 +118,60 @@ export default function App() {
 
   useEffect(() => {
     if (walletAddress) {
-      const getClubs = fetchClubByUserAddress(walletAddress);
-      getClubs
-        .then((result) => {
-          console.log(result);
-          if (result.status != 200) {
-            console.log(result.statusText);
-          } else {
-            setClubData(Array.from(result.data.clubs));
-            setClubOwnerAddress(
-              result.data.userAddress.substring(0, 6) +
-                ".........." +
-                result.data.userAddress.substring(
-                  result.data.userAddress.length - 4,
-                ),
-            );
-          }
-        })
-        .catch((error) => {
+      // (async () => {
+      //   const getClubs = await fetchClubByUserAddress(walletAddress);
+      //   console.log(getClubs.data.clubs);
+      // })();
+      // getClubs
+      //   .then((result) => {
+      //     console.log(result);
+      //     if (result.status != 200) {
+      //       console.log(result.statusText);
+      //     } else {
+      //       console.log("CLub data", Array.from(result.data.clubs));
+      //       setClubData(Array.from(result.data.clubs));
+      //       setClubOwnerAddress(
+      //         result.data.userAddress.substring(0, 6) +
+      //           ".........." +
+      //           result.data.userAddress.substring(
+      //             result.data.userAddress.length - 4,
+      //           ),
+      //       );
+      //     }
+      //   })
+      //   .catch((error) => {
+      //     setNoWalletMessage(
+      //       "You don't have any clubs available, please join an existing one or create a new club",
+      //     );
+      //     console.log(error);
+      //   });
+    }
+
+    if (walletAddress) {
+      const fetchClubs = async () => {
+        try {
+          const data = await subgraphQuery(
+            QUERY_CLUBS_FROM_WALLET_ADDRESS(walletAddress),
+          );
+          console.log(data.users);
+          setClubListData(data.users);
+        } catch (error) {
           setNoWalletMessage(
             "You don't have any clubs available, please join an existing one or create a new club",
           );
           console.log(error);
-        });
+        }
+      };
+      fetchClubs();
     }
+
     if (walletAddress) {
       const getLoginToken = loginToken(walletAddress);
 
       getLoginToken.then((response) => {
         console.log("responseee", response);
-        if (response.status !== 200) {
-          console.log(response.data.error);
+        if (response?.status !== 200) {
+          console.log(response?.data.error);
         } else {
           // setExpiryTime(response.data.tokens.access.expires);
           setExpiryTime("2023-03-19T11:07:20.810Z");
@@ -190,11 +216,12 @@ export default function App() {
   };
 
   const handleItemClick = (data) => {
-    dispatch(addClubName(data.name));
+    dispatch(addClubName(data.daoName));
     dispatch(addDaoAddress(data.daoAddress));
-    dispatch(addClubID(data.clubId));
-    dispatch(addClubRoute(data.route));
-    router.push(`/dashboard/${data.clubId}`, undefined, {
+
+    // dispatch(addClubID(data.clubId));
+    // dispatch(addClubRoute(data.route));
+    router.push(`/dashboard/${data.daoAddress}`, undefined, {
       shallow: true,
     });
   };
@@ -270,32 +297,37 @@ export default function App() {
                 <Divider className={classes.divider} />
                 <Stack spacing={3}>
                   {walletAddress ? (
-                    clubData.map((club, key) => {
+                    clubListData.map((club, key) => {
                       return (
                         <ListItemButton
                           component="a"
                           key={key}
                           onClick={(e) => {
-                            handleItemClick(clubData[key]);
+                            handleItemClick(clubListData[key]);
                           }}
                         >
                           {getImageURL(club.imageUrl)}
                           <Grid container>
-                            <Grid item md={2}>
+                            {/* <Grid item md={2}>
                               <img
                                 src={club.imageUrl}
                                 width="80vw"
                                 alt="club_image"
                                 className={classes.profilePic}
                               />
-                            </Grid>
+                            </Grid> */}
                             <Grid item md={6}>
                               <Stack spacing={0}>
                                 <Typography className={classes.yourClubText}>
-                                  {club.name}
+                                  {club.daoName}
                                 </Typography>
                                 <Typography className={classes.clubAddress}>
-                                  {clubOwnerAddress}
+                                  {`${club.userAddress.substring(
+                                    0,
+                                    9,
+                                  )}......${club.userAddress.substring(
+                                    club.userAddress.length - 6,
+                                  )}`}
                                 </Typography>
                               </Stack>
                             </Grid>
