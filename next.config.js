@@ -4,7 +4,8 @@ const nextConfig = {
   swcMinify: false,
   images: {
     domains: ["clubprofilepics.s3.ap-south-1.amazonaws.com", "./public/*"],
-    unoptimized: true,
+    loader: "custom",
+    loaderFile: "./public/assets/images/monogram.png",
   },
 };
 
