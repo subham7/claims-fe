@@ -30,6 +30,7 @@ const ClubFetch = (Component) => {
     const router = useRouter();
     const dispatch = useDispatch();
     const [{ wallet }] = useConnectWallet();
+
     const walletAddress = Web3.utils.toChecksumAddress(
       wallet?.accounts[0].address,
     );
@@ -56,12 +57,18 @@ const ClubFetch = (Component) => {
 
       try {
         const getSafeSdk = async () => {
-          const web3 = new Web3(window.ethereum);
+          const provider = new Web3.providers.HttpProvider(
+            "http://localhost:3000",
+          );
+          const web3 = new Web3(provider);
+          console.log(web3);
 
           const ethAdapter = new Web3Adapter({
-            web3: web3,
+            web3,
             signerAddress: walletAddress,
           });
+
+          console.log("ethAdapter", Web3Adapter);
 
           const safeSdk = await Safe.create({
             ethAdapter: ethAdapter,
