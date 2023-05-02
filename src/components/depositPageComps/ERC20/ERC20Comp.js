@@ -44,7 +44,7 @@ const ERC20Comp = ({
   handleInputChange,
   handleConnectWallet,
   handleDialogClose,
-  handleSwitchNetwork,
+  // handleSwitchNetwork,
   closingDays,
   open,
   minDeposit,
@@ -675,7 +675,7 @@ const ERC20Comp = ({
                                 : ""}
                             </Typography>
                           </Grid>
-                          
+
                           <Grid
                             item
                             ml={2}
@@ -855,7 +855,7 @@ const ERC20Comp = ({
               <Button
                 variant="primary"
                 onClick={() => {
-                  handleSwitchNetwork();
+                  // handleSwitchNetwork();
                 }}
               >
                 Switch Network

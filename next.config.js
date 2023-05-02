@@ -4,6 +4,7 @@ const nextConfig = {
   swcMinify: false,
   images: {
     domains: ["clubprofilepics.s3.ap-south-1.amazonaws.com", "./public/*"],
+    unoptimized: true,
   },
 };
 

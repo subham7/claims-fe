@@ -29,7 +29,7 @@ import {
   convertToWeiGovernance,
 } from "../../src/utils/globalFunctions";
 
-import { checkNetwork } from "../../src/utils/wallet";
+// import { checkNetwork } from "../../src/utils/wallet";
 
 import { useConnectWallet } from "@web3-onboard/react";
 
@@ -446,14 +446,14 @@ const Join = (props) => {
     setOpen(false);
   };
 
-  const handleSwitchNetwork = async () => {
-    const switched = await checkNetwork();
-    if (switched) {
-      setOpen(false);
-    } else {
-      setOpen(true);
-    }
-  };
+  // const handleSwitchNetwork = async () => {
+  //   const switched = await checkNetwork();
+  //   if (switched) {
+  //     setOpen(false);
+  //   } else {
+  //     setOpen(true);
+  //   }
+  // };
 
   return (
     <Layout2 faucet={true}>
@@ -472,7 +472,7 @@ const Join = (props) => {
           handleDialogClose={handleDialogClose}
           handleInputChange={handleInputChange}
           handleMaxButtonClick={handleMaxButtonClick}
-          handleSwitchNetwork={handleSwitchNetwork}
+          // handleSwitchNetwork={handleSwitchNetwork}
           imageFetched={imageFetched}
           imageUrl={imageUrl}
           maxDeposit={maxDeposit}
