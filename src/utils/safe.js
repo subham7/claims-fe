@@ -1,6 +1,6 @@
 import { CleaningServices } from "@mui/icons-material";
-import { SafeFactory } from "@safe-global/safe-core-sdk";
-import Web3Adapter from "@safe-global/safe-web3-lib";
+import { SafeFactory } from "@safe-global/protocol-kit";
+import Web3Adapter from "@safe-global/protocol-kit";
 import Router from "next/router";
 import Web3 from "web3";
 

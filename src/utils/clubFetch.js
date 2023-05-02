@@ -37,8 +37,8 @@ import ImplementationContract from "../abis/implementationABI.json";
 
 import { useConnectWallet } from "@web3-onboard/react";
 import { addWalletAddress } from "../redux/reducers/user";
-import Safe from "@safe-global/safe-core-sdk";
-import Web3Adapter from "@safe-global/safe-web3-lib";
+import Safe from "@safe-global/protocol-kit";
+import Web3Adapter from "@safe-global/protocol-kit";
 
 const ClubFetch = (Component) => {
   const RetrieveDataComponent = () => {
