@@ -1,5 +1,5 @@
 {
-  "contractName": "Erc20Dao",
+  "contractName": "FactoryContract",
   "abi": [
     {
       "inputs": [

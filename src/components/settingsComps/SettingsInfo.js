@@ -14,13 +14,46 @@ import {
   Typography,
 } from "@mui/material";
 import { DesktopDatePicker, LocalizationProvider } from "@mui/x-date-pickers";
-import React from "react";
+import { Token } from "graphql";
+import { useRouter } from "next/router";
+import React, { useCallback, useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { fetchClubbyDaoAddress } from "../../api/club";
+import {
+  QUERY_ALL_MEMBERS,
+  QUERY_CLUB_DETAILS,
+} from "../../api/graphql/queries";
+import { subgraphQuery } from "../../utils/subgraphs";
 import Layout1 from "../layouts/layout1";
 import ProgressBar from "../progressbar";
-import { SettingsInfoStlyes } from "./SettingsInfoStyles";
+import factoryContractABI from "../../../src/abis/newArch/factoryContract.json";
+import erc20DaoContractABI from "../../../src/abis/newArch/erc20Dao.json";
+import erc20ABI from "../../abis/usdcTokenContract.json";
 
-const SettingsInfo = () => {
+import { SettingsInfoStlyes } from "./SettingsInfoStyles";
+import { NEW_FACTORY_ADDRESS } from "../../api";
+import Web3 from "web3";
+import { useConnectWallet } from "@web3-onboard/react";
+import { SmartContract } from "../../api/contract";
+import {
+  calculateTreasuryTargetShare,
+  calculateUserSharePercentage,
+  convertFromWeiGovernance,
+} from "../../utils/globalFunctions";
+import { getAssetsByDaoAddress } from "../../api/assets";
+import dayjs from "dayjs";
+
+const SettingsInfo = ({
+  daoDetails,
+  treasuryAmount,
+  tokenType,
+  erc20TokenDetails,
+  members,
+  remainingDays,
+  walletAddress,
+}) => {
   const classes = SettingsInfoStlyes();
+
   return (
     <>
       <Layout1 page={5}>
@@ -29,15 +62,19 @@ const SettingsInfo = () => {
             <Card className={classes.cardRegular}>
               <Grid container spacing={2}>
                 <Grid item mt={3} ml={3}>
-                  {/* <img src={imageUrl ?? null} width="100vw" alt="profile_pic" /> */}
+                  <img
+                    src={daoDetails.daoImage ?? null}
+                    width="100vw"
+                    alt="profile_pic"
+                  />
                 </Grid>
                 <Grid item ml={1} mt={4} mb={7}>
                   <Stack spacing={0}>
                     <Typography variant="h4">
-                      {/* {apiTokenDetailSet ? tokenAPIDetails[0].name : null} */}
+                      {daoDetails.daoName ? daoDetails.daoName : null}
                     </Typography>
                     <Typography variant="h6" className={classes.dimColor}>
-                      {/* {dataFetched ? "$" + tokenSymbol : null} */}
+                      {daoDetails.daoSymbol ? "$" + daoDetails.daoSymbol : null}
                     </Typography>
                   </Stack>
                 </Grid>
@@ -59,15 +96,10 @@ const SettingsInfo = () => {
                     <Grid container>
                       <Grid item mt={1}>
                         <Typography variant="p" className={classes.valuesStyle}>
-                          {/* {tokenType === "erc721" && depositCloseDate ? (
-                            new Date(parseInt(depositCloseDate) * 1000)
-                              ?.toJSON()
-                              ?.slice(0, 10)
-                              .split("-")
-                              .reverse()
-                              .join("/")
-                          ) : governorDataFetched ? (
-                            new Date(parseInt(depositCloseDate) * 1000)
+                          {daoDetails.depositDeadline ? (
+                            new Date(
+                              parseInt(daoDetails.depositDeadline) * 1000,
+                            )
                               ?.toJSON()
                               ?.slice(0, 10)
                               .split("-")
@@ -79,32 +111,39 @@ const SettingsInfo = () => {
                               width={100}
                               height={25}
                             />
-                          )} */}
+                          )}
                         </Typography>
                       </Grid>
                       <Grid item ml={1} mt={1}>
-                        {/* {governorDataFetched || tokenType === "erc721" ? (
-                          closingDays > 0 ? (
-                            <Card className={classes.openTag}>
-                              <Typography className={classes.openTagFont}>
-                                Open
-                              </Typography>
-                            </Card>
+                        {walletAddress ? (
+                          daoDetails ? (
+                            remainingDays > 0 ? (
+                              <Card className={classes.openTag}>
+                                <Typography className={classes.openTagFont}>
+                                  Open
+                                </Typography>
+                              </Card>
+                            ) : (
+                              <Card className={classes.closeTag}>
+                                <Typography className={classes.closeTagFont}>
+                                  Closed
+                                </Typography>
+                              </Card>
+                            )
                           ) : (
-                            <Card className={classes.closeTag}>
-                              <Typography className={classes.closeTagFont}>
-                                {console.log(depositCloseDate)}
-                                Closed
-                              </Typography>
-                            </Card>
+                            <Skeleton
+                              variant="rectangular"
+                              width={100}
+                              height={25}
+                            />
                           )
-                        ) : null} */}
+                        ) : null}
                       </Grid>
                     </Grid>
                   </Grid>
                   <Grid item md={3}>
                     <Grid container direction="column">
-                      {/* {tokenType === "erc721" ? (
+                      {tokenType === "erc721" ? (
                         <>
                           <Grid container direction="column">
                             <Grid item>
@@ -140,7 +179,7 @@ const SettingsInfo = () => {
                               variant="p"
                               className={classes.valuesDimStyle}
                             >
-                              Minimum Deposits
+                              Minimum Deposit
                             </Typography>
                           </Grid>
                           <Grid item mt={1}>
@@ -148,10 +187,11 @@ const SettingsInfo = () => {
                               variant="p"
                               className={classes.valuesStyle}
                             >
-                              {governorDataFetched ? (
-                                convertAmountToWei(
-                                  currentMinDeposit.toString(),
-                                ) + " USDC"
+                              {daoDetails.minDeposit ? (
+                                `${convertFromWeiGovernance(
+                                  daoDetails.minDeposit,
+                                  erc20TokenDetails.tokenDecimal,
+                                )} ${erc20TokenDetails.tokenSymbol}`
                               ) : (
                                 <Skeleton
                                   variant="rectangular"
@@ -162,12 +202,12 @@ const SettingsInfo = () => {
                             </Typography>
                           </Grid>
                         </>
-                      )} */}
+                      )}
                     </Grid>
                   </Grid>
                   <Grid item md={3}>
                     <Grid container direction="column">
-                      {/* {tokenType === "erc721" ? (
+                      {tokenType === "erc721" ? (
                         <>
                           <Grid item>
                             <Typography
@@ -213,21 +253,22 @@ const SettingsInfo = () => {
                               variant="p"
                               className={classes.valuesStyle}
                             >
-                              {governorDataFetched ? (
-                                convertAmountToWei(
-                                  currentMaxDeposit.toString(),
-                                ) + " USDC"
+                              {daoDetails.maxDeposit ? (
+                                `${convertFromWeiGovernance(
+                                  daoDetails.maxDeposit,
+                                  erc20TokenDetails.tokenDecimal,
+                                )} ${erc20TokenDetails.tokenSymbol}`
                               ) : (
                                 <Skeleton
                                   variant="rectangular"
                                   width={100}
                                   height={25}
                                 />
-                              )}{" "}
+                              )}
                             </Typography>
                           </Grid>
                         </>
-                      )} */}
+                      )}
                     </Grid>
                   </Grid>
                   <Grid item md={3}>
@@ -241,9 +282,9 @@ const SettingsInfo = () => {
                         </Typography>
                       </Grid>
                       <Grid item mt={{ lg: 5, xl: 1 }}>
-                        {/* <Typography variant="p" className={classes.valuesStyle}>
-                          {membersFetched ? members : 0}
-                        </Typography> */}
+                        <Typography variant="p" className={classes.valuesStyle}>
+                          {members ? members.length : 0}
+                        </Typography>
                       </Grid>
                     </Grid>
                   </Grid>
@@ -257,15 +298,15 @@ const SettingsInfo = () => {
                       <Grid item mt={2}>
                         <Typography variant="p" className={classes.valuesStyle}>
                           $
-                          {/* {clubAssetTokenFetched ? (
-                            clubAssetTokenData.treasuryAmount
-                          ) : ( */}
-                          <Skeleton
-                            variant="rectangular"
-                            width={100}
-                            height={25}
-                          />
-                          {/* )} */}
+                          {treasuryAmount >= 0 ? (
+                            treasuryAmount
+                          ) : (
+                            <Skeleton
+                              variant="rectangular"
+                              width={100}
+                              height={25}
+                            />
+                          )}
                         </Typography>
                       </Grid>
                     </Grid>
@@ -283,7 +324,8 @@ const SettingsInfo = () => {
                             variant="p"
                             className={classes.valuesStyle}
                           >
-                            {balanceOfToken !== null && clubTokenMinted !== null
+                            {balanceOfToken !== null &&
+                            daoDetails.clubTokensMinted !== null
                               ? isNaN(
                                   parseInt(
                                     calculateUserSharePercentage(
@@ -295,18 +337,18 @@ const SettingsInfo = () => {
                                 ? 0
                                 : parseInt(
                                     calculateUserSharePercentage(
-                                      balanceOfToken,
-                                      clubTokenMinted,
+                                      // daoDetails.,
+                                      daoDetails.clubTokensMinted,
                                     ),
                                   )
                               : 0}
-                            % ({balanceOfToken} {tokenSymbol})
+                            % ({balanceOfToken} {daoDetails.daoSymbol})
                           </Typography>
                         </Grid>
                       </Grid>
                     )} */}
                   </Grid>
-                  {/* {isGovernanceActive ? (
+                  {daoDetails.isGovernance ? (
                     <>
                       {" "}
                       <Grid item md={3}>
@@ -321,8 +363,8 @@ const SettingsInfo = () => {
                               variant="p"
                               className={classes.valuesStyle}
                             >
-                              {thresholdFetched ? (
-                                thresholdValue
+                              {daoDetails.threshold ? (
+                                daoDetails.threshold / 100
                               ) : (
                                 <Skeleton
                                   variant="rectangular"
@@ -346,8 +388,8 @@ const SettingsInfo = () => {
                               variant="p"
                               className={classes.valuesStyle}
                             >
-                              {quoramFetched ? (
-                                quoramValue
+                              {daoDetails.quorum ? (
+                                daoDetails.quorum / 100
                               ) : (
                                 <Skeleton
                                   variant="rectangular"
@@ -360,11 +402,11 @@ const SettingsInfo = () => {
                         </Grid>
                       </Grid>
                     </>
-                  ) : null} */}
+                  ) : null}
                 </Grid>
               </Paper>
 
-              {/* {tokenType === "erc721" ? (
+              {tokenType === "erc721" ? (
                 <>
                   <br />
                   <Grid container spacing={7}>
@@ -516,16 +558,26 @@ const SettingsInfo = () => {
               ) : (
                 <>
                   <Grid item ml={3} mt={5} mb={2} mr={3}>
-                    <ProgressBar
-                      value={
-                        clubTokenMinted && totalERC20Supply
-                          ? calculateTreasuryTargetShare(
-                              clubTokenMinted,
-                              totalERC20Supply / 1000000,
-                            )
-                          : 0
-                      }
-                    />
+                    {walletAddress && daoDetails.clubTokensMinted ? (
+                      <ProgressBar
+                        value={calculateTreasuryTargetShare(
+                          +convertFromWeiGovernance(
+                            daoDetails.clubTokensMinted,
+                            daoDetails.decimals,
+                          ) *
+                            convertFromWeiGovernance(
+                              daoDetails.pricePerToken,
+                              erc20TokenDetails.tokenDecimal,
+                            ),
+                          +convertFromWeiGovernance(
+                            daoDetails.totalSupply,
+                            erc20TokenDetails.tokenDecimal,
+                          ),
+                        )}
+                      />
+                    ) : (
+                      <Skeleton variant="rectangular" />
+                    )}
                   </Grid>
 
                   <Grid container spacing={2}>
@@ -563,8 +615,13 @@ const SettingsInfo = () => {
                             variant="p"
                             className={classes.valuesStyle}
                           >
-                            {governorDataFetched ? (
-                              parseInt(clubTokenMinted) + " $" + tokenSymbol
+                            {walletAddress ? (
+                              convertFromWeiGovernance(
+                                daoDetails.clubTokensMinted,
+                                daoDetails.decimals,
+                              ) +
+                              " $" +
+                              daoDetails.daoSymbol
                             ) : (
                               <Skeleton
                                 variant="rectangular"
@@ -614,13 +671,12 @@ const SettingsInfo = () => {
                             variant="p"
                             className={classes.valuesStyle}
                           >
-                            {governorDataFetched ? (
-                              // convertAmountToWei(totalERC20Supply?.toString()) +
-                              // (" $" + tokenDetails[1])
-                              // convertAmountToWei(String(totalERC20Supply))
-                              ` ${
-                                totalERC20Supply / Math.pow(10, 6)
-                              } ${tokenSymbol}`
+                            {daoDetails.totalSupply ? (
+                              convertFromWeiGovernance(
+                                daoDetails.totalSupply,
+                                erc20TokenDetails.tokenDecimal,
+                              ).toString() +
+                              (" $" + erc20TokenDetails.tokenSymbol)
                             ) : (
                               <Skeleton
                                 variant="rectangular"
@@ -634,7 +690,7 @@ const SettingsInfo = () => {
                     </Grid>
                   </Grid>
                 </>
-              )} */}
+              )}
             </Card>
             <br />
           </Grid>

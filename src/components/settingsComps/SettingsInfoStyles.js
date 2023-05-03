@@ -7,7 +7,7 @@ export const SettingsInfoStlyes = makeStyles({
       fontFamily: "Whyte",
     },
     valuesDimStyle: {
-      fontSize: "21px",
+      fontSize: "22px",
       color: "#C1D3FF",
       fontFamily: "Whyte",
     },

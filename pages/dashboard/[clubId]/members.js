@@ -16,10 +16,12 @@ import {
 import { makeStyles } from "@mui/styles";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { QUERY_ALL_MEMBERS } from "../../../src/api/graphql/queries";
 import Layout1 from "../../../src/components/layouts/layout1";
 import { convertFromWeiGovernance } from "../../../src/utils/globalFunctions";
 import { subgraphQuery } from "../../../src/utils/subgraphs";
+import ClubFetch from "../../../src/utils/clubFetch";
 
 const useStyles = makeStyles({
   searchField: {
@@ -58,6 +60,12 @@ const Test = () => {
   const router = useRouter();
   const classes = useStyles();
   const { clubId: daoAddress } = router.query;
+
+  const tokenType = useSelector((state) => {
+    return state.club.clubData.tokenType;
+  });
+
+  console.log("TOkennnnn", tokenType);
 
   const handleAddressClick = (event, address) => {
     event.preventDefault();
@@ -155,15 +163,19 @@ const Test = () => {
                           </Grid>
                         </TableCell>
                         <TableCell align="left" variant="tableBody">
-                          {Number(
-                            convertFromWeiGovernance(data.depositAmount, 6),
-                          ).toFixed(0)}{" "}
+                          {tokenType === "erc20"
+                            ? Number(
+                                convertFromWeiGovernance(data.depositAmount, 6),
+                              ).toFixed(0)
+                            : data.depositAmount}{" "}
                           USDC
                         </TableCell>
                         <TableCell align="left" variant="tableBody">
-                          {Number(
-                            convertFromWeiGovernance(data.gtAmount, 18),
-                          ).toFixed(2)}
+                          {tokenType === "erc20"
+                            ? Number(
+                                convertFromWeiGovernance(data.gtAmount, 18),
+                              ).toFixed(2)
+                            : data.gtAmount}
                         </TableCell>
                         <TableCell align="left" variant="tableBody">
                           {new Date(
@@ -190,4 +202,4 @@ const Test = () => {
   );
 };
 
-export default Test;
+export default ClubFetch(Test);

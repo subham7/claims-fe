@@ -135,7 +135,7 @@ const DashboardIndex = () => {
   const handleCopy = () => {
     navigator.clipboard.writeText(
       typeof window !== "undefined" && window.location.origin
-        ? `${window.location.origin}/join/${clubDetails.daoAddress}`
+        ? `${window.location.origin}/join/${daoAddress}`
         : null,
     );
   };

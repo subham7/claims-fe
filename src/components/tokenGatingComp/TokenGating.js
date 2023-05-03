@@ -220,7 +220,7 @@ const TokenGating = () => {
 
         <button
           className={classes.addBtn}
-          disabled={fetchedDetails?.tokenA}
+          disabled={fetchedDetails?.tokenA || tokensList.length >= 2}
           onClick={addTokensHandler}
         >
           +
@@ -274,10 +274,7 @@ const TokenGating = () => {
         />
       )}
 
-      <Backdrop
-        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={loading}
-      >
+      <Backdrop sx={{ color: "#fff", zIndex: 1000 }} open={loading}>
         <CircularProgress color="inherit" />
       </Backdrop>
 
@@ -286,7 +283,7 @@ const TokenGating = () => {
           severity="success"
           sx={{
             width: "250px",
-            position: "absolute",
+            position: "fixed",
             bottom: "30px",
             right: "20px",
             borderRadius: "8px",
@@ -301,7 +298,7 @@ const TokenGating = () => {
           severity="error"
           sx={{
             width: "250px",
-            position: "absolute",
+            position: "fixed",
             bottom: "30px",
             right: "20px",
             borderRadius: "8px",

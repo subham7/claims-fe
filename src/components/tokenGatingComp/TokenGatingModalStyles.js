@@ -9,7 +9,7 @@ export const TokenGatingModalStyles = makeStyles({
     border: "0.5px solid #6475A3",
     display: "flex",
     flexDirection: "column",
-    position: "absolute",
+    position: "fixed",
     top: "50%",
     left: "50%",
     transform: "translateX(-50%) translateY(-50%)",

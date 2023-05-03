@@ -767,6 +767,22 @@ export class SmartContract {
       .call({ from: this.walletAddress });
   }
 
+  async updateOwnerFee(ownerFeePerDeposit, daoAddress) {
+    return this.contract.methods
+      .updateOwnerFee(ownerFeePerDeposit, daoAddress)
+      .send({
+        from: this.walletAddress,
+      });
+  }
+
+  async updateDepositTime(depositTime, daoAddress) {
+    return this.contract.methods
+      .updateDepositTime(depositTime, daoAddress)
+      .send({
+        from: this.walletAddress,
+      });
+  }
+
   async totalRaiseAmount() {
     return this.contract.methods
       .totalRaiseAmount()
@@ -793,13 +809,13 @@ export class SmartContract {
     });
   }
 
-  async updateOwnerFee(performanceFee) {
-    const gasPrice = await web3.eth.getGasPrice();
-    return this.contract.methods.updateOwnerFee(performanceFee).send({
-      from: this.walletAddress,
-      //  , gasPrice
-    });
-  }
+  // async updateOwnerFee(performanceFee) {
+  //   const gasPrice = await web3.eth.getGasPrice();
+  //   return this.contract.methods.updateOwnerFee(performanceFee).send({
+  //     from: this.walletAddress,
+  //     //  , gasPrice
+  //   });
+  // }
 
   async userDetails() {
     return this.contract.methods
