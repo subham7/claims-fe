@@ -47,11 +47,12 @@ import {
 import ClubFetch from "../../utils/clubFetch";
 
 const DashboardIndex = () => {
+  const clubData = useSelector((state) => {
+    return state.club.clubData;
+  });
+
   const [clubDetails, setClubDetails] = useState({
-    clubName: "",
     clubImageUrl: "",
-    daoAddress: "",
-    tokenType: "",
     noOfMembers: 0,
   });
   const [tokenDetails, setTokenDetails] = useState({
@@ -81,15 +82,15 @@ const DashboardIndex = () => {
   const fetchClubDetails = useCallback(async () => {
     try {
       if (daoAddress) {
-        const clubData = await subgraphQuery(QUERY_CLUB_DETAILS(daoAddress));
-        // const imageUrl = await fetchClubbyDaoAddress(daoAddress);
+        const imageUrl = await fetchClubbyDaoAddress(
+          Web3.utils.toChecksumAddress(daoAddress),
+        );
+
         const membersData = await subgraphQuery(QUERY_ALL_MEMBERS(daoAddress));
-        console.log("Clubdata", clubData);
+
         setClubDetails({
-          clubName: clubData?.stations[0]?.name,
-          daoAddress: clubData?.stations[0]?.daoAddress,
-          // clubImageUrl: imageUrl?.data[0]?.imageUrl,
-          tokenType: clubData?.stations[0]?.tokenType,
+          clubImageUrl: imageUrl?.data[0]?.imageUrl,
+
           noOfMembers: membersData?.users?.length,
         });
       }
@@ -209,14 +210,14 @@ const DashboardIndex = () => {
         }
       };
 
-      if (clubDetails.tokenType === "erc721") {
+      if (clubData.tokenType === "erc721") {
         loadNftContractData();
       } else {
         loadSmartContractData();
       }
       // console.log("token type", tokenType);
     }
-  }, [daoAddress, clubDetails.tokenType, walletAddress]);
+  }, [daoAddress, clubData.tokenType, walletAddress]);
 
   return (
     <>
@@ -239,8 +240,8 @@ const DashboardIndex = () => {
                 <Grid item ml={1} mt={4}>
                   <Stack spacing={0}>
                     <Typography variant="h4">
-                      {clubDetails.clubName ? (
-                        clubDetails.clubName
+                      {clubData.name ? (
+                        clubData.name
                       ) : (
                         <Skeleton
                           variant="rectangular"

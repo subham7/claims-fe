@@ -458,6 +458,7 @@ export async function initiateConnection(
                 console.log(result.statusText);
               } else {
                 let walletAddress = await web3.eth.getAccounts();
+                console.log("walletAddress", walletAddress);
 
                 const data = {
                   userAddress: walletAddress,

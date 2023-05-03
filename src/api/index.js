@@ -32,7 +32,7 @@ export function updateDynamicAddress(networkId, dispatch) {
     } else {
       dispatch(
         addContractAddress({
-          factoryContractAddress: result.data[0].factoryContractAddress,
+          factoryContractAddress: "0x43d087bE7aa873B3F7cF012E6650b14042CF5129",
           usdcContractAddress: result.data[0].usdcContractAddress,
           transactionUrl: result.data[0].gnosisTransactionUrl,
           networkHex: result.data[0].networkHex,
