@@ -24,6 +24,9 @@ import ImplementationContract from "../abis/implementationABI.json";
 import { addWalletAddress } from "../redux/reducers/user";
 import Safe from "@safe-global/protocol-kit";
 import Web3Adapter from "@safe-global/protocol-kit";
+import { ethers } from "ethers";
+import { EthersAdapter } from "@safe-global/protocol-kit";
+import SafeProtocol from "@safe-global/protocol-kit";
 
 const ClubFetch = (Component) => {
   const RetrieveDataComponent = () => {
@@ -41,6 +44,17 @@ const ClubFetch = (Component) => {
     const { clubId: daoAddress } = router.query;
     console.log(router.query);
 
+    // const provider = new Web3.providers.HttpProvider("http://localhost:3000");
+    // const web3 = new Web3(provider);
+    // console.log(web3);
+
+    // const ethAdapter = new Web3Adapter({
+    //   web3,
+    //   signerAddress: walletAddress,
+    // });
+
+    // console.log("ethAdapter", ethAdapter?.getChainId());
+
     dispatch(addDaoAddress(Web3.utils.toChecksumAddress(daoAddress)));
     const USDC_CONTRACT_ADDRESS = useSelector((state) => {
       return state.gnosis.usdcContractAddress;
@@ -57,19 +71,23 @@ const ClubFetch = (Component) => {
 
       try {
         const getSafeSdk = async () => {
-          const provider = new Web3.providers.HttpProvider(
-            "http://localhost:3000",
-          );
-          const web3 = new Web3(provider);
-          console.log(web3);
+          // const provider = new ethers.providers.Web3Provider(window.ethereum);
+          // const ethAdapter = new EthersAdapter({
+          //   ethers: provider,
+          //   signerOrProvider: walletAddress,
+          // });
+          const provider = new ethers.providers.Web3Provider(window.ethereum);
+          const signer = provider.getSigner(walletAddress);
+          console.log(signer);
 
-          const ethAdapter = new Web3Adapter({
-            web3,
-            signerAddress: walletAddress,
+          const ethAdapter = new EthersAdapter({
+            ethers,
+            signer: signer,
           });
+          console.log(walletAddress);
 
-          console.log("ethAdapter", Web3Adapter);
-
+          console.log({ Safe });
+          const Safe = SafeProtocol.default;
           const safeSdk = await Safe.create({
             ethAdapter: ethAdapter,
             safeAddress: gnosisAddress,
@@ -232,6 +250,7 @@ const ClubFetch = (Component) => {
       router,
       wallet,
       walletAddress,
+      // ethAdapter,
     ]);
 
     useEffect(() => {
@@ -245,6 +264,7 @@ const ClubFetch = (Component) => {
       router,
       wallet,
       walletAddress,
+      // ethAdapter,
     ]);
     return <Component />;
   };

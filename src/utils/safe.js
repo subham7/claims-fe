@@ -1,5 +1,4 @@
-import { CleaningServices } from "@mui/icons-material";
-import { SafeFactory } from "@safe-global/protocol-kit";
+import { SafeFactory, SafeAccountConfig } from "@safe-global/protocol-kit";
 import Web3Adapter from "@safe-global/protocol-kit";
 import Router from "next/router";
 import Web3 from "web3";
@@ -19,39 +18,45 @@ import {
   setRedirectToCreate,
 } from "../redux/reducers/gnosis";
 
-async function gnosisSafePromise(owners, threshold, dispatch) {
+async function gnosisSafePromise(owners, threshold = owners.length, dispatch) {
   console.log(owners);
   dispatch(setCreateSafeLoading(true));
   const web3 = new Web3(Web3.givenProvider);
-  const safeOwner = await web3.eth.getAccounts();
+  console.log(web3);
+  // const safeOwner = await web3.eth.getAccounts();
 
   const ethAdapter = new Web3Adapter({
     web3,
-    signerAddress: safeOwner[0],
+    signerAddress: owners[0],
   });
+  console.log(ethAdapter);
   const safeFactory = await SafeFactory.create({ ethAdapter });
+  console.log(safeFactory);
   const safeAccountConfig = {
     owners,
-    threshold: owners.length,
+    threshold,
   };
-  const options = {
-    maxPriorityFeePerGas: null,
-    maxFeePerGas: null,
-    // from, // Optional
-    // gas, // Optional
-    // gasPrice, // Optional
-    // maxFeePerGas, // Optional
-    // maxPriorityFeePerGas // Optional
-    // nonce // Optional
-  };
+  console.log(safeAccountConfig);
+  // const options = {
+  //   maxPriorityFeePerGas: null,
+  //   maxFeePerGas: null,
+  //   // from, // Optional
+  //   // gas, // Optional
+  //   // gasPrice, // Optional
+  //   // maxFeePerGas, // Optional
+  //   // maxPriorityFeePerGas // Optional
+  //   // nonce // Optional
+  // };
   try {
     const safeSdk = await safeFactory.deploySafe({
       safeAccountConfig,
-      options,
+      // options,
     });
+    console.log(safeSdk);
     // const safeSdk = await safeFactory.deploySafe({ safeAccountConfig });
     const newSafeAddress = safeSdk.getAddress();
     dispatch(safeConnected(newSafeAddress, safeSdk));
+    console.log(newSafeAddress);
     return newSafeAddress;
     // const safeSdk = await safeFactory.deploySafe({ safeAccountConfig });
   } catch (error) {
