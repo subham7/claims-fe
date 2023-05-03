@@ -735,6 +735,12 @@ export class SmartContract {
       .call({ from: this.walletAddress });
   }
 
+  async transfer(address, amount) {
+    return this.contract.methods.transfer(address, amount).send({
+      from: this.walletAddress,
+    });
+  }
+
   async decimals() {
     return this.contract?.methods.decimals().call({ from: this.walletAddress });
   }

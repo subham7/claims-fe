@@ -220,7 +220,7 @@ const TokenGating = () => {
 
         <button
           className={classes.addBtn}
-          disabled={tokensList.length === 2}
+          disabled={fetchedDetails?.tokenA}
           onClick={addTokensHandler}
         >
           +
@@ -259,7 +259,7 @@ const TokenGating = () => {
 
       <button
         className={classes.saveBtn}
-        disabled={!tokensList.length || tokensList.length < 2}
+        disabled={!tokensList.length}
         onClick={tokenGatingHandler}
       >
         Save changes
