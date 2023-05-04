@@ -414,7 +414,7 @@ const ProposalDetail = () => {
       ) {
         setTxHash("");
       } else {
-        txHash = result.data[0].txHash;
+        // txHash = result.data[0].txHash;
         setTxHash(result.data[0].txHash);
         const safeService = await getSafeService();
         const tx = await safeService.getTransaction(result.data[0].txHash);
