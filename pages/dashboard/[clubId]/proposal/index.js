@@ -57,8 +57,8 @@ import { useRouter, withRouter } from "next/router";
 import USDCContract from "../../../../src/abis/usdcTokenContract.json";
 import ImplementationContract from "../../../../src/abis/implementationABI.json";
 import ClubFetch from "../../../../src/utils/clubFetch";
-import Web3Adapter from "@safe-global/safe-web3-lib";
-import SafeServiceClient from "@safe-global/safe-service-client";
+import Web3Adapter from "@safe-global/protocol-kit";
+import SafeServiceClient from "@safe-global/api-kit";
 import {
   calculateDays,
   convertToWei,
@@ -66,7 +66,7 @@ import {
 } from "../../../../src/utils/globalFunctions";
 import proposalImg from "../../../../public/assets/images/proposals.png";
 import ProposalCard from "./ProposalCard";
-import Safe from "@safe-global/safe-core-sdk";
+import Safe from "@safe-global/protocol-kit";
 import { setGovernanceAllowed } from "../../../../src/redux/reducers/gnosis";
 import { fetchClubbyDaoAddress } from "../../../../src/api/club";
 
@@ -340,9 +340,7 @@ const Proposal = () => {
   let walletAddress;
   if (typeof window !== "undefined") {
     const web3 = new Web3(window.web3);
-    walletAddress = web3.utils.toChecksumAddress(
-      wallet?.accounts[0].address,
-    );
+    walletAddress = web3.utils.toChecksumAddress(wallet?.accounts[0].address);
   }
 
   const isGovernanceActive = useSelector((state) => {

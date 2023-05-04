@@ -10,7 +10,7 @@ import {
   addErc721ClubDetails,
 } from "../redux/reducers/club";
 import { useConnectWallet } from "@web3-onboard/react";
-import Web3 from "web3";
+
 import {
   addContractAddress,
   setAdminUser,
@@ -20,14 +20,20 @@ import Erc20Dao from "../abis/newArch/erc20Dao.json";
 import Erc721Dao from "../abis/newArch/erc721Dao.json";
 import { fetchConfigById } from "../api/config";
 import { SmartContract } from "../api/contract";
-import Web3Adapter from "@safe-global/safe-web3-lib";
-import Safe from "@safe-global/safe-core-sdk";
+
+import Web3 from "web3";
+import { Web3Adapter } from "@safe-global/protocol-kit";
+import Safe, {
+  SafeFactory,
+  SafeAccountConfig,
+} from "@safe-global/protocol-kit";
 
 const ClubFetch = (Component) => {
   const RetrieveDataComponent = () => {
     const router = useRouter();
     const dispatch = useDispatch();
     const [{ wallet }] = useConnectWallet();
+
     const walletAddress = Web3.utils.toChecksumAddress(
       wallet?.accounts[0].address,
     );
@@ -36,7 +42,6 @@ const ClubFetch = (Component) => {
     }
 
     const { clubId: daoAddress } = router.query;
-    console.log(router.query);
 
     dispatch(addDaoAddress(Web3.utils.toChecksumAddress(daoAddress)));
     const USDC_CONTRACT_ADDRESS = useSelector((state) => {
@@ -55,12 +60,10 @@ const ClubFetch = (Component) => {
       try {
         const getSafeSdk = async () => {
           const web3 = new Web3(window.ethereum);
-
           const ethAdapter = new Web3Adapter({
-            web3: web3,
+            web3,
             signerAddress: walletAddress,
           });
-
           const safeSdk = await Safe.create({
             ethAdapter: ethAdapter,
             safeAddress: gnosisAddress,
@@ -223,6 +226,7 @@ const ClubFetch = (Component) => {
       router,
       wallet,
       walletAddress,
+      // ethAdapter,
     ]);
 
     useEffect(() => {
@@ -236,6 +240,7 @@ const ClubFetch = (Component) => {
       router,
       wallet,
       walletAddress,
+      // ethAdapter,
     ]);
     return <Component />;
   };

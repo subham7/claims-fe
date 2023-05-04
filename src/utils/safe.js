@@ -1,8 +1,11 @@
-import { CleaningServices } from "@mui/icons-material";
-import { SafeFactory } from "@safe-global/safe-core-sdk";
-import Web3Adapter from "@safe-global/safe-web3-lib";
 import Router from "next/router";
+
 import Web3 from "web3";
+import { Web3Adapter } from "@safe-global/protocol-kit";
+import Safe, {
+  SafeFactory,
+  SafeAccountConfig,
+} from "@safe-global/protocol-kit";
 
 import FactoryContract from "../abis/newFactoryContract.json";
 import { createClub, fetchClub } from "../api/club";
@@ -20,40 +23,24 @@ import {
 } from "../redux/reducers/gnosis";
 
 async function gnosisSafePromise(owners, threshold, dispatch) {
-  console.log(owners);
   dispatch(setCreateSafeLoading(true));
-  const web3 = new Web3(Web3.givenProvider);
-  const safeOwner = await web3.eth.getAccounts();
-
+  const web3 = new Web3(window.ethereum);
   const ethAdapter = new Web3Adapter({
     web3,
-    signerAddress: safeOwner[0],
+    signerAddress: owners[0],
   });
   const safeFactory = await SafeFactory.create({ ethAdapter });
   const safeAccountConfig = {
-    owners,
-    threshold: owners.length,
+    owners: owners,
+    threshold,
+    // ...
   };
-  const options = {
-    maxPriorityFeePerGas: null,
-    maxFeePerGas: null,
-    // from, // Optional
-    // gas, // Optional
-    // gasPrice, // Optional
-    // maxFeePerGas, // Optional
-    // maxPriorityFeePerGas // Optional
-    // nonce // Optional
-  };
+  const safeSdk = await safeFactory.deploySafe({ safeAccountConfig });
   try {
-    const safeSdk = await safeFactory.deploySafe({
-      safeAccountConfig,
-      options,
-    });
-    // const safeSdk = await safeFactory.deploySafe({ safeAccountConfig });
-    const newSafeAddress = safeSdk.getAddress();
+    const newSafeAddress = await safeSdk.getAddress();
     dispatch(safeConnected(newSafeAddress, safeSdk));
+    // console.log(newSafeAddress);
     return newSafeAddress;
-    // const safeSdk = await safeFactory.deploySafe({ safeAccountConfig });
   } catch (error) {
     if (error.code === 4001) {
       dispatch(setCreateSafeError(true));
@@ -349,7 +336,15 @@ export async function initiateConnection(
     .catch((err) => {
       console.log(err);
     });
-  await gnosisSafePromise(addressList, params.threshold, dispatch)
+  console.log(
+    addressList,
+    Math.ceil(addressList.length * (params.threshold / 10000)),
+  );
+  await gnosisSafePromise(
+    addressList,
+    Math.ceil(addressList.length * (params.threshold / 10000)),
+    dispatch,
+  )
     .then((treasuryAddress) => {
       console.log("treasuryAddress", treasuryAddress);
       dispatch(setCreateSafeLoading(false));
