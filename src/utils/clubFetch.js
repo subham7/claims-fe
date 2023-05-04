@@ -20,8 +20,7 @@ import Erc20Dao from "../abis/newArch/erc20Dao.json";
 import Erc721Dao from "../abis/newArch/erc721Dao.json";
 import { fetchConfigById } from "../api/config";
 import { SmartContract } from "../api/contract";
-import ImplementationContract from "../abis/implementationABI.json";
-import { addWalletAddress } from "../redux/reducers/user";
+
 import Web3 from "web3";
 import { Web3Adapter } from "@safe-global/protocol-kit";
 import Safe, {
@@ -43,18 +42,6 @@ const ClubFetch = (Component) => {
     }
 
     const { clubId: daoAddress } = router.query;
-    console.log(router.query);
-
-    // const provider = new Web3.providers.HttpProvider("http://localhost:3000");
-    // const web3 = new Web3(provider);
-    // console.log(web3);
-
-    // const ethAdapter = new Web3Adapter({
-    //   web3,
-    //   signerAddress: walletAddress,
-    // });
-
-    // console.log("ethAdapter", ethAdapter?.getChainId());
 
     dispatch(addDaoAddress(Web3.utils.toChecksumAddress(daoAddress)));
     const USDC_CONTRACT_ADDRESS = useSelector((state) => {

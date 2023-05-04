@@ -22,59 +22,7 @@ import {
   setRedirectToCreate,
 } from "../redux/reducers/gnosis";
 
-// async function gnosisSafePromise(owners, threshold = owners.length, dispatch) {
-//   console.log(owners);
-//   dispatch(setCreateSafeLoading(true));
-//   const web3 = new Web3(Web3.givenProvider);
-//   console.log(web3);
-//   // const safeOwner = await web3.eth.getAccounts();
-
-//   const ethAdapter = new Web3Adapter({
-//     web3,
-//     signerAddress: owners[0],
-//   });
-//   console.log(ethAdapter);
-//   const safeFactory = await SafeFactory.create({ ethAdapter });
-//   console.log(safeFactory);
-//   const safeAccountConfig = {
-//     owners,
-//     threshold,
-//   };
-//   console.log(safeAccountConfig);
-//   // const options = {
-//   //   maxPriorityFeePerGas: null,
-//   //   maxFeePerGas: null,
-//   //   // from, // Optional
-//   //   // gas, // Optional
-//   //   // gasPrice, // Optional
-//   //   // maxFeePerGas, // Optional
-//   //   // maxPriorityFeePerGas // Optional
-//   //   // nonce // Optional
-//   // };
-//   try {
-//     const safeSdk = await safeFactory.deploySafe({
-//       safeAccountConfig,
-//       // options,
-//     });
-//     console.log(safeSdk);
-//     // const safeSdk = await safeFactory.deploySafe({ safeAccountConfig });
-//     const newSafeAddress = safeSdk.getAddress();
-//     dispatch(safeConnected(newSafeAddress, safeSdk));
-//     console.log(newSafeAddress);
-//     return newSafeAddress;
-//     // const safeSdk = await safeFactory.deploySafe({ safeAccountConfig });
-//   } catch (error) {
-//     if (error.code === 4001) {
-//       dispatch(setCreateSafeError(true));
-//       dispatch(setCreateSafeErrorCode(4001));
-//     } else {
-//       dispatch(setCreateSafeError(true));
-//     }
-//   }
-// }
-
 async function gnosisSafePromise(owners, threshold, dispatch) {
-  console.log("params", owners, threshold);
   dispatch(setCreateSafeLoading(true));
   const web3 = new Web3(window.ethereum);
   const ethAdapter = new Web3Adapter({
@@ -82,17 +30,25 @@ async function gnosisSafePromise(owners, threshold, dispatch) {
     signerAddress: owners[0],
   });
   const safeFactory = await SafeFactory.create({ ethAdapter });
-  console.log(safeFactory);
-
   const safeAccountConfig = {
     owners: owners,
     threshold,
     // ...
   };
   const safeSdk = await safeFactory.deploySafe({ safeAccountConfig });
-  const newSafeAddress = await safeSdk.getAddress();
-  console.log(newSafeAddress);
-  return newSafeAddress;
+  try {
+    const newSafeAddress = await safeSdk.getAddress();
+    dispatch(safeConnected(newSafeAddress, safeSdk));
+    // console.log(newSafeAddress);
+    return newSafeAddress;
+  } catch (error) {
+    if (error.code === 4001) {
+      dispatch(setCreateSafeError(true));
+      dispatch(setCreateSafeErrorCode(4001));
+    } else {
+      dispatch(setCreateSafeError(true));
+    }
+  }
 }
 
 // export async function initiateConnection(
