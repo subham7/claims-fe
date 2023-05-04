@@ -13,6 +13,7 @@ import SettingsInfo from "../../../src/components/settingsComps/SettingsInfo";
 import TokenGating from "../../../src/components/tokenGatingComp/TokenGating";
 import factoryContractABI from "../../../src/abis/newArch/factoryContract.json";
 import erc20DaoContractABI from "../../../src/abis/newArch/erc20Dao.json";
+import erc721DaoContractABI from "../../../src/abis/newArch/erc721Dao.json";
 import erc20ABI from "../../../src/abis/usdcTokenContract.json";
 import ClubFetch from "../../../src/utils/clubFetch";
 import { subgraphQuery } from "../../../src/utils/subgraphs";
@@ -31,6 +32,7 @@ const Settings = () => {
     isGovernance: false,
     isTokenGated: false,
     isTotalSupplyUnlinited: false,
+    isTransferable: false,
     minDeposit: 0,
     maxDeposit: 0,
     totalSupply: 0,
@@ -164,6 +166,73 @@ const Settings = () => {
     }
   }, [daoDetails.depositTokenAddress, walletAddress]);
 
+  const fetchErc721ContractDetails = useCallback(async () => {
+    try {
+      console.log(factoryContractABI, NEW_FACTORY_ADDRESS);
+      const factoryContract = new SmartContract(
+        factoryContractABI,
+        NEW_FACTORY_ADDRESS,
+        walletAddress,
+        undefined,
+        undefined,
+      );
+
+      console.log(factoryContract);
+
+      const erc721DaoContract = new SmartContract(
+        erc721DaoContractABI,
+        daoAddress,
+        walletAddress,
+        undefined,
+        undefined,
+      );
+
+      console.log(erc721DaoContract);
+
+      const fetchedData = await fetchClubbyDaoAddress(daoAddress);
+      console.log("Fetched Data", fetchedData);
+      const fetchedImage = fetchedData?.data[0]?.nftImageUrl;
+      const nftURI = fetchedData?.data[0]?.nftMetadataUrl;
+
+      if (factoryContract && erc721DaoContract) {
+        const factoryData = await factoryContract.getDAOdetails(daoAddress);
+        console.log("Factory Data", factoryData);
+
+        const erc721Data = await erc721DaoContract.getERC721DAOdetails();
+        console.log("Dataaaaaaaa", erc721Data);
+
+        if (erc721Data && factoryData) {
+          setDaoDetails({
+            daoName: erc721Data.DaoName,
+            daoSymbol: erc721Data.DaoSymbol,
+            quorum: erc721Data.quorum,
+            threshold: erc721Data.threshold,
+            isGovernance: erc721Data.isGovernanceActive,
+            maxTokensPerUser: erc721Data.maxTokensPerUser,
+            isTotalSupplyUnlinited: erc721Data.isNftTotalSupplyUnlimited,
+            // decimals: erc20DaoDecimal,
+            // clubTokensMinted: clubTokensMinted,
+            isTransferable: erc721Data.isTransferable,
+            createdBy: erc721Data.ownerAddress,
+            daoImage: fetchedImage,
+            nftURI: nftURI,
+            isTokenGated: factoryData.isTokenGatingApplied,
+            minDeposit: factoryData.minDepositPerUser,
+            maxDeposit: factoryData.maxDepositPerUser,
+            pricePerToken: factoryData.pricePerToken,
+            depositDeadline: factoryData.depositCloseTime,
+            depositTokenAddress: factoryData.depositTokenAddress,
+            distributionAmt: factoryData.distributionAmount,
+            totalSupply:
+              factoryData.distributionAmount * factoryData.pricePerToken,
+          });
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }, [daoAddress, walletAddress]);
+
   const fetchAssets = useCallback(async () => {
     try {
       const assetsData = await getAssetsByDaoAddress(daoAddress);
@@ -175,9 +244,19 @@ const Settings = () => {
   }, [daoAddress]);
 
   useEffect(() => {
-    fetchErc20ContractDetails();
+    if (tokenType === "erc20") {
+      fetchErc20ContractDetails();
+    } else {
+      fetchErc721ContractDetails();
+    }
     fetchErc20TokenDetails();
-  }, [fetchErc20ContractDetails, fetchErc20TokenDetails, fetchAssets]);
+  }, [
+    fetchErc20ContractDetails,
+    fetchErc20TokenDetails,
+    fetchAssets,
+    fetchErc721ContractDetails,
+    tokenType,
+  ]);
 
   useEffect(() => {
     try {

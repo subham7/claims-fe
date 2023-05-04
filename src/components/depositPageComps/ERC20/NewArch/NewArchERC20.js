@@ -37,7 +37,12 @@ import * as yup from "yup";
 import { NEW_FACTORY_ADDRESS } from "../../../../api";
 import dayjs from "dayjs";
 
-const NewArchERC20 = ({ daoDetails, erc20DaoAddress }) => {
+const NewArchERC20 = ({
+  daoDetails,
+  erc20DaoAddress,
+  isTokenGated,
+  isEligibleForTokenGating,
+}) => {
   const [erc20TokenDetails, setErc20TokenDetails] = useState({
     tokenSymbol: "",
     tokenBalance: 0,

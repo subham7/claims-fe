@@ -128,7 +128,7 @@ export class SmartContract {
   async buyGovernanceTokenERC20DAO(
     userAddress,
     daoAddress,
-    depositTokenAddress,
+    // depositTokenAddress,
     numOfTokens,
     merkleProof,
   ) {
@@ -136,7 +136,7 @@ export class SmartContract {
       .buyGovernanceTokenERC20DAO(
         userAddress,
         daoAddress,
-        depositTokenAddress,
+        // depositTokenAddress,
         numOfTokens,
         merkleProof,
       )

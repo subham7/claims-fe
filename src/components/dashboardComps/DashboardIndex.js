@@ -135,7 +135,9 @@ const DashboardIndex = () => {
   const handleCopy = () => {
     navigator.clipboard.writeText(
       typeof window !== "undefined" && window.location.origin
-        ? `${window.location.origin}/join/${daoAddress}`
+        ? `${window.location.origin}/join/${Web3.utils.toChecksumAddress(
+            daoAddress,
+          )}`
         : null,
     );
   };

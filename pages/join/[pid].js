@@ -3,6 +3,8 @@ import { SmartContract } from "../../src/api/contract";
 import factoryContractABI from "../../src/abis/newArch/factoryContract.json";
 import erc20DaoContractABI from "../../src/abis/newArch/erc20Dao.json";
 import erc721DaoContractABI from "../../src/abis/newArch/erc721Dao.json";
+import FactoryContractABI from "../../src/abis/newArch/factoryContract.json";
+import ERC20ABI from "../../src/abis/usdcTokenContract.json";
 
 import { NEW_FACTORY_ADDRESS } from "../../src/api";
 import { useConnectWallet } from "@web3-onboard/react";
@@ -37,7 +39,24 @@ const Join = () => {
     maxTokensPerUser: 0,
     nftURI: "",
   });
+  const [fetchedDetails, setFetchedDetails] = useState({
+    tokenA: "",
+    tokenB: "",
+    tokenAAmt: 0,
+    tokenBAmt: 0,
+    operator: 0,
+    comparator: 0,
+  });
+  const [displayTokenDetails, setDisplayTokenDetails] = useState({
+    tokenASymbol: "",
+    tokenBSymbol: "",
+    tokenAAmt: 0,
+    tokenBAmt: 0,
+  });
   const [tokenType, setTokenType] = useState("");
+  const [isEligibleForTokenGating, setIsEligibleForTokenGating] =
+    useState(false);
+  const [isTokenGated, setIsTokenGated] = useState(false);
 
   const [{ wallet }] = useConnectWallet();
   const router = useRouter();
@@ -192,6 +211,83 @@ const Join = () => {
     }
   }, [daoAddress]);
 
+  const fetchTokenGatingDetials = useCallback(async () => {
+    try {
+      // setLoading(true);
+      const factoryContract = new SmartContract(
+        FactoryContractABI,
+        NEW_FACTORY_ADDRESS,
+        walletAddress,
+        undefined,
+        undefined,
+      );
+
+      console.log("Factory Contract", factoryContract);
+
+      const tokenGatingDetails = await factoryContract.getTokenGatingDetails(
+        daoAddress,
+        0,
+      );
+      console.log("TOken Gating details", tokenGatingDetails);
+      if (tokenGatingDetails) setIsTokenGated(true);
+      setFetchedDetails({
+        tokenA: tokenGatingDetails?.tokenA,
+        tokenB: tokenGatingDetails?.tokenB,
+        tokenAAmt: tokenGatingDetails?.tokenAAmt,
+        tokenBAmt: tokenGatingDetails?.tokenBAmt,
+        operator: tokenGatingDetails?.operator,
+        comparator: tokenGatingDetails?.comparator,
+      });
+
+      const tokenAContract = new SmartContract(
+        ERC20ABI,
+        tokenGatingDetails.tokenA,
+        walletAddress,
+        undefined,
+        undefined,
+      );
+
+      const tokenBContract = new SmartContract(
+        ERC20ABI,
+        tokenGatingDetails.tokenB,
+        walletAddress,
+        undefined,
+        undefined,
+      );
+
+      const balanceOfTokenAInUserWallet = await tokenAContract.balanceOf();
+      const balanceOfTokenBInUserWallet = await tokenBContract.balanceOf();
+
+      if (tokenGatingDetails.operator === 0) {
+        if (
+          balanceOfTokenAInUserWallet >= tokenGatingDetails.tokenAAmt &&
+          balanceOfTokenBInUserWallet >= tokenGatingDetails.tokenBAmt
+        ) {
+          setIsEligibleForTokenGating(true);
+        } else {
+          setIsEligibleForTokenGating(false);
+        }
+      } else if (tokenGatingDetails.operator === 1) {
+        if (
+          balanceOfTokenAInUserWallet >= tokenGatingDetails.tokenAAmt ||
+          balanceOfTokenBInUserWallet >= tokenGatingDetails.tokenBAmt
+        ) {
+          setIsEligibleForTokenGating(true);
+        } else {
+          setIsEligibleForTokenGating(false);
+        }
+      }
+      // setLoading(false);
+    } catch (error) {
+      console.log(error);
+      // setLoading(false);
+    }
+  }, [walletAddress, daoAddress]);
+
+  useEffect(() => {
+    fetchTokenGatingDetials();
+  }, [fetchTokenGatingDetials]);
+
   useEffect(() => {
     fetchDataFromApi();
   }, [fetchDataFromApi]);
@@ -208,9 +304,19 @@ const Join = () => {
   return (
     <Layout2>
       {tokenType === "erc20NonTransferable" ? (
-        <NewArchERC20 erc20DaoAddress={daoAddress} daoDetails={daoDetails} />
+        <NewArchERC20
+          isTokenGated={isTokenGated}
+          isEligibleForTokenGating={isEligibleForTokenGating}
+          erc20DaoAddress={daoAddress}
+          daoDetails={daoDetails}
+        />
       ) : (
-        <NewArchERC721 erc721DaoAddress={daoAddress} daoDetails={daoDetails} />
+        <NewArchERC721
+          isTokenGated={isTokenGated}
+          isEligibleForTokenGating={isEligibleForTokenGating}
+          erc721DaoAddress={daoAddress}
+          daoDetails={daoDetails}
+        />
       )}
     </Layout2>
   );

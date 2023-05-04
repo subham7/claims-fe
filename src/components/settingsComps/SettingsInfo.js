@@ -54,6 +54,8 @@ const SettingsInfo = ({
 }) => {
   const classes = SettingsInfoStlyes();
 
+  console.log(tokenType);
+
   return (
     <>
       <Layout1 page={5}>
@@ -159,8 +161,8 @@ const SettingsInfo = ({
                                 variant="p"
                                 className={classes.valuesStyle}
                               >
-                                {maxTokensPerUser !== null ? (
-                                  maxTokensPerUser
+                                {daoDetails.maxTokensPerUser !== null ? (
+                                  daoDetails.maxTokensPerUser
                                 ) : (
                                   <Skeleton
                                     variant="rectangular"
@@ -214,7 +216,7 @@ const SettingsInfo = ({
                               variant="p"
                               className={classes.valuesDimStyle}
                             >
-                              Is NFT Tranferable
+                              NFT Tranferable
                             </Typography>
                           </Grid>
                           <Grid item mt={1}>
@@ -222,11 +224,11 @@ const SettingsInfo = ({
                               variant="p"
                               className={classes.valuesStyle}
                             >
-                              {isNftTransferable !== null ? (
-                                isNftTransferable ? (
-                                  "true"
+                              {daoDetails?.isTransferable !== null ? (
+                                daoDetails.isTransferable ? (
+                                  "Yes"
                                 ) : (
-                                  "false"
+                                  "No"
                                 )
                               ) : (
                                 <Skeleton
@@ -443,11 +445,11 @@ const SettingsInfo = ({
                                 variant="p"
                                 className={classes.valuesStyle}
                               >
-                                {totalNftSupply !== null ? (
-                                  isNftTotalSupplyUnlimited ? (
+                                {daoDetails.totalSupply !== null ? (
+                                  daoDetails.isTotalSupplyUnlimited ? (
                                     "Unlimited"
                                   ) : (
-                                    totalNftSupply
+                                    daoDetails.totalSupply
                                   )
                                 ) : (
                                   <Skeleton
@@ -462,7 +464,7 @@ const SettingsInfo = ({
                                 variant="p"
                                 className={classes.valuesStyle}
                               >
-                                {governorDataFetched ? (
+                                {/* {daoDetails ? (
                                   // convertAmountToWei(totalERC20Supply?.toString()) +
                                   // (" $" + tokenDetails[1])
                                   // convertAmountToWei(String(totalERC20Supply))
@@ -475,7 +477,7 @@ const SettingsInfo = ({
                                     width={100}
                                     height={25}
                                   />
-                                )}{" "}
+                                )}{" "} */}
                               </Typography>
                             )}
                           </Stack>
@@ -492,8 +494,10 @@ const SettingsInfo = ({
                               variant="p"
                               className={classes.valuesStyle}
                             >
-                              {governorDataFetched ? (
-                                parseInt(clubTokenMinted) + " $" + tokenSymbol
+                              {daoDetails?.clubTokenMinted ? (
+                                parseInt(daoDetails.clubTokenMinted) +
+                                " $" +
+                                daoDetails.daoSymbol
                               ) : (
                                 <Skeleton
                                   variant="rectangular"
@@ -514,11 +518,11 @@ const SettingsInfo = ({
                                 variant="p"
                                 className={classes.valuesStyle}
                               >
-                                {totalNftSupply !== null ? (
-                                  isNftTotalSupplyUnlimited ? (
+                                {daoDetails.totalSupply !== null ? (
+                                  daoDetails.isTotalSupplyUnlimited ? (
                                     "Unlimited"
                                   ) : (
-                                    totalNftSupply
+                                    daoDetails.totalSupply
                                   )
                                 ) : (
                                   <Skeleton
@@ -533,7 +537,7 @@ const SettingsInfo = ({
                                 variant="p"
                                 className={classes.valuesStyle}
                               >
-                                {governorDataFetched ? (
+                                {/* {governorDataFetched ? (
                                   // convertAmountToWei(totalERC20Supply?.toString()) +
                                   // (" $" + tokenDetails[1])
                                   // convertAmountToWei(String(totalERC20Supply))
@@ -545,8 +549,8 @@ const SettingsInfo = ({
                                     variant="rectangular"
                                     width={100}
                                     height={25}
-                                  />
-                                )}{" "}
+                                  /> */}
+                                {/* )}{" "} */}
                               </Typography>
                             )}
                           </Stack>
@@ -652,11 +656,11 @@ const SettingsInfo = ({
                             variant="p"
                             className={classes.valuesStyle}
                           >
-                            {totalNftSupply !== null ? (
-                              isNftTotalSupplyUnlimited ? (
+                            {daoDetails.totalNftSupply !== null ? (
+                              daoDetails.isTotalSupplyUnlimited ? (
                                 "Unlimited"
                               ) : (
-                                totalNftSupply
+                                daoDetails.totalSupply
                               )
                             ) : (
                               <Skeleton

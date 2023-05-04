@@ -163,11 +163,9 @@ const Test = () => {
                           </Grid>
                         </TableCell>
                         <TableCell align="left" variant="tableBody">
-                          {tokenType === "erc20"
-                            ? Number(
-                                convertFromWeiGovernance(data.depositAmount, 6),
-                              ).toFixed(0)
-                            : data.depositAmount}{" "}
+                          {Number(
+                            convertFromWeiGovernance(data.depositAmount, 6),
+                          ).toFixed(0)}{" "}
                           USDC
                         </TableCell>
                         <TableCell align="left" variant="tableBody">
