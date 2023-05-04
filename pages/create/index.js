@@ -24,6 +24,7 @@ import { setUploadNFTLoading } from "../../src/redux/reducers/gnosis";
 import { NFTStorage } from "nft.storage";
 import { convertAmountToWei } from "../../src/utils/globalFunctions";
 import { convertToWeiGovernance } from "../../src/utils/globalFunctions";
+import { NEW_FACTORY_ADDRESS } from "../../src/api";
 
 const Create = () => {
   const steps = ["Add basic info", "Set token rules", "Governance"];
@@ -204,7 +205,7 @@ const Create = () => {
               GNOSIS_TRANSACTION_URL,
               values.addressList,
               formikStep1.values.clubTokenType,
-              "0x43d087bE7aa873B3F7cF012E6650b14042CF5129",
+              NEW_FACTORY_ADDRESS,
               metadata.data.image.pathname,
               metadata.url,
             );
@@ -256,7 +257,7 @@ const Create = () => {
               GNOSIS_TRANSACTION_URL,
               values.addressList,
               formikStep1.values.clubTokenType,
-              "0x43d087bE7aa873B3F7cF012E6650b14042CF5129",
+              NEW_FACTORY_ADDRESS,
             );
           })
           .catch((error) => {

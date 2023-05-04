@@ -135,11 +135,6 @@
         { "internalType": "address", "name": "_user", "type": "address" },
         { "internalType": "address", "name": "_daoAddress", "type": "address" },
         {
-          "internalType": "address",
-          "name": "_depositTokenAddress",
-          "type": "address"
-        },
-        {
           "internalType": "uint256",
           "name": "_numOfTokensToBuy",
           "type": "uint256"
@@ -159,11 +154,6 @@
       "inputs": [
         { "internalType": "address", "name": "_user", "type": "address" },
         { "internalType": "address", "name": "_daoAddress", "type": "address" },
-        {
-          "internalType": "address",
-          "name": "_depositTokenAddress",
-          "type": "address"
-        },
         { "internalType": "string", "name": "_tokenURI", "type": "string" },
         {
           "internalType": "uint256",
@@ -266,6 +256,7 @@
           "name": "_gnosisAddress",
           "type": "address"
         },
+        { "internalType": "address[]", "name": "_admins", "type": "address[]" },
         {
           "internalType": "bool",
           "name": "_isGovernanceActive",
@@ -323,6 +314,7 @@
           "name": "_gnosisAddress",
           "type": "address"
         },
+        { "internalType": "address[]", "name": "_admins", "type": "address[]" },
         {
           "internalType": "uint256",
           "name": "_maxTokensPerUser",
@@ -368,70 +360,6 @@
       "name": "createERC721DAO",
       "outputs": [],
       "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [{ "internalType": "address", "name": "", "type": "address" }],
-      "name": "daoDetails",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "pricePerToken",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "distributionAmount",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "minDepositPerUser",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "maxDepositPerUser",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "ownerFeePerDepositPercent",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "depositCloseTime",
-          "type": "uint256"
-        },
-        {
-          "internalType": "address",
-          "name": "depositTokenAddress",
-          "type": "address"
-        },
-        {
-          "internalType": "address",
-          "name": "gnosisAddress",
-          "type": "address"
-        },
-        { "internalType": "bytes32", "name": "merkleRoot", "type": "bytes32" },
-        {
-          "internalType": "bool",
-          "name": "isDeployedByFactory",
-          "type": "bool"
-        },
-        {
-          "internalType": "bool",
-          "name": "isTokenGatingApplied",
-          "type": "bool"
-        },
-        {
-          "internalType": "bool",
-          "name": "assetsStoredOnGnosis",
-          "type": "bool"
-        }
-      ],
-      "stateMutability": "view",
       "type": "function"
     },
     {
@@ -551,6 +479,40 @@
       "type": "function"
     },
     {
+      "inputs": [
+        { "internalType": "address", "name": "_daoAddress", "type": "address" }
+      ],
+      "name": "getTokenGatingDetails",
+      "outputs": [
+        {
+          "components": [
+            { "internalType": "address", "name": "tokenA", "type": "address" },
+            { "internalType": "address", "name": "tokenB", "type": "address" },
+            {
+              "internalType": "enum Helper.Operator",
+              "name": "operator",
+              "type": "uint8"
+            },
+            {
+              "internalType": "enum Helper.Comparator",
+              "name": "comparator",
+              "type": "uint8"
+            },
+            {
+              "internalType": "uint256[]",
+              "name": "value",
+              "type": "uint256[]"
+            }
+          ],
+          "internalType": "struct Helper.TokenGatingCondition[]",
+          "name": "",
+          "type": "tuple[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
       "inputs": [],
       "name": "owner",
       "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
@@ -584,29 +546,6 @@
       "name": "setupTokenGating",
       "outputs": [],
       "stateMutability": "payable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        { "internalType": "address", "name": "", "type": "address" },
-        { "internalType": "uint256", "name": "", "type": "uint256" }
-      ],
-      "name": "tokenGatingDetails",
-      "outputs": [
-        { "internalType": "address", "name": "tokenA", "type": "address" },
-        { "internalType": "address", "name": "tokenB", "type": "address" },
-        {
-          "internalType": "enum Helper.Operator",
-          "name": "operator",
-          "type": "uint8"
-        },
-        {
-          "internalType": "enum Helper.Comparator",
-          "name": "comparator",
-          "type": "uint8"
-        }
-      ],
-      "stateMutability": "view",
       "type": "function"
     },
     {

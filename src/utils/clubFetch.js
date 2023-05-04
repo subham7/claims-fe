@@ -27,6 +27,7 @@ import Safe, {
   SafeFactory,
   SafeAccountConfig,
 } from "@safe-global/protocol-kit";
+import { NEW_FACTORY_ADDRESS } from "../api";
 
 const ClubFetch = (Component) => {
   const RetrieveDataComponent = () => {
@@ -64,10 +65,12 @@ const ClubFetch = (Component) => {
             web3,
             signerAddress: walletAddress,
           });
+          console.log("ethAdapter", ethAdapter);
           const safeSdk = await Safe.create({
             ethAdapter: ethAdapter,
             safeAddress: gnosisAddress,
           });
+          console.log("safeSdk", safeSdk);
 
           return safeSdk;
         };
@@ -81,8 +84,7 @@ const ClubFetch = (Component) => {
               console.log(result);
               dispatch(
                 addContractAddress({
-                  factoryContractAddress:
-                    "0x43d087bE7aa873B3F7cF012E6650b14042CF5129",
+                  factoryContractAddress: NEW_FACTORY_ADDRESS,
                   usdcContractAddress: result.data[0].usdcContractAddress,
                   transactionUrl: result.data[0].gnosisTransactionUrl,
                   networkHex: result.data[0].networkHex,
@@ -166,7 +168,7 @@ const ClubFetch = (Component) => {
               GNOSIS_TRANSACTION_URL,
             );
             console.log(erc721Contract);
-            const daoDetails = await erc721Contract.erc721ClubDetails();
+            const daoDetails = await erc721Contract.getERC721DAOdetails();
             dispatch(
               addErc721ClubDetails({
                 quorum: daoDetails.quorum / 100,
@@ -182,36 +184,34 @@ const ClubFetch = (Component) => {
 
             const response = erc721Contract.balanceOf();
 
-            response.then(async (result) => {
-              console.log("responseeeeeeee", result);
+            response.then(
+              async (result) => {
+                console.log("responseeeeeeee", result);
 
-              const safeSdk = getSafeSdk();
-              safeSdk
-                .then(async () => {
-                  const ownerAddresses = await safeSdk.getOwners();
-                  const ownerAddressesArray = ownerAddresses.map((value) =>
-                    Web3.utils.toChecksumAddress(value),
-                  );
-                  console.log(ownerAddressesArray, walletAddress);
-                  if (ownerAddressesArray.includes(walletAddress)) {
-                    console.log("here");
-                    dispatch(setAdminUser(true));
+                const safeSdk = await getSafeSdk();
+                const ownerAddresses = await safeSdk.getOwners();
+                const ownerAddressesArray = ownerAddresses.map((value) =>
+                  Web3.utils.toChecksumAddress(value),
+                );
+                console.log(ownerAddressesArray, walletAddress);
+                if (ownerAddressesArray.includes(walletAddress)) {
+                  console.log("here");
+                  dispatch(setAdminUser(true));
+                } else {
+                  if (result === "0") {
+                    dispatch(setMemberUser(false));
+                    router.push("/");
                   } else {
-                    if (result === "0") {
-                      dispatch(setMemberUser(false));
-                      router.push("/");
-                    } else {
-                      console.log("here");
-                      dispatch(setMemberUser(true));
-                    }
+                    console.log("here");
+                    dispatch(setMemberUser(true));
                   }
-                })
-                .catch((err) => {
-                  console.log(err);
-                  router.push("/");
-                });
-            });
-            console.log(daoDetails);
+                }
+              },
+              (error) => {
+                router.push("/");
+              },
+            ),
+              console.log(daoDetails);
           }
         }
       } catch (error) {
