@@ -18,9 +18,9 @@ import {
   Typography,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
-import Safe from "@safe-global/safe-core-sdk";
-import SafeServiceClient from "@safe-global/safe-service-client";
-import Web3Adapter from "@safe-global/safe-web3-lib";
+import Safe from "@safe-global/protocol-kit";
+import SafeServiceClient from "@safe-global/api-kit";
+import Web3Adapter from "@safe-global/protocol-kit";
 import { useConnectWallet } from "@web3-onboard/react";
 import Image from "next/image";
 import { useRouter } from "next/router";
@@ -414,7 +414,7 @@ const ProposalDetail = () => {
       ) {
         setTxHash("");
       } else {
-        txHash = result.data[0].txHash;
+        // txHash = result.data[0].txHash;
         setTxHash(result.data[0].txHash);
         const safeService = await getSafeService();
         const tx = await safeService.getTransaction(result.data[0].txHash);

@@ -1,6 +1,6 @@
-import Safe, { EthSignSignature } from "@safe-global/safe-core-sdk";
-import SafeServiceClient from "@safe-global/safe-service-client";
-import Web3Adapter from "@safe-global/safe-web3-lib";
+import Safe, { EthSignSignature } from "@safe-global/protocol-kit";
+import SafeServiceClient from "@safe-global/api-kit";
+import Web3Adapter from "@safe-global/protocol-kit";
 import Web3 from "web3";
 
 import FactoryContract from "../../abis/newFactoryContract.json";
@@ -263,6 +263,7 @@ export class SmartContract {
     threshold,
     depositTokenAddress,
     treasuryAddress,
+    addressList,
     maxTokensPerUser,
     distributeAmount,
     pricePerToken,
@@ -283,6 +284,7 @@ export class SmartContract {
         threshold,
         depositTokenAddress,
         treasuryAddress,
+        addressList,
         maxTokensPerUser,
         distributeAmount,
         pricePerToken,
@@ -309,6 +311,7 @@ export class SmartContract {
     threshold,
     depositTokenAddress,
     treasuryAddress,
+    addressList,
     isGovernanceActive,
     isGtTransferable,
     allowWhiteList,
@@ -328,6 +331,7 @@ export class SmartContract {
       threshold,
       depositTokenAddress,
       treasuryAddress,
+      addressList,
       isGovernanceActive,
       isGtTransferable,
       allowWhiteList,
@@ -349,6 +353,7 @@ export class SmartContract {
         threshold,
         depositTokenAddress,
         treasuryAddress,
+        addressList,
         isGovernanceActive,
         isGtTransferable,
         allowWhiteList,
