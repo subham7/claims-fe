@@ -1,7 +1,11 @@
-import { SafeFactory, SafeAccountConfig } from "@safe-global/protocol-kit";
-import Web3Adapter from "@safe-global/protocol-kit";
 import Router from "next/router";
+
 import Web3 from "web3";
+import { Web3Adapter } from "@safe-global/protocol-kit";
+import Safe, {
+  SafeFactory,
+  SafeAccountConfig,
+} from "@safe-global/protocol-kit";
 
 import FactoryContract from "../abis/newFactoryContract.json";
 import { createClub, fetchClub } from "../api/club";
@@ -18,55 +22,77 @@ import {
   setRedirectToCreate,
 } from "../redux/reducers/gnosis";
 
-async function gnosisSafePromise(owners, threshold = owners.length, dispatch) {
-  console.log(owners);
-  dispatch(setCreateSafeLoading(true));
-  const web3 = new Web3(Web3.givenProvider);
-  console.log(web3);
-  // const safeOwner = await web3.eth.getAccounts();
+// async function gnosisSafePromise(owners, threshold = owners.length, dispatch) {
+//   console.log(owners);
+//   dispatch(setCreateSafeLoading(true));
+//   const web3 = new Web3(Web3.givenProvider);
+//   console.log(web3);
+//   // const safeOwner = await web3.eth.getAccounts();
 
+//   const ethAdapter = new Web3Adapter({
+//     web3,
+//     signerAddress: owners[0],
+//   });
+//   console.log(ethAdapter);
+//   const safeFactory = await SafeFactory.create({ ethAdapter });
+//   console.log(safeFactory);
+//   const safeAccountConfig = {
+//     owners,
+//     threshold,
+//   };
+//   console.log(safeAccountConfig);
+//   // const options = {
+//   //   maxPriorityFeePerGas: null,
+//   //   maxFeePerGas: null,
+//   //   // from, // Optional
+//   //   // gas, // Optional
+//   //   // gasPrice, // Optional
+//   //   // maxFeePerGas, // Optional
+//   //   // maxPriorityFeePerGas // Optional
+//   //   // nonce // Optional
+//   // };
+//   try {
+//     const safeSdk = await safeFactory.deploySafe({
+//       safeAccountConfig,
+//       // options,
+//     });
+//     console.log(safeSdk);
+//     // const safeSdk = await safeFactory.deploySafe({ safeAccountConfig });
+//     const newSafeAddress = safeSdk.getAddress();
+//     dispatch(safeConnected(newSafeAddress, safeSdk));
+//     console.log(newSafeAddress);
+//     return newSafeAddress;
+//     // const safeSdk = await safeFactory.deploySafe({ safeAccountConfig });
+//   } catch (error) {
+//     if (error.code === 4001) {
+//       dispatch(setCreateSafeError(true));
+//       dispatch(setCreateSafeErrorCode(4001));
+//     } else {
+//       dispatch(setCreateSafeError(true));
+//     }
+//   }
+// }
+
+async function gnosisSafePromise(owners, threshold, dispatch) {
+  console.log("params", owners, threshold);
+  dispatch(setCreateSafeLoading(true));
+  const web3 = new Web3(window.ethereum);
   const ethAdapter = new Web3Adapter({
     web3,
     signerAddress: owners[0],
   });
-  console.log(ethAdapter);
   const safeFactory = await SafeFactory.create({ ethAdapter });
   console.log(safeFactory);
+
   const safeAccountConfig = {
-    owners,
+    owners: owners,
     threshold,
+    // ...
   };
-  console.log(safeAccountConfig);
-  // const options = {
-  //   maxPriorityFeePerGas: null,
-  //   maxFeePerGas: null,
-  //   // from, // Optional
-  //   // gas, // Optional
-  //   // gasPrice, // Optional
-  //   // maxFeePerGas, // Optional
-  //   // maxPriorityFeePerGas // Optional
-  //   // nonce // Optional
-  // };
-  try {
-    const safeSdk = await safeFactory.deploySafe({
-      safeAccountConfig,
-      // options,
-    });
-    console.log(safeSdk);
-    // const safeSdk = await safeFactory.deploySafe({ safeAccountConfig });
-    const newSafeAddress = safeSdk.getAddress();
-    dispatch(safeConnected(newSafeAddress, safeSdk));
-    console.log(newSafeAddress);
-    return newSafeAddress;
-    // const safeSdk = await safeFactory.deploySafe({ safeAccountConfig });
-  } catch (error) {
-    if (error.code === 4001) {
-      dispatch(setCreateSafeError(true));
-      dispatch(setCreateSafeErrorCode(4001));
-    } else {
-      dispatch(setCreateSafeError(true));
-    }
-  }
+  const safeSdk = await safeFactory.deploySafe({ safeAccountConfig });
+  const newSafeAddress = await safeSdk.getAddress();
+  console.log(newSafeAddress);
+  return newSafeAddress;
 }
 
 // export async function initiateConnection(
@@ -354,7 +380,15 @@ export async function initiateConnection(
     .catch((err) => {
       console.log(err);
     });
-  await gnosisSafePromise(addressList, params.threshold, dispatch)
+  console.log(
+    addressList,
+    Math.ceil(addressList.length * (params.threshold / 10000)),
+  );
+  await gnosisSafePromise(
+    addressList,
+    Math.ceil(addressList.length * (params.threshold / 10000)),
+    dispatch,
+  )
     .then((treasuryAddress) => {
       console.log("treasuryAddress", treasuryAddress);
       dispatch(setCreateSafeLoading(false));

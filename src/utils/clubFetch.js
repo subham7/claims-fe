@@ -10,7 +10,7 @@ import {
   addErc721ClubDetails,
 } from "../redux/reducers/club";
 import { useConnectWallet } from "@web3-onboard/react";
-import Web3 from "web3";
+
 import {
   addContractAddress,
   setAdminUser,
@@ -22,11 +22,12 @@ import { fetchConfigById } from "../api/config";
 import { SmartContract } from "../api/contract";
 import ImplementationContract from "../abis/implementationABI.json";
 import { addWalletAddress } from "../redux/reducers/user";
-import Safe from "@safe-global/protocol-kit";
-import Web3Adapter from "@safe-global/protocol-kit";
-import { ethers } from "ethers";
-import { EthersAdapter } from "@safe-global/protocol-kit";
-import SafeProtocol from "@safe-global/protocol-kit";
+import Web3 from "web3";
+import { Web3Adapter } from "@safe-global/protocol-kit";
+import Safe, {
+  SafeFactory,
+  SafeAccountConfig,
+} from "@safe-global/protocol-kit";
 
 const ClubFetch = (Component) => {
   const RetrieveDataComponent = () => {
@@ -71,23 +72,11 @@ const ClubFetch = (Component) => {
 
       try {
         const getSafeSdk = async () => {
-          // const provider = new ethers.providers.Web3Provider(window.ethereum);
-          // const ethAdapter = new EthersAdapter({
-          //   ethers: provider,
-          //   signerOrProvider: walletAddress,
-          // });
-          const provider = new ethers.providers.Web3Provider(window.ethereum);
-          const signer = provider.getSigner(walletAddress);
-          console.log(signer);
-
-          const ethAdapter = new EthersAdapter({
-            ethers,
-            signer: signer,
+          const web3 = new Web3(window.ethereum);
+          const ethAdapter = new Web3Adapter({
+            web3,
+            signerAddress: walletAddress,
           });
-          console.log(walletAddress);
-
-          console.log({ Safe });
-          const Safe = SafeProtocol.default;
           const safeSdk = await Safe.create({
             ethAdapter: ethAdapter,
             safeAddress: gnosisAddress,
