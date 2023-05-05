@@ -31,7 +31,7 @@ const Settings = () => {
     threshold: 0,
     isGovernance: false,
     isTokenGated: false,
-    isTotalSupplyUnlinited: false,
+    isTotalSupplyUnlimited: false,
     isTransferable: false,
     minDeposit: 0,
     maxDeposit: 0,
@@ -44,6 +44,8 @@ const Settings = () => {
     maxTokensPerUser: 0,
     nftURI: "",
     ownerFee: 0,
+    nftMinted: 0,
+    balanceOfClubToken: 0,
   });
   const [erc20TokenDetails, setErc20TokenDetails] = useState({
     tokenSymbol: "",
@@ -91,7 +93,8 @@ const Settings = () => {
         undefined,
       );
 
-      console.log(factoryContract);
+      const balanceOfClubToken = await erc20DaoContract.balanceOf();
+      console.log("balanceOfClubToken", balanceOfClubToken / 10 ** 18);
 
       const fetchedData = await fetchClubbyDaoAddress(daoAddress);
       console.log("Fetchedd", fetchedData);
@@ -118,6 +121,10 @@ const Settings = () => {
             decimals: erc20DaoDecimal,
             clubTokensMinted: clubTokensMinted,
             daoImage: fetchedImage,
+            balanceOfClubToken: convertFromWeiGovernance(
+              balanceOfClubToken,
+              18,
+            ),
             isTokenGated: factoryData.isTokenGatingApplied,
             minDeposit: factoryData.minDepositPerUser,
             maxDeposit: factoryData.maxDepositPerUser,
@@ -201,6 +208,9 @@ const Settings = () => {
         const erc721Data = await erc721DaoContract.getERC721DAOdetails();
         console.log("Dataaaaaaaa", erc721Data);
 
+        const balanceOfClubToken = await erc721DaoContract.balanceOf();
+        const nftMinted = await erc721DaoContract.nftOwnersCount();
+
         if (erc721Data && factoryData) {
           setDaoDetails({
             daoName: erc721Data.DaoName,
@@ -209,9 +219,14 @@ const Settings = () => {
             threshold: erc721Data.threshold,
             isGovernance: erc721Data.isGovernanceActive,
             maxTokensPerUser: erc721Data.maxTokensPerUser,
-            isTotalSupplyUnlinited: erc721Data.isNftTotalSupplyUnlimited,
+            isTotalSupplyUnlimited: erc721Data.isNftTotalSupplyUnlimited,
             // decimals: erc20DaoDecimal,
             // clubTokensMinted: clubTokensMinted,
+            balanceOfClubToken: convertFromWeiGovernance(
+              balanceOfClubToken,
+              18,
+            ),
+            nftMinted: nftMinted,
             isTransferable: erc721Data.isTransferable,
             createdBy: erc721Data.ownerAddress,
             daoImage: fetchedImage,
@@ -225,6 +240,7 @@ const Settings = () => {
             distributionAmt: factoryData.distributionAmount,
             totalSupply:
               factoryData.distributionAmount * factoryData.pricePerToken,
+            ownerFee: factoryData.ownerFeePerDepositPercent / 100,
           });
         }
       }
@@ -295,6 +311,8 @@ const Settings = () => {
         erc20TokenDetails={erc20TokenDetails}
         tokenType={tokenType}
         walletAddress={walletAddress}
+        fetchErc20ContractDetails={fetchErc20ContractDetails}
+        fetchErc721ContractDetails={fetchErc721ContractDetails}
       />
       <TokenGating />
     </div>

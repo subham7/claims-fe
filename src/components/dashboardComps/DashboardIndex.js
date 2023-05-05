@@ -61,6 +61,7 @@ const DashboardIndex = () => {
   });
   const [nftData, setNftData] = useState([]);
   const [proposalData, setProposalData] = useState([]);
+  const [depositLink, setDepositLink] = useState("");
 
   const [{ wallet }] = useConnectWallet();
   const router = useRouter();
@@ -199,11 +200,13 @@ const DashboardIndex = () => {
           // setUserBalance(userDetail[1]);
           // setTotalTokenMinted(tokensMintedSoFar);
 
-          // setDepositLink(
-          //   typeof window !== "undefined" && window.location.origin
-          //     ? `${window.location.origin}/join/${daoAddress}?dashboard=true`
-          //     : null,
-          // );
+          setDepositLink(
+            typeof window !== "undefined" && window.location.origin
+              ? `${window.location.origin}/join/${Web3.utils.toChecksumAddress(
+                  daoAddress,
+                )}`
+              : null,
+          );
           // setDataFetched(true);
         } catch (e) {
           console.log(e);
@@ -223,7 +226,7 @@ const DashboardIndex = () => {
 
   return (
     <>
-      <Layout1 page={1}>
+      <Layout1 page={1} depositUrl={depositLink}>
         {/* <Layout1 page={1} depositUrl={depositLink}> */}
         <Grid container paddingLeft={10} paddingTop={15} spacing={1}>
           <Grid item spacing={1} xs={9}>

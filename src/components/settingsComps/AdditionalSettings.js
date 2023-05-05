@@ -1,4 +1,7 @@
 import {
+  Alert,
+  Backdrop,
+  CircularProgress,
   Divider,
   Grid,
   IconButton,
@@ -21,22 +24,32 @@ import { NEW_FACTORY_ADDRESS } from "../../api";
 import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
+import DepositOwnerFee from "./modals/DepositOwnerFee";
+import DepositDeadline from "./modals/DepositDeadline";
 
 const AdditionalSettings = ({
   tokenType,
   daoDetails,
   erc20TokenDetails,
   walletAddress,
+  fetchErc20ContractDetails,
+  fetchErc721ContractDetails
 }) => {
   const classes = AdditionalSettingsStyles();
   const router = useRouter();
   const { clubId: daoAddress } = router.query;
-  const [depositTime, setDepositTime] = useState(dayjs(Date.now() + 300000));
+  const [showDepositTimeModal, setShowDepositTimeModal] = useState(false);
+  const [showOwnerFeesModal, setShowOwnerFeesModal] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [showMessage, setShowMessage] = useState(false);
+  const [message, setMessage] = useState("");
+  const [isSuccessFull, setIsSuccessFull] = useState(false);
 
   console.log("Deaddline", daoDetails.depositDeadline);
   const startingTimeInNum = new Date(+daoDetails.depositDeadline * 1000);
 
-  const updateOwnerFee = async () => {
+  const updateOwnerFee = async (ownerFee) => {
+    setLoading(true);
     try {
       const factoryContract = new SmartContract(
         FactoryContractABI,
@@ -46,14 +59,29 @@ const AdditionalSettings = ({
         undefined,
       );
 
-      const res = await factoryContract.updateOwnerFee(20, daoAddress);
+      const res = await factoryContract.updateOwnerFee(
+        +ownerFee * 100,
+        daoAddress,
+      );
       console.log(res);
+      
+      setLoading(false);
+      showMessageHandler();
+      setIsSuccessFull(true);
+      setMessage("Owner Fee updated Successfully");
     } catch (error) {
-      console.log(error);
+      console.log(error.code);
+      showMessageHandler();
+      setLoading(false);
+      setIsSuccessFull(false);
+      if (error.code === 4001) {
+        setMessage("Metamask Signature denied");
+      } else setMessage("Owner Fee updating failed");
     }
   };
 
-  const updateDepositTime = async () => {
+  const updateDepositTime = async (depositTime) => {
+    setLoading(true);
     try {
       const factoryContract = new SmartContract(
         FactoryContractABI,
@@ -63,11 +91,34 @@ const AdditionalSettings = ({
         undefined,
       );
 
-      const res = factoryContract.updateDepositTime(20034034, daoAddress);
+      const res = factoryContract.updateDepositTime(+depositTime, daoAddress);
       console.log(res);
+      setLoading(false);
+      setIsSuccessFull(true);
+      setMessage("Deposit Time updated Successfully");
     } catch (error) {
-      console.log(error);
+      setLoading(false);
+      console.log(error.code);
+      setIsSuccessFull(false);
+      if (error.code === 4001) {
+        setMessage("Metamask Signature denied");
+      } else setMessage("Deposit Time updating failed");
     }
+  };
+
+  const showUpdateDepositTimeModalHandler = () => {
+    setShowDepositTimeModal(true);
+  };
+
+  const showUpdateOwnerFeesModalHandler = () => {
+    setShowOwnerFeesModal(true);
+  };
+
+  const showMessageHandler = () => {
+    setShowMessage(true);
+    setTimeout(() => {
+      setShowMessage(false);
+    }, 4000);
   };
 
   return (
@@ -75,54 +126,6 @@ const AdditionalSettings = ({
       <Typography className={classes.heading}>Additional Details</Typography>
 
       <Stack spacing={3} ml={3}>
-        {tokenType === "erc721" ? (
-          <Grid container>
-            <Grid item>
-              <Typography variant="settingText">
-                NFT contract address
-              </Typography>
-            </Grid>
-            <Grid
-              container
-              sx={{ display: "flex", justifyContent: "flex-end" }}
-              spacing={1}
-            >
-              <Grid item>
-                <IconButton
-                  color="primary"
-                  onClick={() => {
-                    navigator.clipboard.writeText(nftContractAddress);
-                  }}
-                >
-                  <ContentCopyIcon className={classes.iconColor} />
-                </IconButton>
-              </Grid>
-              <Grid item>
-                <IconButton
-                  color="primary"
-                  onClick={() => {
-                    window.open(
-                      `https://goerli.etherscan.io/address/${nftContractAddress}`,
-                    );
-                  }}
-                >
-                  <OpenInNewIcon className={classes.iconColor} />
-                </IconButton>
-              </Grid>
-              <Grid item mr={4}>
-                <Typography variant="p" className={classes.valuesStyle}>
-                  {daoAddress !== null ? (
-                    daoAddress?.substring(0, 6) +
-                    "......" +
-                    daoAddress?.substring(daoAddress.length - 4)
-                  ) : (
-                    <Skeleton variant="rectangular" width={100} height={25} />
-                  )}
-                </Typography>
-              </Grid>
-            </Grid>
-          </Grid>
-        ) : null}
         <Divider />
         <Grid container>
           <Grid item>
@@ -191,7 +194,10 @@ const AdditionalSettings = ({
                 <Typography className={classes.text} mr={1}>
                   {daoDetails.ownerFee}
                 </Typography>
-                <Link className={classes.link} onClick={updateOwnerFee}>
+                <Link
+                  className={classes.link}
+                  onClick={showUpdateOwnerFeesModalHandler}
+                >
                   (Change)
                 </Link>
               </Grid>
@@ -220,31 +226,70 @@ const AdditionalSettings = ({
                   />
                 </Typography>
 
-                <Link className={classes.link} onClick={updateOwnerFee}>
+                <Link
+                  className={classes.link}
+                  onClick={showUpdateDepositTimeModalHandler}
+                >
                   (Change)
                 </Link>
-
-                {/* <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <DateTimePicker
-                    sx={{
-                      width: "65px",
-                      background: "inherit",
-                      paddingRight: "-40px",
-                      // paddingLeft: "40px",
-                    }}
-                    value={depositTime}
-                    minDateTime={dayjs(Date.now())}
-                    onChange={(value) => {
-                      setDepositTime(value);
-                    }}
-                  />
-                </LocalizationProvider> */}
-                {/* <input type={"datetime-local"} /> */}
               </Grid>
             </Grid>
           </Grid>
         </Grid>
       </Stack>
+
+      <Backdrop sx={{ color: "#fff", zIndex: 10000 }} open={loading}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
+
+      {showOwnerFeesModal && (
+        <DepositOwnerFee
+          onClose={() => {
+            setShowOwnerFeesModal(false);
+          }}
+          updateOwnerFeesHandler={updateOwnerFee}
+          loading={loading}
+        />
+      )}
+      {showDepositTimeModal && (
+        <DepositDeadline
+          onClose={() => {
+            setShowDepositTimeModal(false);
+          }}
+          updateDepositTimeHandler={updateDepositTime}
+          loading={loading}
+        />
+      )}
+
+      {showMessage && isSuccessFull && (
+        <Alert
+          severity="success"
+          sx={{
+            width: "300px",
+            position: "fixed",
+            bottom: "30px",
+            right: "20px",
+            borderRadius: "8px",
+          }}
+        >
+          {message}
+        </Alert>
+      )}
+
+      {showMessage && !isSuccessFull && (
+        <Alert
+          severity="error"
+          sx={{
+            width: "300px",
+            position: "fixed",
+            bottom: "30px",
+            right: "20px",
+            borderRadius: "8px",
+          }}
+        >
+          {message}
+        </Alert>
+      )}
     </div>
   );
 };

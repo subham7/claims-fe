@@ -79,6 +79,8 @@ const Test = () => {
         if (daoAddress) {
           const data = await subgraphQuery(QUERY_ALL_MEMBERS(daoAddress));
           setMembersData(data?.users);
+
+          console.log("Memebersss", data.users);
         }
       };
       fetchData();

@@ -20,7 +20,10 @@ import Web3 from "web3";
 import { useConnectWallet } from "@web3-onboard/react";
 import { NEW_FACTORY_ADDRESS } from "../../api";
 import { useRouter } from "next/router";
-import { convertToWeiGovernance } from "../../utils/globalFunctions";
+import {
+  convertFromWeiGovernance,
+  convertToWeiGovernance,
+} from "../../utils/globalFunctions";
 
 const TokenGating = () => {
   const [showTokenGatingModal, setShowTokenGatingModal] = useState(false);
@@ -28,14 +31,16 @@ const TokenGating = () => {
   const [fetchedDetails, setFetchedDetails] = useState({
     tokenA: "",
     tokenB: "",
+    tokenAAmt: 0,
+    tokenBAmt: 0,
     operator: 0,
     comparator: 0,
   });
   const [displayTokenDetails, setDisplayTokenDetails] = useState({
     tokenASymbol: "",
     tokenBSymbol: "",
-    tokenAAmt: 0,
-    tokenBAmt: 0,
+    tokenADecimal: 0,
+    tokenBDecimal: 0,
   });
   const [tokensList, setTokensList] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -78,9 +83,13 @@ const TokenGating = () => {
 
       console.log(tokensList[0].tokenAddress);
 
+      console.log("Checked", checked ? 1 : 0);
+
       const res = await factoryContract.setupTokenGating(
         tokensList[0].tokenAddress,
-        tokensList[1].tokenAddress,
+        tokensList[1]?.tokenAddress
+          ? tokensList[1]?.tokenAddress
+          : tokensList[0]?.tokenAddress,
         checked ? 1 : 0, // Operator for token checks (0 for AND and 1 for OR)
         0, // 0 for Greater, 1 for Below and 2 for Equal,
         [
@@ -89,8 +98,12 @@ const TokenGating = () => {
             tokensList[0].tokenDecimal,
           ),
           convertToWeiGovernance(
-            tokensList[1].tokenAmount,
-            tokensList[1].tokenDecimal,
+            tokensList[1]?.tokenAmount
+              ? tokensList[1]?.tokenAmount
+              : tokensList[0]?.tokenAmount,
+            tokensList[1]?.tokenDecimal
+              ? tokensList[1]?.tokenDecimal
+              : tokensList[0].tokenDecimal,
           ),
         ], // Minimum user balance of tokenA & tokenB
         Web3.utils.toChecksumAddress(daoAddress),
@@ -129,19 +142,20 @@ const TokenGating = () => {
 
       const tokenGatingDetails = await factoryContract.getTokenGatingDetails(
         daoAddress,
-        0,
       );
-      console.log("TOken Gating details", tokenGatingDetails);
+      console.log("TOken Gating details", tokenGatingDetails[0]);
       setFetchedDetails({
-        tokenA: tokenGatingDetails?.tokenA,
-        tokenB: tokenGatingDetails?.tokenB,
-        operator: tokenGatingDetails?.operator,
-        comparator: tokenGatingDetails?.comparator,
+        tokenA: tokenGatingDetails[0]?.tokenA,
+        tokenB: tokenGatingDetails[0]?.tokenB,
+        tokenAAmt: tokenGatingDetails[0]?.value[0],
+        tokenBAmt: tokenGatingDetails[0]?.value[1],
+        operator: tokenGatingDetails[0]?.operator,
+        comparator: tokenGatingDetails[0]?.comparator,
       });
 
       const tokenAContract = new SmartContract(
         ERC20ABI,
-        tokenGatingDetails.tokenA,
+        tokenGatingDetails[0].tokenA,
         walletAddress,
         undefined,
         undefined,
@@ -149,7 +163,7 @@ const TokenGating = () => {
 
       const tokenBContract = new SmartContract(
         ERC20ABI,
-        tokenGatingDetails.tokenB,
+        tokenGatingDetails[0].tokenB,
         walletAddress,
         undefined,
         undefined,
@@ -157,10 +171,14 @@ const TokenGating = () => {
 
       const tokenASymbol = await tokenAContract.symbol();
       const tokenBSymbol = await tokenBContract.symbol();
+      const tokenADecimal = await tokenAContract.decimals();
+      const tokenBDecimal = await tokenBContract.decimals();
 
       setDisplayTokenDetails({
         tokenASymbol: tokenASymbol,
         tokenBSymbol: tokenBSymbol,
+        tokenADecimal: tokenADecimal,
+        tokenBDecimal: tokenBDecimal,
       });
       setLoading(false);
     } catch (error) {
@@ -186,7 +204,7 @@ const TokenGating = () => {
 
       <div className={classes.conditions}>
         <div className={classes.tokensList}>
-          {!fetchedDetails.tokenA.length || tokensList.length ? (
+          {!fetchedDetails?.tokenA?.length || tokensList.length ? (
             <>
               {tokensList?.length ? (
                 tokensList?.map((token) => (
@@ -206,14 +224,39 @@ const TokenGating = () => {
             </>
           ) : (
             <>
-              <SingleToken
-                tokenAddress={fetchedDetails.tokenA}
-                tokenSymbol={displayTokenDetails.tokenASymbol}
-              />
-              <SingleToken
-                tokenAddress={fetchedDetails.tokenB}
-                tokenSymbol={displayTokenDetails.tokenBSymbol}
-              />
+              {fetchedDetails.tokenA === fetchedDetails.tokenB &&
+              fetchedDetails.tokenAAmt === fetchedDetails.tokenBAmt ? (
+                <>
+                  {" "}
+                  <SingleToken
+                    tokenAddress={fetchedDetails.tokenA}
+                    tokenSymbol={displayTokenDetails.tokenASymbol}
+                    tokenAmount={convertFromWeiGovernance(
+                      fetchedDetails.tokenAAmt,
+                      displayTokenDetails.tokenADecimal,
+                    )}
+                  />
+                </>
+              ) : (
+                <>
+                  <SingleToken
+                    tokenAddress={fetchedDetails.tokenA}
+                    tokenSymbol={displayTokenDetails.tokenASymbol}
+                    tokenAmount={convertFromWeiGovernance(
+                      fetchedDetails.tokenAAmt,
+                      displayTokenDetails.tokenADecimal,
+                    )}
+                  />
+                  <SingleToken
+                    tokenAddress={fetchedDetails.tokenB}
+                    tokenSymbol={displayTokenDetails.tokenBSymbol}
+                    tokenAmount={convertFromWeiGovernance(
+                      fetchedDetails.tokenBAmt,
+                      displayTokenDetails.tokenBDecimal,
+                    )}
+                  />
+                </>
+              )}
             </>
           )}
         </div>
@@ -232,8 +275,12 @@ const TokenGating = () => {
           <p>Match</p>
           <Switch
             checked={
-              fetchedDetails && !tokensList.length
-                ? fetchedDetails.operator
+              fetchedDetails &&
+              !tokensList.length &&
+              fetchedDetails.operator == 0
+                ? false
+                : fetchedDetails.operator == 1
+                ? true
                 : checked
             }
             onChange={(e) => {

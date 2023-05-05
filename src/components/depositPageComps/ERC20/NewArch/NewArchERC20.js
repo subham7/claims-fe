@@ -169,7 +169,7 @@ const NewArchERC20 = ({
         const deposit = await factoryContract.buyGovernanceTokenERC20DAO(
           walletAddress,
           erc20DaoAddress,
-          daoDetails.depositTokenAddress,
+          // daoDetails.depositTokenAddress,
           convertToWeiGovernance(
             (inputValue / +daoDetails.pricePerToken).toString(),
             18,
@@ -211,7 +211,7 @@ const NewArchERC20 = ({
                     <Grid container spacing={2}>
                       <Grid item mt={3} ml={3}>
                         {daoDetails.daoImage && (
-                          <Image
+                          <img
                             src={daoDetails?.daoImage}
                             alt="club-image"
                             width={120}
@@ -274,23 +274,24 @@ const NewArchERC20 = ({
                     </div>
                   </Grid>
                 </Grid>
-                {/* <Grid>
-                  {tokenGatingAddress !==
-                    "0x0000000000000000000000000000000000000000" && (
+
+                <Grid>
+                  {isTokenGated && isEligibleForTokenGating ? (
                     <>
-                      {userTokenBalance < tokenGatingAmount ||
-                      isNaN(userTokenBalance) ? (
-                        <Typography sx={{ color: "red" }}>
-                          This club is Token Gated. You don&apos;t qualify
-                        </Typography>
-                      ) : (
-                        <Typography sx={{ color: "#3B7AFD" }}>
-                          This club is Token Gated. You qualify
-                        </Typography>
-                      )}
+                      <Typography sx={{ color: "#3B7AFD", marginLeft: "30px" }}>
+                        This club is token gated. You qualify
+                      </Typography>
                     </>
+                  ) : isTokenGated && !isEligibleForTokenGating ? (
+                    <>
+                      <Typography sx={{ color: "red", marginLeft: "30px" }}>
+                        This club is token gated. You don&apos;t qualify
+                      </Typography>
+                    </>
+                  ) : (
+                    ""
                   )}
-                </Grid> */}
+                </Grid>
 
                 <Divider variant="middle" />
                 <Grid container spacing={7}>
@@ -674,7 +675,11 @@ const NewArchERC20 = ({
                                 type="number"
                                 name="tokenInput"
                                 id="tokenInput"
-                                disabled={remainingDays > 0 ? false : true}
+                                disabled={
+                                  remainingDays > 0 && isEligibleForTokenGating
+                                    ? false
+                                    : true
+                                }
                                 inputProps={{
                                   style: {
                                     fontSize: "2em",
@@ -747,6 +752,11 @@ const NewArchERC20 = ({
                         variant="primary"
                         size="large"
                         onClick={formik.handleSubmit}
+                        disabled={
+                          remainingDays > 0 && isEligibleForTokenGating
+                            ? false
+                            : true
+                        }
                         // disabled={
                         //   (closingDays > 0 ? false : true) ||
                         //   (depositAmount <= 0 ||

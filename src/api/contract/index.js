@@ -128,7 +128,6 @@ export class SmartContract {
   async buyGovernanceTokenERC20DAO(
     userAddress,
     daoAddress,
-    // depositTokenAddress,
     numOfTokens,
     merkleProof,
   ) {
@@ -136,7 +135,6 @@ export class SmartContract {
       .buyGovernanceTokenERC20DAO(
         userAddress,
         daoAddress,
-        // depositTokenAddress,
         numOfTokens,
         merkleProof,
       )
@@ -148,7 +146,6 @@ export class SmartContract {
   async buyGovernanceTokenERC721DAO(
     userAddress,
     daoAddress,
-    depositTokenAddress,
     tokenUriOfNFT,
     numOfTokens,
     merkleProof,
@@ -157,7 +154,6 @@ export class SmartContract {
       .buyGovernanceTokenERC721DAO(
         userAddress,
         daoAddress,
-        depositTokenAddress,
         tokenUriOfNFT,
         numOfTokens,
         merkleProof,
@@ -380,6 +376,7 @@ export class SmartContract {
       from: this.walletAddress,
     });
   }
+
 
   async updateProposalAndExecution(
     daoAddress = "",
@@ -1084,8 +1081,8 @@ export class SmartContract {
       });
   }
 
-  async getTokenGatingDetails(daoAddress, amount) {
-    return this.contract.methods.tokenGatingDetails(daoAddress, amount).call({
+  async getTokenGatingDetails(daoAddress) {
+    return this.contract.methods.getTokenGatingDetails(daoAddress).call({
       from: this.walletAddress,
     });
   }

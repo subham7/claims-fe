@@ -54,7 +54,7 @@ const SettingsInfo = ({
 }) => {
   const classes = SettingsInfoStlyes();
 
-  console.log(tokenType);
+  console.log("Club token minted", daoDetails.clubTokensMinted);
 
   return (
     <>
@@ -314,7 +314,7 @@ const SettingsInfo = ({
                     </Grid>
                   </Grid>
                   <Grid item md={3}>
-                    {/* {tokenType === "erc721" ? null : (
+                    {tokenType === "erc721" ? null : (
                       <Grid container direction="column">
                         <Grid item>
                           <Typography variant="settingText">
@@ -326,29 +326,23 @@ const SettingsInfo = ({
                             variant="p"
                             className={classes.valuesStyle}
                           >
-                            {balanceOfToken !== null &&
+                            {daoDetails.balanceOfClubToken !== null &&
                             daoDetails.clubTokensMinted !== null
-                              ? isNaN(
-                                  parseInt(
-                                    calculateUserSharePercentage(
-                                      balanceOfToken,
-                                      clubTokenMinted,
-                                    ),
-                                  ),
-                                )
-                                ? 0
-                                : parseInt(
-                                    calculateUserSharePercentage(
-                                      // daoDetails.,
+                              ? Number(
+                                  (daoDetails.balanceOfClubToken /
+                                    convertFromWeiGovernance(
                                       daoDetails.clubTokensMinted,
-                                    ),
-                                  )
-                              : 0}
-                            % ({balanceOfToken} {daoDetails.daoSymbol})
+                                      18,
+                                    )) *
+                                    100,
+                                ).toFixed(2)
+                              : ""}
+                            % <br />({daoDetails.balanceOfClubToken}{" "}
+                            {daoDetails.daoSymbol})
                           </Typography>
                         </Grid>
                       </Grid>
-                    )} */}
+                    )}
                   </Grid>
                   {daoDetails.isGovernance ? (
                     <>
@@ -374,6 +368,7 @@ const SettingsInfo = ({
                                   height={25}
                                 />
                               )}
+                              %
                             </Typography>
                           </Grid>
                         </Grid>
@@ -399,6 +394,7 @@ const SettingsInfo = ({
                                   height={25}
                                 />
                               )}
+                              %
                             </Typography>
                           </Grid>
                         </Grid>
@@ -423,8 +419,8 @@ const SettingsInfo = ({
                               variant="p"
                               className={classes.valuesStyle}
                             >
-                              {totalNftMinted !== null ? (
-                                totalNftMinted
+                              {daoDetails.nftMinted !== null ? (
+                                daoDetails.nftMinted
                               ) : (
                                 <Skeleton
                                   variant="rectangular"
@@ -464,7 +460,7 @@ const SettingsInfo = ({
                                 variant="p"
                                 className={classes.valuesStyle}
                               >
-                                {/* {daoDetails ? (
+                                {daoDetails ? (
                                   // convertAmountToWei(totalERC20Supply?.toString()) +
                                   // (" $" + tokenDetails[1])
                                   // convertAmountToWei(String(totalERC20Supply))
@@ -477,7 +473,7 @@ const SettingsInfo = ({
                                     width={100}
                                     height={25}
                                   />
-                                )}{" "} */}
+                                )}{" "}
                               </Typography>
                             )}
                           </Stack>
@@ -537,7 +533,7 @@ const SettingsInfo = ({
                                 variant="p"
                                 className={classes.valuesStyle}
                               >
-                                {/* {governorDataFetched ? (
+                                {governorDataFetched ? (
                                   // convertAmountToWei(totalERC20Supply?.toString()) +
                                   // (" $" + tokenDetails[1])
                                   // convertAmountToWei(String(totalERC20Supply))
@@ -549,8 +545,8 @@ const SettingsInfo = ({
                                     variant="rectangular"
                                     width={100}
                                     height={25}
-                                  /> */}
-                                {/* )}{" "} */}
+                                  />
+                                )}{" "}
                               </Typography>
                             )}
                           </Stack>

@@ -39,20 +39,6 @@ const Join = () => {
     maxTokensPerUser: 0,
     nftURI: "",
   });
-  const [fetchedDetails, setFetchedDetails] = useState({
-    tokenA: "",
-    tokenB: "",
-    tokenAAmt: 0,
-    tokenBAmt: 0,
-    operator: 0,
-    comparator: 0,
-  });
-  const [displayTokenDetails, setDisplayTokenDetails] = useState({
-    tokenASymbol: "",
-    tokenBSymbol: "",
-    tokenAAmt: 0,
-    tokenBAmt: 0,
-  });
   const [tokenType, setTokenType] = useState("");
   const [isEligibleForTokenGating, setIsEligibleForTokenGating] =
     useState(false);
@@ -222,26 +208,14 @@ const Join = () => {
         undefined,
       );
 
-      console.log("Factory Contract", factoryContract);
-
       const tokenGatingDetails = await factoryContract.getTokenGatingDetails(
         daoAddress,
-        0,
       );
       console.log("TOken Gating details", tokenGatingDetails);
-      if (tokenGatingDetails) setIsTokenGated(true);
-      setFetchedDetails({
-        tokenA: tokenGatingDetails?.tokenA,
-        tokenB: tokenGatingDetails?.tokenB,
-        tokenAAmt: tokenGatingDetails?.tokenAAmt,
-        tokenBAmt: tokenGatingDetails?.tokenBAmt,
-        operator: tokenGatingDetails?.operator,
-        comparator: tokenGatingDetails?.comparator,
-      });
-
+      if (tokenGatingDetails[0].length) setIsTokenGated(true);
       const tokenAContract = new SmartContract(
         ERC20ABI,
-        tokenGatingDetails.tokenA,
+        tokenGatingDetails[0].tokenA,
         walletAddress,
         undefined,
         undefined,
@@ -249,31 +223,39 @@ const Join = () => {
 
       const tokenBContract = new SmartContract(
         ERC20ABI,
-        tokenGatingDetails.tokenB,
+        tokenGatingDetails[0].tokenB,
         walletAddress,
         undefined,
         undefined,
       );
-
       const balanceOfTokenAInUserWallet = await tokenAContract.balanceOf();
       const balanceOfTokenBInUserWallet = await tokenBContract.balanceOf();
 
-      if (tokenGatingDetails.operator === 0) {
+      console.log(
+        "Balance of token A",
+        +balanceOfTokenAInUserWallet > +tokenGatingDetails[0].value[0],
+      );
+
+      if (tokenGatingDetails[0].operator == 0) {
         if (
-          balanceOfTokenAInUserWallet >= tokenGatingDetails.tokenAAmt &&
-          balanceOfTokenBInUserWallet >= tokenGatingDetails.tokenBAmt
+          +balanceOfTokenAInUserWallet >= +tokenGatingDetails[0]?.value[0] &&
+          +balanceOfTokenBInUserWallet >= +tokenGatingDetails[0]?.value[1]
         ) {
+          console.log("You are eligible (AND)");
           setIsEligibleForTokenGating(true);
         } else {
+          console.log("You are not eligible (AND)");
           setIsEligibleForTokenGating(false);
         }
-      } else if (tokenGatingDetails.operator === 1) {
+      } else if (tokenGatingDetails[0].operator == 1) {
         if (
-          balanceOfTokenAInUserWallet >= tokenGatingDetails.tokenAAmt ||
-          balanceOfTokenBInUserWallet >= tokenGatingDetails.tokenBAmt
+          +balanceOfTokenAInUserWallet >= +tokenGatingDetails[0]?.value[0] ||
+          +balanceOfTokenBInUserWallet >= +tokenGatingDetails[0]?.value[1]
         ) {
+          console.log("You are eligible (OR)");
           setIsEligibleForTokenGating(true);
         } else {
+          console.log("You are not eligible (OR)");
           setIsEligibleForTokenGating(false);
         }
       }
