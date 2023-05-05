@@ -11,6 +11,11 @@ import {
   Typography,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
+import Safe from "@safe-global/protocol-kit";
+import SafeServiceClient from "@safe-global/api-kit";
+import Web3Adapter from "@safe-global/protocol-kit";
+import { useConnectWallet } from "@web3-onboard/react";
+import Image from "next/image";
 import { useRouter } from "next/router";
 import {
   castVote,
@@ -24,22 +29,17 @@ import ClubFetch from "../../../../src/utils/clubFetch";
 import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import CloseIcon from "@mui/icons-material/Close";
 import DoneIcon from "@mui/icons-material/Done";
-import Image from "next/image";
 import tickerIcon from "../../../../public/assets/icons/ticker_icon.svg";
 import { calculateDays } from "../../../../src/utils/globalFunctions";
 import actionIcon from "../../../../public/assets/icons/action_icon.svg";
 import surveyIcon from "../../../../public/assets/icons/survey_icon.svg";
 import ReactHtmlParser from "react-html-parser";
 import Web3 from "web3";
-import { useConnectWallet } from "@web3-onboard/react";
 import Erc721Dao from "../../../../src/abis/newArch/erc721Dao.json";
 import Erc20Dao from "../../../../src/abis/newArch/erc20Dao.json";
 import { SmartContract } from "../../../../src/api/contract";
 import { getAssets } from "../../../../src/api/assets";
 import { Interface, ethers } from "ethers";
-import Web3Adapter from "@safe-global/safe-web3-lib";
-import SafeServiceClient from "@safe-global/safe-service-client";
-import Safe from "@safe-global/safe-core-sdk";
 
 const useStyles = makeStyles({
   clubAssets: {
@@ -280,7 +280,7 @@ const ProposalDetail = () => {
       ) {
         setTxHash("");
       } else {
-        txHash = result.data[0].txHash;
+        // txHash = result.data[0].txHash;
         setTxHash(result.data[0].txHash);
         const safeService = await getSafeService();
         const tx = await safeService.getTransaction(result.data[0].txHash);

@@ -1,25 +1,38 @@
+import jazzicon from "@metamask/jazzicon";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+import SearchIcon from "@mui/icons-material/Search";
 import {
+  Avatar,
   Backdrop,
+  Box,
+  Button,
+  Card,
   CircularProgress,
   Grid,
   IconButton,
-  Paper,
+  ListItemButton,
+  Stack,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
+  TextField,
   Typography,
 } from "@mui/material";
+import Paper from "@mui/material/Paper";
 import { makeStyles } from "@mui/styles";
 import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
-import { QUERY_ALL_MEMBERS } from "../../../src/api/graphql/queries";
+import { React, useEffect, useRef, useState } from "react";
+import { useSelector } from "react-redux";
+
+import ImplementationContract from "../../../src/abis/implementationABI.json";
+import { SmartContract } from "../../../src/api/contract";
+import { getMembersDetails } from "../../../src/api/user";
 import Layout1 from "../../../src/components/layouts/layout1";
-import { convertFromWeiGovernance } from "../../../src/utils/globalFunctions";
-import { subgraphQuery } from "../../../src/utils/subgraphs";
+import BasicTable from "../../../src/components/table";
+import ClubFetch from "../../../src/utils/clubFetch";
 
 const useStyles = makeStyles({
   searchField: {
@@ -50,36 +63,83 @@ const useStyles = makeStyles({
   },
 });
 
-const Test = () => {
-  const [membersData, setMembersData] = useState([]);
-  const [loading, setLoading] = useState(false);
-
-  const header = ["Name", "Deposit amount", "Club tokens", "Joined on"];
+const Members = (props) => {
   const router = useRouter();
+  const { clubId } = router.query;
   const classes = useStyles();
-  const { clubId: daoAddress } = router.query;
+  const clubID = clubId;
+  const header = ["Name", "Deposit amount", "Club tokens", "Joined on"];
+  const [members, setMembers] = useState([]);
+  const [fetched, setFetched] = useState(false);
+  const [loaderOpen, setLoaderOpen] = useState(false);
+  const [clubTokenMinted, setClubTokenMinted] = useState(null);
+  const daoAddress = useSelector((state) => {
+    return state.create.daoAddress;
+  });
+  const USDC_CONTRACT_ADDRESS = useSelector((state) => {
+    return state.gnosis.usdcContractAddress;
+  });
+  const GNOSIS_TRANSACTION_URL = useSelector((state) => {
+    return state.gnosis.transactionUrl;
+  });
 
-  const handleAddressClick = (event, address) => {
-    event.preventDefault();
-    window.open(`https://goerli.etherscan.io/address/${address}`);
+  const avatarRef = useRef();
+
+  const generateJazzIcon = (account) => {
+    if (account) {
+      const addr = account.slice(2, 10);
+      const seed = parseInt(addr, 16);
+      const icon = jazzicon(35, seed);
+      return icon;
+    }
+  };
+  const loadSmartContractData = async () => {
+    try {
+      const contract = new SmartContract(
+        ImplementationContract,
+        daoAddress,
+        undefined,
+        USDC_CONTRACT_ADDRESS,
+        GNOSIS_TRANSACTION_URL,
+      );
+
+      let getTokenDetails = await contract.tokenDetails();
+
+      setClubTokenMinted(getTokenDetails[1]);
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   useEffect(() => {
-    try {
-      setLoading(true);
-      const fetchData = async () => {
-        if (daoAddress) {
-          const data = await subgraphQuery(QUERY_ALL_MEMBERS(daoAddress));
-          setMembersData(data?.users);
-        }
-      };
-      fetchData();
-      setLoading(false);
-    } catch (error) {
-      console.log(error);
-      setLoading(false);
+    if (daoAddress && USDC_CONTRACT_ADDRESS && GNOSIS_TRANSACTION_URL) {
+      loadSmartContractData();
     }
-  }, [daoAddress]);
+  }, [daoAddress, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL]);
+
+  const fetchMembers = () => {
+    const membersData = getMembersDetails(clubID);
+    membersData.then((result) => {
+      if (result.status != 200) {
+        setFetched(false);
+      } else {
+        setMembers(result.data);
+        console.log("ALL MEMBERS", result.data);
+        setFetched(true);
+        setLoaderOpen(false);
+      }
+    });
+  };
+
+  useEffect(() => {
+    setLoaderOpen(true);
+    fetchMembers();
+  }, [clubID, fetched]);
+
+  const handleAddressClick = (event, address) => {
+    event.preventDefault();
+    window.open(`https://rinkeby.etherscan.io/address/${address}`);
+  };
 
   return (
     <>
@@ -89,8 +149,29 @@ const Test = () => {
             <Grid item md={9}>
               <Grid container mb={10}>
                 <Grid item>
-                  <Typography variant="title">Member</Typography>
+                  <Typography variant="title">Members</Typography>
                 </Grid>
+                {/* <Grid
+                  item
+                  xs
+                  sx={{ display: "flex", justifyContent: "flex-end" }}
+                >
+                  <TextField
+                    className={classes.searchField}
+                    placeholder="Search members"
+                    InputProps={{
+                      endAdornment: (
+                        <IconButton
+                          type="submit"
+                          sx={{ p: "10px" }}
+                          aria-label="search"
+                        >
+                          <SearchIcon />
+                        </IconButton>
+                      ),
+                    }}
+                  />
+                </Grid> */}
               </Grid>
 
               <TableContainer component={Paper}>
@@ -111,13 +192,14 @@ const Test = () => {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {membersData.map((data, key) => (
+                    {members.map((data, key) => (
                       <TableRow
                         key={key}
                         sx={{
                           "&:last-child td, &:last-child th": { border: 0 },
                         }}
                       >
+                        {/* <TableCell align="left" className={classes.tablecontent}>{generateJazzIcon(data.userAddress)</TableCell> */}
                         <TableCell align="left" variant="tableBody">
                           <Grid
                             container
@@ -155,19 +237,14 @@ const Test = () => {
                           </Grid>
                         </TableCell>
                         <TableCell align="left" variant="tableBody">
-                          {Number(
-                            convertFromWeiGovernance(data.depositAmount, 6),
-                          ).toFixed(0)}{" "}
-                          USDC
+                          {data.clubs[0].balance} USDC
                         </TableCell>
                         <TableCell align="left" variant="tableBody">
-                          {Number(
-                            convertFromWeiGovernance(data.gtAmount, 18),
-                          ).toFixed(2)}
+                          {data.clubs[0].tokenBalance} {clubTokenMinted}
                         </TableCell>
                         <TableCell align="left" variant="tableBody">
                           {new Date(
-                            +data.timeStamp * 1000,
+                            data.clubs[0].joiningDate,
                           ).toLocaleDateString()}
                         </TableCell>
                       </TableRow>
@@ -178,10 +255,9 @@ const Test = () => {
             </Grid>
           </Grid>
         </div>
-
         <Backdrop
           sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-          open={loading}
+          open={loaderOpen}
         >
           <CircularProgress color="inherit" />
         </Backdrop>
@@ -190,4 +266,4 @@ const Test = () => {
   );
 };
 
-export default Test;
+export default ClubFetch(Members);

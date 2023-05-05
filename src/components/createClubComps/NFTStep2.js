@@ -228,19 +228,21 @@ export default function NFTStep2(props) {
                 height: "400px",
                 borderRadius: "10px",
                 backgroundColor: "#19274B",
+                position: "relative",
               }}
               mr={3}
             >
-              {console.log(props.formik.values.nftImage)}
+              {/* {console.log(props.formik.values.nftImage)} */}
               <Image
                 src={imageUrl || empty_nft}
                 alt={""}
-                className={classes.emptyImage}
-                // className={imageUrl ? classes.nftImage : classes.emptyImage}
-                // layout="fill"
-                height="400px"
-                width="400px"
-                sx={{ borderRadius: "10px" }}
+                // className={classes.emptyImage}
+                width={400}
+                height={400}
+                // fill
+                // sizes="100vw"
+                style={{ borderRadius: "10px" }}
+                // sx={{  width: "100%", height: "100%" }}
               />
             </Grid>
           </Grid>

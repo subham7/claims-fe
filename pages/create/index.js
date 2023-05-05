@@ -24,6 +24,7 @@ import { setUploadNFTLoading } from "../../src/redux/reducers/gnosis";
 import { NFTStorage } from "nft.storage";
 import { convertAmountToWei } from "../../src/utils/globalFunctions";
 import { convertToWeiGovernance } from "../../src/utils/globalFunctions";
+import { NEW_FACTORY_ADDRESS } from "../../src/api";
 
 const Create = () => {
   const steps = ["Add basic info", "Set token rules", "Governance"];
@@ -92,8 +93,8 @@ const Create = () => {
 
   const formikStep1 = useFormik({
     initialValues: {
-      clubName: "",
-      clubSymbol: "",
+      clubName: "g20",
+      clubSymbol: "g20",
       clubTokenType: tokenType[0],
     },
     validationSchema: step1ValidationSchema,
@@ -105,10 +106,10 @@ const Create = () => {
   const formikERC20Step2 = useFormik({
     initialValues: {
       depositClose: dayjs(Date.now() + 300000),
-      minDepositPerUser: "",
-      maxDepositPerUser: "",
-      totalRaiseAmount: "",
-      pricePerToken: "",
+      minDepositPerUser: "100",
+      maxDepositPerUser: "1000",
+      totalRaiseAmount: "10000",
+      pricePerToken: "10",
     },
     validationSchema: ERC20Step2ValidationSchema,
     onSubmit: (values) => {
@@ -202,7 +203,7 @@ const Create = () => {
               GNOSIS_TRANSACTION_URL,
               values.addressList,
               formikStep1.values.clubTokenType,
-              "0xe0723c6573D54f6af1c621238fbba42E7F8Ee643",
+              NEW_FACTORY_ADDRESS,
               metadata.data.image.pathname,
               metadata.url,
             );
@@ -254,7 +255,7 @@ const Create = () => {
               GNOSIS_TRANSACTION_URL,
               values.addressList,
               formikStep1.values.clubTokenType,
-              "0xe0723c6573D54f6af1c621238fbba42E7F8Ee643",
+              NEW_FACTORY_ADDRESS,
             );
           })
           .catch((error) => {
