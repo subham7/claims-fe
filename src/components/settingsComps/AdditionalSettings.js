@@ -26,6 +26,8 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import DepositOwnerFee from "./modals/DepositOwnerFee";
 import DepositDeadline from "./modals/DepositDeadline";
+import ClubFetch from "../../utils/clubFetch";
+import { useSelector } from "react-redux";
 
 const AdditionalSettings = ({
   tokenType,
@@ -46,8 +48,16 @@ const AdditionalSettings = ({
   const [message, setMessage] = useState("");
   const [isSuccessFull, setIsSuccessFull] = useState(false);
 
-  console.log("Deaddline", daoDetails.depositDeadline);
-  const startingTimeInNum = new Date(+daoDetails.depositDeadline * 1000);
+  console.log("Deaddline", daoDetails);
+  const startingTimeInNum = new Date(+daoDetails?.depositDeadline * 1000);
+
+  const GNOSIS_TRANSACTION_URL = useSelector((state) => {
+    return state.gnosis.transactionUrl;
+  });
+
+  const USDC_CONTRACT_ADDRESS = useSelector((state) => {
+    return state.gnosis.usdcContractAddress;
+  });
 
   const updateOwnerFee = async (ownerFee) => {
     setLoading(true);
@@ -56,8 +66,8 @@ const AdditionalSettings = ({
         FactoryContractABI,
         NEW_FACTORY_ADDRESS,
         walletAddress,
-        undefined,
-        undefined,
+        USDC_CONTRACT_ADDRESS,
+        GNOSIS_TRANSACTION_URL,
       );
 
       const res = await factoryContract.updateOwnerFee(
@@ -93,8 +103,8 @@ const AdditionalSettings = ({
         FactoryContractABI,
         NEW_FACTORY_ADDRESS,
         walletAddress,
-        undefined,
-        undefined,
+        USDC_CONTRACT_ADDRESS,
+        GNOSIS_TRANSACTION_URL,
       );
 
       const res = factoryContract.updateDepositTime(+depositTime, daoAddress);

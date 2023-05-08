@@ -72,7 +72,21 @@ const DashboardIndex = () => {
     return state.gnosis.adminUser;
   });
 
-  console.log("Admin", isAdmin);
+  const NETWORK_HEX = useSelector((state) => {
+    return state.gnosis.networkHex;
+  });
+
+  console.log("NETWORK HEX", NETWORK_HEX);
+
+  const GNOSIS_TRANSACTION_URL = useSelector((state) => {
+    return state.gnosis.transactionUrl;
+  });
+
+  const USDC_CONTRACT_ADDRESS = useSelector((state) => {
+    return state.gnosis.usdcContractAddress;
+  });
+
+  console.log("Admin", GNOSIS_TRANSACTION_URL, USDC_CONTRACT_ADDRESS);
 
   let walletAddress;
   if (typeof window !== "undefined") {
@@ -102,7 +116,7 @@ const DashboardIndex = () => {
 
   const fetchAssets = useCallback(async () => {
     try {
-      const assetsData = await getAssetsByDaoAddress(daoAddress);
+      const assetsData = await getAssetsByDaoAddress(daoAddress, NETWORK_HEX);
       console.log("Asset data", assetsData.data);
       setTokenDetails({
         treasuryAmount: assetsData?.data?.treasuryAmount,
@@ -111,7 +125,7 @@ const DashboardIndex = () => {
     } catch (error) {
       console.log(error);
     }
-  }, [daoAddress]);
+  }, [NETWORK_HEX, daoAddress]);
 
   const fetchNfts = useCallback(async () => {
     try {
@@ -168,8 +182,8 @@ const DashboardIndex = () => {
             nft,
             daoAddress,
             walletAddress,
-            undefined,
-            undefined,
+            USDC_CONTRACT_ADDRESS,
+            GNOSIS_TRANSACTION_URL,
           );
           const nftBalance = await nftContract.nftBalance(walletAddress);
           console.log("NFT Balance", nftBalance);
@@ -189,8 +203,8 @@ const DashboardIndex = () => {
             "",
             daoAddress,
             walletAddress,
-            undefined,
-            undefined,
+            USDC_CONTRACT_ADDRESS,
+            GNOSIS_TRANSACTION_URL,
           );
           // const depositCloseTime = await contract.depositCloseTime();
           // const userDetail = await contract.userDetails();
@@ -222,7 +236,13 @@ const DashboardIndex = () => {
       }
       // console.log("token type", tokenType);
     }
-  }, [daoAddress, clubData.tokenType, walletAddress]);
+  }, [
+    daoAddress,
+    clubData.tokenType,
+    walletAddress,
+    USDC_CONTRACT_ADDRESS,
+    GNOSIS_TRANSACTION_URL,
+  ]);
 
   return (
     <>
@@ -777,7 +797,7 @@ const DashboardIndex = () => {
                           onClick={(e) => {
                             router.push(
                               {
-                                pathname: `/dashboard/${clubId}/proposal`,
+                                pathname: `/dashboard/${daoAddress}/proposal`,
                                 query: {
                                   create_proposal: true,
                                 },

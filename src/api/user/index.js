@@ -25,6 +25,7 @@ export async function fetchClubByUserAddress(userId) {
     },
   });
 }
+
 export async function getMembersDetails(clubId) {
   // fetch members of club
   return await axios.get(MAIN_API_URL + `user/club/${clubId}`, {

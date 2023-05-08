@@ -208,7 +208,11 @@ const ProposalDetail = () => {
   const isAdmin = useSelector((state) => {
     return state.gnosis.adminUser;
   });
-  console.log("isadmin", isAdmin);
+
+  const NETWORK_HEX = useSelector((state) => {
+    return state.gnosis.networkHex;
+  });
+
   const USDC_CONTRACT_ADDRESS = useSelector((state) => {
     return state.gnosis.usdcContractAddress;
   });
@@ -377,7 +381,7 @@ const ProposalDetail = () => {
 
   const fetchTokens = () => {
     if (daoAddress) {
-      const tokenData = getAssetsByDaoAddress(daoAddress);
+      const tokenData = getAssetsByDaoAddress(daoAddress, NETWORK_HEX);
       tokenData.then((result) => {
         if (result.status != 200) {
           setTokenFetched(false);

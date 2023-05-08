@@ -12,9 +12,9 @@ export async function getAssets(clubId) {
   });
 }
 
-export async function getAssetsByDaoAddress(daoAddress) {
+export async function getAssetsByDaoAddress(daoAddress, networkId) {
   return await axios.get(
-    MAIN_API_URL + `assets/dao/${daoAddress}?networkId=0x5`,
+    MAIN_API_URL + `assets/dao/${daoAddress}?networkId=${networkId}`,
     {
       headers: {
         "Authorization": "Bearer " + getJwtToken(),
@@ -47,9 +47,9 @@ export async function getNFTs(clubId) {
   });
 }
 
-export async function getNFTsByDaoAddress(daoAddress) {
+export async function getNFTsByDaoAddress(daoAddress, networkId) {
   return await axios.get(
-    MAIN_API_URL + `assets/dao/${daoAddress}/nft?networkId=0x5`,
+    MAIN_API_URL + `assets/dao/${daoAddress}/nft?networkId=${networkId}`,
     {
       headers: {
         "Authorization": "Bearer " + getJwtToken(),

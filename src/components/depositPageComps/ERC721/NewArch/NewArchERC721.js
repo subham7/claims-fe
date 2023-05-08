@@ -21,6 +21,8 @@ import { convertFromWeiGovernance } from "../../../../utils/globalFunctions";
 import { SmartContract } from "../../../../api/contract";
 import { NEW_FACTORY_ADDRESS } from "../../../../api";
 import dayjs from "dayjs";
+import ClubFetch from "../../../../utils/clubFetch";
+import { useSelector } from "react-redux";
 
 const NewArchERC721 = ({
   daoDetails,
@@ -47,9 +49,15 @@ const NewArchERC721 = ({
     walletAddress = web3.utils.toChecksumAddress(wallet?.accounts[0].address);
   }
 
-  const classes = NewArchERC721Styles();
+  const GNOSIS_TRANSACTION_URL = useSelector((state) => {
+    return state.gnosis.transactionUrl;
+  });
 
-  console.log("Depositiiii", daoDetails.depositDeadline);
+  const USDC_CONTRACT_ADDRESS = useSelector((state) => {
+    return state.gnosis.usdcContractAddress;
+  });
+
+  const classes = NewArchERC721Styles();
 
   const day = Math.floor(new Date().getTime() / 1000.0);
   const day1 = dayjs.unix(day);
@@ -69,16 +77,16 @@ const NewArchERC721 = ({
         erc20ABI,
         daoDetails.depositTokenAddress,
         walletAddress,
-        undefined,
-        undefined,
+        USDC_CONTRACT_ADDRESS,
+        GNOSIS_TRANSACTION_URL,
       );
 
       const erc721Contract = new SmartContract(
         erc721ABI,
         erc721DaoAddress,
         walletAddress,
-        undefined,
-        undefined,
+        USDC_CONTRACT_ADDRESS,
+        GNOSIS_TRANSACTION_URL,
       );
 
       const balanceOfNft = await erc721Contract.balanceOf();
@@ -104,6 +112,8 @@ const NewArchERC721 = ({
       console.log(error);
     }
   }, [
+    GNOSIS_TRANSACTION_URL,
+    USDC_CONTRACT_ADDRESS,
     daoDetails.depositTokenAddress,
     daoDetails.maxTokensPerUser,
     erc721DaoAddress,
@@ -126,16 +136,16 @@ const NewArchERC721 = ({
         factoryContractABI,
         NEW_FACTORY_ADDRESS,
         walletAddress,
-        undefined,
-        undefined,
+        USDC_CONTRACT_ADDRESS,
+        GNOSIS_TRANSACTION_URL,
       );
 
       const erc20Contract = new SmartContract(
         erc20ABI,
         daoDetails.depositTokenAddress,
         walletAddress,
-        undefined,
-        undefined,
+        USDC_CONTRACT_ADDRESS,
+        GNOSIS_TRANSACTION_URL,
       );
 
       await erc20Contract.approveDeposit(
@@ -476,4 +486,4 @@ const NewArchERC721 = ({
   );
 };
 
-export default NewArchERC721;
+export default (NewArchERC721);

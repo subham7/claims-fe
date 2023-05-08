@@ -8,6 +8,7 @@ import ERC20ABI from "../../abis/usdcTokenContract.json";
 import Web3 from "web3";
 import { useConnectWallet } from "@web3-onboard/react";
 import { TokenGatingModalStyles } from "./TokenGatingModalStyles";
+import ClubFetch from "../../utils/clubFetch";
 
 const Backdrop = ({ onClick }) => {
   const classes = TokenGatingModalStyles();
@@ -24,6 +25,14 @@ const TokenGatingModal = ({ closeModal, chooseTokens }) => {
   if (typeof window !== "undefined") {
     walletAddress = Web3.utils.toChecksumAddress(wallet?.accounts[0].address);
   }
+
+  const GNOSIS_TRANSACTION_URL = useSelector((state) => {
+    return state.gnosis.transactionUrl;
+  });
+
+  const USDC_CONTRACT_ADDRESS = useSelector((state) => {
+    return state.gnosis.usdcContractAddress;
+  });
 
   const formik = useFormik({
     initialValues: {
@@ -48,8 +57,8 @@ const TokenGatingModal = ({ closeModal, chooseTokens }) => {
               ERC20ABI,
               values.address,
               walletAddress,
-              undefined,
-              undefined,
+              USDC_CONTRACT_ADDRESS,
+              GNOSIS_TRANSACTION_URL,
             );
 
             tokenSymbol = await erc20contract.obtainSymbol();
@@ -149,4 +158,4 @@ const TokenGatingModal = ({ closeModal, chooseTokens }) => {
   );
 };
 
-export default TokenGatingModal;
+export default ClubFetch(TokenGatingModal);
