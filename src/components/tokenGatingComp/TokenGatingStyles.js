@@ -3,7 +3,8 @@ import { makeStyles } from "@mui/styles";
 export const TokenGatingStyle = makeStyles({
   container: {
     background: "#142243",
-    width: "1000px",
+    marginLeft: "130px",
+    width: "65%",
     borderRadius: "12px",
     padding: "50px 30px",
     display: "flex",

@@ -22,7 +22,12 @@ import { SmartContract } from "../../../../api/contract";
 import { NEW_FACTORY_ADDRESS } from "../../../../api";
 import dayjs from "dayjs";
 
-const NewArchERC721 = ({ daoDetails, erc721DaoAddress }) => {
+const NewArchERC721 = ({
+  daoDetails,
+  erc721DaoAddress,
+  isTokenGated,
+  isEligibleForTokenGating,
+}) => {
   const [loading, setLoading] = useState(false);
   const [active, setActive] = useState(false);
   const [hasClaimed, setHasClaimed] = useState(false);
@@ -154,7 +159,7 @@ const NewArchERC721 = ({ daoDetails, erc721DaoAddress }) => {
       const claimNFT = await factoryContract.buyGovernanceTokenERC721DAO(
         walletAddress,
         erc721DaoAddress,
-        daoDetails.depositTokenAddress,
+        // daoDetails.depositTokenAddress,
         daoDetails.nftURI,
         1,
         [],
@@ -381,7 +386,11 @@ const NewArchERC721 = ({ daoDetails, erc721DaoAddress }) => {
                     <Grid item>
                       <Button
                         onClick={claimNFTHandler}
-                        disabled={hasClaimed}
+                        disabled={
+                          hasClaimed || isTokenGated
+                            ? !isEligibleForTokenGating
+                            : false
+                        }
                         sx={{ px: 8 }}
                       >
                         {loading ? (
@@ -403,23 +412,23 @@ const NewArchERC721 = ({ daoDetails, erc721DaoAddress }) => {
                     This station allows maximum of {daoDetails.maxTokensPerUser}{" "}
                     mints per member
                   </Typography>
-                  {/* {tokenGatingAddress !==
-                    "0x0000000000000000000000000000000000000000" && (
-                    <>
-                      {userTokenBalance < tokenGatingAmount ? (
-                        <Typography variant="subtitle2" sx={{ color: "red" }}>
-                          This club is Token Gated. You don&apos;t qualify
+                  <Grid>
+                    {isTokenGated && isEligibleForTokenGating ? (
+                      <>
+                        <Typography sx={{ color: "#3B7AFD" }}>
+                          This club is token gated. You qualify
                         </Typography>
-                      ) : (
-                        <Typography
-                          variant="subtitle2"
-                          sx={{ color: "#3B7AFD" }}
-                        >
-                          This club is Token Gated. You qualify
+                      </>
+                    ) : isTokenGated && !isEligibleForTokenGating ? (
+                      <>
+                        <Typography sx={{ color: "red" }}>
+                          This club is token gated. You don&apos;t qualify
                         </Typography>
-                      )}
-                    </>
-                  )} */}
+                      </>
+                    ) : (
+                      ""
+                    )}
+                  </Grid>
                 </Grid>
               </Grid>
             </Grid>

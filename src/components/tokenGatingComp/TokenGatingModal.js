@@ -5,88 +5,12 @@ import React, { useState } from "react";
 import * as yup from "yup";
 import { SmartContract } from "../../api/contract";
 import ERC20ABI from "../../abis/usdcTokenContract.json";
-import ERC721ABI from "../../abis/nft.json";
-
 import Web3 from "web3";
 import { useConnectWallet } from "@web3-onboard/react";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  addTokenAddress,
-  addTokenAmount,
-  addTokenGatingDetails,
-  addTokens,
-  addTokenSymbol,
-} from "../../redux/reducers/tokenGating";
-
-const useStyles = makeStyles({
-  container: {
-    background: "#101D38",
-    width: "600px",
-    borderRadius: "20px",
-    padding: "70px 30px",
-    border: "0.5px solid #6475A3",
-    display: "flex",
-    flexDirection: "column",
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translateX(-50%) translateY(-50%)",
-    zIndex: "1000",
-  },
-
-  backdrop: {
-    position: "fixed",
-    top: "0",
-    left: "0",
-    height: "100vh",
-    width: "100vw",
-    background: "#fff",
-    opacity: "30%",
-  },
-  form: {
-    width: "100%",
-    display: "flex",
-    flexDirection: "column",
-  },
-
-  input: {
-    width: "100%",
-    marginBottom: "24px",
-  },
-
-  label: {
-    color: "white",
-    fontSize: "18px",
-    marginBottom: "5px",
-  },
-
-  btns: {
-    alignSelf: "flex-end",
-    justifySelf: "flex-end",
-  },
-
-  cancelBtn: {
-    background: "#101D38",
-    border: "0.5px solid #6475A3",
-    borderRadius: "50px",
-    width: "150px",
-    marginRight: "10px",
-  },
-
-  addBtn: {
-    "background": "#D93C8A",
-    "border": "none",
-    "borderRadius": "50px",
-    "width": "150px",
-    "color": "white",
-    "&:hover": {
-      background: "#D83C8A",
-    },
-  },
-});
+import { TokenGatingModalStyles } from "./TokenGatingModalStyles";
 
 const Backdrop = ({ onClick }) => {
-  const classes = useStyles();
+  const classes = TokenGatingModalStyles();
 
   return <div onClick={onClick} className={classes.backdrop}></div>;
 };
@@ -94,7 +18,7 @@ const Backdrop = ({ onClick }) => {
 const TokenGatingModal = ({ closeModal, chooseTokens }) => {
   const [notValid, setNotValid] = useState(false);
   const [{ wallet }] = useConnectWallet();
-  const classes = useStyles();
+  const classes = TokenGatingModalStyles();
 
   let walletAddress;
   if (typeof window !== "undefined") {
@@ -115,7 +39,8 @@ const TokenGatingModal = ({ closeModal, chooseTokens }) => {
     }),
 
     onSubmit: (values) => {
-      let tokenSymbol;
+      let tokenSymbol,
+        tokenDecimal = 0;
       if (values.address) {
         const checkTokenGating = async () => {
           try {
@@ -128,7 +53,13 @@ const TokenGatingModal = ({ closeModal, chooseTokens }) => {
             );
 
             tokenSymbol = await erc20contract.obtainSymbol();
-            const tokenDecimal = await erc20contract.decimals();
+
+            try {
+              tokenDecimal = await erc20contract.decimals();
+            } catch (err) {
+              console.log(err);
+            }
+
             console.log("Token Symbol", tokenSymbol);
             chooseTokens({
               tokenSymbol: tokenSymbol,
@@ -144,30 +75,6 @@ const TokenGatingModal = ({ closeModal, chooseTokens }) => {
             }, 3000);
             setNotValid(true);
           }
-
-          // if (!tokenSymbol) {
-          //   try {
-          //     const erc721Contract = new SmartContract(
-          //       ERC721ABI,
-          //       values.address,
-          //       walletAddress,
-          //       undefined,
-          //       undefined,
-          //     );
-
-          //     tokenSymbol = await erc721Contract.obtainSymbol();
-          //     console.log("NFT token Symbol", tokenSymbol);
-          //     chooseTokens({
-          //       tokenSymbol: tokenSymbol,
-          //       tokenAddress: values.address,
-          //       tokenAmount: values.noOfTokens,
-          //     });
-          //     closeModal();
-          //   } catch (error) {
-          //     console.log(error);
-
-          //   }
-          // }
         };
         checkTokenGating();
       }

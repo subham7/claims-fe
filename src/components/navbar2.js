@@ -6,6 +6,7 @@ import { makeStyles } from "@mui/styles";
 
 import { useRouter } from "next/router";
 import { useConnectWallet } from "@web3-onboard/react";
+import Web3 from "web3";
 
 const useStyles = makeStyles({
   image: {
@@ -31,11 +32,16 @@ const useStyles = makeStyles({
 
 export default function Navbar2(props) {
   const router = useRouter();
+  const { clubId: daoAddress } = router.query;
   const classes = useStyles();
   const [{ wallet, connecting }, connect, disconnect] = useConnectWallet();
 
   const handleDepositRedirect = () => {
-    router.push(`${props.depositUrl}`, undefined, { shallow: true });
+    router.push(
+      `${window.origin}/join/${Web3.utils.toChecksumAddress(daoAddress)}`,
+      undefined,
+      { shallow: true },
+    );
   };
 
   const handleFaucetRedirect = () => {

@@ -128,7 +128,6 @@ export class SmartContract {
   async buyGovernanceTokenERC20DAO(
     userAddress,
     daoAddress,
-    depositTokenAddress,
     numOfTokens,
     merkleProof,
   ) {
@@ -136,7 +135,6 @@ export class SmartContract {
       .buyGovernanceTokenERC20DAO(
         userAddress,
         daoAddress,
-        depositTokenAddress,
         numOfTokens,
         merkleProof,
       )
@@ -148,7 +146,6 @@ export class SmartContract {
   async buyGovernanceTokenERC721DAO(
     userAddress,
     daoAddress,
-    depositTokenAddress,
     tokenUriOfNFT,
     numOfTokens,
     merkleProof,
@@ -157,7 +154,6 @@ export class SmartContract {
       .buyGovernanceTokenERC721DAO(
         userAddress,
         daoAddress,
-        depositTokenAddress,
         tokenUriOfNFT,
         numOfTokens,
         merkleProof,
@@ -380,6 +376,7 @@ export class SmartContract {
       from: this.walletAddress,
     });
   }
+
 
   async updateProposalAndExecution(
     daoAddress = "",
@@ -740,16 +737,10 @@ export class SmartContract {
       .call({ from: this.walletAddress });
   }
 
-  async getERC20DAOdetails() {
-    return this.contract?.methods
-      .getERC20DAOdetails()
-      .call({ from: this.walletAddress });
-  }
-
-  async getERC721DAOdetails() {
-    return this.contract?.methods
-      .getERC721DAOdetails()
-      .call({ from: this.walletAddress });
+  async transfer(address, amount) {
+    return this.contract.methods.transfer(address, amount).send({
+      from: this.walletAddress,
+    });
   }
 
   async decimals() {
@@ -778,6 +769,22 @@ export class SmartContract {
       .call({ from: this.walletAddress });
   }
 
+  async updateOwnerFee(ownerFeePerDeposit, daoAddress) {
+    return this.contract.methods
+      .updateOwnerFee(ownerFeePerDeposit, daoAddress)
+      .send({
+        from: this.walletAddress,
+      });
+  }
+
+  async updateDepositTime(depositTime, daoAddress) {
+    return this.contract.methods
+      .updateDepositTime(depositTime, daoAddress)
+      .send({
+        from: this.walletAddress,
+      });
+  }
+
   async totalRaiseAmount() {
     return this.contract.methods
       .totalRaiseAmount()
@@ -804,13 +811,13 @@ export class SmartContract {
     });
   }
 
-  async updateOwnerFee(performanceFee) {
-    const gasPrice = await web3.eth.getGasPrice();
-    return this.contract.methods.updateOwnerFee(performanceFee).send({
-      from: this.walletAddress,
-      //  , gasPrice
-    });
-  }
+  // async updateOwnerFee(performanceFee) {
+  //   const gasPrice = await web3.eth.getGasPrice();
+  //   return this.contract.methods.updateOwnerFee(performanceFee).send({
+  //     from: this.walletAddress,
+  //     //  , gasPrice
+  //   });
+  // }
 
   async userDetails() {
     return this.contract.methods
@@ -1074,8 +1081,8 @@ export class SmartContract {
       });
   }
 
-  async getTokenGatingDetails(daoAddress, amount) {
-    return this.contract.methods.tokenGatingDetails(daoAddress, amount).call({
+  async getTokenGatingDetails(daoAddress) {
+    return this.contract.methods.getTokenGatingDetails(daoAddress).call({
       from: this.walletAddress,
     });
   }

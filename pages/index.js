@@ -297,7 +297,7 @@ export default function App() {
                 <Divider className={classes.divider} />
                 <Stack spacing={3}>
                   {walletAddress ? (
-                    clubListData.map((club, key) => {
+                    clubListData.reverse().map((club, key) => {
                       return (
                         <ListItemButton
                           component="a"
