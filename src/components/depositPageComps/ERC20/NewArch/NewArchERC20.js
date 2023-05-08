@@ -676,12 +676,6 @@ const NewArchERC20 = ({
                                 type="number"
                                 name="tokenInput"
                                 id="tokenInput"
-                                // disabled={
-                                //   (remainingDays > 0 && isTokenGated) ?
-                                //      !isEligibleForTokenGating
-                                //     : true
-                                // }
-
                                 disabled={
                                   remainingDays > 0 && isTokenGated
                                     ? !isEligibleForTokenGating
@@ -762,7 +756,9 @@ const NewArchERC20 = ({
                         size="large"
                         onClick={formik.handleSubmit}
                         disabled={
-                          remainingDays > 0 && isEligibleForTokenGating
+                          remainingDays > 0 && isTokenGated
+                            ? !isEligibleForTokenGating
+                            : remainingDays > 0
                             ? false
                             : true
                         }
