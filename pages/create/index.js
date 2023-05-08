@@ -166,8 +166,6 @@ const Create = () => {
             const walletAddress = Web3.utils.toChecksumAddress(result[0]);
             values.addressList.unshift(walletAddress);
 
-            console.log(dayjs(formikERC721Step2.values.depositClose).unix());
-
             const params = {
               clubName: formikStep1.values.clubName,
               clubSymbol: formikStep1.values.clubSymbol,

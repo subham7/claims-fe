@@ -5,6 +5,7 @@ import gnosisReducer from "./reducers/gnosis";
 import userReducer from "./reducers/user";
 import legalReducer from "./reducers/legal";
 import createClaimReducer from "./reducers/createClaim";
+import proposalReducer from "./reducers/proposal";
 
 export default configureStore({
   reducer: {
@@ -14,6 +15,7 @@ export default configureStore({
     legal: legalReducer,
     user: userReducer,
     createClaim: createClaimReducer,
+    proposal: proposalReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

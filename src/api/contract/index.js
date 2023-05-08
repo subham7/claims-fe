@@ -1,7 +1,10 @@
-import Safe, { EthSignSignature } from "@safe-global/protocol-kit";
-import SafeServiceClient from "@safe-global/api-kit";
-import Web3Adapter from "@safe-global/protocol-kit";
 import Web3 from "web3";
+import { Web3Adapter } from "@safe-global/protocol-kit";
+import Safe, {
+  SafeFactory,
+  SafeAccountConfig,
+  EthSignSignature,
+} from "@safe-global/protocol-kit";
 
 import FactoryContract from "../../abis/newFactoryContract.json";
 import ImplementationContract from "../../abis/implementationABI.json";
@@ -9,6 +12,7 @@ import USDCContract from "../../abis/usdcTokenContract.json";
 import { createProposalTxHash, getProposalTxHash } from "../../api/proposal";
 import { calculateDays, convertToWei } from "../../utils/globalFunctions";
 import { USDC_FAUCET_ADDRESS } from "../index";
+import SafeApiKit from "@safe-global/api-kit";
 
 async function syncWallet() {
   // function for validating metamask wallet
@@ -57,7 +61,7 @@ export class SmartContract {
         usdcContractAddress,
       gnosisTransactionUrl)
     ) {
-      this.web3 = new Web3(window.web3);
+      this.web3 = new Web3(window.ethereum);
       this.abi = abiFile.abi;
       this.contractAddress = contractAddress;
       this.checkSum = this.web3.utils.toChecksumAddress(this.contractAddress);
@@ -379,80 +383,53 @@ export class SmartContract {
 
 
   async updateProposalAndExecution(
+    data,
     daoAddress = "",
     gnosisAddress = "",
-    proposalHash = "",
-    executionStatus = "",
-    proposalId = 1,
-    customToken = "0x0000000000000000000000000000000000000000",
-    airDropToken = "0x0000000000000000000000000000000000000000",
-    executionIds = [0, 0, 0, 0, 0, 0, 0, 0],
-    quoram = 0,
-    threshold = 0,
-    totalDeposits = 0,
-    airDropAmount = 0,
-    mintGTAmounts = [],
-    mintGTAddresses = [],
-    customTokenAmounts = [],
-    customTokenAddresses = [],
-    ownersAirdropFees = 0,
-    daoAdminAddresses = [],
     txHash = "",
     pid,
     tokenData,
-    nftDetails,
-    contractCallDetails,
+    executionStatus,
   ) {
-    const parameters = [
-      proposalHash,
-      executionStatus,
-      proposalId,
-      customToken,
-      airDropToken,
-      executionIds,
-      quoram,
-      threshold,
-      totalDeposits,
-      airDropAmount,
-      mintGTAmounts,
-      mintGTAddresses,
-      customTokenAmounts,
-      customTokenAddresses,
-      ownersAirdropFees,
-      daoAdminAddresses,
-      nftDetails,
-      contractCallDetails,
-    ];
-    console.log(parameters);
+    const parameters = data;
+    console.log("executionStatus", executionStatus, gnosisAddress);
     const safeOwner = this.walletAddress;
+    // const ethAdapter = new Web3Adapter({
+    //   web3: this.web3,
+    //   signerAddress: safeOwner,
+    // });
     const ethAdapter = new Web3Adapter({
       web3: this.web3,
-      signerAddress: safeOwner,
+      signerAddress: this.walletAddress,
     });
     const txServiceUrl = this.gnosisTransactionUrl;
-    const safeService = new SafeServiceClient({ txServiceUrl, ethAdapter });
-
-    const web3 = new Web3(window.web3);
-    const implementationContract = new web3.eth.Contract(
-      ImplementationContract.abi,
-      daoAddress,
-    );
+    console.log(txServiceUrl);
+    // const safeService = new SafeServiceClient({ txServiceUrl, ethAdapter });
+    const safeService = new SafeApiKit({
+      txServiceUrl,
+      ethAdapter,
+    });
+    console.log(safeService);
 
     const safeSdk = await Safe.create({
       ethAdapter: ethAdapter,
       safeAddress: gnosisAddress,
     });
-    console.log("here");
+    console.log("here", safeSdk);
+    const implementationContract = new web3.eth.Contract(
+      ImplementationContract.abi,
+      daoAddress,
+    );
+    console.log("implementationContract", implementationContract);
 
     const transaction = {
-      to: daoAddress,
+      to: web3.utils.toChecksumAddress(daoAddress),
       data: implementationContract.methods
         .updateProposalAndExecution(parameters)
         .encodeABI(),
       value: "0",
     };
     console.log("transaction", transaction);
-
     const nonce = await safeService.getNextNonce(gnosisAddress);
     console.log("nonce", nonce);
 
@@ -471,20 +448,10 @@ export class SmartContract {
     const safeTransaction = await safeSdk.createTransaction({
       safeTransactionData,
     });
+    console.log("safeTransaction", safeTransaction);
 
     if (executionStatus !== "executed") {
       if (txHash === "") {
-        if (
-          Number(airDropAmount) >
-            Number(
-              tokenData?.filter(
-                (data) => data.token_address === airDropToken,
-              )[0]?.balance,
-            ) &&
-          tokenData.length > 0
-        ) {
-          return Promise.reject("Balance is less than the airdrop amount");
-        }
         const safeTxHash = await safeSdk.getTransactionHash(safeTransaction);
         const payload = {
           proposalId: pid,
@@ -505,11 +472,13 @@ export class SmartContract {
         await safeService.confirmTransaction(safeTxHash, senderSignature.data);
         return proposeTxn;
       } else {
+        console.log("here");
         const proposalTxHash = await getProposalTxHash(pid);
-
+        console.log("proposalTxHash", proposalTxHash);
         const tx = await safeService.getTransaction(
           proposalTxHash.data[0].txHash,
         );
+        console.log("txxx", tx);
         const nonce = await safeSdk.getNonce();
         console.log("nonce", nonce);
         const safeTxHash = tx.safeTxHash;

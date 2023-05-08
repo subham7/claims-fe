@@ -78,6 +78,10 @@ const Test = () => {
       const fetchData = async () => {
         if (daoAddress) {
           const data = await subgraphQuery(QUERY_ALL_MEMBERS(daoAddress));
+          let membersArray = [];
+          data.users.map((member) => membersArray.push(member.userAddress));
+          console.log(membersArray);
+
           setMembersData(data?.users);
 
           console.log("Memebersss", data.users);

@@ -4,7 +4,7 @@ import { getJwtToken } from "../../utils/auth";
 
 export async function createProposal(data) {
   // create proposal API
-  return await axios.post(MAIN_API_URL + "proposal", data, {
+  return await axios.post(MAIN_API_URL + "proposal/create", data, {
     headers: {
       "Authorization": "Bearer " + getJwtToken(),
       "Content-Type": "application/json",
