@@ -22,7 +22,7 @@ const useStyles = makeStyles({
   },
 });
 
-const ProposalActionForm = ({ formik }) => {
+const ProposalActionForm = ({ formik, tokenData }) => {
   console.log(formik);
   const classes = useStyles();
   return (
@@ -77,7 +77,90 @@ const ProposalActionForm = ({ formik }) => {
 
       {formik.values.actionCommand === "Distribute token to members" ? (
         <>
-          <Typography variant="proposalBody">Airdrop Token *</Typography>
+          <Grid
+            container
+            direction={"column"}
+            ml={3}
+            mt={2}
+            sx={{ marginLeft: "0 !important" }}
+          >
+            <Typography variant="proposalBody">Token to be sent</Typography>
+            <Select
+              value={formik.values.customToken}
+              onChange={(e) =>
+                formik.setFieldValue(
+                  "airdropToken",
+                  tokenData.find((token) => token.name === e.target.value)
+                    .token_address,
+                )
+              }
+              renderValue={(selected) => {
+                if (selected.length === 0) {
+                  return "Select a command";
+                }
+
+                return tokenData.find(
+                  (token) => token.token_address === selected,
+                ).name;
+              }}
+              inputProps={{ "aria-label": "Without label" }}
+              name="airdropToken"
+              id="airdropToken"
+            >
+              {tokenData.map((token) => (
+                <MenuItem key={token.name} value={token.name}>
+                  {token.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </Grid>
+          <Grid
+            container
+            direction={"column"}
+            ml={3}
+            mt={2}
+            sx={{ marginLeft: "0 !important" }}
+          >
+            <Typography variant="proposalBody">Amount of Tokens *</Typography>
+            <TextField
+              variant="outlined"
+              className={classes.textField}
+              placeholder="0"
+              type="number"
+              name="amountToAirdrop"
+              id="amountToAirdrop"
+              value={formik.values.amountToAirdrop}
+              onChange={formik.handleChange}
+              error={
+                formik.touched.amountToAirdrop &&
+                Boolean(formik.errors.amountToAirdrop)
+              }
+              helperText={
+                formik.touched.amountToAirdrop && formik.errors.amountToAirdrop
+              }
+            />
+          </Grid>
+          <Grid
+            container
+            direction={"column"}
+            ml={3}
+            mt={2}
+            sx={{ marginLeft: "0 !important" }}
+          >
+            <Typography variant="proposalBody">Carry Fee</Typography>
+            <TextField
+              variant="outlined"
+              className={classes.textField}
+              placeholder="0"
+              type="number"
+              name="carryFee"
+              id="carryFee"
+              value={formik.values.carryFee}
+              onChange={formik.handleChange}
+              error={formik.touched.carryFee && Boolean(formik.errors.carryFee)}
+              helperText={formik.touched.carryFee && formik.errors.carryFee}
+            />
+          </Grid>
         </>
       ) : formik.values.actionCommand === "Mint club token" ? (
         <>
@@ -223,6 +306,38 @@ const ProposalActionForm = ({ formik }) => {
             mt={2}
             sx={{ marginLeft: "0 !important" }}
           >
+            <Typography variant="proposalBody">Token to be sent</Typography>
+            <Select
+              value={formik.values.customToken}
+              onChange={(e) =>
+                formik.setFieldValue(
+                  "customToken",
+                  tokenData.find((token) => token.name === e.target.value)
+                    .token_address,
+                )
+              }
+              renderValue={(selected) => {
+                if (selected.length === 0) {
+                  return "Select a command";
+                }
+                console.log(
+                  tokenData.find((token) => token.token_address === selected)
+                    .name,
+                );
+                return tokenData.find(
+                  (token) => token.token_address === selected,
+                ).name;
+              }}
+              inputProps={{ "aria-label": "Without label" }}
+              name="customToken"
+              id="customToken"
+            >
+              {tokenData.map((token) => (
+                <MenuItem key={token.name} value={token.name}>
+                  {token.name}
+                </MenuItem>
+              ))}
+            </Select>
             <Typography variant="proposalBody">
               Receiver&apos;s wallet address *
             </Typography>

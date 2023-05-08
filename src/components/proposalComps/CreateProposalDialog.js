@@ -27,12 +27,16 @@ import AddCircleRoundedIcon from "@mui/icons-material/AddCircleRounded";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ProposalActionForm from "./ProposalActionForm";
 import { proposalValidationSchema } from "../createClubComps/ValidationSchemas";
-import { convertToWeiGovernance } from "../../utils/globalFunctions";
+import {
+  convertToWei,
+  convertToWeiGovernance,
+} from "../../utils/globalFunctions";
 import { useConnectWallet } from "@web3-onboard/react";
 import { useRouter } from "next/router";
 import Web3 from "web3";
 import { createProposal } from "../../api/proposal";
 import { fetchProposals } from "../../utils/proposal";
+import { useSelector } from "react-redux";
 
 const useStyles = makeStyles({
   modalStyle: {
@@ -54,7 +58,8 @@ const useStyles = makeStyles({
     marginTop: "0.5rem",
   },
 });
-const CreateProposalDialog = ({ open, setOpen, onClose }) => {
+const CreateProposalDialog = ({ open, setOpen, onClose, tokenData }) => {
+  console.log(tokenData);
   const classes = useStyles();
   const router = useRouter();
 
@@ -63,6 +68,12 @@ const CreateProposalDialog = ({ open, setOpen, onClose }) => {
   const walletAddress = Web3.utils.toChecksumAddress(
     wallet?.accounts[0].address,
   );
+  const clubData = useSelector((state) => {
+    return state.club.clubData;
+  });
+  const daoAddress = useSelector((state) => {
+    return state.club.daoAddress;
+  });
 
   const [loaderOpen, setLoaderOpen] = useState(false);
   const [openSnackBar, setOpenSnackBar] = useState(false);
@@ -83,11 +94,15 @@ const CreateProposalDialog = ({ open, setOpen, onClose }) => {
       proposalDescription: "",
       optionList: [{ text: "yes" }, { text: "no" }],
       actionCommand: "",
+      airdropToken: tokenData ? tokenData[0]?.tokenAddress : "",
+      amountToAirdrop: 0,
+      carryFee: 0,
       userAddress: "",
       amountOfTokens: 0,
       quorum: 0,
       threshold: 0,
       totalDeposit: 0,
+      customToken: tokenData ? tokenData[0]?.tokenAddress : "",
       recieverAddress: "",
       amountToSend: 0,
     },
@@ -96,14 +111,63 @@ const CreateProposalDialog = ({ open, setOpen, onClose }) => {
       console.log(values);
       let commands;
       setLoaderOpen(true);
-      if (values.actionCommand === "Mint club token") {
+      if (values.actionCommand === "Distribute token to members") {
+        const airDropTokenDecimal = tokenData.find(
+          (token) => token.token_address === values.airdropToken,
+        ).decimals;
         commands = [
           {
             executionId: 0,
+            airDropToken: values.airdropToken,
+            airDropAmount: convertToWei(
+              values.amountToAirdrop,
+              airDropTokenDecimal,
+            ).toString(),
+            airDropCarryFee: values.carryFee,
+            usdcTokenSymbol: "USDC",
+            usdcTokenDecimal: 6,
+            usdcGovernanceTokenDecimal: 18,
+          },
+        ];
+      }
+      if (values.actionCommand === "Mint club token") {
+        commands = [
+          {
+            executionId: 1,
             mintGTAddresses: [values.userAddress],
             mintGTAmounts: [convertToWeiGovernance(values.amountOfTokens, 18)],
             usdcTokenSymbol: "USDC",
-            usdcTokenDecimal: 18,
+            usdcTokenDecimal: 6,
+            usdcGovernanceTokenDecimal: 18,
+          },
+        ];
+      }
+      if (values.actionCommand === "Update Governance Settings") {
+        commands = [
+          {
+            executionId: 2,
+            quorum: values.quorum,
+            threshold: values.threshold,
+            usdcTokenSymbol: "USDC",
+            usdcTokenDecimal: 6,
+            usdcGovernanceTokenDecimal: 18,
+          },
+        ];
+      }
+      if (values.actionCommand === "Send token to an address") {
+        const tokenDecimal = tokenData.find(
+          (token) => token.token_address === values.customToken,
+        ).decimals;
+        commands = [
+          {
+            executionId: 4,
+            customToken: values.customToken,
+            customTokenAmounts: [
+              convertToWei(values.amountToSend, tokenDecimal),
+            ],
+            customTokenAddresses: [values.customToken],
+            usdcTokenSymbol: "USDC",
+            usdcTokenDecimal: 6,
             usdcGovernanceTokenDecimal: 18,
           },
         ];
@@ -117,6 +181,8 @@ const CreateProposalDialog = ({ open, setOpen, onClose }) => {
         votingOptions: values.optionList,
         commands: commands,
         type: "action",
+        tokenType: clubData.tokenType,
+        daoAddress: daoAddress,
       };
 
       const createRequest = createProposal(payload);
@@ -387,7 +453,7 @@ const CreateProposalDialog = ({ open, setOpen, onClose }) => {
               >
                 Add command
               </Button> */}
-                <ProposalActionForm formik={proposal} />
+                <ProposalActionForm formik={proposal} tokenData={tokenData} />
               </Stack>
             )}
 

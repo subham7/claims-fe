@@ -56,8 +56,6 @@ const ClubFetch = (Component) => {
     });
 
     const checkUserExists = useCallback(async () => {
-      console.log(daoAddress);
-
       try {
         const getSafeSdk = async () => {
           const web3 = new Web3(window.ethereum);
@@ -65,12 +63,10 @@ const ClubFetch = (Component) => {
             web3,
             signerAddress: walletAddress,
           });
-          console.log("ethAdapter", ethAdapter);
           const safeSdk = await Safe.create({
             ethAdapter: ethAdapter,
             safeAddress: gnosisAddress,
           });
-          console.log("safeSdk", safeSdk);
 
           return safeSdk;
         };
@@ -81,7 +77,6 @@ const ClubFetch = (Component) => {
             if (result.status != 200) {
               console.log(result.error);
             } else {
-              console.log(result);
               dispatch(
                 addContractAddress({
                   factoryContractAddress: NEW_FACTORY_ADDRESS,
@@ -106,7 +101,6 @@ const ClubFetch = (Component) => {
               tokenType: clubData.stations[0].tokenType,
             }),
           );
-          console.log("Clubdatasaaaaaa", clubData.stations[0].gnosisAddress);
 
           if (clubData.stations[0].tokenType === "erc20") {
             const erc20Contract = new SmartContract(
@@ -116,7 +110,6 @@ const ClubFetch = (Component) => {
               USDC_CONTRACT_ADDRESS,
               GNOSIS_TRANSACTION_URL,
             );
-            console.log(erc20Contract);
             const daoDetails = await erc20Contract.getERC20DAOdetails();
             dispatch(
               addErc20ClubDetails({
@@ -132,24 +125,18 @@ const ClubFetch = (Component) => {
 
             response.then(
               async (result) => {
-                console.log("responseeeeeeee", result);
-
                 const safeSdk = await getSafeSdk();
                 const ownerAddresses = await safeSdk.getOwners();
-                console.log("ownerAddresses", ownerAddresses);
                 const ownerAddressesArray = ownerAddresses.map((value) =>
                   Web3.utils.toChecksumAddress(value),
                 );
-                console.log(ownerAddressesArray, walletAddress);
                 if (ownerAddressesArray.includes(walletAddress)) {
-                  console.log("here");
                   dispatch(setAdminUser(true));
                 } else {
                   if (result === "0") {
                     dispatch(setMemberUser(false));
                     router.push("/");
                   } else {
-                    console.log("here");
                     dispatch(setMemberUser(true));
                   }
                 }
@@ -158,7 +145,6 @@ const ClubFetch = (Component) => {
                 router.push("/");
               },
             );
-            console.log(daoDetails);
           } else if (clubData.stations[0].tokenType === "erc721") {
             const erc721Contract = new SmartContract(
               Erc721Dao,
@@ -167,7 +153,6 @@ const ClubFetch = (Component) => {
               USDC_CONTRACT_ADDRESS,
               GNOSIS_TRANSACTION_URL,
             );
-            console.log(erc721Contract);
             const daoDetails = await erc721Contract.getERC721DAOdetails();
             dispatch(
               addErc721ClubDetails({
@@ -186,23 +171,18 @@ const ClubFetch = (Component) => {
 
             response.then(
               async (result) => {
-                console.log("responseeeeeeee", result);
-
                 const safeSdk = await getSafeSdk();
                 const ownerAddresses = await safeSdk.getOwners();
                 const ownerAddressesArray = ownerAddresses.map((value) =>
                   Web3.utils.toChecksumAddress(value),
                 );
-                console.log(ownerAddressesArray, walletAddress);
                 if (ownerAddressesArray.includes(walletAddress)) {
-                  console.log("here");
                   dispatch(setAdminUser(true));
                 } else {
                   if (result === "0") {
                     dispatch(setMemberUser(false));
                     router.push("/");
                   } else {
-                    console.log("here");
                     dispatch(setMemberUser(true));
                   }
                 }

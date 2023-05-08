@@ -11,9 +11,6 @@ import {
   Typography,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
-import Safe from "@safe-global/protocol-kit";
-import SafeServiceClient from "@safe-global/api-kit";
-import Web3Adapter from "@safe-global/protocol-kit";
 import { useConnectWallet } from "@web3-onboard/react";
 import Image from "next/image";
 import { useRouter } from "next/router";
@@ -34,12 +31,21 @@ import { calculateDays } from "../../../../src/utils/globalFunctions";
 import actionIcon from "../../../../public/assets/icons/action_icon.svg";
 import surveyIcon from "../../../../public/assets/icons/survey_icon.svg";
 import ReactHtmlParser from "react-html-parser";
-import Web3 from "web3";
 import Erc721Dao from "../../../../src/abis/newArch/erc721Dao.json";
 import Erc20Dao from "../../../../src/abis/newArch/erc20Dao.json";
 import { SmartContract } from "../../../../src/api/contract";
-import { getAssets } from "../../../../src/api/assets";
+import { getAssets, getAssetsByDaoAddress } from "../../../../src/api/assets";
 import { Interface, ethers } from "ethers";
+
+import Web3 from "web3";
+import { Web3Adapter } from "@safe-global/protocol-kit";
+import Safe, {
+  SafeFactory,
+  SafeAccountConfig,
+} from "@safe-global/protocol-kit";
+import SafeApiKit from "@safe-global/api-kit";
+import { subgraphQuery } from "../../../../src/utils/subgraphs";
+import { QUERY_ALL_MEMBERS } from "../../../../src/api/graphql/queries";
 
 const useStyles = makeStyles({
   clubAssets: {
@@ -186,7 +192,8 @@ const ProposalDetail = () => {
   const classes = useStyles();
   const router = useRouter();
   const dispatch = useDispatch();
-  const { pid, clubId } = router.query;
+  const { pid, clubId: daoAddress } = router.query;
+  console.log("pid", pid);
 
   const [{ wallet }] = useConnectWallet();
   const walletAddress = Web3.utils.toChecksumAddress(
@@ -201,15 +208,16 @@ const ProposalDetail = () => {
   const isAdmin = useSelector((state) => {
     return state.gnosis.adminUser;
   });
+  console.log("isadmin", isAdmin);
   const USDC_CONTRACT_ADDRESS = useSelector((state) => {
     return state.gnosis.usdcContractAddress;
   });
 
-  const daoAddress = useSelector((state) => {
-    return state.create.daoAddress;
-  });
+  // const daoAddress = useSelector((state) => {
+  //   return state.create.daoAddress;
+  // });
   const gnosisAddress = useSelector((state) => {
-    return state.gnosis.safeAddress;
+    return state.club.clubData.gnosisAddress;
   });
 
   console.log(isAdmin);
@@ -240,26 +248,33 @@ const ProposalDetail = () => {
   const getSafeSdk = async () => {
     const web3 = new Web3(window.ethereum);
     const ethAdapter = new Web3Adapter({
-      web3: web3,
+      web3,
       signerAddress: walletAddress,
     });
+    console.log("ethAdapter", ethAdapter);
     const safeSdk = await Safe.create({
       ethAdapter: ethAdapter,
       safeAddress: gnosisAddress,
     });
+    console.log("safeSdk", safeSdk);
+
     return safeSdk;
   };
 
   const getSafeService = async () => {
-    const web3 = new Web3(window.web3);
+    const web3 = new Web3(window.ethereum);
     const ethAdapter = new Web3Adapter({
-      web3: web3,
+      web3,
       signerAddress: walletAddress,
     });
-    const safeService = new SafeServiceClient({
+    const safeService = new SafeApiKit({
       txServiceUrl: GNOSIS_TRANSACTION_URL,
       ethAdapter,
     });
+    // const safeService = new SafeServiceClient({
+    //   txServiceUrl: GNOSIS_TRANSACTION_URL,
+    //   ethAdapter,
+    // });
     return safeService;
   };
 
@@ -281,15 +296,16 @@ const ProposalDetail = () => {
         setTxHash("");
       } else {
         // txHash = result.data[0].txHash;
+        console.log(result);
         setTxHash(result.data[0].txHash);
         const safeService = await getSafeService();
         const tx = await safeService.getTransaction(result.data[0].txHash);
         const ownerAddresses = tx.confirmations.map(
           (confirmOwners) => confirmOwners.owner,
         );
-        console.log("ownerAddresses", ownerAddresses);
+        console.log("ownerAddresses", ownerAddresses, gnosisAddress);
         const pendingTxs = await safeService.getPendingTransactions(
-          gnosisAddress,
+          Web3.utils.toChecksumAddress(gnosisAddress),
         );
         setPendingTxHash(
           pendingTxs?.results[pendingTxs.count - 1]?.safeTxHash,
@@ -327,7 +343,7 @@ const ProposalDetail = () => {
       proposalId: pid,
       votingOptionId: castVoteOption,
       voterAddress: walletAddress,
-      clubId: clubId,
+      clubId: daoAddress,
     };
     const voteSubmit = castVote(payload);
     voteSubmit.then((result) => {
@@ -345,6 +361,7 @@ const ProposalDetail = () => {
   const fetchData = async () => {
     setLoader(true);
     dispatch(addProposalId(pid));
+    console.log("pid", pid);
     const proposalData = getProposalDetail(pid);
 
     proposalData.then((result) => {
@@ -359,8 +376,8 @@ const ProposalDetail = () => {
   };
 
   const fetchTokens = () => {
-    if (clubId) {
-      const tokenData = getAssets(clubId);
+    if (daoAddress) {
+      const tokenData = getAssetsByDaoAddress(daoAddress);
       tokenData.then((result) => {
         if (result.status != 200) {
           setTokenFetched(false);
@@ -383,82 +400,119 @@ const ProposalDetail = () => {
       GNOSIS_TRANSACTION_URL,
     );
     console.log("samrt contraccttt", proposalData);
+    let data;
     if (proposalData.commands[0].executionId === 0) {
+      const membersData = await subgraphQuery(QUERY_ALL_MEMBERS(daoAddress));
+      let membersArray = [];
+      membersData.users.map((member) => membersArray.push(member.userAddress));
+      console.log(membersArray);
+
       let ABI = Erc20Dao.abi;
       let iface = new Interface(ABI);
       console.log(iface);
-      let data = iface.encodeFunctionData("mintGTToAddress", [
-        [
-          ethers.parseUnits(
-            proposalData.commands[0].mintGTAmounts.toString(),
-            6,
-          ),
-        ],
+      data = iface.encodeFunctionData("airDropToken", [
+        proposalData.commands[0].airDropToken,
+        proposalData.commands[0].airDropAmount,
+        proposalData.commands[0].airDropCarryFee,
+        membersArray,
+      ]);
+      console.log(data);
+    }
+    if (proposalData.commands[0].executionId === 1) {
+      let ABI = Erc20Dao.abi;
+      let iface = new Interface(ABI);
+      console.log(iface);
+      data = iface.encodeFunctionData("mintGTToAddress", [
+        [proposalData.commands[0].mintGTAmounts.toString()],
         proposalData.commands[0].mintGTAddresses,
       ]);
       console.log(data);
-      const response = updateProposal.updateProposalAndExecution(
-        data,
-        daoAddress,
-        gnosisAddress,
-        txHash,
-        pid,
-        tokenFetched ? tokenData : "",
-        proposalStatus,
-      );
-      console.log(response);
-      if (proposalStatus === "executed") {
-        response.then(
-          (result) => {
-            result.promiEvent.on("confirmation", () => {
-              const updateStatus = patchProposalExecuted(pid);
-              updateStatus.then((result) => {
-                if (result.status !== 200) {
-                  setExecuted(false);
-                  setOpenSnackBar(true);
-                  setMessage("MintGT execution status update failed!");
-                  setFailed(true);
-                  setLoaderOpen(false);
-                } else {
-                  fetchData();
-                  setExecuted(true);
-                  setOpenSnackBar(true);
-                  setMessage("MintGT execution successful!");
-                  setFailed(false);
-                  setLoaderOpen(false);
-                }
-              });
+    }
+    if (proposalData.commands[0].executionId === 2) {
+      let ABI = Erc20Dao.abi;
+      let iface = new Interface(ABI);
+      console.log(iface);
+      data = iface.encodeFunctionData("updateGovernanceSettings", [
+        proposalData.commands[0].quorum,
+        proposalData.commands[0].threshold,
+      ]);
+      console.log(data);
+    }
+    if (proposalData.commands[0].executionId === 4) {
+      let ABI = Erc20Dao.abi;
+      let iface = new Interface(ABI);
+      console.log(iface);
+      data = iface.encodeFunctionData("sendCustomToken", [
+        proposalData.commands[0].customToken,
+        proposalData.commands[0].customTokenAmounts,
+        proposalData.commands[0].customTokenAddresses,
+      ]);
+      console.log(data);
+    }
+    const response = updateProposal.updateProposalAndExecution(
+      data,
+      daoAddress,
+      Web3.utils.toChecksumAddress(gnosisAddress),
+      txHash,
+      pid,
+      tokenFetched ? tokenData : "",
+      proposalStatus,
+    );
+    console.log(response);
+    if (proposalStatus === "executed") {
+      response.then(
+        (result) => {
+          result.promiEvent.on("confirmation", () => {
+            const updateStatus = patchProposalExecuted(pid);
+            updateStatus.then((result) => {
+              if (result.status !== 200) {
+                setExecuted(false);
+                setOpenSnackBar(true);
+                setMessage("MintGT execution status update failed!");
+                setFailed(true);
+                setLoaderOpen(false);
+              } else {
+                fetchData();
+                setExecuted(true);
+                setOpenSnackBar(true);
+                setMessage("MintGT execution successful!");
+                setFailed(false);
+                setLoaderOpen(false);
+              }
             });
-          },
-          (error) => {
-            console.log(error);
-            setExecuted(false);
-            setOpenSnackBar(true);
-            setMessage("MintGT execution failed!");
-            setFailed(true);
-            setLoaderOpen(false);
-          },
-        );
-      } else {
-        await response
-          .then(async (result) => {
-            setSigned(true);
-            setLoaderOpen(false);
-          })
-          .catch((err) => {
-            setSigned(false);
-            setMessage("Signature failed!");
-            setLoaderOpen(false);
           });
-      }
+        },
+        (error) => {
+          console.log(error);
+          setExecuted(false);
+          setOpenSnackBar(true);
+          setMessage("MintGT execution failed!");
+          setFailed(true);
+          setLoaderOpen(false);
+        },
+      );
+    } else {
+      await response
+        .then(async (result) => {
+          setSigned(true);
+          setLoaderOpen(false);
+        })
+        .catch((err) => {
+          setSigned(false);
+          setMessage("Signature failed!");
+          setLoaderOpen(false);
+        });
     }
   };
 
   useEffect(() => {
-    fetchData();
-    isOwner();
-    fetchTokens();
-  }, []);
+    console.log("heree");
+    if (pid) {
+      fetchData();
+      isOwner();
+      fetchTokens();
+    }
+  }, [pid]);
   //   console.log(proposalData);
   if (!wallet && proposalData === null) {
     console.log("loaaadddiinnngg", proposalData);
@@ -469,6 +523,7 @@ const ProposalDetail = () => {
       <Layout1 page={2}>
         <Grid container spacing={6} paddingLeft={10} paddingTop={10}>
           <Grid item md={8.5}>
+            {/* back button */}
             <Grid container spacing={1} onClick={() => router.back()}>
               <Grid item mt={0.5} sx={{ "&:hover": { cursor: "pointer" } }}>
                 <KeyboardBackspaceIcon className={classes.listFont} />
@@ -498,7 +553,6 @@ const ProposalDetail = () => {
                         <Grid container>
                           <Image src={tickerIcon} alt="ticker-icon" />
                           <Typography ml={1}>
-                            {" "}
                             {calculateDays(proposalData?.votingDuration) <= 0
                               ? "Voting closed"
                               : calculateDays(proposalData?.votingDuration) +
@@ -663,10 +717,6 @@ const ProposalDetail = () => {
                       ) : proposalData?.status === "passed" ? (
                         isAdmin ? (
                           <Card>
-                            {console.log(
-                              "pendingTxHash",
-                              pendingTxHash === txHash,
-                            )}
                             <Card
                               className={
                                 executed
@@ -711,49 +761,21 @@ const ProposalDetail = () => {
                                       Executed Successfully
                                     </Typography>
                                   </Grid>
-                                ) : null}
-                                {executionReady ? (
+                                ) : executionReady ? (
                                   <Grid item>
                                     <Typography className={classes.cardFont1}>
                                       Execute Now
                                     </Typography>
                                   </Grid>
+                                ) : !executionReady && !executed ? (
+                                  <Grid item>
+                                    <Typography className={classes.cardFont1}>
+                                      {signed
+                                        ? "Signed Succesfully"
+                                        : "Sign Now"}
+                                    </Typography>
+                                  </Grid>
                                 ) : null}
-                                <Grid item>
-                                  {signed && !executionReady && !executed ? (
-                                    <Grid item>
-                                      <Typography className={classes.cardFont1}>
-                                        {signed
-                                          ? "Signed Succesfully"
-                                          : "Sign Now"}
-                                      </Typography>
-                                    </Grid>
-                                  ) : null}
-                                  {!signed && !executionReady && !executed ? (
-                                    <Grid item>
-                                      <Typography className={classes.cardFont1}>
-                                        {signed
-                                          ? "Signed Succesfully"
-                                          : "Sign Now"}
-                                      </Typography>
-                                    </Grid>
-                                  ) : null}
-                                  {/* {txHash ? (
-                                      <Typography className={classes.cardFont1}>
-                                        {signed
-                                          ? "Signed Succesfully"
-                                          : "Sign Now"}
-
-                                       
-                                      </Typography>
-                                    ) : (
-                                      <Typography className={classes.cardFont1}>
-                                        {signed
-                                          ? "Signed Succesfully"
-                                          : "Sign Now"}
-                                      </Typography>
-                                    )} */}
-                                </Grid>
                               </Grid>
                             </Card>
                           </Card>

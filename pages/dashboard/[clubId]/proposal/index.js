@@ -14,10 +14,12 @@ import CreateProposalDialog from "../../../../src/components/proposalComps/Creat
 import { fetchProposals } from "../../../../src/utils/proposal";
 import { useRouter } from "next/router";
 import ProposalCard from "../proposalsss/ProposalCard";
+import { getAssetsByDaoAddress } from "../../../../src/api/assets";
+import ClubFetch from "../../../../src/utils/clubFetch";
 
 const Proposal = () => {
   const router = useRouter();
-  const { clubId } = router.query;
+  const { clubId: daoAddress } = router.query;
 
   const [selectedListItem, setSelectedListItem] = useState(
     proposalDisplayOptions[0].type,
@@ -25,6 +27,7 @@ const Proposal = () => {
 
   const [proposalList, setProposalList] = useState();
   const [open, setOpen] = useState(false);
+  const [tokenData, setTokenData] = useState();
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -43,17 +46,31 @@ const Proposal = () => {
   };
 
   const fetchProposalList = async () => {
-    const data = await fetchProposals(clubId);
+    const data = await fetchProposals(daoAddress);
     console.log(data);
 
     setProposalList(data);
   };
 
-  useEffect(() => {
-    if (clubId) {
-      fetchProposalList();
+  const fetchTokens = () => {
+    if (daoAddress) {
+      const tokenData = getAssetsByDaoAddress(daoAddress);
+      tokenData.then((result) => {
+        if (result.status != 200) {
+          console.log("error in token daata fetching");
+        } else {
+          setTokenData(result.data.tokenPriceList);
+        }
+      });
     }
-  }, [clubId]);
+  };
+
+  useEffect(() => {
+    if (daoAddress) {
+      fetchProposalList();
+      fetchTokens();
+    }
+  }, [daoAddress]);
 
   return (
     <Layout1 page={2}>
@@ -162,9 +179,10 @@ const Proposal = () => {
         open={open}
         setOpen={setOpen}
         onClose={handleClose}
+        tokenData={tokenData}
       />
     </Layout1>
   );
 };
 
-export default Proposal;
+export default ClubFetch(Proposal);

@@ -221,9 +221,13 @@ export default function App() {
 
     // dispatch(addClubID(data.clubId));
     // dispatch(addClubRoute(data.route));
-    router.push(`/dashboard/${data.daoAddress}`, undefined, {
-      shallow: true,
-    });
+    router.push(
+      `/dashboard/${Web3.utils.toChecksumAddress(data.daoAddress)}`,
+      undefined,
+      {
+        shallow: true,
+      },
+    );
   };
 
   const handleClose = (e) => {

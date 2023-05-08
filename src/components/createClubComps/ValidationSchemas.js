@@ -67,6 +67,14 @@ export const proposalValidationSchema = yup.object({
         .string("Enter proposal action")
         .required("action command is required"),
   }),
+  amountToAirdrop: yup.number("Enter amount of tokens").when("actionCommand", {
+    is: "Distribute token to members",
+    then: () =>
+      yup
+        .number("Enter amount of tokens")
+        .required("Amount is required")
+        .moreThan(0, "Amount should be greater than 0"),
+  }),
   userAddress: yup
     .string("Please enter user address")
 
