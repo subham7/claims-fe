@@ -15,7 +15,7 @@ export const QUERY_ALL_MEMBERS = (daoAddress) => {
 
 export const QUERY_CLUBS_FROM_WALLET_ADDRESS = (userAddress) => {
   return `query{
-        users(where: {userAddress: "${userAddress}"}){
+        users(  orderBy: timeStamp where: {userAddress: "${userAddress}"}){
             id
             daoAddress
             daoName

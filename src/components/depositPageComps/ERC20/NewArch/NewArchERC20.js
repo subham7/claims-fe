@@ -677,10 +677,18 @@ const NewArchERC20 = ({
                                 name="tokenInput"
                                 id="tokenInput"
                                 // disabled={
-                                //   remainingDays > 0 && isEligibleForTokenGating
-                                //     ? false
+                                //   (remainingDays > 0 && isTokenGated) ?
+                                //      !isEligibleForTokenGating
                                 //     : true
                                 // }
+
+                                disabled={
+                                  remainingDays > 0 && isTokenGated
+                                    ? !isEligibleForTokenGating
+                                    : remainingDays > 0
+                                    ? false
+                                    : true
+                                }
                                 inputProps={{
                                   style: {
                                     fontSize: "2em",
@@ -753,11 +761,11 @@ const NewArchERC20 = ({
                         variant="primary"
                         size="large"
                         onClick={formik.handleSubmit}
-                        // disabled={
-                        //   remainingDays > 0 &&   isEligibleForTokenGating
-                        //     ? false
-                        //     : true
-                        // }
+                        disabled={
+                          remainingDays > 0 && isEligibleForTokenGating
+                            ? false
+                            : true
+                        }
                         // disabled={
                         //   (closingDays > 0 ? false : true) ||
                         //   (depositAmount <= 0 ||
