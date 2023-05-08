@@ -9,6 +9,7 @@ import Web3 from "web3";
 import { useConnectWallet } from "@web3-onboard/react";
 import { TokenGatingModalStyles } from "./TokenGatingModalStyles";
 import ClubFetch from "../../utils/clubFetch";
+import { useSelector } from "react-redux";
 
 const Backdrop = ({ onClick }) => {
   const classes = TokenGatingModalStyles();
@@ -57,12 +58,14 @@ const TokenGatingModal = ({ closeModal, chooseTokens }) => {
               ERC20ABI,
               values.address,
               walletAddress,
-              USDC_CONTRACT_ADDRESS,
-              GNOSIS_TRANSACTION_URL,
+              undefined,
+              undefined,
+              // USDC_CONTRACT_ADDRESS,
+              // GNOSIS_TRANSACTION_URL,
             );
 
             tokenSymbol = await erc20contract.obtainSymbol();
-
+            console.log("NO TOKEN SYMBOL", tokenSymbol);
             try {
               tokenDecimal = await erc20contract.decimals();
             } catch (err) {
@@ -78,7 +81,8 @@ const TokenGatingModal = ({ closeModal, chooseTokens }) => {
             });
             closeModal();
           } catch (error) {
-            console.log(error);
+            console.log("ERROROROOROR", error);
+
             setTimeout(() => {
               setNotValid(false);
             }, 3000);
@@ -89,6 +93,8 @@ const TokenGatingModal = ({ closeModal, chooseTokens }) => {
       }
     },
   });
+
+  console.log("NOT VALID", notValid);
 
   return (
     <>
@@ -145,10 +151,11 @@ const TokenGatingModal = ({ closeModal, chooseTokens }) => {
           severity="error"
           sx={{
             width: "250px",
-            position: "absolute",
+            position: "fixed",
             bottom: "30px",
             right: "20px",
             borderRadius: "8px",
+            zIndex: 900000000,
           }}
         >
           Not a valid token address!
@@ -158,4 +165,4 @@ const TokenGatingModal = ({ closeModal, chooseTokens }) => {
   );
 };
 
-export default ClubFetch(TokenGatingModal);
+export default TokenGatingModal;
