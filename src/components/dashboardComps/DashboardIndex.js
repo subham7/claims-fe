@@ -61,6 +61,7 @@ const DashboardIndex = () => {
   });
   const [nftData, setNftData] = useState([]);
   const [proposalData, setProposalData] = useState([]);
+  const [depositLink, setDepositLink] = useState("");
 
   const [{ wallet }] = useConnectWallet();
   const router = useRouter();
@@ -135,7 +136,9 @@ const DashboardIndex = () => {
   const handleCopy = () => {
     navigator.clipboard.writeText(
       typeof window !== "undefined" && window.location.origin
-        ? `${window.location.origin}/join/${clubDetails.daoAddress}`
+        ? `${window.location.origin}/join/${Web3.utils.toChecksumAddress(
+            daoAddress,
+          )}`
         : null,
     );
   };
@@ -197,11 +200,13 @@ const DashboardIndex = () => {
           // setUserBalance(userDetail[1]);
           // setTotalTokenMinted(tokensMintedSoFar);
 
-          // setDepositLink(
-          //   typeof window !== "undefined" && window.location.origin
-          //     ? `${window.location.origin}/join/${daoAddress}?dashboard=true`
-          //     : null,
-          // );
+          setDepositLink(
+            typeof window !== "undefined" && window.location.origin
+              ? `${window.location.origin}/join/${Web3.utils.toChecksumAddress(
+                  daoAddress,
+                )}`
+              : null,
+          );
           // setDataFetched(true);
         } catch (e) {
           console.log(e);
@@ -221,7 +226,7 @@ const DashboardIndex = () => {
 
   return (
     <>
-      <Layout1 page={1}>
+      <Layout1 page={1} depositUrl={depositLink}>
         {/* <Layout1 page={1} depositUrl={depositLink}> */}
         <Grid container paddingLeft={10} paddingTop={15} spacing={1}>
           <Grid item spacing={1} xs={9}>
@@ -322,65 +327,65 @@ const DashboardIndex = () => {
                             </Typography>
                             <Typography fontSize={"48px"} fontWeight="bold">
                               {/* {clubDetails.tokenType === "erc721" ? (
-                                  <>
-                                    {nftMinted && nftBalance ? (
-                                      <>
-                                        {isNaN((nftBalance / nftMinted) * 100)
-                                          ? 0
-                                          : (nftBalance / nftMinted) * 100}
-                                        %
-                                      </>
-                                    ) : (
-                                      <Skeleton
-                                        variant="rectangular"
-                                        width={100}
-                                        height={25}
-                                      />
-                                    )}
-                                  </>
-                                ) : (
-                                  <>
-                                    {userBalance !== null &&
-                                    totalTokenMinted !== null ? (
-                                      <>
-                                        {isNaN(
-                                          parseInt(
+                                <>
+                                  {nftMinted && nftBalance ? (
+                                    <>
+                                      {isNaN((nftBalance / nftMinted) * 100)
+                                        ? 0
+                                        : (nftBalance / nftMinted) * 100}
+                                      %
+                                    </>
+                                  ) : (
+                                    <Skeleton
+                                      variant="rectangular"
+                                      width={100}
+                                      height={25}
+                                    />
+                                  )}
+                                </>
+                              ) : (
+                                <>
+                                  {userBalance !== null &&
+                                  totalTokenMinted !== null ? (
+                                    <>
+                                      {isNaN(
+                                        parseInt(
+                                          calculateUserSharePercentage(
+                                            userBalance,
+                                            totalTokenMinted,
+                                          ),
+                                        ),
+                                      )
+                                        ? 0
+                                        : parseInt(
                                             calculateUserSharePercentage(
                                               userBalance,
                                               totalTokenMinted,
                                             ),
-                                          ),
-                                        )
-                                          ? 0
-                                          : parseInt(
-                                              calculateUserSharePercentage(
-                                                userBalance,
-                                                totalTokenMinted,
-                                              ),
-                                            )}
-                                        %
-                                      </>
-                                    ) : (
-                                      <Skeleton
-                                        variant="rectangular"
-                                        width={100}
-                                        height={25}
-                                      />
-                                    )}
-                                  </>
-                                )} */}
+                                          )}
+                                      %
+                                    </>
+                                  ) : (
+                                    <Skeleton
+                                      variant="rectangular"
+                                      width={100}
+                                      height={25}
+                                    />
+                                  )}
+                                </>
+                              )} */}
                             </Typography>
-                            {/* <Typography className={classes.card2text2} mb={1}>
-                                {setTokenSymbol ? (
-                                  tokenSymbol
-                                ) : (
-                                  <Skeleton
-                                    variant="rectangular"
-                                    width={100}
-                                    height={25}
-                                  />
-                                )}
-                              </Typography> */}
+                            <Typography className={classes.card2text2} mb={1}>
+                              {clubData?.symbol ? (
+                                clubData.symbol
+                              ) : (
+                                <Skeleton
+                                  variant="rectangular"
+                                  width={100}
+                                  height={25}
+                                />
+                              )}
+                            </Typography>
                           </Box>
                         </Grid>
                         {/* <CardMedia    className={classes.media}    component=“img”    image=“/assets/images/card_illustration.png”    alt=“abstract background”    sx={{ position: “absolute”, bottom: 0 }}                     />   */}

@@ -3,6 +3,8 @@ import { SmartContract } from "../../src/api/contract";
 import factoryContractABI from "../../src/abis/newArch/factoryContract.json";
 import erc20DaoContractABI from "../../src/abis/newArch/erc20Dao.json";
 import erc721DaoContractABI from "../../src/abis/newArch/erc721Dao.json";
+import FactoryContractABI from "../../src/abis/newArch/factoryContract.json";
+import ERC20ABI from "../../src/abis/usdcTokenContract.json";
 
 import { NEW_FACTORY_ADDRESS } from "../../src/api";
 import { useConnectWallet } from "@web3-onboard/react";
@@ -13,6 +15,8 @@ import { useRouter } from "next/router";
 import { fetchClub, fetchClubbyDaoAddress } from "../../src/api/club";
 import NewArchERC721 from "../../src/components/depositPageComps/ERC721/NewArch/NewArchERC721";
 import { convertFromWeiGovernance } from "../../src/utils/globalFunctions";
+import { subgraphQuery } from "../../src/utils/subgraphs";
+import { QUERY_ALL_MEMBERS } from "../../src/api/graphql/queries";
 
 const Join = () => {
   const [daoDetails, setDaoDetails] = useState({
@@ -38,6 +42,10 @@ const Join = () => {
     nftURI: "",
   });
   const [tokenType, setTokenType] = useState("");
+  const [isEligibleForTokenGating, setIsEligibleForTokenGating] =
+    useState(false);
+  const [isTokenGated, setIsTokenGated] = useState(false);
+  const [members, setMembers] = useState([]);
 
   const [{ wallet }] = useConnectWallet();
   const router = useRouter();
@@ -192,6 +200,79 @@ const Join = () => {
     }
   }, [daoAddress]);
 
+  const fetchTokenGatingDetials = useCallback(async () => {
+    try {
+      // setLoading(true);
+      const factoryContract = new SmartContract(
+        FactoryContractABI,
+        NEW_FACTORY_ADDRESS,
+        walletAddress,
+        undefined,
+        undefined,
+      );
+
+      const tokenGatingDetails = await factoryContract.getTokenGatingDetails(
+        daoAddress,
+      );
+      console.log("TOken Gating details", tokenGatingDetails);
+      if (tokenGatingDetails[0].length) setIsTokenGated(true);
+      const tokenAContract = new SmartContract(
+        ERC20ABI,
+        tokenGatingDetails[0].tokenA,
+        walletAddress,
+        undefined,
+        undefined,
+      );
+
+      const tokenBContract = new SmartContract(
+        ERC20ABI,
+        tokenGatingDetails[0].tokenB,
+        walletAddress,
+        undefined,
+        undefined,
+      );
+      const balanceOfTokenAInUserWallet = await tokenAContract.balanceOf();
+      const balanceOfTokenBInUserWallet = await tokenBContract.balanceOf();
+
+      console.log(
+        "Balance of token A",
+        +balanceOfTokenAInUserWallet > +tokenGatingDetails[0].value[0],
+      );
+
+      if (tokenGatingDetails[0].operator == 0) {
+        if (
+          +balanceOfTokenAInUserWallet >= +tokenGatingDetails[0]?.value[0] &&
+          +balanceOfTokenBInUserWallet >= +tokenGatingDetails[0]?.value[1]
+        ) {
+          console.log("You are eligible (AND)");
+          setIsEligibleForTokenGating(true);
+        } else {
+          console.log("You are not eligible (AND)");
+          setIsEligibleForTokenGating(false);
+        }
+      } else if (tokenGatingDetails[0].operator == 1) {
+        if (
+          +balanceOfTokenAInUserWallet >= +tokenGatingDetails[0]?.value[0] ||
+          +balanceOfTokenBInUserWallet >= +tokenGatingDetails[0]?.value[1]
+        ) {
+          console.log("You are eligible (OR)");
+          setIsEligibleForTokenGating(true);
+        } else {
+          console.log("You are not eligible (OR)");
+          setIsEligibleForTokenGating(false);
+        }
+      }
+      // setLoading(false);
+    } catch (error) {
+      console.log(error);
+      // setLoading(false);
+    }
+  }, [walletAddress, daoAddress]);
+
+  useEffect(() => {
+    fetchTokenGatingDetials();
+  }, [fetchTokenGatingDetials]);
+
   useEffect(() => {
     fetchDataFromApi();
   }, [fetchDataFromApi]);
@@ -205,12 +286,38 @@ const Join = () => {
     }
   }, [fetchErc20ContractDetails, tokenType, fetchErc721ContractDetails]);
 
+  useEffect(() => {
+    try {
+      const fetchData = async () => {
+        if (daoAddress) {
+          const data = await subgraphQuery(QUERY_ALL_MEMBERS(daoAddress));
+          console.log("Members", data);
+          setMembers(data?.users);
+        }
+      };
+      fetchData();
+    } catch (error) {
+      console.log(error);
+    }
+  }, [daoAddress]);
+
   return (
     <Layout2>
       {tokenType === "erc20NonTransferable" ? (
-        <NewArchERC20 erc20DaoAddress={daoAddress} daoDetails={daoDetails} />
+        <NewArchERC20
+          isTokenGated={isTokenGated}
+          isEligibleForTokenGating={isEligibleForTokenGating}
+          erc20DaoAddress={daoAddress}
+          daoDetails={daoDetails}
+          members={members}
+        />
       ) : (
-        <NewArchERC721 erc721DaoAddress={daoAddress} daoDetails={daoDetails} />
+        <NewArchERC721
+          isTokenGated={isTokenGated}
+          isEligibleForTokenGating={isEligibleForTokenGating}
+          erc721DaoAddress={daoAddress}
+          daoDetails={daoDetails}
+        />
       )}
     </Layout2>
   );

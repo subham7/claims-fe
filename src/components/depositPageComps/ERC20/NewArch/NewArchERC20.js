@@ -37,7 +37,13 @@ import * as yup from "yup";
 import { NEW_FACTORY_ADDRESS } from "../../../../api";
 import dayjs from "dayjs";
 
-const NewArchERC20 = ({ daoDetails, erc20DaoAddress }) => {
+const NewArchERC20 = ({
+  daoDetails,
+  erc20DaoAddress,
+  isTokenGated,
+  isEligibleForTokenGating,
+  members,
+}) => {
   const [erc20TokenDetails, setErc20TokenDetails] = useState({
     tokenSymbol: "",
     tokenBalance: 0,
@@ -164,7 +170,7 @@ const NewArchERC20 = ({ daoDetails, erc20DaoAddress }) => {
         const deposit = await factoryContract.buyGovernanceTokenERC20DAO(
           walletAddress,
           erc20DaoAddress,
-          daoDetails.depositTokenAddress,
+          // daoDetails.depositTokenAddress,
           convertToWeiGovernance(
             (inputValue / +daoDetails.pricePerToken).toString(),
             18,
@@ -206,7 +212,7 @@ const NewArchERC20 = ({ daoDetails, erc20DaoAddress }) => {
                     <Grid container spacing={2}>
                       <Grid item mt={3} ml={3}>
                         {daoDetails.daoImage && (
-                          <Image
+                          <img
                             src={daoDetails?.daoImage}
                             alt="club-image"
                             width={120}
@@ -269,23 +275,24 @@ const NewArchERC20 = ({ daoDetails, erc20DaoAddress }) => {
                     </div>
                   </Grid>
                 </Grid>
-                {/* <Grid>
-                  {tokenGatingAddress !==
-                    "0x0000000000000000000000000000000000000000" && (
+
+                <Grid>
+                  {isTokenGated && isEligibleForTokenGating ? (
                     <>
-                      {userTokenBalance < tokenGatingAmount ||
-                      isNaN(userTokenBalance) ? (
-                        <Typography sx={{ color: "red" }}>
-                          This club is Token Gated. You don&apos;t qualify
-                        </Typography>
-                      ) : (
-                        <Typography sx={{ color: "#3B7AFD" }}>
-                          This club is Token Gated. You qualify
-                        </Typography>
-                      )}
+                      <Typography sx={{ color: "#3B7AFD", marginLeft: "30px" }}>
+                        This club is token gated. You qualify
+                      </Typography>
                     </>
+                  ) : isTokenGated && !isEligibleForTokenGating ? (
+                    <>
+                      <Typography sx={{ color: "red", marginLeft: "30px" }}>
+                        This club is token gated. You don&apos;t qualify
+                      </Typography>
+                    </>
+                  ) : (
+                    ""
                   )}
-                </Grid> */}
+                </Grid>
 
                 <Divider variant="middle" />
                 <Grid container spacing={7}>
@@ -456,7 +463,7 @@ const NewArchERC20 = ({ daoDetails, erc20DaoAddress }) => {
                   </Grid>
                   <Grid item ml={5} md={3}>
                     <Grid container direction="column">
-                      {/* <Grid item>
+                      <Grid item>
                         <Typography
                           variant="p"
                           className={classes.valuesDimStyle}
@@ -471,18 +478,18 @@ const NewArchERC20 = ({ daoDetails, erc20DaoAddress }) => {
                             />
                           )}
                         </Typography>
-                      </Grid> */}
+                      </Grid>
                       <Grid item mt={2}>
                         <Typography variant="p" className={classes.valuesStyle}>
-                          {/* {walletConnected ? (
-                            members
+                          {walletAddress ? (
+                            members.length
                           ) : (
                             <Skeleton
                               variant="rectangular"
                               width={100}
                               height={25}
                             />
-                          )} */}
+                          )}
                         </Typography>
                       </Grid>
                     </Grid>
@@ -669,7 +676,19 @@ const NewArchERC20 = ({ daoDetails, erc20DaoAddress }) => {
                                 type="number"
                                 name="tokenInput"
                                 id="tokenInput"
-                                disabled={remainingDays > 0 ? false : true}
+                                // disabled={
+                                //   (remainingDays > 0 && isTokenGated) ?
+                                //      !isEligibleForTokenGating
+                                //     : true
+                                // }
+
+                                disabled={
+                                  remainingDays > 0 && isTokenGated
+                                    ? !isEligibleForTokenGating
+                                    : remainingDays > 0
+                                    ? false
+                                    : true
+                                }
                                 inputProps={{
                                   style: {
                                     fontSize: "2em",
@@ -742,6 +761,11 @@ const NewArchERC20 = ({ daoDetails, erc20DaoAddress }) => {
                         variant="primary"
                         size="large"
                         onClick={formik.handleSubmit}
+                        disabled={
+                          remainingDays > 0 && isEligibleForTokenGating
+                            ? false
+                            : true
+                        }
                         // disabled={
                         //   (closingDays > 0 ? false : true) ||
                         //   (depositAmount <= 0 ||

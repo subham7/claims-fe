@@ -155,7 +155,7 @@ const Claims = () => {
 
       {/* Right Side */}
       <div className={classes.rightDiv}>
-        <Image src={claimsBanner} alt="claimBanner" />
+        <Image src={claimsBanner} alt="claimBanner" height={250} width={400} />
       </div>
     </div>
   );
