@@ -15,6 +15,8 @@ import { useRouter } from "next/router";
 import { fetchClub, fetchClubbyDaoAddress } from "../../src/api/club";
 import NewArchERC721 from "../../src/components/depositPageComps/ERC721/NewArch/NewArchERC721";
 import { convertFromWeiGovernance } from "../../src/utils/globalFunctions";
+import { subgraphQuery } from "../../src/utils/subgraphs";
+import { QUERY_ALL_MEMBERS } from "../../src/api/graphql/queries";
 
 const Join = () => {
   const [daoDetails, setDaoDetails] = useState({
@@ -43,6 +45,7 @@ const Join = () => {
   const [isEligibleForTokenGating, setIsEligibleForTokenGating] =
     useState(false);
   const [isTokenGated, setIsTokenGated] = useState(false);
+  const [members, setMembers] = useState([]);
 
   const [{ wallet }] = useConnectWallet();
   const router = useRouter();
@@ -283,6 +286,21 @@ const Join = () => {
     }
   }, [fetchErc20ContractDetails, tokenType, fetchErc721ContractDetails]);
 
+  useEffect(() => {
+    try {
+      const fetchData = async () => {
+        if (daoAddress) {
+          const data = await subgraphQuery(QUERY_ALL_MEMBERS(daoAddress));
+          console.log("Members", data);
+          setMembers(data?.users);
+        }
+      };
+      fetchData();
+    } catch (error) {
+      console.log(error);
+    }
+  }, [daoAddress]);
+
   return (
     <Layout2>
       {tokenType === "erc20NonTransferable" ? (
@@ -291,6 +309,7 @@ const Join = () => {
           isEligibleForTokenGating={isEligibleForTokenGating}
           erc20DaoAddress={daoAddress}
           daoDetails={daoDetails}
+          members={members}
         />
       ) : (
         <NewArchERC721

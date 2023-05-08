@@ -13,35 +13,17 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { DesktopDatePicker, LocalizationProvider } from "@mui/x-date-pickers";
-import { Token } from "graphql";
-import { useRouter } from "next/router";
-import React, { useCallback, useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { fetchClubbyDaoAddress } from "../../api/club";
-import {
-  QUERY_ALL_MEMBERS,
-  QUERY_CLUB_DETAILS,
-} from "../../api/graphql/queries";
-import { subgraphQuery } from "../../utils/subgraphs";
+import React from "react";
 import Layout1 from "../layouts/layout1";
 import ProgressBar from "../progressbar";
-import factoryContractABI from "../../../src/abis/newArch/factoryContract.json";
-import erc20DaoContractABI from "../../../src/abis/newArch/erc20Dao.json";
-import erc20ABI from "../../abis/usdcTokenContract.json";
 
 import { SettingsInfoStlyes } from "./SettingsInfoStyles";
-import { NEW_FACTORY_ADDRESS } from "../../api";
 import Web3 from "web3";
-import { useConnectWallet } from "@web3-onboard/react";
-import { SmartContract } from "../../api/contract";
 import {
   calculateTreasuryTargetShare,
   calculateUserSharePercentage,
   convertFromWeiGovernance,
 } from "../../utils/globalFunctions";
-import { getAssetsByDaoAddress } from "../../api/assets";
-import dayjs from "dayjs";
 
 const SettingsInfo = ({
   daoDetails,
@@ -54,7 +36,15 @@ const SettingsInfo = ({
 }) => {
   const classes = SettingsInfoStlyes();
 
-  console.log("Club token minted", daoDetails.clubTokensMinted);
+  console.log(
+    "Club token minted",
+    isNaN(
+      Number(
+        daoDetails.balanceOfClubToken /
+          Number(convertFromWeiGovernance(daoDetails.clubTokensMinted, 18)),
+      ),
+    ),
+  );
 
   return (
     <>
@@ -327,16 +317,26 @@ const SettingsInfo = ({
                             className={classes.valuesStyle}
                           >
                             {daoDetails.balanceOfClubToken !== null &&
-                            daoDetails.clubTokensMinted !== null
-                              ? Number(
+                            daoDetails.clubTokensMinted !== null &&
+                            isNaN(
+                              Number(
+                                (daoDetails.balanceOfClubToken /
+                                  convertFromWeiGovernance(
+                                    daoDetails.clubTokensMinted,
+                                    18,
+                                  )) *
+                                  100,
+                              ).toFixed(2),
+                            )
+                              ? 0
+                              : Number(
                                   (daoDetails.balanceOfClubToken /
                                     convertFromWeiGovernance(
                                       daoDetails.clubTokensMinted,
                                       18,
                                     )) *
                                     100,
-                                ).toFixed(2)
-                              : ""}
+                                ).toFixed(2)}
                             % <br />({daoDetails.balanceOfClubToken}{" "}
                             {daoDetails.daoSymbol})
                           </Typography>
@@ -533,7 +533,8 @@ const SettingsInfo = ({
                                 variant="p"
                                 className={classes.valuesStyle}
                               >
-                                {governorDataFetched ? (
+                                {/* {governorDataFetched ? ( */}
+                                {daoDetails ? (
                                   // convertAmountToWei(totalERC20Supply?.toString()) +
                                   // (" $" + tokenDetails[1])
                                   // convertAmountToWei(String(totalERC20Supply))

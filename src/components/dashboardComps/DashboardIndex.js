@@ -327,65 +327,65 @@ const DashboardIndex = () => {
                             </Typography>
                             <Typography fontSize={"48px"} fontWeight="bold">
                               {/* {clubDetails.tokenType === "erc721" ? (
-                                  <>
-                                    {nftMinted && nftBalance ? (
-                                      <>
-                                        {isNaN((nftBalance / nftMinted) * 100)
-                                          ? 0
-                                          : (nftBalance / nftMinted) * 100}
-                                        %
-                                      </>
-                                    ) : (
-                                      <Skeleton
-                                        variant="rectangular"
-                                        width={100}
-                                        height={25}
-                                      />
-                                    )}
-                                  </>
-                                ) : (
-                                  <>
-                                    {userBalance !== null &&
-                                    totalTokenMinted !== null ? (
-                                      <>
-                                        {isNaN(
-                                          parseInt(
+                                <>
+                                  {nftMinted && nftBalance ? (
+                                    <>
+                                      {isNaN((nftBalance / nftMinted) * 100)
+                                        ? 0
+                                        : (nftBalance / nftMinted) * 100}
+                                      %
+                                    </>
+                                  ) : (
+                                    <Skeleton
+                                      variant="rectangular"
+                                      width={100}
+                                      height={25}
+                                    />
+                                  )}
+                                </>
+                              ) : (
+                                <>
+                                  {userBalance !== null &&
+                                  totalTokenMinted !== null ? (
+                                    <>
+                                      {isNaN(
+                                        parseInt(
+                                          calculateUserSharePercentage(
+                                            userBalance,
+                                            totalTokenMinted,
+                                          ),
+                                        ),
+                                      )
+                                        ? 0
+                                        : parseInt(
                                             calculateUserSharePercentage(
                                               userBalance,
                                               totalTokenMinted,
                                             ),
-                                          ),
-                                        )
-                                          ? 0
-                                          : parseInt(
-                                              calculateUserSharePercentage(
-                                                userBalance,
-                                                totalTokenMinted,
-                                              ),
-                                            )}
-                                        %
-                                      </>
-                                    ) : (
-                                      <Skeleton
-                                        variant="rectangular"
-                                        width={100}
-                                        height={25}
-                                      />
-                                    )}
-                                  </>
-                                )} */}
+                                          )}
+                                      %
+                                    </>
+                                  ) : (
+                                    <Skeleton
+                                      variant="rectangular"
+                                      width={100}
+                                      height={25}
+                                    />
+                                  )}
+                                </>
+                              )} */}
                             </Typography>
-                            {/* <Typography className={classes.card2text2} mb={1}>
-                                {setTokenSymbol ? (
-                                  tokenSymbol
-                                ) : (
-                                  <Skeleton
-                                    variant="rectangular"
-                                    width={100}
-                                    height={25}
-                                  />
-                                )}
-                              </Typography> */}
+                            <Typography className={classes.card2text2} mb={1}>
+                              {clubData?.symbol ? (
+                                clubData.symbol
+                              ) : (
+                                <Skeleton
+                                  variant="rectangular"
+                                  width={100}
+                                  height={25}
+                                />
+                              )}
+                            </Typography>
                           </Box>
                         </Grid>
                         {/* <CardMedia    className={classes.media}    component=“img”    image=“/assets/images/card_illustration.png”    alt=“abstract background”    sx={{ position: “absolute”, bottom: 0 }}                     />   */}

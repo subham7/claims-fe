@@ -33,7 +33,8 @@ const AdditionalSettings = ({
   erc20TokenDetails,
   walletAddress,
   fetchErc20ContractDetails,
-  fetchErc721ContractDetails
+  fetchErc721ContractDetails,
+  isAdminUser,
 }) => {
   const classes = AdditionalSettingsStyles();
   const router = useRouter();
@@ -64,11 +65,16 @@ const AdditionalSettings = ({
         daoAddress,
       );
       console.log(res);
-      
+
       setLoading(false);
       showMessageHandler();
       setIsSuccessFull(true);
       setMessage("Owner Fee updated Successfully");
+      if (tokenType === "erc20") {
+        fetchErc20ContractDetails();
+      } else {
+        fetchErc721ContractDetails();
+      }
     } catch (error) {
       console.log(error.code);
       showMessageHandler();
@@ -192,14 +198,19 @@ const AdditionalSettings = ({
             <Grid mr={4}>
               <Grid sx={{ display: "flex", alignItems: "center" }}>
                 <Typography className={classes.text} mr={1}>
-                  {daoDetails.ownerFee}
+                  {daoDetails.ownerFee}%
                 </Typography>
-                <Link
-                  className={classes.link}
-                  onClick={showUpdateOwnerFeesModalHandler}
-                >
-                  (Change)
-                </Link>
+
+                {isAdminUser ? (
+                  <Link
+                    className={classes.link}
+                    onClick={showUpdateOwnerFeesModalHandler}
+                  >
+                    (Change)
+                  </Link>
+                ) : (
+                  ""
+                )}
               </Grid>
             </Grid>
           </Grid>
@@ -226,12 +237,16 @@ const AdditionalSettings = ({
                   />
                 </Typography>
 
-                <Link
-                  className={classes.link}
-                  onClick={showUpdateDepositTimeModalHandler}
-                >
-                  (Change)
-                </Link>
+                {isAdminUser ? (
+                  <Link
+                    className={classes.link}
+                    onClick={showUpdateDepositTimeModalHandler}
+                  >
+                    (Change)
+                  </Link>
+                ) : (
+                  ""
+                )}
               </Grid>
             </Grid>
           </Grid>

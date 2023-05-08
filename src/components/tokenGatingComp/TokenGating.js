@@ -50,6 +50,10 @@ const TokenGating = () => {
 
   const [{ wallet }] = useConnectWallet();
 
+  const isAdminUser = useSelector((state) => {
+    return state.gnosis.adminUser;
+  });
+
   let walletAddress;
   const router = useRouter();
   const classes = TokenGatingStyle();
@@ -197,9 +201,12 @@ const TokenGating = () => {
     <div className={classes.container}>
       <div className={classes.heading}>
         <p className={classes.title}>Token Gating</p>
-        <div className={classes.icon}>
-          <MdEdit size={20} />
-        </div>
+
+        {isAdminUser && (
+          <div className={classes.icon}>
+            <MdEdit size={20} />
+          </div>
+        )}
       </div>
 
       <div className={classes.conditions}>
@@ -261,13 +268,15 @@ const TokenGating = () => {
           )}
         </div>
 
-        <button
-          className={classes.addBtn}
-          disabled={fetchedDetails?.tokenA || tokensList.length >= 2}
-          onClick={addTokensHandler}
-        >
-          +
-        </button>
+        {isAdminUser && (
+          <button
+            className={classes.addBtn}
+            disabled={fetchedDetails?.tokenA || tokensList.length >= 2}
+            onClick={addTokensHandler}
+          >
+            +
+          </button>
+        )}
       </div>
 
       <div className={classes.switchContainer}>
@@ -304,13 +313,17 @@ const TokenGating = () => {
         <p>condition(s)</p>
       </div>
 
-      <button
-        className={classes.saveBtn}
-        disabled={!tokensList.length}
-        onClick={tokenGatingHandler}
-      >
-        Save changes
-      </button>
+      {isAdminUser ? (
+        <button
+          className={classes.saveBtn}
+          disabled={!tokensList.length}
+          onClick={tokenGatingHandler}
+        >
+          Save changes
+        </button>
+      ) : (
+        ""
+      )}
 
       {showTokenGatingModal && (
         <TokenGatingModal

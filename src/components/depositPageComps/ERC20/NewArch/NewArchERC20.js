@@ -42,6 +42,7 @@ const NewArchERC20 = ({
   erc20DaoAddress,
   isTokenGated,
   isEligibleForTokenGating,
+  members,
 }) => {
   const [erc20TokenDetails, setErc20TokenDetails] = useState({
     tokenSymbol: "",
@@ -462,7 +463,7 @@ const NewArchERC20 = ({
                   </Grid>
                   <Grid item ml={5} md={3}>
                     <Grid container direction="column">
-                      {/* <Grid item>
+                      <Grid item>
                         <Typography
                           variant="p"
                           className={classes.valuesDimStyle}
@@ -477,18 +478,18 @@ const NewArchERC20 = ({
                             />
                           )}
                         </Typography>
-                      </Grid> */}
+                      </Grid>
                       <Grid item mt={2}>
                         <Typography variant="p" className={classes.valuesStyle}>
-                          {/* {walletConnected ? (
-                            members
+                          {walletAddress ? (
+                            members.length
                           ) : (
                             <Skeleton
                               variant="rectangular"
                               width={100}
                               height={25}
                             />
-                          )} */}
+                          )}
                         </Typography>
                       </Grid>
                     </Grid>

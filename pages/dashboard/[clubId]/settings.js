@@ -67,6 +67,11 @@ const Settings = () => {
     return state.club.clubData.tokenType;
   });
 
+  const isAdminUser = useSelector((state) => {
+    return state.gnosis.adminUser;
+  });
+
+
   const router = useRouter();
   const { clubId: daoAddress } = router.query;
 
@@ -313,6 +318,7 @@ const Settings = () => {
         walletAddress={walletAddress}
         fetchErc20ContractDetails={fetchErc20ContractDetails}
         fetchErc721ContractDetails={fetchErc721ContractDetails}
+        isAdminUser={isAdminUser}
       />
       <TokenGating />
     </div>
