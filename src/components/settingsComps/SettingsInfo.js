@@ -424,7 +424,9 @@ const SettingsInfo = ({
                         )}
                       />
                     </>
-                  ) : walletAddress && daoDetails.clubTokensMinted ? (
+                  ) : tokenType === "erc721" &&
+                    daoDetails.isTotalSupplyUnlimited ? null : walletAddress &&
+                    daoDetails.clubTokensMinted ? (
                     <ProgressBar
                       value={calculateTreasuryTargetShare(
                         convertFromWeiGovernance(
