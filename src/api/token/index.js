@@ -1,7 +1,7 @@
 import axios from "axios";
-import { GOERLI_RPC_URL } from "../index";
+import { GOERLI_RPC_URL, POLYGON_MAINNET_RPC_URL } from "../index";
 
-export const getTokensFromWallet = async (address) => {
+export const getTokensFromWallet = async (address, networkId) => {
   const data = JSON.stringify({
     jsonrpc: "2.0",
     method: "alchemy_getTokenBalances",
@@ -14,7 +14,12 @@ export const getTokensFromWallet = async (address) => {
 
   const config = {
     method: "post",
-    url: GOERLI_RPC_URL,
+    url:
+      networkId == "0x5"
+        ? GOERLI_RPC_URL
+        : networkId == "0x89"
+        ? POLYGON_MAINNET_RPC_URL
+        : "",
     headers: {
       "Content-Type": "application/json",
     },
@@ -50,7 +55,12 @@ export const getTokensFromWallet = async (address) => {
       // options for making a request to get the token metadata
       const options = {
         method: "POST",
-        url: GOERLI_RPC_URL,
+        url:
+          networkId == "0x5"
+            ? GOERLI_RPC_URL
+            : networkId == "0x89"
+            ? POLYGON_MAINNET_RPC_URL
+            : "",
         headers: {
           "accept": "application/json",
           "content-type": "application/json",
@@ -91,7 +101,11 @@ export const getTokensFromWallet = async (address) => {
   return newData;
 };
 
-export const getBalanceOfToken = async (walletAddress, tokenAddress) => {
+export const getBalanceOfToken = async (
+  walletAddress,
+  tokenAddress,
+  networkId,
+) => {
   console.log(walletAddress);
   const main = async () => {
     //fetching token balance
@@ -99,7 +113,12 @@ export const getBalanceOfToken = async (walletAddress, tokenAddress) => {
     // options for making a request to get the token metadata
     const options = {
       method: "POST",
-      url: GOERLI_RPC_URL,
+      url:
+        networkId == "0x5"
+          ? GOERLI_RPC_URL
+          : networkId == "0x89"
+          ? POLYGON_MAINNET_RPC_URL
+          : "",
       headers: {
         "accept": "application/json",
         "content-type": "application/json",
@@ -112,7 +131,7 @@ export const getBalanceOfToken = async (walletAddress, tokenAddress) => {
       },
     };
 
-    const tokenDecimal = await getTokensDecimalFromAddress(`${tokenAddress}`);
+    const tokenDecimal = await getTokensDecimalFromAddress(`${tokenAddress}`,networkId);
 
     const metadata = await axios.request(options);
     let balance = metadata.data.result.tokenBalances[0].tokenBalance;
@@ -126,8 +145,7 @@ export const getBalanceOfToken = async (walletAddress, tokenAddress) => {
   return newData;
 };
 
-export const getTokensDecimalFromAddress = async (address) => {
-
+export const getTokensDecimalFromAddress = async (address, networkId) => {
   const data = JSON.stringify({
     jsonrpc: "2.0",
     method: "alchemy_getTokenMetadata",
@@ -140,7 +158,12 @@ export const getTokensDecimalFromAddress = async (address) => {
 
   const config = {
     method: "post",
-    url: GOERLI_RPC_URL,
+    url:
+      networkId == "0x5"
+        ? GOERLI_RPC_URL
+        : networkId == "0x89"
+        ? POLYGON_MAINNET_RPC_URL
+        : "",
     headers: {
       "Content-Type": "application/json",
     },
@@ -161,7 +184,7 @@ export const getTokensDecimalFromAddress = async (address) => {
   return tokenDecimal;
 };
 
-export const getTokenMetadata = async (address) => {
+export const getTokenMetadata = async (address, networkId) => {
   const data = JSON.stringify({
     jsonrpc: "2.0",
     method: "alchemy_getTokenMetadata",
@@ -174,7 +197,12 @@ export const getTokenMetadata = async (address) => {
 
   const config = {
     method: "post",
-    url: GOERLI_RPC_URL,
+    url:
+      networkId == "0x5"
+        ? GOERLI_RPC_URL
+        : networkId == "0x89"
+        ? POLYGON_MAINNET_RPC_URL
+        : "",
     headers: {
       "Content-Type": "application/json",
     },

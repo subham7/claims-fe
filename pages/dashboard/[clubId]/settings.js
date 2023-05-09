@@ -71,6 +71,19 @@ const Settings = () => {
     return state.gnosis.adminUser;
   });
 
+  const NETWORK_HEX = useSelector((state) => {
+    return state.gnosis.networkHex;
+  });
+
+  const GNOSIS_TRANSACTION_URL = useSelector((state) => {
+    return state.gnosis.transactionUrl;
+  });
+
+  const USDC_CONTRACT_ADDRESS = useSelector((state) => {
+    return state.gnosis.usdcContractAddress;
+  });
+
+  console.log("GNOSIS", GNOSIS_TRANSACTION_URL, USDC_CONTRACT_ADDRESS);
 
   const router = useRouter();
   const { clubId: daoAddress } = router.query;
@@ -86,16 +99,16 @@ const Settings = () => {
         factoryContractABI,
         NEW_FACTORY_ADDRESS,
         walletAddress,
-        undefined,
-        undefined,
+        USDC_CONTRACT_ADDRESS,
+        GNOSIS_TRANSACTION_URL,
       );
 
       const erc20DaoContract = new SmartContract(
         erc20DaoContractABI,
         daoAddress,
         walletAddress,
-        undefined,
-        undefined,
+        USDC_CONTRACT_ADDRESS,
+        GNOSIS_TRANSACTION_URL,
       );
 
       const balanceOfClubToken = await erc20DaoContract.balanceOf();
@@ -146,7 +159,12 @@ const Settings = () => {
     } catch (error) {
       console.log(error);
     }
-  }, [daoAddress, walletAddress]);
+  }, [
+    GNOSIS_TRANSACTION_URL,
+    USDC_CONTRACT_ADDRESS,
+    daoAddress,
+    walletAddress,
+  ]);
 
   const fetchErc20TokenDetails = useCallback(async () => {
     try {
@@ -154,8 +172,8 @@ const Settings = () => {
         erc20ABI,
         daoDetails.depositTokenAddress,
         walletAddress,
-        undefined,
-        undefined,
+        USDC_CONTRACT_ADDRESS,
+        GNOSIS_TRANSACTION_URL,
       );
 
       const balanceOfToken = await erc20Contract.balanceOf();
@@ -176,7 +194,12 @@ const Settings = () => {
     } catch (error) {
       console.log(error);
     }
-  }, [daoDetails.depositTokenAddress, walletAddress]);
+  }, [
+    GNOSIS_TRANSACTION_URL,
+    USDC_CONTRACT_ADDRESS,
+    daoDetails.depositTokenAddress,
+    walletAddress,
+  ]);
 
   const fetchErc721ContractDetails = useCallback(async () => {
     try {
@@ -185,8 +208,8 @@ const Settings = () => {
         factoryContractABI,
         NEW_FACTORY_ADDRESS,
         walletAddress,
-        undefined,
-        undefined,
+        USDC_CONTRACT_ADDRESS,
+        GNOSIS_TRANSACTION_URL,
       );
 
       console.log(factoryContract);
@@ -195,8 +218,8 @@ const Settings = () => {
         erc721DaoContractABI,
         daoAddress,
         walletAddress,
-        undefined,
-        undefined,
+        USDC_CONTRACT_ADDRESS,
+        GNOSIS_TRANSACTION_URL,
       );
 
       console.log(erc721DaoContract);
@@ -252,17 +275,22 @@ const Settings = () => {
     } catch (error) {
       console.log(error);
     }
-  }, [daoAddress, walletAddress]);
+  }, [
+    GNOSIS_TRANSACTION_URL,
+    USDC_CONTRACT_ADDRESS,
+    daoAddress,
+    walletAddress,
+  ]);
 
   const fetchAssets = useCallback(async () => {
     try {
-      const assetsData = await getAssetsByDaoAddress(daoAddress);
+      const assetsData = await getAssetsByDaoAddress(daoAddress, NETWORK_HEX);
       console.log("Asset data", assetsData.data?.treasuryAmount);
       setTreasuryAmount(assetsData?.data?.treasuryAmount);
     } catch (error) {
       console.log(error);
     }
-  }, [daoAddress]);
+  }, [NETWORK_HEX, daoAddress]);
 
   useEffect(() => {
     if (tokenType === "erc20") {

@@ -24,6 +24,7 @@ import {
   convertFromWeiGovernance,
   convertToWeiGovernance,
 } from "../../utils/globalFunctions";
+import ClubFetch from "../../utils/clubFetch";
 
 const TokenGating = () => {
   const [showTokenGatingModal, setShowTokenGatingModal] = useState(false);
@@ -63,6 +64,14 @@ const TokenGating = () => {
     walletAddress = Web3.utils.toChecksumAddress(wallet?.accounts[0].address);
   }
 
+  const GNOSIS_TRANSACTION_URL = useSelector((state) => {
+    return state.gnosis.transactionUrl;
+  });
+
+  const USDC_CONTRACT_ADDRESS = useSelector((state) => {
+    return state.gnosis.usdcContractAddress;
+  });
+
   const addTokensHandler = () => {
     setShowTokenGatingModal(true);
   };
@@ -79,8 +88,8 @@ const TokenGating = () => {
         FactoryContractABI,
         NEW_FACTORY_ADDRESS,
         walletAddress,
-        undefined,
-        undefined,
+        USDC_CONTRACT_ADDRESS,
+        GNOSIS_TRANSACTION_URL,
       );
 
       console.log("Factory Contract", factoryContract);
@@ -138,8 +147,8 @@ const TokenGating = () => {
         FactoryContractABI,
         NEW_FACTORY_ADDRESS,
         walletAddress,
-        undefined,
-        undefined,
+        USDC_CONTRACT_ADDRESS,
+        GNOSIS_TRANSACTION_URL,
       );
 
       console.log("Factory Contract", factoryContract);
@@ -161,16 +170,16 @@ const TokenGating = () => {
         ERC20ABI,
         tokenGatingDetails[0].tokenA,
         walletAddress,
-        undefined,
-        undefined,
+        USDC_CONTRACT_ADDRESS,
+        GNOSIS_TRANSACTION_URL,
       );
 
       const tokenBContract = new SmartContract(
         ERC20ABI,
         tokenGatingDetails[0].tokenB,
         walletAddress,
-        undefined,
-        undefined,
+        USDC_CONTRACT_ADDRESS,
+        GNOSIS_TRANSACTION_URL,
       );
 
       const tokenASymbol = await tokenAContract.symbol();
@@ -189,7 +198,12 @@ const TokenGating = () => {
       console.log(error);
       setLoading(false);
     }
-  }, [walletAddress, daoAddress]);
+  }, [
+    walletAddress,
+    USDC_CONTRACT_ADDRESS,
+    GNOSIS_TRANSACTION_URL,
+    daoAddress,
+  ]);
 
   useEffect(() => {
     fetchTokenGatingDetials();

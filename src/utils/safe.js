@@ -7,7 +7,7 @@ import Safe, {
   SafeAccountConfig,
 } from "@safe-global/protocol-kit";
 
-import FactoryContract from "../abis/newFactoryContract.json";
+import FactoryContract from "../abis/newArch/factoryContract.json";
 import { createClub, fetchClub } from "../api/club";
 import { SmartContract } from "../api/contract";
 import { createUser } from "../api/user";

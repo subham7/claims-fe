@@ -36,6 +36,7 @@ import { Form, useFormik } from "formik";
 import * as yup from "yup";
 import { NEW_FACTORY_ADDRESS } from "../../../../api";
 import dayjs from "dayjs";
+import { useSelector } from "react-redux";
 
 const NewArchERC20 = ({
   daoDetails,
@@ -61,6 +62,15 @@ const NewArchERC20 = ({
     const web3 = new Web3(window.web3);
     walletAddress = web3.utils.toChecksumAddress(wallet?.accounts[0].address);
   }
+  const GNOSIS_TRANSACTION_URL = useSelector((state) => {
+    return state.gnosis.transactionUrl;
+  });
+
+  const USDC_CONTRACT_ADDRESS = useSelector((state) => {
+    return state.gnosis.usdcContractAddress;
+  });
+
+  console.log("GNOSIS USDC", GNOSIS_TRANSACTION_URL, USDC_CONTRACT_ADDRESS);
 
   const day = Math.floor(new Date().getTime() / 1000.0);
   const day1 = dayjs.unix(day);
@@ -81,8 +91,8 @@ const NewArchERC20 = ({
         erc20ABI,
         daoDetails.depositTokenAddress,
         walletAddress,
-        undefined,
-        undefined,
+        USDC_CONTRACT_ADDRESS,
+        GNOSIS_TRANSACTION_URL,
       );
 
       const balanceOfToken = await erc20Contract.balanceOf();
@@ -103,7 +113,12 @@ const NewArchERC20 = ({
     } catch (error) {
       console.log(error);
     }
-  }, [daoDetails.depositTokenAddress, walletAddress]);
+  }, [
+    GNOSIS_TRANSACTION_URL,
+    USDC_CONTRACT_ADDRESS,
+    daoDetails.depositTokenAddress,
+    walletAddress,
+  ]);
 
   const formik = useFormik({
     initialValues: {
@@ -144,16 +159,16 @@ const NewArchERC20 = ({
           factoryContractABI,
           NEW_FACTORY_ADDRESS,
           walletAddress,
-          undefined,
-          undefined,
+          USDC_CONTRACT_ADDRESS,
+          GNOSIS_TRANSACTION_URL,
         );
 
         const erc20Contract = new SmartContract(
           erc20ABI,
           daoDetails.depositTokenAddress,
           walletAddress,
-          undefined,
-          undefined,
+          USDC_CONTRACT_ADDRESS,
+          GNOSIS_TRANSACTION_URL,
         );
 
         const inputValue = convertToWeiGovernance(

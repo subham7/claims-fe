@@ -17,6 +17,8 @@ import NewArchERC721 from "../../src/components/depositPageComps/ERC721/NewArch/
 import { convertFromWeiGovernance } from "../../src/utils/globalFunctions";
 import { subgraphQuery } from "../../src/utils/subgraphs";
 import { QUERY_ALL_MEMBERS } from "../../src/api/graphql/queries";
+import { useSelector } from "react-redux";
+import ClubFetch from "../../src/utils/clubFetch";
 
 const Join = () => {
   const [daoDetails, setDaoDetails] = useState({
@@ -52,6 +54,16 @@ const Join = () => {
 
   const { pid: daoAddress } = router.query;
 
+  const GNOSIS_TRANSACTION_URL = useSelector((state) => {
+    return state.gnosis.transactionUrl;
+  });
+
+  const USDC_CONTRACT_ADDRESS = useSelector((state) => {
+    return state.gnosis.usdcContractAddress;
+  });
+
+  console.log("GNOSIS", GNOSIS_TRANSACTION_URL, USDC_CONTRACT_ADDRESS);
+
   let walletAddress;
   if (typeof window !== "undefined") {
     const web3 = new Web3(window.web3);
@@ -67,16 +79,16 @@ const Join = () => {
         factoryContractABI,
         NEW_FACTORY_ADDRESS,
         walletAddress,
-        undefined,
-        undefined,
+        USDC_CONTRACT_ADDRESS,
+        GNOSIS_TRANSACTION_URL,
       );
 
       const erc20DaoContract = new SmartContract(
         erc20DaoContractABI,
         daoAddress,
         walletAddress,
-        undefined,
-        undefined,
+        USDC_CONTRACT_ADDRESS,
+        GNOSIS_TRANSACTION_URL,
       );
 
       const fetchedData = await fetchClubbyDaoAddress(daoAddress);
@@ -116,7 +128,12 @@ const Join = () => {
     } catch (error) {
       console.log(error);
     }
-  }, [daoAddress, walletAddress]);
+  }, [
+    GNOSIS_TRANSACTION_URL,
+    USDC_CONTRACT_ADDRESS,
+    daoAddress,
+    walletAddress,
+  ]);
 
   /**
    * Fetching details for ERC721 comp
@@ -128,8 +145,8 @@ const Join = () => {
         factoryContractABI,
         NEW_FACTORY_ADDRESS,
         walletAddress,
-        undefined,
-        undefined,
+        USDC_CONTRACT_ADDRESS,
+        GNOSIS_TRANSACTION_URL,
       );
 
       console.log(factoryContract);
@@ -138,8 +155,8 @@ const Join = () => {
         erc721DaoContractABI,
         daoAddress,
         walletAddress,
-        undefined,
-        undefined,
+        USDC_CONTRACT_ADDRESS,
+        GNOSIS_TRANSACTION_URL,
       );
 
       console.log(erc721DaoContract);
@@ -185,7 +202,12 @@ const Join = () => {
     } catch (error) {
       console.log(error);
     }
-  }, [daoAddress, walletAddress]);
+  }, [
+    GNOSIS_TRANSACTION_URL,
+    USDC_CONTRACT_ADDRESS,
+    daoAddress,
+    walletAddress,
+  ]);
 
   /**
    * Fetching tokenType from API
@@ -207,8 +229,8 @@ const Join = () => {
         FactoryContractABI,
         NEW_FACTORY_ADDRESS,
         walletAddress,
-        undefined,
-        undefined,
+        USDC_CONTRACT_ADDRESS,
+        GNOSIS_TRANSACTION_URL,
       );
 
       const tokenGatingDetails = await factoryContract.getTokenGatingDetails(
@@ -220,16 +242,16 @@ const Join = () => {
         ERC20ABI,
         tokenGatingDetails[0].tokenA,
         walletAddress,
-        undefined,
-        undefined,
+        USDC_CONTRACT_ADDRESS,
+        GNOSIS_TRANSACTION_URL,
       );
 
       const tokenBContract = new SmartContract(
         ERC20ABI,
         tokenGatingDetails[0].tokenB,
         walletAddress,
-        undefined,
-        undefined,
+        USDC_CONTRACT_ADDRESS,
+        GNOSIS_TRANSACTION_URL,
       );
       const balanceOfTokenAInUserWallet = await tokenAContract.balanceOf();
       const balanceOfTokenBInUserWallet = await tokenBContract.balanceOf();
@@ -267,7 +289,12 @@ const Join = () => {
       console.log(error);
       // setLoading(false);
     }
-  }, [walletAddress, daoAddress]);
+  }, [
+    walletAddress,
+    USDC_CONTRACT_ADDRESS,
+    GNOSIS_TRANSACTION_URL,
+    daoAddress,
+  ]);
 
   useEffect(() => {
     fetchTokenGatingDetials();
@@ -323,4 +350,4 @@ const Join = () => {
   );
 };
 
-export default Join;
+export default ClubFetch(Join);
