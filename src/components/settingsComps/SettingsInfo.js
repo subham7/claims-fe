@@ -562,7 +562,7 @@ const SettingsInfo = ({
                     {walletAddress && daoDetails.clubTokensMinted ? (
                       <ProgressBar
                         value={calculateTreasuryTargetShare(
-                          +convertFromWeiGovernance(
+                          convertFromWeiGovernance(
                             daoDetails.clubTokensMinted,
                             daoDetails.decimals,
                           ) *
@@ -570,7 +570,7 @@ const SettingsInfo = ({
                               daoDetails.pricePerToken,
                               erc20TokenDetails.tokenDecimal,
                             ),
-                          +convertFromWeiGovernance(
+                          convertFromWeiGovernance(
                             daoDetails.totalSupply,
                             erc20TokenDetails.tokenDecimal,
                           ),
@@ -620,9 +620,12 @@ const SettingsInfo = ({
                               convertFromWeiGovernance(
                                 daoDetails.clubTokensMinted,
                                 daoDetails.decimals,
-                              ) +
-                              " $" +
-                              daoDetails.daoSymbol
+                              ) *
+                                convertFromWeiGovernance(
+                                  daoDetails.pricePerToken,
+                                  erc20TokenDetails.tokenDecimal,
+                                ) +
+                              " $USDC"
                             ) : (
                               <Skeleton
                                 variant="rectangular"

@@ -15,8 +15,6 @@ export default function Layout1(props) {
     setMobileOpen(!mobileOpen);
   };
 
-  console.log("DEPOSIT URRRL", props.depositUrl);
-
   return (
     <>
       <Navbar

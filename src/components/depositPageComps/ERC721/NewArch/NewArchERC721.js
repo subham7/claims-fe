@@ -157,16 +157,6 @@ const NewArchERC721 = ({
         ),
         erc20TokenDetails.tokenDecimal,
       );
-
-      console.log(
-        walletAddress,
-        erc721DaoAddress,
-        daoDetails.depositTokenAddress,
-        daoDetails.nftURI,
-        1,
-        [],
-      );
-
       const claimNFT = await factoryContract.buyGovernanceTokenERC721DAO(
         walletAddress,
         erc721DaoAddress,
@@ -175,10 +165,16 @@ const NewArchERC721 = ({
         1,
         [],
       );
-
       console.log(claimNFT);
       setLoading(false);
       setClaimSuccessfull(true);
+      Router.push(
+        `/dashboard/${Web3.utils.toChecksumAddress(erc721DaoAddress)}`,
+        undefined,
+        {
+          shallow: true,
+        },
+      );
       showMessageHandler();
     } catch (error) {
       console.log(error);

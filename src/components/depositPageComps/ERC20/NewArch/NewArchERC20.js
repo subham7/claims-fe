@@ -37,6 +37,7 @@ import * as yup from "yup";
 import { NEW_FACTORY_ADDRESS } from "../../../../api";
 import dayjs from "dayjs";
 import { useSelector } from "react-redux";
+import { useRouter } from "next/router";
 
 const NewArchERC20 = ({
   daoDetails,
@@ -56,6 +57,7 @@ const NewArchERC20 = ({
   const [depositSuccessfull, setDepositSuccessfull] = useState(false);
   const classes = NewArchERC20Styles();
   const [{ wallet }] = useConnectWallet();
+  const router = useRouter();
 
   let walletAddress;
   if (typeof window !== "undefined") {
@@ -195,6 +197,13 @@ const NewArchERC20 = ({
 
         setLoading(false);
         setDepositSuccessfull(true);
+        router.push(
+          `/dashboard/${Web3.utils.toChecksumAddress(erc20DaoAddress)}`,
+          undefined,
+          {
+            shallow: true,
+          },
+        );
         showMessageHandler();
         formik.values.tokenInput = 0;
       } catch (error) {
@@ -511,10 +520,11 @@ const NewArchERC20 = ({
                   </Grid>
                 </Grid>
                 <Grid item ml={3} mt={5} mb={2} mr={3}>
+                  {console.log(daoDetails.clubTokensMinted)}
                   {walletAddress && daoDetails.clubTokensMinted ? (
                     <ProgressBar
                       value={calculateTreasuryTargetShare(
-                        +convertFromWeiGovernance(
+                        convertFromWeiGovernance(
                           daoDetails.clubTokensMinted,
                           daoDetails.decimals,
                         ) *
@@ -522,7 +532,7 @@ const NewArchERC20 = ({
                             daoDetails.pricePerToken,
                             erc20TokenDetails.tokenDecimal,
                           ),
-                        +convertFromWeiGovernance(
+                        convertFromWeiGovernance(
                           daoDetails.totalSupply,
                           erc20TokenDetails.tokenDecimal,
                         ),
@@ -564,9 +574,12 @@ const NewArchERC20 = ({
                             convertFromWeiGovernance(
                               daoDetails.clubTokensMinted,
                               daoDetails.decimals,
-                            ) +
-                            " $" +
-                            daoDetails.daoSymbol
+                            ) *
+                              convertFromWeiGovernance(
+                                daoDetails.pricePerToken,
+                                erc20TokenDetails.tokenDecimal,
+                              ) +
+                            " USDC"
                           ) : (
                             <Skeleton
                               variant="rectangular"
@@ -602,8 +615,7 @@ const NewArchERC20 = ({
                             convertFromWeiGovernance(
                               daoDetails.totalSupply,
                               erc20TokenDetails.tokenDecimal,
-                            ).toString() +
-                            (" $" + erc20TokenDetails.tokenSymbol)
+                            ).toString() + " USDC"
                           ) : (
                             <Skeleton
                               variant="rectangular"

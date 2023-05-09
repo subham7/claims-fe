@@ -101,7 +101,7 @@ const Join = () => {
         const erc20DaoDecimal = await erc20DaoContract.decimals();
         const clubTokensMinted = await erc20DaoContract.totalSupply();
 
-        console.log(factoryData, erc20Data);
+        // console.log(factoryData, erc20Data);
 
         if (erc20Data && factoryData)
           setDaoDetails({
@@ -308,7 +308,6 @@ const Join = () => {
     if (tokenType === "erc20NonTransferable") {
       fetchErc20ContractDetails();
     } else {
-      console.log("Hereee");
       fetchErc721ContractDetails();
     }
   }, [fetchErc20ContractDetails, tokenType, fetchErc721ContractDetails]);

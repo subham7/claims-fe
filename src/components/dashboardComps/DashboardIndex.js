@@ -45,6 +45,9 @@ import {
   QUERY_CLUB_DETAILS,
 } from "../../api/graphql/queries";
 import ClubFetch from "../../utils/clubFetch";
+import erc20DaoContractABI from "../../abis/newArch/erc20Dao.json";
+import erc721DaoContractABI from "../../abis/newArch/erc721Dao.json";
+import { convertFromWeiGovernance } from "../../utils/globalFunctions";
 
 const DashboardIndex = () => {
   const clubData = useSelector((state) => {
@@ -62,6 +65,8 @@ const DashboardIndex = () => {
   const [nftData, setNftData] = useState([]);
   const [proposalData, setProposalData] = useState([]);
   const [depositLink, setDepositLink] = useState("");
+  const [balanceOfUser, setBalanceOfUser] = useState(0);
+  const [clubTokenMinted, setClubTokenMinted] = useState(0);
 
   const [{ wallet }] = useConnectWallet();
   const router = useRouter();
@@ -199,13 +204,18 @@ const DashboardIndex = () => {
       const loadSmartContractData = async () => {
         console.log(walletAddress);
         try {
-          const contract = new SmartContract(
-            "",
+          const erc20DaoContract = new SmartContract(
+            erc20DaoContractABI,
             daoAddress,
             walletAddress,
             USDC_CONTRACT_ADDRESS,
             GNOSIS_TRANSACTION_URL,
           );
+          console.log("erc20DaoContract", erc20DaoContract);
+          const balance = await erc20DaoContract.balanceOf(walletAddress);
+          setBalanceOfUser(balance);
+          const clubTokensMinted = await erc20DaoContract.totalSupply();
+          setClubTokenMinted(clubTokensMinted);
           // const depositCloseTime = await contract.depositCloseTime();
           // const userDetail = await contract.userDetails();
           // const tokensMintedSoFar = await contract.erc20TokensMinted();
@@ -346,65 +356,31 @@ const DashboardIndex = () => {
                               My ownership share
                             </Typography>
                             <Typography fontSize={"48px"} fontWeight="bold">
-                              {/* {clubDetails.tokenType === "erc721" ? (
-                                <>
-                                  {nftMinted && nftBalance ? (
-                                    <>
-                                      {isNaN((nftBalance / nftMinted) * 100)
-                                        ? 0
-                                        : (nftBalance / nftMinted) * 100}
-                                      %
-                                    </>
-                                  ) : (
-                                    <Skeleton
-                                      variant="rectangular"
-                                      width={100}
-                                      height={25}
-                                    />
-                                  )}
-                                </>
-                              ) : (
-                                <>
-                                  {userBalance !== null &&
-                                  totalTokenMinted !== null ? (
-                                    <>
-                                      {isNaN(
-                                        parseInt(
-                                          calculateUserSharePercentage(
-                                            userBalance,
-                                            totalTokenMinted,
-                                          ),
-                                        ),
-                                      )
-                                        ? 0
-                                        : parseInt(
-                                            calculateUserSharePercentage(
-                                              userBalance,
-                                              totalTokenMinted,
-                                            ),
-                                          )}
-                                      %
-                                    </>
-                                  ) : (
-                                    <Skeleton
-                                      variant="rectangular"
-                                      width={100}
-                                      height={25}
-                                    />
-                                  )}
-                                </>
-                              )} */}
-                            </Typography>
-                            <Typography className={classes.card2text2} mb={1}>
-                              {clubData?.symbol ? (
-                                clubData.symbol
-                              ) : (
-                                <Skeleton
-                                  variant="rectangular"
-                                  width={100}
-                                  height={25}
-                                />
-                              )}
+                              {balanceOfUser !== null &&
+                              clubTokenMinted !== null &&
+                              isNaN(
+                                Number(
+                                  (convertFromWeiGovernance(balanceOfUser, 18) /
+                                    convertFromWeiGovernance(
+                                      clubTokenMinted,
+                                      18,
+                                    )) *
+                                    100,
+                                ).toFixed(2),
+                              )
+                                ? 0
+                                : Number(
+                                    (convertFromWeiGovernance(
+                                      balanceOfUser,
+                                      18,
+                                    ) /
+                                      convertFromWeiGovernance(
+                                        clubTokenMinted,
+                                        18,
+                                      )) *
+                                      100,
+                                  ).toFixed(2)}
+                              %
                             </Typography>
                           </Box>
                         </Grid>
