@@ -13,15 +13,19 @@ export async function getAssets(clubId) {
 }
 
 export async function getAssetsByDaoAddress(daoAddress, networkId) {
-  return await axios.get(
-    MAIN_API_URL + `assets/dao/${daoAddress}?networkId=${networkId}`,
-    {
-      headers: {
-        "Authorization": "Bearer " + getJwtToken(),
-        "Content-Type": "application/json",
+  try {
+    return await axios.get(
+      MAIN_API_URL + `assets/dao/${daoAddress}?networkId=${networkId}`,
+      {
+        headers: {
+          "Authorization": "Bearer " + getJwtToken(),
+          "Content-Type": "application/json",
+        },
       },
-    },
-  );
+    );
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 // fetch token metadata(if exists) using token address

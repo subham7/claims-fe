@@ -8,6 +8,7 @@ import {
   Link,
   Skeleton,
   Stack,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import React, { useCallback, useEffect, useState } from "react";
@@ -107,14 +108,23 @@ const AdditionalSettings = ({
         GNOSIS_TRANSACTION_URL,
       );
 
-      const res = factoryContract.updateDepositTime(+depositTime, daoAddress);
+      const res = await factoryContract.updateDepositTime(
+        +depositTime.toFixed(0).toString(),
+        daoAddress,
+      );
       console.log(res);
       setLoading(false);
+      showMessageHandler();
       setIsSuccessFull(true);
       setMessage("Deposit Time updated Successfully");
+      if (tokenType === "erc20") {
+        fetchErc20ContractDetails();
+      } else {
+        fetchErc721ContractDetails();
+      }
     } catch (error) {
+      showMessageHandler();
       setLoading(false);
-      console.log(error.code);
       setIsSuccessFull(false);
       if (error.code === 4001) {
         setMessage("Metamask Signature denied");
@@ -240,12 +250,20 @@ const AdditionalSettings = ({
           >
             <Grid mr={4}>
               <Grid sx={{ display: "flex", alignItems: "center" }}>
-                <Typography className={classes.text} mr={1}>
-                  <Countdown
-                    className={classes.closingIn}
-                    date={startingTimeInNum}
-                  />
-                </Typography>
+                <Tooltip title={startingTimeInNum.toString()}>
+                  <Typography className={classes.text} mr={1}>
+                    {daoDetails.depositDeadline ? (
+                      new Date(parseInt(daoDetails.depositDeadline) * 1000)
+                        ?.toJSON()
+                        ?.slice(0, 10)
+                        .split("-")
+                        .reverse()
+                        .join("/")
+                    ) : (
+                      <Skeleton variant="rectangular" width={100} height={25} />
+                    )}
+                  </Typography>
+                </Tooltip>
 
                 {isAdminUser ? (
                   <Link
@@ -263,7 +281,7 @@ const AdditionalSettings = ({
         </Grid>
       </Stack>
 
-      <Backdrop sx={{ color: "#fff", zIndex: 10000 }} open={loading}>
+      <Backdrop sx={{ color: "#fff", zIndex: 10000000 }} open={loading}>
         <CircularProgress color="inherit" />
       </Backdrop>
 

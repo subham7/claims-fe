@@ -121,12 +121,14 @@ const DashboardIndex = () => {
 
   const fetchAssets = useCallback(async () => {
     try {
-      const assetsData = await getAssetsByDaoAddress(daoAddress, NETWORK_HEX);
-      console.log("Asset data", assetsData.data);
-      setTokenDetails({
-        treasuryAmount: assetsData?.data?.treasuryAmount,
-        tokenPriceList: assetsData?.data?.tokenPriceList,
-      });
+      if (NETWORK_HEX !== "undefined") {
+        const assetsData = await getAssetsByDaoAddress(daoAddress, NETWORK_HEX);
+        console.log("Asset data", assetsData.data);
+        setTokenDetails({
+          treasuryAmount: assetsData?.data?.treasuryAmount,
+          tokenPriceList: assetsData?.data?.tokenPriceList,
+        });
+      }
     } catch (error) {
       console.log(error);
     }
@@ -134,13 +136,13 @@ const DashboardIndex = () => {
 
   const fetchNfts = useCallback(async () => {
     try {
-      const nftsData = await getNFTsByDaoAddress(daoAddress);
+      const nftsData = await getNFTsByDaoAddress(daoAddress, NETWORK_HEX);
       console.log("NFTs by dao", nftsData);
       setNftData(nftsData.data);
     } catch (error) {
       console.log(error);
     }
-  }, [daoAddress]);
+  }, [NETWORK_HEX, daoAddress]);
 
   //   const fetchActiveProposals = useCallback(async () => {
   //     try {
