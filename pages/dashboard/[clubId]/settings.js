@@ -270,6 +270,11 @@ const Settings = () => {
               factoryData.distributionAmount * factoryData.pricePerToken,
             ownerFee: factoryData.ownerFeePerDepositPercent / 100,
           });
+          console.log(
+            "total supply",
+            convertFromWeiGovernance(daoDetails.distributionAmt, 18) *
+              convertFromWeiGovernance(daoDetails.pricePerToken, 6),
+          );
         }
       }
     } catch (error) {

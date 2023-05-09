@@ -23,6 +23,7 @@ import { NEW_FACTORY_ADDRESS } from "../../../../api";
 import dayjs from "dayjs";
 import ClubFetch from "../../../../utils/clubFetch";
 import { useSelector } from "react-redux";
+import { useRouter } from "next/router";
 
 const NewArchERC721 = ({
   daoDetails,
@@ -42,6 +43,7 @@ const NewArchERC721 = ({
   });
 
   const [{ wallet }] = useConnectWallet();
+  const router = useRouter();
 
   let walletAddress;
   if (typeof window !== "undefined") {
@@ -168,7 +170,7 @@ const NewArchERC721 = ({
       console.log(claimNFT);
       setLoading(false);
       setClaimSuccessfull(true);
-      Router.push(
+      router.push(
         `/dashboard/${Web3.utils.toChecksumAddress(erc721DaoAddress)}`,
         undefined,
         {
@@ -393,22 +395,12 @@ const NewArchERC721 = ({
                     <Grid item>
                       <Button
                         onClick={claimNFTHandler}
-                        // disabled={
-                        //   hasClaimed || isTokenGated
-                        //     ? !isEligibleForTokenGating
-                        //     : false
-                        // }
-
-                        // disabled={
-                        //   remainingDays > 0 && isTokenGated ? !isEligibleForTokenGating : remainingDays > 0 ? false : true
-                        // }
-
                         disabled={
                           remainingDays <= 0 || hasClaimed
                             ? true
                             : isTokenGated
                             ? !isEligibleForTokenGating
-                            : true
+                            : false
                         }
                         sx={{ px: 8 }}
                       >

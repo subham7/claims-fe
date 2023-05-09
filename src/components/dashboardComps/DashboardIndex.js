@@ -192,9 +192,11 @@ const DashboardIndex = () => {
           );
           const nftBalance = await nftContract.nftBalance(walletAddress);
           console.log("NFT Balance", nftBalance);
+          setBalanceOfUser(nftBalance);
           const symbol = await nftContract.symbol();
           console.log("SYMBOL", symbol);
           const nftMinted = await nftContract.nftOwnersCount();
+          setClubTokenMinted(nftMinted);
           console.log("NFT Minted", nftMinted);
         } catch (error) {
           console.log(error);
@@ -216,13 +218,6 @@ const DashboardIndex = () => {
           setBalanceOfUser(balance);
           const clubTokensMinted = await erc20DaoContract.totalSupply();
           setClubTokenMinted(clubTokensMinted);
-          // const depositCloseTime = await contract.depositCloseTime();
-          // const userDetail = await contract.userDetails();
-          // const tokensMintedSoFar = await contract.erc20TokensMinted();
-
-          // setDepositCloseTime(depositCloseTime);
-          // setUserBalance(userDetail[1]);
-          // setTotalTokenMinted(tokensMintedSoFar);
 
           setDepositLink(
             typeof window !== "undefined" && window.location.origin
@@ -355,21 +350,12 @@ const DashboardIndex = () => {
                             >
                               My ownership share
                             </Typography>
-                            <Typography fontSize={"48px"} fontWeight="bold">
-                              {balanceOfUser !== null &&
-                              clubTokenMinted !== null &&
-                              isNaN(
-                                Number(
-                                  (convertFromWeiGovernance(balanceOfUser, 18) /
-                                    convertFromWeiGovernance(
-                                      clubTokenMinted,
-                                      18,
-                                    )) *
-                                    100,
-                                ).toFixed(2),
-                              )
-                                ? 0
-                                : Number(
+                            {clubData.tokenType === "erc721" ? (
+                              <Typography fontSize={"48px"} fontWeight="bold">
+                                {balanceOfUser !== null &&
+                                clubTokenMinted !== null &&
+                                isNaN(
+                                  Number(
                                     (convertFromWeiGovernance(
                                       balanceOfUser,
                                       18,
@@ -379,9 +365,54 @@ const DashboardIndex = () => {
                                         18,
                                       )) *
                                       100,
-                                  ).toFixed(2)}
-                              %
-                            </Typography>
+                                  ).toFixed(2),
+                                )
+                                  ? 0
+                                  : Number(
+                                      (convertFromWeiGovernance(
+                                        balanceOfUser,
+                                        18,
+                                      ) /
+                                        convertFromWeiGovernance(
+                                          clubTokenMinted,
+                                          18,
+                                        )) *
+                                        100,
+                                    ).toFixed(2)}
+                                %
+                              </Typography>
+                            ) : (
+                              <Typography fontSize={"48px"} fontWeight="bold">
+                                {balanceOfUser !== null &&
+                                clubTokenMinted !== null &&
+                                isNaN(
+                                  Number(
+                                    (convertFromWeiGovernance(
+                                      balanceOfUser,
+                                      18,
+                                    ) /
+                                      convertFromWeiGovernance(
+                                        clubTokenMinted,
+                                        18,
+                                      )) *
+                                      100,
+                                  ).toFixed(2),
+                                )
+                                  ? 0
+                                  : Number(
+                                      (convertFromWeiGovernance(
+                                        balanceOfUser,
+                                        18,
+                                      ) /
+                                        convertFromWeiGovernance(
+                                          clubTokenMinted,
+                                          18,
+                                        )) *
+                                        100,
+                                    ).toFixed(2)}
+                                %
+                              </Typography>
+                            )}
                           </Box>
                         </Grid>
                         {/* <CardMedia    className={classes.media}    component=“img”    image=“/assets/images/card_illustration.png”    alt=“abstract background”    sx={{ position: “absolute”, bottom: 0 }}                     />   */}
