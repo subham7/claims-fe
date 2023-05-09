@@ -267,10 +267,12 @@ const ProposalDetail = () => {
       web3,
       signerAddress: walletAddress,
     });
+    console.log("GNOSIS_TRANSACTION_URL", GNOSIS_TRANSACTION_URL);
     const safeService = new SafeApiKit({
       txServiceUrl: GNOSIS_TRANSACTION_URL,
       ethAdapter,
     });
+    console.log("safeService", safeService);
     // const safeService = new SafeServiceClient({
     //   txServiceUrl: GNOSIS_TRANSACTION_URL,
     //   ethAdapter,
