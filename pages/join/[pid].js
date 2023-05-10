@@ -42,6 +42,7 @@ const Join = () => {
     createdBy: "",
     maxTokensPerUser: 0,
     nftURI: "",
+    nftMinted: 0,
   });
   const [tokenType, setTokenType] = useState("");
   const [isEligibleForTokenGating, setIsEligibleForTokenGating] =
@@ -171,6 +172,7 @@ const Join = () => {
         console.log("Factory Data", factoryData);
 
         const erc721Data = await erc721DaoContract.getERC721DAOdetails();
+        const nftCount = await erc721DaoContract.nftOwnersCount();
         console.log(erc721Data);
 
         if (erc721Data && factoryData) {
@@ -196,6 +198,7 @@ const Join = () => {
             distributionAmt: factoryData.distributionAmount,
             totalSupply:
               factoryData.distributionAmount * factoryData.pricePerToken,
+            nftMinted: nftCount,
           });
         }
       }

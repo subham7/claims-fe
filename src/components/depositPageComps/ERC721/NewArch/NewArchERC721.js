@@ -336,8 +336,13 @@ const NewArchERC721 = ({
                           : Number(
                               convertFromWeiGovernance(
                                 daoDetails.distributionAmt,
-                                16,
-                              ),
+                                18,
+                              ) *
+                                convertFromWeiGovernance(
+                                  daoDetails.pricePerToken,
+                                  6,
+                                ) -
+                                Number(daoDetails.nftMinted),
                             ).toFixed(0)}
                         {/* : totalNftSupply - totalNftMinted} */}
                       </Typography>
