@@ -53,6 +53,7 @@ const Proposal = () => {
   };
 
   const fetchTokens = () => {
+    console.log("daoAddress", daoAddress);
     if (daoAddress) {
       const tokenData = getAssetsByDaoAddress(daoAddress);
       tokenData.then((result) => {

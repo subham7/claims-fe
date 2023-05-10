@@ -27,7 +27,10 @@ import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import CloseIcon from "@mui/icons-material/Close";
 import DoneIcon from "@mui/icons-material/Done";
 import tickerIcon from "../../../../public/assets/icons/ticker_icon.svg";
-import { calculateDays } from "../../../../src/utils/globalFunctions";
+import {
+  calculateDays,
+  convertToWeiGovernance,
+} from "../../../../src/utils/globalFunctions";
 import actionIcon from "../../../../public/assets/icons/action_icon.svg";
 import surveyIcon from "../../../../public/assets/icons/survey_icon.svg";
 import ReactHtmlParser from "react-html-parser";
@@ -46,6 +49,7 @@ import Safe, {
 import SafeApiKit from "@safe-global/api-kit";
 import { subgraphQuery } from "../../../../src/utils/subgraphs";
 import { QUERY_ALL_MEMBERS } from "../../../../src/api/graphql/queries";
+import { NEW_FACTORY_ADDRESS } from "../../../../src/api";
 
 const useStyles = makeStyles({
   clubAssets: {
@@ -440,6 +444,21 @@ const ProposalDetail = () => {
       ]);
       console.log(data);
     }
+    if (proposalData.commands[0].executionId === 3) {
+      let ABI = Erc20Dao.abi;
+      let iface = new Interface(ABI);
+      console.log(
+        iface,
+        convertToWeiGovernance(proposalData.commands[0].totalDeposits, 18),
+        daoAddress,
+      );
+      data = iface.encodeFunctionData("updateDistributionAmount", [
+        convertToWeiGovernance(proposalData.commands[0].totalDeposits, 18),
+        daoAddress,
+      ]);
+
+      console.log(data);
+    }
     if (proposalData.commands[0].executionId === 4) {
       let ABI = Erc20Dao.abi;
       let iface = new Interface(ABI);
@@ -453,7 +472,9 @@ const ProposalDetail = () => {
     }
     const response = updateProposal.updateProposalAndExecution(
       data,
-      daoAddress,
+      proposalData.commands[0].executionId === 3
+        ? NEW_FACTORY_ADDRESS
+        : daoAddress,
       Web3.utils.toChecksumAddress(gnosisAddress),
       txHash,
       pid,

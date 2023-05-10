@@ -381,7 +381,6 @@ export class SmartContract {
     });
   }
 
-
   async updateProposalAndExecution(
     data,
     daoAddress = "",
@@ -425,7 +424,10 @@ export class SmartContract {
     const transaction = {
       to: web3.utils.toChecksumAddress(daoAddress),
       data: implementationContract.methods
-        .updateProposalAndExecution(parameters)
+        .updateProposalAndExecution(
+          web3.utils.toChecksumAddress(daoAddress),
+          parameters,
+        )
         .encodeABI(),
       value: "0",
     };
