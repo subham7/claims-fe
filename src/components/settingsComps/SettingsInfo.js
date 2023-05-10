@@ -404,225 +404,64 @@ const SettingsInfo = ({
                 </Grid>
               </Paper>
 
-              {tokenType === "erc721" ? (
-                <>
-                  <br />
-                  <Grid container spacing={7}>
-                    {tokenType === "erc721" ? (
-                      <>
-                        <Grid item md={3} ml={4}>
-                          <Stack spacing={1}>
-                            <Typography variant="settingText">
-                              NFTs Minted so far
-                            </Typography>
-                            <Typography
-                              variant="p"
-                              className={classes.valuesStyle}
-                            >
-                              {daoDetails.nftMinted !== null ? (
-                                daoDetails.nftMinted
-                              ) : (
-                                <Skeleton
-                                  variant="rectangular"
-                                  width={100}
-                                  height={25}
-                                />
-                              )}
-                            </Typography>
-                          </Stack>
-                        </Grid>
-                        <Grid item>
-                          <Stack spacing={1}>
-                            <Typography variant="settingText">
-                              Total Supply
-                            </Typography>
-                            {tokenType === "erc721" ? (
-                              <Typography
-                                variant="p"
-                                className={classes.valuesStyle}
-                              >
-                                {daoDetails.totalSupply !== null ? (
-                                  daoDetails.isTotalSupplyUnlimited ? (
-                                    "Unlimited"
-                                  ) : (
-                                    daoDetails.totalSupply
-                                  )
-                                ) : (
-                                  <Skeleton
-                                    variant="rectangular"
-                                    width={100}
-                                    height={25}
-                                  />
-                                )}{" "}
-                              </Typography>
-                            ) : (
-                              <Typography
-                                variant="p"
-                                className={classes.valuesStyle}
-                              >
-                                {daoDetails ? (
-                                  // convertAmountToWei(totalERC20Supply?.toString()) +
-                                  // (" $" + tokenDetails[1])
-                                  // convertAmountToWei(String(totalERC20Supply))
-                                  ` ${
-                                    totalERC20Supply / Math.pow(10, 6)
-                                  } ${tokenSymbol}`
-                                ) : (
-                                  <Skeleton
-                                    variant="rectangular"
-                                    width={100}
-                                    height={25}
-                                  />
-                                )}{" "}
-                              </Typography>
-                            )}
-                          </Stack>
-                        </Grid>
-                      </>
-                    ) : (
-                      <>
-                        <Grid item md={3} ml={4}>
-                          <Stack spacing={1}>
-                            <Typography variant="settingText">
-                              Club Tokens Minted so far
-                            </Typography>
-                            <Typography
-                              variant="p"
-                              className={classes.valuesStyle}
-                            >
-                              {daoDetails?.clubTokenMinted ? (
-                                parseInt(daoDetails.clubTokenMinted) +
-                                " $" +
-                                daoDetails.daoSymbol
-                              ) : (
-                                <Skeleton
-                                  variant="rectangular"
-                                  width={100}
-                                  height={25}
-                                />
-                              )}
-                            </Typography>
-                          </Stack>
-                        </Grid>
-                        <Grid item>
-                          <Stack spacing={1}>
-                            <Typography variant="settingText">
-                              Total Supply
-                            </Typography>
-                            {tokenType === "erc721" ? (
-                              <Typography
-                                variant="p"
-                                className={classes.valuesStyle}
-                              >
-                                {daoDetails.totalSupply !== null ? (
-                                  daoDetails.isTotalSupplyUnlimited ? (
-                                    "Unlimited"
-                                  ) : (
-                                    daoDetails.totalSupply
-                                  )
-                                ) : (
-                                  <Skeleton
-                                    variant="rectangular"
-                                    width={100}
-                                    height={25}
-                                  />
-                                )}{" "}
-                              </Typography>
-                            ) : (
-                              <Typography
-                                variant="p"
-                                className={classes.valuesStyle}
-                              >
-                                {/* {governorDataFetched ? ( */}
-                                {daoDetails ? (
-                                  // convertAmountToWei(totalERC20Supply?.toString()) +
-                                  // (" $" + tokenDetails[1])
-                                  // convertAmountToWei(String(totalERC20Supply))
-                                  ` ${
-                                    totalERC20Supply / Math.pow(10, 6)
-                                  } ${tokenSymbol}`
-                                ) : (
-                                  <Skeleton
-                                    variant="rectangular"
-                                    width={100}
-                                    height={25}
-                                  />
-                                )}{" "}
-                              </Typography>
-                            )}
-                          </Stack>
-                        </Grid>
-                      </>
-                    )}
-                  </Grid>
-                </>
-              ) : (
-                <>
-                  <Grid item ml={3} mt={5} mb={2} mr={3}>
-                    {walletAddress && daoDetails.clubTokensMinted ? (
+              <>
+                <Grid item ml={3} mt={5} mb={2} mr={3}>
+                  {walletAddress &&
+                  tokenType === "erc721" &&
+                  !daoDetails.isTotalSupplyUnlimited ? (
+                    <>
                       <ProgressBar
                         value={calculateTreasuryTargetShare(
-                          +convertFromWeiGovernance(
-                            daoDetails.clubTokensMinted,
-                            daoDetails.decimals,
+                          daoDetails.nftMinted,
+                          convertFromWeiGovernance(
+                            daoDetails.distributionAmt,
+                            18,
                           ) *
                             convertFromWeiGovernance(
                               daoDetails.pricePerToken,
-                              erc20TokenDetails.tokenDecimal,
+                              6,
                             ),
-                          +convertFromWeiGovernance(
-                            daoDetails.totalSupply,
-                            erc20TokenDetails.tokenDecimal,
-                          ),
                         )}
                       />
-                    ) : (
-                      <Skeleton variant="rectangular" />
-                    )}
-                  </Grid>
+                    </>
+                  ) : tokenType === "erc721" &&
+                    daoDetails.isTotalSupplyUnlimited ? null : walletAddress &&
+                    daoDetails.clubTokensMinted ? (
+                    <ProgressBar
+                      value={calculateTreasuryTargetShare(
+                        convertFromWeiGovernance(
+                          daoDetails.clubTokensMinted,
+                          daoDetails.decimals,
+                        ) *
+                          convertFromWeiGovernance(
+                            daoDetails.pricePerToken,
+                            erc20TokenDetails.tokenDecimal,
+                          ),
+                        convertFromWeiGovernance(
+                          daoDetails.totalSupply,
+                          erc20TokenDetails.tokenDecimal,
+                        ),
+                      )}
+                    />
+                  ) : (
+                    <Skeleton variant="rectangular" />
+                  )}
+                </Grid>
 
-                  <Grid container spacing={2}>
-                    {tokenType === "erc721" ? (
-                      <>
-                        <Grid item ml={4} mt={1} mb={2}>
-                          <Stack spacing={1}>
-                            <Typography variant="settingText">
-                              NFTs Minted so far
-                            </Typography>
-                            <Typography
-                              variant="p"
-                              className={classes.valuesStyle}
-                            >
-                              {totalNftMinted !== null ? (
-                                totalNftMinted
-                              ) : (
-                                <Skeleton
-                                  variant="rectangular"
-                                  width={100}
-                                  height={25}
-                                />
-                              )}
-                            </Typography>
-                          </Stack>
-                        </Grid>
-                      </>
-                    ) : (
+                <Grid container spacing={2}>
+                  {tokenType === "erc721" ? (
+                    <>
                       <Grid item ml={4} mt={1} mb={2}>
                         <Stack spacing={1}>
                           <Typography variant="settingText">
-                            Club Tokens Minted so far
+                            NFTs Minted so far
                           </Typography>
                           <Typography
                             variant="p"
                             className={classes.valuesStyle}
                           >
-                            {walletAddress ? (
-                              convertFromWeiGovernance(
-                                daoDetails.clubTokensMinted,
-                                daoDetails.decimals,
-                              ) +
-                              " $" +
-                              daoDetails.daoSymbol
+                            {daoDetails.nftMinted !== null ? (
+                              daoDetails.nftMinted
                             ) : (
                               <Skeleton
                                 variant="rectangular"
@@ -633,65 +472,93 @@ const SettingsInfo = ({
                           </Typography>
                         </Stack>
                       </Grid>
-                    )}
-
-                    <Grid
-                      item
-                      ml={4}
-                      mt={1}
-                      mb={2}
-                      mr={4}
-                      xs
-                      sx={{ display: "flex", justifyContent: "flex-end" }}
-                    >
+                    </>
+                  ) : (
+                    <Grid item ml={4} mt={1} mb={2}>
                       <Stack spacing={1}>
                         <Typography variant="settingText">
-                          Total Supply
+                          Club Tokens Minted so far
                         </Typography>
-                        {tokenType === "erc721" ? (
-                          <Typography
-                            variant="p"
-                            className={classes.valuesStyle}
-                          >
-                            {daoDetails.totalNftSupply !== null ? (
-                              daoDetails.isTotalSupplyUnlimited ? (
-                                "Unlimited"
-                              ) : (
-                                daoDetails.totalSupply
-                              )
-                            ) : (
-                              <Skeleton
-                                variant="rectangular"
-                                width={100}
-                                height={25}
-                              />
-                            )}{" "}
-                          </Typography>
-                        ) : (
-                          <Typography
-                            variant="p"
-                            className={classes.valuesStyle}
-                          >
-                            {daoDetails.totalSupply ? (
+                        <Typography variant="p" className={classes.valuesStyle}>
+                          {walletAddress ? (
+                            convertFromWeiGovernance(
+                              daoDetails.clubTokensMinted,
+                              daoDetails.decimals,
+                            ) *
                               convertFromWeiGovernance(
-                                daoDetails.totalSupply,
+                                daoDetails.pricePerToken,
                                 erc20TokenDetails.tokenDecimal,
-                              ).toString() +
-                              (" $" + erc20TokenDetails.tokenSymbol)
-                            ) : (
-                              <Skeleton
-                                variant="rectangular"
-                                width={100}
-                                height={25}
-                              />
-                            )}{" "}
-                          </Typography>
-                        )}
+                              ) +
+                            " $USDC"
+                          ) : (
+                            <Skeleton
+                              variant="rectangular"
+                              width={100}
+                              height={25}
+                            />
+                          )}
+                        </Typography>
                       </Stack>
                     </Grid>
+                  )}
+
+                  <Grid
+                    item
+                    ml={4}
+                    mt={1}
+                    mb={2}
+                    mr={4}
+                    xs
+                    sx={{ display: "flex", justifyContent: "flex-end" }}
+                  >
+                    <Stack spacing={1}>
+                      <Typography variant="settingText">
+                        Total Supply
+                      </Typography>
+                      {tokenType === "erc721" ? (
+                        <Typography variant="p" className={classes.valuesStyle}>
+                          {daoDetails.totalNftSupply !== null ? (
+                            daoDetails.isTotalSupplyUnlimited ? (
+                              "Unlimited"
+                            ) : (
+                              convertFromWeiGovernance(
+                                daoDetails.distributionAmt,
+                                18,
+                              ) *
+                              convertFromWeiGovernance(
+                                daoDetails.pricePerToken,
+                                6,
+                              )
+                            )
+                          ) : (
+                            <Skeleton
+                              variant="rectangular"
+                              width={100}
+                              height={25}
+                            />
+                          )}{" "}
+                        </Typography>
+                      ) : (
+                        <Typography variant="p" className={classes.valuesStyle}>
+                          {daoDetails.totalSupply ? (
+                            convertFromWeiGovernance(
+                              daoDetails.totalSupply,
+                              erc20TokenDetails.tokenDecimal,
+                            ) +
+                            (" $" + erc20TokenDetails.tokenSymbol)
+                          ) : (
+                            <Skeleton
+                              variant="rectangular"
+                              width={100}
+                              height={25}
+                            />
+                          )}{" "}
+                        </Typography>
+                      )}
+                    </Stack>
                   </Grid>
-                </>
-              )}
+                </Grid>
+              </>
             </Card>
             <br />
           </Grid>

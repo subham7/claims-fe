@@ -43,6 +43,8 @@ const Form = () => {
 
   const classes = useStyles();
   const [{ wallet }] = useConnectWallet();
+
+  const networkId = wallet?.chains[0]?.id;
   const walletAddress = wallet?.accounts[0].address;
   const router = useRouter();
 
@@ -58,7 +60,7 @@ const Form = () => {
     setLoadingTokens(true);
     const web3 = new Web3(window.ethereum);
     const accounts = await web3.eth.getAccounts();
-    const data = await getTokensFromWallet(accounts[0]);
+    const data = await getTokensFromWallet(accounts[0], networkId);
     setCurrentAccount(accounts[0]);
     setTokensInWallet(data);
     setLoadingTokens(false);

@@ -45,6 +45,11 @@ import {
   QUERY_CLUB_DETAILS,
 } from "../../api/graphql/queries";
 import ClubFetch from "../../utils/clubFetch";
+import erc20DaoContractABI from "../../abis/newArch/erc20Dao.json";
+import erc721DaoContractABI from "../../abis/newArch/erc721Dao.json";
+import factoryContractABI from "../../abis/newArch/factoryContract.json";
+import { convertFromWeiGovernance } from "../../utils/globalFunctions";
+import { NEW_FACTORY_ADDRESS } from "../../api";
 
 const DashboardIndex = () => {
   const clubData = useSelector((state) => {
@@ -62,6 +67,9 @@ const DashboardIndex = () => {
   const [nftData, setNftData] = useState([]);
   const [proposalData, setProposalData] = useState([]);
   const [depositLink, setDepositLink] = useState("");
+  const [balanceOfUser, setBalanceOfUser] = useState(0);
+  const [clubTokenMinted, setClubTokenMinted] = useState(0);
+  const [depositCloseTime, setDepositCloseTime] = useState("");
 
   const [{ wallet }] = useConnectWallet();
   const router = useRouter();
@@ -72,7 +80,21 @@ const DashboardIndex = () => {
     return state.gnosis.adminUser;
   });
 
-  console.log("Admin", isAdmin);
+  const NETWORK_HEX = useSelector((state) => {
+    return state.gnosis.networkHex;
+  });
+
+  console.log("NETWORK HEX", NETWORK_HEX);
+
+  const GNOSIS_TRANSACTION_URL = useSelector((state) => {
+    return state.gnosis.transactionUrl;
+  });
+
+  const USDC_CONTRACT_ADDRESS = useSelector((state) => {
+    return state.gnosis.usdcContractAddress;
+  });
+
+  console.log("Admin", GNOSIS_TRANSACTION_URL, USDC_CONTRACT_ADDRESS);
 
   let walletAddress;
   if (typeof window !== "undefined") {
@@ -102,26 +124,28 @@ const DashboardIndex = () => {
 
   const fetchAssets = useCallback(async () => {
     try {
-      const assetsData = await getAssetsByDaoAddress(daoAddress);
-      console.log("Asset data", assetsData.data);
-      setTokenDetails({
-        treasuryAmount: assetsData?.data?.treasuryAmount,
-        tokenPriceList: assetsData?.data?.tokenPriceList,
-      });
+      if (NETWORK_HEX !== "undefined") {
+        const assetsData = await getAssetsByDaoAddress(daoAddress, NETWORK_HEX);
+        console.log("Asset data", assetsData.data);
+        setTokenDetails({
+          treasuryAmount: assetsData?.data?.treasuryAmount,
+          tokenPriceList: assetsData?.data?.tokenPriceList,
+        });
+      }
     } catch (error) {
       console.log(error);
     }
-  }, [daoAddress]);
+  }, [NETWORK_HEX, daoAddress]);
 
   const fetchNfts = useCallback(async () => {
     try {
-      const nftsData = await getNFTsByDaoAddress(daoAddress);
+      const nftsData = await getNFTsByDaoAddress(daoAddress, NETWORK_HEX);
       console.log("NFTs by dao", nftsData);
       setNftData(nftsData.data);
     } catch (error) {
       console.log(error);
     }
-  }, [daoAddress]);
+  }, [NETWORK_HEX, daoAddress]);
 
   //   const fetchActiveProposals = useCallback(async () => {
   //     try {
@@ -162,20 +186,51 @@ const DashboardIndex = () => {
 
   useEffect(() => {
     if (daoAddress) {
+      try {
+        const factoryContractData = async () => {
+          const factoryContract = new SmartContract(
+            factoryContractABI,
+            NEW_FACTORY_ADDRESS,
+            walletAddress,
+            USDC_CONTRACT_ADDRESS,
+            GNOSIS_TRANSACTION_URL,
+          );
+
+          const factoryData = await factoryContract.getDAOdetails(daoAddress);
+          console.log("Factory Data", factoryData);
+          setDepositCloseTime(factoryData?.depositCloseTime);
+        };
+
+        factoryContractData();
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  }, [
+    GNOSIS_TRANSACTION_URL,
+    USDC_CONTRACT_ADDRESS,
+    daoAddress,
+    walletAddress,
+  ]);
+
+  useEffect(() => {
+    if (daoAddress) {
       const loadNftContractData = async () => {
         try {
           const nftContract = new SmartContract(
             nft,
             daoAddress,
             walletAddress,
-            undefined,
-            undefined,
+            USDC_CONTRACT_ADDRESS,
+            GNOSIS_TRANSACTION_URL,
           );
           const nftBalance = await nftContract.nftBalance(walletAddress);
           console.log("NFT Balance", nftBalance);
+          setBalanceOfUser(nftBalance);
           const symbol = await nftContract.symbol();
           console.log("SYMBOL", symbol);
           const nftMinted = await nftContract.nftOwnersCount();
+          setClubTokenMinted(nftMinted);
           console.log("NFT Minted", nftMinted);
         } catch (error) {
           console.log(error);
@@ -185,20 +240,18 @@ const DashboardIndex = () => {
       const loadSmartContractData = async () => {
         console.log(walletAddress);
         try {
-          const contract = new SmartContract(
-            "",
+          const erc20DaoContract = new SmartContract(
+            erc20DaoContractABI,
             daoAddress,
             walletAddress,
-            undefined,
-            undefined,
+            USDC_CONTRACT_ADDRESS,
+            GNOSIS_TRANSACTION_URL,
           );
-          // const depositCloseTime = await contract.depositCloseTime();
-          // const userDetail = await contract.userDetails();
-          // const tokensMintedSoFar = await contract.erc20TokensMinted();
-
-          // setDepositCloseTime(depositCloseTime);
-          // setUserBalance(userDetail[1]);
-          // setTotalTokenMinted(tokensMintedSoFar);
+          console.log("erc20DaoContract", erc20DaoContract);
+          const balance = await erc20DaoContract.balanceOf(walletAddress);
+          setBalanceOfUser(balance);
+          const clubTokensMinted = await erc20DaoContract.totalSupply();
+          setClubTokenMinted(clubTokensMinted);
 
           setDepositLink(
             typeof window !== "undefined" && window.location.origin
@@ -222,7 +275,13 @@ const DashboardIndex = () => {
       }
       // console.log("token type", tokenType);
     }
-  }, [daoAddress, clubData.tokenType, walletAddress]);
+  }, [
+    daoAddress,
+    clubData.tokenType,
+    walletAddress,
+    USDC_CONTRACT_ADDRESS,
+    GNOSIS_TRANSACTION_URL,
+  ]);
 
   return (
     <>
@@ -325,67 +384,69 @@ const DashboardIndex = () => {
                             >
                               My ownership share
                             </Typography>
-                            <Typography fontSize={"48px"} fontWeight="bold">
-                              {/* {clubDetails.tokenType === "erc721" ? (
-                                <>
-                                  {nftMinted && nftBalance ? (
-                                    <>
-                                      {isNaN((nftBalance / nftMinted) * 100)
-                                        ? 0
-                                        : (nftBalance / nftMinted) * 100}
-                                      %
-                                    </>
-                                  ) : (
-                                    <Skeleton
-                                      variant="rectangular"
-                                      width={100}
-                                      height={25}
-                                    />
-                                  )}
-                                </>
-                              ) : (
-                                <>
-                                  {userBalance !== null &&
-                                  totalTokenMinted !== null ? (
-                                    <>
-                                      {isNaN(
-                                        parseInt(
-                                          calculateUserSharePercentage(
-                                            userBalance,
-                                            totalTokenMinted,
-                                          ),
-                                        ),
-                                      )
-                                        ? 0
-                                        : parseInt(
-                                            calculateUserSharePercentage(
-                                              userBalance,
-                                              totalTokenMinted,
-                                            ),
-                                          )}
-                                      %
-                                    </>
-                                  ) : (
-                                    <Skeleton
-                                      variant="rectangular"
-                                      width={100}
-                                      height={25}
-                                    />
-                                  )}
-                                </>
-                              )} */}
-                            </Typography>
-                            <Typography className={classes.card2text2} mb={1}>
-                              {clubData?.symbol ? (
-                                clubData.symbol
-                              ) : (
-                                <Skeleton
-                                  variant="rectangular"
-                                  width={100}
-                                  height={25}
-                                />
-                              )}
-                            </Typography>
+                            {clubData.tokenType === "erc721" ? (
+                              <Typography fontSize={"48px"} fontWeight="bold">
+                                {balanceOfUser !== null &&
+                                clubTokenMinted !== null &&
+                                isNaN(
+                                  Number(
+                                    (convertFromWeiGovernance(
+                                      balanceOfUser,
+                                      18,
+                                    ) /
+                                      convertFromWeiGovernance(
+                                        clubTokenMinted,
+                                        18,
+                                      )) *
+                                      100,
+                                  ).toFixed(2),
+                                )
+                                  ? 0
+                                  : Number(
+                                      (convertFromWeiGovernance(
+                                        balanceOfUser,
+                                        18,
+                                      ) /
+                                        convertFromWeiGovernance(
+                                          clubTokenMinted,
+                                          18,
+                                        )) *
+                                        100,
+                                    ).toFixed(2)}
+                                %
+                              </Typography>
+                            ) : (
+                              <Typography fontSize={"48px"} fontWeight="bold">
+                                {balanceOfUser !== null &&
+                                clubTokenMinted !== null &&
+                                isNaN(
+                                  Number(
+                                    (convertFromWeiGovernance(
+                                      balanceOfUser,
+                                      18,
+                                    ) /
+                                      convertFromWeiGovernance(
+                                        clubTokenMinted,
+                                        18,
+                                      )) *
+                                      100,
+                                  ).toFixed(2),
+                                )
+                                  ? 0
+                                  : Number(
+                                      (convertFromWeiGovernance(
+                                        balanceOfUser,
+                                        18,
+                                      ) /
+                                        convertFromWeiGovernance(
+                                          clubTokenMinted,
+                                          18,
+                                        )) *
+                                        100,
+                                    ).toFixed(2)}
+                                %
+                              </Typography>
+                            )}
                           </Box>
                         </Grid>
                         {/* <CardMedia    className={classes.media}    component=“img”    image=“/assets/images/card_illustration.png”    alt=“abstract background”    sx={{ position: “absolute”, bottom: 0 }}                     />   */}
@@ -597,51 +658,51 @@ const DashboardIndex = () => {
                       xs
                       sx={{ display: "flex", justifyContent: "flex-end" }}
                     >
-                      {/* {depositCloseTime ? (
-                          depositCloseTime * 1000 > Date.now() ? (
-                            <Grid
-                              container
-                              sx={{ display: "flex", justifyContent: "flex-end" }}
-                            >
-                              <Grid item mt={1} mr={1}>
-                                <div className={classes.activeIllustration}></div>
-                              </Grid>
-                              <Grid item>
-                                <Typography
-                                  sx={{
-                                    color: "#0ABB92",
-                                    fontSize: "1.25em",
-                                    fontFamily: "Whyte",
-                                  }}
-                                >
-                                  Active
-                                </Typography>
-                              </Grid>
+                      {depositCloseTime ? (
+                        depositCloseTime * 1000 > Date.now() ? (
+                          <Grid
+                            container
+                            sx={{ display: "flex", justifyContent: "flex-end" }}
+                          >
+                            <Grid item mt={1} mr={1}>
+                              <div className={classes.activeIllustration}></div>
                             </Grid>
-                          ) : (
-                            <Grid
-                              container
-                              sx={{ display: "flex", justifyContent: "flex-end" }}
-                            >
-                              <Grid item mt={1} mr={1}>
-                                <div
-                                  className={classes.inactiveIllustration}
-                                ></div>
-                              </Grid>
-                              <Grid item>
-                                <Typography
-                                  sx={{
-                                    color: "#D55438",
-                                    fontSize: "1.25em",
-                                    fontFamily: "Whyte",
-                                  }}
-                                >
-                                  In-active
-                                </Typography>
-                              </Grid>
+                            <Grid item>
+                              <Typography
+                                sx={{
+                                  color: "#0ABB92",
+                                  fontSize: "1.25em",
+                                  fontFamily: "Whyte",
+                                }}
+                              >
+                                Active
+                              </Typography>
                             </Grid>
-                          )
-                        ) : null} */}
+                          </Grid>
+                        ) : (
+                          <Grid
+                            container
+                            sx={{ display: "flex", justifyContent: "flex-end" }}
+                          >
+                            <Grid item mt={1} mr={1}>
+                              <div
+                                className={classes.inactiveIllustration}
+                              ></div>
+                            </Grid>
+                            <Grid item>
+                              <Typography
+                                sx={{
+                                  color: "#D55438",
+                                  fontSize: "1.25em",
+                                  fontFamily: "Whyte",
+                                }}
+                              >
+                                In-active
+                              </Typography>
+                            </Grid>
+                          </Grid>
+                        )
+                      ) : null}
                     </Grid>
                   </Grid>
 
@@ -777,7 +838,7 @@ const DashboardIndex = () => {
                           onClick={(e) => {
                             router.push(
                               {
-                                pathname: `/dashboard/${clubId}/proposal`,
+                                pathname: `/dashboard/${daoAddress}/proposal`,
                                 query: {
                                   create_proposal: true,
                                 },

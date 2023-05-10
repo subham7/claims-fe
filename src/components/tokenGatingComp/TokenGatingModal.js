@@ -8,6 +8,8 @@ import ERC20ABI from "../../abis/usdcTokenContract.json";
 import Web3 from "web3";
 import { useConnectWallet } from "@web3-onboard/react";
 import { TokenGatingModalStyles } from "./TokenGatingModalStyles";
+import ClubFetch from "../../utils/clubFetch";
+import { useSelector } from "react-redux";
 
 const Backdrop = ({ onClick }) => {
   const classes = TokenGatingModalStyles();
@@ -24,6 +26,14 @@ const TokenGatingModal = ({ closeModal, chooseTokens }) => {
   if (typeof window !== "undefined") {
     walletAddress = Web3.utils.toChecksumAddress(wallet?.accounts[0].address);
   }
+
+  const GNOSIS_TRANSACTION_URL = useSelector((state) => {
+    return state.gnosis.transactionUrl;
+  });
+
+  const USDC_CONTRACT_ADDRESS = useSelector((state) => {
+    return state.gnosis.usdcContractAddress;
+  });
 
   const formik = useFormik({
     initialValues: {
@@ -50,10 +60,12 @@ const TokenGatingModal = ({ closeModal, chooseTokens }) => {
               walletAddress,
               undefined,
               undefined,
+              // USDC_CONTRACT_ADDRESS,
+              // GNOSIS_TRANSACTION_URL,
             );
 
             tokenSymbol = await erc20contract.obtainSymbol();
-
+            console.log("NO TOKEN SYMBOL", tokenSymbol);
             try {
               tokenDecimal = await erc20contract.decimals();
             } catch (err) {
@@ -69,7 +81,8 @@ const TokenGatingModal = ({ closeModal, chooseTokens }) => {
             });
             closeModal();
           } catch (error) {
-            console.log(error);
+            console.log("ERROROROOROR", error);
+
             setTimeout(() => {
               setNotValid(false);
             }, 3000);
@@ -80,6 +93,8 @@ const TokenGatingModal = ({ closeModal, chooseTokens }) => {
       }
     },
   });
+
+  console.log("NOT VALID", notValid);
 
   return (
     <>
@@ -136,10 +151,11 @@ const TokenGatingModal = ({ closeModal, chooseTokens }) => {
           severity="error"
           sx={{
             width: "250px",
-            position: "absolute",
+            position: "fixed",
             bottom: "30px",
             right: "20px",
             borderRadius: "8px",
+            zIndex: 900000000,
           }}
         >
           Not a valid token address!

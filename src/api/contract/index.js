@@ -6,7 +6,7 @@ import Safe, {
   EthSignSignature,
 } from "@safe-global/protocol-kit";
 
-import FactoryContract from "../../abis/newFactoryContract.json";
+import FactoryContract from "../../abis/newArch/factoryContract.json";
 import ImplementationContract from "../../abis/implementationABI.json";
 import USDCContract from "../../abis/usdcTokenContract.json";
 import { createProposalTxHash, getProposalTxHash } from "../../api/proposal";

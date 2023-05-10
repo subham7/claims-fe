@@ -27,7 +27,7 @@ const useStyles = makeStyles({
     top: "50%",
     left: "50%",
     transform: "translateX(-50%) translateY(-50%)",
-    zIndex: "0000",
+    zIndex: "000",
   },
   backdrop: {
     position: "fixed",
@@ -59,6 +59,7 @@ const DepositDeadline = ({ updateDepositTimeHandler, onClose, loading }) => {
     }),
     onSubmit: (value) => {
       updateDepositTimeHandler(new Date(value.depositTime).getTime() / 1000);
+      onClose();
     },
   });
 
@@ -106,9 +107,9 @@ const DepositDeadline = ({ updateDepositTimeHandler, onClose, loading }) => {
           </Grid>
         </form>
 
-        <Backdrop sx={{ color: "#fff", zIndex: 1000 }} open={loading}>
+        {/* <Backdrop sx={{ color: "#fff", zIndex: 1000 }} open={loading}>
           <CircularProgress color="inherit" />
-        </Backdrop>
+        </Backdrop> */}
       </div>
     </>
   );

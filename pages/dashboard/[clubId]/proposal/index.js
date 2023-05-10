@@ -16,6 +16,7 @@ import { useRouter } from "next/router";
 import ProposalCard from "../proposalsss/ProposalCard";
 import { getAssetsByDaoAddress } from "../../../../src/api/assets";
 import ClubFetch from "../../../../src/utils/clubFetch";
+import { useSelector } from "react-redux";
 
 const Proposal = () => {
   const router = useRouter();
@@ -28,6 +29,10 @@ const Proposal = () => {
   const [proposalList, setProposalList] = useState();
   const [open, setOpen] = useState(false);
   const [tokenData, setTokenData] = useState();
+
+  const NETWORK_HEX = useSelector((state) => {
+    return state.gnosis.networkHex;
+  });
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -55,7 +60,7 @@ const Proposal = () => {
   const fetchTokens = () => {
     console.log("daoAddress", daoAddress);
     if (daoAddress) {
-      const tokenData = getAssetsByDaoAddress(daoAddress);
+      const tokenData = getAssetsByDaoAddress(daoAddress, NETWORK_HEX);
       tokenData.then((result) => {
         if (result.status != 200) {
           console.log("error in token daata fetching");

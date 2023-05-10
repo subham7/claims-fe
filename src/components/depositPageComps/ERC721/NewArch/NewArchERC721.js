@@ -21,6 +21,9 @@ import { convertFromWeiGovernance } from "../../../../utils/globalFunctions";
 import { SmartContract } from "../../../../api/contract";
 import { NEW_FACTORY_ADDRESS } from "../../../../api";
 import dayjs from "dayjs";
+import ClubFetch from "../../../../utils/clubFetch";
+import { useSelector } from "react-redux";
+import { useRouter } from "next/router";
 
 const NewArchERC721 = ({
   daoDetails,
@@ -40,6 +43,7 @@ const NewArchERC721 = ({
   });
 
   const [{ wallet }] = useConnectWallet();
+  const router = useRouter();
 
   let walletAddress;
   if (typeof window !== "undefined") {
@@ -47,13 +51,20 @@ const NewArchERC721 = ({
     walletAddress = web3.utils.toChecksumAddress(wallet?.accounts[0].address);
   }
 
-  const classes = NewArchERC721Styles();
+  const GNOSIS_TRANSACTION_URL = useSelector((state) => {
+    return state.gnosis.transactionUrl;
+  });
 
-  console.log("Depositiiii", daoDetails.depositDeadline);
+  const USDC_CONTRACT_ADDRESS = useSelector((state) => {
+    return state.gnosis.usdcContractAddress;
+  });
+
+  const classes = NewArchERC721Styles();
 
   const day = Math.floor(new Date().getTime() / 1000.0);
   const day1 = dayjs.unix(day);
   const day2 = dayjs.unix(daoDetails.depositDeadline);
+  const remainingDays = day2.diff(day1, "day");
   const dateSum = new Date(dayjs.unix(daoDetails.depositDeadline)).toString();
 
   const showMessageHandler = () => {
@@ -69,16 +80,16 @@ const NewArchERC721 = ({
         erc20ABI,
         daoDetails.depositTokenAddress,
         walletAddress,
-        undefined,
-        undefined,
+        USDC_CONTRACT_ADDRESS,
+        GNOSIS_TRANSACTION_URL,
       );
 
       const erc721Contract = new SmartContract(
         erc721ABI,
         erc721DaoAddress,
         walletAddress,
-        undefined,
-        undefined,
+        USDC_CONTRACT_ADDRESS,
+        GNOSIS_TRANSACTION_URL,
       );
 
       const balanceOfNft = await erc721Contract.balanceOf();
@@ -104,6 +115,8 @@ const NewArchERC721 = ({
       console.log(error);
     }
   }, [
+    GNOSIS_TRANSACTION_URL,
+    USDC_CONTRACT_ADDRESS,
     daoDetails.depositTokenAddress,
     daoDetails.maxTokensPerUser,
     erc721DaoAddress,
@@ -126,16 +139,16 @@ const NewArchERC721 = ({
         factoryContractABI,
         NEW_FACTORY_ADDRESS,
         walletAddress,
-        undefined,
-        undefined,
+        USDC_CONTRACT_ADDRESS,
+        GNOSIS_TRANSACTION_URL,
       );
 
       const erc20Contract = new SmartContract(
         erc20ABI,
         daoDetails.depositTokenAddress,
         walletAddress,
-        undefined,
-        undefined,
+        USDC_CONTRACT_ADDRESS,
+        GNOSIS_TRANSACTION_URL,
       );
 
       await erc20Contract.approveDeposit(
@@ -146,16 +159,6 @@ const NewArchERC721 = ({
         ),
         erc20TokenDetails.tokenDecimal,
       );
-
-      console.log(
-        walletAddress,
-        erc721DaoAddress,
-        daoDetails.depositTokenAddress,
-        daoDetails.nftURI,
-        1,
-        [],
-      );
-
       const claimNFT = await factoryContract.buyGovernanceTokenERC721DAO(
         walletAddress,
         erc721DaoAddress,
@@ -164,10 +167,16 @@ const NewArchERC721 = ({
         1,
         [],
       );
-
       console.log(claimNFT);
       setLoading(false);
       setClaimSuccessfull(true);
+      router.push(
+        `/dashboard/${Web3.utils.toChecksumAddress(erc721DaoAddress)}`,
+        undefined,
+        {
+          shallow: true,
+        },
+      );
       showMessageHandler();
     } catch (error) {
       console.log(error);
@@ -387,7 +396,9 @@ const NewArchERC721 = ({
                       <Button
                         onClick={claimNFTHandler}
                         disabled={
-                          hasClaimed || isTokenGated
+                          remainingDays <= 0 || hasClaimed
+                            ? true
+                            : isTokenGated
                             ? !isEligibleForTokenGating
                             : false
                         }
