@@ -47,7 +47,9 @@ import {
 import ClubFetch from "../../utils/clubFetch";
 import erc20DaoContractABI from "../../abis/newArch/erc20Dao.json";
 import erc721DaoContractABI from "../../abis/newArch/erc721Dao.json";
+import factoryContractABI from "../../abis/newArch/factoryContract.json";
 import { convertFromWeiGovernance } from "../../utils/globalFunctions";
+import { NEW_FACTORY_ADDRESS } from "../../api";
 
 const DashboardIndex = () => {
   const clubData = useSelector((state) => {
@@ -67,6 +69,7 @@ const DashboardIndex = () => {
   const [depositLink, setDepositLink] = useState("");
   const [balanceOfUser, setBalanceOfUser] = useState(0);
   const [clubTokenMinted, setClubTokenMinted] = useState(0);
+  const [depositCloseTime, setDepositCloseTime] = useState("");
 
   const [{ wallet }] = useConnectWallet();
   const router = useRouter();
@@ -180,6 +183,35 @@ const DashboardIndex = () => {
     fetchNfts();
     // fetchActiveProposals();
   }, [fetchClubDetails, fetchNfts, fetchAssets]);
+
+  useEffect(() => {
+    if (daoAddress) {
+      try {
+        const factoryContractData = async () => {
+          const factoryContract = new SmartContract(
+            factoryContractABI,
+            NEW_FACTORY_ADDRESS,
+            walletAddress,
+            USDC_CONTRACT_ADDRESS,
+            GNOSIS_TRANSACTION_URL,
+          );
+
+          const factoryData = await factoryContract.getDAOdetails(daoAddress);
+          console.log("Factory Data", factoryData);
+          setDepositCloseTime(factoryData?.depositCloseTime);
+        };
+
+        factoryContractData();
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  }, [
+    GNOSIS_TRANSACTION_URL,
+    USDC_CONTRACT_ADDRESS,
+    daoAddress,
+    walletAddress,
+  ]);
 
   useEffect(() => {
     if (daoAddress) {
@@ -626,51 +658,51 @@ const DashboardIndex = () => {
                       xs
                       sx={{ display: "flex", justifyContent: "flex-end" }}
                     >
-                      {/* {depositCloseTime ? (
-                          depositCloseTime * 1000 > Date.now() ? (
-                            <Grid
-                              container
-                              sx={{ display: "flex", justifyContent: "flex-end" }}
-                            >
-                              <Grid item mt={1} mr={1}>
-                                <div className={classes.activeIllustration}></div>
-                              </Grid>
-                              <Grid item>
-                                <Typography
-                                  sx={{
-                                    color: "#0ABB92",
-                                    fontSize: "1.25em",
-                                    fontFamily: "Whyte",
-                                  }}
-                                >
-                                  Active
-                                </Typography>
-                              </Grid>
+                      {depositCloseTime ? (
+                        depositCloseTime * 1000 > Date.now() ? (
+                          <Grid
+                            container
+                            sx={{ display: "flex", justifyContent: "flex-end" }}
+                          >
+                            <Grid item mt={1} mr={1}>
+                              <div className={classes.activeIllustration}></div>
                             </Grid>
-                          ) : (
-                            <Grid
-                              container
-                              sx={{ display: "flex", justifyContent: "flex-end" }}
-                            >
-                              <Grid item mt={1} mr={1}>
-                                <div
-                                  className={classes.inactiveIllustration}
-                                ></div>
-                              </Grid>
-                              <Grid item>
-                                <Typography
-                                  sx={{
-                                    color: "#D55438",
-                                    fontSize: "1.25em",
-                                    fontFamily: "Whyte",
-                                  }}
-                                >
-                                  In-active
-                                </Typography>
-                              </Grid>
+                            <Grid item>
+                              <Typography
+                                sx={{
+                                  color: "#0ABB92",
+                                  fontSize: "1.25em",
+                                  fontFamily: "Whyte",
+                                }}
+                              >
+                                Active
+                              </Typography>
                             </Grid>
-                          )
-                        ) : null} */}
+                          </Grid>
+                        ) : (
+                          <Grid
+                            container
+                            sx={{ display: "flex", justifyContent: "flex-end" }}
+                          >
+                            <Grid item mt={1} mr={1}>
+                              <div
+                                className={classes.inactiveIllustration}
+                              ></div>
+                            </Grid>
+                            <Grid item>
+                              <Typography
+                                sx={{
+                                  color: "#D55438",
+                                  fontSize: "1.25em",
+                                  fontFamily: "Whyte",
+                                }}
+                              >
+                                In-active
+                              </Typography>
+                            </Grid>
+                          </Grid>
+                        )
+                      ) : null}
                     </Grid>
                   </Grid>
 
