@@ -401,24 +401,6 @@
       "type": "function"
     },
     {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "_to",
-          "type": "address"
-        },
-        {
-          "internalType": "bytes",
-          "name": "_data",
-          "type": "bytes"
-        }
-      ],
-      "name": "contractCalls",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
       "inputs": [],
       "name": "decimals",
       "outputs": [
@@ -503,14 +485,14 @@
           "type": "bool"
         },
         {
-          "internalType": "address",
-          "name": "ownerAddress",
-          "type": "address"
-        },
-        {
           "internalType": "bool",
           "name": "onlyAllowWhitelist",
           "type": "bool"
+        },
+        {
+          "internalType": "address",
+          "name": "ownerAddress",
+          "type": "address"
         }
       ],
       "stateMutability": "view",
@@ -566,14 +548,14 @@
               "type": "bool"
             },
             {
-              "internalType": "address",
-              "name": "ownerAddress",
-              "type": "address"
-            },
-            {
               "internalType": "bool",
               "name": "onlyAllowWhitelist",
               "type": "bool"
+            },
+            {
+              "internalType": "address",
+              "name": "ownerAddress",
+              "type": "address"
             }
           ],
           "internalType": "struct Helper.ERC20DAOdetails",
@@ -1035,6 +1017,11 @@
     },
     {
       "inputs": [
+        {
+          "internalType": "address",
+          "name": "_contract",
+          "type": "address"
+        },
         {
           "internalType": "bytes",
           "name": "_data",

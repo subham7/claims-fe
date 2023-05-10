@@ -36,6 +36,7 @@ import surveyIcon from "../../../../public/assets/icons/survey_icon.svg";
 import ReactHtmlParser from "react-html-parser";
 import Erc721Dao from "../../../../src/abis/newArch/erc721Dao.json";
 import Erc20Dao from "../../../../src/abis/newArch/erc20Dao.json";
+import FactoryContractABI from "../../../../src/abis/newArch/factoryContract.json";
 import { SmartContract } from "../../../../src/api/contract";
 import { getAssets, getAssetsByDaoAddress } from "../../../../src/api/assets";
 import { Interface, ethers } from "ethers";
@@ -221,9 +222,10 @@ const ProposalDetail = () => {
     return state.gnosis.usdcContractAddress;
   });
 
-  // const daoAddress = useSelector((state) => {
-  //   return state.create.daoAddress;
-  // });
+  const clubData = useSelector((state) => {
+    return state.club.clubData;
+  });
+
   const gnosisAddress = useSelector((state) => {
     return state.club.clubData.gnosisAddress;
   });
@@ -411,13 +413,23 @@ const ProposalDetail = () => {
     );
     console.log("samrt contraccttt", proposalData);
     let data;
+    let ABI;
+    console.log(clubData.tokenType);
+    if (proposalData.commands[0].executionId === 3) {
+      ABI = FactoryContractABI.abi;
+    } else if (clubData.tokenType === "erc721") {
+      console.log("here");
+      ABI = Erc721Dao.abi;
+    } else if (clubData.tokenType === "erc20") {
+      ABI = Erc20Dao.abi;
+    }
+    // if(clubData.tokenType === 'erc721')
     if (proposalData.commands[0].executionId === 0) {
       const membersData = await subgraphQuery(QUERY_ALL_MEMBERS(daoAddress));
       let membersArray = [];
       membersData.users.map((member) => membersArray.push(member.userAddress));
       console.log(membersArray);
 
-      let ABI = Erc20Dao.abi;
       let iface = new Interface(ABI);
       console.log(iface);
       data = iface.encodeFunctionData("airDropToken", [
@@ -429,9 +441,8 @@ const ProposalDetail = () => {
       console.log(data);
     }
     if (proposalData.commands[0].executionId === 1) {
-      let ABI = Erc20Dao.abi;
       let iface = new Interface(ABI);
-      console.log(iface);
+      console.log(iface, ABI);
       data = iface.encodeFunctionData("mintGTToAddress", [
         [proposalData.commands[0].mintGTAmounts.toString()],
         proposalData.commands[0].mintGTAddresses,
@@ -439,7 +450,6 @@ const ProposalDetail = () => {
       console.log(data);
     }
     if (proposalData.commands[0].executionId === 2) {
-      let ABI = Erc20Dao.abi;
       let iface = new Interface(ABI);
       console.log(iface);
       data = iface.encodeFunctionData("updateGovernanceSettings", [
@@ -449,7 +459,6 @@ const ProposalDetail = () => {
       console.log(data);
     }
     if (proposalData.commands[0].executionId === 3) {
-      let ABI = Erc20Dao.abi;
       let iface = new Interface(ABI);
       console.log(
         iface,
@@ -464,7 +473,6 @@ const ProposalDetail = () => {
       console.log(data);
     }
     if (proposalData.commands[0].executionId === 4) {
-      let ABI = Erc20Dao.abi;
       let iface = new Interface(ABI);
       console.log(iface);
       data = iface.encodeFunctionData("sendCustomToken", [

@@ -13,6 +13,8 @@ import { createProposalTxHash, getProposalTxHash } from "../../api/proposal";
 import { calculateDays, convertToWei } from "../../utils/globalFunctions";
 import { USDC_FAUCET_ADDRESS } from "../index";
 import SafeApiKit from "@safe-global/api-kit";
+import Erc721Dao from "../../abis/newArch/erc721Dao.json";
+import Erc20Dao from "../../abis/newArch/erc20Dao.json";
 
 async function syncWallet() {
   // function for validating metamask wallet
@@ -416,7 +418,7 @@ export class SmartContract {
     });
     console.log("here", safeSdk);
     const implementationContract = new web3.eth.Contract(
-      ImplementationContract.abi,
+      Erc20Dao.abi,
       daoAddress,
     );
     console.log("implementationContract", implementationContract);
