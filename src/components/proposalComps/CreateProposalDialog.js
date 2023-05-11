@@ -37,6 +37,10 @@ import Web3 from "web3";
 import { createProposal } from "../../api/proposal";
 import { fetchProposals } from "../../utils/proposal";
 import { useSelector } from "react-redux";
+import factoryContractABI from "../../abis/newArch/factoryContract.json";
+import { convertFromWeiGovernance } from "../../utils/globalFunctions";
+import { SmartContract } from "../../api/contract";
+import { NEW_FACTORY_ADDRESS } from "../../api";
 
 const useStyles = makeStyles({
   modalStyle: {
@@ -71,8 +75,16 @@ const CreateProposalDialog = ({ open, setOpen, onClose, tokenData }) => {
   const clubData = useSelector((state) => {
     return state.club.clubData;
   });
+
   const daoAddress = useSelector((state) => {
     return state.club.daoAddress;
+  });
+
+  const USDC_CONTRACT_ADDRESS = useSelector((state) => {
+    return state.gnosis.usdcContractAddress;
+  });
+  const GNOSIS_TRANSACTION_URL = useSelector((state) => {
+    return state.gnosis.transactionUrl;
   });
 
   const [loaderOpen, setLoaderOpen] = useState(false);
@@ -84,6 +96,7 @@ const CreateProposalDialog = ({ open, setOpen, onClose, tokenData }) => {
       return;
     }
     setOpenSnackBar(false);
+    setLoaderOpen(false);
   };
 
   const proposal = useFormik({
@@ -107,7 +120,7 @@ const CreateProposalDialog = ({ open, setOpen, onClose, tokenData }) => {
       amountToSend: 0,
     },
     validationSchema: proposalValidationSchema,
-    onSubmit: (values) => {
+    onSubmit: async (values) => {
       console.log(values);
       let commands;
       setLoaderOpen(true);
@@ -148,6 +161,31 @@ const CreateProposalDialog = ({ open, setOpen, onClose, tokenData }) => {
             executionId: 2,
             quorum: values.quorum,
             threshold: values.threshold,
+            usdcTokenSymbol: "USDC",
+            usdcTokenDecimal: 6,
+            usdcGovernanceTokenDecimal: 18,
+          },
+        ];
+      }
+      if (values.actionCommand === "Change total raise amount") {
+        console.log("here");
+        const factoryContract = new SmartContract(
+          factoryContractABI,
+          NEW_FACTORY_ADDRESS,
+          walletAddress,
+          USDC_CONTRACT_ADDRESS,
+          GNOSIS_TRANSACTION_URL,
+        );
+        const factoryData = await factoryContract.getDAOdetails(daoAddress);
+        console.log(
+          convertToWei(values.totalDeposit, 6) / factoryData.pricePerToken,
+        );
+        commands = [
+          {
+            executionId: 3,
+            totalDeposits:
+              convertToWei(values.totalDeposit, 6) / factoryData.pricePerToken,
+
             usdcTokenSymbol: "USDC",
             usdcTokenDecimal: 6,
             usdcGovernanceTokenDecimal: 18,
@@ -472,6 +510,7 @@ const CreateProposalDialog = ({ open, setOpen, onClose, tokenData }) => {
                   variant="primary"
                   onClick={() => {
                     proposal.resetForm();
+                    setLoaderOpen(false);
                     onClose(event, "cancel");
                   }}
                 >

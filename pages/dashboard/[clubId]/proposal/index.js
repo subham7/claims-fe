@@ -58,6 +58,7 @@ const Proposal = () => {
   };
 
   const fetchTokens = () => {
+    console.log("daoAddress", daoAddress);
     if (daoAddress) {
       const tokenData = getAssetsByDaoAddress(daoAddress, NETWORK_HEX);
       tokenData.then((result) => {
@@ -149,30 +150,29 @@ const Proposal = () => {
                     Propose
                   </Button>
                 </Grid>
-
-                <Grid container spacing={3}>
-                  {proposalList?.length > 0
-                    ? proposalList.map((proposal, key) => {
-                        return (
-                          <Grid
-                            item
-                            key={proposal.id}
-                            onClick={(e) => {
-                              handleProposalClick(proposalList[key]);
-                            }}
-                            md={12}
-                          >
-                            <ProposalCard
-                              proposal={proposal}
-                              indexKey={key}
-                              // fetched={fetched}
-                            />
-                          </Grid>
-                        );
-                      })
-                    : null}
-                </Grid>
               </Grid>
+            </Grid>
+            <Grid container spacing={3}>
+              {proposalList?.length > 0
+                ? proposalList.map((proposal, key) => {
+                    return (
+                      <Grid
+                        item
+                        key={proposal.id}
+                        onClick={(e) => {
+                          handleProposalClick(proposalList[key]);
+                        }}
+                        md={12}
+                      >
+                        <ProposalCard
+                          proposal={proposal}
+                          indexKey={key}
+                          // fetched={fetched}
+                        />
+                      </Grid>
+                    );
+                  })
+                : null}
             </Grid>
           </Grid>
         </Grid>

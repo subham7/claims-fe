@@ -27,12 +27,16 @@ import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import CloseIcon from "@mui/icons-material/Close";
 import DoneIcon from "@mui/icons-material/Done";
 import tickerIcon from "../../../../public/assets/icons/ticker_icon.svg";
-import { calculateDays } from "../../../../src/utils/globalFunctions";
+import {
+  calculateDays,
+  convertToWeiGovernance,
+} from "../../../../src/utils/globalFunctions";
 import actionIcon from "../../../../public/assets/icons/action_icon.svg";
 import surveyIcon from "../../../../public/assets/icons/survey_icon.svg";
 import ReactHtmlParser from "react-html-parser";
 import Erc721Dao from "../../../../src/abis/newArch/erc721Dao.json";
 import Erc20Dao from "../../../../src/abis/newArch/erc20Dao.json";
+import FactoryContractABI from "../../../../src/abis/newArch/factoryContract.json";
 import { SmartContract } from "../../../../src/api/contract";
 import { getAssets, getAssetsByDaoAddress } from "../../../../src/api/assets";
 import { Interface, ethers } from "ethers";
@@ -46,6 +50,7 @@ import Safe, {
 import SafeApiKit from "@safe-global/api-kit";
 import { subgraphQuery } from "../../../../src/utils/subgraphs";
 import { QUERY_ALL_MEMBERS } from "../../../../src/api/graphql/queries";
+import { NEW_FACTORY_ADDRESS } from "../../../../src/api";
 
 const useStyles = makeStyles({
   clubAssets: {
@@ -217,9 +222,10 @@ const ProposalDetail = () => {
     return state.gnosis.usdcContractAddress;
   });
 
-  // const daoAddress = useSelector((state) => {
-  //   return state.create.daoAddress;
-  // });
+  const clubData = useSelector((state) => {
+    return state.club.clubData;
+  });
+
   const gnosisAddress = useSelector((state) => {
     return state.club.clubData.gnosisAddress;
   });
@@ -271,10 +277,12 @@ const ProposalDetail = () => {
       web3,
       signerAddress: walletAddress,
     });
+    console.log("GNOSIS_TRANSACTION_URL", GNOSIS_TRANSACTION_URL);
     const safeService = new SafeApiKit({
       txServiceUrl: GNOSIS_TRANSACTION_URL,
       ethAdapter,
     });
+    console.log("safeService", safeService);
     // const safeService = new SafeServiceClient({
     //   txServiceUrl: GNOSIS_TRANSACTION_URL,
     //   ethAdapter,
@@ -405,13 +413,23 @@ const ProposalDetail = () => {
     );
     console.log("samrt contraccttt", proposalData);
     let data;
+    let ABI;
+    console.log(clubData.tokenType);
+    if (proposalData.commands[0].executionId === 3) {
+      ABI = FactoryContractABI.abi;
+    } else if (clubData.tokenType === "erc721") {
+      console.log("here");
+      ABI = Erc721Dao.abi;
+    } else if (clubData.tokenType === "erc20") {
+      ABI = Erc20Dao.abi;
+    }
+    // if(clubData.tokenType === 'erc721')
     if (proposalData.commands[0].executionId === 0) {
       const membersData = await subgraphQuery(QUERY_ALL_MEMBERS(daoAddress));
       let membersArray = [];
       membersData.users.map((member) => membersArray.push(member.userAddress));
       console.log(membersArray);
 
-      let ABI = Erc20Dao.abi;
       let iface = new Interface(ABI);
       console.log(iface);
       data = iface.encodeFunctionData("airDropToken", [
@@ -423,9 +441,8 @@ const ProposalDetail = () => {
       console.log(data);
     }
     if (proposalData.commands[0].executionId === 1) {
-      let ABI = Erc20Dao.abi;
       let iface = new Interface(ABI);
-      console.log(iface);
+      console.log(iface, ABI);
       data = iface.encodeFunctionData("mintGTToAddress", [
         [proposalData.commands[0].mintGTAmounts.toString()],
         proposalData.commands[0].mintGTAddresses,
@@ -433,7 +450,6 @@ const ProposalDetail = () => {
       console.log(data);
     }
     if (proposalData.commands[0].executionId === 2) {
-      let ABI = Erc20Dao.abi;
       let iface = new Interface(ABI);
       console.log(iface);
       data = iface.encodeFunctionData("updateGovernanceSettings", [
@@ -442,8 +458,21 @@ const ProposalDetail = () => {
       ]);
       console.log(data);
     }
+    if (proposalData.commands[0].executionId === 3) {
+      let iface = new Interface(ABI);
+      console.log(
+        iface,
+        convertToWeiGovernance(proposalData.commands[0].totalDeposits, 18),
+        daoAddress,
+      );
+      data = iface.encodeFunctionData("updateDistributionAmount", [
+        convertToWeiGovernance(proposalData.commands[0].totalDeposits, 18),
+        daoAddress,
+      ]);
+
+      console.log(data);
+    }
     if (proposalData.commands[0].executionId === 4) {
-      let ABI = Erc20Dao.abi;
       let iface = new Interface(ABI);
       console.log(iface);
       data = iface.encodeFunctionData("sendCustomToken", [
@@ -455,7 +484,9 @@ const ProposalDetail = () => {
     }
     const response = updateProposal.updateProposalAndExecution(
       data,
-      daoAddress,
+      proposalData.commands[0].executionId === 3
+        ? NEW_FACTORY_ADDRESS
+        : daoAddress,
       Web3.utils.toChecksumAddress(gnosisAddress),
       txHash,
       pid,
