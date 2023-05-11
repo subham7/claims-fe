@@ -53,6 +53,7 @@ import { QUERY_ALL_MEMBERS } from "../../../../src/api/graphql/queries";
 import { NEW_FACTORY_ADDRESS } from "../../../../src/api";
 import ProposalExecutionInfo from "../../../../src/components/proposalComps/ProposalExecutionInfo";
 import Signators from "../../../../src/components/proposalComps/Signators";
+import ProposalInfo from "../../../../src/components/proposalComps/ProposalInfo";
 
 const useStyles = makeStyles({
   clubAssets: {
@@ -253,6 +254,7 @@ const ProposalDetail = () => {
   const [tokenData, setTokenData] = useState([]);
   const [tokenFetched, setTokenFetched] = useState(false);
   const [threshold, setThreshold] = useState();
+  const [fetched, setFetched] = useState(false);
 
   const GNOSIS_TRANSACTION_URL = useSelector((state) => {
     return state.gnosis.transactionUrl;
@@ -398,10 +400,12 @@ const ProposalDetail = () => {
     proposalData.then((result) => {
       if (result.status !== 200) {
         setLoader(false);
+        setFetched(false);
       } else {
         console.log(proposalData);
         setProposalData(result.data[0]);
         console.log("NEW DATA", result.data[0]);
+        setFetched(true);
       }
     });
     setLoader(false);
@@ -660,14 +664,20 @@ const ProposalDetail = () => {
               </Grid>
             </Grid>
 
+            {/* Proposal Info and Signators */}
             <Grid container spacing={2} mt={4} mb={3}>
-              <ProposalExecutionInfo proposalData={proposalData} />
+              <ProposalExecutionInfo
+                proposalData={proposalData}
+                fetched={fetched}
+              />
 
               <Signators
                 ownerAddresses={ownerAddresses}
                 signedOwners={signedOwners}
               />
             </Grid>
+
+            {/* <ProposalInfo proposalData={proposalData} fetched={fetched} /> */}
 
             {/* proposal description */}
             <Grid container item className={classes.listFont}>

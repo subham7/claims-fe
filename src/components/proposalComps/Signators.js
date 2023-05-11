@@ -16,28 +16,33 @@ const Signators = ({ ownerAddresses, signedOwners }) => {
   return (
     <Grid item md={3}>
       <Card>
-        <Grid container item>
+        <Grid container >
           <Typography className={classes.listFont2}>Signators</Typography>
           <Divider sx={{ marginTop: 2, marginBottom: 3 }} />
         </Grid>
-        {ownerAddresses?.map((owner) => (
-          <Grid
-            sx={{
-              display: "flex",
-              justifyContent: "flex-start",
-            }}
-            key={owner}
-          >
-            {signedOwners?.includes(owner) ? (
-              <DoneIcon fill="blue" sx={{ marginRight: 2, color: "#3B7AFD" }} />
-            ) : (
-              <HelpOutlineIcon sx={{ marginRight: 2 }} />
-            )}
-            <Typography>
-              {owner.slice(0, 6)}.....{owner.slice(-4)}
-            </Typography>
-          </Grid>
-        ))}
+        <Grid sx={{ overflow: "scroll" }}>
+          {ownerAddresses?.map((owner) => (
+            <Grid
+              sx={{
+                display: "flex",
+                justifyContent: "flex-start",
+              }}
+              key={owner}
+            >
+              {signedOwners?.includes(owner) ? (
+                <DoneIcon
+                  fill="blue"
+                  sx={{ marginRight: 2, color: "#3B7AFD" }}
+                />
+              ) : (
+                <HelpOutlineIcon sx={{ marginRight: 2 }} />
+              )}
+              <Typography>
+                {owner.slice(0, 6)}.....{owner.slice(-4)}
+              </Typography>
+            </Grid>
+          ))}
+        </Grid>
       </Card>
     </Grid>
   );

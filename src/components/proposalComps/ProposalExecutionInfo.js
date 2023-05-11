@@ -14,10 +14,9 @@ const useStyles = makeStyles({
   },
 });
 
-const ProposalExecutionInfo = ({ proposalData }) => {
+const ProposalExecutionInfo = ({ proposalData, fetched }) => {
   console.log("Proposal Data", proposalData);
   const classes = useStyles();
-  const fetched = true;
 
   return (
     <Grid item md={9}>
