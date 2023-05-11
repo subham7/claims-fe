@@ -54,6 +54,8 @@ import { NEW_FACTORY_ADDRESS } from "../../../../src/api";
 import ProposalExecutionInfo from "../../../../src/components/proposalComps/ProposalExecutionInfo";
 import Signators from "../../../../src/components/proposalComps/Signators";
 import ProposalInfo from "../../../../src/components/proposalComps/ProposalInfo";
+import CurrentResults from "../../../../src/components/proposalComps/CurrentResults";
+import ProposalVotes from "../../../../src/components/proposalComps/ProposalVotes";
 
 const useStyles = makeStyles({
   clubAssets: {
@@ -677,8 +679,6 @@ const ProposalDetail = () => {
               />
             </Grid>
 
-            {/* <ProposalInfo proposalData={proposalData} fetched={fetched} /> */}
-
             {/* proposal description */}
             <Grid container item className={classes.listFont}>
               <div
@@ -895,6 +895,13 @@ const ProposalDetail = () => {
             ) : (
               <></>
             )}
+          </Grid>
+          <Grid item md={3.5}>
+            <Stack spacing={3}>
+              <ProposalInfo proposalData={proposalData} fetched={fetched} />
+              <CurrentResults proposalData={proposalData} fetched={fetched} />
+              <ProposalVotes proposalData={proposalData} fetched={fetched} />
+            </Stack>
           </Grid>
         </Grid>
       </Layout1>
