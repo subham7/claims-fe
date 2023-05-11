@@ -51,6 +51,7 @@ import SafeApiKit from "@safe-global/api-kit";
 import { subgraphQuery } from "../../../../src/utils/subgraphs";
 import { QUERY_ALL_MEMBERS } from "../../../../src/api/graphql/queries";
 import { NEW_FACTORY_ADDRESS } from "../../../../src/api";
+import { AIRDROP_ACTION_ADDRESS } from "../../../../src/api";
 
 const useStyles = makeStyles({
   clubAssets: {
@@ -413,9 +414,16 @@ const ProposalDetail = () => {
     );
     console.log("samrt contraccttt", proposalData);
     let data;
+    let approvalData;
     let ABI;
     console.log(clubData.tokenType);
-    if (proposalData.commands[0].executionId === 3) {
+    if (proposalData.commands[0].executionId === 0) {
+      ABI = [
+        "function approve(address spender, uint256 amount)",
+        "function contractCalls(address _to, bytes memory _data)",
+        "function airDropToken(address _airdropTokenAddress,uint256[] memory _airdropAmountArray,address[] memory _members)",
+      ];
+    } else if (proposalData.commands[0].executionId === 3) {
       ABI = FactoryContractABI.abi;
     } else if (clubData.tokenType === "erc721") {
       console.log("here");
@@ -432,13 +440,33 @@ const ProposalDetail = () => {
 
       let iface = new Interface(ABI);
       console.log(iface);
-      data = iface.encodeFunctionData("airDropToken", [
-        proposalData.commands[0].airDropToken,
+      // data = iface.encodeFunctionData("airDropToken", [
+      //   proposalData.commands[0].airDropToken,
+      //   proposalData.commands[0].airDropAmount,
+      //   proposalData.commands[0].airDropCarryFee,
+      //   membersArray,
+      // ]);
+
+      approvalData = iface.encodeFunctionData("approve", [
+        AIRDROP_ACTION_ADDRESS,
         proposalData.commands[0].airDropAmount,
-        proposalData.commands[0].airDropCarryFee,
-        membersArray,
       ]);
-      console.log(data);
+      console.log("approvalData", approvalData);
+
+      let airDropAmountArray = [];
+      let newMembersArray = membersArray.map(async (member) => {
+        console.log("member", member);
+        airDropAmountArray.push(proposalData.commands[0].airDropAmount);
+      });
+      Promise.all(newMembersArray).then(() => {
+        data = iface.encodeFunctionData("airDropToken", [
+          proposalData.commands[0].airDropToken,
+          airDropAmountArray,
+          membersArray,
+        ]);
+      });
+
+      console.log("data", data);
     }
     if (proposalData.commands[0].executionId === 1) {
       let iface = new Interface(ABI);
@@ -449,6 +477,7 @@ const ProposalDetail = () => {
       ]);
       console.log(data);
     }
+
     if (proposalData.commands[0].executionId === 2) {
       let iface = new Interface(ABI);
       console.log(iface);
@@ -484,6 +513,7 @@ const ProposalDetail = () => {
     }
     const response = updateProposal.updateProposalAndExecution(
       data,
+      approvalData,
       proposalData.commands[0].executionId === 3
         ? NEW_FACTORY_ADDRESS
         : daoAddress,

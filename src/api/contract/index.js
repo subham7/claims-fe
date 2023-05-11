@@ -15,6 +15,7 @@ import { USDC_FAUCET_ADDRESS } from "../index";
 import SafeApiKit from "@safe-global/api-kit";
 import Erc721Dao from "../../abis/newArch/erc721Dao.json";
 import Erc20Dao from "../../abis/newArch/erc20Dao.json";
+import { AIRDROP_ACTION_ADDRESS } from "../../api";
 
 async function syncWallet() {
   // function for validating metamask wallet
@@ -385,6 +386,7 @@ export class SmartContract {
 
   async updateProposalAndExecution(
     data,
+    approvalData = "",
     daoAddress = "",
     gnosisAddress = "",
     txHash = "",
@@ -422,33 +424,63 @@ export class SmartContract {
       daoAddress,
     );
     console.log("implementationContract", implementationContract);
+    const approvalTransaction = {
+      to: web3.utils.toChecksumAddress(daoAddress),
+      data: implementationContract.methods
+        .updateProposalAndExecution(
+          //usdc address
+          web3.utils.toChecksumAddress(
+            "0xf699d5f8F3C0E6Ad4e239685e7B5F141CF1a0CC1",
+          ),
+          approvalData,
+        )
+        .encodeABI(),
+      value: "0",
+    };
 
     const transaction = {
       to: web3.utils.toChecksumAddress(daoAddress),
       data: implementationContract.methods
         .updateProposalAndExecution(
-          web3.utils.toChecksumAddress(daoAddress),
+          //airdrop address
+          web3.utils.toChecksumAddress(AIRDROP_ACTION_ADDRESS),
           parameters,
         )
         .encodeABI(),
       value: "0",
     };
+
     console.log("transaction", transaction);
     const nonce = await safeService.getNextNonce(gnosisAddress);
     console.log("nonce", nonce);
 
-    const safeTransactionData = {
-      to: transaction.to,
-      data: transaction.data,
-      value: transaction.value,
-      // operation, // Optional
-      // safeTxGas, // Optional
-      // baseGas, // Optional
-      // gasPrice, // Optional
-      // gasToken, // Optional
-      // refundReceiver, // Optional
-      nonce: nonce, // Optional
-    };
+    const safeTransactionData = [
+      {
+        to: approvalTransaction.to,
+        data: approvalTransaction.data,
+        value: approvalTransaction.value,
+        // operation, // Optional
+        // safeTxGas, // Optional
+        // baseGas, // Optional
+        // gasPrice, // Optional
+        // gasToken, // Optional
+        // refundReceiver, // Optional
+        // nonce: nonce, // Optional
+      },
+      {
+        to: transaction.to,
+        data: transaction.data,
+        value: transaction.value,
+        // operation, // Optional
+        // safeTxGas, // Optional
+        // baseGas, // Optional
+        // gasPrice, // Optional
+        // gasToken, // Optional
+        // refundReceiver, // Optional
+        // nonce: nonce, // Optional
+      },
+    ];
+    // ];
     const safeTransaction = await safeSdk.createTransaction({
       safeTransactionData,
     });
@@ -498,7 +530,7 @@ export class SmartContract {
       const safetx = await safeService.getTransaction(
         proposalTxHash.data[0].txHash,
       );
-
+      console.log("safetx", safetx);
       const options = {
         maxPriorityFeePerGas: null,
         maxFeePerGas: null,
@@ -511,7 +543,7 @@ export class SmartContract {
       };
       const executeTxResponse = await safeSdk.executeTransaction(
         safetx,
-        // options,
+        options,
       );
 
       console.log("executeTxResponse", executeTxResponse);
