@@ -261,7 +261,7 @@ export default function App() {
             <NewCard
               onClick={claimsHandler}
               imgSrc={claim}
-              title={"Claim Tokens"}
+              title={"Airdrop Tokens"}
               subtitle={"Get your airdrop tokens from here!"}
             />
           </div>

@@ -324,6 +324,8 @@ const ProposalDetail = () => {
       } else setGovernance(false);
     } else setGovernance(true);
     const threshold = await safeSdk.getThreshold();
+
+    console.log("Threshold", threshold);
     setThreshold(threshold);
     const proposalTxHash = getProposalTxHash(pid);
     proposalTxHash.then(async (result) => {
@@ -373,6 +375,7 @@ const ProposalDetail = () => {
     walletAddress,
   ]);
   console.log("governance", governance);
+
   const checkUserVoted = () => {
     if (walletAddress) {
       //   console.log(walletAddress);
@@ -591,6 +594,7 @@ const ProposalDetail = () => {
     );
     console.log(response);
     if (proposalStatus === "executed") {
+      // fetchData()  
       response.then(
         (result) => {
           result.promiEvent.on("confirmation", () => {

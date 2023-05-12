@@ -17,22 +17,52 @@ import ProposalCard from "../proposalsss/ProposalCard";
 import { getAssetsByDaoAddress } from "../../../../src/api/assets";
 import ClubFetch from "../../../../src/utils/clubFetch";
 import { useSelector } from "react-redux";
+import { makeStyles } from "@mui/styles";
+
+const useStyles = makeStyles({
+  noProposal_heading: {
+    fontSize: "18px",
+    fontWeight: "400",
+    color: "white",
+  },
+  noProposal_para: {
+    fontSize: "14px",
+    fontWeight: "400",
+    color: "lightgray",
+  },
+  noProposal: {
+    width: "600px",
+    margin: "0 auto",
+    textAlign: "center",
+    border: "1px solid #FFFFFF1A",
+    borderRadius: "10px",
+    padding: "10px 30px",
+    marginTop: "50px",
+  },
+});
 
 const Proposal = () => {
   const router = useRouter();
   const { clubId: daoAddress } = router.query;
+  const classes = useStyles();
 
   const [selectedListItem, setSelectedListItem] = useState(
     proposalDisplayOptions[0].type,
   );
 
-  const [proposalList, setProposalList] = useState();
+  const [proposalList, setProposalList] = useState([]);
   const [open, setOpen] = useState(false);
-  const [tokenData, setTokenData] = useState();
+  const [tokenData, setTokenData] = useState([]);
 
   const NETWORK_HEX = useSelector((state) => {
     return state.gnosis.networkHex;
   });
+
+  const proposalList2 = useSelector((state) => {
+    return state.proposal.proposalList;
+  });
+
+  console.log("Proposal List", proposalList2);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -45,16 +75,16 @@ const Proposal = () => {
   };
 
   const handleProposalClick = (proposal) => {
-    router.push(`${router.asPath}/${proposal.proposalId}`, undefined, {
+    router.push(`${router.asPath}/${proposal?.proposalId}`, undefined, {
       shallow: true,
     });
   };
 
-  const fetchProposalList = useCallback(async () => {
-    const data = await fetchProposals(daoAddress);
-    console.log(data);
-    setProposalList(data);
-  }, [daoAddress]);
+  // const fetchProposalList = async () => {
+  //   const data = await fetchProposals(daoAddress);
+  //   console.log(data);
+  //   setProposalList(data);
+  // };
 
   const fetchTokens = useCallback(() => {
     console.log("daoAddress", daoAddress);
@@ -77,8 +107,13 @@ const Proposal = () => {
   }, [daoAddress, fetchTokens]);
 
   useEffect(() => {
+    const fetchProposalList = async () => {
+      const data = await fetchProposals(daoAddress);
+      console.log(data);
+      setProposalList(data);
+    };
     fetchProposalList();
-  }, []);
+  }, [daoAddress]);
 
   return (
     <Layout1 page={2}>
@@ -155,8 +190,27 @@ const Proposal = () => {
               </Grid>
             </Grid>
             <Grid container spacing={3}>
-              {proposalList?.length > 0
-                ? proposalList.map((proposal, key) => {
+              {(proposalList?.length > 0 || proposalList2?.length > 0) &&
+              proposalList2 !== null
+                ? proposalList2.map((proposal, key) => {
+                    return (
+                      <Grid
+                        item
+                        key={proposal.id}
+                        onClick={(e) => {
+                          handleProposalClick(proposalList2[key]);
+                        }}
+                        md={12}
+                      >
+                        <ProposalCard
+                          proposal={proposal}
+                          indexKey={key}
+                          // fetched={fetched}
+                        />
+                      </Grid>
+                    );
+                  })
+                : proposalList.map((proposal, key) => {
                     return (
                       <Grid
                         item
@@ -173,8 +227,18 @@ const Proposal = () => {
                         />
                       </Grid>
                     );
-                  })
-                : null}
+                  })}
+
+              {!proposalList?.length && !proposalList2?.length && (
+                <div className={classes.noProposal}>
+                  <p className={classes.noProposal_heading}>
+                    No Proposals found
+                  </p>
+                  <p className={classes.noProposal_para}>
+                    Proposals inside your station will appear here.
+                  </p>
+                </div>
+              )}
             </Grid>
           </Grid>
         </Grid>
