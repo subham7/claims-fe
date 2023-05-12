@@ -395,7 +395,7 @@ export class SmartContract {
     executionStatus,
   ) {
     const parameters = data;
-    console.log("executionStatus", executionStatus, gnosisAddress);
+    console.log("executionStatus", executionStatus, gnosisAddress, parameters);
     const safeOwner = this.walletAddress;
     // const ethAdapter = new Web3Adapter({
     //   web3: this.web3,
@@ -424,49 +424,60 @@ export class SmartContract {
       daoAddress,
     );
     console.log("implementationContract", implementationContract);
-    const approvalTransaction = {
-      to: web3.utils.toChecksumAddress(daoAddress),
-      data: implementationContract.methods
-        .updateProposalAndExecution(
-          //usdc address
-          web3.utils.toChecksumAddress(
-            "0xf699d5f8F3C0E6Ad4e239685e7B5F141CF1a0CC1",
-          ),
-          approvalData,
-        )
-        .encodeABI(),
-      value: "0",
-    };
-
+    // const approvalTransaction = {
+    //   to: web3.utils.toChecksumAddress(daoAddress),
+    //   data: implementationContract.methods
+    //     .updateProposalAndExecution(
+    //       //usdc address
+    //       web3.utils.toChecksumAddress(
+    //         "0xf699d5f8F3C0E6Ad4e239685e7B5F141CF1a0CC1",
+    //       ),
+    //       approvalData,
+    //     )
+    //     .encodeABI(),
+    //   value: "0",
+    // };
     const transaction = {
       to: web3.utils.toChecksumAddress(daoAddress),
       data: implementationContract.methods
         .updateProposalAndExecution(
-          //airdrop address
-          web3.utils.toChecksumAddress(AIRDROP_ACTION_ADDRESS),
+          web3.utils.toChecksumAddress(daoAddress),
           parameters,
         )
         .encodeABI(),
       value: "0",
     };
 
+    // const transaction = {
+    //   to: web3.utils.toChecksumAddress(daoAddress),
+    //   data: implementationContract.methods
+    //     .updateProposalAndExecution(
+    //       //airdrop address
+    //       web3.utils.toChecksumAddress(AIRDROP_ACTION_ADDRESS),
+    //       parameters,
+    //     )
+    //     .encodeABI(),
+    //   value: "0",
+    // };
+
     console.log("transaction", transaction);
     const nonce = await safeService.getNextNonce(gnosisAddress);
     console.log("nonce", nonce);
 
-    const safeTransactionData = [
-      {
-        to: approvalTransaction.to,
-        data: approvalTransaction.data,
-        value: approvalTransaction.value,
-        // operation, // Optional
-        // safeTxGas, // Optional
-        // baseGas, // Optional
-        // gasPrice, // Optional
-        // gasToken, // Optional
-        // refundReceiver, // Optional
-        // nonce: nonce, // Optional
-      },
+    const safeTransactionData =
+      // [
+      //   {
+      //     to: approvalTransaction.to,
+      //     data: approvalTransaction.data,
+      //     value: approvalTransaction.value,
+      //     // operation, // Optional
+      //     // safeTxGas, // Optional
+      //     // baseGas, // Optional
+      //     // gasPrice, // Optional
+      //     // gasToken, // Optional
+      //     // refundReceiver, // Optional
+      //     // nonce: nonce, // Optional
+      //   },
       {
         to: transaction.to,
         data: transaction.data,
@@ -478,8 +489,8 @@ export class SmartContract {
         // gasToken, // Optional
         // refundReceiver, // Optional
         // nonce: nonce, // Optional
-      },
-    ];
+      };
+    // ];
     // ];
     const safeTransaction = await safeSdk.createTransaction({
       safeTransactionData,

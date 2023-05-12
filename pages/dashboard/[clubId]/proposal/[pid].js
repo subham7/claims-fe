@@ -380,6 +380,7 @@ const ProposalDetail = () => {
       votingOptionId: castVoteOption,
       voterAddress: walletAddress,
       clubId: daoAddress,
+      daoAddress: daoAddress,
     };
     const voteSubmit = castVote(payload);
     voteSubmit.then((result) => {
