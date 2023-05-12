@@ -513,9 +513,9 @@ const ProposalDetail = () => {
           const balance = await erc20DaoContract.nftBalance(
             Web3.utils.toChecksumAddress(member),
           );
-          console.log("balance", balance);
+
           const clubTokensMinted = await erc20DaoContract.totalSupply();
-          console.log(balance, clubTokensMinted, balance / clubTokensMinted);
+
           return (
             (proposalData.commands[0].airDropAmount * balance) /
             clubTokensMinted
@@ -594,7 +594,7 @@ const ProposalDetail = () => {
     );
     console.log(response);
     if (proposalStatus === "executed") {
-      // fetchData()  
+      // fetchData()
       response.then(
         (result) => {
           result.promiEvent.on("confirmation", () => {

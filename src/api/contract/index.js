@@ -423,10 +423,11 @@ export class SmartContract {
       Erc20Dao.abi,
       daoAddress,
     );
-    console.log("implementationContract", implementationContract, tokenData);
+    // console.log("implementationContract", implementationContract, tokenData);
     let approvalTransaction;
     let transaction;
     if (approvalData !== "") {
+      console.log("in airdrop");
       approvalTransaction = {
         to: web3.utils.toChecksumAddress(daoAddress),
         data: implementationContract.methods
@@ -451,6 +452,7 @@ export class SmartContract {
           .encodeABI(),
         value: "0",
       };
+      console.log("txnnssss", approvalTransaction, transaction);
     } else {
       transaction = {
         to: web3.utils.toChecksumAddress(daoAddress),
@@ -467,7 +469,9 @@ export class SmartContract {
     console.log("transaction", transaction);
 
     if (executionStatus !== "executed") {
+      //case for 1st signature
       if (txHash === "") {
+        console.log("in airdrop", approvalTransaction, transaction);
         const nonce = await safeService.getNextNonce(gnosisAddress);
         console.log("nonce", nonce);
         let safeTransactionData;
@@ -536,7 +540,9 @@ export class SmartContract {
         );
         await safeService.confirmTransaction(safeTxHash, senderSignature.data);
         return proposeTxn;
-      } else {
+      }
+      //case for remaining signatures
+      else {
         console.log("here");
         const proposalTxHash = await getProposalTxHash(pid);
         console.log("proposalTxHash", proposalTxHash);
@@ -547,6 +553,49 @@ export class SmartContract {
         const nonce = await safeSdk.getNonce();
         console.log("nonce", nonce);
         let safeTransactionData;
+
+        if (approvalData === "") {
+          safeTransactionData = {
+            to: tx.to,
+            data: tx.data,
+            value: tx.value,
+            // operation, // Optional
+            // safeTxGas, // Optional
+            // baseGas, // Optional
+            // gasPrice, // Optional
+            // gasToken, // Optional
+            // refundReceiver, // Optional
+            nonce: tx.nonce, // Optional
+          };
+        } else {
+          safeTransactionData = [
+            {
+              to: tx.dataDecoded.parameters[0].valueDecoded[0].to,
+              data: tx.dataDecoded.parameters[0].valueDecoded[0].data,
+              value: tx.dataDecoded.parameters[0].valueDecoded[0].value,
+              // operation, // Optional
+              // safeTxGas, // Optional
+              // baseGas, // Optional
+              // gasPrice, // Optional
+              // gasToken, // Optional
+              // refundReceiver, // Optional
+              nonce: tx.nonce, // Optional
+            },
+            {
+              to: tx.dataDecoded.parameters[0].valueDecoded[1].to,
+              data: tx.dataDecoded.parameters[0].valueDecoded[1].data,
+              value: tx.dataDecoded.parameters[0].valueDecoded[1].value,
+              // operation, // Optional
+              // safeTxGas, // Optional
+              // baseGas, // Optional
+              // gasPrice, // Optional
+              // gasToken, // Optional
+              // refundReceiver, // Optional
+              nonce: nonce, // Optional
+            },
+          ];
+        }
+
         safeTransactionData = {
           to: tx.to,
           data: tx.data,

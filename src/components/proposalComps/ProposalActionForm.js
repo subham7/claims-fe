@@ -101,7 +101,7 @@ const ProposalActionForm = ({ formik, tokenData }) => {
 
                 return tokenData.find(
                   (token) => token.token_address === selected,
-                ).name;
+                )?.name;
               }}
               inputProps={{ "aria-label": "Without label" }}
               name="airdropToken"
@@ -326,7 +326,7 @@ const ProposalActionForm = ({ formik, tokenData }) => {
                 );
                 return tokenData.find(
                   (token) => token.token_address === selected,
-                ).name;
+                )?.name;
               }}
               inputProps={{ "aria-label": "Without label" }}
               name="customToken"
