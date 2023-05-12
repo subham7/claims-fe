@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Layout1 from "../../../../src/components/layouts/layout1";
 import {
   Button,
@@ -50,33 +50,35 @@ const Proposal = () => {
     });
   };
 
-  const fetchProposalList = async () => {
+  const fetchProposalList = useCallback(async () => {
     const data = await fetchProposals(daoAddress);
     console.log(data);
-
     setProposalList(data);
-  };
+  }, [daoAddress]);
 
-  const fetchTokens = () => {
+  const fetchTokens = useCallback(() => {
     console.log("daoAddress", daoAddress);
     if (daoAddress) {
       const tokenData = getAssetsByDaoAddress(daoAddress, NETWORK_HEX);
       tokenData.then((result) => {
-        if (result.status != 200) {
+        if (result?.status != 200) {
           console.log("error in token daata fetching");
         } else {
           setTokenData(result.data.tokenPriceList);
         }
       });
     }
-  };
+  }, [NETWORK_HEX, daoAddress]);
 
   useEffect(() => {
     if (daoAddress) {
-      fetchProposalList();
       fetchTokens();
     }
-  }, [daoAddress]);
+  }, [daoAddress, fetchTokens]);
+
+  useEffect(() => {
+    fetchProposalList();
+  });
 
   return (
     <Layout1 page={2}>

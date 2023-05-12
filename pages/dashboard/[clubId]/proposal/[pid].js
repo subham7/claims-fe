@@ -211,10 +211,20 @@ const ProposalDetail = () => {
     wallet?.accounts[0].address,
   );
 
-  //   const isGovernanceActive = useSelector((state) => {
-  //     return state.gnosis.governanceAllowed;
-  //   });
-  const isGovernanceActive = true;
+  const tokenType = useSelector((state) => {
+    return state.club.clubData.tokenType;
+  });
+
+  const isGovernanceERC20 = useSelector((state) => {
+    return state.club.erc20ClubDetails.isGovernanceActive;
+  });
+
+  const isGovernanceERC721 = useSelector((state) => {
+    return state.club.erc721ClubDetails.isGovernanceActive;
+  });
+
+  const isGovernanceActive =
+    tokenType === "erc20" ? isGovernanceERC20 : isGovernanceERC721;
 
   const isAdmin = useSelector((state) => {
     return state.gnosis.adminUser;
@@ -307,7 +317,6 @@ const ProposalDetail = () => {
     );
     setOwnerAddresses(ownerAddressesArray);
 
-    console.log("OWNERS HAI BHAI", owners);
     if (isGovernanceActive === false) {
       if (isAdmin) {
         setGovernance(true);
@@ -423,7 +432,7 @@ const ProposalDetail = () => {
     if (daoAddress) {
       const tokenData = getAssetsByDaoAddress(daoAddress, NETWORK_HEX);
       tokenData.then((result) => {
-        if (result.status != 200) {
+        if (result?.status != 200) {
           setTokenFetched(false);
         } else {
           setTokenData(result.data.tokenPriceList);
@@ -934,8 +943,18 @@ const ProposalDetail = () => {
           <Grid item md={3.5}>
             <Stack spacing={3}>
               <ProposalInfo proposalData={proposalData} fetched={fetched} />
-              <CurrentResults proposalData={proposalData} fetched={fetched} />
-              <ProposalVotes proposalData={proposalData} fetched={fetched} />
+              {isGovernanceActive && (
+                <>
+                  <CurrentResults
+                    proposalData={proposalData}
+                    fetched={fetched}
+                  />
+                  <ProposalVotes
+                    proposalData={proposalData}
+                    fetched={fetched}
+                  />
+                </>
+              )}
             </Stack>
           </Grid>
         </Grid>
