@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Layout1 from "../../../../src/components/layouts/layout1";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import {
@@ -52,6 +52,11 @@ import { subgraphQuery } from "../../../../src/utils/subgraphs";
 import { QUERY_ALL_MEMBERS } from "../../../../src/api/graphql/queries";
 import { NEW_FACTORY_ADDRESS } from "../../../../src/api";
 import { AIRDROP_ACTION_ADDRESS } from "../../../../src/api";
+import ProposalExecutionInfo from "../../../../src/components/proposalComps/ProposalExecutionInfo";
+import Signators from "../../../../src/components/proposalComps/Signators";
+import ProposalInfo from "../../../../src/components/proposalComps/ProposalInfo";
+import CurrentResults from "../../../../src/components/proposalComps/CurrentResults";
+import ProposalVotes from "../../../../src/components/proposalComps/ProposalVotes";
 
 const useStyles = makeStyles({
   clubAssets: {
@@ -236,6 +241,7 @@ const ProposalDetail = () => {
   const [proposalData, setProposalData] = useState(null);
   const [governance, setGovernance] = useState(false);
   const [voted, setVoted] = useState(false);
+  const [ownerAddresses, setOwnerAddresses] = useState([]);
   const [castVoteOption, setCastVoteOption] = useState("");
   const [cardSelected, setCardSelected] = useState(null);
   const [loaderOpen, setLoaderOpen] = useState(false);
@@ -251,12 +257,13 @@ const ProposalDetail = () => {
   const [tokenData, setTokenData] = useState([]);
   const [tokenFetched, setTokenFetched] = useState(false);
   const [threshold, setThreshold] = useState();
+  const [fetched, setFetched] = useState(false);
 
   const GNOSIS_TRANSACTION_URL = useSelector((state) => {
     return state.gnosis.transactionUrl;
   });
 
-  const getSafeSdk = async () => {
+  const getSafeSdk = useCallback(async () => {
     const web3 = new Web3(window.ethereum);
     const ethAdapter = new Web3Adapter({
       web3,
@@ -270,9 +277,9 @@ const ProposalDetail = () => {
     console.log("safeSdk", safeSdk);
 
     return safeSdk;
-  };
+  }, [gnosisAddress, walletAddress]);
 
-  const getSafeService = async () => {
+  const getSafeService = useCallback(async () => {
     const web3 = new Web3(window.ethereum);
     const ethAdapter = new Web3Adapter({
       web3,
@@ -289,10 +296,18 @@ const ProposalDetail = () => {
     //   ethAdapter,
     // });
     return safeService;
-  };
+  }, [GNOSIS_TRANSACTION_URL, walletAddress]);
 
-  const isOwner = async () => {
+  const isOwner = useCallback(async () => {
     const safeSdk = await getSafeSdk();
+    const owners = await safeSdk.getOwners();
+
+    const ownerAddressesArray = owners.map((value) =>
+      Web3.utils.toChecksumAddress(value),
+    );
+    setOwnerAddresses(ownerAddressesArray);
+
+    console.log("OWNERS HAI BHAI", owners);
     if (isGovernanceActive === false) {
       if (isAdmin) {
         setGovernance(true);
@@ -334,7 +349,15 @@ const ProposalDetail = () => {
         }
       }
     });
-  };
+  }, [
+    getSafeSdk,
+    getSafeService,
+    gnosisAddress,
+    isAdmin,
+    isGovernanceActive,
+    pid,
+    walletAddress,
+  ]);
   console.log("governance", governance);
   const checkUserVoted = () => {
     if (walletAddress) {
@@ -371,7 +394,7 @@ const ProposalDetail = () => {
     });
   };
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoader(true);
     dispatch(addProposalId(pid));
     console.log("pid", pid);
@@ -380,15 +403,18 @@ const ProposalDetail = () => {
     proposalData.then((result) => {
       if (result.status !== 200) {
         setLoader(false);
+        setFetched(false);
       } else {
         console.log(proposalData);
         setProposalData(result.data[0]);
+        console.log("NEW DATA", result.data[0]);
+        setFetched(true);
       }
     });
     setLoader(false);
-  };
+  }, [dispatch, pid]);
 
-  const fetchTokens = () => {
+  const fetchTokens = useCallback(() => {
     if (daoAddress) {
       const tokenData = getAssetsByDaoAddress(daoAddress, NETWORK_HEX);
       tokenData.then((result) => {
@@ -400,7 +426,7 @@ const ProposalDetail = () => {
         }
       });
     }
-  };
+  }, [NETWORK_HEX, daoAddress]);
 
   const executeFunction = async (proposalStatus) => {
     console.log(proposalStatus);
@@ -577,7 +603,7 @@ const ProposalDetail = () => {
       isOwner();
       fetchTokens();
     }
-  }, [pid]);
+  }, [fetchData, fetchTokens, isOwner, pid]);
   //   console.log(proposalData);
   if (!wallet && proposalData === null) {
     console.log("loaaadddiinnngg", proposalData);
@@ -668,6 +694,19 @@ const ProposalDetail = () => {
                   </Grid>
                 </Grid>
               </Grid>
+            </Grid>
+
+            {/* Proposal Info and Signators */}
+            <Grid container spacing={2} mt={4} mb={3}>
+              <ProposalExecutionInfo
+                proposalData={proposalData}
+                fetched={fetched}
+              />
+
+              <Signators
+                ownerAddresses={ownerAddresses}
+                signedOwners={signedOwners}
+              />
             </Grid>
 
             {/* proposal description */}
@@ -886,6 +925,13 @@ const ProposalDetail = () => {
             ) : (
               <></>
             )}
+          </Grid>
+          <Grid item md={3.5}>
+            <Stack spacing={3}>
+              <ProposalInfo proposalData={proposalData} fetched={fetched} />
+              <CurrentResults proposalData={proposalData} fetched={fetched} />
+              <ProposalVotes proposalData={proposalData} fetched={fetched} />
+            </Stack>
           </Grid>
         </Grid>
       </Layout1>
