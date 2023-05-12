@@ -538,7 +538,7 @@ const ProposalDetail = () => {
         [proposalData.commands[0].mintGTAmounts.toString()],
         proposalData.commands[0].mintGTAddresses,
       ]);
-      console.log(data);
+      // console.log(data);
     }
 
     if (proposalData.commands[0].executionId === 2) {
@@ -574,7 +574,7 @@ const ProposalDetail = () => {
       ]);
       console.log(data);
     }
-    console.log("data", data);
+    // console.log("data", data);
     const response = updateProposal.updateProposalAndExecution(
       data,
       approvalData,

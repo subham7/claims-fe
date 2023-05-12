@@ -401,6 +401,7 @@ export class SmartContract {
     //   web3: this.web3,
     //   signerAddress: safeOwner,
     // });
+    console.log("first", this.walletAddress);
     const ethAdapter = new Web3Adapter({
       web3: this.web3,
       signerAddress: this.walletAddress,
@@ -423,43 +424,45 @@ export class SmartContract {
       daoAddress,
     );
     console.log("implementationContract", implementationContract, tokenData);
+    let approvalTransaction;
+    let transaction;
+    if (approvalData !== "") {
+      approvalTransaction = {
+        to: web3.utils.toChecksumAddress(daoAddress),
+        data: implementationContract.methods
+          .updateProposalAndExecution(
+            //usdc address
+            web3.utils.toChecksumAddress(tokenData),
+            approvalData,
+          )
+          .encodeABI(),
+        value: "0",
+      };
 
-    const approvalTransaction = {
-      to: web3.utils.toChecksumAddress(daoAddress),
-      data: implementationContract.methods
-        .updateProposalAndExecution(
-          //usdc address
-          web3.utils.toChecksumAddress(tokenData),
-          approvalData,
-        )
-        .encodeABI(),
-      value: "0",
-    };
+      transaction = {
+        to: web3.utils.toChecksumAddress(daoAddress),
+        data: implementationContract.methods
+          .updateProposalAndExecution(
+            //airdrop address
 
-    // const transaction = {
-    //   to: web3.utils.toChecksumAddress(daoAddress),
-    //   data: implementationContract.methods
-    //     .updateProposalAndExecution(
-    //       web3.utils.toChecksumAddress(daoAddress),
-    //       parameters,
-    //     )
-    //     .encodeABI(),
-    //   value: "0",
-    // };
-
-    const transaction = {
-      to: web3.utils.toChecksumAddress(daoAddress),
-      data: implementationContract.methods
-        .updateProposalAndExecution(
-          //airdrop address
-          approvalData === ""
-            ? web3.utils.toChecksumAddress(AIRDROP_ACTION_ADDRESS)
-            : web3.utils.toChecksumAddress(daoAddress),
-          parameters,
-        )
-        .encodeABI(),
-      value: "0",
-    };
+            web3.utils.toChecksumAddress(AIRDROP_ACTION_ADDRESS),
+            parameters,
+          )
+          .encodeABI(),
+        value: "0",
+      };
+    } else {
+      transaction = {
+        to: web3.utils.toChecksumAddress(daoAddress),
+        data: implementationContract.methods
+          .updateProposalAndExecution(
+            web3.utils.toChecksumAddress(daoAddress),
+            parameters,
+          )
+          .encodeABI(),
+        value: "0",
+      };
+    }
 
     console.log("transaction", transaction);
 
@@ -544,47 +547,59 @@ export class SmartContract {
         const nonce = await safeSdk.getNonce();
         console.log("nonce", nonce);
         let safeTransactionData;
-        if (approvalData === "") {
-          safeTransactionData = {
-            to: tx.to,
-            data: tx.data,
-            value: tx.value,
-            // operation, // Optional
-            // safeTxGas, // Optional
-            // baseGas, // Optional
-            // gasPrice, // Optional
-            // gasToken, // Optional
-            // refundReceiver, // Optional
-            nonce: tx.nonce, // Optional
-          };
-        } else {
-          safeTransactionData = [
-            {
-              to: approvalTransaction.to,
-              data: approvalTransaction.data,
-              value: approvalTransaction.value,
-              // operation, // Optional
-              // safeTxGas, // Optional
-              // baseGas, // Optional
-              // gasPrice, // Optional
-              // gasToken, // Optional
-              // refundReceiver, // Optional
-              nonce: tx.nonce, // Optional
-            },
-            {
-              to: transaction.to,
-              data: transaction.data,
-              value: transaction.value,
-              // operation, // Optional
-              // safeTxGas, // Optional
-              // baseGas, // Optional
-              // gasPrice, // Optional
-              // gasToken, // Optional
-              // refundReceiver, // Optional
-              nonce: tx.nonce, // Optional
-            },
-          ];
-        }
+        safeTransactionData = {
+          to: tx.to,
+          data: tx.data,
+          value: tx.value,
+          // operation, // Optional
+          // safeTxGas, // Optional
+          // baseGas, // Optional
+          // gasPrice, // Optional
+          // gasToken, // Optional
+          // refundReceiver, // Optional
+          nonce: tx.nonce, // Optional
+        };
+        // if (approvalData === "") {
+        //   safeTransactionData = {
+        //     to: tx.to,
+        //     data: tx.data,
+        //     value: tx.value,
+        //     // operation, // Optional
+        //     // safeTxGas, // Optional
+        //     // baseGas, // Optional
+        //     // gasPrice, // Optional
+        //     // gasToken, // Optional
+        //     // refundReceiver, // Optional
+        //     // nonce: tx.nonce, // Optional
+        //   };
+        // } else {
+        //   safeTransactionData = [
+        //     {
+        //       to: approvalTransaction.to,
+        //       data: approvalTransaction.data,
+        //       value: approvalTransaction.value,
+        //       // operation, // Optional
+        //       // safeTxGas, // Optional
+        //       // baseGas, // Optional
+        //       // gasPrice, // Optional
+        //       // gasToken, // Optional
+        //       // refundReceiver, // Optional
+        //       // nonce: tx.nonce, // Optional
+        //     },
+        //     {
+        //       to: transaction.to,
+        //       data: transaction.data,
+        //       value: transaction.value,
+        //       // operation, // Optional
+        //       // safeTxGas, // Optional
+        //       // baseGas, // Optional
+        //       // gasPrice, // Optional
+        //       // gasToken, // Optional
+        //       // refundReceiver, // Optional
+        //       // nonce: tx.nonce, // Optional
+        //     },
+        //   ];
+        // }
         const safeTxHash = tx.safeTxHash;
         const safeTransaction = await safeSdk.createTransaction({
           safeTransactionData,
