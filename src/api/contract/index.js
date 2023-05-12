@@ -407,7 +407,6 @@ export class SmartContract {
     });
     const txServiceUrl = this.gnosisTransactionUrl;
     console.log(txServiceUrl);
-    // const safeService = new SafeServiceClient({ txServiceUrl, ethAdapter });
     const safeService = new SafeApiKit({
       txServiceUrl,
       ethAdapter,
@@ -488,7 +487,7 @@ export class SmartContract {
         // gasPrice, // Optional
         // gasToken, // Optional
         // refundReceiver, // Optional
-        // nonce: nonce, // Optional
+        nonce: nonce, // Optional
       };
     // ];
     // ];
@@ -528,8 +527,27 @@ export class SmartContract {
         console.log("txxx", tx);
         const nonce = await safeSdk.getNonce();
         console.log("nonce", nonce);
+        const safeTransactionData = {
+          to: tx.to,
+          data: tx.data,
+          value: tx.value,
+          // operation, // Optional
+          // safeTxGas, // Optional
+          // baseGas, // Optional
+          // gasPrice, // Optional
+          // gasToken, // Optional
+          // refundReceiver, // Optional
+          nonce: tx.nonce, // Optional
+        };
         const safeTxHash = tx.safeTxHash;
-        const senderSignature = await safeSdk.signTypedData(tx, "v4");
+        const safeTransaction = await safeSdk.createTransaction({
+          safeTransactionData,
+        });
+        // const senderSignature = await safeSdk.signTypedData(tx, "v4");
+        const senderSignature = await safeSdk.signTypedData(
+          safeTransaction,
+          "v4",
+        );
         await safeService.confirmTransaction(safeTxHash, senderSignature.data);
         return tx;
       }

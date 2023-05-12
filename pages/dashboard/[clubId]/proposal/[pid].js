@@ -335,6 +335,10 @@ const ProposalDetail = () => {
         const pendingTxs = await safeService.getPendingTransactions(
           Web3.utils.toChecksumAddress(gnosisAddress),
         );
+        console.log(
+          pendingTxs?.results[pendingTxs.count - 1]?.safeTxHash,
+          result.data[0].txHash,
+        );
         setPendingTxHash(
           pendingTxs?.results[pendingTxs.count - 1]?.safeTxHash,
           result.data[0].txHash,
