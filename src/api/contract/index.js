@@ -422,26 +422,15 @@ export class SmartContract {
       Erc20Dao.abi,
       daoAddress,
     );
-    console.log("implementationContract", implementationContract);
-    // const approvalTransaction = {
-    //   to: web3.utils.toChecksumAddress(daoAddress),
-    //   data: implementationContract.methods
-    //     .updateProposalAndExecution(
-    //       //usdc address
-    //       web3.utils.toChecksumAddress(
-    //         "0xf699d5f8F3C0E6Ad4e239685e7B5F141CF1a0CC1",
-    //       ),
-    //       approvalData,
-    //     )
-    //     .encodeABI(),
-    //   value: "0",
-    // };
-    const transaction = {
+    console.log("implementationContract", implementationContract, tokenData);
+
+    const approvalTransaction = {
       to: web3.utils.toChecksumAddress(daoAddress),
       data: implementationContract.methods
         .updateProposalAndExecution(
-          web3.utils.toChecksumAddress(daoAddress),
-          parameters,
+          //usdc address
+          web3.utils.toChecksumAddress(tokenData),
+          approvalData,
         )
         .encodeABI(),
       value: "0",
@@ -451,53 +440,80 @@ export class SmartContract {
     //   to: web3.utils.toChecksumAddress(daoAddress),
     //   data: implementationContract.methods
     //     .updateProposalAndExecution(
-    //       //airdrop address
-    //       web3.utils.toChecksumAddress(AIRDROP_ACTION_ADDRESS),
+    //       web3.utils.toChecksumAddress(daoAddress),
     //       parameters,
     //     )
     //     .encodeABI(),
     //   value: "0",
     // };
 
-    console.log("transaction", transaction);
-    const nonce = await safeService.getNextNonce(gnosisAddress);
-    console.log("nonce", nonce);
+    const transaction = {
+      to: web3.utils.toChecksumAddress(daoAddress),
+      data: implementationContract.methods
+        .updateProposalAndExecution(
+          //airdrop address
+          approvalData === ""
+            ? web3.utils.toChecksumAddress(AIRDROP_ACTION_ADDRESS)
+            : web3.utils.toChecksumAddress(daoAddress),
+          parameters,
+        )
+        .encodeABI(),
+      value: "0",
+    };
 
-    const safeTransactionData =
-      // [
-      //   {
-      //     to: approvalTransaction.to,
-      //     data: approvalTransaction.data,
-      //     value: approvalTransaction.value,
-      //     // operation, // Optional
-      //     // safeTxGas, // Optional
-      //     // baseGas, // Optional
-      //     // gasPrice, // Optional
-      //     // gasToken, // Optional
-      //     // refundReceiver, // Optional
-      //     // nonce: nonce, // Optional
-      //   },
-      {
-        to: transaction.to,
-        data: transaction.data,
-        value: transaction.value,
-        // operation, // Optional
-        // safeTxGas, // Optional
-        // baseGas, // Optional
-        // gasPrice, // Optional
-        // gasToken, // Optional
-        // refundReceiver, // Optional
-        nonce: nonce, // Optional
-      };
-    // ];
-    // ];
-    const safeTransaction = await safeSdk.createTransaction({
-      safeTransactionData,
-    });
-    console.log("safeTransaction", safeTransaction);
+    console.log("transaction", transaction);
 
     if (executionStatus !== "executed") {
       if (txHash === "") {
+        const nonce = await safeService.getNextNonce(gnosisAddress);
+        console.log("nonce", nonce);
+        let safeTransactionData;
+        if (approvalData === "") {
+          safeTransactionData = {
+            to: transaction.to,
+            data: transaction.data,
+            value: transaction.value,
+            // operation, // Optional
+            // safeTxGas, // Optional
+            // baseGas, // Optional
+            // gasPrice, // Optional
+            // gasToken, // Optional
+            // refundReceiver, // Optional
+            nonce: nonce, // Optional
+          };
+        } else {
+          safeTransactionData = [
+            {
+              to: approvalTransaction.to,
+              data: approvalTransaction.data,
+              value: approvalTransaction.value,
+              // operation, // Optional
+              // safeTxGas, // Optional
+              // baseGas, // Optional
+              // gasPrice, // Optional
+              // gasToken, // Optional
+              // refundReceiver, // Optional
+              nonce: nonce, // Optional
+            },
+            {
+              to: transaction.to,
+              data: transaction.data,
+              value: transaction.value,
+              // operation, // Optional
+              // safeTxGas, // Optional
+              // baseGas, // Optional
+              // gasPrice, // Optional
+              // gasToken, // Optional
+              // refundReceiver, // Optional
+              nonce: nonce, // Optional
+            },
+          ];
+        }
+
+        const safeTransaction = await safeSdk.createTransaction({
+          safeTransactionData,
+        });
+        console.log("safeTransaction", safeTransaction);
         const safeTxHash = await safeSdk.getTransactionHash(safeTransaction);
         const payload = {
           proposalId: pid,
@@ -527,18 +543,48 @@ export class SmartContract {
         console.log("txxx", tx);
         const nonce = await safeSdk.getNonce();
         console.log("nonce", nonce);
-        const safeTransactionData = {
-          to: tx.to,
-          data: tx.data,
-          value: tx.value,
-          // operation, // Optional
-          // safeTxGas, // Optional
-          // baseGas, // Optional
-          // gasPrice, // Optional
-          // gasToken, // Optional
-          // refundReceiver, // Optional
-          nonce: tx.nonce, // Optional
-        };
+        let safeTransactionData;
+        if (approvalData === "") {
+          safeTransactionData = {
+            to: tx.to,
+            data: tx.data,
+            value: tx.value,
+            // operation, // Optional
+            // safeTxGas, // Optional
+            // baseGas, // Optional
+            // gasPrice, // Optional
+            // gasToken, // Optional
+            // refundReceiver, // Optional
+            nonce: tx.nonce, // Optional
+          };
+        } else {
+          safeTransactionData = [
+            {
+              to: approvalTransaction.to,
+              data: approvalTransaction.data,
+              value: approvalTransaction.value,
+              // operation, // Optional
+              // safeTxGas, // Optional
+              // baseGas, // Optional
+              // gasPrice, // Optional
+              // gasToken, // Optional
+              // refundReceiver, // Optional
+              nonce: tx.nonce, // Optional
+            },
+            {
+              to: transaction.to,
+              data: transaction.data,
+              value: transaction.value,
+              // operation, // Optional
+              // safeTxGas, // Optional
+              // baseGas, // Optional
+              // gasPrice, // Optional
+              // gasToken, // Optional
+              // refundReceiver, // Optional
+              nonce: tx.nonce, // Optional
+            },
+          ];
+        }
         const safeTxHash = tx.safeTxHash;
         const safeTransaction = await safeSdk.createTransaction({
           safeTransactionData,

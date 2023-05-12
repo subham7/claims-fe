@@ -78,7 +78,7 @@ const Proposal = () => {
 
   useEffect(() => {
     fetchProposalList();
-  });
+  }, []);
 
   return (
     <Layout1 page={2}>

@@ -29,6 +29,7 @@ import DoneIcon from "@mui/icons-material/Done";
 import tickerIcon from "../../../../public/assets/icons/ticker_icon.svg";
 import {
   calculateDays,
+  convertFromWeiGovernance,
   convertToWeiGovernance,
 } from "../../../../src/utils/globalFunctions";
 import actionIcon from "../../../../public/assets/icons/action_icon.svg";
@@ -478,6 +479,15 @@ const ProposalDetail = () => {
       membersData.users.map((member) => membersArray.push(member.userAddress));
       console.log(membersArray);
 
+      const erc20DaoContract = new SmartContract(
+        Erc20Dao,
+        daoAddress,
+        walletAddress,
+        USDC_CONTRACT_ADDRESS,
+        GNOSIS_TRANSACTION_URL,
+      );
+      console.log("erc20DaoContract", erc20DaoContract);
+
       let iface = new Interface(ABI);
       console.log(iface);
       // data = iface.encodeFunctionData("airDropToken", [
@@ -494,19 +504,32 @@ const ProposalDetail = () => {
       console.log("approvalData", approvalData);
 
       let airDropAmountArray = [];
-      let newMembersArray = membersArray.map(async (member) => {
-        console.log("member", member);
-        airDropAmountArray.push(proposalData.commands[0].airDropAmount);
-      });
-      Promise.all(newMembersArray).then(() => {
-        data = iface.encodeFunctionData("airDropToken", [
-          proposalData.commands[0].airDropToken,
-          airDropAmountArray,
-          membersArray,
-        ]);
-      });
+      let newMembersArray = await Promise.all(
+        membersArray.map(async (member) => {
+          console.log("member", member);
+          const balance = await erc20DaoContract.nftBalance(
+            Web3.utils.toChecksumAddress(member),
+          );
+          console.log("balance", balance);
+          const clubTokensMinted = await erc20DaoContract.totalSupply();
+          console.log(balance, clubTokensMinted, balance / clubTokensMinted);
+          return (
+            (proposalData.commands[0].airDropAmount * balance) /
+            clubTokensMinted
+          )
+            .toFixed(0)
+            .toString();
+        }),
+      );
 
-      console.log("data", data);
+      airDropAmountArray = newMembersArray;
+      console.log("airDropAmountArray", airDropAmountArray);
+
+      data = iface.encodeFunctionData("airDropToken", [
+        proposalData.commands[0].airDropToken,
+        airDropAmountArray,
+        membersArray,
+      ]);
     }
     if (proposalData.commands[0].executionId === 1) {
       let iface = new Interface(ABI);
@@ -551,6 +574,7 @@ const ProposalDetail = () => {
       ]);
       console.log(data);
     }
+    console.log("data", data);
     const response = updateProposal.updateProposalAndExecution(
       data,
       approvalData,
@@ -560,7 +584,9 @@ const ProposalDetail = () => {
       Web3.utils.toChecksumAddress(gnosisAddress),
       txHash,
       pid,
-      tokenFetched ? tokenData : "",
+      proposalData.commands[0].executionId === 0
+        ? proposalData.commands[0].airDropToken
+        : "",
       proposalStatus,
     );
     console.log(response);
