@@ -2179,10 +2179,12 @@
 
 // export default ClubFetch(ProposalDetail);
 
-import React from "react";
+import React from 'react'
 
-const ProposalDetail = () => {
-  return <div>const ProposalDetail </div>;
-};
+const ProposalDetail  = () => {
+  return (
+    <div>const ProposalDetail </div>
+  )
+}
 
-export default ProposalDetail;
+export default  ProposalDetail 
