@@ -194,6 +194,10 @@ const ProposalCard = ({
 
   const [{ wallet }] = useConnectWallet();
 
+  const tokenType = useSelector((state) => {
+    return state.club.clubData.tokenType;
+  });
+
   const [tokenDetails, setTokenDetails] = useState({
     decimals: 0,
     symbol: "",
@@ -229,20 +233,36 @@ const ProposalCard = ({
           GNOSIS_TRANSACTION_URL,
         );
 
-        const decimal = await airdropContract.decimals();
-
-        console.log("Decimal", decimal);
-        const symbol = await airdropContract.obtainSymbol();
-
-        setTokenDetails({
-          decimals: decimal,
-          symbol: symbol,
-        });
+        if (tokenType === "erc20" || proposal?.commands[0].executionId !== 1) {
+          const decimal = await airdropContract.decimals();
+          console.log("Decimal", decimal);
+          const symbol = await airdropContract.obtainSymbol();
+          setTokenDetails({
+            decimals: decimal,
+            symbol: symbol,
+          });
+        } else if (
+          tokenType === "erc721" &&
+          proposal?.commands[0].executionId === 1
+        ) {
+          const symbol = await airdropContract.obtainSymbol();
+          setTokenDetails({
+            decimals: 18,
+            symbol: symbol,
+          });
+        }
       }
     } catch (error) {
       console.log(error);
     }
-  }, [GNOSIS_TRANSACTION_URL, USDC_CONTRACT_ADDRESS, proposal, walletAddress]);
+  }, [
+    GNOSIS_TRANSACTION_URL,
+    USDC_CONTRACT_ADDRESS,
+    daoAddress,
+    proposal,
+    tokenType,
+    walletAddress,
+  ]);
 
   useEffect(() => {
     fetchAirDropContractDetails();
@@ -431,10 +451,12 @@ const ProposalCard = ({
                             Amount:
                           </Typography>
                           <Typography color="#FFFFFF">
-                            {convertFromWeiGovernance(
-                              proposal?.commands[0].mintGTAmounts[0],
-                              tokenDetails.decimals,
-                            )}
+                            {Number(
+                              convertFromWeiGovernance(
+                                proposal?.commands[0].mintGTAmounts[0],
+                                tokenDetails.decimals,
+                              ),
+                            ).toFixed(0)}
                           </Typography>
                         </Grid>
                       ) : null
