@@ -799,6 +799,7 @@ const ProposalDetail = () => {
               <ProposalExecutionInfo
                 proposalData={proposalData}
                 fetched={fetched}
+                USDC_CONTRACT_ADDRESS={USDC_CONTRACT_ADDRESS}
               />
 
               <Signators

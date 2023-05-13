@@ -62,6 +62,10 @@ const Proposal = () => {
     return state.proposal.proposalList;
   });
 
+  const isAdminUser = useSelector((state) => {
+    return state.gnosis.adminUser;
+  });
+
   console.log("Proposal List", proposalList2);
 
   const handleClickOpen = () => {
@@ -175,18 +179,21 @@ const Proposal = () => {
                     ))}
                   </Select>
                 </Grid>
-                <Grid item>
-                  <Button
-                    variant="contained"
-                    size="large"
-                    sx={{
-                      height: "80%",
-                    }}
-                    onClick={handleClickOpen}
-                  >
-                    Propose
-                  </Button>
-                </Grid>
+
+                {isAdminUser && (
+                  <Grid item>
+                    <Button
+                      variant="contained"
+                      size="large"
+                      sx={{
+                        height: "80%",
+                      }}
+                      onClick={handleClickOpen}
+                    >
+                      Propose
+                    </Button>
+                  </Grid>
+                )}
               </Grid>
             </Grid>
             <Grid container spacing={3}>
