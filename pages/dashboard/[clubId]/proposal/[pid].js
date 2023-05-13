@@ -449,13 +449,25 @@ const ProposalDetail = () => {
   const executeFunction = async (proposalStatus) => {
     console.log(proposalStatus);
     setLoaderOpen(true);
-    const updateProposal = new SmartContract(
-      Erc20Dao,
-      daoAddress,
-      undefined,
-      USDC_CONTRACT_ADDRESS,
-      GNOSIS_TRANSACTION_URL,
-    );
+    let updateProposal;
+    if (clubData.tokenType === "erc20") {
+      updateProposal = new SmartContract(
+        Erc20Dao,
+        daoAddress,
+        undefined,
+        USDC_CONTRACT_ADDRESS,
+        GNOSIS_TRANSACTION_URL,
+      );
+    } else if (clubData.tokenType === "erc721") {
+      updateProposal = new SmartContract(
+        Erc721Dao,
+        daoAddress,
+        undefined,
+        USDC_CONTRACT_ADDRESS,
+        GNOSIS_TRANSACTION_URL,
+      );
+    }
+
     console.log("samrt contraccttt", proposalData);
     let data;
     let approvalData;
@@ -485,14 +497,14 @@ const ProposalDetail = () => {
       membersData.users.map((member) => membersArray.push(member.userAddress));
       console.log(membersArray);
 
-      const erc20DaoContract = new SmartContract(
-        Erc20Dao,
-        daoAddress,
-        walletAddress,
-        USDC_CONTRACT_ADDRESS,
-        GNOSIS_TRANSACTION_URL,
-      );
-      console.log("erc20DaoContract", erc20DaoContract);
+      // const erc20DaoContract = new SmartContract(
+      //   Erc20Dao,
+      //   daoAddress,
+      //   walletAddress,
+      //   USDC_CONTRACT_ADDRESS,
+      //   GNOSIS_TRANSACTION_URL,
+      // );
+      // console.log("erc20DaoContract", erc20DaoContract);
 
       let iface = new Interface(ABI);
       console.log(iface);
@@ -517,11 +529,11 @@ const ProposalDetail = () => {
         airDropAmountArray = await Promise.all(
           membersArray.map(async (member) => {
             console.log("member", member);
-            const balance = await erc20DaoContract.nftBalance(
+            const balance = await updateProposal.nftBalance(
               Web3.utils.toChecksumAddress(member),
             );
 
-            const clubTokensMinted = await erc20DaoContract.totalSupply();
+            const clubTokensMinted = await updateProposal.totalSupply();
 
             return (
               ((proposalData.commands[0].airDropAmount - carryFeeAmount) *
@@ -540,11 +552,11 @@ const ProposalDetail = () => {
         airDropAmountArray = await Promise.all(
           membersArray.map(async (member) => {
             console.log("member", member);
-            const balance = await erc20DaoContract.nftBalance(
+            const balance = await updateProposal.nftBalance(
               Web3.utils.toChecksumAddress(member),
             );
 
-            const clubTokensMinted = await erc20DaoContract.totalSupply();
+            const clubTokensMinted = await updateProposal.totalSupply();
 
             return (
               (proposalData.commands[0].airDropAmount * balance) /
@@ -598,14 +610,14 @@ const ProposalDetail = () => {
       console.log(data);
     }
     if (proposalData.commands[0].executionId === 4) {
-      const erc20DaoContract = new SmartContract(
-        Erc20Dao,
-        daoAddress,
-        walletAddress,
-        USDC_CONTRACT_ADDRESS,
-        GNOSIS_TRANSACTION_URL,
-      );
-      console.log("erc20DaoContract", erc20DaoContract);
+      // const erc20DaoContract = new SmartContract(
+      //   Erc20Dao,
+      //   daoAddress,
+      //   walletAddress,
+      //   USDC_CONTRACT_ADDRESS,
+      //   GNOSIS_TRANSACTION_URL,
+      // );
+      // console.log("erc20DaoContract", erc20DaoContract);
 
       let iface = new Interface(ABI);
       console.log(iface);
