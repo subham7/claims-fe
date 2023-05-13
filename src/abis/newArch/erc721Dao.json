@@ -765,11 +765,6 @@
           "internalType": "address[]",
           "name": "_userAddress",
           "type": "address[]"
-        },
-        {
-          "internalType": "bytes32[]",
-          "name": "_merkleProof",
-          "type": "bytes32[]"
         }
       ],
       "name": "mintGTToAddress",

@@ -73,10 +73,12 @@ const ProposalActionForm = ({ formik, tokenData }) => {
         <MenuItem key={0} value="Distribute token to members">
           Distribute token to members
         </MenuItem>
-        <MenuItem key={1} value="Mint club token">
-          Mint club token
-        </MenuItem>
-        {isGovernanceActive ? (
+        {tokenType !== "erc721" ? (
+          <MenuItem key={1} value="Mint club token">
+            Mint club token
+          </MenuItem>
+        ) : null}
+        {isGovernanceActive && tokenType !== "erc721" ? (
           <MenuItem key={2} value="Update Governance Settings">
             Update Governance Settings
           </MenuItem>
