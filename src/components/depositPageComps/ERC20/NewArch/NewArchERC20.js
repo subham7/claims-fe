@@ -88,6 +88,7 @@ const NewArchERC20 = ({
   };
 
   const fetchTokenDetails = useCallback(async () => {
+    setLoading(true);
     try {
       const erc20Contract = new SmartContract(
         erc20ABI,
@@ -112,8 +113,10 @@ const NewArchERC20 = ({
         tokenName: name,
         tokenDecimal: decimals,
       });
+      setLoading(false);
     } catch (error) {
       console.log(error);
+      setLoading(false);
     }
   }, [
     GNOSIS_TRANSACTION_URL,
@@ -473,15 +476,7 @@ const NewArchERC20 = ({
                     </Grid>
                     <Grid item mt={2}>
                       <Typography variant="p" className={classes.valuesStyle}>
-                        {daoDetails.isGovernance ? (
-                          "By Voting"
-                        ) : (
-                          <Skeleton
-                            variant="rectangular"
-                            width={100}
-                            height={25}
-                          />
-                        )}
+                        {daoDetails.isGovernance ? "By Voting" : "In-active"}
                       </Typography>
                     </Grid>
                   </Grid>

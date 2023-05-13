@@ -228,7 +228,7 @@ const Settings = () => {
       console.log("Fetched Data", fetchedData);
       const fetchedImage = fetchedData?.data[0]?.nftImageUrl;
       const nftURI = fetchedData?.data[0]?.nftMetadataUrl;
-
+      console.log("nftUROOO", nftURI);
       if (factoryContract && erc721DaoContract) {
         const factoryData = await factoryContract.getDAOdetails(daoAddress);
         console.log("Factory Data", factoryData);

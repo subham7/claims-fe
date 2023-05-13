@@ -15,6 +15,7 @@ import { USDC_FAUCET_ADDRESS } from "../index";
 import SafeApiKit from "@safe-global/api-kit";
 import Erc721Dao from "../../abis/newArch/erc721Dao.json";
 import Erc20Dao from "../../abis/newArch/erc20Dao.json";
+import { AIRDROP_ACTION_ADDRESS } from "../../api";
 
 async function syncWallet() {
   // function for validating metamask wallet
@@ -385,6 +386,7 @@ export class SmartContract {
 
   async updateProposalAndExecution(
     data,
+    approvalData = "",
     daoAddress = "",
     gnosisAddress = "",
     txHash = "",
@@ -393,19 +395,25 @@ export class SmartContract {
     executionStatus,
   ) {
     const parameters = data;
-    console.log("executionStatus", executionStatus, gnosisAddress);
+    console.log(
+      "executionStatus",
+      executionStatus,
+      gnosisAddress,
+      parameters,
+      approvalData,
+    );
     const safeOwner = this.walletAddress;
     // const ethAdapter = new Web3Adapter({
     //   web3: this.web3,
     //   signerAddress: safeOwner,
     // });
+    console.log("first", this.walletAddress);
     const ethAdapter = new Web3Adapter({
       web3: this.web3,
       signerAddress: this.walletAddress,
     });
     const txServiceUrl = this.gnosisTransactionUrl;
     console.log(txServiceUrl);
-    // const safeService = new SafeServiceClient({ txServiceUrl, ethAdapter });
     const safeService = new SafeApiKit({
       txServiceUrl,
       ethAdapter,
@@ -421,41 +429,104 @@ export class SmartContract {
       Erc20Dao.abi,
       daoAddress,
     );
-    console.log("implementationContract", implementationContract);
+    console.log("implementationContract", implementationContract, tokenData);
+    let approvalTransaction;
+    let transaction;
+    if (approvalData !== "") {
+      console.log("in airdrop");
+      approvalTransaction = {
+        to: web3.utils.toChecksumAddress(daoAddress),
+        data: implementationContract.methods
+          .updateProposalAndExecution(
+            //usdc address
+            web3.utils.toChecksumAddress(tokenData),
+            approvalData,
+          )
+          .encodeABI(),
+        value: "0",
+      };
 
-    const transaction = {
-      to: web3.utils.toChecksumAddress(daoAddress),
-      data: implementationContract.methods
-        .updateProposalAndExecution(
-          web3.utils.toChecksumAddress(daoAddress),
-          parameters,
-        )
-        .encodeABI(),
-      value: "0",
-    };
+      transaction = {
+        to: web3.utils.toChecksumAddress(daoAddress),
+        data: implementationContract.methods
+          .updateProposalAndExecution(
+            //airdrop address
+
+            web3.utils.toChecksumAddress(AIRDROP_ACTION_ADDRESS),
+            parameters,
+          )
+          .encodeABI(),
+        value: "0",
+      };
+      console.log("txnnssss", approvalTransaction, transaction);
+    } else {
+      transaction = {
+        to: web3.utils.toChecksumAddress(daoAddress),
+        data: implementationContract.methods
+          .updateProposalAndExecution(
+            web3.utils.toChecksumAddress(daoAddress),
+            parameters,
+          )
+          .encodeABI(),
+        value: "0",
+      };
+    }
+
     console.log("transaction", transaction);
-    const nonce = await safeService.getNextNonce(gnosisAddress);
-    console.log("nonce", nonce);
-
-    const safeTransactionData = {
-      to: transaction.to,
-      data: transaction.data,
-      value: transaction.value,
-      // operation, // Optional
-      // safeTxGas, // Optional
-      // baseGas, // Optional
-      // gasPrice, // Optional
-      // gasToken, // Optional
-      // refundReceiver, // Optional
-      nonce: nonce, // Optional
-    };
-    const safeTransaction = await safeSdk.createTransaction({
-      safeTransactionData,
-    });
-    console.log("safeTransaction", safeTransaction);
 
     if (executionStatus !== "executed") {
+      //case for 1st signature
       if (txHash === "") {
+        console.log("in airdrop", approvalTransaction, transaction);
+        const nonce = await safeService.getNextNonce(gnosisAddress);
+        console.log("nonce", nonce);
+        let safeTransactionData;
+        if (approvalData === "") {
+          safeTransactionData = {
+            to: transaction.to,
+            data: transaction.data,
+            value: transaction.value,
+            // operation, // Optional
+            // safeTxGas, // Optional
+            // baseGas, // Optional
+            // gasPrice, // Optional
+            // gasToken, // Optional
+            // refundReceiver, // Optional
+            nonce: nonce, // Optional
+          };
+        } else {
+          safeTransactionData = [
+            {
+              to: approvalTransaction.to,
+              data: approvalTransaction.data,
+              value: approvalTransaction.value,
+              // operation, // Optional
+              // safeTxGas, // Optional
+              // baseGas, // Optional
+              // gasPrice, // Optional
+              // gasToken, // Optional
+              // refundReceiver, // Optional
+              nonce: nonce, // Optional
+            },
+            {
+              to: transaction.to,
+              data: transaction.data,
+              value: transaction.value,
+              // operation, // Optional
+              // safeTxGas, // Optional
+              // baseGas, // Optional
+              // gasPrice, // Optional
+              // gasToken, // Optional
+              // refundReceiver, // Optional
+              nonce: nonce, // Optional
+            },
+          ];
+        }
+
+        const safeTransaction = await safeSdk.createTransaction({
+          safeTransactionData,
+        });
+        console.log("safeTransaction", safeTransaction);
         const safeTxHash = await safeSdk.getTransactionHash(safeTransaction);
         const payload = {
           proposalId: pid,
@@ -475,7 +546,9 @@ export class SmartContract {
         );
         await safeService.confirmTransaction(safeTxHash, senderSignature.data);
         return proposeTxn;
-      } else {
+      }
+      //case for remaining signatures
+      else {
         console.log("here");
         const proposalTxHash = await getProposalTxHash(pid);
         console.log("proposalTxHash", proposalTxHash);
@@ -485,8 +558,100 @@ export class SmartContract {
         console.log("txxx", tx);
         const nonce = await safeSdk.getNonce();
         console.log("nonce", nonce);
+        let safeTransactionData;
+
+        if (approvalData === "") {
+          safeTransactionData = {
+            to: tx.to,
+            data: tx.data,
+            value: tx.value,
+            // operation, // Optional
+            // safeTxGas, // Optional
+            // baseGas, // Optional
+            // gasPrice, // Optional
+            // gasToken, // Optional
+            // refundReceiver, // Optional
+            nonce: tx.nonce, // Optional
+          };
+        } else {
+          safeTransactionData = [
+            {
+              to: tx.dataDecoded.parameters[0].valueDecoded[0].to,
+              data: tx.dataDecoded.parameters[0].valueDecoded[0].data,
+              value: tx.dataDecoded.parameters[0].valueDecoded[0].value,
+              // operation, // Optional
+              // safeTxGas, // Optional
+              // baseGas, // Optional
+              // gasPrice, // Optional
+              // gasToken, // Optional
+              // refundReceiver, // Optional
+              nonce: tx.nonce, // Optional
+            },
+            {
+              to: tx.dataDecoded.parameters[0].valueDecoded[1].to,
+              data: tx.dataDecoded.parameters[0].valueDecoded[1].data,
+              value: tx.dataDecoded.parameters[0].valueDecoded[1].value,
+              // operation, // Optional
+              // safeTxGas, // Optional
+              // baseGas, // Optional
+              // gasPrice, // Optional
+              // gasToken, // Optional
+              // refundReceiver, // Optional
+              nonce: tx.nonce, // Optional
+            },
+          ];
+        }
+
+        // if (approvalData === "") {
+        //   safeTransactionData = {
+        //     to: tx.to,
+        //     data: tx.data,
+        //     value: tx.value,
+        //     // operation, // Optional
+        //     // safeTxGas, // Optional
+        //     // baseGas, // Optional
+        //     // gasPrice, // Optional
+        //     // gasToken, // Optional
+        //     // refundReceiver, // Optional
+        //     // nonce: tx.nonce, // Optional
+        //   };
+        // } else {
+        //   safeTransactionData = [
+        //     {
+        //       to: approvalTransaction.to,
+        //       data: approvalTransaction.data,
+        //       value: approvalTransaction.value,
+        //       // operation, // Optional
+        //       // safeTxGas, // Optional
+        //       // baseGas, // Optional
+        //       // gasPrice, // Optional
+        //       // gasToken, // Optional
+        //       // refundReceiver, // Optional
+        //       // nonce: tx.nonce, // Optional
+        //     },
+        //     {
+        //       to: transaction.to,
+        //       data: transaction.data,
+        //       value: transaction.value,
+        //       // operation, // Optional
+        //       // safeTxGas, // Optional
+        //       // baseGas, // Optional
+        //       // gasPrice, // Optional
+        //       // gasToken, // Optional
+        //       // refundReceiver, // Optional
+        //       // nonce: tx.nonce, // Optional
+        //     },
+        //   ];
+        // }
         const safeTxHash = tx.safeTxHash;
-        const senderSignature = await safeSdk.signTypedData(tx, "v4");
+        const safeTransaction = await safeSdk.createTransaction({
+          safeTransactionData,
+        });
+        // const senderSignature = await safeSdk.signTypedData(tx, "v4");
+        const senderSignature = await safeSdk.signTypedData(
+          safeTransaction,
+          "v4",
+        );
         await safeService.confirmTransaction(safeTxHash, senderSignature.data);
         return tx;
       }
@@ -498,7 +663,7 @@ export class SmartContract {
       const safetx = await safeService.getTransaction(
         proposalTxHash.data[0].txHash,
       );
-
+      console.log("safetx", safetx);
       const options = {
         maxPriorityFeePerGas: null,
         maxFeePerGas: null,
@@ -511,7 +676,7 @@ export class SmartContract {
       };
       const executeTxResponse = await safeSdk.executeTransaction(
         safetx,
-        // options,
+        options,
       );
 
       console.log("executeTxResponse", executeTxResponse);

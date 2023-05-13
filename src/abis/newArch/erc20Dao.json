@@ -1032,6 +1032,19 @@
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bool",
+          "name": "_isTokenTransferable",
+          "type": "bool"
+        }
+      ],
+      "name": "updateTokenTransferability",
+      "outputs": [],
+      "stateMutability": "payable",
+      "type": "function"
     }
   ]
 }

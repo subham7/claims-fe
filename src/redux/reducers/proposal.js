@@ -4,11 +4,13 @@ export const slice = createSlice({
   name: "proposal",
   initialState: {
     proposalList: null,
+    
   },
   reducers: {
     setProposalList: (state, action) => {
       state.proposalList = action.payload;
     },
+    
   },
 });
 

@@ -11,6 +11,7 @@ import {
 import React from "react";
 import { commandTypeList } from "../../data/dashboard";
 import { makeStyles } from "@mui/styles";
+import { useSelector } from "react-redux";
 
 const useStyles = makeStyles({
   textField: {
@@ -25,6 +26,22 @@ const useStyles = makeStyles({
 const ProposalActionForm = ({ formik, tokenData }) => {
   console.log(formik);
   const classes = useStyles();
+
+  const tokenType = useSelector((state) => {
+    return state.club.clubData.tokenType;
+  });
+
+  const isGovernanceERC20 = useSelector((state) => {
+    return state.club.erc20ClubDetails.isGovernanceActive;
+  });
+
+  const isGovernanceERC721 = useSelector((state) => {
+    return state.club.erc721ClubDetails.isGovernanceActive;
+  });
+
+  const isGovernanceActive =
+    tokenType === "erc20" ? isGovernanceERC20 : isGovernanceERC721;
+
   return (
     <Stack sx={{ marginTop: "1rem" }}>
       <Typography variant="proposalBody">
@@ -56,19 +73,21 @@ const ProposalActionForm = ({ formik, tokenData }) => {
         <MenuItem key={0} value="Distribute token to members">
           Distribute token to members
         </MenuItem>
-        <MenuItem key={1} value="Mint club token">
-          Mint club token
-        </MenuItem>
-        {/* {isGovernanceActive ? ( */}
-        <MenuItem key={2} value="Update Governance Settings">
-          Update Governance Settings
-        </MenuItem>
-        {/* ) : null} */}
-        {/* {tokenType !== "erc721" ? ( */}
-        <MenuItem key={3} value="Change total raise amount">
-          Change total raise amount
-        </MenuItem>
-        {/* ) : null} */}
+        {tokenType !== "erc721" ? (
+          <MenuItem key={1} value="Mint club token">
+            Mint club token
+          </MenuItem>
+        ) : null}
+        {isGovernanceActive && tokenType !== "erc721" ? (
+          <MenuItem key={2} value="Update Governance Settings">
+            Update Governance Settings
+          </MenuItem>
+        ) : null}
+        {tokenType !== "erc721" ? (
+          <MenuItem key={3} value="Change total raise amount">
+            Change total raise amount
+          </MenuItem>
+        ) : null}
 
         <MenuItem key={4} value="Send token to an address">
           Send token to an address
@@ -101,7 +120,7 @@ const ProposalActionForm = ({ formik, tokenData }) => {
 
                 return tokenData.find(
                   (token) => token.token_address === selected,
-                ).name;
+                )?.name;
               }}
               inputProps={{ "aria-label": "Without label" }}
               name="airdropToken"
@@ -320,13 +339,10 @@ const ProposalActionForm = ({ formik, tokenData }) => {
                 if (selected.length === 0) {
                   return "Select a command";
                 }
-                console.log(
-                  tokenData.find((token) => token.token_address === selected)
-                    .name,
-                );
+
                 return tokenData.find(
                   (token) => token.token_address === selected,
-                ).name;
+                )?.name;
               }}
               inputProps={{ "aria-label": "Without label" }}
               name="customToken"
