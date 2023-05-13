@@ -468,7 +468,7 @@ const ProposalDetail = () => {
       );
     }
 
-    console.log("samrt contraccttt", proposalData);
+    console.log("samrt contraccttt", updateProposal);
     let data;
     let approvalData;
     let ABI;
@@ -533,7 +533,12 @@ const ProposalDetail = () => {
               Web3.utils.toChecksumAddress(member),
             );
 
-            const clubTokensMinted = await updateProposal.totalSupply();
+            let clubTokensMinted;
+            if (clubData.tokenType === "erc20") {
+              clubTokensMinted = await updateProposal.totalSupply();
+            } else {
+              clubTokensMinted = await updateProposal.nftOwnersCount();
+            }
 
             return (
               ((proposalData.commands[0].airDropAmount - carryFeeAmount) *
@@ -556,7 +561,12 @@ const ProposalDetail = () => {
               Web3.utils.toChecksumAddress(member),
             );
 
-            const clubTokensMinted = await updateProposal.totalSupply();
+            let clubTokensMinted;
+            if (clubData.tokenType === "erc20") {
+              clubTokensMinted = await updateProposal.totalSupply();
+            } else {
+              clubTokensMinted = await updateProposal.nftOwnersCount();
+            }
 
             return (
               (proposalData.commands[0].airDropAmount * balance) /
