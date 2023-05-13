@@ -62,6 +62,7 @@ import Signators from "../../../../src/components/proposalComps/Signators";
 import ProposalInfo from "../../../../src/components/proposalComps/ProposalInfo";
 import CurrentResults from "../../../../src/components/proposalComps/CurrentResults";
 import ProposalVotes from "../../../../src/components/proposalComps/ProposalVotes";
+import { fetchClubbyDaoAddress } from "../../../../src/api/club";
 
 const useStyles = makeStyles({
   clubAssets: {
@@ -489,7 +490,6 @@ const ProposalDetail = () => {
     } else if (proposalData.commands[0].executionId === 3) {
       ABI = FactoryContractABI.abi;
     } else if (clubData.tokenType === "erc721") {
-      console.log("here");
       ABI = Erc721Dao.abi;
     } else if (clubData.tokenType === "erc20") {
       ABI = Erc20Dao.abi;
@@ -591,12 +591,28 @@ const ProposalDetail = () => {
       ]);
     }
     if (proposalData.commands[0].executionId === 1) {
+      console.log("abi", ABI);
       let iface = new Interface(ABI);
       console.log(iface, ABI);
-      data = iface.encodeFunctionData("mintGTToAddress", [
-        [proposalData.commands[0].mintGTAmounts.toString()],
-        proposalData.commands[0].mintGTAddresses,
-      ]);
+
+      if (clubData.tokenType === "erc20") {
+        data = iface.encodeFunctionData("mintGTToAddress", [
+          [proposalData.commands[0].mintGTAmounts.toString()],
+          proposalData.commands[0].mintGTAddresses,
+        ]);
+      } else {
+        console.log("hereee");
+        const fetchedData = await fetchClubbyDaoAddress(daoAddress);
+        console.log("Fetched Data", fetchedData);
+        const tokenURI = fetchedData?.data[0]?.nftMetadataUrl;
+        console.log(tokenURI);
+        data = iface.encodeFunctionData("mintGTToAddress", [
+          [proposalData.commands[0].mintGTAmounts.toString()],
+          [tokenURI],
+          proposalData.commands[0].mintGTAddresses,
+        ]);
+      }
+
       // console.log(data);
     }
 
