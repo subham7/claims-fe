@@ -31,6 +31,7 @@ import { NEW_FACTORY_ADDRESS } from "../api";
 
 const ClubFetch = (Component) => {
   const RetrieveDataComponent = () => {
+    console.log("first");
     const router = useRouter();
     const dispatch = useDispatch();
     const [{ wallet }] = useConnectWallet();
@@ -43,6 +44,8 @@ const ClubFetch = (Component) => {
     }
 
     const { clubId: daoAddress } = router.query;
+    const { pid } = router.query;
+    console.log("first", router.query);
 
     dispatch(addDaoAddress(Web3.utils.toChecksumAddress(daoAddress)));
     const USDC_CONTRACT_ADDRESS = useSelector((state) => {
@@ -56,6 +59,7 @@ const ClubFetch = (Component) => {
     });
 
     const checkUserExists = useCallback(async () => {
+      console.log("first");
       try {
         const getSafeSdk = async () => {
           const web3 = new Web3(window.ethereum);
@@ -70,8 +74,9 @@ const ClubFetch = (Component) => {
 
           return safeSdk;
         };
-
-        if (daoAddress && wallet) {
+        console.log("first", daoAddress, wallet);
+        if ((daoAddress && wallet) || (pid && wallet)) {
+          console.log("first", daoAddress, wallet);
           const networkData = fetchConfigById(wallet.chains[0].id);
           networkData.then((result) => {
             if (result.status != 200) {
@@ -206,10 +211,12 @@ const ClubFetch = (Component) => {
       router,
       wallet,
       walletAddress,
+      pid,
       // ethAdapter,
     ]);
 
     useEffect(() => {
+      console.log("first");
       checkUserExists();
     }, [
       GNOSIS_TRANSACTION_URL,
@@ -220,6 +227,7 @@ const ClubFetch = (Component) => {
       router,
       wallet,
       walletAddress,
+      pid,
       // ethAdapter,
     ]);
     return <Component />;
