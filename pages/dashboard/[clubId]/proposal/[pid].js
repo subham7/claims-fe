@@ -878,7 +878,34 @@ const ProposalDetail = () => {
                       proposalData?.status === "active" ? (
                         <>
                           {checkUserVoted() ? (
-                            "asfj"
+                            <Card sx={{ width: "100%" }}>
+                              <Grid
+                                container
+                                direction="column"
+                                justifyContent="center"
+                                alignItems="center"
+                                mt={10}
+                                mb={10}
+                              >
+                                <Grid item mt={0.5}>
+                                  <CheckCircleRoundedIcon
+                                    className={classes.mainCardButtonSuccess}
+                                  />
+                                </Grid>
+                                <Grid item mt={0.5}>
+                                  <Typography
+                                    className={classes.successfulMessageText}
+                                  >
+                                    Successfully voted
+                                  </Typography>
+                                </Grid>
+                                <Grid item mt={0.5}>
+                                  <Typography className={classes.listFont2}>
+                                    {/* Voted for */}
+                                  </Typography>
+                                </Grid>
+                              </Grid>
+                            </Card>
                           ) : (
                             <Card>
                               <Typography className={classes.cardFont1}>

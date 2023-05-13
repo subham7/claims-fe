@@ -25,6 +25,8 @@ const useStyles = makeStyles({
   image: {
     height: "30px",
     width: "auto !important",
+    zIndex: "99999 !important",
+    position: "absolute",
   },
 });
 

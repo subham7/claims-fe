@@ -107,7 +107,7 @@ const CreateProposalDialog = ({ open, setOpen, onClose, tokenData }) => {
       proposalDeadline: dayjs(Date.now() + 300000),
       proposalTitle: "",
       proposalDescription: "",
-      optionList: [{ text: "yes" }, { text: "no" }],
+      optionList: [{ text: "Yes" }, { text: "No" }, { text: "Abstain" }],
       actionCommand: "",
       airdropToken: tokenData ? tokenData[0]?.tokenAddress : "",
       amountToAirdrop: 0,
@@ -447,7 +447,7 @@ const CreateProposalDialog = ({ open, setOpen, onClose, tokenData }) => {
                               disabled={
                                 proposal.values.optionList.indexOf(
                                   proposal.values.optionList[key],
-                                ) < 2
+                                ) < 3
                               }
                               onClick={(value) => {
                                 const list = [...proposal.values.optionList];
