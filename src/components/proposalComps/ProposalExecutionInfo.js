@@ -1,6 +1,12 @@
 import { Card, Divider, Grid, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
-import React from "react";
+import React, { useCallback, useEffect, useState } from "react";
+import { SmartContract } from "../../api/contract";
+import erc20ABI from "../../abis/usdcTokenContract.json";
+import { useConnectWallet } from "@web3-onboard/react";
+import Web3 from "web3";
+import { useSelector } from "react-redux";
+import { convertFromWeiGovernance } from "../../utils/globalFunctions";
 
 const useStyles = makeStyles({
   listFont2: {
@@ -14,9 +20,61 @@ const useStyles = makeStyles({
   },
 });
 
-const ProposalExecutionInfo = ({ proposalData, fetched }) => {
+const ProposalExecutionInfo = ({
+  proposalData,
+  fetched,
+  USDC_CONTRACT_ADDRESS,
+}) => {
   console.log("Proposal Data", proposalData);
   const classes = useStyles();
+  const [{ wallet }] = useConnectWallet();
+
+  const [tokenDetails, setTokenDetails] = useState({
+    decimals: 0,
+    symbol: "",
+  });
+
+  const GNOSIS_TRANSACTION_URL = useSelector((state) => {
+    return state.gnosis.transactionUrl;
+  });
+
+  let walletAddress;
+  if (typeof window !== "undefined") {
+    walletAddress = Web3.utils.toChecksumAddress(wallet?.accounts[0].address);
+  }
+
+  const fetchAirDropContractDetails = useCallback(async () => {
+    try {
+      if (proposalData) {
+        const airdropContract = new SmartContract(
+          erc20ABI,
+          proposalData?.commands[0]?.airDropToken,
+          walletAddress,
+          USDC_CONTRACT_ADDRESS,
+          GNOSIS_TRANSACTION_URL,
+        );
+
+        const decimal = await airdropContract.decimals();
+        const symbol = await airdropContract.obtainSymbol();
+
+        setTokenDetails({
+          decimals: decimal,
+          symbol: symbol,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }, [
+    GNOSIS_TRANSACTION_URL,
+    USDC_CONTRACT_ADDRESS,
+    proposalData,
+    walletAddress,
+  ]);
+
+  useEffect(() => {
+    fetchAirDropContractDetails();
+  }, [fetchAirDropContractDetails]);
 
   return (
     <Grid item md={9}>
@@ -38,7 +96,7 @@ const ProposalExecutionInfo = ({ proposalData, fetched }) => {
                         Token
                       </Typography>
                       <Typography className={classes.listFont2Colourless}>
-                        {proposalData?.commands[0].usdcTokenSymbol}
+                        {tokenDetails.symbol}
                       </Typography>
                     </Grid>
                     <Grid item xs={12} md={4}>
@@ -47,12 +105,9 @@ const ProposalExecutionInfo = ({ proposalData, fetched }) => {
                       </Typography>
                       <Typography className={classes.listFont2Colourless}>
                         {fetched
-                          ? proposalData?.commands[0].airDropAmount /
-                            Math.pow(
-                              10,
-                              parseInt(
-                                proposalData?.commands[0].usdcTokenDecimal,
-                              ),
+                          ? convertFromWeiGovernance(
+                              proposalData?.commands[0].airDropAmount,
+                              tokenDetails.decimals,
                             )
                           : null}
                       </Typography>
@@ -173,14 +228,14 @@ const ProposalExecutionInfo = ({ proposalData, fetched }) => {
                       </Typography>
                       <Typography className={classes.listFont2Colourless}>
                         {fetched
-                          ? proposalData?.commands[0].totalDeposits /
-                            Math.pow(
-                              10,
-                              parseInt(
-                                proposalData?.commands[0].usdcTokenDecimal,
-                              ),
-                            )
-                          : null}{" "}
+                          ? proposalData?.commands[0].totalDeposits
+                          : // Math.pow(
+                            //   10,
+                            //   parseInt(
+                            //     proposalData?.commands[0].usdcTokenDecimal,
+                            //   ),
+                            // )
+                            null}{" "}
                         {proposalData?.commands[0].usdcTokenSymbol}
                       </Typography>
                     </Grid>

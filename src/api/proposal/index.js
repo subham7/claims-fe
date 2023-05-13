@@ -47,7 +47,7 @@ export async function getProposalDetail(proposalId) {
 
 export async function castVote(data) {
   // cast proposal vote API
-  return await axios.post(MAIN_API_URL + `proposal/vote`, data, {
+  return await axios.post(MAIN_API_URL + `proposal/vote2?networkId=5`, data, {
     headers: {
       "Authorization": "Bearer " + getJwtToken(),
       "Content-Type": "application/json",

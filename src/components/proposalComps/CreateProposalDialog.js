@@ -36,11 +36,12 @@ import { useRouter } from "next/router";
 import Web3 from "web3";
 import { createProposal } from "../../api/proposal";
 import { fetchProposals } from "../../utils/proposal";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import factoryContractABI from "../../abis/newArch/factoryContract.json";
 import { convertFromWeiGovernance } from "../../utils/globalFunctions";
 import { SmartContract } from "../../api/contract";
 import { NEW_FACTORY_ADDRESS } from "../../api";
+import { setProposalList } from "../../redux/reducers/proposal";
 
 const useStyles = makeStyles({
   modalStyle: {
@@ -66,6 +67,7 @@ const CreateProposalDialog = ({ open, setOpen, onClose, tokenData }) => {
   console.log(tokenData);
   const classes = useStyles();
   const router = useRouter();
+  const dispatch = useDispatch();
 
   const { clubId } = router.query;
   const [{ wallet }] = useConnectWallet();
@@ -132,7 +134,7 @@ const CreateProposalDialog = ({ open, setOpen, onClose, tokenData }) => {
           {
             executionId: 0,
             airDropToken: values.airdropToken,
-            airDropAmount: convertToWei(
+            airDropAmount: convertToWeiGovernance(
               values.amountToAirdrop,
               airDropTokenDecimal,
             ).toString(),
@@ -203,7 +205,7 @@ const CreateProposalDialog = ({ open, setOpen, onClose, tokenData }) => {
             customTokenAmounts: [
               convertToWei(values.amountToSend, tokenDecimal),
             ],
-            customTokenAddresses: [values.customToken],
+            customTokenAddresses: [values.recieverAddress],
             usdcTokenSymbol: "USDC",
             usdcTokenDecimal: 6,
             usdcGovernanceTokenDecimal: 18,
@@ -234,6 +236,7 @@ const CreateProposalDialog = ({ open, setOpen, onClose, tokenData }) => {
           // fetchData();
           const proposalData = await fetchProposals(clubId);
           console.log(proposalData);
+          dispatch(setProposalList(proposalData));
           setOpenSnackBar(true);
           setFailed(false);
           setOpen(false);

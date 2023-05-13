@@ -1,11 +1,21 @@
 import { Card, CardActionArea, Chip, Grid, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
-import { calculateDays } from "../../../../src/utils/globalFunctions";
+import {
+  calculateDays,
+  convertFromWeiGovernance,
+} from "../../../../src/utils/globalFunctions";
 import actionIcon from "../../../../public/assets/icons/action_icon.svg";
 import tickerIcon from "../../../../public/assets/icons/ticker_icon.svg";
 import surveyIcon from "../../../../public/assets/icons/survey_icon.svg";
-import React from "react";
+import erc20ABI from "../../../../src/abis/usdcTokenContract.json";
+
+import React, { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
+import { useSelector } from "react-redux";
+import { useConnectWallet } from "@web3-onboard/react";
+import Web3 from "web3";
+import { SmartContract } from "../../../../src/api/contract";
+import { useRouter } from "next/router";
 
 const useStyles = makeStyles({
   clubAssets: {
@@ -177,6 +187,87 @@ const ProposalCard = ({
   executionTransaction,
 }) => {
   const classes = useStyles();
+  console.log("PROPOSALAAA", proposal);
+  const router = useRouter();
+
+  const { clubId: daoAddress } = router.query;
+
+  const [{ wallet }] = useConnectWallet();
+
+  const tokenType = useSelector((state) => {
+    return state.club.clubData.tokenType;
+  });
+
+  const [tokenDetails, setTokenDetails] = useState({
+    decimals: 0,
+    symbol: "",
+  });
+
+  const GNOSIS_TRANSACTION_URL = useSelector((state) => {
+    return state.gnosis.transactionUrl;
+  });
+
+  const USDC_CONTRACT_ADDRESS = useSelector((state) => {
+    return state.gnosis.usdcContractAddress;
+  });
+
+  let walletAddress;
+  if (typeof window !== "undefined") {
+    walletAddress = Web3.utils.toChecksumAddress(wallet?.accounts[0].address);
+  }
+
+  const fetchAirDropContractDetails = useCallback(async () => {
+    try {
+      if (proposal) {
+        const airdropContract = new SmartContract(
+          erc20ABI,
+          proposal?.commands[0].executionId === 0
+            ? proposal?.commands[0]?.airDropToken
+            : proposal?.commands[0].executionId === 1
+            ? daoAddress
+            : proposal?.commands[0].executionId === 4
+            ? proposal?.commands[0]?.customToken
+            : "",
+          walletAddress,
+          USDC_CONTRACT_ADDRESS,
+          GNOSIS_TRANSACTION_URL,
+        );
+
+        if (tokenType === "erc20" || proposal?.commands[0].executionId !== 1) {
+          const decimal = await airdropContract.decimals();
+          console.log("Decimal", decimal);
+          const symbol = await airdropContract.obtainSymbol();
+          setTokenDetails({
+            decimals: decimal,
+            symbol: symbol,
+          });
+        } else if (
+          tokenType === "erc721" &&
+          proposal?.commands[0].executionId === 1
+        ) {
+          const symbol = await airdropContract.obtainSymbol();
+          setTokenDetails({
+            decimals: 18,
+            symbol: symbol,
+          });
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }, [
+    GNOSIS_TRANSACTION_URL,
+    USDC_CONTRACT_ADDRESS,
+    daoAddress,
+    proposal,
+    tokenType,
+    walletAddress,
+  ]);
+
+  useEffect(() => {
+    fetchAirDropContractDetails();
+  }, [fetchAirDropContractDetails]);
+
   //   console.log("key in card", indexKey);
   return (
     <CardActionArea sx={{ borderRadius: "10px" }}>
@@ -308,7 +399,7 @@ const ProposalCard = ({
                           Asset:
                         </Typography>
                         <Typography color="#FFFFFF">
-                          {proposal.commands[0].usdcTokenSymbol}
+                          {tokenDetails.symbol}
                         </Typography>
                       </Grid>
                     }
@@ -333,8 +424,39 @@ const ProposalCard = ({
                             Amount:
                           </Typography>
                           <Typography color="#FFFFFF">
-                            {proposal.commands[0].airDropAmount /
-                              10 ** proposal.commands[0].usdcTokenDecimal}
+                            {convertFromWeiGovernance(
+                              proposal?.commands[0].airDropAmount,
+                              tokenDetails.decimals,
+                            )}
+                          </Typography>
+                        </Grid>
+                      ) : null
+                    }
+                  ></Chip>
+                </Grid>
+              ) : null}
+
+              {proposal?.commands[0]?.executionId === 1 ? (
+                <Grid item>
+                  <Chip
+                    className={classes.timeLeftChip}
+                    label={
+                      proposal.commands[0].mintGTAmounts[0] ? (
+                        <Grid sx={{ display: "flex" }}>
+                          {" "}
+                          <Typography
+                            color="#C1D3FF"
+                            sx={{ marginRight: "5px" }}
+                          >
+                            Amount:
+                          </Typography>
+                          <Typography color="#FFFFFF">
+                            {Number(
+                              convertFromWeiGovernance(
+                                proposal?.commands[0].mintGTAmounts[0],
+                                tokenDetails.decimals,
+                              ),
+                            ).toFixed(0)}
                           </Typography>
                         </Grid>
                       ) : null
@@ -433,6 +555,7 @@ const ProposalCard = ({
                   </Grid>
                 </>
               ) : null}
+
               {proposal?.commands[0]?.totalDeposits ? (
                 <Grid item>
                   <Chip
@@ -444,9 +567,7 @@ const ProposalCard = ({
                           Raise Amount:
                         </Typography>
                         <Typography color="#FFFFFF">
-                          {proposal?.commands[0]?.totalDeposits /
-                            10 ** proposal?.commands[0]?.usdcTokenDecimal}{" "}
-                          {proposal?.commands[0]?.usdcTokenSymbol}
+                          {proposal?.commands[0]?.totalDeposits}
                         </Typography>
                       </Grid>
                     }
