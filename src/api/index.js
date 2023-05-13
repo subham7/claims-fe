@@ -58,10 +58,25 @@ export function updateDynamicAddress(networkId, dispatch) {
     } else {
       dispatch(
         addContractAddress({
-          factoryContractAddress: "0x43d087bE7aa873B3F7cF012E6650b14042CF5129",
+          factoryContractAddress:
+            networkId == "0x5"
+              ? FACTORY_ADDRESS_GOERLI
+              : networkId == "0x89"
+              ? FACTORY_ADDRESS_POLYGON
+              : "",
           usdcContractAddress: result.data[0].usdcContractAddress,
-          actionContractAddress: "",
-          subgraphUrl: "",
+          actionContractAddress:
+            networkId == "0x5"
+              ? AIRDROP_ACTION_ADDRESS_GOERLI
+              : networkId == "0x89"
+              ? AIRDROP_ACTION_ADDRESS_POLYGON
+              : "",
+          subgraphUrl:
+            networkId == "0x5"
+              ? SUBGRAPH_URL_GOERLI
+              : networkId == "0x89"
+              ? SUBGRAPH_URL_POLYGON
+              : "",
           transactionUrl: result.data[0].gnosisTransactionUrl,
           networkHex: result.data[0].networkHex,
           networkId: result.data[0].networkId,

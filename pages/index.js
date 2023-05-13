@@ -112,6 +112,7 @@ const App = () => {
   const router = useRouter();
 
   const networkId = wallet?.chains[0]?.id;
+  console.log("Current Network Id", wallet );
 
   let walletAddress;
 
