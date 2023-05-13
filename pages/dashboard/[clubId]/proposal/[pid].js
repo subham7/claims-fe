@@ -2,11 +2,15 @@ import React, { useCallback, useEffect, useState } from "react";
 import Layout1 from "../../../../src/components/layouts/layout1";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import {
+  Alert,
+  Backdrop,
   Card,
   CardActionArea,
   Chip,
+  CircularProgress,
   Divider,
   Grid,
+  Snackbar,
   Stack,
   Typography,
 } from "@mui/material";
@@ -716,6 +720,13 @@ const ProposalDetail = () => {
     }
   };
 
+  const handleSnackBarClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpenSnackBar(false);
+  };
+
   useEffect(() => {
     console.log("heree");
     if (pid) {
@@ -1065,6 +1076,36 @@ const ProposalDetail = () => {
             </Stack>
           </Grid>
         </Grid>
+        <Snackbar
+          open={openSnackBar}
+          autoHideDuration={6000}
+          onClose={handleSnackBarClose}
+          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+        >
+          {!failed ? (
+            <Alert
+              onClose={handleSnackBarClose}
+              severity="success"
+              sx={{ width: "100%" }}
+            >
+              {message}
+            </Alert>
+          ) : (
+            <Alert
+              onClose={handleSnackBarClose}
+              severity="error"
+              sx={{ width: "100%" }}
+            >
+              {message}
+            </Alert>
+          )}
+        </Snackbar>
+        <Backdrop
+          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+          open={loaderOpen}
+        >
+          <CircularProgress color="inherit" />
+        </Backdrop>
       </Layout1>
     </>
   );
