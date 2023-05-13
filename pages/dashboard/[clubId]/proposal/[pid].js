@@ -714,7 +714,9 @@ const ProposalDetail = () => {
         })
         .catch((err) => {
           setSigned(false);
+          setOpenSnackBar(true);
           setMessage("Signature failed!");
+          setFailed(true);
           setLoaderOpen(false);
         });
     }
