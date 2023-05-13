@@ -505,7 +505,7 @@ const NewArchERC20 = ({
                       <Grid item mt={2}>
                         <Typography variant="p" className={classes.valuesStyle}>
                           {walletAddress ? (
-                            members.length
+                            members?.length
                           ) : (
                             <Skeleton
                               variant="rectangular"
@@ -614,7 +614,7 @@ const NewArchERC20 = ({
                             convertFromWeiGovernance(
                               daoDetails.totalSupply,
                               erc20TokenDetails.tokenDecimal,
-                            ).toString() + " USDC"
+                            )?.toString() + " USDC"
                           ) : (
                             <Skeleton
                               variant="rectangular"

@@ -45,7 +45,7 @@ const ClubFetch = (Component) => {
     const [{ wallet }] = useConnectWallet();
     const networkId = wallet?.chains[0]?.id;
 
-    console.log("Networrrk ID", networkId);
+    console.log("Networrrk ID", wallet);
 
     const walletAddress = Web3.utils.toChecksumAddress(
       wallet?.accounts[0].address,
@@ -87,12 +87,14 @@ const ClubFetch = (Component) => {
         };
         console.log("first", daoAddress, wallet);
         if ((daoAddress && wallet) || (pid && wallet)) {
-          console.log("first", daoAddress, wallet);
+          console.log("first", pid, wallet);
           const networkData = fetchConfigById(wallet.chains[0].id);
           networkData.then((result) => {
             if (result.status != 200) {
               console.log(result.error);
             } else {
+              console.log("firstyyyyy");
+
               dispatch(
                 addContractAddress({
                   factoryContractAddress:
@@ -253,20 +255,14 @@ const ClubFetch = (Component) => {
     ]);
 
     useEffect(() => {
-      console.log("first");
-      checkUserExists();
-    }, [
-      GNOSIS_TRANSACTION_URL,
-      USDC_CONTRACT_ADDRESS,
-      daoAddress,
-      dispatch,
-      gnosisAddress,
-      router,
-      wallet,
-      walletAddress,
-      pid,
-      checkUserExists,
-    ]);
+      console.log("first second", wallet, pid);
+
+      if (wallet) checkUserExists();
+    }, [checkUserExists, pid, wallet]);
+
+    useEffect(() => {
+      console.log("Wallettt", wallet);
+    }, [wallet]);
     return <Component />;
   };
   return RetrieveDataComponent;

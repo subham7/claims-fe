@@ -137,6 +137,7 @@ const Join = () => {
       console.log(error);
     }
   }, [
+    FACTORY_CONTRACT_ADDRESS,
     GNOSIS_TRANSACTION_URL,
     USDC_CONTRACT_ADDRESS,
     daoAddress,
