@@ -499,7 +499,6 @@ const ProposalDetail = () => {
       //   proposalData.commands[0].airDropCarryFee,
       //   membersArray,
       // ]);
-
       approvalData = iface.encodeFunctionData("approve", [
         AIRDROP_ACTION_ADDRESS,
         proposalData.commands[0].airDropAmount,

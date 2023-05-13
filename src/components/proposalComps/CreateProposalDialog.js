@@ -134,7 +134,7 @@ const CreateProposalDialog = ({ open, setOpen, onClose, tokenData }) => {
           {
             executionId: 0,
             airDropToken: values.airdropToken,
-            airDropAmount: convertToWei(
+            airDropAmount: convertToWeiGovernance(
               values.amountToAirdrop,
               airDropTokenDecimal,
             ).toString(),

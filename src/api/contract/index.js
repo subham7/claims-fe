@@ -591,23 +591,11 @@ export class SmartContract {
               // gasPrice, // Optional
               // gasToken, // Optional
               // refundReceiver, // Optional
-              nonce: nonce, // Optional
+              nonce: tx.nonce, // Optional
             },
           ];
         }
 
-        safeTransactionData = {
-          to: tx.to,
-          data: tx.data,
-          value: tx.value,
-          // operation, // Optional
-          // safeTxGas, // Optional
-          // baseGas, // Optional
-          // gasPrice, // Optional
-          // gasToken, // Optional
-          // refundReceiver, // Optional
-          nonce: tx.nonce, // Optional
-        };
         // if (approvalData === "") {
         //   safeTransactionData = {
         //     to: tx.to,
