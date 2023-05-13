@@ -1,7 +1,6 @@
 import axios from "axios";
-import { SUBGRAPH_URL } from "../api";
 
-export const subgraphQuery = async (query) => {
+export const subgraphQuery = async (SUBGRAPH_URL, query) => {
   try {
     const response = await axios.post(SUBGRAPH_URL, {
       query,
@@ -13,6 +12,5 @@ export const subgraphQuery = async (query) => {
     return response.data.data;
   } catch (error) {
     console.error(error);
-    throw new Error(`Could not query the subgraph ${error.message}`);
   }
 };

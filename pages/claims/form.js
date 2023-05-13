@@ -13,7 +13,7 @@ import claimContractFactory from "../../src/abis/claimContractFactory.json";
 import usdcTokenContract from "../../src/abis/usdcTokenContract.json";
 import { convertToWeiGovernance } from "../../src/utils/globalFunctions";
 import { createClaim } from "../../src/api/claims";
-import { CLAIM_FACTORY_ADDRESS } from "../../src/api";
+import { CLAIM_FACTORY_ADDRESS_GOERLI } from "../../src/api";
 import { MerkleTree } from "merkletreejs";
 import keccak256 from "keccak256";
 import Web3 from "web3";
@@ -133,7 +133,7 @@ const Form = () => {
     }),
 
     onSubmit: (values) => {
-      const claimsContractAddress = CLAIM_FACTORY_ADDRESS;
+      const claimsContractAddress = CLAIM_FACTORY_ADDRESS_GOERLI;
 
       const data = {
         description: values.description,
@@ -303,7 +303,7 @@ const Form = () => {
             try {
               const claimsContract = new SmartContract(
                 claimContractFactory,
-                CLAIM_FACTORY_ADDRESS,
+                CLAIM_FACTORY_ADDRESS_GOERLI,
                 data.walletAddress,
                 undefined,
                 undefined,

@@ -49,7 +49,6 @@ import erc20DaoContractABI from "../../abis/newArch/erc20Dao.json";
 import erc721DaoContractABI from "../../abis/newArch/erc721Dao.json";
 import factoryContractABI from "../../abis/newArch/factoryContract.json";
 import { convertFromWeiGovernance } from "../../utils/globalFunctions";
-import { NEW_FACTORY_ADDRESS } from "../../api";
 
 const DashboardIndex = () => {
   const clubData = useSelector((state) => {
@@ -76,8 +75,16 @@ const DashboardIndex = () => {
   const classes = DashboardStyles();
   const { clubId: daoAddress } = router.query;
 
+  const FACTORY_CONTRACT_ADDRESS = useSelector((state) => {
+    return state.gnosis.factoryContractAddress;
+  });
+
   const isAdmin = useSelector((state) => {
     return state.gnosis.adminUser;
+  });
+
+  const SUBGRAPH_URL = useSelector((state) => {
+    return state.gnosis.subgraphUrl;
   });
 
   const NETWORK_HEX = useSelector((state) => {
@@ -109,7 +116,10 @@ const DashboardIndex = () => {
           Web3.utils.toChecksumAddress(daoAddress),
         );
 
-        const membersData = await subgraphQuery(QUERY_ALL_MEMBERS(daoAddress));
+        const membersData = await subgraphQuery(
+          SUBGRAPH_URL,
+          QUERY_ALL_MEMBERS(daoAddress),
+        );
 
         setClubDetails({
           clubImageUrl: imageUrl?.data[0]?.imageUrl,
@@ -120,7 +130,7 @@ const DashboardIndex = () => {
     } catch (error) {
       console.log(error);
     }
-  }, [daoAddress]);
+  }, [SUBGRAPH_URL, daoAddress]);
 
   const fetchAssets = useCallback(async () => {
     try {
@@ -190,7 +200,7 @@ const DashboardIndex = () => {
         const factoryContractData = async () => {
           const factoryContract = new SmartContract(
             factoryContractABI,
-            NEW_FACTORY_ADDRESS,
+            FACTORY_CONTRACT_ADDRESS,
             walletAddress,
             USDC_CONTRACT_ADDRESS,
             GNOSIS_TRANSACTION_URL,

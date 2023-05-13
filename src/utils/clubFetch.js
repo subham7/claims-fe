@@ -27,14 +27,25 @@ import Safe, {
   SafeFactory,
   SafeAccountConfig,
 } from "@safe-global/protocol-kit";
-import { NEW_FACTORY_ADDRESS } from "../api";
+import {
+  AIRDROP_ACTION_ADDRESS_GOERLI,
+  AIRDROP_ACTION_ADDRESS_POLYGON,
+  FACTORY_ADDRESS_GOERLI,
+  FACTORY_ADDRESS_POLYGON,
+  SUBGRAPH_URL_GOERLI,
+  SUBGRAPH_URL_POLYGON,
+} from "../api";
 
 const ClubFetch = (Component) => {
+  console.log("SUBGRAPH", SUBGRAPH_URL_GOERLI, SUBGRAPH_URL_POLYGON);
   const RetrieveDataComponent = () => {
     console.log("first");
     const router = useRouter();
     const dispatch = useDispatch();
     const [{ wallet }] = useConnectWallet();
+    const networkId = wallet?.chains[0]?.id;
+
+    console.log("Networrrk ID", networkId);
 
     const walletAddress = Web3.utils.toChecksumAddress(
       wallet?.accounts[0].address,
@@ -84,8 +95,25 @@ const ClubFetch = (Component) => {
             } else {
               dispatch(
                 addContractAddress({
-                  factoryContractAddress: NEW_FACTORY_ADDRESS,
+                  factoryContractAddress:
+                    networkId == "0x5"
+                      ? FACTORY_ADDRESS_GOERLI
+                      : networkId == "0x89"
+                      ? FACTORY_ADDRESS_POLYGON
+                      : "",
                   usdcContractAddress: result.data[0].usdcContractAddress,
+                  actionContractAddress:
+                    networkId == "0x5"
+                      ? AIRDROP_ACTION_ADDRESS_GOERLI
+                      : networkId == "0x89"
+                      ? AIRDROP_ACTION_ADDRESS_POLYGON
+                      : "",
+                  subgraphUrl:
+                    networkId == "0x5"
+                      ? SUBGRAPH_URL_GOERLI
+                      : networkId == "0x89"
+                      ? SUBGRAPH_URL_POLYGON
+                      : "",
                   transactionUrl: result.data[0].gnosisTransactionUrl,
                   networkHex: result.data[0].networkHex,
                   networkId: result.data[0].networkId,
@@ -95,7 +123,16 @@ const ClubFetch = (Component) => {
             }
           });
 
-          const clubData = await subgraphQuery(QUERY_CLUB_DETAILS(daoAddress));
+          const clubData = await subgraphQuery(
+            networkId == "0x5"
+              ? SUBGRAPH_URL_GOERLI
+              : networkId == "0x89"
+              ? SUBGRAPH_URL_POLYGON
+              : "",
+            QUERY_CLUB_DETAILS(daoAddress),
+          );
+
+          console.log("TOKENNNNNN CLUB", clubData.stations[0].tokenType);
           dispatch(
             addClubData({
               gnosisAddress: clubData.stations[0].gnosisAddress,
@@ -203,16 +240,16 @@ const ClubFetch = (Component) => {
         console.log(error);
       }
     }, [
-      GNOSIS_TRANSACTION_URL,
-      USDC_CONTRACT_ADDRESS,
       daoAddress,
-      dispatch,
-      gnosisAddress,
-      router,
       wallet,
-      walletAddress,
       pid,
-      // ethAdapter,
+      walletAddress,
+      gnosisAddress,
+      networkId,
+      dispatch,
+      USDC_CONTRACT_ADDRESS,
+      GNOSIS_TRANSACTION_URL,
+      router,
     ]);
 
     useEffect(() => {
@@ -228,7 +265,7 @@ const ClubFetch = (Component) => {
       wallet,
       walletAddress,
       pid,
-      // ethAdapter,
+      checkUserExists,
     ]);
     return <Component />;
   };

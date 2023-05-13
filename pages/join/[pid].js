@@ -6,7 +6,6 @@ import erc721DaoContractABI from "../../src/abis/newArch/erc721Dao.json";
 import FactoryContractABI from "../../src/abis/newArch/factoryContract.json";
 import ERC20ABI from "../../src/abis/usdcTokenContract.json";
 
-import { NEW_FACTORY_ADDRESS } from "../../src/api";
 import { useConnectWallet } from "@web3-onboard/react";
 import Web3 from "web3";
 import Layout2 from "../../src/components/layouts/layout2";
@@ -55,6 +54,14 @@ const Join = () => {
 
   const { pid: daoAddress } = router.query;
 
+  const FACTORY_CONTRACT_ADDRESS = useSelector((state) => {
+    return state.gnosis.factoryContractAddress;
+  });
+
+  const SUBGRAPH_URL = useSelector((state) => {
+    return state.gnosis.subgraphUrl;
+  });
+
   const GNOSIS_TRANSACTION_URL = useSelector((state) => {
     return state.gnosis.transactionUrl;
   });
@@ -78,7 +85,7 @@ const Join = () => {
     try {
       const factoryContract = new SmartContract(
         factoryContractABI,
-        NEW_FACTORY_ADDRESS,
+        FACTORY_CONTRACT_ADDRESS,
         walletAddress,
         USDC_CONTRACT_ADDRESS,
         GNOSIS_TRANSACTION_URL,
@@ -141,10 +148,10 @@ const Join = () => {
    */
   const fetchErc721ContractDetails = useCallback(async () => {
     try {
-      console.log(factoryContractABI, NEW_FACTORY_ADDRESS);
+      console.log(factoryContractABI, FACTORY_CONTRACT_ADDRESS);
       const factoryContract = new SmartContract(
         factoryContractABI,
-        NEW_FACTORY_ADDRESS,
+        FACTORY_CONTRACT_ADDRESS,
         walletAddress,
         USDC_CONTRACT_ADDRESS,
         GNOSIS_TRANSACTION_URL,
@@ -230,7 +237,7 @@ const Join = () => {
       // setLoading(true);
       const factoryContract = new SmartContract(
         FactoryContractABI,
-        NEW_FACTORY_ADDRESS,
+        FACTORY_CONTRACT_ADDRESS,
         walletAddress,
         USDC_CONTRACT_ADDRESS,
         GNOSIS_TRANSACTION_URL,
@@ -319,7 +326,10 @@ const Join = () => {
     try {
       const fetchData = async () => {
         if (daoAddress) {
-          const data = await subgraphQuery(QUERY_ALL_MEMBERS(daoAddress));
+          const data = await subgraphQuery(
+            SUBGRAPH_URL,
+            QUERY_ALL_MEMBERS(daoAddress),
+          );
           console.log("Members", data);
           setMembers(data?.users);
         }
@@ -328,7 +338,7 @@ const Join = () => {
     } catch (error) {
       console.log(error);
     }
-  }, [daoAddress]);
+  }, [SUBGRAPH_URL, daoAddress]);
 
   return (
     <Layout2>

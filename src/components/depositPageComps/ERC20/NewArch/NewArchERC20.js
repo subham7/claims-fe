@@ -34,7 +34,6 @@ import {
 } from "../../../../utils/globalFunctions";
 import { Form, useFormik } from "formik";
 import * as yup from "yup";
-import { NEW_FACTORY_ADDRESS } from "../../../../api";
 import dayjs from "dayjs";
 import { useSelector } from "react-redux";
 import { useRouter } from "next/router";
@@ -64,6 +63,11 @@ const NewArchERC20 = ({
     const web3 = new Web3(window.web3);
     walletAddress = web3.utils.toChecksumAddress(wallet?.accounts[0].address);
   }
+
+  const FACTORY_CONTRACT_ADDRESS = useSelector((state) => {
+    return state.gnosis.factoryContractAddress;
+  });
+
   const GNOSIS_TRANSACTION_URL = useSelector((state) => {
     return state.gnosis.transactionUrl;
   });
@@ -162,7 +166,7 @@ const NewArchERC20 = ({
 
         const factoryContract = new SmartContract(
           factoryContractABI,
-          NEW_FACTORY_ADDRESS,
+          FACTORY_CONTRACT_ADDRESS,
           walletAddress,
           USDC_CONTRACT_ADDRESS,
           GNOSIS_TRANSACTION_URL,
@@ -182,7 +186,7 @@ const NewArchERC20 = ({
         );
 
         await erc20Contract.approveDeposit(
-          NEW_FACTORY_ADDRESS,
+          FACTORY_CONTRACT_ADDRESS,
           inputValue,
           erc20TokenDetails.tokenDecimal,
         );

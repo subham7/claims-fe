@@ -15,7 +15,7 @@ import { USDC_FAUCET_ADDRESS } from "../index";
 import SafeApiKit from "@safe-global/api-kit";
 import Erc721Dao from "../../abis/newArch/erc721Dao.json";
 import Erc20Dao from "../../abis/newArch/erc20Dao.json";
-import { AIRDROP_ACTION_ADDRESS } from "../../api";
+import { AIRDROP_ACTION_ADDRESS_GOERLI } from "../../api";
 
 async function syncWallet() {
   // function for validating metamask wallet
@@ -452,7 +452,7 @@ export class SmartContract {
           .updateProposalAndExecution(
             //airdrop address
 
-            web3.utils.toChecksumAddress(AIRDROP_ACTION_ADDRESS),
+            web3.utils.toChecksumAddress(AIRDROP_ACTION_ADDRESS_GOERLI),
             parameters,
           )
           .encodeABI(),

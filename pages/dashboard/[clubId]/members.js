@@ -65,6 +65,10 @@ const Test = () => {
     return state.club.clubData.tokenType;
   });
 
+  const SUBGRAPH_URL = useSelector((state) => {
+    return state.gnosis.subgraphUrl;
+  });
+
   console.log("TOkennnnn", tokenType);
 
   const handleAddressClick = (event, address) => {
@@ -73,18 +77,22 @@ const Test = () => {
   };
 
   useEffect(() => {
+    console.log("NET", SUBGRAPH_URL);
     try {
       setLoading(true);
       const fetchData = async () => {
         if (daoAddress) {
-          const data = await subgraphQuery(QUERY_ALL_MEMBERS(daoAddress));
+          const data = await subgraphQuery(
+            SUBGRAPH_URL,
+            QUERY_ALL_MEMBERS(daoAddress),
+          );
           let membersArray = [];
-          data.users.map((member) => membersArray.push(member.userAddress));
+          data?.users?.map((member) => membersArray.push(member.userAddress));
           console.log(membersArray);
 
           setMembersData(data?.users);
 
-          console.log("Memebersss", data.users);
+          console.log("Memebersss", data?.users);
         }
       };
       fetchData();
@@ -93,7 +101,7 @@ const Test = () => {
       console.log(error);
       setLoading(false);
     }
-  }, [daoAddress]);
+  }, [SUBGRAPH_URL, daoAddress]);
 
   return (
     <>
@@ -125,7 +133,7 @@ const Test = () => {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {membersData.map((data, key) => (
+                    {membersData?.map((data, key) => (
                       <TableRow
                         key={key}
                         sx={{
@@ -177,9 +185,9 @@ const Test = () => {
                         <TableCell align="left" variant="tableBody">
                           {tokenType === "erc20"
                             ? Number(
-                                convertFromWeiGovernance(data.gtAmount, 18),
+                                convertFromWeiGovernance(data?.gtAmount, 18),
                               ).toFixed(2)
-                            : data.gtAmount}
+                            : data?.gtAmount}
                         </TableCell>
                         <TableCell align="left" variant="tableBody">
                           {new Date(

@@ -24,7 +24,7 @@ import { setUploadNFTLoading } from "../../src/redux/reducers/gnosis";
 import { NFTStorage } from "nft.storage";
 import { convertAmountToWei } from "../../src/utils/globalFunctions";
 import { convertToWeiGovernance } from "../../src/utils/globalFunctions";
-import { NEW_FACTORY_ADDRESS } from "../../src/api";
+// import { FACTORY_ADDRESS_GOERLI } from "../../src/api";
 
 const Create = () => {
   const steps = ["Add basic info", "Set token rules", "Governance"];
@@ -34,6 +34,10 @@ const Create = () => {
   const [activeStep, setActiveStep] = useState(0);
   const [completed, setCompleted] = useState({});
   const [open, setOpen] = useState(false);
+
+  const FACTORY_CONTRACT_ADDRESS = useSelector((state) => {
+    return state.gnosis.factoryContractAddress;
+  });
 
   const USDC_CONTRACT_ADDRESS = useSelector((state) => {
     return state.gnosis.usdcContractAddress;
@@ -203,7 +207,7 @@ const Create = () => {
               GNOSIS_TRANSACTION_URL,
               values.addressList,
               formikStep1.values.clubTokenType,
-              NEW_FACTORY_ADDRESS,
+              FACTORY_CONTRACT_ADDRESS,
               metadata.data.image.pathname,
               metadata.url,
             );
@@ -255,7 +259,7 @@ const Create = () => {
               GNOSIS_TRANSACTION_URL,
               values.addressList,
               formikStep1.values.clubTokenType,
-              NEW_FACTORY_ADDRESS,
+              FACTORY_CONTRACT_ADDRESS,
             );
           })
           .catch((error) => {

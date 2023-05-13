@@ -21,7 +21,6 @@ import { useRouter } from "next/router";
 import Countdown from "react-countdown";
 import { SmartContract } from "../../api/contract";
 import FactoryContractABI from "../../abis/newArch/factoryContract.json";
-import { NEW_FACTORY_ADDRESS } from "../../api";
 import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
@@ -56,6 +55,10 @@ const AdditionalSettings = ({
     return state.gnosis.transactionUrl;
   });
 
+  const FACTORY_CONTRACT_ADDRESS = useSelector((state) => {
+    return state.gnosis.factoryContractAddress;
+  });
+
   const USDC_CONTRACT_ADDRESS = useSelector((state) => {
     return state.gnosis.usdcContractAddress;
   });
@@ -65,7 +68,7 @@ const AdditionalSettings = ({
     try {
       const factoryContract = new SmartContract(
         FactoryContractABI,
-        NEW_FACTORY_ADDRESS,
+        FACTORY_CONTRACT_ADDRESS,
         walletAddress,
         USDC_CONTRACT_ADDRESS,
         GNOSIS_TRANSACTION_URL,
@@ -102,7 +105,7 @@ const AdditionalSettings = ({
     try {
       const factoryContract = new SmartContract(
         FactoryContractABI,
-        NEW_FACTORY_ADDRESS,
+        FACTORY_CONTRACT_ADDRESS,
         walletAddress,
         USDC_CONTRACT_ADDRESS,
         GNOSIS_TRANSACTION_URL,

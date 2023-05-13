@@ -39,6 +39,8 @@ import NewCard from "../src/components/cards/card";
 import Web3 from "web3";
 import { subgraphQuery } from "../src/utils/subgraphs";
 import { QUERY_CLUBS_FROM_WALLET_ADDRESS } from "../src/api/graphql/queries";
+import ClubFetch from "../src/utils/clubFetch";
+import { SUBGRAPH_URL_GOERLI, SUBGRAPH_URL_POLYGON } from "../src/api";
 
 const useStyles = makeStyles({
   container: {
@@ -94,7 +96,7 @@ const useStyles = makeStyles({
   },
 });
 
-export default function App() {
+const App = () => {
   const dispatch = useDispatch();
   const [clubFlow, setClubFlow] = useState(false);
   const classes = useStyles();
@@ -108,6 +110,8 @@ export default function App() {
 
   const [open, setOpen] = useState(false);
   const router = useRouter();
+
+  const networkId = wallet?.chains[0]?.id;
 
   let walletAddress;
 
@@ -151,6 +155,11 @@ export default function App() {
       const fetchClubs = async () => {
         try {
           const data = await subgraphQuery(
+            networkId === "0x5"
+              ? SUBGRAPH_URL_GOERLI
+              : networkId === "0x89"
+              ? SUBGRAPH_URL_POLYGON
+              : "",
             QUERY_CLUBS_FROM_WALLET_ADDRESS(walletAddress),
           );
           console.log(data.users);
@@ -205,7 +214,7 @@ export default function App() {
     } else {
       setClubFlow(false);
     }
-  }, [walletAddress]);
+  }, [networkId, walletAddress]);
 
   const handleCreateButtonClick = async (event) => {
     const { pathname } = Router;
@@ -451,4 +460,6 @@ export default function App() {
       </div>
     </Layout2>
   );
-}
+};
+
+export default App;
