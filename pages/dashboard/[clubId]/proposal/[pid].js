@@ -610,6 +610,7 @@ const ProposalDetail = () => {
           [proposalData.commands[0].mintGTAmounts.toString()],
           [tokenURI],
           proposalData.commands[0].mintGTAddresses,
+          "0x0000000000000000000000000000000000000000000000000000000000000001",
         ]);
       }
 
