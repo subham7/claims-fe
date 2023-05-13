@@ -395,7 +395,13 @@ export class SmartContract {
     executionStatus,
   ) {
     const parameters = data;
-    console.log("executionStatus", executionStatus, gnosisAddress, parameters);
+    console.log(
+      "executionStatus",
+      executionStatus,
+      gnosisAddress,
+      parameters,
+      approvalData,
+    );
     const safeOwner = this.walletAddress;
     // const ethAdapter = new Web3Adapter({
     //   web3: this.web3,
@@ -423,7 +429,7 @@ export class SmartContract {
       Erc20Dao.abi,
       daoAddress,
     );
-    // console.log("implementationContract", implementationContract, tokenData);
+    console.log("implementationContract", implementationContract, tokenData);
     let approvalTransaction;
     let transaction;
     if (approvalData !== "") {

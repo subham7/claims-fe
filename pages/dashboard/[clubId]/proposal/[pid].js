@@ -461,7 +461,10 @@ const ProposalDetail = () => {
     let approvalData;
     let ABI;
     console.log(clubData.tokenType);
-    if (proposalData.commands[0].executionId === 0) {
+    if (
+      proposalData.commands[0].executionId === 0 ||
+      proposalData.commands[0].executionId === 4
+    ) {
       ABI = [
         "function approve(address spender, uint256 amount)",
         "function contractCalls(address _to, bytes memory _data)",
@@ -506,25 +509,53 @@ const ProposalDetail = () => {
       console.log("approvalData", approvalData);
 
       let airDropAmountArray = [];
-      let newMembersArray = await Promise.all(
-        membersArray.map(async (member) => {
-          console.log("member", member);
-          const balance = await erc20DaoContract.nftBalance(
-            Web3.utils.toChecksumAddress(member),
-          );
+      if (proposalData.commands[0].airDropCarryFee !== 0) {
+        const carryFeeAmount =
+          (proposalData.commands[0].airDropAmount *
+            proposalData.commands[0].airDropCarryFee) /
+          100;
+        airDropAmountArray = await Promise.all(
+          membersArray.map(async (member) => {
+            console.log("member", member);
+            const balance = await erc20DaoContract.nftBalance(
+              Web3.utils.toChecksumAddress(member),
+            );
 
-          const clubTokensMinted = await erc20DaoContract.totalSupply();
+            const clubTokensMinted = await erc20DaoContract.totalSupply();
 
-          return (
-            (proposalData.commands[0].airDropAmount * balance) /
-            clubTokensMinted
-          )
-            .toFixed(0)
-            .toString();
-        }),
-      );
+            return (
+              ((proposalData.commands[0].airDropAmount - carryFeeAmount) *
+                balance) /
+              clubTokensMinted
+            )
+              .toFixed(0)
+              .toString();
+          }),
+        );
+        airDropAmountArray.unshift(carryFeeAmount.toString());
+        membersArray.unshift(
+          Web3.utils.toChecksumAddress(proposalData.createdBy),
+        );
+      } else {
+        airDropAmountArray = await Promise.all(
+          membersArray.map(async (member) => {
+            console.log("member", member);
+            const balance = await erc20DaoContract.nftBalance(
+              Web3.utils.toChecksumAddress(member),
+            );
 
-      airDropAmountArray = newMembersArray;
+            const clubTokensMinted = await erc20DaoContract.totalSupply();
+
+            return (
+              (proposalData.commands[0].airDropAmount * balance) /
+              clubTokensMinted
+            )
+              .toFixed(0)
+              .toString();
+          }),
+        );
+      }
+
       console.log("airDropAmountArray", airDropAmountArray);
 
       data = iface.encodeFunctionData("airDropToken", [
@@ -567,13 +598,35 @@ const ProposalDetail = () => {
       console.log(data);
     }
     if (proposalData.commands[0].executionId === 4) {
+      const erc20DaoContract = new SmartContract(
+        Erc20Dao,
+        daoAddress,
+        walletAddress,
+        USDC_CONTRACT_ADDRESS,
+        GNOSIS_TRANSACTION_URL,
+      );
+      console.log("erc20DaoContract", erc20DaoContract);
+
       let iface = new Interface(ABI);
       console.log(iface);
-      data = iface.encodeFunctionData("sendCustomToken", [
+
+      approvalData = iface.encodeFunctionData("approve", [
+        AIRDROP_ACTION_ADDRESS,
+        proposalData.commands[0].customTokenAmounts[0],
+      ]);
+      console.log("approvalData", approvalData);
+
+      data = iface.encodeFunctionData("airDropToken", [
         proposalData.commands[0].customToken,
         proposalData.commands[0].customTokenAmounts,
         proposalData.commands[0].customTokenAddresses,
       ]);
+
+      // data = iface.encodeFunctionData("sendCustomToken", [
+      //   proposalData.commands[0].customToken,
+      //   proposalData.commands[0].customTokenAmounts,
+      //   proposalData.commands[0].customTokenAddresses,
+      // ]);
       console.log(data);
     }
     // console.log("data", data);
@@ -588,6 +641,8 @@ const ProposalDetail = () => {
       pid,
       proposalData.commands[0].executionId === 0
         ? proposalData.commands[0].airDropToken
+        : proposalData.commands[0].executionId === 4
+        ? proposalData.commands[0].customToken
         : "",
       proposalStatus,
     );

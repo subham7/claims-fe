@@ -320,10 +320,7 @@ const ProposalActionForm = ({ formik, tokenData }) => {
                 if (selected.length === 0) {
                   return "Select a command";
                 }
-                console.log(
-                  tokenData.find((token) => token.token_address === selected)
-                    .name,
-                );
+
                 return tokenData.find(
                   (token) => token.token_address === selected,
                 )?.name;

@@ -205,7 +205,7 @@ const CreateProposalDialog = ({ open, setOpen, onClose, tokenData }) => {
             customTokenAmounts: [
               convertToWei(values.amountToSend, tokenDecimal),
             ],
-            customTokenAddresses: [values.customToken],
+            customTokenAddresses: [values.recieverAddress],
             usdcTokenSymbol: "USDC",
             usdcTokenDecimal: 6,
             usdcGovernanceTokenDecimal: 18,
