@@ -58,7 +58,7 @@ export default function Navbar2(props) {
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static">
+      <AppBar position="static" sx={{ position: "fixed" }}>
         <Toolbar>
           <IconButton
             color="inherit"
@@ -89,14 +89,14 @@ export default function Navbar2(props) {
               >
                 Deposit
               </Button>
-              <Button
+              {/* <Button
                 variant="primary"
                 color="primary"
                 sx={{ mr: 2, mt: 2 }}
                 onClick={handleFaucetRedirect}
               >
                 USDC Faucet
-              </Button>
+              </Button> */}
             </div>
           ) : null}
           {connecting ? (

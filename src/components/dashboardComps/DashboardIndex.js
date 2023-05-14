@@ -94,6 +94,10 @@ const DashboardIndex = () => {
     return state.gnosis.usdcContractAddress;
   });
 
+  const symbol = useSelector((state) => {
+    return state.club.clubData.symbol;
+  });
+
   console.log("Admin", GNOSIS_TRANSACTION_URL, USDC_CONTRACT_ADDRESS);
 
   let walletAddress;
@@ -329,7 +333,7 @@ const DashboardIndex = () => {
                     <Grid item mt={3} ml={5}>
                       <Grid container item direction="column">
                         <Typography variant="regularText4" fontSize={"21px"}>
-                          Treasury value
+                          Total assets
                         </Typography>
                         <Typography fontSize={"48px"} fontWeight="bold">
                           $
@@ -381,11 +385,16 @@ const DashboardIndex = () => {
                             <Typography
                               variant="regularText4"
                               fontSize={"21px"}
+                              sx={{ margin: "0px" }}
                             >
-                              My ownership share
+                              My share
                             </Typography>
                             {clubData.tokenType === "erc721" ? (
-                              <Typography fontSize={"48px"} fontWeight="bold">
+                              <Typography
+                                fontSize={"48px"}
+                                fontWeight="bold"
+                                sx={{ margin: "0px" }}
+                              >
                                 {balanceOfUser !== null &&
                                 clubTokenMinted !== null &&
                                 isNaN(
@@ -446,6 +455,13 @@ const DashboardIndex = () => {
                                     ).toFixed(2)}
                                 %
                               </Typography>
+                            )}
+                            {balanceOfUser === null || balanceOfUser === 0 ? (
+                              <Typography>
+                                {balanceOfUser} {symbol}
+                              </Typography>
+                            ) : (
+                              <Typography>0 {symbol}</Typography>
                             )}
                           </Box>
                         </Grid>

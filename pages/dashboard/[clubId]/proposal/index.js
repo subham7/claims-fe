@@ -121,7 +121,7 @@ const Proposal = () => {
 
   return (
     <Layout1 page={2}>
-      <Grid container spacing={3} paddingLeft={10} paddingTop={5}>
+      <Grid container spacing={3} paddingLeft={10} paddingTop={15}>
         <Grid item md={8}>
           <Grid
             container

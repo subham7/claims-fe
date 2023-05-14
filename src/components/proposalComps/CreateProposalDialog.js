@@ -104,7 +104,7 @@ const CreateProposalDialog = ({ open, setOpen, onClose, tokenData }) => {
   const proposal = useFormik({
     initialValues: {
       typeOfProposal: "survey",
-      proposalDeadline: dayjs(Date.now() + 300000),
+      proposalDeadline: dayjs(Date.now() + 3600 * 1000 * 24),
       proposalTitle: "",
       proposalDescription: "",
       optionList: [{ text: "Yes" }, { text: "No" }, { text: "Abstain" }],
@@ -447,7 +447,7 @@ const CreateProposalDialog = ({ open, setOpen, onClose, tokenData }) => {
                               disabled={
                                 proposal.values.optionList.indexOf(
                                   proposal.values.optionList[key],
-                                ) < 3
+                                ) < 2
                               }
                               onClick={(value) => {
                                 const list = [...proposal.values.optionList];

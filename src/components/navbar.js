@@ -81,7 +81,7 @@ export default function Navbar3(props) {
               alt="monogram"
             />
           </Box>
-          {props.faucet ? (
+          {/* {props.faucet ? (
             <Button
               variant="primary"
               color="primary"
@@ -90,7 +90,7 @@ export default function Navbar3(props) {
             >
               USDC Faucet
             </Button>
-          ) : null}
+          ) : null} */}
           {connecting ? (
             <Button sx={{ mr: 2, mt: 2 }} className={classes.navButton}>
               Connecting
