@@ -356,7 +356,7 @@ const NewArchERC20 = ({
                           )}
                         </Typography>
                       </Grid>
-                      <Grid item ml={1}>
+                      <Grid item ml={1} mt={1}>
                         {walletAddress ? (
                           daoDetails ? (
                             remainingDays > 0 ? (

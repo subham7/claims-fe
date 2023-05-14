@@ -50,6 +50,9 @@ import erc721DaoContractABI from "../../abis/newArch/erc721Dao.json";
 import factoryContractABI from "../../abis/newArch/factoryContract.json";
 import { convertFromWeiGovernance } from "../../utils/globalFunctions";
 import { NEW_FACTORY_ADDRESS } from "../../api";
+import { GiTwoCoins } from "react-icons/gi";
+import { IoColorPalette } from "react-icons/io5";
+import Image from "next/image";
 
 const DashboardIndex = () => {
   const clubData = useSelector((state) => {
@@ -146,6 +149,8 @@ const DashboardIndex = () => {
       const nftsData = await getNFTsByDaoAddress(daoAddress, NETWORK_HEX);
       console.log("NFTs by dao", nftsData);
       setNftData(nftsData.data);
+
+      console.log("NFTS data", nftsData.data);
     } catch (error) {
       console.log(error);
     }
@@ -291,8 +296,8 @@ const DashboardIndex = () => {
     <>
       <Layout1 page={1} depositUrl={depositLink}>
         {/* <Layout1 page={1} depositUrl={depositLink}> */}
-        <Grid container paddingLeft={10} paddingTop={15} spacing={1}>
-          <Grid item spacing={1} xs={9}>
+        <Grid container paddingLeft={8} paddingTop={13} spacing={3}>
+          <Grid item xs={9}>
             <Card className={classes.cardSharp1}>
               <Grid container spacing={2}>
                 <Grid item ml={3} mt={2}>
@@ -300,14 +305,14 @@ const DashboardIndex = () => {
                     src={
                       clubDetails.clubImageUrl ? clubDetails.clubImageUrl : null
                     }
-                    width="100vw"
+                    width="110px"
                     alt="profile_pic"
                     className={classes.profilePic}
                   />
                 </Grid>
                 <Grid item ml={1} mt={4}>
                   <Stack spacing={0}>
-                    <Typography variant="h4">
+                    <Typography variant="h3">
                       {clubData.name ? (
                         clubData.name
                       ) : (
@@ -318,7 +323,13 @@ const DashboardIndex = () => {
                         />
                       )}
                     </Typography>
-                    <Grid container item direction="row" paddingBottom={4}>
+                    <Grid
+                      container
+                      item
+                      direction="row"
+                      paddingBottom={4}
+                      mt={1}
+                    >
                       <Typography variant="regularText2" mr={1}>
                         {clubDetails.noOfMembers}
                       </Typography>
@@ -330,7 +341,7 @@ const DashboardIndex = () => {
               <Stack direction={{ xs: "column", sm: "row" }} spacing={3}>
                 <Grid item xs={12}>
                   <Card className={classes.firstCard}>
-                    <Grid item mt={3} ml={5}>
+                    <Grid item mt={4} ml={5}>
                       <Grid container item direction="column">
                         <Typography variant="regularText4" fontSize={"21px"}>
                           Total assets
@@ -372,7 +383,7 @@ const DashboardIndex = () => {
                       sx={{
                         position: "absolute",
                         bottom: 0,
-                        paddingTop: "4px",
+                        paddingTop: "px",
                       }}
                     />
                     <Grid container>
@@ -460,9 +471,7 @@ const DashboardIndex = () => {
                               <Typography>
                                 {balanceOfUser} {symbol}
                               </Typography>
-                            ) : (
-                              <Typography>0 {symbol}</Typography>
-                            )}
+                            ) : null}
                           </Box>
                         </Grid>
                         {/* <CardMedia    className={classes.media}    component=“img”    image=“/assets/images/card_illustration.png”    alt=“abstract background”    sx={{ position: “absolute”, bottom: 0 }}                     />   */}
@@ -481,7 +490,7 @@ const DashboardIndex = () => {
                   >
                     <Grid container item mt={8}>
                       <Typography className={classes.clubAssets}>
-                        Club Assets
+                        All Assets
                       </Typography>
                     </Grid>
                     {/* <Grid container mt={4}>
@@ -506,9 +515,17 @@ const DashboardIndex = () => {
                         />
                       </Grid>
                     </Grid> */}
-                    <Typography mt={5} mb={5} variant="subHeading">
-                      Tokens
-                    </Typography>
+                    <div
+                      style={{
+                        display: "flex",
+                        gap: "10px",
+                        alignItems: "flex-start",
+                      }}
+                    >
+                      <GiTwoCoins size={30} />
+                      <Typography variant="subHeading">Tokens</Typography>
+                    </div>
+
                     {tokenDetails.tokenPriceList ? (
                       tokenDetails.tokenPriceList.length ? (
                         //  if the tokens length is > 0 and if the token[0] (by default it will be Ether) is not equal to 0, then show the table
@@ -583,18 +600,27 @@ const DashboardIndex = () => {
                         </Grid>
                       )
                     ) : null}
-                    <Typography mt={16} mb={5} variant="subHeading">
-                      Collectibles
-                    </Typography>
-                    <Grid container>
+
+                    <div
+                      style={{
+                        display: "flex",
+                        gap: "10px",
+                        alignItems: "flex-start",
+                      }}
+                    >
+                      <IoColorPalette size={30} />
+                      <Typography variant="subHeading">Collectibles</Typography>
+                    </div>
+                    <Grid container width={"70vw"}>
                       {nftData ? (
                         nftData.length > 0 ? (
                           nftData.map((data, key) => (
-                            <Grid item m={1} key={key}>
+                            <Grid item m={1} key={key} gap={3}>
                               <CollectionCard
                                 metadata={data.metadata}
                                 tokenName={data.name}
                                 tokenSymbol={data.symbol}
+                                nftData={data}
                               />
                             </Grid>
                           ))
@@ -627,8 +653,12 @@ const DashboardIndex = () => {
                 <Grid>
                   <Grid>
                     <Grid item>
-                      <Typography variant="getStartedClub" fontSize={"36px"}>
-                        Get started with your club 👋
+                      <Typography
+                        variant="getStartedClub"
+                        fontSize={"36px"}
+                        color={"white"}
+                      >
+                        Docs to help you get started
                       </Typography>
                     </Grid>
                     <Grid item>
@@ -764,9 +794,7 @@ const DashboardIndex = () => {
               <Card className={classes.fourthCard}>
                 <Grid container m={2}>
                   <Grid item>
-                    <Typography className={classes.card2text1}>
-                      Proposals
-                    </Typography>
+                    <Typography fontSize={"24px"}>Recent Proposals</Typography>
                   </Grid>
                 </Grid>
                 {proposalData.length > 0 ? (
@@ -838,9 +866,9 @@ const DashboardIndex = () => {
                 ) : (
                   <Grid
                     container
-                    pt={10}
                     justifyContent="center"
                     alignItems="center"
+                    minHeight={"120px"}
                   >
                     <Grid item>
                       <Typography className={classes.card2text1}>
