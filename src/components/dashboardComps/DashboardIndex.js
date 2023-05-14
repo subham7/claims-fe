@@ -613,7 +613,7 @@ const DashboardIndex = () => {
                       <IoColorPalette size={30} />
                       <Typography variant="subHeading">Collectibles</Typography>
                     </div>
-                    <Grid container width={"70vw"}>
+                    <Grid container maxWidth={"70vw"}>
                       {nftData ? (
                         nftData.length > 0 ? (
                           nftData.map((data, key) => (
