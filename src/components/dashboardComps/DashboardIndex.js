@@ -37,7 +37,7 @@ import {
   getNFTs,
   getNFTsByDaoAddress,
 } from "../../api/assets";
-import { getProposal } from "../../api/proposal";
+import { getProposal, getProposalByDaoAddress } from "../../api/proposal";
 import { SmartContract } from "../../api/contract";
 import { subgraphQuery } from "../../utils/subgraphs";
 import {
@@ -156,15 +156,15 @@ const DashboardIndex = () => {
     }
   }, [NETWORK_HEX, daoAddress]);
 
-  //   const fetchActiveProposals = useCallback(async () => {
-  //     try {
-  //       const activeProposals = await getProposal(clubId, "active");
-  //       console.log("Proposals", activeProposals);
-  //       // setProposalData(activeProposals?.data);
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   }, [clubId]);
+  const fetchActiveProposals = useCallback(async () => {
+    try {
+      const activeProposals = await getProposalByDaoAddress(daoAddress);
+      console.log("Proposals", activeProposals);
+      setProposalData(activeProposals?.data);
+    } catch (error) {
+      console.log(error);
+    }
+  }, [daoAddress]);
 
   const handleCopy = () => {
     navigator.clipboard.writeText(
@@ -190,8 +190,8 @@ const DashboardIndex = () => {
     fetchClubDetails();
     fetchAssets();
     fetchNfts();
-    // fetchActiveProposals();
-  }, [fetchClubDetails, fetchNfts, fetchAssets]);
+    fetchActiveProposals();
+  }, [fetchClubDetails, fetchNfts, fetchAssets, fetchActiveProposals]);
 
   useEffect(() => {
     if (daoAddress) {
@@ -292,6 +292,8 @@ const DashboardIndex = () => {
     GNOSIS_TRANSACTION_URL,
   ]);
 
+  console.log("Proposal list", proposalData);
+
   return (
     <>
       <Layout1 page={1} depositUrl={depositLink}>
@@ -363,7 +365,7 @@ const DashboardIndex = () => {
                           component="img"
                           className={classes.media}
                           alt="ownershipshare"
-                          sx={{ position: "absolute", bottom: 0 }}
+                          sx={{ position: "sticky", zIndex: 0 }}
                         />
                       </Grid>
                     </Grid>
@@ -812,8 +814,8 @@ const DashboardIndex = () => {
                                       }
                                       sx={{ width: "100%" }}
                                     >
-                                      <Grid container direction="column">
-                                        <Grid item md={12}>
+                                      <Grid container mb={2} direction="column">
+                                        {/* <Grid item md={12}>
                                           <Typography
                                             className={classes.card5text1}
                                           >
@@ -824,7 +826,7 @@ const DashboardIndex = () => {
                                                 data.createdBy.length - 4,
                                               )}
                                           </Typography>
-                                        </Grid>
+                                        </Grid> */}
                                         <Grid item>
                                           <Typography
                                             className={classes.card5text2}
@@ -876,7 +878,7 @@ const DashboardIndex = () => {
                       </Typography>
                     </Grid>
                     {isAdmin ? (
-                      <Grid item pb={15}>
+                      <Grid item pb={4}>
                         <Button
                           variant="primary"
                           onClick={(e) => {

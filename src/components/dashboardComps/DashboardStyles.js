@@ -25,6 +25,8 @@ export const DashboardStyles = makeStyles({
   thirdCard: {
     width: "22vw",
     height: "351px",
+    background: "#121D38",
+    border: "1px solid #6475A3",
   },
   fifthCard: {
     width: "22vw",
@@ -32,7 +34,7 @@ export const DashboardStyles = makeStyles({
     background: "#121D38",
     border: "1px solid #6475A3",
     color: "white",
-    position: "relative",
+    // position: "relative",
   },
   cardOverlay: {
     position: "absolute",
@@ -98,7 +100,6 @@ export const DashboardStyles = makeStyles({
     fontSize: "20px",
     color: "#C1D3FF",
     opacity: "1",
-    
   },
   card2text2: {
     fontFamily: "Whyte",
@@ -231,7 +232,8 @@ export const DashboardStyles = makeStyles({
   },
   card5text2: {
     fontFamily: "Whyte",
-    fontSize: "22px",
+    fontSize: "20px",
+    fontWeight: "400",
     color: "#EFEFEF",
   },
   searchField: {
@@ -289,7 +291,7 @@ export const DashboardStyles = makeStyles({
   },
   docs: {
     "position": "absolute",
-    "bottom": "8px",
+    "top": "440px",
     "color": "white",
     "textDecoration": "underline",
     "fontSize": "18px",
