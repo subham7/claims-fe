@@ -220,7 +220,7 @@ const CreateProposalDialog = ({ open, setOpen, onClose, tokenData }) => {
         votingDuration: dayjs(values.proposalDeadline).unix(),
         votingOptions: values.optionList,
         commands: commands,
-        type: "action",
+        type: values.typeOfProposal,
         tokenType: clubData.tokenType,
         daoAddress: daoAddress,
       };
