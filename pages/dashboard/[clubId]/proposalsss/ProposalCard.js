@@ -268,7 +268,7 @@ const ProposalCard = ({
     fetchAirDropContractDetails();
   }, [fetchAirDropContractDetails]);
 
-  //   console.log("key in card", indexKey);
+  console.log("heyy", fetched);
   return (
     <CardActionArea sx={{ borderRadius: "10px" }}>
       <Card className={classes.mainCard}>
@@ -276,11 +276,11 @@ const ProposalCard = ({
           <Grid item ml={2} mr={2}>
             <Typography className={classes.cardFont}>
               Proposed by{" "}
-              {fetched
-                ? proposal.createdBy.substring(0, 6) +
-                  ".........." +
-                  proposal.createdBy.substring(proposal.createdBy.length - 4)
-                : null}{" "}
+              {proposal.createdBy.substring(0, 6) +
+                ".........." +
+                proposal.createdBy.substring(
+                  proposal.createdBy.length - 4,
+                )}{" "}
               on {new Date(String(proposal?.updateDate)).toLocaleDateString()}
             </Typography>
           </Grid>
@@ -294,73 +294,72 @@ const ProposalCard = ({
               justifyContent: "flex-end",
             }}
           >
-            {fetched ? (
-              <Grid
-                container
-                spacing={1}
-                sx={{
-                  display: "flex",
-                  justifyContent: "flex-end",
-                }}
-              >
-                <Grid item>
-                  <Chip
-                    className={classes.timeLeftChip}
-                    label={
-                      <Grid container>
-                        <Image src={tickerIcon} alt="ticker-icon" />
-                        <Typography ml={1}>
-                          {" "}
-                          {calculateDays(proposal.votingDuration) <= 0
-                            ? "Voting closed"
-                            : calculateDays(proposal.votingDuration) +
-                              " days left"}
-                        </Typography>
-                      </Grid>
-                    }
-                  />
-                </Grid>
-                <Grid item>
-                  <Chip
-                    className={
-                      proposal.type === "action"
-                        ? classes.actionChip
-                        : classes.surveyChip
-                    }
-                    label={
-                      <Grid container>
-                        {proposal.type === "action" ? (
-                          <Image src={actionIcon} alt="action-icon" />
-                        ) : (
-                          <Image src={surveyIcon} alt="survey-icon" />
-                        )}
-                        <Typography ml={1}>{proposal.type}</Typography>
-                      </Grid>
-                    }
-                  />
-                </Grid>
-                <Grid item>
-                  {" "}
-                  <Chip
-                    className={
-                      proposal.status === "active"
-                        ? classes.cardFontActive
-                        : proposal.status === "passed"
-                        ? classes.cardFontPassed
-                        : proposal.status === "executed"
-                        ? classes.cardFontExecuted
-                        : proposal.status === "failed"
-                        ? classes.cardFontFailed
-                        : classes.cardFontFailed
-                    }
-                    label={
-                      proposal.status.charAt(0).toUpperCase() +
-                      proposal.status.slice(1)
-                    }
-                  />
-                </Grid>
+            <Grid
+              container
+              spacing={1}
+              sx={{
+                display: "flex",
+                justifyContent: "flex-end",
+              }}
+            >
+              {console.log("heyy")}
+              <Grid item>
+                <Chip
+                  className={classes.timeLeftChip}
+                  label={
+                    <Grid container>
+                      <Image src={tickerIcon} alt="ticker-icon" />
+                      <Typography ml={1}>
+                        {" "}
+                        {calculateDays(proposal.votingDuration) <= 0
+                          ? "Voting closed"
+                          : calculateDays(proposal.votingDuration) +
+                            " days left"}
+                      </Typography>
+                    </Grid>
+                  }
+                />
               </Grid>
-            ) : null}
+              <Grid item>
+                <Chip
+                  className={
+                    proposal.type === "action"
+                      ? classes.actionChip
+                      : classes.surveyChip
+                  }
+                  label={
+                    <Grid container>
+                      {proposal.type === "action" ? (
+                        <Image src={actionIcon} alt="action-icon" />
+                      ) : (
+                        <Image src={surveyIcon} alt="survey-icon" />
+                      )}
+                      <Typography ml={1}>{proposal.type}</Typography>
+                    </Grid>
+                  }
+                />
+              </Grid>
+              <Grid item>
+                {" "}
+                <Chip
+                  className={
+                    proposal.status === "active"
+                      ? classes.cardFontActive
+                      : proposal.status === "passed"
+                      ? classes.cardFontPassed
+                      : proposal.status === "executed"
+                      ? classes.cardFontExecuted
+                      : proposal.status === "failed"
+                      ? classes.cardFontFailed
+                      : classes.cardFontFailed
+                  }
+                  label={
+                    proposal.status.charAt(0).toUpperCase() +
+                    proposal.status.slice(1)
+                  }
+                />
+              </Grid>
+            </Grid>
           </Grid>
         </Grid>
         <Grid container>
