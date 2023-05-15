@@ -179,7 +179,7 @@ const Test = () => {
                         <TableCell align="left" variant="tableBody">
                           {Number(
                             convertFromWeiGovernance(data.depositAmount, 6),
-                          ).toFixed(0)}{" "}
+                          ).toFixed(2)}{" "}
                           USDC
                         </TableCell>
                         <TableCell align="left" variant="tableBody">
