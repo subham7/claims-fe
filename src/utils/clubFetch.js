@@ -258,6 +258,7 @@ const ClubFetch = (Component) => {
       dispatch,
       USDC_CONTRACT_ADDRESS,
       GNOSIS_TRANSACTION_URL,
+      router,
     ]);
 
     useEffect(() => {
