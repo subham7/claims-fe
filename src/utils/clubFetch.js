@@ -154,7 +154,11 @@ const ClubFetch = (Component) => {
               USDC_CONTRACT_ADDRESS,
               GNOSIS_TRANSACTION_URL,
             );
+            console.log("erc20Contract", erc20Contract);
             const daoDetails = await erc20Contract.getERC20DAOdetails();
+            console.log("daoDetails", daoDetails);
+            const response = erc20Contract.balanceOf();
+            console.log("response", response);
             dispatch(
               addErc20ClubDetails({
                 quorum: daoDetails.quorum / 100,
@@ -165,30 +169,32 @@ const ClubFetch = (Component) => {
                 deployerAddress: daoDetails.deployerAddress,
               }),
             );
-            const response = erc20Contract.balanceOf();
 
-            response.then(
-              async (result) => {
-                const safeSdk = await getSafeSdk();
-                const ownerAddresses = await safeSdk.getOwners();
-                const ownerAddressesArray = ownerAddresses.map((value) =>
-                  Web3.utils.toChecksumAddress(value),
-                );
-                if (ownerAddressesArray.includes(walletAddress)) {
-                  dispatch(setAdminUser(true));
-                } else {
-                  if (result === "0") {
-                    dispatch(setMemberUser(false));
-                    router.push("/");
+            response
+              .then(
+                async (result) => {
+                  const safeSdk = await getSafeSdk();
+                  const ownerAddresses = await safeSdk.getOwners();
+                  const ownerAddressesArray = ownerAddresses.map((value) =>
+                    Web3.utils.toChecksumAddress(value),
+                  );
+                  if (ownerAddressesArray.includes(walletAddress)) {
+                    dispatch(setAdminUser(true));
                   } else {
-                    dispatch(setMemberUser(true));
+                    if (result === "0") {
+                      console.log("heree");
+                      dispatch(setMemberUser(false));
+                      router.push("/");
+                    } else {
+                      dispatch(setMemberUser(true));
+                    }
                   }
-                }
-              },
-              (error) => {
-                router.push("/");
-              },
-            );
+                },
+                (error) => {
+                  router.push("/");
+                },
+              )
+              .catch((err) => console.log(err));
           } else if (clubData.stations[0].tokenType === "erc721") {
             const erc721Contract = new SmartContract(
               Erc721Dao,
@@ -198,6 +204,9 @@ const ClubFetch = (Component) => {
               GNOSIS_TRANSACTION_URL,
             );
             const daoDetails = await erc721Contract.getERC721DAOdetails();
+            console.log("daoDetails", daoDetails);
+            const response = erc721Contract.balanceOf();
+            console.log("response", response);
             dispatch(
               addErc721ClubDetails({
                 quorum: daoDetails.quorum / 100,
@@ -211,31 +220,31 @@ const ClubFetch = (Component) => {
               }),
             );
 
-            const response = erc721Contract.balanceOf();
-
-            response.then(
-              async (result) => {
-                const safeSdk = await getSafeSdk();
-                const ownerAddresses = await safeSdk.getOwners();
-                const ownerAddressesArray = ownerAddresses.map((value) =>
-                  Web3.utils.toChecksumAddress(value),
-                );
-                if (ownerAddressesArray.includes(walletAddress)) {
-                  dispatch(setAdminUser(true));
-                } else {
-                  if (result === "0") {
-                    dispatch(setMemberUser(false));
-                    router.push("/");
+            response
+              .then(
+                async (result) => {
+                  const safeSdk = await getSafeSdk();
+                  const ownerAddresses = await safeSdk.getOwners();
+                  const ownerAddressesArray = ownerAddresses.map((value) =>
+                    Web3.utils.toChecksumAddress(value),
+                  );
+                  if (ownerAddressesArray.includes(walletAddress)) {
+                    dispatch(setAdminUser(true));
                   } else {
-                    dispatch(setMemberUser(true));
+                    if (result === "0") {
+                      dispatch(setMemberUser(false));
+                      router.push("/");
+                    } else {
+                      dispatch(setMemberUser(true));
+                    }
                   }
-                }
-              },
-              (error) => {
-                router.push("/");
-              },
-            ),
-              console.log(daoDetails);
+                },
+                (error) => {
+                  router.push("/");
+                },
+              )
+              .catch((err) => console.log(err));
+            console.log(daoDetails);
           }
         }
       } catch (error) {
@@ -251,7 +260,6 @@ const ClubFetch = (Component) => {
       dispatch,
       USDC_CONTRACT_ADDRESS,
       GNOSIS_TRANSACTION_URL,
-      router,
     ]);
 
     useEffect(() => {

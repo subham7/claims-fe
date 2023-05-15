@@ -217,6 +217,7 @@ const DashboardIndex = () => {
       }
     }
   }, [
+    FACTORY_CONTRACT_ADDRESS,
     GNOSIS_TRANSACTION_URL,
     USDC_CONTRACT_ADDRESS,
     daoAddress,
@@ -248,7 +249,6 @@ const DashboardIndex = () => {
       };
 
       const loadSmartContractData = async () => {
-        console.log(walletAddress);
         try {
           const erc20DaoContract = new SmartContract(
             erc20DaoContractABI,
@@ -258,9 +258,13 @@ const DashboardIndex = () => {
             GNOSIS_TRANSACTION_URL,
           );
           console.log("erc20DaoContract", erc20DaoContract);
-          const balance = await erc20DaoContract.balanceOf(walletAddress);
+          const balance = await erc20DaoContract.nftBalance(walletAddress);
+          //KEEP THIS CONSOLE
+          console.log(balance);
           setBalanceOfUser(balance);
           const clubTokensMinted = await erc20DaoContract.totalSupply();
+          //KEEP THIS CONSOLE
+          console.log("clubTokensMinted", clubTokensMinted);
           setClubTokenMinted(clubTokensMinted);
 
           setDepositLink(

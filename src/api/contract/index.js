@@ -367,6 +367,7 @@ export class SmartContract {
   }
 
   async getERC20DAOdetails() {
+    console.log("methods", this.contract?.methods);
     return this.contract?.methods.getERC20DAOdetails().call({
       from: this.walletAddress,
     });
@@ -886,6 +887,7 @@ export class SmartContract {
   }
 
   async totalSupply() {
+    console.log("methods", this.contract?.methods);
     return this.contract?.methods
       .totalSupply()
       .call({ from: this.walletAddress });
