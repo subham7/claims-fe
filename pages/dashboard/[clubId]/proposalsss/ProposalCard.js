@@ -183,7 +183,7 @@ const useStyles = makeStyles({
 const ProposalCard = ({
   proposal,
   indexKey,
-  fetched,
+
   executionTransaction,
 }) => {
   const classes = useStyles();
@@ -275,10 +275,10 @@ const ProposalCard = ({
           <Grid item ml={2} mr={2}>
             <Typography className={classes.cardFont}>
               Proposed by{" "}
-              {proposal.createdBy.substring(0, 6) +
+              {proposal?.createdBy.substring(0, 6) +
                 ".........." +
-                proposal.createdBy.substring(
-                  proposal.createdBy.length - 4,
+                proposal?.createdBy.substring(
+                  proposal?.createdBy.length - 4,
                 )}{" "}
               on {new Date(String(proposal?.updateDate)).toLocaleDateString()}
             </Typography>
@@ -309,9 +309,9 @@ const ProposalCard = ({
                       <Image src={tickerIcon} alt="ticker-icon" />
                       <Typography ml={1}>
                         {" "}
-                        {calculateDays(proposal.votingDuration) <= 0
+                        {calculateDays(proposal?.votingDuration) <= 0
                           ? "Voting closed"
-                          : calculateDays(proposal.votingDuration) +
+                          : calculateDays(proposal?.votingDuration) +
                             " days left"}
                       </Typography>
                     </Grid>
@@ -321,18 +321,18 @@ const ProposalCard = ({
               <Grid item>
                 <Chip
                   className={
-                    proposal.type === "action"
+                    proposal?.type === "action"
                       ? classes.actionChip
                       : classes.surveyChip
                   }
                   label={
                     <Grid container>
-                      {proposal.type === "action" ? (
+                      {proposal?.type === "action" ? (
                         <Image src={actionIcon} alt="action-icon" />
                       ) : (
                         <Image src={surveyIcon} alt="survey-icon" />
                       )}
-                      <Typography ml={1}>{proposal.type}</Typography>
+                      <Typography ml={1}>{proposal?.type}</Typography>
                     </Grid>
                   }
                 />
@@ -341,19 +341,19 @@ const ProposalCard = ({
                 {" "}
                 <Chip
                   className={
-                    proposal.status === "active"
+                    proposal?.status === "active"
                       ? classes.cardFontActive
-                      : proposal.status === "passed"
+                      : proposal?.status === "passed"
                       ? classes.cardFontPassed
-                      : proposal.status === "executed"
+                      : proposal?.status === "executed"
                       ? classes.cardFontExecuted
-                      : proposal.status === "failed"
+                      : proposal?.status === "failed"
                       ? classes.cardFontFailed
                       : classes.cardFontFailed
                   }
                   label={
-                    proposal.status.charAt(0).toUpperCase() +
-                    proposal.status.slice(1)
+                    proposal?.status.charAt(0).toUpperCase() +
+                    proposal?.status.slice(1)
                   }
                 />
               </Grid>
@@ -411,7 +411,7 @@ const ProposalCard = ({
                   <Chip
                     className={classes.timeLeftChip}
                     label={
-                      proposal.commands[0].airDropAmount ? (
+                      proposal?.commands[0].airDropAmount ? (
                         <Grid sx={{ display: "flex" }}>
                           {" "}
                           <Typography

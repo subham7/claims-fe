@@ -5,7 +5,7 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import EditIcon from "@mui/icons-material/Edit";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import { onboard, disconnectWallet } from "../utils/wallet";
+// import { onboard, disconnectWallet } from "../utils/wallet";
 import { useDispatch } from "react-redux";
 import jazzicon from "@metamask/jazzicon";
 import { useState } from "react";
@@ -74,19 +74,19 @@ export default function AccountButton(props) {
     setAnchorEl(null);
   };
 
-  const handleDisconnect = async () => {
-    const [primaryWallet] = onboard.state.get().wallets;
-    await onboard.disconnectWallet({ label: localStorage.getItem("label") });
-    await disconnectWallet(dispatch);
-    setJwtToken("");
-    setRefreshToken("");
-    setAnchorEl(null);
-    if (router.pathname === "/") {
-      router.reload();
-    } else {
-      router.push("/");
-    }
-  };
+  // const handleDisconnect = async () => {
+  //   const [primaryWallet] = onboard.state.get().wallets;
+  //   await onboard.disconnectWallet({ label: localStorage.getItem("label") });
+  //   await disconnectWallet(dispatch);
+  //   setJwtToken("");
+  //   setRefreshToken("");
+  //   setAnchorEl(null);
+  //   if (router.pathname === "/") {
+  //     router.reload();
+  //   } else {
+  //     router.push("/");
+  //   }
+  // };
 
   const generateJazzIcon = (account) => {
     if (account && !generated) {
@@ -127,10 +127,10 @@ export default function AccountButton(props) {
         anchorEl={anchorEl}
         open={open}
         onClose={handleClose}
-        onDisconnect={handleDisconnect}
+        // onDisconnect={handleDisconnect}
       >
         {menuItems && (
-          <MenuItem onClick={handleDisconnect} disableRipple>
+          <MenuItem disableRipple>
             <EditIcon />
             Disconnect
           </MenuItem>
