@@ -66,6 +66,17 @@ const Proposal = () => {
     return state.gnosis.adminUser;
   });
 
+  const isGovernanceERC20 = useSelector((state) => {
+    return state.club.erc20ClubDetails.isGovernanceActive;
+  });
+
+  const isGovernanceERC721 = useSelector((state) => {
+    return state.club.erc721ClubDetails.isGovernanceActive;
+  });
+
+  const isGovernanceActive =
+    tokenType === "erc20" ? isGovernanceERC20 : isGovernanceERC721;
+
   console.log("Proposal List", proposalList2);
 
   const handleClickOpen = () => {
@@ -184,7 +195,7 @@ const Proposal = () => {
                   </Select>
                 </Grid>
 
-                {isAdminUser && (
+                {isGovernanceActive ? (
                   <Grid item>
                     <Button
                       variant="contained"
@@ -197,7 +208,35 @@ const Proposal = () => {
                       Propose
                     </Button>
                   </Grid>
-                )}
+                ) : isAdminUser ? (
+                  <Grid item>
+                    <Button
+                      variant="contained"
+                      size="large"
+                      sx={{
+                        height: "80%",
+                      }}
+                      onClick={handleClickOpen}
+                    >
+                      Propose
+                    </Button>
+                  </Grid>
+                ) : null}
+
+                {/* {isAdminUser && (
+                  <Grid item>
+                    <Button
+                      variant="contained"
+                      size="large"
+                      sx={{
+                        height: "80%",
+                      }}
+                      onClick={handleClickOpen}
+                    >
+                      Propose
+                    </Button>
+                  </Grid>
+                )} */}
               </Grid>
             </Grid>
             <Grid container spacing={3}>
