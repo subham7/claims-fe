@@ -301,11 +301,11 @@ const App = () => {
                     sx={{ display: "flex", justifyContent: "flex-end" }}
                   >
                     <Button
-                      startIcon={<AddIcon fontSize="large" />}
+                      // startIcon={<AddIcon fontSize="large" />}
                       variant="primary"
                       onClick={handleCreateButtonClick}
                     >
-                      Create club
+                      Create new
                     </Button>
                   </Grid>
                 </Grid>

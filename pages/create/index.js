@@ -108,7 +108,7 @@ const Create = () => {
 
   const formikERC20Step2 = useFormik({
     initialValues: {
-      depositClose: dayjs(Date.now() + 300000),
+      depositClose: dayjs(Date.now() + 3600 * 1000 * 24),
       minDepositPerUser: "100",
       maxDepositPerUser: "1000",
       totalRaiseAmount: "10000",
@@ -365,7 +365,7 @@ const Create = () => {
                   ) : (
                     <Button
                       variant="wideButton"
-                      sx={{ marginTop: "2rem" }}
+                      sx={{ marginTop: "2rem", marginBottom: "6rem" }}
                       onClick={handleSubmit}
                     >
                       Next

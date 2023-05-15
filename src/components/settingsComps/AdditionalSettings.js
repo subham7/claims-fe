@@ -156,13 +156,16 @@ const AdditionalSettings = ({
 
       <Stack spacing={3} ml={3}>
         <Divider />
-        <Grid container>
+        <Grid
+          container
+          sx={{ display: "flex", justifyContent: "space-between" }}
+        >
           <Grid item>
             <Typography variant="settingText">Club contract address</Typography>
           </Grid>
           <Grid
-            container
-            sx={{ display: "flex", justifyContent: "flex-end" }}
+            // container
+            sx={{ display: "flex", alignItems: "center" }}
             spacing={1}
           >
             <Grid item>
@@ -209,13 +212,20 @@ const AdditionalSettings = ({
       </Stack>
 
       <Stack spacing={1} ml={3}>
-        <Grid container>
+        <Grid
+          container
+          py={2}
+          sx={{ display: "flex", justifyContent: "space-between" }}
+        >
           <Grid item mt={3}>
             <Typography variant="settingText">Owner fees</Typography>
           </Grid>
           <Grid
-            container
-            sx={{ display: "flex", justifyContent: "flex-end" }}
+            sx={{
+              display: "flex",
+              justifyContent: "flex-end",
+              alignItems: "center",
+            }}
             spacing={1}
           >
             <Grid mr={4}>
@@ -242,13 +252,17 @@ const AdditionalSettings = ({
       </Stack>
 
       <Stack spacing={1} ml={3}>
-        <Grid container>
+        <Grid
+          container
+          py={2}
+          sx={{ display: "flex", justifyContent: "space-between" }}
+        >
           <Grid item mt={3}>
             <Typography variant="settingText">Deposit Time</Typography>
           </Grid>
           <Grid
-            container
-            sx={{ display: "flex", justifyContent: "flex-end" }}
+            // container
+            sx={{ display: "flex", alignItems: "center" }}
             spacing={1}
           >
             <Grid mr={4}>

@@ -53,14 +53,14 @@ const SettingsInfo = ({
           <Grid item md={9}>
             <Card className={classes.cardRegular}>
               <Grid container spacing={2}>
-                <Grid item mt={3} ml={3}>
+                {/* <Grid item mt={3} ml={3}>
                   <img
                     src={daoDetails.daoImage ?? null}
                     width="100vw"
                     alt="profile_pic"
                   />
-                </Grid>
-                <Grid item ml={1} mt={4} mb={7}>
+                </Grid> */}
+                <Grid item ml={4} mt={4} mb={7}>
                   <Stack spacing={0}>
                     <Typography variant="h4">
                       {daoDetails.daoName ? daoDetails.daoName : null}

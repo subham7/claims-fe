@@ -296,39 +296,41 @@ const TokenGating = () => {
         )}
       </div>
 
-      <div className={classes.switchContainer}>
-        <div className={classes.match}>
-          <p>Match</p>
-          <Switch
-            checked={
-              fetchedDetails &&
-              !tokensList.length &&
-              fetchedDetails.operator == 0
-                ? false
-                : fetchedDetails.operator == 1
-                ? true
-                : checked
-            }
-            onChange={(e) => {
-              console.log(e.target.checked);
-              setChecked(e.target.checked);
-            }}
-            checkedIcon={
-              <div
-                style={{
-                  background: "#C64988",
-                  height: "25px",
-                  width: "25px",
-                  borderRadius: "100px",
-                }}
-              ></div>
-            }
-          />
-          <p>any</p>
-        </div>
+      {isAdminUser && (
+        <div className={classes.switchContainer}>
+          <div className={classes.match}>
+            <p>Match</p>
+            <Switch
+              checked={
+                fetchedDetails &&
+                !tokensList.length &&
+                fetchedDetails.operator == 0
+                  ? false
+                  : fetchedDetails.operator == 1
+                  ? true
+                  : checked
+              }
+              onChange={(e) => {
+                console.log(e.target.checked);
+                setChecked(e.target.checked);
+              }}
+              checkedIcon={
+                <div
+                  style={{
+                    background: "#C64988",
+                    height: "25px",
+                    width: "25px",
+                    borderRadius: "100px",
+                  }}
+                ></div>
+              }
+            />
+            <p>any</p>
+          </div>
 
-        <p>condition(s)</p>
-      </div>
+          <p>condition(s)</p>
+        </div>
+      )}
 
       {isAdminUser ? (
         <button

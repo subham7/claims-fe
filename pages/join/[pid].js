@@ -18,6 +18,7 @@ import { subgraphQuery } from "../../src/utils/subgraphs";
 import { QUERY_ALL_MEMBERS } from "../../src/api/graphql/queries";
 import { useSelector } from "react-redux";
 import ClubFetch from "../../src/utils/clubFetch";
+import { Backdrop, CircularProgress } from "@mui/material";
 
 const Join = () => {
   const [daoDetails, setDaoDetails] = useState({
@@ -48,6 +49,7 @@ const Join = () => {
     useState(false);
   const [isTokenGated, setIsTokenGated] = useState(false);
   const [members, setMembers] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const [{ wallet }] = useConnectWallet();
   const router = useRouter();
@@ -66,6 +68,10 @@ const Join = () => {
     return state.gnosis.transactionUrl;
   });
 
+  const TOKEN_TYPE = useSelector((state) => {
+    return state.club.clubData.tokenType;
+  });
+
   const USDC_CONTRACT_ADDRESS = useSelector((state) => {
     return state.gnosis.usdcContractAddress;
   });
@@ -79,6 +85,7 @@ const Join = () => {
    */
   const fetchErc20ContractDetails = useCallback(async () => {
     try {
+      setLoading(true);
       const factoryContract = new SmartContract(
         factoryContractABI,
         FACTORY_CONTRACT_ADDRESS,
@@ -129,8 +136,10 @@ const Join = () => {
               factoryData.pricePerToken,
           });
       }
+      setLoading(false);
     } catch (error) {
       console.log(error);
+      setLoading(false);
     }
   }, [
     FACTORY_CONTRACT_ADDRESS,
@@ -145,6 +154,7 @@ const Join = () => {
    */
   const fetchErc721ContractDetails = useCallback(async () => {
     try {
+      setLoading(true);
       console.log(factoryContractABI, FACTORY_CONTRACT_ADDRESS);
       const factoryContract = new SmartContract(
         factoryContractABI,
@@ -206,10 +216,13 @@ const Join = () => {
           });
         }
       }
+      setLoading(false);
     } catch (error) {
       console.log(error);
+      setLoading(false);
     }
   }, [
+    FACTORY_CONTRACT_ADDRESS,
     GNOSIS_TRANSACTION_URL,
     USDC_CONTRACT_ADDRESS,
     daoAddress,
@@ -221,17 +234,20 @@ const Join = () => {
    */
   const fetchDataFromApi = useCallback(async () => {
     try {
+      setLoading(true);
       const data = await fetchClubbyDaoAddress(daoAddress);
       console.log(data?.data[0]?.tokenType);
       setTokenType(data?.data[0]?.tokenType);
+      setLoading(false);
     } catch (error) {
       console.log(error);
+      setLoading(false);
     }
   }, [daoAddress]);
 
   const fetchTokenGatingDetials = useCallback(async () => {
     try {
-      // setLoading(true);
+      setLoading(true);
       const factoryContract = new SmartContract(
         FactoryContractABI,
         FACTORY_CONTRACT_ADDRESS,
@@ -291,12 +307,13 @@ const Join = () => {
           setIsEligibleForTokenGating(false);
         }
       }
-      // setLoading(false);
+      setLoading(false);
     } catch (error) {
       console.log(error);
-      // setLoading(false);
+      setLoading(false);
     }
   }, [
+    FACTORY_CONTRACT_ADDRESS,
     walletAddress,
     USDC_CONTRACT_ADDRESS,
     GNOSIS_TRANSACTION_URL,
@@ -321,6 +338,7 @@ const Join = () => {
 
   useEffect(() => {
     try {
+      setLoading(true);
       const fetchData = async () => {
         if (daoAddress) {
           const data = await subgraphQuery(
@@ -332,8 +350,10 @@ const Join = () => {
         }
       };
       fetchData();
+      setLoading(false);
     } catch (error) {
       console.log(error);
+      setLoading(false);
     }
   }, [SUBGRAPH_URL, daoAddress]);
 
@@ -347,14 +367,21 @@ const Join = () => {
           daoDetails={daoDetails}
           members={members}
         />
-      ) : (
+      ) : tokenType === "erc721" ? (
         <NewArchERC721
           isTokenGated={isTokenGated}
           isEligibleForTokenGating={isEligibleForTokenGating}
           erc721DaoAddress={daoAddress}
           daoDetails={daoDetails}
         />
-      )}
+      ) : null}
+
+      <Backdrop
+        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={loading}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </Layout2>
   );
 };

@@ -108,10 +108,10 @@ const CreateProposalDialog = ({ open, setOpen, onClose, tokenData }) => {
   const proposal = useFormik({
     initialValues: {
       typeOfProposal: "survey",
-      proposalDeadline: dayjs(Date.now() + 300000),
+      proposalDeadline: dayjs(Date.now() + 3600 * 1000 * 24),
       proposalTitle: "",
       proposalDescription: "",
-      optionList: [{ text: "yes" }, { text: "no" }],
+      optionList: [{ text: "Yes" }, { text: "No" }, { text: "Abstain" }],
       actionCommand: "",
       airdropToken: tokenData ? tokenData[0]?.tokenAddress : "",
       amountToAirdrop: 0,
@@ -224,7 +224,7 @@ const CreateProposalDialog = ({ open, setOpen, onClose, tokenData }) => {
         votingDuration: dayjs(values.proposalDeadline).unix(),
         votingOptions: values.optionList,
         commands: commands,
-        type: "action",
+        type: values.typeOfProposal,
         tokenType: clubData.tokenType,
         daoAddress: daoAddress,
       };

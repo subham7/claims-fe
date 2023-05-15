@@ -357,7 +357,7 @@ const NewArchERC20 = ({
                           )}
                         </Typography>
                       </Grid>
-                      <Grid item ml={1}>
+                      <Grid item ml={1} mt={1}>
                         {walletAddress ? (
                           daoDetails ? (
                             remainingDays > 0 ? (
@@ -637,7 +637,7 @@ const NewArchERC20 = ({
                       mb={4}
                       className={classes.JoinText}
                     >
-                      <Typography variant="h4">Join this Club</Typography>
+                      <Typography variant="h4">Join this Station</Typography>
                     </Grid>
                     <Divider />
                     <Grid

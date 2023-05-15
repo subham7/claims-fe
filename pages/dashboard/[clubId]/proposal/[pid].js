@@ -893,7 +893,34 @@ const ProposalDetail = () => {
                       proposalData?.status === "active" ? (
                         <>
                           {checkUserVoted() ? (
-                            "asfj"
+                            <Card sx={{ width: "100%" }}>
+                              <Grid
+                                container
+                                direction="column"
+                                justifyContent="center"
+                                alignItems="center"
+                                mt={10}
+                                mb={10}
+                              >
+                                <Grid item mt={0.5}>
+                                  <CheckCircleRoundedIcon
+                                    className={classes.mainCardButtonSuccess}
+                                  />
+                                </Grid>
+                                <Grid item mt={0.5}>
+                                  <Typography
+                                    className={classes.successfulMessageText}
+                                  >
+                                    Successfully voted
+                                  </Typography>
+                                </Grid>
+                                <Grid item mt={0.5}>
+                                  <Typography className={classes.listFont2}>
+                                    {/* Voted for */}
+                                  </Typography>
+                                </Grid>
+                              </Grid>
+                            </Card>
                           ) : (
                             <Card>
                               <Typography className={classes.cardFont1}>
@@ -1082,9 +1109,191 @@ const ProposalDetail = () => {
                       ) : (
                         <></>
                       )
-                    ) : (
-                      <></>
-                    )}
+                    ) : proposalData?.type === "survey" ? (
+                      proposalData?.type === "survey" ? (
+                        proposalData?.status === "active" ? (
+                          checkUserVoted(pid) ? (
+                            <Card sx={{ width: "100%" }}>
+                              <Grid
+                                container
+                                direction="column"
+                                justifyContent="center"
+                                alignItems="center"
+                                mt={10}
+                                mb={10}
+                              >
+                                <Grid item mt={0.5}>
+                                  <CheckCircleRoundedIcon
+                                    className={classes.mainCardButtonSuccess}
+                                  />
+                                </Grid>
+                                <Grid item mt={0.5}>
+                                  <Typography
+                                    className={classes.successfulMessageText}
+                                  >
+                                    Successfully voted
+                                  </Typography>
+                                </Grid>
+                                <Grid item mt={0.5}>
+                                  <Typography className={classes.listFont2}>
+                                    {/* Voted for */}
+                                  </Typography>
+                                </Grid>
+                              </Grid>
+                            </Card>
+                          ) : (
+                            <Card>
+                              <Typography className={classes.cardFont1}>
+                                Cast your vote
+                              </Typography>
+                              <Divider sx={{ marginTop: 2, marginBottom: 3 }} />
+                              <Stack spacing={2}>
+                                {fetched
+                                  ? proposalData?.votingOptions.map(
+                                      (data, key) => {
+                                        return (
+                                          <CardActionArea
+                                            className={classes.mainCard}
+                                            key={key}
+                                            disabled={voted}
+                                          >
+                                            <Card
+                                              className={
+                                                cardSelected == key
+                                                  ? classes.mainCardSelected
+                                                  : classes.mainCard
+                                              }
+                                              onClick={(e) => {
+                                                setCastVoteOption(
+                                                  data.votingOptionId,
+                                                );
+                                                setCardSelected(key);
+                                              }}
+                                            >
+                                              <Grid
+                                                container
+                                                item
+                                                justifyContent="center"
+                                                alignItems="center"
+                                              >
+                                                <Typography
+                                                  className={classes.cardFont1}
+                                                >
+                                                  {data.text}{" "}
+                                                </Typography>
+                                              </Grid>
+                                            </Card>
+                                          </CardActionArea>
+                                        );
+                                      },
+                                    )
+                                  : null}
+                                <CardActionArea
+                                  className={classes.mainCard}
+                                  disabled={voted}
+                                >
+                                  <Card
+                                    className={
+                                      voted
+                                        ? classes.mainCardButtonSuccess
+                                        : classes.mainCardButton
+                                    }
+                                    onClick={submitVote}
+                                  >
+                                    <Grid
+                                      container
+                                      justifyContent="center"
+                                      alignItems="center"
+                                    >
+                                      {voted ? (
+                                        <Grid item mt={0.5}>
+                                          <CheckCircleRoundedIcon />
+                                        </Grid>
+                                      ) : (
+                                        <Grid item></Grid>
+                                      )}
+                                      <Grid item>
+                                        {voted ? (
+                                          <Typography
+                                            className={classes.cardFont1}
+                                          >
+                                            Successfully voted
+                                          </Typography>
+                                        ) : (
+                                          <Typography
+                                            className={classes.cardFont1}
+                                          >
+                                            Vote now
+                                          </Typography>
+                                        )}
+                                      </Grid>
+                                    </Grid>
+                                  </Card>
+                                </CardActionArea>
+                              </Stack>
+                            </Card>
+                          )
+                        ) : proposalData[0].status === "failed" ? (
+                          <Card sx={{ width: "100%" }}>
+                            <Grid
+                              container
+                              direction="column"
+                              justifyContent="center"
+                              alignItems="center"
+                              mt={10}
+                              mb={10}
+                            >
+                              <Grid item mt={0.5}>
+                                <CloseIcon
+                                  className={classes.mainCardButtonError}
+                                />
+                              </Grid>
+                              <Grid item mt={0.5}>
+                                <Typography
+                                  className={classes.successfulMessageText}
+                                >
+                                  Voting Closed
+                                </Typography>
+                              </Grid>
+                              <Grid item mt={0.5}>
+                                <Typography className={classes.listFont2}>
+                                  {/* Voted for */}
+                                </Typography>
+                              </Grid>
+                            </Grid>
+                          </Card>
+                        ) : proposalData[0].status === "closed" ? (
+                          <Card sx={{ width: "100%" }}>
+                            <Grid
+                              container
+                              direction="column"
+                              justifyContent="center"
+                              alignItems="center"
+                              mt={10}
+                              mb={10}
+                            >
+                              <Grid item mt={0.5}>
+                                <CloseIcon
+                                  className={classes.mainCardButtonError}
+                                />
+                              </Grid>
+                              <Grid item mt={0.5}>
+                                <Typography
+                                  className={classes.successfulMessageText}
+                                >
+                                  Voting Closed
+                                </Typography>
+                              </Grid>
+                              <Grid item mt={0.5}>
+                                <Typography className={classes.listFont2}>
+                                  {/* Voted for */}
+                                </Typography>
+                              </Grid>
+                            </Grid>
+                          </Card>
+                        ) : null
+                      ) : null
+                    ) : null}
                   </Grid>
                 </Grid>
               </>

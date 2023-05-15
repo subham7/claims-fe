@@ -414,7 +414,7 @@
 //       ) {
 //         setTxHash("");
 //       } else {
-//         txHash = result.data[0].txHash;
+//         // txHash = result.data[0].txHash;
 //         setTxHash(result.data[0].txHash);
 //         const safeService = await getSafeService();
 //         const tx = await safeService.getTransaction(result.data[0].txHash);
@@ -2179,12 +2179,10 @@
 
 // export default ClubFetch(ProposalDetail);
 
-import React from 'react'
+import React from "react";
 
-const ProposalDetail  = () => {
-  return (
-    <div>const ProposalDetail </div>
-  )
-}
+const ProposalDetail = () => {
+  return <div>const ProposalDetail </div>;
+};
 
-export default  ProposalDetail 
+export default ProposalDetail;
