@@ -32,10 +32,20 @@ const polygonMainnet = {
 const chains = [ethereumMainnet, ethereumGoerli, polygonMainnet];
 const wallets = [injectedModule()];
 
+const customTheme = {
+  "--w3o-background-color": "#111d38",
+  "--w3o-foreground-color": "#333",
+  "--w3o-text-color": "#fff",
+  "--w3o-border-color": "#ccc",
+  "--w3o-action-color": "#007bff",
+  "--w3o-border-radius": "24px",
+};
+
 export const web3Onboard = init({
   connect: {
     autoConnectLastWallet: true,
   },
+  theme: customTheme,
   wallets,
   chains,
   appMetadata: {
