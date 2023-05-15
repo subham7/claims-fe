@@ -600,7 +600,7 @@ const DashboardIndex = () => {
                                         align="left"
                                         variant="tableBody"
                                       >
-                                        ${data.usd.usdValue}
+                                        ${data.usd.usdValue.toFixed(2)}
                                       </TableCell>
                                     </TableRow>
                                   );

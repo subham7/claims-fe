@@ -481,15 +481,16 @@ const SettingsInfo = ({
                         </Typography>
                         <Typography variant="p" className={classes.valuesStyle}>
                           {walletAddress ? (
-                            convertFromWeiGovernance(
-                              daoDetails.clubTokensMinted,
-                              daoDetails.decimals,
-                            ) *
+                            (
+                              convertFromWeiGovernance(
+                                daoDetails.clubTokensMinted,
+                                daoDetails.decimals,
+                              ) *
                               convertFromWeiGovernance(
                                 daoDetails.pricePerToken,
                                 erc20TokenDetails.tokenDecimal,
-                              ) +
-                            " $USDC"
+                              )
+                            ).toFixed(2) + " $USDC"
                           ) : (
                             <Skeleton
                               variant="rectangular"
