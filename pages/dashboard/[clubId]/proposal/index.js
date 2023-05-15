@@ -222,21 +222,6 @@ const Proposal = () => {
                     </Button>
                   </Grid>
                 ) : null}
-
-                {/* {isAdminUser && (
-                  <Grid item>
-                    <Button
-                      variant="contained"
-                      size="large"
-                      sx={{
-                        height: "80%",
-                      }}
-                      onClick={handleClickOpen}
-                    >
-                      Propose
-                    </Button>
-                  </Grid>
-                )} */}
               </Grid>
             </Grid>
             <Grid container spacing={3}>
