@@ -62,6 +62,10 @@ const Proposal = () => {
     return state.proposal.proposalList;
   });
 
+  const tokenType = useSelector((state) => {
+    return state.club.clubData.tokenType;
+  });
+
   const isAdminUser = useSelector((state) => {
     return state.gnosis.adminUser;
   });
