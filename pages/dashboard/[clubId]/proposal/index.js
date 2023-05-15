@@ -16,8 +16,9 @@ import { useRouter } from "next/router";
 import ProposalCard from "../proposalsss/ProposalCard";
 import { getAssetsByDaoAddress } from "../../../../src/api/assets";
 import ClubFetch from "../../../../src/utils/clubFetch";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { makeStyles } from "@mui/styles";
+import { setProposalList } from "../../../../src/redux/reducers/proposal";
 
 const useStyles = makeStyles({
   noProposal_heading: {
@@ -43,6 +44,7 @@ const useStyles = makeStyles({
 
 const Proposal = () => {
   const router = useRouter();
+  const dispatch = useDispatch();
   const { clubId: daoAddress } = router.query;
   const classes = useStyles();
 
@@ -50,7 +52,6 @@ const Proposal = () => {
     proposalDisplayOptions[0].type,
   );
 
-  const [proposalList, setProposalList] = useState([]);
   const [open, setOpen] = useState(false);
   const [tokenData, setTokenData] = useState([]);
 
@@ -58,7 +59,7 @@ const Proposal = () => {
     return state.gnosis.networkHex;
   });
 
-  const proposalList2 = useSelector((state) => {
+  const proposalList = useSelector((state) => {
     return state.proposal.proposalList;
   });
 
@@ -80,8 +81,6 @@ const Proposal = () => {
 
   const isGovernanceActive =
     tokenType === "erc20" ? isGovernanceERC20 : isGovernanceERC721;
-
-  console.log("Proposal List", proposalList2);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -116,7 +115,7 @@ const Proposal = () => {
     const data = await fetchProposals(daoAddress, type);
 
     console.log(data);
-    setProposalList(data);
+    dispatch(setProposalList(data));
   };
 
   const handleFilterChange = (event) => {
@@ -229,46 +228,26 @@ const Proposal = () => {
               </Grid>
             </Grid>
             <Grid container spacing={3}>
-              {(proposalList?.length > 0 || proposalList2?.length > 0) &&
-              proposalList2 !== null
-                ? proposalList2.map((proposal, key) => {
-                    return (
-                      <Grid
-                        item
-                        key={proposal.id}
-                        onClick={(e) => {
-                          handleProposalClick(proposalList2[key]);
-                        }}
-                        md={12}
-                      >
-                        <ProposalCard
-                          proposal={proposal}
-                          indexKey={key}
-                          // fetched={fetched}
-                        />
-                      </Grid>
-                    );
-                  })
-                : proposalList.map((proposal, key) => {
-                    return (
-                      <Grid
-                        item
-                        key={proposal.id}
-                        onClick={(e) => {
-                          handleProposalClick(proposalList[key]);
-                        }}
-                        md={12}
-                      >
-                        <ProposalCard
-                          proposal={proposal}
-                          indexKey={key}
-                          // fetched={fetched}
-                        />
-                      </Grid>
-                    );
-                  })}
-
-              {!proposalList?.length && !proposalList2?.length && (
+              {proposalList?.length > 0 ? (
+                proposalList.map((proposal, key) => {
+                  return (
+                    <Grid
+                      item
+                      key={proposal.id}
+                      onClick={(e) => {
+                        handleProposalClick(proposalList[key]);
+                      }}
+                      md={12}
+                    >
+                      <ProposalCard
+                        proposal={proposal}
+                        indexKey={key}
+                        // fetched={fetched}
+                      />
+                    </Grid>
+                  );
+                })
+              ) : (
                 <div className={classes.noProposal}>
                   <p className={classes.noProposal_heading}>
                     No Proposals found

@@ -3,14 +3,12 @@ import { createSlice } from "@reduxjs/toolkit";
 export const slice = createSlice({
   name: "proposal",
   initialState: {
-    proposalList: null,
-    
+    proposalList: [],
   },
   reducers: {
     setProposalList: (state, action) => {
       state.proposalList = action.payload;
     },
-    
   },
 });
 
