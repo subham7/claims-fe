@@ -34,7 +34,7 @@ const wallets = [injectedModule()];
 
 const customTheme = {
   "--w3o-background-color": "#111d38",
-  "--w3o-foreground-color": "#333",
+  "--w3o-foreground-color": "#111d38",
   "--w3o-text-color": "#fff",
   "--w3o-border-color": "#ccc",
   "--w3o-action-color": "#007bff",
