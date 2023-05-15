@@ -93,6 +93,10 @@ const CreateProposalDialog = ({ open, setOpen, onClose, tokenData }) => {
     return state.gnosis.transactionUrl;
   });
 
+  const NETWORK_HEX = useSelector((state) => {
+    return state.gnosis.networkHex;
+  });
+
   const [loaderOpen, setLoaderOpen] = useState(false);
   const [openSnackBar, setOpenSnackBar] = useState(false);
   const [failed, setFailed] = useState(false);
@@ -229,7 +233,7 @@ const CreateProposalDialog = ({ open, setOpen, onClose, tokenData }) => {
         daoAddress: daoAddress,
       };
 
-      const createRequest = createProposal(payload);
+      const createRequest = createProposal(payload, NETWORK_HEX);
       createRequest.then(async (result) => {
         if (result.status !== 201) {
           setOpenSnackBar(true);

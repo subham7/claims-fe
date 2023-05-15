@@ -416,7 +416,7 @@ const ProposalDetail = () => {
       clubId: daoAddress,
       daoAddress: daoAddress,
     };
-    const voteSubmit = castVote(payload);
+    const voteSubmit = castVote(payload, NETWORK_HEX);
     voteSubmit.then((result) => {
       if (result.status !== 201) {
         setVoted(false);
