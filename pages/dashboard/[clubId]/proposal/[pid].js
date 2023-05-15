@@ -715,14 +715,14 @@ const ProposalDetail = () => {
               if (result.status !== 200) {
                 setExecuted(false);
                 setOpenSnackBar(true);
-                setMessage("MintGT execution status update failed!");
+                setMessage("execution status update failed!");
                 setFailed(true);
                 setLoaderOpen(false);
               } else {
                 fetchData();
                 setExecuted(true);
                 setOpenSnackBar(true);
-                setMessage("MintGT execution successful!");
+                setMessage("execution successful!");
                 setFailed(false);
                 setLoaderOpen(false);
               }
@@ -733,7 +733,7 @@ const ProposalDetail = () => {
           console.log(error);
           setExecuted(false);
           setOpenSnackBar(true);
-          setMessage("MintGT execution failed!");
+          setMessage("execution failed!");
           setFailed(true);
           setLoaderOpen(false);
         },
@@ -742,6 +742,8 @@ const ProposalDetail = () => {
       await response
         .then(async (result) => {
           setSigned(true);
+
+          isOwner();
           setLoaderOpen(false);
         })
         .catch((err) => {
@@ -1052,7 +1054,7 @@ const ProposalDetail = () => {
                                   <Grid item></Grid>
                                 )}
 
-                                {executed ? (
+                                {executed && signed ? (
                                   <Grid item>
                                     <Typography className={classes.cardFont1}>
                                       Executed Successfully

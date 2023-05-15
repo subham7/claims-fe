@@ -55,6 +55,7 @@ const ProposalExecutionInfo = ({
         );
 
         const decimal = await airdropContract.decimals();
+        console.log("decimals", decimal);
         const symbol = await airdropContract.obtainSymbol();
 
         setTokenDetails({
