@@ -18,7 +18,6 @@ import SingleToken from "./SingleToken";
 import { SmartContract } from "../../api/contract";
 import Web3 from "web3";
 import { useConnectWallet } from "@web3-onboard/react";
-import { NEW_FACTORY_ADDRESS } from "../../api";
 import { useRouter } from "next/router";
 import {
   convertFromWeiGovernance,
@@ -55,6 +54,10 @@ const TokenGating = () => {
     return state.gnosis.adminUser;
   });
 
+  const FACTORY_CONTRACT_ADDRESS = useSelector((state) => {
+    return state.gnosis.factoryContractAddress;
+  });
+
   let walletAddress;
   const router = useRouter();
   const classes = TokenGatingStyle();
@@ -86,7 +89,7 @@ const TokenGating = () => {
       setLoading(true);
       const factoryContract = new SmartContract(
         FactoryContractABI,
-        NEW_FACTORY_ADDRESS,
+        FACTORY_CONTRACT_ADDRESS,
         walletAddress,
         USDC_CONTRACT_ADDRESS,
         GNOSIS_TRANSACTION_URL,
@@ -145,7 +148,7 @@ const TokenGating = () => {
       setLoading(true);
       const factoryContract = new SmartContract(
         FactoryContractABI,
-        NEW_FACTORY_ADDRESS,
+        FACTORY_CONTRACT_ADDRESS,
         walletAddress,
         USDC_CONTRACT_ADDRESS,
         GNOSIS_TRANSACTION_URL,

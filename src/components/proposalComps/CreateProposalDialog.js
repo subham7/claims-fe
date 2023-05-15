@@ -40,7 +40,6 @@ import { useDispatch, useSelector } from "react-redux";
 import factoryContractABI from "../../abis/newArch/factoryContract.json";
 import { convertFromWeiGovernance } from "../../utils/globalFunctions";
 import { SmartContract } from "../../api/contract";
-import { NEW_FACTORY_ADDRESS } from "../../api";
 import { setProposalList } from "../../redux/reducers/proposal";
 
 const useStyles = makeStyles({
@@ -74,6 +73,11 @@ const CreateProposalDialog = ({ open, setOpen, onClose, tokenData }) => {
   const walletAddress = Web3.utils.toChecksumAddress(
     wallet?.accounts[0].address,
   );
+
+  const FACTORY_CONTRACT_ADDRESS = useSelector((state) => {
+    return state.gnosis.factoryContractAddress;
+  });
+
   const clubData = useSelector((state) => {
     return state.club.clubData;
   });
@@ -173,7 +177,7 @@ const CreateProposalDialog = ({ open, setOpen, onClose, tokenData }) => {
         console.log("here");
         const factoryContract = new SmartContract(
           factoryContractABI,
-          NEW_FACTORY_ADDRESS,
+          FACTORY_CONTRACT_ADDRESS,
           walletAddress,
           USDC_CONTRACT_ADDRESS,
           GNOSIS_TRANSACTION_URL,

@@ -14,15 +14,19 @@ export async function loginToken(userAddress) {
 }
 
 export async function refreshToken(refreshToken, accessToken) {
-  console.log(accessToken);
-  // authenticate and fetch users new token
-  const data = JSON.stringify({
-    refreshToken: refreshToken,
-  });
-  return await axios.post(MAIN_API_URL + "auth/refresh-tokens", data, {
-    headers: {
-      "Authorization": "Bearer " + accessToken,
-      "Content-Type": "application/json",
-    },
-  });
+  try {
+    console.log(accessToken);
+    // authenticate and fetch users new token
+    const data = JSON.stringify({
+      refreshToken: refreshToken,
+    });
+    return await axios.post(MAIN_API_URL + "auth/refresh-tokens", data, {
+      headers: {
+        "Authorization": "Bearer " + accessToken,
+        "Content-Type": "application/json",
+      },
+    });
+  } catch (error) {
+    console.log(error);
+  }
 }

@@ -19,7 +19,6 @@ import erc721ABI from "../../../../abis/nft.json";
 import factoryContractABI from "../../../../abis/newArch/factoryContract.json";
 import { convertFromWeiGovernance } from "../../../../utils/globalFunctions";
 import { SmartContract } from "../../../../api/contract";
-import { NEW_FACTORY_ADDRESS } from "../../../../api";
 import dayjs from "dayjs";
 import ClubFetch from "../../../../utils/clubFetch";
 import { useSelector } from "react-redux";
@@ -50,6 +49,10 @@ const NewArchERC721 = ({
     const web3 = new Web3(window.web3);
     walletAddress = web3.utils.toChecksumAddress(wallet?.accounts[0].address);
   }
+
+  const FACTORY_CONTRACT_ADDRESS = useSelector((state) => {
+    return state.gnosis.factoryContractAddress;
+  });
 
   const GNOSIS_TRANSACTION_URL = useSelector((state) => {
     return state.gnosis.transactionUrl;
@@ -137,7 +140,7 @@ const NewArchERC721 = ({
 
       const factoryContract = new SmartContract(
         factoryContractABI,
-        NEW_FACTORY_ADDRESS,
+        FACTORY_CONTRACT_ADDRESS,
         walletAddress,
         USDC_CONTRACT_ADDRESS,
         GNOSIS_TRANSACTION_URL,
@@ -152,7 +155,7 @@ const NewArchERC721 = ({
       );
 
       await erc20Contract.approveDeposit(
-        NEW_FACTORY_ADDRESS,
+        FACTORY_CONTRACT_ADDRESS,
         convertFromWeiGovernance(
           daoDetails.pricePerToken,
           erc20TokenDetails.tokenDecimal,

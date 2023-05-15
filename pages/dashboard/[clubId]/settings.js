@@ -4,7 +4,6 @@ import { useRouter } from "next/router";
 import React, { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import Web3 from "web3";
-import { NEW_FACTORY_ADDRESS } from "../../../src/api";
 import { fetchClubbyDaoAddress } from "../../../src/api/club";
 import { SmartContract } from "../../../src/api/contract";
 import { QUERY_ALL_MEMBERS } from "../../../src/api/graphql/queries";
@@ -63,6 +62,14 @@ const Settings = () => {
     walletAddress = Web3.utils.toChecksumAddress(wallet?.accounts[0].address);
   }
 
+  const FACTORY_CONTRACT_ADDRESS = useSelector((state) => {
+    return state.gnosis.factoryContractAddress;
+  });
+
+  const SUBGRAPH_URL = useSelector((state) => {
+    return state.gnosis.subgraphUrl;
+  });
+
   const tokenType = useSelector((state) => {
     return state.club.clubData.tokenType;
   });
@@ -97,7 +104,7 @@ const Settings = () => {
     try {
       const factoryContract = new SmartContract(
         factoryContractABI,
-        NEW_FACTORY_ADDRESS,
+        FACTORY_CONTRACT_ADDRESS,
         walletAddress,
         USDC_CONTRACT_ADDRESS,
         GNOSIS_TRANSACTION_URL,
@@ -160,6 +167,7 @@ const Settings = () => {
       console.log(error);
     }
   }, [
+    FACTORY_CONTRACT_ADDRESS,
     GNOSIS_TRANSACTION_URL,
     USDC_CONTRACT_ADDRESS,
     daoAddress,
@@ -168,9 +176,18 @@ const Settings = () => {
 
   const fetchErc20TokenDetails = useCallback(async () => {
     try {
+      const factoryContract = new SmartContract(
+        factoryContractABI,
+        FACTORY_CONTRACT_ADDRESS,
+        walletAddress,
+        USDC_CONTRACT_ADDRESS,
+        GNOSIS_TRANSACTION_URL,
+      );
+      const factoryData = await factoryContract.getDAOdetails(daoAddress);
+
       const erc20Contract = new SmartContract(
         erc20ABI,
-        daoDetails.depositTokenAddress,
+        factoryData.depositTokenAddress,
         walletAddress,
         USDC_CONTRACT_ADDRESS,
         GNOSIS_TRANSACTION_URL,
@@ -195,24 +212,23 @@ const Settings = () => {
       console.log(error);
     }
   }, [
+    FACTORY_CONTRACT_ADDRESS,
     GNOSIS_TRANSACTION_URL,
     USDC_CONTRACT_ADDRESS,
-    daoDetails.depositTokenAddress,
+    daoAddress,
     walletAddress,
   ]);
 
   const fetchErc721ContractDetails = useCallback(async () => {
     try {
-      console.log(factoryContractABI, NEW_FACTORY_ADDRESS);
+      console.log(factoryContractABI, FACTORY_CONTRACT_ADDRESS);
       const factoryContract = new SmartContract(
         factoryContractABI,
-        NEW_FACTORY_ADDRESS,
+        FACTORY_CONTRACT_ADDRESS,
         walletAddress,
         USDC_CONTRACT_ADDRESS,
         GNOSIS_TRANSACTION_URL,
       );
-
-      console.log(factoryContract);
 
       const erc721DaoContract = new SmartContract(
         erc721DaoContractABI,
@@ -222,19 +238,14 @@ const Settings = () => {
         GNOSIS_TRANSACTION_URL,
       );
 
-      console.log(erc721DaoContract);
-
       const fetchedData = await fetchClubbyDaoAddress(daoAddress);
-      console.log("Fetched Data", fetchedData);
       const fetchedImage = fetchedData?.data[0]?.nftImageUrl;
       const nftURI = fetchedData?.data[0]?.nftMetadataUrl;
-      console.log("nftUROOO", nftURI);
+
       if (factoryContract && erc721DaoContract) {
         const factoryData = await factoryContract.getDAOdetails(daoAddress);
-        console.log("Factory Data", factoryData);
 
         const erc721Data = await erc721DaoContract.getERC721DAOdetails();
-        console.log("Dataaaaaaaa", erc721Data);
 
         const balanceOfClubToken = await erc721DaoContract.balanceOf();
         const nftMinted = await erc721DaoContract.nftOwnersCount();
@@ -281,9 +292,12 @@ const Settings = () => {
       console.log(error);
     }
   }, [
+    FACTORY_CONTRACT_ADDRESS,
     GNOSIS_TRANSACTION_URL,
     USDC_CONTRACT_ADDRESS,
     daoAddress,
+    daoDetails.distributionAmt,
+    daoDetails.pricePerToken,
     walletAddress,
   ]);
 
@@ -307,7 +321,6 @@ const Settings = () => {
   }, [
     fetchErc20ContractDetails,
     fetchErc20TokenDetails,
-    fetchAssets,
     fetchErc721ContractDetails,
     tokenType,
   ]);
@@ -316,7 +329,10 @@ const Settings = () => {
     try {
       const fetchData = async () => {
         if (daoAddress) {
-          const data = await subgraphQuery(QUERY_ALL_MEMBERS(daoAddress));
+          const data = await subgraphQuery(
+            SUBGRAPH_URL,
+            QUERY_ALL_MEMBERS(daoAddress),
+          );
           console.log("Members", data);
           setMembers(data?.users);
         }
@@ -325,7 +341,7 @@ const Settings = () => {
     } catch (error) {
       console.log(error);
     }
-  }, [daoAddress]);
+  }, [SUBGRAPH_URL, daoAddress]);
 
   useEffect(() => {
     fetchAssets();

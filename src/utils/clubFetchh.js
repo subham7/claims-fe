@@ -102,42 +102,50 @@ const ClubFetch = (Component) => {
     // }, [wallet]);
 
     //fetch governance token decimal
-    const fetchCustomTokenDecimals = async () => {
-      if (daoAddress && USDC_CONTRACT_ADDRESS && GNOSIS_TRANSACTION_URL) {
-        const usdcContract = new SmartContract(
-          ImplementationContract,
-          USDC_CONTRACT_ADDRESS,
-          undefined,
-          USDC_CONTRACT_ADDRESS,
-          GNOSIS_TRANSACTION_URL,
-        );
-        const daoContract = new SmartContract(
-          ImplementationContract,
-          daoAddress,
-          undefined,
-          USDC_CONTRACT_ADDRESS,
-          GNOSIS_TRANSACTION_URL,
-        );
+    const fetchCustomTokenDecimals = useCallback(async () => {
+      try {
+        if (daoAddress && USDC_CONTRACT_ADDRESS && GNOSIS_TRANSACTION_URL) {
+          const usdcContract = new SmartContract(
+            ImplementationContract,
+            USDC_CONTRACT_ADDRESS,
+            undefined,
+            USDC_CONTRACT_ADDRESS,
+            GNOSIS_TRANSACTION_URL,
+          );
+          const daoContract = new SmartContract(
+            ImplementationContract,
+            daoAddress,
+            undefined,
+            USDC_CONTRACT_ADDRESS,
+            GNOSIS_TRANSACTION_URL,
+          );
 
-        await usdcContract.obtainTokenDecimals().then((result) => {
-          setTokenDecimalUsdc(result);
-        });
-        await daoContract.obtainTokenDecimals().then((result) => {
-          setTokenDecimalGovernance(result);
-        });
+          await usdcContract.obtainTokenDecimals().then((result) => {
+            setTokenDecimalUsdc(result);
+          });
+          await daoContract.obtainTokenDecimals().then((result) => {
+            setTokenDecimalGovernance(result);
+          });
+        }
+      } catch (error) {
+        console.log(error);
       }
-    };
+    }, [GNOSIS_TRANSACTION_URL, USDC_CONTRACT_ADDRESS, daoAddress]);
 
     useEffect(() => {
-      if (tokenDecimalGovernance && tokenDecimalUsdc) {
-        dispatch(setGovernanceTokenDetails(tokenDecimalGovernance));
-        dispatch(
-          setUSDCTokenDetails({
-            // TODO: token symbol should be dynamic, obtain it from api
-            tokenSymbol: "USDC",
-            tokenDecimal: tokenDecimalUsdc,
-          }),
-        );
+      try {
+        if (tokenDecimalGovernance && tokenDecimalUsdc) {
+          dispatch(setGovernanceTokenDetails(tokenDecimalGovernance));
+          dispatch(
+            setUSDCTokenDetails({
+              // TODO: token symbol should be dynamic, obtain it from api
+              tokenSymbol: "USDC",
+              tokenDecimal: tokenDecimalUsdc,
+            }),
+          );
+        }
+      } catch (error) {
+        console.log(error);
       }
     }, [dispatch, tokenDecimalGovernance, tokenDecimalUsdc]);
 
@@ -206,20 +214,24 @@ const ClubFetch = (Component) => {
     ]);
 
     const checkGovernanceExists = () => {
-      if (daoAddress && USDC_CONTRACT_ADDRESS && GNOSIS_TRANSACTION_URL) {
-        const checkGovernance = new SmartContract(
-          ImplementationContract,
-          daoAddress,
-          undefined,
-          USDC_CONTRACT_ADDRESS,
-          GNOSIS_TRANSACTION_URL,
-        );
-        const response = checkGovernance.governanceDetails();
-        // console.log(response);
-        response.then((result) => {
-          console.log(result);
-          dispatch(setGovernanceAllowed(result));
-        });
+      try {
+        if (daoAddress && USDC_CONTRACT_ADDRESS && GNOSIS_TRANSACTION_URL) {
+          const checkGovernance = new SmartContract(
+            ImplementationContract,
+            daoAddress,
+            undefined,
+            USDC_CONTRACT_ADDRESS,
+            GNOSIS_TRANSACTION_URL,
+          );
+          const response = checkGovernance.governanceDetails();
+          // console.log(response);
+          response.then((result) => {
+            console.log(result);
+            dispatch(setGovernanceAllowed(result));
+          });
+        }
+      } catch (error) {
+        console.log(error);
       }
     };
 
@@ -246,117 +258,123 @@ const ClubFetch = (Component) => {
     useEffect(() => {
       // const switched = checkNetwork()
 
-      if (daoAddress && wallet) {
-        console.log("club data workingggg");
-        console.log("clubid", daoAddress);
-        const networkData = fetchConfig();
-        networkData.then((networks) => {
-          if (networks.status != 200) {
-            console.log(result.error);
-          } else {
-            const networksAvailable = [];
-            networks.data.forEach((network) => {
-              networksAvailable.push(network.networkId);
-            });
-            const web3 = new Web3(Web3.givenProvider);
-            web3.eth.net
-              .getId()
-              .then((networkId) => {
-                if (!networksAvailable.includes(networkId)) {
-                  setOpen(true);
-                }
-                const networkData = fetchConfigById(networkId);
-                networkData.then((result) => {
-                  if (result.status != 200) {
-                    console.log(result.error);
+      try {
+        if (daoAddress && wallet) {
+          console.log("club data workingggg");
+          console.log("clubid", daoAddress);
+          const networkData = fetchConfig();
+          networkData.then((networks) => {
+            if (networks.status != 200) {
+              console.log(result.error);
+            } else {
+              const networksAvailable = [];
+              networks.data.forEach((network) => {
+                networksAvailable.push(network.networkId);
+              });
+              const web3 = new Web3(Web3.givenProvider);
+              web3.eth.net
+                .getId()
+                .then((networkId) => {
+                  if (!networksAvailable.includes(networkId)) {
+                    setOpen(true);
+                  }
+                  const networkData = fetchConfigById(networkId);
+                  networkData.then((result) => {
+                    if (result.status != 200) {
+                      console.log(result.error);
+                    } else {
+                      console.log(
+                        "usdcContractAddress",
+                        result.data[0].usdcContractAddress,
+                      );
+                      dispatch(
+                        addContractAddress({
+                          factoryContractAddress:
+                            "0xe0723c6573D54f6af1c621238fbba42E7F8Ee643",
+                          usdcContractAddress:
+                            result.data[0].usdcContractAddress,
+                          transactionUrl: result.data[0].gnosisTransactionUrl,
+                          networkHex: result.data[0].networkHex,
+                          networkId: result.data[0].networkId,
+                          networkName: result.data[0].name,
+                        }),
+                      );
+                    }
+                  });
+                })
+                .catch((err) => {
+                  console.log(err);
+                });
+            }
+          });
+
+          // const clubData = fetchClub(clubId);
+          const clubData = subgraphQuery(QUERY_CLUB_DETAILS(daoAddress));
+          clubData.then((result) => {
+            console.log("club dataaaaa", result);
+            if (result.status !== 200) {
+            } else {
+              if (!wallet) {
+                router.push("/");
+              } else {
+                const web3 = new Web3(window.web3);
+                const checkedwallet = Web3.utils.toChecksumAddress(
+                  wallet?.accounts[0].address,
+                );
+
+                const getLoginToken = loginToken(checkedwallet);
+                getLoginToken.then((response) => {
+                  if (response.status !== 200) {
+                    console.log(response.data.error);
+                    // router.push("/");
                   } else {
-                    console.log(
-                      "usdcContractAddress",
-                      result.data[0].usdcContractAddress,
-                    );
-                    dispatch(
-                      addContractAddress({
-                        factoryContractAddress:
-                          "0xe0723c6573D54f6af1c621238fbba42E7F8Ee643",
-                        usdcContractAddress: result.data[0].usdcContractAddress,
-                        transactionUrl: result.data[0].gnosisTransactionUrl,
-                        networkHex: result.data[0].networkHex,
-                        networkId: result.data[0].networkId,
-                        networkName: result.data[0].name,
-                      }),
-                    );
+                    setExpiryTime(response.data.tokens.access.expires);
+                    const expiryTime = getExpiryTime();
+                    const currentDate = Date();
+                    setJwtToken(response.data.tokens.access.token);
+                    setRefreshToken(response.data.tokens.refresh.token);
+                    // if (expiryTime < currentDate) {
+                    //   const obtainNewToken = refreshToken(
+                    //     getRefreshToken(),
+                    //     getJwtToken(),
+                    //   );
+                    //   obtainNewToken
+                    //     .then((tokenResponse) => {
+                    //       if (response.status !== 200) {
+                    //         console.log(tokenResponse.data.error);
+                    //       } else {
+                    //         setExpiryTime(
+                    //           tokenResponse.data.tokens.access.expires,
+                    //         );
+                    //         setJwtToken(tokenResponse.data.tokens.access.token);
+                    //         setRefreshToken(
+                    //           tokenResponse.data.tokens.refresh.token,
+                    //         );
+                    //       }
+                    //     })
+                    //     .catch((error) => {
+                    //       console.log(error);
+                    //     });
+                    // }
                   }
                 });
-              })
-              .catch((err) => {
-                console.log(err);
-              });
-          }
-        });
 
-        // const clubData = fetchClub(clubId);
-        const clubData = subgraphQuery(QUERY_CLUB_DETAILS(daoAddress));
-        clubData.then((result) => {
-          console.log("club dataaaaa", result);
-          if (result.status !== 200) {
-          } else {
-            if (!wallet) {
-              router.push("/");
-            } else {
-              const web3 = new Web3(window.web3);
-              const checkedwallet = web3.utils.toChecksumAddress(
-                wallet?.accounts[0].address,
-              );
-
-              const getLoginToken = loginToken(checkedwallet);
-              getLoginToken.then((response) => {
-                if (response.status !== 200) {
-                  console.log(response.data.error);
-                  // router.push("/");
-                } else {
-                  setExpiryTime(response.data.tokens.access.expires);
-                  const expiryTime = getExpiryTime();
-                  const currentDate = Date();
-                  setJwtToken(response.data.tokens.access.token);
-                  setRefreshToken(response.data.tokens.refresh.token);
-                  // if (expiryTime < currentDate) {
-                  //   const obtainNewToken = refreshToken(
-                  //     getRefreshToken(),
-                  //     getJwtToken(),
-                  //   );
-                  //   obtainNewToken
-                  //     .then((tokenResponse) => {
-                  //       if (response.status !== 200) {
-                  //         console.log(tokenResponse.data.error);
-                  //       } else {
-                  //         setExpiryTime(
-                  //           tokenResponse.data.tokens.access.expires,
-                  //         );
-                  //         setJwtToken(tokenResponse.data.tokens.access.token);
-                  //         setRefreshToken(
-                  //           tokenResponse.data.tokens.refresh.token,
-                  //         );
-                  //       }
-                  //     })
-                  //     .catch((error) => {
-                  //       console.log(error);
-                  //     });
-                  // }
-                }
-              });
-
-              dispatch(addWalletAddress(checkedwallet));
-              dispatch(addClubID(result.data[0].clubId));
-              dispatch(addClubName(result.data[0].name));
-              dispatch(addClubRoute(result.data[0].route));
-              dispatch(addDaoAddress(result.data[0].daoAddress));
-              dispatch(addTokenAddress(result.data[0].tokenAddress));
-              dispatch(addClubImageUrl(result.data[0].imageUrl));
-              dispatch(addSafeAddress(result.data[0].gnosisAddress));
+                dispatch(addWalletAddress(checkedwallet));
+                dispatch(addClubID(result.data[0].clubId));
+                dispatch(addClubName(result.data[0].name));
+                dispatch(addClubRoute(result.data[0].route));
+                dispatch(addDaoAddress(result.data[0].daoAddress));
+                dispatch(addTokenAddress(result.data[0].tokenAddress));
+                dispatch(addClubImageUrl(result.data[0].imageUrl));
+                dispatch(addSafeAddress(result.data[0].gnosisAddress));
+              }
             }
-          }
-        });
+          });
+        }
+      } catch (error) {
+        console.log(error);
       }
+
       checkUserExists();
     }, [checkUserExists, daoAddress, dispatch, router, wallet]);
 

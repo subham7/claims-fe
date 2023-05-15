@@ -7,6 +7,8 @@ export const slice = createSlice({
     safeSdk: null,
     factoryContractAddress: null,
     usdcContractAddress: null,
+    actionContractAddress: null,
+    subgraphUrl: null,
     transactionUrl: null,
     networkHex: null,
     networkId: null,
@@ -39,6 +41,8 @@ export const slice = createSlice({
     addContractAddress: (state, action) => {
       state.factoryContractAddress = action.payload.factoryContractAddress;
       state.usdcContractAddress = action.payload.usdcContractAddress;
+      state.actionContractAddress = action.payload.actionContractAddress;
+      state.subgraphUrl = action.payload.subgraphUrl;
       state.transactionUrl = action.payload.transactionUrl;
       state.networkHex = action.payload.networkHex;
       state.networkId = action.payload.networkId;

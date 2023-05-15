@@ -55,8 +55,6 @@ import Safe, {
 import SafeApiKit from "@safe-global/api-kit";
 import { subgraphQuery } from "../../../../src/utils/subgraphs";
 import { QUERY_ALL_MEMBERS } from "../../../../src/api/graphql/queries";
-import { NEW_FACTORY_ADDRESS } from "../../../../src/api";
-import { AIRDROP_ACTION_ADDRESS } from "../../../../src/api";
 import ProposalExecutionInfo from "../../../../src/components/proposalComps/ProposalExecutionInfo";
 import Signators from "../../../../src/components/proposalComps/Signators";
 import ProposalInfo from "../../../../src/components/proposalComps/ProposalInfo";
@@ -221,6 +219,10 @@ const ProposalDetail = () => {
     return state.club.clubData.tokenType;
   });
 
+  const SUBGRAPH_URL = useSelector((state) => {
+    return state.gnosis.subgraphUrl;
+  });
+
   const isGovernanceERC20 = useSelector((state) => {
     return state.club.erc20ClubDetails.isGovernanceActive;
   });
@@ -278,6 +280,16 @@ const ProposalDetail = () => {
   const GNOSIS_TRANSACTION_URL = useSelector((state) => {
     return state.gnosis.transactionUrl;
   });
+
+  const FACTORY_CONTRACT_ADDRESS = useSelector((state) => {
+    return state.gnosis.factoryContractAddress;
+  });
+
+  const AIRDROP_ACTION_ADDRESS = useSelector((state) => {
+    return state.gnosis.actionContractAddress;
+  });
+
+  console.log("AIRDROP ACtion", AIRDROP_ACTION_ADDRESS);
 
   const getSafeSdk = useCallback(async () => {
     const web3 = new Web3(window.ethereum);
@@ -496,7 +508,10 @@ const ProposalDetail = () => {
     }
     // if(clubData.tokenType === 'erc721')
     if (proposalData.commands[0].executionId === 0) {
-      const membersData = await subgraphQuery(QUERY_ALL_MEMBERS(daoAddress));
+      const membersData = await subgraphQuery(
+        SUBGRAPH_URL,
+        QUERY_ALL_MEMBERS(daoAddress),
+      );
       let membersArray = [];
       membersData.users.map((member) => membersArray.push(member.userAddress));
       console.log(membersArray);
@@ -677,7 +692,7 @@ const ProposalDetail = () => {
       data,
       approvalData,
       proposalData.commands[0].executionId === 3
-        ? NEW_FACTORY_ADDRESS
+        ? FACTORY_CONTRACT_ADDRESS
         : daoAddress,
       Web3.utils.toChecksumAddress(gnosisAddress),
       txHash,
