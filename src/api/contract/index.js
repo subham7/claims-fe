@@ -86,9 +86,11 @@ export class SmartContract {
   }
 
   async claimContract(claimSettings) {
+    const gasPrice = await this.web3.eth.getGasPrice();
+    const increasedGasPrice = +gasPrice + 30000000000;
     return this.contract.methods
       .deployClaimContract(claimSettings)
-      .send({ from: this.walletAddress });
+      .send({ from: this.walletAddress, gasPrice: increasedGasPrice });
   }
 
   async claimSettings() {
@@ -100,9 +102,12 @@ export class SmartContract {
   }
 
   async claim(amount, merkleData, leaf) {
+    const gasPrice = await this.web3.eth.getGasPrice();
+    const increasedGasPrice = +gasPrice + 30000000000;
     console.log(amount);
     return this.contract.methods.claim(amount, merkleData, leaf).send({
       from: this.walletAddress,
+      gasPrice: increasedGasPrice,
     });
   }
 
@@ -138,6 +143,8 @@ export class SmartContract {
     numOfTokens,
     merkleProof,
   ) {
+    const gasPrice = await this.web3.eth.getGasPrice();
+    const increasedGasPrice = +gasPrice + 30000000000;
     return this.contract.methods
       .buyGovernanceTokenERC20DAO(
         userAddress,
@@ -147,6 +154,7 @@ export class SmartContract {
       )
       .send({
         from: this.walletAddress,
+        gasPrice: increasedGasPrice,
       });
   }
 
@@ -157,6 +165,8 @@ export class SmartContract {
     numOfTokens,
     merkleProof,
   ) {
+    const gasPrice = await this.web3.eth.getGasPrice();
+    const increasedGasPrice = +gasPrice + 30000000000;
     return this.contract.methods
       .buyGovernanceTokenERC721DAO(
         userAddress,
@@ -167,6 +177,7 @@ export class SmartContract {
       )
       .send({
         from: this.walletAddress,
+        gasPrice: increasedGasPrice,
       });
   }
 
@@ -277,6 +288,8 @@ export class SmartContract {
     assetsStoredOnGnosis,
     merkleRoot,
   ) {
+    const gasPrice = await this.web3.eth.getGasPrice();
+    const increasedGasPrice = +gasPrice + 30000000000;
     return this.contract.methods
       .createERC721DAO(
         clubName,
@@ -298,7 +311,7 @@ export class SmartContract {
         assetsStoredOnGnosis,
         merkleRoot,
       )
-      .send({ from: this.walletAddress });
+      .send({ from: this.walletAddress, gasPrice: increasedGasPrice });
   }
 
   async createERC20DAO(
@@ -321,6 +334,8 @@ export class SmartContract {
     assetsStoredOnGnosis,
     merkleRoot,
   ) {
+    const gasPrice = await this.web3.eth.getGasPrice();
+    const increasedGasPrice = +gasPrice + 30000000000;
     console.log(
       clubName,
       clubSymbol,
@@ -363,7 +378,7 @@ export class SmartContract {
         assetsStoredOnGnosis,
         merkleRoot,
       )
-      .send({ from: this.walletAddress });
+      .send({ from: this.walletAddress, gasPrice: increasedGasPrice });
   }
 
   async getERC20DAOdetails() {
@@ -394,6 +409,9 @@ export class SmartContract {
     tokenData,
     executionStatus,
   ) {
+    const gasPrice = await this.web3.eth.getGasPrice();
+    const increasedGasPrice = +gasPrice + 30000000000;
+
     const parameters = data;
     console.log(
       "executionStatus",
@@ -706,6 +724,10 @@ export class SmartContract {
       ethAdapter: ethAdapter,
       safeAddress: gnosisAddress,
     });
+
+    // const gasPrice = await this.web3.eth.getGasPrice();
+    // const increasedGasPrice = +gasPrice + 30000000000;
+
     const transaction = {
       to: this.usdcContractAddress,
       data: usdcContract.methods
@@ -811,61 +833,59 @@ export class SmartContract {
     const value = convertToWei(amount, usdcConvertDecimal).toString();
     // const value = amount;
     const gasPrice = await web3.eth.getGasPrice();
-    const gasAmount = await this.contract.methods
-      .approve(address, value)
-      .estimateGas({ from: this.walletAddress });
-    const gas = gasAmount * gasPrice;
-    console.log(gasPrice, gas);
+    const increasedGasPrice = +gasPrice + 30000000000;
 
     return this.contract.methods.approve(address, value).send({
       from: this.walletAddress,
-      //  , gasPrice
+      gasPrice: increasedGasPrice,
     });
   }
 
   async performanceFee() {
+    const gasPrice = await web3.eth.getGasPrice();
+    const increasedGasPrice = +gasPrice + 30000000000;
+
     return await this.contract.methods
       .ownerFeePerDeposit()
-      .call({ from: this.walletAddress });
+      .call({ from: this.walletAddress, gasPrice: increasedGasPrice });
   }
 
   async mint(address, amount) {
+    const gasPrice = await web3.eth.getGasPrice();
+    const increasedGasPrice = +gasPrice + 30000000000;
+
     return this.contract.methods
       .mint(address, amount)
-      .send({ from: this.walletAddress });
+      .send({ from: this.walletAddress, gasPrice: increasedGasPrice });
   }
 
   async closeDeposit() {
     const gasPrice = await web3.eth.getGasPrice();
+    const increasedGasPrice = +gasPrice + 30000000000;
 
     return this.contract.methods.closeDeposit().send({
       from: this.walletAddress,
-      //  , gasPrice
+      gasPrice: increasedGasPrice,
     });
   }
 
   async startDeposit(startTime) {
     const gasPrice = await web3.eth.getGasPrice();
+    const increasedGasPrice = +gasPrice + 30000000000;
     return this.contract.methods.startDeposit(startTime).send({
       from: this.walletAddress,
-      //  , gasPrice
+      gasPrice: increasedGasPrice,
     });
   }
 
   async deposit(address, amount, tokenUri) {
     console.log(address, amount, tokenUri);
     const gasPrice = await web3.eth.getGasPrice();
-    const gasAmount = await this.contract.methods.deposit(
-      address,
-      amount,
-      tokenUri,
-    );
-    // .estimateGas({ from: this.walletAddress });
-    const gas = gasAmount * gasPrice;
+    const increasedGasPrice = +gasPrice + 30000000000;
 
     return this.contract.methods.deposit(address, amount, tokenUri).send({
       from: this.walletAddress,
-      //  , gasPrice
+      gasPrice: increasedGasPrice,
     });
   }
 
@@ -876,8 +896,11 @@ export class SmartContract {
   }
 
   async transfer(address, amount) {
+    const gasPrice = await web3.eth.getGasPrice();
+    const increasedGasPrice = +gasPrice + 30000000000;
     return this.contract.methods.transfer(address, amount).send({
       from: this.walletAddress,
+      gasPrice: increasedGasPrice,
     });
   }
 
@@ -886,7 +909,7 @@ export class SmartContract {
   }
 
   async totalSupply() {
-    return this.contract?.methods
+    return this.contract.methods
       .totalSupply()
       .call({ from: this.walletAddress });
   }
@@ -908,18 +931,24 @@ export class SmartContract {
   }
 
   async updateOwnerFee(ownerFeePerDeposit, daoAddress) {
+    const gasPrice = await web3.eth.getGasPrice();
+    const increasedGasPrice = +gasPrice + 30000000000;
     return this.contract.methods
       .updateOwnerFee(ownerFeePerDeposit, daoAddress)
       .send({
         from: this.walletAddress,
+        gasPrice: increasedGasPrice,
       });
   }
 
   async updateDepositTime(depositTime, daoAddress) {
+    const gasPrice = await web3.eth.getGasPrice();
+    const increasedGasPrice = +gasPrice + 30000000000;
     return this.contract.methods
       .updateDepositTime(depositTime, daoAddress)
       .send({
         from: this.walletAddress,
+        gasPrice: increasedGasPrice,
       });
   }
 
@@ -943,9 +972,10 @@ export class SmartContract {
 
   async updateMinMaxDeposit(minValue, maxValue) {
     const gasPrice = await web3.eth.getGasPrice();
+    const increasedGasPrice = +gasPrice + 30000000000;
     return this.contract.methods.updateMinMaxDeposit(minValue, maxValue).send({
       from: this.walletAddress,
-      //  , gasPrice
+      gasPrice: increasedGasPrice,
     });
   }
 
@@ -994,15 +1024,19 @@ export class SmartContract {
   }
 
   async enableTokenGating(address, amount) {
+    const gasPrice = await web3.eth.getGasPrice();
+    const increasedGasPrice = +gasPrice + 30000000000;
     return this.contract.methods
       .enableTokenGating(address, amount)
-      .send({ from: this.walletAddress });
+      .send({ from: this.walletAddress, gasPrice: increasedGasPrice });
   }
 
   async disableTokenGating() {
+    const gasPrice = await web3.eth.getGasPrice();
+    const increasedGasPrice = +gasPrice + 30000000000;
     return this.contract.methods
       .disableTokenGating()
-      .send({ from: this.walletAddress });
+      .send({ from: this.walletAddress, gasPrice: increasedGasPrice });
   }
 
   async ownerFee() {
@@ -1153,21 +1187,27 @@ export class SmartContract {
   }
 
   async updateMaxTokensPerUser(tokenValue) {
+    const gasPrice = await web3.eth.getGasPrice();
+    const increasedGasPrice = +gasPrice + 30000000000;
     return this.contract.methods
       .updateMaxTokensPerUser(tokenValue)
-      .send({ from: this.walletAddress });
+      .send({ from: this.walletAddress, gasPrice: increasedGasPrice });
   }
 
   async updateTotalSupplyOfToken(newSupplyValue) {
+    const gasPrice = await web3.eth.getGasPrice();
+    const increasedGasPrice = +gasPrice + 30000000000;
     return this.contract.methods
       .updateTotalSupplyOfToken(newSupplyValue)
-      .send({ from: this.walletAddress });
+      .send({ from: this.walletAddress, gasPrice: increasedGasPrice });
   }
 
   async updateNftTransferability(value) {
+    const gasPrice = await web3.eth.getGasPrice();
+    const increasedGasPrice = +gasPrice + 30000000000;
     return this.contract.methods
       .updateNftTransferability(value)
-      .send({ from: this.walletAddress });
+      .send({ from: this.walletAddress, gasPrice: increasedGasPrice });
   }
 
   async symbol() {
@@ -1211,11 +1251,14 @@ export class SmartContract {
     value,
     daoAddress,
   ) {
+    const gasPrice = await web3.eth.getGasPrice();
+    const increasedGasPrice = +gasPrice + 30000000000;
     console.log(tokenA, tokenB, operator, comparator, value, daoAddress);
     return this.contract.methods
       .setupTokenGating(tokenA, tokenB, operator, comparator, value, daoAddress)
       .send({
         from: this.walletAddress,
+        gasPrice: increasedGasPrice,
       });
   }
 

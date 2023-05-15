@@ -37,7 +37,6 @@ import {
 } from "../api";
 
 const ClubFetch = (Component) => {
-  console.log("SUBGRAPH", SUBGRAPH_URL_GOERLI, SUBGRAPH_URL_POLYGON);
   const RetrieveDataComponent = () => {
     console.log("first");
     const router = useRouter();
@@ -102,20 +101,20 @@ const ClubFetch = (Component) => {
                       ? FACTORY_ADDRESS_GOERLI
                       : networkId == "0x89"
                       ? FACTORY_ADDRESS_POLYGON
-                      : "",
+                      : null,
                   usdcContractAddress: result.data[0].usdcContractAddress,
                   actionContractAddress:
                     networkId == "0x5"
                       ? AIRDROP_ACTION_ADDRESS_GOERLI
                       : networkId == "0x89"
                       ? AIRDROP_ACTION_ADDRESS_POLYGON
-                      : "",
+                      : null,
                   subgraphUrl:
                     networkId == "0x5"
                       ? SUBGRAPH_URL_GOERLI
                       : networkId == "0x89"
                       ? SUBGRAPH_URL_POLYGON
-                      : "",
+                      : null,
                   transactionUrl: result.data[0].gnosisTransactionUrl,
                   networkHex: result.data[0].networkHex,
                   networkId: result.data[0].networkId,
@@ -134,7 +133,6 @@ const ClubFetch = (Component) => {
             QUERY_CLUB_DETAILS(daoAddress),
           );
 
-          console.log("TOKENNNNNN CLUB", clubData.stations[0].tokenType);
           dispatch(
             addClubData({
               gnosisAddress: clubData.stations[0].gnosisAddress,
@@ -150,7 +148,7 @@ const ClubFetch = (Component) => {
             const erc20Contract = new SmartContract(
               Erc20Dao,
               daoAddress,
-              undefined,
+              walletAddress,
               USDC_CONTRACT_ADDRESS,
               GNOSIS_TRANSACTION_URL,
             );
@@ -193,7 +191,7 @@ const ClubFetch = (Component) => {
             const erc721Contract = new SmartContract(
               Erc721Dao,
               daoAddress,
-              undefined,
+              walletAddress,
               USDC_CONTRACT_ADDRESS,
               GNOSIS_TRANSACTION_URL,
             );

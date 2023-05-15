@@ -205,12 +205,9 @@ const Faucet = (props) => {
   });
   const [{ wallet }] = useConnectWallet();
 
-  let walletAddress;
-
-  if (typeof window !== "undefined") {
-    const web3 = new Web3(window.web3);
-    walletAddress = web3.utils.toChecksumAddress(wallet?.accounts[0].address);
-  }
+  const walletAddress = Web3.utils.toChecksumAddress(
+    wallet?.accounts[0].address,
+  );
 
   useEffect(() => {
     if (wallet) {

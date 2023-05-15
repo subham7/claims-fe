@@ -91,8 +91,6 @@ const DashboardIndex = () => {
     return state.gnosis.networkHex;
   });
 
-  console.log("NETWORK HEX", NETWORK_HEX);
-
   const GNOSIS_TRANSACTION_URL = useSelector((state) => {
     return state.gnosis.transactionUrl;
   });
@@ -101,13 +99,9 @@ const DashboardIndex = () => {
     return state.gnosis.usdcContractAddress;
   });
 
-  console.log("Admin", GNOSIS_TRANSACTION_URL, USDC_CONTRACT_ADDRESS);
-
-  let walletAddress;
-  if (typeof window !== "undefined") {
-    const web3 = new Web3(window.web3);
-    walletAddress = web3.utils.toChecksumAddress(wallet?.accounts[0].address);
-  }
+  const walletAddress = Web3.utils.toChecksumAddress(
+    wallet?.accounts[0].address,
+  );
 
   const fetchClubDetails = useCallback(async () => {
     try {
@@ -136,7 +130,7 @@ const DashboardIndex = () => {
     try {
       if (NETWORK_HEX !== "undefined") {
         const assetsData = await getAssetsByDaoAddress(daoAddress, NETWORK_HEX);
-        console.log("Asset data", assetsData.data);
+        console.log("Asset data", assetsData?.data);
         setTokenDetails({
           treasuryAmount: assetsData?.data?.treasuryAmount,
           tokenPriceList: assetsData?.data?.tokenPriceList,
@@ -188,15 +182,17 @@ const DashboardIndex = () => {
   };
 
   useEffect(() => {
-    fetchClubDetails();
-    fetchAssets();
-    fetchNfts();
+    if (NETWORK_HEX) {
+      fetchClubDetails();
+      fetchAssets();
+      fetchNfts();
+    }
     // fetchActiveProposals();
-  }, [fetchClubDetails, fetchNfts, fetchAssets]);
+  }, [fetchClubDetails, fetchNfts, fetchAssets, NETWORK_HEX]);
 
   useEffect(() => {
-    if (daoAddress) {
-      try {
+    try {
+      if (daoAddress) {
         const factoryContractData = async () => {
           const factoryContract = new SmartContract(
             factoryContractABI,
@@ -212,11 +208,12 @@ const DashboardIndex = () => {
         };
 
         factoryContractData();
-      } catch (error) {
-        console.log(error);
       }
+    } catch (error) {
+      console.log(error);
     }
   }, [
+    FACTORY_CONTRACT_ADDRESS,
     GNOSIS_TRANSACTION_URL,
     USDC_CONTRACT_ADDRESS,
     daoAddress,
@@ -224,66 +221,74 @@ const DashboardIndex = () => {
   ]);
 
   useEffect(() => {
-    if (daoAddress) {
-      const loadNftContractData = async () => {
-        try {
-          const nftContract = new SmartContract(
-            nft,
-            daoAddress,
-            walletAddress,
-            USDC_CONTRACT_ADDRESS,
-            GNOSIS_TRANSACTION_URL,
-          );
-          const nftBalance = await nftContract.nftBalance(walletAddress);
-          console.log("NFT Balance", nftBalance);
-          setBalanceOfUser(nftBalance);
-          const symbol = await nftContract.symbol();
-          console.log("SYMBOL", symbol);
-          const nftMinted = await nftContract.nftOwnersCount();
-          setClubTokenMinted(nftMinted);
-          console.log("NFT Minted", nftMinted);
-        } catch (error) {
-          console.log(error);
+    try {
+      if (daoAddress) {
+        const loadNftContractData = async () => {
+          try {
+            const nftContract = new SmartContract(
+              erc721DaoContractABI,
+              daoAddress,
+              walletAddress,
+              USDC_CONTRACT_ADDRESS,
+              GNOSIS_TRANSACTION_URL,
+            );
+            const nftBalance = await nftContract.nftBalance(walletAddress);
+            console.log("NFT Balance", nftBalance);
+            setBalanceOfUser(nftBalance);
+            const symbol = await nftContract.symbol();
+            console.log("SYMBOL", symbol);
+            const nftMinted = await nftContract.nftOwnersCount();
+            setClubTokenMinted(nftMinted);
+            console.log("NFT Minted", nftMinted);
+          } catch (error) {
+            console.log(error);
+          }
+        };
+
+        const loadSmartContractData = async () => {
+          try {
+            const erc20DaoContract = new SmartContract(
+              erc20DaoContractABI,
+              daoAddress,
+              walletAddress,
+              USDC_CONTRACT_ADDRESS,
+              GNOSIS_TRANSACTION_URL,
+            );
+            console.log("erc20DaoContract", erc20DaoContract);
+
+            if (erc20DaoContract) {
+              const balance = await erc20DaoContract.balanceOf(walletAddress);
+              setBalanceOfUser(balance);
+
+              const clubTokensMinted = await erc20DaoContract.totalSupply();
+              console.log(clubTokensMinted);
+              setClubTokenMinted(clubTokensMinted);
+
+              setDepositLink(
+                typeof window !== "undefined" && window.location.origin
+                  ? `${
+                      window.location.origin
+                    }/join/${Web3.utils.toChecksumAddress(daoAddress)}`
+                  : null,
+              );
+            }
+            // setDataFetched(true);
+          } catch (e) {
+            console.log(e);
+            // setOpenSnackBar(true);
+            // setFailed(true);
+          }
+        };
+
+        if (clubData.tokenType === "erc721") {
+          loadNftContractData();
+        } else {
+          loadSmartContractData();
         }
-      };
-
-      const loadSmartContractData = async () => {
-        console.log(walletAddress);
-        try {
-          const erc20DaoContract = new SmartContract(
-            erc20DaoContractABI,
-            daoAddress,
-            walletAddress,
-            USDC_CONTRACT_ADDRESS,
-            GNOSIS_TRANSACTION_URL,
-          );
-          console.log("erc20DaoContract", erc20DaoContract);
-          const balance = await erc20DaoContract.balanceOf(walletAddress);
-          setBalanceOfUser(balance);
-          const clubTokensMinted = await erc20DaoContract.totalSupply();
-          setClubTokenMinted(clubTokensMinted);
-
-          setDepositLink(
-            typeof window !== "undefined" && window.location.origin
-              ? `${window.location.origin}/join/${Web3.utils.toChecksumAddress(
-                  daoAddress,
-                )}`
-              : null,
-          );
-          // setDataFetched(true);
-        } catch (e) {
-          console.log(e);
-          // setOpenSnackBar(true);
-          // setFailed(true);
-        }
-      };
-
-      if (clubData.tokenType === "erc721") {
-        loadNftContractData();
-      } else {
-        loadSmartContractData();
+        // console.log("token type", tokenType);
       }
-      // console.log("token type", tokenType);
+    } catch (error) {
+      console.log(error);
     }
   }, [
     daoAddress,

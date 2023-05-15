@@ -3,19 +3,27 @@ import { MAIN_API_URL } from "../index";
 import { getJwtToken } from "../../utils/auth";
 
 export async function fetchConfig() {
-  return await axios.get(MAIN_API_URL + `config`, {
-    headers: {
-      "Authorization": "Bearer " + getJwtToken(),
-      "Content-Type": "application/json",
-    },
-  });
+  try {
+    return await axios.get(MAIN_API_URL + `config`, {
+      headers: {
+        "Authorization": "Bearer " + getJwtToken(),
+        "Content-Type": "application/json",
+      },
+    });
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 export async function fetchConfigById(networkId) {
-  return await axios.get(MAIN_API_URL + `config/${networkId}`, {
-    headers: {
-      "Authorization": "Bearer " + getJwtToken(),
-      "Content-Type": "application/json",
-    },
-  });
+  try {
+    return await axios.get(MAIN_API_URL + `config/${networkId}`, {
+      headers: {
+        "Authorization": "Bearer " + getJwtToken(),
+        "Content-Type": "application/json",
+      },
+    });
+  } catch (error) {
+    console.log(error);
+  }
 }

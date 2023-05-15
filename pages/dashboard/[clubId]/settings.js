@@ -176,9 +176,18 @@ const Settings = () => {
 
   const fetchErc20TokenDetails = useCallback(async () => {
     try {
+      const factoryContract = new SmartContract(
+        factoryContractABI,
+        FACTORY_CONTRACT_ADDRESS,
+        walletAddress,
+        USDC_CONTRACT_ADDRESS,
+        GNOSIS_TRANSACTION_URL,
+      );
+      const factoryData = await factoryContract.getDAOdetails(daoAddress);
+
       const erc20Contract = new SmartContract(
         erc20ABI,
-        daoDetails.depositTokenAddress,
+        factoryData.depositTokenAddress,
         walletAddress,
         USDC_CONTRACT_ADDRESS,
         GNOSIS_TRANSACTION_URL,
@@ -203,9 +212,10 @@ const Settings = () => {
       console.log(error);
     }
   }, [
+    FACTORY_CONTRACT_ADDRESS,
     GNOSIS_TRANSACTION_URL,
     USDC_CONTRACT_ADDRESS,
-    daoDetails.depositTokenAddress,
+    daoAddress,
     walletAddress,
   ]);
 
@@ -220,8 +230,6 @@ const Settings = () => {
         GNOSIS_TRANSACTION_URL,
       );
 
-      console.log(factoryContract);
-
       const erc721DaoContract = new SmartContract(
         erc721DaoContractABI,
         daoAddress,
@@ -230,19 +238,14 @@ const Settings = () => {
         GNOSIS_TRANSACTION_URL,
       );
 
-      console.log(erc721DaoContract);
-
       const fetchedData = await fetchClubbyDaoAddress(daoAddress);
-      console.log("Fetched Data", fetchedData);
       const fetchedImage = fetchedData?.data[0]?.nftImageUrl;
       const nftURI = fetchedData?.data[0]?.nftMetadataUrl;
-      console.log("nftUROOO", nftURI);
+
       if (factoryContract && erc721DaoContract) {
         const factoryData = await factoryContract.getDAOdetails(daoAddress);
-        console.log("Factory Data", factoryData);
 
         const erc721Data = await erc721DaoContract.getERC721DAOdetails();
-        console.log("Dataaaaaaaa", erc721Data);
 
         const balanceOfClubToken = await erc721DaoContract.balanceOf();
         const nftMinted = await erc721DaoContract.nftOwnersCount();
@@ -318,7 +321,6 @@ const Settings = () => {
   }, [
     fetchErc20ContractDetails,
     fetchErc20TokenDetails,
-    fetchAssets,
     fetchErc721ContractDetails,
     tokenType,
   ]);

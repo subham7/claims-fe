@@ -24,7 +24,6 @@ import { setUploadNFTLoading } from "../../src/redux/reducers/gnosis";
 import { NFTStorage } from "nft.storage";
 import { convertAmountToWei } from "../../src/utils/globalFunctions";
 import { convertToWeiGovernance } from "../../src/utils/globalFunctions";
-// import { FACTORY_ADDRESS_GOERLI } from "../../src/api";
 
 const Create = () => {
   const steps = ["Add basic info", "Set token rules", "Governance"];
