@@ -268,7 +268,6 @@ const ProposalCard = ({
     fetchAirDropContractDetails();
   }, [fetchAirDropContractDetails]);
 
-  console.log("heyy", fetched);
   return (
     <CardActionArea sx={{ borderRadius: "10px" }}>
       <Card className={classes.mainCard}>
@@ -302,7 +301,6 @@ const ProposalCard = ({
                 justifyContent: "flex-end",
               }}
             >
-              {console.log("heyy")}
               <Grid item>
                 <Chip
                   className={classes.timeLeftChip}

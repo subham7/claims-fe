@@ -84,12 +84,6 @@ const Proposal = () => {
     });
   };
 
-  // const fetchProposalList = async () => {
-  //   const data = await fetchProposals(daoAddress);
-  //   console.log(data);
-  //   setProposalList(data);
-  // };
-
   const fetchTokens = useCallback(() => {
     console.log("daoAddress", daoAddress);
     if (daoAddress) {
@@ -103,6 +97,21 @@ const Proposal = () => {
       });
     }
   }, [NETWORK_HEX, daoAddress]);
+  const fetchProposalList = async (type = "all") => {
+    const data = await fetchProposals(daoAddress, type);
+
+    console.log(data);
+    setProposalList(data);
+  };
+
+  const handleFilterChange = (event) => {
+    const {
+      target: { value },
+    } = event;
+    setSelectedListItem(value);
+    fetchProposalList(value);
+    console.log("value", value);
+  };
 
   useEffect(() => {
     if (daoAddress) {
@@ -111,11 +120,6 @@ const Proposal = () => {
   }, [daoAddress, fetchTokens]);
 
   useEffect(() => {
-    const fetchProposalList = async () => {
-      const data = await fetchProposals(daoAddress);
-      console.log(data);
-      setProposalList(data);
-    };
     fetchProposalList();
   }, [daoAddress]);
 
@@ -153,7 +157,7 @@ const Proposal = () => {
                   <Select
                     sx={{ height: "80%", textTransform: "capitalize" }}
                     value={selectedListItem}
-                    // onChange={handleFilterChange}
+                    onChange={handleFilterChange}
                     input={<OutlinedInput />}
                     renderValue={(selected) => {
                       if (selected.length === 0) {
