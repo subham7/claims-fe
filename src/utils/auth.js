@@ -13,6 +13,7 @@ import { setUSDCTokenDetails } from "../redux/reducers/gnosis";
 import { getAssets } from "../api/assets";
 import { checkUserByClub } from "../api/user";
 import { useConnectWallet } from "@web3-onboard/react";
+import { useCallback } from "react";
 
 export default function ProtectRoute(Component) {
   const AuthenticatedComponent = () => {
@@ -33,65 +34,75 @@ export default function ProtectRoute(Component) {
       return state.gnosis.transactionUrl;
     });
 
-    let walletAddress;
-    if (typeof window !== "undefined") {
-      const web3 = new Web3(window.web3);
-      walletAddress = web3.utils.toChecksumAddress(wallet?.accounts[0].address);
-    }
+    const walletAddress = Web3.utils.toChecksumAddress(
+      wallet?.accounts[0].address,
+    );
 
     if (wallet) {
       localStorage.setItem("wallet", walletAddress);
     }
 
     // console.log("walllleettttt");
-    const fetchCustomTokenDecimals = async () => {
-      if (USDC_CONTRACT_ADDRESS && GNOSIS_TRANSACTION_URL) {
-        const usdcContract = new SmartContract(
-          ImplementationContract,
-          USDC_CONTRACT_ADDRESS,
-          undefined,
-          USDC_CONTRACT_ADDRESS,
-          GNOSIS_TRANSACTION_URL,
-        );
+    const fetchCustomTokenDecimals = useCallback(async () => {
+      try {
+        if (USDC_CONTRACT_ADDRESS && GNOSIS_TRANSACTION_URL) {
+          const usdcContract = new SmartContract(
+            ImplementationContract,
+            USDC_CONTRACT_ADDRESS,
+            undefined,
+            USDC_CONTRACT_ADDRESS,
+            GNOSIS_TRANSACTION_URL,
+          );
 
-        await usdcContract.obtainTokenDecimals().then((result) => {
-          setTokenDecimalUsdc(result);
-        });
+          await usdcContract.obtainTokenDecimals().then((result) => {
+            setTokenDecimalUsdc(result);
+          });
+        }
+      } catch (error) {
+        console.log(error);
       }
-    };
+    }, [GNOSIS_TRANSACTION_URL, USDC_CONTRACT_ADDRESS]);
 
     useEffect(() => {
-      if (tokenDecimalUsdc) {
-        dispatch(
-          setUSDCTokenDetails({
-            tokenSymbol: "USDC",
-            tokenDecimal: tokenDecimalUsdc,
-          }),
-        );
+      try {
+        if (tokenDecimalUsdc) {
+          dispatch(
+            setUSDCTokenDetails({
+              tokenSymbol: "USDC",
+              tokenDecimal: tokenDecimalUsdc,
+            }),
+          );
+        }
+      } catch (error) {
+        console.log(error);
       }
-    }, [tokenDecimalUsdc]);
+    }, [dispatch, tokenDecimalUsdc]);
 
     useEffect(() => {
       fetchCustomTokenDecimals();
-    }, [USDC_CONTRACT_ADDRESS]);
+    }, [fetchCustomTokenDecimals]);
 
     const handleRedirectClick = () => {
       // router.push("/");
     };
 
     const fetchNetworks = () => {
-      const networkData = fetchConfig();
-      networkData.then((result) => {
-        if (result.status != 200) {
-          setNetworksFetched(false);
-        } else {
-          setNetworks(result.data);
-          setNetworksFetched(true);
-        }
-      });
+      try {
+        const networkData = fetchConfig();
+        networkData.then((result) => {
+          if (result.status != 200) {
+            setNetworksFetched(false);
+          } else {
+            setNetworks(result.data);
+            setNetworksFetched(true);
+          }
+        });
+      } catch (error) {
+        console.log(error);
+      }
     };
 
-    const handleMount = async () => {
+    const handleMount = useCallback(async () => {
       console.log("wallet in handle mount", wallet);
       // if (wallet !== null) {
       //   // setWalletAddress(wallet[0][0].address);
@@ -136,37 +147,41 @@ export default function ProtectRoute(Component) {
         // router.push("/");
         setRedirect(false);
       }
-    };
+    }, [redirect, wallet]);
 
     useEffect(() => {
       handleMount();
-    }, []);
+    }, [handleMount]);
 
     useEffect(() => {
       fetchNetworks();
     }, []);
 
     useEffect(() => {
-      if (networksFetched) {
-        const networksAvailable = [];
-        networks.forEach((network) => {
-          networksAvailable.push(network.networkId);
-        });
-        const web3 = new Web3(Web3.givenProvider);
-        web3.eth.net
-          .getId()
-          .then((networkId) => {
-            console.log("networkId", networkId);
-            if (!networksAvailable.includes(networkId)) {
-              setOpen(true);
-            }
-            updateDynamicAddress(networkId, dispatch);
-          })
-          .catch((err) => {
-            console.log(err);
+      try {
+        if (networksFetched) {
+          const networksAvailable = [];
+          networks.forEach((network) => {
+            networksAvailable.push(network.networkId);
           });
+          const web3 = new Web3(Web3.givenProvider);
+          web3.eth.net
+            .getId()
+            .then((networkId) => {
+              console.log("networkId", networkId);
+              if (!networksAvailable.includes(networkId)) {
+                setOpen(true);
+              }
+              updateDynamicAddress(networkId, dispatch);
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        }
+      } catch (error) {
+        console.log(error);
       }
-    }, [networksFetched, networks]);
+    }, [networksFetched, networks, dispatch]);
 
     return wallet ? (
       <Component wallet={walletAddress} />
@@ -213,93 +228,97 @@ export function authenticateUser(
   USDC_CONTRACT_ADDRESS,
   GNOSIS_TRANSACTION_URL,
 ) {
-  if (
-    clubId &&
-    walletAddress &&
-    daoAddress &&
-    USDC_CONTRACT_ADDRESS &&
-    GNOSIS_TRANSACTION_URL
-  ) {
-    const checkUserInClub = new SmartContract(
-      ImplementationContract,
-      daoAddress,
-      undefined,
-      USDC_CONTRACT_ADDRESS,
-      GNOSIS_TRANSACTION_URL,
-    );
-    const response = checkUserInClub.userDetails();
-    response.then((result) => {
-      console.log("userdetail", result);
-      if (result[0]) {
-        // is admin
-        return true;
-      } else {
-        // is not an admin
-        return false;
-      }
-    });
-    // check club token type
-    // const tokens = getAssets(clubId);
-    // tokens.then((tokenResult) => {
-    //   if (tokenResult.status != 200) {
-    //     return false;
-    //   } else {
-    //     if (
-    //       tokenResult.data.tokenPriceList.length != 0 &&
-    //       tokenResult.data.tokenPriceList[0].name === "USDC"
-    //     ) {
-    //       // check if user is part of a club
-    //       // if yes? check whether user holds governance token in the wallet
-    //       const checkUser = checkUserByClub(walletAddress, clubId);
-    //       console.log("CHECKUSER", checkUser);
-    //       checkUser.then(async (user) => {
-    //         if (user.data) {
-    //           // if user is a part of the club,
-    //           // check whether the user wallet holds the governance token
-    //           // const usdc_contract = new SmartContract(
-    //           //   ImplementationContract,
-    //           //   USDC_CONTRACT_ADDRESS,
-    //           //   undefined,
-    //           //   USDC_CONTRACT_ADDRESS,
-    //           //   GNOSIS_TRANSACTION_URL,
-    //           // );
-    //           // await usdc_contract.balanceOf().then(
-    //           //   (result) => {
-    //           //     if (result <= 0) {
-    //           //       return false;
-    //           //     } else {
-    //           //       return true;
-    //           //     }
-    //           //   },
-    //           //   (error) => {
-    //           //     return false;
-    //           //   },
-    //           // );
-    //         } else {
-    //           // if user not part of club
-    //           // Check user is an admin?
-    //           const checkUserInClub = new SmartContract(
-    //             ImplementationContract,
-    //             daoAddress,
-    //             undefined,
-    //             USDC_CONTRACT_ADDRESS,
-    //             GNOSIS_TRANSACTION_URL,
-    //           );
-    //           const response = checkUserInClub.userDetails();
-    //           response.then((result) => {
-    //             console.log("userdetail", result);
-    //             if (result[2]) {
-    //               // is admin
-    //               return true;
-    //             } else {
-    //               // is not an admin
-    //               return false;
-    //             }
-    //           });
-    //         }
-    //       });
-    //     }
-    //   }
-    // });
+  try {
+    if (
+      clubId &&
+      walletAddress &&
+      daoAddress &&
+      USDC_CONTRACT_ADDRESS &&
+      GNOSIS_TRANSACTION_URL
+    ) {
+      const checkUserInClub = new SmartContract(
+        ImplementationContract,
+        daoAddress,
+        undefined,
+        USDC_CONTRACT_ADDRESS,
+        GNOSIS_TRANSACTION_URL,
+      );
+      const response = checkUserInClub.userDetails();
+      response.then((result) => {
+        console.log("userdetail", result);
+        if (result[0]) {
+          // is admin
+          return true;
+        } else {
+          // is not an admin
+          return false;
+        }
+      });
+      // check club token type
+      // const tokens = getAssets(clubId);
+      // tokens.then((tokenResult) => {
+      //   if (tokenResult.status != 200) {
+      //     return false;
+      //   } else {
+      //     if (
+      //       tokenResult.data.tokenPriceList.length != 0 &&
+      //       tokenResult.data.tokenPriceList[0].name === "USDC"
+      //     ) {
+      //       // check if user is part of a club
+      //       // if yes? check whether user holds governance token in the wallet
+      //       const checkUser = checkUserByClub(walletAddress, clubId);
+      //       console.log("CHECKUSER", checkUser);
+      //       checkUser.then(async (user) => {
+      //         if (user.data) {
+      //           // if user is a part of the club,
+      //           // check whether the user wallet holds the governance token
+      //           // const usdc_contract = new SmartContract(
+      //           //   ImplementationContract,
+      //           //   USDC_CONTRACT_ADDRESS,
+      //           //   undefined,
+      //           //   USDC_CONTRACT_ADDRESS,
+      //           //   GNOSIS_TRANSACTION_URL,
+      //           // );
+      //           // await usdc_contract.balanceOf().then(
+      //           //   (result) => {
+      //           //     if (result <= 0) {
+      //           //       return false;
+      //           //     } else {
+      //           //       return true;
+      //           //     }
+      //           //   },
+      //           //   (error) => {
+      //           //     return false;
+      //           //   },
+      //           // );
+      //         } else {
+      //           // if user not part of club
+      //           // Check user is an admin?
+      //           const checkUserInClub = new SmartContract(
+      //             ImplementationContract,
+      //             daoAddress,
+      //             undefined,
+      //             USDC_CONTRACT_ADDRESS,
+      //             GNOSIS_TRANSACTION_URL,
+      //           );
+      //           const response = checkUserInClub.userDetails();
+      //           response.then((result) => {
+      //             console.log("userdetail", result);
+      //             if (result[2]) {
+      //               // is admin
+      //               return true;
+      //             } else {
+      //               // is not an admin
+      //               return false;
+      //             }
+      //           });
+      //         }
+      //       });
+      //     }
+      //   }
+      // });
+    }
+  } catch (error) {
+    console.log(error);
   }
 }

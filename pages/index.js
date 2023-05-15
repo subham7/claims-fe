@@ -112,108 +112,109 @@ const App = () => {
   const router = useRouter();
 
   const networkId = wallet?.chains[0]?.id;
-  console.log("Current Network Id", wallet );
+  console.log("Current Network Id", wallet);
 
-  let walletAddress;
-
-  if (typeof window !== "undefined") {
-    const web3 = new Web3(window.web3);
-    walletAddress = web3.utils.toChecksumAddress(wallet?.accounts[0].address);
-  }
+  const walletAddress = Web3.utils.toChecksumAddress(
+    wallet?.accounts[0].address,
+  );
 
   useEffect(() => {
-    if (walletAddress) {
-      // (async () => {
-      //   const getClubs = await fetchClubByUserAddress(walletAddress);
-      //   console.log(getClubs.data.clubs);
-      // })();
-      // getClubs
-      //   .then((result) => {
-      //     console.log(result);
-      //     if (result.status != 200) {
-      //       console.log(result.statusText);
-      //     } else {
-      //       console.log("CLub data", Array.from(result.data.clubs));
-      //       setClubData(Array.from(result.data.clubs));
-      //       setClubOwnerAddress(
-      //         result.data.userAddress.substring(0, 6) +
-      //           ".........." +
-      //           result.data.userAddress.substring(
-      //             result.data.userAddress.length - 4,
-      //           ),
-      //       );
-      //     }
-      //   })
-      //   .catch((error) => {
-      //     setNoWalletMessage(
-      //       "You don't have any clubs available, please join an existing one or create a new club",
-      //     );
-      //     console.log(error);
-      //   });
-    }
+    try {
+      if (walletAddress) {
+        // (async () => {
+        //   const getClubs = await fetchClubByUserAddress(walletAddress);
+        //   console.log(getClubs.data.clubs);
+        // })();
+        // getClubs
+        //   .then((result) => {
+        //     console.log(result);
+        //     if (result.status != 200) {
+        //       console.log(result.statusText);
+        //     } else {
+        //       console.log("CLub data", Array.from(result.data.clubs));
+        //       setClubData(Array.from(result.data.clubs));
+        //       setClubOwnerAddress(
+        //         result.data.userAddress.substring(0, 6) +
+        //           ".........." +
+        //           result.data.userAddress.substring(
+        //             result.data.userAddress.length - 4,
+        //           ),
+        //       );
+        //     }
+        //   })
+        //   .catch((error) => {
+        //     setNoWalletMessage(
+        //       "You don't have any clubs available, please join an existing one or create a new club",
+        //     );
+        //     console.log(error);
+        //   });
+      }
 
-    if (walletAddress) {
-      const fetchClubs = async () => {
-        try {
-          const data = await subgraphQuery(
-            networkId === "0x5"
-              ? SUBGRAPH_URL_GOERLI
-              : networkId === "0x89"
-              ? SUBGRAPH_URL_POLYGON
-              : "",
-            QUERY_CLUBS_FROM_WALLET_ADDRESS(walletAddress),
-          );
-          console.log(data.users);
-          setClubListData(data.users);
-        } catch (error) {
-          setNoWalletMessage(
-            "You don't have any clubs available, please join an existing one or create a new club",
-          );
-          console.log(error);
-        }
-      };
-      fetchClubs();
-    }
-
-    if (walletAddress) {
-      const getLoginToken = loginToken(walletAddress);
-
-      getLoginToken.then((response) => {
-        console.log("responseee", response);
-        if (response?.status !== 200) {
-          console.log(response?.data.error);
-        } else {
-          // setExpiryTime(response.data.tokens.access.expires);
-          setExpiryTime("2023-03-19T11:07:20.810Z");
-          const expiryTime = getExpiryTime();
-          const currentDate = Date();
-          setJwtToken(response.data.tokens.access.token);
-          setRefreshToken(response.data.tokens.refresh.token);
-          if (expiryTime < currentDate) {
-            console.log("changeeeee", getJwtToken());
-            const obtainNewToken = refreshToken(
-              getRefreshToken(),
-              getJwtToken(),
+      if (walletAddress) {
+        const fetchClubs = async () => {
+          try {
+            const data = await subgraphQuery(
+              networkId === "0x5"
+                ? SUBGRAPH_URL_GOERLI
+                : networkId === "0x89"
+                ? SUBGRAPH_URL_POLYGON
+                : "",
+              QUERY_CLUBS_FROM_WALLET_ADDRESS(walletAddress),
             );
-            obtainNewToken
-              .then((tokenResponse) => {
-                if (response.status !== 200) {
-                  console.log(tokenResponse.data.error);
-                } else {
-                  setExpiryTime(tokenResponse.data.tokens.access.expires);
-                  setJwtToken(tokenResponse.data.tokens.access.token);
-                  setRefreshToken(tokenResponse.data.tokens.refresh.token);
-                }
-              })
-              .catch((error) => {
-                console.log(error);
-              });
+            console.log(data.users);
+            setClubListData(data.users);
+          } catch (error) {
+            setNoWalletMessage(
+              "You don't have any clubs available, please join an existing one or create a new club",
+            );
+            console.log(error);
           }
-        }
-      });
-      setClubFlow(true);
-    } else {
-      setClubFlow(false);
+        };
+        fetchClubs();
+      }
+
+      if (walletAddress) {
+        const getLoginToken = loginToken(walletAddress);
+
+        getLoginToken.then((response) => {
+          console.log("responseee", response);
+          if (response?.status !== 200) {
+            console.log(response?.data.error);
+          } else {
+            // setExpiryTime(response.data.tokens.access.expires);
+            setExpiryTime("2023-03-19T11:07:20.810Z");
+            const expiryTime = getExpiryTime();
+            const currentDate = Date();
+            setJwtToken(response.data.tokens.access.token);
+            setRefreshToken(response.data.tokens.refresh.token);
+            if (expiryTime < currentDate) {
+              console.log("changeeeee", getJwtToken());
+              const obtainNewToken = refreshToken(
+                getRefreshToken(),
+                getJwtToken(),
+              );
+              obtainNewToken
+                .then((tokenResponse) => {
+                  if (response.status !== 200) {
+                    console.log(tokenResponse.data.error);
+                  } else {
+                    setExpiryTime(tokenResponse.data.tokens.access.expires);
+                    setJwtToken(tokenResponse.data.tokens.access.token);
+                    setRefreshToken(tokenResponse.data.tokens.refresh.token);
+                  }
+                })
+                .catch((error) => {
+                  console.log(error);
+                });
+            }
+          }
+        });
+        setClubFlow(true);
+      } else {
+        setClubFlow(false);
+      }
+    } catch (error) {
+      console.log(error);
     }
   }, [networkId, walletAddress]);
 

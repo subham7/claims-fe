@@ -70,13 +70,9 @@ const Join = () => {
     return state.gnosis.usdcContractAddress;
   });
 
-  console.log("GNOSIS", GNOSIS_TRANSACTION_URL, USDC_CONTRACT_ADDRESS);
-
-  let walletAddress;
-  if (typeof window !== "undefined") {
-    const web3 = new Web3(window.web3);
-    walletAddress = web3.utils.toChecksumAddress(wallet?.accounts[0].address);
-  }
+  const walletAddress = Web3.utils.toChecksumAddress(
+    wallet?.accounts[0].address,
+  );
 
   /**
    * Fetching details for ERC20 comp

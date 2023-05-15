@@ -60,7 +60,6 @@ const DepositOwnerFee = ({ updateOwnerFeesHandler, onClose, loading }) => {
         .lessThan(100),
     }),
     onSubmit: (value) => {
-      console.log("New", value);
       updateOwnerFeesHandler(value.ownerFee);
       onClose();
     },

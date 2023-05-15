@@ -51,38 +51,42 @@ export const SUBGRAPH_CLIENT = new ApolloClient({
 });
 
 export function updateDynamicAddress(networkId, dispatch) {
-  const networkData = fetchConfigById(networkId);
-  networkData.then((result) => {
-    if (result.status != 200) {
-      console.log(result.error);
-    } else {
-      dispatch(
-        addContractAddress({
-          factoryContractAddress:
-            networkId == "0x5"
-              ? FACTORY_ADDRESS_GOERLI
-              : networkId == "0x89"
-              ? FACTORY_ADDRESS_POLYGON
-              : "",
-          usdcContractAddress: result.data[0].usdcContractAddress,
-          actionContractAddress:
-            networkId == "0x5"
-              ? AIRDROP_ACTION_ADDRESS_GOERLI
-              : networkId == "0x89"
-              ? AIRDROP_ACTION_ADDRESS_POLYGON
-              : "",
-          subgraphUrl:
-            networkId == "0x5"
-              ? SUBGRAPH_URL_GOERLI
-              : networkId == "0x89"
-              ? SUBGRAPH_URL_POLYGON
-              : "",
-          transactionUrl: result.data[0].gnosisTransactionUrl,
-          networkHex: result.data[0].networkHex,
-          networkId: result.data[0].networkId,
-          networkName: result.data[0].name,
-        }),
-      );
-    }
-  });
+  try {
+    const networkData = fetchConfigById(networkId);
+    networkData.then((result) => {
+      if (result.status != 200) {
+        console.log(result.error);
+      } else {
+        dispatch(
+          addContractAddress({
+            factoryContractAddress:
+              networkId == "0x5"
+                ? FACTORY_ADDRESS_GOERLI
+                : networkId == "0x89"
+                ? FACTORY_ADDRESS_POLYGON
+                : "",
+            usdcContractAddress: result.data[0].usdcContractAddress,
+            actionContractAddress:
+              networkId == "0x5"
+                ? AIRDROP_ACTION_ADDRESS_GOERLI
+                : networkId == "0x89"
+                ? AIRDROP_ACTION_ADDRESS_POLYGON
+                : "",
+            subgraphUrl:
+              networkId == "0x5"
+                ? SUBGRAPH_URL_GOERLI
+                : networkId == "0x89"
+                ? SUBGRAPH_URL_POLYGON
+                : "",
+            transactionUrl: result.data[0].gnosisTransactionUrl,
+            networkHex: result.data[0].networkHex,
+            networkId: result.data[0].networkId,
+            networkName: result.data[0].name,
+          }),
+        );
+      }
+    });
+  } catch (error) {
+    console.log(error);
+  }
 }
