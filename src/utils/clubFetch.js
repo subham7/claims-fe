@@ -8,6 +8,7 @@ import {
   addDaoAddress,
   addErc20ClubDetails,
   addErc721ClubDetails,
+  setClubNetworkId,
 } from "../redux/reducers/club";
 import { useConnectWallet } from "@web3-onboard/react";
 
@@ -15,6 +16,7 @@ import {
   addContractAddress,
   setAdminUser,
   setMemberUser,
+  setWrongNetwork,
 } from "../redux/reducers/gnosis";
 import Erc20Dao from "../abis/newArch/erc20Dao.json";
 import Erc721Dao from "../abis/newArch/erc721Dao.json";
@@ -35,6 +37,7 @@ import {
   SUBGRAPH_URL_GOERLI,
   SUBGRAPH_URL_POLYGON,
 } from "../api";
+import { fetchClubbyDaoAddress } from "../api/club";
 
 const ClubFetch = (Component) => {
   const RetrieveDataComponent = () => {
@@ -88,11 +91,15 @@ const ClubFetch = (Component) => {
         if ((daoAddress && wallet) || (pid && wallet)) {
           console.log("first", pid, wallet);
           const networkData = fetchConfigById(wallet.chains[0].id);
-          networkData.then((result) => {
+
+          networkData.then(async (result) => {
             if (result.status != 200) {
               console.log(result.error);
             } else {
-              console.log("firstyyyyy");
+              console.log("firstyyyyy", result.data[0]);
+              const clubData = await fetchClubbyDaoAddress(
+                daoAddress ? daoAddress : pid,
+              );
 
               dispatch(
                 addContractAddress({
@@ -102,7 +109,7 @@ const ClubFetch = (Component) => {
                       : networkId == "0x89"
                       ? FACTORY_ADDRESS_POLYGON
                       : null,
-                  usdcContractAddress: result.data[0].usdcContractAddress,
+                  usdcContractAddress: result?.data[0]?.usdcContractAddress,
                   actionContractAddress:
                     networkId == "0x5"
                       ? AIRDROP_ACTION_ADDRESS_GOERLI
@@ -115,10 +122,11 @@ const ClubFetch = (Component) => {
                       : networkId == "0x89"
                       ? SUBGRAPH_URL_POLYGON
                       : null,
-                  transactionUrl: result.data[0].gnosisTransactionUrl,
-                  networkHex: result.data[0].networkHex,
-                  networkId: result.data[0].networkId,
-                  networkName: result.data[0].name,
+                  transactionUrl: result?.data[0]?.gnosisTransactionUrl,
+                  networkHex: result?.data[0]?.networkHex,
+                  networkId: result?.data[0]?.networkId,
+                  networkName: result?.data[0]?.name,
+                  clubNetworkId: clubData?.data[0]?.networkId,
                 }),
               );
             }
@@ -261,11 +269,43 @@ const ClubFetch = (Component) => {
       router,
     ]);
 
+    const checkClubExistsOnNetwork = useCallback(async () => {
+      try {
+        if ((daoAddress && wallet) || (pid && wallet)) {
+          console.log("now", pid, wallet);
+          const networkData = await fetchClubbyDaoAddress(
+            daoAddress ? daoAddress : pid,
+          );
+          console.log("now Network Data", networkData, daoAddress);
+          const clubNetworkId = networkData.data[0].networkId;
+          console.log("CLUB ID", clubNetworkId);
+
+          console.log("now wallet", wallet);
+
+          if (clubNetworkId === 5 && wallet?.chains[0].id === "0x5") {
+            console.log("Nice club");
+            dispatch(setWrongNetwork(false));
+          } else if (clubNetworkId === 137 && wallet?.chains[0].id === "0x89") {
+            console.log("Polygon club it is");
+            dispatch(setWrongNetwork(false));
+          } else {
+            console.log("Wrong Club");
+            dispatch(setWrongNetwork(true));
+          }
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }, [daoAddress, dispatch, pid, wallet]);
+
     useEffect(() => {
       console.log("first second", wallet, pid);
 
-      if (wallet) checkUserExists();
-    }, [checkUserExists, pid, wallet]);
+      if (wallet) {
+        checkUserExists();
+        checkClubExistsOnNetwork();
+      }
+    }, [checkClubExistsOnNetwork, checkUserExists, pid, wallet]);
 
     useEffect(() => {
       console.log("Wallettt", wallet);

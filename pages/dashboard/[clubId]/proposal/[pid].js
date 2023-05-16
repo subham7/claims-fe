@@ -61,6 +61,7 @@ import ProposalInfo from "../../../../src/components/proposalComps/ProposalInfo"
 import CurrentResults from "../../../../src/components/proposalComps/CurrentResults";
 import ProposalVotes from "../../../../src/components/proposalComps/ProposalVotes";
 import { fetchClubbyDaoAddress } from "../../../../src/api/club";
+import WrongNetworkModal from "../../../../src/components/modals/WrongNetworkModal";
 
 const useStyles = makeStyles({
   clubAssets: {
@@ -285,8 +286,16 @@ const ProposalDetail = () => {
     return state.gnosis.factoryContractAddress;
   });
 
+  const WRONG_NETWORK = useSelector((state) => {
+    return state.gnosis.wrongNetwork;
+  });
+
   const AIRDROP_ACTION_ADDRESS = useSelector((state) => {
     return state.gnosis.actionContractAddress;
+  });
+
+  const CLUB_NETWORK_ID = useSelector((state) => {
+    return state.gnosis.clubNetworkId;
   });
 
   console.log("AIRDROP ACtion", AIRDROP_ACTION_ADDRESS);
@@ -1319,6 +1328,9 @@ const ProposalDetail = () => {
             </Stack>
           </Grid>
         </Grid>
+
+        {WRONG_NETWORK && <WrongNetworkModal chainId={CLUB_NETWORK_ID} />}
+
         <Snackbar
           open={openSnackBar}
           autoHideDuration={6000}

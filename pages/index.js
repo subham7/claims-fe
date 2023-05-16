@@ -41,6 +41,7 @@ import { subgraphQuery } from "../src/utils/subgraphs";
 import { QUERY_CLUBS_FROM_WALLET_ADDRESS } from "../src/api/graphql/queries";
 import ClubFetch from "../src/utils/clubFetch";
 import { SUBGRAPH_URL_GOERLI, SUBGRAPH_URL_POLYGON } from "../src/api";
+import WrongNetworkModal from "../src/components/modals/WrongNetworkModal";
 
 const useStyles = makeStyles({
   container: {
@@ -112,7 +113,7 @@ const App = () => {
   const router = useRouter();
 
   const networkId = wallet?.chains[0]?.id;
-  console.log("Current Network Id", wallet);
+  console.log("Current Network Id", networkId);
 
   const walletAddress = Web3.utils.toChecksumAddress(
     wallet?.accounts[0].address,
@@ -459,6 +460,12 @@ const App = () => {
             </Grid>
           </DialogContent>
         </Dialog>
+
+        {networkId !== "0x89" && networkId !== "0x5" ? (
+          <WrongNetworkModal  />
+        ) : (
+          ""
+        )}
       </div>
     </Layout2>
   );

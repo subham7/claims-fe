@@ -37,6 +37,7 @@ import * as yup from "yup";
 import dayjs from "dayjs";
 import { useSelector } from "react-redux";
 import { useRouter } from "next/router";
+import WrongNetworkModal from "../../../modals/WrongNetworkModal";
 
 const NewArchERC20 = ({
   daoDetails,
@@ -58,8 +59,9 @@ const NewArchERC20 = ({
   const [{ wallet }] = useConnectWallet();
   const router = useRouter();
 
-  const walletAddress = Web3.utils.toChecksumAddress(wallet?.accounts[0].address);
-  
+  const walletAddress = Web3.utils.toChecksumAddress(
+    wallet?.accounts[0].address,
+  );
 
   const FACTORY_CONTRACT_ADDRESS = useSelector((state) => {
     return state.gnosis.factoryContractAddress;
@@ -72,6 +74,20 @@ const NewArchERC20 = ({
   const USDC_CONTRACT_ADDRESS = useSelector((state) => {
     return state.gnosis.usdcContractAddress;
   });
+
+  const CLUB_NETWORK_ID = useSelector((state) => {
+    return state.gnosis.clubNetworkId;
+  });
+
+  const WRONG_NETWORK = useSelector((state) => {
+    return state.gnosis.wrongNetwork;
+  });
+
+  const NETWORK_ID = useSelector((state) => {
+    return state.gnosis.networkId;
+  });
+
+  console.log("NETWORK ID +++", NETWORK_ID);
 
   console.log("GNOSIS USDC", GNOSIS_TRANSACTION_URL, USDC_CONTRACT_ADDRESS);
 
@@ -905,7 +921,7 @@ const NewArchERC20 = ({
         )
       )}
 
-      <Dialog
+      {/* <Dialog
         // open={open}
         // onClose={handleDialogClose}
         scroll="body"
@@ -946,7 +962,9 @@ const NewArchERC20 = ({
             </Grid>
           </Grid>
         </DialogContent>
-      </Dialog>
+      </Dialog> */}
+
+      {WRONG_NETWORK && <WrongNetworkModal chainId={CLUB_NETWORK_ID} />}
 
       <Backdrop
         sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}

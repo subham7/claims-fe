@@ -53,6 +53,8 @@ import { NEW_FACTORY_ADDRESS } from "../../api";
 import { GiTwoCoins } from "react-icons/gi";
 import { IoColorPalette } from "react-icons/io5";
 import Image from "next/image";
+import WrongNetworkModal from "../modals/WrongNetworkModal";
+import { setClubNetworkId } from "../../redux/reducers/club";
 
 const DashboardIndex = () => {
   const clubData = useSelector((state) => {
@@ -91,12 +93,20 @@ const DashboardIndex = () => {
     return state.gnosis.subgraphUrl;
   });
 
+  const CLUB_NETWORK_ID = useSelector((state) => {
+    return state.gnosis.clubNetworkId;
+  });
+
   const NETWORK_HEX = useSelector((state) => {
     return state.gnosis.networkHex;
   });
 
   const GNOSIS_TRANSACTION_URL = useSelector((state) => {
     return state.gnosis.transactionUrl;
+  });
+
+  const WRONG_NETWORK = useSelector((state) => {
+    return state.gnosis.wrongNetwork;
   });
 
   const USDC_CONTRACT_ADDRESS = useSelector((state) => {
@@ -118,7 +128,6 @@ const DashboardIndex = () => {
         const imageUrl = await fetchClubbyDaoAddress(
           Web3.utils.toChecksumAddress(daoAddress),
         );
-
         const membersData = await subgraphQuery(
           SUBGRAPH_URL,
           QUERY_ALL_MEMBERS(daoAddress),
@@ -928,6 +937,8 @@ const DashboardIndex = () => {
             </Stack>
           </Grid>
         </Grid>
+
+        {WRONG_NETWORK && <WrongNetworkModal chainId={CLUB_NETWORK_ID} />}
 
         <Snackbar
           //   open={openSnackBar}

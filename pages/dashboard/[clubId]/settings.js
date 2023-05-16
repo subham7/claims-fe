@@ -18,6 +18,7 @@ import ClubFetch from "../../../src/utils/clubFetch";
 import { subgraphQuery } from "../../../src/utils/subgraphs";
 import { convertFromWeiGovernance } from "../../../src/utils/globalFunctions";
 import { getAssetsByDaoAddress } from "../../../src/api/assets";
+import WrongNetworkModal from "../../../src/components/modals/WrongNetworkModal";
 
 const Settings = () => {
   const [daoDetails, setDaoDetails] = useState({
@@ -66,6 +67,10 @@ const Settings = () => {
     return state.gnosis.factoryContractAddress;
   });
 
+  const CLUB_NETWORK_ID = useSelector((state) => {
+    return state.gnosis.clubNetworkId;
+  });
+
   const SUBGRAPH_URL = useSelector((state) => {
     return state.gnosis.subgraphUrl;
   });
@@ -76,6 +81,10 @@ const Settings = () => {
 
   const isAdminUser = useSelector((state) => {
     return state.gnosis.adminUser;
+  });
+
+  const WRONG_NETWORK = useSelector((state) => {
+    return state.gnosis.wrongNetwork;
   });
 
   const NETWORK_HEX = useSelector((state) => {
@@ -370,6 +379,8 @@ const Settings = () => {
         isAdminUser={isAdminUser}
       />
       <TokenGating />
+
+      {WRONG_NETWORK && <WrongNetworkModal chainId={CLUB_NETWORK_ID} />}
     </div>
   );
 };

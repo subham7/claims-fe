@@ -19,6 +19,7 @@ import { QUERY_ALL_MEMBERS } from "../../src/api/graphql/queries";
 import { useSelector } from "react-redux";
 import ClubFetch from "../../src/utils/clubFetch";
 import { Backdrop, CircularProgress } from "@mui/material";
+import WrongNetworkModal from "../../src/components/modals/WrongNetworkModal";
 
 const Join = () => {
   const [daoDetails, setDaoDetails] = useState({
@@ -59,6 +60,8 @@ const Join = () => {
   const FACTORY_CONTRACT_ADDRESS = useSelector((state) => {
     return state.gnosis.factoryContractAddress;
   });
+
+
 
   const SUBGRAPH_URL = useSelector((state) => {
     return state.gnosis.subgraphUrl;
@@ -375,6 +378,7 @@ const Join = () => {
           daoDetails={daoDetails}
         />
       ) : null}
+
 
       <Backdrop
         sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}

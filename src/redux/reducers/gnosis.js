@@ -25,6 +25,8 @@ export const slice = createSlice({
     createDaoAuthorized: false,
     governanceAllowed: true,
     redirectToCreate: false,
+    wrongNetwork: false,
+    clubNetworkId: null,
   },
   reducers: {
     safeConnected: (state, action) => {
@@ -47,6 +49,7 @@ export const slice = createSlice({
       state.networkHex = action.payload.networkHex;
       state.networkId = action.payload.networkId;
       state.networkName = action.payload.networkName;
+      state.clubNetworkId = action.payload.clubNetworkId;
     },
     setAdminUser: (state, action) => {
       state.adminUser = action.payload;
@@ -82,6 +85,9 @@ export const slice = createSlice({
     setRedirectToCreate: (state, action) => {
       state.redirectToCreate = action.payload;
     },
+    setWrongNetwork: (state, action) => {
+      state.wrongNetwork = action.payload;
+    },
   },
 });
 
@@ -101,6 +107,7 @@ export const {
   setCreateDaoAuthorized,
   setGovernanceAllowed,
   setRedirectToCreate,
+  setWrongNetwork,
 } = slice.actions;
 
 export default slice.reducer;

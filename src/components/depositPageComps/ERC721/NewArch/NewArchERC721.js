@@ -23,6 +23,7 @@ import dayjs from "dayjs";
 import ClubFetch from "../../../../utils/clubFetch";
 import { useSelector } from "react-redux";
 import { useRouter } from "next/router";
+import WrongNetworkModal from "../../../modals/WrongNetworkModal";
 
 const NewArchERC721 = ({
   daoDetails,
@@ -49,6 +50,16 @@ const NewArchERC721 = ({
     const web3 = new Web3(window.web3);
     walletAddress = web3.utils.toChecksumAddress(wallet?.accounts[0].address);
   }
+
+  const WRONG_NETWORK = useSelector((state) => {
+    return state.gnosis.wrongNetwork;
+  });
+
+  const CLUB_NETWORK_ID = useSelector((state) => {
+    return state.gnosis.clubNetworkId;
+  });
+
+  console.log("NETWORK ID +++", NETWORK_ID);
 
   const FACTORY_CONTRACT_ADDRESS = useSelector((state) => {
     return state.gnosis.factoryContractAddress;
@@ -459,6 +470,8 @@ const NewArchERC721 = ({
             </Typography>
           </Grid>
         )}
+
+        {WRONG_NETWORK && <WrongNetworkModal chainId={CLUB_NETWORK_ID} />}
 
         {claimSuccessfull && showMessage ? (
           <Alert

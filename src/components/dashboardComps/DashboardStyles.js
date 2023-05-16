@@ -34,7 +34,7 @@ export const DashboardStyles = makeStyles({
     background: "#121D38",
     border: "1px solid #6475A3",
     color: "white",
-    // position: "relative",
+    position: "relative",
   },
   cardOverlay: {
     position: "absolute",
@@ -291,7 +291,7 @@ export const DashboardStyles = makeStyles({
   },
   docs: {
     "position": "absolute",
-    "top": "440px",
+    "top": "330px",
     "color": "white",
     "textDecoration": "underline",
     "fontSize": "18px",

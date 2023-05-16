@@ -24,11 +24,14 @@ import { setUploadNFTLoading } from "../../src/redux/reducers/gnosis";
 import { NFTStorage } from "nft.storage";
 import { convertAmountToWei } from "../../src/utils/globalFunctions";
 import { convertToWeiGovernance } from "../../src/utils/globalFunctions";
+import WrongNetworkModal from "../../src/components/modals/WrongNetworkModal";
+import { useConnectWallet } from "@web3-onboard/react";
 
 const Create = () => {
   const steps = ["Add basic info", "Set token rules", "Governance"];
   const dispatch = useDispatch();
   const uploadInputRef = useRef(null);
+  const [{ wallet }] = useConnectWallet();
 
   const [activeStep, setActiveStep] = useState(0);
   const [completed, setCompleted] = useState({});
@@ -61,6 +64,8 @@ const Create = () => {
   const uploadNFTLoading = useSelector((state) => {
     return state.gnosis.setUploadNFTLoading;
   });
+
+  const networkId = wallet?.chains[0]?.id;
 
   const handleStep = (step) => () => {
     setActiveStep(step);
@@ -377,6 +382,8 @@ const Create = () => {
           </form>
         </Box>
       </Grid>
+
+      {networkId !== "0x89" && networkId !== "0x5" ? <WrongNetworkModal /> : ""}
     </Layout2>
   );
 };
