@@ -42,6 +42,7 @@ import { QUERY_CLUBS_FROM_WALLET_ADDRESS } from "../src/api/graphql/queries";
 import ClubFetch from "../src/utils/clubFetch";
 import { SUBGRAPH_URL_GOERLI, SUBGRAPH_URL_POLYGON } from "../src/api";
 import WrongNetworkModal from "../src/components/modals/WrongNetworkModal";
+import Image from "next/image";
 
 const useStyles = makeStyles({
   container: {
@@ -413,6 +414,13 @@ const App = () => {
                   </Typography>
                 </Grid>
               </Grid>
+
+              // <div>
+              //   <div></div>
+              //   <div>
+              //     <Image src={homepage} alt='Join StationX' height={800} />
+              //   </div>
+              // </div>
             )}
           </>
         )}

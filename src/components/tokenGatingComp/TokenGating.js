@@ -201,12 +201,7 @@ const TokenGating = () => {
       console.log(error);
       setLoading(false);
     }
-  }, [
-    walletAddress,
-    USDC_CONTRACT_ADDRESS,
-    GNOSIS_TRANSACTION_URL,
-    daoAddress,
-  ]);
+  }, [FACTORY_CONTRACT_ADDRESS, walletAddress, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL, daoAddress]);
 
   useEffect(() => {
     fetchTokenGatingDetials();

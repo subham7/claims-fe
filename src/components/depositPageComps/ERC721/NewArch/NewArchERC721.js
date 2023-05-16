@@ -59,8 +59,6 @@ const NewArchERC721 = ({
     return state.gnosis.clubNetworkId;
   });
 
-  console.log("NETWORK ID +++", NETWORK_ID);
-
   const FACTORY_CONTRACT_ADDRESS = useSelector((state) => {
     return state.gnosis.factoryContractAddress;
   });

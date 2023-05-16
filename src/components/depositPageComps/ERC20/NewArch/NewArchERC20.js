@@ -83,13 +83,6 @@ const NewArchERC20 = ({
     return state.gnosis.wrongNetwork;
   });
 
-  const NETWORK_ID = useSelector((state) => {
-    return state.gnosis.networkId;
-  });
-
-  console.log("NETWORK ID +++", NETWORK_ID);
-
-  console.log("GNOSIS USDC", GNOSIS_TRANSACTION_URL, USDC_CONTRACT_ADDRESS);
 
   const day = Math.floor(new Date().getTime() / 1000.0);
   const day1 = dayjs.unix(day);
