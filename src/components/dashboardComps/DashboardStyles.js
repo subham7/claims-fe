@@ -26,13 +26,13 @@ export const DashboardStyles = makeStyles({
     width: "22vw",
     height: "351px",
     background: "#121D38",
-    border: "1px solid #6475A3",
+    border: ".5px solid #6475A3",
   },
   fifthCard: {
     width: "22vw",
     height: "370px",
     background: "#121D38",
-    border: "1px solid #6475A3",
+    border: ".5px solid #6475A3",
     color: "white",
     position: "relative",
   },
@@ -49,7 +49,7 @@ export const DashboardStyles = makeStyles({
     opacity: 1,
     width: "100%",
     height: "370px",
-    border: "1px solid #6475A3",
+    border: ".5px solid #6475A3",
   },
   cardSharp2: {
     backgroundColor: "#142243",
@@ -216,7 +216,7 @@ export const DashboardStyles = makeStyles({
     width: "22vw",
     background: "#121D38",
     borderRadius: "10px",
-    border: "1px solid #6475A3",
+    border: ".5px solid #6475A3",
   },
   pendingIllustration: {
     height: "12px",

@@ -107,6 +107,7 @@ const Settings = () => {
   const day = Math.floor(new Date().getTime() / 1000.0);
   const day1 = dayjs.unix(day);
   const day2 = dayjs.unix(daoDetails.depositDeadline);
+  const remainingTimeInSecs = day2.diff(day1, "seconds");
   const remainingDays = day2.diff(day1, "day");
 
   const fetchErc20ContractDetails = useCallback(async () => {
@@ -367,6 +368,7 @@ const Settings = () => {
         treasuryAmount={treasuryAmount}
         tokenType={tokenType}
         remainingDays={remainingDays}
+        remainingTimeInSecs={remainingTimeInSecs}
         walletAddress={walletAddress}
       />
       <AdditionalSettings

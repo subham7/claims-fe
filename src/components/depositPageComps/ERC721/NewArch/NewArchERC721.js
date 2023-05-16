@@ -77,6 +77,7 @@ const NewArchERC721 = ({
   const day1 = dayjs.unix(day);
   const day2 = dayjs.unix(daoDetails.depositDeadline);
   const remainingDays = day2.diff(day1, "day");
+  const remainingTimeInSecs = day2.diff(day1, "seconds");
   const dateSum = new Date(dayjs.unix(daoDetails.depositDeadline)).toString();
 
   const showMessageHandler = () => {
@@ -267,7 +268,7 @@ const NewArchERC721 = ({
                           Active
                         </Typography>
                       ) : (
-                        <Typography className={classes.depositActive}>
+                        <Typography className={classes.depositInactive}>
                           <div className={classes.executedIllustration}></div>
                           Finished
                         </Typography>
@@ -413,7 +414,8 @@ const NewArchERC721 = ({
                       <Button
                         onClick={claimNFTHandler}
                         disabled={
-                          remainingDays <= 0 || hasClaimed
+                          (remainingDays <= 0 && remainingTimeInSecs < 0) ||
+                          hasClaimed
                             ? true
                             : isTokenGated
                             ? !isEligibleForTokenGating

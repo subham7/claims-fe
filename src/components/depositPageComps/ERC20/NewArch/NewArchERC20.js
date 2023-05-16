@@ -83,12 +83,14 @@ const NewArchERC20 = ({
     return state.gnosis.wrongNetwork;
   });
 
-
   const day = Math.floor(new Date().getTime() / 1000.0);
   const day1 = dayjs.unix(day);
   const day2 = dayjs.unix(daoDetails.depositDeadline);
 
   const remainingDays = day2.diff(day1, "day");
+  const remainingTimeInSecs = day2.diff(day1, "seconds");
+  const remainingTimeInHours = day2.diff(day1, "hours");
+  console.log("Remaining Time in Secs", remainingTimeInSecs);
 
   const showMessageHandler = () => {
     setShowMessage(true);
@@ -369,7 +371,7 @@ const NewArchERC20 = ({
                       <Grid item ml={1} mt={1}>
                         {walletAddress ? (
                           daoDetails ? (
-                            remainingDays > 0 ? (
+                            remainingDays >= 0 && remainingTimeInSecs > 0 ? (
                               <Card className={classes.openTag}>
                                 <Typography className={classes.openTagFont}>
                                   Open
@@ -660,8 +662,12 @@ const NewArchERC20 = ({
                     >
                       <Typography variant="h6" className={classes.JoinText}>
                         {daoDetails.depositDeadline
-                          ? remainingDays > 0
-                            ? "Closes in " + remainingDays + " days"
+                          ? remainingDays >= 0 && remainingTimeInSecs > 0
+                            ? `Closes in ${
+                                remainingDays === 0
+                                  ? remainingTimeInHours
+                                  : remainingDays
+                              } ${remainingDays === 0 ? "hours" : "days"}`
                             : "Joining Closed"
                           : 0}
                       </Typography>
@@ -709,9 +715,12 @@ const NewArchERC20 = ({
                                 name="tokenInput"
                                 id="tokenInput"
                                 disabled={
-                                  remainingDays > 0 && isTokenGated
+                                  remainingDays >= 0 &&
+                                  remainingTimeInSecs > 0 &&
+                                  isTokenGated
                                     ? !isEligibleForTokenGating
-                                    : remainingDays > 0
+                                    : remainingDays >= 0 &&
+                                      remainingTimeInSecs > 0
                                     ? false
                                     : true
                                 }
@@ -788,24 +797,14 @@ const NewArchERC20 = ({
                         size="large"
                         onClick={formik.handleSubmit}
                         disabled={
-                          remainingDays > 0 && isTokenGated
+                          remainingDays >= 0 &&
+                          remainingTimeInSecs > 0 &&
+                          isTokenGated
                             ? !isEligibleForTokenGating
-                            : remainingDays > 0
+                            : remainingDays >= 0 && remainingTimeInSecs > 0
                             ? false
                             : true
                         }
-                        // disabled={
-                        //   (closingDays > 0 ? false : true) ||
-                        //   (depositAmount <= 0 ||
-                        //   depositAmount < minDeposit ||
-                        //   depositAmount > maxDeposit
-                        //     ? true
-                        //     : false) ||
-                        //   (tokenGatingAddress !==
-                        //     "0x0000000000000000000000000000000000000000" &&
-                        //     (userTokenBalance < tokenGatingAmount ||
-                        //       isNaN(userTokenBalance)))
-                        // }
                       >
                         Deposit
                       </Button>

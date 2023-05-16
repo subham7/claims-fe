@@ -33,6 +33,7 @@ const SettingsInfo = ({
   members,
   remainingDays,
   walletAddress,
+  remainingTimeInSecs,
 }) => {
   const classes = SettingsInfoStlyes();
 
@@ -109,7 +110,7 @@ const SettingsInfo = ({
                       <Grid item ml={1} mt={1}>
                         {walletAddress ? (
                           daoDetails ? (
-                            remainingDays > 0 ? (
+                            remainingDays >= 0 && remainingTimeInSecs > 0 ? (
                               <Card className={classes.openTag}>
                                 <Typography className={classes.openTagFont}>
                                   Open
