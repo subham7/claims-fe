@@ -61,8 +61,6 @@ const Join = () => {
     return state.gnosis.factoryContractAddress;
   });
 
-
-
   const SUBGRAPH_URL = useSelector((state) => {
     return state.gnosis.subgraphUrl;
   });
@@ -263,7 +261,7 @@ const Join = () => {
         daoAddress,
       );
       console.log("TOken Gating details", tokenGatingDetails);
-      if (tokenGatingDetails[0].length) setIsTokenGated(true);
+      if (tokenGatingDetails[0]?.length) setIsTokenGated(true);
       const tokenAContract = new SmartContract(
         ERC20ABI,
         tokenGatingDetails[0].tokenA,
@@ -378,7 +376,6 @@ const Join = () => {
           daoDetails={daoDetails}
         />
       ) : null}
-
 
       <Backdrop
         sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}

@@ -24,11 +24,7 @@ export default function CollectionCard(props) {
   const { metadata, tokenName, tokenSymbol, nftData } = props;
   const [image, setImage] = useState("");
 
-  console.log("Token metadata", metadata);
-
   const tokenURI = nftData?.token_uri;
-
-  console.log("TOKEN URI", tokenURI);
 
   const fetchData = async () => {
     if (tokenURI.length)

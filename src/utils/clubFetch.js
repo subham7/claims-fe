@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { subgraphQuery } from "./subgraphs";
 import { QUERY_CLUB_DETAILS } from "../api/graphql/queries";
@@ -41,7 +41,7 @@ import { fetchClubbyDaoAddress } from "../api/club";
 
 const ClubFetch = (Component) => {
   const RetrieveDataComponent = () => {
-    console.log("first");
+    const [tracker, setTracker] = useState(false);
     const router = useRouter();
     const dispatch = useDispatch();
     const [{ wallet }] = useConnectWallet();
@@ -138,8 +138,9 @@ const ClubFetch = (Component) => {
               : networkId == "0x89"
               ? SUBGRAPH_URL_POLYGON
               : "",
-            QUERY_CLUB_DETAILS(daoAddress),
+            QUERY_CLUB_DETAILS(daoAddress ? daoAddress : pid),
           );
+          console.log("clubdataaaaaaa", clubData, SUBGRAPH_URL_POLYGON, pid);
 
           dispatch(
             addClubData({
@@ -152,105 +153,136 @@ const ClubFetch = (Component) => {
             }),
           );
 
-          if (clubData.stations[0].tokenType === "erc20") {
-            const erc20Contract = new SmartContract(
-              Erc20Dao,
+          if (
+            USDC_CONTRACT_ADDRESS &&
+            GNOSIS_TRANSACTION_URL &&
+            gnosisAddress
+          ) {
+            console.log(
+              "yyyyyyyyyyyyyyyyyyy",
               daoAddress,
+              wallet,
+              pid,
               walletAddress,
+              gnosisAddress,
+              networkId,
+              dispatch,
               USDC_CONTRACT_ADDRESS,
               GNOSIS_TRANSACTION_URL,
+              router,
             );
-            console.log("erc20Contract", erc20Contract);
-            const daoDetails = await erc20Contract.getERC20DAOdetails();
-            console.log("daoDetails", daoDetails);
-            const response = erc20Contract.balanceOf();
-            console.log("response", response);
-            dispatch(
-              addErc20ClubDetails({
-                quorum: daoDetails.quorum / 100,
-                threshold: daoDetails.threshold / 100,
-                isGovernanceActive: daoDetails.isGovernanceActive,
-                isTransferable: daoDetails.isTransferable,
-                onlyAllowWhitelist: daoDetails.onlyAllowWhitelist,
-                deployerAddress: daoDetails.deployerAddress,
-              }),
-            );
+            if (clubData.stations[0].tokenType === "erc20") {
+              // console.log(first);
+              const erc20Contract = new SmartContract(
+                Erc20Dao,
+                daoAddress ? daoAddress : pid,
+                walletAddress,
+                USDC_CONTRACT_ADDRESS,
+                GNOSIS_TRANSACTION_URL,
+              );
+              console.log("erc20Contract", erc20Contract);
+              const daoDetails = await erc20Contract.getERC20DAOdetails();
+              console.log("daoDetails", daoDetails);
+              const response = erc20Contract.balanceOf();
+              console.log("response", response);
+              dispatch(
+                addErc20ClubDetails({
+                  quorum: daoDetails.quorum / 100,
+                  threshold: daoDetails.threshold / 100,
+                  isGovernanceActive: daoDetails.isGovernanceActive,
+                  isTransferable: daoDetails.isTransferable,
+                  onlyAllowWhitelist: daoDetails.onlyAllowWhitelist,
+                  deployerAddress: daoDetails.deployerAddress,
+                }),
+              );
 
-            response
-              .then(
-                async (result) => {
-                  const safeSdk = await getSafeSdk();
-                  const ownerAddresses = await safeSdk.getOwners();
-                  const ownerAddressesArray = ownerAddresses.map((value) =>
-                    Web3.utils.toChecksumAddress(value),
-                  );
-                  if (ownerAddressesArray.includes(walletAddress)) {
-                    dispatch(setAdminUser(true));
-                  } else {
-                    if (result === "0") {
-                      console.log("heree");
-                      dispatch(setMemberUser(false));
-                      router.push("/");
-                    } else {
-                      dispatch(setMemberUser(true));
+              response
+                .then(
+                  async (result) => {
+                    try {
+                      console.log("first", gnosisAddress, result, response);
+                      const safeSdk = await getSafeSdk();
+                      console.log("safeSdk", safeSdk);
+                      const ownerAddresses = await safeSdk.getOwners();
+                      console.log("ownerAddresses", ownerAddresses);
+                      const ownerAddressesArray = ownerAddresses.map((value) =>
+                        Web3.utils.toChecksumAddress(value),
+                      );
+                      if (ownerAddressesArray.includes(walletAddress)) {
+                        dispatch(setAdminUser(true));
+                        setTracker(true);
+                      } else {
+                        if (result === "0") {
+                          console.log("heree");
+                          dispatch(setMemberUser(false));
+                          router.push("/");
+                          setTracker(true);
+                        } else {
+                          dispatch(setMemberUser(true));
+                          setTracker(true);
+                        }
+                      }
+                    } catch (error) {
+                      console.log("errrrrrrrrr", error);
                     }
-                  }
-                },
-                (error) => {
-                  router.push("/");
-                },
-              )
-              .catch((err) => console.log(err));
-          } else if (clubData.stations[0].tokenType === "erc721") {
-            const erc721Contract = new SmartContract(
-              Erc721Dao,
-              daoAddress,
-              walletAddress,
-              USDC_CONTRACT_ADDRESS,
-              GNOSIS_TRANSACTION_URL,
-            );
-            const daoDetails = await erc721Contract.getERC721DAOdetails();
-            console.log("daoDetails", daoDetails);
-            const response = erc721Contract.balanceOf();
-            console.log("response", response);
-            dispatch(
-              addErc721ClubDetails({
-                quorum: daoDetails.quorum / 100,
-                threshold: daoDetails.threshold / 100,
-                maxTokensPerUser: daoDetails.maxTokensPerUser,
-                isNftTotalSupplyUnlimited: daoDetails.isNftTotalSupplyUnlimited,
-                isGovernanceActive: daoDetails.isGovernanceActive,
-                isTransferable: daoDetails.isTransferable,
-                onlyAllowWhitelist: daoDetails.onlyAllowWhitelist,
-                deployerAddress: daoDetails.deployerAddress,
-              }),
-            );
+                  },
+                  (error) => {
+                    router.push("/");
+                  },
+                )
+                .catch((err) => console.log(err));
+            } else if (clubData.stations[0].tokenType === "erc721") {
+              const erc721Contract = new SmartContract(
+                Erc721Dao,
+                daoAddress,
+                walletAddress,
+                USDC_CONTRACT_ADDRESS,
+                GNOSIS_TRANSACTION_URL,
+              );
+              const daoDetails = await erc721Contract.getERC721DAOdetails();
+              console.log("daoDetails", daoDetails);
+              const response = erc721Contract.balanceOf();
+              console.log("response", response);
+              dispatch(
+                addErc721ClubDetails({
+                  quorum: daoDetails.quorum / 100,
+                  threshold: daoDetails.threshold / 100,
+                  maxTokensPerUser: daoDetails.maxTokensPerUser,
+                  isNftTotalSupplyUnlimited:
+                    daoDetails.isNftTotalSupplyUnlimited,
+                  isGovernanceActive: daoDetails.isGovernanceActive,
+                  isTransferable: daoDetails.isTransferable,
+                  onlyAllowWhitelist: daoDetails.onlyAllowWhitelist,
+                  deployerAddress: daoDetails.deployerAddress,
+                }),
+              );
 
-            response
-              .then(
-                async (result) => {
-                  const safeSdk = await getSafeSdk();
-                  const ownerAddresses = await safeSdk.getOwners();
-                  const ownerAddressesArray = ownerAddresses.map((value) =>
-                    Web3.utils.toChecksumAddress(value),
-                  );
-                  if (ownerAddressesArray.includes(walletAddress)) {
-                    dispatch(setAdminUser(true));
-                  } else {
-                    if (result === "0") {
-                      dispatch(setMemberUser(false));
-                      router.push("/");
+              response
+                .then(
+                  async (result) => {
+                    const safeSdk = await getSafeSdk();
+                    const ownerAddresses = await safeSdk.getOwners();
+                    const ownerAddressesArray = ownerAddresses.map((value) =>
+                      Web3.utils.toChecksumAddress(value),
+                    );
+                    if (ownerAddressesArray.includes(walletAddress)) {
+                      dispatch(setAdminUser(true));
                     } else {
-                      dispatch(setMemberUser(true));
+                      if (result === "0") {
+                        dispatch(setMemberUser(false));
+                        router.push("/");
+                      } else {
+                        dispatch(setMemberUser(true));
+                      }
                     }
-                  }
-                },
-                (error) => {
-                  router.push("/");
-                },
-              )
-              .catch((err) => console.log(err));
-            console.log(daoDetails);
+                  },
+                  (error) => {
+                    router.push("/");
+                  },
+                )
+                .catch((err) => console.log(err));
+              console.log(daoDetails);
+            }
           }
         }
       } catch (error) {
@@ -299,18 +331,29 @@ const ClubFetch = (Component) => {
     }, [daoAddress, dispatch, pid, wallet]);
 
     useEffect(() => {
-      console.log("first second", wallet, pid);
+      console.log("first useeffect called", wallet, pid);
 
       if (wallet) {
         checkUserExists();
-        checkClubExistsOnNetwork();
       }
     }, [checkClubExistsOnNetwork, checkUserExists, pid, wallet]);
 
     useEffect(() => {
-      console.log("Wallettt", wallet);
-    }, [wallet]);
-    return <Component />;
+      if (wallet) {
+        checkClubExistsOnNetwork();
+      }
+    }, [checkClubExistsOnNetwork, wallet]);
+
+    // useEffect(() => {
+    //   console.log("use", wallet);
+    // }, [wallet]);
+    if (tracker === true) {
+      return (
+        <div>
+          <Component />
+        </div>
+      );
+    }
   };
   return RetrieveDataComponent;
 };

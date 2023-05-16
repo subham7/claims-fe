@@ -56,6 +56,14 @@ export class SmartContract {
     usdcContractAddress,
     gnosisTransactionUrl,
   ) {
+    console.log(
+      "xxxxxxxxxxxxxxx",
+      abiFile,
+      contractAddress,
+      walletAddress,
+      usdcContractAddress,
+      gnosisTransactionUrl,
+    );
     if (
       (syncWallet() &&
         abiFile &&
