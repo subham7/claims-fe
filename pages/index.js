@@ -461,8 +461,8 @@ const App = () => {
           </DialogContent>
         </Dialog>
 
-        {networkId !== "0x89" && networkId !== "0x5" ? (
-          <WrongNetworkModal  />
+        {walletAddress && networkId !== "0x89" && networkId !== "0x5" ? (
+          <WrongNetworkModal />
         ) : (
           ""
         )}
