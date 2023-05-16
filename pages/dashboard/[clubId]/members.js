@@ -22,6 +22,7 @@ import Layout1 from "../../../src/components/layouts/layout1";
 import { convertFromWeiGovernance } from "../../../src/utils/globalFunctions";
 import { subgraphQuery } from "../../../src/utils/subgraphs";
 import ClubFetch from "../../../src/utils/clubFetch";
+import WrongNetworkModal from "../../../src/components/modals/WrongNetworkModal";
 
 const useStyles = makeStyles({
   searchField: {
@@ -65,8 +66,16 @@ const Test = () => {
     return state.club.clubData.tokenType;
   });
 
+  const WRONG_NETWORK = useSelector((state) => {
+    return state.gnosis.wrongNetwork;
+  });
+
   const SUBGRAPH_URL = useSelector((state) => {
     return state.gnosis.subgraphUrl;
+  });
+
+  const CLUB_NETWORK_ID = useSelector((state) => {
+    return state.gnosis.clubNetworkId;
   });
 
   console.log("TOkennnnn", tokenType);
@@ -202,6 +211,8 @@ const Test = () => {
             </Grid>
           </Grid>
         </div>
+
+        {WRONG_NETWORK && <WrongNetworkModal chainId={CLUB_NETWORK_ID} />}
 
         <Backdrop
           sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}

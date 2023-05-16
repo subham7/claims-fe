@@ -30,6 +30,7 @@ export const slice = createSlice({
       onlyAllowWhitelist: null,
       deployerAddress: null,
     },
+    clubNetworkId: null,
   },
   reducers: {
     addDaoAddress: (state, action) => {
@@ -67,6 +68,9 @@ export const slice = createSlice({
         action.payload.onlyAllowWhitelist;
       state.erc721ClubDetails.deployerAddress = action.payload.deployerAddress;
     },
+    setClubNetworkId: (state, action) => {
+      state.clubNetworkId = action.payload;
+    },
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware(),
 });
@@ -76,6 +80,7 @@ export const {
   addClubData,
   addErc20ClubDetails,
   addErc721ClubDetails,
+  setClubNetworkId,
 } = slice.actions;
 
 export default slice.reducer;

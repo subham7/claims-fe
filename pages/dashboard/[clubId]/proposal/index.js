@@ -19,6 +19,7 @@ import ClubFetch from "../../../../src/utils/clubFetch";
 import { useDispatch, useSelector } from "react-redux";
 import { makeStyles } from "@mui/styles";
 import { setProposalList } from "../../../../src/redux/reducers/proposal";
+import WrongNetworkModal from "../../../../src/components/modals/WrongNetworkModal";
 
 const useStyles = makeStyles({
   noProposal_heading: {
@@ -57,6 +58,14 @@ const Proposal = () => {
 
   const NETWORK_HEX = useSelector((state) => {
     return state.gnosis.networkHex;
+  });
+
+  const CLUB_NETWORK_ID = useSelector((state) => {
+    return state.gnosis.clubNetworkId;
+  });
+
+  const WRONG_NETWORK = useSelector((state) => {
+    return state.gnosis.wrongNetwork;
   });
 
   const proposalList = useSelector((state) => {
@@ -264,6 +273,9 @@ const Proposal = () => {
           <DocsCard />
         </Grid>
       </Grid>
+
+      {WRONG_NETWORK && <WrongNetworkModal chainId={CLUB_NETWORK_ID} />}
+
       <CreateProposalDialog
         open={open}
         setOpen={setOpen}

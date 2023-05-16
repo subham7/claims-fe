@@ -37,6 +37,7 @@ import * as yup from "yup";
 import dayjs from "dayjs";
 import { useSelector } from "react-redux";
 import { useRouter } from "next/router";
+import WrongNetworkModal from "../../../modals/WrongNetworkModal";
 
 const NewArchERC20 = ({
   daoDetails,
@@ -58,8 +59,9 @@ const NewArchERC20 = ({
   const [{ wallet }] = useConnectWallet();
   const router = useRouter();
 
-  const walletAddress = Web3.utils.toChecksumAddress(wallet?.accounts[0].address);
-  
+  const walletAddress = Web3.utils.toChecksumAddress(
+    wallet?.accounts[0].address,
+  );
 
   const FACTORY_CONTRACT_ADDRESS = useSelector((state) => {
     return state.gnosis.factoryContractAddress;
@@ -73,13 +75,22 @@ const NewArchERC20 = ({
     return state.gnosis.usdcContractAddress;
   });
 
-  console.log("GNOSIS USDC", GNOSIS_TRANSACTION_URL, USDC_CONTRACT_ADDRESS);
+  const CLUB_NETWORK_ID = useSelector((state) => {
+    return state.gnosis.clubNetworkId;
+  });
+
+  const WRONG_NETWORK = useSelector((state) => {
+    return state.gnosis.wrongNetwork;
+  });
 
   const day = Math.floor(new Date().getTime() / 1000.0);
   const day1 = dayjs.unix(day);
   const day2 = dayjs.unix(daoDetails.depositDeadline);
 
   const remainingDays = day2.diff(day1, "day");
+  const remainingTimeInSecs = day2.diff(day1, "seconds");
+  const remainingTimeInHours = day2.diff(day1, "hours");
+  console.log("Remaining Time in Secs", remainingTimeInSecs);
 
   const showMessageHandler = () => {
     setShowMessage(true);
@@ -360,7 +371,7 @@ const NewArchERC20 = ({
                       <Grid item ml={1} mt={1}>
                         {walletAddress ? (
                           daoDetails ? (
-                            remainingDays > 0 ? (
+                            remainingDays >= 0 && remainingTimeInSecs > 0 ? (
                               <Card className={classes.openTag}>
                                 <Typography className={classes.openTagFont}>
                                   Open
@@ -651,8 +662,12 @@ const NewArchERC20 = ({
                     >
                       <Typography variant="h6" className={classes.JoinText}>
                         {daoDetails.depositDeadline
-                          ? remainingDays > 0
-                            ? "Closes in " + remainingDays + " days"
+                          ? remainingDays >= 0 && remainingTimeInSecs > 0
+                            ? `Closes in ${
+                                remainingDays === 0
+                                  ? remainingTimeInHours
+                                  : remainingDays
+                              } ${remainingDays === 0 ? "hours" : "days"}`
                             : "Joining Closed"
                           : 0}
                       </Typography>
@@ -700,9 +715,12 @@ const NewArchERC20 = ({
                                 name="tokenInput"
                                 id="tokenInput"
                                 disabled={
-                                  remainingDays > 0 && isTokenGated
+                                  remainingDays >= 0 &&
+                                  remainingTimeInSecs > 0 &&
+                                  isTokenGated
                                     ? !isEligibleForTokenGating
-                                    : remainingDays > 0
+                                    : remainingDays >= 0 &&
+                                      remainingTimeInSecs > 0
                                     ? false
                                     : true
                                 }
@@ -779,24 +797,14 @@ const NewArchERC20 = ({
                         size="large"
                         onClick={formik.handleSubmit}
                         disabled={
-                          remainingDays > 0 && isTokenGated
+                          remainingDays >= 0 &&
+                          remainingTimeInSecs > 0 &&
+                          isTokenGated
                             ? !isEligibleForTokenGating
-                            : remainingDays > 0
+                            : remainingDays >= 0 && remainingTimeInSecs > 0
                             ? false
                             : true
                         }
-                        // disabled={
-                        //   (closingDays > 0 ? false : true) ||
-                        //   (depositAmount <= 0 ||
-                        //   depositAmount < minDeposit ||
-                        //   depositAmount > maxDeposit
-                        //     ? true
-                        //     : false) ||
-                        //   (tokenGatingAddress !==
-                        //     "0x0000000000000000000000000000000000000000" &&
-                        //     (userTokenBalance < tokenGatingAmount ||
-                        //       isNaN(userTokenBalance)))
-                        // }
                       >
                         Deposit
                       </Button>
@@ -905,7 +913,7 @@ const NewArchERC20 = ({
         )
       )}
 
-      <Dialog
+      {/* <Dialog
         // open={open}
         // onClose={handleDialogClose}
         scroll="body"
@@ -946,7 +954,9 @@ const NewArchERC20 = ({
             </Grid>
           </Grid>
         </DialogContent>
-      </Dialog>
+      </Dialog> */}
+
+      {WRONG_NETWORK && <WrongNetworkModal chainId={CLUB_NETWORK_ID} />}
 
       <Backdrop
         sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}

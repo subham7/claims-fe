@@ -51,6 +51,23 @@ export const NewArchERC721Styles = makeStyles({
     marginRight: 3,
   },
 
+  depositInactive: {
+    background: "#D5533840",
+    color: "#D55338",
+    padding: "0.3em 0.5em",
+    borderRadius: "0.3em",
+    display: "flex",
+    alignItems: "center",
+  },
+
+  executedIllustration: {
+    height: "10px",
+    width: "10px",
+    backgroundColor: "#D55338",
+    borderRadius: "50%",
+    marginRight: 4,
+  },
+
   claimGrid: {
     display: "flex",
     justifyContent: "center",

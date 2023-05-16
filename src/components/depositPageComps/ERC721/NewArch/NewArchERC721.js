@@ -23,6 +23,7 @@ import dayjs from "dayjs";
 import ClubFetch from "../../../../utils/clubFetch";
 import { useSelector } from "react-redux";
 import { useRouter } from "next/router";
+import WrongNetworkModal from "../../../modals/WrongNetworkModal";
 
 const NewArchERC721 = ({
   daoDetails,
@@ -50,6 +51,14 @@ const NewArchERC721 = ({
     walletAddress = web3.utils.toChecksumAddress(wallet?.accounts[0].address);
   }
 
+  const WRONG_NETWORK = useSelector((state) => {
+    return state.gnosis.wrongNetwork;
+  });
+
+  const CLUB_NETWORK_ID = useSelector((state) => {
+    return state.gnosis.clubNetworkId;
+  });
+
   const FACTORY_CONTRACT_ADDRESS = useSelector((state) => {
     return state.gnosis.factoryContractAddress;
   });
@@ -68,6 +77,7 @@ const NewArchERC721 = ({
   const day1 = dayjs.unix(day);
   const day2 = dayjs.unix(daoDetails.depositDeadline);
   const remainingDays = day2.diff(day1, "day");
+  const remainingTimeInSecs = day2.diff(day1, "seconds");
   const dateSum = new Date(dayjs.unix(daoDetails.depositDeadline)).toString();
 
   const showMessageHandler = () => {
@@ -258,7 +268,7 @@ const NewArchERC721 = ({
                           Active
                         </Typography>
                       ) : (
-                        <Typography className={classes.depositActive}>
+                        <Typography className={classes.depositInactive}>
                           <div className={classes.executedIllustration}></div>
                           Finished
                         </Typography>
@@ -404,7 +414,8 @@ const NewArchERC721 = ({
                       <Button
                         onClick={claimNFTHandler}
                         disabled={
-                          remainingDays <= 0 || hasClaimed
+                          (remainingDays <= 0 && remainingTimeInSecs < 0) ||
+                          hasClaimed
                             ? true
                             : isTokenGated
                             ? !isEligibleForTokenGating
@@ -459,6 +470,8 @@ const NewArchERC721 = ({
             </Typography>
           </Grid>
         )}
+
+        {WRONG_NETWORK && <WrongNetworkModal chainId={CLUB_NETWORK_ID} />}
 
         {claimSuccessfull && showMessage ? (
           <Alert
