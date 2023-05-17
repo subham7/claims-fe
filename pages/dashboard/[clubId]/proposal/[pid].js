@@ -698,6 +698,27 @@ const ProposalDetail = () => {
     }
     // console.log("data", data);
     //
+
+    if (clubData.tokenType === "erc20") {
+      updateProposal = new SmartContract(
+        Erc20Dao,
+        daoAddress,
+        undefined,
+        USDC_CONTRACT_ADDRESS,
+        GNOSIS_TRANSACTION_URL,
+        true,
+      );
+    } else if (clubData.tokenType === "erc721") {
+      updateProposal = new SmartContract(
+        Erc721Dao,
+        daoAddress,
+        undefined,
+        USDC_CONTRACT_ADDRESS,
+        GNOSIS_TRANSACTION_URL,
+        true,
+      );
+    }
+
     const response = updateProposal.updateProposalAndExecution(
       data,
       approvalData,
