@@ -240,6 +240,39 @@ const NewArchERC20 = ({
       fetchTokenDetails();
   }, [fetchTokenDetails, daoDetails]);
 
+  console.log(
+    "Club tokens minted",
+    Number(
+      convertFromWeiGovernance(
+        +daoDetails.clubTokensMinted,
+        +daoDetails.decimals,
+      ) *
+        Number(
+          convertFromWeiGovernance(
+            +daoDetails.pricePerToken,
+            +erc20TokenDetails.tokenDecimal,
+          ),
+        ) *
+        100,
+    ) /
+      Number(
+        convertFromWeiGovernance(
+          +daoDetails.totalSupply.toFixed(0),
+          +erc20TokenDetails.tokenDecimal,
+        ),
+      ),
+  );
+
+  console.log(
+    "Club tokens check",
+    Number(
+      convertFromWeiGovernance(
+        +daoDetails.totalSupply.toFixed(0),
+        +erc20TokenDetails.tokenDecimal,
+      ),
+    ),
+  );
+
   return (
     <>
       {wallet !== null ? (
@@ -537,20 +570,27 @@ const NewArchERC20 = ({
                   {console.log(daoDetails.clubTokensMinted)}
                   {walletAddress && daoDetails.clubTokensMinted ? (
                     <ProgressBar
-                      value={calculateTreasuryTargetShare(
-                        convertFromWeiGovernance(
-                          daoDetails.clubTokensMinted,
-                          daoDetails.decimals,
-                        ) *
+                      value={
+                        Number(
                           convertFromWeiGovernance(
-                            daoDetails.pricePerToken,
-                            erc20TokenDetails.tokenDecimal,
+                            +daoDetails.clubTokensMinted,
+                            +daoDetails.decimals,
+                          ) *
+                            Number(
+                              convertFromWeiGovernance(
+                                +daoDetails.pricePerToken,
+                                +erc20TokenDetails.tokenDecimal,
+                              ),
+                            ) *
+                            100,
+                        ) /
+                        Number(
+                          convertFromWeiGovernance(
+                            +daoDetails.totalSupply.toFixed(0),
+                            +erc20TokenDetails.tokenDecimal,
                           ),
-                        convertFromWeiGovernance(
-                          daoDetails.totalSupply,
-                          erc20TokenDetails.tokenDecimal,
-                        ),
-                      )}
+                        )
+                      }
                     />
                   ) : (
                     <Skeleton variant="rectangular" />
@@ -627,7 +667,7 @@ const NewArchERC20 = ({
                         <Typography variant="p" className={classes.valuesStyle}>
                           {daoDetails.totalSupply ? (
                             convertFromWeiGovernance(
-                              daoDetails.totalSupply,
+                              daoDetails.totalSupply.toFixed(0),
                               erc20TokenDetails.tokenDecimal,
                             )?.toString() + " USDC"
                           ) : (
