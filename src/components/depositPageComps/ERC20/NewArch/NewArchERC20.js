@@ -102,6 +102,10 @@ const NewArchERC20 = ({
   const fetchTokenDetails = useCallback(async () => {
     setLoading(true);
     try {
+      console.log(
+        "daoDetails.depositTokenAddress",
+        daoDetails.depositTokenAddress,
+      );
       const erc20Contract = new SmartContract(
         erc20ABI,
         daoDetails.depositTokenAddress,
@@ -230,8 +234,9 @@ const NewArchERC20 = ({
   });
 
   useEffect(() => {
-    fetchTokenDetails();
-  }, [fetchTokenDetails, daoDetails.clubTokensMinted]);
+    if (daoDetails.depositTokenAddress && daoDetails.clubTokensMinted)
+      fetchTokenDetails();
+  }, [fetchTokenDetails, daoDetails]);
 
   return (
     <>

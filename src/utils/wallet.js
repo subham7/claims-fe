@@ -1,6 +1,7 @@
 // import "../styles/globals.css";
 import { init } from "@web3-onboard/react";
 import injectedModule from "@web3-onboard/injected-wallets";
+import { POLYGON_MAINNET_RPC_URL } from "../api";
 
 const INFURA_ID = "sdf";
 
@@ -26,7 +27,7 @@ const polygonMainnet = {
   id: "0x89",
   token: "MATIC",
   label: "Polygon",
-  rpcUrl: MATIC_MAINNET_RPC,
+  rpcUrl: POLYGON_MAINNET_RPC_URL,
 };
 
 const chains = [ethereumMainnet, ethereumGoerli, polygonMainnet];
