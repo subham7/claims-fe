@@ -34,10 +34,12 @@ import {
   AIRDROP_ACTION_ADDRESS_POLYGON,
   FACTORY_ADDRESS_GOERLI,
   FACTORY_ADDRESS_POLYGON,
+  POLYGON_MAINNET_RPC_URL,
   SUBGRAPH_URL_GOERLI,
   SUBGRAPH_URL_POLYGON,
 } from "../api";
 import { fetchClubbyDaoAddress } from "../api/club";
+import { Backdrop, CircularProgress } from "@mui/material";
 
 const ClubFetch = (Component) => {
   const RetrieveDataComponent = () => {
@@ -201,7 +203,17 @@ const ClubFetch = (Component) => {
                   async (result) => {
                     try {
                       console.log("first", gnosisAddress, result, response);
-                      const safeSdk = await getSafeSdk();
+                      // const safeSdk = await getSafeSdk();
+                      // const web3 = new Web3(window.ethereum);
+                      const web3 = new Web3(POLYGON_MAINNET_RPC_URL);
+                      const ethAdapter = new Web3Adapter({
+                        web3,
+                        signerAddress: walletAddress,
+                      });
+                      const safeSdk = await Safe.create({
+                        ethAdapter: ethAdapter,
+                        safeAddress: gnosisAddress,
+                      });
                       console.log("safeSdk", safeSdk);
                       const ownerAddresses = await safeSdk.getOwners();
                       console.log("ownerAddresses", ownerAddresses);
@@ -352,6 +364,16 @@ const ClubFetch = (Component) => {
         <div>
           <Component />
         </div>
+      );
+    } else {
+      return (
+        <Backdrop
+          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+          open={!tracker}
+          // onClick={handleClose}
+        >
+          <CircularProgress color="inherit" />
+        </Backdrop>
       );
     }
   };
