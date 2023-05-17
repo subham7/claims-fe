@@ -65,6 +65,7 @@ export const convertFromWeiGovernance = (convertValue, decimal) => {
   try {
     return ethers.formatUnits(convertValue.toString(), Number(decimal));
   } catch (err) {
-    // console.log(err);
+    
+    console.log(err);
   }
 };

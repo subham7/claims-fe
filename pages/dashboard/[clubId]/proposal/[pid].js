@@ -277,6 +277,7 @@ const ProposalDetail = () => {
   const [tokenFetched, setTokenFetched] = useState(false);
   const [threshold, setThreshold] = useState();
   const [fetched, setFetched] = useState(false);
+  const [daoDetails, setDaoDetails] = useState();
 
   const GNOSIS_TRANSACTION_URL = useSelector((state) => {
     return state.gnosis.transactionUrl;
@@ -645,8 +646,8 @@ const ProposalDetail = () => {
       let iface = new Interface(ABI);
       console.log(iface);
       data = iface.encodeFunctionData("updateGovernanceSettings", [
-        proposalData.commands[0].quorum,
-        proposalData.commands[0].threshold,
+        proposalData.commands[0].quorum * 100,
+        proposalData.commands[0].threshold * 100,
       ]);
       console.log(data);
     }
@@ -699,8 +700,9 @@ const ProposalDetail = () => {
     // console.log("data", data);
     //
 
+    let updateProposalExecute;
     if (clubData.tokenType === "erc20") {
-      updateProposal = new SmartContract(
+      updateProposalExecute = new SmartContract(
         Erc20Dao,
         daoAddress,
         undefined,
@@ -709,7 +711,7 @@ const ProposalDetail = () => {
         true,
       );
     } else if (clubData.tokenType === "erc721") {
-      updateProposal = new SmartContract(
+      updateProposalExecute = new SmartContract(
         Erc721Dao,
         daoAddress,
         undefined,
@@ -719,7 +721,7 @@ const ProposalDetail = () => {
       );
     }
 
-    const response = updateProposal.updateProposalAndExecution(
+    const response = updateProposalExecute.updateProposalAndExecution(
       data,
       approvalData,
       proposalData.commands[0].executionId === 3
@@ -802,6 +804,33 @@ const ProposalDetail = () => {
       fetchTokens();
     }
   }, [fetchData, fetchTokens, isOwner, pid]);
+
+  useEffect(() => {
+    const fetchFactoryContractDetails = async () => {
+      try {
+        const factoryContract = new SmartContract(
+          FactoryContractABI,
+          FACTORY_CONTRACT_ADDRESS,
+          walletAddress,
+          USDC_CONTRACT_ADDRESS,
+          GNOSIS_TRANSACTION_URL,
+        );
+
+        const factoryData = await factoryContract.getDAOdetails(daoAddress);
+        setDaoDetails(factoryData);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchFactoryContractDetails();
+  }, [
+    daoAddress,
+    FACTORY_CONTRACT_ADDRESS,
+    GNOSIS_TRANSACTION_URL,
+    USDC_CONTRACT_ADDRESS,
+    walletAddress,
+  ]);
   //   console.log(proposalData);
   if (!wallet && proposalData === null) {
     console.log("loaaadddiinnngg", proposalData);
@@ -900,6 +929,7 @@ const ProposalDetail = () => {
                 proposalData={proposalData}
                 fetched={fetched}
                 USDC_CONTRACT_ADDRESS={USDC_CONTRACT_ADDRESS}
+                daoDetails={daoDetails}
               />
 
               <Signators

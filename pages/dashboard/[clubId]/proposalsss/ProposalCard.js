@@ -8,7 +8,7 @@ import actionIcon from "../../../../public/assets/icons/action_icon.svg";
 import tickerIcon from "../../../../public/assets/icons/ticker_icon.svg";
 import surveyIcon from "../../../../public/assets/icons/survey_icon.svg";
 import erc20ABI from "../../../../src/abis/usdcTokenContract.json";
-
+import factoryContractABI from "../../../../src/abis/newArch/factoryContract.json";
 import React, { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
 import { useSelector } from "react-redux";
@@ -202,6 +202,7 @@ const ProposalCard = ({
     decimals: 0,
     symbol: "",
   });
+  const [daoDetails, setDaoDetails] = useState();
 
   const GNOSIS_TRANSACTION_URL = useSelector((state) => {
     return state.gnosis.transactionUrl;
@@ -209,6 +210,10 @@ const ProposalCard = ({
 
   const USDC_CONTRACT_ADDRESS = useSelector((state) => {
     return state.gnosis.usdcContractAddress;
+  });
+
+  const FACTORY_CONTRACT_ADDRESS = useSelector((state) => {
+    return state.gnosis.factoryContractAddress;
   });
 
   let walletAddress;
@@ -227,7 +232,7 @@ const ProposalCard = ({
             ? daoAddress
             : proposal?.commands[0].executionId === 4
             ? proposal?.commands[0]?.customToken
-            : "",
+            : proposal?.commands[0],
           walletAddress,
           USDC_CONTRACT_ADDRESS,
           GNOSIS_TRANSACTION_URL,
@@ -265,8 +270,37 @@ const ProposalCard = ({
   ]);
 
   useEffect(() => {
+    const fetchFactoryContractDetails = async () => {
+      try {
+        const factoryContract = new SmartContract(
+          factoryContractABI,
+          FACTORY_CONTRACT_ADDRESS,
+          walletAddress,
+          USDC_CONTRACT_ADDRESS,
+          GNOSIS_TRANSACTION_URL,
+        );
+
+        const factoryData = await factoryContract.getDAOdetails(daoAddress);
+        setDaoDetails(factoryData);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchFactoryContractDetails();
+  }, [
+    daoAddress,
+    FACTORY_CONTRACT_ADDRESS,
+    GNOSIS_TRANSACTION_URL,
+    USDC_CONTRACT_ADDRESS,
+    walletAddress,
+  ]);
+
+  useEffect(() => {
     fetchAirDropContractDetails();
   }, [fetchAirDropContractDetails]);
+
+  console.log("Dao Details");
 
   return (
     <CardActionArea sx={{ borderRadius: "10px" }}>
@@ -564,7 +598,11 @@ const ProposalCard = ({
                           Raise Amount:
                         </Typography>
                         <Typography color="#FFFFFF">
-                          {proposal?.commands[0]?.totalDeposits}
+                          {proposal?.commands[0]?.totalDeposits *
+                            +convertFromWeiGovernance(
+                              daoDetails?.pricePerToken,
+                              6,
+                            )}
                         </Typography>
                       </Grid>
                     }
