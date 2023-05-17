@@ -35,6 +35,7 @@ import {
   FACTORY_ADDRESS_GOERLI,
   FACTORY_ADDRESS_POLYGON,
   POLYGON_MAINNET_RPC_URL,
+  RPC_URL,
   SUBGRAPH_URL_GOERLI,
   SUBGRAPH_URL_POLYGON,
 } from "../api";
@@ -77,7 +78,7 @@ const ClubFetch = (Component) => {
       console.log("first");
       try {
         const getSafeSdk = async () => {
-          const web3 = new Web3(window.ethereum);
+          const web3 = new Web3(RPC_URL);
           const ethAdapter = new Web3Adapter({
             web3,
             signerAddress: walletAddress,
@@ -205,7 +206,7 @@ const ClubFetch = (Component) => {
                       console.log("first", gnosisAddress, result, response);
                       // const safeSdk = await getSafeSdk();
                       // const web3 = new Web3(window.ethereum);
-                      const web3 = new Web3(POLYGON_MAINNET_RPC_URL);
+                      const web3 = new Web3(RPC_URL);
                       const ethAdapter = new Web3Adapter({
                         web3,
                         signerAddress: walletAddress,
@@ -292,7 +293,9 @@ const ClubFetch = (Component) => {
                     router.push("/");
                   },
                 )
-                .catch((err) => console.log(err));
+                .catch((err) => {
+                  console.log(err);
+                });
               console.log(daoDetails);
             }
           }

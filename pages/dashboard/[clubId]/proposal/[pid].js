@@ -699,8 +699,9 @@ const ProposalDetail = () => {
     // console.log("data", data);
     //
 
+    let updateProposalExecute;
     if (clubData.tokenType === "erc20") {
-      updateProposal = new SmartContract(
+      updateProposalExecute = new SmartContract(
         Erc20Dao,
         daoAddress,
         undefined,
@@ -709,7 +710,7 @@ const ProposalDetail = () => {
         true,
       );
     } else if (clubData.tokenType === "erc721") {
-      updateProposal = new SmartContract(
+      updateProposalExecute = new SmartContract(
         Erc721Dao,
         daoAddress,
         undefined,
@@ -719,7 +720,7 @@ const ProposalDetail = () => {
       );
     }
 
-    const response = updateProposal.updateProposalAndExecution(
+    const response = updateProposalExecute.updateProposalAndExecution(
       data,
       approvalData,
       proposalData.commands[0].executionId === 3
