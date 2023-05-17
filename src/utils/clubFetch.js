@@ -247,7 +247,7 @@ const ClubFetch = (Component) => {
             } else if (clubData.stations[0].tokenType === "erc721") {
               const erc721Contract = new SmartContract(
                 Erc721Dao,
-                daoAddress,
+                daoAddress ?? pid,
                 walletAddress,
                 USDC_CONTRACT_ADDRESS,
                 GNOSIS_TRANSACTION_URL,
@@ -282,7 +282,7 @@ const ClubFetch = (Component) => {
                       dispatch(setAdminUser(true));
                       setTracker(true);
                     } else {
-                      if (result === "0") {
+                      if (result === "0" && !pid) {
                         dispatch(setMemberUser(false));
                         router.push("/");
                         setTracker(true);
