@@ -73,21 +73,21 @@ const ProposalActionForm = ({ formik, tokenData }) => {
         <MenuItem key={0} value="Distribute token to members">
           Distribute token to members
         </MenuItem>
-        {tokenType !== "erc721" ? (
-          <MenuItem key={1} value="Mint club token">
-            Mint club token
-          </MenuItem>
-        ) : null}
+        {/* {tokenType !== "erc721" ? ( */}
+        <MenuItem key={1} value="Mint club token">
+          Mint club token
+        </MenuItem>
+        {/* ) : null} */}
         {isGovernanceActive && tokenType !== "erc721" ? (
           <MenuItem key={2} value="Update Governance Settings">
             Update Governance Settings
           </MenuItem>
         ) : null}
-        {tokenType !== "erc721" ? (
-          <MenuItem key={3} value="Change total raise amount">
-            Change total raise amount
-          </MenuItem>
-        ) : null}
+        {/* {tokenType !== "erc721" ? ( */}
+        <MenuItem key={3} value="Change total raise amount">
+          Change total raise amount
+        </MenuItem>
+        {/* ) : null} */}
 
         <MenuItem key={4} value="Send token to an address">
           Send token to an address
