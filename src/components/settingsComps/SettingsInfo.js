@@ -48,6 +48,8 @@ const SettingsInfo = ({
     convertFromWeiGovernance(daoDetails.totalSupply.toFixed(0), 6),
   );
 
+  console.log("Dao Details", daoDetails);
+
   return (
     <>
       <Layout1 page={5}>

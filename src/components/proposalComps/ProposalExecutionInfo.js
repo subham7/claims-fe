@@ -24,6 +24,7 @@ const ProposalExecutionInfo = ({
   proposalData,
   fetched,
   USDC_CONTRACT_ADDRESS,
+  daoDetails,
 }) => {
   console.log("Proposal Data", proposalData);
   const classes = useStyles();
@@ -229,7 +230,11 @@ const ProposalExecutionInfo = ({
                       </Typography>
                       <Typography className={classes.listFont2Colourless}>
                         {fetched
-                          ? proposalData?.commands[0].totalDeposits
+                          ? proposalData?.commands[0].totalDeposits *
+                            +convertFromWeiGovernance(
+                              daoDetails?.pricePerToken,
+                              6,
+                            )
                           : // Math.pow(
                             //   10,
                             //   parseInt(
