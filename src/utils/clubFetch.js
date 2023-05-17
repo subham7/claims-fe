@@ -225,7 +225,7 @@ const ClubFetch = (Component) => {
                         dispatch(setAdminUser(true));
                         setTracker(true);
                       } else {
-                        if (result === "0") {
+                        if (result === "0" && !pid) {
                           console.log("heree");
                           dispatch(setMemberUser(false));
                           router.push("/");
@@ -280,12 +280,15 @@ const ClubFetch = (Component) => {
                     );
                     if (ownerAddressesArray.includes(walletAddress)) {
                       dispatch(setAdminUser(true));
+                      setTracker(true);
                     } else {
                       if (result === "0") {
                         dispatch(setMemberUser(false));
                         router.push("/");
+                        setTracker(true);
                       } else {
                         dispatch(setMemberUser(true));
+                        setTracker(true);
                       }
                     }
                   },
