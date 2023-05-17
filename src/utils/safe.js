@@ -359,17 +359,18 @@ export async function initiateConnection(
       dispatch(setCreateSafeLoading(false));
       dispatch(setCreateDaoAuthorized(true));
 
-      const smartContract = new SmartContract(
+      const factorySmartContract = new SmartContract(
         FactoryContract,
         factoryContractAddress,
         undefined,
         params.depositTokenAddress,
         gnosisTransactionUrl,
+        true,
       );
       let value;
       if (clubTokenType === "NFT") {
         console.log("NFT");
-        value = smartContract.createERC721DAO(
+        value = factorySmartContract.createERC721DAO(
           params.clubName,
           params.clubSymbol,
           params.ownerFeePerDepositPercent,
@@ -390,7 +391,7 @@ export async function initiateConnection(
           params.merkleRoot,
         );
       } else {
-        value = smartContract.createERC20DAO(
+        value = factorySmartContract.createERC20DAO(
           params.clubName,
           params.clubSymbol,
           params.distributeAmount,

@@ -20,6 +20,8 @@ export const GOERLI_RPC_URL = process.env.NEXT_PUBLIC_GOERLI_RPC_URL;
 export const POLYGON_MAINNET_RPC_URL =
   process.env.NEXT_PUBLIC_POLYGON_MAINNET_RPC_URL;
 
+export const RPC_URL = process.env.NEXT_PUBLIC_RPC_URL;
+
 // Claim Factory
 export const CLAIM_FACTORY_ADDRESS_GOERLI =
   process.env.NEXT_PUBLIC_CLAIM_FACTORY_ADDRESS_GOERLI;

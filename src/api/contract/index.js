@@ -11,7 +11,7 @@ import ImplementationContract from "../../abis/implementationABI.json";
 import USDCContract from "../../abis/usdcTokenContract.json";
 import { createProposalTxHash, getProposalTxHash } from "../../api/proposal";
 import { calculateDays, convertToWei } from "../../utils/globalFunctions";
-import { POLYGON_MAINNET_RPC_URL, USDC_FAUCET_ADDRESS } from "../index";
+import { RPC_URL, USDC_FAUCET_ADDRESS } from "../index";
 import SafeApiKit from "@safe-global/api-kit";
 import Erc721Dao from "../../abis/newArch/erc721Dao.json";
 import Erc20Dao from "../../abis/newArch/erc20Dao.json";
@@ -55,8 +55,10 @@ export class SmartContract {
     walletAddress = localStorage.getItem("wallet"),
     usdcContractAddress,
     gnosisTransactionUrl,
+    useMetamask,
   ) {
     console.log(
+      useMetamask,
       "xxxxxxxxxxxxxxx",
       abiFile,
       contractAddress,
@@ -72,7 +74,11 @@ export class SmartContract {
         usdcContractAddress,
       gnosisTransactionUrl)
     ) {
-      this.web3 = new Web3(POLYGON_MAINNET_RPC_URL);
+      if (!useMetamask) {
+        this.web3 = new Web3(RPC_URL);
+      } else {
+        this.web3 = new Web3(window.ethereum);
+      }
       this.abi = abiFile.abi;
       this.contractAddress = contractAddress;
       this.checkSum = this.web3.utils.toChecksumAddress(this.contractAddress);
@@ -84,7 +90,11 @@ export class SmartContract {
     }
 
     if (syncWallet() && abiFile && contractAddress && walletAddress) {
-      this.web3 = new Web3(POLYGON_MAINNET_RPC_URL);
+      if (!useMetamask) {
+        this.web3 = new Web3(RPC_URL);
+      } else {
+        this.web3 = new Web3(window.ethereum);
+      }
       this.abi = abiFile.abi;
       this.contractAddress = contractAddress;
       this.checkSum = this.web3.utils.toChecksumAddress(this.contractAddress);
