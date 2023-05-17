@@ -227,6 +227,7 @@ const Faucet = (props) => {
       faucetAddress,
       USDC_CONTRACT_ADDRESS,
       GNOSIS_TRANSACTION_URL,
+      true,
     );
     const transaction = usdcFaucet.mint(faucetAddress, FaucetAmount.toString());
     transaction.then(

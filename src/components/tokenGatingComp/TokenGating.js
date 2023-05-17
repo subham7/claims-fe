@@ -93,6 +93,7 @@ const TokenGating = () => {
         walletAddress,
         USDC_CONTRACT_ADDRESS,
         GNOSIS_TRANSACTION_URL,
+        true,
       );
 
       console.log("Factory Contract", factoryContract);
@@ -201,7 +202,13 @@ const TokenGating = () => {
       console.log(error);
       setLoading(false);
     }
-  }, [FACTORY_CONTRACT_ADDRESS, walletAddress, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL, daoAddress]);
+  }, [
+    FACTORY_CONTRACT_ADDRESS,
+    walletAddress,
+    USDC_CONTRACT_ADDRESS,
+    GNOSIS_TRANSACTION_URL,
+    daoAddress,
+  ]);
 
   useEffect(() => {
     fetchTokenGatingDetials();

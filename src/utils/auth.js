@@ -236,14 +236,14 @@ export function authenticateUser(
       USDC_CONTRACT_ADDRESS &&
       GNOSIS_TRANSACTION_URL
     ) {
-      const checkUserInClub = new SmartContract(
+      const factoryContract = new SmartContract(
         ImplementationContract,
         daoAddress,
         undefined,
         USDC_CONTRACT_ADDRESS,
         GNOSIS_TRANSACTION_URL,
       );
-      const response = checkUserInClub.userDetails();
+      const response = factoryContract.userDetails();
       response.then((result) => {
         console.log("userdetail", result);
         if (result[0]) {

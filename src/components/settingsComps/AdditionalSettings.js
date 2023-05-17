@@ -72,6 +72,7 @@ const AdditionalSettings = ({
         walletAddress,
         USDC_CONTRACT_ADDRESS,
         GNOSIS_TRANSACTION_URL,
+        true,
       );
 
       const res = await factoryContract.updateOwnerFee(
@@ -109,6 +110,7 @@ const AdditionalSettings = ({
         walletAddress,
         USDC_CONTRACT_ADDRESS,
         GNOSIS_TRANSACTION_URL,
+        true,
       );
 
       const res = await factoryContract.updateDepositTime(

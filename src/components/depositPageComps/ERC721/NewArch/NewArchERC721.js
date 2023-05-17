@@ -154,6 +154,7 @@ const NewArchERC721 = ({
         walletAddress,
         USDC_CONTRACT_ADDRESS,
         GNOSIS_TRANSACTION_URL,
+        true,
       );
 
       const erc20Contract = new SmartContract(
@@ -162,6 +163,7 @@ const NewArchERC721 = ({
         walletAddress,
         USDC_CONTRACT_ADDRESS,
         GNOSIS_TRANSACTION_URL,
+        true,
       );
 
       await erc20Contract.approveDeposit(
@@ -172,6 +174,7 @@ const NewArchERC721 = ({
         ),
         erc20TokenDetails.tokenDecimal,
       );
+
       const claimNFT = await factoryContract.buyGovernanceTokenERC721DAO(
         walletAddress,
         erc721DaoAddress,

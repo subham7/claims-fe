@@ -697,6 +697,7 @@ const ProposalDetail = () => {
       console.log(data);
     }
     // console.log("data", data);
+    //
     const response = updateProposal.updateProposalAndExecution(
       data,
       approvalData,

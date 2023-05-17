@@ -182,6 +182,7 @@ const NewArchERC20 = ({
           walletAddress,
           USDC_CONTRACT_ADDRESS,
           GNOSIS_TRANSACTION_URL,
+          true,
         );
 
         const erc20Contract = new SmartContract(
@@ -190,6 +191,7 @@ const NewArchERC20 = ({
           walletAddress,
           USDC_CONTRACT_ADDRESS,
           GNOSIS_TRANSACTION_URL,
+          true,
         );
 
         const inputValue = convertToWeiGovernance(
