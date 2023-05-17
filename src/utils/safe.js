@@ -35,7 +35,16 @@ async function gnosisSafePromise(owners, threshold, dispatch) {
     threshold,
     // ...
   };
-  const safeSdk = await safeFactory.deploySafe({ safeAccountConfig });
+
+  const gasPrice = await web3.eth.getGasPrice();
+  console.log("Current gas Price", gasPrice);
+  const increasedGasPrice = +gasPrice + 30000000000;
+
+  const options = {
+    gasPrice: increasedGasPrice,
+  };
+
+  const safeSdk = await safeFactory.deploySafe({ safeAccountConfig, options });
   try {
     const newSafeAddress = await safeSdk.getAddress();
     dispatch(safeConnected(newSafeAddress, safeSdk));
