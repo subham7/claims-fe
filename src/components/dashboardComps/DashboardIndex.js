@@ -140,21 +140,23 @@ const DashboardIndex = () => {
           QUERY_CLUB_DETAILS(daoAddress),
         );
 
-        const url = convertIpfsToUrl(clubDetails.stations[0].imageUrl);
-        const res = await fetch(url);
-        const data = await res.json();
-        const imageUrl = convertIpfsToUrl(data.image);
+        if (tokenType === "erc721") {
+          const url = convertIpfsToUrl(clubDetails.stations[0].imageUrl);
+          const res = await fetch(url);
+          const data = await res.json();
+          const imageUrl = convertIpfsToUrl(data.image);
 
-        setClubDetails({
-          clubImageUrl: imageUrl,
+          setClubDetails({
+            clubImageUrl: imageUrl,
 
-          noOfMembers: membersData?.users?.length,
-        });
+            noOfMembers: membersData?.users?.length,
+          });
+        }
       }
     } catch (error) {
       console.log(error);
     }
-  }, [SUBGRAPH_URL, daoAddress]);
+  }, [SUBGRAPH_URL, daoAddress, tokenType]);
 
   const fetchAssets = useCallback(async () => {
     try {

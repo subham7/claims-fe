@@ -8,7 +8,6 @@ import {
   addDaoAddress,
   addErc20ClubDetails,
   addErc721ClubDetails,
-  setClubNetworkId,
 } from "../redux/reducers/club";
 import { useConnectWallet } from "@web3-onboard/react";
 
@@ -25,16 +24,12 @@ import { SmartContract } from "../api/contract";
 
 import Web3 from "web3";
 import { Web3Adapter } from "@safe-global/protocol-kit";
-import Safe, {
-  SafeFactory,
-  SafeAccountConfig,
-} from "@safe-global/protocol-kit";
+import Safe from "@safe-global/protocol-kit";
 import {
   AIRDROP_ACTION_ADDRESS_GOERLI,
   AIRDROP_ACTION_ADDRESS_POLYGON,
   FACTORY_ADDRESS_GOERLI,
   FACTORY_ADDRESS_POLYGON,
-  POLYGON_MAINNET_RPC_URL,
   RPC_URL,
   SUBGRAPH_URL_GOERLI,
   SUBGRAPH_URL_POLYGON,
@@ -285,6 +280,7 @@ const ClubFetch = (Component) => {
           const networkData = await fetchClubbyDaoAddress(
             daoAddress ? daoAddress : pid,
           );
+
           const clubNetworkId = networkData.data[0].networkId;
 
           if (clubNetworkId === 5 && wallet?.chains[0].id === "0x5") {
@@ -304,13 +300,13 @@ const ClubFetch = (Component) => {
       if (wallet) {
         checkUserExists();
       }
-    }, [checkClubExistsOnNetwork, checkUserExists, pid, wallet]);
+    }, [checkUserExists, pid, wallet]);
 
-    useEffect(() => {
-      if (wallet) {
-        checkClubExistsOnNetwork();
-      }
-    }, [checkClubExistsOnNetwork, wallet]);
+    // useEffect(() => {
+    //   if (wallet) {
+    //     checkClubExistsOnNetwork();
+    //   }
+    // }, [checkClubExistsOnNetwork, wallet]);
 
     // useEffect(() => {
     //   console.log("use", wallet);

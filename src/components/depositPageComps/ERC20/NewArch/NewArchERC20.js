@@ -251,17 +251,7 @@ const NewArchERC20 = ({
                 <Grid container>
                   <Grid item xs={12} md={9}>
                     <Grid container spacing={2}>
-                      <Grid item mt={3} ml={3}>
-                        {daoDetails.daoImage && (
-                          <img
-                            src={daoDetails?.daoImage}
-                            alt="club-image"
-                            width={120}
-                            height={120}
-                          />
-                        )}
-                      </Grid>
-                      <Grid item ml={1} mt={4} mb={7}>
+                      <Grid item ml={4} mt={4} mb={7}>
                         <Stack spacing={0}>
                           <Typography variant="h4">
                             {daoDetails.daoName ? (

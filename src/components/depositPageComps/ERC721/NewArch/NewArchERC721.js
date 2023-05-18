@@ -175,7 +175,6 @@ const NewArchERC721 = ({
       const claimNFT = await factoryContract.buyGovernanceTokenERC721DAO(
         walletAddress,
         erc721DaoAddress,
-        // daoDetails.depositTokenAddress,
         daoDetails.nftURI,
         1,
         [],

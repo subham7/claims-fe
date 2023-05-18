@@ -14,6 +14,7 @@ export const slice = createSlice({
     tresuryAddress: null,
     tokenAddress: null,
     clubImageUrl: null,
+    tokenURI: null,
   },
   reducers: {
     addWallet: (state, action) => {
@@ -55,6 +56,10 @@ export const slice = createSlice({
     addClubImageUrl: (state, action) => {
       state.clubImageUrl = action.payload;
     },
+
+    addTokenURI: (state, action) => {
+      state.tokenURI = action.payload;
+    },
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware(),
 });
@@ -73,6 +78,7 @@ export const {
   addTresuryAddress,
   addTokenAddress,
   addClubImageUrl,
+  addTokenURI,
 } = slice.actions;
 
 export default slice.reducer;
