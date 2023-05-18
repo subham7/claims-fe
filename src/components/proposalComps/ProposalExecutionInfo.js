@@ -29,6 +29,10 @@ const ProposalExecutionInfo = ({
   const classes = useStyles();
   const [{ wallet }] = useConnectWallet();
 
+  const tokenType = useSelector((state) => {
+    return state.club.clubData.tokenType;
+  });
+
   const [tokenDetails, setTokenDetails] = useState({
     decimals: 0,
     symbol: "",
@@ -149,14 +153,16 @@ const ProposalExecutionInfo = ({
                   >
                     <Typography className={classes.listFont2Colourless}>
                       {fetched
-                        ? proposalData?.commands[0].mintGTAmounts[0] /
-                          Math.pow(
-                            10,
-                            parseInt(
-                              proposalData?.commands[0]
-                                .usdcGovernanceTokenDecimal,
-                            ),
-                          )
+                        ? tokenType === "erc721"
+                          ? proposalData?.commands[0].mintGTAmounts[0]
+                          : proposalData?.commands[0].mintGTAmounts[0] /
+                            Math.pow(
+                              10,
+                              parseInt(
+                                proposalData?.commands[0]
+                                  .usdcGovernanceTokenDecimal,
+                              ),
+                            )
                         : null}
                     </Typography>
                   </Grid>

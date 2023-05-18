@@ -48,7 +48,10 @@ import ClubFetch from "../../utils/clubFetch";
 import erc20DaoContractABI from "../../abis/newArch/erc20Dao.json";
 import erc721DaoContractABI from "../../abis/newArch/erc721Dao.json";
 import factoryContractABI from "../../abis/newArch/factoryContract.json";
-import { convertFromWeiGovernance } from "../../utils/globalFunctions";
+import {
+  convertFromWeiGovernance,
+  convertIpfsToUrl,
+} from "../../utils/globalFunctions";
 import { NEW_FACTORY_ADDRESS } from "../../api";
 import { GiTwoCoins } from "react-icons/gi";
 import { IoColorPalette } from "react-icons/io5";
@@ -127,9 +130,6 @@ const DashboardIndex = () => {
   const fetchClubDetails = useCallback(async () => {
     try {
       if (daoAddress) {
-        const imageUrl = await fetchClubbyDaoAddress(
-          Web3.utils.toChecksumAddress(daoAddress),
-        );
         const membersData = await subgraphQuery(
           SUBGRAPH_URL,
           QUERY_ALL_MEMBERS(daoAddress),
@@ -139,8 +139,14 @@ const DashboardIndex = () => {
           SUBGRAPH_URL,
           QUERY_CLUB_DETAILS(daoAddress),
         );
+
+        const url = convertIpfsToUrl(clubDetails.stations[0].imageUrl);
+        const res = await fetch(url);
+        const data = await res.json();
+        const imageUrl = convertIpfsToUrl(data.image);
+
         setClubDetails({
-          clubImageUrl: clubDetails?.stations[0].imageUrl,
+          clubImageUrl: imageUrl,
 
           noOfMembers: membersData?.users?.length,
         });

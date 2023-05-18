@@ -119,7 +119,7 @@ export async function initiateConnection(
         value = factorySmartContract.createERC721DAO(
           params.clubName,
           params.clubSymbol,
-          modifiedTokenURI,
+          metadataURL,
           params.ownerFeePerDepositPercent,
           params.depositClose,
           params.quorum,

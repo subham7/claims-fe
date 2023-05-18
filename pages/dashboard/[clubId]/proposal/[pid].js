@@ -49,7 +49,10 @@ import { Web3Adapter } from "@safe-global/protocol-kit";
 import Safe from "@safe-global/protocol-kit";
 import SafeApiKit from "@safe-global/api-kit";
 import { subgraphQuery } from "../../../../src/utils/subgraphs";
-import { QUERY_ALL_MEMBERS } from "../../../../src/api/graphql/queries";
+import {
+  QUERY_ALL_MEMBERS,
+  QUERY_CLUB_DETAILS,
+} from "../../../../src/api/graphql/queries";
 import ProposalExecutionInfo from "../../../../src/components/proposalComps/ProposalExecutionInfo";
 import Signators from "../../../../src/components/proposalComps/Signators";
 import ProposalInfo from "../../../../src/components/proposalComps/ProposalInfo";
@@ -568,8 +571,11 @@ const ProposalDetail = () => {
           proposalData.commands[0].mintGTAddresses,
         ]);
       } else {
-        const fetchedData = await fetchClubbyDaoAddress(daoAddress);
-        const tokenURI = fetchedData?.data[0]?.nftMetadataUrl;
+        const clubDetails = await subgraphQuery(
+          SUBGRAPH_URL,
+          QUERY_CLUB_DETAILS(daoAddress),
+        );
+        const tokenURI = clubDetails?.stations[0].imageUrl;
         data = iface.encodeFunctionData("mintGTToAddress", [
           proposalData.commands[0].mintGTAmounts,
           [tokenURI],
