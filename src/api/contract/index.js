@@ -427,6 +427,7 @@ export class SmartContract {
     pid,
     tokenData,
     executionStatus,
+    airdropContractAddress = "",
   ) {
     const gasPrice = await this.web3.eth.getGasPrice();
     const increasedGasPrice = +gasPrice + 30000000000;
@@ -489,7 +490,7 @@ export class SmartContract {
           .updateProposalAndExecution(
             //airdrop address
 
-            web3.utils.toChecksumAddress(AIRDROP_ACTION_ADDRESS_GOERLI),
+            web3.utils.toChecksumAddress(airdropContractAddress),
             parameters,
           )
           .encodeABI(),
@@ -705,7 +706,7 @@ export class SmartContract {
         maxPriorityFeePerGas: null,
         maxFeePerGas: null,
         // from, // Optional
-        // gas, // Optional
+        // gasPrice: increasedGasPrice,
         // gasPrice, // Optional
         // maxFeePerGas, // Optional
         // maxPriorityFeePerGas // Optional

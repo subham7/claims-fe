@@ -255,6 +255,10 @@ const ProposalDetail = () => {
     return state.club.clubData.gnosisAddress;
   });
 
+  const airdropContractAddress = useSelector((state) => {
+    return state.gnosis.actionContractAddress;
+  });
+
   console.log(isAdmin);
   const [loader, setLoader] = useState(false);
   const [proposalData, setProposalData] = useState(null);
@@ -654,12 +658,22 @@ const ProposalDetail = () => {
     if (proposalData.commands[0].executionId === 3) {
       let iface = new Interface(ABI);
       console.log(
+        "Filter",
         iface,
-        convertToWeiGovernance(proposalData.commands[0].totalDeposits, 18),
+        convertToWeiGovernance(
+          convertToWeiGovernance(proposalData.commands[0].totalDeposits, 6) /
+            daoDetails.pricePerToken,
+          18,
+        ),
         daoAddress,
+        daoDetails.pricePerToken,
       );
       data = iface.encodeFunctionData("updateDistributionAmount", [
-        convertToWeiGovernance(proposalData.commands[0].totalDeposits, 18),
+        convertToWeiGovernance(
+          convertToWeiGovernance(proposalData.commands[0].totalDeposits, 6) /
+            daoDetails.pricePerToken,
+          18,
+        ),
         daoAddress,
       ]);
 
@@ -724,9 +738,7 @@ const ProposalDetail = () => {
     const response = updateProposalExecute.updateProposalAndExecution(
       data,
       approvalData,
-      proposalData.commands[0].executionId === 3
-        ? FACTORY_CONTRACT_ADDRESS
-        : daoAddress,
+      daoAddress,
       Web3.utils.toChecksumAddress(gnosisAddress),
       txHash,
       pid,
@@ -736,6 +748,7 @@ const ProposalDetail = () => {
         ? proposalData.commands[0].customToken
         : "",
       proposalStatus,
+      airdropContractAddress,
     );
     console.log(response);
     if (proposalStatus === "executed") {

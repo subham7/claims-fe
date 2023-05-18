@@ -175,7 +175,6 @@ const ClubFetch = (Component) => {
               router,
             );
             if (clubData.stations[0].tokenType === "erc20") {
-              // console.log(first);
               const erc20Contract = new SmartContract(
                 Erc20Dao,
                 daoAddress ? daoAddress : pid,
@@ -183,8 +182,9 @@ const ClubFetch = (Component) => {
                 USDC_CONTRACT_ADDRESS,
                 GNOSIS_TRANSACTION_URL,
               );
-              console.log("erc20Contract", erc20Contract);
+
               const daoDetails = await erc20Contract.getERC20DAOdetails();
+              
               console.log("daoDetails", daoDetails);
               const response = erc20Contract.balanceOf();
               console.log("response", response);
