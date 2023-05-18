@@ -250,69 +250,6 @@ export function authenticateUser(
           return false;
         }
       });
-      // check club token type
-      // const tokens = getAssets(clubId);
-      // tokens.then((tokenResult) => {
-      //   if (tokenResult.status != 200) {
-      //     return false;
-      //   } else {
-      //     if (
-      //       tokenResult.data.tokenPriceList.length != 0 &&
-      //       tokenResult.data.tokenPriceList[0].name === "USDC"
-      //     ) {
-      //       // check if user is part of a club
-      //       // if yes? check whether user holds governance token in the wallet
-      //       const checkUser = checkUserByClub(walletAddress, clubId);
-      //       console.log("CHECKUSER", checkUser);
-      //       checkUser.then(async (user) => {
-      //         if (user.data) {
-      //           // if user is a part of the club,
-      //           // check whether the user wallet holds the governance token
-      //           // const usdc_contract = new SmartContract(
-      //           //   ImplementationContract,
-      //           //   USDC_CONTRACT_ADDRESS,
-      //           //   undefined,
-      //           //   USDC_CONTRACT_ADDRESS,
-      //           //   GNOSIS_TRANSACTION_URL,
-      //           // );
-      //           // await usdc_contract.balanceOf().then(
-      //           //   (result) => {
-      //           //     if (result <= 0) {
-      //           //       return false;
-      //           //     } else {
-      //           //       return true;
-      //           //     }
-      //           //   },
-      //           //   (error) => {
-      //           //     return false;
-      //           //   },
-      //           // );
-      //         } else {
-      //           // if user not part of club
-      //           // Check user is an admin?
-      //           const checkUserInClub = new SmartContract(
-      //             ImplementationContract,
-      //             daoAddress,
-      //             undefined,
-      //             USDC_CONTRACT_ADDRESS,
-      //             GNOSIS_TRANSACTION_URL,
-      //           );
-      //           const response = checkUserInClub.userDetails();
-      //           response.then((result) => {
-      //             console.log("userdetail", result);
-      //             if (result[2]) {
-      //               // is admin
-      //               return true;
-      //             } else {
-      //               // is not an admin
-      //               return false;
-      //             }
-      //           });
-      //         }
-      //       });
-      //     }
-      //   }
-      // });
     }
   } catch (error) {
     console.log(error);
