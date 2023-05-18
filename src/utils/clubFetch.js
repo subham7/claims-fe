@@ -135,7 +135,6 @@ const ClubFetch = (Component) => {
                 : "",
               QUERY_CLUB_DETAILS(daoAddress ? daoAddress : pid),
             );
-            console.log("clubdataaaaaaa", clubData, SUBGRAPH_URL_POLYGON, pid);
 
             dispatch(
               addClubData({
@@ -154,19 +153,6 @@ const ClubFetch = (Component) => {
             GNOSIS_TRANSACTION_URL &&
             reduxClubData.gnosisAddress
           ) {
-            console.log(
-              "yyyyyyyyyyyyyyyyyyy",
-              daoAddress,
-              wallet,
-              pid,
-              walletAddress,
-              reduxClubData.gnosisAddress,
-              networkId,
-              dispatch,
-              USDC_CONTRACT_ADDRESS,
-              GNOSIS_TRANSACTION_URL,
-              router,
-            );
             if (reduxClubData.tokenType === "erc20") {
               const erc20Contract = new SmartContract(
                 Erc20Dao,
@@ -178,9 +164,7 @@ const ClubFetch = (Component) => {
 
               const daoDetails = await erc20Contract.getERC20DAOdetails();
 
-              console.log("daoDetails", daoDetails);
               const response = erc20Contract.balanceOf();
-              console.log("response", response);
               dispatch(
                 addErc20ClubDetails({
                   quorum: daoDetails.quorum / 100,
@@ -196,11 +180,8 @@ const ClubFetch = (Component) => {
                 .then(
                   async (result) => {
                     try {
-                      console.log("first", gnosisAddress, result, response);
                       const safeSdk = await getSafeSdk();
-                      console.log("safeSdk", safeSdk);
                       const ownerAddresses = await safeSdk.getOwners();
-                      console.log("ownerAddresses", ownerAddresses);
                       const ownerAddressesArray = ownerAddresses.map((value) =>
                         Web3.utils.toChecksumAddress(value),
                       );
@@ -209,7 +190,6 @@ const ClubFetch = (Component) => {
                         setTracker(true);
                       } else {
                         if (result === "0" && !pid) {
-                          console.log("heree");
                           dispatch(setMemberUser(false));
                           router.push("/");
                           setTracker(true);
@@ -236,9 +216,7 @@ const ClubFetch = (Component) => {
                 GNOSIS_TRANSACTION_URL,
               );
               const daoDetails = await erc721Contract.getERC721DAOdetails();
-              console.log("daoDetails", daoDetails);
               const response = erc721Contract.balanceOf();
-              console.log("response", response);
               dispatch(
                 addErc721ClubDetails({
                   quorum: daoDetails.quorum / 100,
@@ -282,7 +260,6 @@ const ClubFetch = (Component) => {
                 .catch((err) => {
                   console.log(err);
                 });
-              console.log(daoDetails);
             }
           }
         }
@@ -305,24 +282,16 @@ const ClubFetch = (Component) => {
     const checkClubExistsOnNetwork = useCallback(async () => {
       try {
         if ((daoAddress && wallet) || (pid && wallet)) {
-          console.log("now", pid, wallet);
           const networkData = await fetchClubbyDaoAddress(
             daoAddress ? daoAddress : pid,
           );
-          console.log("now Network Data", networkData, daoAddress);
           const clubNetworkId = networkData.data[0].networkId;
-          console.log("CLUB ID", clubNetworkId);
-
-          console.log("now wallet", wallet);
 
           if (clubNetworkId === 5 && wallet?.chains[0].id === "0x5") {
-            console.log("Nice club");
             dispatch(setWrongNetwork(false));
           } else if (clubNetworkId === 137 && wallet?.chains[0].id === "0x89") {
-            console.log("Polygon club it is");
             dispatch(setWrongNetwork(false));
           } else {
-            console.log("Wrong Club");
             dispatch(setWrongNetwork(true));
           }
         }
@@ -332,8 +301,6 @@ const ClubFetch = (Component) => {
     }, [daoAddress, dispatch, pid, wallet]);
 
     useEffect(() => {
-      console.log("first useeffect called", wallet, pid);
-
       if (wallet) {
         checkUserExists();
       }
