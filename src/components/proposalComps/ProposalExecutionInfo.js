@@ -195,7 +195,7 @@ const ProposalExecutionInfo = ({
                   <Grid container spacing={3}>
                     <Grid item xs={12} md={4}>
                       <Typography className={classes.listFont2}>
-                        Quoram
+                        Quorum
                       </Typography>
                       <Typography className={classes.listFont2Colourless}>
                         {fetched ? proposalData?.commands[0].quorum : null}%

@@ -11,7 +11,10 @@ import LegalEntityModal from "../../../../../src/components/modals/LegalEntityMo
 import { useDispatch, useSelector } from "react-redux";
 import { createDocument } from "../../../../../src/api/document";
 import { MAIN_API_URL } from "../../../../../src/api";
-import { addAdminFormData, addMembersData } from "../../../../../src/redux/reducers/legal";
+import {
+  addAdminFormData,
+  addMembersData,
+} from "../../../../../src/redux/reducers/legal";
 const DocumentPDF = dynamic(() => import("../pdfGenerator"), {
   ssr: false,
 });
@@ -50,7 +53,6 @@ const useStyles = makeStyles({
 
 // const htmltoImage = () => {
 //   // const domElement1 = document.getElementById("result1");
-//   // console.log(domElement1);
 //   const domElement = document.getElementsByClassName("comments-result");
 //   const arr = [...domElement];
 //   const generateImage = (domElement) => {
@@ -79,7 +81,7 @@ const SignDoc = () => {
 
   const router = useRouter();
   const { clubId, isAdmin } = router.query;
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
   const adminFormData = useSelector((state) => {
     return state.legal.adminFormData;
@@ -102,7 +104,6 @@ const SignDoc = () => {
       const accounts = await web3.eth.getAccounts();
       const currentAccount = accounts[0];
 
-      // console.log(currentAccount);
       const originalMessage = "YOUR_MESSAGE";
 
       // Signed message
@@ -115,9 +116,6 @@ const SignDoc = () => {
       setSignedAcc(currentAccount);
       setSignDoc(true);
       setSignedHash(signedMessage);
-
-      
-
     } catch (error) {
       console.log(error);
     }
@@ -136,14 +134,12 @@ const SignDoc = () => {
       signedMessage: signedHash,
     });
 
-
     // Encrypt it using crypto-JS
     const encryptUserData = CryptoJS.AES.encrypt(data, "").toString();
     const replacedEncrytedLink = encryptUserData.replaceAll("/", "STATION");
     setEncryptedString(replacedEncrytedLink);
-    console.log(replacedEncrytedLink)
 
-   const res = createDocument({
+    const res = createDocument({
       clubId: clubId,
       createdBy: signedAcc,
       fileName: "Legal Doc",
@@ -152,7 +148,6 @@ const SignDoc = () => {
       isTokenForSign: true,
       docIdentifier: replacedEncrytedLink,
     });
-    console.log(res.status);
 
     router.push({
       pathname: `/dashboard/${clubId}/documents`,
@@ -171,16 +166,14 @@ const SignDoc = () => {
   // admin data from encrypted URL
   const fetchAdminsData = () => {
     const newEncryptedLink = encryptedData?.replaceAll("STATION", "/");
-    // console.log(newEncryptedLink);
+
     // decrypt url
     if (newEncryptedLink) {
       const bytes = CryptoJS.AES.decrypt(newEncryptedLink, "");
       const decryptedData = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
       setDecryptedDataObj(decryptedData);
-      console.log(decryptedData);
     }
   };
-
 
   const [client, setClient] = useState(false);
   useEffect(() => {
@@ -307,8 +300,6 @@ const SignDoc = () => {
       )} */}
         {/* <LineGraph /> */}
       </Layout1>
-
-      
     </div>
   );
 };
