@@ -231,7 +231,7 @@ const ProposalCard = ({
             ? daoAddress
             : proposal?.commands[0].executionId === 4
             ? proposal?.commands[0]?.customToken
-            : proposal?.commands[0],
+            : "",
           walletAddress,
           USDC_CONTRACT_ADDRESS,
           GNOSIS_TRANSACTION_URL,
@@ -240,6 +240,7 @@ const ProposalCard = ({
         if (tokenType === "erc20" || proposal?.commands[0].executionId !== 1) {
           const decimal = await airdropContract.decimals();
           const symbol = await airdropContract.obtainSymbol();
+
           setTokenDetails({
             decimals: decimal,
             symbol: symbol,
@@ -506,7 +507,7 @@ const ProposalCard = ({
                         </Typography>
                         <Typography color="#FFFFFF">
                           {proposal.commands[0].customTokenAmounts[0] /
-                            10 ** proposal.commands[0].usdcTokenDecimal}
+                            10 ** tokenDetails.decimals}
                         </Typography>
                       </Grid>
                     }
