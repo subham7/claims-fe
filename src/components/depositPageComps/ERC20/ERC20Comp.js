@@ -117,7 +117,6 @@ const ERC20Comp = ({
                   const createuser = createUser(data);
                   createuser.then((result) => {
                     if (result.status !== 201) {
-                      console.log("Error", result);
                       setAlertStatus("error");
                       setOpenSnackBar(true);
                     } else {
@@ -130,21 +129,18 @@ const ERC20Comp = ({
                   });
                 })
                 .catch((error) => {
-                  console.log("Error", error.message);
                   setAlertStatus("error");
                   setOpenSnackBar(true);
                   setDepositInitiated(false);
                 });
             },
             (error) => {
-              console.log("Error", error.message);
               setAlertStatus("error");
               setOpenSnackBar(true);
               setDepositInitiated(false);
             },
           )
           .catch((error) => {
-            console.log("Error", error);
             setAlertStatus("error");
             setOpenSnackBar(true);
             setDepositInitiated(false);
@@ -178,7 +174,6 @@ const ERC20Comp = ({
                   const updateDepositAmount = patchUserBalance(patchData);
                   updateDepositAmount.then((result) => {
                     if (result.status != 200) {
-                      console.log("Error", result);
                       setAlertStatus("error");
                       setOpenSnackBar(true);
                     } else {
@@ -191,21 +186,18 @@ const ERC20Comp = ({
                   });
                 })
                 .catch((error) => {
-                  console.log("Error", error);
                   setAlertStatus("error");
                   setOpenSnackBar(true);
                   setDepositInitiated(false);
                 });
             },
             (error) => {
-              console.log("Error", error);
               setAlertStatus("error");
               setOpenSnackBar(true);
               setDepositInitiated(false);
             },
           )
           .catch((error) => {
-            console.log("Error", error.message);
             setAlertStatus("error");
             setOpenSnackBar(true);
             setDepositInitiated(false);

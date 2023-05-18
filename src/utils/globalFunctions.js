@@ -28,11 +28,7 @@ export const calculateDays = (dateTime) => {
 
 // function for converting the usdc token amount from decimal to Wei format
 export const convertToWei = (convertAmount, decimal) => {
-  // console.log("convert amount", convertAmount * Math.pow(10, decimal));
-  // console.log(
-  //   "convert amount wei",
-  //   web3.utils.fromWei(convertAmount, Math.pow(10, decimal).toString()),
-  // );
+
   try {
     return ethers
       .parseUnits(convertAmount.toString(), Number(decimal))

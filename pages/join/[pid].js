@@ -267,11 +267,6 @@ const Join = () => {
       const balanceOfTokenAInUserWallet = await tokenAContract.balanceOf();
       const balanceOfTokenBInUserWallet = await tokenBContract.balanceOf();
 
-      console.log(
-        "Balance of token A",
-        +balanceOfTokenAInUserWallet > +tokenGatingDetails[0].value[0],
-      );
-
       if (tokenGatingDetails[0].operator == 0) {
         if (
           +balanceOfTokenAInUserWallet >= +tokenGatingDetails[0]?.value[0] &&

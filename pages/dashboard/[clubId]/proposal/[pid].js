@@ -614,15 +614,6 @@ const ProposalDetail = () => {
       ]);
     }
     if (proposalData.commands[0].executionId === 4) {
-      // const erc20DaoContract = new SmartContract(
-      //   Erc20Dao,
-      //   daoAddress,
-      //   walletAddress,
-      //   USDC_CONTRACT_ADDRESS,
-      //   GNOSIS_TRANSACTION_URL,
-      // );
-      // console.log("erc20DaoContract", erc20DaoContract);
-
       let iface = new Interface(ABI);
 
       approvalData = iface.encodeFunctionData("approve", [
