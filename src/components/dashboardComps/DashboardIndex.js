@@ -148,7 +148,10 @@ const DashboardIndex = () => {
 
           setClubDetails({
             clubImageUrl: imageUrl,
-
+            noOfMembers: membersData?.users?.length,
+          });
+        } else {
+          setClubDetails({
             noOfMembers: membersData?.users?.length,
           });
         }
@@ -323,6 +326,7 @@ const DashboardIndex = () => {
     USDC_CONTRACT_ADDRESS,
     GNOSIS_TRANSACTION_URL,
   ]);
+
 
   return (
     <>
