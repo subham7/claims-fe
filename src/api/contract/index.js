@@ -1,21 +1,11 @@
 import Web3 from "web3";
 import { Web3Adapter } from "@safe-global/protocol-kit";
-import Safe, {
-  SafeFactory,
-  SafeAccountConfig,
-  EthSignSignature,
-} from "@safe-global/protocol-kit";
-
-import FactoryContract from "../../abis/newArch/factoryContract.json";
-import ImplementationContract from "../../abis/implementationABI.json";
-import USDCContract from "../../abis/usdcTokenContract.json";
+import Safe from "@safe-global/protocol-kit";
 import { createProposalTxHash, getProposalTxHash } from "../../api/proposal";
-import { calculateDays, convertToWei } from "../../utils/globalFunctions";
-import { RPC_URL, USDC_FAUCET_ADDRESS } from "../index";
+import { convertToWei } from "../../utils/globalFunctions";
+import { RPC_URL } from "../index";
 import SafeApiKit from "@safe-global/api-kit";
-import Erc721Dao from "../../abis/newArch/erc721Dao.json";
 import Erc20Dao from "../../abis/newArch/erc20Dao.json";
-import { AIRDROP_ACTION_ADDRESS_GOERLI } from "../../api";
 
 async function syncWallet() {
   // function for validating metamask wallet
@@ -311,9 +301,6 @@ export class SmartContract {
     airdropContractAddress = "",
     factoryContractAddress = "",
   ) {
-    const gasPrice = await this.web3.eth.getGasPrice();
-    const increasedGasPrice = +gasPrice + 30000000000;
-
     const parameters = data;
 
     const ethAdapter = new Web3Adapter({
@@ -330,10 +317,12 @@ export class SmartContract {
       ethAdapter: ethAdapter,
       safeAddress: gnosisAddress,
     });
+
     const implementationContract = new web3.eth.Contract(
       Erc20Dao.abi,
       daoAddress,
     );
+
     let approvalTransaction;
     let transaction;
     if (approvalData !== "") {
@@ -528,14 +517,7 @@ export class SmartContract {
         // maxPriorityFeePerGas // Optional
         // nonce // Optional
       };
-      const ethAdapter = new Web3Adapter({
-        web3: this.web3,
-        signerAddress: this.walletAddress,
-      });
-      const safeSdk = await Safe.create({
-        ethAdapter: ethAdapter,
-        safeAddress: gnosisAddress,
-      });
+
       const executeTxResponse = await safeSdk.executeTransaction(
         safetx,
         options,

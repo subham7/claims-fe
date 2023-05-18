@@ -29,11 +29,9 @@ import { addProposalId } from "../../../../src/redux/reducers/create";
 import ClubFetch from "../../../../src/utils/clubFetch";
 import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import CloseIcon from "@mui/icons-material/Close";
-import DoneIcon from "@mui/icons-material/Done";
 import tickerIcon from "../../../../public/assets/icons/ticker_icon.svg";
 import {
   calculateDays,
-  convertFromWeiGovernance,
   convertToWeiGovernance,
 } from "../../../../src/utils/globalFunctions";
 import actionIcon from "../../../../public/assets/icons/action_icon.svg";
@@ -43,15 +41,12 @@ import Erc721Dao from "../../../../src/abis/newArch/erc721Dao.json";
 import Erc20Dao from "../../../../src/abis/newArch/erc20Dao.json";
 import FactoryContractABI from "../../../../src/abis/newArch/factoryContract.json";
 import { SmartContract } from "../../../../src/api/contract";
-import { getAssets, getAssetsByDaoAddress } from "../../../../src/api/assets";
-import { Interface, ethers } from "ethers";
+import { getAssetsByDaoAddress } from "../../../../src/api/assets";
+import { Interface } from "ethers";
 
 import Web3 from "web3";
 import { Web3Adapter } from "@safe-global/protocol-kit";
-import Safe, {
-  SafeFactory,
-  SafeAccountConfig,
-} from "@safe-global/protocol-kit";
+import Safe from "@safe-global/protocol-kit";
 import SafeApiKit from "@safe-global/api-kit";
 import { subgraphQuery } from "../../../../src/utils/subgraphs";
 import { QUERY_ALL_MEMBERS } from "../../../../src/api/graphql/queries";
@@ -459,24 +454,6 @@ const ProposalDetail = () => {
 
   const executeFunction = async (proposalStatus) => {
     setLoaderOpen(true);
-    // let updateProposal;
-    // if (clubData.tokenType === "erc20") {
-    //   updateProposal = new SmartContract(
-    //     Erc20Dao,
-    //     daoAddress,
-    //     undefined,
-    //     USDC_CONTRACT_ADDRESS,
-    //     GNOSIS_TRANSACTION_URL,
-    //   );
-    // } else if (clubData.tokenType === "erc721") {
-    //   updateProposal = new SmartContract(
-    //     Erc721Dao,
-    //     daoAddress,
-    //     undefined,
-    //     USDC_CONTRACT_ADDRESS,
-    //     GNOSIS_TRANSACTION_URL,
-    //   );
-    // }
 
     const updateProposal = new SmartContract(
       clubData?.tokenType === "erc20" ? Erc20Dao : Erc721Dao,
@@ -634,27 +611,6 @@ const ProposalDetail = () => {
         proposalData.commands[0].customTokenAddresses,
       ]);
     }
-
-    // let updateProposalExecute;
-    // if (clubData.tokenType === "erc20") {
-    //   updateProposalExecute = new SmartContract(
-    //     Erc20Dao,
-    //     daoAddress,
-    //     undefined,
-    //     USDC_CONTRACT_ADDRESS,
-    //     GNOSIS_TRANSACTION_URL,
-    //     true,
-    //   );
-    // } else if (clubData.tokenType === "erc721") {
-    //   updateProposalExecute = new SmartContract(
-    //     Erc721Dao,
-    //     daoAddress,
-    //     undefined,
-    //     USDC_CONTRACT_ADDRESS,
-    //     GNOSIS_TRANSACTION_URL,
-    //     true,
-    //   );
-    // }
 
     const updateProposalExecute = new SmartContract(
       clubData?.tokenType === "erc20" ? Erc20Dao : Erc721Dao,
