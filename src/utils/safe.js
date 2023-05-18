@@ -216,11 +216,10 @@ export async function initiateConnection(
           //         }
           //       });
 
-
-         
-
-            //    let admins = addressList;
+                // let admins = addressList;
                 // if (admins.length > 1) admins.shift();
+          //       let admins = addressList;
+          //       admins.shift();
 
           //       if (admins.length) {
           //         for (let i in admins) {
