@@ -62,9 +62,7 @@ async function gnosisSafePromise(owners, threshold, dispatch) {
 export async function initiateConnection(
   params,
   dispatch,
-
   gnosisTransactionUrl,
-
   addressList,
   clubTokenType,
   factoryContractAddress,
@@ -108,6 +106,7 @@ export async function initiateConnection(
         value = factorySmartContract.createERC721DAO(
           params.clubName,
           params.clubSymbol,
+          tokenURI,
           params.ownerFeePerDepositPercent,
           params.depositClose,
           params.quorum,
@@ -193,79 +192,81 @@ export async function initiateConnection(
                 ? metadataURL
                 : "",
           };
-          const club = createClub(data);
-          club
-            .then(async (result) => {
-              if (result.status !== 201) {
-                console.log(result.statusText);
-              } else {
-                let walletAddress = await web3.eth.getAccounts();
+          // const club = createClub(data);
+          // club
+          //   .then(async (result) => {
+          //     if (result.status !== 201) {
+          //       console.log(result.statusText);
+          //     } else {
+          //       let walletAddress = await web3.eth.getAccounts();
 
-                const data = {
-                  userAddress: walletAddress,
-                  clubs: [
-                    {
-                      clubId: result.data.clubId,
-                      isAdmin: 1,
-                    },
-                  ],
-                };
-                const createuser = createUser(data);
-                createuser.then((result) => {
-                  if (result.error) {
-                    console.log(result.error);
-                  }
-                });
+          //       const data = {
+          //         userAddress: walletAddress,
+          //         clubs: [
+          //           {
+          //             clubId: result.data.clubId,
+          //             isAdmin: 1,
+          //           },
+          //         ],
+          //       };
+          //       const createuser = createUser(data);
+          //       createuser.then((result) => {
+          //         if (result.error) {
+          //           console.log(result.error);
+          //         }
+          //       });
 
-                let admins = addressList;
+                // let admins = addressList;
                 // if (admins.length > 1) admins.shift();
+          //       let admins = addressList;
+          //       admins.shift();
 
-                if (admins.length) {
-                  for (let i in admins) {
-                    const data = {
-                      userAddress: Web3.utils.toChecksumAddress(admins[i]),
-                      clubs: [
-                        {
-                          clubId: result.data.clubId,
-                          isAdmin: 1,
-                        },
-                      ],
-                    };
-                    const createuser = createUser(data);
-                    createuser.then((result) => {
-                      if (result.error) {
-                        console.log(result.error);
-                      }
-                    });
-                  }
-                }
+          //       if (admins.length) {
+          //         for (let i in admins) {
+          //           const data = {
+          //             userAddress: Web3.utils.toChecksumAddress(admins[i]),
+          //             clubs: [
+          //               {
+          //                 clubId: result.data.clubId,
+          //                 isAdmin: 1,
+          //               },
+          //             ],
+          //           };
+          //           //     const createuser = createUser(data);
+          //           //     createuser.then((result) => {
+          //           //       if (result.error) {
+          //           //         console.log(result.error);
+          //           //       }
+          //           //     });
+          //         }
+          //       }
 
-                dispatch(
-                  addDaoAddress(
-                    Web3.utils.toChecksumAddress(result.data.daoAddress),
-                  ),
-                );
-                dispatch(addClubID(result.data.clubId));
+          //       dispatch(
+          //         addDaoAddress(
+          //           Web3.utils.toChecksumAddress(result.data.daoAddress),
+          //         ),
+          //       );
+          //       dispatch(addClubID(result.data.clubId));
 
-                const { pathname } = Router;
-                if (pathname == "/create") {
-                  Router.push(
-                    `/dashboard/${Web3.utils.toChecksumAddress(
-                      result.data.daoAddress,
-                    )}?clubCreate=true`,
-                    undefined,
-                    {
-                      shallow: true,
-                    },
-                  );
-                }
-              }
-            })
-            .catch((error) => {
-              dispatch(setCreateDaoAuthorized(false));
-              dispatch(setCreateSafeError(true));
-              console.error(error);
-            });
+          //       const { pathname } = Router;
+          //       if (pathname == "/create") {
+          //         Router.push(
+          //           `/dashboard/${Web3.utils.toChecksumAddress(
+          //             result.data.daoAddress,
+          //           )}?clubCreate=true`,
+          //           undefined,
+          //           {
+          //             shallow: true,
+          //           },
+          //         );
+          //       }
+          //     }
+          //   })
+          //   .catch((error) => {
+          //     dispatch(setCreateDaoAuthorized(false));
+          //     dispatch(setCreateSafeError(true));
+          //     console.error(error);
+          //   });
         })
         .catch((error) => {
           dispatch(setCreateDaoAuthorized(false));
