@@ -52,7 +52,9 @@ const ProposalExecutionInfo = ({
       if (proposalData) {
         const airdropContract = new SmartContract(
           erc20ABI,
-          proposalData?.commands[0]?.airDropToken,
+          proposalData?.commands[0]?.airDropToken
+            ? proposalData?.commands[0]?.airDropToken
+            : proposalData?.commands[0]?.customToken,
           walletAddress,
           USDC_CONTRACT_ADDRESS,
           GNOSIS_TRANSACTION_URL,
@@ -269,14 +271,9 @@ const ProposalExecutionInfo = ({
                       <Typography className={classes.listFont2Colourless}>
                         {fetched
                           ? proposalData?.commands[0].customTokenAmounts[0] /
-                            Math.pow(
-                              10,
-                              parseInt(
-                                proposalData?.commands[0].usdcTokenDecimal,
-                              ),
-                            )
+                            Math.pow(10, parseInt(tokenDetails.decimals))
                           : null}{" "}
-                        {proposalData.commands[0].usdcTokenSymbol}
+                        {tokenDetails.symbol}
                       </Typography>
                     </Grid>
                     <Grid item xs={12} md={4}>
