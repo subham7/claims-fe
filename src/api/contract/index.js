@@ -316,13 +316,8 @@ export class SmartContract {
 
     const parameters = data;
 
-    const safeOwner = this.walletAddress;
-    // const ethAdapter = new Web3Adapter({
-    //   web3: this.web3,
-    //   signerAddress: safeOwner,
-    // });
     const ethAdapter = new Web3Adapter({
-      web3: new Web3(RPC_URL),
+      web3: new Web3(window.ethereum),
       signerAddress: this.walletAddress,
     });
     const txServiceUrl = this.gnosisTransactionUrl;
