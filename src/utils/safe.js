@@ -1,25 +1,19 @@
 import Router from "next/router";
-
 import Web3 from "web3";
 import { Web3Adapter } from "@safe-global/protocol-kit";
-import Safe, {
-  SafeFactory,
-  SafeAccountConfig,
-} from "@safe-global/protocol-kit";
-
+import { SafeFactory } from "@safe-global/protocol-kit";
 import FactoryContract from "../abis/newArch/factoryContract.json";
-import { createClub, fetchClub } from "../api/club";
 import { SmartContract } from "../api/contract";
-import { createUser } from "../api/user";
-import { addClubID, addDaoAddress } from "../redux/reducers/create";
+import {
+  addDaoAddress,
+  addTokenURI,
+} from "../redux/reducers/create";
 import {
   safeConnected,
   setCreateDaoAuthorized,
-  setCreateDaoGnosisSigned,
   setCreateSafeError,
   setCreateSafeErrorCode,
   setCreateSafeLoading,
-  setRedirectToCreate,
 } from "../redux/reducers/gnosis";
 import { addClubData } from "../redux/reducers/club";
 
@@ -115,6 +109,8 @@ export async function initiateConnection(
             modifiedTokenURI = `https://${imgUrl[2]}.ipfs.dweb.link/${imgUrl[3]}`;
           }
         }
+
+        dispatch(addTokenURI(modifiedTokenURI));
 
         value = factorySmartContract.createERC721DAO(
           params.clubName,
