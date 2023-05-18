@@ -478,12 +478,14 @@ const ProposalCard = ({
                             Amount:
                           </Typography>
                           <Typography color="#FFFFFF">
-                            {Number(
-                              convertFromWeiGovernance(
-                                proposal?.commands[0].mintGTAmounts[0],
-                                tokenDetails.decimals,
-                              ),
-                            ).toFixed(0)}
+                            {tokenType === "erc20"
+                              ? Number(
+                                  convertFromWeiGovernance(
+                                    proposal?.commands[0].mintGTAmounts[0],
+                                    tokenDetails.decimals,
+                                  ),
+                                ).toFixed(0)
+                              : proposal?.commands[0].mintGTAmounts[0]}
                           </Typography>
                         </Grid>
                       ) : null
