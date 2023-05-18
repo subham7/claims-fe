@@ -114,19 +114,19 @@ const ERC20Comp = ({
                       },
                     ],
                   };
-                  const createuser = createUser(data);
-                  createuser.then((result) => {
-                    if (result.status !== 201) {
-                      setAlertStatus("error");
-                      setOpenSnackBar(true);
-                    } else {
-                      setAlertStatus("success");
-                      setOpenSnackBar(true);
-                      router.push(`/dashboard/${clubId}`, undefined, {
-                        shallow: true,
-                      });
-                    }
-                  });
+                  // const createuser = createUser(data);
+                  // createuser.then((result) => {
+                  //   if (result.status !== 201) {
+                  //     setAlertStatus("error");
+                  //     setOpenSnackBar(true);
+                  //   } else {
+                  //     setAlertStatus("success");
+                  //     setOpenSnackBar(true);
+                  //     router.push(`/dashboard/${clubId}`, undefined, {
+                  //       shallow: true,
+                  //     });
+                  //   }
+                  // });
                 })
                 .catch((error) => {
                   setAlertStatus("error");
@@ -667,7 +667,7 @@ const ERC20Comp = ({
                                 : ""}
                             </Typography>
                           </Grid>
-                          
+
                           <Grid
                             item
                             ml={2}

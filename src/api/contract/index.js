@@ -181,6 +181,7 @@ export class SmartContract {
   async createERC721DAO(
     clubName,
     clubSymbol,
+    tokenUri,
     ownerFeePerDepositPercent,
     depositClose,
     quorum,
@@ -204,6 +205,7 @@ export class SmartContract {
       .createERC721DAO(
         clubName,
         clubSymbol,
+        tokenUri,
         ownerFeePerDepositPercent,
         depositClose,
         quorum,

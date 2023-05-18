@@ -92,20 +92,20 @@ const ERC721Comp = ({
               const checkUserExists = checkUserByClub(userDetails, clubId);
               checkUserExists.then((result) => {
                 if (result.data === false) {
-                  const createuser = createUser(data);
-                  createuser.then((result) => {
-                    if (result.status !== 201) {
-                      setAlertStatus("error");
-                      setOpenSnackBar(true);
-                    } else {
-                      setAlertStatus("success");
-                      setOpenSnackBar(true);
-                      setLoading(false);
-                      router.push(`/dashboard/${clubId}`, undefined, {
-                        shallow: true,
-                      });
-                    }
-                  });
+                  // const createuser = createUser(data);
+                  // createuser.then((result) => {
+                  //   if (result.status !== 201) {
+                  //     setAlertStatus("error");
+                  //     setOpenSnackBar(true);
+                  //   } else {
+                  //     setAlertStatus("success");
+                  //     setOpenSnackBar(true);
+                  //     setLoading(false);
+                  //     router.push(`/dashboard/${clubId}`, undefined, {
+                  //       shallow: true,
+                  //     });
+                  //   }
+                  // });
                 } else {
                   setLoading(false);
                   setAlertStatus("success");
