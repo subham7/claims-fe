@@ -62,6 +62,7 @@ import CurrentResults from "../../../../src/components/proposalComps/CurrentResu
 import ProposalVotes from "../../../../src/components/proposalComps/ProposalVotes";
 import { fetchClubbyDaoAddress } from "../../../../src/api/club";
 import WrongNetworkModal from "../../../../src/components/modals/WrongNetworkModal";
+import { RPC_URL } from "../../../../src/api";
 
 const useStyles = makeStyles({
   clubAssets: {
@@ -306,7 +307,7 @@ const ProposalDetail = () => {
   console.log("AIRDROP ACtion", AIRDROP_ACTION_ADDRESS);
 
   const getSafeSdk = useCallback(async () => {
-    const web3 = new Web3(window.ethereum);
+    const web3 = new Web3(RPC_URL);
     const ethAdapter = new Web3Adapter({
       web3,
       signerAddress: walletAddress,
@@ -395,6 +396,7 @@ const ProposalDetail = () => {
           setExecutionReady(true);
         }
       }
+      setLoaderOpen(false);
     });
   }, [
     getSafeSdk,
@@ -790,7 +792,6 @@ const ProposalDetail = () => {
           setSigned(true);
 
           isOwner();
-          setLoaderOpen(false);
         })
         .catch((err) => {
           setSigned(false);
@@ -812,6 +813,7 @@ const ProposalDetail = () => {
   useEffect(() => {
     console.log("heree");
     if (pid) {
+      setLoaderOpen(true);
       fetchData();
       isOwner();
       fetchTokens();
