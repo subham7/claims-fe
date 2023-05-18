@@ -102,42 +102,6 @@ export default function ProtectRoute(Component) {
     };
 
     const handleMount = useCallback(async () => {
-      // if (wallet !== null) {
-      //   // setWalletAddress(wallet[0][0].address);
-      //   // setWalletLoaded(true);
-      //   const getLoginToken = loginToken(walletAddress);
-      //   getLoginToken?.then((response) => {
-      //     if (response.status !== 200) {
-      //       console.log(response.data.error);
-      //       // router.push("/");
-      //     } else {
-      //       setExpiryTime(response.data.tokens.access.expires);
-      //       const expiryTime = getExpiryTime();
-      //       const currentDate = Date();
-      //       setJwtToken(response.data.tokens.access.token);
-      //       setRefreshToken(response.data.tokens.refresh.token);
-      //       if (expiryTime < currentDate) {
-      //         const obtainNewToken = refreshToken(
-      //           getRefreshToken(),
-      //           getJwtToken(),
-      //         );
-      //         obtainNewToken
-      //           .then((tokenResponse) => {
-      //             if (response.status !== 200) {
-      //               console.log(tokenResponse.data.error);
-      //             } else {
-      //               setExpiryTime(tokenResponse.data.tokens.access.expires);
-      //               setJwtToken(tokenResponse.data.tokens.access.token);
-      //               setRefreshToken(tokenResponse.data.tokens.refresh.token);
-      //             }
-      //           })
-      //           .catch((error) => {
-      //             console.log(error);
-      //           });
-      //       }
-      //     }
-      //   });
-      // }
       if (!wallet) {
         setRedirect(true);
       }

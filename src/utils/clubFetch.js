@@ -196,18 +196,8 @@ const ClubFetch = (Component) => {
                 .then(
                   async (result) => {
                     try {
-                      // console.log("first", gnosisAddress, result, response);
-                      // const safeSdk = await getSafeSdk();
-                      // const web3 = new Web3(window.ethereum);
-                      const web3 = new Web3(RPC_URL);
-                      const ethAdapter = new Web3Adapter({
-                        web3,
-                        signerAddress: walletAddress,
-                      });
-                      const safeSdk = await Safe.create({
-                        ethAdapter: ethAdapter,
-                        safeAddress: reduxClubData.gnosisAddress,
-                      });
+                      console.log("first", gnosisAddress, result, response);
+                      const safeSdk = await getSafeSdk();
                       console.log("safeSdk", safeSdk);
                       const ownerAddresses = await safeSdk.getOwners();
                       console.log("ownerAddresses", ownerAddresses);

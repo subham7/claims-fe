@@ -38,7 +38,6 @@ async function gnosisSafePromise(owners, threshold, dispatch) {
   };
 
   const gasPrice = await web3.eth.getGasPrice();
-  console.log("Current gas Price", gasPrice);
   const increasedGasPrice = +gasPrice + 30000000000;
 
   const options = {
@@ -49,7 +48,6 @@ async function gnosisSafePromise(owners, threshold, dispatch) {
   try {
     const newSafeAddress = await safeSdk.getAddress();
     dispatch(safeConnected(newSafeAddress, safeSdk));
-    // console.log(newSafeAddress);
     return newSafeAddress;
   } catch (error) {
     if (error.code === 4001) {
@@ -82,23 +80,18 @@ export async function initiateConnection(
   await web3.eth.net
     .getId()
     .then((id) => {
-      console.log(id);
       networkId = id;
     })
     .catch((err) => {
       console.log(err);
     });
-  console.log(
-    addressList,
-    Math.ceil(addressList.length * (params.threshold / 10000)),
-  );
+
   await gnosisSafePromise(
     addressList,
     Math.ceil(addressList.length * (params.threshold / 10000)),
     dispatch,
   )
     .then((treasuryAddress) => {
-      console.log("treasuryAddress", treasuryAddress);
       dispatch(setCreateSafeLoading(false));
       dispatch(setCreateDaoAuthorized(true));
 
@@ -112,7 +105,6 @@ export async function initiateConnection(
       );
       let value;
       if (clubTokenType === "NFT") {
-        console.log("NFT");
         value = factorySmartContract.createERC721DAO(
           params.clubName,
           params.clubSymbol,
@@ -155,7 +147,6 @@ export async function initiateConnection(
           params.merkleRoot,
         );
       }
-      console.log(value);
       value
         .then((result) => {
           dispatch(
@@ -179,17 +170,9 @@ export async function initiateConnection(
             ) {
               let imgUrl = tokenURI?.split("//");
               modifiedTokenURI = `https://${imgUrl[1]}.ipfs.dweb.link/${imgUrl[2]}`;
-              console.log(
-                "imgUrl, ",
-                `https://${imgUrl[1]}.ipfs.dweb.link/${imgUrl[2]}`,
-              );
             } else {
               let imgUrl = tokenURI?.split("/");
               modifiedTokenURI = `https://${imgUrl[2]}.ipfs.dweb.link/${imgUrl[3]}`;
-              console.log(
-                "imgUrl, ",
-                `https://${imgUrl[2]}.ipfs.dweb.link/${imgUrl[3]}`,
-              );
             }
           }
 
@@ -218,7 +201,6 @@ export async function initiateConnection(
                 console.log(result.statusText);
               } else {
                 let walletAddress = await web3.eth.getAccounts();
-                console.log("walletAddress", walletAddress);
 
                 const data = {
                   userAddress: walletAddress,
