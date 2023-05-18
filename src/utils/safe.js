@@ -103,10 +103,23 @@ export async function initiateConnection(
       );
       let value;
       if (clubTokenType === "NFT") {
+        let modifiedTokenURI;
+        if (clubTokenType === "NFT") {
+          if (
+            tokenURI.slice(tokenURI.indexOf("/"), tokenURI?.lastIndexOf("//"))
+          ) {
+            let imgUrl = tokenURI?.split("//");
+            modifiedTokenURI = `https://${imgUrl[1]}.ipfs.dweb.link/${imgUrl[2]}`;
+          } else {
+            let imgUrl = tokenURI?.split("/");
+            modifiedTokenURI = `https://${imgUrl[2]}.ipfs.dweb.link/${imgUrl[3]}`;
+          }
+        }
+
         value = factorySmartContract.createERC721DAO(
           params.clubName,
           params.clubSymbol,
-          tokenURI,
+          modifiedTokenURI,
           params.ownerFeePerDepositPercent,
           params.depositClose,
           params.quorum,
@@ -160,113 +173,18 @@ export async function initiateConnection(
           );
           daoAddress = result.events[0].address;
           dispatch(addDaoAddress(result.events[0].address));
-
-          let modifiedTokenURI;
-          if (clubTokenType === "NFT") {
-            if (
-              tokenURI.slice(tokenURI.indexOf("/"), tokenURI?.lastIndexOf("//"))
-            ) {
-              let imgUrl = tokenURI?.split("//");
-              modifiedTokenURI = `https://${imgUrl[1]}.ipfs.dweb.link/${imgUrl[2]}`;
-            } else {
-              let imgUrl = tokenURI?.split("/");
-              modifiedTokenURI = `https://${imgUrl[2]}.ipfs.dweb.link/${imgUrl[3]}`;
-            }
+          const { pathname } = Router;
+          if (pathname == "/create") {
+            Router.push(
+              `/dashboard/${Web3.utils.toChecksumAddress(
+                daoAddress,
+              )}?clubCreate=true`,
+              undefined,
+              {
+                shallow: true,
+              },
+            );
           }
-
-          const data = {
-            name: params.clubName,
-            daoAddress: daoAddress,
-            gnosisAddress: treasuryAddress,
-            networkId: networkId,
-            tokenType:
-              clubTokenType === "Non Transferable ERC20 Token"
-                ? "erc20NonTransferable"
-                : "erc721",
-            nftImageUrl:
-              clubTokenType !== "Non Transferable ERC20 Token"
-                ? modifiedTokenURI
-                : "",
-            nftMetadataUrl:
-              clubTokenType !== "Non Transferable ERC20 Token"
-                ? metadataURL
-                : "",
-          };
-          // const club = createClub(data);
-          // club
-          //   .then(async (result) => {
-          //     if (result.status !== 201) {
-          //       console.log(result.statusText);
-          //     } else {
-          //       let walletAddress = await web3.eth.getAccounts();
-
-          //       const data = {
-          //         userAddress: walletAddress,
-          //         clubs: [
-          //           {
-          //             clubId: result.data.clubId,
-          //             isAdmin: 1,
-          //           },
-          //         ],
-          //       };
-          //       const createuser = createUser(data);
-          //       createuser.then((result) => {
-          //         if (result.error) {
-          //           console.log(result.error);
-          //         }
-          //       });
-
-                // let admins = addressList;
-                // if (admins.length > 1) admins.shift();
-          //       let admins = addressList;
-          //       admins.shift();
-
-          //       if (admins.length) {
-          //         for (let i in admins) {
-          //           const data = {
-          //             userAddress: Web3.utils.toChecksumAddress(admins[i]),
-          //             clubs: [
-          //               {
-          //                 clubId: result.data.clubId,
-          //                 isAdmin: 1,
-          //               },
-          //             ],
-          //           };
-          //           //     const createuser = createUser(data);
-          //           //     createuser.then((result) => {
-          //           //       if (result.error) {
-          //           //         console.log(result.error);
-          //           //       }
-          //           //     });
-          //         }
-          //       }
-
-          //       dispatch(
-          //         addDaoAddress(
-          //           Web3.utils.toChecksumAddress(result.data.daoAddress),
-          //         ),
-          //       );
-          //       dispatch(addClubID(result.data.clubId));
-
-          //       const { pathname } = Router;
-          //       if (pathname == "/create") {
-          //         Router.push(
-          //           `/dashboard/${Web3.utils.toChecksumAddress(
-          //             result.data.daoAddress,
-          //           )}?clubCreate=true`,
-          //           undefined,
-          //           {
-          //             shallow: true,
-          //           },
-          //         );
-          //       }
-          //     }
-          //   })
-          //   .catch((error) => {
-          //     dispatch(setCreateDaoAuthorized(false));
-          //     dispatch(setCreateSafeError(true));
-          //     console.error(error);
-          //   });
         })
         .catch((error) => {
           dispatch(setCreateDaoAuthorized(false));

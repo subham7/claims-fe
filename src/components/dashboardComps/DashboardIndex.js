@@ -116,6 +116,10 @@ const DashboardIndex = () => {
     return state.club.clubData.symbol;
   });
 
+  const tokenType = useSelector((state) => {
+    return state.club.clubData.tokenType;
+  });
+
   const walletAddress = Web3.utils.toChecksumAddress(
     wallet?.accounts[0].address,
   );
@@ -131,8 +135,12 @@ const DashboardIndex = () => {
           QUERY_ALL_MEMBERS(daoAddress),
         );
 
+        const clubDetails = await subgraphQuery(
+          SUBGRAPH_URL,
+          QUERY_CLUB_DETAILS(daoAddress),
+        );
         setClubDetails({
-          clubImageUrl: imageUrl?.data[0]?.imageUrl,
+          clubImageUrl: clubDetails?.stations[0].imageUrl,
 
           noOfMembers: membersData?.users?.length,
         });
@@ -316,16 +324,21 @@ const DashboardIndex = () => {
           <Grid item xs={9}>
             <Card className={classes.cardSharp1}>
               <Grid container spacing={2}>
-                <Grid item ml={3} mt={2}>
-                  <img
-                    src={
-                      clubDetails.clubImageUrl ? clubDetails.clubImageUrl : null
-                    }
-                    width="110px"
-                    alt="profile_pic"
-                    className={classes.profilePic}
-                  />
-                </Grid>
+                {tokenType === "erc721" ? (
+                  <Grid item ml={3} mt={2}>
+                    <img
+                      src={
+                        clubDetails.clubImageUrl
+                          ? clubDetails.clubImageUrl
+                          : null
+                      }
+                      width="110px"
+                      alt="profile_pic"
+                      className={classes.profilePic}
+                    />
+                  </Grid>
+                ) : null}
+
                 <Grid item ml={1} mt={4}>
                   <Stack spacing={0}>
                     <Typography variant="h3">

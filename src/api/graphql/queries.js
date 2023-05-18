@@ -40,6 +40,8 @@ export const QUERY_CLUB_DETAILS = (daoAddress) => {
               tokenType
               symbol
               isGtTransferable
+              imageUrl
+              isGovernanceActive
             }
     }`;
 };
