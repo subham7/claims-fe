@@ -459,24 +459,32 @@ const ProposalDetail = () => {
 
   const executeFunction = async (proposalStatus) => {
     setLoaderOpen(true);
-    let updateProposal;
-    if (clubData.tokenType === "erc20") {
-      updateProposal = new SmartContract(
-        Erc20Dao,
-        daoAddress,
-        undefined,
-        USDC_CONTRACT_ADDRESS,
-        GNOSIS_TRANSACTION_URL,
-      );
-    } else if (clubData.tokenType === "erc721") {
-      updateProposal = new SmartContract(
-        Erc721Dao,
-        daoAddress,
-        undefined,
-        USDC_CONTRACT_ADDRESS,
-        GNOSIS_TRANSACTION_URL,
-      );
-    }
+    // let updateProposal;
+    // if (clubData.tokenType === "erc20") {
+    //   updateProposal = new SmartContract(
+    //     Erc20Dao,
+    //     daoAddress,
+    //     undefined,
+    //     USDC_CONTRACT_ADDRESS,
+    //     GNOSIS_TRANSACTION_URL,
+    //   );
+    // } else if (clubData.tokenType === "erc721") {
+    //   updateProposal = new SmartContract(
+    //     Erc721Dao,
+    //     daoAddress,
+    //     undefined,
+    //     USDC_CONTRACT_ADDRESS,
+    //     GNOSIS_TRANSACTION_URL,
+    //   );
+    // }
+
+    const updateProposal = new SmartContract(
+      clubData?.tokenType === "erc20" ? Erc20Dao : Erc721Dao,
+      daoAddress,
+      undefined,
+      USDC_CONTRACT_ADDRESS,
+      GNOSIS_TRANSACTION_URL,
+    );
 
     let data;
     let approvalData;
@@ -627,26 +635,35 @@ const ProposalDetail = () => {
       ]);
     }
 
-    let updateProposalExecute;
-    if (clubData.tokenType === "erc20") {
-      updateProposalExecute = new SmartContract(
-        Erc20Dao,
-        daoAddress,
-        undefined,
-        USDC_CONTRACT_ADDRESS,
-        GNOSIS_TRANSACTION_URL,
-        true,
-      );
-    } else if (clubData.tokenType === "erc721") {
-      updateProposalExecute = new SmartContract(
-        Erc721Dao,
-        daoAddress,
-        undefined,
-        USDC_CONTRACT_ADDRESS,
-        GNOSIS_TRANSACTION_URL,
-        true,
-      );
-    }
+    // let updateProposalExecute;
+    // if (clubData.tokenType === "erc20") {
+    //   updateProposalExecute = new SmartContract(
+    //     Erc20Dao,
+    //     daoAddress,
+    //     undefined,
+    //     USDC_CONTRACT_ADDRESS,
+    //     GNOSIS_TRANSACTION_URL,
+    //     true,
+    //   );
+    // } else if (clubData.tokenType === "erc721") {
+    //   updateProposalExecute = new SmartContract(
+    //     Erc721Dao,
+    //     daoAddress,
+    //     undefined,
+    //     USDC_CONTRACT_ADDRESS,
+    //     GNOSIS_TRANSACTION_URL,
+    //     true,
+    //   );
+    // }
+
+    const updateProposalExecute = new SmartContract(
+      clubData?.tokenType === "erc20" ? Erc20Dao : Erc721Dao,
+      daoAddress,
+      undefined,
+      USDC_CONTRACT_ADDRESS,
+      GNOSIS_TRANSACTION_URL,
+      true,
+    );
 
     const response = updateProposalExecute.updateProposalAndExecution(
       data,
