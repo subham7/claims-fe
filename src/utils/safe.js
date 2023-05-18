@@ -159,7 +159,6 @@ export async function initiateConnection(
               tokenType: clubTokenType === "NFT" ? "erc721" : "erc20",
             }),
           );
-          console.log(result);
           daoAddress = result.events[0].address;
           dispatch(addDaoAddress(result.events[0].address));
 
