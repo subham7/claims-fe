@@ -138,7 +138,6 @@ const Create = () => {
 
     validationSchema: ERC721Step2ValidationSchema,
     onSubmit: (values) => {
-      console.log(values);
       handleNext();
     },
   });
@@ -166,7 +165,6 @@ const Create = () => {
           image: formikERC721Step2.values.nftImage,
         });
         dispatch(setUploadNFTLoading(false));
-        console.log(metadata);
         const web3 = new Web3(Web3.givenProvider);
         const auth = web3.eth.getAccounts();
         auth

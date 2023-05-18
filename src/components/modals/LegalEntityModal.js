@@ -111,7 +111,6 @@ const LegalEntityModal = ({
   const classes = useStyles();
   const router = useRouter();
 
-  console.log(daoAddress);
   const { clubId } = router.query;
 
   // create legal Entity

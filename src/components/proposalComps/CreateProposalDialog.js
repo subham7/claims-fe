@@ -63,7 +63,6 @@ const useStyles = makeStyles({
   },
 });
 const CreateProposalDialog = ({ open, setOpen, onClose, tokenData }) => {
-  console.log(tokenData);
   const classes = useStyles();
   const router = useRouter();
   const dispatch = useDispatch();
@@ -131,7 +130,6 @@ const CreateProposalDialog = ({ open, setOpen, onClose, tokenData }) => {
     },
     validationSchema: proposalValidationSchema,
     onSubmit: async (values) => {
-      console.log(values);
       let commands;
       setLoaderOpen(true);
       if (values.actionCommand === "Distribute token to members") {
@@ -178,7 +176,6 @@ const CreateProposalDialog = ({ open, setOpen, onClose, tokenData }) => {
         ];
       }
       if (values.actionCommand === "Change total raise amount") {
-        console.log("here");
         const factoryContract = new SmartContract(
           factoryContractABI,
           FACTORY_CONTRACT_ADDRESS,
@@ -187,9 +184,7 @@ const CreateProposalDialog = ({ open, setOpen, onClose, tokenData }) => {
           GNOSIS_TRANSACTION_URL,
         );
         const factoryData = await factoryContract.getDAOdetails(daoAddress);
-        console.log(
-          convertToWei(values.totalDeposit, 6) / factoryData.pricePerToken,
-        );
+
         commands = [
           {
             executionId: 3,
@@ -240,10 +235,7 @@ const CreateProposalDialog = ({ open, setOpen, onClose, tokenData }) => {
           setFailed(true);
           setLoaderOpen(false);
         } else {
-          // console.log(result.data)
-          // fetchData();
           const proposalData = await fetchProposals(clubId);
-          console.log(proposalData);
           dispatch(setProposalList(proposalData));
           setOpenSnackBar(true);
           setFailed(false);

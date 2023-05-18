@@ -65,14 +65,12 @@ const TokenGatingModal = ({ closeModal, chooseTokens }) => {
             );
 
             tokenSymbol = await erc20contract.obtainSymbol();
-            console.log("NO TOKEN SYMBOL", tokenSymbol);
             try {
               tokenDecimal = await erc20contract.decimals();
             } catch (err) {
               console.log(err);
             }
 
-            console.log("Token Symbol", tokenSymbol);
             chooseTokens({
               tokenSymbol: tokenSymbol,
               tokenAddress: values.address,
@@ -81,7 +79,7 @@ const TokenGatingModal = ({ closeModal, chooseTokens }) => {
             });
             closeModal();
           } catch (error) {
-            console.log("ERROROROOROR", error);
+            console.log(error);
 
             setTimeout(() => {
               setNotValid(false);
@@ -93,8 +91,6 @@ const TokenGatingModal = ({ closeModal, chooseTokens }) => {
       }
     },
   });
-
-  console.log("NOT VALID", notValid);
 
   return (
     <>

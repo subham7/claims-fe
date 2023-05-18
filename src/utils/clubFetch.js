@@ -50,8 +50,6 @@ const ClubFetch = (Component) => {
     const [{ wallet }] = useConnectWallet();
     const networkId = wallet?.chains[0]?.id;
 
-    console.log("Networrrk ID", wallet);
-
     const walletAddress = Web3.utils.toChecksumAddress(
       wallet?.accounts[0].address,
     );
@@ -61,7 +59,6 @@ const ClubFetch = (Component) => {
 
     const { clubId: daoAddress } = router.query;
     const { pid } = router.query;
-    console.log("first", router.query);
 
     dispatch(addDaoAddress(Web3.utils.toChecksumAddress(daoAddress)));
     const USDC_CONTRACT_ADDRESS = useSelector((state) => {
@@ -75,7 +72,6 @@ const ClubFetch = (Component) => {
     });
 
     const checkUserExists = useCallback(async () => {
-      console.log("first");
       try {
         const getSafeSdk = async () => {
           const web3 = new Web3(RPC_URL);
@@ -90,16 +86,12 @@ const ClubFetch = (Component) => {
 
           return safeSdk;
         };
-        console.log("first", daoAddress, wallet);
         if ((daoAddress && wallet) || (pid && wallet)) {
-          console.log("first", pid, wallet);
           const networkData = fetchConfigById(wallet.chains[0].id);
 
           networkData.then(async (result) => {
             if (result.status != 200) {
-              console.log(result.error);
             } else {
-              console.log("firstyyyyy", result.data[0]);
               const clubData = await fetchClubbyDaoAddress(
                 daoAddress ? daoAddress : pid,
               );
@@ -184,7 +176,7 @@ const ClubFetch = (Component) => {
               );
 
               const daoDetails = await erc20Contract.getERC20DAOdetails();
-              
+
               console.log("daoDetails", daoDetails);
               const response = erc20Contract.balanceOf();
               console.log("response", response);

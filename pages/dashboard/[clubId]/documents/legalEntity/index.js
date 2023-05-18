@@ -76,7 +76,7 @@ const validationSchema = yup.object({
 const Homepage = () => {
   const classes = useStyles();
   const router = useRouter();
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
   const { clubId } = router.query;
 
@@ -90,15 +90,12 @@ const Homepage = () => {
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
-      console.log(values);
-      // router.push(`/dashboard/${clubId}/documents/legalEntity/signDoc`)
-
-      dispatch(addAdminFormData(values))
+      dispatch(addAdminFormData(values));
       router.push({
         pathname: `/dashboard/${clubId}/documents/legalEntity/signDoc`,
         query: {
-          isAdmin: true
-        }
+          isAdmin: true,
+        },
       });
     },
   });

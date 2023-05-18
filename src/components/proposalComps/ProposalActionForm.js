@@ -24,7 +24,6 @@ const useStyles = makeStyles({
 });
 
 const ProposalActionForm = ({ formik, tokenData }) => {
-  console.log(formik);
   const classes = useStyles();
 
   const tokenType = useSelector((state) => {
@@ -117,7 +116,6 @@ const ProposalActionForm = ({ formik, tokenData }) => {
                 if (selected.length === 0) {
                   return "Select a command";
                 }
-                // console.log(selected);
                 return selected;
               }}
               inputProps={{ "aria-label": "Without label" }}

@@ -42,7 +42,6 @@ export default function ProtectRoute(Component) {
       localStorage.setItem("wallet", walletAddress);
     }
 
-    // console.log("walllleettttt");
     const fetchCustomTokenDecimals = useCallback(async () => {
       try {
         if (USDC_CONTRACT_ADDRESS && GNOSIS_TRANSACTION_URL) {
@@ -103,7 +102,6 @@ export default function ProtectRoute(Component) {
     };
 
     const handleMount = useCallback(async () => {
-      console.log("wallet in handle mount", wallet);
       // if (wallet !== null) {
       //   // setWalletAddress(wallet[0][0].address);
       //   // setWalletLoaded(true);
@@ -168,7 +166,6 @@ export default function ProtectRoute(Component) {
           web3.eth.net
             .getId()
             .then((networkId) => {
-              console.log("networkId", networkId);
               if (!networksAvailable.includes(networkId)) {
                 setOpen(true);
               }
@@ -245,7 +242,6 @@ export function authenticateUser(
       );
       const response = factoryContract.userDetails();
       response.then((result) => {
-        console.log("userdetail", result);
         if (result[0]) {
           // is admin
           return true;

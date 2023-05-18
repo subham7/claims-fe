@@ -187,7 +187,6 @@ const ProposalCard = ({
   executionTransaction,
 }) => {
   const classes = useStyles();
-  console.log("PROPOSALAAA", proposal);
   const router = useRouter();
 
   const { clubId: daoAddress } = router.query;
@@ -240,7 +239,6 @@ const ProposalCard = ({
 
         if (tokenType === "erc20" || proposal?.commands[0].executionId !== 1) {
           const decimal = await airdropContract.decimals();
-          console.log("Decimal", decimal);
           const symbol = await airdropContract.obtainSymbol();
           setTokenDetails({
             decimals: decimal,
@@ -299,8 +297,6 @@ const ProposalCard = ({
   useEffect(() => {
     fetchAirDropContractDetails();
   }, [fetchAirDropContractDetails]);
-
-  console.log("Dao Details");
 
   return (
     <CardActionArea sx={{ borderRadius: "10px" }}>

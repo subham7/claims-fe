@@ -90,7 +90,6 @@ const NewArchERC20 = ({
   const remainingDays = day2.diff(day1, "day");
   const remainingTimeInSecs = day2.diff(day1, "seconds");
   const remainingTimeInHours = day2.diff(day1, "hours");
-  console.log("Remaining Time in Secs", remainingTimeInSecs);
 
   const showMessageHandler = () => {
     setShowMessage(true);
@@ -102,10 +101,6 @@ const NewArchERC20 = ({
   const fetchTokenDetails = useCallback(async () => {
     setLoading(true);
     try {
-      console.log(
-        "daoDetails.depositTokenAddress",
-        daoDetails.depositTokenAddress,
-      );
       const erc20Contract = new SmartContract(
         erc20ABI,
         daoDetails.depositTokenAddress,
@@ -239,39 +234,6 @@ const NewArchERC20 = ({
     if (daoDetails.depositTokenAddress && daoDetails.clubTokensMinted)
       fetchTokenDetails();
   }, [fetchTokenDetails, daoDetails]);
-
-  console.log(
-    "Club tokens minted",
-    Number(
-      convertFromWeiGovernance(
-        +daoDetails.clubTokensMinted,
-        +daoDetails.decimals,
-      ) *
-        Number(
-          convertFromWeiGovernance(
-            +daoDetails.pricePerToken,
-            +erc20TokenDetails.tokenDecimal,
-          ),
-        ) *
-        100,
-    ) /
-      Number(
-        convertFromWeiGovernance(
-          +daoDetails.totalSupply.toFixed(0),
-          +erc20TokenDetails.tokenDecimal,
-        ),
-      ),
-  );
-
-  console.log(
-    "Club tokens check",
-    Number(
-      convertFromWeiGovernance(
-        +daoDetails.totalSupply.toFixed(0),
-        +erc20TokenDetails.tokenDecimal,
-      ),
-    ),
-  );
 
   return (
     <>
@@ -567,7 +529,6 @@ const NewArchERC20 = ({
                   </Grid>
                 </Grid>
                 <Grid item ml={3} mt={5} mb={2} mr={3}>
-                  {console.log(daoDetails.clubTokensMinted)}
                   {walletAddress && daoDetails.clubTokensMinted ? (
                     <ProgressBar
                       value={

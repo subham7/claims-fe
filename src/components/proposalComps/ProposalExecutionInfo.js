@@ -26,7 +26,6 @@ const ProposalExecutionInfo = ({
   USDC_CONTRACT_ADDRESS,
   daoDetails,
 }) => {
-  console.log("Proposal Data", proposalData);
   const classes = useStyles();
   const [{ wallet }] = useConnectWallet();
 
@@ -56,7 +55,6 @@ const ProposalExecutionInfo = ({
         );
 
         const decimal = await airdropContract.decimals();
-        console.log("decimals", decimal);
         const symbol = await airdropContract.obtainSymbol();
 
         setTokenDetails({

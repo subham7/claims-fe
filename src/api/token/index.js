@@ -35,16 +35,12 @@ export const getTokensFromWallet = async (address, networkId) => {
       let response = await axios(config);
       response = response["data"];
 
-      // tokens.map(token => console.log(token.contractAddress))
-      // Getting balances
       const balances = response["result"];
 
       // Remove tokens with zero balance
       const nonZeroBalances = await balances.tokenBalances.filter((token) => {
         return token.tokenBalance !== "0";
       });
-
-      console.log(`Token balances of ${address}: \n`);
 
       let i = 1;
 
@@ -82,7 +78,7 @@ export const getTokensFromWallet = async (address, networkId) => {
 
         tokenName = metadata["data"]["result"].name;
         tokenSymbol = metadata["data"]["result"].symbol;
-        // console.log(metadata["data"])
+
         // Print name, balance, and symbol of token
 
         tokenData.push({
@@ -91,8 +87,6 @@ export const getTokensFromWallet = async (address, networkId) => {
           tokenSymbol: tokenSymbol,
           tokenAddress: address,
         });
-
-        //   console.log(`${i++}. ${tokenName}: ${tokenBalance} ${tokenSymbol}`);
       }
 
       return tokenData;
@@ -111,7 +105,6 @@ export const getBalanceOfToken = async (
   networkId,
 ) => {
   try {
-    console.log(walletAddress);
     const main = async () => {
       //fetching token balance
 
@@ -189,7 +182,6 @@ export const getTokensDecimalFromAddress = async (address, networkId) => {
       response = response["data"];
       tokenDecimal = response.result.decimals;
       return tokenDecimal;
-      //   console.log(`${i++}. ${tokenName}: ${tokenBalance} ${tokenSymbol}`);
     };
     const result = await main();
 
@@ -230,7 +222,6 @@ export const getTokenMetadata = async (address, networkId) => {
       let response = await axios(config);
       response = response["data"];
       return response;
-      //   console.log(`${i++}. ${tokenName}: ${tokenBalance} ${tokenSymbol}`);
     };
     const result = await main();
 

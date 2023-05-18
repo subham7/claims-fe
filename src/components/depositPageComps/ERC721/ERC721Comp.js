@@ -43,8 +43,6 @@ const ERC721Comp = ({
   const classes = ERC721Styles();
   const router = useRouter();
 
-  console.log("Userrrrrr....", userDetails);
-
   const USDC_CONTRACT_ADDRESS = useSelector((state) => {
     return state.gnosis.usdcContractAddress;
   });
@@ -59,7 +57,6 @@ const ERC721Comp = ({
     //   usdcTokenDecimal,
     // ).toString();
     const priceOfNftConverted = priceOfNft;
-    // console.log(userNftBalance, maxTokensPerUser);
     if (
       userNftBalance < maxTokensPerUser &&
       walletBalance >= convertFromWei(priceOfNft, 6)
@@ -122,7 +119,6 @@ const ERC721Comp = ({
             });
           },
           (error) => {
-            // console.log("Error", error);
             setAlertStatus("error");
             setMessage(error.message);
             setLoading(false);
@@ -137,7 +133,6 @@ const ERC721Comp = ({
         });
     } else {
       setAlertStatus("error");
-      // console.log("wallet balance less", walletBalance, priceOfNftConverted);
       if (walletBalance < convertFromWei(priceOfNftConverted, 6)) {
         setMessage("usdc balance is less that mint price");
       } else setMessage("Mint Limit Reached");

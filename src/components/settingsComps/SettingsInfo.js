@@ -37,19 +37,6 @@ const SettingsInfo = ({
 }) => {
   const classes = SettingsInfoStlyes();
 
-  console.log(
-    "Total supply",
-    daoDetails.totalSupply,
-    erc20TokenDetails.tokenDecimal,
-  );
-
-  console.log(
-    "Total Supply",
-    convertFromWeiGovernance(daoDetails.totalSupply.toFixed(0), 6),
-  );
-
-  console.log("Dao Details", daoDetails);
-
   return (
     <>
       <Layout1 page={5}>
