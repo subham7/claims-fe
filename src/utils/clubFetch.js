@@ -307,10 +307,7 @@ const ClubFetch = (Component) => {
     //     checkClubExistsOnNetwork();
     //   }
     // }, [checkClubExistsOnNetwork, wallet]);
-
-    // useEffect(() => {
-    //   console.log("use", wallet);
-    // }, [wallet]);
+    
     if (tracker === true) {
       return (
         <div>
