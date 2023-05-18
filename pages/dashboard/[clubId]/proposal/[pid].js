@@ -571,7 +571,7 @@ const ProposalDetail = () => {
         const fetchedData = await fetchClubbyDaoAddress(daoAddress);
         const tokenURI = fetchedData?.data[0]?.nftMetadataUrl;
         data = iface.encodeFunctionData("mintGTToAddress", [
-          [proposalData.commands[0].mintGTAmounts.toString()],
+          proposalData.commands[0].mintGTAmounts,
           [tokenURI],
           proposalData.commands[0].mintGTAddresses,
         ]);
