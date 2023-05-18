@@ -21,6 +21,7 @@ import {
   setCreateSafeLoading,
   setRedirectToCreate,
 } from "../redux/reducers/gnosis";
+import { addClubData } from "../redux/reducers/club";
 
 async function gnosisSafePromise(owners, threshold, dispatch) {
   dispatch(setCreateSafeLoading(true));
@@ -59,7 +60,6 @@ async function gnosisSafePromise(owners, threshold, dispatch) {
     }
   }
 }
-
 
 export async function initiateConnection(
   params,
@@ -158,6 +158,16 @@ export async function initiateConnection(
       console.log(value);
       value
         .then((result) => {
+          dispatch(
+            addClubData({
+              gnosisAddress: treasuryAddress,
+              isGtTransferable: params.isGtTransferable,
+              name: params.clubName,
+              ownerAddress: addressList,
+              symbol: params.clubSymbol,
+              tokenType: clubTokenType === "NFT" ? "erc721" : "erc20",
+            }),
+          );
           console.log(result);
           daoAddress = result.events[0].address;
           dispatch(addDaoAddress(result.events[0].address));
@@ -227,7 +237,7 @@ export async function initiateConnection(
                 });
 
                 let admins = addressList;
-                admins.shift();
+                // if (admins.length > 1) admins.shift();
 
                 if (admins.length) {
                   for (let i in admins) {

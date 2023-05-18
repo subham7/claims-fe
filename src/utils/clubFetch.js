@@ -67,8 +67,8 @@ const ClubFetch = (Component) => {
     const GNOSIS_TRANSACTION_URL = useSelector((state) => {
       return state.gnosis.transactionUrl;
     });
-    const gnosisAddress = useSelector((state) => {
-      return state.club.clubData.gnosisAddress;
+    const reduxClubData = useSelector((state) => {
+      return state.club.clubData;
     });
 
     const checkUserExists = useCallback(async () => {
@@ -81,7 +81,7 @@ const ClubFetch = (Component) => {
           });
           const safeSdk = await Safe.create({
             ethAdapter: ethAdapter,
-            safeAddress: gnosisAddress,
+            safeAddress: reduxClubData.gnosisAddress,
           });
 
           return safeSdk;
@@ -126,32 +126,33 @@ const ClubFetch = (Component) => {
               );
             }
           });
+          if (!reduxClubData.gnosisAddress) {
+            const clubData = await subgraphQuery(
+              networkId == "0x5"
+                ? SUBGRAPH_URL_GOERLI
+                : networkId == "0x89"
+                ? SUBGRAPH_URL_POLYGON
+                : "",
+              QUERY_CLUB_DETAILS(daoAddress ? daoAddress : pid),
+            );
+            console.log("clubdataaaaaaa", clubData, SUBGRAPH_URL_POLYGON, pid);
 
-          const clubData = await subgraphQuery(
-            networkId == "0x5"
-              ? SUBGRAPH_URL_GOERLI
-              : networkId == "0x89"
-              ? SUBGRAPH_URL_POLYGON
-              : "",
-            QUERY_CLUB_DETAILS(daoAddress ? daoAddress : pid),
-          );
-          console.log("clubdataaaaaaa", clubData, SUBGRAPH_URL_POLYGON, pid);
-
-          dispatch(
-            addClubData({
-              gnosisAddress: clubData.stations[0].gnosisAddress,
-              isGtTransferable: clubData.stations[0].isGtTransferable,
-              name: clubData.stations[0].name,
-              ownerAddress: clubData.stations[0].ownerAddress,
-              symbol: clubData.stations[0].symbol,
-              tokenType: clubData.stations[0].tokenType,
-            }),
-          );
+            dispatch(
+              addClubData({
+                gnosisAddress: clubData.stations[0].gnosisAddress,
+                isGtTransferable: clubData.stations[0].isGtTransferable,
+                name: clubData.stations[0].name,
+                ownerAddress: clubData.stations[0].ownerAddress,
+                symbol: clubData.stations[0].symbol,
+                tokenType: clubData.stations[0].tokenType,
+              }),
+            );
+          }
 
           if (
             USDC_CONTRACT_ADDRESS &&
             GNOSIS_TRANSACTION_URL &&
-            gnosisAddress
+            reduxClubData.gnosisAddress
           ) {
             console.log(
               "yyyyyyyyyyyyyyyyyyy",
@@ -159,14 +160,14 @@ const ClubFetch = (Component) => {
               wallet,
               pid,
               walletAddress,
-              gnosisAddress,
+              reduxClubData.gnosisAddress,
               networkId,
               dispatch,
               USDC_CONTRACT_ADDRESS,
               GNOSIS_TRANSACTION_URL,
               router,
             );
-            if (clubData.stations[0].tokenType === "erc20") {
+            if (reduxClubData.tokenType === "erc20") {
               const erc20Contract = new SmartContract(
                 Erc20Dao,
                 daoAddress ? daoAddress : pid,
@@ -195,7 +196,7 @@ const ClubFetch = (Component) => {
                 .then(
                   async (result) => {
                     try {
-                      console.log("first", gnosisAddress, result, response);
+                      // console.log("first", gnosisAddress, result, response);
                       // const safeSdk = await getSafeSdk();
                       // const web3 = new Web3(window.ethereum);
                       const web3 = new Web3(RPC_URL);
@@ -205,7 +206,7 @@ const ClubFetch = (Component) => {
                       });
                       const safeSdk = await Safe.create({
                         ethAdapter: ethAdapter,
-                        safeAddress: gnosisAddress,
+                        safeAddress: reduxClubData.gnosisAddress,
                       });
                       console.log("safeSdk", safeSdk);
                       const ownerAddresses = await safeSdk.getOwners();
@@ -236,7 +237,7 @@ const ClubFetch = (Component) => {
                   },
                 )
                 .catch((err) => console.log(err));
-            } else if (clubData.stations[0].tokenType === "erc721") {
+            } else if (reduxClubData.tokenType === "erc721") {
               const erc721Contract = new SmartContract(
                 Erc721Dao,
                 daoAddress ?? pid,
@@ -303,7 +304,7 @@ const ClubFetch = (Component) => {
       wallet,
       pid,
       walletAddress,
-      gnosisAddress,
+      reduxClubData,
       networkId,
       dispatch,
       USDC_CONTRACT_ADDRESS,
