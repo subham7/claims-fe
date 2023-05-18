@@ -22,8 +22,6 @@ const useStyles = makeStyles({
 const CurrentResults = ({ proposalData, fetched }) => {
   const classes = useStyles();
 
-  console.log("Propsosal Data - Current Results", proposalData);
-
   const calculateVotePercentage = (voteReceived) => {
     let totalVote = 0;
     proposalData?.votingOptions.map((vote, key) => {

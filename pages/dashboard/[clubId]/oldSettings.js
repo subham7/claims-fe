@@ -258,8 +258,6 @@ const Settings = (props) => {
     walletAddress = web3.utils.toChecksumAddress(wallet?.accounts[0].address);
   }
 
-  console.log("Walllllllettt", walletAddress);
-
   const [tokenDetails, settokenDetails] = useState(null);
   const [tokenAPIDetails, settokenAPIDetails] = useState(null); // contains the details extracted from API
   const [apiTokenDetailSet, setApiTokenDetailSet] = useState(false);
@@ -349,10 +347,8 @@ const Settings = (props) => {
         USDC_CONTRACT_ADDRESS,
         GNOSIS_TRANSACTION_URL,
       );
-      console.log("aaaaaa", governanceConvertDecimal, fetchUserBalance);
       await fetchUserBalance.checkUserBalance().then(
         (result) => {
-          console.log("bbb", result);
           setUserBalance(
             convertFromWeiGovernance(result, governanceConvertDecimal),
           );
@@ -441,7 +437,6 @@ const Settings = (props) => {
       const membersData = getMembersDetails(clubId);
       membersData.then((result) => {
         if (result.status != 200) {
-          console.log(result.statusText);
           setMembersFetched(false);
         } else {
           setMembersDetails(result.data);
@@ -454,7 +449,6 @@ const Settings = (props) => {
 
   const fetchClubAssetToken = () => {
     const tokens = getAssets(clubId);
-    console.log("hereeee");
     tokens.then((result) => {
       if (result.status != 200) {
         setClubAssetTokenFetched(false);

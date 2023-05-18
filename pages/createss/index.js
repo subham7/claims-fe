@@ -190,12 +190,8 @@ const Create = (props) => {
           token:
             "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweDlhMWRFQjEyMjQyYTBlN0VmNTUwNjFlOTAwMTYyMDcxNEFENDBlNDgiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTY3NDEyOTI3MzM5MSwibmFtZSI6InN0YXRpb25YIG5mdCJ9.1w-RC7qZ43T2NhjHrtsO_Gmb0Mw1BjJo7GXMciqX5jY",
         });
-        // console.log(selectedImage);
         let metadata;
         if (selectedImage) {
-          // const image = await client.storeBlob(selectedImage);
-          // console.log("image", image);
-
           metadata = await client.store({
             name: clubName,
             description: "nft image",
@@ -210,8 +206,7 @@ const Create = (props) => {
           const file = new File([blob], imageUrl, {
             type: blob.type,
           });
-          // const image = await client.storeBlob(file);
-          // console.log("image", image);
+
           metadata = await client.store({
             name: clubName,
             description: "nft image",

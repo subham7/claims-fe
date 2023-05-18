@@ -116,8 +116,6 @@ const DashboardIndex = () => {
     return state.club.clubData.symbol;
   });
 
-  console.log("Admin", GNOSIS_TRANSACTION_URL, USDC_CONTRACT_ADDRESS);
-
   const walletAddress = Web3.utils.toChecksumAddress(
     wallet?.accounts[0].address,
   );
@@ -148,7 +146,6 @@ const DashboardIndex = () => {
     try {
       if (NETWORK_HEX !== "undefined") {
         const assetsData = await getAssetsByDaoAddress(daoAddress, NETWORK_HEX);
-        console.log("Asset data", assetsData?.data);
         setTokenDetails({
           treasuryAmount: assetsData?.data?.treasuryAmount,
           tokenPriceList: assetsData?.data?.tokenPriceList,
@@ -162,10 +159,7 @@ const DashboardIndex = () => {
   const fetchNfts = useCallback(async () => {
     try {
       const nftsData = await getNFTsByDaoAddress(daoAddress, NETWORK_HEX);
-      console.log("NFTs by dao", nftsData);
       setNftData(nftsData.data);
-
-      console.log("NFTS data", nftsData.data);
     } catch (error) {
       console.log(error);
     }
@@ -174,7 +168,6 @@ const DashboardIndex = () => {
   const fetchActiveProposals = useCallback(async () => {
     try {
       const activeProposals = await getProposalByDaoAddress(daoAddress);
-      console.log("Proposals", activeProposals);
       setProposalData(activeProposals?.data);
     } catch (error) {
       console.log(error);
@@ -229,7 +222,6 @@ const DashboardIndex = () => {
           );
 
           const factoryData = await factoryContract.getDAOdetails(daoAddress);
-          console.log("Factory Data", factoryData);
           setDepositCloseTime(factoryData?.depositCloseTime);
         };
 
@@ -259,13 +251,10 @@ const DashboardIndex = () => {
               GNOSIS_TRANSACTION_URL,
             );
             const nftBalance = await nftContract.nftBalance(walletAddress);
-            console.log("NFT Balance", nftBalance);
             setBalanceOfUser(nftBalance);
             const symbol = await nftContract.symbol();
-            console.log("SYMBOL", symbol);
             const nftMinted = await nftContract.nftOwnersCount();
             setClubTokenMinted(nftMinted);
-            console.log("NFT Minted", nftMinted);
           } catch (error) {
             console.log(error);
           }
@@ -280,14 +269,11 @@ const DashboardIndex = () => {
               USDC_CONTRACT_ADDRESS,
               GNOSIS_TRANSACTION_URL,
             );
-            console.log("erc20DaoContract", erc20DaoContract);
             const balance = await erc20DaoContract.nftBalance(walletAddress);
             //KEEP THIS CONSOLE
-            console.log(balance);
             setBalanceOfUser(balance);
             const clubTokensMinted = await erc20DaoContract.totalSupply();
             //KEEP THIS CONSOLE
-            console.log("clubTokensMinted", clubTokensMinted);
             setClubTokenMinted(clubTokensMinted);
 
             setDepositLink(
@@ -310,7 +296,6 @@ const DashboardIndex = () => {
         } else {
           loadSmartContractData();
         }
-        // console.log("token type", tokenType);
       }
     } catch (error) {
       console.log(error);
@@ -322,8 +307,6 @@ const DashboardIndex = () => {
     USDC_CONTRACT_ADDRESS,
     GNOSIS_TRANSACTION_URL,
   ]);
-
-  console.log("Proposal list", proposalData);
 
   return (
     <>

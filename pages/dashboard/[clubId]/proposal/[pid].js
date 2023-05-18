@@ -210,7 +210,6 @@ const ProposalDetail = () => {
   const router = useRouter();
   const dispatch = useDispatch();
   const { pid, clubId: daoAddress } = router.query;
-  console.log("pid", pid);
 
   const [{ wallet }] = useConnectWallet();
   const walletAddress = Web3.utils.toChecksumAddress(
@@ -260,7 +259,6 @@ const ProposalDetail = () => {
     return state.gnosis.actionContractAddress;
   });
 
-  console.log(isAdmin);
   const [loader, setLoader] = useState(false);
   const [proposalData, setProposalData] = useState(null);
   const [governance, setGovernance] = useState(false);
@@ -304,20 +302,16 @@ const ProposalDetail = () => {
     return state.gnosis.clubNetworkId;
   });
 
-  console.log("AIRDROP ACtion", AIRDROP_ACTION_ADDRESS);
-
   const getSafeSdk = useCallback(async () => {
     const web3 = new Web3(RPC_URL);
     const ethAdapter = new Web3Adapter({
       web3,
       signerAddress: walletAddress,
     });
-    console.log("ethAdapter", ethAdapter);
     const safeSdk = await Safe.create({
       ethAdapter: ethAdapter,
       safeAddress: gnosisAddress,
     });
-    console.log("safeSdk", safeSdk);
 
     return safeSdk;
   }, [gnosisAddress, walletAddress]);
@@ -328,12 +322,10 @@ const ProposalDetail = () => {
       web3,
       signerAddress: walletAddress,
     });
-    console.log("GNOSIS_TRANSACTION_URL", GNOSIS_TRANSACTION_URL);
     const safeService = new SafeApiKit({
       txServiceUrl: GNOSIS_TRANSACTION_URL,
       ethAdapter,
     });
-    console.log("safeService", safeService);
     // const safeService = new SafeServiceClient({
     //   txServiceUrl: GNOSIS_TRANSACTION_URL,
     //   ethAdapter,
@@ -357,7 +349,6 @@ const ProposalDetail = () => {
     } else setGovernance(true);
     const threshold = await safeSdk.getThreshold();
 
-    console.log("Threshold", threshold);
     setThreshold(threshold);
     const proposalTxHash = getProposalTxHash(pid);
     proposalTxHash.then(async (result) => {
@@ -368,21 +359,16 @@ const ProposalDetail = () => {
         setTxHash("");
       } else {
         // txHash = result.data[0].txHash;
-        console.log(result);
         setTxHash(result.data[0].txHash);
         const safeService = await getSafeService();
         const tx = await safeService.getTransaction(result.data[0].txHash);
         const ownerAddresses = tx.confirmations.map(
           (confirmOwners) => confirmOwners.owner,
         );
-        console.log("ownerAddresses", ownerAddresses, gnosisAddress);
         const pendingTxs = await safeService.getPendingTransactions(
           Web3.utils.toChecksumAddress(gnosisAddress),
         );
-        console.log(
-          pendingTxs?.results[pendingTxs.count - 1]?.safeTxHash,
-          result.data[0].txHash,
-        );
+
         setPendingTxHash(
           pendingTxs?.results[pendingTxs.count - 1]?.safeTxHash,
           result.data[0].txHash,
@@ -407,14 +393,9 @@ const ProposalDetail = () => {
     pid,
     walletAddress,
   ]);
-  console.log("governance", governance);
 
   const checkUserVoted = () => {
     if (walletAddress) {
-      //   console.log(walletAddress);
-      //   const web3 = new Web3(window.web3);
-      //   let userAddress = walletAddress;
-      //   userAddress = web3.utils.toChecksumAddress(userAddress);
       let obj = proposalData.vote.find(
         (voteCasted) => voteCasted.voterAddress === walletAddress,
       );
@@ -448,7 +429,6 @@ const ProposalDetail = () => {
   const fetchData = useCallback(async () => {
     setLoader(true);
     dispatch(addProposalId(pid));
-    console.log("pid", pid);
     const proposalData = getProposalDetail(pid);
 
     proposalData.then((result) => {
@@ -456,9 +436,7 @@ const ProposalDetail = () => {
         setLoader(false);
         setFetched(false);
       } else {
-        console.log(proposalData);
         setProposalData(result.data[0]);
-        console.log("NEW DATA", result.data[0]);
         setFetched(true);
       }
     });
@@ -480,7 +458,6 @@ const ProposalDetail = () => {
   }, [NETWORK_HEX, daoAddress]);
 
   const executeFunction = async (proposalStatus) => {
-    console.log(proposalStatus);
     setLoaderOpen(true);
     let updateProposal;
     if (clubData.tokenType === "erc20") {
@@ -501,11 +478,9 @@ const ProposalDetail = () => {
       );
     }
 
-    console.log("samrt contraccttt", updateProposal);
     let data;
     let approvalData;
     let ABI;
-    console.log(clubData.tokenType);
     if (
       proposalData.commands[0].executionId === 0 ||
       proposalData.commands[0].executionId === 4
@@ -530,30 +505,12 @@ const ProposalDetail = () => {
       );
       let membersArray = [];
       membersData.users.map((member) => membersArray.push(member.userAddress));
-      console.log(membersArray);
-
-      // const erc20DaoContract = new SmartContract(
-      //   Erc20Dao,
-      //   daoAddress,
-      //   walletAddress,
-      //   USDC_CONTRACT_ADDRESS,
-      //   GNOSIS_TRANSACTION_URL,
-      // );
-      // console.log("erc20DaoContract", erc20DaoContract);
 
       let iface = new Interface(ABI);
-      console.log(iface);
-      // data = iface.encodeFunctionData("airDropToken", [
-      //   proposalData.commands[0].airDropToken,
-      //   proposalData.commands[0].airDropAmount,
-      //   proposalData.commands[0].airDropCarryFee,
-      //   membersArray,
-      // ]);
       approvalData = iface.encodeFunctionData("approve", [
         AIRDROP_ACTION_ADDRESS,
         proposalData.commands[0].airDropAmount,
       ]);
-      console.log("approvalData", approvalData);
 
       let airDropAmountArray = [];
       if (proposalData.commands[0].airDropCarryFee !== 0) {
@@ -563,7 +520,6 @@ const ProposalDetail = () => {
           100;
         airDropAmountArray = await Promise.all(
           membersArray.map(async (member) => {
-            console.log("member", member);
             const balance = await updateProposal.nftBalance(
               Web3.utils.toChecksumAddress(member),
             );
@@ -591,7 +547,6 @@ const ProposalDetail = () => {
       } else {
         airDropAmountArray = await Promise.all(
           membersArray.map(async (member) => {
-            console.log("member", member);
             const balance = await updateProposal.nftBalance(
               Web3.utils.toChecksumAddress(member),
             );
@@ -613,8 +568,6 @@ const ProposalDetail = () => {
         );
       }
 
-      console.log("airDropAmountArray", airDropAmountArray);
-
       data = iface.encodeFunctionData("airDropToken", [
         proposalData.commands[0].airDropToken,
         airDropAmountArray,
@@ -622,9 +575,7 @@ const ProposalDetail = () => {
       ]);
     }
     if (proposalData.commands[0].executionId === 1) {
-      console.log("abi", ABI);
       let iface = new Interface(ABI);
-      console.log(iface, ABI);
 
       if (clubData.tokenType === "erc20") {
         data = iface.encodeFunctionData("mintGTToAddress", [
@@ -632,11 +583,8 @@ const ProposalDetail = () => {
           proposalData.commands[0].mintGTAddresses,
         ]);
       } else {
-        console.log("hereee");
         const fetchedData = await fetchClubbyDaoAddress(daoAddress);
-        console.log("Fetched Data", fetchedData);
         const tokenURI = fetchedData?.data[0]?.nftMetadataUrl;
-        console.log(tokenURI);
         data = iface.encodeFunctionData("mintGTToAddress", [
           [proposalData.commands[0].mintGTAmounts.toString()],
           [tokenURI],
@@ -644,32 +592,18 @@ const ProposalDetail = () => {
           "0x0000000000000000000000000000000000000000000000000000000000000001",
         ]);
       }
-
-      // console.log(data);
     }
 
     if (proposalData.commands[0].executionId === 2) {
       let iface = new Interface(ABI);
-      console.log(iface);
       data = iface.encodeFunctionData("updateGovernanceSettings", [
         proposalData.commands[0].quorum * 100,
         proposalData.commands[0].threshold * 100,
       ]);
-      console.log(data);
     }
     if (proposalData.commands[0].executionId === 3) {
       let iface = new Interface(ABI);
-      console.log(
-        "Filter",
-        iface,
-        convertToWeiGovernance(
-          convertToWeiGovernance(proposalData.commands[0].totalDeposits, 6) /
-            daoDetails.pricePerToken,
-          18,
-        ),
-        daoAddress,
-        daoDetails.pricePerToken,
-      );
+
       data = iface.encodeFunctionData("updateDistributionAmount", [
         convertToWeiGovernance(
           convertToWeiGovernance(proposalData.commands[0].totalDeposits, 6) /
@@ -678,8 +612,6 @@ const ProposalDetail = () => {
         ),
         daoAddress,
       ]);
-
-      console.log(data);
     }
     if (proposalData.commands[0].executionId === 4) {
       // const erc20DaoContract = new SmartContract(
@@ -692,29 +624,18 @@ const ProposalDetail = () => {
       // console.log("erc20DaoContract", erc20DaoContract);
 
       let iface = new Interface(ABI);
-      console.log(iface);
 
       approvalData = iface.encodeFunctionData("approve", [
         AIRDROP_ACTION_ADDRESS,
         proposalData.commands[0].customTokenAmounts[0],
       ]);
-      console.log("approvalData", approvalData);
 
       data = iface.encodeFunctionData("airDropToken", [
         proposalData.commands[0].customToken,
         proposalData.commands[0].customTokenAmounts,
         proposalData.commands[0].customTokenAddresses,
       ]);
-
-      // data = iface.encodeFunctionData("sendCustomToken", [
-      //   proposalData.commands[0].customToken,
-      //   proposalData.commands[0].customTokenAmounts,
-      //   proposalData.commands[0].customTokenAddresses,
-      // ]);
-      console.log(data);
     }
-    // console.log("data", data);
-    //
 
     let updateProposalExecute;
     if (clubData.tokenType === "erc20") {
@@ -751,8 +672,10 @@ const ProposalDetail = () => {
         : "",
       proposalStatus,
       airdropContractAddress,
+      proposalData.commands[0].executionId === 3
+        ? FACTORY_CONTRACT_ADDRESS
+        : "",
     );
-    console.log(response);
     if (proposalStatus === "executed") {
       // fetchData()
       response.then(
@@ -811,7 +734,6 @@ const ProposalDetail = () => {
   };
 
   useEffect(() => {
-    console.log("heree");
     if (pid) {
       setLoaderOpen(true);
       fetchData();
@@ -846,9 +768,7 @@ const ProposalDetail = () => {
     USDC_CONTRACT_ADDRESS,
     walletAddress,
   ]);
-  //   console.log(proposalData);
   if (!wallet && proposalData === null) {
-    console.log("loaaadddiinnngg", proposalData);
     return <>loading</>;
   }
   return (
@@ -1105,7 +1025,6 @@ const ProposalDetail = () => {
                                         executeFunction("executed");
                                       }
                                     : () => {
-                                        console.log("rrrrrrrrrrr");
                                         setOpenSnackBar(true);
                                         setFailed(true);
                                         setMessage(

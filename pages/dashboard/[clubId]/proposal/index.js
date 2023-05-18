@@ -108,7 +108,6 @@ const Proposal = () => {
   };
 
   const fetchTokens = useCallback(() => {
-    console.log("daoAddress", daoAddress);
     if (daoAddress) {
       const tokenData = getAssetsByDaoAddress(daoAddress, NETWORK_HEX);
       tokenData.then((result) => {
@@ -133,7 +132,6 @@ const Proposal = () => {
     } = event;
     setSelectedListItem(value);
     fetchProposalList(value);
-    console.log("value", value);
   };
 
   useEffect(() => {

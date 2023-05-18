@@ -19,7 +19,6 @@ const useStyles = makeStyles({
 });
 
 export default function CollectionCard(props) {
-  // console.log("tokenName", props);
   const classes = useStyles();
   const { metadata, tokenName, tokenSymbol, nftData } = props;
   const [image, setImage] = useState("");
@@ -36,47 +35,16 @@ export default function CollectionCard(props) {
         const res = await fetch(`https://ipfs.io/ipfs/${tokenURI}`);
         const data = await res.json();
         setImage(data?.image);
-        console.log("TOKEN DATA URI", data.image);
       } else if (tokenURI?.startsWith("https")) {
         const res = await fetch(tokenURI);
         const data = await res.json();
         setImage(data?.image);
-        console.log("TOKEN DATA URI", data.image);
       }
   };
 
   useEffect(() => {
     fetchData();
   }, [tokenURI]);
-
-  // if (tokenURI?.slice(tokenURI?.indexOf("/"), tokenURI?.lastIndexOf("//"))) {
-  //   console.log("here1");
-  //   let imgUrl = tokenURI?.split("//");
-  //   modifiedTokenURI = `https://${imgUrl[1]}.ipfs.dweb.link/${imgUrl[2]}`;
-  //   console.log("imgUrl, ", `https://${imgUrl[1]}.ipfs.dweb.link/${imgUrl[2]}`);
-  // } else {
-  //   let imgUrl = tokenURI?.split("/");
-  //   if (imgUrl[3] === undefined) {
-  //     console.log("here2");
-  //     modifiedTokenURI = tokenURI?.replace("ipfs://", "https://ipfs.io/ipfs/");
-  //     console.log("MODIFIED", modifiedTokenURI);
-  //   } else {
-  //     modifiedTokenURI = `https://${imgUrl[2]}.ipfs.dweb.link/${imgUrl[3]}`;
-  //     console.log(
-  //       "imgUrl, ",
-  //       `https://${imgUrl[2]}.ipfs.dweb.link/${imgUrl[3]}`,
-  //     );
-  //   }
-  // }
-
-  console.log(
-    "NEW TOKEN URI",
-    image?.startsWith("https") || image?.startsWith("data")
-      ? image
-      : image?.startsWith("Qm")
-      ? image?.replace("Qm", "https://ipfs.io/ipfs/Qm")
-      : image?.replace("ipfs://", "https://ipfs.io/ipfs/"),
-  );
 
   return (
     <>

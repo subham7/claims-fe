@@ -62,8 +62,6 @@ const WrongNetworkModal = ({ chainId = 137 }) => {
   const classes = useStyles();
 
   const switchNetworkHandler = async () => {
-    console.log("Click ho rha hai");
-
     if (typeof window !== "undefined") {
       if (window.ethereum.networkVersion !== chainId) {
         try {

@@ -231,10 +231,6 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
     }
   };
 
-  // useEffect(() => {
-  //   console.log(file);
-  // }, [file]);
-
   return (
     <>
       <Typography onClick={handleBack} className={classes.back}>

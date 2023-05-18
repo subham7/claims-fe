@@ -154,7 +154,6 @@ export default function NetworkSwitcher() {
       if (data.networkId == 137) {
         rpcURL = POLYGON_MAINNET_RPC_URL;
       }
-      console.log("data.networkId", data.networkId);
       const switched = await switchNetwork(
         networkDetails[0].networkHex,
         rpcURL,

@@ -79,8 +79,6 @@ const MembersSign = () => {
 
   const dispatch = useDispatch();
 
-  // console.log(membersSign)
-
   const classes = useStyles();
 
   const formik = useFormik({
@@ -91,12 +89,9 @@ const MembersSign = () => {
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
-      console.log(values);
-
       dispatch(addMembersData(values));
       dispatch(addEncryptedLink(membersSign));
 
-      // console.log('button clicked')
       router.push(`/dashboard/${clubId}/documents/legalEntity/signDoc`);
     },
   });

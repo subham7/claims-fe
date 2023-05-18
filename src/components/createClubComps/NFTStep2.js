@@ -107,7 +107,6 @@ const useStyles = makeStyles({
 });
 
 export default function NFTStep2(props) {
-  console.log(props.formik);
   const classes = useStyles();
   const [imageUrl, setImageUrl] = useState(null);
 
@@ -232,7 +231,6 @@ export default function NFTStep2(props) {
               }}
               mr={3}
             >
-              {/* {console.log(props.formik.values.nftImage)} */}
               <Image
                 src={imageUrl || empty_nft}
                 alt={""}

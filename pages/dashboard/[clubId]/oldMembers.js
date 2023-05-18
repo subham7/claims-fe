@@ -124,7 +124,6 @@ const Members = (props) => {
         setFetched(false);
       } else {
         setMembers(result.data);
-        console.log("ALL MEMBERS", result.data);
         setFetched(true);
         setLoaderOpen(false);
       }

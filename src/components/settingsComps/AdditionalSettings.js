@@ -48,7 +48,6 @@ const AdditionalSettings = ({
   const [message, setMessage] = useState("");
   const [isSuccessFull, setIsSuccessFull] = useState(false);
 
-  console.log("Deaddline", daoDetails);
   const startingTimeInNum = new Date(+daoDetails?.depositDeadline * 1000);
 
   const GNOSIS_TRANSACTION_URL = useSelector((state) => {
@@ -79,7 +78,6 @@ const AdditionalSettings = ({
         +ownerFee * 100,
         daoAddress,
       );
-      console.log(res);
 
       setLoading(false);
       showMessageHandler();
@@ -117,7 +115,6 @@ const AdditionalSettings = ({
         +depositTime.toFixed(0).toString(),
         daoAddress,
       );
-      console.log(res);
       setLoading(false);
       showMessageHandler();
       setIsSuccessFull(true);

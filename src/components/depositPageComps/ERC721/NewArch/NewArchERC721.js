@@ -107,9 +107,6 @@ const NewArchERC721 = ({
 
       const balanceOfNft = await erc721Contract.balanceOf();
 
-      console.log("Balance of NFT", +balanceOfNft);
-      console.log("MaxTOken", +daoDetails.maxTokensPerUser);
-
       if (+balanceOfNft >= +daoDetails?.maxTokensPerUser) {
         setHasClaimed(true);
       } else {
@@ -183,7 +180,6 @@ const NewArchERC721 = ({
         1,
         [],
       );
-      console.log(claimNFT);
       setLoading(false);
       setClaimSuccessfull(true);
       router.push(

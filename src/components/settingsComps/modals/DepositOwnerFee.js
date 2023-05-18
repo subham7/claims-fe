@@ -65,8 +65,6 @@ const DepositOwnerFee = ({ updateOwnerFeesHandler, onClose, loading }) => {
     },
   });
 
-  console.log("Loading", loading);
-
   return (
     <>
       <CustomBackdrop onClick={onClose} />
@@ -110,7 +108,6 @@ const DepositOwnerFee = ({ updateOwnerFeesHandler, onClose, loading }) => {
           </Grid>
         </form>
       </div>
-     
     </>
   );
 };
