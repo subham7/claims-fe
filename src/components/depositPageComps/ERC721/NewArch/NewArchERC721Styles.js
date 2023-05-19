@@ -70,7 +70,7 @@ export const NewArchERC721Styles = makeStyles({
 
   claimGrid: {
     display: "flex",
-    justifyContent: "center",
+    justifyContent: "space-between",
     border: "1px solid #C1D3FF40",
     borderRadius: "8px",
     alignItems: "center",
