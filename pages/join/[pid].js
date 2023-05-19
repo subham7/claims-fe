@@ -11,9 +11,8 @@ import Web3 from "web3";
 import Layout2 from "../../src/components/layouts/layout2";
 import NewArchERC20 from "../../src/components/depositPageComps/ERC20/NewArch/NewArchERC20";
 import { useRouter } from "next/router";
-import { fetchClub, fetchClubbyDaoAddress } from "../../src/api/club";
 import NewArchERC721 from "../../src/components/depositPageComps/ERC721/NewArch/NewArchERC721";
-import { convertFromWeiGovernance, convertIpfsToUrl } from "../../src/utils/globalFunctions";
+import { convertIpfsToUrl } from "../../src/utils/globalFunctions";
 import { subgraphQuery } from "../../src/utils/subgraphs";
 import {
   QUERY_ALL_MEMBERS,
@@ -22,7 +21,6 @@ import {
 import { useSelector } from "react-redux";
 import ClubFetch from "../../src/utils/clubFetch";
 import { Backdrop, CircularProgress } from "@mui/material";
-import WrongNetworkModal from "../../src/components/modals/WrongNetworkModal";
 
 const Join = () => {
   const [daoDetails, setDaoDetails] = useState({
@@ -167,7 +165,6 @@ const Join = () => {
         USDC_CONTRACT_ADDRESS,
         GNOSIS_TRANSACTION_URL,
       );
-
 
       const clubDetails = await subgraphQuery(
         SUBGRAPH_URL,
