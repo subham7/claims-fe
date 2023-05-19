@@ -38,11 +38,15 @@ import { useConnectWallet } from "@web3-onboard/react";
 import NewCard from "../src/components/cards/card";
 import Web3 from "web3";
 import { subgraphQuery } from "../src/utils/subgraphs";
-import { QUERY_CLUBS_FROM_WALLET_ADDRESS } from "../src/api/graphql/queries";
+import {
+  QUERY_CLUBS_FROM_WALLET_ADDRESS,
+  QUERY_CLUB_DETAILS,
+} from "../src/api/graphql/queries";
 import ClubFetch from "../src/utils/clubFetch";
 import { SUBGRAPH_URL_GOERLI, SUBGRAPH_URL_POLYGON } from "../src/api";
 import WrongNetworkModal from "../src/components/modals/WrongNetworkModal";
 import Image from "next/image";
+import { addClubData } from "../src/redux/reducers/club";
 
 const useStyles = makeStyles({
   container: {
@@ -204,10 +208,27 @@ const App = () => {
     }
   };
 
-  const handleItemClick = (data) => {
+  const handleItemClick = async (data) => {
     dispatch(addClubName(data.daoName));
     dispatch(addDaoAddress(data.daoAddress));
-
+    const clubData = await subgraphQuery(
+      networkId == "0x5"
+        ? SUBGRAPH_URL_GOERLI
+        : networkId == "0x89"
+        ? SUBGRAPH_URL_POLYGON
+        : "",
+      QUERY_CLUB_DETAILS(data.daoAddress),
+    );
+    dispatch(
+      addClubData({
+        gnosisAddress: clubData.stations[0].gnosisAddress,
+        isGtTransferable: clubData.stations[0].isGtTransferable,
+        name: clubData.stations[0].name,
+        ownerAddress: clubData.stations[0].ownerAddress,
+        symbol: clubData.stations[0].symbol,
+        tokenType: clubData.stations[0].tokenType,
+      }),
+    );
     // dispatch(addClubID(data.clubId));
     // dispatch(addClubRoute(data.route));
     router.push(
