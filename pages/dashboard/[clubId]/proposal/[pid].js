@@ -1004,6 +1004,7 @@ const ProposalDetail = () => {
                                       executeFunction("passed");
                                     }
                               }
+                              disabled={(!executionReady && signed) || executed}
                             >
                               <Grid
                                 container
