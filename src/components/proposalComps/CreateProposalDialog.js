@@ -480,9 +480,6 @@ const CreateProposalDialog = ({ open, setOpen, onClose, tokenData }) => {
                   >
                     Add Option
                   </Button>
-                  <Typography variant="proposalBody">
-                    (Minimum 2 options needed *)
-                  </Typography>
                 </Stack>
               </>
             ) : (
@@ -525,8 +522,16 @@ const CreateProposalDialog = ({ open, setOpen, onClose, tokenData }) => {
                 </Button>
               </Grid>
               <Grid item>
-                <Button variant="primary" type="submit">
-                  {loaderOpen ? <CircularProgress color="inherit" /> : "Submit"}
+                <Button
+                  variant="primary"
+                  type="submit"
+                  sx={loaderOpen && { padding: "3px" }}
+                >
+                  {loaderOpen ? (
+                    <CircularProgress color="inherit" s />
+                  ) : (
+                    "Submit"
+                  )}
                 </Button>
               </Grid>
             </Grid>

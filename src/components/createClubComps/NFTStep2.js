@@ -161,7 +161,7 @@ export default function NFTStep2(props) {
                 color="white !important"
                 mb={2}
               >
-                How do you want to set an image?
+                Upload Image
               </Typography>
               <Grid container spacing={2} mb={2}>
                 <Grid item>
