@@ -25,7 +25,6 @@ import WrongNetworkModal from "../../../../src/components/modals/WrongNetworkMod
 import Web3 from "web3";
 import { RPC_URL } from "../../../../src/api";
 import { Web3Adapter } from "@safe-global/protocol-kit";
-import Safe from "@safe-global/protocol-kit";
 import SafeApiKit from "@safe-global/api-kit";
 import {
   getProposalByDaoAddress,
@@ -142,6 +141,7 @@ const Proposal = () => {
       });
     }
   }, [NETWORK_HEX, daoAddress]);
+
   const fetchProposalList = async (type = "all") => {
     const data = await fetchProposals(daoAddress, type);
     dispatch(setProposalList(data));
