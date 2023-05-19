@@ -23,6 +23,7 @@ import { convertFromWeiGovernance } from "../../../src/utils/globalFunctions";
 import { subgraphQuery } from "../../../src/utils/subgraphs";
 import ClubFetch from "../../../src/utils/clubFetch";
 import WrongNetworkModal from "../../../src/components/modals/WrongNetworkModal";
+import { useConnectWallet } from "@web3-onboard/react";
 
 const useStyles = makeStyles({
   searchField: {
@@ -57,10 +58,13 @@ const Test = () => {
   const [membersData, setMembersData] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const header = ["Name", "Deposit amount", "Club tokens", "Joined on"];
+  const header = ["Name", "Deposit amount", "Station tokens", "Joined on"];
   const router = useRouter();
   const classes = useStyles();
   const { clubId: daoAddress } = router.query;
+  const [{ wallet }] = useConnectWallet();
+
+  const networkId = wallet?.chains[0].id;
 
   const tokenType = useSelector((state) => {
     return state.club.clubData.tokenType;
@@ -80,7 +84,15 @@ const Test = () => {
 
   const handleAddressClick = (event, address) => {
     event.preventDefault();
-    window.open(`https://goerli.etherscan.io/address/${address}`);
+    window.open(
+      `https://${
+        networkId === "0x5"
+          ? "goerli.etherscan.io/"
+          : networkId === "0x89"
+          ? "polygonscan.com"
+          : ""
+      }/address/${address}`,
+    );
   };
 
   useEffect(() => {
@@ -148,7 +160,8 @@ const Test = () => {
                             container
                             direction="row"
                             alignItems="center"
-                            spacing={1}
+                            // spacing={1}
+                            justifyContent={"space-between"}
                           >
                             <Grid item>
                               <a

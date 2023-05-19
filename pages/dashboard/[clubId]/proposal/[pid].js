@@ -746,7 +746,7 @@ const ProposalDetail = () => {
         <Grid container spacing={6} paddingLeft={10} paddingTop={10}>
           <Grid item md={8.5}>
             {/* back button */}
-            <Grid container spacing={1} onClick={() => router.back()}>
+            <Grid container spacing={1} ml={-4} onClick={() => router.back()}>
               <Grid item mt={0.5} sx={{ "&:hover": { cursor: "pointer" } }}>
                 <KeyboardBackspaceIcon className={classes.listFont} />
               </Grid>
@@ -768,11 +768,14 @@ const ProposalDetail = () => {
             <Grid container direction="row" spacing={4}>
               <Grid item>
                 <Grid container spacing={2}>
-                  <Grid item>
+                  <Grid item ml={-1}>
                     <Chip
                       className={classes.timeLeftChip}
                       label={
-                        <Grid container>
+                        <Grid
+                          container
+                          sx={{ display: "flex", alignItems: "center" }}
+                        >
                           <Image src={tickerIcon} alt="ticker-icon" />
                           <Typography ml={1}>
                             {calculateDays(proposalData?.votingDuration) <= 0
@@ -792,7 +795,10 @@ const ProposalDetail = () => {
                           : classes.surveyChip
                       }
                       label={
-                        <Grid container>
+                        <Grid
+                          container
+                          sx={{ display: "flex", alignItems: "center" }}
+                        >
                           {proposalData?.type === "action" ? (
                             <Image src={actionIcon} alt="action-icon" />
                           ) : (

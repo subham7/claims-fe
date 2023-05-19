@@ -160,7 +160,9 @@ const AdditionalSettings = ({
           sx={{ display: "flex", justifyContent: "space-between" }}
         >
           <Grid item>
-            <Typography variant="settingText">Club contract address</Typography>
+            <Typography variant="settingText">
+              Station contract address
+            </Typography>
           </Grid>
           <Grid
             // container
@@ -257,7 +259,7 @@ const AdditionalSettings = ({
           sx={{ display: "flex", justifyContent: "space-between" }}
         >
           <Grid item mt={3}>
-            <Typography variant="settingText">Deposit Time</Typography>
+            <Typography variant="settingText">Deposit deadline</Typography>
           </Grid>
           <Grid
             // container

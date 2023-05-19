@@ -327,7 +327,6 @@ const DashboardIndex = () => {
     GNOSIS_TRANSACTION_URL,
   ]);
 
-
   return (
     <>
       <Layout1 page={1} depositUrl={depositLink}>
@@ -798,7 +797,7 @@ const DashboardIndex = () => {
                       <TextField
                         className={classes.linkInput}
                         disabled
-                        value={
+                      value={
                           typeof window !== "undefined" &&
                           window.location.origin
                             ? `${window.location.origin}/join/${clubDetails.daoAddress}`
@@ -822,8 +821,8 @@ const DashboardIndex = () => {
                   <Grid container>
                     <Grid item md={12} mt={4} ml={1} mr={1}>
                       <Typography variant="regularText5">
-                        Share this link for new members to join your club and
-                        add funds into this club.
+                        Share this link for new members to join your station and
+                        add funds into this station.
                       </Typography>
                     </Grid>
                   </Grid>

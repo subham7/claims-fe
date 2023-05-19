@@ -336,7 +336,10 @@ const ProposalCard = ({
                 <Chip
                   className={classes.timeLeftChip}
                   label={
-                    <Grid container>
+                    <Grid
+                      container
+                      sx={{ display: "flex", alignItems: "center" }}
+                    >
                       <Image src={tickerIcon} alt="ticker-icon" />
                       <Typography ml={1}>
                         {" "}
@@ -357,7 +360,10 @@ const ProposalCard = ({
                       : classes.surveyChip
                   }
                   label={
-                    <Grid container>
+                    <Grid
+                      container
+                      sx={{ display: "flex", alignItems: "center" }}
+                    >
                       {proposal?.type === "action" ? (
                         <Image src={actionIcon} alt="action-icon" />
                       ) : (
