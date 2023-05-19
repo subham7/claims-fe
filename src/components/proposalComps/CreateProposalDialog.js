@@ -160,7 +160,7 @@ const CreateProposalDialog = ({ open, setOpen, onClose, tokenData }) => {
             mintGTAmounts: [
               clubData.tokenType === "erc20"
                 ? convertToWeiGovernance(values.amountOfTokens, 18)
-                : values.amountOfTokensssss,
+                : values.amountOfTokens721,
             ],
             usdcTokenSymbol: "USDC",
             usdcTokenDecimal: 6,
