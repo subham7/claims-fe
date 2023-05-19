@@ -234,27 +234,6 @@ const NewArchERC721 = ({
                         {daoDetails.daoName}
                       </Typography>
                     </Grid>
-
-                    <Grid
-                      item
-                      xs={12}
-                      md={3}
-                      sx={{ display: "flex", alignItems: "center" }}
-                    >
-                      <div className="centerContent">
-                        <div className="selfCenter spaceBetween">
-                          <TwitterShareButton
-                            onLoad={function noRefCheck() {}}
-                            options={{
-                              size: "large",
-                              text: `Just joined ${daoDetails.daoName} Station on `,
-                              via: "stationxnetwork",
-                            }}
-                            url={`https://test.stationx.network/join/${erc721DaoAddress}`}
-                          />
-                        </div>
-                      </div>
-                    </Grid>
                   </Grid>
                 </Grid>
                 <Grid item>
@@ -294,6 +273,21 @@ const NewArchERC721 = ({
                         }}
                         fontSize="large"
                       />
+                    </Grid>
+                    <Grid item sx={{ display: "flex", alignItems: "center" }}>
+                      <div className="centerContent">
+                        <div className="selfCenter spaceBetween">
+                          <TwitterShareButton
+                            onLoad={function noRefCheck() {}}
+                            options={{
+                              size: "large",
+                              text: `Just joined ${daoDetails.daoName} Station on `,
+                              via: "stationxnetwork",
+                            }}
+                            url={`https://test.stationx.network/join/${erc721DaoAddress}`}
+                          />
+                        </div>
+                      </div>
                     </Grid>
                   </Grid>
                 </Grid>
@@ -338,12 +332,15 @@ const NewArchERC721 = ({
                     )}
 
                     <Grid item xs={4} width="fit-content">
+                      <Typography variant="subtitle2" color="#C1D3FF">
+                        Nfts Remaining
+                      </Typography>
                       <Typography
                         variant="subtitle1"
                         className={classes.quoramTxt}
                       >
                         {daoDetails.isTotalSupplyUnlinited
-                          ? "unlimited"
+                          ? "Unlimited"
                           : Number(
                               convertFromWeiGovernance(
                                 daoDetails.distributionAmt,
@@ -356,9 +353,6 @@ const NewArchERC721 = ({
                                 Number(daoDetails.nftMinted),
                             ).toFixed(0)}
                         {/* : totalNftSupply - totalNftMinted} */}
-                      </Typography>
-                      <Typography variant="subtitle2" color="#C1D3FF">
-                        Nfts Remaining
                       </Typography>
                     </Grid>
                   </Grid>
@@ -380,34 +374,6 @@ const NewArchERC721 = ({
 
                 <Grid item width="100%">
                   <Grid container className={classes.claimGrid}>
-                    {/* <Grid
-                          spacing={3}
-                          sx={{
-                            background: "#EFEFEF",
-                            borderRadius: 2,
-                            display: "flex",
-                            flexDirection: "inherit",
-                            alignItems: "center",
-                          }}
-                        >
-                          
-                          <IconButton onClick={() => setCount(count - 1)}>
-                            <RemoveIcon sx={{ color: "black", fontSize: 20 }} />
-                          </IconButton>
-                          <Typography
-                            variant="h6"
-                            color=""
-                            sx={{ fontWeight: "bold" }}
-                          >
-                            {count}
-                          </Typography>
-                          <IconButton
-                            onClick={() => setCount(count + 1)}
-                            color="#000"
-                          >
-                            <AddIcon sx={{ color: "black", fontSize: 20 }} />
-                          </IconButton>
-                        </Grid> */}
                     <Grid item>
                       <Button
                         onClick={claimNFTHandler}

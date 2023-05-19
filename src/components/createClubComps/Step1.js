@@ -49,7 +49,11 @@ export default function Step1(props) {
           <br />
           <Typography className={classes.wrapTextIcon}>
             Symbol{" "}
-            <Box sx={{ color: "#6475A3" }} fontWeight="Normal" display="inline">
+            <Box
+              sx={{ color: "#6475A3", ml: 1 }}
+              fontWeight="Normal"
+              display="inline"
+            >
               (Ticker)
             </Box>
           </Typography>
@@ -95,9 +99,9 @@ export default function Step1(props) {
               id="clubTokenType"
             >
               <MenuItem value={"Non Transferable ERC20 Token"}>
-                Non Transferable ERC20 Token
+                Non-Transferabe Token [ERC20]
               </MenuItem>
-              <MenuItem value={"NFT"}>NFT</MenuItem>
+              <MenuItem value={"NFT"}>NFT [ERC721]</MenuItem>
             </Select>
           </FormControl>
           <br />

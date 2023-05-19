@@ -46,8 +46,8 @@ import Image from "next/image";
 
 const useStyles = makeStyles({
   container: {
-    // background: "url(/assets/images/gradients.png)",
     minHeight: "100vh",
+    width: "100vw",
   },
   yourClubText: {
     fontSize: "30px",
@@ -95,6 +95,17 @@ const useStyles = makeStyles({
     alignItems: "center",
     justifyContent: "center",
     minHeight: "90vh",
+  },
+  isAdmin: {
+    fontSize: "16px",
+    color: "#C1D3FF",
+    opacity: 1,
+    fontFamily: "Whyte",
+  },
+  flexContainer: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
 });
 
@@ -259,19 +270,15 @@ const App = () => {
                 <Grid container mt={2}>
                   <Grid item>
                     <Typography className={classes.yourClubText}>
-                      Your clubs
+                      Your Stations
                     </Typography>
                   </Grid>
                   <Grid
                     item
                     xs
-                    sx={{ display: "flex", justifyContent: "flex-end" }}
+                    className={classes.flexContainer}
                   >
-                    <Button
-                      // startIcon={<AddIcon fontSize="large" />}
-                      variant="primary"
-                      onClick={handleCreateButtonClick}
-                    >
+                    <Button variant="primary" onClick={handleCreateButtonClick}>
                       Create new
                     </Button>
                   </Grid>
@@ -289,15 +296,10 @@ const App = () => {
                           }}
                         >
                           {getImageURL(club.imageUrl)}
-                          <Grid container>
-                            {/* <Grid item md={2}>
-                              <img
-                                src={club.imageUrl}
-                                width="80vw"
-                                alt="club_image"
-                                className={classes.profilePic}
-                              />
-                            </Grid> */}
+                          <Grid
+                            container
+                            className={classes.flexContainer}
+                          >
                             <Grid item md={6}>
                               <Stack spacing={0}>
                                 <Typography className={classes.yourClubText}>
@@ -313,15 +315,7 @@ const App = () => {
                                 </Typography>
                               </Stack>
                             </Grid>
-                            <Grid
-                              item
-                              md={4}
-                              xs
-                              sx={{
-                                display: "flex",
-                                justifyContent: "flex-end",
-                              }}
-                            >
+                            <Grid>
                               <Stack
                                 spacing={0}
                                 alignItems="flex-end"
@@ -330,7 +324,7 @@ const App = () => {
                                 <Typography
                                   className={classes.createClubButton}
                                 ></Typography>
-                                <Typography className={classes.clubAddress}>
+                                <Typography className={classes.isAdmin}>
                                   {club.isAdmin ? "Admin" : "Member"}
                                 </Typography>
                               </Stack>
@@ -379,13 +373,6 @@ const App = () => {
                   </Typography>
                 </Grid>
               </Grid>
-
-              // <div>
-              //   <div></div>
-              //   <div>
-              //     <Image src={homepage} alt='Join StationX' height={800} />
-              //   </div>
-              // </div>
             )}
           </>
         )}

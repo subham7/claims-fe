@@ -178,6 +178,10 @@ const useStyles = makeStyles({
   banner: {
     width: "100%",
   },
+  flexContainer: {
+    display: "flex",
+    alignItems: "center",
+  },
 });
 
 const ProposalCard = ({
@@ -336,10 +340,7 @@ const ProposalCard = ({
                 <Chip
                   className={classes.timeLeftChip}
                   label={
-                    <Grid
-                      container
-                      sx={{ display: "flex", alignItems: "center" }}
-                    >
+                    <Grid container className={classes.flexContainer}>
                       <Image src={tickerIcon} alt="ticker-icon" />
                       <Typography ml={1}>
                         {" "}
@@ -360,10 +361,7 @@ const ProposalCard = ({
                       : classes.surveyChip
                   }
                   label={
-                    <Grid
-                      container
-                      sx={{ display: "flex", alignItems: "center" }}
-                    >
+                    <Grid container className={classes.flexContainer}>
                       {proposal?.type === "action" ? (
                         <Image src={actionIcon} alt="action-icon" />
                       ) : (
