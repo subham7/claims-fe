@@ -140,7 +140,6 @@ const ClubFetch = (Component) => {
 
     const checkUserExists = useCallback(async () => {
       try {
-        debugger;
         if ((daoAddress && wallet) || (pid && wallet)) {
           if (
             USDC_CONTRACT_ADDRESS &&
@@ -171,7 +170,6 @@ const ClubFetch = (Component) => {
                 }),
               );
 
-              debugger;
               try {
                 const safeSdk = await getSafeSdk(
                   reduxClubData.gnosisAddress,
