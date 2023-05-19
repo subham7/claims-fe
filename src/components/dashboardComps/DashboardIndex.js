@@ -327,7 +327,6 @@ const DashboardIndex = () => {
     GNOSIS_TRANSACTION_URL,
   ]);
 
-
   return (
     <>
       <Layout1 page={1} depositUrl={depositLink}>
@@ -749,7 +748,11 @@ const DashboardIndex = () => {
                         depositCloseTime * 1000 > Date.now() ? (
                           <Grid
                             container
-                            sx={{ display: "flex", justifyContent: "flex-end" }}
+                            sx={{
+                              display: "flex",
+                              justifyContent: "flex-end",
+                              alignItems: "baseline",
+                            }}
                           >
                             <Grid item mt={1} mr={1}>
                               <div className={classes.activeIllustration}></div>
@@ -822,8 +825,8 @@ const DashboardIndex = () => {
                   <Grid container>
                     <Grid item md={12} mt={4} ml={1} mr={1}>
                       <Typography variant="regularText5">
-                        Share this link for new members to join your club and
-                        add funds into this club.
+                        Share the link with new members to deposit & join this
+                        Station.
                       </Typography>
                     </Grid>
                   </Grid>

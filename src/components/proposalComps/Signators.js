@@ -11,12 +11,12 @@ const useStyles = makeStyles({
   },
 });
 
-const Signators = ({ ownerAddresses, signedOwners }) => {
+const Signators = ({ ownerAddresses, signedOwners, isSurvey = false }) => {
   const classes = useStyles();
   return (
-    <Grid item md={3}>
+    <Grid item md={3} minWidth={isSurvey && "340px"}>
       <Card>
-        <Grid container >
+        <Grid container>
           <Typography className={classes.listFont2}>Signators</Typography>
           <Divider sx={{ marginTop: 2, marginBottom: 3 }} />
         </Grid>
@@ -37,9 +37,15 @@ const Signators = ({ ownerAddresses, signedOwners }) => {
               ) : (
                 <HelpOutlineIcon sx={{ marginRight: 2 }} />
               )}
-              <Typography>
-                {owner.slice(0, 6)}.....{owner.slice(-4)}
-              </Typography>
+              {isSurvey ? (
+                <Typography>
+                  {owner.slice(0, 13)}....{owner.slice(-4)}
+                </Typography>
+              ) : (
+                <Typography>
+                  {owner.slice(0, 6)}.....{owner.slice(-4)}
+                </Typography>
+              )}
             </Grid>
           ))}
         </Grid>

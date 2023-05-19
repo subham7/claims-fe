@@ -360,7 +360,7 @@ const NewArchERC20 = ({
                           )}
                         </Typography>
                       </Grid>
-                      <Grid item ml={1} mt={1}>
+                      <Grid item ml={3} mt={1}>
                         {walletAddress ? (
                           daoDetails ? (
                             remainingDays >= 0 && remainingTimeInSecs > 0 ? (
@@ -563,7 +563,7 @@ const NewArchERC20 = ({
                           className={classes.valuesDimStyle}
                         >
                           {walletAddress ? (
-                            "Club Tokens Minted so far"
+                            "Amount raised so far"
                           ) : (
                             <Skeleton
                               variant="rectangular"
@@ -784,8 +784,9 @@ const NewArchERC20 = ({
                     <Grid item md={12} mt={2}>
                       <Card className={classes.cardWarning}>
                         <Typography className={classes.JoinText}>
-                          Clubs can have same names or symbols, please make sure
-                          to trust the sender for the link before depositing.
+                          Stations can have same names or symbols, please make
+                          sure to trust the sender for the link before
+                          depositing.
                         </Typography>
                       </Card>
                     </Grid>
