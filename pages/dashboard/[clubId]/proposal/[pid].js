@@ -752,7 +752,7 @@ const ProposalDetail = () => {
               </Grid>
               <Grid item sx={{ "&:hover": { cursor: "pointer" } }} mb={2}>
                 <Typography className={classes.listFont}>
-                  Back to workstation
+                  Back to all proposals
                 </Typography>
               </Grid>
             </Grid>
@@ -842,13 +842,16 @@ const ProposalDetail = () => {
                 daoDetails={daoDetails}
               />
 
-              <Signators
-                ownerAddresses={ownerAddresses}
-                signedOwners={signedOwners}
-              />
+              {proposalData?.type === "action" && (
+                <Signators
+                  ownerAddresses={ownerAddresses}
+                  signedOwners={signedOwners}
+                />
+              )}
             </Grid>
 
             {/* proposal description */}
+            <Typography fontWeight={"500"}>Proposal description</Typography>
             <Grid container item className={classes.listFont}>
               <div
                 dangerouslySetInnerHTML={{
@@ -1276,6 +1279,14 @@ const ProposalDetail = () => {
           <Grid item md={3.5}>
             <Stack spacing={3}>
               <ProposalInfo proposalData={proposalData} fetched={fetched} />
+              {proposalData?.type === "survey" && (
+                <Signators
+                  ownerAddresses={ownerAddresses}
+                  signedOwners={signedOwners}
+                  isSurvey={true}
+                />
+              )}
+
               {isGovernanceActive && (
                 <>
                   <CurrentResults

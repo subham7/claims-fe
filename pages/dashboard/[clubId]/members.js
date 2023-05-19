@@ -58,7 +58,12 @@ const Test = () => {
   const [membersData, setMembersData] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const header = ["Name", "Deposit amount", "Station tokens", "Joined on"];
+  const header = [
+    "Member address",
+    "Deposit amount",
+    "Station tokens",
+    "Joined on",
+  ];
   const router = useRouter();
   const classes = useStyles();
   const { clubId: daoAddress } = router.query;
@@ -126,7 +131,7 @@ const Test = () => {
             <Grid item md={9}>
               <Grid container mb={10}>
                 <Grid item>
-                  <Typography variant="title">Member</Typography>
+                  <Typography variant="title">Station Members</Typography>
                 </Grid>
               </Grid>
 

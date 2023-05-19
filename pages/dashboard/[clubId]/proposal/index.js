@@ -159,7 +159,7 @@ const Proposal = () => {
             }}
           >
             <Grid item>
-              <Typography variant="title">WorkStation</Typography>
+              <Typography variant="title">All Proposals</Typography>
             </Grid>
             <Grid
               item
@@ -260,7 +260,7 @@ const Proposal = () => {
                     No Proposals found
                   </p>
                   <p className={classes.noProposal_para}>
-                    Proposals inside your station will appear here.
+                    Past proposals appear here.
                   </p>
                 </div>
               )}
