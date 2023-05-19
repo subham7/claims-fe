@@ -22,7 +22,6 @@ import {
 } from "../../src/components/createClubComps/ValidationSchemas";
 import { setUploadNFTLoading } from "../../src/redux/reducers/gnosis";
 import { NFTStorage } from "nft.storage";
-import { convertAmountToWei } from "../../src/utils/globalFunctions";
 import { convertToWeiGovernance } from "../../src/utils/globalFunctions";
 import WrongNetworkModal from "../../src/components/modals/WrongNetworkModal";
 import { useConnectWallet } from "@web3-onboard/react";
@@ -165,108 +164,104 @@ const Create = () => {
           image: formikERC721Step2.values.nftImage,
         });
         dispatch(setUploadNFTLoading(false));
-        const web3 = new Web3(Web3.givenProvider);
-        const auth = web3.eth.getAccounts();
-        auth
-          .then((result) => {
-            const walletAddress = Web3.utils.toChecksumAddress(result[0]);
-            values.addressList.unshift(walletAddress);
+        try {
+          const walletAddress = Web3.utils.toChecksumAddress(
+            wallet.accounts[0].address,
+          );
+          values.addressList.unshift(walletAddress);
 
-            const params = {
-              clubName: formikStep1.values.clubName,
-              clubSymbol: formikStep1.values.clubSymbol,
-              ownerFeePerDepositPercent: 0 * 100,
-              depositClose: dayjs(formikERC721Step2.values.depositClose).unix(),
-              quorum: values.quorum * 100,
-              threshold: values.threshold * 100,
-              depositTokenAddress: USDC_CONTRACT_ADDRESS,
-              maxTokensPerUser: formikERC721Step2.values.maxTokensPerUser,
+          const params = {
+            clubName: formikStep1.values.clubName,
+            clubSymbol: formikStep1.values.clubSymbol,
+            ownerFeePerDepositPercent: 0 * 100,
+            depositClose: dayjs(formikERC721Step2.values.depositClose).unix(),
+            quorum: values.quorum * 100,
+            threshold: values.threshold * 100,
+            depositTokenAddress: USDC_CONTRACT_ADDRESS,
+            maxTokensPerUser: formikERC721Step2.values.maxTokensPerUser,
 
-              distributeAmount: formikERC721Step2.values.isNftTotalSupplylimited
-                ? convertToWeiGovernance(
-                    formikERC721Step2.values.totalTokenSupply /
-                      formikERC721Step2.values.pricePerToken,
-                    18,
-                  )
-                : 0,
-              pricePerToken: convertToWeiGovernance(
-                formikERC721Step2.values.pricePerToken,
-                6,
-              ),
-              isNftTransferable: formikERC721Step2.values.isNftTransferable,
-              isNftTotalSupplyUnlimited:
-                !formikERC721Step2.values.isNftTotalSupplylimited,
-              isGovernanceActive: values.governance,
+            distributeAmount: formikERC721Step2.values.isNftTotalSupplylimited
+              ? convertToWeiGovernance(
+                  formikERC721Step2.values.totalTokenSupply /
+                    formikERC721Step2.values.pricePerToken,
+                  18,
+                )
+              : 0,
+            pricePerToken: convertToWeiGovernance(
+              formikERC721Step2.values.pricePerToken,
+              6,
+            ),
+            isNftTransferable: formikERC721Step2.values.isNftTransferable,
+            isNftTotalSupplyUnlimited:
+              !formikERC721Step2.values.isNftTotalSupplylimited,
+            isGovernanceActive: values.governance,
 
-              allowWhiteList: false,
-              merkleRoot:
-                "0x0000000000000000000000000000000000000000000000000000000000000001",
-            };
+            allowWhiteList: false,
+            merkleRoot:
+              "0x0000000000000000000000000000000000000000000000000000000000000001",
+          };
 
-            initiateConnection(
-              params,
-              dispatch,
-              GNOSIS_TRANSACTION_URL,
-              values.addressList,
-              formikStep1.values.clubTokenType,
-              FACTORY_CONTRACT_ADDRESS,
-              metadata.data.image.pathname,
-              metadata.url,
-            );
-          })
-          .catch((error) => {
-            console.error(error);
-          });
+          initiateConnection(
+            params,
+            dispatch,
+            GNOSIS_TRANSACTION_URL,
+            values.addressList,
+            formikStep1.values.clubTokenType,
+            FACTORY_CONTRACT_ADDRESS,
+            metadata.data.image.pathname,
+            metadata.url,
+          );
+        } catch (error) {
+          console.error(error);
+        }
       } else {
-        const web3 = new Web3(Web3.givenProvider);
-        const auth = web3.eth.getAccounts();
-        auth
-          .then((result) => {
-            const walletAddress = Web3.utils.toChecksumAddress(result[0]);
-            values.addressList.unshift(walletAddress);
-            const params = {
-              clubName: formikStep1.values.clubName,
-              clubSymbol: formikStep1.values.clubSymbol,
-              distributeAmount: convertToWeiGovernance(
-                formikERC20Step2.values.totalRaiseAmount /
-                  formikERC20Step2.values.pricePerToken,
-                18,
-              ),
-              pricePerToken: convertToWeiGovernance(
+        try {
+          const walletAddress = Web3.utils.toChecksumAddress(
+            wallet.accounts[0].address,
+          );
+          values.addressList.unshift(walletAddress);
+          const params = {
+            clubName: formikStep1.values.clubName,
+            clubSymbol: formikStep1.values.clubSymbol,
+            distributeAmount: convertToWeiGovernance(
+              formikERC20Step2.values.totalRaiseAmount /
                 formikERC20Step2.values.pricePerToken,
-                6,
-              ),
-              minDepositPerUser: convertToWeiGovernance(
-                formikERC20Step2.values.minDepositPerUser,
-                6,
-              ),
-              maxDepositPerUser: convertToWeiGovernance(
-                formikERC20Step2.values.maxDepositPerUser,
-                6,
-              ),
-              ownerFeePerDepositPercent: 0 * 100,
-              depositClose: dayjs(formikERC20Step2.values.depositClose).unix(),
-              quorum: values.quorum * 100,
-              threshold: values.threshold * 100,
-              depositTokenAddress: USDC_CONTRACT_ADDRESS,
-              isGovernanceActive: values.governance,
-              isGtTransferable: true,
-              allowWhiteList: false,
-              merkleRoot:
-                "0x0000000000000000000000000000000000000000000000000000000000000001",
-            };
-            initiateConnection(
-              params,
-              dispatch,
-              GNOSIS_TRANSACTION_URL,
-              values.addressList,
-              formikStep1.values.clubTokenType,
-              FACTORY_CONTRACT_ADDRESS,
-            );
-          })
-          .catch((error) => {
-            console.error(error);
-          });
+              18,
+            ),
+            pricePerToken: convertToWeiGovernance(
+              formikERC20Step2.values.pricePerToken,
+              6,
+            ),
+            minDepositPerUser: convertToWeiGovernance(
+              formikERC20Step2.values.minDepositPerUser,
+              6,
+            ),
+            maxDepositPerUser: convertToWeiGovernance(
+              formikERC20Step2.values.maxDepositPerUser,
+              6,
+            ),
+            ownerFeePerDepositPercent: 0 * 100,
+            depositClose: dayjs(formikERC20Step2.values.depositClose).unix(),
+            quorum: values.quorum * 100,
+            threshold: values.threshold * 100,
+            depositTokenAddress: USDC_CONTRACT_ADDRESS,
+            isGovernanceActive: values.governance,
+            isGtTransferable: true,
+            allowWhiteList: false,
+            merkleRoot:
+              "0x0000000000000000000000000000000000000000000000000000000000000001",
+          };
+          initiateConnection(
+            params,
+            dispatch,
+            GNOSIS_TRANSACTION_URL,
+            values.addressList,
+            formikStep1.values.clubTokenType,
+            FACTORY_CONTRACT_ADDRESS,
+          );
+        } catch (error) {
+          console.error(error);
+        }
       }
     },
   });
