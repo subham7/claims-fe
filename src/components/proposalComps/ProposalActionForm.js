@@ -212,23 +212,45 @@ const ProposalActionForm = ({ formik, tokenData }) => {
             sx={{ marginLeft: "0 !important" }}
           >
             <Typography variant="proposalBody">Amount of Tokens *</Typography>
-            <TextField
-              variant="outlined"
-              className={classes.textField}
-              placeholder="0"
-              type="number"
-              name="amountOfTokens"
-              id="amountOfTokens"
-              value={formik.values.amountOfTokens}
-              onChange={formik.handleChange}
-              error={
-                formik.touched.amountOfTokens &&
-                Boolean(formik.errors.amountOfTokens)
-              }
-              helperText={
-                formik.touched.amountOfTokens && formik.errors.amountOfTokens
-              }
-            />
+            {tokenType === "erc20" ? (
+              <TextField
+                variant="outlined"
+                className={classes.textField}
+                placeholder="0"
+                type="number"
+                name="amountOfTokens"
+                id="amountOfTokens"
+                value={formik.values.amountOfTokens}
+                onChange={formik.handleChange}
+                error={
+                  formik.touched.amountOfTokens &&
+                  Boolean(formik.errors.amountOfTokens)
+                }
+                helperText={
+                  formik.touched.amountOfTokens &&
+                  Boolean(formik.errors.amountOfTokens)
+                }
+              />
+            ) : (
+              <TextField
+                variant="outlined"
+                className={classes.textField}
+                placeholder="0"
+                type="number"
+                name="amountOfTokens721"
+                id="amountOfTokens721"
+                value={formik.values.amountOfTokens721}
+                onChange={formik.handleChange}
+                error={
+                  formik.touched.amountOfTokens721 &&
+                  Boolean(formik.errors.amountOfTokens721)
+                }
+                helperText={
+                  formik.touched.amountOfTokens721 &&
+                  formik.errors.amountOfTokens721
+                }
+              />
+            )}
           </Grid>
         </>
       ) : formik.values.actionCommand === "Update Governance Settings" ? (
