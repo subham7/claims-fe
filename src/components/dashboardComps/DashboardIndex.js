@@ -327,7 +327,6 @@ const DashboardIndex = () => {
     GNOSIS_TRANSACTION_URL,
   ]);
 
-
   return (
     <>
       <Layout1 page={1} depositUrl={depositLink}>
@@ -653,6 +652,7 @@ const DashboardIndex = () => {
                       <Typography variant="subHeading">Collectibles</Typography>
                     </div>
                     <Grid container maxWidth={"70vw"}>
+                      {console.log(nftData)}
                       {nftData ? (
                         nftData.length > 0 ? (
                           nftData.map((data, key) => (

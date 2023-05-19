@@ -46,6 +46,11 @@ export default function CollectionCard(props) {
     fetchData();
   }, [tokenURI]);
 
+  const jsonString = nftData.metadata;
+  const jsonObject = JSON.parse(jsonString);
+
+  const imgUrl = jsonObject.image;
+
   return (
     <>
       {/* {image.length ? ( */}
@@ -55,13 +60,7 @@ export default function CollectionCard(props) {
           component="img"
           alt="green iguana"
           sx={{ width: "340px", height: "320px" }}
-          image={
-            image?.startsWith("https") || image?.startsWith("data")
-              ? image
-              : image?.startsWith("Qm")
-              ? image?.replace("Qm", "https://ipfs.io/ipfs/Qm")
-              : image?.replace("ipfs://", "https://ipfs.io/ipfs/")
-          }
+          image={imgUrl}
         />
 
         {/* <MediaRenderer src={tokenURI?} alt="A mp4 video" /> */}
