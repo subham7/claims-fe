@@ -11,7 +11,13 @@ export const step1ValidationSchema = yup.object({
 });
 
 export const ERC20Step2ValidationSchema = yup.object({
-  depositClose: yup.date().required("deposit close date is required"),
+  depositClose: yup
+    .date()
+    .min(
+      new Date(new Date().setDate(new Date().getDate() + 1)),
+      "Date must be at least one day in the future.",
+    )
+    .required("deposit close date is required"),
   minDepositPerUser: yup.number().required("min deposit amount is required"),
   maxDepositPerUser: yup
     .number()
@@ -44,7 +50,13 @@ export const ERC721Step2ValidationSchema = yup.object({
     is: true,
     then: () => yup.number().required("total supply of nft is required"),
   }),
-  depositClose: yup.date().required("deposit close date is required"),
+  depositClose: yup
+    .date()
+    .min(
+      new Date(new Date().setDate(new Date().getDate() + 1)),
+      "Date must be at least one day in the future.",
+    )
+    .required("deposit close date is required"),
 });
 
 export const proposalValidationSchema = yup.object({
@@ -86,14 +98,30 @@ export const proposalValidationSchema = yup.object({
           .matches(/^0x[a-zA-Z0-9]+/gm, " proper wallet address is required")
           .required("User address is required"),
     }),
-  amountOfTokens: yup.number("Enter amount of tokens").when("actionCommand", {
-    is: "Mint club token",
-    then: () =>
-      yup
-        .number("Enter amount of tokens")
-        .required("Amount is required")
-        .moreThan(0, "Amount should be greater than 0"),
-  }),
+  amountOfTokens: yup
+    .number("Enter amount of tokens")
+
+    .when("actionCommand", {
+      is: "Mint club token",
+      then: () =>
+        yup
+          .number("Enter amount of tokens")
+
+          .required("Amount is required")
+          .moreThan(0, "Amount should be greater than 0"),
+    }),
+  amountOfTokens721: yup
+    .number("Enter amount of tokens")
+    .integer("amount should be an integer")
+    .when("actionCommand", {
+      is: "Mint club token",
+      then: () =>
+        yup
+          .number("Enter amount of tokens")
+          .integer("amount should be an integer")
+          .required("Amount is required")
+          .moreThan(0, "Amount should be greater than 0"),
+    }),
   quorum: yup.number("Enter Quorum in percentage").when("actionCommand", {
     is: "Update Governance Settings",
     then: () =>
