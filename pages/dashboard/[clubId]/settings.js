@@ -99,8 +99,6 @@ const Settings = () => {
     return state.gnosis.usdcContractAddress;
   });
 
-  console.log("GNOSIS", GNOSIS_TRANSACTION_URL, USDC_CONTRACT_ADDRESS);
-
   const router = useRouter();
   const { clubId: daoAddress } = router.query;
 
@@ -129,22 +127,16 @@ const Settings = () => {
       );
 
       const balanceOfClubToken = await erc20DaoContract.balanceOf();
-      console.log("balanceOfClubToken", balanceOfClubToken / 10 ** 18);
 
       const fetchedData = await fetchClubbyDaoAddress(daoAddress);
-      console.log("Fetchedd", fetchedData);
       const fetchedImage = fetchedData?.data[0];
-      console.log("Fetchedddd Image", fetchedImage);
 
       if (factoryContract && erc20DaoContract) {
         const factoryData = await factoryContract.getDAOdetails(daoAddress);
 
-        console.log("Fkajdkald", factoryData);
         const erc20Data = await erc20DaoContract.getERC20DAOdetails();
         const erc20DaoDecimal = await erc20DaoContract.decimals();
         const clubTokensMinted = await erc20DaoContract.totalSupply();
-
-        console.log(factoryData, erc20Data);
 
         if (erc20Data && factoryData)
           setDaoDetails({
@@ -231,7 +223,6 @@ const Settings = () => {
 
   const fetchErc721ContractDetails = useCallback(async () => {
     try {
-      console.log(factoryContractABI, FACTORY_CONTRACT_ADDRESS);
       const factoryContract = new SmartContract(
         factoryContractABI,
         FACTORY_CONTRACT_ADDRESS,
@@ -291,11 +282,6 @@ const Settings = () => {
               factoryData.distributionAmount * factoryData.pricePerToken,
             ownerFee: factoryData.ownerFeePerDepositPercent / 100,
           });
-          console.log(
-            "total supply",
-            convertFromWeiGovernance(daoDetails.distributionAmt, 18) *
-              convertFromWeiGovernance(daoDetails.pricePerToken, 6),
-          );
         }
       }
     } catch (error) {
@@ -306,15 +292,12 @@ const Settings = () => {
     GNOSIS_TRANSACTION_URL,
     USDC_CONTRACT_ADDRESS,
     daoAddress,
-    daoDetails.distributionAmt,
-    daoDetails.pricePerToken,
     walletAddress,
   ]);
 
   const fetchAssets = useCallback(async () => {
     try {
       const assetsData = await getAssetsByDaoAddress(daoAddress, NETWORK_HEX);
-      console.log("Asset data", assetsData.data?.treasuryAmount);
       setTreasuryAmount(assetsData?.data?.treasuryAmount);
     } catch (error) {
       console.log(error);
@@ -343,7 +326,6 @@ const Settings = () => {
             SUBGRAPH_URL,
             QUERY_ALL_MEMBERS(daoAddress),
           );
-          console.log("Members", data);
           setMembers(data?.users);
         }
       };
@@ -356,8 +338,6 @@ const Settings = () => {
   useEffect(() => {
     fetchAssets();
   }, [fetchAssets]);
-
-  console.log(erc20TokenDetails);
 
   return (
     <div>

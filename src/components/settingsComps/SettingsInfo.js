@@ -37,16 +37,6 @@ const SettingsInfo = ({
 }) => {
   const classes = SettingsInfoStlyes();
 
-  console.log(
-    "Club token minted",
-    isNaN(
-      Number(
-        daoDetails.balanceOfClubToken /
-          Number(convertFromWeiGovernance(daoDetails.clubTokensMinted, 18)),
-      ),
-    ),
-  );
-
   return (
     <>
       <Layout1 page={5}>
@@ -429,20 +419,27 @@ const SettingsInfo = ({
                     daoDetails.isTotalSupplyUnlimited ? null : walletAddress &&
                     daoDetails.clubTokensMinted ? (
                     <ProgressBar
-                      value={calculateTreasuryTargetShare(
-                        convertFromWeiGovernance(
-                          daoDetails.clubTokensMinted,
-                          daoDetails.decimals,
-                        ) *
+                      value={
+                        Number(
                           convertFromWeiGovernance(
-                            daoDetails.pricePerToken,
-                            erc20TokenDetails.tokenDecimal,
+                            +daoDetails.clubTokensMinted,
+                            +daoDetails.decimals,
+                          ) *
+                            Number(
+                              convertFromWeiGovernance(
+                                +daoDetails.pricePerToken,
+                                +erc20TokenDetails.tokenDecimal,
+                              ),
+                            ) *
+                            100,
+                        ) /
+                        Number(
+                          convertFromWeiGovernance(
+                            +daoDetails.totalSupply.toFixed(0),
+                            +erc20TokenDetails.tokenDecimal,
                           ),
-                        convertFromWeiGovernance(
-                          daoDetails.totalSupply,
-                          erc20TokenDetails.tokenDecimal,
-                        ),
-                      )}
+                        )
+                      }
                     />
                   ) : (
                     <Skeleton variant="rectangular" />
@@ -515,7 +512,7 @@ const SettingsInfo = ({
                   >
                     <Stack spacing={1}>
                       <Typography variant="settingText">
-                        Total Supply
+                        Total Raise Amount
                       </Typography>
                       {tokenType === "erc721" ? (
                         <Typography variant="p" className={classes.valuesStyle}>
@@ -544,7 +541,7 @@ const SettingsInfo = ({
                         <Typography variant="p" className={classes.valuesStyle}>
                           {daoDetails.totalSupply ? (
                             convertFromWeiGovernance(
-                              daoDetails.totalSupply,
+                              daoDetails.totalSupply.toFixed(0),
                               erc20TokenDetails.tokenDecimal,
                             ) +
                             (" $" + erc20TokenDetails.tokenSymbol)

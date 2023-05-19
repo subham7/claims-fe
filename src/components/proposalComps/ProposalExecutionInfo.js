@@ -24,10 +24,14 @@ const ProposalExecutionInfo = ({
   proposalData,
   fetched,
   USDC_CONTRACT_ADDRESS,
+  daoDetails,
 }) => {
-  console.log("Proposal Data", proposalData);
   const classes = useStyles();
   const [{ wallet }] = useConnectWallet();
+
+  const tokenType = useSelector((state) => {
+    return state.club.clubData.tokenType;
+  });
 
   const [tokenDetails, setTokenDetails] = useState({
     decimals: 0,
@@ -48,14 +52,15 @@ const ProposalExecutionInfo = ({
       if (proposalData) {
         const airdropContract = new SmartContract(
           erc20ABI,
-          proposalData?.commands[0]?.airDropToken,
+          proposalData?.commands[0]?.airDropToken
+            ? proposalData?.commands[0]?.airDropToken
+            : proposalData?.commands[0]?.customToken,
           walletAddress,
           USDC_CONTRACT_ADDRESS,
           GNOSIS_TRANSACTION_URL,
         );
 
         const decimal = await airdropContract.decimals();
-        console.log("decimals", decimal);
         const symbol = await airdropContract.obtainSymbol();
 
         setTokenDetails({
@@ -150,14 +155,16 @@ const ProposalExecutionInfo = ({
                   >
                     <Typography className={classes.listFont2Colourless}>
                       {fetched
-                        ? proposalData?.commands[0].mintGTAmounts[0] /
-                          Math.pow(
-                            10,
-                            parseInt(
-                              proposalData?.commands[0]
-                                .usdcGovernanceTokenDecimal,
-                            ),
-                          )
+                        ? tokenType === "erc721"
+                          ? proposalData?.commands[0].mintGTAmounts[0]
+                          : proposalData?.commands[0].mintGTAmounts[0] /
+                            Math.pow(
+                              10,
+                              parseInt(
+                                proposalData?.commands[0]
+                                  .usdcGovernanceTokenDecimal,
+                              ),
+                            )
                         : null}
                     </Typography>
                   </Grid>
@@ -196,7 +203,7 @@ const ProposalExecutionInfo = ({
                   <Grid container spacing={3}>
                     <Grid item xs={12} md={4}>
                       <Typography className={classes.listFont2}>
-                        Quoram
+                        Quorum
                       </Typography>
                       <Typography className={classes.listFont2Colourless}>
                         {fetched ? proposalData?.commands[0].quorum : null}%
@@ -229,7 +236,11 @@ const ProposalExecutionInfo = ({
                       </Typography>
                       <Typography className={classes.listFont2Colourless}>
                         {fetched
-                          ? proposalData?.commands[0].totalDeposits
+                          ? proposalData?.commands[0].totalDeposits *
+                            +convertFromWeiGovernance(
+                              daoDetails?.pricePerToken,
+                              6,
+                            )
                           : // Math.pow(
                             //   10,
                             //   parseInt(
@@ -260,14 +271,9 @@ const ProposalExecutionInfo = ({
                       <Typography className={classes.listFont2Colourless}>
                         {fetched
                           ? proposalData?.commands[0].customTokenAmounts[0] /
-                            Math.pow(
-                              10,
-                              parseInt(
-                                proposalData?.commands[0].usdcTokenDecimal,
-                              ),
-                            )
+                            Math.pow(10, parseInt(tokenDetails.decimals))
                           : null}{" "}
-                        {proposalData.commands[0].usdcTokenSymbol}
+                        {tokenDetails.symbol}
                       </Typography>
                     </Grid>
                     <Grid item xs={12} md={4}>

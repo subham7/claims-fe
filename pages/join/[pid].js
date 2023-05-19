@@ -13,9 +13,12 @@ import NewArchERC20 from "../../src/components/depositPageComps/ERC20/NewArch/Ne
 import { useRouter } from "next/router";
 import { fetchClub, fetchClubbyDaoAddress } from "../../src/api/club";
 import NewArchERC721 from "../../src/components/depositPageComps/ERC721/NewArch/NewArchERC721";
-import { convertFromWeiGovernance } from "../../src/utils/globalFunctions";
+import { convertFromWeiGovernance, convertIpfsToUrl } from "../../src/utils/globalFunctions";
 import { subgraphQuery } from "../../src/utils/subgraphs";
-import { QUERY_ALL_MEMBERS } from "../../src/api/graphql/queries";
+import {
+  QUERY_ALL_MEMBERS,
+  QUERY_CLUB_DETAILS,
+} from "../../src/api/graphql/queries";
 import { useSelector } from "react-redux";
 import ClubFetch from "../../src/utils/clubFetch";
 import { Backdrop, CircularProgress } from "@mui/material";
@@ -45,7 +48,6 @@ const Join = () => {
     nftURI: "",
     nftMinted: 0,
   });
-  const [tokenType, setTokenType] = useState("");
   const [isEligibleForTokenGating, setIsEligibleForTokenGating] =
     useState(false);
   const [isTokenGated, setIsTokenGated] = useState(false);
@@ -103,17 +105,11 @@ const Join = () => {
         GNOSIS_TRANSACTION_URL,
       );
 
-      const fetchedData = await fetchClubbyDaoAddress(daoAddress);
-      console.log(fetchedData);
-      const fetchedImage = fetchedData?.data[0]?.imageUrl;
-
       if (factoryContract && erc20DaoContract) {
         const factoryData = await factoryContract.getDAOdetails(daoAddress);
         const erc20Data = await erc20DaoContract.getERC20DAOdetails();
         const erc20DaoDecimal = await erc20DaoContract.decimals();
         const clubTokensMinted = await erc20DaoContract.totalSupply();
-
-        // console.log(factoryData, erc20Data);
 
         if (erc20Data && factoryData)
           setDaoDetails({
@@ -124,7 +120,7 @@ const Join = () => {
             isGovernance: erc20Data.isGovernanceActive,
             decimals: erc20DaoDecimal,
             clubTokensMinted: clubTokensMinted,
-            daoImage: fetchedImage,
+            // daoImage: fetchedImage,
             isTokenGated: factoryData.isTokenGatingApplied,
             minDeposit: factoryData.minDepositPerUser,
             maxDeposit: factoryData.maxDepositPerUser,
@@ -156,7 +152,6 @@ const Join = () => {
   const fetchErc721ContractDetails = useCallback(async () => {
     try {
       setLoading(true);
-      console.log(factoryContractABI, FACTORY_CONTRACT_ADDRESS);
       const factoryContract = new SmartContract(
         factoryContractABI,
         FACTORY_CONTRACT_ADDRESS,
@@ -164,8 +159,6 @@ const Join = () => {
         USDC_CONTRACT_ADDRESS,
         GNOSIS_TRANSACTION_URL,
       );
-
-      console.log(factoryContract);
 
       const erc721DaoContract = new SmartContract(
         erc721DaoContractABI,
@@ -175,20 +168,22 @@ const Join = () => {
         GNOSIS_TRANSACTION_URL,
       );
 
-      console.log(erc721DaoContract);
 
-      const fetchedData = await fetchClubbyDaoAddress(daoAddress);
-      console.log("Fetched Data", fetchedData);
-      const fetchedImage = fetchedData?.data[0]?.nftImageUrl;
-      const nftURI = fetchedData?.data[0]?.nftMetadataUrl;
+      const clubDetails = await subgraphQuery(
+        SUBGRAPH_URL,
+        QUERY_CLUB_DETAILS(daoAddress),
+      );
+
+      const url = convertIpfsToUrl(clubDetails.stations[0].imageUrl);
+      const res = await fetch(url);
+      const data = await res.json();
+      const imageUrl = convertIpfsToUrl(data.image);
 
       if (factoryContract && erc721DaoContract) {
         const factoryData = await factoryContract.getDAOdetails(daoAddress);
-        console.log("Factory Data", factoryData);
 
         const erc721Data = await erc721DaoContract.getERC721DAOdetails();
         const nftCount = await erc721DaoContract.nftOwnersCount();
-        console.log(erc721Data);
 
         if (erc721Data && factoryData) {
           setDaoDetails({
@@ -202,8 +197,8 @@ const Join = () => {
             // decimals: erc20DaoDecimal,
             // clubTokensMinted: clubTokensMinted,
             createdBy: erc721Data.ownerAddress,
-            daoImage: fetchedImage,
-            nftURI: nftURI,
+            daoImage: imageUrl,
+            nftURI: clubDetails?.stations[0].imageUrl,
             isTokenGated: factoryData.isTokenGatingApplied,
             minDeposit: factoryData.minDepositPerUser,
             maxDeposit: factoryData.maxDepositPerUser,
@@ -225,26 +220,11 @@ const Join = () => {
   }, [
     FACTORY_CONTRACT_ADDRESS,
     GNOSIS_TRANSACTION_URL,
+    SUBGRAPH_URL,
     USDC_CONTRACT_ADDRESS,
     daoAddress,
     walletAddress,
   ]);
-
-  /**
-   * Fetching tokenType from API
-   */
-  const fetchDataFromApi = useCallback(async () => {
-    try {
-      setLoading(true);
-      const data = await fetchClubbyDaoAddress(daoAddress);
-      console.log(data?.data[0]?.tokenType);
-      setTokenType(data?.data[0]?.tokenType);
-      setLoading(false);
-    } catch (error) {
-      console.log(error);
-      setLoading(false);
-    }
-  }, [daoAddress]);
 
   const fetchTokenGatingDetials = useCallback(async () => {
     try {
@@ -260,55 +240,48 @@ const Join = () => {
       const tokenGatingDetails = await factoryContract.getTokenGatingDetails(
         daoAddress,
       );
-      console.log("TOken Gating details", tokenGatingDetails);
-      if (tokenGatingDetails[0]?.length) setIsTokenGated(true);
-      const tokenAContract = new SmartContract(
-        ERC20ABI,
-        tokenGatingDetails[0].tokenA,
-        walletAddress,
-        USDC_CONTRACT_ADDRESS,
-        GNOSIS_TRANSACTION_URL,
-      );
 
-      const tokenBContract = new SmartContract(
-        ERC20ABI,
-        tokenGatingDetails[0].tokenB,
-        walletAddress,
-        USDC_CONTRACT_ADDRESS,
-        GNOSIS_TRANSACTION_URL,
-      );
-      const balanceOfTokenAInUserWallet = await tokenAContract.balanceOf();
-      const balanceOfTokenBInUserWallet = await tokenBContract.balanceOf();
+      if (tokenGatingDetails[0]?.length) {
+        setIsTokenGated(true);
+        const tokenAContract = new SmartContract(
+          ERC20ABI,
+          tokenGatingDetails[0].tokenA,
+          walletAddress,
+          USDC_CONTRACT_ADDRESS,
+          GNOSIS_TRANSACTION_URL,
+        );
 
-      console.log(
-        "Balance of token A",
-        +balanceOfTokenAInUserWallet > +tokenGatingDetails[0].value[0],
-      );
+        const tokenBContract = new SmartContract(
+          ERC20ABI,
+          tokenGatingDetails[0].tokenB,
+          walletAddress,
+          USDC_CONTRACT_ADDRESS,
+          GNOSIS_TRANSACTION_URL,
+        );
+        const balanceOfTokenAInUserWallet = await tokenAContract.balanceOf();
+        const balanceOfTokenBInUserWallet = await tokenBContract.balanceOf();
 
-      if (tokenGatingDetails[0].operator == 0) {
-        if (
-          +balanceOfTokenAInUserWallet >= +tokenGatingDetails[0]?.value[0] &&
-          +balanceOfTokenBInUserWallet >= +tokenGatingDetails[0]?.value[1]
-        ) {
-          console.log("You are eligible (AND)");
-          setIsEligibleForTokenGating(true);
-        } else {
-          console.log("You are not eligible (AND)");
-          setIsEligibleForTokenGating(false);
+        if (tokenGatingDetails[0].operator == 0) {
+          if (
+            +balanceOfTokenAInUserWallet >= +tokenGatingDetails[0]?.value[0] &&
+            +balanceOfTokenBInUserWallet >= +tokenGatingDetails[0]?.value[1]
+          ) {
+            setIsEligibleForTokenGating(true);
+          } else {
+            setIsEligibleForTokenGating(false);
+          }
+        } else if (tokenGatingDetails[0].operator == 1) {
+          if (
+            +balanceOfTokenAInUserWallet >= +tokenGatingDetails[0]?.value[0] ||
+            +balanceOfTokenBInUserWallet >= +tokenGatingDetails[0]?.value[1]
+          ) {
+            setIsEligibleForTokenGating(true);
+          } else {
+            setIsEligibleForTokenGating(false);
+          }
         }
-      } else if (tokenGatingDetails[0].operator == 1) {
-        if (
-          +balanceOfTokenAInUserWallet >= +tokenGatingDetails[0]?.value[0] ||
-          +balanceOfTokenBInUserWallet >= +tokenGatingDetails[0]?.value[1]
-        ) {
-          console.log("You are eligible (OR)");
-          setIsEligibleForTokenGating(true);
-        } else {
-          console.log("You are not eligible (OR)");
-          setIsEligibleForTokenGating(false);
-        }
+        setLoading(false);
       }
-      setLoading(false);
     } catch (error) {
       console.log(error);
       setLoading(false);
@@ -326,16 +299,12 @@ const Join = () => {
   }, [fetchTokenGatingDetials]);
 
   useEffect(() => {
-    fetchDataFromApi();
-  }, [fetchDataFromApi]);
-
-  useEffect(() => {
-    if (tokenType === "erc20NonTransferable") {
+    if (TOKEN_TYPE === "erc20") {
       fetchErc20ContractDetails();
     } else {
       fetchErc721ContractDetails();
     }
-  }, [fetchErc20ContractDetails, tokenType, fetchErc721ContractDetails]);
+  }, [fetchErc20ContractDetails, TOKEN_TYPE, fetchErc721ContractDetails]);
 
   useEffect(() => {
     try {
@@ -346,7 +315,6 @@ const Join = () => {
             SUBGRAPH_URL,
             QUERY_ALL_MEMBERS(daoAddress),
           );
-          console.log("Members", data);
           setMembers(data?.users);
         }
       };
@@ -360,7 +328,7 @@ const Join = () => {
 
   return (
     <Layout2>
-      {tokenType === "erc20NonTransferable" ? (
+      {TOKEN_TYPE === "erc20" ? (
         <NewArchERC20
           isTokenGated={isTokenGated}
           isEligibleForTokenGating={isEligibleForTokenGating}
@@ -368,7 +336,7 @@ const Join = () => {
           daoDetails={daoDetails}
           members={members}
         />
-      ) : tokenType === "erc721" ? (
+      ) : TOKEN_TYPE === "erc721" ? (
         <NewArchERC721
           isTokenGated={isTokenGated}
           isEligibleForTokenGating={isEligibleForTokenGating}

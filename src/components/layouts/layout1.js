@@ -9,7 +9,6 @@ const drawerWidth = 50;
 export default function Layout1(props) {
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const { showSidebar = true } = props;
-  console.log(showSidebar);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);

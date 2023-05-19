@@ -15,7 +15,6 @@ export async function loginToken(userAddress) {
 
 export async function refreshToken(refreshToken, accessToken) {
   try {
-    console.log(accessToken);
     // authenticate and fetch users new token
     const data = JSON.stringify({
       refreshToken: refreshToken,

@@ -80,7 +80,6 @@ const TokenGating = () => {
   };
 
   const chooseTokens = (currentToken) => {
-    console.log("Current TOkens", currentToken);
     setTokensList([...tokensList, currentToken]);
   };
 
@@ -93,13 +92,8 @@ const TokenGating = () => {
         walletAddress,
         USDC_CONTRACT_ADDRESS,
         GNOSIS_TRANSACTION_URL,
+        true,
       );
-
-      console.log("Factory Contract", factoryContract);
-
-      console.log(tokensList[0].tokenAddress);
-
-      console.log("Checked", checked ? 1 : 0);
 
       const res = await factoryContract.setupTokenGating(
         tokensList[0].tokenAddress,
@@ -124,7 +118,6 @@ const TokenGating = () => {
         ], // Minimum user balance of tokenA & tokenB
         Web3.utils.toChecksumAddress(daoAddress),
       );
-      console.log(res);
       setLoading(false);
       setIsTokenGatingSuccessfull(true);
       showMessageHandler();
@@ -154,12 +147,9 @@ const TokenGating = () => {
         GNOSIS_TRANSACTION_URL,
       );
 
-      console.log("Factory Contract", factoryContract);
-
       const tokenGatingDetails = await factoryContract.getTokenGatingDetails(
         daoAddress,
       );
-      console.log("TOken Gating details", tokenGatingDetails[0]);
       setFetchedDetails({
         tokenA: tokenGatingDetails[0]?.tokenA,
         tokenB: tokenGatingDetails[0]?.tokenB,
@@ -201,13 +191,17 @@ const TokenGating = () => {
       console.log(error);
       setLoading(false);
     }
-  }, [FACTORY_CONTRACT_ADDRESS, walletAddress, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL, daoAddress]);
+  }, [
+    FACTORY_CONTRACT_ADDRESS,
+    walletAddress,
+    USDC_CONTRACT_ADDRESS,
+    GNOSIS_TRANSACTION_URL,
+    daoAddress,
+  ]);
 
   useEffect(() => {
     fetchTokenGatingDetials();
   }, [fetchTokenGatingDetials]);
-
-  console.log("FETCHED DEIAls", fetchedDetails);
 
   return (
     <div className={classes.container}>
@@ -228,7 +222,6 @@ const TokenGating = () => {
               {tokensList?.length ? (
                 tokensList?.map((token) => (
                   <>
-                    {console.log("Tokennnnn", tokensList)}
                     <SingleToken
                       key={token.tokenAddress}
                       tokenAmount={token.tokenAmount}
@@ -306,7 +299,6 @@ const TokenGating = () => {
                   : checked
               }
               onChange={(e) => {
-                console.log(e.target.checked);
                 setChecked(e.target.checked);
               }}
               checkedIcon={

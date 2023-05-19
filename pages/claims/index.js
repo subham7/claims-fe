@@ -108,7 +108,6 @@ const Claims = () => {
   useEffect(() => {
     const getData = async () => {
       const data = await getClaimsByUserAddress(walletAddress);
-      console.log(data);
       setClaimData(data.reverse());
     };
 

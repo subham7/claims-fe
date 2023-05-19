@@ -24,7 +24,6 @@ const useStyles = makeStyles({
 });
 
 const ProposalActionForm = ({ formik, tokenData }) => {
-  console.log(formik);
   const classes = useStyles();
 
   const tokenType = useSelector((state) => {
@@ -73,12 +72,12 @@ const ProposalActionForm = ({ formik, tokenData }) => {
         <MenuItem key={0} value="Distribute token to members">
           Distribute token to members
         </MenuItem>
-        {tokenType !== "erc721" ? (
-          <MenuItem key={1} value="Mint club token">
-            Mint club token
-          </MenuItem>
-        ) : null}
-        {isGovernanceActive && tokenType !== "erc721" ? (
+        {/* {tokenType !== "erc721" ? ( */}
+        <MenuItem key={1} value="Mint club token">
+          Mint club token
+        </MenuItem>
+        {/* ) : null} */}
+        {isGovernanceActive ? (
           <MenuItem key={2} value="Update Governance Settings">
             Update Governance Settings
           </MenuItem>
@@ -117,7 +116,6 @@ const ProposalActionForm = ({ formik, tokenData }) => {
                 if (selected.length === 0) {
                   return "Select a command";
                 }
-                // console.log(selected);
                 return selected;
               }}
               inputProps={{ "aria-label": "Without label" }}

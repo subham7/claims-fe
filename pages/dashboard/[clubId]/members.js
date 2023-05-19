@@ -78,15 +78,12 @@ const Test = () => {
     return state.gnosis.clubNetworkId;
   });
 
-  console.log("TOkennnnn", tokenType);
-
   const handleAddressClick = (event, address) => {
     event.preventDefault();
     window.open(`https://goerli.etherscan.io/address/${address}`);
   };
 
   useEffect(() => {
-    console.log("NET", SUBGRAPH_URL);
     try {
       setLoading(true);
       const fetchData = async () => {
@@ -97,11 +94,8 @@ const Test = () => {
           );
           let membersArray = [];
           data?.users?.map((member) => membersArray.push(member.userAddress));
-          console.log(membersArray);
 
           setMembersData(data?.users);
-
-          console.log("Memebersss", data?.users);
         }
       };
       fetchData();

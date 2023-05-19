@@ -90,7 +90,6 @@ const NewArchERC20 = ({
   const remainingDays = day2.diff(day1, "day");
   const remainingTimeInSecs = day2.diff(day1, "seconds");
   const remainingTimeInHours = day2.diff(day1, "hours");
-  console.log("Remaining Time in Secs", remainingTimeInSecs);
 
   const showMessageHandler = () => {
     setShowMessage(true);
@@ -102,10 +101,6 @@ const NewArchERC20 = ({
   const fetchTokenDetails = useCallback(async () => {
     setLoading(true);
     try {
-      console.log(
-        "daoDetails.depositTokenAddress",
-        daoDetails.depositTokenAddress,
-      );
       const erc20Contract = new SmartContract(
         erc20ABI,
         daoDetails.depositTokenAddress,
@@ -182,6 +177,7 @@ const NewArchERC20 = ({
           walletAddress,
           USDC_CONTRACT_ADDRESS,
           GNOSIS_TRANSACTION_URL,
+          true,
         );
 
         const erc20Contract = new SmartContract(
@@ -190,6 +186,7 @@ const NewArchERC20 = ({
           walletAddress,
           USDC_CONTRACT_ADDRESS,
           GNOSIS_TRANSACTION_URL,
+          true,
         );
 
         const inputValue = convertToWeiGovernance(
@@ -254,17 +251,7 @@ const NewArchERC20 = ({
                 <Grid container>
                   <Grid item xs={12} md={9}>
                     <Grid container spacing={2}>
-                      <Grid item mt={3} ml={3}>
-                        {daoDetails.daoImage && (
-                          <img
-                            src={daoDetails?.daoImage}
-                            alt="club-image"
-                            width={120}
-                            height={120}
-                          />
-                        )}
-                      </Grid>
-                      <Grid item ml={1} mt={4} mb={7}>
+                      <Grid item ml={4} mt={4} mb={7}>
                         <Stack spacing={0}>
                           <Typography variant="h4">
                             {daoDetails.daoName ? (
@@ -532,23 +519,29 @@ const NewArchERC20 = ({
                   </Grid>
                 </Grid>
                 <Grid item ml={3} mt={5} mb={2} mr={3}>
-                  {console.log(daoDetails.clubTokensMinted)}
                   {walletAddress && daoDetails.clubTokensMinted ? (
                     <ProgressBar
-                      value={calculateTreasuryTargetShare(
-                        convertFromWeiGovernance(
-                          daoDetails.clubTokensMinted,
-                          daoDetails.decimals,
-                        ) *
+                      value={
+                        Number(
                           convertFromWeiGovernance(
-                            daoDetails.pricePerToken,
-                            erc20TokenDetails.tokenDecimal,
+                            +daoDetails.clubTokensMinted,
+                            +daoDetails.decimals,
+                          ) *
+                            Number(
+                              convertFromWeiGovernance(
+                                +daoDetails.pricePerToken,
+                                +erc20TokenDetails.tokenDecimal,
+                              ),
+                            ) *
+                            100,
+                        ) /
+                        Number(
+                          convertFromWeiGovernance(
+                            +daoDetails.totalSupply.toFixed(0),
+                            +erc20TokenDetails.tokenDecimal,
                           ),
-                        convertFromWeiGovernance(
-                          daoDetails.totalSupply,
-                          erc20TokenDetails.tokenDecimal,
-                        ),
-                      )}
+                        )
+                      }
                     />
                   ) : (
                     <Skeleton variant="rectangular" />
@@ -625,7 +618,7 @@ const NewArchERC20 = ({
                         <Typography variant="p" className={classes.valuesStyle}>
                           {daoDetails.totalSupply ? (
                             convertFromWeiGovernance(
-                              daoDetails.totalSupply,
+                              daoDetails.totalSupply.toFixed(0),
                               erc20TokenDetails.tokenDecimal,
                             )?.toString() + " USDC"
                           ) : (

@@ -48,14 +48,6 @@ export default function Navbar2(props) {
     window.open("/faucet", "_ blank");
   };
 
-  useEffect(() => {
-    console.log("wallet in navbar2", wallet);
-    if (!wallet) {
-      console.log("");
-      // router.push(`/`, undefined, { shallow: true });
-    }
-  }, [router, wallet]);
-
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static" sx={{ position: "fixed" }}>

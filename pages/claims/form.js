@@ -158,7 +158,6 @@ const Form = () => {
         merkleData: values.merkleData,
         csvObject: values.csvObject,
       };
-      console.log(data.numberOfTokens);
       if (activeStep === steps.length - 1) {
         if (data.eligible === "token" || data.eligible === "everyone") {
           // checking maximum claim is prorata or custom
@@ -211,7 +210,6 @@ const Form = () => {
                   data.numberOfTokens,
                   decimals, // decimal
                 );
-                console.log(res);
               }
 
               const claimsSettings = [
@@ -242,12 +240,10 @@ const Form = () => {
                 ],
                 [false, 0],
               ];
-              console.log(claimsSettings);
 
               const response = await claimsContract.claimContract(
                 claimsSettings,
               );
-              console.log(response);
 
               const newClaimContract =
                 response.events.NewClaimContract.returnValues._newClaimContract;

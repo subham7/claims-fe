@@ -241,13 +241,15 @@ export default function Sidebar(props) {
         open
       >
         <Box>
-          <Image
-            src="/assets/images/monogram.png"
-            height="40"
-            width="40"
-            className={classes.image}
-            alt="monogram"
-          />
+          <Link href={"/"}>
+            <Image
+              src="/assets/images/monogram.png"
+              height="40"
+              width="40"
+              className={classes.image}
+              alt="monogram"
+            />
+          </Link>
         </Box>
 
         <Toolbar />

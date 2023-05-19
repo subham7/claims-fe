@@ -107,9 +107,6 @@ const NewArchERC721 = ({
 
       const balanceOfNft = await erc721Contract.balanceOf();
 
-      console.log("Balance of NFT", +balanceOfNft);
-      console.log("MaxTOken", +daoDetails.maxTokensPerUser);
-
       if (+balanceOfNft >= +daoDetails?.maxTokensPerUser) {
         setHasClaimed(true);
       } else {
@@ -154,6 +151,7 @@ const NewArchERC721 = ({
         walletAddress,
         USDC_CONTRACT_ADDRESS,
         GNOSIS_TRANSACTION_URL,
+        true,
       );
 
       const erc20Contract = new SmartContract(
@@ -162,6 +160,7 @@ const NewArchERC721 = ({
         walletAddress,
         USDC_CONTRACT_ADDRESS,
         GNOSIS_TRANSACTION_URL,
+        true,
       );
 
       await erc20Contract.approveDeposit(
@@ -172,15 +171,14 @@ const NewArchERC721 = ({
         ),
         erc20TokenDetails.tokenDecimal,
       );
+
       const claimNFT = await factoryContract.buyGovernanceTokenERC721DAO(
         walletAddress,
         erc721DaoAddress,
-        // daoDetails.depositTokenAddress,
         daoDetails.nftURI,
         1,
         [],
       );
-      console.log(claimNFT);
       setLoading(false);
       setClaimSuccessfull(true);
       router.push(

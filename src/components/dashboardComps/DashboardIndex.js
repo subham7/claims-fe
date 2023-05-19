@@ -48,7 +48,10 @@ import ClubFetch from "../../utils/clubFetch";
 import erc20DaoContractABI from "../../abis/newArch/erc20Dao.json";
 import erc721DaoContractABI from "../../abis/newArch/erc721Dao.json";
 import factoryContractABI from "../../abis/newArch/factoryContract.json";
-import { convertFromWeiGovernance } from "../../utils/globalFunctions";
+import {
+  convertFromWeiGovernance,
+  convertIpfsToUrl,
+} from "../../utils/globalFunctions";
 import { NEW_FACTORY_ADDRESS } from "../../api";
 import { GiTwoCoins } from "react-icons/gi";
 import { IoColorPalette } from "react-icons/io5";
@@ -116,7 +119,9 @@ const DashboardIndex = () => {
     return state.club.clubData.symbol;
   });
 
-  console.log("Admin", GNOSIS_TRANSACTION_URL, USDC_CONTRACT_ADDRESS);
+  const tokenType = useSelector((state) => {
+    return state.club.clubData.tokenType;
+  });
 
   const walletAddress = Web3.utils.toChecksumAddress(
     wallet?.accounts[0].address,
@@ -125,30 +130,41 @@ const DashboardIndex = () => {
   const fetchClubDetails = useCallback(async () => {
     try {
       if (daoAddress) {
-        const imageUrl = await fetchClubbyDaoAddress(
-          Web3.utils.toChecksumAddress(daoAddress),
-        );
         const membersData = await subgraphQuery(
           SUBGRAPH_URL,
           QUERY_ALL_MEMBERS(daoAddress),
         );
 
-        setClubDetails({
-          clubImageUrl: imageUrl?.data[0]?.imageUrl,
+        const clubDetails = await subgraphQuery(
+          SUBGRAPH_URL,
+          QUERY_CLUB_DETAILS(daoAddress),
+        );
 
-          noOfMembers: membersData?.users?.length,
-        });
+        if (tokenType === "erc721") {
+          const url = convertIpfsToUrl(clubDetails.stations[0].imageUrl);
+          const res = await fetch(url);
+          const data = await res.json();
+          const imageUrl = convertIpfsToUrl(data.image);
+
+          setClubDetails({
+            clubImageUrl: imageUrl,
+            noOfMembers: membersData?.users?.length,
+          });
+        } else {
+          setClubDetails({
+            noOfMembers: membersData?.users?.length,
+          });
+        }
       }
     } catch (error) {
       console.log(error);
     }
-  }, [SUBGRAPH_URL, daoAddress]);
+  }, [SUBGRAPH_URL, daoAddress, tokenType]);
 
   const fetchAssets = useCallback(async () => {
     try {
       if (NETWORK_HEX !== "undefined") {
         const assetsData = await getAssetsByDaoAddress(daoAddress, NETWORK_HEX);
-        console.log("Asset data", assetsData?.data);
         setTokenDetails({
           treasuryAmount: assetsData?.data?.treasuryAmount,
           tokenPriceList: assetsData?.data?.tokenPriceList,
@@ -162,10 +178,7 @@ const DashboardIndex = () => {
   const fetchNfts = useCallback(async () => {
     try {
       const nftsData = await getNFTsByDaoAddress(daoAddress, NETWORK_HEX);
-      console.log("NFTs by dao", nftsData);
       setNftData(nftsData.data);
-
-      console.log("NFTS data", nftsData.data);
     } catch (error) {
       console.log(error);
     }
@@ -174,7 +187,6 @@ const DashboardIndex = () => {
   const fetchActiveProposals = useCallback(async () => {
     try {
       const activeProposals = await getProposalByDaoAddress(daoAddress);
-      console.log("Proposals", activeProposals);
       setProposalData(activeProposals?.data);
     } catch (error) {
       console.log(error);
@@ -229,7 +241,6 @@ const DashboardIndex = () => {
           );
 
           const factoryData = await factoryContract.getDAOdetails(daoAddress);
-          console.log("Factory Data", factoryData);
           setDepositCloseTime(factoryData?.depositCloseTime);
         };
 
@@ -259,13 +270,10 @@ const DashboardIndex = () => {
               GNOSIS_TRANSACTION_URL,
             );
             const nftBalance = await nftContract.nftBalance(walletAddress);
-            console.log("NFT Balance", nftBalance);
             setBalanceOfUser(nftBalance);
             const symbol = await nftContract.symbol();
-            console.log("SYMBOL", symbol);
             const nftMinted = await nftContract.nftOwnersCount();
             setClubTokenMinted(nftMinted);
-            console.log("NFT Minted", nftMinted);
           } catch (error) {
             console.log(error);
           }
@@ -280,14 +288,11 @@ const DashboardIndex = () => {
               USDC_CONTRACT_ADDRESS,
               GNOSIS_TRANSACTION_URL,
             );
-            console.log("erc20DaoContract", erc20DaoContract);
             const balance = await erc20DaoContract.nftBalance(walletAddress);
             //KEEP THIS CONSOLE
-            console.log(balance);
             setBalanceOfUser(balance);
             const clubTokensMinted = await erc20DaoContract.totalSupply();
             //KEEP THIS CONSOLE
-            console.log("clubTokensMinted", clubTokensMinted);
             setClubTokenMinted(clubTokensMinted);
 
             setDepositLink(
@@ -310,7 +315,6 @@ const DashboardIndex = () => {
         } else {
           loadSmartContractData();
         }
-        // console.log("token type", tokenType);
       }
     } catch (error) {
       console.log(error);
@@ -323,7 +327,6 @@ const DashboardIndex = () => {
     GNOSIS_TRANSACTION_URL,
   ]);
 
-  console.log("Proposal list", proposalData);
 
   return (
     <>
@@ -333,16 +336,21 @@ const DashboardIndex = () => {
           <Grid item xs={9}>
             <Card className={classes.cardSharp1}>
               <Grid container spacing={2}>
-                <Grid item ml={3} mt={2}>
-                  <img
-                    src={
-                      clubDetails.clubImageUrl ? clubDetails.clubImageUrl : null
-                    }
-                    width="110px"
-                    alt="profile_pic"
-                    className={classes.profilePic}
-                  />
-                </Grid>
+                {tokenType === "erc721" ? (
+                  <Grid item ml={3} mt={2}>
+                    <img
+                      src={
+                        clubDetails.clubImageUrl
+                          ? clubDetails.clubImageUrl
+                          : null
+                      }
+                      width="110px"
+                      alt="profile_pic"
+                      className={classes.profilePic}
+                    />
+                  </Grid>
+                ) : null}
+
                 <Grid item ml={1} mt={4}>
                   <Stack spacing={0}>
                     <Typography variant="h3">
