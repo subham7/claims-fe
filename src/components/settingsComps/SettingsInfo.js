@@ -40,7 +40,7 @@ const SettingsInfo = ({
   return (
     <>
       <Layout1 page={5}>
-        <Grid container spacing={3} paddingLeft={10} paddingTop={15} >
+        <Grid container spacing={3} paddingLeft={10} paddingTop={15}>
           <Grid item md={9}>
             <Card className={classes.cardRegular}>
               <Grid container spacing={2}>
@@ -422,41 +422,6 @@ const SettingsInfo = ({
                       </Grid>
                     </>
                   ) : (
-                    // <Stack spacing={1}>
-                    //   <Typography variant="settingText">
-                    //     Total Raise Amount
-                    //   </Typography>
-                    //   {tokenType === "erc721" ? (
-                    //     <Typography
-                    //       textAlign="right"
-                    //       variant="p"
-                    //       className={classes.valuesStyle}
-                    //     >
-                    //       {daoDetails.totalNftSupply !== null ? (
-                    //         daoDetails.isTotalSupplyUnlimited ? (
-                    //           "Unlimited"
-                    //         ) : (
-                    //           convertFromWeiGovernance(
-                    //             daoDetails.distributionAmt,
-                    //             18,
-                    //           ) *
-                    //           convertFromWeiGovernance(
-                    //             daoDetails.pricePerToken,
-                    //             6,
-                    //           )
-                    //         )
-                    //       ) : (
-                    //         <Skeleton
-                    //           variant="rectangular"
-                    //           width={100}
-                    //           height={25}
-                    //         />
-                    //       )}{" "}
-                    //     </Typography>
-                    //   ) : (
-                    //     ""
-                    //   )}
-                    // </Stack>
                     <>
                       {!daoDetails.isGovernance && tokenType === "erc721" && (
                         <Grid item md={3}>
