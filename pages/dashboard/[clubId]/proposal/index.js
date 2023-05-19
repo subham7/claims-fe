@@ -1,7 +1,9 @@
 import React, { useCallback, useEffect, useState } from "react";
 import Layout1 from "../../../../src/components/layouts/layout1";
 import {
+  Backdrop,
   Button,
+  CircularProgress,
   Grid,
   MenuItem,
   OutlinedInput,
@@ -109,6 +111,7 @@ const Proposal = () => {
     tokenType === "erc20" ? isGovernanceERC20 : isGovernanceERC721;
 
   const [executionTransaction, setExecutionTransaction] = useState(null);
+  const [loaderOpen, setLoaderOpen] = useState(false);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -124,6 +127,7 @@ const Proposal = () => {
     router.push(`${router.asPath}/${proposal?.proposalId}`, undefined, {
       shallow: true,
     });
+    // router.push("/");
   };
 
   const fetchTokens = useCallback(() => {
@@ -188,13 +192,22 @@ const Proposal = () => {
       );
     });
   };
-  getExecutionTransaction();
+  // getExecutionTransaction();
 
   useEffect(() => {
     if (daoAddress) {
       fetchTokens();
     }
   }, [daoAddress, fetchTokens]);
+
+  useEffect(() => {
+    setLoaderOpen(true);
+    if (gnosisAddress && GNOSIS_TRANSACTION_URL) {
+      getExecutionTransaction();
+      setLoaderOpen(false);
+    }
+    setLoaderOpen(false);
+  }, [gnosisAddress, GNOSIS_TRANSACTION_URL]);
 
   useEffect(() => {
     fetchProposalList();
@@ -357,6 +370,12 @@ const Proposal = () => {
         onClose={handleClose}
         tokenData={tokenData}
       />
+      <Backdrop
+        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={loaderOpen}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </Layout1>
   );
 };
