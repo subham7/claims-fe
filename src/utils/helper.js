@@ -15,3 +15,10 @@ export const getSafeSdk = async (gnosisAddress, walletAddress) => {
 
   return safeSdk;
 };
+
+export const getIncreaseGasPrice = async () => {
+  const web3 = new Web3(RPC_URL);
+  const gasPrice = await web3.eth.getGasPrice();
+  const increasedGasPrice = +gasPrice + 30000000000;
+  return increasedGasPrice;
+};
