@@ -72,7 +72,7 @@ export default function Navbar2(props) {
           </Box>
 
           {props.page === 1 ? (
-            <div style={{ marginRight: "350px" }}>
+            <div style={{ marginRight: "330px", marginTop: "10px" }}>
               <Button
                 variant="primary"
                 color="primary"

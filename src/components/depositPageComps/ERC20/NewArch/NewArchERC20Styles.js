@@ -21,7 +21,7 @@ export const NewArchERC20Styles = makeStyles({
     opacity: 1,
   },
   cardJoin: {
-    backgroundColor: "#81F5FF",
+    backgroundColor: "#19274A",
     borderRadius: "10px",
     opacity: 1,
     justifyContent: "space-between",
@@ -41,7 +41,7 @@ export const NewArchERC20Styles = makeStyles({
     color: "#111D38",
   },
   JoinText: {
-    color: "#111D38",
+    color: "#fff",
     fontFamily: "Whyte",
     fontSize: "21px",
     fontWeight: "bold",

@@ -431,7 +431,7 @@ const ProposalCard = ({
                           Asset:
                         </Typography>
                         <Typography color="#FFFFFF">
-                          {tokenDetails.symbol}
+                          ${tokenDetails.symbol}
                         </Typography>
                       </Grid>
                     }
@@ -489,7 +489,7 @@ const ProposalCard = ({
                                     proposal?.commands[0].mintGTAmounts[0],
                                     tokenDetails.decimals,
                                   ),
-                                ).toFixed(0)
+                                )
                               : proposal?.commands[0].mintGTAmounts[0]}
                           </Typography>
                         </Grid>

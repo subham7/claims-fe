@@ -219,7 +219,7 @@ const AdditionalSettings = ({
           sx={{ display: "flex", justifyContent: "space-between" }}
         >
           <Grid item mt={3}>
-            <Typography variant="settingText">Owner fees</Typography>
+            <Typography variant="settingText">Admin fees</Typography>
           </Grid>
           <Grid
             sx={{

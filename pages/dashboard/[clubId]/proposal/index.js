@@ -44,7 +44,7 @@ const useStyles = makeStyles({
     color: "lightgray",
   },
   noProposal: {
-    width: "600px",
+    width: "100%",
     margin: "0 auto",
     textAlign: "center",
     border: "1px solid #FFFFFF1A",
