@@ -475,7 +475,7 @@ const SettingsInfo = ({
                     <Grid item ml={4} mt={1} mb={2}>
                       <Stack spacing={1}>
                         <Typography variant="settingText">
-                          Club Tokens Minted so far
+                          Amount raised so far
                         </Typography>
                         <Typography variant="p" className={classes.valuesStyle}>
                           {walletAddress ? (

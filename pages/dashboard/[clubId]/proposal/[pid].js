@@ -746,13 +746,13 @@ const ProposalDetail = () => {
         <Grid container spacing={6} paddingLeft={10} paddingTop={10}>
           <Grid item md={8.5}>
             {/* back button */}
-            <Grid container spacing={1} onClick={() => router.back()}>
+            <Grid container spacing={1} ml={-4} onClick={() => router.back()}>
               <Grid item mt={0.5} sx={{ "&:hover": { cursor: "pointer" } }}>
                 <KeyboardBackspaceIcon className={classes.listFont} />
               </Grid>
               <Grid item sx={{ "&:hover": { cursor: "pointer" } }} mb={2}>
                 <Typography className={classes.listFont}>
-                  Back to workstation
+                  Back to all proposals
                 </Typography>
               </Grid>
             </Grid>
@@ -768,11 +768,14 @@ const ProposalDetail = () => {
             <Grid container direction="row" spacing={4}>
               <Grid item>
                 <Grid container spacing={2}>
-                  <Grid item>
+                  <Grid item ml={-1}>
                     <Chip
                       className={classes.timeLeftChip}
                       label={
-                        <Grid container>
+                        <Grid
+                          container
+                          sx={{ display: "flex", alignItems: "center" }}
+                        >
                           <Image src={tickerIcon} alt="ticker-icon" />
                           <Typography ml={1}>
                             {calculateDays(proposalData?.votingDuration) <= 0
@@ -792,7 +795,10 @@ const ProposalDetail = () => {
                           : classes.surveyChip
                       }
                       label={
-                        <Grid container>
+                        <Grid
+                          container
+                          sx={{ display: "flex", alignItems: "center" }}
+                        >
                           {proposalData?.type === "action" ? (
                             <Image src={actionIcon} alt="action-icon" />
                           ) : (
@@ -836,13 +842,16 @@ const ProposalDetail = () => {
                 daoDetails={daoDetails}
               />
 
-              <Signators
-                ownerAddresses={ownerAddresses}
-                signedOwners={signedOwners}
-              />
+              {proposalData?.type === "action" && (
+                <Signators
+                  ownerAddresses={ownerAddresses}
+                  signedOwners={signedOwners}
+                />
+              )}
             </Grid>
 
             {/* proposal description */}
+            <Typography fontWeight={"500"}>Proposal description</Typography>
             <Grid container item className={classes.listFont}>
               <div
                 dangerouslySetInnerHTML={{
@@ -1271,6 +1280,14 @@ const ProposalDetail = () => {
           <Grid item md={3.5}>
             <Stack spacing={3}>
               <ProposalInfo proposalData={proposalData} fetched={fetched} />
+              {proposalData?.type === "survey" && (
+                <Signators
+                  ownerAddresses={ownerAddresses}
+                  signedOwners={signedOwners}
+                  isSurvey={true}
+                />
+              )}
+
               {isGovernanceActive && (
                 <>
                   <CurrentResults

@@ -185,7 +185,15 @@ const ProposalExecutionInfo = ({
                   >
                     <Typography className={classes.listFont2Colourless}>
                       {fetched
-                        ? proposalData?.commands[0].mintGTAddresses[0]
+                        ? proposalData?.commands[0].mintGTAddresses[0].slice(
+                            0,
+                            6,
+                          ) +
+                          "...." +
+                          proposalData?.commands[0].mintGTAddresses[0].slice(
+                            proposalData?.commands[0].mintGTAddresses[0]
+                              .length - 4,
+                          )
                         : null}
                     </Typography>
                   </Grid>
