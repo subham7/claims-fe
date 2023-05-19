@@ -734,9 +734,7 @@ const DashboardIndex = () => {
                 <Card className={classes.thirdCard}>
                   <Grid container m={2}>
                     <Grid item>
-                      <Typography variant="regularText4">
-                        Joining link
-                      </Typography>
+                      <Typography fontSize={"24px"}>Joining link</Typography>
                     </Grid>
                     <Grid
                       item
@@ -754,7 +752,7 @@ const DashboardIndex = () => {
                               alignItems: "baseline",
                             }}
                           >
-                            <Grid item mt={1} mr={1}>
+                            <Grid item mt={1.5} mr={1}>
                               <div className={classes.activeIllustration}></div>
                             </Grid>
                             <Grid item>
@@ -837,8 +835,10 @@ const DashboardIndex = () => {
             <Stack mt={2}>
               <Card className={classes.fourthCard}>
                 <Grid container m={2}>
-                  <Grid item>
-                    <Typography fontSize={"24px"}>Recent Proposals</Typography>
+                  <Grid item >
+                    <Typography  fontSize={"24px"}>
+                      Recent Proposals
+                    </Typography>
                   </Grid>
                 </Grid>
                 {proposalData.length > 0 ? (

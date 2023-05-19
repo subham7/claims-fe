@@ -7,12 +7,14 @@ import { makeStyles } from "@mui/styles";
 import { useRouter } from "next/router";
 import { useConnectWallet } from "@web3-onboard/react";
 import Web3 from "web3";
+import Link from "next/link";
 
 const useStyles = makeStyles({
   image: {
     height: "30px",
     width: "auto !important",
     zIndex: "2000",
+    cursor: "pointer",
   },
   navbarText: {
     flexGrow: 1,
@@ -63,6 +65,9 @@ export default function Navbar2(props) {
           </IconButton>
           <Box sx={{ flexGrow: 1 }}>
             <Image
+              onClick={() => {
+                router.push(`/dashboard/${daoAddress}`);
+              }}
               src="/assets/images/monogram.png"
               height="40"
               width="40"
@@ -71,7 +76,7 @@ export default function Navbar2(props) {
             />
           </Box>
 
-          {props.page === 1 ? (
+          {props.page ? (
             <div style={{ marginRight: "330px", marginTop: "10px" }}>
               <Button
                 variant="primary"

@@ -100,6 +100,7 @@ const ProposalActionForm = ({ formik, tokenData }) => {
             direction={"column"}
             ml={3}
             mt={2}
+            // mb={}
             sx={{ marginLeft: "0 !important" }}
           >
             <Typography variant="proposalBody">Token to be sent</Typography>
@@ -348,7 +349,7 @@ const ProposalActionForm = ({ formik, tokenData }) => {
                 </MenuItem>
               ))}
             </Select>
-            <Typography variant="proposalBody">
+            <Typography mt={2} variant="proposalBody">
               Receiver&apos;s wallet address *
             </Typography>
             <TextField

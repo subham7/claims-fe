@@ -165,9 +165,14 @@ const Test = () => {
                             container
                             direction="row"
                             alignItems="center"
-                            justifyContent={"space-between"}
+                            gap={4}
                           >
-                            <Grid item>
+                            <Grid
+                              sx={{
+                                flex: "0.7",
+                              }}
+                              item
+                            >
                               <a
                                 className={classes.activityLink}
                                 onClick={(e) => {
@@ -182,7 +187,7 @@ const Test = () => {
                                   )}{" "}
                               </a>
                             </Grid>
-                            <Grid item>
+                            <Grid item flex={0.3}>
                               <IconButton
                                 color="primary"
                                 onClick={(e) => {

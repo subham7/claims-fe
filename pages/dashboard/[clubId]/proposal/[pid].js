@@ -1235,13 +1235,6 @@ const ProposalDetail = () => {
           <Grid item md={3.5}>
             <Stack spacing={3}>
               <ProposalInfo proposalData={proposalData} fetched={fetched} />
-              {proposalData?.type === "survey" && (
-                <Signators
-                  ownerAddresses={ownerAddresses}
-                  signedOwners={signedOwners}
-                  isSurvey={true}
-                />
-              )}
 
               {isGovernanceActive && (
                 <>

@@ -111,6 +111,14 @@ const useStyles = makeStyles({
     justifyContent: "space-between",
     alignItems: "center",
   },
+
+  flex: {
+    display: "flex",
+    width: "100%",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginTop: "15px",
+  },
 });
 
 const App = () => {
@@ -288,22 +296,18 @@ const App = () => {
           >
             <Grid item md={5}>
               <Card>
-                <Grid container mt={2}>
+                <div className={classes.flex}>
                   <Grid item>
                     <Typography className={classes.yourClubText}>
                       Your Stations
                     </Typography>
                   </Grid>
-                  <Grid
-                    item
-                    xs
-                    className={classes.flexContainer}
-                  >
+                  <Grid>
                     <Button variant="primary" onClick={handleCreateButtonClick}>
                       Create new
                     </Button>
                   </Grid>
-                </Grid>
+                </div>
                 <Divider className={classes.divider} />
                 <Stack spacing={3}>
                   {walletAddress ? (
@@ -317,10 +321,7 @@ const App = () => {
                           }}
                         >
                           {getImageURL(club.imageUrl)}
-                          <Grid
-                            container
-                            className={classes.flexContainer}
-                          >
+                          <Grid container className={classes.flexContainer}>
                             <Grid item md={6}>
                               <Stack spacing={0}>
                                 <Typography className={classes.yourClubText}>
@@ -390,7 +391,8 @@ const App = () => {
                 </Grid>
                 <Grid item mt={4}>
                   <Typography variant="regularText">
-                    Create or join a club in less than 60 seconds using StationX
+                    Create or join a station in less than 60 seconds using
+                    StationX
                   </Typography>
                 </Grid>
               </Grid>

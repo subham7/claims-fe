@@ -416,7 +416,7 @@ const CreateProposalDialog = ({ open, setOpen, onClose, tokenData }) => {
                             key={key}
                           >
                             <TextField
-                              label="option"
+                              label="Options"
                               // error={!/^0x[a-zA-Z0-9]+/gm.test(addressList[key])}
                               variant="outlined"
                               value={proposal.values.optionList[key].text}

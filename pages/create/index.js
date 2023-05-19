@@ -101,8 +101,8 @@ const Create = () => {
 
   const formikStep1 = useFormik({
     initialValues: {
-      clubName: "g20",
-      clubSymbol: "g20",
+      clubName: "",
+      clubSymbol: "",
       clubTokenType: tokenType[0],
     },
     validationSchema: step1ValidationSchema,
@@ -114,10 +114,10 @@ const Create = () => {
   const formikERC20Step2 = useFormik({
     initialValues: {
       depositClose: dayjs(Date.now() + 3600 * 1000 * 24),
-      minDepositPerUser: "100",
-      maxDepositPerUser: "1000",
-      totalRaiseAmount: "10000",
-      pricePerToken: "10",
+      minDepositPerUser: "",
+      maxDepositPerUser: "",
+      totalRaiseAmount: "",
+      pricePerToken: "",
     },
     validationSchema: ERC20Step2ValidationSchema,
     onSubmit: (values) => {
