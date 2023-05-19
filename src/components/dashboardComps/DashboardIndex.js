@@ -652,7 +652,6 @@ const DashboardIndex = () => {
                       <Typography variant="subHeading">Collectibles</Typography>
                     </div>
                     <Grid container maxWidth={"70vw"}>
-                      {console.log(nftData)}
                       {nftData ? (
                         nftData.length > 0 ? (
                           nftData.map((data, key) => (
