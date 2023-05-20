@@ -16,7 +16,6 @@ export async function createUser(data) {
 
 export async function fetchClubByUserAddress(userId) {
   // fetch club by user address API
-  const web3 = new Web3(window.web3);
   // const walletAddress = web3.utils.toChecksumAddress(userId);
   return await axios.get(MAIN_API_URL + `user/${userId}`, {
     headers: {
@@ -25,6 +24,7 @@ export async function fetchClubByUserAddress(userId) {
     },
   });
 }
+
 export async function getMembersDetails(clubId) {
   // fetch members of club
   return await axios.get(MAIN_API_URL + `user/club/${clubId}`, {

@@ -24,6 +24,7 @@ import { styled } from "@mui/material/styles";
 import Fade from "@mui/material/Fade";
 import Zoom from "@mui/material/Zoom";
 import Link from "next/link";
+import Image from "next/image";
 
 const useStyles = makeStyles({
   listItemIcon: {
@@ -228,12 +229,29 @@ export default function Sidebar(props) {
             boxSizing: "border-box",
             width: drawerWidth,
             paddingTop: "50px",
+            display: "flex",
+            alignItems: "center",
+            position: "fixed",
+            // minHeight: "100vh",
+            paddingTop: "1rem",
             backgroundColor: (theme) =>
               theme.palette.mode == "dark" ? "#111D38" : "#F4F4F5",
           },
         }}
         open
       >
+        <Box>
+          <Link href={"/"}>
+            <Image
+              src="/assets/images/monogram.png"
+              height="40"
+              width="40"
+              className={classes.image}
+              alt="monogram"
+            />
+          </Link>
+        </Box>
+
         <Toolbar />
 
         <List>

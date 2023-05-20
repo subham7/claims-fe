@@ -1,9 +1,8 @@
 import { makeStyles } from "@mui/styles";
 
-export const ERC721Styles = makeStyles({
+export const NewArchERC721Styles = makeStyles({
   topGrid: {
-    paddingLeft: "5em",
-    paddingTop: "5em",
+    paddingLeft: "6em",
     paddingRight: "6em",
     display: "flex",
     flexDirection: "column",
@@ -49,6 +48,23 @@ export const ERC721Styles = makeStyles({
     backgroundColor: "#0ABB92",
     borderRadius: "50%",
     marginRight: 3,
+  },
+
+  depositInactive: {
+    background: "#D5533840",
+    color: "#D55338",
+    padding: "0.3em 0.5em",
+    borderRadius: "0.3em",
+    display: "flex",
+    alignItems: "center",
+  },
+
+  executedIllustration: {
+    height: "10px",
+    width: "10px",
+    backgroundColor: "#D55338",
+    borderRadius: "50%",
+    marginRight: 4,
   },
 
   claimGrid: {

@@ -2,14 +2,18 @@ import axios from "axios";
 import { MAIN_API_URL } from "../index";
 import { getJwtToken } from "../../utils/auth";
 
-export async function createProposal(data) {
+export async function createProposal(data, networkId) {
   // create proposal API
-  return await axios.post(MAIN_API_URL + "proposal", data, {
-    headers: {
-      "Authorization": "Bearer " + getJwtToken(),
-      "Content-Type": "application/json",
+  return await axios.post(
+    MAIN_API_URL + `proposal/create?networkId=${networkId}`,
+    data,
+    {
+      headers: {
+        "Authorization": "Bearer " + getJwtToken(),
+        "Content-Type": "application/json",
+      },
     },
-  });
+  );
 }
 
 export async function getProposal(clubId, filter) {
@@ -45,14 +49,18 @@ export async function getProposalDetail(proposalId) {
   });
 }
 
-export async function castVote(data) {
+export async function castVote(data, networkId) {
   // cast proposal vote API
-  return await axios.post(MAIN_API_URL + `proposal/vote`, data, {
-    headers: {
-      "Authorization": "Bearer " + getJwtToken(),
-      "Content-Type": "application/json",
+  return await axios.post(
+    MAIN_API_URL + `proposal/vote2?networkId=${networkId}`,
+    data,
+    {
+      headers: {
+        "Authorization": "Bearer " + getJwtToken(),
+        "Content-Type": "application/json",
+      },
     },
-  });
+  );
 }
 
 export async function patchProposalStatus(proposalId) {
@@ -101,4 +109,12 @@ export async function createProposalTxHash(data) {
       "Content-Type": "application/json",
     },
   });
+}
+
+export async function getProposalByDaoAddress(daoAddress) {
+  try {
+    return await axios.get(MAIN_API_URL + `proposal/station/${daoAddress}`, {});
+  } catch (error) {
+    console.log(error);
+  }
 }

@@ -1,11 +1,21 @@
 import { Card, CardActionArea, Chip, Grid, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
-import { calculateDays } from "../../../../src/utils/globalFunctions";
+import {
+  calculateDays,
+  convertFromWeiGovernance,
+} from "../../../../src/utils/globalFunctions";
 import actionIcon from "../../../../public/assets/icons/action_icon.svg";
 import tickerIcon from "../../../../public/assets/icons/ticker_icon.svg";
 import surveyIcon from "../../../../public/assets/icons/survey_icon.svg";
-import React from "react";
+import erc20ABI from "../../../../src/abis/usdcTokenContract.json";
+import factoryContractABI from "../../../../src/abis/newArch/factoryContract.json";
+import React, { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
+import { useSelector } from "react-redux";
+import { useConnectWallet } from "@web3-onboard/react";
+import Web3 from "web3";
+import { SmartContract } from "../../../../src/api/contract";
+import { useRouter } from "next/router";
 
 const useStyles = makeStyles({
   clubAssets: {
@@ -168,16 +178,131 @@ const useStyles = makeStyles({
   banner: {
     width: "100%",
   },
+  flexContainer: {
+    display: "flex",
+    alignItems: "center",
+  },
 });
 
 const ProposalCard = ({
   proposal,
   indexKey,
-  fetched,
+
   executionTransaction,
 }) => {
   const classes = useStyles();
-  //   console.log("key in card", indexKey);
+  const router = useRouter();
+
+  const { clubId: daoAddress } = router.query;
+
+  const [{ wallet }] = useConnectWallet();
+
+  const tokenType = useSelector((state) => {
+    return state.club.clubData.tokenType;
+  });
+
+  const [tokenDetails, setTokenDetails] = useState({
+    decimals: 0,
+    symbol: "",
+  });
+  const [daoDetails, setDaoDetails] = useState();
+
+  const GNOSIS_TRANSACTION_URL = useSelector((state) => {
+    return state.gnosis.transactionUrl;
+  });
+
+  const USDC_CONTRACT_ADDRESS = useSelector((state) => {
+    return state.gnosis.usdcContractAddress;
+  });
+
+  const FACTORY_CONTRACT_ADDRESS = useSelector((state) => {
+    return state.gnosis.factoryContractAddress;
+  });
+
+  let walletAddress;
+  if (typeof window !== "undefined") {
+    walletAddress = Web3.utils.toChecksumAddress(wallet?.accounts[0].address);
+  }
+
+  const fetchAirDropContractDetails = useCallback(async () => {
+    try {
+      if (proposal) {
+        const airdropContract = new SmartContract(
+          erc20ABI,
+          proposal?.commands[0].executionId === 0
+            ? proposal?.commands[0]?.airDropToken
+            : proposal?.commands[0].executionId === 1
+            ? daoAddress
+            : proposal?.commands[0].executionId === 4
+            ? proposal?.commands[0]?.customToken
+            : "",
+          walletAddress,
+          USDC_CONTRACT_ADDRESS,
+          GNOSIS_TRANSACTION_URL,
+        );
+
+        if (tokenType === "erc20" || proposal?.commands[0].executionId !== 1) {
+          const decimal = await airdropContract.decimals();
+          const symbol = await airdropContract.obtainSymbol();
+
+          setTokenDetails({
+            decimals: decimal,
+            symbol: symbol,
+          });
+        } else if (
+          tokenType === "erc721" &&
+          proposal?.commands[0].executionId === 1
+        ) {
+          const symbol = await airdropContract.obtainSymbol();
+          setTokenDetails({
+            decimals: 18,
+            symbol: symbol,
+          });
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }, [
+    GNOSIS_TRANSACTION_URL,
+    USDC_CONTRACT_ADDRESS,
+    daoAddress,
+    proposal,
+    tokenType,
+    walletAddress,
+  ]);
+
+  useEffect(() => {
+    const fetchFactoryContractDetails = async () => {
+      try {
+        const factoryContract = new SmartContract(
+          factoryContractABI,
+          FACTORY_CONTRACT_ADDRESS,
+          walletAddress,
+          USDC_CONTRACT_ADDRESS,
+          GNOSIS_TRANSACTION_URL,
+        );
+
+        const factoryData = await factoryContract.getDAOdetails(daoAddress);
+        setDaoDetails(factoryData);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchFactoryContractDetails();
+  }, [
+    daoAddress,
+    FACTORY_CONTRACT_ADDRESS,
+    GNOSIS_TRANSACTION_URL,
+    USDC_CONTRACT_ADDRESS,
+    walletAddress,
+  ]);
+
+  useEffect(() => {
+    fetchAirDropContractDetails();
+  }, [fetchAirDropContractDetails]);
+
   return (
     <CardActionArea sx={{ borderRadius: "10px" }}>
       <Card className={classes.mainCard}>
@@ -185,11 +310,11 @@ const ProposalCard = ({
           <Grid item ml={2} mr={2}>
             <Typography className={classes.cardFont}>
               Proposed by{" "}
-              {fetched
-                ? proposal.createdBy.substring(0, 6) +
-                  ".........." +
-                  proposal.createdBy.substring(proposal.createdBy.length - 4)
-                : null}{" "}
+              {proposal?.createdBy.substring(0, 6) +
+                ".........." +
+                proposal?.createdBy.substring(
+                  proposal?.createdBy.length - 4,
+                )}{" "}
               on {new Date(String(proposal?.updateDate)).toLocaleDateString()}
             </Typography>
           </Grid>
@@ -203,73 +328,71 @@ const ProposalCard = ({
               justifyContent: "flex-end",
             }}
           >
-            {fetched ? (
-              <Grid
-                container
-                spacing={1}
-                sx={{
-                  display: "flex",
-                  justifyContent: "flex-end",
-                }}
-              >
-                <Grid item>
-                  <Chip
-                    className={classes.timeLeftChip}
-                    label={
-                      <Grid container>
-                        <Image src={tickerIcon} alt="ticker-icon" />
-                        <Typography ml={1}>
-                          {" "}
-                          {calculateDays(proposal.votingDuration) <= 0
-                            ? "Voting closed"
-                            : calculateDays(proposal.votingDuration) +
-                              " days left"}
-                        </Typography>
-                      </Grid>
-                    }
-                  />
-                </Grid>
-                <Grid item>
-                  <Chip
-                    className={
-                      proposal.type === "action"
-                        ? classes.actionChip
-                        : classes.surveyChip
-                    }
-                    label={
-                      <Grid container>
-                        {proposal.type === "action" ? (
-                          <Image src={actionIcon} alt="action-icon" />
-                        ) : (
-                          <Image src={surveyIcon} alt="survey-icon" />
-                        )}
-                        <Typography ml={1}>{proposal.type}</Typography>
-                      </Grid>
-                    }
-                  />
-                </Grid>
-                <Grid item>
-                  {" "}
-                  <Chip
-                    className={
-                      proposal.status === "active"
-                        ? classes.cardFontActive
-                        : proposal.status === "passed"
-                        ? classes.cardFontPassed
-                        : proposal.status === "executed"
-                        ? classes.cardFontExecuted
-                        : proposal.status === "failed"
-                        ? classes.cardFontFailed
-                        : classes.cardFontFailed
-                    }
-                    label={
-                      proposal.status.charAt(0).toUpperCase() +
-                      proposal.status.slice(1)
-                    }
-                  />
-                </Grid>
+            <Grid
+              container
+              spacing={1}
+              sx={{
+                display: "flex",
+                justifyContent: "flex-end",
+              }}
+            >
+              <Grid item>
+                <Chip
+                  className={classes.timeLeftChip}
+                  label={
+                    <Grid container className={classes.flexContainer}>
+                      <Image src={tickerIcon} alt="ticker-icon" />
+                      <Typography ml={1}>
+                        {" "}
+                        {calculateDays(proposal?.votingDuration) <= 0
+                          ? "Voting closed"
+                          : calculateDays(proposal?.votingDuration) +
+                            " days left"}
+                      </Typography>
+                    </Grid>
+                  }
+                />
               </Grid>
-            ) : null}
+              <Grid item>
+                <Chip
+                  className={
+                    proposal?.type === "action"
+                      ? classes.actionChip
+                      : classes.surveyChip
+                  }
+                  label={
+                    <Grid container className={classes.flexContainer}>
+                      {proposal?.type === "action" ? (
+                        <Image src={actionIcon} alt="action-icon" />
+                      ) : (
+                        <Image src={surveyIcon} alt="survey-icon" />
+                      )}
+                      <Typography ml={1}>{proposal?.type}</Typography>
+                    </Grid>
+                  }
+                />
+              </Grid>
+              <Grid item>
+                {" "}
+                <Chip
+                  className={
+                    proposal?.status === "active"
+                      ? classes.cardFontActive
+                      : proposal?.status === "passed"
+                      ? classes.cardFontPassed
+                      : proposal?.status === "executed"
+                      ? classes.cardFontExecuted
+                      : proposal?.status === "failed"
+                      ? classes.cardFontFailed
+                      : classes.cardFontFailed
+                  }
+                  label={
+                    proposal?.status.charAt(0).toUpperCase() +
+                    proposal?.status.slice(1)
+                  }
+                />
+              </Grid>
+            </Grid>
           </Grid>
         </Grid>
         <Grid container>
@@ -308,7 +431,7 @@ const ProposalCard = ({
                           Asset:
                         </Typography>
                         <Typography color="#FFFFFF">
-                          {proposal.commands[0].usdcTokenSymbol}
+                          ${tokenDetails.symbol}
                         </Typography>
                       </Grid>
                     }
@@ -323,7 +446,7 @@ const ProposalCard = ({
                   <Chip
                     className={classes.timeLeftChip}
                     label={
-                      proposal.commands[0].airDropAmount ? (
+                      proposal?.commands[0].airDropAmount ? (
                         <Grid sx={{ display: "flex" }}>
                           {" "}
                           <Typography
@@ -333,8 +456,41 @@ const ProposalCard = ({
                             Amount:
                           </Typography>
                           <Typography color="#FFFFFF">
-                            {proposal.commands[0].airDropAmount /
-                              10 ** proposal.commands[0].usdcTokenDecimal}
+                            {convertFromWeiGovernance(
+                              proposal?.commands[0].airDropAmount,
+                              tokenDetails.decimals,
+                            )}
+                          </Typography>
+                        </Grid>
+                      ) : null
+                    }
+                  ></Chip>
+                </Grid>
+              ) : null}
+
+              {proposal?.commands[0]?.executionId === 1 ? (
+                <Grid item>
+                  <Chip
+                    className={classes.timeLeftChip}
+                    label={
+                      proposal.commands[0].mintGTAmounts[0] ? (
+                        <Grid sx={{ display: "flex" }}>
+                          {" "}
+                          <Typography
+                            color="#C1D3FF"
+                            sx={{ marginRight: "5px" }}
+                          >
+                            Amount:
+                          </Typography>
+                          <Typography color="#FFFFFF">
+                            {tokenType === "erc20"
+                              ? Number(
+                                  convertFromWeiGovernance(
+                                    proposal?.commands[0].mintGTAmounts[0],
+                                    tokenDetails.decimals,
+                                  ),
+                                )
+                              : proposal?.commands[0].mintGTAmounts[0]}
                           </Typography>
                         </Grid>
                       ) : null
@@ -355,7 +511,7 @@ const ProposalCard = ({
                         </Typography>
                         <Typography color="#FFFFFF">
                           {proposal.commands[0].customTokenAmounts[0] /
-                            10 ** proposal.commands[0].usdcTokenDecimal}
+                            10 ** tokenDetails.decimals}
                         </Typography>
                       </Grid>
                     }
@@ -433,6 +589,7 @@ const ProposalCard = ({
                   </Grid>
                 </>
               ) : null}
+
               {proposal?.commands[0]?.totalDeposits ? (
                 <Grid item>
                   <Chip
@@ -444,9 +601,11 @@ const ProposalCard = ({
                           Raise Amount:
                         </Typography>
                         <Typography color="#FFFFFF">
-                          {proposal?.commands[0]?.totalDeposits /
-                            10 ** proposal?.commands[0]?.usdcTokenDecimal}{" "}
-                          {proposal?.commands[0]?.usdcTokenSymbol}
+                          {proposal?.commands[0]?.totalDeposits *
+                            +convertFromWeiGovernance(
+                              daoDetails?.pricePerToken,
+                              6,
+                            )}
                         </Typography>
                       </Grid>
                     }

@@ -36,11 +36,22 @@ import {
 import { loginToken, refreshToken } from "../src/api/auth";
 import { useConnectWallet } from "@web3-onboard/react";
 import NewCard from "../src/components/cards/card";
+import Web3 from "web3";
+import { subgraphQuery } from "../src/utils/subgraphs";
+import {
+  QUERY_CLUBS_FROM_WALLET_ADDRESS,
+  QUERY_CLUB_DETAILS,
+} from "../src/api/graphql/queries";
+import ClubFetch from "../src/utils/clubFetch";
+import { SUBGRAPH_URL_GOERLI, SUBGRAPH_URL_POLYGON } from "../src/api";
+import WrongNetworkModal from "../src/components/modals/WrongNetworkModal";
+import Image from "next/image";
+import { addClubData } from "../src/redux/reducers/club";
 
 const useStyles = makeStyles({
   container: {
-    // background: "url(/assets/images/gradients.png)",
     minHeight: "100vh",
+    width: "100vw",
   },
   yourClubText: {
     fontSize: "30px",
@@ -89,9 +100,28 @@ const useStyles = makeStyles({
     justifyContent: "center",
     minHeight: "90vh",
   },
+  isAdmin: {
+    fontSize: "16px",
+    color: "#C1D3FF",
+    opacity: 1,
+    fontFamily: "Whyte",
+  },
+  flexContainer: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+
+  flex: {
+    display: "flex",
+    width: "100%",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginTop: "15px",
+  },
 });
 
-export default function App() {
+const App = () => {
   const dispatch = useDispatch();
   const [clubFlow, setClubFlow] = useState(false);
   const classes = useStyles();
@@ -99,98 +129,123 @@ export default function App() {
   const [clubData, setClubData] = useState([]);
   const [clubOwnerAddress, setClubOwnerAddress] = useState(null);
   const [noWalletMessage, setNoWalletMessage] = useState(null);
+  const [clubListData, setClubListData] = useState([]);
 
   const [manageStation, setManageStation] = useState(false);
 
   const [open, setOpen] = useState(false);
   const router = useRouter();
-  const walletAddress = wallet?.accounts[0].address;
+
+  const networkId = wallet?.chains[0]?.id;
+
+  const walletAddress = Web3.utils.toChecksumAddress(
+    wallet?.accounts[0].address,
+  );
 
   useEffect(() => {
-    if (walletAddress) {
-      const getClubs = fetchClubByUserAddress(walletAddress);
-      getClubs
-        .then((result) => {
-          console.log(result);
-          if (result.status != 200) {
-            console.log(result.statusText);
-          } else {
-            setClubData(Array.from(result.data.clubs));
-            setClubOwnerAddress(
-              result.data.userAddress.substring(0, 6) +
-                ".........." +
-                result.data.userAddress.substring(
-                  result.data.userAddress.length - 4,
-                ),
+    try {
+      if (walletAddress) {
+        const fetchClubs = async () => {
+          try {
+            const data = await subgraphQuery(
+              networkId === "0x5"
+                ? SUBGRAPH_URL_GOERLI
+                : networkId === "0x89"
+                ? SUBGRAPH_URL_POLYGON
+                : "",
+              QUERY_CLUBS_FROM_WALLET_ADDRESS(walletAddress),
             );
+            setClubListData(data.users);
+          } catch (error) {
+            setNoWalletMessage(
+              "You don't have any clubs available, please join an existing one or create a new club",
+            );
+            console.log(error);
           }
-        })
-        .catch((error) => {
-          setNoWalletMessage(
-            "You don't have any clubs available, please join an existing one or create a new club",
-          );
-          console.log(error);
-        });
-    }
-    if (walletAddress) {
-      console.log("walllleeettt addresss", walletAddress);
-      const getLoginToken = loginToken(walletAddress);
+        };
+        fetchClubs();
+      }
 
-      getLoginToken.then((response) => {
-        console.log("responseee", response);
-        if (response.status !== 200) {
-          console.log(response.data.error);
-        } else {
-          // setExpiryTime(response.data.tokens.access.expires);
-          setExpiryTime("2023-03-19T11:07:20.810Z");
-          const expiryTime = getExpiryTime();
-          const currentDate = Date();
-          setJwtToken(response.data.tokens.access.token);
-          setRefreshToken(response.data.tokens.refresh.token);
-          if (expiryTime < currentDate) {
-            console.log("changeeeee", getJwtToken());
-            const obtainNewToken = refreshToken(
-              getRefreshToken(),
-              getJwtToken(),
-            );
-            obtainNewToken
-              .then((tokenResponse) => {
-                if (response.status !== 200) {
-                  console.log(tokenResponse.data.error);
-                } else {
-                  setExpiryTime(tokenResponse.data.tokens.access.expires);
-                  setJwtToken(tokenResponse.data.tokens.access.token);
-                  setRefreshToken(tokenResponse.data.tokens.refresh.token);
-                }
-              })
-              .catch((error) => {
-                console.log(error);
-              });
+      if (walletAddress) {
+        const getLoginToken = loginToken(walletAddress);
+
+        getLoginToken.then((response) => {
+          if (response?.status !== 200) {
+            console.log(response?.data.error);
+          } else {
+            // setExpiryTime(response.data.tokens.access.expires);
+            setExpiryTime("2023-03-19T11:07:20.810Z");
+            const expiryTime = getExpiryTime();
+            const currentDate = Date();
+            setJwtToken(response.data.tokens.access.token);
+            setRefreshToken(response.data.tokens.refresh.token);
+            if (expiryTime < currentDate) {
+              const obtainNewToken = refreshToken(
+                getRefreshToken(),
+                getJwtToken(),
+              );
+              obtainNewToken
+                .then((tokenResponse) => {
+                  if (response.status !== 200) {
+                    console.log(tokenResponse.data.error);
+                  } else {
+                    setExpiryTime(tokenResponse.data.tokens.access.expires);
+                    setJwtToken(tokenResponse.data.tokens.access.token);
+                    setRefreshToken(tokenResponse.data.tokens.refresh.token);
+                  }
+                })
+                .catch((error) => {
+                  console.log(error);
+                });
+            }
           }
-        }
-      });
-      setClubFlow(true);
-    } else {
-      setClubFlow(false);
+        });
+        setClubFlow(true);
+      } else {
+        setClubFlow(false);
+      }
+    } catch (error) {
+      console.log(error);
     }
-  }, [walletAddress]);
+  }, [networkId, walletAddress]);
 
   const handleCreateButtonClick = async (event) => {
     const { pathname } = Router;
-    console.log(pathname);
     if (pathname == "/") {
       Router.push("/create");
     }
   };
 
-  const handleItemClick = (data) => {
-    dispatch(addClubName(data.name));
+  const handleItemClick = async (data) => {
+    dispatch(addClubName(data.daoName));
     dispatch(addDaoAddress(data.daoAddress));
-    dispatch(addClubID(data.clubId));
-    dispatch(addClubRoute(data.route));
-    router.push(`/dashboard/${data.clubId}`, undefined, {
-      shallow: true,
-    });
+    const clubData = await subgraphQuery(
+      networkId == "0x5"
+        ? SUBGRAPH_URL_GOERLI
+        : networkId == "0x89"
+        ? SUBGRAPH_URL_POLYGON
+        : "",
+      QUERY_CLUB_DETAILS(data.daoAddress),
+    );
+    dispatch(
+      addClubData({
+        gnosisAddress: clubData.stations[0].gnosisAddress,
+        isGtTransferable: clubData.stations[0].isGtTransferable,
+        name: clubData.stations[0].name,
+        ownerAddress: clubData.stations[0].ownerAddress,
+        symbol: clubData.stations[0].symbol,
+        tokenType: clubData.stations[0].tokenType,
+      }),
+    );
+    // dispatch(addClubID(data.clubId));
+    // dispatch(addClubRoute(data.route));
+    router.push(
+      `/dashboard/${Web3.utils.toChecksumAddress(data.daoAddress)}`,
+      undefined,
+      {
+        shallow: true,
+      },
+    );
   };
 
   const handleClose = (e) => {
@@ -224,7 +279,7 @@ export default function App() {
             <NewCard
               onClick={claimsHandler}
               imgSrc={claim}
-              title={"Claim Tokens"}
+              title={"Airdrop Tokens"}
               subtitle={"Get your airdrop tokens from here!"}
             />
           </div>
@@ -241,67 +296,48 @@ export default function App() {
           >
             <Grid item md={5}>
               <Card>
-                <Grid container mt={2}>
+                <div className={classes.flex}>
                   <Grid item>
                     <Typography className={classes.yourClubText}>
-                      Your clubs
+                      Your Stations
                     </Typography>
                   </Grid>
-                  <Grid
-                    item
-                    xs
-                    sx={{ display: "flex", justifyContent: "flex-end" }}
-                  >
-                    <Button
-                      startIcon={<AddIcon fontSize="large" />}
-                      variant="primary"
-                      onClick={handleCreateButtonClick}
-                    >
-                      Create club
+                  <Grid>
+                    <Button variant="primary" onClick={handleCreateButtonClick}>
+                      Create new
                     </Button>
                   </Grid>
-                </Grid>
+                </div>
                 <Divider className={classes.divider} />
                 <Stack spacing={3}>
                   {walletAddress ? (
-                    clubData.map((club, key) => {
+                    clubListData.reverse().map((club, key) => {
                       return (
                         <ListItemButton
                           component="a"
                           key={key}
                           onClick={(e) => {
-                            handleItemClick(clubData[key]);
+                            handleItemClick(clubListData[key]);
                           }}
                         >
                           {getImageURL(club.imageUrl)}
-                          <Grid container>
-                            <Grid item md={2}>
-                              <img
-                                src={club.imageUrl}
-                                width="80vw"
-                                alt="club_image"
-                                className={classes.profilePic}
-                              />
-                            </Grid>
+                          <Grid container className={classes.flexContainer}>
                             <Grid item md={6}>
                               <Stack spacing={0}>
                                 <Typography className={classes.yourClubText}>
-                                  {club.name}
+                                  {club.daoName}
                                 </Typography>
                                 <Typography className={classes.clubAddress}>
-                                  {clubOwnerAddress}
+                                  {`${club.userAddress.substring(
+                                    0,
+                                    9,
+                                  )}......${club.userAddress.substring(
+                                    club.userAddress.length - 6,
+                                  )}`}
                                 </Typography>
                               </Stack>
                             </Grid>
-                            <Grid
-                              item
-                              md={4}
-                              xs
-                              sx={{
-                                display: "flex",
-                                justifyContent: "flex-end",
-                              }}
-                            >
+                            <Grid>
                               <Stack
                                 spacing={0}
                                 alignItems="flex-end"
@@ -310,7 +346,7 @@ export default function App() {
                                 <Typography
                                   className={classes.createClubButton}
                                 ></Typography>
-                                <Typography className={classes.clubAddress}>
+                                <Typography className={classes.isAdmin}>
                                   {club.isAdmin ? "Admin" : "Member"}
                                 </Typography>
                               </Stack>
@@ -355,7 +391,8 @@ export default function App() {
                 </Grid>
                 <Grid item mt={4}>
                   <Typography variant="regularText">
-                    Create or join a club in less than 60 seconds using StationX
+                    Create or join a station in less than 60 seconds using
+                    StationX
                   </Typography>
                 </Grid>
               </Grid>
@@ -406,7 +443,15 @@ export default function App() {
             </Grid>
           </DialogContent>
         </Dialog>
+
+        {walletAddress && networkId !== "0x89" && networkId !== "0x5" ? (
+          <WrongNetworkModal />
+        ) : (
+          ""
+        )}
       </div>
     </Layout2>
   );
-}
+};
+
+export default App;

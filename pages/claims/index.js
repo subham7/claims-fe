@@ -107,7 +107,6 @@ const Claims = () => {
   useEffect(() => {
     const getData = async () => {
       const data = await getClaimsByUserAddress(walletAddress);
-      console.log(data);
       setClaimData(data.reverse());
     };
 
@@ -154,7 +153,7 @@ const Claims = () => {
 
       {/* Right Side */}
       <div className={classes.rightDiv}>
-        <Image src={claimsBanner} alt="claimBanner" />
+        <Image src={claimsBanner} alt="claimBanner" height={250} width={400} />
       </div>
     </div>
   );

@@ -19,16 +19,15 @@ export const calculateTreasuryTargetShare = (treasuryBalance, totalSupply) => {
 
 // function for calculating the number of days
 export const calculateDays = (dateTime) => {
+  console.log(
+    dateTime,
+    Math.round((new Date(dateTime) - new Date()) / (1000 * 60 * 60 * 24)),
+  );
   return Math.round((new Date(dateTime) - new Date()) / (1000 * 60 * 60 * 24));
 };
 
 // function for converting the usdc token amount from decimal to Wei format
 export const convertToWei = (convertAmount, decimal) => {
-  // console.log("convert amount", convertAmount * Math.pow(10, decimal));
-  // console.log(
-  //   "convert amount wei",
-  //   web3.utils.fromWei(convertAmount, Math.pow(10, decimal).toString()),
-  // );
   try {
     return ethers
       .parseUnits(convertAmount.toString(), Number(decimal))
@@ -61,7 +60,18 @@ export const convertFromWeiGovernance = (convertValue, decimal) => {
   try {
     return ethers.formatUnits(convertValue.toString(), Number(decimal));
   } catch (err) {
-    // console.log(err);
+    console.log(err);
   }
 };
 
+export const convertIpfsToUrl = (url) => {
+  let modifiedTokenURI;
+  if (url.slice(url.indexOf("/"), url?.lastIndexOf("//"))) {
+    let imgUrl = url?.split("//");
+    modifiedTokenURI = `https://${imgUrl[1]}.ipfs.dweb.link/${imgUrl[2]}`;
+  } else {
+    let imgUrl = url?.split("/");
+    modifiedTokenURI = `https://${imgUrl[2]}.ipfs.dweb.link/${imgUrl[3]}`;
+  }
+  return modifiedTokenURI;
+};

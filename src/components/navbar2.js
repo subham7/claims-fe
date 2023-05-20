@@ -6,12 +6,15 @@ import { makeStyles } from "@mui/styles";
 
 import { useRouter } from "next/router";
 import { useConnectWallet } from "@web3-onboard/react";
+import Web3 from "web3";
+import Link from "next/link";
 
 const useStyles = makeStyles({
   image: {
     height: "30px",
     width: "auto !important",
     zIndex: "2000",
+    cursor: "pointer",
   },
   navbarText: {
     flexGrow: 1,
@@ -31,28 +34,25 @@ const useStyles = makeStyles({
 
 export default function Navbar2(props) {
   const router = useRouter();
+  const { clubId: daoAddress } = router.query;
   const classes = useStyles();
   const [{ wallet, connecting }, connect, disconnect] = useConnectWallet();
 
   const handleDepositRedirect = () => {
-    router.push(`${props.depositUrl}`, undefined, { shallow: true });
+    router.push(
+      `${window.origin}/join/${Web3.utils.toChecksumAddress(daoAddress)}`,
+      undefined,
+      { shallow: true },
+    );
   };
 
   const handleFaucetRedirect = () => {
     window.open("/faucet", "_ blank");
   };
 
-  useEffect(() => {
-    console.log("wallet in navbar2", wallet);
-    if (!wallet) {
-      console.log("hereeee??????");
-      // router.push(`/`, undefined, { shallow: true });
-    }
-  }, [router, wallet]);
-
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static">
+      <AppBar position="static" sx={{ position: "fixed" }}>
         <Toolbar>
           <IconButton
             color="inherit"
@@ -65,6 +65,9 @@ export default function Navbar2(props) {
           </IconButton>
           <Box sx={{ flexGrow: 1 }}>
             <Image
+              onClick={() => {
+                router.push(`/dashboard/${daoAddress}`);
+              }}
               src="/assets/images/monogram.png"
               height="40"
               width="40"
@@ -73,8 +76,8 @@ export default function Navbar2(props) {
             />
           </Box>
 
-          {props.page === 1 ? (
-            <div style={{ marginRight: "350px" }}>
+          {props.page ? (
+            <div style={{ marginRight: "330px", marginTop: "10px" }}>
               <Button
                 variant="primary"
                 color="primary"
@@ -83,14 +86,14 @@ export default function Navbar2(props) {
               >
                 Deposit
               </Button>
-              <Button
+              {/* <Button
                 variant="primary"
                 color="primary"
                 sx={{ mr: 2, mt: 2 }}
                 onClick={handleFaucetRedirect}
               >
                 USDC Faucet
-              </Button>
+              </Button> */}
             </div>
           ) : null}
           {connecting ? (

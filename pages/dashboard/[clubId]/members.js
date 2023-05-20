@@ -1,19 +1,29 @@
-import jazzicon from "@metamask/jazzicon";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
-import SearchIcon from "@mui/icons-material/Search";
-import { Avatar, Backdrop, Box, Button, Card, CircularProgress, Grid, IconButton, ListItemButton, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from "@mui/material";
-import Paper from "@mui/material/Paper";
+import {
+  Backdrop,
+  CircularProgress,
+  Grid,
+  IconButton,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography,
+} from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { useRouter } from "next/router";
-import { React, useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-
-import ImplementationContract from "../../../src/abis/implementationABI.json";
-import { SmartContract } from "../../../src/api/contract";
-import { getMembersDetails } from "../../../src/api/user";
+import { QUERY_ALL_MEMBERS } from "../../../src/api/graphql/queries";
 import Layout1 from "../../../src/components/layouts/layout1";
-import BasicTable from "../../../src/components/table";
+import { convertFromWeiGovernance } from "../../../src/utils/globalFunctions";
+import { subgraphQuery } from "../../../src/utils/subgraphs";
 import ClubFetch from "../../../src/utils/clubFetch";
+import WrongNetworkModal from "../../../src/components/modals/WrongNetworkModal";
+import { useConnectWallet } from "@web3-onboard/react";
 
 const useStyles = makeStyles({
   searchField: {
@@ -44,82 +54,74 @@ const useStyles = makeStyles({
   },
 });
 
-const Members = (props) => {
+const Test = () => {
+  const [membersData, setMembersData] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  const header = [
+    "Member address",
+    "Deposit amount",
+    "Station tokens",
+    "Joined on",
+  ];
   const router = useRouter();
-  const { clubId } = router.query;
   const classes = useStyles();
-  const clubID = clubId;
-  const header = ["Name", "Deposit amount", "Club tokens", "Joined on"];
-  const [members, setMembers] = useState([]);
-  const [fetched, setFetched] = useState(false);
-  const [loaderOpen, setLoaderOpen] = useState(false);
-  const [clubTokenMinted, setClubTokenMinted] = useState(null);
-  const daoAddress = useSelector((state) => {
-    return state.create.daoAddress;
-  });
-  const USDC_CONTRACT_ADDRESS = useSelector((state) => {
-    return state.gnosis.usdcContractAddress;
-  });
-  const GNOSIS_TRANSACTION_URL = useSelector((state) => {
-    return state.gnosis.transactionUrl;
+  const { clubId: daoAddress } = router.query;
+  const [{ wallet }] = useConnectWallet();
+
+  const networkId = wallet?.chains[0].id;
+
+  const tokenType = useSelector((state) => {
+    return state.club.clubData.tokenType;
   });
 
-  const avatarRef = useRef();
+  const WRONG_NETWORK = useSelector((state) => {
+    return state.gnosis.wrongNetwork;
+  });
 
-  const generateJazzIcon = (account) => {
-    if (account) {
-      const addr = account.slice(2, 10);
-      const seed = parseInt(addr, 16);
-      const icon = jazzicon(35, seed);
-      return icon;
-    }
-  };
-  const loadSmartContractData = async () => {
-    try {
-      const contract = new SmartContract(
-        ImplementationContract,
-        daoAddress,
-        undefined,
-        USDC_CONTRACT_ADDRESS,
-        GNOSIS_TRANSACTION_URL,
-      );
+  const SUBGRAPH_URL = useSelector((state) => {
+    return state.gnosis.subgraphUrl;
+  });
 
-      let getTokenDetails = await contract.tokenDetails();
-
-      setClubTokenMinted(getTokenDetails[1]);
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
-  useEffect(() => {
-    if (daoAddress && USDC_CONTRACT_ADDRESS && GNOSIS_TRANSACTION_URL) {
-      loadSmartContractData();
-    }
-  }, [daoAddress, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL]);
-
-  const fetchMembers = () => {
-    const membersData = getMembersDetails(clubID);
-    membersData.then((result) => {
-      if (result.status != 200) {
-        setFetched(false);
-      } else {
-        setMembers(result.data);
-        setFetched(true);
-        setLoaderOpen(false);
-      }
-    });
-  };
-
-  useEffect(() => {
-    setLoaderOpen(true);
-    fetchMembers();
-  }, [clubID, fetched]);
+  const CLUB_NETWORK_ID = useSelector((state) => {
+    return state.gnosis.clubNetworkId;
+  });
 
   const handleAddressClick = (event, address) => {
     event.preventDefault();
-    window.open(`https://rinkeby.etherscan.io/address/${address}`);
+    window.open(
+      `https://${
+        networkId === "0x5"
+          ? "goerli.etherscan.io/"
+          : networkId === "0x89"
+          ? "polygonscan.com"
+          : ""
+      }/address/${address}`,
+    );
   };
+
+  useEffect(() => {
+    try {
+      setLoading(true);
+      const fetchData = async () => {
+        if (daoAddress) {
+          const data = await subgraphQuery(
+            SUBGRAPH_URL,
+            QUERY_ALL_MEMBERS(daoAddress),
+          );
+          let membersArray = [];
+          data?.users?.map((member) => membersArray.push(member.userAddress));
+
+          setMembersData(data?.users);
+        }
+      };
+      fetchData();
+      setLoading(false);
+    } catch (error) {
+      console.log(error);
+      setLoading(false);
+    }
+  }, [SUBGRAPH_URL, daoAddress]);
 
   return (
     <>
@@ -129,29 +131,8 @@ const Members = (props) => {
             <Grid item md={9}>
               <Grid container mb={10}>
                 <Grid item>
-                  <Typography variant="title">Members</Typography>
+                  <Typography variant="title">Station Members</Typography>
                 </Grid>
-                {/* <Grid
-                  item
-                  xs
-                  sx={{ display: "flex", justifyContent: "flex-end" }}
-                >
-                  <TextField
-                    className={classes.searchField}
-                    placeholder="Search members"
-                    InputProps={{
-                      endAdornment: (
-                        <IconButton
-                          type="submit"
-                          sx={{ p: "10px" }}
-                          aria-label="search"
-                        >
-                          <SearchIcon />
-                        </IconButton>
-                      ),
-                    }}
-                  />
-                </Grid> */}
               </Grid>
 
               <TableContainer component={Paper}>
@@ -172,22 +153,26 @@ const Members = (props) => {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {members.map((data, key) => (
+                    {membersData?.map((data, key) => (
                       <TableRow
                         key={key}
                         sx={{
                           "&:last-child td, &:last-child th": { border: 0 },
                         }}
                       >
-                        {/* <TableCell align="left" className={classes.tablecontent}>{generateJazzIcon(data.userAddress)</TableCell> */}
                         <TableCell align="left" variant="tableBody">
                           <Grid
                             container
                             direction="row"
                             alignItems="center"
-                            spacing={1}
+                            gap={4}
                           >
-                            <Grid item>
+                            <Grid
+                              sx={{
+                                flex: "0.7",
+                              }}
+                              item
+                            >
                               <a
                                 className={classes.activityLink}
                                 onClick={(e) => {
@@ -202,7 +187,7 @@ const Members = (props) => {
                                   )}{" "}
                               </a>
                             </Grid>
-                            <Grid item>
+                            <Grid item flex={0.3}>
                               <IconButton
                                 color="primary"
                                 onClick={(e) => {
@@ -217,14 +202,21 @@ const Members = (props) => {
                           </Grid>
                         </TableCell>
                         <TableCell align="left" variant="tableBody">
-                          {data.clubs[0].balance} USDC
+                          {Number(
+                            convertFromWeiGovernance(data.depositAmount, 6),
+                          ).toFixed(2)}{" "}
+                          USDC
                         </TableCell>
                         <TableCell align="left" variant="tableBody">
-                          {data.clubs[0].tokenBalance} {clubTokenMinted}
+                          {tokenType === "erc20"
+                            ? Number(
+                                convertFromWeiGovernance(data?.gtAmount, 18),
+                              ).toFixed(2)
+                            : data?.gtAmount}
                         </TableCell>
                         <TableCell align="left" variant="tableBody">
                           {new Date(
-                            data.clubs[0].joiningDate,
+                            +data.timeStamp * 1000,
                           ).toLocaleDateString()}
                         </TableCell>
                       </TableRow>
@@ -235,9 +227,12 @@ const Members = (props) => {
             </Grid>
           </Grid>
         </div>
+
+        {WRONG_NETWORK && <WrongNetworkModal chainId={CLUB_NETWORK_ID} />}
+
         <Backdrop
           sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-          open={loaderOpen}
+          open={loading}
         >
           <CircularProgress color="inherit" />
         </Backdrop>
@@ -246,4 +241,4 @@ const Members = (props) => {
   );
 };
 
-export default ClubFetch(Members);
+export default ClubFetch(Test);

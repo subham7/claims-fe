@@ -280,7 +280,6 @@ const ClaimAddress = () => {
       );
 
       const desc = await claimContract.claimSettings();
-      console.log(desc);
       setContractData(desc);
       // setClaimEnabled(desc.isEnabled);
       dispatch(addClaimEnabled(desc.isEnabled));
@@ -415,8 +414,6 @@ const ClaimAddress = () => {
           .reverse()
           .find((address) => address.claimContract === claimAddress);
 
-        console.log(addresses);
-
         let encodedListOfLeaves = [];
 
         addresses.map(async (data) => {
@@ -438,7 +435,6 @@ const ClaimAddress = () => {
           desc.claimAmountDetails[1],
           decimals,
         );
-        console.log(desc);
 
         if (desc.daoToken !== "0x0000000000000000000000000000000000000000") {
           // amount for prorata
@@ -478,7 +474,6 @@ const ClaimAddress = () => {
         const tree = new MerkleTree(merkleLeaves, keccak256, { sort: true });
 
         const root = tree.getHexRoot();
-        console.log("root", root);
 
         const encodedLeaf = await claimContract.encode(
           walletAddress,
@@ -486,14 +481,8 @@ const ClaimAddress = () => {
         );
 
         const leaf = keccak256(encodedLeaf);
-        console.log("ENcodded", encodedLeaf);
-
         const proof = tree.getHexProof(leaf);
-        console.log("proof", proof);
-
         const amt = convertToWeiGovernance(claimInput, decimalOfToken);
-        console.log("amt", amt);
-
         const res = await claimContract.claim(amt, proof, encodedLeaf);
 
         const remainingAmt = await claimContract.claimAmount(walletAddress);

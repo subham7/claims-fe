@@ -13,7 +13,7 @@ import claimContractFactory from "../../src/abis/claimContractFactory.json";
 import usdcTokenContract from "../../src/abis/usdcTokenContract.json";
 import { convertToWeiGovernance } from "../../src/utils/globalFunctions";
 import { createClaim } from "../../src/api/claims";
-import { CLAIM_FACTORY_ADDRESS } from "../../src/api";
+import { CLAIM_FACTORY_ADDRESS_GOERLI } from "../../src/api";
 import { MerkleTree } from "merkletreejs";
 import keccak256 from "keccak256";
 import Web3 from "web3";
@@ -43,6 +43,8 @@ const Form = () => {
 
   const classes = useStyles();
   const [{ wallet }] = useConnectWallet();
+
+  const networkId = wallet?.chains[0]?.id;
   const walletAddress = wallet?.accounts[0].address;
   const router = useRouter();
 
@@ -58,7 +60,7 @@ const Form = () => {
     setLoadingTokens(true);
     const web3 = new Web3(window.ethereum);
     const accounts = await web3.eth.getAccounts();
-    const data = await getTokensFromWallet(accounts[0]);
+    const data = await getTokensFromWallet(accounts[0], networkId);
     setCurrentAccount(accounts[0]);
     setTokensInWallet(data);
     setLoadingTokens(false);
@@ -131,7 +133,7 @@ const Form = () => {
     }),
 
     onSubmit: (values) => {
-      const claimsContractAddress = CLAIM_FACTORY_ADDRESS;
+      const claimsContractAddress = CLAIM_FACTORY_ADDRESS_GOERLI;
 
       const data = {
         description: values.description,
@@ -156,7 +158,6 @@ const Form = () => {
         merkleData: values.merkleData,
         csvObject: values.csvObject,
       };
-      console.log(data.numberOfTokens);
       if (activeStep === steps.length - 1) {
         if (data.eligible === "token" || data.eligible === "everyone") {
           // checking maximum claim is prorata or custom
@@ -209,7 +210,6 @@ const Form = () => {
                   data.numberOfTokens,
                   decimals, // decimal
                 );
-                console.log(res);
               }
 
               const claimsSettings = [
@@ -240,12 +240,10 @@ const Form = () => {
                 ],
                 [false, 0],
               ];
-              console.log(claimsSettings);
 
               const response = await claimsContract.claimContract(
                 claimsSettings,
               );
-              console.log(response);
 
               const newClaimContract =
                 response.events.NewClaimContract.returnValues._newClaimContract;
@@ -301,7 +299,7 @@ const Form = () => {
             try {
               const claimsContract = new SmartContract(
                 claimContractFactory,
-                CLAIM_FACTORY_ADDRESS,
+                CLAIM_FACTORY_ADDRESS_GOERLI,
                 data.walletAddress,
                 undefined,
                 undefined,

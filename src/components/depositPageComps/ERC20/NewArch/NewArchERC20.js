@@ -1,218 +1,233 @@
+import React, { useCallback, useEffect, useState } from "react";
 import {
+  Alert,
   Backdrop,
   Button,
   Card,
   CardMedia,
   CircularProgress,
-  Dialog,
-  DialogContent,
   Divider,
+  FormControl,
   Grid,
-  Input,
   Skeleton,
   Stack,
+  TextField,
   Typography,
 } from "@mui/material";
-
-import { ERC20Styles } from "./ERC20CompStyles";
+import { TwitterShareButton } from "react-twitter-embed";
+import { NewArchERC20Styles } from "./NewArchERC20Styles";
+import { useConnectWallet } from "@web3-onboard/react";
+import { SmartContract } from "../../../../api/contract";
+import factoryContractABI from "../../../../abis/newArch/factoryContract.json";
+import ProgressBar from "../../../progressbar";
+import erc20ABI from "../../../../abis/usdcTokenContract.json";
+import Web3 from "web3";
 import {
-  checkUserByClub,
-  createUser,
-  patchUserBalance,
-} from "../../../api/user";
+  convertFromWeiGovernance,
+  convertToWeiGovernance,
+} from "../../../../utils/globalFunctions";
+import { useFormik } from "formik";
+import * as yup from "yup";
+import dayjs from "dayjs";
 import { useSelector } from "react-redux";
 import { useRouter } from "next/router";
-import ClubFetch from "../../../utils/clubFetch";
-import { TwitterShareButton } from "react-twitter-embed";
-import { convertToWei } from "../../../utils/globalFunctions";
+import WrongNetworkModal from "../../../modals/WrongNetworkModal";
 
-const ERC20Comp = ({
-  wallet,
-  imageFetched,
-  imageUrl,
-  apiTokenDetailSet,
-  tokenAPIDetails,
-  // tokenDetails,
-  newContract,
-  dataFetched,
-  walletConnected,
-  governorDataFetched,
-  depositCloseDate,
-  depositAmount,
-  depositInitiated,
-  handleMaxButtonClick,
-  handleInputChange,
-  handleConnectWallet,
-  handleDialogClose,
-  // handleSwitchNetwork,
-  closingDays,
-  open,
-  minDeposit,
-  maxDeposit,
+const NewArchERC20 = ({
+  daoDetails,
+  erc20DaoAddress,
+  isTokenGated,
+  isEligibleForTokenGating,
   members,
-  clubTokenMinted,
-  tokenSymbol,
-  totalDeposit,
-  walletBalance,
-  setDepositInitiated,
-  setAlertStatus,
-  setOpenSnackBar,
-  userDetails,
-  clubId,
-  usdcTokenDecimal,
-  daoAddress,
-  clubName,
-  loading,
-  setLoading,
-  tokenGatingAddress,
-  tokenGatingAmount,
-  userTokenBalance,
 }) => {
-  const classes = ERC20Styles();
+  const [erc20TokenDetails, setErc20TokenDetails] = useState({
+    tokenSymbol: "",
+    tokenBalance: 0,
+    tokenName: "",
+    tokenDecimal: 0,
+  });
+  const [loading, setLoading] = useState(false);
+  const [showMessage, setShowMessage] = useState(false);
+  const [depositSuccessfull, setDepositSuccessfull] = useState(false);
+  const classes = NewArchERC20Styles();
+  const [{ wallet }] = useConnectWallet();
   const router = useRouter();
+
+  const walletAddress = Web3.utils.toChecksumAddress(
+    wallet?.accounts[0].address,
+  );
+
+  const FACTORY_CONTRACT_ADDRESS = useSelector((state) => {
+    return state.gnosis.factoryContractAddress;
+  });
+
+  const GNOSIS_TRANSACTION_URL = useSelector((state) => {
+    return state.gnosis.transactionUrl;
+  });
 
   const USDC_CONTRACT_ADDRESS = useSelector((state) => {
     return state.gnosis.usdcContractAddress;
   });
 
-  const handleDeposit = async () => {
-    setDepositInitiated(true);
-    const checkUserExists = checkUserByClub(userDetails, clubId);
-    const depositAmountConverted = convertToWei(
-      depositAmount,
-      usdcTokenDecimal,
-    );
-    checkUserExists.then((result) => {
-      if (result.data === false) {
-        // if the user doesn't exist
-        const usdc_contract = newContract(USDC_CONTRACT_ADDRESS);
-        // pass governor contract
-        const dao_contract = newContract(daoAddress);
-        // pass governor contract
-        const usdc_response = usdc_contract.approveDeposit(
-          daoAddress,
-          depositAmountConverted,
-          usdcTokenDecimal,
-        );
-        usdc_response
-          .then(
-            (result) => {
-              const deposit_response = dao_contract.deposit(
-                USDC_CONTRACT_ADDRESS,
-                depositAmountConverted,
-                "",
-              );
-              deposit_response
-                .then((result) => {
-                  const data = {
-                    userAddress: userDetails,
-                    clubs: [
-                      {
-                        clubId: clubId,
-                        isAdmin: 0,
-                        balance: depositAmountConverted,
-                      },
-                    ],
-                  };
-                  const createuser = createUser(data);
-                  createuser.then((result) => {
-                    if (result.status !== 201) {
-                      console.log("Error", result);
-                      setAlertStatus("error");
-                      setOpenSnackBar(true);
-                    } else {
-                      setAlertStatus("success");
-                      setOpenSnackBar(true);
-                      router.push(`/dashboard/${clubId}`, undefined, {
-                        shallow: true,
-                      });
-                    }
-                  });
-                })
-                .catch((error) => {
-                  console.log("Error", error.message);
-                  setAlertStatus("error");
-                  setOpenSnackBar(true);
-                  setDepositInitiated(false);
-                });
-            },
-            (error) => {
-              console.log("Error", error.message);
-              setAlertStatus("error");
-              setOpenSnackBar(true);
-              setDepositInitiated(false);
-            },
-          )
-          .catch((error) => {
-            console.log("Error", error);
-            setAlertStatus("error");
-            setOpenSnackBar(true);
-            setDepositInitiated(false);
-          });
-      } else {
-        // if user exists
-        const usdc_contract = newContract(USDC_CONTRACT_ADDRESS);
-        // pass governor contract
-        const dao_contract = newContract(daoAddress);
-        // pass governor contract
-        const usdc_response = usdc_contract.approveDeposit(
-          daoAddress,
-          depositAmountConverted,
-          usdcTokenDecimal,
-        );
-        usdc_response
-          .then(
-            (result) => {
-              const deposit_response = dao_contract.deposit(
-                USDC_CONTRACT_ADDRESS,
-                depositAmountConverted,
-                "",
-              );
-              deposit_response
-                .then((result) => {
-                  const patchData = {
-                    userAddress: userDetails,
-                    clubId: clubId,
-                    balance: depositAmountConverted,
-                  };
-                  const updateDepositAmount = patchUserBalance(patchData);
-                  updateDepositAmount.then((result) => {
-                    if (result.status != 200) {
-                      console.log("Error", result);
-                      setAlertStatus("error");
-                      setOpenSnackBar(true);
-                    } else {
-                      setAlertStatus("success");
-                      setOpenSnackBar(true);
-                      router.push(`/dashboard/${clubId}`, undefined, {
-                        shallow: true,
-                      });
-                    }
-                  });
-                })
-                .catch((error) => {
-                  console.log("Error", error);
-                  setAlertStatus("error");
-                  setOpenSnackBar(true);
-                  setDepositInitiated(false);
-                });
-            },
-            (error) => {
-              console.log("Error", error);
-              setAlertStatus("error");
-              setOpenSnackBar(true);
-              setDepositInitiated(false);
-            },
-          )
-          .catch((error) => {
-            console.log("Error", error.message);
-            setAlertStatus("error");
-            setOpenSnackBar(true);
-            setDepositInitiated(false);
-          });
-      }
-    });
+  const CLUB_NETWORK_ID = useSelector((state) => {
+    return state.gnosis.clubNetworkId;
+  });
+
+  const WRONG_NETWORK = useSelector((state) => {
+    return state.gnosis.wrongNetwork;
+  });
+
+  const day = Math.floor(new Date().getTime() / 1000.0);
+  const day1 = dayjs.unix(day);
+  const day2 = dayjs.unix(daoDetails.depositDeadline);
+
+  const remainingDays = day2.diff(day1, "day");
+  const remainingTimeInSecs = day2.diff(day1, "seconds");
+  const remainingTimeInHours = day2.diff(day1, "hours");
+
+  const showMessageHandler = () => {
+    setShowMessage(true);
+    setTimeout(() => {
+      setShowMessage(false);
+    }, 4000);
   };
+
+  const fetchTokenDetails = useCallback(async () => {
+    setLoading(true);
+    try {
+      const erc20Contract = new SmartContract(
+        erc20ABI,
+        daoDetails.depositTokenAddress,
+        walletAddress,
+        USDC_CONTRACT_ADDRESS,
+        GNOSIS_TRANSACTION_URL,
+      );
+
+      const balanceOfToken = await erc20Contract.balanceOf();
+      const decimals = await erc20Contract.decimals();
+      const symbol = await erc20Contract.obtainSymbol();
+      const name = await erc20Contract.name();
+
+      const balanceConverted = convertFromWeiGovernance(
+        balanceOfToken,
+        decimals,
+      );
+      setErc20TokenDetails({
+        tokenBalance: +balanceConverted,
+        tokenSymbol: symbol,
+        tokenName: name,
+        tokenDecimal: decimals,
+      });
+      setLoading(false);
+    } catch (error) {
+      console.log(error);
+      setLoading(false);
+    }
+  }, [
+    GNOSIS_TRANSACTION_URL,
+    USDC_CONTRACT_ADDRESS,
+    daoDetails.depositTokenAddress,
+    walletAddress,
+  ]);
+
+  const formik = useFormik({
+    initialValues: {
+      tokenInput: 0,
+    },
+    validationSchema: yup.object().shape({
+      tokenInput: yup
+        .number()
+        .required("Input is required")
+        .min(
+          Number(
+            convertFromWeiGovernance(
+              daoDetails.minDeposit,
+              erc20TokenDetails.tokenDecimal,
+            ),
+          ),
+          "Amount should be greater than min deposit",
+        )
+        .lessThan(
+          erc20TokenDetails.tokenBalance.toFixed(2),
+          "Amount should be less than your wallet balance",
+        )
+        .max(
+          Number(
+            convertFromWeiGovernance(
+              daoDetails.maxDeposit,
+              erc20TokenDetails.tokenDecimal,
+            ),
+          ),
+          "Amount should be less than max deposit",
+        ),
+    }),
+    onSubmit: async (values) => {
+      try {
+        setLoading(true);
+
+        const factoryContract = new SmartContract(
+          factoryContractABI,
+          FACTORY_CONTRACT_ADDRESS,
+          walletAddress,
+          USDC_CONTRACT_ADDRESS,
+          GNOSIS_TRANSACTION_URL,
+          true,
+        );
+
+        const erc20Contract = new SmartContract(
+          erc20ABI,
+          daoDetails.depositTokenAddress,
+          walletAddress,
+          USDC_CONTRACT_ADDRESS,
+          GNOSIS_TRANSACTION_URL,
+          true,
+        );
+
+        const inputValue = convertToWeiGovernance(
+          values.tokenInput,
+          erc20TokenDetails.tokenDecimal,
+        );
+
+        await erc20Contract.approveDeposit(
+          FACTORY_CONTRACT_ADDRESS,
+          inputValue,
+          erc20TokenDetails.tokenDecimal,
+        );
+
+        const deposit = await factoryContract.buyGovernanceTokenERC20DAO(
+          walletAddress,
+          erc20DaoAddress,
+          // daoDetails.depositTokenAddress,
+          convertToWeiGovernance(
+            (inputValue / +daoDetails.pricePerToken).toString(),
+            18,
+          ),
+          [],
+        );
+
+        setLoading(false);
+        setDepositSuccessfull(true);
+        router.push(
+          `/dashboard/${Web3.utils.toChecksumAddress(erc20DaoAddress)}`,
+          undefined,
+          {
+            shallow: true,
+          },
+        );
+        showMessageHandler();
+        formik.values.tokenInput = 0;
+      } catch (error) {
+        console.log(error);
+        setLoading(false);
+        showMessageHandler();
+      }
+    },
+  });
+
+  useEffect(() => {
+    if (daoDetails.depositTokenAddress && daoDetails.clubTokensMinted)
+      fetchTokenDetails();
+  }, [fetchTokenDetails, daoDetails]);
 
   return (
     <>
@@ -222,7 +237,7 @@ const ERC20Comp = ({
             container
             spacing={2}
             paddingLeft={10}
-            paddingTop={15}
+            paddingTop={6}
             paddingRight={10}
           >
             <Grid item md={7}>
@@ -230,18 +245,11 @@ const ERC20Comp = ({
                 <Grid container>
                   <Grid item xs={12} md={9}>
                     <Grid container spacing={2}>
-                      <Grid item mt={3} ml={3}>
-                        <img
-                          src={imageFetched ? imageUrl : null}
-                          alt="club-image"
-                          width="100vw"
-                        />
-                      </Grid>
-                      <Grid item ml={1} mt={4} mb={7}>
+                      <Grid item ml={4} mt={4} mb={4}>
                         <Stack spacing={0}>
                           <Typography variant="h4">
-                            {apiTokenDetailSet ? (
-                              clubName
+                            {daoDetails.daoName ? (
+                              daoDetails.daoName
                             ) : (
                               <Skeleton
                                 variant="rectangular"
@@ -251,8 +259,8 @@ const ERC20Comp = ({
                             )}
                           </Typography>
                           <Typography variant="h6" className={classes.dimColor}>
-                            {apiTokenDetailSet ? (
-                              "$" + tokenSymbol
+                            {daoDetails.daoSymbol ? (
+                              "$" + daoDetails.daoSymbol
                             ) : (
                               <Skeleton
                                 variant="rectangular"
@@ -269,7 +277,11 @@ const ERC20Comp = ({
                     item
                     xs={12}
                     md={3}
-                    sx={{ display: "flex", alignItems: "center" }}
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
                   >
                     {/* enter your code here */}
 
@@ -279,30 +291,31 @@ const ERC20Comp = ({
                           onLoad={function noRefCheck() {}}
                           options={{
                             size: "large",
-                            text: `Just joined ${clubName} Station on `,
+                            text: `Just joined ${daoDetails.daoName} Station on `,
                             via: "stationxnetwork",
                           }}
-                          url={`https://test.stationx.network/join/${daoAddress}`}
+                          //   url={`https://test.stationx.network/join/${daoAddress}`}
                         />
                       </div>
                     </div>
                   </Grid>
                 </Grid>
+
                 <Grid>
-                  {tokenGatingAddress !==
-                    "0x0000000000000000000000000000000000000000" && (
+                  {isTokenGated && isEligibleForTokenGating ? (
                     <>
-                      {userTokenBalance < tokenGatingAmount ||
-                      isNaN(userTokenBalance) ? (
-                        <Typography sx={{ color: "red" }}>
-                          This club is Token Gated. You don&apos;t qualify
-                        </Typography>
-                      ) : (
-                        <Typography sx={{ color: "#3B7AFD" }}>
-                          This club is Token Gated. You qualify
-                        </Typography>
-                      )}
+                      <Typography sx={{ color: "#3B7AFD", marginLeft: "30px" }}>
+                        This club is token gated. You qualify
+                      </Typography>
                     </>
+                  ) : isTokenGated && !isEligibleForTokenGating ? (
+                    <>
+                      <Typography sx={{ color: "red", marginLeft: "30px" }}>
+                        This club is token gated. You don&apos;t qualify
+                      </Typography>
+                    </>
+                  ) : (
+                    ""
                   )}
                 </Grid>
 
@@ -310,7 +323,7 @@ const ERC20Comp = ({
                 <Grid container spacing={7}>
                   <Grid item ml={4} mt={5} md={3}>
                     <Typography variant="p" className={classes.valuesDimStyle}>
-                      {walletConnected ? (
+                      {walletAddress ? (
                         "Deposits deadline"
                       ) : (
                         <Skeleton
@@ -323,8 +336,10 @@ const ERC20Comp = ({
                     <Grid container mt={2} direction="row">
                       <Grid item>
                         <Typography variant="p" className={classes.valuesStyle}>
-                          {governorDataFetched ? (
-                            new Date(parseInt(depositCloseDate) * 1000)
+                          {daoDetails.depositDeadline ? (
+                            new Date(
+                              parseInt(daoDetails.depositDeadline) * 1000,
+                            )
                               ?.toJSON()
                               ?.slice(0, 10)
                               .split("-")
@@ -339,10 +354,10 @@ const ERC20Comp = ({
                           )}
                         </Typography>
                       </Grid>
-                      <Grid item ml={1}>
-                        {walletConnected ? (
-                          governorDataFetched ? (
-                            closingDays > 0 ? (
+                      <Grid item ml={3} mt={1}>
+                        {walletAddress ? (
+                          daoDetails ? (
+                            remainingDays >= 0 && remainingTimeInSecs > 0 ? (
                               <Card className={classes.openTag}>
                                 <Typography className={classes.openTagFont}>
                                   Open
@@ -367,13 +382,13 @@ const ERC20Comp = ({
                     </Grid>
                   </Grid>
                   <Grid item ml={4} mt={5} md={3}>
-                    <Grid container>
+                    <Grid container direction={"column"}>
                       <Grid item>
                         <Typography
                           variant="p"
                           className={classes.valuesDimStyle}
                         >
-                          {walletConnected ? (
+                          {walletAddress ? (
                             "Minimum Deposits"
                           ) : (
                             <Skeleton
@@ -386,8 +401,11 @@ const ERC20Comp = ({
                       </Grid>
                       <Grid item mt={2}>
                         <Typography variant="p" className={classes.valuesStyle}>
-                          {governorDataFetched ? (
-                            minDeposit + " USDC"
+                          {daoDetails.minDeposit ? (
+                            `${convertFromWeiGovernance(
+                              daoDetails.minDeposit,
+                              erc20TokenDetails.tokenDecimal,
+                            )} ${erc20TokenDetails.tokenSymbol}`
                           ) : (
                             <Skeleton
                               variant="rectangular"
@@ -406,7 +424,7 @@ const ERC20Comp = ({
                           variant="p"
                           className={classes.valuesDimStyle}
                         >
-                          {walletConnected ? (
+                          {walletAddress ? (
                             "Maximum Deposit"
                           ) : (
                             <Skeleton
@@ -419,15 +437,18 @@ const ERC20Comp = ({
                       </Grid>
                       <Grid item mt={2}>
                         <Typography variant="p" className={classes.valuesStyle}>
-                          {governorDataFetched ? (
-                            maxDeposit + " USDC"
+                          {daoDetails.maxDeposit ? (
+                            `${convertFromWeiGovernance(
+                              daoDetails.maxDeposit,
+                              erc20TokenDetails.tokenDecimal,
+                            )} ${erc20TokenDetails.tokenSymbol}`
                           ) : (
                             <Skeleton
                               variant="rectangular"
                               width={100}
                               height={25}
                             />
-                          )}{" "}
+                          )}
                         </Typography>
                       </Grid>
                     </Grid>
@@ -440,7 +461,7 @@ const ERC20Comp = ({
                         variant="p"
                         className={classes.valuesDimStyle}
                       >
-                        {walletConnected ? (
+                        {walletAddress ? (
                           "Governance"
                         ) : (
                           <Skeleton
@@ -453,15 +474,7 @@ const ERC20Comp = ({
                     </Grid>
                     <Grid item mt={2}>
                       <Typography variant="p" className={classes.valuesStyle}>
-                        {walletConnected ? (
-                          "By Voting"
-                        ) : (
-                          <Skeleton
-                            variant="rectangular"
-                            width={100}
-                            height={25}
-                          />
-                        )}
+                        {daoDetails.isGovernance ? "By Voting" : "In-active"}
                       </Typography>
                     </Grid>
                   </Grid>
@@ -472,7 +485,7 @@ const ERC20Comp = ({
                           variant="p"
                           className={classes.valuesDimStyle}
                         >
-                          {walletConnected ? (
+                          {walletAddress ? (
                             "Members"
                           ) : (
                             <Skeleton
@@ -485,8 +498,8 @@ const ERC20Comp = ({
                       </Grid>
                       <Grid item mt={2}>
                         <Typography variant="p" className={classes.valuesStyle}>
-                          {walletConnected ? (
-                            members
+                          {walletAddress ? (
+                            members?.length
                           ) : (
                             <Skeleton
                               variant="rectangular"
@@ -499,22 +512,35 @@ const ERC20Comp = ({
                     </Grid>
                   </Grid>
                 </Grid>
-                {/* <Grid item ml={3} mt={5} mb={2} mr={3}>
-            {walletConnected ? (
-              <ProgressBar
-                value={
-                  governorDataFetched
-                    ? calculateTreasuryTargetShare(
-                        clubTokenMinted,
-                        convertAmountToWei(governorDetails[4]),
-                      )
-                    : 0
-                }
-              />
-            ) : (
-              <Skeleton variant="rectangular" />
-            )}
-          </Grid> */}
+                <Grid item ml={3} mt={5} mb={2} mr={3}>
+                  {walletAddress && daoDetails.clubTokensMinted ? (
+                    <ProgressBar
+                      value={
+                        Number(
+                          convertFromWeiGovernance(
+                            +daoDetails.clubTokensMinted,
+                            +daoDetails.decimals,
+                          ) *
+                            Number(
+                              convertFromWeiGovernance(
+                                +daoDetails.pricePerToken,
+                                +erc20TokenDetails.tokenDecimal,
+                              ),
+                            ) *
+                            100,
+                        ) /
+                        Number(
+                          convertFromWeiGovernance(
+                            +daoDetails.totalSupply.toFixed(0),
+                            +erc20TokenDetails.tokenDecimal,
+                          ),
+                        )
+                      }
+                    />
+                  ) : (
+                    <Skeleton variant="rectangular" />
+                  )}
+                </Grid>
                 <br />
                 <Grid
                   container
@@ -530,8 +556,8 @@ const ERC20Comp = ({
                           variant="p"
                           className={classes.valuesDimStyle}
                         >
-                          {walletConnected ? (
-                            "Club Tokens Minted so far"
+                          {walletAddress ? (
+                            "Amount raised so far"
                           ) : (
                             <Skeleton
                               variant="rectangular"
@@ -543,8 +569,16 @@ const ERC20Comp = ({
                       </Grid>
                       <Grid item>
                         <Typography variant="p" className={classes.valuesStyle}>
-                          {walletConnected ? (
-                            parseInt(clubTokenMinted) + " $" + tokenSymbol
+                          {walletAddress ? (
+                            convertFromWeiGovernance(
+                              daoDetails.clubTokensMinted,
+                              daoDetails.decimals,
+                            ) *
+                              convertFromWeiGovernance(
+                                daoDetails.pricePerToken,
+                                erc20TokenDetails.tokenDecimal,
+                              ) +
+                            " USDC"
                           ) : (
                             <Skeleton
                               variant="rectangular"
@@ -563,8 +597,8 @@ const ERC20Comp = ({
                           variant="p"
                           className={classes.valuesDimStyle}
                         >
-                          {walletConnected ? (
-                            "Total Supply"
+                          {walletAddress ? (
+                            "Total Raise Amt"
                           ) : (
                             <Skeleton
                               variant="rectangular"
@@ -576,8 +610,11 @@ const ERC20Comp = ({
                       </Grid>
                       <Grid item>
                         <Typography variant="p" className={classes.valuesStyle}>
-                          {governorDataFetched ? (
-                            totalDeposit + (" $" + tokenSymbol)
+                          {daoDetails.totalSupply ? (
+                            convertFromWeiGovernance(
+                              daoDetails.totalSupply.toFixed(0),
+                              erc20TokenDetails.tokenDecimal,
+                            )?.toString() + " USDC"
                           ) : (
                             <Skeleton
                               variant="rectangular"
@@ -593,7 +630,7 @@ const ERC20Comp = ({
               </Card>
             </Grid>
             <Grid item md={5}>
-              {walletConnected ? (
+              {walletAddress ? (
                 <Card className={classes.cardJoin}>
                   <Grid container spacing={2}>
                     <Grid
@@ -603,7 +640,7 @@ const ERC20Comp = ({
                       mb={4}
                       className={classes.JoinText}
                     >
-                      <Typography variant="h4">Join this Club</Typography>
+                      <Typography variant="h4">Join Station</Typography>
                     </Grid>
                     <Divider />
                     <Grid
@@ -616,9 +653,13 @@ const ERC20Comp = ({
                       sx={{ display: "flex", justifyContent: "flex-end" }}
                     >
                       <Typography variant="h6" className={classes.JoinText}>
-                        {governorDataFetched
-                          ? closingDays > 0
-                            ? "Closes in " + closingDays + " days"
+                        {daoDetails.depositDeadline
+                          ? remainingDays >= 0 && remainingTimeInSecs > 0
+                            ? `Closes in ${
+                                remainingDays === 0
+                                  ? remainingTimeInHours
+                                  : remainingDays
+                              } ${remainingDays === 0 ? "hours" : "days"}`
                             : "Joining Closed"
                           : 0}
                       </Typography>
@@ -632,7 +673,7 @@ const ERC20Comp = ({
                         <Grid container spacing={2}>
                           <Grid item ml={2} mt={2} mb={0}>
                             <Typography className={classes.cardSmallFont}>
-                              USDC
+                              {erc20TokenDetails.tokenSymbol}
                             </Typography>
                           </Grid>
                           <Grid
@@ -647,33 +688,63 @@ const ERC20Comp = ({
                             }}
                           >
                             <Typography className={classes.cardSmallFont}>
-                              Balance: {walletBalance} USDC
+                              Balance:{" "}
+                              {erc20TokenDetails.tokenBalance.toFixed(2)} $
+                              {erc20TokenDetails.tokenSymbol}
                             </Typography>
                           </Grid>
                         </Grid>
                         <Grid container spacing={2}>
                           <Grid item ml={2} mt={1} mb={2} p={1}>
-                            <Input
-                              type="number"
-                              error={depositAmount <= 0}
-                              className={classes.cardLargeFont}
-                              placeholder="0"
-                              value={depositAmount}
-                              onChange={(e) =>
-                                handleInputChange(e.target.value)
-                              }
-                              disabled={closingDays > 0 ? false : true}
-                              inputProps={{ style: { fontSize: "1em" } }}
-                              InputLabelProps={{ style: { fontSize: "1em" } }}
-                            />
-                            <Typography sx={{ color: "red" }}>
+                            <FormControl
+                              style={{ background: "#fff" }}
+                              onSubmit={formik.handleSubmit}
+                            >
+                              <TextField
+                                variant="filled"
+                                className={classes.cardLargeFont}
+                                type="number"
+                                name="tokenInput"
+                                id="tokenInput"
+                                disabled={
+                                  remainingDays >= 0 &&
+                                  remainingTimeInSecs > 0 &&
+                                  isTokenGated
+                                    ? !isEligibleForTokenGating
+                                    : remainingDays >= 0 &&
+                                      remainingTimeInSecs > 0
+                                    ? false
+                                    : true
+                                }
+                                inputProps={{
+                                  style: {
+                                    fontSize: "2em",
+                                    background: "#fff",
+                                    color: "#000",
+                                  },
+                                }}
+                                InputLabelProps={{ style: { fontSize: "1em" } }}
+                                onChange={formik.handleChange}
+                                value={formik.values.tokenInput}
+                                error={
+                                  formik.touched.tokenInput &&
+                                  Boolean(formik.errors.tokenInput)
+                                }
+                                helperText={
+                                  formik.touched.tokenInput &&
+                                  formik.errors.tokenInput
+                                }
+                              />
+                            </FormControl>
+
+                            {/* <Typography sx={{ color: "red" }}>
                               {depositAmount < minDeposit
                                 ? "Deposit amount should be greater than min deposit"
                                 : ""}
                               {depositAmount > maxDeposit
                                 ? "Deposit amount should be less than max deposit"
                                 : ""}
-                            </Typography>
+                            </Typography> */}
                           </Grid>
 
                           <Grid
@@ -689,7 +760,12 @@ const ERC20Comp = ({
                           >
                             <Button
                               className={classes.maxTag}
-                              onClick={handleMaxButtonClick}
+                              onClick={() => {
+                                formik.setFieldValue(
+                                  "tokenInput",
+                                  erc20TokenDetails.tokenBalance.toFixed(2),
+                                );
+                              }}
                             >
                               Max
                             </Button>
@@ -702,8 +778,9 @@ const ERC20Comp = ({
                     <Grid item md={12} mt={2}>
                       <Card className={classes.cardWarning}>
                         <Typography className={classes.JoinText}>
-                          Clubs can have same names or symbols, please make sure
-                          to trust the sender for the link before depositing.
+                          Stations can have same names or symbols, please make
+                          sure to trust the sender for the link before
+                          depositing.
                         </Typography>
                       </Card>
                     </Grid>
@@ -711,18 +788,15 @@ const ERC20Comp = ({
                       <Button
                         variant="primary"
                         size="large"
-                        onClick={handleDeposit}
+                        onClick={formik.handleSubmit}
                         disabled={
-                          (closingDays > 0 ? false : true) ||
-                          (depositAmount <= 0 ||
-                          depositAmount < minDeposit ||
-                          depositAmount > maxDeposit
-                            ? true
-                            : false) ||
-                          (tokenGatingAddress !==
-                            "0x0000000000000000000000000000000000000000" &&
-                            (userTokenBalance < tokenGatingAmount ||
-                              isNaN(userTokenBalance)))
+                          remainingDays >= 0 &&
+                          remainingTimeInSecs > 0 &&
+                          isTokenGated
+                            ? !isEligibleForTokenGating
+                            : remainingDays >= 0 && remainingTimeInSecs > 0
+                            ? false
+                            : true
                         }
                       >
                         Deposit
@@ -750,7 +824,7 @@ const ERC20Comp = ({
                         <Grid mt={"300px"} ml={4}>
                           <Button
                             variant="primary"
-                            onClick={handleConnectWallet}
+                            // onClick={handleConnectWallet}
                           >
                             Connect
                           </Button>
@@ -801,34 +875,40 @@ const ERC20Comp = ({
           </Grid>
         </>
       )}
-      {/* 
-    <Snackbar
-      open={openSnackBar}
-      autoHideDuration={6000}
-      onClose={handleClose}
-      anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-    >
-      {alertStatus === "success" ? (
+      {depositSuccessfull && showMessage ? (
         <Alert
-          onClose={handleClose}
           severity="success"
-          sx={{ width: "100%" }}
+          sx={{
+            width: "250px",
+            position: "fixed",
+            bottom: "30px",
+            right: "20px",
+            borderRadius: "8px",
+          }}
         >
-          Transaction Successfull!
+          Transaction Successfull
         </Alert>
       ) : (
-        <Alert
-          onClose={handleClose}
-          severity="error"
-          sx={{ width: "100%" }}
-        >
-          Transaction Failed!
-        </Alert>
+        !depositSuccessfull &&
+        showMessage && (
+          <Alert
+            severity="error"
+            sx={{
+              width: "250px",
+              position: "fixed",
+              bottom: "30px",
+              right: "20px",
+              borderRadius: "8px",
+            }}
+          >
+            Transaction Failed
+          </Alert>
+        )
       )}
-    </Snackbar> */}
-      <Dialog
-        open={open}
-        onClose={handleDialogClose}
+
+      {/* <Dialog
+        // open={open}
+        // onClose={handleDialogClose}
         scroll="body"
         PaperProps={{ classes: { root: classes.modalStyle } }}
         fullWidth
@@ -843,7 +923,11 @@ const ERC20Comp = ({
             mt={3}
           >
             <Grid item pl={15}>
-              <img src="/assets/images/connected_world_wuay.svg" width="80%" />
+              <Image
+                src="/assets/images/connected_world_wuay.svg"
+                width="80%"
+                alt="connected"
+              />
             </Grid>
             <Grid item m={3}>
               <Typography className={classes.dialogBox}>
@@ -855,7 +939,7 @@ const ERC20Comp = ({
               <Button
                 variant="primary"
                 onClick={() => {
-                  // handleSwitchNetwork();
+                  //   handleSwitchNetwork();
                 }}
               >
                 Switch Network
@@ -863,10 +947,13 @@ const ERC20Comp = ({
             </Grid>
           </Grid>
         </DialogContent>
-      </Dialog>
+      </Dialog> */}
+
+      {WRONG_NETWORK && <WrongNetworkModal chainId={CLUB_NETWORK_ID} />}
+
       <Backdrop
         sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={depositInitiated}
+        open={loading}
       >
         <CircularProgress color="inherit" />
       </Backdrop>
@@ -874,4 +961,4 @@ const ERC20Comp = ({
   );
 };
 
-export default ERC20Comp;
+export default NewArchERC20;

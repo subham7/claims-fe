@@ -7,18 +7,26 @@ export const slice = createSlice({
     safeSdk: null,
     factoryContractAddress: null,
     usdcContractAddress: null,
+    actionContractAddress: null,
+    subgraphUrl: null,
     transactionUrl: null,
     networkHex: null,
     networkId: null,
     networkName: null,
     adminUser: false,
+    memberUser: false,
     tokenSymbol: null,
     tokenDecimal: null,
     governanceTokenDecimal: null,
-    createDaoGnosisSigned: false,
+    setUploadNFTLoading: false,
+    setCreateSafeLoading: false,
+    setCreateSafeError: false,
+    setCreateSafeErrorCode: null,
     createDaoAuthorized: false,
     governanceAllowed: true,
     redirectToCreate: false,
+    wrongNetwork: false,
+    clubNetworkId: null,
   },
   reducers: {
     safeConnected: (state, action) => {
@@ -35,13 +43,19 @@ export const slice = createSlice({
     addContractAddress: (state, action) => {
       state.factoryContractAddress = action.payload.factoryContractAddress;
       state.usdcContractAddress = action.payload.usdcContractAddress;
+      state.actionContractAddress = action.payload.actionContractAddress;
+      state.subgraphUrl = action.payload.subgraphUrl;
       state.transactionUrl = action.payload.transactionUrl;
       state.networkHex = action.payload.networkHex;
       state.networkId = action.payload.networkId;
       state.networkName = action.payload.networkName;
+      state.clubNetworkId = action.payload.clubNetworkId;
     },
     setAdminUser: (state, action) => {
       state.adminUser = action.payload;
+    },
+    setMemberUser: (state, action) => {
+      state.memberUser = action.payload;
     },
     setGovernanceTokenDetails: (state, action) => {
       state.governanceTokenDecimal = action.payload;
@@ -50,8 +64,17 @@ export const slice = createSlice({
       state.tokenSymbol = action.payload.tokenSymbol;
       state.tokenDecimal = action.payload.tokenDecimal;
     },
-    setCreateDaoGnosisSigned: (state, action) => {
-      state.createDaoGnosisSigned = action.payload;
+    setUploadNFTLoading: (state, action) => {
+      state.setUploadNFTLoading = action.payload;
+    },
+    setCreateSafeLoading: (state, action) => {
+      state.setCreateSafeLoading = action.payload;
+    },
+    setCreateSafeError: (state, action) => {
+      state.setCreateSafeError = action.payload;
+    },
+    setCreateSafeErrorCode: (state, action) => {
+      state.setCreateSafeErrorCode = action.payload;
     },
     setCreateDaoAuthorized: (state, action) => {
       state.createDaoAuthorized = action.payload;
@@ -61,7 +84,10 @@ export const slice = createSlice({
     },
     setRedirectToCreate: (state, action) => {
       state.redirectToCreate = action.payload;
-    }
+    },
+    setWrongNetwork: (state, action) => {
+      state.wrongNetwork = action.payload;
+    },
   },
 });
 
@@ -71,12 +97,17 @@ export const {
   addSafeAddress,
   addContractAddress,
   setAdminUser,
+  setMemberUser,
   setGovernanceTokenDetails,
   setUSDCTokenDetails,
-  setCreateDaoGnosisSigned,
+  setUploadNFTLoading,
+  setCreateSafeLoading,
+  setCreateSafeError,
+  setCreateSafeErrorCode,
   setCreateDaoAuthorized,
   setGovernanceAllowed,
   setRedirectToCreate,
+  setWrongNetwork,
 } = slice.actions;
 
 export default slice.reducer;

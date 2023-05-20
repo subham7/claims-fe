@@ -4,7 +4,6 @@ import Layout1 from "../../../../src/components/layouts/layout1";
 import settingsImg from "../../../../public/assets/images/settings.png";
 import { makeStyles } from "@mui/styles";
 import { useRouter } from "next/router";
-import { getDocumentsByClubId } from "../../../../src/api/document";
 import { Card, Grid, Link, Typography } from "@mui/material";
 import LegalEntityModal from "../../../../src/components/modals/LegalEntityModal";
 
@@ -43,11 +42,10 @@ const useStyles = makeStyles({
   },
   rightDiv: {
     flex: "0.35",
-    
   },
   imgContainer: {
     position: "relative",
-    width:'100%'
+    width: "100%",
   },
   rightDiv_title: {
     fontSize: "24px",
@@ -88,15 +86,13 @@ const useStyles = makeStyles({
   proposalImg: {
     position: "relative",
   },
-  
 });
 
 const Documents = () => {
   const classes = useStyles();
   const router = useRouter();
-  const {encryptedLink} = router.query
-  const [showInviteModal, setShowInviteModal] = useState(false)
-
+  const { encryptedLink } = router.query;
+  const [showInviteModal, setShowInviteModal] = useState(false);
 
   const { clubId } = router.query;
 
@@ -104,16 +100,16 @@ const Documents = () => {
     router.push(`/dashboard/${clubId}/documents/legalEntity`);
   };
 
-   // closing legal entity modal
-   const closeModalHandler = () => {
-    setShowInviteModal(false)
-  }
+  // closing legal entity modal
+  const closeModalHandler = () => {
+    setShowInviteModal(false);
+  };
 
-  useEffect(() =>{
-    if(encryptedLink?.length){
-      setShowInviteModal(true)
+  useEffect(() => {
+    if (encryptedLink?.length) {
+      setShowInviteModal(true);
     }
-  }, [encryptedLink])
+  }, [encryptedLink]);
 
   return (
     <Layout1>
@@ -139,7 +135,7 @@ const Documents = () => {
         {/* Right Side */}
 
         <div className={classes.rightDiv}>
-        <Grid item md={4}>
+          <Grid item md={4}>
             <Card
               className={classes.proposalInfoCard}
               sx={{ padding: 0, position: "relative" }}
@@ -177,14 +173,17 @@ const Documents = () => {
               >
                 Read Docs
               </Link>
-
-              
             </Card>
           </Grid>
-          </div>
+        </div>
 
-      {showInviteModal && <LegalEntityModal encryptedLink={encryptedLink} isInvite={true} onClose={closeModalHandler} />}
-          
+        {showInviteModal && (
+          <LegalEntityModal
+            encryptedLink={encryptedLink}
+            isInvite={true}
+            onClose={closeModalHandler}
+          />
+        )}
       </div>
     </Layout1>
   );

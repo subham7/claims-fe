@@ -204,7 +204,10 @@ const Faucet = (props) => {
     return state.gnosis.transactionUrl;
   });
   const [{ wallet }] = useConnectWallet();
-  const walletAddress = wallet?.accounts[0].address;
+
+  const walletAddress = Web3.utils.toChecksumAddress(
+    wallet?.accounts[0].address,
+  );
 
   useEffect(() => {
     if (wallet) {
@@ -224,6 +227,7 @@ const Faucet = (props) => {
       faucetAddress,
       USDC_CONTRACT_ADDRESS,
       GNOSIS_TRANSACTION_URL,
+      true,
     );
     const transaction = usdcFaucet.mint(faucetAddress, FaucetAmount.toString());
     transaction.then(

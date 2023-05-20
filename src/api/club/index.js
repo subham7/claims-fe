@@ -4,7 +4,7 @@ import { getJwtToken } from "../../utils/auth";
 
 export async function createClub(data) {
   // create new club API
-  return await axios.post(MAIN_API_URL + "club/create", data, {
+  return await axios.post(MAIN_API_URL + "club/createnew", data, {
     headers: {
       "Authorization": "Bearer " + getJwtToken(),
       "Content-Type": "application/json",

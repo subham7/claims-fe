@@ -140,7 +140,7 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
   const dispatch = useDispatch();
 
   const hiddenFileInput = useRef(null);
-  // const claimsContractAddress = CLAIM_FACTORY_ADDRESS;
+  // const claimsContractAddress = CLAIM_FACTORY_ADDRESS_GOERLI;
 
   const [file, setFile] = useState("");
   const handleClick = (event) => {
@@ -230,10 +230,6 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
       };
     }
   };
-
-  // useEffect(() => {
-  //   console.log(file);
-  // }, [file]);
 
   return (
     <>

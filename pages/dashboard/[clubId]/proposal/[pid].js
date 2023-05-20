@@ -1,12 +1,9 @@
-import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
-import CloseIcon from "@mui/icons-material/Close";
-import DoneIcon from "@mui/icons-material/Done";
-import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
+import React, { useCallback, useEffect, useState } from "react";
+import Layout1 from "../../../../src/components/layouts/layout1";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import {
   Alert,
   Backdrop,
-  Button,
   Card,
   CardActionArea,
   Chip,
@@ -18,36 +15,50 @@ import {
   Typography,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
-import Safe from "@safe-global/safe-core-sdk";
-import SafeServiceClient from "@safe-global/safe-service-client";
-import Web3Adapter from "@safe-global/safe-web3-lib";
 import { useConnectWallet } from "@web3-onboard/react";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { React, useEffect, useState } from "react";
-import ReactHtmlParser from "react-html-parser";
-import { useDispatch, useSelector } from "react-redux";
-import Web3 from "web3";
-
-import actionIcon from "../../../../public/assets/icons/action_icon.svg";
-import surveyIcon from "../../../../public/assets/icons/survey_icon.svg";
-import tickerIcon from "../../../../public/assets/icons/ticker_icon.svg";
-import ImplementationContract from "../../../../src/abis/implementationABI.json";
-import USDCContract from "../../../../src/abis/usdcTokenContract.json";
-import { getAssets } from "../../../../src/api/assets";
-import { SmartContract } from "../../../../src/api/contract";
 import {
   castVote,
   getProposalDetail,
   getProposalTxHash,
   patchProposalExecuted,
 } from "../../../../src/api/proposal";
-import { getMembersDetails } from "../../../../src/api/user";
-import Layout1 from "../../../../src/components/layouts/layout1";
-import ProgressBar from "../../../../src/components/progressbar";
+import { useDispatch, useSelector } from "react-redux";
 import { addProposalId } from "../../../../src/redux/reducers/create";
 import ClubFetch from "../../../../src/utils/clubFetch";
-import { calculateDays } from "../../../../src/utils/globalFunctions";
+import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
+import CloseIcon from "@mui/icons-material/Close";
+import tickerIcon from "../../../../public/assets/icons/ticker_icon.svg";
+import {
+  calculateDays,
+  convertToWeiGovernance,
+} from "../../../../src/utils/globalFunctions";
+import actionIcon from "../../../../public/assets/icons/action_icon.svg";
+import surveyIcon from "../../../../public/assets/icons/survey_icon.svg";
+import ReactHtmlParser from "react-html-parser";
+import Erc721Dao from "../../../../src/abis/newArch/erc721Dao.json";
+import Erc20Dao from "../../../../src/abis/newArch/erc20Dao.json";
+import FactoryContractABI from "../../../../src/abis/newArch/factoryContract.json";
+import { SmartContract } from "../../../../src/api/contract";
+import { Interface } from "ethers";
+
+import Web3 from "web3";
+import { Web3Adapter } from "@safe-global/protocol-kit";
+import Safe from "@safe-global/protocol-kit";
+import SafeApiKit from "@safe-global/api-kit";
+import { subgraphQuery } from "../../../../src/utils/subgraphs";
+import {
+  QUERY_ALL_MEMBERS,
+  QUERY_CLUB_DETAILS,
+} from "../../../../src/api/graphql/queries";
+import ProposalExecutionInfo from "../../../../src/components/proposalComps/ProposalExecutionInfo";
+import Signators from "../../../../src/components/proposalComps/Signators";
+import ProposalInfo from "../../../../src/components/proposalComps/ProposalInfo";
+import CurrentResults from "../../../../src/components/proposalComps/CurrentResults";
+import ProposalVotes from "../../../../src/components/proposalComps/ProposalVotes";
+import WrongNetworkModal from "../../../../src/components/modals/WrongNetworkModal";
+import { getSafeSdk } from "../../../../src/utils/helper";
 
 const useStyles = makeStyles({
   clubAssets: {
@@ -191,215 +202,131 @@ const useStyles = makeStyles({
 });
 
 const ProposalDetail = () => {
-  const router = useRouter();
-  const { pid, clubId } = router.query;
-  const [{ wallet }] = useConnectWallet();
-  const walletAddress = wallet?.accounts[0].address;
   const classes = useStyles();
-  const [voted, setVoted] = useState(false);
-  const [fetched, setFetched] = useState(false);
-  const [members, setMembers] = useState([]);
-  const [owner, setOwner] = useState(false);
-  const [ownerAddresses, setOwnerAddresses] = useState([]);
-  const [signedOwners, setSignedOwners] = useState([]);
-  const [threshold, setThreshold] = useState();
-  const [signed, setSigned] = useState(false);
-  const [txHash, setTxHash] = useState();
-  const [executionReady, setExecutionReady] = useState(false);
-  const [pendingTxHash, setPendingTxHash] = useState("");
-  const [membersFetched, setMembersFetched] = useState(false);
-  const [proposalData, setProposalData] = useState([]);
-  const [castVoteOption, setCastVoteOption] = useState("");
-  const clubID = clubId;
-  const [cardSelected, setCardSelected] = useState(null);
-  const [governance, setGovernance] = useState(true);
-  const [tokenData, setTokenData] = useState([]);
-  const [tokenFetched, setTokenFetched] = useState(false);
+  const router = useRouter();
+  const dispatch = useDispatch();
+  const { pid, clubId: daoAddress } = router.query;
 
-  const isGovernanceActive = useSelector((state) => {
-    return state.gnosis.governanceAllowed;
-  });
-  const daoAddress = useSelector((state) => {
-    return state.create.daoAddress;
-  });
-  const gnosisAddress = useSelector((state) => {
-    return state.gnosis.safeAddress;
+  const [{ wallet }] = useConnectWallet();
+  const walletAddress = Web3.utils.toChecksumAddress(
+    wallet?.accounts[0].address,
+  );
+
+  const tokenType = useSelector((state) => {
+    return state.club.clubData.tokenType;
   });
 
-  const [executed, setExecuted] = useState(false);
-  const [message, setMessage] = useState("");
-  const [failed, setFailed] = useState(false);
-  const [openSnackBar, setOpenSnackBar] = useState(false);
-  const tresuryAddress = useSelector((state) => {
-    return state.create.tresuryAddress;
+  const SUBGRAPH_URL = useSelector((state) => {
+    return state.gnosis.subgraphUrl;
   });
-  const [loaderOpen, setLoaderOpen] = useState(false);
-  const FACTORY_CONTRACT_ADDRESS = useSelector((state) => {
-    return state.gnosis.factoryContractAddress;
+
+  const isGovernanceERC20 = useSelector((state) => {
+    return state.club.erc20ClubDetails.isGovernanceActive;
   });
+
+  const isGovernanceERC721 = useSelector((state) => {
+    return state.club.erc721ClubDetails.isGovernanceActive;
+  });
+
+  const isGovernanceActive =
+    tokenType === "erc20" ? isGovernanceERC20 : isGovernanceERC721;
+
+  const isAdmin = useSelector((state) => {
+    return state.gnosis.adminUser;
+  });
+
+  const NETWORK_HEX = useSelector((state) => {
+    return state.gnosis.networkHex;
+  });
+
   const USDC_CONTRACT_ADDRESS = useSelector((state) => {
     return state.gnosis.usdcContractAddress;
   });
+
+  const clubData = useSelector((state) => {
+    return state.club.clubData;
+  });
+
+  const gnosisAddress = useSelector((state) => {
+    return state.club.clubData.gnosisAddress;
+  });
+
+  const airdropContractAddress = useSelector((state) => {
+    return state.gnosis.actionContractAddress;
+  });
+
+  const [proposalData, setProposalData] = useState(null);
+  const [governance, setGovernance] = useState(false);
+  const [voted, setVoted] = useState(false);
+  const [ownerAddresses, setOwnerAddresses] = useState([]);
+  const [castVoteOption, setCastVoteOption] = useState("");
+  const [cardSelected, setCardSelected] = useState(null);
+  const [loaderOpen, setLoaderOpen] = useState(false);
+  const [executionReady, setExecutionReady] = useState(false);
+  const [signed, setSigned] = useState(false);
+  const [executed, setExecuted] = useState(false);
+  const [pendingTxHash, setPendingTxHash] = useState("");
+  const [txHash, setTxHash] = useState();
+  const [signedOwners, setSignedOwners] = useState([]);
+  const [openSnackBar, setOpenSnackBar] = useState(false);
+  const [message, setMessage] = useState("");
+  const [failed, setFailed] = useState(false);
+  const [fetched, setFetched] = useState(false);
+  const [daoDetails, setDaoDetails] = useState();
+
   const GNOSIS_TRANSACTION_URL = useSelector((state) => {
     return state.gnosis.transactionUrl;
   });
 
-  let voteId = null;
-  const dispatch = useDispatch();
+  const FACTORY_CONTRACT_ADDRESS = useSelector((state) => {
+    return state.gnosis.factoryContractAddress;
+  });
 
-  const getSafeSdk = async () => {
+  const WRONG_NETWORK = useSelector((state) => {
+    return state.gnosis.wrongNetwork;
+  });
+
+  const AIRDROP_ACTION_ADDRESS = useSelector((state) => {
+    return state.gnosis.actionContractAddress;
+  });
+
+  const CLUB_NETWORK_ID = useSelector((state) => {
+    return state.gnosis.clubNetworkId;
+  });
+
+  const getSafeService = useCallback(async () => {
     const web3 = new Web3(window.ethereum);
     const ethAdapter = new Web3Adapter({
-      web3: web3,
+      web3,
       signerAddress: walletAddress,
     });
-    const safeSdk = await Safe.create({
-      ethAdapter: ethAdapter,
-      safeAddress: gnosisAddress,
-    });
-    return safeSdk;
-  };
-
-  const getSafeService = async () => {
-    const web3 = new Web3(window.web3);
-    const ethAdapter = new Web3Adapter({
-      web3: web3,
-      signerAddress: walletAddress,
-    });
-    const safeService = new SafeServiceClient({
+    const safeService = new SafeApiKit({
       txServiceUrl: GNOSIS_TRANSACTION_URL,
       ethAdapter,
     });
+    // const safeService = new SafeServiceClient({
+    //   txServiceUrl: GNOSIS_TRANSACTION_URL,
+    //   ethAdapter,
+    // });
     return safeService;
-  };
+  }, [GNOSIS_TRANSACTION_URL, walletAddress]);
 
-  const fetchData = async () => {
-    dispatch(addProposalId(pid));
-    const proposalData = getProposalDetail(pid);
-    proposalData.then((result) => {
-      if (result.status !== 200) {
-        setFetched(false);
-      } else {
-        setProposalData(result.data);
-        setFetched(true);
-      }
-    });
-  };
+  const isOwner = useCallback(async () => {
+    const safeSdk = await getSafeSdk(gnosisAddress, walletAddress);
+    const owners = await safeSdk.getOwners();
 
-  const fetchTokens = () => {
-    if (clubID) {
-      const tokenData = getAssets(clubId);
-      tokenData.then((result) => {
-        if (result.status != 200) {
-          setTokenFetched(false);
-        } else {
-          setTokenData(result.data.tokenPriceList);
-          setTokenFetched(true);
-        }
-      });
-    }
-  };
-
-  const fetchMembersData = () => {
-    const membersData = getMembersDetails(clubID);
-    membersData.then((result) => {
-      if (result.status !== 200) {
-        setMembersFetched(false);
-      } else {
-        setMembers(result.data);
-        setMembersFetched(true);
-      }
-    });
-  };
-
-  const calculateVotePercentage = (voteReceived) => {
-    let totalVote = 0;
-    proposalData[0].votingOptions.map((vote, key) => {
-      totalVote += vote.count;
-    });
-    return (voteReceived / totalVote).toFixed(2) * 100;
-  };
-
-  const fetchVotingOptionChoice = (votingOptionAddress) => {
-    let obj = proposalData[0].votingOptions.find(
-      (voteOption) => voteOption.votingOptionId === votingOptionAddress,
+    const ownerAddressesArray = owners.map((value) =>
+      Web3.utils.toChecksumAddress(value),
     );
-    voteId = parseInt(proposalData[0].votingOptions.indexOf(obj));
-    return proposalData[0].votingOptions.indexOf(obj);
-  };
-
-  useEffect(async () => {
-    setLoaderOpen(true);
-
-    if (pid && gnosisAddress && GNOSIS_TRANSACTION_URL) {
-      await isOwner();
-      await fetchData();
-    }
-  }, [pid, gnosisAddress, GNOSIS_TRANSACTION_URL]);
-  useEffect(async () => {
-    setLoaderOpen(true);
-    // await isOwner();
-    if (clubId) {
-      fetchMembersData();
-      fetchTokens();
-    }
-  }, [clubId]);
-
-  useEffect(() => {
-    if (fetched && membersFetched) {
-      setLoaderOpen(false);
-    }
-  }, [fetched, membersFetched]);
-
-  const returnHome = () => {
-    router.back();
-  };
-
-  const submitVote = () => {
-    setLoaderOpen(true);
-    const web3 = new Web3(window.web3);
-    const userAddress = web3.utils.toChecksumAddress(walletAddress);
-    const payload = {
-      proposalId: pid,
-      votingOptionId: castVoteOption,
-      voterAddress: userAddress.toLowerCase(),
-      clubId: clubID,
-    };
-    const voteSubmit = castVote(payload);
-    voteSubmit.then((result) => {
-      if (result.status !== 201) {
-        setVoted(false);
-        setLoaderOpen(false);
-      } else {
-        fetchData();
-        setVoted(true);
-        setLoaderOpen(false);
-      }
-    });
-  };
-
-  const isOwner = async () => {
-    const safeSdk = await getSafeSdk();
-    const ownerAddresses = await safeSdk.getOwners();
-    const ownerAddressesArray = ownerAddresses.map((value) =>
-      value.toLowerCase(),
-    );
-
     setOwnerAddresses(ownerAddressesArray);
-    if (ownerAddressesArray.includes(walletAddress)) {
-      setOwner(true);
-    } else {
-      setOwner(false);
-    }
+
     if (isGovernanceActive === false) {
-      if (ownerAddressesArray.includes(walletAddress)) {
+      if (isAdmin) {
         setGovernance(true);
-      } else {
-        setGovernance(false);
-      }
-    }
+      } else setGovernance(false);
+    } else setGovernance(true);
     const threshold = await safeSdk.getThreshold();
-    setThreshold(threshold);
+
     const proposalTxHash = getProposalTxHash(pid);
     proposalTxHash.then(async (result) => {
       if (
@@ -408,17 +335,17 @@ const ProposalDetail = () => {
       ) {
         setTxHash("");
       } else {
-        txHash = result.data[0].txHash;
+        // txHash = result.data[0].txHash;
         setTxHash(result.data[0].txHash);
         const safeService = await getSafeService();
         const tx = await safeService.getTransaction(result.data[0].txHash);
         const ownerAddresses = tx.confirmations.map(
           (confirmOwners) => confirmOwners.owner,
         );
-        console.log("ownerAddresses", ownerAddresses);
         const pendingTxs = await safeService.getPendingTransactions(
-          gnosisAddress,
+          Web3.utils.toChecksumAddress(gnosisAddress),
         );
+
         setPendingTxHash(
           pendingTxs?.results[pendingTxs.count - 1]?.safeTxHash,
           result.data[0].txHash,
@@ -432,541 +359,294 @@ const ProposalDetail = () => {
           setExecutionReady(true);
         }
       }
+      setLoaderOpen(false);
+    });
+  }, [gnosisAddress, isAdmin, isGovernanceActive, pid, walletAddress]);
+
+  const checkUserVoted = () => {
+    if (walletAddress) {
+      let obj = proposalData.vote.find(
+        (voteCasted) => voteCasted.voterAddress === walletAddress,
+      );
+      const isVoted = proposalData.vote.indexOf(obj) >= 0;
+      return isVoted;
+    }
+  };
+
+  const submitVote = () => {
+    setLoaderOpen(true);
+    const payload = {
+      proposalId: pid,
+      votingOptionId: castVoteOption,
+      voterAddress: walletAddress,
+      clubId: daoAddress,
+      daoAddress: daoAddress,
+    };
+    const voteSubmit = castVote(payload, NETWORK_HEX);
+    voteSubmit.then((result) => {
+      if (result.status !== 201) {
+        setVoted(false);
+        setLoaderOpen(false);
+      } else {
+        fetchData();
+        setVoted(true);
+        setLoaderOpen(false);
+      }
     });
   };
 
+  const fetchData = useCallback(async () => {
+    dispatch(addProposalId(pid));
+    const proposalData = getProposalDetail(pid);
+
+    proposalData.then((result) => {
+      if (result.status !== 200) {
+        setFetched(false);
+      } else {
+        setProposalData(result.data[0]);
+        setFetched(true);
+      }
+    });
+  }, [pid]);
+
   const executeFunction = async (proposalStatus) => {
     setLoaderOpen(true);
-    if (proposalData[0].commands[0].executionId === 0) {
-      // for airdrop execution
-      const updateProposal = new SmartContract(
-        ImplementationContract,
-        daoAddress,
-        undefined,
-        USDC_CONTRACT_ADDRESS,
-        GNOSIS_TRANSACTION_URL,
+
+    const updateProposal = new SmartContract(
+      clubData?.tokenType === "erc20" ? Erc20Dao : Erc721Dao,
+      daoAddress,
+      undefined,
+      USDC_CONTRACT_ADDRESS,
+      GNOSIS_TRANSACTION_URL,
+    );
+
+    let data;
+    let approvalData;
+    let ABI;
+    if (
+      proposalData.commands[0].executionId === 0 ||
+      proposalData.commands[0].executionId === 4
+    ) {
+      ABI = [
+        "function approve(address spender, uint256 amount)",
+        "function contractCalls(address _to, bytes memory _data)",
+        "function airDropToken(address _airdropTokenAddress,uint256[] memory _airdropAmountArray,address[] memory _members)",
+      ];
+    } else if (proposalData.commands[0].executionId === 3) {
+      ABI = FactoryContractABI.abi;
+    } else if (clubData.tokenType === "erc721") {
+      ABI = Erc721Dao.abi;
+    } else if (clubData.tokenType === "erc20") {
+      ABI = Erc20Dao.abi;
+    }
+    // if(clubData.tokenType === 'erc721')
+    if (proposalData.commands[0].executionId === 0) {
+      const membersData = await subgraphQuery(
+        SUBGRAPH_URL,
+        QUERY_ALL_MEMBERS(daoAddress),
       );
-      console.log(proposalData[0].commands[0].airDropToken);
-      const response = updateProposal.updateProposalAndExecution(
-        daoAddress,
-        gnosisAddress,
-        proposalData[0].cid,
-        proposalStatus,
-        123444,
-        undefined,
-        proposalData[0].commands[0].airDropToken,
-        [1, 0, 0, 0, 0, 0, 0, 0],
-        undefined,
-        undefined,
-        undefined,
-        proposalData[0].commands[0].airDropAmount,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        proposalData[0].commands[0].airDropCarryFee,
-        [],
-        txHash,
-        pid,
-        tokenFetched ? tokenData : "",
-        [
-          "0x0000000000000000000000000000000000000000",
-          "0x0000000000000000000000000000000000000000",
-          0,
-        ],
-        ["0x0000000000000000000000000000000000000000", "0x"],
-      );
-      if (proposalStatus === "executed") {
-        await response.then(
-          (result) => {
-            result.promiEvent.on("confirmation", () => {
-              const updateStatus = patchProposalExecuted(pid);
-              updateStatus.then((result) => {
-                if (result.status !== 200) {
-                  setExecuted(false);
-                  setOpenSnackBar(true);
-                  setMessage("Airdrop execution status update failed!");
-                  setFailed(true);
-                  setLoaderOpen(false);
-                } else {
-                  fetchData();
-                  setExecuted(true);
-                  setOpenSnackBar(true);
-                  setMessage("Airdrop execution successful!");
-                  setFailed(false);
-                  setLoaderOpen(false);
-                }
-              });
-            });
-          },
-          (error) => {
-            setExecuted(false);
-            setOpenSnackBar(true);
-            setMessage("Airdrop execution failed!");
-            setFailed(true);
-            setLoaderOpen(false);
-          },
+      let membersArray = [];
+      membersData.users.map((member) => membersArray.push(member.userAddress));
+
+      let iface = new Interface(ABI);
+      approvalData = iface.encodeFunctionData("approve", [
+        AIRDROP_ACTION_ADDRESS,
+        proposalData.commands[0].airDropAmount,
+      ]);
+
+      let airDropAmountArray = [];
+      if (proposalData.commands[0].airDropCarryFee !== 0) {
+        const carryFeeAmount =
+          (proposalData.commands[0].airDropAmount *
+            proposalData.commands[0].airDropCarryFee) /
+          100;
+        airDropAmountArray = await Promise.all(
+          membersArray.map(async (member) => {
+            const balance = await updateProposal.nftBalance(
+              Web3.utils.toChecksumAddress(member),
+            );
+
+            let clubTokensMinted;
+            if (clubData.tokenType === "erc20") {
+              clubTokensMinted = await updateProposal.totalSupply();
+            } else {
+              clubTokensMinted = await updateProposal.nftOwnersCount();
+            }
+
+            return (
+              ((proposalData.commands[0].airDropAmount - carryFeeAmount) *
+                balance) /
+              clubTokensMinted
+            )
+              .toFixed(0)
+              .toString();
+          }),
+        );
+        airDropAmountArray.unshift(carryFeeAmount.toString());
+        membersArray.unshift(
+          Web3.utils.toChecksumAddress(proposalData.createdBy),
         );
       } else {
-        await response
-          .then(() => {
-            console.log("in response", response);
-            setSigned(true);
-            setLoaderOpen(false);
-          })
-          .catch((err) => {
-            // console.log("in response error", err);
-            setSigned(false);
-            setOpenSnackBar(true);
-            setFailed(true);
-            // err
-            //   ? setMessage(err)
-            //   : err.message
-            //   ? setMessage(message)
-            //   : setMessage("Signature failed!");
-            err.message
-              ? setMessage(err.message)
-              : err
-              ? setMessage(err)
-              : setMessage("Signature failed!");
-            setLoaderOpen(false);
-          });
+        airDropAmountArray = await Promise.all(
+          membersArray.map(async (member) => {
+            const balance = await updateProposal.nftBalance(
+              Web3.utils.toChecksumAddress(member),
+            );
+
+            let clubTokensMinted;
+            if (clubData.tokenType === "erc20") {
+              clubTokensMinted = await updateProposal.totalSupply();
+            } else {
+              clubTokensMinted = await updateProposal.nftOwnersCount();
+            }
+
+            return (
+              (proposalData.commands[0].airDropAmount * balance) /
+              clubTokensMinted
+            )
+              .toFixed(0)
+              .toString();
+          }),
+        );
+      }
+
+      data = iface.encodeFunctionData("airDropToken", [
+        proposalData.commands[0].airDropToken,
+        airDropAmountArray,
+        membersArray,
+      ]);
+    }
+    if (proposalData.commands[0].executionId === 1) {
+      let iface = new Interface(ABI);
+
+      if (clubData.tokenType === "erc20") {
+        data = iface.encodeFunctionData("mintGTToAddress", [
+          [proposalData.commands[0].mintGTAmounts.toString()],
+          proposalData.commands[0].mintGTAddresses,
+        ]);
+      } else {
+        const clubDetails = await subgraphQuery(
+          SUBGRAPH_URL,
+          QUERY_CLUB_DETAILS(daoAddress),
+        );
+        const tokenURI = clubDetails?.stations[0].imageUrl;
+        data = iface.encodeFunctionData("mintGTToAddress", [
+          proposalData.commands[0].mintGTAmounts,
+          [tokenURI],
+          proposalData.commands[0].mintGTAddresses,
+        ]);
       }
     }
 
-    if (proposalData[0].commands[0].executionId === 1) {
-      // for mintGT execution
-      const updateProposal = new SmartContract(
-        ImplementationContract,
+    if (proposalData.commands[0].executionId === 2) {
+      let iface = new Interface(ABI);
+      data = iface.encodeFunctionData("updateGovernanceSettings", [
+        proposalData.commands[0].quorum * 100,
+        proposalData.commands[0].threshold * 100,
+      ]);
+    }
+    if (proposalData.commands[0].executionId === 3) {
+      let iface = new Interface(ABI);
+
+      data = iface.encodeFunctionData("updateDistributionAmount", [
+        convertToWeiGovernance(
+          convertToWeiGovernance(proposalData.commands[0].totalDeposits, 6) /
+            daoDetails.pricePerToken,
+          18,
+        ),
         daoAddress,
-        undefined,
-        USDC_CONTRACT_ADDRESS,
-        GNOSIS_TRANSACTION_URL,
-      );
-      const response = updateProposal.updateProposalAndExecution(
-        daoAddress,
-        gnosisAddress,
-        proposalData[0].cid,
-        proposalStatus,
-        123444,
-        undefined,
-        undefined,
-        [0, 1, 0, 0, 0, 0, 0, 0],
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        [proposalData[0].commands[0].mintGTAmounts.toString()],
-        proposalData[0].commands[0].mintGTAddresses,
-        undefined,
-        undefined,
-        undefined,
-        [],
-        txHash,
-        pid,
-        tokenFetched ? tokenData : "",
-        [
-          "0x0000000000000000000000000000000000000000",
-          "0x0000000000000000000000000000000000000000",
-          0,
-        ],
-        ["0x0000000000000000000000000000000000000000", "0x"],
-      );
-      if (proposalStatus === "executed") {
-        response.then(
-          (result) => {
-            result.promiEvent.on("confirmation", () => {
-              const updateStatus = patchProposalExecuted(pid);
-              updateStatus.then((result) => {
-                if (result.status !== 200) {
-                  setExecuted(false);
-                  setOpenSnackBar(true);
-                  setMessage("MintGT execution status update failed!");
-                  setFailed(true);
-                  setLoaderOpen(false);
-                } else {
-                  fetchData();
-                  setExecuted(true);
-                  setOpenSnackBar(true);
-                  setMessage("MintGT execution successful!");
-                  setFailed(false);
-                  setLoaderOpen(false);
-                }
-              });
+      ]);
+    }
+    if (proposalData.commands[0].executionId === 4) {
+      let iface = new Interface(ABI);
+
+      approvalData = iface.encodeFunctionData("approve", [
+        AIRDROP_ACTION_ADDRESS,
+        proposalData.commands[0].customTokenAmounts[0],
+      ]);
+
+      data = iface.encodeFunctionData("airDropToken", [
+        proposalData.commands[0].customToken,
+        proposalData.commands[0].customTokenAmounts,
+        proposalData.commands[0].customTokenAddresses,
+      ]);
+    }
+
+    const updateProposalExecute = new SmartContract(
+      clubData?.tokenType === "erc20" ? Erc20Dao : Erc721Dao,
+      daoAddress,
+      undefined,
+      USDC_CONTRACT_ADDRESS,
+      GNOSIS_TRANSACTION_URL,
+      true,
+    );
+
+    const response = updateProposalExecute.updateProposalAndExecution(
+      data,
+      approvalData,
+      daoAddress,
+      Web3.utils.toChecksumAddress(gnosisAddress),
+      txHash,
+      pid,
+      proposalData.commands[0].executionId === 0
+        ? proposalData.commands[0].airDropToken
+        : proposalData.commands[0].executionId === 4
+        ? proposalData.commands[0].customToken
+        : "",
+      proposalStatus,
+      airdropContractAddress,
+      proposalData.commands[0].executionId === 3
+        ? FACTORY_CONTRACT_ADDRESS
+        : "",
+    );
+    if (proposalStatus === "executed") {
+      // fetchData()
+      response.then(
+        (result) => {
+          result.promiEvent.on("confirmation", () => {
+            const updateStatus = patchProposalExecuted(pid);
+            updateStatus.then((result) => {
+              if (result.status !== 200) {
+                setExecuted(false);
+                setOpenSnackBar(true);
+                setMessage("execution status update failed!");
+                setFailed(true);
+                setLoaderOpen(false);
+              } else {
+                fetchData();
+                setExecuted(true);
+                setOpenSnackBar(true);
+                setMessage("execution successful!");
+                setFailed(false);
+                setLoaderOpen(false);
+              }
             });
-          },
-          (error) => {
-            console.log(error);
-            setExecuted(false);
-            setOpenSnackBar(true);
-            setMessage("MintGT execution failed!");
-            setFailed(true);
-            setLoaderOpen(false);
-          },
-        );
-      } else {
-        await response
-          .then(async (result) => {
-            setSigned(true);
-            setLoaderOpen(false);
-          })
-          .catch((err) => {
-            setSigned(false);
-            setMessage("Signature failed!");
-            setLoaderOpen(false);
           });
-      }
+        },
+        (error) => {
+          console.error(error);
+          setExecuted(false);
+          setOpenSnackBar(true);
+          setMessage("execution failed!");
+          setFailed(true);
+          setLoaderOpen(false);
+        },
+      );
+    } else {
+      await response
+        .then(async (result) => {
+          setSigned(true);
+          isOwner();
+        })
+        .catch((err) => {
+          console.error(err);
+          setSigned(false);
+          setOpenSnackBar(true);
+          setMessage("Signature failed!");
+          setFailed(true);
+          setLoaderOpen(false);
+        });
     }
-    // comented from before
-    // if (proposalData[0].commands[0].executionId === 2) {
-    //   const web3 = new Web3(window.web3)
-    //   // for assigner executor role execution
-    //   const updateProposal = new SmartContract(ImplementationContract, daoAddress, undefined, USDC_CONTRACT_ADDRESS, GNOSIS_TRANSACTION_URL)
-    //   const response = updateProposal.updateProposalAndExecution(
-    //     daoAddress,
-    //     gnosisAddress,
-    //     proposalData[0].ipfsHash,
-    //     "Executed",
-    //     123444,
-    //     undefined,
-    //     undefined,
-    //     [0, 0, 1, 0, 0, 0, 0, 0],
-    //     undefined,
-    //     undefined,
-    //     undefined,
-    //     undefined,
-    //     undefined,
-    //     undefined,
-    //     undefined,
-    //     undefined,
-    //     undefined,
-    //     undefined,
-    //     undefined,
-    //     undefined,
-    //     undefined,
-    //     [web3.utils.toChecksumAddress(proposalData[0].commands[0].executiveRoles)],
-    //   )
-    //   response.then((result) => {
-    //     const updateStatus = patchProposalExecuted(pid)
-    //     updateStatus.then((result) => {
-    //       if (result.status !== 200) {
-    //         setExecuted(false)
-    //         setOpenSnackBar(true)
-    //         setMessage("Assigner executor role status update failed!")
-    //         setFailed(true)
-    //         setLoaderOpen(false)
-    //       } else {
-    //         setExecuted(true)
-    //         setOpenSnackBar(true)
-    //         setMessage("Assigner executor role allocation successful!")
-    //         setFailed(false)
-    //         setLoaderOpen(false)
-    //       }
-    //     })
-    //   }, (error) => {
-    //     setExecuted(false)
-    //     setOpenSnackBar(true)
-    //     setMessage("Assigner executor role allocation failed!")
-    //     setFailed(true)
-    //     setLoaderOpen(false)
-    //   })
-    // }
-    //commented from before ends
-
-    if (proposalData[0].commands[0].executionId === 2) {
-      // For execution of Governance settings
-      const updateProposal = new SmartContract(
-        ImplementationContract,
-        daoAddress,
-        undefined,
-        USDC_CONTRACT_ADDRESS,
-        GNOSIS_TRANSACTION_URL,
-      );
-      const response = updateProposal.updateProposalAndExecution(
-        daoAddress,
-        gnosisAddress,
-        proposalData[0].cid,
-        proposalStatus,
-        123444,
-        undefined,
-        undefined,
-        [0, 0, 1, 0, 0, 0, 0, 0],
-        proposalData[0].commands[0].quorum,
-        proposalData[0].commands[0].threshold,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        [],
-        txHash,
-        pid,
-        tokenFetched ? tokenData : "",
-        [
-          "0x0000000000000000000000000000000000000000",
-          "0x0000000000000000000000000000000000000000",
-          0,
-        ],
-        ["0x0000000000000000000000000000000000000000", "0x"],
-      );
-      if (proposalStatus === "executed") {
-        response.then(
-          (result) => {
-            result.promiEvent.on("confirmation", () => {
-              const updateStatus = patchProposalExecuted(pid);
-              updateStatus.then((result) => {
-                if (result.status !== 200) {
-                  setExecuted(false);
-                  setOpenSnackBar(true);
-                  setMessage("Governance settings status update failed!");
-                  setFailed(true);
-                  setLoaderOpen(false);
-                } else {
-                  fetchData();
-                  setExecuted(true);
-                  setOpenSnackBar(true);
-                  setMessage("Governance settings execution successful!");
-                  setFailed(false);
-                  setLoaderOpen(false);
-                }
-              });
-            });
-          },
-          (error) => {
-            console.log(error);
-            setExecuted(false);
-            setOpenSnackBar(true);
-            setMessage("Governance settings execution failed!");
-            setFailed(true);
-            setLoaderOpen(false);
-          },
-        );
-      } else {
-        await response
-          .then(async (result) => {
-            setSigned(true);
-            setLoaderOpen(false);
-          })
-          .catch((err) => {
-            setSigned(false);
-            setMessage("Signature failed!");
-            setLoaderOpen(false);
-          });
-      }
-    }
-
-    if (proposalData[0].commands[0].executionId === 3) {
-      // update raise amount execution
-      const updateProposal = new SmartContract(
-        ImplementationContract,
-        daoAddress,
-        undefined,
-        USDC_CONTRACT_ADDRESS,
-        GNOSIS_TRANSACTION_URL,
-      );
-      const response = updateProposal.updateProposalAndExecution(
-        daoAddress,
-        gnosisAddress,
-        proposalData[0].cid,
-        proposalStatus,
-        123444,
-        undefined,
-        undefined,
-        [0, 0, 0, 1, 0, 0, 0, 0],
-        undefined,
-        undefined,
-        proposalData[0].commands[0].totalDeposits,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        [],
-        txHash,
-        pid,
-        tokenFetched ? tokenData : "",
-        [
-          "0x0000000000000000000000000000000000000000",
-          "0x0000000000000000000000000000000000000000",
-          0,
-        ],
-        ["0x0000000000000000000000000000000000000000", "0x"],
-      );
-
-      if (proposalStatus === "executed") {
-        response.then(
-          (result) => {
-            result.promiEvent.on("confirmation", () => {
-              const updateStatus = patchProposalExecuted(pid);
-              updateStatus.then((result) => {
-                if (result.status !== 200) {
-                  setExecuted(false);
-                  setOpenSnackBar(true);
-                  setMessage("Raise amount execution status update failed!");
-                  setFailed(true);
-                  setLoaderOpen(false);
-                } else {
-                  fetchData();
-                  setExecuted(true);
-                  setOpenSnackBar(true);
-                  setMessage("Update raise amount execution successful!");
-                  setFailed(false);
-                  setLoaderOpen(false);
-                }
-              });
-            });
-          },
-          (error) => {
-            setExecuted(false);
-            setOpenSnackBar(true);
-            setMessage("Update raise amount execution failed!");
-            setFailed(true);
-            setLoaderOpen(false);
-          },
-        );
-      } else {
-        await response
-          .then(async (result) => {
-            await isOwner();
-            setSigned(true);
-            setLoaderOpen(false);
-          })
-          .catch((err) => {
-            setSigned(false);
-            setMessage("Signature failed!");
-            setLoaderOpen(false);
-          });
-      }
-    }
-
-    if (proposalData[0].commands[0].executionId === 4) {
-      // send custom token execution
-      const updateProposal = new SmartContract(
-        ImplementationContract,
-        daoAddress,
-        undefined,
-        USDC_CONTRACT_ADDRESS,
-        GNOSIS_TRANSACTION_URL,
-      );
-      const response = updateProposal.updateProposalAndExecution(
-        daoAddress,
-        gnosisAddress,
-        proposalData[0].cid,
-        proposalStatus,
-        123444,
-        proposalData[0].commands[0].customToken,
-        undefined,
-        [0, 0, 0, 0, 1, 0, 0, 0],
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        proposalData[0].commands[0].customTokenAmounts,
-        proposalData[0].commands[0].customTokenAddresses,
-        undefined,
-        [],
-        txHash,
-        pid,
-        tokenFetched ? tokenData : "",
-        [
-          "0x0000000000000000000000000000000000000000",
-          "0x0000000000000000000000000000000000000000",
-          0,
-        ],
-        ["0x0000000000000000000000000000000000000000", "0x"],
-      );
-
-      if (proposalStatus === "executed") {
-        response.then(
-          (result) => {
-            result.promiEvent.on("confirmation", () => {
-              const updateStatus = patchProposalExecuted(pid);
-              updateStatus.then((result) => {
-                if (result.status !== 200) {
-                  setExecuted(false);
-                  setOpenSnackBar(true);
-                  setMessage(
-                    "Send custom token execution status update failed!",
-                  );
-                  setFailed(true);
-                  setLoaderOpen(false);
-                } else {
-                  fetchData();
-                  setExecuted(true);
-                  setOpenSnackBar(true);
-                  setMessage("Send custom token execution successful!");
-                  setFailed(false);
-                  setLoaderOpen(false);
-                }
-              });
-            });
-          },
-          (error) => {
-            setExecuted(false);
-            setOpenSnackBar(true);
-            setMessage("Send custom token execution status update failed!");
-            setFailed(true);
-            setLoaderOpen(false);
-          },
-        );
-      } else {
-        await response
-          .then((result) => {
-            setSigned(true);
-            setLoaderOpen(false);
-          })
-          .catch((err) => {
-            setSigned(false);
-            setOpenSnackBar(true);
-            setFailed(true);
-            // err
-            //   ? setMessage(err)
-            //   : err.message
-            //   ? setMessage(message)
-            //   : setMessage("Signature failed!");
-            err.message
-              ? setMessage(err.message)
-              : err
-              ? setMessage(err)
-              : setMessage("Signature failed!");
-            setLoaderOpen(false);
-          });
-      }
-    }
-  };
-
-  const checkUserVoted = (pid) => {
-    if (walletAddress) {
-      console.log(walletAddress);
-      const web3 = new Web3(window.web3);
-      let userAddress = walletAddress;
-      userAddress = web3.utils.toChecksumAddress(userAddress);
-      let obj = proposalData[0].vote.find(
-        (voteCasted) => voteCasted.voterAddress === userAddress.toLowerCase(),
-      );
-      return proposalData[0].vote.indexOf(obj) >= 0;
-    }
-  };
-
-  const fetchUserVoteText = (pid) => {
-    if (walletAddress) {
-      const web3 = new Web3(window.web3);
-      let userAddress = walletAddress;
-      userAddress = web3.utils.toChecksumAddress(userAddress);
-      let obj = proposalData[0].vote.find(
-        (voteCasted) => voteCasted.voterAddress === userAddress,
-      );
-      return proposalData[0].vote.indexOf(obj) >= 0;
-    }
-  };
-
-  const handleShowMore = () => {
-    router.push("/dashboard", undefined, { shallow: true });
   };
 
   const handleSnackBarClose = (event, reason) => {
@@ -976,42 +656,86 @@ const ProposalDetail = () => {
     setOpenSnackBar(false);
   };
 
+  useEffect(() => {
+    if (pid) {
+      setLoaderOpen(true);
+      fetchData();
+      isOwner();
+    }
+  }, [pid]);
+
+  useEffect(() => {
+    const fetchFactoryContractDetails = async () => {
+      try {
+        const factoryContract = new SmartContract(
+          FactoryContractABI,
+          FACTORY_CONTRACT_ADDRESS,
+          walletAddress,
+          USDC_CONTRACT_ADDRESS,
+          GNOSIS_TRANSACTION_URL,
+        );
+
+        const factoryData = await factoryContract.getDAOdetails(daoAddress);
+        setDaoDetails(factoryData);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchFactoryContractDetails();
+  }, [
+    daoAddress,
+    FACTORY_CONTRACT_ADDRESS,
+    GNOSIS_TRANSACTION_URL,
+    USDC_CONTRACT_ADDRESS,
+    walletAddress,
+  ]);
+
+  if (!wallet && proposalData === null) {
+    return <>loading</>;
+  }
+
   return (
     <>
       <Layout1 page={2}>
         <Grid container spacing={6} paddingLeft={10} paddingTop={10}>
           <Grid item md={8.5}>
-            <Grid container spacing={1} onClick={returnHome}>
+            {/* back button */}
+            <Grid container spacing={1} ml={-4} onClick={() => router.back()}>
               <Grid item mt={0.5} sx={{ "&:hover": { cursor: "pointer" } }}>
                 <KeyboardBackspaceIcon className={classes.listFont} />
               </Grid>
               <Grid item sx={{ "&:hover": { cursor: "pointer" } }} mb={2}>
                 <Typography className={classes.listFont}>
-                  Back to workstation
+                  Back to all proposals
                 </Typography>
               </Grid>
             </Grid>
+            {/* propsal name */}
             <Grid container mb={2}>
               <Grid item>
                 <Typography className={classes.clubAssets}>
-                  {fetched ? proposalData[0].name : null}
+                  {proposalData?.name}
                 </Typography>
               </Grid>
             </Grid>
+            {/* chips */}
             <Grid container direction="row" spacing={4}>
               <Grid item>
                 <Grid container spacing={2}>
-                  <Grid item>
+                  <Grid item ml={-1}>
                     <Chip
                       className={classes.timeLeftChip}
                       label={
-                        <Grid container>
+                        <Grid
+                          container
+                          sx={{ display: "flex", alignItems: "center" }}
+                        >
                           <Image src={tickerIcon} alt="ticker-icon" />
                           <Typography ml={1}>
-                            {" "}
-                            {calculateDays(proposalData[0]?.votingDuration) <= 0
+                            {calculateDays(proposalData?.votingDuration) <= 0
                               ? "Voting closed"
-                              : calculateDays(proposalData[0]?.votingDuration) +
+                              : calculateDays(proposalData?.votingDuration) +
                                 " days left"}
                           </Typography>
                         </Grid>
@@ -1021,20 +745,21 @@ const ProposalDetail = () => {
                   <Grid item>
                     <Chip
                       className={
-                        proposalData[0]?.type === "action"
+                        proposalData?.type === "action"
                           ? classes.actionChip
                           : classes.surveyChip
                       }
                       label={
-                        <Grid container>
-                          {proposalData[0]?.type === "action" ? (
+                        <Grid
+                          container
+                          sx={{ display: "flex", alignItems: "center" }}
+                        >
+                          {proposalData?.type === "action" ? (
                             <Image src={actionIcon} alt="action-icon" />
                           ) : (
                             <Image src={surveyIcon} alt="survey-icon" />
                           )}
-                          <Typography ml={1}>
-                            {proposalData[0]?.type}
-                          </Typography>
+                          <Typography ml={1}>{proposalData?.type}</Typography>
                         </Grid>
                       }
                     />
@@ -1043,368 +768,62 @@ const ProposalDetail = () => {
                     {" "}
                     <Chip
                       className={
-                        proposalData[0]?.status === "active"
+                        proposalData?.status === "active"
                           ? classes.cardFontActive
-                          : proposalData[0]?.status === "passed"
+                          : proposalData?.status === "passed"
                           ? classes.cardFontPassed
-                          : proposalData[0]?.status === "executed"
+                          : proposalData?.status === "executed"
                           ? classes.cardFontExecuted
-                          : proposalData[0]?.status === "failed"
+                          : proposalData?.status === "failed"
                           ? classes.cardFontFailed
                           : classes.cardFontFailed
                       }
                       label={
-                        proposalData[0]?.status.charAt(0).toUpperCase() +
-                        proposalData[0]?.status.slice(1)
+                        proposalData?.status?.charAt(0).toUpperCase() +
+                        proposalData?.status?.slice(1)
                       }
                     />
                   </Grid>
                 </Grid>
               </Grid>
             </Grid>
-            <Grid container mt={4} mb={3} spacing={2}>
-              <Grid item md={9}>
-                {fetched && (
-                  <>
-                    {proposalData[0].commands.length ? (
-                      <Card>
-                        {/* <Grid container item>
-                            <Typography className={classes.listFont2}>
-                              Actions
-                            </Typography>
-                            <Divider sx={{ marginTop: 2, marginBottom: 3 }} />
-                          </Grid> */}
 
-                        <>
-                          {proposalData[0].commands[0].executionId == 0 ? (
-                            <>
-                              <Grid container item mb={1}>
-                                <Typography
-                                  className={classes.listFont2Colourless}
-                                >
-                                  Distribute tokens to a wallet
-                                </Typography>
-                              </Grid>
-                              <Divider />
-                              <Grid container mt={1}>
-                                <Grid container spacing={3}>
-                                  <Grid item xs={12} md={4}>
-                                    <Typography className={classes.listFont2}>
-                                      Token
-                                    </Typography>
-                                    <Typography
-                                      className={classes.listFont2Colourless}
-                                    >
-                                      {
-                                        proposalData[0].commands[0]
-                                          .usdcTokenSymbol
-                                      }
-                                    </Typography>
-                                  </Grid>
-                                  <Grid item xs={12} md={4}>
-                                    <Typography className={classes.listFont2}>
-                                      Amount
-                                    </Typography>
-                                    <Typography
-                                      className={classes.listFont2Colourless}
-                                    >
-                                      {fetched
-                                        ? proposalData[0].commands[0]
-                                            .airDropAmount /
-                                          Math.pow(
-                                            10,
-                                            parseInt(
-                                              proposalData[0].commands[0]
-                                                .usdcTokenDecimal,
-                                            ),
-                                          )
-                                        : null}
-                                    </Typography>
-                                  </Grid>
-                                  <Grid item xs={12} md={4}>
-                                    <Typography className={classes.listFont2}>
-                                      Carry fee
-                                    </Typography>
-                                    <Typography
-                                      className={classes.listFont2Colourless}
-                                    >
-                                      {fetched
-                                        ? proposalData[0].commands[0]
-                                            .airDropCarryFee
-                                        : null}
-                                      %
-                                    </Typography>
-                                  </Grid>
-                                </Grid>
-                              </Grid>
-                            </>
-                          ) : proposalData[0].commands[0].executionId == 1 ? (
-                            <>
-                              <Grid container item>
-                                <Typography
-                                  className={classes.listFont2Colourless}
-                                >
-                                  Mint governance tokens to a wallet
-                                </Typography>
-                              </Grid>
-                              <Grid container>
-                                <Grid item>
-                                  <Typography className={classes.listFont2}>
-                                    Amount
-                                  </Typography>
-                                </Grid>
-                                <Grid
-                                  item
-                                  xs
-                                  sx={{
-                                    display: "flex",
-                                    justifyContent: "flex-end",
-                                  }}
-                                >
-                                  <Typography
-                                    className={classes.listFont2Colourless}
-                                  >
-                                    {fetched
-                                      ? proposalData[0].commands[0]
-                                          .mintGTAmounts[0] /
-                                        Math.pow(
-                                          10,
-                                          parseInt(
-                                            proposalData[0].commands[0]
-                                              .usdcGovernanceTokenDecimal,
-                                          ),
-                                        )
-                                      : null}
-                                  </Typography>
-                                </Grid>
-                              </Grid>
-                              <Grid container>
-                                <Grid item>
-                                  <Typography className={classes.listFont2}>
-                                    Recipient
-                                  </Typography>
-                                </Grid>
-                                <Grid
-                                  item
-                                  xs
-                                  sx={{
-                                    display: "flex",
-                                    justifyContent: "flex-end",
-                                  }}
-                                >
-                                  <Typography
-                                    className={classes.listFont2Colourless}
-                                  >
-                                    {fetched
-                                      ? proposalData[0].commands[0]
-                                          .mintGTAddresses[0]
-                                      : null}
-                                  </Typography>
-                                </Grid>
-                              </Grid>
-                            </>
-                          ) : proposalData[0].commands[0].executionId == 2 ? (
-                            <>
-                              <Grid container item mb={1}>
-                                <Typography
-                                  className={classes.listFont2Colourless}
-                                >
-                                  Update governance settings of the club
-                                </Typography>
-                              </Grid>
-                              <Divider />
-                              <Grid container mt={1}>
-                                <Grid container spacing={3}>
-                                  <Grid item xs={12} md={4}>
-                                    <Typography className={classes.listFont2}>
-                                      Quoram
-                                    </Typography>
-                                    <Typography
-                                      className={classes.listFont2Colourless}
-                                    >
-                                      {fetched
-                                        ? proposalData[0].commands[0].quorum
-                                        : null}
-                                      %
-                                    </Typography>
-                                  </Grid>
-                                  <Grid item xs={12} md={4}>
-                                    <Typography className={classes.listFont2}>
-                                      Threshold
-                                    </Typography>
-                                    <Typography
-                                      className={classes.listFont2Colourless}
-                                    >
-                                      {fetched
-                                        ? proposalData[0].commands[0].threshold
-                                        : null}
-                                      %
-                                    </Typography>
-                                  </Grid>
-                                </Grid>
-                              </Grid>
-                            </>
-                          ) : proposalData[0].commands[0].executionId == 3 ? (
-                            <>
-                              <Grid container item mb={1}>
-                                <Typography
-                                  className={classes.listFont2Colourless}
-                                >
-                                  Update total raise amount
-                                </Typography>
-                              </Grid>
-                              <Divider />
-                              <Grid container mt={1}>
-                                <Grid container spacing={3}>
-                                  <Grid item xs={12} md={4}>
-                                    <Typography className={classes.listFont2}>
-                                      Total amount
-                                    </Typography>
-                                    <Typography
-                                      className={classes.listFont2Colourless}
-                                    >
-                                      {fetched
-                                        ? proposalData[0].commands[0]
-                                            .totalDeposits /
-                                          Math.pow(
-                                            10,
-                                            parseInt(
-                                              proposalData[0].commands[0]
-                                                .usdcTokenDecimal,
-                                            ),
-                                          )
-                                        : null}{" "}
-                                      {
-                                        proposalData[0].commands[0]
-                                          .usdcTokenSymbol
-                                      }
-                                    </Typography>
-                                  </Grid>
-                                </Grid>
-                              </Grid>
-                            </>
-                          ) : proposalData[0].commands[0].executionId == 4 ? (
-                            <>
-                              <Grid container item mb={1}>
-                                <Typography
-                                  className={classes.listFont2Colourless}
-                                >
-                                  Transfer token to a wallet
-                                </Typography>
-                              </Grid>
-                              <Divider />
-                              <Grid container mt={1}>
-                                <Grid container spacing={3}>
-                                  <Grid item xs={12} md={4}>
-                                    <Typography className={classes.listFont2}>
-                                      Amount
-                                    </Typography>
-                                    <Typography
-                                      className={classes.listFont2Colourless}
-                                    >
-                                      {fetched
-                                        ? proposalData[0].commands[0]
-                                            .customTokenAmounts[0] /
-                                          Math.pow(
-                                            10,
-                                            parseInt(
-                                              proposalData[0].commands[0]
-                                                .usdcTokenDecimal,
-                                            ),
-                                          )
-                                        : null}{" "}
-                                      {
-                                        proposalData[0].commands[0]
-                                          .usdcTokenSymbol
-                                      }
-                                    </Typography>
-                                  </Grid>
-                                  <Grid item xs={12} md={4}>
-                                    <Typography className={classes.listFont2}>
-                                      Recipient
-                                    </Typography>
-                                    <Typography
-                                      className={classes.listFont2Colourless}
-                                    >
-                                      {fetched
-                                        ? proposalData[0].commands[0].customTokenAddresses[0].slice(
-                                            0,
-                                            6,
-                                          ) +
-                                          "...." +
-                                          proposalData[0].commands[0].customTokenAddresses[0].slice(
-                                            proposalData[0].commands[0]
-                                              .customTokenAddresses[0].length -
-                                              4,
-                                          )
-                                        : null}
-                                    </Typography>
-                                  </Grid>
-                                </Grid>
-                              </Grid>
-                            </>
-                          ) : null}
-                        </>
+            {/* Proposal Info and Signators */}
+            <Grid container spacing={2} mt={4} mb={3}>
+              <ProposalExecutionInfo
+                proposalData={proposalData}
+                fetched={fetched}
+                USDC_CONTRACT_ADDRESS={USDC_CONTRACT_ADDRESS}
+                daoDetails={daoDetails}
+              />
 
-                        {/*<Divider sx={{ marginTop: 2, marginBottom: 3 }} />*/}
-                      </Card>
-                    ) : null}
-                  </>
-                )}
-              </Grid>
-              <Grid item md={3}>
-                <Card>
-                  <Grid container item>
-                    <Typography className={classes.listFont2}>
-                      Signators
-                    </Typography>
-                    <Divider sx={{ marginTop: 2, marginBottom: 3 }} />
-                  </Grid>
-                  {ownerAddresses.map((owner) => (
-                    <Grid
-                      sx={{
-                        display: "flex",
-                        justifyContent: "flex-start",
-                      }}
-                      key={owner}
-                    >
-                      {signedOwners.includes(owner) ? (
-                        <DoneIcon
-                          fill="blue"
-                          sx={{ marginRight: 2, color: "#3B7AFD" }}
-                        />
-                      ) : (
-                        <HelpOutlineIcon sx={{ marginRight: 2 }} />
-                      )}
-                      <Typography>
-                        {owner.slice(0, 6)}.....{owner.slice(-4)}
-                      </Typography>
-                    </Grid>
-                  ))}
-                </Card>
-              </Grid>
+              {proposalData?.type === "action" && (
+                <Signators
+                  ownerAddresses={ownerAddresses}
+                  signedOwners={signedOwners}
+                />
+              )}
             </Grid>
+
+            {/* proposal description */}
+            <Typography fontWeight={"500"}>Proposal description</Typography>
             <Grid container item className={classes.listFont}>
-              {fetched ? (
-                <div
-                  dangerouslySetInnerHTML={{
-                    __html: ReactHtmlParser(proposalData[0].description),
-                  }}
-                >
-                  {/* {console.log(ReactHtmlParser(proposalData[0].description))}
-                  {ReactHtmlParser(proposalData[0].description)} */}
-                </div>
-              ) : null}
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: ReactHtmlParser(proposalData?.description),
+                }}
+              ></div>
             </Grid>
+
+            {/* voting process before Signature */}
             {governance ? (
               <>
-                {" "}
                 <Grid container mt={6}>
                   <Grid item md={12}>
-                    {fetched ? (
-                      proposalData[0].type === "action" ? (
-                        proposalData[0].status === "active" ? (
-                          checkUserVoted(pid) ? (
+                    {proposalData?.type === "action" ? (
+                      proposalData?.status === "active" ? (
+                        <>
+                          {checkUserVoted() ? (
                             <Card sx={{ width: "100%" }}>
                               <Grid
                                 container
@@ -1440,44 +859,42 @@ const ProposalDetail = () => {
                               </Typography>
                               <Divider sx={{ marginTop: 2, marginBottom: 3 }} />
                               <Stack spacing={2}>
-                                {proposalData[0].votingOptions.map(
-                                  (data, key) => {
-                                    return (
-                                      <CardActionArea
-                                        className={classes.mainCard}
-                                        key={key}
-                                        disabled={voted}
+                                {proposalData.votingOptions.map((data, key) => {
+                                  return (
+                                    <CardActionArea
+                                      className={classes.mainCard}
+                                      key={key}
+                                      disabled={voted}
+                                    >
+                                      <Card
+                                        className={
+                                          cardSelected == key
+                                            ? classes.mainCardSelected
+                                            : classes.mainCard
+                                        }
+                                        onClick={(e) => {
+                                          setCastVoteOption(
+                                            data.votingOptionId,
+                                          );
+                                          setCardSelected(key);
+                                        }}
                                       >
-                                        <Card
-                                          className={
-                                            cardSelected == key
-                                              ? classes.mainCardSelected
-                                              : classes.mainCard
-                                          }
-                                          onClick={(e) => {
-                                            setCastVoteOption(
-                                              data.votingOptionId,
-                                            );
-                                            setCardSelected(key);
-                                          }}
+                                        <Grid
+                                          container
+                                          item
+                                          justifyContent="center"
+                                          alignItems="center"
                                         >
-                                          <Grid
-                                            container
-                                            item
-                                            justifyContent="center"
-                                            alignItems="center"
+                                          <Typography
+                                            className={classes.cardFont1}
                                           >
-                                            <Typography
-                                              className={classes.cardFont1}
-                                            >
-                                              {data.text}{" "}
-                                            </Typography>
-                                          </Grid>
-                                        </Card>
-                                      </CardActionArea>
-                                    );
-                                  },
-                                )}
+                                            {data.text}{" "}
+                                          </Typography>
+                                        </Grid>
+                                      </Card>
+                                    </CardActionArea>
+                                  );
+                                })}
                                 <CardActionArea
                                   className={classes.mainCard}
                                   disabled={voted}
@@ -1523,164 +940,74 @@ const ProposalDetail = () => {
                                 </CardActionArea>
                               </Stack>
                             </Card>
-                          )
-                        ) : proposalData[0].status === "passed" ? (
-                          owner ? (
-                            <Card>
-                              <Card
-                                className={
-                                  executed
-                                    ? classes.mainCardButtonSuccess
-                                    : classes.mainCardButton
-                                }
-                                onClick={
-                                  executionReady
-                                    ? pendingTxHash === txHash
-                                      ? () => {
-                                          executeFunction("executed");
-                                        }
-                                      : () => {
-                                          console.log("rrrrrrrrrrr");
-                                          setOpenSnackBar(true);
-                                          setFailed(true);
-                                          setMessage(
-                                            "execute txns with smaller nonce first",
-                                          );
-                                        }
-                                    : () => {
-                                        executeFunction("passed");
+                          )}
+                        </>
+                      ) : proposalData?.status === "passed" ? (
+                        isAdmin ? (
+                          <Card>
+                            <Card
+                              className={
+                                executed
+                                  ? classes.mainCardButtonSuccess
+                                  : classes.mainCardButton
+                              }
+                              onClick={
+                                executionReady
+                                  ? pendingTxHash === txHash
+                                    ? () => {
+                                        executeFunction("executed");
                                       }
-                                }
-                              >
-                                <Grid
-                                  container
-                                  justifyContent="center"
-                                  alignItems="center"
-                                >
-                                  {signed && !executionReady ? (
-                                    <Grid item mt={0.5}>
-                                      <CheckCircleRoundedIcon />
-                                    </Grid>
-                                  ) : (
-                                    <Grid item></Grid>
-                                  )}
-
-                                  {executed ? (
-                                    <Grid item>
-                                      <Typography className={classes.cardFont1}>
-                                        Executed Successfully
-                                      </Typography>
-                                    </Grid>
-                                  ) : null}
-                                  {executionReady ? (
-                                    <Grid item>
-                                      <Typography className={classes.cardFont1}>
-                                        Execute Now
-                                      </Typography>
-                                    </Grid>
-                                  ) : null}
-                                  <Grid item>
-                                    {signed && !executionReady && !executed ? (
-                                      <Grid item>
-                                        <Typography
-                                          className={classes.cardFont1}
-                                        >
-                                          {signed
-                                            ? "Signed Succesfully"
-                                            : "Sign Now"}
-                                        </Typography>
-                                      </Grid>
-                                    ) : null}
-                                    {!signed && !executionReady && !executed ? (
-                                      <Grid item>
-                                        <Typography
-                                          className={classes.cardFont1}
-                                        >
-                                          {signed
-                                            ? "Signed Succesfully"
-                                            : "Sign Now"}
-                                        </Typography>
-                                      </Grid>
-                                    ) : null}
-                                    {/* {txHash ? (
-                                      <Typography className={classes.cardFont1}>
-                                        {signed
-                                          ? "Signed Succesfully"
-                                          : "Sign Now"}
-
-                                       
-                                      </Typography>
-                                    ) : (
-                                      <Typography className={classes.cardFont1}>
-                                        {signed
-                                          ? "Signed Succesfully"
-                                          : "Sign Now"}
-                                      </Typography>
-                                    )} */}
-                                  </Grid>
-                                </Grid>
-                              </Card>
-                            </Card>
-                          ) : (
-                            <Card sx={{ width: "100%" }}>
+                                    : () => {
+                                        setOpenSnackBar(true);
+                                        setFailed(true);
+                                        setMessage(
+                                          "execute txns with smaller nonce first",
+                                        );
+                                      }
+                                  : () => {
+                                      executeFunction("passed");
+                                    }
+                              }
+                              disabled={(!executionReady && signed) || executed}
+                            >
                               <Grid
                                 container
-                                direction="column"
                                 justifyContent="center"
                                 alignItems="center"
-                                mt={10}
-                                mb={10}
                               >
-                                <Grid item mt={0.5}>
-                                  <CheckCircleRoundedIcon
-                                    className={classes.mainCardButtonSuccess}
-                                  />
-                                </Grid>
-                                <Grid item mt={0.5}>
-                                  <Typography
-                                    className={classes.successfulMessageText}
-                                  >
-                                    Proposal needs to be executed by Admin
-                                  </Typography>
-                                </Grid>
-                                <Grid item mt={0.5}>
-                                  <Typography className={classes.listFont2}>
-                                    {/* Voted for */}
-                                  </Typography>
-                                </Grid>
+                                {signed && !executionReady ? (
+                                  <Grid item mt={0.5}>
+                                    <CheckCircleRoundedIcon />
+                                  </Grid>
+                                ) : (
+                                  <Grid item></Grid>
+                                )}
+
+                                {executed && signed ? (
+                                  <Grid item>
+                                    <Typography className={classes.cardFont1}>
+                                      Executed Successfully
+                                    </Typography>
+                                  </Grid>
+                                ) : executionReady ? (
+                                  <Grid item>
+                                    <Typography className={classes.cardFont1}>
+                                      Execute Now
+                                    </Typography>
+                                  </Grid>
+                                ) : !executionReady && !executed ? (
+                                  <Grid item>
+                                    <Typography className={classes.cardFont1}>
+                                      {signed
+                                        ? "Signed Succesfully"
+                                        : "Sign Now"}
+                                    </Typography>
+                                  </Grid>
+                                ) : null}
                               </Grid>
                             </Card>
-                          )
-                        ) : proposalData[0].status === "failed" ? (
-                          <Card sx={{ width: "100%" }}>
-                            <Grid
-                              container
-                              direction="column"
-                              justifyContent="center"
-                              alignItems="center"
-                              mt={10}
-                              mb={10}
-                            >
-                              <Grid item mt={0.5}>
-                                <CloseIcon
-                                  className={classes.mainCardButtonError}
-                                />
-                              </Grid>
-                              <Grid item mt={0.5}>
-                                <Typography
-                                  className={classes.successfulMessageText}
-                                >
-                                  Execution Failed
-                                </Typography>
-                              </Grid>
-                              <Grid item mt={0.5}>
-                                <Typography className={classes.listFont2}>
-                                  {/* Voted for */}
-                                </Typography>
-                              </Grid>
-                            </Grid>
                           </Card>
-                        ) : proposalData[0].status === "executed" ? (
+                        ) : (
                           <Card sx={{ width: "100%" }}>
                             <Grid
                               container
@@ -1699,7 +1026,7 @@ const ProposalDetail = () => {
                                 <Typography
                                   className={classes.successfulMessageText}
                                 >
-                                  Successfully Executed
+                                  Proposal needs to be executed by Admin
                                 </Typography>
                               </Grid>
                               <Grid item mt={0.5}>
@@ -1709,9 +1036,13 @@ const ProposalDetail = () => {
                               </Grid>
                             </Grid>
                           </Card>
-                        ) : null
-                      ) : proposalData[0].type === "survey" ? (
-                        proposalData[0].status === "active" ? (
+                        )
+                      ) : (
+                        <></>
+                      )
+                    ) : proposalData?.type === "survey" ? (
+                      proposalData?.type === "survey" ? (
+                        proposalData?.status === "active" ? (
                           checkUserVoted(pid) ? (
                             <Card sx={{ width: "100%" }}>
                               <Grid
@@ -1749,7 +1080,7 @@ const ProposalDetail = () => {
                               <Divider sx={{ marginTop: 2, marginBottom: 3 }} />
                               <Stack spacing={2}>
                                 {fetched
-                                  ? proposalData[0].votingOptions.map(
+                                  ? proposalData?.votingOptions.map(
                                       (data, key) => {
                                         return (
                                           <CardActionArea
@@ -1897,249 +1228,32 @@ const ProposalDetail = () => {
                   </Grid>
                 </Grid>
               </>
-            ) : null}
+            ) : (
+              <></>
+            )}
           </Grid>
           <Grid item md={3.5}>
             <Stack spacing={3}>
-              <Card>
-                <Grid container>
-                  <Grid item>
-                    <Typography className={classes.listFont2}>
-                      Proposed by
-                    </Typography>
-                  </Grid>
-                  <Grid
-                    item
-                    xs
-                    sx={{ display: "flex", justifyContent: "flex-end" }}
-                  >
-                    <Typography className={classes.listFont2Colourless}>
-                      {fetched
-                        ? proposalData[0].createdBy.substring(0, 6) +
-                          ".........." +
-                          proposalData[0].createdBy.substring(
-                            proposalData[0].createdBy.length - 4,
-                          )
-                        : null}
-                    </Typography>
-                  </Grid>
-                </Grid>
-                <Grid container>
-                  <Grid item>
-                    <Typography className={classes.listFont2}>
-                      Voting system
-                    </Typography>
-                  </Grid>
-                  <Grid
-                    item
-                    xs
-                    sx={{ display: "flex", justifyContent: "flex-end" }}
-                  >
-                    <Typography className={classes.listFont2Colourless}>
-                      Single choice
-                    </Typography>
-                  </Grid>
-                </Grid>
-                <Grid container>
-                  <Grid item>
-                    <Typography className={classes.listFont2}>
-                      Start date
-                    </Typography>
-                  </Grid>
-                  <Grid
-                    item
-                    xs
-                    sx={{ display: "flex", justifyContent: "flex-end" }}
-                  >
-                    <Typography className={classes.listFont2Colourless}>
-                      {fetched
-                        ? new Date(
-                            String(proposalData[0].updateDate),
-                          ).toLocaleDateString()
-                        : null}
-                    </Typography>
-                  </Grid>
-                </Grid>
-                <Grid container>
-                  <Grid item>
-                    <Typography className={classes.listFont2}>
-                      End date
-                    </Typography>
-                  </Grid>
-                  <Grid
-                    item
-                    xs
-                    sx={{ display: "flex", justifyContent: "flex-end" }}
-                  >
-                    <Typography className={classes.listFont2Colourless}>
-                      {fetched
-                        ? new Date(
-                            String(proposalData[0].votingDuration),
-                          ).toLocaleDateString()
-                        : null}
-                    </Typography>
-                  </Grid>
-                </Grid>
-              </Card>
-              <Card>
-                <Grid container item mb={2}>
-                  <Typography className={classes.listFont}>
-                    Current results
-                  </Typography>
-                </Grid>
-                {fetched ? (
-                  proposalData[0].votingOptions.length > 0 ? (
-                    proposalData[0].votingOptions.map((vote, key) => {
-                      return (
-                        <Grid key={key} sx={{ marginBottom: "10px" }}>
-                          <Grid container>
-                            <Grid item sx={{ display: "flex" }}>
-                              <Typography className={classes.listFont2}>
-                                {vote.text}
-                              </Typography>
-                              <Typography
-                                sx={{
-                                  background: "#6475A3",
-                                  paddingX: "10px",
-                                  marginBottom: "5px",
-                                  borderRadius: "5px",
-                                }}
-                                mx={1}
-                                variant="subtitle2"
-                              >
-                                {vote.count}
-                              </Typography>
-                            </Grid>
-                            <Grid
-                              item
-                              xs
-                              sx={{
-                                display: "flex",
-                                justifyContent: "flex-end",
-                              }}
-                            >
-                              <Typography
-                                className={classes.listFont2Colourless}
-                              >
-                                {vote.count > 0
-                                  ? calculateVotePercentage(vote.count)
-                                  : 0}
-                                %
-                              </Typography>
-                            </Grid>
-                          </Grid>
-                          <ProgressBar
-                            value={
-                              vote.count > 0
-                                ? calculateVotePercentage(vote.count)
-                                : 0
-                            }
-                          />
-                        </Grid>
-                      );
-                    })
-                  ) : (
-                    <Typography className={classes.listFont2Colourless}>
-                      No previous results available
-                    </Typography>
-                  )
-                ) : null}
-              </Card>
-              <Card>
-                <Grid container item mb={2}>
-                  <Typography className={classes.listFont}>Votes</Typography>
-                </Grid>
-                {fetched ? (
-                  proposalData[0].vote.length > 0 ? (
-                    proposalData[0].vote.map((voter, key) => {
-                      if (key < 3) {
-                        return (
-                          <div key={key}>
-                            <Grid container>
-                              <Grid item>
-                                <Typography
-                                  className={classes.listFont2Colourless}
-                                >
-                                  {voter.voterAddress.substring(0, 6) +
-                                    "......" +
-                                    voter.voterAddress.substring(
-                                      voter.voterAddress.length - 4,
-                                    )}
-                                </Typography>
-                              </Grid>
-                              <Grid
-                                item
-                                xs
-                                sx={{
-                                  display: "flex",
-                                  justifyContent: "flex-end",
-                                }}
-                              >
-                                <Typography
-                                  className={classes.listFont2Colourless}
-                                >
-                                  {fetched
-                                    ? proposalData[0].votingOptions[
-                                        parseInt(
-                                          fetchVotingOptionChoice(
-                                            voter.votingOptionId,
-                                          ),
-                                        )
-                                      ].text
-                                    : null}
-                                </Typography>
-                              </Grid>
-                            </Grid>
-                            <Grid container>
-                              {/* <Grid item>
-                                <Typography className={classes.listFont2small}>
-                                  10,000 $DEMO
-                                </Typography>
-                              </Grid> */}
-                              <Grid
-                                item
-                                xs
-                                sx={{
-                                  display: "flex",
-                                  justifyContent: "flex-end",
-                                }}
-                              >
-                                <Typography variant="proposalSubHeading">
-                                  Signed on{" "}
-                                  {new Date(
-                                    voter.createdAt,
-                                  ).toLocaleDateString()}
-                                </Typography>
-                              </Grid>
-                            </Grid>
-                            <br />
-                          </div>
-                        );
-                      }
-                    })
-                  ) : (
-                    <Typography className={classes.listFont2Colourless}>
-                      No previous votes available
-                    </Typography>
-                  )
-                ) : null}
-                {fetched && proposalData[0].length >= 0 ? (
-                  <Grid container>
-                    <Grid item md={12}>
-                      <Button
-                        sx={{ width: "100%" }}
-                        variant="transparentWhite"
-                        onClick={() => handleShowMore()}
-                      >
-                        More
-                      </Button>
-                    </Grid>
-                  </Grid>
-                ) : null}
-              </Card>
+              <ProposalInfo proposalData={proposalData} fetched={fetched} />
+
+              {isGovernanceActive && (
+                <>
+                  <CurrentResults
+                    proposalData={proposalData}
+                    fetched={fetched}
+                  />
+                  <ProposalVotes
+                    proposalData={proposalData}
+                    fetched={fetched}
+                  />
+                </>
+              )}
             </Stack>
           </Grid>
         </Grid>
+
+        {WRONG_NETWORK && <WrongNetworkModal chainId={CLUB_NETWORK_ID} />}
+
         <Snackbar
           open={openSnackBar}
           autoHideDuration={6000}

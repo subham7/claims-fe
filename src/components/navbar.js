@@ -16,22 +16,34 @@ import AccountButton from "./accountbutton";
 
 import store from "../redux/store";
 import { useDispatch, useSelector } from "react-redux";
-import { useRouter } from "next/router";
+import Router, { useRouter } from "next/router";
 import { useAccountCenter, useConnectWallet } from "@web3-onboard/react";
 import { addWalletAddress } from "../redux/reducers/user";
 // import "../../styles/globals.css";
 
 const useStyles = makeStyles({
   image: {
-    height: "30px",
+    height: "40px",
     width: "auto !important",
+    zIndex: "99999 !important",
+    position: "absolute",
+    cursor: "pointer",
   },
 });
 
 export default function Navbar3(props) {
   const dispatch = useDispatch();
   const classes = useStyles();
+  const router = useRouter();
   const [{ wallet, connecting }, connect, disconnect] = useConnectWallet();
+  const { pid: daoAddress } = router.query;
+
+  let walletAddress;
+
+  if (typeof window !== "undefined") {
+    const web3 = new Web3(window.web3);
+    walletAddress = web3.utils.toChecksumAddress(wallet?.accounts[0].address);
+  }
 
   if (wallet) {
     if (window.ethereum) {
@@ -42,9 +54,9 @@ export default function Navbar3(props) {
   }
   useEffect(() => {
     if (wallet) {
-      dispatch(addWalletAddress(wallet ? wallet.accounts[0].address : null));
+      dispatch(addWalletAddress(wallet ? walletAddress : null));
     }
-  }, [dispatch, wallet]);
+  }, [dispatch, wallet, walletAddress]);
 
   const handleFaucetRedirect = () => {
     window.open("/faucet", "_ blank");
@@ -64,15 +76,18 @@ export default function Navbar3(props) {
             <MenuIcon />
           </IconButton>
           <Box sx={{ flexGrow: 1 }}>
+            {/* <Link href={"/"}> */}
             <Image
               src="/assets/images/monogram.png"
-              height="40"
-              width="40"
+              height="50"
+              width="50"
               className={classes.image}
               alt="monogram"
+              onClick={() => router.push(`/dashboard/${daoAddress}`)}
             />
+            {/* </Link> */}
           </Box>
-          {props.faucet ? (
+          {/* {props.faucet ? (
             <Button
               variant="primary"
               color="primary"
@@ -81,7 +96,7 @@ export default function Navbar3(props) {
             >
               USDC Faucet
             </Button>
-          ) : null}
+          ) : null} */}
           {connecting ? (
             <Button sx={{ mr: 2, mt: 2 }} className={classes.navButton}>
               Connecting

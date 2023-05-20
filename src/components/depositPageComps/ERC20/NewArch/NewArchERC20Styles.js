@@ -1,6 +1,11 @@
 import { makeStyles } from "@mui/styles";
 
-export const ERC20Styles = makeStyles({
+export const NewArchERC20Styles = makeStyles({
+  root: {
+    "& .MuiFilledInput-root": {
+      background: "rgb(232, 241, 250)",
+    },
+  },
   valuesStyle: {
     fontFamily: "Whyte",
     fontSize: "21px",
@@ -16,7 +21,7 @@ export const ERC20Styles = makeStyles({
     opacity: 1,
   },
   cardJoin: {
-    backgroundColor: "#81F5FF",
+    backgroundColor: "#19274A",
     borderRadius: "10px",
     opacity: 1,
     justifyContent: "space-between",
@@ -36,16 +41,16 @@ export const ERC20Styles = makeStyles({
     color: "#111D38",
   },
   JoinText: {
-    color: "#111D38",
+    color: "#fff",
     fontFamily: "Whyte",
     fontSize: "21px",
     fontWeight: "bold",
   },
   cardLargeFont: {
-    "width": "150px",
+    "width": "300px",
     "fontSize": "2em",
     "fontWeight": "bold",
-    "fontFamily": "Whyte",
+    // "fontFamily": "Whyte",
     "borderColor": "#142243",
     "borderRadius": "0px",
     "& input[type=number]": {
@@ -60,6 +65,7 @@ export const ERC20Styles = makeStyles({
       "margin": 0,
     },
     "color": "#3B7AFD",
+    "background": "#fff",
   },
   cardWarning: {
     backgroundColor: "#FFB74D0D",

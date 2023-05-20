@@ -11,7 +11,7 @@ import { useRouter } from "next/router";
 import { networkType } from "../data/network";
 import { switchNetwork } from "../utils/wallet";
 import { fetchConfig, fetchConfigById } from "../api/config";
-import { updateDynamicAddress } from "../api";
+import { POLYGON_MAINNET_RPC_URL, updateDynamicAddress } from "../api";
 import Web3 from "web3";
 import { RINKEYBY_RPC_URL, GOERLI_RPC_URL, POLYGON_RPC_URL } from "../api";
 
@@ -152,9 +152,8 @@ export default function NetworkSwitcher() {
         rpcURL = GOERLI_RPC_URL;
       }
       if (data.networkId == 137) {
-        rpcURL = POLYGON_RPC_URL;
+        rpcURL = POLYGON_MAINNET_RPC_URL;
       }
-      console.log("data.networkId", data.networkId);
       const switched = await switchNetwork(
         networkDetails[0].networkHex,
         rpcURL,
