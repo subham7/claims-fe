@@ -164,11 +164,7 @@ const AdditionalSettings = ({
               Station contract address
             </Typography>
           </Grid>
-          <Grid
-            // container
-            sx={{ display: "flex", alignItems: "center" }}
-            spacing={1}
-          >
+          <Grid sx={{ display: "flex", alignItems: "center" }}>
             <Grid item>
               <IconButton
                 color="primary"
@@ -191,7 +187,7 @@ const AdditionalSettings = ({
                 <OpenInNewIcon className={classes.iconColor} />
               </IconButton>
             </Grid>
-            <Grid item mr={4}>
+            <Grid item mr={4} mt={1}>
               <Typography variant="p" className={classes.valuesStyle}>
                 {daoDetails ? (
                   daoAddress?.substring(0, 6) +
@@ -219,7 +215,7 @@ const AdditionalSettings = ({
           sx={{ display: "flex", justifyContent: "space-between" }}
         >
           <Grid item mt={3}>
-            <Typography variant="settingText">Owner fees</Typography>
+            <Typography variant="settingText">Admin fees</Typography>
           </Grid>
           <Grid
             sx={{

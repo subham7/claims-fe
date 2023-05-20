@@ -17,6 +17,7 @@ export const AdditionalSettingsStyles = makeStyles({
     marginLeft: "20px",
   },
   iconColor: {
+    fontSize: "18px",
     color: "#C1D3FF",
   },
 
@@ -34,6 +35,8 @@ export const AdditionalSettingsStyles = makeStyles({
     },
   },
   text: {
-    fontSize: "26px",
+    fontSize: "21px",
+    fontWeight: "normal",
+    fontFamily: "Whyte",
   },
 });

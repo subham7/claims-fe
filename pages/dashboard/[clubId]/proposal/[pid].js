@@ -41,7 +41,6 @@ import Erc721Dao from "../../../../src/abis/newArch/erc721Dao.json";
 import Erc20Dao from "../../../../src/abis/newArch/erc20Dao.json";
 import FactoryContractABI from "../../../../src/abis/newArch/factoryContract.json";
 import { SmartContract } from "../../../../src/api/contract";
-import { getAssetsByDaoAddress } from "../../../../src/api/assets";
 import { Interface } from "ethers";
 
 import Web3 from "web3";
@@ -58,9 +57,8 @@ import Signators from "../../../../src/components/proposalComps/Signators";
 import ProposalInfo from "../../../../src/components/proposalComps/ProposalInfo";
 import CurrentResults from "../../../../src/components/proposalComps/CurrentResults";
 import ProposalVotes from "../../../../src/components/proposalComps/ProposalVotes";
-import { fetchClubbyDaoAddress } from "../../../../src/api/club";
 import WrongNetworkModal from "../../../../src/components/modals/WrongNetworkModal";
-import { RPC_URL } from "../../../../src/api";
+import { getSafeSdk } from "../../../../src/utils/helper";
 
 const useStyles = makeStyles({
   clubAssets: {
@@ -257,7 +255,6 @@ const ProposalDetail = () => {
     return state.gnosis.actionContractAddress;
   });
 
-  const [loader, setLoader] = useState(false);
   const [proposalData, setProposalData] = useState(null);
   const [governance, setGovernance] = useState(false);
   const [voted, setVoted] = useState(false);
@@ -274,9 +271,6 @@ const ProposalDetail = () => {
   const [openSnackBar, setOpenSnackBar] = useState(false);
   const [message, setMessage] = useState("");
   const [failed, setFailed] = useState(false);
-  const [tokenData, setTokenData] = useState([]);
-  const [tokenFetched, setTokenFetched] = useState(false);
-  const [threshold, setThreshold] = useState();
   const [fetched, setFetched] = useState(false);
   const [daoDetails, setDaoDetails] = useState();
 
@@ -300,20 +294,6 @@ const ProposalDetail = () => {
     return state.gnosis.clubNetworkId;
   });
 
-  const getSafeSdk = useCallback(async () => {
-    const web3 = new Web3(RPC_URL);
-    const ethAdapter = new Web3Adapter({
-      web3,
-      signerAddress: walletAddress,
-    });
-    const safeSdk = await Safe.create({
-      ethAdapter: ethAdapter,
-      safeAddress: gnosisAddress,
-    });
-
-    return safeSdk;
-  }, [gnosisAddress, walletAddress]);
-
   const getSafeService = useCallback(async () => {
     const web3 = new Web3(window.ethereum);
     const ethAdapter = new Web3Adapter({
@@ -332,7 +312,7 @@ const ProposalDetail = () => {
   }, [GNOSIS_TRANSACTION_URL, walletAddress]);
 
   const isOwner = useCallback(async () => {
-    const safeSdk = await getSafeSdk();
+    const safeSdk = await getSafeSdk(gnosisAddress, walletAddress);
     const owners = await safeSdk.getOwners();
 
     const ownerAddressesArray = owners.map((value) =>
@@ -347,7 +327,6 @@ const ProposalDetail = () => {
     } else setGovernance(true);
     const threshold = await safeSdk.getThreshold();
 
-    setThreshold(threshold);
     const proposalTxHash = getProposalTxHash(pid);
     proposalTxHash.then(async (result) => {
       if (
@@ -382,15 +361,7 @@ const ProposalDetail = () => {
       }
       setLoaderOpen(false);
     });
-  }, [
-    getSafeSdk,
-    getSafeService,
-    gnosisAddress,
-    isAdmin,
-    isGovernanceActive,
-    pid,
-    walletAddress,
-  ]);
+  }, [gnosisAddress, isAdmin, isGovernanceActive, pid, walletAddress]);
 
   const checkUserVoted = () => {
     if (walletAddress) {
@@ -425,35 +396,18 @@ const ProposalDetail = () => {
   };
 
   const fetchData = useCallback(async () => {
-    setLoader(true);
     dispatch(addProposalId(pid));
     const proposalData = getProposalDetail(pid);
 
     proposalData.then((result) => {
       if (result.status !== 200) {
-        setLoader(false);
         setFetched(false);
       } else {
         setProposalData(result.data[0]);
         setFetched(true);
       }
     });
-    setLoader(false);
-  }, [dispatch, pid]);
-
-  const fetchTokens = useCallback(() => {
-    if (daoAddress) {
-      const tokenData = getAssetsByDaoAddress(daoAddress, NETWORK_HEX);
-      tokenData.then((result) => {
-        if (result?.status != 200) {
-          setTokenFetched(false);
-        } else {
-          setTokenData(result.data.tokenPriceList);
-          setTokenFetched(true);
-        }
-      });
-    }
-  }, [NETWORK_HEX, daoAddress]);
+  }, [pid]);
 
   const executeFunction = async (proposalStatus) => {
     setLoaderOpen(true);
@@ -670,7 +624,7 @@ const ProposalDetail = () => {
           });
         },
         (error) => {
-          console.log(error);
+          console.error(error);
           setExecuted(false);
           setOpenSnackBar(true);
           setMessage("execution failed!");
@@ -682,10 +636,10 @@ const ProposalDetail = () => {
       await response
         .then(async (result) => {
           setSigned(true);
-
           isOwner();
         })
         .catch((err) => {
+          console.error(err);
           setSigned(false);
           setOpenSnackBar(true);
           setMessage("Signature failed!");
@@ -707,9 +661,8 @@ const ProposalDetail = () => {
       setLoaderOpen(true);
       fetchData();
       isOwner();
-      fetchTokens();
     }
-  }, [fetchData, fetchTokens, isOwner, pid]);
+  }, [pid]);
 
   useEffect(() => {
     const fetchFactoryContractDetails = async () => {
@@ -737,9 +690,11 @@ const ProposalDetail = () => {
     USDC_CONTRACT_ADDRESS,
     walletAddress,
   ]);
+
   if (!wallet && proposalData === null) {
     return <>loading</>;
   }
+
   return (
     <>
       <Layout1 page={2}>
@@ -1280,13 +1235,6 @@ const ProposalDetail = () => {
           <Grid item md={3.5}>
             <Stack spacing={3}>
               <ProposalInfo proposalData={proposalData} fetched={fetched} />
-              {proposalData?.type === "survey" && (
-                <Signators
-                  ownerAddresses={ownerAddresses}
-                  signedOwners={signedOwners}
-                  isSurvey={true}
-                />
-              )}
 
               {isGovernanceActive && (
                 <>

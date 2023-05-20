@@ -16,7 +16,7 @@ import AccountButton from "./accountbutton";
 
 import store from "../redux/store";
 import { useDispatch, useSelector } from "react-redux";
-import Router from "next/router";
+import Router, { useRouter } from "next/router";
 import { useAccountCenter, useConnectWallet } from "@web3-onboard/react";
 import { addWalletAddress } from "../redux/reducers/user";
 // import "../../styles/globals.css";
@@ -27,13 +27,16 @@ const useStyles = makeStyles({
     width: "auto !important",
     zIndex: "99999 !important",
     position: "absolute",
+    cursor: "pointer",
   },
 });
 
 export default function Navbar3(props) {
   const dispatch = useDispatch();
   const classes = useStyles();
+  const router = useRouter();
   const [{ wallet, connecting }, connect, disconnect] = useConnectWallet();
+  const { pid: daoAddress } = router.query;
 
   let walletAddress;
 
@@ -80,7 +83,7 @@ export default function Navbar3(props) {
               width="50"
               className={classes.image}
               alt="monogram"
-              onClick={() => Router.reload()}
+              onClick={() => router.push(`/dashboard/${daoAddress}`)}
             />
             {/* </Link> */}
           </Box>

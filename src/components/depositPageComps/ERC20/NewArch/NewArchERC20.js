@@ -6,12 +6,9 @@ import {
   Card,
   CardMedia,
   CircularProgress,
-  Dialog,
-  DialogContent,
   Divider,
   FormControl,
   Grid,
-  Input,
   Skeleton,
   Stack,
   TextField,
@@ -21,18 +18,15 @@ import { TwitterShareButton } from "react-twitter-embed";
 import { NewArchERC20Styles } from "./NewArchERC20Styles";
 import { useConnectWallet } from "@web3-onboard/react";
 import { SmartContract } from "../../../../api/contract";
-import Image from "next/image";
-import erc20DaoContractABI from "../../../../abis/newArch/erc20Dao.json";
 import factoryContractABI from "../../../../abis/newArch/factoryContract.json";
 import ProgressBar from "../../../progressbar";
 import erc20ABI from "../../../../abis/usdcTokenContract.json";
 import Web3 from "web3";
 import {
-  calculateTreasuryTargetShare,
   convertFromWeiGovernance,
   convertToWeiGovernance,
 } from "../../../../utils/globalFunctions";
-import { Form, useFormik } from "formik";
+import { useFormik } from "formik";
 import * as yup from "yup";
 import dayjs from "dayjs";
 import { useSelector } from "react-redux";
@@ -243,7 +237,7 @@ const NewArchERC20 = ({
             container
             spacing={2}
             paddingLeft={10}
-            paddingTop={15}
+            paddingTop={6}
             paddingRight={10}
           >
             <Grid item md={7}>
@@ -251,7 +245,7 @@ const NewArchERC20 = ({
                 <Grid container>
                   <Grid item xs={12} md={9}>
                     <Grid container spacing={2}>
-                      <Grid item ml={4} mt={4} mb={7}>
+                      <Grid item ml={4} mt={4} mb={4}>
                         <Stack spacing={0}>
                           <Typography variant="h4">
                             {daoDetails.daoName ? (
@@ -646,7 +640,7 @@ const NewArchERC20 = ({
                       mb={4}
                       className={classes.JoinText}
                     >
-                      <Typography variant="h4">Join this Station</Typography>
+                      <Typography variant="h4">Join Station</Typography>
                     </Grid>
                     <Divider />
                     <Grid

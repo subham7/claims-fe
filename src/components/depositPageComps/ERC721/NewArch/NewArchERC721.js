@@ -260,20 +260,7 @@ const NewArchERC721 = ({
                         )}...${daoDetails.createdBy?.slice(-5)}`}
                       </Typography>
                     </Grid>
-                    <Grid item xs="auto">
-                      <MoreHorizIcon
-                        sx={{
-                          background: "#142243",
-                          color: "#fff",
-                          paddingTop: 0.5,
-                          paddingBottom: 0.5,
-                          paddingRight: 1,
-                          paddingLeft: 1,
-                          borderRadius: 2,
-                        }}
-                        fontSize="large"
-                      />
-                    </Grid>
+                     
                     <Grid item sx={{ display: "flex", alignItems: "center" }}>
                       <div className="centerContent">
                         <div className="selfCenter spaceBetween">

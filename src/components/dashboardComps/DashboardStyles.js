@@ -24,7 +24,7 @@ export const DashboardStyles = makeStyles({
   },
   thirdCard: {
     width: "22vw",
-    height: "351px",
+    // height: "351px",
     background: "#121D38",
     border: ".5px solid #6475A3",
   },
@@ -217,6 +217,7 @@ export const DashboardStyles = makeStyles({
     background: "#121D38",
     borderRadius: "10px",
     border: ".5px solid #6475A3",
+    paddingBottom: '25px'
   },
   pendingIllustration: {
     height: "12px",
