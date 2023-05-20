@@ -99,6 +99,18 @@ export class SmartContract {
     return this.contract.methods.claimBalance().call();
   }
 
+  async toggleClaim() {
+    return this.contract.methods.toggleClaim().send({
+      from: this.walletAddress,
+    });
+  }
+
+  async rollbackTokens(amount) {
+    return this.contract.methods.rollbackTokens(amount).send({
+      from: this.walletAddress,
+    });
+  }
+
   async claim(amount, merkleData, leaf) {
     const gasPrice = await this.web3.eth.getGasPrice();
     const increasedGasPrice = +gasPrice + 30000000000;

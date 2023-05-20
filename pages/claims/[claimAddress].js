@@ -8,7 +8,6 @@ import {
   convertFromWeiGovernance,
   convertToWeiGovernance,
 } from "../../src/utils/globalFunctions";
-
 import { useRouter } from "next/router";
 import { useConnectWallet } from "@web3-onboard/react";
 import {
@@ -28,6 +27,10 @@ import Navbar3 from "../../src/components/navbar";
 import Image from "next/image";
 import Layout1 from "../../src/components/layouts/layout1";
 import Countdown from "react-countdown";
+import { BsThreeDots } from "react-icons/bs";
+import ClaimsEditModal from "../../src/components/claimsPageComps/ClaimsEditModal";
+import { useDispatch } from "react-redux";
+import { addClaimEnabled } from "../../src/redux/reducers/createClaim";
 
 const useStyles = makeStyles({
   container: {
@@ -81,7 +84,7 @@ const useStyles = makeStyles({
 
   createdBy: {
     background: "#142243",
-    padding: "0px 10px",
+    padding: "10px 10px",
     color: "#C1D3FF",
     borderRadius: "10px",
     display: "flex",
@@ -245,6 +248,8 @@ const ClaimAddress = () => {
   const [claimBalanceRemaing, setClaimBalanceRemaing] = useState(0);
   const [daoTokenSymbol, setDaoTokenSymbol] = useState("");
   const [isClaimStarted, setIsClaimStarted] = useState(false);
+  // const [claimEnabled, setClaimEnabled] = useState(null);
+  // const [showClaimsEdit, setShowClaimsEdit] = useState(false);
 
   const [isEligibleForTokenGated, setIsEligibleForTokenGated] = useState(null);
 
@@ -252,6 +257,7 @@ const ClaimAddress = () => {
   const walletAddress = wallet?.accounts[0].address;
 
   const { claimAddress } = router.query;
+  const dispatch = useDispatch();
 
   // claims end date
   const endDateString = new Date(contractData.endTime * 1000).toString();
@@ -275,6 +281,8 @@ const ClaimAddress = () => {
 
       const desc = await claimContract.claimSettings();
       setContractData(desc);
+      // setClaimEnabled(desc.isEnabled);
+      dispatch(addClaimEnabled(desc.isEnabled));
 
       const erc20Contract = new SmartContract(
         USDCContract,
@@ -611,19 +619,25 @@ const ClaimAddress = () => {
                 <div className={classes.activeContainer}>
                   <div
                     className={`${
-                      claimActive ? classes.active : classes.inactive
+                      claimActive && contractData.isEnabled
+                        ? classes.active
+                        : classes.inactive
                     }`}
                   >
-                    {claimActive && isClaimStarted
+                    {claimActive && isClaimStarted && contractData.isEnabled
                       ? "Active"
-                      : !claimActive && isClaimStarted
+                      : (!claimActive && isClaimStarted) ||
+                        !contractData.isEnabled
                       ? "Inactive"
                       : !claimActive && !isClaimStarted && "Not started yet"}
                   </div>
 
                   <div className={classes.createdBy}>
-                    <p>Created By</p>
-                    <p className={classes.address}>
+                    <p style={{ margin: 0, padding: 0 }}>Created By</p>
+                    <p
+                      style={{ margin: 0, padding: 0 }}
+                      className={classes.address}
+                    >
                       {contractData.creatorAddress?.slice(0, 5)}...
                       {contractData.creatorAddress?.slice(
                         contractData.creatorAddress?.length - 5,
@@ -743,6 +757,7 @@ const ClaimAddress = () => {
                   disabled={
                     !claimActive ||
                     !claimableAmt ||
+                    !contractData.isEnabled ||
                     (claimRemaining == 0 && alreadyClaimed)
                       ? true
                       : false
@@ -753,7 +768,7 @@ const ClaimAddress = () => {
                   className={classes.input}
                 />
                 <button
-                  disabled={!claimActive && true}
+                  disabled={(!claimActive || !contractData.isEnabled) && true}
                   style={
                     !claimActive
                       ? { cursor: "not-allowed" }
@@ -848,6 +863,14 @@ const ClaimAddress = () => {
             </Alert>
           )
         )}
+
+        {/* {showClaimsEdit && (
+          <ClaimsEditModal
+            claimAddress={claimAddress}
+            walletAddress={walletAddress}
+            onClose={onClose}
+          />
+        )} */}
       </>
     </Layout1>
   );
