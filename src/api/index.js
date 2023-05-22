@@ -20,7 +20,7 @@ export const GOERLI_RPC_URL = process.env.NEXT_PUBLIC_GOERLI_RPC_URL;
 export const POLYGON_MAINNET_RPC_URL =
   process.env.NEXT_PUBLIC_POLYGON_MAINNET_RPC_URL;
 
-export const RPC_URL = process.env.NEXT_PUBLIC_RPC_URL;
+export let RPC_URL;
 
 // Claim Factory
 export const CLAIM_FACTORY_ADDRESS_GOERLI =
@@ -59,6 +59,9 @@ export function updateDynamicAddress(networkId, dispatch) {
       if (result.status != 200) {
         console.log(result.error);
       } else {
+        if (networkId == "0x89") RPC_URL = process.env.NEXT_PUBLIC_RPC_URL;
+        else if (networkId == "0x5")
+          RPC_URL = process.env.NEXT_PUBLIC_GOERLI_RPC_URL;
         dispatch(
           addContractAddress({
             factoryContractAddress:
