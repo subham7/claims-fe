@@ -3,6 +3,7 @@ import {
   Button,
   CircularProgress,
   Grid,
+  IconButton,
   Skeleton,
   Typography,
 } from "@mui/material";
@@ -24,6 +25,8 @@ import ClubFetch from "../../../../utils/clubFetch";
 import { useSelector } from "react-redux";
 import { useRouter } from "next/router";
 import WrongNetworkModal from "../../../modals/WrongNetworkModal";
+import RemoveIcon from "@mui/icons-material/Remove";
+import AddIcon from "@mui/icons-material/Add";
 
 const NewArchERC721 = ({
   daoDetails,
@@ -41,6 +44,8 @@ const NewArchERC721 = ({
     tokenName: "",
     tokenDecimal: 0,
   });
+  const [count, setCount] = useState(1);
+  const [balanceOfNft, setBalanceOfNft] = useState();
 
   const [{ wallet }] = useConnectWallet();
   const router = useRouter();
@@ -106,6 +111,7 @@ const NewArchERC721 = ({
       );
 
       const balanceOfNft = await erc721Contract.balanceOf();
+      setBalanceOfNft(balanceOfNft);
 
       if (+balanceOfNft >= +daoDetails?.maxTokensPerUser) {
         setHasClaimed(true);
@@ -176,7 +182,7 @@ const NewArchERC721 = ({
         walletAddress,
         erc721DaoAddress,
         daoDetails.nftURI,
-        1,
+        count,
         [],
       );
       setLoading(false);
@@ -361,6 +367,42 @@ const NewArchERC721 = ({
 
                 <Grid item width="100%">
                   <Grid container className={classes.claimGrid}>
+                    <Grid
+                      spacing={3}
+                      sx={{
+                        color: "#EFEFEF",
+                        borderRadius: 2,
+                        display: "flex",
+                        flexDirection: "inherit",
+                        alignItems: "center",
+                      }}
+                    >
+                      <IconButton
+                        onClick={() => {
+                          count > 1 ? setCount(count - 1) : 1;
+                        }}
+                      >
+                        <RemoveIcon sx={{ color: "#EFEFEF", fontSize: 20 }} />
+                      </IconButton>
+                      <Typography
+                        variant="h6"
+                        color=""
+                        sx={{ fontWeight: "bold" }}
+                      >
+                        {count}
+                      </Typography>
+                      <IconButton
+                        onClick={() =>
+                          count < daoDetails.maxTokensPerUser - balanceOfNft
+                            ? setCount(count + 1)
+                            : daoDetails.maxTokensPerUser
+                        }
+                        color="#000"
+                      >
+                        <AddIcon sx={{ color: "#EFEFEF", fontSize: 20 }} />
+                      </IconButton>
+                    </Grid>
+
                     <Grid item>
                       <Button
                         onClick={claimNFTHandler}
