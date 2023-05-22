@@ -22,14 +22,7 @@ import { fetchConfigById } from "../api/config";
 import { SmartContract } from "../api/contract";
 
 import Web3 from "web3";
-import {
-  AIRDROP_ACTION_ADDRESS_GOERLI,
-  AIRDROP_ACTION_ADDRESS_POLYGON,
-  FACTORY_ADDRESS_GOERLI,
-  FACTORY_ADDRESS_POLYGON,
-  SUBGRAPH_URL_GOERLI,
-  SUBGRAPH_URL_POLYGON,
-} from "../api";
+import { SUBGRAPH_URL_GOERLI, SUBGRAPH_URL_POLYGON, getRpcUrl } from "../api";
 import { Backdrop, CircularProgress } from "@mui/material";
 import { getSafeSdk } from "./helper";
 
@@ -71,28 +64,17 @@ const ClubFetch = (Component) => {
     useEffect(() => {
       const getNetworkConfig = async () => {
         try {
+          getRpcUrl(networkId);
+
           const networkData = await fetchConfigById(networkId);
+
           dispatch(
             addContractAddress({
-              factoryContractAddress:
-                networkId == "0x5"
-                  ? FACTORY_ADDRESS_GOERLI
-                  : networkId == "0x89"
-                  ? FACTORY_ADDRESS_POLYGON
-                  : null,
-              usdcContractAddress: networkData?.data[0]?.usdcContractAddress,
+              factoryContractAddress: networkData?.data[0]?.factoryContract,
+              usdcContractAddress: networkData?.data[0]?.depositTokenContract,
               actionContractAddress:
-                networkId == "0x5"
-                  ? AIRDROP_ACTION_ADDRESS_GOERLI
-                  : networkId == "0x89"
-                  ? AIRDROP_ACTION_ADDRESS_POLYGON
-                  : null,
-              subgraphUrl:
-                networkId == "0x5"
-                  ? SUBGRAPH_URL_GOERLI
-                  : networkId == "0x89"
-                  ? SUBGRAPH_URL_POLYGON
-                  : null,
+                networkData?.data[0]?.tokenTransferActionContract,
+              subgraphUrl: networkData?.data[0]?.subgraph,
               transactionUrl: networkData?.data[0]?.gnosisTransactionUrl,
               networkHex: networkData?.data[0]?.networkHex,
               networkId: networkData?.data[0]?.networkId,
@@ -106,7 +88,7 @@ const ClubFetch = (Component) => {
         }
       };
       networkId && getNetworkConfig();
-    }, [networkId]);
+    }, [dispatch, networkId]);
 
     useEffect(() => {
       const addClubDataToRedux = async () => {
@@ -197,7 +179,6 @@ const ClubFetch = (Component) => {
               }
             } else if (reduxClubData.tokenType === "erc721") {
               try {
-                debugger;
                 const erc721Contract = new SmartContract(
                   Erc721Dao,
                   daoAddress ?? pid,
@@ -256,11 +237,13 @@ const ClubFetch = (Component) => {
       daoAddress,
       wallet,
       pid,
-      walletAddress,
-      reduxClubData,
-      networkId,
       USDC_CONTRACT_ADDRESS,
       GNOSIS_TRANSACTION_URL,
+      reduxClubData.gnosisAddress,
+      reduxClubData.tokenType,
+      walletAddress,
+      dispatch,
+      router,
     ]);
 
     useEffect(() => {
