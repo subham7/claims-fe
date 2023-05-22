@@ -20,8 +20,6 @@ export const GOERLI_RPC_URL = process.env.NEXT_PUBLIC_GOERLI_RPC_URL;
 export const POLYGON_MAINNET_RPC_URL =
   process.env.NEXT_PUBLIC_POLYGON_MAINNET_RPC_URL;
 
-export let RPC_URL;
-
 // Claim Factory
 export const CLAIM_FACTORY_ADDRESS_GOERLI =
   process.env.NEXT_PUBLIC_CLAIM_FACTORY_ADDRESS_GOERLI;
@@ -55,38 +53,22 @@ export const SUBGRAPH_CLIENT = new ApolloClient({
 export function updateDynamicAddress(networkId, dispatch) {
   try {
     const networkData = fetchConfigById(networkId);
+
+    getRpcUrl(networkId);
     networkData.then((result) => {
       if (result.status != 200) {
         console.log(result.error);
       } else {
-        if (networkId == "0x89") RPC_URL = process.env.NEXT_PUBLIC_RPC_URL;
-        else if (networkId == "0x5")
-          RPC_URL = process.env.NEXT_PUBLIC_GOERLI_RPC_URL;
         dispatch(
           addContractAddress({
-            factoryContractAddress:
-              networkId == "0x5"
-                ? FACTORY_ADDRESS_GOERLI
-                : networkId == "0x89"
-                ? FACTORY_ADDRESS_POLYGON
-                : "",
-            usdcContractAddress: result.data[0].usdcContractAddress,
-            actionContractAddress:
-              networkId == "0x5"
-                ? AIRDROP_ACTION_ADDRESS_GOERLI
-                : networkId == "0x89"
-                ? AIRDROP_ACTION_ADDRESS_POLYGON
-                : "",
-            subgraphUrl:
-              networkId == "0x5"
-                ? SUBGRAPH_URL_GOERLI
-                : networkId == "0x89"
-                ? SUBGRAPH_URL_POLYGON
-                : "",
-            transactionUrl: result.data[0].gnosisTransactionUrl,
-            networkHex: result.data[0].networkHex,
-            networkId: result.data[0].networkId,
-            networkName: result.data[0].name,
+            factoryContractAddress: result?.data[0]?.factoryContract,
+            usdcContractAddress: result?.data[0]?.depositTokenContract,
+            actionContractAddress: result?.data[0]?.tokenTransferActionContract,
+            subgraphUrl: result?.data[0]?.subgraph,
+            transactionUrl: result?.data[0]?.gnosisTransactionUrl,
+            networkHex: result?.data[0]?.networkHex,
+            networkId: result?.data[0]?.networkId,
+            networkName: result?.data[0]?.name,
           }),
         );
       }
@@ -94,4 +76,11 @@ export function updateDynamicAddress(networkId, dispatch) {
   } catch (error) {
     console.log(error);
   }
+}
+
+export let RPC_URL;
+
+export function getRpcUrl(networkId) {
+  if (networkId == "0x89") RPC_URL = process.env.NEXT_PUBLIC_RPC_URL;
+  else if (networkId == "0x5") RPC_URL = process.env.NEXT_PUBLIC_GOERLI_RPC_URL;
 }
