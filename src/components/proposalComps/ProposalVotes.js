@@ -1,4 +1,4 @@
-import { Button, Card, Grid, Typography } from "@mui/material";
+import { Card, Grid, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import React from "react";
 
@@ -56,8 +56,7 @@ const ProposalVotes = ({ fetched, proposalData }) => {
                       sx={{
                         display: "flex",
                         justifyContent: "flex-end",
-                      }}
-                    >
+                      }}>
                       <Typography className={classes.listFont2Colourless}>
                         {fetched
                           ? proposalData?.votingOptions[
@@ -76,8 +75,7 @@ const ProposalVotes = ({ fetched, proposalData }) => {
                       sx={{
                         display: "flex",
                         justifyContent: "flex-start",
-                      }}
-                    >
+                      }}>
                       <Typography variant="proposalSubHeading">
                         Signed on{" "}
                         {new Date(voter.createdAt).toLocaleDateString()}

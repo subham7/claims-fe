@@ -5,21 +5,22 @@ export const slice = createSlice({
   initialState: {
     membersData: null,
     encryptedLink: null,
-    adminFormData: null
+    adminFormData: null,
   },
   reducers: {
     addMembersData: (state, action) => {
       state.membersData = action.payload;
     },
     addEncryptedLink: (state, action) => {
-      state.encryptedLink = action.payload
+      state.encryptedLink = action.payload;
     },
     addAdminFormData: (state, action) => {
-      state.adminFormData = action.payload
+      state.adminFormData = action.payload;
     },
   },
 });
 
-export const { addMembersData, addEncryptedLink, addAdminFormData } = slice.actions;
+export const { addMembersData, addEncryptedLink, addAdminFormData } =
+  slice.actions;
 
 export default slice.reducer;

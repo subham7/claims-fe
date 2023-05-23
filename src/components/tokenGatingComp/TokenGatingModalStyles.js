@@ -56,11 +56,11 @@ export const TokenGatingModalStyles = makeStyles({
   },
 
   addBtn: {
-    "background": "#D93C8A",
-    "border": "none",
-    "borderRadius": "50px",
-    "width": "150px",
-    "color": "white",
+    background: "#D93C8A",
+    border: "none",
+    borderRadius: "50px",
+    width: "150px",
+    color: "white",
     "&:hover": {
       background: "#D83C8A",
     },

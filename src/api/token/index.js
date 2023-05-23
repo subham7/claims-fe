@@ -59,7 +59,7 @@ export const getTokensFromWallet = async (address, networkId) => {
               ? POLYGON_MAINNET_RPC_URL
               : "",
           headers: {
-            "accept": "application/json",
+            accept: "application/json",
             "content-type": "application/json",
           },
           data: {
@@ -118,7 +118,7 @@ export const getBalanceOfToken = async (
             ? POLYGON_MAINNET_RPC_URL
             : "",
         headers: {
-          "accept": "application/json",
+          accept: "application/json",
           "content-type": "application/json",
         },
         data: {

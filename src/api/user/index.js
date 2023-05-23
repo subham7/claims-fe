@@ -1,5 +1,4 @@
 import { MAIN_API_URL } from "../index";
-import Web3 from "web3";
 import axios from "axios";
 import { getJwtToken } from "../../utils/auth";
 
@@ -8,7 +7,7 @@ export async function createUser(data) {
 
   return await axios.post(MAIN_API_URL + "user", data, {
     headers: {
-      "Authorization": "Bearer " + getJwtToken(),
+      Authorization: "Bearer " + getJwtToken(),
       "Content-Type": "application/json",
     },
   });
@@ -19,7 +18,7 @@ export async function fetchClubByUserAddress(userId) {
   // const walletAddress = web3.utils.toChecksumAddress(userId);
   return await axios.get(MAIN_API_URL + `user/${userId}`, {
     headers: {
-      "Authorization": "Bearer " + getJwtToken(),
+      Authorization: "Bearer " + getJwtToken(),
       "Content-Type": "application/json",
     },
   });
@@ -29,7 +28,7 @@ export async function getMembersDetails(clubId) {
   // fetch members of club
   return await axios.get(MAIN_API_URL + `user/club/${clubId}`, {
     headers: {
-      "Authorization": "Bearer " + getJwtToken(),
+      Authorization: "Bearer " + getJwtToken(),
       "Content-Type": "application/json",
     },
   });
@@ -39,7 +38,7 @@ export async function patchUserBalance(data) {
   // update user amount status
   return await axios.patch(MAIN_API_URL + "user/balance", data, {
     headers: {
-      "Authorization": "Bearer " + getJwtToken(),
+      Authorization: "Bearer " + getJwtToken(),
       "Content-Type": "application/json",
     },
   });
@@ -51,7 +50,7 @@ export async function checkUserByClub(walletAddress, clubId) {
     MAIN_API_URL + `user/${walletAddress}/club/${clubId}/check`,
     {
       headers: {
-        "Authorization": "Bearer " + getJwtToken(),
+        Authorization: "Bearer " + getJwtToken(),
         "Content-Type": "application/json",
       },
     },

@@ -10,7 +10,6 @@ import { useDispatch } from "react-redux";
 import jazzicon from "@metamask/jazzicon";
 import { useState } from "react";
 import { useRouter } from "next/router";
-import { setJwtToken, setRefreshToken } from "../utils/auth";
 
 const StyledMenu = styled((props) => (
   <Menu
@@ -29,13 +28,12 @@ const StyledMenu = styled((props) => (
   />
 ))(({ theme }) => ({
   "& .MuiPaper-root": {
-    "borderRadius": 30,
-    "border": "1px solid #C1D3FF40",
-    "marginTop": theme.spacing(1),
-    "minWidth": 280,
-    "color":
-      theme.palette.mode === "light" ? "#19274B" : theme.palette.grey[300],
-    "boxShadow":
+    borderRadius: 30,
+    border: "1px solid #C1D3FF40",
+    marginTop: theme.spacing(1),
+    minWidth: 280,
+    color: theme.palette.mode === "light" ? "#19274B" : theme.palette.grey[300],
+    boxShadow:
       "rgb(255, 255, 255) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px",
     "& .MuiMenu-list": {
       padding: "4px 0",
@@ -111,8 +109,7 @@ export default function AccountButton(props) {
         disableElevation
         onClick={handleClick}
         // startIcon={<div id="jazzicon">{props.accountDetail ? generateJazzIcon(props.accountDetail) : null} </div>}
-        endIcon={<KeyboardArrowDownIcon />}
-      >
+        endIcon={<KeyboardArrowDownIcon />}>
         {props.accountDetail
           ? props.accountDetail.substring(0, 6) +
             ".........." +

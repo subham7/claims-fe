@@ -1,23 +1,13 @@
-import { React, useEffect, useState } from "react";
-import {
-  AppBar,
-  Box,
-  Toolbar,
-  IconButton,
-  Button,
-  Typography,
-} from "@mui/material";
+import { React, useEffect } from "react";
+import { AppBar, Box, Toolbar, IconButton, Button } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import Image from "next/image";
 import { makeStyles } from "@mui/styles";
-import { connectWallet, setUserChain, onboard } from "../utils/wallet";
 import Web3 from "web3";
-import AccountButton from "./accountbutton";
 
-import store from "../redux/store";
-import { useDispatch, useSelector } from "react-redux";
-import Router, { useRouter } from "next/router";
-import { useAccountCenter, useConnectWallet } from "@web3-onboard/react";
+import { useDispatch } from "react-redux";
+import { useRouter } from "next/router";
+import { useConnectWallet } from "@web3-onboard/react";
 import { addWalletAddress } from "../redux/reducers/user";
 // import "../../styles/globals.css";
 
@@ -71,8 +61,7 @@ export default function Navbar3(props) {
             aria-label="open drawer"
             edge="start"
             onClick={props.handleDrawerToggle}
-            sx={{ mr: 2, display: { sm: "none" } }}
-          >
+            sx={{ mr: 2, display: { sm: "none" } }}>
             <MenuIcon />
           </IconButton>
           <Box sx={{ flexGrow: 1 }}>
@@ -107,8 +96,7 @@ export default function Navbar3(props) {
             <Button
               sx={{ mr: 2, mt: 2 }}
               className={classes.navButton}
-              onClick={() => (wallet ? disconnect(wallet) : connect())}
-            >
+              onClick={() => (wallet ? disconnect(wallet) : connect())}>
               Connect wallet
             </Button>
           )}

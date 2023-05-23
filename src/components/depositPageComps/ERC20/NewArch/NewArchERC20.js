@@ -238,8 +238,7 @@ const NewArchERC20 = ({
             spacing={2}
             paddingLeft={10}
             paddingTop={6}
-            paddingRight={10}
-          >
+            paddingRight={10}>
             <Grid item md={7}>
               <Card className={classes.cardRegular}>
                 <Grid container>
@@ -281,8 +280,7 @@ const NewArchERC20 = ({
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
-                    }}
-                  >
+                    }}>
                     {/* enter your code here */}
 
                     <div className="centerContent">
@@ -386,8 +384,7 @@ const NewArchERC20 = ({
                       <Grid item>
                         <Typography
                           variant="p"
-                          className={classes.valuesDimStyle}
-                        >
+                          className={classes.valuesDimStyle}>
                           {walletAddress ? (
                             "Minimum Deposits"
                           ) : (
@@ -422,8 +419,7 @@ const NewArchERC20 = ({
                       <Grid item>
                         <Typography
                           variant="p"
-                          className={classes.valuesDimStyle}
-                        >
+                          className={classes.valuesDimStyle}>
                           {walletAddress ? (
                             "Maximum Deposit"
                           ) : (
@@ -459,8 +455,7 @@ const NewArchERC20 = ({
                     <Grid item>
                       <Typography
                         variant="p"
-                        className={classes.valuesDimStyle}
-                      >
+                        className={classes.valuesDimStyle}>
                         {walletAddress ? (
                           "Governance"
                         ) : (
@@ -483,8 +478,7 @@ const NewArchERC20 = ({
                       <Grid item>
                         <Typography
                           variant="p"
-                          className={classes.valuesDimStyle}
-                        >
+                          className={classes.valuesDimStyle}>
                           {walletAddress ? (
                             "Members"
                           ) : (
@@ -547,15 +541,13 @@ const NewArchERC20 = ({
                   spacing={2}
                   direction="row"
                   justifyContent="space-between"
-                  alignItems="center"
-                >
+                  alignItems="center">
                   <Grid item ml={4} mt={1} mb={2} md={8}>
                     <Grid container direction="column" spacing={2}>
                       <Grid item>
                         <Typography
                           variant="p"
-                          className={classes.valuesDimStyle}
-                        >
+                          className={classes.valuesDimStyle}>
                           {walletAddress ? (
                             "Amount raised so far"
                           ) : (
@@ -595,8 +587,7 @@ const NewArchERC20 = ({
                       <Grid item>
                         <Typography
                           variant="p"
-                          className={classes.valuesDimStyle}
-                        >
+                          className={classes.valuesDimStyle}>
                           {walletAddress ? (
                             "Total Raise Amt"
                           ) : (
@@ -638,8 +629,7 @@ const NewArchERC20 = ({
                       ml={2}
                       mt={4}
                       mb={4}
-                      className={classes.JoinText}
-                    >
+                      className={classes.JoinText}>
                       <Typography variant="h4">Join Station</Typography>
                     </Grid>
                     <Divider />
@@ -650,8 +640,7 @@ const NewArchERC20 = ({
                       mb={4}
                       mr={2}
                       xs
-                      sx={{ display: "flex", justifyContent: "flex-end" }}
-                    >
+                      sx={{ display: "flex", justifyContent: "flex-end" }}>
                       <Typography variant="h6" className={classes.JoinText}>
                         {daoDetails.depositDeadline
                           ? remainingDays >= 0 && remainingTimeInSecs > 0
@@ -685,8 +674,7 @@ const NewArchERC20 = ({
                             sx={{
                               display: "flex",
                               justifyContent: "flex-end",
-                            }}
-                          >
+                            }}>
                             <Typography className={classes.cardSmallFont}>
                               Balance:{" "}
                               {erc20TokenDetails.tokenBalance.toFixed(2)} $
@@ -698,8 +686,7 @@ const NewArchERC20 = ({
                           <Grid item ml={2} mt={1} mb={2} p={1}>
                             <FormControl
                               style={{ background: "#fff" }}
-                              onSubmit={formik.handleSubmit}
-                            >
+                              onSubmit={formik.handleSubmit}>
                               <TextField
                                 variant="filled"
                                 className={classes.cardLargeFont}
@@ -756,8 +743,7 @@ const NewArchERC20 = ({
                             sx={{
                               display: "flex",
                               justifyContent: "flex-end",
-                            }}
-                          >
+                            }}>
                             <Button
                               className={classes.maxTag}
                               onClick={() => {
@@ -765,8 +751,7 @@ const NewArchERC20 = ({
                                   "tokenInput",
                                   erc20TokenDetails.tokenBalance.toFixed(2),
                                 );
-                              }}
-                            >
+                              }}>
                               Max
                             </Button>
                           </Grid>
@@ -797,8 +782,7 @@ const NewArchERC20 = ({
                             : remainingDays >= 0 && remainingTimeInSecs > 0
                             ? false
                             : true
-                        }
-                      >
+                        }>
                         Deposit
                       </Button>
                     </Grid>
@@ -812,8 +796,7 @@ const NewArchERC20 = ({
                       flexDirection="column"
                       container
                       justifyContent={"space-between"}
-                      height={"100%"}
-                    >
+                      height={"100%"}>
                       <Grid margin={"25px"}>
                         <Typography className={classes.JoinText}>
                           {" "}
@@ -859,15 +842,13 @@ const NewArchERC20 = ({
               height: "100vh",
               width: "100%",
               justifyContent: "center",
-            }}
-          >
+            }}>
             <Grid
               sx={{
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
-              }}
-            >
+              }}>
               <Typography variant="h5" color={"white"} fontWeight="bold">
                 Please connect your wallet
               </Typography>
@@ -884,8 +865,7 @@ const NewArchERC20 = ({
             bottom: "30px",
             right: "20px",
             borderRadius: "8px",
-          }}
-        >
+          }}>
           Transaction Successfull
         </Alert>
       ) : (
@@ -899,8 +879,7 @@ const NewArchERC20 = ({
               bottom: "30px",
               right: "20px",
               borderRadius: "8px",
-            }}
-          >
+            }}>
             Transaction Failed
           </Alert>
         )
@@ -953,8 +932,7 @@ const NewArchERC20 = ({
 
       <Backdrop
         sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={loading}
-      >
+        open={loading}>
         <CircularProgress color="inherit" />
       </Backdrop>
     </>

@@ -154,13 +154,11 @@ export default function NFTStep2(props) {
                 alignItems: "start",
               }}
               mt={6}
-              spacing={3}
-            >
+              spacing={3}>
               <Typography
                 className={classes.largeText}
                 color="white !important"
-                mb={2}
-              >
+                mb={2}>
                 Upload Image
               </Typography>
               <Grid container spacing={2} mb={2}>
@@ -168,8 +166,7 @@ export default function NFTStep2(props) {
                   <Button
                     variant="contained"
                     sx={{ fontWeight: "light" }}
-                    onClick={generateRandomNFTImage}
-                  >
+                    onClick={generateRandomNFTImage}>
                     Generate random
                   </Button>
                 </Grid>
@@ -179,17 +176,16 @@ export default function NFTStep2(props) {
                   <Button
                     startIcon={<UploadIcon />}
                     sx={{
-                      "fontWeight": "light",
-                      "backgroundColor": "#81F5FF",
-                      "color": "#3B7AFD",
+                      fontWeight: "light",
+                      backgroundColor: "#81F5FF",
+                      color: "#3B7AFD",
                       ":hover": {
                         backgroundColor: "#81F5FF",
                       },
                     }}
                     onClick={(e) => {
                       props.uploadInputRef.current.click();
-                    }}
-                  >
+                    }}>
                     Upload
                   </Button>
                   <input
@@ -229,8 +225,7 @@ export default function NFTStep2(props) {
                 backgroundColor: "#19274B",
                 position: "relative",
               }}
-              mr={3}
-            >
+              mr={3}>
               <Image
                 src={imageUrl || empty_nft}
                 alt={""}
@@ -261,13 +256,11 @@ export default function NFTStep2(props) {
                 display: "flex",
                 justifyContent: "flex-start",
                 alignItems: "center",
-              }}
-            >
+              }}>
               <Typography
                 className={classes.largeText}
                 //   sx={{ color: "#FFFFFF" }}
-                color="white !important"
-              >
+                color="white !important">
                 Make membership transferable
               </Typography>
             </Grid>
@@ -279,8 +272,7 @@ export default function NFTStep2(props) {
                 justifyContent: "flex-end",
                 alignItems: "center",
               }}
-              mr={3}
-            >
+              mr={3}>
               <FormControlLabel
                 control={
                   <Switch
@@ -311,13 +303,11 @@ export default function NFTStep2(props) {
                 display: "flex",
                 justifyContent: "flex-start",
                 alignItems: "center",
-              }}
-            >
+              }}>
               <Typography
                 className={classes.largeText}
                 //   sx={{ color: "#FFFFFF" }}
-                color="white !important"
-              >
+                color="white !important">
                 Set price per NFT (in USDC)
               </Typography>
             </Grid>
@@ -329,8 +319,7 @@ export default function NFTStep2(props) {
                 justifyContent: "flex-end",
                 alignItems: "center",
               }}
-              mr={3}
-            >
+              mr={3}>
               <TextField
                 name="pricePerToken"
                 className={classes.textField}
@@ -370,13 +359,11 @@ export default function NFTStep2(props) {
                 display: "flex",
                 justifyContent: "flex-start",
                 alignItems: "center",
-              }}
-            >
+              }}>
               <Typography
                 className={classes.largeText}
                 //   sx={{ color: "#FFFFFF" }}
-                color="white !important"
-              >
+                color="white !important">
                 Max. mints allowed per wallet
               </Typography>
             </Grid>
@@ -388,8 +375,7 @@ export default function NFTStep2(props) {
                 justifyContent: "flex-end",
                 alignItems: "center",
               }}
-              mr={3}
-            >
+              mr={3}>
               <TextField
                 name="maxTokensPerUser"
                 type="number"
@@ -422,13 +408,11 @@ export default function NFTStep2(props) {
                 display: "flex",
                 justifyContent: "flex-start",
                 alignItems: "center",
-              }}
-            >
+              }}>
               <Typography
                 className={classes.largeText}
                 //   sx={{ color: "#FFFFFF" }}
-                color="white !important"
-              >
+                color="white !important">
                 Limit total supply of the token
               </Typography>
             </Grid>
@@ -440,8 +424,7 @@ export default function NFTStep2(props) {
                 justifyContent: "flex-end",
                 alignItems: "center",
               }}
-              mr={3}
-            >
+              mr={3}>
               <FormControlLabel
                 control={
                   <Switch
@@ -472,12 +455,10 @@ export default function NFTStep2(props) {
                   display: "flex",
                   justifyContent: "flex-start",
                   alignItems: "center",
-                }}
-              >
+                }}>
                 <Typography
                   className={classes.largeText}
-                  color="white !important"
-                >
+                  color="white !important">
                   Set total token supply
                 </Typography>
               </Grid>
@@ -489,8 +470,7 @@ export default function NFTStep2(props) {
                   justifyContent: "flex-end",
                   alignItems: "center",
                 }}
-                mr={3}
-              >
+                mr={3}>
                 <TextField
                   name="totalTokenSupply"
                   className={classes.textField}
@@ -523,12 +503,10 @@ export default function NFTStep2(props) {
                 display: "flex",
                 justifyContent: "flex-start",
                 alignItems: "center",
-              }}
-            >
+              }}>
               <Typography
                 className={classes.largeText}
-                color="white !important"
-              >
+                color="white !important">
                 Last date to close deposits
               </Typography>
             </Grid>
@@ -540,8 +518,7 @@ export default function NFTStep2(props) {
                 justifyContent: "flex-end",
                 alignItems: "center",
               }}
-              mr={3}
-            >
+              mr={3}>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DateTimePicker
                   value={props.formik.values.depositClose}

@@ -7,7 +7,6 @@ import {
   Skeleton,
   Typography,
 } from "@mui/material";
-import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import React, { useCallback, useEffect, useState } from "react";
 
 import { TwitterShareButton } from "react-twitter-embed";
@@ -21,7 +20,6 @@ import factoryContractABI from "../../../../abis/newArch/factoryContract.json";
 import { convertFromWeiGovernance } from "../../../../utils/globalFunctions";
 import { SmartContract } from "../../../../api/contract";
 import dayjs from "dayjs";
-import ClubFetch from "../../../../utils/clubFetch";
 import { useSelector } from "react-redux";
 import { useRouter } from "next/router";
 import WrongNetworkModal from "../../../modals/WrongNetworkModal";
@@ -224,15 +222,13 @@ const NewArchERC721 = ({
               <Grid
                 container
                 spacing={1.5}
-                sx={{ display: "flex", flexDirection: "column" }}
-              >
+                sx={{ display: "flex", flexDirection: "column" }}>
                 <Grid
                   sx={{
                     display: "flex",
                     justifyContent: "center",
                     alignItems: "center",
-                  }}
-                ></Grid>
+                  }}></Grid>
                 <Grid item sx={{ width: "100%" }}>
                   <Grid container>
                     <Grid item xs={12} md={9}>
@@ -266,7 +262,7 @@ const NewArchERC721 = ({
                         )}...${daoDetails.createdBy?.slice(-5)}`}
                       </Typography>
                     </Grid>
-                     
+
                     <Grid item sx={{ display: "flex", alignItems: "center" }}>
                       <div className="centerContent">
                         <div className="selfCenter spaceBetween">
@@ -302,8 +298,7 @@ const NewArchERC721 = ({
                         <Grid item xs={3}>
                           <Typography
                             variant="subtitle1"
-                            className={classes.quoramTxt}
-                          >
+                            className={classes.quoramTxt}>
                             {daoDetails.quorum / 100}%
                           </Typography>
                           <Typography variant="subtitle2" color="#C1D3FF">
@@ -313,8 +308,7 @@ const NewArchERC721 = ({
                         <Grid item xs={3}>
                           <Typography
                             variant="subtitle1"
-                            className={classes.quoramTxt}
-                          >
+                            className={classes.quoramTxt}>
                             {daoDetails.threshold / 100}%
                           </Typography>
                           <Typography variant="subtitle2" color="#C1D3FF">
@@ -330,8 +324,7 @@ const NewArchERC721 = ({
                       </Typography>
                       <Typography
                         variant="subtitle1"
-                        className={classes.quoramTxt}
-                      >
+                        className={classes.quoramTxt}>
                         {daoDetails.isTotalSupplyUnlinited
                           ? "Unlimited"
                           : Number(
@@ -375,20 +368,17 @@ const NewArchERC721 = ({
                         display: "flex",
                         flexDirection: "inherit",
                         alignItems: "center",
-                      }}
-                    >
+                      }}>
                       <IconButton
                         onClick={() => {
                           count > 1 ? setCount(count - 1) : 1;
-                        }}
-                      >
+                        }}>
                         <RemoveIcon sx={{ color: "#EFEFEF", fontSize: 20 }} />
                       </IconButton>
                       <Typography
                         variant="h6"
                         color=""
-                        sx={{ fontWeight: "bold" }}
-                      >
+                        sx={{ fontWeight: "bold" }}>
                         {count}
                       </Typography>
                       <IconButton
@@ -397,8 +387,7 @@ const NewArchERC721 = ({
                             ? setCount(count + 1)
                             : daoDetails.maxTokensPerUser
                         }
-                        color="#000"
-                      >
+                        color="#000">
                         <AddIcon sx={{ color: "#EFEFEF", fontSize: 20 }} />
                       </IconButton>
                     </Grid>
@@ -414,8 +403,7 @@ const NewArchERC721 = ({
                             ? !isEligibleForTokenGating
                             : false
                         }
-                        sx={{ px: 8 }}
-                      >
+                        sx={{ px: 8 }}>
                         {loading ? (
                           <CircularProgress />
                         ) : hasClaimed ? (
@@ -430,8 +418,7 @@ const NewArchERC721 = ({
                 <Grid item>
                   <Typography
                     variant="subtitle2"
-                    className={classes.maxTokensTxt}
-                  >
+                    className={classes.maxTokensTxt}>
                     This station allows maximum of {daoDetails.maxTokensPerUser}{" "}
                     mints per member
                   </Typography>
@@ -475,8 +462,7 @@ const NewArchERC721 = ({
               bottom: "30px",
               right: "20px",
               borderRadius: "8px",
-            }}
-          >
+            }}>
             Transaction Successfull
           </Alert>
         ) : (
@@ -490,8 +476,7 @@ const NewArchERC721 = ({
                 bottom: "30px",
                 right: "20px",
                 borderRadius: "8px",
-              }}
-            >
+              }}>
               Transaction Failed
             </Alert>
           )

@@ -3,17 +3,15 @@ import { styled, alpha } from "@mui/material/styles";
 import Button from "@mui/material/Button";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import EditIcon from "@mui/icons-material/Edit";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { useDispatch, useSelector } from "react-redux";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import { networkType } from "../data/network";
 import { switchNetwork } from "../utils/wallet";
 import { fetchConfig, fetchConfigById } from "../api/config";
 import { POLYGON_MAINNET_RPC_URL, updateDynamicAddress } from "../api";
 import Web3 from "web3";
-import { RINKEYBY_RPC_URL, GOERLI_RPC_URL, POLYGON_RPC_URL } from "../api";
+import { RINKEYBY_RPC_URL, GOERLI_RPC_URL } from "../api";
 
 const StyledMenu = styled((props) => (
   <Menu
@@ -32,13 +30,12 @@ const StyledMenu = styled((props) => (
   />
 ))(({ theme }) => ({
   "& .MuiPaper-root": {
-    "borderRadius": 10,
-    "border": "1px solid #C1D3FF40",
-    "marginTop": theme.spacing(1),
-    "minWidth": 280,
-    "color":
-      theme.palette.mode === "light" ? "#19274B" : theme.palette.grey[300],
-    "boxShadow":
+    borderRadius: 10,
+    border: "1px solid #C1D3FF40",
+    marginTop: theme.spacing(1),
+    minWidth: 280,
+    color: theme.palette.mode === "light" ? "#19274B" : theme.palette.grey[300],
+    boxShadow:
       "rgb(255, 255, 255) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px",
     "& .MuiMenu-list": {
       padding: "4px 0",
@@ -177,8 +174,7 @@ export default function NetworkSwitcher() {
         variant="navBar"
         disableElevation
         onClick={handleClick}
-        endIcon={<KeyboardArrowDownIcon />}
-      >
+        endIcon={<KeyboardArrowDownIcon />}>
         {activeNetworkName ? activeNetworkName : activeNetwork}
       </Button>
       <StyledMenu
@@ -188,16 +184,14 @@ export default function NetworkSwitcher() {
         }}
         anchorEl={anchorEl}
         onClose={handleClose}
-        open={open}
-      >
+        open={open}>
         {networksFetched
           ? networks.map((data, networkId) => {
               return (
                 <MenuItem
                   key={networkId}
                   onClick={() => handleNetworkChange(data)}
-                  disableRipple
-                >
+                  disableRipple>
                   {data.name}
                 </MenuItem>
               );
