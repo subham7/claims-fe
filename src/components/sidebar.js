@@ -348,7 +348,7 @@ export default function Sidebar(props) {
             </ListItemButton>
           </BootstrapTooltip>
 
-          {/* <BootstrapTooltip title="Documents" placement="left">
+          <BootstrapTooltip title="Documents" placement="left">
             <ListItemButton
               component="a"
               onClick={(e) => {
@@ -367,7 +367,7 @@ export default function Sidebar(props) {
                 <HiDocumentDuplicate size={30}/>
               </ListItemIcon>
             </ListItemButton>
-          </BootstrapTooltip> */}
+          </BootstrapTooltip>
         </List>
       </Drawer>
     </Box>
