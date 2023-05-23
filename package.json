@@ -8,12 +8,8 @@
     "start": "next start",
     "lint": "eslint .",
     "lint:fix": "eslint --fix",
-    "format": "prettier --write './**/*.{js,jsx,ts,tsx,css,md,json}' --config ./.prettierrc"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
+    "format": "prettier --write './**/*.{js,jsx,ts,tsx,css,md,json}' --config ./.prettierrc",
+    "prepare": "husky install"
   },
   "lint-staged": {
     "*.{js,jsx}": [
@@ -24,7 +20,8 @@
     "*.{html,css,less,ejs}": [
       "prettier --write",
       "git add"
-    ]
+    ],
+    "*.js": "eslint --cache --fix"
   },
   "dependencies": {
     "@apollo/client": "^3.7.13",
