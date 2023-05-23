@@ -13,10 +13,7 @@ export const step1ValidationSchema = yup.object({
 export const ERC20Step2ValidationSchema = yup.object({
   depositClose: yup
     .date()
-    .min(
-      new Date(new Date().setDate(new Date().getDate() + 1)),
-      "Date must be at least one day in the future.",
-    )
+    .min(new Date(), "date-time must be greater than now.")
     .required("deposit close date is required"),
   minDepositPerUser: yup.number().required("min deposit amount is required"),
   maxDepositPerUser: yup
@@ -52,10 +49,7 @@ export const ERC721Step2ValidationSchema = yup.object({
   }),
   depositClose: yup
     .date()
-    .min(
-      new Date(new Date().setDate(new Date().getDate() + 1)),
-      "Date must be at least one day in the future.",
-    )
+    .min(new Date(), "date-time must be greater than now.")
     .required("deposit close date is required"),
 });
 
