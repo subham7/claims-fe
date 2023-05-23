@@ -2,19 +2,15 @@ import React from "react";
 import PropTypes from "prop-types";
 import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
 import PeopleRoundedIcon from "@mui/icons-material/PeopleRounded";
-import CompareArrowsRoundedIcon from "@mui/icons-material/CompareArrowsRounded";
 import InsertDriveFileRoundedIcon from "@mui/icons-material/InsertDriveFileRounded";
 import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
-import { HiDocumentDuplicate } from "react-icons/hi";
 import { makeStyles } from "@mui/styles";
 import {
   Drawer,
   Box,
   Toolbar,
-  ListItemText,
   ListItemIcon,
   ListItemButton,
-  Divider,
   List,
   Tooltip,
 } from "@mui/material";
@@ -22,7 +18,6 @@ import { tooltipClasses } from "@mui/material/Tooltip";
 import { useRouter } from "next/router";
 import { styled } from "@mui/material/styles";
 import Fade from "@mui/material/Fade";
-import Zoom from "@mui/material/Zoom";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -92,7 +87,7 @@ export default function Sidebar(props) {
           keepMounted: true, // Better open performance on mobile.
         }}
         sx={{
-          "display": { xs: "block", sm: "none" },
+          display: { xs: "block", sm: "none" },
           "& .MuiDrawer-paper": {
             border: "none",
             boxSizing: "border-box",
@@ -101,8 +96,7 @@ export default function Sidebar(props) {
             backgroundColor: (theme) =>
               theme.palette.mode == "dark" ? "#111D38" : "#F4F4F5",
           },
-        }}
-      >
+        }}>
         <Toolbar />
         <List>
           <BootstrapTooltip title="Dashboard" placement="left">
@@ -114,15 +108,13 @@ export default function Sidebar(props) {
                 //     shallow: true,
                 //   })
                 // }}
-                alignItems="center"
-              >
+                alignItems="center">
                 <ListItemIcon
                   className={
                     page == 1
                       ? classes.listItemIconSelected
                       : classes.listItemIcon
-                  }
-                >
+                  }>
                   <HomeRoundedIcon />
                 </ListItemIcon>
               </ListItemButton>
@@ -144,8 +136,7 @@ export default function Sidebar(props) {
                     page == 2
                       ? classes.listItemIconSelected
                       : classes.listItemIcon
-                  }
-                >
+                  }>
                   <InsertDriveFileRoundedIcon />
                 </ListItemIcon>
               </ListItemButton>
@@ -167,8 +158,7 @@ export default function Sidebar(props) {
                     page == 3
                       ? classes.listItemIconSelected
                       : classes.listItemIcon
-                  }
-                >
+                  }>
                   <PeopleRoundedIcon />
                 </ListItemIcon>
               </ListItemButton>
@@ -223,7 +213,7 @@ export default function Sidebar(props) {
       <Drawer
         variant="permanent"
         sx={{
-          "display": { xs: "none", sm: "block" },
+          display: { xs: "none", sm: "block" },
           "& .MuiDrawer-paper": {
             border: "none",
             boxSizing: "border-box",
@@ -238,8 +228,7 @@ export default function Sidebar(props) {
               theme.palette.mode == "dark" ? "#111D38" : "#F4F4F5",
           },
         }}
-        open
-      >
+        open>
         <Box>
           <Link href={"/"}>
             <Image
@@ -263,15 +252,13 @@ export default function Sidebar(props) {
                   shallow: true,
                 });
               }}
-              alignItems="center"
-            >
+              alignItems="center">
               <ListItemIcon
                 className={
                   page == 1
                     ? classes.listItemIconSelected
                     : classes.listItemIcon
-                }
-              >
+                }>
                 <HomeRoundedIcon />
               </ListItemIcon>
             </ListItemButton>
@@ -284,15 +271,13 @@ export default function Sidebar(props) {
                 router.push(`/dashboard/${clubId}/proposal`, undefined, {
                   shallow: true,
                 });
-              }}
-            >
+              }}>
               <ListItemIcon
                 className={
                   page == 2
                     ? classes.listItemIconSelected
                     : classes.listItemIcon
-                }
-              >
+                }>
                 <InsertDriveFileRoundedIcon />
               </ListItemIcon>
             </ListItemButton>
@@ -305,15 +290,13 @@ export default function Sidebar(props) {
                 router.push(`/dashboard/${clubId}/members`, undefined, {
                   shallow: true,
                 });
-              }}
-            >
+              }}>
               <ListItemIcon
                 className={
                   page == 3
                     ? classes.listItemIconSelected
                     : classes.listItemIcon
-                }
-              >
+                }>
                 <PeopleRoundedIcon />
               </ListItemIcon>
             </ListItemButton>
@@ -334,15 +317,13 @@ export default function Sidebar(props) {
                 router.push(`/dashboard/${clubId}/settings`, undefined, {
                   shallow: true,
                 });
-              }}
-            >
+              }}>
               <ListItemIcon
                 className={
                   page == 5
                     ? classes.listItemIconSelected
                     : classes.listItemIcon
-                }
-              >
+                }>
                 <SettingsRoundedIcon />
               </ListItemIcon>
             </ListItemButton>

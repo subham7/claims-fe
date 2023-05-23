@@ -1,11 +1,4 @@
-import {
-  Alert,
-  Backdrop,
-  CircularProgress,
-  Grid,
-  Switch,
-  Typography,
-} from "@mui/material";
+import { Alert, Backdrop, CircularProgress, Switch } from "@mui/material";
 import React, { useCallback, useEffect, useState } from "react";
 import { TokenGatingStyle } from "./TokenGatingStyles";
 import { MdEdit } from "react-icons/md";
@@ -23,7 +16,6 @@ import {
   convertFromWeiGovernance,
   convertToWeiGovernance,
 } from "../../utils/globalFunctions";
-import ClubFetch from "../../utils/clubFetch";
 
 const TokenGating = () => {
   const [showTokenGatingModal, setShowTokenGatingModal] = useState(false);
@@ -277,8 +269,7 @@ const TokenGating = () => {
           <button
             className={classes.addBtn}
             disabled={fetchedDetails?.tokenA || tokensList.length >= 2}
-            onClick={addTokensHandler}
-          >
+            onClick={addTokensHandler}>
             +
           </button>
         )}
@@ -308,8 +299,7 @@ const TokenGating = () => {
                     height: "25px",
                     width: "25px",
                     borderRadius: "100px",
-                  }}
-                ></div>
+                  }}></div>
               }
             />
             <p>any</p>
@@ -323,8 +313,7 @@ const TokenGating = () => {
         <button
           className={classes.saveBtn}
           disabled={!tokensList.length}
-          onClick={tokenGatingHandler}
-        >
+          onClick={tokenGatingHandler}>
           Save changes
         </button>
       ) : (
@@ -353,8 +342,7 @@ const TokenGating = () => {
             bottom: "30px",
             right: "20px",
             borderRadius: "8px",
-          }}
-        >
+          }}>
           Token Gating Successfull
         </Alert>
       )}
@@ -368,8 +356,7 @@ const TokenGating = () => {
             bottom: "30px",
             right: "20px",
             borderRadius: "8px",
-          }}
-        >
+          }}>
           Token Gating Failed
         </Alert>
       )}

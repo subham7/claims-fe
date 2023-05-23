@@ -214,8 +214,7 @@ const ClaimsCard = ({
           <div
             className={`${
               isActive && claimEnabled ? classes.active : classes.inactive
-            }`}
-          >
+            }`}>
             {isActive && isClaimStarted && claimEnabled
               ? "Active"
               : (!isActive && isClaimStarted) || !claimEnabled
@@ -281,8 +280,7 @@ const ClaimsCard = ({
             bottom: "30px",
             right: "20px",
             borderRadius: "8px",
-          }}
-        >
+          }}>
           {"Copied"}
         </Alert>
       )}

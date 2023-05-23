@@ -225,8 +225,7 @@ const Proposal = () => {
               sm: "column",
               md: "column",
               lg: "row",
-            }}
-          >
+            }}>
             <Grid item>
               <Typography variant="title">All Proposals</Typography>
             </Grid>
@@ -236,14 +235,12 @@ const Proposal = () => {
               sx={{
                 display: { lg: "flex" },
                 justifyContent: { md: "flex-center", lg: "flex-end" },
-              }}
-            >
+              }}>
               <Grid container direction="row" spacing={2}>
                 <Grid
                   item
                   xs
-                  sx={{ display: "flex", justifyContent: "flex-end" }}
-                >
+                  sx={{ display: "flex", justifyContent: "flex-end" }}>
                   <Select
                     sx={{ height: "80%", textTransform: "capitalize" }}
                     value={selectedListItem}
@@ -260,14 +257,12 @@ const Proposal = () => {
                       borderRadius: "10px",
                       background: "#111D38 0% 0% no-repeat padding-box",
                       width: "30%",
-                    }}
-                  >
+                    }}>
                     {proposalDisplayOptions.map((option) => (
                       <MenuItem
                         key={option.name}
                         value={option.type}
-                        sx={{ textTransform: "capitalize" }}
-                      >
+                        sx={{ textTransform: "capitalize" }}>
                         {option.name}
                       </MenuItem>
                     ))}
@@ -282,8 +277,7 @@ const Proposal = () => {
                       sx={{
                         height: "80%",
                       }}
-                      onClick={handleClickOpen}
-                    >
+                      onClick={handleClickOpen}>
                       Propose
                     </Button>
                   </Grid>
@@ -295,8 +289,7 @@ const Proposal = () => {
                       sx={{
                         height: "80%",
                       }}
-                      onClick={handleClickOpen}
-                    >
+                      onClick={handleClickOpen}>
                       Propose
                     </Button>
                   </Grid>
@@ -314,8 +307,7 @@ const Proposal = () => {
                         onClick={(e) => {
                           handleProposalClick(executionTransaction);
                         }}
-                        md={12}
-                      >
+                        md={12}>
                         <ProposalCard
                           proposal={executionTransaction}
                           // fetched={fetched}
@@ -333,8 +325,7 @@ const Proposal = () => {
                         onClick={(e) => {
                           handleProposalClick(proposalList[key]);
                         }}
-                        md={12}
-                      >
+                        md={12}>
                         <ProposalCard
                           proposal={proposal}
                           indexKey={key}
@@ -372,8 +363,7 @@ const Proposal = () => {
       />
       <Backdrop
         sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={loaderOpen}
-      >
+        open={loaderOpen}>
         <CircularProgress color="inherit" />
       </Backdrop>
     </Layout1>

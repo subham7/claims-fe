@@ -7,8 +7,5 @@ export const fetchProposals = async (clubId, type) => {
 
   if (proposalData.status !== 200) {
     return null;
-  }
- 
-  else return proposalData.data;
-
+  } else return proposalData.data;
 };

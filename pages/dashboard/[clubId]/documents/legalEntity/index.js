@@ -1,4 +1,4 @@
-import { Button, InputAdornment, TextField, Typography } from "@mui/material";
+import { Button, TextField, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import React from "react";
 import Layout1 from "../../../../../src/components/layouts/layout1";
@@ -23,20 +23,20 @@ const useStyles = makeStyles({
     marginBottom: "40px",
   },
   input: {
-    "width": "100%",
-    "marginTop": "6px",
-    "color": "#6475A3",
-    "borderRadius": "8px",
+    width: "100%",
+    marginTop: "6px",
+    color: "#6475A3",
+    borderRadius: "8px",
     "& input[type=number]": {
       "-moz-appearance": "textfield",
     },
     "& input[type=number]::-webkit-outer-spin-button": {
       "-webkit-appearance": "none",
-      "margin": 0,
+      margin: 0,
     },
     "& input[type=number]::-webkit-inner-spin-button": {
       "-webkit-appearance": "none",
-      "margin": 0,
+      margin: 0,
     },
   },
   label: {

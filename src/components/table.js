@@ -47,8 +47,7 @@ export default function BasicTable(props) {
           {rows.map((row) => (
             <TableRow
               key={row.name}
-              sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-            >
+              sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
               <TableCell align="left" variant="tableBody">
                 <></>
                 {row.token}
@@ -66,8 +65,7 @@ export default function BasicTable(props) {
                   row.daychange > 0
                     ? { color: "#0ABB92" }
                     : { color: "#D55438" }
-                }
-              >
+                }>
                 {row.daychange > 0 ? "+" : ""}
                 {row.daychange}
               </TableCell>

@@ -1,15 +1,5 @@
 import { React } from "react";
-import {
-  Card,
-  Grid,
-  CardActions,
-  CardContent,
-  CardMedia,
-  Typography,
-  Stack,
-  emphasize,
-  Box,
-} from "@mui/material";
+import { Card, CardContent, CardMedia, Typography, Box } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import StarIcon from "@mui/icons-material/Star";
 
@@ -38,10 +28,10 @@ const useStyles = makeStyles({
     fontWeight: "normal",
   },
   contractCards: {
-    "borderRadius": "10px 10px 0px 0px",
-    "padding": 0,
-    "width": "25vw",
-    "height": "45vh",
+    borderRadius: "10px 10px 0px 0px",
+    padding: 0,
+    width: "25vw",
+    height: "45vh",
     "&:hover": {
       cursor: "pointer",
       background:
@@ -49,20 +39,20 @@ const useStyles = makeStyles({
     },
   },
   contractCardsInactive: {
-    "borderRadius": "10px 10px 0px 0px",
-    "padding": 0,
-    "width": "25vw",
-    "height": "45vh",
+    borderRadius: "10px 10px 0px 0px",
+    padding: 0,
+    width: "25vw",
+    height: "45vh",
     "&:hover, &:focus": {
       cursor: "pointer",
     },
   },
   linearGradientBackgroundInactive: {
-    "width": "100%",
-    "height": "60%",
-    "display": "flex",
-    "justifyContent": "center",
-    "alignItems": "center",
+    width: "100%",
+    height: "60%",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
     "&:hover, &:focus": {
       cursor: "pointer",
     },
@@ -85,8 +75,7 @@ export default function ContractCard(props) {
       <Card className={classes.contractCards}>
         <div
           className={classes.linearGradientBackground}
-          style={{ backgroundColor: backgroundColour }}
-        >
+          style={{ backgroundColor: backgroundColour }}>
           <CardMedia
             className={classes.image}
             component="img"
@@ -103,8 +92,7 @@ export default function ContractCard(props) {
           <Typography
             gutterBottom
             component="div"
-            className={classes.subheading}
-          >
+            className={classes.subheading}>
             {contractSubHeading}
           </Typography>
         </CardContent>
@@ -115,8 +103,7 @@ export default function ContractCard(props) {
       <Card className={classes.contractCardsInactive}>
         <div
           className={classes.linearGradientBackgroundInactive}
-          style={{ backgroundColor: backgroundColour }}
-        >
+          style={{ backgroundColor: backgroundColour }}>
           <CardMedia
             className={classes.image}
             component="img"
@@ -134,8 +121,7 @@ export default function ContractCard(props) {
                 <Box
                   sx={{ color: "#6475A3" }}
                   fontWeight="Normal"
-                  display="inline"
-                >
+                  display="inline">
                   (Coming soon)
                 </Box>
               </>
@@ -145,8 +131,7 @@ export default function ContractCard(props) {
           <Typography
             gutterBottom
             component="div"
-            className={classes.subheading}
-          >
+            className={classes.subheading}>
             {contractSubHeading}
           </Typography>
         </CardContent>

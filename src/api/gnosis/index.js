@@ -9,7 +9,7 @@ export async function getTokens(gnosisAddress) {
       gnosisAddress: `${gnosisAddress}`,
     },
     headers: {
-      "Authorization": "Bearer " + getJwtToken(),
+      Authorization: "Bearer " + getJwtToken(),
       "Content-Type": "application/json",
     },
   });
@@ -19,7 +19,7 @@ export async function getNfts(gnosisAddress) {
   // fetch nfts associated with the gnosis wallet
   return await axios.get(MAIN_API_URL + `assets/${gnosisAddress}/nft`, {
     headers: {
-      "Authorization": "Bearer " + getJwtToken(),
+      Authorization: "Bearer " + getJwtToken(),
       "Content-Type": "application/json",
     },
   });
@@ -31,7 +31,7 @@ export async function getBalance(gnosisAddress) {
     MAIN_API_URL + `gnosis/getAssets?gnosisAddress=${gnosisAddress}`,
     {
       headers: {
-        "Authorization": "Bearer " + getJwtToken(),
+        Authorization: "Bearer " + getJwtToken(),
         "Content-Type": "application/json",
       },
     },

@@ -1,5 +1,3 @@
-import ImplementationContract from "../abis/implementationABI.json";
-import { SmartContract } from "../api/contract";
 import { ethers } from "ethers";
 
 // function for calculating the balance percentage of the users share

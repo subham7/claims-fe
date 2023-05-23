@@ -9,7 +9,6 @@ import {
   Typography,
 } from "@mui/material";
 
-import { Field, FieldArray } from "formik";
 import CustomSlider from "../slider";
 import AddCircleOutlinedIcon from "@mui/icons-material/AddCircleOutlined";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -46,8 +45,7 @@ export default function Step3(props) {
                   display: "flex",
                   justifyContent: "flex-start",
                   alignItems: "center",
-                }}
-              >
+                }}>
                 <Typography className={classes.largeText2}>
                   Do you want to enable Governance?
                 </Typography>
@@ -59,8 +57,7 @@ export default function Step3(props) {
                   display: "flex",
                   justifyContent: "flex-end",
                   alignItems: "center",
-                }}
-              >
+                }}>
                 <FormControlLabel
                   control={
                     <Switch
@@ -94,23 +91,20 @@ export default function Step3(props) {
                   alignItems: "center",
                 }}
                 mt={2}
-                mb={2}
-              >
+                mb={2}>
                 <Typography className={classes.largeText2}>
                   Min.{" "}
                   <Box
                     sx={{ color: "#3B7AFD" }}
                     fontWeight="fontWeightBold"
-                    display="inline"
-                  >
+                    display="inline">
                     % of votes needed
                   </Box>{" "}
                   to consider any proposal raised{" "}
                   <Box
                     sx={{ color: "#6475A3" }}
                     fontWeight="fontWeightBold"
-                    display="inline"
-                  >
+                    display="inline">
                     (Quorum)
                   </Box>{" "}
                 </Typography>
@@ -140,23 +134,20 @@ export default function Step3(props) {
                 // pl={3}
                 pr={1}
                 mt={2}
-                mb={2}
-              >
+                mb={2}>
                 <Typography className={classes.largeText2}>
                   Min.{" "}
                   <Box
                     sx={{ color: "#3B7AFD" }}
                     fontWeight="fontWeightBold"
-                    display="inline"
-                  >
+                    display="inline">
                     % of votes needed
                   </Box>{" "}
                   out of all votes to pass a proposal{" "}
                   <Box
                     sx={{ color: "#6475A3" }}
                     fontWeight="fontWeightBold"
-                    display="inline"
-                  >
+                    display="inline">
                     (Threshold)
                   </Box>{" "}
                 </Typography>
@@ -194,8 +185,7 @@ export default function Step3(props) {
                   display: "flex",
                   justifyContent: "flex-start",
                   alignItems: "center",
-                }}
-              >
+                }}>
                 <Typography className={classes.largeText}>
                   Add more wallets that will sign & approve final transaction
                 </Typography>
@@ -208,8 +198,7 @@ export default function Step3(props) {
                   justifyContent: "flex-end",
                   alignItems: "center",
                 }}
-                mr={3}
-              >
+                mr={3}>
                 <IconButton
                   aria-label="add"
                   onClick={(value) => {
@@ -217,8 +206,7 @@ export default function Step3(props) {
                       ...props.formik.values.addressList,
                       "",
                     ]);
-                  }}
-                >
+                  }}>
                   <AddCircleOutlinedIcon className={classes.addCircleColour} />
                 </IconButton>
               </Grid>
@@ -236,8 +224,7 @@ export default function Step3(props) {
                         justifyContent: "flex-start",
                         alignItems: "center",
                       }}
-                      key={key}
-                    >
+                      key={key}>
                       <TextField
                         label="Wallet address"
                         // error={!/^0x[a-zA-Z0-9]+/gm.test(addressList[key])}
@@ -275,8 +262,7 @@ export default function Step3(props) {
                           const list = [...props.formik.values.addressList];
                           list.splice(key, 1);
                           props.formik.setFieldValue("addressList", list);
-                        }}
-                      >
+                        }}>
                         <DeleteIcon />
                       </IconButton>
                     </Grid>

@@ -11,22 +11,15 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useState } from "react";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
-import CancelIcon from "@mui/icons-material/Cancel";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { AdditionalSettingsStyles } from "./AdditionalSettingsStyles";
 import { useRouter } from "next/router";
-import Countdown from "react-countdown";
 import { SmartContract } from "../../api/contract";
 import FactoryContractABI from "../../abis/newArch/factoryContract.json";
-import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import dayjs from "dayjs";
 import DepositOwnerFee from "./modals/DepositOwnerFee";
 import DepositDeadline from "./modals/DepositDeadline";
-import ClubFetch from "../../utils/clubFetch";
 import { useSelector } from "react-redux";
 
 const AdditionalSettings = ({
@@ -157,8 +150,7 @@ const AdditionalSettings = ({
         <Divider />
         <Grid
           container
-          sx={{ display: "flex", justifyContent: "space-between" }}
-        >
+          sx={{ display: "flex", justifyContent: "space-between" }}>
           <Grid item>
             <Typography variant="settingText">
               Station contract address
@@ -170,8 +162,7 @@ const AdditionalSettings = ({
                 color="primary"
                 onClick={() => {
                   navigator.clipboard.writeText(daoAddress);
-                }}
-              >
+                }}>
                 <ContentCopyIcon className={classes.iconColor} />
               </IconButton>
             </Grid>
@@ -182,8 +173,7 @@ const AdditionalSettings = ({
                   window.open(
                     `https://goerli.etherscan.io/address/${daoAddress}`,
                   );
-                }}
-              >
+                }}>
                 <OpenInNewIcon className={classes.iconColor} />
               </IconButton>
             </Grid>
@@ -212,8 +202,7 @@ const AdditionalSettings = ({
         <Grid
           container
           py={2}
-          sx={{ display: "flex", justifyContent: "space-between" }}
-        >
+          sx={{ display: "flex", justifyContent: "space-between" }}>
           <Grid item mt={3}>
             <Typography variant="settingText">Admin fees</Typography>
           </Grid>
@@ -223,8 +212,7 @@ const AdditionalSettings = ({
               justifyContent: "flex-end",
               alignItems: "center",
             }}
-            spacing={1}
-          >
+            spacing={1}>
             <Grid mr={4}>
               <Grid sx={{ display: "flex", alignItems: "center" }}>
                 <Typography className={classes.text} mr={1}>
@@ -234,8 +222,7 @@ const AdditionalSettings = ({
                 {isAdminUser ? (
                   <Link
                     className={classes.link}
-                    onClick={showUpdateOwnerFeesModalHandler}
-                  >
+                    onClick={showUpdateOwnerFeesModalHandler}>
                     (Change)
                   </Link>
                 ) : (
@@ -252,16 +239,14 @@ const AdditionalSettings = ({
         <Grid
           container
           py={2}
-          sx={{ display: "flex", justifyContent: "space-between" }}
-        >
+          sx={{ display: "flex", justifyContent: "space-between" }}>
           <Grid item mt={3}>
             <Typography variant="settingText">Deposit deadline</Typography>
           </Grid>
           <Grid
             // container
             sx={{ display: "flex", alignItems: "center" }}
-            spacing={1}
-          >
+            spacing={1}>
             <Grid mr={4}>
               <Grid sx={{ display: "flex", alignItems: "center" }}>
                 <Tooltip title={startingTimeInNum.toString()}>
@@ -282,8 +267,7 @@ const AdditionalSettings = ({
                 {isAdminUser ? (
                   <Link
                     className={classes.link}
-                    onClick={showUpdateDepositTimeModalHandler}
-                  >
+                    onClick={showUpdateDepositTimeModalHandler}>
                     (Change)
                   </Link>
                 ) : (
@@ -327,8 +311,7 @@ const AdditionalSettings = ({
             bottom: "30px",
             right: "20px",
             borderRadius: "8px",
-          }}
-        >
+          }}>
           {message}
         </Alert>
       )}
@@ -342,8 +325,7 @@ const AdditionalSettings = ({
             bottom: "30px",
             right: "20px",
             borderRadius: "8px",
-          }}
-        >
+          }}>
           {message}
         </Alert>
       )}

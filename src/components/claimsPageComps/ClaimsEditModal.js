@@ -2,10 +2,7 @@ import {
   Alert,
   Button,
   CircularProgress,
-  FormControlLabel,
-  FormGroup,
   Switch,
-  ToggleButton,
   Typography,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
@@ -14,7 +11,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { SmartContract } from "../../api/contract";
 import claimContractABI from "../../../src/abis/singleClaimContract.json";
 import { useRouter } from "next/router";
-import { addClaimsOn } from "../../redux/reducers/createClaim";
 
 const useStyles = makeStyles({
   backdrop: {
@@ -201,8 +197,7 @@ const ClaimsEditModal = ({ onClose, claimAddress, walletAddress }) => {
               <Button
                 disabled={claimed}
                 className={classes.claim}
-                onClick={rollbackHandler}
-              >
+                onClick={rollbackHandler}>
                 {claimed ? "Claimed" : "Claim"}
               </Button>
             </div>
@@ -218,8 +213,7 @@ const ClaimsEditModal = ({ onClose, claimAddress, walletAddress }) => {
                 right: "20px",
                 borderRadius: "8px",
                 zIndex: 1000000,
-              }}
-            >
+              }}>
               {"Claims turned Off"}
             </Alert>
           )}
@@ -234,8 +228,7 @@ const ClaimsEditModal = ({ onClose, claimAddress, walletAddress }) => {
                 right: "20px",
                 borderRadius: "8px",
                 zIndex: 1000000,
-              }}
-            >
+              }}>
               {"Claims turned On"}
             </Alert>
           )}

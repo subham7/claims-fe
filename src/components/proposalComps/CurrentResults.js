@@ -52,8 +52,7 @@ const CurrentResults = ({ proposalData, fetched }) => {
                         borderRadius: "5px",
                       }}
                       mx={1}
-                      variant="subtitle2"
-                    >
+                      variant="subtitle2">
                       {vote.count}
                     </Typography>
                   </Grid>
@@ -63,8 +62,7 @@ const CurrentResults = ({ proposalData, fetched }) => {
                     sx={{
                       display: "flex",
                       justifyContent: "flex-end",
-                    }}
-                  >
+                    }}>
                     <Typography className={classes.listFont2Colourless}>
                       {vote.count > 0 ? calculateVotePercentage(vote.count) : 0}
                       %

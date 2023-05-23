@@ -79,11 +79,11 @@ const useStyles = makeStyles({
     borderRadius: "15px",
   },
   linkInput: {
-    "width": "100%",
-    "color": "#C1D3FF",
-    "background": "#111D38 0% 0% no-repeat padding-box",
-    "border": "1px solid #C1D3FF40",
-    "borderRadius": "10px",
+    width: "100%",
+    color: "#C1D3FF",
+    background: "#111D38 0% 0% no-repeat padding-box",
+    border: "1px solid #C1D3FF40",
+    borderRadius: "10px",
     "&:hover": {
       boxShadow: "0px 0px 12px #C1D3FF40",
       border: "1px solid #C1D3FF40",
@@ -172,8 +172,7 @@ const LegalEntityModal = ({
                       <Button
                         variant="contained"
                         className={classes.copy}
-                        onClick={copyHandler}
-                      >
+                        onClick={copyHandler}>
                         {isCopy ? "Copied" : "Copy"}
                       </Button>
                     ),
@@ -192,8 +191,7 @@ const LegalEntityModal = ({
                 alignItems: "center",
                 justifyContent: "center",
               }}
-              mt={5}
-            >
+              mt={5}>
               {/* enter your code here */}
 
               <div className="centerContent">

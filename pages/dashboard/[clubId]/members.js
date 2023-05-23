@@ -27,12 +27,12 @@ import { useConnectWallet } from "@web3-onboard/react";
 
 const useStyles = makeStyles({
   searchField: {
-    "width": "548px",
-    "height": "55px",
-    "color": "#C1D3FF",
-    "backgroundColor": "#111D38",
-    "border": "1px solid #C1D3FF40",
-    "borderRadius": "10px",
+    width: "548px",
+    height: "55px",
+    color: "#C1D3FF",
+    backgroundColor: "#111D38",
+    border: "1px solid #C1D3FF40",
+    borderRadius: "10px",
     "&:hover": {
       boxShadow: "0px 0px 12px #C1D3FF40",
       border: "1px solid #C1D3FF40",
@@ -45,8 +45,8 @@ const useStyles = makeStyles({
     color: "#C1D3FF",
   },
   activityLink: {
-    "color": "#C1D3FF",
-    "textDecoration": "none",
+    color: "#C1D3FF",
+    textDecoration: "none",
     "&:hover": {
       textDecoration: "none",
       cursor: "pointer",
@@ -144,8 +144,7 @@ const Test = () => {
                           <TableCell
                             align="left"
                             variant="tableHeading"
-                            key={key}
-                          >
+                            key={key}>
                             {data}
                           </TableCell>
                         );
@@ -158,27 +157,23 @@ const Test = () => {
                         key={key}
                         sx={{
                           "&:last-child td, &:last-child th": { border: 0 },
-                        }}
-                      >
+                        }}>
                         <TableCell align="left" variant="tableBody">
                           <Grid
                             container
                             direction="row"
                             alignItems="center"
-                            gap={4}
-                          >
+                            gap={4}>
                             <Grid
                               sx={{
                                 flex: "0.7",
                               }}
-                              item
-                            >
+                              item>
                               <a
                                 className={classes.activityLink}
                                 onClick={(e) => {
                                   handleAddressClick(e, data.userAddress);
-                                }}
-                              >
+                                }}>
                                 {" "}
                                 {data.userAddress.substring(0, 6) +
                                   "......" +
@@ -192,8 +187,7 @@ const Test = () => {
                                 color="primary"
                                 onClick={(e) => {
                                   handleAddressClick(e, data.userAddress);
-                                }}
-                              >
+                                }}>
                                 <OpenInNewIcon
                                   className={classes.activityLink}
                                 />
@@ -232,8 +226,7 @@ const Test = () => {
 
         <Backdrop
           sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-          open={loading}
-        >
+          open={loading}>
           <CircularProgress color="inherit" />
         </Backdrop>
       </Layout1>
