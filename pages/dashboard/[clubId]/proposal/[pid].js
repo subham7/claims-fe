@@ -255,6 +255,17 @@ const ProposalDetail = () => {
     return state.gnosis.actionContractAddress;
   });
 
+  const ERC721_Threshold = useSelector((state) => {
+    return state.club.erc721ClubDetails.threshold;
+  });
+
+  const ERC20_Threshold = useSelector((state) => {
+    return state.club.erc20ClubDetails.threshold;
+  });
+
+  const Club_Threshold =
+    tokenType === "erc20" ? ERC20_Threshold : ERC721_Threshold;
+
   const [proposalData, setProposalData] = useState(null);
   const [governance, setGovernance] = useState(false);
   const [voted, setVoted] = useState(false);
@@ -273,6 +284,7 @@ const ProposalDetail = () => {
   const [failed, setFailed] = useState(false);
   const [fetched, setFetched] = useState(false);
   const [daoDetails, setDaoDetails] = useState();
+  const [members, setMembers] = useState([]);
 
   const GNOSIS_TRANSACTION_URL = useSelector((state) => {
     return state.gnosis.transactionUrl;
@@ -399,6 +411,12 @@ const ProposalDetail = () => {
     dispatch(addProposalId(pid));
     const proposalData = getProposalDetail(pid);
 
+    const membersData = await subgraphQuery(
+      SUBGRAPH_URL,
+      QUERY_ALL_MEMBERS(daoAddress),
+    );
+    setMembers(membersData);
+
     proposalData.then((result) => {
       if (result.status !== 200) {
         setFetched(false);
@@ -407,7 +425,7 @@ const ProposalDetail = () => {
         setFetched(true);
       }
     });
-  }, [pid]);
+  }, [SUBGRAPH_URL, daoAddress, dispatch, pid]);
 
   const executeFunction = async (proposalStatus) => {
     setLoaderOpen(true);
@@ -445,6 +463,7 @@ const ProposalDetail = () => {
         SUBGRAPH_URL,
         QUERY_ALL_MEMBERS(daoAddress),
       );
+      setMembers(membersData);
       let membersArray = [];
       membersData.users.map((member) => membersArray.push(member.userAddress));
 
@@ -1234,7 +1253,14 @@ const ProposalDetail = () => {
           </Grid>
           <Grid item md={3.5}>
             <Stack spacing={3}>
-              <ProposalInfo proposalData={proposalData} fetched={fetched} />
+              <ProposalInfo
+                proposalData={proposalData}
+                fetched={fetched}
+                threshold={Club_Threshold}
+                members={members}
+                isGovernanceActive={isGovernanceActive}
+                ownerAddresses={ownerAddresses}
+              />
 
               {isGovernanceActive && (
                 <>
