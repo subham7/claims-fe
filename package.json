@@ -13,13 +13,11 @@
   },
   "lint-staged": {
     "*.{js,jsx}": [
-      "prettier --write './**/*.{js,jsx,ts,tsx,css,md,json}' --config ./.prettierrc",
-      "eslint --fix",
-      "git add"
+      "prettier --write",
+      "eslint --fix"
     ],
     "*.{html,css,less,ejs}": [
-      "prettier --write",
-      "git add"
+      "prettier --write"
     ],
     "*.js": "eslint --cache --fix"
   },
