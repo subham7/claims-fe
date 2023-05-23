@@ -14,7 +14,7 @@ import {
 import { useDispatch } from "react-redux";
 import { makeStyles } from "@mui/styles";
 import Router, { useRouter } from "next/router";
-import { addClubName, addDaoAddress } from "../src/redux/reducers/create";
+import { addDaoAddress } from "../src/redux/reducers/club";
 import claim from "../public/assets/images/treasury_image.png";
 import station from "../public/assets/images/gov_image.png";
 
@@ -208,7 +208,6 @@ const App = () => {
   };
 
   const handleItemClick = async (data) => {
-    dispatch(addClubName(data.daoName));
     dispatch(addDaoAddress(data.daoAddress));
     const clubData = await subgraphQuery(
       networkId == "0x5"
@@ -228,8 +227,6 @@ const App = () => {
         tokenType: clubData.stations[0].tokenType,
       }),
     );
-    // dispatch(addClubID(data.clubId));
-    // dispatch(addClubRoute(data.route));
     router.push(
       `/dashboard/${Web3.utils.toChecksumAddress(data.daoAddress)}`,
       undefined,

@@ -4,7 +4,6 @@ import { Web3Adapter } from "@safe-global/protocol-kit";
 import { SafeFactory } from "@safe-global/protocol-kit";
 import FactoryContract from "../abis/newArch/factoryContract.json";
 import { SmartContract } from "../api/contract";
-import { addDaoAddress, addTokenURI } from "../redux/reducers/create";
 import {
   safeConnected,
   setCreateDaoAuthorized,
@@ -12,7 +11,7 @@ import {
   setCreateSafeErrorCode,
   setCreateSafeLoading,
 } from "../redux/reducers/gnosis";
-import { addClubData } from "../redux/reducers/club";
+import { addClubData, addDaoAddress } from "../redux/reducers/club";
 import { getIncreaseGasPrice } from "./helper";
 
 async function gnosisSafePromise(owners, threshold, dispatch) {
@@ -100,8 +99,6 @@ export async function initiateConnection(
           modifiedTokenURI = `https://${imgUrl[2]}.ipfs.dweb.link/${imgUrl[3]}`;
         }
       }
-
-      dispatch(addTokenURI(modifiedTokenURI));
 
       value = await factorySmartContract.createERC721DAO(
         params.clubName,
