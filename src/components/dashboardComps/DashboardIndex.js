@@ -514,7 +514,6 @@ const DashboardIndex = () => {
                             ) : null}
                           </Box>
                         </Grid>
-                        {/* <CardMedia    className={classes.media}    component=“img”    image=“/assets/images/card_illustration.png”    alt=“abstract background”    sx={{ position: “absolute”, bottom: 0 }}                     />   */}
                       </Grid>
                     </Grid>
                   </Card>
@@ -835,10 +834,8 @@ const DashboardIndex = () => {
             <Stack mt={2}>
               <Card className={classes.fourthCard}>
                 <Grid container m={2}>
-                  <Grid item >
-                    <Typography  fontSize={"24px"}>
-                      Recent Proposals
-                    </Typography>
+                  <Grid item>
+                    <Typography fontSize={"24px"}>Recent Proposals</Typography>
                   </Grid>
                 </Grid>
                 {proposalData.length > 0 ? (
