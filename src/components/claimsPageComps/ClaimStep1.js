@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import { BsArrowLeft } from "react-icons/bs";
 import { makeStyles } from "@mui/styles";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { IoWalletSharp } from "react-icons/io5";
 import { BsFillSendFill } from "react-icons/bs";
 import { LocalizationProvider } from "@mui/x-date-pickers";
@@ -35,20 +35,20 @@ const useStyles = makeStyles({
     marginBottom: "40px",
   },
   input: {
-    "width": "100%",
-    "marginTop": "6px",
-    "color": "#6475A3",
-    "borderRadius": "8px",
+    width: "100%",
+    marginTop: "6px",
+    color: "#6475A3",
+    borderRadius: "8px",
     "& input[type=number]": {
       "-moz-appearance": "textfield",
     },
     "& input[type=number]::-webkit-outer-spin-button": {
       "-webkit-appearance": "none",
-      "margin": 0,
+      margin: 0,
     },
     "& input[type=number]::-webkit-inner-spin-button": {
       "-webkit-appearance": "none",
-      "margin": 0,
+      margin: 0,
     },
   },
   label: {
@@ -167,8 +167,7 @@ const ClaimStep1 = ({ formik, tokensInWallet, isLoading }) => {
         onClick={() => {
           router.push("/claims");
         }}
-        className={classes.back}
-      >
+        className={classes.back}>
         <BsArrowLeft /> Back to claims
       </Typography>
 
@@ -206,14 +205,12 @@ const ClaimStep1 = ({ formik, tokensInWallet, isLoading }) => {
           aria-label="airdropFrom"
           name="airdropFrom"
           id="airdropFrom"
-          className={classes.selectContainer}
-        >
+          className={classes.selectContainer}>
           <ToggleButton
             className={classes.rightContainer}
             name="airdropFrom"
             value="contract"
-            id="airdropFrom"
-          >
+            id="airdropFrom">
             <BsFillSendFill size={20} />
             <p className={classes.label}>Claim Contract</p>
             <p className={classes.smallText}>
@@ -225,8 +222,7 @@ const ClaimStep1 = ({ formik, tokensInWallet, isLoading }) => {
             className={classes.leftContainer}
             name="airdropFrom"
             id="airdropFrom"
-            value="wallet"
-          >
+            value="wallet">
             <IoWalletSharp size={20} />
             <p className={classes.label}>My Wallet</p>
             <p className={classes.smallText}>
@@ -290,8 +286,7 @@ const ClaimStep1 = ({ formik, tokensInWallet, isLoading }) => {
               }
               helperText={
                 formik.touched.selectedToken && formik.errors.selectedToken
-              }
-            >
+              }>
               {tokensInWallet?.map((token, i) => (
                 <MenuItem key={i} value={token}>
                   {token?.tokenSymbol}
@@ -343,8 +338,7 @@ const ClaimStep1 = ({ formik, tokensInWallet, isLoading }) => {
             alignItems: "center",
             justifyContent: "space-between",
             width: "100%",
-          }}
-        >
+          }}>
           {/* Claim Start */}
 
           <div style={{ width: "100%" }}>
@@ -398,8 +392,7 @@ const ClaimStep1 = ({ formik, tokensInWallet, isLoading }) => {
           onClick={formik.handleSubmit}
           type="submit"
           variant="contained"
-          className={classes.btn}
-        >
+          className={classes.btn}>
           Next
         </Button>
       </form>

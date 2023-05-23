@@ -1,6 +1,5 @@
 "use client";
 import React, { useMemo } from "react";
-import PropTypes from "prop-types";
 import clsx from "clsx";
 import dynamic from "next/dynamic";
 
@@ -9,7 +8,7 @@ import "react-quill/dist/quill.snow.css";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    "height": "fit-content !important",
+    height: "fit-content !important",
     "max-height": "20vh !important",
     "& .root": {
       height: "fit-content",
@@ -18,10 +17,10 @@ const useStyles = makeStyles((theme) => ({
       //   "borderLeft": "none",
       //   "borderTop": "none",
       //   "borderRight": "none",
-      "border": `1px solid ${theme.palette.divider}`,
-      "borderTopRightRadius": "12px",
-      "borderTopLeftRadius": "12px",
-      "borderBottom": `1px solid ${theme.palette.divider}`,
+      border: `1px solid ${theme.palette.divider}`,
+      borderTopRightRadius: "12px",
+      borderTopLeftRadius: "12px",
+      borderBottom: `1px solid ${theme.palette.divider}`,
       "& .ql-picker-label:hover": {
         color: theme.palette.secondary.main,
       },
@@ -35,13 +34,13 @@ const useStyles = makeStyles((theme) => ({
         color: theme.palette.secondary.main,
       },
       "& button:hover": {
-        "color": theme.palette.secondary.main,
+        color: theme.palette.secondary.main,
         "& .ql-stroke": {
           stroke: theme.palette.secondary.main,
         },
       },
       "& button:focus": {
-        "color": theme.palette.secondary.main,
+        color: theme.palette.secondary.main,
         "& .ql-stroke": {
           stroke: theme.palette.secondary.main,
         },
@@ -66,15 +65,15 @@ const useStyles = makeStyles((theme) => ({
       },
     },
     "& .ql-container": {
-      "height": "16vh",
+      height: "16vh",
       //   "border": "none",
-      "border": `1px solid ${theme.palette.divider}`,
-      "borderBottomRightRadius": "12px",
-      "borderBottomLeftRadius": "12px",
+      border: `1px solid ${theme.palette.divider}`,
+      borderBottomRightRadius: "12px",
+      borderBottomLeftRadius: "12px",
       "& .ql-editor": {
-        "fontFamily": theme.typography.fontFamily,
-        "fontSize": 16,
-        "color": theme.palette.text.primary,
+        fontFamily: theme.typography.fontFamily,
+        fontSize: 16,
+        color: theme.palette.text.primary,
         "&.ql-blank::before": {
           color: theme.palette.text.secondary,
         },
@@ -83,16 +82,16 @@ const useStyles = makeStyles((theme) => ({
   },
   error: {
     "& .ql-container": {
-      "height": "16vh",
+      height: "16vh",
       //   "border": "none",
 
-      "border": `1px solid #d32f2f`,
-      "borderBottomRightRadius": "12px",
-      "borderBottomLeftRadius": "12px",
+      border: `1px solid #d32f2f`,
+      borderBottomRightRadius: "12px",
+      borderBottomLeftRadius: "12px",
       "& .ql-editor": {
-        "fontFamily": theme.typography.fontFamily,
-        "fontSize": 16,
-        "color": theme.palette.text.primary,
+        fontFamily: theme.typography.fontFamily,
+        fontSize: 16,
+        color: theme.palette.text.primary,
         "&.ql-blank::before": {
           color: theme.palette.text.secondary,
         },

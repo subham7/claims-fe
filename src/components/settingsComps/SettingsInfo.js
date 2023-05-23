@@ -1,16 +1,12 @@
 import {
   Backdrop,
-  Button,
   Card,
   CircularProgress,
-  Dialog,
-  DialogContent,
   Divider,
   Grid,
   Paper,
   Skeleton,
   Stack,
-  TextField,
   Typography,
 } from "@mui/material";
 import React from "react";
@@ -18,10 +14,8 @@ import Layout1 from "../layouts/layout1";
 import ProgressBar from "../progressbar";
 
 import { SettingsInfoStlyes } from "./SettingsInfoStyles";
-import Web3 from "web3";
 import {
   calculateTreasuryTargetShare,
-  calculateUserSharePercentage,
   convertFromWeiGovernance,
 } from "../../utils/globalFunctions";
 
@@ -69,8 +63,7 @@ const SettingsInfo = ({
                   boxShadow: "none",
                   paddingTop: "50px",
                   paddingLeft: "30px",
-                }}
-              >
+                }}>
                 <Grid container spacing={7}>
                   <Grid item md={3}>
                     <Typography variant="settingText">
@@ -132,16 +125,14 @@ const SettingsInfo = ({
                             <Grid item>
                               <Typography
                                 variant="p"
-                                className={classes.valuesDimStyle}
-                              >
+                                className={classes.valuesDimStyle}>
                                 Max Token Per User
                               </Typography>
                             </Grid>
                             <Grid item mt={1}>
                               <Typography
                                 variant="p"
-                                className={classes.valuesStyle}
-                              >
+                                className={classes.valuesStyle}>
                                 {daoDetails.maxTokensPerUser !== null ? (
                                   daoDetails.maxTokensPerUser
                                 ) : (
@@ -160,16 +151,14 @@ const SettingsInfo = ({
                           <Grid item>
                             <Typography
                               variant="p"
-                              className={classes.valuesDimStyle}
-                            >
+                              className={classes.valuesDimStyle}>
                               Minimum Deposit
                             </Typography>
                           </Grid>
                           <Grid item mt={1}>
                             <Typography
                               variant="p"
-                              className={classes.valuesStyle}
-                            >
+                              className={classes.valuesStyle}>
                               {daoDetails.minDeposit ? (
                                 `${convertFromWeiGovernance(
                                   daoDetails.minDeposit,
@@ -195,16 +184,14 @@ const SettingsInfo = ({
                           <Grid item>
                             <Typography
                               variant="p"
-                              className={classes.valuesDimStyle}
-                            >
+                              className={classes.valuesDimStyle}>
                               NFT Tranferable
                             </Typography>
                           </Grid>
                           <Grid item mt={1}>
                             <Typography
                               variant="p"
-                              className={classes.valuesStyle}
-                            >
+                              className={classes.valuesStyle}>
                               {daoDetails?.isTransferable !== null ? (
                                 daoDetails.isTransferable ? (
                                   "Yes"
@@ -226,16 +213,14 @@ const SettingsInfo = ({
                           <Grid item>
                             <Typography
                               variant="p"
-                              className={classes.valuesDimStyle}
-                            >
+                              className={classes.valuesDimStyle}>
                               Maximum Deposit
                             </Typography>
                           </Grid>
                           <Grid item mt={1}>
                             <Typography
                               variant="p"
-                              className={classes.valuesStyle}
-                            >
+                              className={classes.valuesStyle}>
                               {daoDetails.maxDeposit ? (
                                 `${convertFromWeiGovernance(
                                   daoDetails.maxDeposit,
@@ -259,8 +244,7 @@ const SettingsInfo = ({
                       <Grid item>
                         <Typography
                           variant="p"
-                          className={classes.valuesDimStyle}
-                        >
+                          className={classes.valuesDimStyle}>
                           Members
                         </Typography>
                       </Grid>
@@ -305,8 +289,7 @@ const SettingsInfo = ({
                             </Typography>
                             <Typography
                               variant="p"
-                              className={classes.valuesStyle}
-                            >
+                              className={classes.valuesStyle}>
                               {daoDetails.nftMinted !== null ? (
                                 daoDetails.nftMinted
                               ) : (
@@ -334,8 +317,7 @@ const SettingsInfo = ({
                           <Grid item mt={2}>
                             <Typography
                               variant="p"
-                              className={classes.valuesStyle}
-                            >
+                              className={classes.valuesStyle}>
                               {daoDetails.balanceOfClubToken !== null &&
                               daoDetails.clubTokensMinted !== null &&
                               isNaN(
@@ -378,8 +360,7 @@ const SettingsInfo = ({
                           <Grid item mt={2}>
                             <Typography
                               variant="p"
-                              className={classes.valuesStyle}
-                            >
+                              className={classes.valuesStyle}>
                               {daoDetails.threshold ? (
                                 daoDetails.threshold / 100
                               ) : (
@@ -404,8 +385,7 @@ const SettingsInfo = ({
                           <Grid item mt={2}>
                             <Typography
                               variant="p"
-                              className={classes.valuesStyle}
-                            >
+                              className={classes.valuesStyle}>
                               {daoDetails.quorum ? (
                                 daoDetails.quorum / 100
                               ) : (
@@ -434,8 +414,7 @@ const SettingsInfo = ({
                             <Grid item mt={2}>
                               <Typography
                                 variant="p"
-                                className={classes.valuesStyle}
-                              >
+                                className={classes.valuesStyle}>
                                 {daoDetails.totalNftSupply !== null ? (
                                   daoDetails.isTotalSupplyUnlimited ? (
                                     "Unlimited"
@@ -528,8 +507,7 @@ const SettingsInfo = ({
                             </Typography>
                             <Typography
                               variant="p"
-                              className={classes.valuesStyle}
-                            >
+                              className={classes.valuesStyle}>
                               {daoDetails.nftMinted !== null ? (
                                 daoDetails.nftMinted
                               ) : (
@@ -581,8 +559,7 @@ const SettingsInfo = ({
                     mb={2}
                     mr={4}
                     xs
-                    sx={{ display: "flex", justifyContent: "flex-end" }}
-                  >
+                    sx={{ display: "flex", justifyContent: "flex-end" }}>
                     <Stack spacing={1}>
                       {daoDetails.isGovernance && (
                         <Typography variant="settingText">
@@ -596,8 +573,7 @@ const SettingsInfo = ({
                             <Typography
                               textAlign="right"
                               variant="p"
-                              className={classes.valuesStyle}
-                            >
+                              className={classes.valuesStyle}>
                               {daoDetails.totalNftSupply !== null ? (
                                 daoDetails.isTotalSupplyUnlimited ? (
                                   "Unlimited"
@@ -626,8 +602,7 @@ const SettingsInfo = ({
                           textAlign="right
                         "
                           variant="p"
-                          className={classes.valuesStyle}
-                        >
+                          className={classes.valuesStyle}>
                           {daoDetails.totalSupply ? (
                             convertFromWeiGovernance(
                               daoDetails.totalSupply.toFixed(0),

@@ -463,8 +463,7 @@ const Form = () => {
             bottom: "30px",
             right: "20px",
             borderRadius: "8px",
-          }}
-        >
+          }}>
           {errMsg}
         </Alert>
       )}
@@ -478,8 +477,7 @@ const Form = () => {
             bottom: "30px",
             right: "20px",
             borderRadius: "8px",
-          }}
-        >
+          }}>
           {"Airdrop created successfully"}
         </Alert>
       )}

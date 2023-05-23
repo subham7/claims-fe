@@ -1,17 +1,13 @@
-import React, { createContext, useState, useContext, useEffect } from "react";
-import Router, { useRouter } from "next/router";
-import { connectWallet } from "../utils/wallet";
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/router";
 import { useDispatch, useSelector } from "react-redux";
-import { Backdrop, Button, Typography } from "@mui/material";
-import { loginToken, refreshToken } from "../api/auth";
+import { Backdrop, Button } from "@mui/material";
 import { fetchConfig } from "../api/config";
 import { updateDynamicAddress } from "../api";
 import Web3 from "web3";
 import { SmartContract } from "../api/contract";
 import ImplementationContract from "../abis/implementationABI.json";
 import { setUSDCTokenDetails } from "../redux/reducers/gnosis";
-import { getAssets } from "../api/assets";
-import { checkUserByClub } from "../api/user";
 import { useConnectWallet } from "@web3-onboard/react";
 import { useCallback } from "react";
 
@@ -149,8 +145,7 @@ export default function ProtectRoute(Component) {
     ) : (
       <Backdrop
         sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={redirect}
-      >
+        open={redirect}>
         <Button onClick={handleRedirectClick}>Home</Button>
       </Backdrop>
     );

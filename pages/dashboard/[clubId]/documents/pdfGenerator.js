@@ -1,11 +1,4 @@
-import {
-  Page,
-  Text,
-  View,
-  Document,
-  StyleSheet,
-  Image,
-} from "@react-pdf/renderer";
+import { Page, Text, View, Document, StyleSheet } from "@react-pdf/renderer";
 import { useEffect, useState } from "react";
 import { PDFViewer } from "@react-pdf/renderer";
 
@@ -215,13 +208,13 @@ const styles = StyleSheet.create({
     textDecoration: "none",
     display: "block",
     padding: "40px",
-    borderRadius: '20px',
-    backgroundColor: 'lightgray'
+    borderRadius: "20px",
+    backgroundColor: "lightgray",
   },
 
   adminDetails: {
-    marginTop: '50px'
-  }
+    marginTop: "50px",
+  },
 });
 
 const PdfFile = ({
@@ -528,31 +521,30 @@ const PdfFile = ({
 
           {member_name && (
             <View>
-            <Text style={styles.adminDetails}>Admin</Text>
-            <View style={styles.signedAcc}>
-              <Text >{admin_name}</Text>
-              <Text >{admin_sign}</Text>
-            </View>
+              <Text style={styles.adminDetails}>Admin</Text>
+              <View style={styles.signedAcc}>
+                <Text>{admin_name}</Text>
+                <Text>{admin_sign}</Text>
+              </View>
             </View>
           )}
         </View>
 
         {signedAcc && (
-
-        <View>
-        <Text style={styles.adminDetails}>Your Sign</Text>
-          <View style={styles.signedAcc}>  
-              <Text>Signed By: 
+          <View>
+            <Text style={styles.adminDetails}>Your Sign</Text>
+            <View style={styles.signedAcc}>
+              <Text>
+                Signed By:
                 {signedAcc.slice(0, 8)}...
                 {signedAcc.slice(signedAcc.length - 6)}
               </Text>
-            
-            <Text>
-              Signed Hash:{" "}
-                {signedHash.slice(0, 12)}....
+
+              <Text>
+                Signed Hash: {signedHash.slice(0, 12)}....
                 {signedHash.slice(signedHash.length - 12)}
-            </Text>
-          </View>
+              </Text>
+            </View>
           </View>
         )}
 

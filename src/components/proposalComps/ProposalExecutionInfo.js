@@ -151,8 +151,7 @@ const ProposalExecutionInfo = ({
                     sx={{
                       display: "flex",
                       justifyContent: "flex-end",
-                    }}
-                  >
+                    }}>
                     <Typography className={classes.listFont2Colourless}>
                       {fetched
                         ? tokenType === "erc721"
@@ -181,8 +180,7 @@ const ProposalExecutionInfo = ({
                     sx={{
                       display: "flex",
                       justifyContent: "flex-end",
-                    }}
-                  >
+                    }}>
                     <Typography className={classes.listFont2Colourless}>
                       {fetched
                         ? proposalData?.commands[0].mintGTAddresses[0].slice(

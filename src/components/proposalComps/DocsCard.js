@@ -19,8 +19,7 @@ const DocsCard = () => {
   return (
     <Card
       className={classes.proposalInfoCard}
-      sx={{ padding: 0, position: "relative" }}
-    >
+      sx={{ padding: 0, position: "relative" }}>
       <Image
         src={proposalImg}
         alt="proposal image"
@@ -35,8 +34,7 @@ const DocsCard = () => {
           color: "#111D38",
           fontWeight: "normal",
           width: "70%",
-        }}
-      >
+        }}>
         Create & execute proposals
       </Typography>
       <Link
@@ -50,8 +48,7 @@ const DocsCard = () => {
           fontSize: "0.875rem",
           left: 20,
           bottom: 10,
-        }}
-      >
+        }}>
         Read Docs
       </Link>
     </Card>

@@ -1,4 +1,4 @@
-import { React, useEffect, useState } from "react";
+import { React } from "react";
 import { AppBar, Box, Toolbar, IconButton, Button } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import Image from "next/image";
@@ -7,7 +7,6 @@ import { makeStyles } from "@mui/styles";
 import { useRouter } from "next/router";
 import { useConnectWallet } from "@web3-onboard/react";
 import Web3 from "web3";
-import Link from "next/link";
 
 const useStyles = makeStyles({
   image: {
@@ -59,8 +58,7 @@ export default function Navbar2(props) {
             aria-label="open drawer"
             edge="start"
             onClick={props.handleDrawerToggle}
-            sx={{ mr: 2, display: { sm: "none" } }}
-          >
+            sx={{ mr: 2, display: { sm: "none" } }}>
             <MenuIcon />
           </IconButton>
           <Box sx={{ flexGrow: 1 }}>
@@ -82,8 +80,7 @@ export default function Navbar2(props) {
                 variant="primary"
                 color="primary"
                 sx={{ mr: 2, mt: 2 }}
-                onClick={handleDepositRedirect}
-              >
+                onClick={handleDepositRedirect}>
                 Deposit
               </Button>
               {/* <Button
@@ -106,8 +103,7 @@ export default function Navbar2(props) {
             <Button
               sx={{ mr: 2, mt: 2 }}
               className={classes.navButton}
-              onClick={() => (wallet ? disconnect(wallet) : connect())}
-            >
+              onClick={() => (wallet ? disconnect(wallet) : connect())}>
               Connect wallet
             </Button>
           )}

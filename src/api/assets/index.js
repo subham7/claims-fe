@@ -6,7 +6,7 @@ import { getJwtToken } from "../../utils/auth";
 export async function getAssets(clubId) {
   return await axios.get(MAIN_API_URL + `assets/${clubId}`, {
     headers: {
-      "Authorization": "Bearer " + getJwtToken(),
+      Authorization: "Bearer " + getJwtToken(),
       "Content-Type": "application/json",
     },
   });
@@ -18,7 +18,7 @@ export async function getAssetsByDaoAddress(daoAddress, networkId) {
       MAIN_API_URL + `assets/dao/${daoAddress}?networkId=${networkId}`,
       {
         headers: {
-          "Authorization": "Bearer " + getJwtToken(),
+          Authorization: "Bearer " + getJwtToken(),
           "Content-Type": "application/json",
         },
       },
@@ -36,7 +36,7 @@ export async function fetchTokenMetaData(tokenAddress, networkId) {
         `assets/metadata?address=${tokenAddress}&networkId=${networkId}`,
       {
         headers: {
-          "Authorization": "Bearer " + getJwtToken(),
+          Authorization: "Bearer " + getJwtToken(),
           "Content-Type": "application/json",
         },
       },
@@ -49,7 +49,7 @@ export async function fetchTokenMetaData(tokenAddress, networkId) {
 export async function getNFTs(clubId) {
   return await axios.get(MAIN_API_URL + `assets/${clubId}/nft`, {
     headers: {
-      "Authorization": "Bearer " + getJwtToken(),
+      Authorization: "Bearer " + getJwtToken(),
       "Content-Type": "application/json",
     },
   });
@@ -61,7 +61,7 @@ export async function getNFTsByDaoAddress(daoAddress, networkId) {
       MAIN_API_URL + `assets/dao/${daoAddress}/nft?networkId=${networkId}`,
       {
         headers: {
-          "Authorization": "Bearer " + getJwtToken(),
+          Authorization: "Bearer " + getJwtToken(),
           "Content-Type": "application/json",
         },
       },

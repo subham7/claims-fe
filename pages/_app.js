@@ -4,7 +4,6 @@ import { ThemeProvider } from "@mui/material/styles";
 import theme from "../src/theme/theme";
 import store from "../src/redux/store";
 import { Provider } from "react-redux";
-import Faucet from "./faucet";
 import "../styles/fonts.css";
 import "../styles/globals.css";
 import { Web3OnboardProvider } from "@web3-onboard/react";

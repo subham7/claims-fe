@@ -296,12 +296,10 @@ const Create = () => {
         paddingTop={15}
         paddingRight={{ xs: 5, sm: 5, md: 10, lg: 45 }}
         justifyContent="center"
-        alignItems="center"
-      >
+        alignItems="center">
         <Box
           width={{ xs: "60%", sm: "70%", md: "80%", lg: "100%" }}
-          paddingTop={10}
-        >
+          paddingTop={10}>
           <form noValidate autoComplete="off">
             <Stepper activeStep={activeStep}>
               {steps.map((label, index) => {
@@ -349,23 +347,20 @@ const Create = () => {
                   direction="row"
                   justifyContent="center"
                   alignItems="center"
-                  mt={2}
-                >
+                  mt={2}>
                   {getStepContent(activeStep)}
                   {activeStep === steps.length - 1 ? (
                     <Button
                       variant="wideButton"
                       sx={{ marginTop: "2rem" }}
-                      onClick={handleSubmit}
-                    >
+                      onClick={handleSubmit}>
                       Finish
                     </Button>
                   ) : (
                     <Button
                       variant="wideButton"
                       sx={{ marginTop: "2rem", marginBottom: "6rem" }}
-                      onClick={handleSubmit}
-                    >
+                      onClick={handleSubmit}>
                       Next
                     </Button>
                   )}

@@ -1,5 +1,4 @@
 import { Alert, Button, TextField, Typography } from "@mui/material";
-import { makeStyles } from "@mui/styles";
 import { useFormik } from "formik";
 import React, { useState } from "react";
 import * as yup from "yup";
@@ -8,7 +7,6 @@ import ERC20ABI from "../../abis/usdcTokenContract.json";
 import Web3 from "web3";
 import { useConnectWallet } from "@web3-onboard/react";
 import { TokenGatingModalStyles } from "./TokenGatingModalStyles";
-import ClubFetch from "../../utils/clubFetch";
 import { useSelector } from "react-redux";
 
 const Backdrop = ({ onClick }) => {
@@ -152,8 +150,7 @@ const TokenGatingModal = ({ closeModal, chooseTokens }) => {
             right: "20px",
             borderRadius: "8px",
             zIndex: 900000000,
-          }}
-        >
+          }}>
           Not a valid token address!
         </Alert>
       )}

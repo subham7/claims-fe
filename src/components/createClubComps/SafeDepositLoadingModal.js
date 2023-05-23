@@ -16,16 +16,14 @@ const SafeDepositLoadingModal = ({ open, title, description }) => {
         backgroundImage: "url(assets/images/gradients.png)",
         backgroundPosition: "center center",
       }}
-      open={open}
-    >
+      open={open}>
       <Card>
         <Grid
           container
           justifyContent="center"
           alignItems="center"
           sx={{ padding: "10px", width: "547px" }}
-          direction="column"
-        >
+          direction="column">
           <Grid item>
             <img src="assets/images/deployingsafe_img.svg" />
           </Grid>
@@ -33,8 +31,7 @@ const SafeDepositLoadingModal = ({ open, title, description }) => {
             item
             paddingTop="20px"
             justifyContent="left"
-            justifyItems="left"
-          >
+            justifyItems="left">
             <Typography variant="h4" sx={{ color: "#fff" }}>
               {title}
             </Typography>
@@ -43,8 +40,7 @@ const SafeDepositLoadingModal = ({ open, title, description }) => {
             item
             paddingTop="20px"
             justifyContent="left"
-            justifyItems="left"
-          >
+            justifyItems="left">
             <Typography variant="regularText4" sx={{ color: "#fff" }}>
               {description}
             </Typography>

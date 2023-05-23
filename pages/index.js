@@ -11,17 +11,10 @@ import {
   DialogContent,
   Dialog,
 } from "@mui/material";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { makeStyles } from "@mui/styles";
-import AddIcon from "@mui/icons-material/Add";
 import Router, { useRouter } from "next/router";
-import { fetchClubByUserAddress } from "../src/api/user";
-import {
-  addClubName,
-  addDaoAddress,
-  addClubID,
-  addClubRoute,
-} from "../src/redux/reducers/create";
+import { addClubName, addDaoAddress } from "../src/redux/reducers/create";
 import claim from "../public/assets/images/treasury_image.png";
 import station from "../public/assets/images/gov_image.png";
 
@@ -42,10 +35,8 @@ import {
   QUERY_CLUBS_FROM_WALLET_ADDRESS,
   QUERY_CLUB_DETAILS,
 } from "../src/api/graphql/queries";
-import ClubFetch from "../src/utils/clubFetch";
 import { SUBGRAPH_URL_GOERLI, SUBGRAPH_URL_POLYGON } from "../src/api";
 import WrongNetworkModal from "../src/components/modals/WrongNetworkModal";
-import Image from "next/image";
 import { addClubData } from "../src/redux/reducers/club";
 
 const useStyles = makeStyles({
@@ -292,8 +283,7 @@ const App = () => {
             justifyContent="center"
             alignItems="center"
             mt={20}
-            mb={10}
-          >
+            mb={10}>
             <Grid item md={5}>
               <Card>
                 <div className={classes.flex}>
@@ -318,8 +308,7 @@ const App = () => {
                           key={key}
                           onClick={(e) => {
                             handleItemClick(clubListData[key]);
-                          }}
-                        >
+                          }}>
                           {getImageURL(club.imageUrl)}
                           <Grid container className={classes.flexContainer}>
                             <Grid item md={6}>
@@ -341,11 +330,11 @@ const App = () => {
                               <Stack
                                 spacing={0}
                                 alignItems="flex-end"
-                                justifyContent="flex-end"
-                              >
+                                justifyContent="flex-end">
                                 <Typography
-                                  className={classes.createClubButton}
-                                ></Typography>
+                                  className={
+                                    classes.createClubButton
+                                  }></Typography>
                                 <Typography className={classes.isAdmin}>
                                   {club.isAdmin ? "Admin" : "Member"}
                                 </Typography>
@@ -360,8 +349,7 @@ const App = () => {
                       container
                       item
                       justifyContent="center"
-                      alignItems="center"
-                    >
+                      alignItems="center">
                       <Typography>{noWalletMessage}</Typography>
                     </Grid>
                   )}
@@ -376,8 +364,7 @@ const App = () => {
                 container
                 direction="column"
                 justifyContent="center"
-                alignItems="center"
-              >
+                alignItems="center">
                 <Grid item mt={15}>
                   <img
                     className={classes.bannerImage}
@@ -406,18 +393,15 @@ const App = () => {
           scroll="body"
           PaperProps={{ classes: { root: classes.modalStyle } }}
           fullWidth
-          maxWidth="lg"
-        >
+          maxWidth="lg">
           <DialogContent
-            sx={{ overflow: "hidden", backgroundColor: "#19274B" }}
-          >
+            sx={{ overflow: "hidden", backgroundColor: "#19274B" }}>
             <Grid
               container
               justifyContent="center"
               alignItems="center"
               direction="column"
-              mt={3}
-            >
+              mt={3}>
               <Grid item pl={15}>
                 <img
                   src="/assets/images/connected_world_wuay.svg"
@@ -435,8 +419,7 @@ const App = () => {
                   variant="primary"
                   onClick={() => {
                     handleSwitchNetwork();
-                  }}
-                >
+                  }}>
                   Switch Network
                 </Button>
               </Grid>

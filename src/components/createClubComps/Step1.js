@@ -17,8 +17,7 @@ export default function Step1(props) {
         container
         direction="row"
         justifyContent="center"
-        alignItems="center"
-      >
+        alignItems="center">
         <Grid item md={8} mt={8}>
           <Typography className={classes.wrapTextIcon}>
             Basic Station info
@@ -52,8 +51,7 @@ export default function Step1(props) {
             <Box
               sx={{ color: "#6475A3", ml: 1 }}
               fontWeight="Normal"
-              display="inline"
-            >
+              display="inline">
               (Ticker)
             </Box>
           </Typography>
@@ -96,8 +94,7 @@ export default function Step1(props) {
               onChange={props.formik.handleChange}
               inputProps={{ "aria-label": "Without label" }}
               name="clubTokenType"
-              id="clubTokenType"
-            >
+              id="clubTokenType">
               <MenuItem value={"Non Transferable ERC20 Token"}>
                 Non-Transferabe Token [ERC20]
               </MenuItem>

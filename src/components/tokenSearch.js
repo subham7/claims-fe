@@ -77,8 +77,7 @@ const TokenSearch = (props) => {
       scroll="body"
       PaperProps={{ classes: { root: classes.modalStyle } }}
       fullWidth
-      maxWidth="sm"
-    >
+      maxWidth="sm">
       <DialogContent sx={{ overflow: "hidden", backgroundColor: "#19274B" }}>
         <Grid container>
           <Grid item m={3}>
@@ -105,8 +104,7 @@ const TokenSearch = (props) => {
               justifyContent: "flex-end",
               alignItems: "center",
             }}
-            mr={3}
-          >
+            mr={3}>
             <IconButton aria-label="add" onClick={handleSearch}>
               <SearchIcon className={classes.addCircleColour} />
             </IconButton>
@@ -144,15 +142,13 @@ const TokenSearch = (props) => {
                       justifyContent: "flex-end",
                       alignItems: "center",
                     }}
-                    mr={3}
-                  >
+                    mr={3}>
                     <IconButton
                       aria-label="add"
                       onClick={(e) => {
                         props.handleTokenInputChange(tokenDetails[0].address);
                         props.handleSetTokenType(tokenDetails[0].contract_type);
-                      }}
-                    >
+                      }}>
                       <AddCircleOutlinedIcon
                         className={classes.addCircleColour}
                       />
