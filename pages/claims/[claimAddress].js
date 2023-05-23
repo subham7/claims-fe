@@ -30,7 +30,6 @@ const useStyles = makeStyles({
     color: "white",
     // width: "1300px",
     margin: "0 auto",
-    // gap: "50px",
   },
 
   lefContainer: {
