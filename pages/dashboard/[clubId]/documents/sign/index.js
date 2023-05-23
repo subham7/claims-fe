@@ -13,6 +13,7 @@ import { createDocument } from "../../../../../src/api/document";
 import { MAIN_API_URL } from "../../../../../src/api";
 import {
   addAdminFormData,
+  addLegalDocLink,
   addMembersData,
 } from "../../../../../src/redux/reducers/legal";
 const DocumentPDF = dynamic(() => import("../pdfGenerator"), {
@@ -151,10 +152,13 @@ const SignDoc = () => {
 
     router.push({
       pathname: `/dashboard/${clubId}/documents`,
-      query: {
-        encryptedLink: replacedEncrytedLink,
-      },
+
+      // query: {
+      //   encryptedLink: replacedEncrytedLink,
+      // },
     });
+
+    dispatch(addLegalDocLink(replacedEncrytedLink));
   };
 
   // member signed and finished

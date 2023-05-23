@@ -6,6 +6,9 @@ import { makeStyles } from "@mui/styles";
 import { useRouter } from "next/router";
 import { Card, Grid, Link, Typography } from "@mui/material";
 import LegalEntityModal from "../../../../src/components/modals/LegalEntityModal";
+import { useSelector } from "react-redux";
+import { getDocumentsByClubId } from "../../../../src/api/document";
+import DocumentCard from "../../../../src/components/documentPageComps/documentCard";
 
 const useStyles = makeStyles({
   container: {
@@ -62,13 +65,17 @@ const useStyles = makeStyles({
     cursor: "pointer",
   },
   noDocument: {
-    width: "600px",
+    width: "100%",
     margin: "0 auto",
     textAlign: "center",
     border: "1px solid #FFFFFF1A",
     borderRadius: "10px",
     padding: "10px 30px",
     marginTop: "20px",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
   },
   noDoc_heading: {
     fontSize: "18px",
@@ -78,6 +85,8 @@ const useStyles = makeStyles({
     fontSize: "14px",
     fontWeight: "400",
     color: "lightgray",
+    width: "600px",
+    textAlign: "center",
   },
   proposalInfoCard: {
     background: settingsImg,
@@ -85,19 +94,26 @@ const useStyles = makeStyles({
   },
   proposalImg: {
     position: "relative",
+    height: "300px",
+    width: "300px",
   },
 });
 
 const Documents = () => {
   const classes = useStyles();
   const router = useRouter();
-  const { encryptedLink } = router.query;
+  // const { encryptedLink } = router.query;
   const [showInviteModal, setShowInviteModal] = useState(false);
+  const [documents, setDocuments] = useState([]);
 
-  const { clubId } = router.query;
+  const encryptedLink = useSelector((state) => {
+    return state.legal.legalDocLink;
+  });
+
+  const { clubId: daoAddress } = router.query;
 
   const createDocHandler = () => {
-    router.push(`/dashboard/${clubId}/documents/legalEntity`);
+    router.push(`/dashboard/${daoAddress}/documents/create`);
   };
 
   // closing legal entity modal
@@ -111,6 +127,16 @@ const Documents = () => {
     }
   }, [encryptedLink]);
 
+  useEffect(() => {
+    const fetchDocs = async () => {
+      const docs = await getDocumentsByClubId(daoAddress);
+      setDocuments(docs);
+    };
+    fetchDocs();
+  }, [daoAddress]);
+
+  console.log(documents);
+
   return (
     <Layout1>
       <div className={classes.container}>
@@ -123,13 +149,27 @@ const Documents = () => {
             </button>
           </div>
 
-          <div className={classes.noDocument}>
-            <p className={classes.noDoc_heading}>No documents found</p>
-            <p className={classes.noDoc_para}>
-              Create a legal entity for this Station & invite members to sign
-              the doucment by sharing a private link.
-            </p>
-          </div>
+          {documents.length ? (
+            <>
+              {documents.map((document, index) => (
+                <DocumentCard
+                  key={index}
+                  legalDocLink={document.docIdentifier}
+                  date={document.updateDate}
+                  fileName={document.fileName}
+                  index={index + 1}
+                />
+              ))}
+            </>
+          ) : (
+            <div className={classes.noDocument}>
+              <p className={classes.noDoc_heading}>No documents found</p>
+              <p className={classes.noDoc_para}>
+                Create a legal entity for this Station & invite members to sign
+                the doucment by sharing a private link.
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Right Side */}

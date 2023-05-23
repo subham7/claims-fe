@@ -92,7 +92,7 @@ const MembersSign = () => {
       dispatch(addMembersData(values));
       dispatch(addEncryptedLink(membersSign));
 
-      router.push(`/dashboard/${clubId}/documents/legalEntity/signDoc`);
+      router.push(`/dashboard/${clubId}/documents/sign`);
     },
   });
 

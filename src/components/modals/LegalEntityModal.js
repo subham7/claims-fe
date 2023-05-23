@@ -128,7 +128,7 @@ const LegalEntityModal = ({
   const copyHandler = () => {
     navigator.clipboard.writeText(
       typeof window !== "undefined" && window.location.origin
-        ? `${window.location.origin}/dashboard/${clubId}/documents/legal/${encryptedLink}`
+        ? `${window.location.origin}/dashboard/${clubId}/documents/sign/${encryptedLink}`
         : null,
     );
     setIsCopy(true);
