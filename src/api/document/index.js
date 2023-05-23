@@ -30,3 +30,20 @@ export const getDocumentsByClubId = async (clubId) => {
     console.log(err);
   }
 };
+
+export const sentFileByEmail = async (formData) => {
+  console.log("JSON DATA", formData);
+  try {
+    const res = await fetch(`${MAIN_API_URL}/document/email`, {
+      method: "POST",
+      body: formData,
+      headers: {
+        "Content-Type": `multipart/form-data; boundary=${formData._boundary}`,
+      },
+    });
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+};

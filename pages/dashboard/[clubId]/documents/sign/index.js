@@ -4,18 +4,22 @@ import html2canvas from "html2canvas";
 import dynamic from "next/dynamic";
 import { makeStyles } from "@mui/styles";
 import Web3 from "web3";
-import { PDFDownloadLink } from "@react-pdf/renderer";
+import { pdf, PDFDownloadLink } from "@react-pdf/renderer";
 import { useRouter } from "next/router";
 import CryptoJS from "crypto-js";
 import LegalEntityModal from "../../../../../src/components/modals/LegalEntityModal";
 import { useDispatch, useSelector } from "react-redux";
-import { createDocument } from "../../../../../src/api/document";
+import {
+  createDocument,
+  sentFileByEmail,
+} from "../../../../../src/api/document";
 import { MAIN_API_URL } from "../../../../../src/api";
 import {
   addAdminFormData,
   addLegalDocLink,
   addMembersData,
 } from "../../../../../src/redux/reducers/legal";
+import PDFView, { PdfFile } from "../pdfGenerator";
 const DocumentPDF = dynamic(() => import("../pdfGenerator"), {
   ssr: false,
 });
@@ -79,6 +83,7 @@ const SignDoc = () => {
   const [encryptedString, setEncryptedString] = useState("");
   const [decryptedDataObj, setDecryptedDataObj] = useState("");
   const [showModal, setShowModal] = useState(false);
+  const [formData, setFormData] = useState({});
 
   const router = useRouter();
   const { clubId, isAdmin } = router.query;
@@ -87,6 +92,8 @@ const SignDoc = () => {
   const adminFormData = useSelector((state) => {
     return state.legal.adminFormData;
   });
+
+  console.log("ADMIN FORM", adminFormData);
 
   const membersData = useSelector((state) => {
     return state.legal.membersData;
@@ -135,6 +142,34 @@ const SignDoc = () => {
       signedMessage: signedHash,
     });
 
+    const props = {
+      LLC_name: adminFormData.LLC_name,
+      admin_name: adminFormData.admin_name,
+      email: adminFormData.email,
+      location: adminFormData.location,
+      general_purpose: adminFormData.general_purpose,
+      signedAcc: signedAcc,
+      signedHash: signedHash,
+    };
+
+    const GetMyDoc = (props) => <PdfFile {...props} />;
+
+    const blob = await pdf(GetMyDoc(props)).toBlob();
+    console.log("Blob", blob);
+    const file = new File([blob], "document.pdf", {
+      type: "application/pdf",
+    });
+    console.log("File", file);
+
+    const formData = new FormData();
+    formData.append("file", file, "document.pdf");
+    formData.append("email", addAdminFormData.email);
+
+    console.log("File exists in formData:", formData.get("file") !== null);
+
+    const sendFileByEmail = sentFileByEmail(formData);
+    console.log(sendFileByEmail);
+
     // Encrypt it using crypto-JS
     const encryptUserData = CryptoJS.AES.encrypt(data, "").toString();
     const replacedEncrytedLink = encryptUserData.replaceAll("/", "STATION");
@@ -152,10 +187,6 @@ const SignDoc = () => {
 
     router.push({
       pathname: `/dashboard/${clubId}/documents`,
-
-      // query: {
-      //   encryptedLink: replacedEncrytedLink,
-      // },
     });
 
     dispatch(addLegalDocLink(replacedEncrytedLink));
@@ -187,6 +218,8 @@ const SignDoc = () => {
   useEffect(() => {
     fetchAdminsData();
   }, [encryptedData]);
+
+  console.log("Latest", formData);
 
   return (
     <div>
