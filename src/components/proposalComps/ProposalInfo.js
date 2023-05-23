@@ -13,9 +13,21 @@ const useStyles = makeStyles({
     color: "#FFFFFF",
     fontWeight: "bold",
   },
+  proposalThreshold: {
+    fontSize: "19px",
+    color: "#0ABB92",
+    fontWeight: "bold",
+  },
 });
 
-const ProposalInfo = ({ proposalData, fetched }) => {
+const ProposalInfo = ({
+  proposalData,
+  fetched,
+  members,
+  threshold,
+  isGovernanceActive,
+  ownerAddressess,
+}) => {
   const classes = useStyles();
   return (
     <Card>
@@ -42,6 +54,24 @@ const ProposalInfo = ({ proposalData, fetched }) => {
         <Grid item xs sx={{ display: "flex", justifyContent: "flex-end" }}>
           <Typography className={classes.listFont2Colourless}>
             Single choice
+          </Typography>
+        </Grid>
+      </Grid>
+
+      <Grid container>
+        <Grid item>
+          <Typography className={classes.listFont2}>Threshold</Typography>
+        </Grid>
+        <Grid item xs sx={{ display: "flex", justifyContent: "flex-end" }}>
+          <Typography className={classes.proposalThreshold}>
+            {isGovernanceActive
+              ? Number(
+                  Math.ceil(members.users?.length * threshold) / 100,
+                ).toFixed(0)
+              : Number(
+                  Math.ceil(ownerAddressess?.length * threshold) / 100,
+                ).toFixed(0)}{" "}
+            Votes
           </Typography>
         </Grid>
       </Grid>
