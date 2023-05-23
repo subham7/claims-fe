@@ -17,11 +17,11 @@ const CustomPrompt = styled(Slider)(({ theme }) => ({
     height: "26px",
   },
   "& .MuiSlider-valueLabel": {
-    "color": "#C1D3FF",
-    "fontSize": 18,
-    "fontWeight": "normal",
-    "top": -6,
-    "backgroundColor": "unset",
+    color: "#C1D3FF",
+    fontSize: 18,
+    fontWeight: "normal",
+    top: -6,
+    backgroundColor: "unset",
     "&:before": {
       display: "none",
     },

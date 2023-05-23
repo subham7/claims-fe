@@ -3,11 +3,7 @@ import {
   CircularProgress,
   FormControl,
   FormControlLabel,
-  FormLabel,
-  InputAdornment,
-  InputLabel,
   MenuItem,
-  NativeSelect,
   Radio,
   RadioGroup,
   Select,
@@ -16,7 +12,7 @@ import {
 } from "@mui/material";
 import { BsArrowLeft } from "react-icons/bs";
 import { makeStyles } from "@mui/styles";
-import React, { useEffect, useRef, useState } from "react";
+import React, {  useRef, useState } from "react";
 import { SmartContract } from "../../../src/api/contract";
 import claimContractABI from "../../../src/abis/singleClaimContract.json";
 import usdcTokenContract from "../../../src/abis/usdcTokenContract.json";
@@ -24,9 +20,7 @@ import { convertToWeiGovernance } from "../../../src/utils/globalFunctions";
 import keccak256 from "keccak256";
 import { useConnectWallet } from "@web3-onboard/react";
 import { useDispatch } from "react-redux";
-import { addMerkleLeaves } from "../../redux/reducers/createClaim";
 import { useRouter } from "next/router";
-import { Formik } from "formik";
 import Link from "next/link";
 
 const useStyles = makeStyles({
@@ -45,20 +39,20 @@ const useStyles = makeStyles({
     marginBottom: "40px",
   },
   input: {
-    "width": "100%",
-    "marginTop": "6px",
-    "color": "#6475A3",
-    "borderRadius": "8px",
+    width: "100%",
+    marginTop: "6px",
+    color: "#6475A3",
+    borderRadius: "8px",
     "& input[type=number]": {
       "-moz-appearance": "textfield",
     },
     "& input[type=number]::-webkit-outer-spin-button": {
       "-webkit-appearance": "none",
-      "margin": 0,
+      margin: 0,
     },
     "& input[type=number]::-webkit-inner-spin-button": {
       "-webkit-appearance": "none",
-      "margin": 0,
+      margin: 0,
     },
   },
   label: {
@@ -251,8 +245,7 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
             onChange={formik.handleChange}
             inputProps={{ "aria-label": "Without label" }}
             name="eligible"
-            id="eligible"
-          >
+            id="eligible">
             <MenuItem value={"everyone"}>Everyone can claim</MenuItem>
             <MenuItem value={"token"}>Anyone with certain token/NFT</MenuItem>
             <MenuItem value={"csv"}>Upload custom CSV file</MenuItem>
@@ -292,8 +285,7 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
 
             <Typography
               className={classes.label}
-              sx={values.eligible === "everyone" && { display: "none" }}
-            >
+              sx={values.eligible === "everyone" && { display: "none" }}>
               What is the maximum claim allowed per token holder?
             </Typography>
             <RadioGroup
@@ -303,8 +295,7 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
               value={values.maximumClaim}
               onChange={formik.handleChange}
               name="maximumClaim"
-              id="maximumClaim"
-            >
+              id="maximumClaim">
               <FormControlLabel
                 disabled={values.eligible === "everyone"}
                 // disabled
@@ -394,8 +385,7 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
               router.push("/claims");
             }}
             variant="contained"
-            className={classes.finish}
-          >
+            className={classes.finish}>
             Go back to claims
           </Button>
         ) : (
@@ -413,8 +403,7 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
             }
             onClick={formik.handleSubmit}
             variant="contained"
-            className={classes.btn}
-          >
+            className={classes.btn}>
             {loading || loadingCsv ? <CircularProgress /> : "Finish"}
           </Button>
         )}

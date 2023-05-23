@@ -9,7 +9,7 @@ export async function createProposal(data, networkId) {
     data,
     {
       headers: {
-        "Authorization": "Bearer " + getJwtToken(),
+        Authorization: "Bearer " + getJwtToken(),
         "Content-Type": "application/json",
       },
     },
@@ -25,14 +25,14 @@ export async function getProposal(clubId, filter) {
         status: `\"${filter}\"`,
       },
       headers: {
-        "Authorization": "Bearer " + getJwtToken(),
+        Authorization: "Bearer " + getJwtToken(),
         "Content-Type": "application/json",
       },
     });
   } else {
     return await axios.get(MAIN_API_URL + `proposal/club/${clubId}`, {
       headers: {
-        "Authorization": "Bearer " + getJwtToken(),
+        Authorization: "Bearer " + getJwtToken(),
         "Content-Type": "application/json",
       },
     });
@@ -43,7 +43,7 @@ export async function getProposalDetail(proposalId) {
   // get proposal detail by proposal id
   return await axios.get(MAIN_API_URL + `proposal/${proposalId}`, {
     headers: {
-      "Authorization": "Bearer " + getJwtToken(),
+      Authorization: "Bearer " + getJwtToken(),
       "Content-Type": "application/json",
     },
   });
@@ -56,7 +56,7 @@ export async function castVote(data, networkId) {
     data,
     {
       headers: {
-        "Authorization": "Bearer " + getJwtToken(),
+        Authorization: "Bearer " + getJwtToken(),
         "Content-Type": "application/json",
       },
     },
@@ -70,7 +70,7 @@ export async function patchProposalStatus(proposalId) {
     { proposalId: proposalId },
     {
       headers: {
-        "Authorization": "Bearer " + getJwtToken(),
+        Authorization: "Bearer " + getJwtToken(),
         "Content-Type": "application/json",
       },
     },
@@ -84,7 +84,7 @@ export async function patchProposalExecuted(proposalId) {
     { proposalId: proposalId },
     {
       headers: {
-        "Authorization": "Bearer " + getJwtToken(),
+        Authorization: "Bearer " + getJwtToken(),
         "Content-Type": "application/json",
       },
     },
@@ -95,7 +95,7 @@ export async function getProposalTxHash(proposalId) {
   // get proposal detail by proposal id
   return await axios.get(MAIN_API_URL + `proposal/hash/${proposalId}`, {
     headers: {
-      "Authorization": "Bearer " + getJwtToken(),
+      Authorization: "Bearer " + getJwtToken(),
       "Content-Type": "application/json",
     },
   });
@@ -105,7 +105,7 @@ export async function createProposalTxHash(data) {
   // create proposal API
   return await axios.post(MAIN_API_URL + "proposal/hash", data, {
     headers: {
-      "Authorization": "Bearer " + getJwtToken(),
+      Authorization: "Bearer " + getJwtToken(),
       "Content-Type": "application/json",
     },
   });

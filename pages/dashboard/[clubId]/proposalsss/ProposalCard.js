@@ -38,12 +38,12 @@ const useStyles = makeStyles({
     fontFamily: "Whyte",
   },
   searchField: {
-    "width": "28.5vw",
-    "height": "55px",
-    "color": "#C1D3FF",
-    "background": "#111D38 0% 0% no-repeat padding-box",
-    "border": "1px solid #C1D3FF40",
-    "borderRadius": "10px",
+    width: "28.5vw",
+    height: "55px",
+    color: "#C1D3FF",
+    background: "#111D38 0% 0% no-repeat padding-box",
+    border: "1px solid #C1D3FF40",
+    borderRadius: "10px",
     "&:hover": {
       boxShadow: "0px 0px 12px #C1D3FF40",
       border: "1px solid #C1D3FF40",
@@ -326,16 +326,14 @@ const ProposalCard = ({
             sx={{
               display: "flex",
               justifyContent: "flex-end",
-            }}
-          >
+            }}>
             <Grid
               container
               spacing={1}
               sx={{
                 display: "flex",
                 justifyContent: "flex-end",
-              }}
-            >
+              }}>
               <Grid item>
                 <Chip
                   className={classes.timeLeftChip}
@@ -434,8 +432,7 @@ const ProposalCard = ({
                           ${tokenDetails.symbol}
                         </Typography>
                       </Grid>
-                    }
-                  ></Chip>
+                    }></Chip>
                 </Grid>
               ) : (
                 <></>
@@ -451,8 +448,7 @@ const ProposalCard = ({
                           {" "}
                           <Typography
                             color="#C1D3FF"
-                            sx={{ marginRight: "5px" }}
-                          >
+                            sx={{ marginRight: "5px" }}>
                             Amount:
                           </Typography>
                           <Typography color="#FFFFFF">
@@ -463,8 +459,7 @@ const ProposalCard = ({
                           </Typography>
                         </Grid>
                       ) : null
-                    }
-                  ></Chip>
+                    }></Chip>
                 </Grid>
               ) : null}
 
@@ -478,8 +473,7 @@ const ProposalCard = ({
                           {" "}
                           <Typography
                             color="#C1D3FF"
-                            sx={{ marginRight: "5px" }}
-                          >
+                            sx={{ marginRight: "5px" }}>
                             Amount:
                           </Typography>
                           <Typography color="#FFFFFF">
@@ -494,8 +488,7 @@ const ProposalCard = ({
                           </Typography>
                         </Grid>
                       ) : null
-                    }
-                  ></Chip>
+                    }></Chip>
                 </Grid>
               ) : null}
 
@@ -514,8 +507,7 @@ const ProposalCard = ({
                             10 ** tokenDetails.decimals}
                         </Typography>
                       </Grid>
-                    }
-                  ></Chip>
+                    }></Chip>
                 </Grid>
               ) : null}
 
@@ -541,8 +533,7 @@ const ProposalCard = ({
                             )}
                         </Typography>
                       </Grid>
-                    }
-                  ></Chip>
+                    }></Chip>
                 </Grid>
               ) : null}
 
@@ -557,16 +548,14 @@ const ProposalCard = ({
                           {" "}
                           <Typography
                             color="#C1D3FF"
-                            sx={{ marginRight: "5px" }}
-                          >
+                            sx={{ marginRight: "5px" }}>
                             Quorum:
                           </Typography>
                           <Typography color="#FFFFFF">
                             {proposal?.commands[0]?.quorum}
                           </Typography>
                         </Grid>
-                      }
-                    ></Chip>
+                      }></Chip>
                   </Grid>
                   <Grid item>
                     <Chip
@@ -576,16 +565,14 @@ const ProposalCard = ({
                           {" "}
                           <Typography
                             color="#C1D3FF"
-                            sx={{ marginRight: "5px" }}
-                          >
+                            sx={{ marginRight: "5px" }}>
                             Threshold:
                           </Typography>
                           <Typography color="#FFFFFF">
                             {proposal?.commands[0]?.threshold}
                           </Typography>
                         </Grid>
-                      }
-                    ></Chip>
+                      }></Chip>
                   </Grid>
                 </>
               ) : null}
@@ -608,8 +595,7 @@ const ProposalCard = ({
                             )}
                         </Typography>
                       </Grid>
-                    }
-                  ></Chip>
+                    }></Chip>
                 </Grid>
               ) : null}
             </Grid>

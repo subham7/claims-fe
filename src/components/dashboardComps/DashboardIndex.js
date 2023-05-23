@@ -1,5 +1,4 @@
 import {
-  Alert,
   Button,
   Card,
   CardMedia,
@@ -23,21 +22,12 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import CollectionCard from "../../../src/components/cardcontent";
 import Layout1 from "../../../src/components/layouts/layout1";
-import LegalEntityModal from "../../../src/components/modals/LegalEntityModal";
 import { DashboardStyles } from "./DashboardStyles";
 import { useConnectWallet } from "@web3-onboard/react";
 import Web3 from "web3";
-import { fetchClub, fetchClubbyDaoAddress } from "../../api/club";
 import { useRouter } from "next/router";
-import { getMembersDetails } from "../../api/user";
-import nft from "../../../src/abis/nft.json";
-import {
-  getAssets,
-  getAssetsByDaoAddress,
-  getNFTs,
-  getNFTsByDaoAddress,
-} from "../../api/assets";
-import { getProposal, getProposalByDaoAddress } from "../../api/proposal";
+import { getAssetsByDaoAddress, getNFTsByDaoAddress } from "../../api/assets";
+import { getProposalByDaoAddress } from "../../api/proposal";
 import { SmartContract } from "../../api/contract";
 import { subgraphQuery } from "../../utils/subgraphs";
 import {
@@ -52,12 +42,9 @@ import {
   convertFromWeiGovernance,
   convertIpfsToUrl,
 } from "../../utils/globalFunctions";
-import { NEW_FACTORY_ADDRESS } from "../../api";
 import { GiTwoCoins } from "react-icons/gi";
 import { IoColorPalette } from "react-icons/io5";
-import Image from "next/image";
 import WrongNetworkModal from "../modals/WrongNetworkModal";
-import { setClubNetworkId } from "../../redux/reducers/club";
 
 const DashboardIndex = () => {
   const clubData = useSelector((state) => {
@@ -368,8 +355,7 @@ const DashboardIndex = () => {
                       item
                       direction="row"
                       paddingBottom={4}
-                      mt={1}
-                    >
+                      mt={1}>
                       <Typography variant="regularText2" mr={1}>
                         {clubDetails.noOfMembers}
                       </Typography>
@@ -412,8 +398,7 @@ const DashboardIndex = () => {
                 <Grid
                   container
                   spacing={{ xs: 2, sm: 5, md: 3 }}
-                  direction={{ xs: "column", sm: "column", md: "column" }}
-                >
+                  direction={{ xs: "column", sm: "column", md: "column" }}>
                   <Card className={classes.secondCard}>
                     <CardMedia
                       image="/assets/images/ownershipshare.png"
@@ -429,23 +414,24 @@ const DashboardIndex = () => {
                     <Grid container>
                       <Grid
                         container
-                        direction={{ xs: "column", sm: "column", md: "column" }}
-                      >
+                        direction={{
+                          xs: "column",
+                          sm: "column",
+                          md: "column",
+                        }}>
                         <Grid item>
                           <Box className={classes.cardOverlay}>
                             <Typography
                               variant="regularText4"
                               fontSize={"21px"}
-                              sx={{ margin: "0px" }}
-                            >
+                              sx={{ margin: "0px" }}>
                               My share
                             </Typography>
                             {clubData.tokenType === "erc721" ? (
                               <Typography
                                 fontSize={"48px"}
                                 fontWeight="bold"
-                                sx={{ margin: "0px" }}
-                              >
+                                sx={{ margin: "0px" }}>
                                 {balanceOfUser !== null &&
                                 clubTokenMinted !== null &&
                                 isNaN(
@@ -525,8 +511,7 @@ const DashboardIndex = () => {
                 <Grid item>
                   <Stack
                     direction={{ xs: "column", sm: "column" }}
-                    spacing={{ xs: 1, sm: 2, md: 4 }}
-                  >
+                    spacing={{ xs: 1, sm: 2, md: 4 }}>
                     <Grid container item mt={8}>
                       <Typography className={classes.clubAssets}>
                         All Assets
@@ -559,8 +544,7 @@ const DashboardIndex = () => {
                         display: "flex",
                         gap: "10px",
                         alignItems: "flex-start",
-                      }}
-                    >
+                      }}>
                       <GiTwoCoins size={30} />
                       <Typography variant="subHeading">Tokens</Typography>
                     </div>
@@ -571,8 +555,7 @@ const DashboardIndex = () => {
                         <TableContainer component={Paper}>
                           <Table
                             sx={{ minWidth: 809 }}
-                            aria-label="simple table"
-                          >
+                            aria-label="simple table">
                             <TableHead>
                               <TableRow>
                                 <TableCell align="left" variant="tableHeading">
@@ -596,25 +579,21 @@ const DashboardIndex = () => {
                                         "&:last-child td, &:last-child th": {
                                           border: 0,
                                         },
-                                      }}
-                                    >
+                                      }}>
                                       <TableCell
                                         align="left"
-                                        variant="tableBody"
-                                      >
+                                        variant="tableBody">
                                         <></>
                                         {data.symbol}
                                       </TableCell>
                                       <TableCell
                                         align="left"
-                                        variant="tableBody"
-                                      >
+                                        variant="tableBody">
                                         {data.value}
                                       </TableCell>
                                       <TableCell
                                         align="left"
-                                        variant="tableBody"
-                                      >
+                                        variant="tableBody">
                                         ${data.usd.usdValue.toFixed(2)}
                                       </TableCell>
                                     </TableRow>
@@ -629,8 +608,7 @@ const DashboardIndex = () => {
                           item
                           justifyContent="center"
                           alignItems="center"
-                          md={10}
-                        >
+                          md={10}>
                           <img
                             src="/assets/images/tokens_banner.png"
                             alt="token-banner"
@@ -645,8 +623,7 @@ const DashboardIndex = () => {
                         display: "flex",
                         gap: "10px",
                         alignItems: "flex-start",
-                      }}
-                    >
+                      }}>
                       <IoColorPalette size={30} />
                       <Typography variant="subHeading">Collectibles</Typography>
                     </div>
@@ -668,8 +645,7 @@ const DashboardIndex = () => {
                             item
                             justifyContent="center"
                             alignItems="center"
-                            md={10}
-                          >
+                            md={10}>
                             <img
                               src="/assets/images/NFT_banner.png"
                               alt="proposal-banner"
@@ -695,8 +671,7 @@ const DashboardIndex = () => {
                       <Typography
                         variant="getStartedClub"
                         fontSize={"36px"}
-                        color={"white"}
-                      >
+                        color={"white"}>
                         Docs to help you get started
                       </Typography>
                     </Grid>
@@ -709,8 +684,7 @@ const DashboardIndex = () => {
                           window.open(
                             `https://stationx.substack.com/p/get-started-with-stationx-on-rinkeby`,
                           );
-                        }}
-                      >
+                        }}>
                         Read Docs
                       </Link>
 
@@ -739,8 +713,7 @@ const DashboardIndex = () => {
                       item
                       mr={4}
                       xs
-                      sx={{ display: "flex", justifyContent: "flex-end" }}
-                    >
+                      sx={{ display: "flex", justifyContent: "flex-end" }}>
                       {depositCloseTime ? (
                         depositCloseTime * 1000 > Date.now() ? (
                           <Grid
@@ -749,8 +722,7 @@ const DashboardIndex = () => {
                               display: "flex",
                               justifyContent: "flex-end",
                               alignItems: "baseline",
-                            }}
-                          >
+                            }}>
                             <Grid item mt={1.5} mr={1}>
                               <div className={classes.activeIllustration}></div>
                             </Grid>
@@ -760,8 +732,7 @@ const DashboardIndex = () => {
                                   color: "#0ABB92",
                                   fontSize: "1.25em",
                                   fontFamily: "Whyte",
-                                }}
-                              >
+                                }}>
                                 Active
                               </Typography>
                             </Grid>
@@ -769,12 +740,13 @@ const DashboardIndex = () => {
                         ) : (
                           <Grid
                             container
-                            sx={{ display: "flex", justifyContent: "flex-end" }}
-                          >
+                            sx={{
+                              display: "flex",
+                              justifyContent: "flex-end",
+                            }}>
                             <Grid item mt={1} mr={1}>
                               <div
-                                className={classes.inactiveIllustration}
-                              ></div>
+                                className={classes.inactiveIllustration}></div>
                             </Grid>
                             <Grid item>
                               <Typography
@@ -782,8 +754,7 @@ const DashboardIndex = () => {
                                   color: "#D55438",
                                   fontSize: "1.25em",
                                   fontFamily: "Whyte",
-                                }}
-                              >
+                                }}>
                                 In-active
                               </Typography>
                             </Grid>
@@ -809,8 +780,7 @@ const DashboardIndex = () => {
                             <Button
                               variant="contained"
                               className={classes.copyButton}
-                              onClick={handleCopy}
-                            >
+                              onClick={handleCopy}>
                               Copy
                             </Button>
                           ),
@@ -851,8 +821,7 @@ const DashboardIndex = () => {
                                       onClick={() =>
                                         handleProposalClick(proposalData[key])
                                       }
-                                      sx={{ width: "100%" }}
-                                    >
+                                      sx={{ width: "100%" }}>
                                       <Grid container mb={2} direction="column">
                                         {/* <Grid item md={12}>
                                           <Typography
@@ -868,15 +837,13 @@ const DashboardIndex = () => {
                                         </Grid> */}
                                         <Grid item>
                                           <Typography
-                                            className={classes.card5text2}
-                                          >
+                                            className={classes.card5text2}>
                                             {data.name}
                                           </Typography>
                                         </Grid>
                                         <Grid item>
                                           <Typography
-                                            className={classes.card5text1}
-                                          >
+                                            className={classes.card5text1}>
                                             Expired on{" "}
                                             {new Date(
                                               data.votingDuration,
@@ -897,8 +864,7 @@ const DashboardIndex = () => {
                         <Button
                           sx={{ width: "100%" }}
                           variant="transparentWhite"
-                          onClick={() => handleMoreClick()}
-                        >
+                          onClick={() => handleMoreClick()}>
                           More
                         </Button>
                       </Grid>
@@ -909,8 +875,7 @@ const DashboardIndex = () => {
                     container
                     justifyContent="center"
                     alignItems="center"
-                    minHeight={"120px"}
-                  >
+                    minHeight={"120px"}>
                     <Grid item>
                       <Typography className={classes.card2text1}>
                         No proposals raised yet
@@ -933,8 +898,7 @@ const DashboardIndex = () => {
                                 shallow: true,
                               },
                             );
-                          }}
-                        >
+                          }}>
                           Create new
                         </Button>
                       </Grid>
@@ -952,8 +916,7 @@ const DashboardIndex = () => {
           //   open={openSnackBar}
           autoHideDuration={6000}
           //   onClose={handleSnackBarClose}
-          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-        >
+          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}>
           {/* {failed ? (
               <Alert
               //   onClose={handleSnackBarClose}

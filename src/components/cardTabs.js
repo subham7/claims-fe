@@ -23,8 +23,7 @@ function TabPanel(props) {
       hidden={value !== index}
       id={`simple-tabpanel-${index}`}
       aria-labelledby={`simple-tab-${index}`}
-      {...other}
-    >
+      {...other}>
       {value === index && (
         <Box sx={{ p: 3 }}>
           <Typography>{children}</Typography>
@@ -36,7 +35,7 @@ function TabPanel(props) {
 
 function a11yProps(index) {
   return {
-    "id": `simple-tab-${index}`,
+    id: `simple-tab-${index}`,
     "aria-controls": `simple-tabpanel-${index}`,
   };
 }
@@ -57,8 +56,7 @@ export default function SimpleTab(props) {
         value={value}
         onChange={handleChange}
         aria-label="basic tabs"
-        className={classes.root}
-      >
+        className={classes.root}>
         {tabs.map((item, index) => (
           <Tab key={index} label={item.label} {...a11yProps(index)} />
         ))}

@@ -111,10 +111,10 @@ export class SmartContract {
     });
   }
 
-  async claim(amount, merkleData, leaf) {
+  async claim(contract, amount, merkleData, leaf) {
     const gasPrice = await this.web3.eth.getGasPrice();
     const increasedGasPrice = +gasPrice + 30000000000;
-    return this.contract.methods.claim(amount, merkleData, leaf).send({
+    return contract.methods.claim(amount, merkleData, leaf).send({
       from: this.walletAddress,
       gasPrice: increasedGasPrice,
     });

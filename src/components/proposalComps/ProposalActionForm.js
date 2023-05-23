@@ -67,8 +67,9 @@ const ProposalActionForm = ({ formik, tokenData }) => {
         error={
           formik.touched.actionCommand && Boolean(formik.errors.actionCommand)
         }
-        helperText={formik.touched.actionCommand && formik.errors.actionCommand}
-      >
+        helperText={
+          formik.touched.actionCommand && formik.errors.actionCommand
+        }>
         <MenuItem key={0} value="Distribute token to members">
           Distribute token to members
         </MenuItem>
@@ -101,8 +102,7 @@ const ProposalActionForm = ({ formik, tokenData }) => {
             ml={3}
             mt={2}
             // mb={}
-            sx={{ marginLeft: "0 !important" }}
-          >
+            sx={{ marginLeft: "0 !important" }}>
             <Typography variant="proposalBody">Token to be sent</Typography>
             <Select
               value={formik.values.customToken}
@@ -121,8 +121,7 @@ const ProposalActionForm = ({ formik, tokenData }) => {
               }}
               inputProps={{ "aria-label": "Without label" }}
               name="airdropToken"
-              id="airdropToken"
-            >
+              id="airdropToken">
               {tokenData.map((token) => (
                 <MenuItem key={token.name} value={token.name}>
                   {token.name}
@@ -135,8 +134,7 @@ const ProposalActionForm = ({ formik, tokenData }) => {
             direction={"column"}
             ml={3}
             mt={2}
-            sx={{ marginLeft: "0 !important" }}
-          >
+            sx={{ marginLeft: "0 !important" }}>
             <Typography variant="proposalBody">Amount of Tokens *</Typography>
             <TextField
               variant="outlined"
@@ -161,8 +159,7 @@ const ProposalActionForm = ({ formik, tokenData }) => {
             direction={"column"}
             ml={3}
             mt={2}
-            sx={{ marginLeft: "0 !important" }}
-          >
+            sx={{ marginLeft: "0 !important" }}>
             <Typography variant="proposalBody">Carry Fee</Typography>
             <TextField
               variant="outlined"
@@ -185,8 +182,7 @@ const ProposalActionForm = ({ formik, tokenData }) => {
             direction={"column"}
             ml={3}
             mt={2}
-            sx={{ marginLeft: "0 !important" }}
-          >
+            sx={{ marginLeft: "0 !important" }}>
             <Typography variant="proposalBody">User Address *</Typography>
             <TextField
               variant="outlined"
@@ -210,8 +206,7 @@ const ProposalActionForm = ({ formik, tokenData }) => {
             direction={"column"}
             ml={3}
             mt={2}
-            sx={{ marginLeft: "0 !important" }}
-          >
+            sx={{ marginLeft: "0 !important" }}>
             <Typography variant="proposalBody">Amount of Tokens *</Typography>
             {tokenType === "erc20" ? (
               <TextField
@@ -261,8 +256,7 @@ const ProposalActionForm = ({ formik, tokenData }) => {
             direction={"column"}
             ml={3}
             mt={2}
-            sx={{ marginLeft: "0 !important" }}
-          >
+            sx={{ marginLeft: "0 !important" }}>
             <Typography variant="proposalBody">Quorum (in %)</Typography>
             <TextField
               variant="outlined"
@@ -283,8 +277,7 @@ const ProposalActionForm = ({ formik, tokenData }) => {
             direction={"column"}
             ml={3}
             mt={2}
-            sx={{ marginLeft: "0 !important" }}
-          >
+            sx={{ marginLeft: "0 !important" }}>
             <Typography variant="proposalBody"> Threshold (in %)</Typography>
             <TextField
               variant="outlined"
@@ -308,8 +301,7 @@ const ProposalActionForm = ({ formik, tokenData }) => {
           direction={"column"}
           ml={3}
           mt={2}
-          sx={{ marginLeft: "0 !important" }}
-        >
+          sx={{ marginLeft: "0 !important" }}>
           <Typography variant="proposalBody">Total deposit</Typography>
           <TextField
             variant="outlined"
@@ -342,8 +334,7 @@ const ProposalActionForm = ({ formik, tokenData }) => {
             direction={"column"}
             ml={3}
             mt={2}
-            sx={{ marginLeft: "0 !important" }}
-          >
+            sx={{ marginLeft: "0 !important" }}>
             <Typography variant="proposalBody">Token to be sent</Typography>
             <Select
               value={formik.values.customToken}
@@ -363,8 +354,7 @@ const ProposalActionForm = ({ formik, tokenData }) => {
               }}
               inputProps={{ "aria-label": "Without label" }}
               name="customToken"
-              id="customToken"
-            >
+              id="customToken">
               {tokenData.map((token) => (
                 <MenuItem key={token.name} value={token.name}>
                   {token.name}
@@ -397,8 +387,7 @@ const ProposalActionForm = ({ formik, tokenData }) => {
             direction={"column"}
             ml={3}
             mt={2}
-            sx={{ marginLeft: "0 !important" }}
-          >
+            sx={{ marginLeft: "0 !important" }}>
             <Typography variant="proposalBody"> Amount to be sent *</Typography>
             <TextField
               variant="outlined"

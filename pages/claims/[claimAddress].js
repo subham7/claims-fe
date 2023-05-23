@@ -1,7 +1,6 @@
 import { makeStyles } from "@mui/styles";
-import React, { useCallback, useEffect, useReducer, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { SmartContract } from "../../src/api/contract";
-import Navbar2 from "../../src/components/navbar2";
 import claimContractABI from "../../src/abis/singleClaimContract.json";
 import USDCContract from "../../src/abis/usdcTokenContract.json";
 import {
@@ -10,25 +9,15 @@ import {
 } from "../../src/utils/globalFunctions";
 import { useRouter } from "next/router";
 import { useConnectWallet } from "@web3-onboard/react";
-import {
-  Alert,
-  CircularProgress,
-  IconButton,
-  Snackbar,
-  Tooltip,
-} from "@mui/material";
+import { Alert, CircularProgress, Tooltip } from "@mui/material";
 import {
   getClaimAmountForUser,
   getClaimsByUserAddress,
 } from "../../src/api/claims";
 import MerkleTree from "merkletreejs";
 import keccak256 from "keccak256";
-import Navbar3 from "../../src/components/navbar";
-import Image from "next/image";
 import Layout1 from "../../src/components/layouts/layout1";
 import Countdown from "react-countdown";
-import { BsThreeDots } from "react-icons/bs";
-import ClaimsEditModal from "../../src/components/claimsPageComps/ClaimsEditModal";
 import { useDispatch } from "react-redux";
 import { addClaimEnabled } from "../../src/redux/reducers/createClaim";
 
@@ -605,8 +594,7 @@ const ClaimAddress = () => {
               height: "100vh",
               alignItems: "center",
               justifyContent: "center",
-            }}
-          >
+            }}>
             <CircularProgress />
           </div>
         ) : (
@@ -622,8 +610,7 @@ const ClaimAddress = () => {
                       claimActive && contractData.isEnabled
                         ? classes.active
                         : classes.inactive
-                    }`}
-                  >
+                    }`}>
                     {claimActive && isClaimStarted && contractData.isEnabled
                       ? "Active"
                       : (!claimActive && isClaimStarted) ||
@@ -636,8 +623,7 @@ const ClaimAddress = () => {
                     <p style={{ margin: 0, padding: 0 }}>Created By</p>
                     <p
                       style={{ margin: 0, padding: 0 }}
-                      className={classes.address}
-                    >
+                      className={classes.address}>
                       {contractData.creatorAddress?.slice(0, 5)}...
                       {contractData.creatorAddress?.slice(
                         contractData.creatorAddress?.length - 5,
@@ -775,8 +761,7 @@ const ClaimAddress = () => {
                       : { cursor: "pointer" }
                   }
                   onClick={maxHandler}
-                  className={classes.max}
-                >
+                  className={classes.max}>
                   Max
                 </button>
               </div>
@@ -809,8 +794,7 @@ const ClaimAddress = () => {
                   !claimableAmt
                     ? { cursor: "not-allowed" }
                     : { cursor: "pointer" }
-                }
-              >
+                }>
                 {isClaiming ? (
                   <CircularProgress />
                 ) : alreadyClaimed && +claimRemaining === 0 ? (
@@ -842,8 +826,7 @@ const ClaimAddress = () => {
               bottom: "30px",
               right: "20px",
               borderRadius: "8px",
-            }}
-          >
+            }}>
             {message}
           </Alert>
         ) : (
@@ -857,8 +840,7 @@ const ClaimAddress = () => {
                 bottom: "30px",
                 right: "20px",
                 borderRadius: "8px",
-              }}
-            >
+              }}>
               {message}
             </Alert>
           )

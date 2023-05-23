@@ -47,8 +47,7 @@ export default function SimpleSelectButton(props) {
           style={{
             borderRadius: "10px",
             background: "#111D38 0% 0% no-repeat padding-box",
-          }}
-        >
+          }}>
           {data.map((value) => (
             <MenuItem key={value} value={value}>
               {value}

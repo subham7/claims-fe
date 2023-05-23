@@ -1,5 +1,4 @@
-import { React, useRef, onChange, useState, useEffect } from "react";
-import Image from "next/image";
+import { React, useState, useEffect } from "react";
 import { makeStyles } from "@mui/styles";
 import USDCContract from "../../src/abis/usdcTokenContract.json";
 import {
@@ -13,16 +12,9 @@ import {
   TextField,
 } from "@mui/material";
 import Layout2 from "../../src/components/layouts/layout2";
-import { connectWallet, setUserChain, onboard } from "../../src/utils/wallet";
 import { useDispatch, useSelector } from "react-redux";
-import store from "../../src/redux/store";
 import Web3 from "web3";
 import { SmartContract } from "../../src/api/contract";
-import {
-  calculateTreasuryTargetShare,
-  convertAmountToWei,
-  convertToWei,
-} from "../../src/utils/globalFunctions";
 import { useConnectWallet } from "@web3-onboard/react";
 import { updateDynamicAddress } from "../../src/api";
 
@@ -76,23 +68,23 @@ const useStyles = makeStyles({
     color: "#111D38",
   },
   cardLargeFont: {
-    "width": "150px",
-    "fontSize": "2em",
-    "fontWeight": "bold",
-    "fontFamily": "Whyte",
-    "color": "#F5F5F5",
-    "borderColor": "#142243",
-    "borderRadius": "0px",
+    width: "150px",
+    fontSize: "2em",
+    fontWeight: "bold",
+    fontFamily: "Whyte",
+    color: "#F5F5F5",
+    borderColor: "#142243",
+    borderRadius: "0px",
     "& input[type=number]": {
       "-moz-appearance": "textfield",
     },
     "& input[type=number]::-webkit-outer-spin-button": {
       "-webkit-appearance": "none",
-      "margin": 0,
+      margin: 0,
     },
     "& input[type=number]::-webkit-inner-spin-button": {
       "-webkit-appearance": "none",
-      "margin": 0,
+      margin: 0,
     },
   },
   cardWarning: {
@@ -108,16 +100,16 @@ const useStyles = makeStyles({
     fontSize: "14px",
   },
   maxTag: {
-    "borderRadius": "17px",
-    "width": "98px",
-    "height": "34px",
-    "opacity": "1",
-    "padding": "10px",
-    "justifyContent": "center",
-    "display": "flex",
-    "alignItems": "center",
-    "backgroundColor": " #3B7AFD",
-    "fontSize": "20px",
+    borderRadius: "17px",
+    width: "98px",
+    height: "34px",
+    opacity: "1",
+    padding: "10px",
+    justifyContent: "center",
+    display: "flex",
+    alignItems: "center",
+    backgroundColor: " #3B7AFD",
+    fontSize: "20px",
     "&:hover": {
       background: "#F5F5F5",
       color: "#3B7AFD",
@@ -296,14 +288,12 @@ const Faucet = (props) => {
         paddingTop={15}
         paddingRight={10}
         justifyContent="center"
-        alignItems="center"
-      ></Grid>
+        alignItems="center"></Grid>
       <Grid
         container
         direction="row"
         justifyContent="center"
-        alignItems="center"
-      >
+        alignItems="center">
         <Grid item md={8} mt={8}>
           <br />
           <Typography className={classes.wrapTextIcon}>
@@ -332,12 +322,10 @@ const Faucet = (props) => {
               mt={2}
               flex
               flexDirection="row"
-              justifyContent="space-between"
-            >
+              justifyContent="space-between">
               <Button
                 variant="wideButton"
-                onClick={() => handleFaucet(faucetAddress, FaucetAmount)}
-              >
+                onClick={() => handleFaucet(faucetAddress, FaucetAmount)}>
                 Mint
               </Button>
             </Grid>
@@ -347,16 +335,14 @@ const Faucet = (props) => {
               mt={2}
               flex
               flexDirection="row"
-              justifyContent="space-between"
-            >
+              justifyContent="space-between">
               <Button
                 variant="transparentWhite"
                 color={"#FFFFFF"}
                 ml={"200px"}
                 onClick={() => {
                   window.open(`https://faucets.chain.link`);
-                }}
-              >
+                }}>
                 {" "}
                 Get Eth here
               </Button>
@@ -367,16 +353,14 @@ const Faucet = (props) => {
               mt={2}
               flex
               flexDirection="row"
-              justifyContent="space-between"
-            >
+              justifyContent="space-between">
               <Button
                 variant="transparentWhite"
                 color={"#FFFFFF"}
                 ml={"200px"}
                 onClick={() => {
                   importTokenToMetaMask();
-                }}
-              >
+                }}>
                 {" "}
                 Import token
               </Button>
@@ -388,30 +372,26 @@ const Faucet = (props) => {
         open={openSnackBar}
         autoHideDuration={6000}
         onClose={handleSnackBarClose}
-        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-      >
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}>
         {!failed ? (
           <Alert
             onClose={handleSnackBarClose}
             severity="success"
-            sx={{ width: "100%" }}
-          >
+            sx={{ width: "100%" }}>
             {statusMessage}
           </Alert>
         ) : (
           <Alert
             onClose={handleSnackBarClose}
             severity="error"
-            sx={{ width: "100%" }}
-          >
+            sx={{ width: "100%" }}>
             {statusMessage}
           </Alert>
         )}
       </Snackbar>
       <Backdrop
         sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={open}
-      >
+        open={open}>
         <CircularProgress color="inherit" />
       </Backdrop>
     </Layout2>

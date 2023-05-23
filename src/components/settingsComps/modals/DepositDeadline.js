@@ -1,17 +1,10 @@
-import {
-  Backdrop,
-  Button,
-  CircularProgress,
-  Grid,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Button, Grid, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import { useFormik } from "formik";
-import React, { useState } from "react";
+import React from "react";
 import * as yup from "yup";
 
 const useStyles = makeStyles({
@@ -70,8 +63,7 @@ const DepositDeadline = ({ updateDepositTimeHandler, onClose, loading }) => {
       <CustomBackdrop onClick={onClose} />
       <div className={classes.container}>
         <Typography
-          sx={{ textAlign: "left", fontSize: "24px", marginBottom: "8px" }}
-        >
+          sx={{ textAlign: "left", fontSize: "24px", marginBottom: "8px" }}>
           Update Deposit Time
         </Typography>
 
@@ -96,8 +88,7 @@ const DepositDeadline = ({ updateDepositTimeHandler, onClose, loading }) => {
               display: "flex",
               gap: "30px",
               marginTop: "20px",
-            }}
-          >
+            }}>
             <Button onClick={formik.handleSubmit} variant="primary">
               Update
             </Button>

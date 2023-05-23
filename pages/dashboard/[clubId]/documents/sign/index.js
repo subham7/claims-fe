@@ -1,13 +1,10 @@
 import React, { useEffect, useState } from "react";
 import Layout1 from "../../../../../src/components/layouts/layout1";
-import html2canvas from "html2canvas";
 import dynamic from "next/dynamic";
 import { makeStyles } from "@mui/styles";
 import Web3 from "web3";
-import { pdf, PDFDownloadLink } from "@react-pdf/renderer";
 import { useRouter } from "next/router";
 import CryptoJS from "crypto-js";
-import LegalEntityModal from "../../../../../src/components/modals/LegalEntityModal";
 import { useDispatch, useSelector } from "react-redux";
 import {
   createDocument,

@@ -21,7 +21,7 @@ export async function refreshToken(refreshToken, accessToken) {
     });
     return await axios.post(MAIN_API_URL + "auth/refresh-tokens", data, {
       headers: {
-        "Authorization": "Bearer " + accessToken,
+        Authorization: "Bearer " + accessToken,
         "Content-Type": "application/json",
       },
     });

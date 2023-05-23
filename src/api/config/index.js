@@ -6,7 +6,7 @@ export async function fetchConfig() {
   try {
     return await axios.get(MAIN_API_URL + `config`, {
       headers: {
-        "Authorization": "Bearer " + getJwtToken(),
+        Authorization: "Bearer " + getJwtToken(),
         "Content-Type": "application/json",
       },
     });
@@ -19,7 +19,7 @@ export async function fetchConfigById(networkId) {
   try {
     return await axios.get(MAIN_API_URL + `config/${networkId}`, {
       headers: {
-        "Authorization": "Bearer " + getJwtToken(),
+        Authorization: "Bearer " + getJwtToken(),
         "Content-Type": "application/json",
       },
     });
