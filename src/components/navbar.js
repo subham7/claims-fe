@@ -83,7 +83,7 @@ export default function Navbar3(props) {
               width="50"
               className={classes.image}
               alt="monogram"
-              onClick={() => router.push(`/dashboard/${daoAddress}`)}
+              onClick={() => router.reload(`/`)}
             />
             {/* </Link> */}
           </Box>
