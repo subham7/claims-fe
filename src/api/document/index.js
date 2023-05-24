@@ -1,4 +1,3 @@
-import { generateBoundary } from "../../utils/globalFunctions";
 import { MAIN_API_URL } from "../index";
 
 export const createDocument = async (jsonData) => {
