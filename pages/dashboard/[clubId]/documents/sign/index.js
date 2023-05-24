@@ -142,6 +142,7 @@ const SignDoc = () => {
       signedMessage: signedHash,
     });
 
+    // Sending Email part
     const props = {
       LLC_name: adminFormData.LLC_name,
       admin_name: adminFormData.admin_name,
@@ -155,17 +156,40 @@ const SignDoc = () => {
     const GetMyDoc = (props) => <PdfFile {...props} />;
 
     const blob = await pdf(GetMyDoc(props)).toBlob();
-    console.log("Blob", blob);
+    console.log("Blob", await blob.text());
+
     const file = new File([blob], "document.pdf", {
       type: "application/pdf",
     });
+
     console.log("File", file);
 
+    // let convertedFile;
+    // const reader = new FileReader();
+
+    // reader.onloadend = function () {
+    //   const bufferData = reader.result;
+
+    //   convertedFile = {
+    //     fieldname: "file",
+    //     originalname: file.name,
+    //     encoding: "7bit",
+    //     mimetype: file.type,
+    //     buffer: Buffer.from(bufferData),
+    //     size: bufferData.byteLength,
+    //   };
+
+    //   console.log("File contains buffer data:", convertedFile);
+    // };
+
+    // reader.readAsArrayBuffer(file);
+
     const formData = new FormData();
-    formData.append("file", file, "document.pdf");
+
+    formData.append("file", file);
     formData.append("email", addAdminFormData.email);
 
-    console.log("File exists in formData:", formData.get("file") !== null);
+    console.log("File exists in formData:", formData.values());
 
     const sendFileByEmail = sentFileByEmail(formData);
     console.log(sendFileByEmail);
@@ -175,19 +199,19 @@ const SignDoc = () => {
     const replacedEncrytedLink = encryptUserData.replaceAll("/", "STATION");
     setEncryptedString(replacedEncrytedLink);
 
-    const res = createDocument({
-      clubId: clubId,
-      createdBy: signedAcc,
-      fileName: "Legal Doc",
-      isPublic: false,
-      isSignable: true,
-      isTokenForSign: true,
-      docIdentifier: replacedEncrytedLink,
-    });
+    // const res = createDocument({
+    //   clubId: clubId,
+    //   createdBy: signedAcc,
+    //   fileName: "Legal Doc",
+    //   isPublic: false,
+    //   isSignable: true,
+    //   isTokenForSign: true,
+    //   docIdentifier: replacedEncrytedLink,
+    // });
 
-    router.push({
-      pathname: `/dashboard/${clubId}/documents`,
-    });
+    // router.push({
+    //   pathname: `/dashboard/${clubId}/documents`,
+    // });
 
     dispatch(addLegalDocLink(replacedEncrytedLink));
   };

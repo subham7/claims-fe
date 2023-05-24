@@ -75,3 +75,15 @@ export const convertIpfsToUrl = (url) => {
   }
   return modifiedTokenURI;
 };
+
+export const generateBoundary = () => {
+  const chars =
+    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  let boundary = "----";
+
+  for (let i = 0; i < 16; i++) {
+    boundary += chars[Math.floor(Math.random() * chars.length)];
+  }
+
+  return boundary;
+};
