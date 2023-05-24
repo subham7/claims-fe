@@ -35,8 +35,7 @@ export default function ERC20Step2(props) {
                   display: "flex",
                   justifyContent: "flex-start",
                   alignItems: "center",
-                }}
-              >
+                }}>
                 <Typography className={classes.largeText}>
                   Last date for members to deposit & join
                 </Typography>
@@ -50,8 +49,7 @@ export default function ERC20Step2(props) {
                   justifyContent: "flex-end",
                   alignItems: "center",
                   padding: "1rem 0",
-                }}
-              >
+                }}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DateTimePicker
                     value={props.formik.values.depositClose}
@@ -75,8 +73,7 @@ export default function ERC20Step2(props) {
                   display: "flex",
                   justifyContent: "flex-start",
                   alignItems: "center",
-                }}
-              >
+                }}>
                 <Typography className={classes.largeText}>
                   Min. deposit amount per wallet
                 </Typography>
@@ -88,8 +85,7 @@ export default function ERC20Step2(props) {
                   display: "flex",
                   justifyContent: "flex-end",
                   alignItems: "center",
-                }}
-              >
+                }}>
                 <TextField
                   name="minDepositPerUser"
                   className={classes.textField}
@@ -129,8 +125,7 @@ export default function ERC20Step2(props) {
                   display: "flex",
                   justifyContent: "flex-start",
                   alignItems: "center",
-                }}
-              >
+                }}>
                 <Typography className={classes.largeText}>
                   Max. deposit amount per wallet
                 </Typography>
@@ -142,8 +137,7 @@ export default function ERC20Step2(props) {
                   display: "flex",
                   justifyContent: "flex-end",
                   alignItems: "center",
-                }}
-              >
+                }}>
                 <TextField
                   name="maxDepositPerUser"
                   className={classes.textField}
@@ -184,8 +178,7 @@ export default function ERC20Step2(props) {
                   display: "flex",
                   justifyContent: "flex-start",
                   alignItems: "center",
-                }}
-              >
+                }}>
                 <Typography className={classes.largeText}>
                   Total amount your Station is raising
                 </Typography>
@@ -197,8 +190,7 @@ export default function ERC20Step2(props) {
                   display: "flex",
                   justifyContent: "flex-end",
                   alignItems: "center",
-                }}
-              >
+                }}>
                 <TextField
                   name="totalRaiseAmount"
                   className={classes.textField}
@@ -239,8 +231,7 @@ export default function ERC20Step2(props) {
                   display: "flex",
                   justifyContent: "flex-start",
                   alignItems: "center",
-                }}
-              >
+                }}>
                 <Typography className={classes.largeText}>
                   Price per token
                 </Typography>
@@ -252,8 +243,7 @@ export default function ERC20Step2(props) {
                   display: "flex",
                   justifyContent: "flex-end",
                   alignItems: "center",
-                }}
-              >
+                }}>
                 <TextField
                   name="pricePerToken"
                   className={classes.textField}

@@ -178,8 +178,7 @@ const Documents = () => {
           <Grid item md={4}>
             <Card
               className={classes.proposalInfoCard}
-              sx={{ padding: 0, position: "relative" }}
-            >
+              sx={{ padding: 0, position: "relative" }}>
               <Image
                 src={settingsImg}
                 alt="proposal image"
@@ -194,8 +193,7 @@ const Documents = () => {
                   color: "#111D38",
                   fontWeight: "normal",
                   width: "80%",
-                }}
-              >
+                }}>
                 Sign documents within your station
               </Typography>
               <Link
@@ -209,8 +207,7 @@ const Documents = () => {
                   fontSize: "0.875rem",
                   left: 20,
                   bottom: 10,
-                }}
-              >
+                }}>
                 Read Docs
               </Link>
             </Card>

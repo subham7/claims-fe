@@ -6,7 +6,7 @@ export async function createClub(data) {
   // create new club API
   return await axios.post(MAIN_API_URL + "club/createnew", data, {
     headers: {
-      "Authorization": "Bearer " + getJwtToken(),
+      Authorization: "Bearer " + getJwtToken(),
       "Content-Type": "application/json",
     },
   });
@@ -16,7 +16,7 @@ export async function fetchClub(clubID) {
   // fetch club details using clubId
   return await axios.get(MAIN_API_URL + `club?clubId=${clubID}`, {
     headers: {
-      "Authorization": "Bearer " + getJwtToken(),
+      Authorization: "Bearer " + getJwtToken(),
       "Content-Type": "application/json",
     },
   });
@@ -32,7 +32,7 @@ export async function fetchClubbyDaoAddress(daoAddress) {
     // mode: "no-cors",
     method: "GET",
     headers: {
-      "Authorization": "Bearer " + getJwtToken(),
+      Authorization: "Bearer " + getJwtToken(),
       "Content-Type": "application/json",
       // "Access-Control-Allow-Origin": "localhost:3000",
     },

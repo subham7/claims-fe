@@ -19,8 +19,7 @@ const Signators = ({ ownerAddresses, signedOwners, isSurvey = false }) => {
         sx={{
           height: "145px",
           overflowY: "scroll",
-        }}
-      >
+        }}>
         <Grid container>
           <Typography className={classes.listFont2}>Signators</Typography>
           <Divider sx={{ marginTop: 2, marginBottom: 3 }} />
@@ -32,8 +31,7 @@ const Signators = ({ ownerAddresses, signedOwners, isSurvey = false }) => {
                 display: "flex",
                 justifyContent: "flex-start",
               }}
-              key={owner}
-            >
+              key={owner}>
               {signedOwners?.includes(owner) ? (
                 <DoneIcon
                   fill="blue"

@@ -27,8 +27,8 @@ export const AdditionalSettingsStyles = makeStyles({
     fontFamily: "Whyte",
   },
   link: {
-    "color": "#3B7AFD",
-    "textDecoration": "none",
+    color: "#3B7AFD",
+    textDecoration: "none",
     "&:hover": {
       textDecoration: "none",
       cursor: "pointer",

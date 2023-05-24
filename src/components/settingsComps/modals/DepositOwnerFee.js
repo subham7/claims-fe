@@ -1,11 +1,4 @@
-import {
-  Backdrop,
-  Button,
-  CircularProgress,
-  Grid,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Button, Grid, TextField, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { useFormik } from "formik";
 import * as yup from "yup";
@@ -70,8 +63,7 @@ const DepositOwnerFee = ({ updateOwnerFeesHandler, onClose, loading }) => {
       <CustomBackdrop onClick={onClose} />
       <div className={classes.container}>
         <Typography
-          sx={{ textAlign: "left", fontSize: "24px", marginBottom: "8px" }}
-        >
+          sx={{ textAlign: "left", fontSize: "24px", marginBottom: "8px" }}>
           Update Owner Fees (%){" "}
         </Typography>
         <form style={{ width: "100%" }}>
@@ -93,13 +85,11 @@ const DepositOwnerFee = ({ updateOwnerFeesHandler, onClose, loading }) => {
               display: "flex",
               gap: "30px",
               marginTop: "20px",
-            }}
-          >
+            }}>
             <Button
               type="submit"
               onClick={formik.handleSubmit}
-              variant="primary"
-            >
+              variant="primary">
               Update
             </Button>
             <Button onClick={onClose} variant="primary">

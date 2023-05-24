@@ -191,11 +191,11 @@ export const DashboardStyles = makeStyles({
     borderRadius: "15px",
   },
   linkInput: {
-    "width": "100%",
-    "color": "#C1D3FF",
-    "background": "#111D38 0% 0% no-repeat padding-box",
-    "border": "1px solid #C1D3FF40",
-    "borderRadius": "10px",
+    width: "100%",
+    color: "#C1D3FF",
+    background: "#111D38 0% 0% no-repeat padding-box",
+    border: "1px solid #C1D3FF40",
+    borderRadius: "10px",
     "&:hover": {
       boxShadow: "0px 0px 12px #C1D3FF40",
       border: "1px solid #C1D3FF40",
@@ -217,7 +217,7 @@ export const DashboardStyles = makeStyles({
     background: "#121D38",
     borderRadius: "10px",
     border: ".5px solid #6475A3",
-    paddingBottom: '25px'
+    paddingBottom: "25px",
   },
   pendingIllustration: {
     height: "12px",
@@ -238,12 +238,12 @@ export const DashboardStyles = makeStyles({
     color: "#EFEFEF",
   },
   searchField: {
-    "width": "28.5vw",
-    "height": "auto",
-    "color": "#C1D3FF",
-    "background": "#111D38 0% 0% no-repeat padding-box",
-    "border": "1px solid #C1D3FF40",
-    "borderRadius": "10px",
+    width: "28.5vw",
+    height: "auto",
+    color: "#C1D3FF",
+    background: "#111D38 0% 0% no-repeat padding-box",
+    border: "1px solid #C1D3FF40",
+    borderRadius: "10px",
     "&:hover": {
       boxShadow: "0px 0px 12px #C1D3FF40",
       border: "1px solid #C1D3FF40",
@@ -291,11 +291,11 @@ export const DashboardStyles = makeStyles({
     color: "#81F5FF",
   },
   docs: {
-    "position": "absolute",
-    "top": "330px",
-    "color": "white",
-    "textDecoration": "underline",
-    "fontSize": "18px",
+    position: "absolute",
+    top: "330px",
+    color: "white",
+    textDecoration: "underline",
+    fontSize: "18px",
     "&:hover": {
       cursor: "pointer",
     },

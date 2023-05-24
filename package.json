@@ -6,9 +6,20 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "format": "prettier --check --ignore-path .prettierignore .",
-    "format:fix": "prettier --write --ignore-path .prettierignore ."
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix",
+    "format": "prettier --write './**/*.{js,jsx,ts,tsx,css,md,json}' --config ./.prettierrc",
+    "prepare": "husky install"
+  },
+  "lint-staged": {
+    "*.{js,jsx}": [
+      "prettier --write",
+      "eslint --fix"
+    ],
+    "*.{html,css,less,ejs}": [
+      "prettier --write"
+    ],
+    "*.js": "eslint --cache --fix"
   },
   "dependencies": {
     "@apollo/client": "^3.7.13",
@@ -60,6 +71,10 @@
     "eslint": "8.10.0",
     "eslint-config-next": "12.1.0",
     "eslint-config-prettier": "^8.5.0",
-    "prettier": "^2.7.1"
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-unused-imports": "^2.0.0",
+    "prettier": "^2.7.1",
+    "lint-staged": "^13.2.2",
+    "husky": "^8.0.3"
   }
 }

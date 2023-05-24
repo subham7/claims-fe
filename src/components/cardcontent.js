@@ -1,13 +1,5 @@
-import { React, useEffect, useState } from "react";
-import {
-  Card,
-  Grid,
-  CardActions,
-  CardContent,
-  CardMedia,
-  Typography,
-  Stack,
-} from "@mui/material";
+import { React } from "react";
+import { Card, Grid, CardContent, CardMedia, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 
 const useStyles = makeStyles({
@@ -43,8 +35,7 @@ export default function CollectionCard(props) {
             fontSize={28}
             gutterBottom
             component="div"
-            variant="cardFont1"
-          >
+            variant="cardFont1">
             {tokenName}
           </Typography>
           <Grid container spacing={4}></Grid>

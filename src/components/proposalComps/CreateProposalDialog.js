@@ -38,7 +38,6 @@ import { createProposal } from "../../api/proposal";
 import { fetchProposals } from "../../utils/proposal";
 import { useDispatch, useSelector } from "react-redux";
 import factoryContractABI from "../../abis/newArch/factoryContract.json";
-import { convertFromWeiGovernance } from "../../utils/globalFunctions";
 import { SmartContract } from "../../api/contract";
 import { setProposalList } from "../../redux/reducers/proposal";
 
@@ -259,15 +258,13 @@ const CreateProposalDialog = ({ open, setOpen, onClose, tokenData }) => {
         scroll="body"
         PaperProps={{ classes: { root: classes.modalStyle } }}
         fullWidth
-        maxWidth="lg"
-      >
+        maxWidth="lg">
         <DialogContent
           sx={{
             overflow: "hidden",
             backgroundColor: "#19274B",
             padding: "3rem",
-          }}
-        >
+          }}>
           <form onSubmit={proposal.handleSubmit} className={classes.form}>
             {/* <Grid container>
             <Grid item m={3}> */}
@@ -287,8 +284,7 @@ const CreateProposalDialog = ({ open, setOpen, onClose, tokenData }) => {
                     onChange={proposal.handleChange}
                     inputProps={{ "aria-label": "Without label" }}
                     name="typeOfProposal"
-                    id="typeOfProposal"
-                  >
+                    id="typeOfProposal">
                     <MenuItem value={"survey"}>Survey</MenuItem>
                     <MenuItem value={"action"}>Action</MenuItem>
                   </Select>
@@ -321,8 +317,7 @@ const CreateProposalDialog = ({ open, setOpen, onClose, tokenData }) => {
               direction={"column"}
               ml={3}
               mt={2}
-              sx={{ marginLeft: "0 !important" }}
-            >
+              sx={{ marginLeft: "0 !important" }}>
               <Typography variant="proposalBody">Proposal Title*</Typography>
 
               <TextField
@@ -350,8 +345,7 @@ const CreateProposalDialog = ({ open, setOpen, onClose, tokenData }) => {
               direction={"column"}
               ml={3}
               mt={2}
-              sx={{ marginLeft: "0 !important" }}
-            >
+              sx={{ marginLeft: "0 !important" }}>
               <Typography variant="proposalBody">
                 Proposal Description*
               </Typography>
@@ -391,8 +385,7 @@ const CreateProposalDialog = ({ open, setOpen, onClose, tokenData }) => {
                     error
                     focused
                     mt={10}
-                    sx={{ marginLeft: "1rem" }}
-                  >
+                    sx={{ marginLeft: "1rem" }}>
                     Description is required
                   </FormHelperText>
                 )}
@@ -414,8 +407,7 @@ const CreateProposalDialog = ({ open, setOpen, onClose, tokenData }) => {
                               justifyContent: "flex-start",
                               alignItems: "center",
                             }}
-                            key={key}
-                          >
+                            key={key}>
                             <TextField
                               label="Options"
                               // error={!/^0x[a-zA-Z0-9]+/gm.test(addressList[key])}
@@ -458,8 +450,7 @@ const CreateProposalDialog = ({ open, setOpen, onClose, tokenData }) => {
                                 const list = [...proposal.values.optionList];
                                 list.splice(key, 1);
                                 proposal.setFieldValue("optionList", list);
-                              }}
-                            >
+                              }}>
                               <DeleteIcon />
                             </IconButton>
                           </Grid>
@@ -477,8 +468,7 @@ const CreateProposalDialog = ({ open, setOpen, onClose, tokenData }) => {
                         { text: "" },
                       ]);
                     }}
-                    startIcon={<AddCircleRoundedIcon />}
-                  >
+                    startIcon={<AddCircleRoundedIcon />}>
                     Add Option
                   </Button>
                 </Stack>
@@ -509,16 +499,14 @@ const CreateProposalDialog = ({ open, setOpen, onClose, tokenData }) => {
                   display: "flex",
                   justifyContent: "flex-end",
                   alignItems: "center",
-                }}
-              >
+                }}>
                 <Button
                   variant="primary"
                   onClick={() => {
                     proposal.resetForm();
                     setLoaderOpen(false);
                     onClose(event, "cancel");
-                  }}
-                >
+                  }}>
                   Cancel
                 </Button>
               </Grid>
@@ -526,8 +514,7 @@ const CreateProposalDialog = ({ open, setOpen, onClose, tokenData }) => {
                 <Button
                   variant="primary"
                   type="submit"
-                  sx={loaderOpen && { padding: "3px" }}
-                >
+                  sx={loaderOpen && { padding: "3px" }}>
                   {loaderOpen ? (
                     <CircularProgress color="inherit" s />
                   ) : (
@@ -543,22 +530,19 @@ const CreateProposalDialog = ({ open, setOpen, onClose, tokenData }) => {
         open={openSnackBar}
         autoHideDuration={6000}
         onClose={handleSnackBarClose}
-        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-      >
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}>
         {!failed ? (
           <Alert
             onClose={handleSnackBarClose}
             severity="success"
-            sx={{ width: "100%" }}
-          >
+            sx={{ width: "100%" }}>
             Proposal Successfully created!
           </Alert>
         ) : (
           <Alert
             onClose={handleSnackBarClose}
             severity="error"
-            sx={{ width: "100%" }}
-          >
+            sx={{ width: "100%" }}>
             Proposal creation failed!
           </Alert>
         )}

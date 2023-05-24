@@ -45,7 +45,6 @@ import { Interface } from "ethers";
 
 import Web3 from "web3";
 import { Web3Adapter } from "@safe-global/protocol-kit";
-import Safe from "@safe-global/protocol-kit";
 import SafeApiKit from "@safe-global/api-kit";
 import { subgraphQuery } from "../../../../src/utils/subgraphs";
 import {
@@ -143,9 +142,9 @@ const useStyles = makeStyles({
     backgroundColor: "#19274B",
   },
   mainCardButton: {
-    "borderRadius": "38px",
-    "border": "1px solid #C1D3FF40;",
-    "backgroundColor": "#3B7AFD",
+    borderRadius: "38px",
+    border: "1px solid #C1D3FF40;",
+    backgroundColor: "#3B7AFD",
     "&:hover": {
       cursor: "pointer",
     },
@@ -255,6 +254,17 @@ const ProposalDetail = () => {
     return state.gnosis.actionContractAddress;
   });
 
+  const ERC721_Threshold = useSelector((state) => {
+    return state.club.erc721ClubDetails.threshold;
+  });
+
+  const ERC20_Threshold = useSelector((state) => {
+    return state.club.erc20ClubDetails.threshold;
+  });
+
+  const Club_Threshold =
+    tokenType === "erc20" ? ERC20_Threshold : ERC721_Threshold;
+
   const [proposalData, setProposalData] = useState(null);
   const [governance, setGovernance] = useState(false);
   const [voted, setVoted] = useState(false);
@@ -273,6 +283,7 @@ const ProposalDetail = () => {
   const [failed, setFailed] = useState(false);
   const [fetched, setFetched] = useState(false);
   const [daoDetails, setDaoDetails] = useState();
+  const [members, setMembers] = useState([]);
 
   const GNOSIS_TRANSACTION_URL = useSelector((state) => {
     return state.gnosis.transactionUrl;
@@ -399,6 +410,12 @@ const ProposalDetail = () => {
     dispatch(addProposalId(pid));
     const proposalData = getProposalDetail(pid);
 
+    const membersData = await subgraphQuery(
+      SUBGRAPH_URL,
+      QUERY_ALL_MEMBERS(daoAddress),
+    );
+    setMembers(membersData);
+
     proposalData.then((result) => {
       if (result.status !== 200) {
         setFetched(false);
@@ -407,7 +424,7 @@ const ProposalDetail = () => {
         setFetched(true);
       }
     });
-  }, [pid]);
+  }, [SUBGRAPH_URL, daoAddress, dispatch, pid]);
 
   const executeFunction = async (proposalStatus) => {
     setLoaderOpen(true);
@@ -445,6 +462,7 @@ const ProposalDetail = () => {
         SUBGRAPH_URL,
         QUERY_ALL_MEMBERS(daoAddress),
       );
+      setMembers(membersData);
       let membersArray = [];
       membersData.users.map((member) => membersArray.push(member.userAddress));
 
@@ -729,8 +747,7 @@ const ProposalDetail = () => {
                       label={
                         <Grid
                           container
-                          sx={{ display: "flex", alignItems: "center" }}
-                        >
+                          sx={{ display: "flex", alignItems: "center" }}>
                           <Image src={tickerIcon} alt="ticker-icon" />
                           <Typography ml={1}>
                             {calculateDays(proposalData?.votingDuration) <= 0
@@ -752,8 +769,7 @@ const ProposalDetail = () => {
                       label={
                         <Grid
                           container
-                          sx={{ display: "flex", alignItems: "center" }}
-                        >
+                          sx={{ display: "flex", alignItems: "center" }}>
                           {proposalData?.type === "action" ? (
                             <Image src={actionIcon} alt="action-icon" />
                           ) : (
@@ -811,8 +827,7 @@ const ProposalDetail = () => {
               <div
                 dangerouslySetInnerHTML={{
                   __html: ReactHtmlParser(proposalData?.description),
-                }}
-              ></div>
+                }}></div>
             </Grid>
 
             {/* voting process before Signature */}
@@ -831,8 +846,7 @@ const ProposalDetail = () => {
                                 justifyContent="center"
                                 alignItems="center"
                                 mt={10}
-                                mb={10}
-                              >
+                                mb={10}>
                                 <Grid item mt={0.5}>
                                   <CheckCircleRoundedIcon
                                     className={classes.mainCardButtonSuccess}
@@ -840,8 +854,7 @@ const ProposalDetail = () => {
                                 </Grid>
                                 <Grid item mt={0.5}>
                                   <Typography
-                                    className={classes.successfulMessageText}
-                                  >
+                                    className={classes.successfulMessageText}>
                                     Successfully voted
                                   </Typography>
                                 </Grid>
@@ -864,8 +877,7 @@ const ProposalDetail = () => {
                                     <CardActionArea
                                       className={classes.mainCard}
                                       key={key}
-                                      disabled={voted}
-                                    >
+                                      disabled={voted}>
                                       <Card
                                         className={
                                           cardSelected == key
@@ -877,17 +889,14 @@ const ProposalDetail = () => {
                                             data.votingOptionId,
                                           );
                                           setCardSelected(key);
-                                        }}
-                                      >
+                                        }}>
                                         <Grid
                                           container
                                           item
                                           justifyContent="center"
-                                          alignItems="center"
-                                        >
+                                          alignItems="center">
                                           <Typography
-                                            className={classes.cardFont1}
-                                          >
+                                            className={classes.cardFont1}>
                                             {data.text}{" "}
                                           </Typography>
                                         </Grid>
@@ -897,21 +906,18 @@ const ProposalDetail = () => {
                                 })}
                                 <CardActionArea
                                   className={classes.mainCard}
-                                  disabled={voted}
-                                >
+                                  disabled={voted}>
                                   <Card
                                     className={
                                       voted
                                         ? classes.mainCardButtonSuccess
                                         : classes.mainCardButton
                                     }
-                                    onClick={!voted ? submitVote : null}
-                                  >
+                                    onClick={!voted ? submitVote : null}>
                                     <Grid
                                       container
                                       justifyContent="center"
-                                      alignItems="center"
-                                    >
+                                      alignItems="center">
                                       {voted ? (
                                         <Grid item>
                                           <CheckCircleRoundedIcon />
@@ -923,14 +929,12 @@ const ProposalDetail = () => {
                                         {voted ? (
                                           <Typography
                                             className={classes.cardFont1}
-                                            mt={0.5}
-                                          >
+                                            mt={0.5}>
                                             Successfully voted
                                           </Typography>
                                         ) : (
                                           <Typography
-                                            className={classes.cardFont1}
-                                          >
+                                            className={classes.cardFont1}>
                                             Vote now
                                           </Typography>
                                         )}
@@ -968,13 +972,13 @@ const ProposalDetail = () => {
                                       executeFunction("passed");
                                     }
                               }
-                              disabled={(!executionReady && signed) || executed}
-                            >
+                              disabled={
+                                (!executionReady && signed) || executed
+                              }>
                               <Grid
                                 container
                                 justifyContent="center"
-                                alignItems="center"
-                              >
+                                alignItems="center">
                                 {signed && !executionReady ? (
                                   <Grid item mt={0.5}>
                                     <CheckCircleRoundedIcon />
@@ -1015,8 +1019,7 @@ const ProposalDetail = () => {
                               justifyContent="center"
                               alignItems="center"
                               mt={10}
-                              mb={10}
-                            >
+                              mb={10}>
                               <Grid item mt={0.5}>
                                 <CheckCircleRoundedIcon
                                   className={classes.mainCardButtonSuccess}
@@ -1024,8 +1027,7 @@ const ProposalDetail = () => {
                               </Grid>
                               <Grid item mt={0.5}>
                                 <Typography
-                                  className={classes.successfulMessageText}
-                                >
+                                  className={classes.successfulMessageText}>
                                   Proposal needs to be executed by Admin
                                 </Typography>
                               </Grid>
@@ -1051,8 +1053,7 @@ const ProposalDetail = () => {
                                 justifyContent="center"
                                 alignItems="center"
                                 mt={10}
-                                mb={10}
-                              >
+                                mb={10}>
                                 <Grid item mt={0.5}>
                                   <CheckCircleRoundedIcon
                                     className={classes.mainCardButtonSuccess}
@@ -1060,8 +1061,7 @@ const ProposalDetail = () => {
                                 </Grid>
                                 <Grid item mt={0.5}>
                                   <Typography
-                                    className={classes.successfulMessageText}
-                                  >
+                                    className={classes.successfulMessageText}>
                                     Successfully voted
                                   </Typography>
                                 </Grid>
@@ -1086,8 +1086,7 @@ const ProposalDetail = () => {
                                           <CardActionArea
                                             className={classes.mainCard}
                                             key={key}
-                                            disabled={voted}
-                                          >
+                                            disabled={voted}>
                                             <Card
                                               className={
                                                 cardSelected == key
@@ -1099,17 +1098,14 @@ const ProposalDetail = () => {
                                                   data.votingOptionId,
                                                 );
                                                 setCardSelected(key);
-                                              }}
-                                            >
+                                              }}>
                                               <Grid
                                                 container
                                                 item
                                                 justifyContent="center"
-                                                alignItems="center"
-                                              >
+                                                alignItems="center">
                                                 <Typography
-                                                  className={classes.cardFont1}
-                                                >
+                                                  className={classes.cardFont1}>
                                                   {data.text}{" "}
                                                 </Typography>
                                               </Grid>
@@ -1121,21 +1117,18 @@ const ProposalDetail = () => {
                                   : null}
                                 <CardActionArea
                                   className={classes.mainCard}
-                                  disabled={voted}
-                                >
+                                  disabled={voted}>
                                   <Card
                                     className={
                                       voted
                                         ? classes.mainCardButtonSuccess
                                         : classes.mainCardButton
                                     }
-                                    onClick={submitVote}
-                                  >
+                                    onClick={submitVote}>
                                     <Grid
                                       container
                                       justifyContent="center"
-                                      alignItems="center"
-                                    >
+                                      alignItems="center">
                                       {voted ? (
                                         <Grid item mt={0.5}>
                                           <CheckCircleRoundedIcon />
@@ -1146,14 +1139,12 @@ const ProposalDetail = () => {
                                       <Grid item>
                                         {voted ? (
                                           <Typography
-                                            className={classes.cardFont1}
-                                          >
+                                            className={classes.cardFont1}>
                                             Successfully voted
                                           </Typography>
                                         ) : (
                                           <Typography
-                                            className={classes.cardFont1}
-                                          >
+                                            className={classes.cardFont1}>
                                             Vote now
                                           </Typography>
                                         )}
@@ -1172,8 +1163,7 @@ const ProposalDetail = () => {
                               justifyContent="center"
                               alignItems="center"
                               mt={10}
-                              mb={10}
-                            >
+                              mb={10}>
                               <Grid item mt={0.5}>
                                 <CloseIcon
                                   className={classes.mainCardButtonError}
@@ -1181,8 +1171,7 @@ const ProposalDetail = () => {
                               </Grid>
                               <Grid item mt={0.5}>
                                 <Typography
-                                  className={classes.successfulMessageText}
-                                >
+                                  className={classes.successfulMessageText}>
                                   Voting Closed
                                 </Typography>
                               </Grid>
@@ -1201,8 +1190,7 @@ const ProposalDetail = () => {
                               justifyContent="center"
                               alignItems="center"
                               mt={10}
-                              mb={10}
-                            >
+                              mb={10}>
                               <Grid item mt={0.5}>
                                 <CloseIcon
                                   className={classes.mainCardButtonError}
@@ -1210,8 +1198,7 @@ const ProposalDetail = () => {
                               </Grid>
                               <Grid item mt={0.5}>
                                 <Typography
-                                  className={classes.successfulMessageText}
-                                >
+                                  className={classes.successfulMessageText}>
                                   Voting Closed
                                 </Typography>
                               </Grid>
@@ -1234,7 +1221,14 @@ const ProposalDetail = () => {
           </Grid>
           <Grid item md={3.5}>
             <Stack spacing={3}>
-              <ProposalInfo proposalData={proposalData} fetched={fetched} />
+              <ProposalInfo
+                proposalData={proposalData}
+                fetched={fetched}
+                threshold={Club_Threshold}
+                members={members}
+                isGovernanceActive={isGovernanceActive}
+                ownerAddresses={ownerAddresses}
+              />
 
               {isGovernanceActive && (
                 <>
@@ -1258,30 +1252,26 @@ const ProposalDetail = () => {
           open={openSnackBar}
           autoHideDuration={6000}
           onClose={handleSnackBarClose}
-          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-        >
+          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}>
           {!failed ? (
             <Alert
               onClose={handleSnackBarClose}
               severity="success"
-              sx={{ width: "100%" }}
-            >
+              sx={{ width: "100%" }}>
               {message}
             </Alert>
           ) : (
             <Alert
               onClose={handleSnackBarClose}
               severity="error"
-              sx={{ width: "100%" }}
-            >
+              sx={{ width: "100%" }}>
               {message}
             </Alert>
           )}
         </Snackbar>
         <Backdrop
           sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-          open={loaderOpen}
-        >
+          open={loaderOpen}>
           <CircularProgress color="inherit" />
         </Backdrop>
       </Layout1>

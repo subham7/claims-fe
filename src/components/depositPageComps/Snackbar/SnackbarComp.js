@@ -6,8 +6,7 @@ const SnackbarComp = ({ openSnackBar, handleClose, alertStatus, message }) => {
       open={openSnackBar}
       autoHideDuration={6000}
       onClose={handleClose}
-      anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-    >
+      anchorOrigin={{ vertical: "bottom", horizontal: "right" }}>
       {alertStatus === "success" ? (
         <Alert onClose={handleClose} severity="success" sx={{ width: "100%" }}>
           {message}
