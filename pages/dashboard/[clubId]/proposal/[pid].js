@@ -25,7 +25,6 @@ import {
   patchProposalExecuted,
 } from "../../../../src/api/proposal";
 import { useDispatch, useSelector } from "react-redux";
-import { addProposalId } from "../../../../src/redux/reducers/create";
 import ClubFetch from "../../../../src/utils/clubFetch";
 import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import CloseIcon from "@mui/icons-material/Close";
@@ -407,7 +406,6 @@ const ProposalDetail = () => {
   };
 
   const fetchData = useCallback(async () => {
-    dispatch(addProposalId(pid));
     const proposalData = getProposalDetail(pid);
 
     const membersData = await subgraphQuery(
