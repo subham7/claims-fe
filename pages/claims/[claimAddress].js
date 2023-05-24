@@ -28,7 +28,6 @@ const useStyles = makeStyles({
     justifyContent: "space-evenly",
     height: "90vh",
     color: "white",
-    // width: "1300px",
     margin: "0 auto",
   },
 

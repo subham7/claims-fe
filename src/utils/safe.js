@@ -5,7 +5,6 @@ import { SafeFactory } from "@safe-global/protocol-kit";
 import FactoryContract from "../abis/newArch/factoryContract.json";
 import { SmartContract } from "../api/contract";
 import {
-  safeConnected,
   setCreateDaoAuthorized,
   setCreateSafeError,
   setCreateSafeErrorCode,
