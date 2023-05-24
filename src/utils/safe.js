@@ -40,7 +40,7 @@ async function gnosisSafePromise(owners, threshold, dispatch) {
     });
 
     const newSafeAddress = await safeSdk.getAddress();
-    dispatch(safeConnected(newSafeAddress, safeSdk));
+
     return newSafeAddress;
   } catch (error) {
     console.error(error);
