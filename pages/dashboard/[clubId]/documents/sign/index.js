@@ -15,6 +15,7 @@ import {
   addLegalDocLink,
 } from "../../../../../src/redux/reducers/legal";
 import  { PdfFile } from "../pdfGenerator";
+import LegalEntityModal from "../../../../../src/components/modals/LegalEntityModal";
 const DocumentPDF = dynamic(() => import("../pdfGenerator"), {
   ssr: false,
 });

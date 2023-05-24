@@ -3,6 +3,7 @@ import { makeStyles } from "@mui/styles";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { BsLink45Deg } from "react-icons/bs";
+import { useSelector } from "react-redux";
 
 const useStyles = makeStyles({
   container: {
@@ -61,7 +62,7 @@ const useStyles = makeStyles({
   },
 });
 
-const DocumentCard = ({ legalDocLink, date, fileName, index }) => {
+const DocumentCard = ({ legalDocLink, date, fileName, index, createdBy }) => {
   const [isCopied, setIsCopied] = useState(false);
 
   const classes = useStyles();
@@ -69,30 +70,41 @@ const DocumentCard = ({ legalDocLink, date, fileName, index }) => {
   const { clubId: daoAddress } = router.query;
   const convertedDate = new Date(date).toLocaleDateString();
 
+  const isAdminUser = useSelector((state) => {
+    return state.gnosis.adminUser;
+  });
+
   return (
     <div className={classes.container}>
       <div className={classes.topLine}>
         <h4 className={classes.createdBy}>
-          Created by <span className={classes.span}>me</span> on{" "}
-          <span className={classes.span}>{convertedDate}</span>
+          Created by{" "}
+          <span className={classes.span}>
+            {createdBy?.slice(0, 5)}....
+            {createdBy?.slice(createdBy?.length - 4)}
+          </span>{" "}
+          on <span className={classes.span}>{convertedDate}</span>
         </h4>
-        <div className={classes.iconContainer}>
-          <BsLink45Deg
-            onClick={(e) => {
-              e.stopPropagation();
-              navigator.clipboard.writeText(
-                `${window.location.origin}/dashboard/${daoAddress}/documents/sign/${legalDocLink}`,
-              );
-              setIsCopied(true);
 
-              setTimeout(() => {
-                setIsCopied(false);
-              }, 3000);
-            }}
-            size={25}
-            className={classes.icons}
-          />
-        </div>
+        {isAdminUser && (
+          <div className={classes.iconContainer}>
+            <BsLink45Deg
+              onClick={(e) => {
+                e.stopPropagation();
+                navigator.clipboard.writeText(
+                  `${window.location.origin}/dashboard/${daoAddress}/documents/sign/${legalDocLink}`,
+                );
+                setIsCopied(true);
+
+                setTimeout(() => {
+                  setIsCopied(false);
+                }, 3000);
+              }}
+              size={25}
+              className={classes.icons}
+            />
+          </div>
+        )}
       </div>
 
       <h2 className={classes.title}>
@@ -109,8 +121,7 @@ const DocumentCard = ({ legalDocLink, date, fileName, index }) => {
             bottom: "30px",
             right: "20px",
             borderRadius: "8px",
-          }}
-        >
+          }}>
           {"Copied"}
         </Alert>
       )}
