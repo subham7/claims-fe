@@ -15,7 +15,7 @@ import DocsCard from "../../../../src/components/proposalComps/DocsCard";
 import CreateProposalDialog from "../../../../src/components/proposalComps/CreateProposalDialog";
 import { fetchProposals } from "../../../../src/utils/proposal";
 import { useRouter } from "next/router";
-import ProposalCard from "../proposalsss/ProposalCard";
+import ProposalCard from "./ProposalCard";
 import { getAssetsByDaoAddress } from "../../../../src/api/assets";
 import ClubFetch from "../../../../src/utils/clubFetch";
 import { useDispatch, useSelector } from "react-redux";
