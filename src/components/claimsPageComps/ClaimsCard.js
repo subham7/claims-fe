@@ -176,7 +176,6 @@ const ClaimsCard = ({
 
   const claimHandler = () => {
     router.push(`/claims/${claimContract}`);
-    // console.log('CLICKEDDDD')
   };
 
   const onClose = (e) => {
@@ -193,7 +192,6 @@ const ClaimsCard = ({
     return state.createClaim.claimEnabled;
   });
 
-  // console.log(IS_CLAIM_ENABLED);
 
   return (
     <div onClick={claimHandler} className={classes.container}>

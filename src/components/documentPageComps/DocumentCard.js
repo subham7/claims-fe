@@ -2,10 +2,7 @@ import { Alert } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
-import { AiFillCalendar } from "react-icons/ai";
-import { BiPencil } from "react-icons/bi";
-import { BsFillSendFill, BsLink45Deg } from "react-icons/bs";
-import { FaCoins } from "react-icons/fa";
+import { BsLink45Deg } from "react-icons/bs";
 
 const useStyles = makeStyles({
   container: {
@@ -95,11 +92,6 @@ const DocumentCard = ({ legalDocLink, date, fileName, index }) => {
             size={25}
             className={classes.icons}
           />
-          {/* <BiPencil
-            size={25}
-            className={classes.icons}
-            // onClick={editClaimsHandler}
-          /> */}
         </div>
       </div>
 

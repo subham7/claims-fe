@@ -135,7 +135,6 @@ const Documents = () => {
     fetchDocs();
   }, [daoAddress]);
 
-  console.log(documents);
 
   return (
     <Layout1>

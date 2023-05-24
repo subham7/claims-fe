@@ -33,15 +33,10 @@ export const getDocumentsByClubId = async (clubId) => {
 };
 
 export const sentFileByEmail = async (formData) => {
-  console.log("JSON DATA", formData);
-  const boundary = generateBoundary();
   try {
     const res = await fetch(`${MAIN_API_URL}document/email`, {
       method: "POST",
       body: formData,
-      // headers: {
-      //   "Content-Type": `multipart/form-data; boundary=${boundary}`,
-      // },
     });
     const data = await res.json();
     return data;
