@@ -164,7 +164,7 @@ const LegalEntityModal = ({
                   disabled
                   value={
                     typeof window !== "undefined" && window.location.origin
-                      ? `${window.location.origin}/dashboard/${clubId}/documents/legal/${encryptedLink}`
+                      ? `${window.location.origin}/dashboard/${clubId}/documents/sign/${encryptedLink}`
                       : null
                   }
                   InputProps={{

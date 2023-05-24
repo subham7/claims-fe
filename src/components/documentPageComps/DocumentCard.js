@@ -84,7 +84,7 @@ const DocumentCard = ({ legalDocLink, date, fileName, index }) => {
             onClick={(e) => {
               e.stopPropagation();
               navigator.clipboard.writeText(
-                `${window.location.origin}/dashboard/${daoAddress}/documents/legal/${legalDocLink}`,
+                `${window.location.origin}/dashboard/${daoAddress}/documents/sign/${legalDocLink}`,
               );
               setIsCopied(true);
 

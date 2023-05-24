@@ -39,9 +39,9 @@ export const sentFileByEmail = async (formData) => {
     const res = await fetch(`${MAIN_API_URL}document/email`, {
       method: "POST",
       body: formData,
-      headers: {
-        "Content-Type": `multipart/form-data; boundary=${boundary}`,
-      },
+      // headers: {
+      //   "Content-Type": `multipart/form-data; boundary=${boundary}`,
+      // },
     });
     const data = await res.json();
     return data;
