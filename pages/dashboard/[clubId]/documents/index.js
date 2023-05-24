@@ -8,7 +8,7 @@ import { Card, Grid, Link, Typography } from "@mui/material";
 import LegalEntityModal from "../../../../src/components/modals/LegalEntityModal";
 import { useSelector } from "react-redux";
 import { getDocumentsByClubId } from "../../../../src/api/document";
-import DocumentCard from "../../../../src/components/documentPageComps/documentCard";
+import DocumentCard from "../../../../src/components/documentPageComps/DocumentCard";
 
 const useStyles = makeStyles({
   container: {
