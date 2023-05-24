@@ -26,7 +26,7 @@ const ProposalInfo = ({
   members,
   threshold,
   isGovernanceActive,
-  ownerAddressess,
+  ownerAddresses,
 }) => {
   const classes = useStyles();
   return (
@@ -69,7 +69,7 @@ const ProposalInfo = ({
                   Math.ceil(members.users?.length * threshold) / 100,
                 ).toFixed(0)
               : Number(
-                  Math.ceil(ownerAddressess?.length * threshold) / 100,
+                  Math.ceil(ownerAddresses?.length * threshold) / 100,
                 ).toFixed(0)}{" "}
             Votes
           </Typography>
