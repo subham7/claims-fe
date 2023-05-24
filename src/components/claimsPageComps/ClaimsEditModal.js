@@ -121,10 +121,8 @@ const ClaimsEditModal = ({ onClose, claimAddress, walletAddress }) => {
       );
 
       const desc = await claimContract.claimSettings();
-      // console.log(desc);
 
       const claimBalance = await claimContract.claimBalance();
-      // console.log(claimBalance);
       const res = await claimContract.rollbackTokens(claimBalance);
       console.log(res);
       setClaimed(true);

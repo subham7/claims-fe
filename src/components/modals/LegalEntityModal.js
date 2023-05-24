@@ -105,13 +105,12 @@ const LegalEntityModal = ({
   isInvite = false,
   encryptedLink,
   isTwitter = false,
-  daoAddress,
 }) => {
   const [isCopy, setIsCopy] = useState(false);
   const classes = useStyles();
   const router = useRouter();
 
-  const { clubId } = router.query;
+  const { clubId: daoAddress } = router.query;
 
   // create legal Entity
   const createLegalEntityHandler = () => {
@@ -121,14 +120,14 @@ const LegalEntityModal = ({
   // back to dashboard
   const dashboardHandler = () => {
     // add dynamic link
-    router.push("/dashboard/");
+    router.push(`/dashboard/${daoAddress}`);
   };
 
   // copy link
   const copyHandler = () => {
     navigator.clipboard.writeText(
       typeof window !== "undefined" && window.location.origin
-        ? `${window.location.origin}/dashboard/${clubId}/documents/sign/${encryptedLink}`
+        ? `${window.location.origin}/dashboard/${daoAddress}/documents/sign/${encryptedLink}`
         : null,
     );
     setIsCopy(true);
@@ -164,7 +163,7 @@ const LegalEntityModal = ({
                   disabled
                   value={
                     typeof window !== "undefined" && window.location.origin
-                      ? `${window.location.origin}/dashboard/${clubId}/documents/legal/${encryptedLink}`
+                      ? `${window.location.origin}/dashboard/${daoAddress}/documents/sign/${encryptedLink}`
                       : null
                   }
                   InputProps={{
@@ -203,7 +202,7 @@ const LegalEntityModal = ({
                       text: `Just created a Station on `,
                       via: "stationxnetwork",
                     }}
-                    url={`https://test.stationx.network/join/${daoAddress}`}
+                    url={`${window.location.origin}/join/${daoAddress}`}
                   />
                 </div>
               </div>

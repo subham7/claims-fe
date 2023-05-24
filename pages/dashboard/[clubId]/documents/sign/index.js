@@ -7,12 +7,13 @@ import { pdf } from "@react-pdf/renderer";
 import { useRouter } from "next/router";
 import CryptoJS from "crypto-js";
 import { useDispatch, useSelector } from "react-redux";
-import { sentFileByEmail } from "../../../../../src/api/document";
 import {
-  addAdminFormData,
-  addLegalDocLink,
-} from "../../../../../src/redux/reducers/legal";
+  createDocument,
+  sentFileByEmail,
+} from "../../../../../src/api/document";
+import { addLegalDocLink } from "../../../../../src/redux/reducers/legal";
 import { PdfFile } from "../pdfGenerator";
+import LegalEntityModal from "../../../../../src/components/modals/LegalEntityModal";
 const DocumentPDF = dynamic(() => import("../pdfGenerator"), {
   ssr: false,
 });
@@ -49,34 +50,14 @@ const useStyles = makeStyles({
   },
 });
 
-// const htmltoImage = () => {
-//   // const domElement1 = document.getElementById("result1");
-//   const domElement = document.getElementsByClassName("comments-result");
-//   const arr = [...domElement];
-//   const generateImage = (domElement) => {
-//     return html2canvas(domElement, {
-//       onclone: (document) => {
-//         document.getElementById("innerDiv").style.display = "block";
-//       },
-//       windowWidth: 1600,
-//     }).then((canvas) => {
-//       const imgData = canvas.toDataURL("image/jpeg", 1.0);
-//       return imgData;
-//     });
-//   };
-
-//   return Promise.all(arr.map((element) => generateImage(element)));
-// };
-
 const SignDoc = () => {
   const classes = useStyles();
   const [signedAcc, setSignedAcc] = useState("");
   const [signDoc, setSignDoc] = useState(false);
   const [signedHash, setSignedHash] = useState("");
-  const [encryptedString, setEncryptedString] = useState("");
   const [decryptedDataObj, setDecryptedDataObj] = useState("");
+  const [client, setClient] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  const [formData, setFormData] = useState({});
 
   const router = useRouter();
   const { clubId, isAdmin } = router.query;
@@ -85,8 +66,6 @@ const SignDoc = () => {
   const adminFormData = useSelector((state) => {
     return state.legal.adminFormData;
   });
-
-  console.log("ADMIN FORM", adminFormData);
 
   const membersData = useSelector((state) => {
     return state.legal.membersData;
@@ -124,110 +103,124 @@ const SignDoc = () => {
 
   // Encrypting admin's data and converting into URL
   const finishHandler = async () => {
-    // Convert data into a JSON string
-    const data = JSON.stringify({
-      LLC_name: adminFormData.LLC_name,
-      admin_name: adminFormData.admin_name,
-      email: adminFormData.email,
-      location: adminFormData.location,
-      general_purpose: adminFormData.general_purpose,
-      signedAcc: signedAcc,
-      signedMessage: signedHash,
-    });
+    try {
+      // Convert data into a JSON string
+      const data = JSON.stringify({
+        LLC_name: adminFormData.LLC_name,
+        admin_name: adminFormData.admin_name,
+        email: adminFormData.email,
+        location: adminFormData.location,
+        general_purpose: adminFormData.general_purpose,
+        signedAcc: signedAcc,
+        signedMessage: signedHash,
+      });
 
-    // Sending Email part
-    const props = {
-      LLC_name: adminFormData.LLC_name,
-      admin_name: adminFormData.admin_name,
-      email: adminFormData.email,
-      location: adminFormData.location,
-      general_purpose: adminFormData.general_purpose,
-      signedAcc: signedAcc,
-      signedHash: signedHash,
-    };
+      // Sending Email part
+      const props = {
+        LLC_name: adminFormData.LLC_name,
+        admin_name: adminFormData.admin_name,
+        email: adminFormData.email,
+        location: adminFormData.location,
+        general_purpose: adminFormData.general_purpose,
+        signedAcc: signedAcc,
+        signedHash: signedHash,
+      };
 
-    const GetMyDoc = (props) => <PdfFile {...props} />;
+      const GetMyDoc = (props) => <PdfFile {...props} />;
 
-    const blob = await pdf(GetMyDoc(props)).toBlob();
-    console.log("Blob", await blob.text());
+      const blob = await pdf(GetMyDoc(props)).toBlob();
+      const file = new File([blob], "document.pdf", {
+        type: "application/pdf",
+      });
 
-    const file = new File([blob], "document.pdf", {
-      type: "application/pdf",
-    });
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("email", adminFormData.email);
 
-    console.log("File", file);
+      // ----- API CALL ------
+      sentFileByEmail(formData);
 
-    // let convertedFile;
-    // const reader = new FileReader();
+      // Encrypt it using crypto-JS
+      const encryptUserData = CryptoJS.AES.encrypt(data, "").toString();
+      const replacedEncrytedLink = encryptUserData.replaceAll("/", "STATION");
 
-    // reader.onloadend = function () {
-    //   const bufferData = reader.result;
+      createDocument({
+        clubId: clubId,
+        createdBy: signedAcc,
+        fileName: "Legal Doc",
+        isPublic: false,
+        isSignable: true,
+        isTokenForSign: true,
+        docIdentifier: replacedEncrytedLink,
+      });
 
-    //   convertedFile = {
-    //     fieldname: "file",
-    //     originalname: file.name,
-    //     encoding: "7bit",
-    //     mimetype: file.type,
-    //     buffer: Buffer.from(bufferData),
-    //     size: bufferData.byteLength,
-    //   };
+      router.push({
+        pathname: `/dashboard/${clubId}/documents`,
+      });
 
-    //   console.log("File contains buffer data:", convertedFile);
-    // };
-
-    // reader.readAsArrayBuffer(file);
-
-    const formData = new FormData();
-
-    formData.append("file", file);
-    formData.append("email", addAdminFormData.email);
-
-    console.log("File exists in formData:", formData.values());
-
-    const sendFileByEmail = sentFileByEmail(formData);
-    console.log(sendFileByEmail);
-
-    // Encrypt it using crypto-JS
-    const encryptUserData = CryptoJS.AES.encrypt(data, "").toString();
-    const replacedEncrytedLink = encryptUserData.replaceAll("/", "STATION");
-    setEncryptedString(replacedEncrytedLink);
-
-    // const res = createDocument({
-    //   clubId: clubId,
-    //   createdBy: signedAcc,
-    //   fileName: "Legal Doc",
-    //   isPublic: false,
-    //   isSignable: true,
-    //   isTokenForSign: true,
-    //   docIdentifier: replacedEncrytedLink,
-    // });
-
-    // router.push({
-    //   pathname: `/dashboard/${clubId}/documents`,
-    // });
-
-    dispatch(addLegalDocLink(replacedEncrytedLink));
+      dispatch(addLegalDocLink(replacedEncrytedLink));
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   // member signed and finished
-  const finishMemberSignHandler = () => {
-    alert("Successfully signed!");
-    router.push(`/dashboard/${clubId}`);
+  const finishMemberSignHandler = async () => {
+    try {
+      const props = {
+        LLC_name: decryptedDataObj.LLC_name,
+        admin_name: decryptedDataObj.admin_name,
+        email: decryptedDataObj.email,
+        location: decryptedDataObj.location,
+        general_purpose: decryptedDataObj.general_purpose,
+        member_name: membersData.member_name,
+        amount: membersData.amount,
+        member_email: membersData.member_email,
+        admin_sign: decryptedDataObj.signedAcc,
+        signedAcc: signedAcc,
+        signedHash: signedHash,
+      };
+
+      const GetMyDoc = (props) => <PdfFile {...props} />;
+
+      const blob = await pdf(GetMyDoc(props)).toBlob();
+      const file = new File([blob], "document.pdf", {
+        type: "application/pdf",
+      });
+
+      const adminFormData = new FormData();
+      adminFormData.append("file", file);
+      adminFormData.append("email", decryptedDataObj.email);
+
+      const memberFormData = new FormData();
+      memberFormData.append("file", file);
+      memberFormData.append("email", membersData.member_email);
+
+      // ----- API CALL ------
+      sentFileByEmail(adminFormData);
+      sentFileByEmail(memberFormData);
+      setShowModal(true);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   // admin data from encrypted URL
   const fetchAdminsData = () => {
-    const newEncryptedLink = encryptedData?.replaceAll("STATION", "/");
+    try {
+      const newEncryptedLink = encryptedData?.replaceAll("STATION", "/");
 
-    // decrypt url
-    if (newEncryptedLink) {
-      const bytes = CryptoJS.AES.decrypt(newEncryptedLink, "");
-      const decryptedData = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
-      setDecryptedDataObj(decryptedData);
+      // decrypt url
+      if (newEncryptedLink) {
+        const bytes = CryptoJS.AES.decrypt(newEncryptedLink, "");
+        const decryptedData = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
+        setDecryptedDataObj(decryptedData);
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
-  const [client, setClient] = useState(false);
   useEffect(() => {
     setClient(true);
   }, []);
@@ -235,8 +228,6 @@ const SignDoc = () => {
   useEffect(() => {
     fetchAdminsData();
   }, [encryptedData]);
-
-  console.log("Latest", formData);
 
   return (
     <div>
@@ -287,13 +278,6 @@ const SignDoc = () => {
               general_purpose={adminFormData?.general_purpose}
             />
           )}
-
-          {/* <PDFViewer
-        //   showToolbar={false}
-          style={{ height: "100%", width: "90vw" }}
-        >
-          <MyDocument title="Personal Doc" data={formData} />
-        </PDFViewer> */}
         </div>
         {/* <button>
         <PDFDownloadLink
@@ -353,6 +337,15 @@ const SignDoc = () => {
         </PDFDownloadLink>
       )} */}
         {/* <LineGraph /> */}
+
+        {showModal && (
+          <LegalEntityModal
+            isSuccess={true}
+            onClose={() => {
+              setShowModal(false);
+            }}
+          />
+        )}
       </Layout1>
     </div>
   );

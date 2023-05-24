@@ -21,7 +21,6 @@ import Fade from "@mui/material/Fade";
 import Link from "next/link";
 import Image from "next/image";
 import { HiDocumentDuplicate } from "react-icons/hi";
-FaCoins;
 
 const useStyles = makeStyles({
   listItemIcon: {

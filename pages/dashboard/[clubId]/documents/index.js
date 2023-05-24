@@ -135,8 +135,6 @@ const Documents = () => {
     fetchDocs();
   }, [daoAddress]);
 
-  console.log(documents);
-
   return (
     <Layout1>
       <div className={classes.container}>
@@ -158,6 +156,7 @@ const Documents = () => {
                   date={document.updateDate}
                   fileName={document.fileName}
                   index={index + 1}
+                  createdBy={document.createdBy}
                 />
               ))}
             </>
