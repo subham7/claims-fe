@@ -83,7 +83,7 @@ const SignDoc = () => {
   const [encryptedString, setEncryptedString] = useState("");
   const [decryptedDataObj, setDecryptedDataObj] = useState("");
   const [showModal, setShowModal] = useState(false);
-  const [formData, setFormData] = useState({});
+  const [inputFile, setInputFile] = useState();
 
   const router = useRouter();
   const { clubId, isAdmin } = router.query;
@@ -164,40 +164,19 @@ const SignDoc = () => {
 
     console.log("File", file);
 
-    // let convertedFile;
-    // const reader = new FileReader();
-
-    // reader.onloadend = function () {
-    //   const bufferData = reader.result;
-
-    //   convertedFile = {
-    //     fieldname: "file",
-    //     originalname: file.name,
-    //     encoding: "7bit",
-    //     mimetype: file.type,
-    //     buffer: Buffer.from(bufferData),
-    //     size: bufferData.byteLength,
-    //   };
-
-    //   console.log("File contains buffer data:", convertedFile);
-    // };
-
-    // reader.readAsArrayBuffer(file);
-
     const formData = new FormData();
 
-    formData.append("file", file);
-    formData.append("email", addAdminFormData.email);
-
-    console.log("File exists in formData:", formData.values());
+    console.log("Input File", inputFile);
+    formData.append("file", inputFile);
+    // formData.append("email", addAdminFormData.email);
 
     const sendFileByEmail = sentFileByEmail(formData);
     console.log(sendFileByEmail);
 
     // Encrypt it using crypto-JS
-    const encryptUserData = CryptoJS.AES.encrypt(data, "").toString();
-    const replacedEncrytedLink = encryptUserData.replaceAll("/", "STATION");
-    setEncryptedString(replacedEncrytedLink);
+    // const encryptUserData = CryptoJS.AES.encrypt(data, "").toString();
+    // const replacedEncrytedLink = encryptUserData.replaceAll("/", "STATION");
+    // setEncryptedString(replacedEncrytedLink);
 
     // const res = createDocument({
     //   clubId: clubId,
@@ -213,7 +192,7 @@ const SignDoc = () => {
     //   pathname: `/dashboard/${clubId}/documents`,
     // });
 
-    dispatch(addLegalDocLink(replacedEncrytedLink));
+    // dispatch(addLegalDocLink(replacedEncrytedLink));
   };
 
   // member signed and finished
@@ -242,8 +221,6 @@ const SignDoc = () => {
   useEffect(() => {
     fetchAdminsData();
   }, [encryptedData]);
-
-  console.log("Latest", formData);
 
   return (
     <div>
@@ -284,15 +261,23 @@ const SignDoc = () => {
               admin_sign={decryptedDataObj.signedAcc}
             />
           ) : (
-            <DocumentPDF
-              signedAcc={signedAcc}
-              signedHash={signedHash}
-              LLC_name={adminFormData?.LLC_name}
-              admin_name={adminFormData?.admin_name}
-              email={adminFormData?.email}
-              location={adminFormData?.location}
-              general_purpose={adminFormData?.general_purpose}
-            />
+            <>
+              <DocumentPDF
+                signedAcc={signedAcc}
+                signedHash={signedHash}
+                LLC_name={adminFormData?.LLC_name}
+                admin_name={adminFormData?.admin_name}
+                email={adminFormData?.email}
+                location={adminFormData?.location}
+                general_purpose={adminFormData?.general_purpose}
+              />
+              <input
+                type="file"
+                onChange={(e) => {
+                  setInputFile(e.target.files[0]);
+                }}
+              />
+            </>
           )}
 
           {/* <PDFViewer
