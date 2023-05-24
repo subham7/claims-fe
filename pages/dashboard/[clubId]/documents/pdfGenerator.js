@@ -1,6 +1,6 @@
 import { Page, Text, View, Document, StyleSheet } from "@react-pdf/renderer";
 import { useEffect, useState } from "react";
-import { PDFViewer, PDFDownloadLink } from "@react-pdf/renderer";
+import { PDFViewer } from "@react-pdf/renderer";
 
 import Html from "react-pdf-html";
 

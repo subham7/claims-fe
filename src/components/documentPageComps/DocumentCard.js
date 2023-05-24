@@ -2,10 +2,7 @@ import { Alert } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
-import { AiFillCalendar } from "react-icons/ai";
-import { BiPencil } from "react-icons/bi";
-import { BsFillSendFill, BsLink45Deg } from "react-icons/bs";
-import { FaCoins } from "react-icons/fa";
+import { BsLink45Deg } from "react-icons/bs";
 
 const useStyles = makeStyles({
   container: {
@@ -117,8 +114,7 @@ const DocumentCard = ({ legalDocLink, date, fileName, index }) => {
             bottom: "30px",
             right: "20px",
             borderRadius: "8px",
-          }}
-        >
+          }}>
           {"Copied"}
         </Alert>
       )}
