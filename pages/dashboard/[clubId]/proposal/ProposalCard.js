@@ -15,7 +15,7 @@ import { useConnectWallet } from "@web3-onboard/react";
 import Web3 from "web3";
 import { SmartContract } from "../../../../src/api/contract";
 import { useRouter } from "next/router";
-import { ProposalCardStyles } from "./ProposalCardStyles";
+import { ProposalCardStyles } from "../../../../src/components/proposalComps/ProposalCardStyles";
 
 const ProposalCard = ({
   proposal,
