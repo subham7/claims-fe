@@ -1,6 +1,6 @@
 import { React, useEffect } from "react";
-import { AppBar, Box, Toolbar, IconButton, Button } from "@mui/material";
-import MenuIcon from "@mui/icons-material/Menu";
+import { AppBar, Box, Toolbar, Button } from "@mui/material";
+// import MenuIcon from "@mui/icons-material/Menu";
 import Image from "next/image";
 import { makeStyles } from "@mui/styles";
 import Web3 from "web3";
@@ -26,7 +26,7 @@ export default function Navbar3(props) {
   const classes = useStyles();
   const router = useRouter();
   const [{ wallet, connecting }, connect, disconnect] = useConnectWallet();
-  const { pid: daoAddress } = router.query;
+  // const { pid: daoAddress } = router.query;
 
   let walletAddress;
 
@@ -48,22 +48,22 @@ export default function Navbar3(props) {
     }
   }, [dispatch, wallet, walletAddress]);
 
-  const handleFaucetRedirect = () => {
-    window.open("/faucet", "_ blank");
-  };
+  // const handleFaucetRedirect = () => {
+  //   window.open("/faucet", "_ blank");
+  // };
 
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static">
         <Toolbar>
-          <IconButton
+          {/* <IconButton
             color="inherit"
             aria-label="open drawer"
             edge="start"
             onClick={props.handleDrawerToggle}
             sx={{ mr: 2, display: { sm: "none" } }}>
             <MenuIcon />
-          </IconButton>
+          </IconButton> */}
           <Box sx={{ flexGrow: 1 }}>
             {/* <Link href={"/"}> */}
             <Image
@@ -72,7 +72,7 @@ export default function Navbar3(props) {
               width="50"
               className={classes.image}
               alt="monogram"
-              onClick={() => router.reload(`/`)}
+              onClick={() => router.push(`/`)}
             />
             {/* </Link> */}
           </Box>

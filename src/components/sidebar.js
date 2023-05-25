@@ -1,9 +1,9 @@
 import React from "react";
-import PropTypes from "prop-types";
 import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
 import PeopleRoundedIcon from "@mui/icons-material/PeopleRounded";
 import InsertDriveFileRoundedIcon from "@mui/icons-material/InsertDriveFileRounded";
 import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
+import AddCardIcon from "@mui/icons-material/AddCard";
 import { makeStyles } from "@mui/styles";
 import {
   Drawer,
@@ -66,20 +66,26 @@ const BootstrapTooltip = styled(({ className, ...props }) => (
 
 const drawerWidth = 100;
 
-export default function Sidebar(props) {
+const Sidebar = (props) => {
   const classes = useStyles();
-  const { window, page } = props;
+  const { page } = props;
   const router = useRouter();
   const { clubId } = router.query;
-  const container =
-    window !== undefined ? () => window().document.body : undefined;
+  // const container =
+  //   window !== undefined ? () => window().document.body : undefined;
+
+  const handleDepositRedirect = () => {
+    router.push(`${window.origin}/join/${clubId}`, undefined, {
+      shallow: true,
+    });
+  };
 
   return (
     <Box component="nav" aria-label="mailbox folders">
       {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
       {/* Phone drawer */}
       <Drawer
-        container={container}
+        // container={container}
         variant="temporary"
         open={props.mobileOpen}
         onClose={props.handleDrawerToggle}
@@ -173,6 +179,14 @@ export default function Sidebar(props) {
           {/*  </ListItemButton>*/}
           {/*</BootstrapTooltip>*/}
 
+          <BootstrapTooltip title="Deposit" placement="left">
+            <ListItemButton onClick={handleDepositRedirect} component="a">
+              <ListItemIcon className={classes.listItemIcon}>
+                <AddCardIcon />
+              </ListItemIcon>
+            </ListItemButton>
+          </BootstrapTooltip>
+
           <BootstrapTooltip title="Settings" placement="left">
             <Link href={`/dashboard/${clubId}/settings`}>
               <ListItemButton
@@ -223,7 +237,7 @@ export default function Sidebar(props) {
             alignItems: "center",
             position: "fixed",
             // minHeight: "100vh",
-            paddingTop: "1rem",
+            paddingTop: "2rem",
             backgroundColor: (theme) =>
               theme.palette.mode == "dark" ? "#111D38" : "#F4F4F5",
           },
@@ -310,6 +324,19 @@ export default function Sidebar(props) {
           {/*  </ListItemButton>*/}
           {/*</BootstrapTooltip>*/}
 
+          <BootstrapTooltip title="Deposit" placement="left">
+            <ListItemButton component="a" onClick={handleDepositRedirect}>
+              <ListItemIcon
+                className={
+                  page == 3
+                    ? classes.listItemIconSelected
+                    : classes.listItemIcon
+                }>
+                <AddCardIcon />
+              </ListItemIcon>
+            </ListItemButton>
+          </BootstrapTooltip>
+
           <BootstrapTooltip title="Settings" placement="left">
             <ListItemButton
               component="a"
@@ -353,12 +380,6 @@ export default function Sidebar(props) {
       </Drawer>
     </Box>
   );
-}
-
-Sidebar.propTypes = {
-  /**
-   * Injected by the documentation to work in an iframe.
-   * You won't need it on your project.
-   */
-  window: PropTypes.func,
 };
+
+export default Sidebar;
