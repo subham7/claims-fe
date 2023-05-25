@@ -179,15 +179,17 @@ export default function Sidebar(props) {
           {/*  </ListItemButton>*/}
           {/*</BootstrapTooltip>*/}
 
-          <BootstrapTooltip title="Deposit" placement="left">
-            <Link href={`${window?.origin}/join/${clubId}`}>
-              <ListItemButton component="a">
-                <ListItemIcon className={classes.listItemIcon}>
-                  <AddCardIcon />
-                </ListItemIcon>
-              </ListItemButton>
-            </Link>
-          </BootstrapTooltip>
+          {window && (
+            <BootstrapTooltip title="Deposit" placement="left">
+              <Link href={`${window?.origin}/join/${clubId}`}>
+                <ListItemButton component="a">
+                  <ListItemIcon className={classes.listItemIcon}>
+                    <AddCardIcon />
+                  </ListItemIcon>
+                </ListItemButton>
+              </Link>
+            </BootstrapTooltip>
+          )}
 
           <BootstrapTooltip title="Settings" placement="left">
             <Link href={`/dashboard/${clubId}/settings`}>
