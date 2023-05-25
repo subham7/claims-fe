@@ -34,6 +34,9 @@ export default function Navbar2() {
   //   window.open("/faucet", "_ blank");
   // };
 
+  if (wallet) {
+    return;
+  }
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar>

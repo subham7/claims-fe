@@ -237,7 +237,7 @@ const Sidebar = (props) => {
             alignItems: "center",
             position: "fixed",
             // minHeight: "100vh",
-            paddingTop: "1rem",
+            paddingTop: "2rem",
             backgroundColor: (theme) =>
               theme.palette.mode == "dark" ? "#111D38" : "#F4F4F5",
           },
