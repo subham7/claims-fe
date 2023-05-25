@@ -181,7 +181,12 @@ const Sidebar = (props) => {
 
           <BootstrapTooltip title="Deposit" placement="left">
             <ListItemButton onClick={handleDepositRedirect} component="a">
-              <ListItemIcon className={classes.listItemIcon}>
+              <ListItemIcon
+                className={
+                  page == 4
+                    ? classes.listItemIconSelected
+                    : classes.listItemIcon
+                }>
                 <AddCardIcon />
               </ListItemIcon>
             </ListItemButton>
@@ -197,7 +202,12 @@ const Sidebar = (props) => {
                 //   })
                 // }}
               >
-                <ListItemIcon className={classes.listItemIcon}>
+                <ListItemIcon
+                  className={
+                    page == 5
+                      ? classes.listItemIconSelected
+                      : classes.listItemIcon
+                  }>
                   <SettingsRoundedIcon />
                 </ListItemIcon>
               </ListItemButton>
@@ -328,7 +338,7 @@ const Sidebar = (props) => {
             <ListItemButton component="a" onClick={handleDepositRedirect}>
               <ListItemIcon
                 className={
-                  page == 3
+                  page == 4
                     ? classes.listItemIconSelected
                     : classes.listItemIcon
                 }>
