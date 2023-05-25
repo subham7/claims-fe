@@ -66,7 +66,7 @@ const BootstrapTooltip = styled(({ className, ...props }) => (
 
 const drawerWidth = 100;
 
-export default function Sidebar(props) {
+const Sidebar = (props) => {
   const classes = useStyles();
   const { page } = props;
   const router = useRouter();
@@ -179,17 +179,13 @@ export default function Sidebar(props) {
           {/*  </ListItemButton>*/}
           {/*</BootstrapTooltip>*/}
 
-          {window && (
-            <BootstrapTooltip title="Deposit" placement="left">
-              <Link href={`${window?.origin}/join/${clubId}`}>
-                <ListItemButton component="a">
-                  <ListItemIcon className={classes.listItemIcon}>
-                    <AddCardIcon />
-                  </ListItemIcon>
-                </ListItemButton>
-              </Link>
-            </BootstrapTooltip>
-          )}
+          <BootstrapTooltip title="Deposit" placement="left">
+            <ListItemButton onClick={handleDepositRedirect} component="a">
+              <ListItemIcon className={classes.listItemIcon}>
+                <AddCardIcon />
+              </ListItemIcon>
+            </ListItemButton>
+          </BootstrapTooltip>
 
           <BootstrapTooltip title="Settings" placement="left">
             <Link href={`/dashboard/${clubId}/settings`}>
@@ -384,4 +380,6 @@ export default function Sidebar(props) {
       </Drawer>
     </Box>
   );
-}
+};
+
+export default Sidebar;
