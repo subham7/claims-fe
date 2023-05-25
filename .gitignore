@@ -39,3 +39,5 @@ package-lock.json
 .idea/
 yarn.local
 yarn.lock
+
+.eslintcache
