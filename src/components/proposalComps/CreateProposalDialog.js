@@ -71,6 +71,9 @@ const CreateProposalDialog = ({ open, setOpen, onClose, tokenData }) => {
   const walletAddress = Web3.utils.toChecksumAddress(
     wallet?.accounts[0].address,
   );
+  const tokenType = useSelector((state) => {
+    return state.club.clubData.tokenType;
+  });
 
   const FACTORY_CONTRACT_ADDRESS = useSelector((state) => {
     return state.gnosis.factoryContractAddress;
@@ -109,6 +112,7 @@ const CreateProposalDialog = ({ open, setOpen, onClose, tokenData }) => {
 
   const proposal = useFormik({
     initialValues: {
+      tokenType: tokenType,
       typeOfProposal: "survey",
       proposalDeadline: dayjs(Date.now() + 3600 * 1000 * 24),
       proposalTitle: "",
@@ -515,11 +519,7 @@ const CreateProposalDialog = ({ open, setOpen, onClose, tokenData }) => {
                   variant="primary"
                   type="submit"
                   sx={loaderOpen && { padding: "3px" }}>
-                  {loaderOpen ? (
-                    <CircularProgress color="inherit" s />
-                  ) : (
-                    "Submit"
-                  )}
+                  {loaderOpen ? <CircularProgress color="inherit" /> : "Submit"}
                 </Button>
               </Grid>
             </Grid>
