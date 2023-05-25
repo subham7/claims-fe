@@ -300,7 +300,7 @@ const App = () => {
                 <Divider className={classes.divider} />
                 <div style={{ overflowY: "scroll", maxHeight: "80vh" }}>
                   <Stack spacing={3}>
-                    {walletAddress ? (
+                    {walletAddress && clubListData.length ? (
                       clubListData.reverse().map((club, key) => {
                         return (
                           <ListItemButton
@@ -345,13 +345,25 @@ const App = () => {
                         );
                       })
                     ) : (
-                      <Grid
-                        container
-                        item
-                        justifyContent="center"
-                        alignItems="center">
-                        <Typography>{noWalletMessage}</Typography>
-                      </Grid>
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          flexDirection: "column",
+                        }}>
+                        <h3
+                          style={{
+                            fontSize: "20px",
+                            fontWeight: "400",
+                            marginBottom: 0,
+                          }}>
+                          No stations found
+                        </h3>
+                        <p style={{ color: "#C1D3FF", fontWeight: "300" }}>
+                          Station(s) you created or a part of appear here
+                        </p>
+                      </div>
                     )}
                   </Stack>
                 </div>
