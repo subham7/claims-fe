@@ -4,6 +4,7 @@ import {
   FormControlLabel,
   Grid,
   IconButton,
+  Slider,
   Switch,
   TextField,
   Typography,
@@ -271,6 +272,61 @@ export default function Step3(props) {
               </Grid>
             ) : null}
           </Card>
+
+          {props.formik.values.addressList.length ? (
+            <>
+              <Grid
+                container
+                item
+                xs
+                sx={{
+                  display: "flex",
+                  justifyContent: "flex-start",
+                  alignItems: "center",
+                }}
+                mt={5}
+                mb={2}>
+                <Typography className={classes.largeText2}>
+                  Min.{" "}
+                  <Box
+                    sx={{ color: "#3B7AFD" }}
+                    fontWeight="fontWeightBold"
+                    display="inline">
+                    number of signature needed
+                  </Box>{" "}
+                  to execute a proposal{" "}
+                  <Box
+                    sx={{ color: "#6475A3" }}
+                    fontWeight="fontWeightBold"
+                    display="inline">
+                    (Safe threshold)
+                  </Box>{" "}
+                </Typography>
+              </Grid>
+
+              <Card container pl={3} pr={1} mt={2}>
+                <Grid container item md={11.3} mt={3} ml={2} mb={1}>
+                  <Slider
+                    defaultValue={1}
+                    step={1}
+                    marks
+                    min={1}
+                    valueLabelDisplay={"on"}
+                    max={props.formik.values.addressList.length + 1}
+                    onChange={(value) => {
+                      props.formik.setFieldValue(
+                        "safeThreshold",
+                        value.target.value,
+                      );
+                    }}
+                    value={props.formik.values.safeThreshold}
+                  />
+                </Grid>
+              </Card>
+            </>
+          ) : (
+            ""
+          )}
         </Grid>
       </Grid>
     </>
