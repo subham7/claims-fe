@@ -3,7 +3,6 @@ import { makeStyles } from "@mui/styles";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { BsLink45Deg } from "react-icons/bs";
-import { useSelector } from "react-redux";
 
 const useStyles = makeStyles({
   container: {
@@ -70,9 +69,7 @@ const DocumentCard = ({ legalDocLink, date, fileName, index, createdBy }) => {
   const { clubId: daoAddress } = router.query;
   const convertedDate = new Date(date).toLocaleDateString();
 
-  const isAdminUser = useSelector((state) => {
-    return state.gnosis.adminUser;
-  });
+  console.log("Converted Date", date, convertedDate);
 
   return (
     <div className={classes.container}>
@@ -86,25 +83,23 @@ const DocumentCard = ({ legalDocLink, date, fileName, index, createdBy }) => {
           on <span className={classes.span}>{convertedDate}</span>
         </h4>
 
-        {isAdminUser && (
-          <div className={classes.iconContainer}>
-            <BsLink45Deg
-              onClick={(e) => {
-                e.stopPropagation();
-                navigator.clipboard.writeText(
-                  `${window.location.origin}/dashboard/${daoAddress}/documents/sign/${legalDocLink}`,
-                );
-                setIsCopied(true);
+        <div className={classes.iconContainer}>
+          <BsLink45Deg
+            onClick={(e) => {
+              e.stopPropagation();
+              navigator.clipboard.writeText(
+                `${window.location.origin}/dashboard/${daoAddress}/documents/sign/${legalDocLink}`,
+              );
+              setIsCopied(true);
 
-                setTimeout(() => {
-                  setIsCopied(false);
-                }, 3000);
-              }}
-              size={25}
-              className={classes.icons}
-            />
-          </div>
-        )}
+              setTimeout(() => {
+                setIsCopied(false);
+              }, 3000);
+            }}
+            size={25}
+            className={classes.icons}
+          />
+        </div>
       </div>
 
       <h2 className={classes.title}>

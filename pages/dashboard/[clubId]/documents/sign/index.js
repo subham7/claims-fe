@@ -9,9 +9,13 @@ import CryptoJS from "crypto-js";
 import { useDispatch, useSelector } from "react-redux";
 import {
   createDocument,
+  getDocumentsByClubId,
   sentFileByEmail,
 } from "../../../../../src/api/document";
-import { addLegalDocLink } from "../../../../../src/redux/reducers/legal";
+import {
+  addDocumentList,
+  addLegalDocLink,
+} from "../../../../../src/redux/reducers/legal";
 import { PdfFile } from "../pdfGenerator";
 import LegalEntityModal from "../../../../../src/components/modals/LegalEntityModal";
 const DocumentPDF = dynamic(() => import("../pdfGenerator"), {
@@ -62,6 +66,7 @@ const SignDoc = () => {
   const router = useRouter();
   const { clubId, isAdmin } = router.query;
   const dispatch = useDispatch();
+  let docsList = [];
 
   const adminFormData = useSelector((state) => {
     return state.legal.adminFormData;
@@ -143,6 +148,7 @@ const SignDoc = () => {
       // Encrypt it using crypto-JS
       const encryptUserData = CryptoJS.AES.encrypt(data, "").toString();
       const replacedEncrytedLink = encryptUserData.replaceAll("/", "STATION");
+      dispatch(addLegalDocLink(replacedEncrytedLink));
 
       createDocument({
         clubId: clubId,
@@ -154,11 +160,15 @@ const SignDoc = () => {
         docIdentifier: replacedEncrytedLink,
       });
 
-      router.push({
-        pathname: `/dashboard/${clubId}/documents`,
+      docsList.push({
+        createdBy: signedAcc,
+        updateDate: new Date().toISOString(),
+        docIdentifier: replacedEncrytedLink,
+        fileName: "Legal Doc",
       });
 
-      dispatch(addLegalDocLink(replacedEncrytedLink));
+      dispatch(addDocumentList(docsList.reverse()));
+      router.push(`/dashboard/${clubId}/documents`);
     } catch (error) {
       console.log(error);
     }
@@ -228,6 +238,14 @@ const SignDoc = () => {
   useEffect(() => {
     fetchAdminsData();
   }, [encryptedData]);
+
+  useEffect(() => {
+    const fetchDocs = async () => {
+      const docs = await getDocumentsByClubId(clubId);
+      docsList.push(...docs);
+    };
+    fetchDocs();
+  });
 
   return (
     <div>

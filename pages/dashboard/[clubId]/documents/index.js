@@ -110,6 +110,15 @@ const Documents = () => {
     return state.legal.legalDocLink;
   });
 
+  const docsList = useSelector((state) => {
+    return state.legal.documentList;
+  });
+
+  console.log(
+    "Docs lisft",
+    docsList ? docsList[docsList?.length - 1].updateDate : "",
+  );
+
   const { clubId: daoAddress } = router.query;
 
   const createDocHandler = () => {
@@ -130,7 +139,7 @@ const Documents = () => {
   useEffect(() => {
     const fetchDocs = async () => {
       const docs = await getDocumentsByClubId(daoAddress);
-      setDocuments(docs);
+      setDocuments(docs.reverse());
     };
     fetchDocs();
   }, [daoAddress]);
@@ -147,7 +156,20 @@ const Documents = () => {
             </button>
           </div>
 
-          {documents.length ? (
+          {docsList?.length ? (
+            <>
+              {docsList?.map((document, index) => (
+                <DocumentCard
+                  key={index}
+                  legalDocLink={document.docIdentifier}
+                  date={document.updateDate}
+                  fileName={document.fileName}
+                  index={index + 1}
+                  createdBy={document.createdBy}
+                />
+              ))}
+            </>
+          ) : documents.length ? (
             <>
               {documents.map((document, index) => (
                 <DocumentCard
