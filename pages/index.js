@@ -136,7 +136,7 @@ const App = () => {
   useEffect(() => {
     try {
       if (!walletAddress) setManageStation(false);
-      if (walletAddress) {
+      else {
         const fetchClubs = async () => {
           try {
             const data = await subgraphQuery(
