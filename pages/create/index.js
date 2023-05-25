@@ -19,15 +19,22 @@ import {
   ERC721Step2ValidationSchema,
   step1ValidationSchema,
   step3ValidationSchema,
+  step4ValidationSchema,
 } from "../../src/components/createClubComps/ValidationSchemas";
 import { setUploadNFTLoading } from "../../src/redux/reducers/gnosis";
 import { NFTStorage } from "nft.storage";
 import { convertToWeiGovernance } from "../../src/utils/globalFunctions";
 import WrongNetworkModal from "../../src/components/modals/WrongNetworkModal";
 import { useConnectWallet } from "@web3-onboard/react";
+import Step4 from "../../src/components/createClubComps/Step4";
 
 const Create = () => {
-  const steps = ["Add basic info", "Set token rules", "Governance"];
+  const steps = [
+    "Add station info",
+    "Set token rules",
+    "Governance",
+    "Treasury",
+  ];
   const dispatch = useDispatch();
   const uploadInputRef = useRef(null);
   const [{ wallet }] = useConnectWallet();
@@ -36,32 +43,8 @@ const Create = () => {
   const [completed, setCompleted] = useState({});
   const [open, setOpen] = useState(false);
 
-  const FACTORY_CONTRACT_ADDRESS = useSelector((state) => {
-    return state.gnosis.factoryContractAddress;
-  });
-
-  const USDC_CONTRACT_ADDRESS = useSelector((state) => {
-    return state.gnosis.usdcContractAddress;
-  });
-  const GNOSIS_TRANSACTION_URL = useSelector((state) => {
-    return state.gnosis.transactionUrl;
-  });
-  const setCreateSafeLoading = useSelector((state) => {
-    return state.gnosis.setCreateSafeLoading;
-  });
-
-  const setCreateDaoAuthorized = useSelector((state) => {
-    return state.gnosis.createDaoAuthorized;
-  });
-  const setCreateSafeError = useSelector((state) => {
-    return state.gnosis.setCreateSafeError;
-  });
-  const setCreateSafeErrorCode = useSelector((state) => {
-    return state.gnosis.setCreateSafeErrorCode;
-  });
-
-  const uploadNFTLoading = useSelector((state) => {
-    return state.gnosis.setUploadNFTLoading;
+  const GNOSIS_DATA = useSelector((state) => {
+    return state.gnosis;
   });
 
   const networkId = wallet?.chains[0]?.id;
@@ -72,6 +55,10 @@ const Create = () => {
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
+  };
+
+  const handlePrev = () => {
+    setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
   const getStepContent = (step) => {
@@ -93,6 +80,8 @@ const Create = () => {
         }
       case 2:
         return <Step3 formik={formikStep3} />;
+      case 3:
+        return <Step4 formik={formikStep4} />;
       default:
         return "Unknown step";
     }
@@ -147,8 +136,20 @@ const Create = () => {
       quorum: 1,
       threshold: 51,
       addressList: [],
+      safeThreshold: 1,
     },
     validationSchema: step3ValidationSchema,
+    onSubmit: (values) => {
+      handleNext();
+    },
+  });
+
+  const formikStep4 = useFormik({
+    initialValues: {
+      deploySafe: true,
+      safeAddress: "",
+    },
+    validationSchema: step4ValidationSchema,
     onSubmit: async (values) => {
       setOpen(true);
       if (formikStep1.values.clubTokenType === "NFT") {
@@ -168,18 +169,21 @@ const Create = () => {
           const walletAddress = Web3.utils.toChecksumAddress(
             wallet.accounts[0].address,
           );
-          values.addressList.unshift(walletAddress);
+          formikStep3.values.addressList.unshift(walletAddress);
 
           const params = {
             clubName: formikStep1.values.clubName,
             clubSymbol: formikStep1.values.clubSymbol,
             ownerFeePerDepositPercent: 0 * 100,
             depositClose: dayjs(formikERC721Step2.values.depositClose).unix(),
-            quorum: values.quorum * 100,
-            threshold: values.threshold * 100,
-            depositTokenAddress: USDC_CONTRACT_ADDRESS,
+            quorum: formikStep3.values.quorum * 100,
+            threshold: formikStep3.values.threshold * 100,
+            safeThreshold: formikStep3.values.safeThreshold,
+            depositTokenAddress: GNOSIS_DATA.usdcContractAddress,
+            treasuryAddress: formikStep4.values.safeAddress
+              ? formikStep4.values.safeAddress
+              : "0x0000000000000000000000000000000000000000",
             maxTokensPerUser: formikERC721Step2.values.maxTokensPerUser,
-
             distributeAmount: formikERC721Step2.values.isNftTotalSupplylimited
               ? convertToWeiGovernance(
                   formikERC721Step2.values.totalTokenSupply /
@@ -194,7 +198,7 @@ const Create = () => {
             isNftTransferable: formikERC721Step2.values.isNftTransferable,
             isNftTotalSupplyUnlimited:
               !formikERC721Step2.values.isNftTotalSupplylimited,
-            isGovernanceActive: values.governance,
+            isGovernanceActive: formikStep3.values.governance,
 
             allowWhiteList: false,
             merkleRoot:
@@ -204,10 +208,10 @@ const Create = () => {
           initiateConnection(
             params,
             dispatch,
-            GNOSIS_TRANSACTION_URL,
-            values.addressList,
+            GNOSIS_DATA.transactionUrl,
+            formikStep3.values.addressList,
             formikStep1.values.clubTokenType,
-            FACTORY_CONTRACT_ADDRESS,
+            GNOSIS_DATA.factoryContractAddress,
             metadata.data.image.pathname,
             metadata.url,
           );
@@ -219,7 +223,7 @@ const Create = () => {
           const walletAddress = Web3.utils.toChecksumAddress(
             wallet.accounts[0].address,
           );
-          values.addressList.unshift(walletAddress);
+          formikStep3.values.addressList.unshift(walletAddress);
           const params = {
             clubName: formikStep1.values.clubName,
             clubSymbol: formikStep1.values.clubSymbol,
@@ -242,10 +246,14 @@ const Create = () => {
             ),
             ownerFeePerDepositPercent: 0 * 100,
             depositClose: dayjs(formikERC20Step2.values.depositClose).unix(),
-            quorum: values.quorum * 100,
-            threshold: values.threshold * 100,
-            depositTokenAddress: USDC_CONTRACT_ADDRESS,
-            isGovernanceActive: values.governance,
+            quorum: formikStep3.values.quorum * 100,
+            threshold: formikStep3.values.threshold * 100,
+            safeThreshold: formikStep3.values.safeThreshold,
+            depositTokenAddress: GNOSIS_DATA.usdcContractAddress,
+            treasuryAddress: formikStep4.values.safeAddress
+              ? formikStep4.values.safeAddress
+              : "0x0000000000000000000000000000000000000000",
+            isGovernanceActive: formikStep3.values.governance,
             isGtTransferable: true,
             allowWhiteList: false,
             merkleRoot:
@@ -254,10 +262,10 @@ const Create = () => {
           initiateConnection(
             params,
             dispatch,
-            GNOSIS_TRANSACTION_URL,
-            values.addressList,
+            GNOSIS_DATA.transactionUrl,
+            formikStep3.values.addressList,
             formikStep1.values.clubTokenType,
-            FACTORY_CONTRACT_ADDRESS,
+            GNOSIS_DATA.factoryContractAddress,
           );
         } catch (error) {
           console.error(error);
@@ -281,10 +289,11 @@ const Create = () => {
           formikERC721Step2.handleSubmit();
           break;
         }
-
       case 2:
         formikStep3.handleSubmit();
         break;
+      case 3:
+        formikStep4.handleSubmit();
     }
   };
   return (
@@ -293,7 +302,7 @@ const Create = () => {
         container
         item
         paddingLeft={{ xs: 5, sm: 5, md: 10, lg: 45 }}
-        paddingTop={15}
+        paddingTop={4}
         paddingRight={{ xs: 5, sm: 5, md: 10, lg: 45 }}
         justifyContent="center"
         alignItems="center">
@@ -312,29 +321,33 @@ const Create = () => {
                 );
               })}
             </Stepper>
-            {activeStep === steps.length - 1 && setCreateSafeLoading ? (
+            {activeStep === steps.length - 1 &&
+            GNOSIS_DATA.setCreateSafeLoading ? (
               <SafeDepositLoadingModal
                 open={open}
                 title=" Deploying a new safe"
                 description=" Please sign & authorise StationX to deploy a new safe for your
                 station."
               />
-            ) : activeStep === steps.length - 1 && setCreateDaoAuthorized ? (
+            ) : activeStep === steps.length - 1 &&
+              GNOSIS_DATA.createDaoAuthorized ? (
               <SafeDepositLoadingModal
                 open={open}
                 title="Setting up your station"
                 description="Please sign to authorise StationX to deploy this station
               for you."
               />
-            ) : activeStep === steps.length - 1 && setCreateSafeError ? (
+            ) : activeStep === steps.length - 1 &&
+              GNOSIS_DATA.setCreateSafeError ? (
               <>
-                {setCreateSafeErrorCode === 4001 ? (
+                {GNOSIS_DATA.setCreateSafeErrorCode === 4001 ? (
                   <ErrorModal isSignRejected />
                 ) : (
                   <ErrorModal isError />
                 )}
               </>
-            ) : activeStep === steps.length - 1 && uploadNFTLoading ? (
+            ) : activeStep === steps.length - 1 &&
+              GNOSIS_DATA.setUploadNFTLoading ? (
               <SafeDepositLoadingModal
                 open={open}
                 title="Uploading your NFT"
@@ -345,17 +358,40 @@ const Create = () => {
                 <Grid
                   container
                   direction="row"
-                  justifyContent="center"
+                  justifyContent="flex-end"
                   alignItems="center"
                   mt={2}>
                   {getStepContent(activeStep)}
-                  {activeStep === steps.length - 1 ? (
+                  {!activeStep == 0 && activeStep !== steps.length - 1 && (
                     <Button
                       variant="wideButton"
-                      sx={{ marginTop: "2rem" }}
-                      onClick={handleSubmit}>
-                      Finish
+                      sx={{
+                        marginTop: "2rem",
+                        marginBottom: "6rem",
+                        marginRight: "1rem",
+                      }}
+                      onClick={handlePrev}>
+                      Prev
                     </Button>
+                  )}
+                  {activeStep === steps.length - 1 ? (
+                    <>
+                      <Button
+                        variant="wideButton"
+                        sx={{
+                          marginTop: "2rem",
+                          marginRight: "1rem",
+                        }}
+                        onClick={handlePrev}>
+                        Prev
+                      </Button>
+                      <Button
+                        variant="wideButton"
+                        sx={{ marginTop: "2rem" }}
+                        onClick={handleSubmit}>
+                        Finish
+                      </Button>
+                    </>
                   ) : (
                     <Button
                       variant="wideButton"
