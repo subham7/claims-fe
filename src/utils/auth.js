@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { Backdrop, Button } from "@mui/material";
 import { fetchConfig } from "../api/config";
 import { updateDynamicAddress } from "../api";
 import Web3 from "web3";
 import { SmartContract } from "../api/contract";
 import ImplementationContract from "../abis/implementationABI.json";
-import { setUSDCTokenDetails } from "../redux/reducers/gnosis";
 import { useConnectWallet } from "@web3-onboard/react";
 import { useCallback } from "react";
 
@@ -21,14 +20,6 @@ export default function ProtectRoute(Component) {
     const [redirect, setRedirect] = useState(false);
     const [networks, setNetworks] = useState([]);
     const [networksFetched, setNetworksFetched] = useState(false);
-    const [tokenDecimalUsdc, setTokenDecimalUsdc] = useState(0);
-
-    const USDC_CONTRACT_ADDRESS = useSelector((state) => {
-      return state.gnosis.usdcContractAddress;
-    });
-    const GNOSIS_TRANSACTION_URL = useSelector((state) => {
-      return state.gnosis.transactionUrl;
-    });
 
     const walletAddress = Web3.utils.toChecksumAddress(
       wallet?.accounts[0].address,
@@ -37,45 +28,6 @@ export default function ProtectRoute(Component) {
     if (wallet) {
       localStorage.setItem("wallet", walletAddress);
     }
-
-    const fetchCustomTokenDecimals = useCallback(async () => {
-      try {
-        if (USDC_CONTRACT_ADDRESS && GNOSIS_TRANSACTION_URL) {
-          const usdcContract = new SmartContract(
-            ImplementationContract,
-            USDC_CONTRACT_ADDRESS,
-            undefined,
-            USDC_CONTRACT_ADDRESS,
-            GNOSIS_TRANSACTION_URL,
-          );
-
-          await usdcContract.obtainTokenDecimals().then((result) => {
-            setTokenDecimalUsdc(result);
-          });
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    }, [GNOSIS_TRANSACTION_URL, USDC_CONTRACT_ADDRESS]);
-
-    useEffect(() => {
-      try {
-        if (tokenDecimalUsdc) {
-          dispatch(
-            setUSDCTokenDetails({
-              tokenSymbol: "USDC",
-              tokenDecimal: tokenDecimalUsdc,
-            }),
-          );
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    }, [dispatch, tokenDecimalUsdc]);
-
-    useEffect(() => {
-      fetchCustomTokenDecimals();
-    }, [fetchCustomTokenDecimals]);
 
     const handleRedirectClick = () => {
       // router.push("/");

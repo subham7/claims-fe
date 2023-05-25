@@ -3,8 +3,6 @@ import { createSlice } from "@reduxjs/toolkit";
 export const slice = createSlice({
   name: "gnosis",
   initialState: {
-    safeAddress: null,
-    safeSdk: null,
     factoryContractAddress: null,
     usdcContractAddress: null,
     actionContractAddress: null,
@@ -13,33 +11,17 @@ export const slice = createSlice({
     networkHex: null,
     networkId: null,
     networkName: null,
+    clubNetworkId: null,
     adminUser: false,
     memberUser: false,
-    tokenSymbol: null,
-    tokenDecimal: null,
-    governanceTokenDecimal: null,
     setUploadNFTLoading: false,
     setCreateSafeLoading: false,
     setCreateSafeError: false,
     setCreateSafeErrorCode: null,
     createDaoAuthorized: false,
-    governanceAllowed: true,
-    redirectToCreate: false,
     wrongNetwork: false,
-    clubNetworkId: null,
   },
   reducers: {
-    safeConnected: (state, action) => {
-      state.safeAddress = action.payload.safeAddress;
-      state.safeSdk = action.payload.safeSdk;
-    },
-    addSafeAddress: (state, action) => {
-      state.safeAddress = action.payload;
-    },
-    safeDisconnected: (state, action) => {
-      state.safeAddress = null;
-      state.safeSdk = null;
-    },
     addContractAddress: (state, action) => {
       state.factoryContractAddress = action.payload.factoryContractAddress;
       state.usdcContractAddress = action.payload.usdcContractAddress;
@@ -57,13 +39,6 @@ export const slice = createSlice({
     setMemberUser: (state, action) => {
       state.memberUser = action.payload;
     },
-    setGovernanceTokenDetails: (state, action) => {
-      state.governanceTokenDecimal = action.payload;
-    },
-    setUSDCTokenDetails: (state, action) => {
-      state.tokenSymbol = action.payload.tokenSymbol;
-      state.tokenDecimal = action.payload.tokenDecimal;
-    },
     setUploadNFTLoading: (state, action) => {
       state.setUploadNFTLoading = action.payload;
     },
@@ -79,12 +54,6 @@ export const slice = createSlice({
     setCreateDaoAuthorized: (state, action) => {
       state.createDaoAuthorized = action.payload;
     },
-    setGovernanceAllowed: (state, action) => {
-      state.governanceAllowed = action.payload;
-    },
-    setRedirectToCreate: (state, action) => {
-      state.redirectToCreate = action.payload;
-    },
     setWrongNetwork: (state, action) => {
       state.wrongNetwork = action.payload;
     },
@@ -92,21 +61,15 @@ export const slice = createSlice({
 });
 
 export const {
-  safeConnected,
-  safeDisconnected,
-  addSafeAddress,
   addContractAddress,
   setAdminUser,
   setMemberUser,
   setGovernanceTokenDetails,
-  setUSDCTokenDetails,
   setUploadNFTLoading,
   setCreateSafeLoading,
   setCreateSafeError,
   setCreateSafeErrorCode,
   setCreateDaoAuthorized,
-  setGovernanceAllowed,
-  setRedirectToCreate,
   setWrongNetwork,
 } = slice.actions;
 
