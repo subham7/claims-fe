@@ -48,9 +48,9 @@ export default function Navbar3(props) {
     }
   }, [dispatch, wallet, walletAddress]);
 
-  const handleFaucetRedirect = () => {
-    window.open("/faucet", "_ blank");
-  };
+  // const handleFaucetRedirect = () => {
+  //   window.open("/faucet", "_ blank");
+  // };
 
   return (
     <Box sx={{ flexGrow: 1 }}>
