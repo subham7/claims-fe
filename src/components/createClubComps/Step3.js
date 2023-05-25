@@ -27,7 +27,7 @@ export default function Step3(props) {
           </Typography>
           <br />
           <Typography className={classes.largeText} mt={3} mb={2}>
-            Add governance
+            Governance
           </Typography>
           <Typography className={classes.smallText} mb={2}>
             Default mechanism is one wallet = one vote irrespective of number of
@@ -187,7 +187,7 @@ export default function Step3(props) {
                   alignItems: "center",
                 }}>
                 <Typography className={classes.largeText}>
-                  Add more wallets that will sign & approve final transaction
+                  Add more wallets that will sign & approve transactions
                 </Typography>
               </Grid>
               <Grid

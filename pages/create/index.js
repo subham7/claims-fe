@@ -19,15 +19,22 @@ import {
   ERC721Step2ValidationSchema,
   step1ValidationSchema,
   step3ValidationSchema,
+  step4ValidationSchema,
 } from "../../src/components/createClubComps/ValidationSchemas";
 import { setUploadNFTLoading } from "../../src/redux/reducers/gnosis";
 import { NFTStorage } from "nft.storage";
 import { convertToWeiGovernance } from "../../src/utils/globalFunctions";
 import WrongNetworkModal from "../../src/components/modals/WrongNetworkModal";
 import { useConnectWallet } from "@web3-onboard/react";
+import Step4 from "../../src/components/createClubComps/Step4";
 
 const Create = () => {
-  const steps = ["Add basic info", "Set token rules", "Governance"];
+  const steps = [
+    "Add station info",
+    "Set token rules",
+    "Governance",
+    "Treasury",
+  ];
   const dispatch = useDispatch();
   const uploadInputRef = useRef(null);
   const [{ wallet }] = useConnectWallet();
@@ -74,6 +81,10 @@ const Create = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
   };
 
+  const handlePrev = () => {
+    setActiveStep((prevActiveStep) => prevActiveStep - 1);
+  };
+
   const getStepContent = (step) => {
     switch (step) {
       case 0:
@@ -93,6 +104,8 @@ const Create = () => {
         }
       case 2:
         return <Step3 formik={formikStep3} />;
+      case 3:
+        return <Step4 formik={formikStep4} />;
       default:
         return "Unknown step";
     }
@@ -149,6 +162,17 @@ const Create = () => {
       addressList: [],
     },
     validationSchema: step3ValidationSchema,
+    onSubmit: (values) => {
+      handleNext();
+    },
+  });
+
+  const formikStep4 = useFormik({
+    initialValues: {
+      deploySafe: true,
+      safeAddress: "",
+    },
+    validationSchema: step4ValidationSchema,
     onSubmit: async (values) => {
       setOpen(true);
       if (formikStep1.values.clubTokenType === "NFT") {
@@ -168,15 +192,15 @@ const Create = () => {
           const walletAddress = Web3.utils.toChecksumAddress(
             wallet.accounts[0].address,
           );
-          values.addressList.unshift(walletAddress);
+          formikStep3.values.addressList.unshift(walletAddress);
 
           const params = {
             clubName: formikStep1.values.clubName,
             clubSymbol: formikStep1.values.clubSymbol,
             ownerFeePerDepositPercent: 0 * 100,
             depositClose: dayjs(formikERC721Step2.values.depositClose).unix(),
-            quorum: values.quorum * 100,
-            threshold: values.threshold * 100,
+            quorum: formikStep3.values.quorum * 100,
+            threshold: formikStep3.values.threshold * 100,
             depositTokenAddress: USDC_CONTRACT_ADDRESS,
             maxTokensPerUser: formikERC721Step2.values.maxTokensPerUser,
 
@@ -219,7 +243,7 @@ const Create = () => {
           const walletAddress = Web3.utils.toChecksumAddress(
             wallet.accounts[0].address,
           );
-          values.addressList.unshift(walletAddress);
+          formikStep3.values.addressList.unshift(walletAddress);
           const params = {
             clubName: formikStep1.values.clubName,
             clubSymbol: formikStep1.values.clubSymbol,
@@ -242,10 +266,10 @@ const Create = () => {
             ),
             ownerFeePerDepositPercent: 0 * 100,
             depositClose: dayjs(formikERC20Step2.values.depositClose).unix(),
-            quorum: values.quorum * 100,
-            threshold: values.threshold * 100,
+            quorum: formikStep3.values.quorum * 100,
+            threshold: formikStep3.values.threshold * 100,
             depositTokenAddress: USDC_CONTRACT_ADDRESS,
-            isGovernanceActive: values.governance,
+            isGovernanceActive: formikStep3.values.governance,
             isGtTransferable: true,
             allowWhiteList: false,
             merkleRoot:
@@ -255,7 +279,7 @@ const Create = () => {
             params,
             dispatch,
             GNOSIS_TRANSACTION_URL,
-            values.addressList,
+            formikStep3.values.addressList,
             formikStep1.values.clubTokenType,
             FACTORY_CONTRACT_ADDRESS,
           );
@@ -281,10 +305,11 @@ const Create = () => {
           formikERC721Step2.handleSubmit();
           break;
         }
-
       case 2:
         formikStep3.handleSubmit();
         break;
+      case 3:
+        formikStep4.handleSubmit();
     }
   };
   return (
@@ -293,7 +318,7 @@ const Create = () => {
         container
         item
         paddingLeft={{ xs: 5, sm: 5, md: 10, lg: 45 }}
-        paddingTop={15}
+        paddingTop={4}
         paddingRight={{ xs: 5, sm: 5, md: 10, lg: 45 }}
         justifyContent="center"
         alignItems="center">
@@ -345,17 +370,40 @@ const Create = () => {
                 <Grid
                   container
                   direction="row"
-                  justifyContent="center"
+                  justifyContent="flex-end"
                   alignItems="center"
                   mt={2}>
                   {getStepContent(activeStep)}
-                  {activeStep === steps.length - 1 ? (
+                  {!activeStep == 0 && activeStep !== steps.length - 1 && (
                     <Button
                       variant="wideButton"
-                      sx={{ marginTop: "2rem" }}
-                      onClick={handleSubmit}>
-                      Finish
+                      sx={{
+                        marginTop: "2rem",
+                        marginBottom: "6rem",
+                        marginRight: "1rem",
+                      }}
+                      onClick={handlePrev}>
+                      Prev
                     </Button>
+                  )}
+                  {activeStep === steps.length - 1 ? (
+                    <>
+                      <Button
+                        variant="wideButton"
+                        sx={{
+                          marginTop: "2rem",
+                          marginRight: "1rem",
+                        }}
+                        onClick={handlePrev}>
+                        Prev
+                      </Button>
+                      <Button
+                        variant="wideButton"
+                        sx={{ marginTop: "2rem" }}
+                        onClick={handleSubmit}>
+                        Finish
+                      </Button>
+                    </>
                   ) : (
                     <Button
                       variant="wideButton"

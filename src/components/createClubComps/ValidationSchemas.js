@@ -13,48 +13,57 @@ export const step1ValidationSchema = yup.object({
 export const ERC20Step2ValidationSchema = yup.object({
   depositClose: yup
     .date()
-    .min(new Date(), "date-time must be greater than now.")
-    .required("deposit close date is required"),
-  minDepositPerUser: yup.number().required("min deposit amount is required"),
+    .min(new Date(), "Date-time must be greater than now.")
+    .required("Deposit close date is required"),
+  minDepositPerUser: yup.number().required("Min deposit amount is required"),
   maxDepositPerUser: yup
     .number()
     .moreThan(
       yup.ref("minDepositPerUser"),
       "Amount should be greater than min deposit",
     )
-    .required("min deposit amount is required"),
-  totalRaiseAmount: yup.number().required("raise amount is required"),
-  pricePerToken: yup.number().required("price per token is required"),
+    .required("Max deposit amount is required"),
+  totalRaiseAmount: yup.number().required("Raise amount is required"),
+  pricePerToken: yup.number().required("Price per token is required"),
 });
 
 export const step3ValidationSchema = yup.object({
   addressList: yup.array().of(
     yup
       .string()
-      .matches(/^0x[a-zA-Z0-9]+/gm, " proper wallet address is required")
-      .required("wallet address is required"),
+      .matches(/^0x[a-zA-Z0-9]+/gm, " Proper wallet address is required")
+      .required("Wallet address is required"),
   ),
+});
+
+export const step4ValidationSchema = yup.object({
+  deploySafe: yup.boolean(),
+  safeAddress: yup.string().when("deploySafe", {
+    is: false,
+    then: () =>
+      yup.string("Enter safe address").required("Safe address is required"),
+  }),
 });
 
 export const ERC721Step2ValidationSchema = yup.object({
   nftImage: yup.mixed().required("File is required"),
-  pricePerToken: yup.number().required("price per token is required"),
+  pricePerToken: yup.number().required("Price per token is required"),
   maxTokensPerUser: yup
     .number()
-    .required("max token min limit per user is required"),
+    .required("Max token min limit per user is required"),
   isNftTotalSupplylimited: yup.boolean(),
   totalTokenSupply: yup.number().when("isNftTotalSupplylimited", {
     is: true,
-    then: () => yup.number().required("total supply of nft is required"),
+    then: () => yup.number().required("Total supply of nft is required"),
   }),
   depositClose: yup
     .date()
-    .min(new Date(), "date-time must be greater than now.")
-    .required("deposit close date is required"),
+    .min(new Date(), "Date-time must be greater than now.")
+    .required("Deposit close date is required"),
 });
 
 export const proposalValidationSchema = yup.object({
-  proposalDeadline: yup.date().required("deposit close date is required"),
+  proposalDeadline: yup.date().required("Deposit close date is required"),
   proposalTitle: yup
     .string("Enter proposal title")
     .required("Title is required"),
@@ -63,7 +72,7 @@ export const proposalValidationSchema = yup.object({
     .required("Description is required"),
   optionList: yup.array().of(
     yup.object({
-      text: yup.string().required("option is required"),
+      text: yup.string().required("Option is required"),
     }),
   ),
   actionCommand: yup.string("Enter proposal action").when("typeOfProposal", {
@@ -71,7 +80,7 @@ export const proposalValidationSchema = yup.object({
     then: () =>
       yup
         .string("Enter proposal action")
-        .required("action command is required"),
+        .required("Action command is required"),
   }),
   amountToAirdrop: yup.number("Enter amount of tokens").when("actionCommand", {
     is: "Distribute token to members",
@@ -89,7 +98,7 @@ export const proposalValidationSchema = yup.object({
       then: () =>
         yup
           .string("Enter user address")
-          .matches(/^0x[a-zA-Z0-9]+/gm, " proper wallet address is required")
+          .matches(/^0x[a-zA-Z0-9]+/gm, " Proper wallet address is required")
           .required("User address is required"),
     }),
   amountOfTokens: yup
@@ -106,13 +115,13 @@ export const proposalValidationSchema = yup.object({
     }),
   amountOfTokens721: yup
     .number("Enter amount of tokens")
-    .integer("amount should be an integer")
+    .integer("Amount should be an integer")
     .when("actionCommand", {
       is: "Mint club token",
       then: () =>
         yup
           .number("Enter amount of tokens")
-          .integer("amount should be an integer")
+          .integer("Amount should be an integer")
           .required("Amount is required")
           .moreThan(0, "Amount should be greater than 0"),
     }),
@@ -149,7 +158,7 @@ export const proposalValidationSchema = yup.object({
       then: () =>
         yup
           .string("Enter reciever address")
-          .matches(/^0x[a-zA-Z0-9]+/gm, " proper wallet address is required")
+          .matches(/^0x[a-zA-Z0-9]+/gm, " Proper wallet address is required")
           .required("Reciever address is required"),
     }),
   amountToSend: yup.number("Enter amount to be sent").when("actionCommand", {
