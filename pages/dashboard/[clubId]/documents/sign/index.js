@@ -151,7 +151,7 @@ const SignDoc = () => {
       dispatch(addLegalDocLink(replacedEncrytedLink));
 
       createDocument({
-        clubId: clubId,
+        daoAddress: clubId,
         createdBy: signedAcc,
         fileName: "Legal Doc",
         isPublic: false,
