@@ -5,7 +5,6 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import EditIcon from "@mui/icons-material/Edit";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-// import { onboard, disconnectWallet } from "../utils/wallet";
 import { useDispatch } from "react-redux";
 import jazzicon from "@metamask/jazzicon";
 import { useState } from "react";

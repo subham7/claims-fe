@@ -1,4 +1,3 @@
-// import SafeAppsSDK from "@gnosis.pm/safe-apps-sdk";
 import { fetchConfigById } from "./config";
 import { addContractAddress } from "../redux/reducers/gnosis";
 import { ApolloClient, InMemoryCache } from "@apollo/client";
@@ -6,7 +5,6 @@ import { ApolloClient, InMemoryCache } from "@apollo/client";
 const opts = {
   allowedDomains: [/gnosis-safe.io/],
 };
-// const appsSdk = new SafeAppsSDK(opts);
 
 // Global variables
 export const MAIN_API_URL = process.env.NEXT_PUBLIC_API_HOST;

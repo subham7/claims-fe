@@ -1,4 +1,3 @@
-// import "../styles/globals.css";
 import { init } from "@web3-onboard/react";
 import injectedModule from "@web3-onboard/injected-wallets";
 import { POLYGON_MAINNET_RPC_URL } from "../api";

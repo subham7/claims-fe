@@ -24,7 +24,6 @@ import CollectionCard from "../../../src/components/cardcontent";
 import Layout1 from "../../../src/components/layouts/layout1";
 import { DashboardStyles } from "./DashboardStyles";
 import { useConnectWallet } from "@web3-onboard/react";
-// import Web3 from "web3";
 import { useRouter } from "next/router";
 import { getAssetsByDaoAddress, getNFTsByDaoAddress } from "../../api/assets";
 import { getProposalByDaoAddress } from "../../api/proposal";
