@@ -105,6 +105,7 @@ const ProposalActionForm = ({ formik, tokenData }) => {
             sx={{ marginLeft: "0 !important" }}>
             <Typography variant="proposalBody">Token to be sent</Typography>
             <Select
+              sx={{ marginTop: "0.5rem" }}
               value={formik.values.customToken}
               onChange={(e) =>
                 formik.setFieldValue(
@@ -337,6 +338,7 @@ const ProposalActionForm = ({ formik, tokenData }) => {
             sx={{ marginLeft: "0 !important" }}>
             <Typography variant="proposalBody">Token to be sent</Typography>
             <Select
+              sx={{ marginTop: "0.5rem" }}
               value={formik.values.customToken}
               onChange={(e) =>
                 formik.setFieldValue(
