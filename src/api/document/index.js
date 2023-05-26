@@ -4,7 +4,7 @@ export const createDocument = async (jsonData) => {
   // storing admin's document details
 
   try {
-    const res = await fetch(`${MAIN_API_URL}/document`, {
+    const res = await fetch(`${MAIN_API_URL}document`, {
       method: "POST",
       body: JSON.stringify(jsonData),
       headers: {
@@ -23,10 +23,23 @@ export const createDocument = async (jsonData) => {
 export const getDocumentsByClubId = async (clubId) => {
   // return await axios.get(`${MAIN_API_URL}/club/${clubId}` )
   try {
-    const res = await fetch(`${MAIN_API_URL}/document/club/${clubId}`);
+    const res = await fetch(`${MAIN_API_URL}document/club/${clubId}`);
     const data = await res.json();
     return data;
   } catch (err) {
     console.log(err);
+  }
+};
+
+export const sentFileByEmail = async (formData) => {
+  try {
+    const res = await fetch(`${MAIN_API_URL}document/email`, {
+      method: "POST",
+      body: formData,
+    });
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    console.log(error);
   }
 };
