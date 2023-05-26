@@ -38,6 +38,7 @@ import { fetchProposals } from "../../utils/proposal";
 import { useDispatch, useSelector } from "react-redux";
 import { setProposalList } from "../../redux/reducers/proposal";
 import useSmartContract from "../../hooks/useSmartContract";
+import Web3 from "web3";
 
 const useStyles = makeStyles({
   modalStyle: {
@@ -66,7 +67,10 @@ const CreateProposalDialog = ({ open, setOpen, onClose, tokenData }) => {
 
   const { clubId } = router.query;
   const [{ wallet }] = useConnectWallet();
-  const walletAddress = wallet?.accounts[0].address;
+
+  const walletAddress = Web3.utils.toChecksumAddress(
+    wallet?.accounts[0].address,
+  );
 
   const tokenType = useSelector((state) => {
     return state.club.clubData.tokenType;
@@ -82,13 +86,6 @@ const CreateProposalDialog = ({ open, setOpen, onClose, tokenData }) => {
 
   const daoAddress = useSelector((state) => {
     return state.club.daoAddress;
-  });
-
-  const USDC_CONTRACT_ADDRESS = useSelector((state) => {
-    return state.gnosis.usdcContractAddress;
-  });
-  const GNOSIS_TRANSACTION_URL = useSelector((state) => {
-    return state.gnosis.transactionUrl;
   });
 
   const NETWORK_HEX = useSelector((state) => {

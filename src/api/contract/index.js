@@ -62,9 +62,11 @@ export class SmartContract {
       }
       this.abi = abiFile.abi;
       this.contractAddress = contractAddress;
-      this.checkSum = this.web3.utils.toChecksumAddress(this.contractAddress);
-      this.contract = new this.web3.eth.Contract(this.abi, this.checkSum);
-      this.walletAddress = this.web3.utils.toChecksumAddress(walletAddress);
+      this.contract = new this.web3.eth.Contract(
+        this.abi,
+        this.contractAddress,
+      );
+      this.walletAddress = walletAddress;
       this.usdcContractAddress = usdcContractAddress;
       this.gnosisTransactionUrl = gnosisTransactionUrl;
       // this.usdcContractFaucet = usdcFaucetAddress
@@ -78,9 +80,11 @@ export class SmartContract {
       }
       this.abi = abiFile.abi;
       this.contractAddress = contractAddress;
-      this.checkSum = this.web3.utils.toChecksumAddress(this.contractAddress);
-      this.contract = new this.web3.eth.Contract(this.abi, this.checkSum);
-      this.walletAddress = this.web3.utils.toChecksumAddress(walletAddress);
+      this.contract = new this.web3.eth.Contract(
+        this.abi,
+        this.contractAddress,
+      );
+      this.walletAddress = walletAddress;
     }
   }
 
@@ -340,11 +344,11 @@ export class SmartContract {
     let transaction;
     if (approvalData !== "") {
       approvalTransaction = {
-        to: web3.utils.toChecksumAddress(daoAddress),
+        to: daoAddress,
         data: implementationContract.methods
           .updateProposalAndExecution(
             //usdc address
-            web3.utils.toChecksumAddress(tokenData),
+            tokenData,
             approvalData,
           )
           .encodeABI(),
@@ -352,12 +356,12 @@ export class SmartContract {
       };
 
       transaction = {
-        to: web3.utils.toChecksumAddress(daoAddress),
+        to: daoAddress,
         data: implementationContract.methods
           .updateProposalAndExecution(
             //airdrop address
 
-            web3.utils.toChecksumAddress(airdropContractAddress),
+            airdropContractAddress,
             parameters,
           )
           .encodeABI(),
@@ -367,13 +371,11 @@ export class SmartContract {
       // debugger;
       transaction = {
         //dao
-        to: web3.utils.toChecksumAddress(daoAddress),
+        to: daoAddress,
         data: implementationContract.methods
           .updateProposalAndExecution(
             //factory
-            factoryContractAddress
-              ? web3.utils.toChecksumAddress(factoryContractAddress)
-              : web3.utils.toChecksumAddress(daoAddress),
+            factoryContractAddress ? factoryContractAddress : daoAddress,
             parameters,
           )
           .encodeABI(),
