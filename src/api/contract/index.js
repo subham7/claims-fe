@@ -555,9 +555,7 @@ export class SmartContract {
 
   async performanceFee() {
     const increasedGasPrice = await getIncreaseGasPrice();
-    return await this.contract.methods
-      .ownerFeePerDeposit()
-      .call({ from: this.walletAddress, gasPrice: increasedGasPrice });
+    return await this.contract.methods.ownerFeePerDeposit().call();
   }
 
   async mint(address, amount) {

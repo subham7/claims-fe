@@ -9,7 +9,6 @@ import { tokenType } from "../../src/data/create";
 import ERC20Step2 from "../../src/components/createClubComps/ERC20Step2";
 import NFTStep2 from "../../src/components/createClubComps/NFTStep2";
 import dayjs from "dayjs";
-// import Web3 from "web3";
 import { useSelector, useDispatch } from "react-redux";
 import { initiateConnection } from "../../src/utils/safe";
 import ErrorModal from "../../src/components/createClubComps/ErrorModal";
