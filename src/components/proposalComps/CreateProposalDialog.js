@@ -39,6 +39,7 @@ import { useDispatch, useSelector } from "react-redux";
 import factoryContractABI from "../../abis/newArch/factoryContract.json";
 import { SmartContract } from "../../api/contract";
 import { setProposalList } from "../../redux/reducers/proposal";
+import Web3 from "web3";
 
 const useStyles = makeStyles({
   modalStyle: {
@@ -67,7 +68,10 @@ const CreateProposalDialog = ({ open, setOpen, onClose, tokenData }) => {
 
   const { clubId } = router.query;
   const [{ wallet }] = useConnectWallet();
-  const walletAddress = wallet?.accounts[0].address;
+
+  const walletAddress = Web3.utils.toChecksumAddress(
+    wallet?.accounts[0].address,
+  );
 
   const tokenType = useSelector((state) => {
     return state.club.clubData.tokenType;
