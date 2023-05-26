@@ -55,10 +55,6 @@ const Settings = () => {
 
   const walletAddress = wallet?.accounts[0].address;
 
-  const CLUB_NETWORK_ID = useSelector((state) => {
-    return state.gnosis.clubNetworkId;
-  });
-
   const SUBGRAPH_URL = useSelector((state) => {
     return state.gnosis.subgraphUrl;
   });
@@ -286,7 +282,7 @@ const Settings = () => {
       />
       <TokenGating />
 
-      {WRONG_NETWORK && <WrongNetworkModal chainId={CLUB_NETWORK_ID} />}
+      {WRONG_NETWORK && <WrongNetworkModal />}
     </div>
   );
 };

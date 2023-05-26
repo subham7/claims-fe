@@ -301,10 +301,6 @@ const ProposalDetail = () => {
     return state.gnosis.actionContractAddress;
   });
 
-  const CLUB_NETWORK_ID = useSelector((state) => {
-    return state.gnosis.clubNetworkId;
-  });
-
   const {
     factoryContract_CALL,
     erc20DaoContract,
@@ -1244,7 +1240,7 @@ const ProposalDetail = () => {
           </Grid>
         </Grid>
 
-        {WRONG_NETWORK && <WrongNetworkModal chainId={CLUB_NETWORK_ID} />}
+        {WRONG_NETWORK && <WrongNetworkModal />}
 
         <Snackbar
           open={openSnackBar}

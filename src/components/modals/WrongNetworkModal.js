@@ -1,6 +1,7 @@
 import { makeStyles } from "@mui/styles";
 import Image from "next/image";
 import React from "react";
+import Web3 from "web3";
 import img from "../../../public/assets/images/wrongNetwork.png";
 
 const Backdrop = () => {
@@ -67,7 +68,7 @@ const WrongNetworkModal = ({ chainId = 137 }) => {
         try {
           await window.ethereum.request({
             method: "wallet_switchEthereumChain",
-            params: [{ chainId: web3.utils.toHex(chainId) }],
+            params: [{ chainId: Web3.utils.toHex(chainId) }],
           });
         } catch (err) {
           // This error code indicates that the chain has not been added to MetaMask
@@ -78,7 +79,7 @@ const WrongNetworkModal = ({ chainId = 137 }) => {
                 params: [
                   {
                     chainName: "Polygon Mainnet",
-                    chainId: web3.utils.toHex(chainId),
+                    chainId: Web3.utils.toHex(chainId),
                     nativeCurrency: {
                       name: "MATIC",
                       decimals: 18,
