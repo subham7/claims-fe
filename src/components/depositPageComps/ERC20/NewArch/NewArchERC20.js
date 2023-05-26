@@ -21,7 +21,6 @@ import { SmartContract } from "../../../../api/contract";
 import factoryContractABI from "../../../../abis/newArch/factoryContract.json";
 import ProgressBar from "../../../progressbar";
 import erc20ABI from "../../../../abis/usdcTokenContract.json";
-import Web3 from "web3";
 import {
   convertFromWeiGovernance,
   convertToWeiGovernance,
@@ -52,10 +51,7 @@ const NewArchERC20 = ({
   const classes = NewArchERC20Styles();
   const [{ wallet }] = useConnectWallet();
   const router = useRouter();
-
-  const walletAddress = Web3.utils.toChecksumAddress(
-    wallet?.accounts[0].address,
-  );
+  const walletAddress = wallet?.accounts[0].address;
 
   const FACTORY_CONTRACT_ADDRESS = useSelector((state) => {
     return state.gnosis.factoryContractAddress;
@@ -207,13 +203,9 @@ const NewArchERC20 = ({
 
         setLoading(false);
         setDepositSuccessfull(true);
-        router.push(
-          `/dashboard/${Web3.utils.toChecksumAddress(erc20DaoAddress)}`,
-          undefined,
-          {
-            shallow: true,
-          },
-        );
+        router.push(`/dashboard/${erc20DaoAddress}`, undefined, {
+          shallow: true,
+        });
         showMessageHandler();
         formik.values.tokenInput = 0;
       } catch (error) {
@@ -562,15 +554,16 @@ const NewArchERC20 = ({
                       <Grid item>
                         <Typography variant="p" className={classes.valuesStyle}>
                           {walletAddress ? (
-                            convertFromWeiGovernance(
-                              daoDetails.clubTokensMinted,
-                              daoDetails.decimals,
-                            ) *
+                            Number(
                               convertFromWeiGovernance(
-                                daoDetails.pricePerToken,
-                                erc20TokenDetails.tokenDecimal,
-                              ) +
-                            " USDC"
+                                daoDetails.clubTokensMinted,
+                                daoDetails.decimals,
+                              ) *
+                                convertFromWeiGovernance(
+                                  daoDetails.pricePerToken,
+                                  erc20TokenDetails.tokenDecimal,
+                                ),
+                            ).toFixed(2) + " USDC"
                           ) : (
                             <Skeleton
                               variant="rectangular"

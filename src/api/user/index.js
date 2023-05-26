@@ -15,7 +15,7 @@ export async function createUser(data) {
 
 export async function fetchClubByUserAddress(userId) {
   // fetch club by user address API
-  // const walletAddress = web3.utils.toChecksumAddress(userId);
+
   return await axios.get(MAIN_API_URL + `user/${userId}`, {
     headers: {
       Authorization: "Bearer " + getJwtToken(),

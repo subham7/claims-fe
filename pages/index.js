@@ -29,7 +29,7 @@ import {
 import { loginToken, refreshToken } from "../src/api/auth";
 import { useConnectWallet } from "@web3-onboard/react";
 import NewCard from "../src/components/cards/card";
-import Web3 from "web3";
+// import Web3 from "web3";
 import { subgraphQuery } from "../src/utils/subgraphs";
 import {
   QUERY_CLUBS_FROM_WALLET_ADDRESS,
@@ -117,9 +117,9 @@ const App = () => {
   const [clubFlow, setClubFlow] = useState(false);
   const classes = useStyles();
   const [{ wallet }] = useConnectWallet();
-  const [clubData, setClubData] = useState([]);
-  const [clubOwnerAddress, setClubOwnerAddress] = useState(null);
-  const [noWalletMessage, setNoWalletMessage] = useState(null);
+  // const [clubData, setClubData] = useState([]);
+  // const [clubOwnerAddress, setClubOwnerAddress] = useState(null);
+  // const [noWalletMessage, setNoWalletMessage] = useState(null);
   const [clubListData, setClubListData] = useState([]);
 
   const [manageStation, setManageStation] = useState(false);
@@ -129,9 +129,7 @@ const App = () => {
 
   const networkId = wallet?.chains[0]?.id;
 
-  const walletAddress = Web3.utils.toChecksumAddress(
-    wallet?.accounts[0].address,
-  );
+  const walletAddress = wallet?.accounts[0].address;
 
   useEffect(() => {
     try {
@@ -228,13 +226,9 @@ const App = () => {
         tokenType: clubData.stations[0].tokenType,
       }),
     );
-    router.push(
-      `/dashboard/${Web3.utils.toChecksumAddress(data.daoAddress)}`,
-      undefined,
-      {
-        shallow: true,
-      },
-    );
+    router.push(`/dashboard/${data.daoAddress}`, undefined, {
+      shallow: true,
+    });
   };
 
   const handleClose = (e) => {

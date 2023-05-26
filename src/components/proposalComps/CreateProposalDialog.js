@@ -33,7 +33,6 @@ import {
 } from "../../utils/globalFunctions";
 import { useConnectWallet } from "@web3-onboard/react";
 import { useRouter } from "next/router";
-import Web3 from "web3";
 import { createProposal } from "../../api/proposal";
 import { fetchProposals } from "../../utils/proposal";
 import { useDispatch, useSelector } from "react-redux";
@@ -68,9 +67,8 @@ const CreateProposalDialog = ({ open, setOpen, onClose, tokenData }) => {
 
   const { clubId } = router.query;
   const [{ wallet }] = useConnectWallet();
-  const walletAddress = Web3.utils.toChecksumAddress(
-    wallet?.accounts[0].address,
-  );
+  const walletAddress = wallet?.accounts[0].address;
+
   const tokenType = useSelector((state) => {
     return state.club.clubData.tokenType;
   });

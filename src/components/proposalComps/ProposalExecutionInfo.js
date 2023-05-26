@@ -4,7 +4,6 @@ import React, { useCallback, useEffect, useState } from "react";
 import { SmartContract } from "../../api/contract";
 import erc20ABI from "../../abis/usdcTokenContract.json";
 import { useConnectWallet } from "@web3-onboard/react";
-import Web3 from "web3";
 import { useSelector } from "react-redux";
 import { convertFromWeiGovernance } from "../../utils/globalFunctions";
 
@@ -42,10 +41,7 @@ const ProposalExecutionInfo = ({
     return state.gnosis.transactionUrl;
   });
 
-  let walletAddress;
-  if (typeof window !== "undefined") {
-    walletAddress = Web3.utils.toChecksumAddress(wallet?.accounts[0].address);
-  }
+  const walletAddress = wallet?.accounts[0].address;
 
   const fetchAirDropContractDetails = useCallback(async () => {
     try {

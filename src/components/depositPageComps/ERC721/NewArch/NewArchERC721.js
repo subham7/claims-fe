@@ -10,7 +10,6 @@ import {
 import React, { useCallback, useEffect, useState } from "react";
 
 import { TwitterShareButton } from "react-twitter-embed";
-import Web3 from "web3";
 import { NewArchERC721Styles } from "./NewArchERC721Styles";
 import { useConnectWallet } from "@web3-onboard/react";
 import erc20ABI from "../../../../abis/usdcTokenContract.json";
@@ -48,11 +47,7 @@ const NewArchERC721 = ({
   const [{ wallet }] = useConnectWallet();
   const router = useRouter();
 
-  let walletAddress;
-  if (typeof window !== "undefined") {
-    const web3 = new Web3(window.web3);
-    walletAddress = web3.utils.toChecksumAddress(wallet?.accounts[0].address);
-  }
+  const walletAddress = wallet?.accounts[0].address;
 
   const WRONG_NETWORK = useSelector((state) => {
     return state.gnosis.wrongNetwork;
@@ -185,13 +180,9 @@ const NewArchERC721 = ({
       );
       setLoading(false);
       setClaimSuccessfull(true);
-      router.push(
-        `/dashboard/${Web3.utils.toChecksumAddress(erc721DaoAddress)}`,
-        undefined,
-        {
-          shallow: true,
-        },
-      );
+      router.push(`/dashboard/${erc721DaoAddress}`, undefined, {
+        shallow: true,
+      });
       showMessageHandler();
     } catch (error) {
       console.log(error);
