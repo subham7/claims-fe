@@ -366,7 +366,7 @@ const CreateProposalDialog = ({ open, setOpen, onClose, tokenData }) => {
                   fontSize: "18px",
                   color: "#C1D3FF",
                   fontFamily: "Whyte",
-                  marginBottom: "0.5rem",
+                  margin: "0.5rem 0",
                 }}
                 name="proposalDescription"
                 id="proposalDescription"
@@ -518,8 +518,15 @@ const CreateProposalDialog = ({ open, setOpen, onClose, tokenData }) => {
                 <Button
                   variant="primary"
                   type="submit"
-                  sx={loaderOpen && { padding: "3px" }}>
-                  {loaderOpen ? <CircularProgress color="inherit" /> : "Submit"}
+                  sx={{ display: "flex", alignItems: "center" }}>
+                  {loaderOpen ? (
+                    <CircularProgress
+                      color="inherit"
+                      sx={{ width: "inherit" }}
+                    />
+                  ) : (
+                    "Submit"
+                  )}
                 </Button>
               </Grid>
             </Grid>
