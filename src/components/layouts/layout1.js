@@ -37,7 +37,7 @@ export default function Layout1(props) {
             flexGrow: 1,
             width: { sm: `calc(100% - ${drawerWidth}px)` },
           }}>
-          <div style={{ padding: "15px 50px" }}>{props.children}</div>
+          <div style={{ padding: "12px 32px 0px 40px" }}>{props.children}</div>
         </Box>
       </Box>
     </>

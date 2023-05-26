@@ -1,12 +1,8 @@
 import { React } from "react";
-import { AppBar, Box, Toolbar, IconButton, Button } from "@mui/material";
-import MenuIcon from "@mui/icons-material/Menu";
-import Image from "next/image";
+import { AppBar, Box, Toolbar, Button } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 
-import { useRouter } from "next/router";
 import { useConnectWallet } from "@web3-onboard/react";
-import Web3 from "web3";
 
 const useStyles = makeStyles({
   image: {
@@ -22,7 +18,6 @@ const useStyles = makeStyles({
   },
   navButton: {
     borderRadius: "10px",
-    width: "327px",
     height: "auto",
     background: "#111D38 0% 0% no-repeat padding-box",
     border: "1px solid #C1D3FF40",
@@ -31,77 +26,30 @@ const useStyles = makeStyles({
   },
 });
 
-export default function Navbar2(props) {
-  const router = useRouter();
-  const { clubId: daoAddress } = router.query;
+export default function Navbar2() {
   const classes = useStyles();
   const [{ wallet, connecting }, connect, disconnect] = useConnectWallet();
 
-  const handleDepositRedirect = () => {
-    router.push(
-      `${window.origin}/join/${Web3.utils.toChecksumAddress(daoAddress)}`,
-      undefined,
-      { shallow: true },
-    );
-  };
+  // const handleFaucetRedirect = () => {
+  //   window.open("/faucet", "_ blank");
+  // };
 
-  const handleFaucetRedirect = () => {
-    window.open("/faucet", "_ blank");
-  };
-
+  if (wallet) {
+    return;
+  }
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static" sx={{ position: "fixed" }}>
+      <AppBar>
         <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            edge="start"
-            onClick={props.handleDrawerToggle}
-            sx={{ mr: 2, display: { sm: "none" } }}>
-            <MenuIcon />
-          </IconButton>
-          <Box sx={{ flexGrow: 1 }}>
-            <Image
-              onClick={() => {
-                router.push(`/dashboard/${daoAddress}`);
-              }}
-              src="/assets/images/monogram.png"
-              height="40"
-              width="40"
-              className={classes.image}
-              alt="monogram"
-            />
-          </Box>
-
-          {props.page ? (
-            <div style={{ marginRight: "330px", marginTop: "10px" }}>
-              <Button
-                variant="primary"
-                color="primary"
-                sx={{ mr: 2, mt: 2 }}
-                onClick={handleDepositRedirect}>
-                Deposit
-              </Button>
-              {/* <Button
-                variant="primary"
-                color="primary"
-                sx={{ mr: 2, mt: 2 }}
-                onClick={handleFaucetRedirect}
-              >
-                USDC Faucet
-              </Button> */}
-            </div>
-          ) : null}
           {connecting ? (
-            <Button sx={{ mr: 2, mt: 2 }} className={classes.navButton}>
+            <Button sx={{ mt: 2 }} className={classes.navButton}>
               Connecting
             </Button>
           ) : wallet ? (
             <></>
           ) : (
             <Button
-              sx={{ mr: 2, mt: 2 }}
+              sx={{ mt: 2 }}
               className={classes.navButton}
               onClick={() => (wallet ? disconnect(wallet) : connect())}>
               Connect wallet
