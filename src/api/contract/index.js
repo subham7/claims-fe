@@ -3,15 +3,15 @@ import { Web3Adapter } from "@safe-global/protocol-kit";
 import Safe from "@safe-global/protocol-kit";
 import { createProposalTxHash, getProposalTxHash } from "../../api/proposal";
 import { convertToWei } from "../../utils/globalFunctions";
-import { RPC_URL } from "../index";
 import SafeApiKit from "@safe-global/api-kit";
 import Erc20Dao from "../../abis/newArch/erc20Dao.json";
-import { getIncreaseGasPrice } from "../../utils/helper";
+import { getIncreaseGasPrice, web3InstanceEthereum } from "../../utils/helper";
+import { RPC_URL } from "..";
 
 async function syncWallet() {
   // function for validating metamask wallet
   if (window.ethereum) {
-    window.web3 = new Web3(window.ethereum);
+    window.web3 = await web3InstanceEthereum();
     await window.ethereum
       .request({ method: "eth_requestAccounts" })
       .then((result) => {
@@ -27,7 +27,7 @@ async function syncWallet() {
         }
       });
   } else if (window.web3) {
-    window.web3 = new Web3(window.web3.currentProvider);
+    window.web3 = await web3InstanceEthereum();
     return true;
   } else {
     window.alert(

@@ -2,8 +2,6 @@ import { React, useEffect } from "react";
 import { AppBar, Box, Toolbar, Button } from "@mui/material";
 import Image from "next/image";
 import { makeStyles } from "@mui/styles";
-import Web3 from "web3";
-
 import { useDispatch } from "react-redux";
 import { useRouter } from "next/router";
 import { useConnectWallet } from "@web3-onboard/react";
@@ -28,13 +26,6 @@ export default function Navbar3(props) {
 
   const walletAddress = wallet?.accounts[0].address;
 
-  if (wallet) {
-    if (window.ethereum) {
-      window.web3 = new Web3(window.ethereum);
-    } else if (window.web3) {
-      window.web3 = new Web3(window.web3.currentProvider);
-    }
-  }
   useEffect(() => {
     if (wallet) {
       dispatch(addWalletAddress(wallet ? walletAddress : null));
