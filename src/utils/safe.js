@@ -1,5 +1,4 @@
 import Router from "next/router";
-import Web3 from "web3";
 import FactoryContract from "../abis/newArch/factoryContract.json";
 import { SmartContract } from "../api/contract";
 import {
@@ -120,15 +119,9 @@ export async function initiateConnection(
       dispatch(addDaoAddress(daoAddress));
       const { pathname } = Router;
       if (pathname == "/create") {
-        Router.push(
-          `/dashboard/${Web3.utils.toChecksumAddress(
-            daoAddress,
-          )}?clubCreate=true`,
-          undefined,
-          {
-            shallow: true,
-          },
-        );
+        Router.push(`/dashboard/${daoAddress}?clubCreate=true`, undefined, {
+          shallow: true,
+        });
       }
     } catch (error) {
       dispatch(setCreateDaoAuthorized(false));

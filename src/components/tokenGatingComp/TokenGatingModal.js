@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import * as yup from "yup";
 import { SmartContract } from "../../api/contract";
 import ERC20ABI from "../../abis/usdcTokenContract.json";
-import Web3 from "web3";
 import { useConnectWallet } from "@web3-onboard/react";
 import { TokenGatingModalStyles } from "./TokenGatingModalStyles";
 import { useSelector } from "react-redux";
@@ -19,11 +18,7 @@ const TokenGatingModal = ({ closeModal, chooseTokens }) => {
   const [notValid, setNotValid] = useState(false);
   const [{ wallet }] = useConnectWallet();
   const classes = TokenGatingModalStyles();
-
-  let walletAddress;
-  if (typeof window !== "undefined") {
-    walletAddress = Web3.utils.toChecksumAddress(wallet?.accounts[0].address);
-  }
+  const walletAddress = wallet?.accounts[0]?.address;
 
   const GNOSIS_TRANSACTION_URL = useSelector((state) => {
     return state.gnosis.transactionUrl;
@@ -56,10 +51,8 @@ const TokenGatingModal = ({ closeModal, chooseTokens }) => {
               ERC20ABI,
               values.address,
               walletAddress,
-              undefined,
-              undefined,
-              // USDC_CONTRACT_ADDRESS,
-              // GNOSIS_TRANSACTION_URL,
+              USDC_CONTRACT_ADDRESS,
+              GNOSIS_TRANSACTION_URL,
             );
 
             tokenSymbol = await erc20contract.obtainSymbol();

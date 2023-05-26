@@ -13,7 +13,6 @@ import {
 } from "@mui/material";
 import Layout2 from "../../src/components/layouts/layout2";
 import { useDispatch, useSelector } from "react-redux";
-import Web3 from "web3";
 import { SmartContract } from "../../src/api/contract";
 import { useConnectWallet } from "@web3-onboard/react";
 import { updateDynamicAddress } from "../../src/api";
@@ -197,9 +196,7 @@ const Faucet = (props) => {
   });
   const [{ wallet }] = useConnectWallet();
 
-  const walletAddress = Web3.utils.toChecksumAddress(
-    wallet?.accounts[0].address,
-  );
+  const walletAddress = wallet?.accounts[0].address;
 
   useEffect(() => {
     if (wallet) {

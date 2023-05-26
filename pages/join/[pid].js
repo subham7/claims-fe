@@ -7,7 +7,6 @@ import FactoryContractABI from "../../src/abis/newArch/factoryContract.json";
 import ERC20ABI from "../../src/abis/usdcTokenContract.json";
 
 import { useConnectWallet } from "@web3-onboard/react";
-import Web3 from "web3";
 import Layout2 from "../../src/components/layouts/layout2";
 import NewArchERC20 from "../../src/components/depositPageComps/ERC20/NewArch/NewArchERC20";
 import { useRouter } from "next/router";
@@ -77,9 +76,7 @@ const Join = () => {
     return state.gnosis.usdcContractAddress;
   });
 
-  const walletAddress = Web3.utils.toChecksumAddress(
-    wallet?.accounts[0].address,
-  );
+  const walletAddress = wallet?.accounts[0].address;
 
   /**
    * Fetching details for ERC20 comp

@@ -9,7 +9,6 @@ import { tokenType } from "../../src/data/create";
 import ERC20Step2 from "../../src/components/createClubComps/ERC20Step2";
 import NFTStep2 from "../../src/components/createClubComps/NFTStep2";
 import dayjs from "dayjs";
-import Web3 from "web3";
 import { useSelector, useDispatch } from "react-redux";
 import { initiateConnection } from "../../src/utils/safe";
 import ErrorModal from "../../src/components/createClubComps/ErrorModal";
@@ -166,9 +165,7 @@ const Create = () => {
         });
         dispatch(setUploadNFTLoading(false));
         try {
-          const walletAddress = Web3.utils.toChecksumAddress(
-            wallet.accounts[0].address,
-          );
+          const walletAddress = wallet.accounts[0].address;
           formikStep3.values.addressList.unshift(walletAddress);
 
           const params = {
@@ -220,9 +217,8 @@ const Create = () => {
         }
       } else {
         try {
-          const walletAddress = Web3.utils.toChecksumAddress(
-            wallet.accounts[0].address,
-          );
+          const walletAddress = wallet.accounts[0].address;
+
           formikStep3.values.addressList.unshift(walletAddress);
           const params = {
             clubName: formikStep1.values.clubName,

@@ -59,7 +59,7 @@ const ClubFetch = (Component) => {
 
     useEffect(() => {
       dispatch(addDaoAddress(Web3.utils.toChecksumAddress(daoAddress)));
-    }, [daoAddress]);
+    }, [daoAddress, dispatch]);
 
     useEffect(() => {
       const getNetworkConfig = async () => {
