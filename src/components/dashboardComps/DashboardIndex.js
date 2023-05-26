@@ -743,8 +743,9 @@ const DashboardIndex = () => {
                             sx={{
                               display: "flex",
                               justifyContent: "flex-end",
+                              alignItems: "baseline",
                             }}>
-                            <Grid item mt={1} mr={1}>
+                            <Grid item mt={1.5} mr={1}>
                               <div
                                 className={classes.inactiveIllustration}></div>
                             </Grid>
