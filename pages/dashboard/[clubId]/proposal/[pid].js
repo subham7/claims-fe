@@ -300,10 +300,6 @@ const ProposalDetail = () => {
     return state.gnosis.actionContractAddress;
   });
 
-  const CLUB_NETWORK_ID = useSelector((state) => {
-    return state.gnosis.clubNetworkId;
-  });
-
   const getSafeService = useCallback(async () => {
     const web3 = await web3InstanceEthereum();
     const ethAdapter = new Web3Adapter({
@@ -1244,7 +1240,7 @@ const ProposalDetail = () => {
           </Grid>
         </Grid>
 
-        {WRONG_NETWORK && <WrongNetworkModal chainId={CLUB_NETWORK_ID} />}
+        {WRONG_NETWORK && <WrongNetworkModal />}
 
         <Snackbar
           open={openSnackBar}

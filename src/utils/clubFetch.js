@@ -15,6 +15,7 @@ import {
   addContractAddress,
   setAdminUser,
   setMemberUser,
+  setWrongNetwork,
 } from "../redux/reducers/gnosis";
 import Erc20Dao from "../abis/newArch/erc20Dao.json";
 import Erc721Dao from "../abis/newArch/erc721Dao.json";
@@ -246,11 +247,30 @@ const ClubFetch = (Component) => {
       router,
     ]);
 
+    const checkClubExist = useCallback(async () => {
+      const clubData = await subgraphQuery(
+        networkId == "0x5"
+          ? SUBGRAPH_URL_GOERLI
+          : networkId == "0x89"
+          ? SUBGRAPH_URL_POLYGON
+          : "",
+        QUERY_CLUB_DETAILS(daoAddress ? daoAddress : pid),
+      );
+
+      if (clubData.stations.length) {
+        dispatch(setWrongNetwork(false));
+      } else {
+        dispatch(setWrongNetwork(true));
+      }
+    }, [daoAddress, dispatch, networkId, pid]);
+
     useEffect(() => {
       if (wallet && networkId) {
         checkUserExists();
       }
-    }, [checkUserExists, pid, daoAddress, wallet, networkId]);
+
+      checkClubExist();
+    }, [checkUserExists, wallet, networkId, checkClubExist]);
 
     if (tracker === true) {
       return (

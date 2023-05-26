@@ -53,10 +53,6 @@ const NewArchERC721 = ({
     return state.gnosis.wrongNetwork;
   });
 
-  const CLUB_NETWORK_ID = useSelector((state) => {
-    return state.gnosis.clubNetworkId;
-  });
-
   const FACTORY_CONTRACT_ADDRESS = useSelector((state) => {
     return state.gnosis.factoryContractAddress;
   });
@@ -442,7 +438,7 @@ const NewArchERC721 = ({
           </Grid>
         )}
 
-        {WRONG_NETWORK && <WrongNetworkModal chainId={CLUB_NETWORK_ID} />}
+        {WRONG_NETWORK && <WrongNetworkModal />}
 
         {claimSuccessfull && showMessage ? (
           <Alert

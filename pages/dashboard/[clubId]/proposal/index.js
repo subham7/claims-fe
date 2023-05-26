@@ -78,10 +78,6 @@ const Proposal = () => {
     return state.club.clubData.gnosisAddress;
   });
 
-  const CLUB_NETWORK_ID = useSelector((state) => {
-    return state.gnosis.clubNetworkId;
-  });
-
   const WRONG_NETWORK = useSelector((state) => {
     return state.gnosis.wrongNetwork;
   });
@@ -354,7 +350,7 @@ const Proposal = () => {
         </Grid>
       </Grid>
 
-      {WRONG_NETWORK && <WrongNetworkModal chainId={CLUB_NETWORK_ID} />}
+      {WRONG_NETWORK && <WrongNetworkModal />}
 
       <CreateProposalDialog
         open={open}

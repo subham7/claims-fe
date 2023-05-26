@@ -46,7 +46,6 @@ export default function Step4(props) {
                     <Switch
                       checked={props.formik.values.deploySafe}
                       // onChange={handleOperationTypeChange}
-                      disabled
                       sx={{
                         cursor: "not-allowed",
                       }}
