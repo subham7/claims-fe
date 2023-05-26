@@ -16,9 +16,9 @@ import { createClaim } from "../../src/api/claims";
 import { CLAIM_FACTORY_ADDRESS_GOERLI } from "../../src/api";
 import { MerkleTree } from "merkletreejs";
 import keccak256 from "keccak256";
-import Web3 from "web3";
 import { useConnectWallet } from "@web3-onboard/react";
 import { useRouter } from "next/router";
+import { web3InstanceEthereum } from "../../src/utils/helper";
 
 const steps = ["Step1", "Step2"];
 
@@ -58,7 +58,7 @@ const Form = () => {
 
   const getCurrentAccount = async () => {
     setLoadingTokens(true);
-    const web3 = new Web3(window.ethereum);
+    const web3 = await web3InstanceEthereum();
     const accounts = await web3.eth.getAccounts();
     const data = await getTokensFromWallet(accounts[0], networkId);
     setCurrentAccount(accounts[0]);
