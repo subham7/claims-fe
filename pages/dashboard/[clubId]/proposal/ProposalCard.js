@@ -193,13 +193,7 @@ const ProposalCard = ({
         <Grid container>
           <Grid item ml={2} mr={2}>
             <Typography className={classes.cardFont1}>
-              {executionTransaction ? (
-                <> {proposal?.name}</>
-              ) : (
-                <>
-                  [#{indexKey + 1}] {proposal?.name}
-                </>
-              )}
+              {proposal?.name}
             </Typography>
           </Grid>
         </Grid>
