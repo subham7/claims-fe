@@ -12,18 +12,14 @@ import React, { useCallback, useEffect, useState } from "react";
 import { TwitterShareButton } from "react-twitter-embed";
 import { NewArchERC721Styles } from "./NewArchERC721Styles";
 import { useConnectWallet } from "@web3-onboard/react";
-import erc20ABI from "../../../../abis/usdcTokenContract.json";
-import erc721ABI from "../../../../abis/nft.json";
-
-import factoryContractABI from "../../../../abis/newArch/factoryContract.json";
 import { convertFromWeiGovernance } from "../../../../utils/globalFunctions";
-import { SmartContract } from "../../../../api/contract";
 import dayjs from "dayjs";
 import { useSelector } from "react-redux";
 import { useRouter } from "next/router";
 import WrongNetworkModal from "../../../modals/WrongNetworkModal";
 import RemoveIcon from "@mui/icons-material/Remove";
 import AddIcon from "@mui/icons-material/Add";
+import useSmartContract from "../../../../hooks/useSmartContract";
 
 const NewArchERC721 = ({
   daoDetails,
@@ -53,20 +49,8 @@ const NewArchERC721 = ({
     return state.gnosis.wrongNetwork;
   });
 
-  const CLUB_NETWORK_ID = useSelector((state) => {
-    return state.gnosis.clubNetworkId;
-  });
-
   const FACTORY_CONTRACT_ADDRESS = useSelector((state) => {
     return state.gnosis.factoryContractAddress;
-  });
-
-  const GNOSIS_TRANSACTION_URL = useSelector((state) => {
-    return state.gnosis.transactionUrl;
-  });
-
-  const USDC_CONTRACT_ADDRESS = useSelector((state) => {
-    return state.gnosis.usdcContractAddress;
   });
 
   const classes = NewArchERC721Styles();
@@ -85,51 +69,43 @@ const NewArchERC721 = ({
     }, 4000);
   };
 
+  const {
+    erc20TokenContract_CALL,
+    erc20TokenContract_SEND,
+    factoryContract_SEND,
+    erc721TokenContract,
+  } = useSmartContract(daoDetails.depositTokenAddress);
+
   const fetchTokenDetails = useCallback(async () => {
     try {
-      const erc20Contract = new SmartContract(
-        erc20ABI,
-        daoDetails.depositTokenAddress,
-        walletAddress,
-        USDC_CONTRACT_ADDRESS,
-        GNOSIS_TRANSACTION_URL,
-      );
+      if (erc20TokenContract_CALL && erc721TokenContract) {
+        console.log("here");
+        const balanceOfNft = await erc721TokenContract.balanceOf();
+        console.log("Balance");
+        setBalanceOfNft(balanceOfNft);
 
-      const erc721Contract = new SmartContract(
-        erc721ABI,
-        erc721DaoAddress,
-        walletAddress,
-        USDC_CONTRACT_ADDRESS,
-        GNOSIS_TRANSACTION_URL,
-      );
+        if (+balanceOfNft >= +daoDetails?.maxTokensPerUser) {
+          setHasClaimed(true);
+        } else {
+          setHasClaimed(false);
+        }
+        const decimals = await erc20TokenContract_CALL.decimals();
+        const symbol = await erc20TokenContract_CALL.obtainSymbol();
+        const name = await erc20TokenContract_CALL.name();
 
-      const balanceOfNft = await erc721Contract.balanceOf();
-      setBalanceOfNft(balanceOfNft);
-
-      if (+balanceOfNft >= +daoDetails?.maxTokensPerUser) {
-        setHasClaimed(true);
-      } else {
-        setHasClaimed(false);
+        setErc20TokenDetails({
+          tokenSymbol: symbol,
+          tokenName: name,
+          tokenDecimal: decimals,
+        });
       }
-      const decimals = await erc20Contract.decimals();
-      const symbol = await erc20Contract.obtainSymbol();
-      const name = await erc20Contract.name();
-
-      setErc20TokenDetails({
-        tokenSymbol: symbol,
-        tokenName: name,
-        tokenDecimal: decimals,
-      });
     } catch (error) {
       console.log(error);
     }
   }, [
-    GNOSIS_TRANSACTION_URL,
-    USDC_CONTRACT_ADDRESS,
-    daoDetails.depositTokenAddress,
-    daoDetails.maxTokensPerUser,
-    erc721DaoAddress,
-    walletAddress,
+    daoDetails?.maxTokensPerUser,
+    erc20TokenContract_CALL,
+    erc721TokenContract,
   ]);
 
   useEffect(() => {
@@ -143,26 +119,7 @@ const NewArchERC721 = ({
   const claimNFTHandler = async () => {
     try {
       setLoading(true);
-
-      const factoryContract = new SmartContract(
-        factoryContractABI,
-        FACTORY_CONTRACT_ADDRESS,
-        walletAddress,
-        USDC_CONTRACT_ADDRESS,
-        GNOSIS_TRANSACTION_URL,
-        true,
-      );
-
-      const erc20Contract = new SmartContract(
-        erc20ABI,
-        daoDetails.depositTokenAddress,
-        walletAddress,
-        USDC_CONTRACT_ADDRESS,
-        GNOSIS_TRANSACTION_URL,
-        true,
-      );
-
-      await erc20Contract.approveDeposit(
+      await erc20TokenContract_SEND.approveDeposit(
         FACTORY_CONTRACT_ADDRESS,
         convertFromWeiGovernance(
           daoDetails.pricePerToken,
@@ -171,7 +128,7 @@ const NewArchERC721 = ({
         erc20TokenDetails.tokenDecimal,
       );
 
-      const claimNFT = await factoryContract.buyGovernanceTokenERC721DAO(
+      await factoryContract_SEND.buyGovernanceTokenERC721DAO(
         walletAddress,
         erc721DaoAddress,
         daoDetails.nftURI,
@@ -442,7 +399,7 @@ const NewArchERC721 = ({
           </Grid>
         )}
 
-        {WRONG_NETWORK && <WrongNetworkModal chainId={CLUB_NETWORK_ID} />}
+        {WRONG_NETWORK && <WrongNetworkModal />}
 
         {claimSuccessfull && showMessage ? (
           <Alert
