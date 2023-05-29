@@ -1,5 +1,5 @@
 import { useConnectWallet } from "@web3-onboard/react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { SmartContract } from "../api/contract";
 
 const useSmartContract = (
@@ -12,21 +12,22 @@ const useSmartContract = (
   const [{ wallet }] = useConnectWallet();
   const walletAddress = wallet?.accounts[0]?.address;
 
-  const [contractInstance, setContractInstance] = useState(null);
+  const contractInstanceRef = useRef(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const initalizeContract = useCallback(() => {
+  const initializeContract = useCallback(() => {
     try {
-      const smartContract = new SmartContract(
-        abiFile,
-        contractAddress,
-        walletAddress,
-        USDC_CONTRACT_ADDRESS,
-        GNOSIS_TRANSACTION_URL,
-        useMetamask,
-      );
-      setContractInstance(smartContract);
+      if (!contractInstanceRef.current) {
+        contractInstanceRef.current = new SmartContract(
+          abiFile,
+          contractAddress,
+          walletAddress,
+          USDC_CONTRACT_ADDRESS,
+          GNOSIS_TRANSACTION_URL,
+          useMetamask,
+        );
+      }
     } catch (error) {
       setError(error.message);
     }
@@ -39,29 +40,26 @@ const useSmartContract = (
     walletAddress,
   ]);
 
-  const callContractFunction = useCallback(
-    async (functionName, ...args) => {
-      try {
-        setIsLoading(true);
-        if (!contractInstance) {
-          throw new Error("SmartContract not initialized!");
-        }
-
-        const result = await contractInstance[functionName](...args);
-        return result;
-      } catch (error) {
-        setError(error.message);
-        return null;
-      } finally {
-        setIsLoading(false);
+  const callContractFunction = useCallback(async (functionName, ...args) => {
+    try {
+      setIsLoading(true);
+      if (!contractInstanceRef.current) {
+        throw new Error("SmartContract not initialized!");
       }
-    },
-    [contractInstance],
-  );
+
+      const result = await contractInstanceRef.current[functionName](...args);
+      return result;
+    } catch (error) {
+      setError(error.message);
+      return null;
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    initalizeContract();
-  }, [initalizeContract]);
+    initializeContract();
+  }, [initializeContract]);
 
   return { isLoading, error, callContractFunction };
 };
