@@ -24,7 +24,6 @@ import CollectionCard from "../../../src/components/cardcontent";
 import Layout1 from "../../../src/components/layouts/layout1";
 import { DashboardStyles } from "./DashboardStyles";
 import { useConnectWallet } from "@web3-onboard/react";
-import Web3 from "web3";
 import { useRouter } from "next/router";
 import { getAssetsByDaoAddress, getNFTsByDaoAddress } from "../../api/assets";
 import { getProposalByDaoAddress } from "../../api/proposal";
@@ -110,9 +109,7 @@ const DashboardIndex = () => {
     return state.club.clubData.tokenType;
   });
 
-  const walletAddress = Web3.utils.toChecksumAddress(
-    wallet?.accounts[0].address,
-  );
+  const walletAddress = wallet?.accounts[0].address;
 
   const fetchClubDetails = useCallback(async () => {
     try {
@@ -183,9 +180,7 @@ const DashboardIndex = () => {
   const handleCopy = () => {
     navigator.clipboard.writeText(
       typeof window !== "undefined" && window.location.origin
-        ? `${window.location.origin}/join/${Web3.utils.toChecksumAddress(
-            daoAddress,
-          )}`
+        ? `${window.location.origin}/join/${daoAddress}`
         : null,
     );
   };
@@ -284,9 +279,7 @@ const DashboardIndex = () => {
 
             setDepositLink(
               typeof window !== "undefined" && window.location.origin
-                ? `${
-                    window.location.origin
-                  }/join/${Web3.utils.toChecksumAddress(daoAddress)}`
+                ? `${window.location.origin}/join/${daoAddress}`
                 : null,
             );
             // setDataFetched(true);
@@ -743,8 +736,9 @@ const DashboardIndex = () => {
                             sx={{
                               display: "flex",
                               justifyContent: "flex-end",
+                              alignItems: "baseline",
                             }}>
-                            <Grid item mt={1} mr={1}>
+                            <Grid item mt={1.5} mr={1}>
                               <div
                                 className={classes.inactiveIllustration}></div>
                             </Grid>

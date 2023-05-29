@@ -75,7 +75,7 @@ export default function ERC20Step2(props) {
                   alignItems: "center",
                 }}>
                 <Typography className={classes.largeText}>
-                  Min. deposit amount per wallet
+                  Min. deposit amount per wallet *
                 </Typography>
               </Grid>
               <Grid
@@ -127,7 +127,7 @@ export default function ERC20Step2(props) {
                   alignItems: "center",
                 }}>
                 <Typography className={classes.largeText}>
-                  Max. deposit amount per wallet
+                  Max. deposit amount per wallet *
                 </Typography>
               </Grid>
               <Grid
@@ -180,7 +180,7 @@ export default function ERC20Step2(props) {
                   alignItems: "center",
                 }}>
                 <Typography className={classes.largeText}>
-                  Total amount your Station is raising
+                  Total amount your Station is raising *
                 </Typography>
               </Grid>
               <Grid
@@ -233,7 +233,7 @@ export default function ERC20Step2(props) {
                   alignItems: "center",
                 }}>
                 <Typography className={classes.largeText}>
-                  Price per token
+                  Price per token *
                 </Typography>
               </Grid>
               <Grid

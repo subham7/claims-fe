@@ -13,22 +13,16 @@ export default function Step1(props) {
   const classes = Step1Styles();
   return (
     <>
-      <Grid
-        container
-        direction="row"
-        justifyContent="center"
-        alignItems="center">
-        <Grid item md={8} mt={8}>
-          <Typography className={classes.wrapTextIcon}>
-            Basic Station info
-          </Typography>
+      <Grid container>
+        <Grid item md={12} mt={8}>
+          <Typography className={classes.wrapTextIcon}>Station info</Typography>
           <Typography className={classes.smallText}>
             Name & token symbol of your station are publicly visible on-chain &
             can’t be changed after it is created. This can be your brand name or
             something your community identifies with.
           </Typography>
           <br />
-          <Typography className={classes.wrapTextIcon}>Name</Typography>
+          <Typography className={classes.wrapTextIcon}>Name *</Typography>
           <TextField
             name="clubName"
             className={classes.textField}
@@ -47,7 +41,7 @@ export default function Step1(props) {
           />
           <br />
           <Typography className={classes.wrapTextIcon}>
-            Symbol{" "}
+            Symbol *{" "}
             <Box
               sx={{ color: "#6475A3", ml: 1 }}
               fontWeight="Normal"

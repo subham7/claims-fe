@@ -205,3 +205,34 @@ export const Step3Styles = makeStyles({
     fontFamily: "Whyte",
   },
 });
+
+export const Step4Styles = makeStyles({
+  largeText: {
+    fontSize: "18px",
+    color: "#C1D3FF",
+    fontFamily: "Whyte",
+  },
+  largeText2: {
+    fontSize: "18px",
+    color: "#FFFFFF",
+    fontFamily: "Whyte",
+  },
+  cardPadding: {
+    margin: 0,
+    padding: 0,
+    borderRadius: "10px",
+  },
+  wrapTextIcon: {
+    fontSize: "18px",
+    fontFamily: "Whyte",
+    color: "#C1D3FF",
+    verticalAlign: "middle",
+    display: "inline-flex",
+  },
+  textField: {
+    width: "100%",
+    margin: "16px 0 25px 0",
+    fontSize: "18px",
+    fontFamily: "Whyte",
+  },
+});
