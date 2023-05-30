@@ -1,7 +1,4 @@
 import Router from "next/router";
-import Web3 from "web3";
-import { Web3Adapter } from "@safe-global/protocol-kit";
-import { SafeFactory } from "@safe-global/protocol-kit";
 import FactoryContract from "../abis/newArch/factoryContract.json";
 import { SmartContract } from "../api/contract";
 import {
@@ -11,46 +8,6 @@ import {
   setCreateSafeLoading,
 } from "../redux/reducers/gnosis";
 import { addClubData, addDaoAddress } from "../redux/reducers/club";
-import { getIncreaseGasPrice } from "./helper";
-
-async function gnosisSafePromise(owners, threshold, dispatch) {
-  try {
-    const web3 = new Web3(window.ethereum);
-    const ethAdapter = new Web3Adapter({
-      web3,
-      signerAddress: owners[0],
-    });
-    const safeFactory = await SafeFactory.create({ ethAdapter });
-    const safeAccountConfig = {
-      owners: owners,
-      threshold,
-      // ...
-    };
-
-    const increasedGasPrice = await getIncreaseGasPrice();
-
-    const options = {
-      gasPrice: increasedGasPrice,
-    };
-
-    const safeSdk = await safeFactory.deploySafe({
-      safeAccountConfig,
-      options,
-    });
-
-    const newSafeAddress = await safeSdk.getAddress();
-
-    return newSafeAddress;
-  } catch (error) {
-    console.error(error);
-    if (error.code === 4001) {
-      dispatch(setCreateSafeError(true));
-      dispatch(setCreateSafeErrorCode(4001));
-    } else {
-      dispatch(setCreateSafeError(true));
-    }
-  }
-}
 
 export async function initiateConnection(
   params,
@@ -67,11 +24,6 @@ export async function initiateConnection(
 
   let daoAddress = null;
 
-  const treasuryAddress = await gnosisSafePromise(
-    addressList,
-    Math.ceil(addressList.length * (params.threshold / 10000)),
-    dispatch,
-  );
   try {
     dispatch(setCreateSafeLoading(false));
     dispatch(setCreateDaoAuthorized(true));
@@ -107,8 +59,9 @@ export async function initiateConnection(
         params.depositClose,
         params.quorum,
         params.threshold,
+        params.safeThreshold,
         params.depositTokenAddress,
-        treasuryAddress,
+        params.treasuryAddress,
         addressList,
         params.maxTokensPerUser,
         params.distributeAmount,
@@ -132,8 +85,9 @@ export async function initiateConnection(
         params.depositClose,
         params.quorum,
         params.threshold,
+        params.safeThreshold,
         params.depositTokenAddress,
-        treasuryAddress,
+        params.treasuryAddress,
         addressList,
         params.isGovernanceActive,
         params.isGtTransferable,
@@ -145,7 +99,11 @@ export async function initiateConnection(
     try {
       dispatch(
         addClubData({
-          gnosisAddress: treasuryAddress,
+          gnosisAddress:
+            params.treasuryAddress ===
+            "0x0000000000000000000000000000000000000000"
+              ? value.events[0].address
+              : params.treasuryAddress,
           isGtTransferable: params.isGtTransferable,
           name: params.clubName,
           ownerAddress: addressList,
@@ -153,19 +111,17 @@ export async function initiateConnection(
           tokenType: clubTokenType === "NFT" ? "erc721" : "erc20",
         }),
       );
-      daoAddress = value.events[0].address;
-      dispatch(addDaoAddress(value.events[0].address));
+
+      daoAddress =
+        params.treasuryAddress === "0x0000000000000000000000000000000000000000"
+          ? value.events[2].address
+          : value.events[0].address;
+      dispatch(addDaoAddress(daoAddress));
       const { pathname } = Router;
       if (pathname == "/create") {
-        Router.push(
-          `/dashboard/${Web3.utils.toChecksumAddress(
-            daoAddress,
-          )}?clubCreate=true`,
-          undefined,
-          {
-            shallow: true,
-          },
-        );
+        Router.push(`/dashboard/${daoAddress}?clubCreate=true`, undefined, {
+          shallow: true,
+        });
       }
     } catch (error) {
       dispatch(setCreateDaoAuthorized(false));

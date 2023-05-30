@@ -6,6 +6,8 @@ export const slice = createSlice({
     membersData: null,
     encryptedLink: null,
     adminFormData: null,
+    legalDocLink: null,
+    documentList: null,
   },
   reducers: {
     addMembersData: (state, action) => {
@@ -17,10 +19,21 @@ export const slice = createSlice({
     addAdminFormData: (state, action) => {
       state.adminFormData = action.payload;
     },
+    addLegalDocLink: (state, action) => {
+      state.legalDocLink = action.payload;
+    },
+    addDocumentList: (state, action) => {
+      state.documentList = action.payload;
+    },
   },
 });
 
-export const { addMembersData, addEncryptedLink, addAdminFormData } =
-  slice.actions;
+export const {
+  addMembersData,
+  addEncryptedLink,
+  addAdminFormData,
+  addLegalDocLink,
+  addDocumentList,
+} = slice.actions;
 
 export default slice.reducer;

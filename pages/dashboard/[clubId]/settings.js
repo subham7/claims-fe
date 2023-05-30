@@ -3,7 +3,6 @@ import dayjs from "dayjs";
 import { useRouter } from "next/router";
 import React, { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import Web3 from "web3";
 import { fetchClubbyDaoAddress } from "../../../src/api/club";
 import { SmartContract } from "../../../src/api/contract";
 import { QUERY_ALL_MEMBERS } from "../../../src/api/graphql/queries";
@@ -58,10 +57,7 @@ const Settings = () => {
 
   const [{ wallet }] = useConnectWallet();
 
-  let walletAddress;
-  if (typeof window !== "undefined") {
-    walletAddress = Web3.utils.toChecksumAddress(wallet?.accounts[0].address);
-  }
+  const walletAddress = wallet?.accounts[0].address;
 
   const FACTORY_CONTRACT_ADDRESS = useSelector((state) => {
     return state.gnosis.factoryContractAddress;

@@ -6,10 +6,8 @@ import TokenGatingModal from "./TokenGatingModal";
 import { useSelector } from "react-redux";
 import FactoryContractABI from "../../abis/newArch/factoryContract.json";
 import ERC20ABI from "../../abis/usdcTokenContract.json";
-
 import SingleToken from "./SingleToken";
 import { SmartContract } from "../../api/contract";
-import Web3 from "web3";
 import { useConnectWallet } from "@web3-onboard/react";
 import { useRouter } from "next/router";
 import {
@@ -50,14 +48,11 @@ const TokenGating = () => {
     return state.gnosis.factoryContractAddress;
   });
 
-  let walletAddress;
   const router = useRouter();
   const classes = TokenGatingStyle();
   const { clubId: daoAddress } = router.query;
 
-  if (typeof window !== undefined) {
-    walletAddress = Web3.utils.toChecksumAddress(wallet?.accounts[0].address);
-  }
+  const walletAddress = wallet?.accounts[0].address;
 
   const GNOSIS_TRANSACTION_URL = useSelector((state) => {
     return state.gnosis.transactionUrl;
@@ -108,7 +103,7 @@ const TokenGating = () => {
               : tokensList[0].tokenDecimal,
           ),
         ], // Minimum user balance of tokenA & tokenB
-        Web3.utils.toChecksumAddress(daoAddress),
+        daoAddress,
       );
       setLoading(false);
       setIsTokenGatingSuccessfull(true);

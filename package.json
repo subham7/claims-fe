@@ -47,6 +47,7 @@
     "ethers": "^6.3.0",
     "formik": "^2.2.9",
     "graphql": "^16.6.0",
+    "html-pdf": "^3.0.1",
     "html2canvas": "^1.4.1",
     "keccak256": "^1.0.6",
     "merkletreejs": "^0.3.9",

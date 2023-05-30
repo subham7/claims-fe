@@ -12,7 +12,6 @@ import React, { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
 import { useSelector } from "react-redux";
 import { useConnectWallet } from "@web3-onboard/react";
-import Web3 from "web3";
 import { SmartContract } from "../../../../src/api/contract";
 import { useRouter } from "next/router";
 import { ProposalCardStyles } from "../../../../src/components/proposalComps/ProposalCardStyles";
@@ -44,9 +43,7 @@ const ProposalCard = ({
     return state.gnosis;
   });
 
-  const walletAddress = Web3.utils.toChecksumAddress(
-    wallet?.accounts[0].address,
-  );
+  const walletAddress = wallet?.accounts[0].address;
 
   const fetchAirDropContractDetails = useCallback(async () => {
     try {
@@ -220,13 +217,7 @@ const ProposalCard = ({
         <Grid container>
           <Grid item ml={2} mr={2}>
             <Typography className={classes.cardFont1}>
-              {executionTransaction ? (
-                <> {proposal?.name}</>
-              ) : (
-                <>
-                  [#{indexKey + 1}] {proposal?.name}
-                </>
-              )}
+              {proposal?.name}
             </Typography>
           </Grid>
         </Grid>

@@ -20,6 +20,7 @@ import { styled } from "@mui/material/styles";
 import Fade from "@mui/material/Fade";
 import Link from "next/link";
 import Image from "next/image";
+import { HiDocumentDuplicate } from "react-icons/hi";
 
 const useStyles = makeStyles({
   listItemIcon: {
@@ -181,7 +182,12 @@ const Sidebar = (props) => {
 
           <BootstrapTooltip title="Deposit" placement="left">
             <ListItemButton onClick={handleDepositRedirect} component="a">
-              <ListItemIcon className={classes.listItemIcon}>
+              <ListItemIcon
+                className={
+                  page == 4
+                    ? classes.listItemIconSelected
+                    : classes.listItemIcon
+                }>
                 <AddCardIcon />
               </ListItemIcon>
             </ListItemButton>
@@ -197,7 +203,12 @@ const Sidebar = (props) => {
                 //   })
                 // }}
               >
-                <ListItemIcon className={classes.listItemIcon}>
+                <ListItemIcon
+                  className={
+                    page == 5
+                      ? classes.listItemIconSelected
+                      : classes.listItemIcon
+                  }>
                   <SettingsRoundedIcon />
                 </ListItemIcon>
               </ListItemButton>
@@ -328,7 +339,7 @@ const Sidebar = (props) => {
             <ListItemButton component="a" onClick={handleDepositRedirect}>
               <ListItemIcon
                 className={
-                  page == 3
+                  page == 4
                     ? classes.listItemIconSelected
                     : classes.listItemIcon
                 }>
@@ -356,26 +367,24 @@ const Sidebar = (props) => {
             </ListItemButton>
           </BootstrapTooltip>
 
-          {/* <BootstrapTooltip title="Documents" placement="left">
+          <BootstrapTooltip title="Documents" placement="left">
             <ListItemButton
               component="a"
               onClick={(e) => {
                 router.push(`/dashboard/${clubId}/documents`, undefined, {
                   shallow: true,
                 });
-              }}
-            >
+              }}>
               <ListItemIcon
                 className={
                   page == 6
                     ? classes.listItemIconSelected
                     : classes.listItemIcon
-                }
-              >
-                <HiDocumentDuplicate size={30}/>
+                }>
+                <HiDocumentDuplicate size={30} />
               </ListItemIcon>
             </ListItemButton>
-          </BootstrapTooltip> */}
+          </BootstrapTooltip>
         </List>
       </Drawer>
     </Box>

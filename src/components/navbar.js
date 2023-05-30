@@ -1,6 +1,5 @@
 import { React, useEffect } from "react";
 import { AppBar, Box, Toolbar, Button } from "@mui/material";
-// import MenuIcon from "@mui/icons-material/Menu";
 import Image from "next/image";
 import { makeStyles } from "@mui/styles";
 import Web3 from "web3";
@@ -9,7 +8,6 @@ import { useDispatch } from "react-redux";
 import { useRouter } from "next/router";
 import { useConnectWallet } from "@web3-onboard/react";
 import { addWalletAddress } from "../redux/reducers/user";
-// import "../../styles/globals.css";
 
 const useStyles = makeStyles({
   image: {
@@ -28,12 +26,7 @@ export default function Navbar3(props) {
   const [{ wallet, connecting }, connect, disconnect] = useConnectWallet();
   // const { pid: daoAddress } = router.query;
 
-  let walletAddress;
-
-  if (typeof window !== "undefined") {
-    const web3 = new Web3(window.web3);
-    walletAddress = web3.utils.toChecksumAddress(wallet?.accounts[0].address);
-  }
+  const walletAddress = wallet?.accounts[0].address;
 
   if (wallet) {
     if (window.ethereum) {

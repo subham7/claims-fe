@@ -33,7 +33,6 @@ import {
 } from "../../utils/globalFunctions";
 import { useConnectWallet } from "@web3-onboard/react";
 import { useRouter } from "next/router";
-import Web3 from "web3";
 import { createProposal } from "../../api/proposal";
 import { fetchProposals } from "../../utils/proposal";
 import { useDispatch, useSelector } from "react-redux";
@@ -68,9 +67,11 @@ const CreateProposalDialog = ({ open, setOpen, onClose, tokenData }) => {
 
   const { clubId } = router.query;
   const [{ wallet }] = useConnectWallet();
-  const walletAddress = Web3.utils.toChecksumAddress(
-    wallet?.accounts[0].address,
-  );
+  const walletAddress = wallet?.accounts[0].address;
+
+  const tokenType = useSelector((state) => {
+    return state.club.clubData.tokenType;
+  });
 
   const FACTORY_CONTRACT_ADDRESS = useSelector((state) => {
     return state.gnosis.factoryContractAddress;
@@ -109,6 +110,7 @@ const CreateProposalDialog = ({ open, setOpen, onClose, tokenData }) => {
 
   const proposal = useFormik({
     initialValues: {
+      tokenType: tokenType,
       typeOfProposal: "survey",
       proposalDeadline: dayjs(Date.now() + 3600 * 1000 * 24),
       proposalTitle: "",
@@ -362,7 +364,7 @@ const CreateProposalDialog = ({ open, setOpen, onClose, tokenData }) => {
                   fontSize: "18px",
                   color: "#C1D3FF",
                   fontFamily: "Whyte",
-                  marginBottom: "0.5rem",
+                  margin: "0.5rem 0",
                 }}
                 name="proposalDescription"
                 id="proposalDescription"
@@ -514,9 +516,12 @@ const CreateProposalDialog = ({ open, setOpen, onClose, tokenData }) => {
                 <Button
                   variant="primary"
                   type="submit"
-                  sx={loaderOpen && { padding: "3px" }}>
+                  sx={{ display: "flex", alignItems: "center" }}>
                   {loaderOpen ? (
-                    <CircularProgress color="inherit" s />
+                    <CircularProgress
+                      color="inherit"
+                      sx={{ width: "inherit" }}
+                    />
                   ) : (
                     "Submit"
                   )}
