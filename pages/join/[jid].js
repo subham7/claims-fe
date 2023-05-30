@@ -52,7 +52,7 @@ const Join = () => {
   const [{ wallet }] = useConnectWallet();
   const router = useRouter();
 
-  const { pid: daoAddress } = router.query;
+  const { jid: daoAddress } = router.query;
 
   const SUBGRAPH_URL = useSelector((state) => {
     return state.gnosis.subgraphUrl;

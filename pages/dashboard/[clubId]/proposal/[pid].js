@@ -39,7 +39,7 @@ import ReactHtmlParser from "react-html-parser";
 import Erc721Dao from "../../../../src/abis/newArch/erc721Dao.json";
 import Erc20Dao from "../../../../src/abis/newArch/erc20Dao.json";
 import FactoryContractABI from "../../../../src/abis/newArch/factoryContract.json";
-import { SmartContract } from "../../../../src/api/contract";
+// import { SmartContract } from "../../../../src/api/contract";
 import { Interface } from "ethers";
 
 import Web3 from "web3";
@@ -305,7 +305,13 @@ const ProposalDetail = () => {
     return state.gnosis.clubNetworkId;
   });
 
-  const { factoryContract_CALL } = useSmartContract();
+  const {
+    factoryContract_CALL,
+    erc20DaoContract,
+    erc721DaoContract,
+    erc20DaoContract_SEND,
+    erc721DaoContract_SEND,
+  } = useSmartContract();
 
   const getSafeService = useCallback(async () => {
     const web3 = new Web3(window.ethereum);
@@ -429,14 +435,15 @@ const ProposalDetail = () => {
 
   const executeFunction = async (proposalStatus) => {
     setLoaderOpen(true);
-
-    const updateProposal = new SmartContract(
-      clubData?.tokenType === "erc20" ? Erc20Dao : Erc721Dao,
-      daoAddress,
-      undefined,
-      USDC_CONTRACT_ADDRESS,
-      GNOSIS_TRANSACTION_URL,
-    );
+    let updateProposal;
+    if (
+      clubData.tokenType === "erc20" &&
+      (erc20DaoContract !== null || erc721DaoContract !== null)
+    ) {
+      updateProposal = erc20DaoContract;
+    } else {
+      updateProposal = erc721DaoContract;
+    }
 
     let data;
     let approvalData;
@@ -591,14 +598,16 @@ const ProposalDetail = () => {
       ]);
     }
 
-    const updateProposalExecute = new SmartContract(
-      clubData?.tokenType === "erc20" ? Erc20Dao : Erc721Dao,
-      daoAddress,
-      undefined,
-      USDC_CONTRACT_ADDRESS,
-      GNOSIS_TRANSACTION_URL,
-      true,
-    );
+    let updateProposalExecute;
+
+    if (
+      clubData.tokenType === "erc20" &&
+      (erc20DaoContract_SEND !== null || erc721DaoContract_SEND !== null)
+    ) {
+      updateProposalExecute = erc20DaoContract_SEND;
+    } else {
+      updateProposalExecute = erc721DaoContract_SEND;
+    }
 
     const response = updateProposalExecute.updateProposalAndExecution(
       data,

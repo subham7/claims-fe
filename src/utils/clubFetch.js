@@ -41,7 +41,7 @@ const ClubFetch = (Component) => {
     }
 
     const { clubId: daoAddress } = router.query;
-    const { pid } = router.query;
+    const { jid } = router.query;
 
     const reduxClubData = useSelector((state) => {
       return state.club.clubData;
@@ -91,7 +91,7 @@ const ClubFetch = (Component) => {
               : networkId == "0x89"
               ? SUBGRAPH_URL_POLYGON
               : "",
-            QUERY_CLUB_DETAILS(daoAddress ? daoAddress : pid),
+            QUERY_CLUB_DETAILS(daoAddress ? daoAddress : jid),
           );
 
           if (clubData) {
@@ -110,13 +110,16 @@ const ClubFetch = (Component) => {
       };
 
       addClubDataToRedux();
-    }, [reduxClubData, networkId, daoAddress, pid, dispatch]);
+    }, [reduxClubData, networkId, daoAddress, jid, dispatch]);
 
     const checkUserExists = useCallback(async () => {
       try {
-        if ((daoAddress && wallet) || (pid && wallet)) {
+        if ((daoAddress && wallet) || (jid && wallet)) {
           if (reduxClubData.gnosisAddress) {
-            if (reduxClubData.tokenType === "erc20") {
+            if (
+              reduxClubData.tokenType === "erc20" &&
+              erc20DaoContract !== null
+            ) {
               const daoDetails = await erc20DaoContract.getERC20DAOdetails();
               const erc20BalanceResponse = await erc20DaoContract.balanceOf();
 
@@ -144,7 +147,7 @@ const ClubFetch = (Component) => {
                   dispatch(setAdminUser(true));
                   setTracker(true);
                 } else {
-                  if (erc20BalanceResponse === "0" && !pid) {
+                  if (erc20BalanceResponse === "0" && !jid) {
                     dispatch(setMemberUser(false));
                     router.push("/");
                     setTracker(true);
@@ -156,7 +159,10 @@ const ClubFetch = (Component) => {
               } catch (error) {
                 console.error(error);
               }
-            } else if (reduxClubData.tokenType === "erc721") {
+            } else if (
+              reduxClubData.tokenType === "erc721" &&
+              erc721DaoContract !== null
+            ) {
               try {
                 const daoDetails =
                   await erc721DaoContract.getERC721DAOdetails();
@@ -189,7 +195,7 @@ const ClubFetch = (Component) => {
                   dispatch(setAdminUser(true));
                   setTracker(true);
                 } else {
-                  if (erc721BalanceResponse === "0" && !pid) {
+                  if (erc721BalanceResponse === "0" && !jid) {
                     dispatch(setMemberUser(false));
                     router.push("/");
                     setTracker(true);
@@ -210,7 +216,7 @@ const ClubFetch = (Component) => {
     }, [
       daoAddress,
       wallet,
-      pid,
+      jid,
       reduxClubData.gnosisAddress,
       reduxClubData.tokenType,
       erc20DaoContract,
@@ -224,7 +230,7 @@ const ClubFetch = (Component) => {
       if (wallet && networkId) {
         checkUserExists();
       }
-    }, [checkUserExists, pid, daoAddress, wallet, networkId]);
+    }, [checkUserExists, jid, daoAddress, wallet, networkId]);
 
     if (tracker === true) {
       return (

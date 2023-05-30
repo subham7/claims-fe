@@ -11,21 +11,26 @@ import ClaimContractABI from "../abis/singleClaimContract.json";
 import { useRouter } from "next/router";
 
 const useSmartContract = (props = {}) => {
-  const { contractAddress, daoTokenAddress, claimsAirdropTokenAddress } = props;
+  const {
+    contractAddress,
+    daoTokenAddress,
+    claimsAirdropTokenAddress,
+    tokenAAddress,
+    tokenBAddress,
+  } = props;
 
   const [{ wallet }] = useConnectWallet();
   const router = useRouter();
-  const { pid: daoAddress, clubId, claimAddress } = router.query;
+  const { jid: daoAddress, clubId, claimAddress } = router.query;
 
   const walletAddress = wallet?.accounts[0]?.address;
 
-  // const contractInstanceRef = useRef(null);
-
-  // const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [erc20TokenContract_CALL, setErc20TokenContract_CALL] = useState(null);
   const [erc20TokenContract_SEND, setErc20TokenContract_SEND] = useState(null);
   const [erc20DaoContract, setErc20DaoContract] = useState(null);
+  const [erc20DaoContract_SEND, setErc20DaoContract_SEND] = useState(null);
+  const [erc721DaoContract_SEND, setErc721DaoContract_SEND] = useState(null);
   const [factoryContract_CALL, setFactoryContract_CALL] = useState(null);
   const [factoryContract_SEND, setFactoryContract_SEND] = useState(null);
   const [erc721TokenContract, setErc721TokenContract] = useState(null);
@@ -34,6 +39,8 @@ const useSmartContract = (props = {}) => {
   const [claimContract_SEND, setClaimContract_SEND] = useState(null);
   const [daoTokenContract, setDaoTokenContract] = useState(null);
   const [erc20ClaimsContract, setErc20ClaimsContract] = useState(null);
+  const [tokenAContract, setTokenAContract] = useState(null);
+  const [tokenBContract, setTokenBContract] = useState(null);
 
   const GNOSIS_TRANSACTION_URL = useSelector((state) => {
     return state.gnosis.transactionUrl;
@@ -116,6 +123,27 @@ const useSmartContract = (props = {}) => {
           GNOSIS_TRANSACTION_URL,
         );
         setErc721DaoContract(erc721DaoContractInstance);
+
+        const erc20DaoContractInstance_SEND = new SmartContract(
+          ERC20DaoABI,
+          daoAddress ? daoAddress : clubId,
+          walletAddress,
+          USDC_CONTRACT_ADDRESS,
+          GNOSIS_TRANSACTION_URL,
+          true,
+        );
+        setErc20DaoContract_SEND(erc20DaoContractInstance_SEND);
+
+        const erc721DaoContractInstance_SEND = new SmartContract(
+          ERC721DaoABI,
+          daoAddress ? daoAddress : clubId,
+          walletAddress,
+          USDC_CONTRACT_ADDRESS,
+          GNOSIS_TRANSACTION_URL,
+          true,
+        );
+
+        setErc721DaoContract_SEND(erc721DaoContractInstance_SEND);
       }
 
       if (claimAddress) {
@@ -157,6 +185,26 @@ const useSmartContract = (props = {}) => {
             undefined,
           );
           setErc20ClaimsContract(erc20ClaimsContractInstance);
+        }
+
+        if (tokenAAddress || tokenBAddress) {
+          const tokenAContractInstance = new SmartContract(
+            ERC20TokenABI,
+            tokenAAddress,
+            walletAddress,
+            USDC_CONTRACT_ADDRESS,
+            GNOSIS_TRANSACTION_URL,
+          );
+          setTokenAContract(tokenAContractInstance);
+
+          const tokenBContractInstance = new SmartContract(
+            ERC20TokenABI,
+            tokenBAddress,
+            walletAddress,
+            USDC_CONTRACT_ADDRESS,
+            GNOSIS_TRANSACTION_URL,
+          );
+          setTokenBContract(tokenBContractInstance);
         }
       }
     } catch (error) {
@@ -210,6 +258,10 @@ const useSmartContract = (props = {}) => {
     claimContract_CALL,
     daoTokenContract,
     erc20ClaimsContract,
+    erc20DaoContract_SEND,
+    erc721DaoContract_SEND,
+    tokenAContract,
+    tokenBContract,
   };
 };
 
