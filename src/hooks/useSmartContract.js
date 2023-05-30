@@ -7,12 +7,15 @@ import ERC721TokenABI from "../abis/nft.json";
 import ERC20DaoABI from "../abis/newArch/erc20Dao.json";
 import ERC721DaoABI from "../abis/newArch/erc721Dao.json";
 import FactoryContractABI from "../abis/newArch/factoryContract.json";
+import ClaimContractABI from "../abis/singleClaimContract.json";
 import { useRouter } from "next/router";
 
-const useSmartContract = (contractAddress = "") => {
+const useSmartContract = (props = {}) => {
+  const { contractAddress, daoTokenAddress, claimsAirdropTokenAddress } = props;
+
   const [{ wallet }] = useConnectWallet();
   const router = useRouter();
-  const { pid: daoAddress, clubId } = router.query;
+  const { pid: daoAddress, clubId, claimAddress } = router.query;
 
   const walletAddress = wallet?.accounts[0]?.address;
 
@@ -27,6 +30,10 @@ const useSmartContract = (contractAddress = "") => {
   const [factoryContract_SEND, setFactoryContract_SEND] = useState(null);
   const [erc721TokenContract, setErc721TokenContract] = useState(null);
   const [erc721DaoContract, setErc721DaoContract] = useState(null);
+  const [claimContract_CALL, setClaimContract_CALL] = useState(null);
+  const [claimContract_SEND, setClaimContract_SEND] = useState(null);
+  const [daoTokenContract, setDaoTokenContract] = useState(null);
+  const [erc20ClaimsContract, setErc20ClaimsContract] = useState(null);
 
   const GNOSIS_TRANSACTION_URL = useSelector((state) => {
     return state.gnosis.transactionUrl;
@@ -110,6 +117,48 @@ const useSmartContract = (contractAddress = "") => {
         );
         setErc721DaoContract(erc721DaoContractInstance);
       }
+
+      if (claimAddress) {
+        const claimContractInstance_CALL = new SmartContract(
+          ClaimContractABI,
+          claimAddress,
+          walletAddress,
+          undefined,
+          undefined,
+        );
+        setClaimContract_CALL(claimContractInstance_CALL);
+
+        const claimContractInstance_SEND = new SmartContract(
+          ClaimContractABI,
+          claimAddress,
+          walletAddress,
+          undefined,
+          undefined,
+        );
+        setClaimContract_SEND(claimContractInstance_SEND);
+
+        if (daoTokenAddress) {
+          const daoTokenContractInstance = new SmartContract(
+            ERC20TokenABI,
+            daoTokenAddress,
+            walletAddress,
+            undefined,
+            undefined,
+          );
+          setDaoTokenContract(daoTokenContractInstance);
+        }
+
+        if (claimsAirdropTokenAddress) {
+          const erc20ClaimsContractInstance = new SmartContract(
+            ERC20TokenABI,
+            claimsAirdropTokenAddress,
+            walletAddress,
+            undefined,
+            undefined,
+          );
+          setErc20ClaimsContract(erc20ClaimsContractInstance);
+        }
+      }
     } catch (error) {
       setError(error.message);
     }
@@ -157,6 +206,10 @@ const useSmartContract = (contractAddress = "") => {
     factoryContract_SEND,
     erc20DaoContract,
     erc721DaoContract,
+    claimContract_SEND,
+    claimContract_CALL,
+    daoTokenContract,
+    erc20ClaimsContract,
   };
 };
 

@@ -36,9 +36,8 @@ import { useRouter } from "next/router";
 import { createProposal } from "../../api/proposal";
 import { fetchProposals } from "../../utils/proposal";
 import { useDispatch, useSelector } from "react-redux";
-import factoryContractABI from "../../abis/newArch/factoryContract.json";
-import { SmartContract } from "../../api/contract";
 import { setProposalList } from "../../redux/reducers/proposal";
+import useSmartContract from "../../hooks/useSmartContract";
 
 const useStyles = makeStyles({
   modalStyle: {
@@ -95,6 +94,8 @@ const CreateProposalDialog = ({ open, setOpen, onClose, tokenData }) => {
   const NETWORK_HEX = useSelector((state) => {
     return state.gnosis.networkHex;
   });
+
+  const { factoryContract_CAll } = useSmartContract();
 
   const [loaderOpen, setLoaderOpen] = useState(false);
   const [openSnackBar, setOpenSnackBar] = useState(false);
@@ -182,26 +183,23 @@ const CreateProposalDialog = ({ open, setOpen, onClose, tokenData }) => {
         ];
       }
       if (values.actionCommand === "Change total raise amount") {
-        const factoryContract = new SmartContract(
-          factoryContractABI,
-          FACTORY_CONTRACT_ADDRESS,
-          walletAddress,
-          USDC_CONTRACT_ADDRESS,
-          GNOSIS_TRANSACTION_URL,
-        );
-        const factoryData = await factoryContract.getDAOdetails(daoAddress);
+        if (factoryContract_CAll !== null) {
+          const factoryData = await factoryContract_CAll.getDAOdetails(
+            daoAddress,
+          );
 
-        commands = [
-          {
-            executionId: 3,
-            totalDeposits:
-              convertToWei(values.totalDeposit, 6) / factoryData.pricePerToken,
-
-            usdcTokenSymbol: "USDC",
-            usdcTokenDecimal: 6,
-            usdcGovernanceTokenDecimal: 18,
-          },
-        ];
+          commands = [
+            {
+              executionId: 3,
+              totalDeposits:
+                convertToWei(values.totalDeposit, 6) /
+                factoryData.pricePerToken,
+              usdcTokenSymbol: "USDC",
+              usdcTokenDecimal: 6,
+              usdcGovernanceTokenDecimal: 18,
+            },
+          ];
+        }
       }
       if (values.actionCommand === "Send token to an address") {
         const tokenDecimal = tokenData.find(

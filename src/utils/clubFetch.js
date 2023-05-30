@@ -16,15 +16,13 @@ import {
   setAdminUser,
   setMemberUser,
 } from "../redux/reducers/gnosis";
-import Erc20Dao from "../abis/newArch/erc20Dao.json";
-import Erc721Dao from "../abis/newArch/erc721Dao.json";
 import { fetchConfigById } from "../api/config";
-import { SmartContract } from "../api/contract";
 
 import Web3 from "web3";
 import { SUBGRAPH_URL_GOERLI, SUBGRAPH_URL_POLYGON, getRpcUrl } from "../api";
 import { Backdrop, CircularProgress } from "@mui/material";
 import { getSafeSdk } from "./helper";
+import useSmartContract from "../hooks/useSmartContract";
 
 const ClubFetch = (Component) => {
   const RetrieveDataComponent = () => {
@@ -45,17 +43,11 @@ const ClubFetch = (Component) => {
     const { clubId: daoAddress } = router.query;
     const { pid } = router.query;
 
-    const USDC_CONTRACT_ADDRESS = useSelector((state) => {
-      return state.gnosis.usdcContractAddress;
-    });
-
-    const GNOSIS_TRANSACTION_URL = useSelector((state) => {
-      return state.gnosis.transactionUrl;
-    });
-
     const reduxClubData = useSelector((state) => {
       return state.club.clubData;
     });
+
+    const { erc20DaoContract, erc721DaoContract } = useSmartContract();
 
     useEffect(() => {
       dispatch(addDaoAddress(Web3.utils.toChecksumAddress(daoAddress)));
@@ -118,28 +110,15 @@ const ClubFetch = (Component) => {
       };
 
       addClubDataToRedux();
-    }, [reduxClubData, networkId]);
+    }, [reduxClubData, networkId, daoAddress, pid, dispatch]);
 
     const checkUserExists = useCallback(async () => {
       try {
         if ((daoAddress && wallet) || (pid && wallet)) {
-          if (
-            USDC_CONTRACT_ADDRESS &&
-            GNOSIS_TRANSACTION_URL &&
-            reduxClubData.gnosisAddress
-          ) {
+          if (reduxClubData.gnosisAddress) {
             if (reduxClubData.tokenType === "erc20") {
-              const erc20Contract = new SmartContract(
-                Erc20Dao,
-                daoAddress ? daoAddress : pid,
-                walletAddress,
-                USDC_CONTRACT_ADDRESS,
-                GNOSIS_TRANSACTION_URL,
-              );
-
-              const daoDetails = await erc20Contract.getERC20DAOdetails();
-
-              const erc20BalanceResponse = await erc20Contract.balanceOf();
+              const daoDetails = await erc20DaoContract.getERC20DAOdetails();
+              const erc20BalanceResponse = await erc20DaoContract.balanceOf();
 
               dispatch(
                 addErc20ClubDetails({
@@ -179,15 +158,10 @@ const ClubFetch = (Component) => {
               }
             } else if (reduxClubData.tokenType === "erc721") {
               try {
-                const erc721Contract = new SmartContract(
-                  Erc721Dao,
-                  daoAddress ?? pid,
-                  walletAddress,
-                  USDC_CONTRACT_ADDRESS,
-                  GNOSIS_TRANSACTION_URL,
-                );
-                const daoDetails = await erc721Contract.getERC721DAOdetails();
-                const erc721BalanceResponse = await erc721Contract.balanceOf();
+                const daoDetails =
+                  await erc721DaoContract.getERC721DAOdetails();
+                const erc721BalanceResponse =
+                  await erc721DaoContract.balanceOf();
 
                 dispatch(
                   addErc721ClubDetails({
@@ -237,13 +211,13 @@ const ClubFetch = (Component) => {
       daoAddress,
       wallet,
       pid,
-      USDC_CONTRACT_ADDRESS,
-      GNOSIS_TRANSACTION_URL,
       reduxClubData.gnosisAddress,
       reduxClubData.tokenType,
-      walletAddress,
+      erc20DaoContract,
       dispatch,
+      walletAddress,
       router,
+      erc721DaoContract,
     ]);
 
     useEffect(() => {

@@ -3,21 +3,16 @@ import dayjs from "dayjs";
 import { useRouter } from "next/router";
 import React, { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { fetchClubbyDaoAddress } from "../../../src/api/club";
-import { SmartContract } from "../../../src/api/contract";
 import { QUERY_ALL_MEMBERS } from "../../../src/api/graphql/queries";
 import AdditionalSettings from "../../../src/components/settingsComps/AdditionalSettings";
 import SettingsInfo from "../../../src/components/settingsComps/SettingsInfo";
 import TokenGating from "../../../src/components/tokenGatingComp/TokenGating";
-import factoryContractABI from "../../../src/abis/newArch/factoryContract.json";
-import erc20DaoContractABI from "../../../src/abis/newArch/erc20Dao.json";
-import erc721DaoContractABI from "../../../src/abis/newArch/erc721Dao.json";
-import erc20ABI from "../../../src/abis/usdcTokenContract.json";
 import ClubFetch from "../../../src/utils/clubFetch";
 import { subgraphQuery } from "../../../src/utils/subgraphs";
 import { convertFromWeiGovernance } from "../../../src/utils/globalFunctions";
 import { getAssetsByDaoAddress } from "../../../src/api/assets";
 import WrongNetworkModal from "../../../src/components/modals/WrongNetworkModal";
+import useSmartContract from "../../../src/hooks/useSmartContract";
 
 const Settings = () => {
   const [daoDetails, setDaoDetails] = useState({
@@ -54,14 +49,11 @@ const Settings = () => {
   });
   const [members, setMembers] = useState(0);
   const [treasuryAmount, setTreasuryAmount] = useState(0);
+  const [factoryDataFetched, setFactoryDataFetched] = useState(null);
 
   const [{ wallet }] = useConnectWallet();
 
   const walletAddress = wallet?.accounts[0].address;
-
-  const FACTORY_CONTRACT_ADDRESS = useSelector((state) => {
-    return state.gnosis.factoryContractAddress;
-  });
 
   const CLUB_NETWORK_ID = useSelector((state) => {
     return state.gnosis.clubNetworkId;
@@ -87,14 +79,6 @@ const Settings = () => {
     return state.gnosis.networkHex;
   });
 
-  const GNOSIS_TRANSACTION_URL = useSelector((state) => {
-    return state.gnosis.transactionUrl;
-  });
-
-  const USDC_CONTRACT_ADDRESS = useSelector((state) => {
-    return state.gnosis.usdcContractAddress;
-  });
-
   const router = useRouter();
   const { clubId: daoAddress } = router.query;
 
@@ -104,32 +88,23 @@ const Settings = () => {
   const remainingTimeInSecs = day2.diff(day1, "seconds");
   const remainingDays = day2.diff(day1, "day");
 
+  const {
+    erc20TokenContract_CALL,
+    factoryContract_CALL,
+    erc20DaoContract,
+    erc721DaoContract,
+  } = useSmartContract({
+    contractAddress:
+      factoryDataFetched && factoryDataFetched?.depositTokenAddress,
+  });
+
   const fetchErc20ContractDetails = useCallback(async () => {
     try {
-      const factoryContract = new SmartContract(
-        factoryContractABI,
-        FACTORY_CONTRACT_ADDRESS,
-        walletAddress,
-        USDC_CONTRACT_ADDRESS,
-        GNOSIS_TRANSACTION_URL,
-      );
-
-      const erc20DaoContract = new SmartContract(
-        erc20DaoContractABI,
-        daoAddress,
-        walletAddress,
-        USDC_CONTRACT_ADDRESS,
-        GNOSIS_TRANSACTION_URL,
-      );
-
-      const balanceOfClubToken = await erc20DaoContract.balanceOf();
-
-      const fetchedData = await fetchClubbyDaoAddress(daoAddress);
-      const fetchedImage = fetchedData?.data[0];
-
-      if (factoryContract && erc20DaoContract) {
-        const factoryData = await factoryContract.getDAOdetails(daoAddress);
-
+      if (factoryContract_CALL !== null && erc20DaoContract) {
+        const factoryData = await factoryContract_CALL.getDAOdetails(
+          daoAddress,
+        );
+        const balanceOfClubToken = await erc20DaoContract.balanceOf();
         const erc20Data = await erc20DaoContract.getERC20DAOdetails();
         const erc20DaoDecimal = await erc20DaoContract.decimals();
         const clubTokensMinted = await erc20DaoContract.totalSupply();
@@ -143,7 +118,7 @@ const Settings = () => {
             isGovernance: erc20Data.isGovernanceActive,
             decimals: erc20DaoDecimal,
             clubTokensMinted: clubTokensMinted,
-            daoImage: fetchedImage,
+            // daoImage: fetchedImage,
             balanceOfClubToken: convertFromWeiGovernance(
               balanceOfClubToken,
               18,
@@ -164,83 +139,46 @@ const Settings = () => {
     } catch (error) {
       console.log(error);
     }
-  }, [
-    FACTORY_CONTRACT_ADDRESS,
-    GNOSIS_TRANSACTION_URL,
-    USDC_CONTRACT_ADDRESS,
-    daoAddress,
-    walletAddress,
-  ]);
+  }, [daoAddress, erc20DaoContract, factoryContract_CALL]);
 
   const fetchErc20TokenDetails = useCallback(async () => {
     try {
-      const factoryContract = new SmartContract(
-        factoryContractABI,
-        FACTORY_CONTRACT_ADDRESS,
-        walletAddress,
-        USDC_CONTRACT_ADDRESS,
-        GNOSIS_TRANSACTION_URL,
-      );
-      const factoryData = await factoryContract.getDAOdetails(daoAddress);
+      const factoryData = await factoryContract_CALL.getDAOdetails(daoAddress);
+      setFactoryDataFetched(factoryData);
 
-      const erc20Contract = new SmartContract(
-        erc20ABI,
-        factoryData.depositTokenAddress,
-        walletAddress,
-        USDC_CONTRACT_ADDRESS,
-        GNOSIS_TRANSACTION_URL,
-      );
+      if (factoryDataFetched?.depositTokenAddress) {
+        const balanceOfToken = await erc20TokenContract_CALL.balanceOf();
+        const decimals = await erc20TokenContract_CALL.decimals();
+        const symbol = await erc20TokenContract_CALL.obtainSymbol();
+        const name = await erc20TokenContract_CALL.name();
 
-      const balanceOfToken = await erc20Contract.balanceOf();
-      const decimals = await erc20Contract.decimals();
-      const symbol = await erc20Contract.obtainSymbol();
-      const name = await erc20Contract.name();
-
-      const balanceConverted = convertFromWeiGovernance(
-        balanceOfToken,
-        decimals,
-      );
-      setErc20TokenDetails({
-        tokenBalance: +balanceConverted,
-        tokenSymbol: symbol,
-        tokenName: name,
-        tokenDecimal: decimals,
-      });
+        const balanceConverted = convertFromWeiGovernance(
+          balanceOfToken,
+          decimals,
+        );
+        setErc20TokenDetails({
+          tokenBalance: +balanceConverted,
+          tokenSymbol: symbol,
+          tokenName: name,
+          tokenDecimal: decimals,
+        });
+      }
     } catch (error) {
       console.log(error);
     }
   }, [
-    FACTORY_CONTRACT_ADDRESS,
-    GNOSIS_TRANSACTION_URL,
-    USDC_CONTRACT_ADDRESS,
     daoAddress,
-    walletAddress,
+    erc20TokenContract_CALL,
+    factoryContract_CALL,
+    factoryDataFetched?.depositTokenAddress,
   ]);
 
   const fetchErc721ContractDetails = useCallback(async () => {
     try {
-      const factoryContract = new SmartContract(
-        factoryContractABI,
-        FACTORY_CONTRACT_ADDRESS,
-        walletAddress,
-        USDC_CONTRACT_ADDRESS,
-        GNOSIS_TRANSACTION_URL,
-      );
-
-      const erc721DaoContract = new SmartContract(
-        erc721DaoContractABI,
-        daoAddress,
-        walletAddress,
-        USDC_CONTRACT_ADDRESS,
-        GNOSIS_TRANSACTION_URL,
-      );
-
-      const fetchedData = await fetchClubbyDaoAddress(daoAddress);
-      const fetchedImage = fetchedData?.data[0]?.nftImageUrl;
-      const nftURI = fetchedData?.data[0]?.nftMetadataUrl;
-
-      if (factoryContract && erc721DaoContract) {
-        const factoryData = await factoryContract.getDAOdetails(daoAddress);
+      if (factoryContract_CALL !== null && erc721DaoContract) {
+        const factoryData = await factoryContract_CALL.getDAOdetails(
+          daoAddress,
+        );
 
         const erc721Data = await erc721DaoContract.getERC721DAOdetails();
 
@@ -256,8 +194,6 @@ const Settings = () => {
             isGovernance: erc721Data.isGovernanceActive,
             maxTokensPerUser: erc721Data.maxTokensPerUser,
             isTotalSupplyUnlimited: erc721Data.isNftTotalSupplyUnlimited,
-            // decimals: erc20DaoDecimal,
-            // clubTokensMinted: clubTokensMinted,
             balanceOfClubToken: convertFromWeiGovernance(
               balanceOfClubToken,
               18,
@@ -265,8 +201,6 @@ const Settings = () => {
             nftMinted: nftMinted,
             isTransferable: erc721Data.isTransferable,
             createdBy: erc721Data.ownerAddress,
-            daoImage: fetchedImage,
-            nftURI: nftURI,
             isTokenGated: factoryData.isTokenGatingApplied,
             minDeposit: factoryData.minDepositPerUser,
             maxDeposit: factoryData.maxDepositPerUser,
@@ -283,13 +217,7 @@ const Settings = () => {
     } catch (error) {
       console.log(error);
     }
-  }, [
-    FACTORY_CONTRACT_ADDRESS,
-    GNOSIS_TRANSACTION_URL,
-    USDC_CONTRACT_ADDRESS,
-    daoAddress,
-    walletAddress,
-  ]);
+  }, [daoAddress, erc721DaoContract, factoryContract_CALL]);
 
   const fetchAssets = useCallback(async () => {
     try {

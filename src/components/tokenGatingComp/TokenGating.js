@@ -4,7 +4,6 @@ import { TokenGatingStyle } from "./TokenGatingStyles";
 import { MdEdit } from "react-icons/md";
 import TokenGatingModal from "./TokenGatingModal";
 import { useSelector } from "react-redux";
-import FactoryContractABI from "../../abis/newArch/factoryContract.json";
 import ERC20ABI from "../../abis/usdcTokenContract.json";
 import SingleToken from "./SingleToken";
 import { SmartContract } from "../../api/contract";
@@ -14,6 +13,7 @@ import {
   convertFromWeiGovernance,
   convertToWeiGovernance,
 } from "../../utils/globalFunctions";
+import useSmartContract from "../../hooks/useSmartContract";
 
 const TokenGating = () => {
   const [showTokenGatingModal, setShowTokenGatingModal] = useState(false);
@@ -44,10 +44,6 @@ const TokenGating = () => {
     return state.gnosis.adminUser;
   });
 
-  const FACTORY_CONTRACT_ADDRESS = useSelector((state) => {
-    return state.gnosis.factoryContractAddress;
-  });
-
   const router = useRouter();
   const classes = TokenGatingStyle();
   const { clubId: daoAddress } = router.query;
@@ -62,6 +58,8 @@ const TokenGating = () => {
     return state.gnosis.usdcContractAddress;
   });
 
+  const { factoryContract_SEND, factoryContract_CALL } = useSmartContract();
+
   const addTokensHandler = () => {
     setShowTokenGatingModal(true);
   };
@@ -73,16 +71,7 @@ const TokenGating = () => {
   const tokenGatingHandler = async () => {
     try {
       setLoading(true);
-      const factoryContract = new SmartContract(
-        FactoryContractABI,
-        FACTORY_CONTRACT_ADDRESS,
-        walletAddress,
-        USDC_CONTRACT_ADDRESS,
-        GNOSIS_TRANSACTION_URL,
-        true,
-      );
-
-      const res = await factoryContract.setupTokenGating(
+      const res = await factoryContract_SEND.setupTokenGating(
         tokensList[0].tokenAddress,
         tokensList[1]?.tokenAddress
           ? tokensList[1]?.tokenAddress
@@ -126,17 +115,8 @@ const TokenGating = () => {
   const fetchTokenGatingDetials = useCallback(async () => {
     try {
       setLoading(true);
-      const factoryContract = new SmartContract(
-        FactoryContractABI,
-        FACTORY_CONTRACT_ADDRESS,
-        walletAddress,
-        USDC_CONTRACT_ADDRESS,
-        GNOSIS_TRANSACTION_URL,
-      );
-
-      const tokenGatingDetails = await factoryContract.getTokenGatingDetails(
-        daoAddress,
-      );
+      const tokenGatingDetails =
+        await factoryContract_CALL.getTokenGatingDetails(daoAddress);
       setFetchedDetails({
         tokenA: tokenGatingDetails[0]?.tokenA,
         tokenB: tokenGatingDetails[0]?.tokenB,
@@ -179,11 +159,11 @@ const TokenGating = () => {
       setLoading(false);
     }
   }, [
-    FACTORY_CONTRACT_ADDRESS,
+    factoryContract_CALL,
+    daoAddress,
     walletAddress,
     USDC_CONTRACT_ADDRESS,
     GNOSIS_TRANSACTION_URL,
-    daoAddress,
   ]);
 
   useEffect(() => {

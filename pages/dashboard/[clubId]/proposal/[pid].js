@@ -57,6 +57,7 @@ import CurrentResults from "../../../../src/components/proposalComps/CurrentResu
 import ProposalVotes from "../../../../src/components/proposalComps/ProposalVotes";
 import WrongNetworkModal from "../../../../src/components/modals/WrongNetworkModal";
 import { getSafeSdk } from "../../../../src/utils/helper";
+import useSmartContract from "../../../../src/hooks/useSmartContract";
 
 const useStyles = makeStyles({
   clubAssets: {
@@ -303,6 +304,8 @@ const ProposalDetail = () => {
   const CLUB_NETWORK_ID = useSelector((state) => {
     return state.gnosis.clubNetworkId;
   });
+
+  const { factoryContract_CALL } = useSmartContract();
 
   const getSafeService = useCallback(async () => {
     const web3 = new Web3(window.ethereum);
@@ -683,15 +686,9 @@ const ProposalDetail = () => {
   useEffect(() => {
     const fetchFactoryContractDetails = async () => {
       try {
-        const factoryContract = new SmartContract(
-          FactoryContractABI,
-          FACTORY_CONTRACT_ADDRESS,
-          walletAddress,
-          USDC_CONTRACT_ADDRESS,
-          GNOSIS_TRANSACTION_URL,
+        const factoryData = await factoryContract_CALL.getDAOdetails(
+          daoAddress,
         );
-
-        const factoryData = await factoryContract.getDAOdetails(daoAddress);
         setDaoDetails(factoryData);
       } catch (error) {
         console.log(error);
@@ -699,13 +696,7 @@ const ProposalDetail = () => {
     };
 
     fetchFactoryContractDetails();
-  }, [
-    daoAddress,
-    FACTORY_CONTRACT_ADDRESS,
-    GNOSIS_TRANSACTION_URL,
-    USDC_CONTRACT_ADDRESS,
-    walletAddress,
-  ]);
+  }, [daoAddress, factoryContract_CALL]);
 
   if (!wallet && proposalData === null) {
     return <>loading</>;

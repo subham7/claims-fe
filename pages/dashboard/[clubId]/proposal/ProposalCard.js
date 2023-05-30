@@ -7,7 +7,6 @@ import actionIcon from "../../../../public/assets/icons/action_icon.svg";
 import tickerIcon from "../../../../public/assets/icons/ticker_icon.svg";
 import surveyIcon from "../../../../public/assets/icons/survey_icon.svg";
 import erc20ABI from "../../../../src/abis/usdcTokenContract.json";
-import factoryContractABI from "../../../../src/abis/newArch/factoryContract.json";
 import React, { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
 import { useSelector } from "react-redux";
@@ -15,6 +14,7 @@ import { useConnectWallet } from "@web3-onboard/react";
 import { SmartContract } from "../../../../src/api/contract";
 import { useRouter } from "next/router";
 import { ProposalCardStyles } from "../../../../src/components/proposalComps/ProposalCardStyles";
+import useSmartContract from "../../../../src/hooks/useSmartContract";
 
 const ProposalCard = ({
   proposal,
@@ -42,6 +42,8 @@ const ProposalCard = ({
   const gnosis = useSelector((state) => {
     return state.gnosis;
   });
+
+  const { factoryContract_CALL } = useSmartContract();
 
   const walletAddress = wallet?.accounts[0].address;
 
@@ -96,29 +98,19 @@ const ProposalCard = ({
   useEffect(() => {
     const fetchFactoryContractDetails = async () => {
       try {
-        const factoryContract = new SmartContract(
-          factoryContractABI,
-          gnosis.factoryContractAddress,
-          walletAddress,
-          gnosis.usdcContractAddress,
-          gnosis.transactionUrl,
-        );
-
-        const factoryData = await factoryContract.getDAOdetails(daoAddress);
-        setDaoDetails(factoryData);
+        if (factoryContract_CALL !== null) {
+          const factoryData = await factoryContract_CALL.getDAOdetails(
+            daoAddress,
+          );
+          setDaoDetails(factoryData);
+        }
       } catch (error) {
         console.log(error);
       }
     };
 
     fetchFactoryContractDetails();
-  }, [
-    daoAddress,
-    gnosis.factoryContractAddress,
-    gnosis.transactionUrl,
-    gnosis.usdcContractAddress,
-    walletAddress,
-  ]);
+  }, [daoAddress, factoryContract_CALL]);
 
   useEffect(() => {
     fetchAirDropContractDetails();

@@ -27,16 +27,12 @@ import { useConnectWallet } from "@web3-onboard/react";
 import { useRouter } from "next/router";
 import { getAssetsByDaoAddress, getNFTsByDaoAddress } from "../../api/assets";
 import { getProposalByDaoAddress } from "../../api/proposal";
-import { SmartContract } from "../../api/contract";
 import { subgraphQuery } from "../../utils/subgraphs";
 import {
   QUERY_ALL_MEMBERS,
   QUERY_CLUB_DETAILS,
 } from "../../api/graphql/queries";
 import ClubFetch from "../../utils/clubFetch";
-import erc20DaoContractABI from "../../abis/newArch/erc20Dao.json";
-import erc721DaoContractABI from "../../abis/newArch/erc721Dao.json";
-import factoryContractABI from "../../abis/newArch/factoryContract.json";
 import {
   convertFromWeiGovernance,
   convertIpfsToUrl,
@@ -44,6 +40,7 @@ import {
 import { GiTwoCoins } from "react-icons/gi";
 import { IoColorPalette } from "react-icons/io5";
 import WrongNetworkModal from "../modals/WrongNetworkModal";
+import useSmartContract from "../../hooks/useSmartContract";
 
 const DashboardIndex = () => {
   const clubData = useSelector((state) => {
@@ -90,17 +87,10 @@ const DashboardIndex = () => {
     return state.gnosis.networkHex;
   });
 
-  const GNOSIS_TRANSACTION_URL = useSelector((state) => {
-    return state.gnosis.transactionUrl;
-  });
-
   const WRONG_NETWORK = useSelector((state) => {
     return state.gnosis.wrongNetwork;
   });
 
-  const USDC_CONTRACT_ADDRESS = useSelector((state) => {
-    return state.gnosis.usdcContractAddress;
-  });
   const symbol = useSelector((state) => {
     return state.club.clubData.symbol;
   });
@@ -108,6 +98,9 @@ const DashboardIndex = () => {
   const tokenType = useSelector((state) => {
     return state.club.clubData.tokenType;
   });
+
+  const { factoryContract_CALL, erc721TokenContract, erc20DaoContract } =
+    useSmartContract();
 
   const walletAddress = wallet?.accounts[0].address;
 
@@ -212,17 +205,11 @@ const DashboardIndex = () => {
 
   useEffect(() => {
     try {
-      if (daoAddress) {
+      if (daoAddress && factoryContract_CALL !== null) {
         const factoryContractData = async () => {
-          const factoryContract = new SmartContract(
-            factoryContractABI,
-            FACTORY_CONTRACT_ADDRESS,
-            walletAddress,
-            USDC_CONTRACT_ADDRESS,
-            GNOSIS_TRANSACTION_URL,
+          const factoryData = await factoryContract_CALL.getDAOdetails(
+            daoAddress,
           );
-
-          const factoryData = await factoryContract.getDAOdetails(daoAddress);
           setDepositCloseTime(factoryData?.depositCloseTime);
         };
 
@@ -231,30 +218,19 @@ const DashboardIndex = () => {
     } catch (error) {
       console.log(error);
     }
-  }, [
-    FACTORY_CONTRACT_ADDRESS,
-    GNOSIS_TRANSACTION_URL,
-    USDC_CONTRACT_ADDRESS,
-    daoAddress,
-    walletAddress,
-  ]);
+  }, [daoAddress, factoryContract_CALL]);
 
   useEffect(() => {
     try {
-      if (daoAddress) {
+      if (daoAddress && erc721TokenContract !== null) {
         const loadNftContractData = async () => {
           try {
-            const nftContract = new SmartContract(
-              erc721DaoContractABI,
-              daoAddress,
+            const nftBalance = await erc721TokenContract.nftBalance(
               walletAddress,
-              USDC_CONTRACT_ADDRESS,
-              GNOSIS_TRANSACTION_URL,
             );
-            const nftBalance = await nftContract.nftBalance(walletAddress);
             setBalanceOfUser(nftBalance);
-            const symbol = await nftContract.symbol();
-            const nftMinted = await nftContract.nftOwnersCount();
+            const symbol = await erc721TokenContract.symbol();
+            const nftMinted = await erc721TokenContract.nftOwnersCount();
             setClubTokenMinted(nftMinted);
           } catch (error) {
             console.log(error);
@@ -263,13 +239,6 @@ const DashboardIndex = () => {
 
         const loadSmartContractData = async () => {
           try {
-            const erc20DaoContract = new SmartContract(
-              erc20DaoContractABI,
-              daoAddress,
-              walletAddress,
-              USDC_CONTRACT_ADDRESS,
-              GNOSIS_TRANSACTION_URL,
-            );
             const balance = await erc20DaoContract.nftBalance(walletAddress);
             //KEEP THIS CONSOLE
             setBalanceOfUser(balance);
@@ -303,8 +272,8 @@ const DashboardIndex = () => {
     daoAddress,
     clubData.tokenType,
     walletAddress,
-    USDC_CONTRACT_ADDRESS,
-    GNOSIS_TRANSACTION_URL,
+    erc721TokenContract,
+    erc20DaoContract,
   ]);
 
   return (

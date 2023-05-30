@@ -74,7 +74,9 @@ const NewArchERC721 = ({
     erc20TokenContract_SEND,
     factoryContract_SEND,
     erc721TokenContract,
-  } = useSmartContract(daoDetails.depositTokenAddress);
+  } = useSmartContract({
+    contractAddress: daoDetails && daoDetails?.depositTokenAddress,
+  });
 
   const fetchTokenDetails = useCallback(async () => {
     try {
