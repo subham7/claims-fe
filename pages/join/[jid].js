@@ -47,7 +47,6 @@ const Join = () => {
   const [isTokenGated, setIsTokenGated] = useState(false);
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [factoryContract, setFactoryContract] = useState(null);
 
   const [{ wallet }] = useConnectWallet();
   const router = useRouter();
@@ -195,6 +194,7 @@ const Join = () => {
           USDC_CONTRACT_ADDRESS,
           GNOSIS_TRANSACTION_URL,
         );
+
         const balanceOfTokenAInUserWallet = await tokenAContract.balanceOf();
         const balanceOfTokenBInUserWallet = await tokenBContract.balanceOf();
 

@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import * as yup from "yup";
 import { useConnectWallet } from "@web3-onboard/react";
 import { TokenGatingModalStyles } from "./TokenGatingModalStyles";
-import { useSelector } from "react-redux";
 import useSmartContract from "../../hooks/useSmartContract";
 
 const Backdrop = ({ onClick }) => {
@@ -18,15 +17,6 @@ const TokenGatingModal = ({ closeModal, chooseTokens }) => {
   const [data, setData] = useState(null);
   const [{ wallet }] = useConnectWallet();
   const classes = TokenGatingModalStyles();
-  const walletAddress = wallet?.accounts[0]?.address;
-
-  const GNOSIS_TRANSACTION_URL = useSelector((state) => {
-    return state.gnosis.transactionUrl;
-  });
-
-  const USDC_CONTRACT_ADDRESS = useSelector((state) => {
-    return state.gnosis.usdcContractAddress;
-  });
 
   const { erc20TokenContractCall } = useSmartContract({
     contractAddress: data && data?.address,

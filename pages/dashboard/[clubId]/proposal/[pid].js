@@ -238,10 +238,6 @@ const ProposalDetail = () => {
     return state.gnosis.networkHex;
   });
 
-  const USDC_CONTRACT_ADDRESS = useSelector((state) => {
-    return state.gnosis.usdcContractAddress;
-  });
-
   const clubData = useSelector((state) => {
     return state.club.clubData;
   });
@@ -789,7 +785,6 @@ const ProposalDetail = () => {
               <ProposalExecutionInfo
                 proposalData={proposalData}
                 fetched={fetched}
-                USDC_CONTRACT_ADDRESS={USDC_CONTRACT_ADDRESS}
                 daoDetails={factoryData}
               />
 
