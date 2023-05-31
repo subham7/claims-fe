@@ -2,11 +2,10 @@ import { Alert, Button, TextField, Typography } from "@mui/material";
 import { useFormik } from "formik";
 import React, { useState } from "react";
 import * as yup from "yup";
-import { SmartContract } from "../../api/contract";
-import ERC20ABI from "../../abis/usdcTokenContract.json";
 import { useConnectWallet } from "@web3-onboard/react";
 import { TokenGatingModalStyles } from "./TokenGatingModalStyles";
 import { useSelector } from "react-redux";
+import useSmartContract from "../../hooks/useSmartContract";
 
 const Backdrop = ({ onClick }) => {
   const classes = TokenGatingModalStyles();
@@ -16,6 +15,7 @@ const Backdrop = ({ onClick }) => {
 
 const TokenGatingModal = ({ closeModal, chooseTokens }) => {
   const [notValid, setNotValid] = useState(false);
+  const [data, setData] = useState(null);
   const [{ wallet }] = useConnectWallet();
   const classes = TokenGatingModalStyles();
   const walletAddress = wallet?.accounts[0]?.address;
@@ -26,6 +26,10 @@ const TokenGatingModal = ({ closeModal, chooseTokens }) => {
 
   const USDC_CONTRACT_ADDRESS = useSelector((state) => {
     return state.gnosis.usdcContractAddress;
+  });
+
+  const { erc20TokenContractCall } = useSmartContract({
+    contractAddress: data && data?.address,
   });
 
   const formik = useFormik({
@@ -42,33 +46,28 @@ const TokenGatingModal = ({ closeModal, chooseTokens }) => {
     }),
 
     onSubmit: (values) => {
+      setData(values);
       let tokenSymbol,
         tokenDecimal = 0;
       if (values.address) {
         const checkTokenGating = async () => {
           try {
-            const erc20contract = new SmartContract(
-              ERC20ABI,
-              values.address,
-              walletAddress,
-              USDC_CONTRACT_ADDRESS,
-              GNOSIS_TRANSACTION_URL,
-            );
+            if (data?.address) {
+              tokenSymbol = await erc20TokenContractCall.obtainSymbol();
+              try {
+                tokenDecimal = await erc20TokenContractCall.decimals();
+              } catch (err) {
+                console.log(err);
+              }
 
-            tokenSymbol = await erc20contract.obtainSymbol();
-            try {
-              tokenDecimal = await erc20contract.decimals();
-            } catch (err) {
-              console.log(err);
+              chooseTokens({
+                tokenSymbol: tokenSymbol,
+                tokenAddress: values.address,
+                tokenAmount: values.noOfTokens,
+                tokenDecimal: tokenDecimal,
+              });
+              closeModal();
             }
-
-            chooseTokens({
-              tokenSymbol: tokenSymbol,
-              tokenAddress: values.address,
-              tokenAmount: values.noOfTokens,
-              tokenDecimal: tokenDecimal,
-            });
-            closeModal();
           } catch (error) {
             console.log(error);
 

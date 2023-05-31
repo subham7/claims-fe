@@ -1,11 +1,9 @@
 import { Card, Divider, Grid, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import React, { useCallback, useEffect, useState } from "react";
-import { SmartContract } from "../../api/contract";
-import erc20ABI from "../../abis/usdcTokenContract.json";
-import { useConnectWallet } from "@web3-onboard/react";
 import { useSelector } from "react-redux";
 import { convertFromWeiGovernance } from "../../utils/globalFunctions";
+import useSmartContract from "../../hooks/useSmartContract";
 
 const useStyles = makeStyles({
   listFont2: {
@@ -19,14 +17,13 @@ const useStyles = makeStyles({
   },
 });
 
-const ProposalExecutionInfo = ({
-  proposalData,
-  fetched,
-  USDC_CONTRACT_ADDRESS,
-  daoDetails,
-}) => {
+const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
   const classes = useStyles();
-  const [{ wallet }] = useConnectWallet();
+  const { erc20TokenContractCall } = useSmartContract({
+    contractAddress: proposalData?.commands[0]?.airDropToken
+      ? proposalData?.commands[0]?.airDropToken
+      : proposalData?.commands[0]?.customToken,
+  });
 
   const tokenType = useSelector((state) => {
     return state.club.clubData.tokenType;
@@ -37,27 +34,11 @@ const ProposalExecutionInfo = ({
     symbol: "",
   });
 
-  const GNOSIS_TRANSACTION_URL = useSelector((state) => {
-    return state.gnosis.transactionUrl;
-  });
-
-  const walletAddress = wallet?.accounts[0].address;
-
   const fetchAirDropContractDetails = useCallback(async () => {
     try {
-      if (proposalData) {
-        const airdropContract = new SmartContract(
-          erc20ABI,
-          proposalData?.commands[0]?.airDropToken
-            ? proposalData?.commands[0]?.airDropToken
-            : proposalData?.commands[0]?.customToken,
-          walletAddress,
-          USDC_CONTRACT_ADDRESS,
-          GNOSIS_TRANSACTION_URL,
-        );
-
-        const decimal = await airdropContract.decimals();
-        const symbol = await airdropContract.obtainSymbol();
+      if (proposalData && erc20TokenContractCall !== null) {
+        const decimal = await erc20TokenContractCall.decimals();
+        const symbol = await erc20TokenContractCall.obtainSymbol();
 
         setTokenDetails({
           decimals: decimal,
@@ -67,12 +48,7 @@ const ProposalExecutionInfo = ({
     } catch (error) {
       console.log(error);
     }
-  }, [
-    GNOSIS_TRANSACTION_URL,
-    USDC_CONTRACT_ADDRESS,
-    proposalData,
-    walletAddress,
-  ]);
+  }, [erc20TokenContractCall, proposalData]);
 
   useEffect(() => {
     fetchAirDropContractDetails();

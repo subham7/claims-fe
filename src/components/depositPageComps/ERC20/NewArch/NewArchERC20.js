@@ -17,10 +17,7 @@ import {
 import { TwitterShareButton } from "react-twitter-embed";
 import { NewArchERC20Styles } from "./NewArchERC20Styles";
 import { useConnectWallet } from "@web3-onboard/react";
-import { SmartContract } from "../../../../api/contract";
-import factoryContractABI from "../../../../abis/newArch/factoryContract.json";
 import ProgressBar from "../../../progressbar";
-import erc20ABI from "../../../../abis/usdcTokenContract.json";
 import {
   convertFromWeiGovernance,
   convertToWeiGovernance,
@@ -31,6 +28,7 @@ import dayjs from "dayjs";
 import { useSelector } from "react-redux";
 import { useRouter } from "next/router";
 import WrongNetworkModal from "../../../modals/WrongNetworkModal";
+import useSmartContract from "../../../../hooks/useSmartContract";
 
 const NewArchERC20 = ({
   daoDetails,
@@ -57,14 +55,6 @@ const NewArchERC20 = ({
     return state.gnosis.factoryContractAddress;
   });
 
-  const GNOSIS_TRANSACTION_URL = useSelector((state) => {
-    return state.gnosis.transactionUrl;
-  });
-
-  const USDC_CONTRACT_ADDRESS = useSelector((state) => {
-    return state.gnosis.usdcContractAddress;
-  });
-
   const WRONG_NETWORK = useSelector((state) => {
     return state.gnosis.wrongNetwork;
   });
@@ -84,43 +74,40 @@ const NewArchERC20 = ({
     }, 4000);
   };
 
+  const {
+    erc20TokenContractCall,
+    erc20TokenContractSend,
+    factoryContractSend,
+  } = useSmartContract({
+    contractAddress: daoDetails && daoDetails?.depositTokenAddress,
+  });
+
   const fetchTokenDetails = useCallback(async () => {
     setLoading(true);
     try {
-      const erc20Contract = new SmartContract(
-        erc20ABI,
-        daoDetails.depositTokenAddress,
-        walletAddress,
-        USDC_CONTRACT_ADDRESS,
-        GNOSIS_TRANSACTION_URL,
-      );
+      if (erc20TokenContractCall !== null) {
+        const balanceOfToken = await erc20TokenContractCall.balanceOf();
+        const decimals = await erc20TokenContractCall.decimals();
+        const symbol = await erc20TokenContractCall.obtainSymbol();
+        const name = await erc20TokenContractCall.name();
 
-      const balanceOfToken = await erc20Contract.balanceOf();
-      const decimals = await erc20Contract.decimals();
-      const symbol = await erc20Contract.obtainSymbol();
-      const name = await erc20Contract.name();
-
-      const balanceConverted = convertFromWeiGovernance(
-        balanceOfToken,
-        decimals,
-      );
-      setErc20TokenDetails({
-        tokenBalance: +balanceConverted,
-        tokenSymbol: symbol,
-        tokenName: name,
-        tokenDecimal: decimals,
-      });
-      setLoading(false);
+        const balanceConverted = convertFromWeiGovernance(
+          balanceOfToken,
+          decimals,
+        );
+        setErc20TokenDetails({
+          tokenBalance: +balanceConverted,
+          tokenSymbol: symbol,
+          tokenName: name,
+          tokenDecimal: decimals,
+        });
+        setLoading(false);
+      }
     } catch (error) {
       console.log(error);
       setLoading(false);
     }
-  }, [
-    GNOSIS_TRANSACTION_URL,
-    USDC_CONTRACT_ADDRESS,
-    daoDetails.depositTokenAddress,
-    walletAddress,
-  ]);
+  }, [erc20TokenContractCall]);
 
   const formik = useFormik({
     initialValues: {
@@ -139,10 +126,6 @@ const NewArchERC20 = ({
           ),
           "Amount should be greater than min deposit",
         )
-        .lessThan(
-          erc20TokenDetails.tokenBalance.toFixed(2),
-          "Amount should be less than your wallet balance",
-        )
         .max(
           Number(
             convertFromWeiGovernance(
@@ -151,45 +134,29 @@ const NewArchERC20 = ({
             ),
           ),
           "Amount should be less than max deposit",
+        )
+        .lessThan(
+          erc20TokenDetails.tokenBalance,
+          "Amount can't be greater than wallet balance",
         ),
     }),
     onSubmit: async (values) => {
       try {
         setLoading(true);
-
-        const factoryContract = new SmartContract(
-          factoryContractABI,
-          FACTORY_CONTRACT_ADDRESS,
-          walletAddress,
-          USDC_CONTRACT_ADDRESS,
-          GNOSIS_TRANSACTION_URL,
-          true,
-        );
-
-        const erc20Contract = new SmartContract(
-          erc20ABI,
-          daoDetails.depositTokenAddress,
-          walletAddress,
-          USDC_CONTRACT_ADDRESS,
-          GNOSIS_TRANSACTION_URL,
-          true,
-        );
-
         const inputValue = convertToWeiGovernance(
           values.tokenInput,
           erc20TokenDetails.tokenDecimal,
         );
 
-        await erc20Contract.approveDeposit(
+        await erc20TokenContractSend.approveDeposit(
           FACTORY_CONTRACT_ADDRESS,
           inputValue,
           erc20TokenDetails.tokenDecimal,
         );
 
-        const deposit = await factoryContract.buyGovernanceTokenERC20DAO(
+        await factoryContractSend.buyGovernanceTokenERC20DAO(
           walletAddress,
           erc20DaoAddress,
-          // daoDetails.depositTokenAddress,
           convertToWeiGovernance(
             (inputValue / +daoDetails.pricePerToken).toString(),
             18,

@@ -36,8 +36,6 @@ import { useRouter } from "next/router";
 import { createProposal } from "../../api/proposal";
 import { fetchProposals } from "../../utils/proposal";
 import { useDispatch, useSelector } from "react-redux";
-import factoryContractABI from "../../abis/newArch/factoryContract.json";
-import { SmartContract } from "../../api/contract";
 import { setProposalList } from "../../redux/reducers/proposal";
 import Web3 from "web3";
 
@@ -77,10 +75,6 @@ const CreateProposalDialog = ({ open, setOpen, onClose, tokenData }) => {
     return state.club.clubData.tokenType;
   });
 
-  const FACTORY_CONTRACT_ADDRESS = useSelector((state) => {
-    return state.gnosis.factoryContractAddress;
-  });
-
   const clubData = useSelector((state) => {
     return state.club.clubData;
   });
@@ -89,15 +83,12 @@ const CreateProposalDialog = ({ open, setOpen, onClose, tokenData }) => {
     return state.club.daoAddress;
   });
 
-  const USDC_CONTRACT_ADDRESS = useSelector((state) => {
-    return state.gnosis.usdcContractAddress;
-  });
-  const GNOSIS_TRANSACTION_URL = useSelector((state) => {
-    return state.gnosis.transactionUrl;
-  });
-
   const NETWORK_HEX = useSelector((state) => {
     return state.gnosis.networkHex;
+  });
+
+  const factoryData = useSelector((state) => {
+    return state.club.factoryData;
   });
 
   const [loaderOpen, setLoaderOpen] = useState(false);
@@ -186,21 +177,11 @@ const CreateProposalDialog = ({ open, setOpen, onClose, tokenData }) => {
         ];
       }
       if (values.actionCommand === "Change total raise amount") {
-        const factoryContract = new SmartContract(
-          factoryContractABI,
-          FACTORY_CONTRACT_ADDRESS,
-          walletAddress,
-          USDC_CONTRACT_ADDRESS,
-          GNOSIS_TRANSACTION_URL,
-        );
-        const factoryData = await factoryContract.getDAOdetails(daoAddress);
-
         commands = [
           {
             executionId: 3,
             totalDeposits:
-              convertToWei(values.totalDeposit, 6) / factoryData.pricePerToken,
-
+              convertToWei(values.totalDeposit, 6) / factoryData?.pricePerToken,
             usdcTokenSymbol: "USDC",
             usdcTokenDecimal: 6,
             usdcGovernanceTokenDecimal: 18,

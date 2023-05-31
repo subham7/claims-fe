@@ -31,6 +31,20 @@ export const slice = createSlice({
       deployerAddress: null,
     },
     clubNetworkId: null,
+    factoryData: {
+      assetsStoredOnGnosis: null,
+      depositCloseTime: null,
+      depositTokenAddress: null,
+      distributionAmount: null,
+      gnosisAddress: null,
+      isDeployedByFactory: null,
+      isTokenGatingApplied: null,
+      maxDepositPerUser: null,
+      merkleRoot: null,
+      minDepositPerUser: null,
+      ownerFeePerDepositPercent: null,
+      pricePerToken: null,
+    },
   },
   reducers: {
     addDaoAddress: (state, action) => {
@@ -71,6 +85,25 @@ export const slice = createSlice({
     setClubNetworkId: (state, action) => {
       state.clubNetworkId = action.payload;
     },
+    addFactoryData: (state, action) => {
+      state.factoryData.assetsStoredOnGnosis =
+        action.payload.assetsStoredOnGnosis;
+      state.factoryData.depositCloseTime = action.payload.depositCloseTime;
+      state.factoryData.depositTokenAddress =
+        action.payload.depositTokenAddress;
+      state.factoryData.distributionAmount = action.payload.distributionAmount;
+      state.factoryData.gnosisAddress = action.payload.gnosisAddress;
+      state.factoryData.isDeployedByFactory =
+        action.payload.isDeployedByFactory;
+      state.factoryData.isTokenGatingApplied =
+        action.payload.isTokenGatingApplied;
+      state.factoryData.maxDepositPerUser = action.payload.maxDepositPerUser;
+      state.factoryData.minDepositPerUser = action.payload.minDepositPerUser;
+      state.factoryData.merkleRoot = action.payload.merkleRoot;
+      state.factoryData.ownerFeePerDepositPercent =
+        action.payload.ownerFeePerDepositPercent;
+      state.factoryData.pricePerToken = action.payload.pricePerToken;
+    },
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware(),
 });
@@ -81,6 +114,7 @@ export const {
   addErc20ClubDetails,
   addErc721ClubDetails,
   setClubNetworkId,
+  addFactoryData,
 } = slice.actions;
 
 export default slice.reducer;

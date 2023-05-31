@@ -16,17 +16,13 @@ import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import { AdditionalSettingsStyles } from "./AdditionalSettingsStyles";
 import { useRouter } from "next/router";
-import { SmartContract } from "../../api/contract";
-import FactoryContractABI from "../../abis/newArch/factoryContract.json";
 import DepositOwnerFee from "./modals/DepositOwnerFee";
 import DepositDeadline from "./modals/DepositDeadline";
-import { useSelector } from "react-redux";
+import useSmartContract from "../../hooks/useSmartContract";
 
 const AdditionalSettings = ({
   tokenType,
   daoDetails,
-  erc20TokenDetails,
-  walletAddress,
   fetchErc20ContractDetails,
   fetchErc721ContractDetails,
   isAdminUser,
@@ -43,31 +39,12 @@ const AdditionalSettings = ({
 
   const startingTimeInNum = new Date(+daoDetails?.depositDeadline * 1000);
 
-  const GNOSIS_TRANSACTION_URL = useSelector((state) => {
-    return state.gnosis.transactionUrl;
-  });
-
-  const FACTORY_CONTRACT_ADDRESS = useSelector((state) => {
-    return state.gnosis.factoryContractAddress;
-  });
-
-  const USDC_CONTRACT_ADDRESS = useSelector((state) => {
-    return state.gnosis.usdcContractAddress;
-  });
+  const { factoryContractSend } = useSmartContract();
 
   const updateOwnerFee = async (ownerFee) => {
     setLoading(true);
     try {
-      const factoryContract = new SmartContract(
-        FactoryContractABI,
-        FACTORY_CONTRACT_ADDRESS,
-        walletAddress,
-        USDC_CONTRACT_ADDRESS,
-        GNOSIS_TRANSACTION_URL,
-        true,
-      );
-
-      const res = await factoryContract.updateOwnerFee(
+      const res = await factoryContractSend.updateOwnerFee(
         +ownerFee * 100,
         daoAddress,
       );
@@ -95,16 +72,7 @@ const AdditionalSettings = ({
   const updateDepositTime = async (depositTime) => {
     setLoading(true);
     try {
-      const factoryContract = new SmartContract(
-        FactoryContractABI,
-        FACTORY_CONTRACT_ADDRESS,
-        walletAddress,
-        USDC_CONTRACT_ADDRESS,
-        GNOSIS_TRANSACTION_URL,
-        true,
-      );
-
-      const res = await factoryContract.updateDepositTime(
+      const res = await factoryContractSend.updateDepositTime(
         +depositTime.toFixed(0).toString(),
         daoAddress,
       );
