@@ -118,35 +118,35 @@ const ClubFetch = (Component) => {
     const checkUserExists = useCallback(async () => {
       try {
         if ((daoAddress && wallet) || (jid && wallet)) {
-          if (reduxClubData.gnosisAddress) {
+          if (reduxClubData.gnosisAddress && factoryContractCall !== null) {
+            const factoryData = await factoryContractCall.getDAOdetails(
+              daoAddress ? daoAddress : jid,
+            );
+            dispatch(
+              addFactoryData({
+                assetsStoredOnGnosis: factoryData.assetsStoredOnGnosis,
+                depositCloseTime: factoryData.depositCloseTime,
+                depositTokenAddress: factoryData.depositTokenAddress,
+                distributionAmount: factoryData.distributionAmount,
+                gnosisAddress: factoryData.gnosisAddress,
+                isDeployedByFactory: factoryData.isDeployedByFactory,
+                isTokenGatingApplied: factoryData.isTokenGatingApplied,
+                maxDepositPerUser: factoryData.maxDepositPerUser,
+                merkleRoot: factoryData.merkleRoot,
+                minDepositPerUser: factoryData.minDepositPerUser,
+                ownerFeePerDepositPercent:
+                  factoryData.ownerFeePerDepositPercent,
+                pricePerToken: factoryData.pricePerToken,
+              }),
+            );
+
             if (
               reduxClubData.tokenType === "erc20" &&
               erc20DaoContract !== null &&
               factoryContractCall !== null
             ) {
               const daoDetails = await erc20DaoContract.getERC20DAOdetails();
-              const factoryData = await factoryContractCall.getDAOdetails(
-                daoAddress ? daoAddress : jid,
-              );
               const erc20BalanceResponse = await erc20DaoContract.balanceOf();
-
-              dispatch(
-                addFactoryData({
-                  assetsStoredOnGnosis: factoryData.assetsStoredOnGnosis,
-                  depositCloseTime: factoryData.depositCloseTime,
-                  depositTokenAddress: factoryData.depositTokenAddress,
-                  distributionAmount: factoryData.distributionAmount,
-                  gnosisAddress: factoryData.gnosisAddress,
-                  isDeployedByFactory: factoryData.isDeployedByFactory,
-                  isTokenGatingApplied: factoryData.isTokenGatingApplied,
-                  maxDepositPerUser: factoryData.maxDepositPerUser,
-                  merkleRoot: factoryData.merkleRoot,
-                  minDepositPerUser: factoryData.minDepositPerUser,
-                  ownerFeePerDepositPercent:
-                    factoryData.ownerFeePerDepositPercent,
-                  pricePerToken: factoryData.pricePerToken,
-                }),
-              );
 
               dispatch(
                 addErc20ClubDetails({
@@ -194,9 +194,6 @@ const ClubFetch = (Component) => {
                   await erc721DaoContract.getERC721DAOdetails();
                 const erc721BalanceResponse =
                   await erc721DaoContract.balanceOf();
-                const factoryData = await factoryContractCall.getDAOdetails(
-                  daoAddress ? daoAddress : jid,
-                );
 
                 dispatch(
                   addErc721ClubDetails({
@@ -209,24 +206,6 @@ const ClubFetch = (Component) => {
                     isTransferable: daoDetails.isTransferable,
                     onlyAllowWhitelist: daoDetails.onlyAllowWhitelist,
                     deployerAddress: daoDetails.deployerAddress,
-                  }),
-                );
-
-                dispatch(
-                  addFactoryData({
-                    assetsStoredOnGnosis: factoryData.assetsStoredOnGnosis,
-                    depositCloseTime: factoryData.depositCloseTime,
-                    depositTokenAddress: factoryData.depositTokenAddress,
-                    distributionAmount: factoryData.distributionAmount,
-                    gnosisAddress: factoryData.gnosisAddress,
-                    isDeployedByFactory: factoryData.isDeployedByFactory,
-                    isTokenGatingApplied: factoryData.isTokenGatingApplied,
-                    maxDepositPerUser: factoryData.maxDepositPerUser,
-                    merkleRoot: factoryData.merkleRoot,
-                    minDepositPerUser: factoryData.minDepositPerUser,
-                    ownerFeePerDepositPercent:
-                      factoryData.ownerFeePerDepositPercent,
-                    pricePerToken: factoryData.pricePerToken,
                   }),
                 );
 
