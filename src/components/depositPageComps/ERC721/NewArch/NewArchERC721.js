@@ -81,9 +81,7 @@ const NewArchERC721 = ({
   const fetchTokenDetails = useCallback(async () => {
     try {
       if (erc20TokenContract_CALL && erc721TokenContract) {
-        console.log("here");
         const balanceOfNft = await erc721TokenContract.balanceOf();
-        console.log("Balance");
         setBalanceOfNft(balanceOfNft);
 
         if (+balanceOfNft >= +daoDetails?.maxTokensPerUser) {

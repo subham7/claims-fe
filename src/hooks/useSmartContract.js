@@ -211,24 +211,6 @@ const useSmartContract = (props = {}) => {
       setError(error.message);
     }
   };
-
-  // const callContractFunction = useCallback(async (functionName, ...args) => {
-  //   try {
-  //     setIsLoading(true);
-  //     if (!contractInstanceRef.current) {
-  //       throw new Error("SmartContract not initialized!");
-  //     }
-
-  //     const result = await contractInstanceRef.current[functionName](...args);
-  //     return result;
-  //   } catch (error) {
-  //     setError(error.message);
-  //     return null;
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // }, []);
-
   useEffect(() => {
     if (
       walletAddress &&
