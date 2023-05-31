@@ -186,13 +186,17 @@ const ClubFetch = (Component) => {
               }
             } else if (
               reduxClubData.tokenType === "erc721" &&
-              erc721DaoContract !== null
+              erc721DaoContract !== null &&
+              factoryContractCall !== null
             ) {
               try {
                 const daoDetails =
                   await erc721DaoContract.getERC721DAOdetails();
                 const erc721BalanceResponse =
                   await erc721DaoContract.balanceOf();
+                const factoryData = await factoryContractCall.getDAOdetails(
+                  daoAddress ? daoAddress : jid,
+                );
 
                 dispatch(
                   addErc721ClubDetails({
@@ -205,6 +209,24 @@ const ClubFetch = (Component) => {
                     isTransferable: daoDetails.isTransferable,
                     onlyAllowWhitelist: daoDetails.onlyAllowWhitelist,
                     deployerAddress: daoDetails.deployerAddress,
+                  }),
+                );
+
+                dispatch(
+                  addFactoryData({
+                    assetsStoredOnGnosis: factoryData.assetsStoredOnGnosis,
+                    depositCloseTime: factoryData.depositCloseTime,
+                    depositTokenAddress: factoryData.depositTokenAddress,
+                    distributionAmount: factoryData.distributionAmount,
+                    gnosisAddress: factoryData.gnosisAddress,
+                    isDeployedByFactory: factoryData.isDeployedByFactory,
+                    isTokenGatingApplied: factoryData.isTokenGatingApplied,
+                    maxDepositPerUser: factoryData.maxDepositPerUser,
+                    merkleRoot: factoryData.merkleRoot,
+                    minDepositPerUser: factoryData.minDepositPerUser,
+                    ownerFeePerDepositPercent:
+                      factoryData.ownerFeePerDepositPercent,
+                    pricePerToken: factoryData.pricePerToken,
                   }),
                 );
 
@@ -250,7 +272,6 @@ const ClubFetch = (Component) => {
       dispatch,
       walletAddress,
       router,
-      erc721DaoContract,
     ]);
 
     const checkClubExist = useCallback(async () => {
@@ -263,7 +284,7 @@ const ClubFetch = (Component) => {
         QUERY_CLUB_DETAILS(daoAddress ? daoAddress : jid),
       );
 
-      if (clubData.stations.length) {
+      if (clubData?.stations.length) {
         dispatch(setWrongNetwork(false));
       } else {
         dispatch(setWrongNetwork(true));
@@ -273,10 +294,8 @@ const ClubFetch = (Component) => {
       if (wallet && networkId) {
         checkUserExists();
       }
-
       checkClubExist();
     }, [checkUserExists, jid, daoAddress, wallet, networkId, checkClubExist]);
-
 
     if (tracker === true) {
       return (

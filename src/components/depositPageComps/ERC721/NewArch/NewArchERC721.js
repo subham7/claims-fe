@@ -36,6 +36,7 @@ const NewArchERC721 = ({
     tokenSymbol: "",
     tokenName: "",
     tokenDecimal: 0,
+    userBalance: 0,
   });
   const [count, setCount] = useState(1);
   const [balanceOfNft, setBalanceOfNft] = useState();
@@ -92,11 +93,15 @@ const NewArchERC721 = ({
         const decimals = await erc20TokenContractCall.decimals();
         const symbol = await erc20TokenContractCall.obtainSymbol();
         const name = await erc20TokenContractCall.name();
+        const userBalance = await erc20TokenContractCall.balanceOf(
+          walletAddress,
+        );
 
         setErc20TokenDetails({
           tokenSymbol: symbol,
           tokenName: name,
           tokenDecimal: decimals,
+          userBalance: convertFromWeiGovernance(userBalance, decimals),
         });
       }
     } catch (error) {
@@ -106,6 +111,7 @@ const NewArchERC721 = ({
     daoDetails?.maxTokensPerUser,
     erc20TokenContractCall,
     erc721TokenContract,
+    walletAddress,
   ]);
 
   useEffect(() => {
@@ -345,7 +351,14 @@ const NewArchERC721 = ({
                         onClick={claimNFTHandler}
                         disabled={
                           (remainingDays <= 0 && remainingTimeInSecs < 0) ||
-                          hasClaimed
+                          hasClaimed ||
+                          erc20TokenDetails.userBalance <
+                            Number(
+                              convertFromWeiGovernance(
+                                daoDetails.pricePerToken,
+                                erc20TokenDetails.tokenDecimal,
+                              ),
+                            )
                             ? true
                             : isTokenGated
                             ? !isEligibleForTokenGating
