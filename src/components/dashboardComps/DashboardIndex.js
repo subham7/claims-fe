@@ -82,10 +82,6 @@ const DashboardIndex = () => {
     return state.gnosis.subgraphUrl;
   });
 
-  const CLUB_NETWORK_ID = useSelector((state) => {
-    return state.gnosis.clubNetworkId;
-  });
-
   const NETWORK_HEX = useSelector((state) => {
     return state.gnosis.networkHex;
   });
@@ -904,7 +900,7 @@ const DashboardIndex = () => {
           </Grid>
         </Grid>
 
-        {WRONG_NETWORK && <WrongNetworkModal chainId={CLUB_NETWORK_ID} />}
+        {WRONG_NETWORK && <WrongNetworkModal />}
 
         <Snackbar
           //   open={openSnackBar}

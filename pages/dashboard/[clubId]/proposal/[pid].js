@@ -56,7 +56,7 @@ import ProposalInfo from "../../../../src/components/proposalComps/ProposalInfo"
 import CurrentResults from "../../../../src/components/proposalComps/CurrentResults";
 import ProposalVotes from "../../../../src/components/proposalComps/ProposalVotes";
 import WrongNetworkModal from "../../../../src/components/modals/WrongNetworkModal";
-import { getSafeSdk } from "../../../../src/utils/helper";
+import { getSafeSdk, web3InstanceEthereum } from "../../../../src/utils/helper";
 
 const useStyles = makeStyles({
   clubAssets: {
@@ -300,12 +300,8 @@ const ProposalDetail = () => {
     return state.gnosis.actionContractAddress;
   });
 
-  const CLUB_NETWORK_ID = useSelector((state) => {
-    return state.gnosis.clubNetworkId;
-  });
-
   const getSafeService = useCallback(async () => {
-    const web3 = new Web3(window.ethereum);
+    const web3 = await web3InstanceEthereum();
     const ethAdapter = new Web3Adapter({
       web3,
       signerAddress: walletAddress,
@@ -1244,7 +1240,7 @@ const ProposalDetail = () => {
           </Grid>
         </Grid>
 
-        {WRONG_NETWORK && <WrongNetworkModal chainId={CLUB_NETWORK_ID} />}
+        {WRONG_NETWORK && <WrongNetworkModal />}
 
         <Snackbar
           open={openSnackBar}

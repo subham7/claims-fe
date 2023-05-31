@@ -65,10 +65,6 @@ const NewArchERC20 = ({
     return state.gnosis.usdcContractAddress;
   });
 
-  const CLUB_NETWORK_ID = useSelector((state) => {
-    return state.gnosis.clubNetworkId;
-  });
-
   const WRONG_NETWORK = useSelector((state) => {
     return state.gnosis.wrongNetwork;
   });
@@ -921,7 +917,7 @@ const NewArchERC20 = ({
         </DialogContent>
       </Dialog> */}
 
-      {WRONG_NETWORK && <WrongNetworkModal chainId={CLUB_NETWORK_ID} />}
+      {WRONG_NETWORK && <WrongNetworkModal />}
 
       <Backdrop
         sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}

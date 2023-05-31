@@ -3,15 +3,15 @@ import { Web3Adapter } from "@safe-global/protocol-kit";
 import Safe from "@safe-global/protocol-kit";
 import { createProposalTxHash, getProposalTxHash } from "../../api/proposal";
 import { convertToWei } from "../../utils/globalFunctions";
-import { RPC_URL } from "../index";
 import SafeApiKit from "@safe-global/api-kit";
 import Erc20Dao from "../../abis/newArch/erc20Dao.json";
-import { getIncreaseGasPrice } from "../../utils/helper";
+import { getIncreaseGasPrice, web3InstanceEthereum } from "../../utils/helper";
+import { RPC_URL } from "..";
 
 async function syncWallet() {
   // function for validating metamask wallet
   if (window.ethereum) {
-    window.web3 = new Web3(window.ethereum);
+    window.web3 = await web3InstanceEthereum();
     await window.ethereum
       .request({ method: "eth_requestAccounts" })
       .then((result) => {
@@ -27,7 +27,7 @@ async function syncWallet() {
         }
       });
   } else if (window.web3) {
-    window.web3 = new Web3(window.web3.currentProvider);
+    window.web3 = await web3InstanceEthereum();
     return true;
   } else {
     window.alert(
@@ -62,9 +62,11 @@ export class SmartContract {
       }
       this.abi = abiFile.abi;
       this.contractAddress = contractAddress;
-      this.checkSum = this.web3.utils.toChecksumAddress(this.contractAddress);
-      this.contract = new this.web3.eth.Contract(this.abi, this.checkSum);
-      this.walletAddress = this.web3.utils.toChecksumAddress(walletAddress);
+      this.contract = new this.web3.eth.Contract(
+        this.abi,
+        this.contractAddress,
+      );
+      this.walletAddress = walletAddress;
       this.usdcContractAddress = usdcContractAddress;
       this.gnosisTransactionUrl = gnosisTransactionUrl;
       // this.usdcContractFaucet = usdcFaucetAddress
@@ -78,9 +80,11 @@ export class SmartContract {
       }
       this.abi = abiFile.abi;
       this.contractAddress = contractAddress;
-      this.checkSum = this.web3.utils.toChecksumAddress(this.contractAddress);
-      this.contract = new this.web3.eth.Contract(this.abi, this.checkSum);
-      this.walletAddress = this.web3.utils.toChecksumAddress(walletAddress);
+      this.contract = new this.web3.eth.Contract(
+        this.abi,
+        this.contractAddress,
+      );
+      this.walletAddress = walletAddress;
     }
   }
 
@@ -340,11 +344,11 @@ export class SmartContract {
     let transaction;
     if (approvalData !== "") {
       approvalTransaction = {
-        to: web3.utils.toChecksumAddress(daoAddress),
+        to: daoAddress,
         data: implementationContract.methods
           .updateProposalAndExecution(
             //usdc address
-            web3.utils.toChecksumAddress(tokenData),
+            tokenData,
             approvalData,
           )
           .encodeABI(),
@@ -352,12 +356,12 @@ export class SmartContract {
       };
 
       transaction = {
-        to: web3.utils.toChecksumAddress(daoAddress),
+        to: daoAddress,
         data: implementationContract.methods
           .updateProposalAndExecution(
             //airdrop address
 
-            web3.utils.toChecksumAddress(airdropContractAddress),
+            airdropContractAddress,
             parameters,
           )
           .encodeABI(),
@@ -367,13 +371,11 @@ export class SmartContract {
       // debugger;
       transaction = {
         //dao
-        to: web3.utils.toChecksumAddress(daoAddress),
+        to: daoAddress,
         data: implementationContract.methods
           .updateProposalAndExecution(
             //factory
-            factoryContractAddress
-              ? web3.utils.toChecksumAddress(factoryContractAddress)
-              : web3.utils.toChecksumAddress(daoAddress),
+            factoryContractAddress ? factoryContractAddress : daoAddress,
             parameters,
           )
           .encodeABI(),

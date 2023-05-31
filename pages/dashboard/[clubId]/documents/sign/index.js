@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import Layout1 from "../../../../../src/components/layouts/layout1";
 import dynamic from "next/dynamic";
 import { makeStyles } from "@mui/styles";
-import Web3 from "web3";
 import { pdf } from "@react-pdf/renderer";
 import { useRouter } from "next/router";
 import CryptoJS from "crypto-js";
@@ -18,6 +17,7 @@ import {
 } from "../../../../../src/redux/reducers/legal";
 import { PdfFile } from "../pdfGenerator";
 import LegalEntityModal from "../../../../../src/components/modals/LegalEntityModal";
+import { web3InstanceEthereum } from "../../../../../src/utils/helper";
 const DocumentPDF = dynamic(() => import("../pdfGenerator"), {
   ssr: false,
 });
@@ -83,7 +83,7 @@ const SignDoc = () => {
   // signDocument
   const signDocumentHandler = async () => {
     try {
-      const web3 = new Web3(window.ethereum);
+      const web3 = await web3InstanceEthereum();
 
       // current account
       const accounts = await web3.eth.getAccounts();
