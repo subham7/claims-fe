@@ -310,7 +310,6 @@ const ProposalDetail = () => {
     erc20DaoContractSend,
     erc721DaoContractSend,
   } = useSmartContract();
-
   const getSafeService = useCallback(async () => {
     const web3 = await web3InstanceEthereum();
     const ethAdapter = new Web3Adapter({

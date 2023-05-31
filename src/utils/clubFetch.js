@@ -269,7 +269,6 @@ const ClubFetch = (Component) => {
         dispatch(setWrongNetwork(true));
       }
     }, [daoAddress, dispatch, jid, networkId]);
-
     useEffect(() => {
       if (wallet && networkId) {
         checkUserExists();
@@ -277,6 +276,7 @@ const ClubFetch = (Component) => {
 
       checkClubExist();
     }, [checkUserExists, jid, daoAddress, wallet, networkId, checkClubExist]);
+
 
     if (tracker === true) {
       return (
