@@ -70,9 +70,13 @@ const Join = () => {
     return state.gnosis.usdcContractAddress;
   });
 
+  const factoryData = useSelector((state) => {
+    return state.club.factoryData;
+  });
+
   const walletAddress = wallet?.accounts[0].address;
 
-  const { factoryContract_CALL, erc20DaoContract, erc721DaoContract } =
+  const { factoryContractCall, erc20DaoContract, erc721DaoContract } =
     useSmartContract();
 
   /**
@@ -81,10 +85,7 @@ const Join = () => {
   const fetchErc20ContractDetails = useCallback(async () => {
     try {
       setLoading(true);
-      if (factoryContract_CALL !== null && erc20DaoContract) {
-        const factoryData = await factoryContract_CALL.getDAOdetails(
-          daoAddress,
-        );
+      if (erc20DaoContract !== null) {
         const erc20Data = await erc20DaoContract.getERC20DAOdetails();
         const erc20DaoDecimal = await erc20DaoContract.decimals();
         const clubTokensMinted = await erc20DaoContract.totalSupply();
@@ -116,7 +117,7 @@ const Join = () => {
       console.log(error);
       setLoading(false);
     }
-  }, [daoAddress, erc20DaoContract, factoryContract_CALL]);
+  }, [erc20DaoContract, factoryData]);
 
   /**
    * Fetching details for ERC721 comp
@@ -134,11 +135,7 @@ const Join = () => {
       const data = await res.json();
       const imageUrl = convertIpfsToUrl(data.image);
 
-      if (factoryContract_CALL !== null && erc721DaoContract) {
-        const factoryData = await factoryContract_CALL.getDAOdetails(
-          daoAddress,
-        );
-
+      if (erc721DaoContract !== null) {
         const erc721Data = await erc721DaoContract.getERC721DAOdetails();
         const nftCount = await erc721DaoContract.nftOwnersCount();
 
@@ -172,14 +169,14 @@ const Join = () => {
       console.log(error);
       setLoading(false);
     }
-  }, [SUBGRAPH_URL, daoAddress, erc721DaoContract, factoryContract_CALL]);
+  }, [SUBGRAPH_URL, daoAddress, erc721DaoContract, factoryData]);
 
   const fetchTokenGatingDetials = useCallback(async () => {
     try {
       setLoading(true);
 
       const tokenGatingDetails =
-        await factoryContract_CALL.getTokenGatingDetails(daoAddress);
+        await factoryContractCall.getTokenGatingDetails(daoAddress);
 
       if (tokenGatingDetails[0]?.length) {
         setIsTokenGated(true);
@@ -227,7 +224,7 @@ const Join = () => {
       setLoading(false);
     }
   }, [
-    factoryContract_CALL,
+    factoryContractCall,
     daoAddress,
     walletAddress,
     USDC_CONTRACT_ADDRESS,

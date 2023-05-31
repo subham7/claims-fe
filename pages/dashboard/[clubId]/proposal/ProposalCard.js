@@ -33,10 +33,20 @@ const ProposalCard = ({
     decimals: 0,
     symbol: "",
   });
-  const [daoDetails, setDaoDetails] = useState();
 
-  const gnosis = useSelector((state) => {
-    return state.gnosis;
+  const factoryData = useSelector((state) => {
+    return state.club.factoryData;
+  });
+
+  const { erc20TokenContractCall } = useSmartContract({
+    contractAddress:
+      proposal?.commands[0].executionId === 0
+        ? proposal?.commands[0]?.airDropToken
+        : proposal?.commands[0].executionId === 1
+        ? daoAddress
+        : proposal?.commands[0].executionId === 4
+        ? proposal?.commands[0]?.customToken
+        : "",
   });
 
   const { factoryContract_CALL, erc20TokenContract_CALL } = useSmartContract({
@@ -54,10 +64,10 @@ const ProposalCard = ({
 
   const fetchAirDropContractDetails = useCallback(async () => {
     try {
-      if (proposal && erc20TokenContract_CALL !== null) {
+      if (proposal && erc20TokenContractCall !== null) {
         if (tokenType === "erc20" || proposal?.commands[0].executionId !== 1) {
-          const decimal = await erc20TokenContract_CALL.decimals();
-          const symbol = await erc20TokenContract_CALL.obtainSymbol();
+          const decimal = await erc20TokenContractCall.decimals();
+          const symbol = await erc20TokenContractCall.obtainSymbol();
 
           setTokenDetails({
             decimals: decimal,
@@ -67,7 +77,7 @@ const ProposalCard = ({
           tokenType === "erc721" &&
           proposal?.commands[0].executionId === 1
         ) {
-          const symbol = await erc20TokenContract_CALL.obtainSymbol();
+          const symbol = await erc20TokenContractCall.obtainSymbol();
           setTokenDetails({
             decimals: 18,
             symbol: symbol,
@@ -77,24 +87,7 @@ const ProposalCard = ({
     } catch (error) {
       console.log(error);
     }
-  }, [proposal, erc20TokenContract_CALL, tokenType]);
-
-  useEffect(() => {
-    const fetchFactoryContractDetails = async () => {
-      try {
-        if (factoryContract_CALL !== null) {
-          const factoryData = await factoryContract_CALL.getDAOdetails(
-            daoAddress,
-          );
-          setDaoDetails(factoryData);
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
-    fetchFactoryContractDetails();
-  }, [daoAddress, factoryContract_CALL]);
+  }, [proposal, erc20TokenContractCall, tokenType]);
 
   useEffect(() => {
     fetchAirDropContractDetails();
@@ -381,7 +374,7 @@ const ProposalCard = ({
                         <Typography color="#FFFFFF">
                           {proposal?.commands[0]?.totalDeposits *
                             +convertFromWeiGovernance(
-                              daoDetails?.pricePerToken,
+                              factoryData?.pricePerToken,
                               6,
                             )}
                         </Typography>

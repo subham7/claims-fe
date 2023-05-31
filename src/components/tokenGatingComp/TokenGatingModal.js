@@ -28,7 +28,7 @@ const TokenGatingModal = ({ closeModal, chooseTokens }) => {
     return state.gnosis.usdcContractAddress;
   });
 
-  const { erc20TokenContract_CALL } = useSmartContract({
+  const { erc20TokenContractCall } = useSmartContract({
     contractAddress: data && data?.address,
   });
 
@@ -53,9 +53,9 @@ const TokenGatingModal = ({ closeModal, chooseTokens }) => {
         const checkTokenGating = async () => {
           try {
             if (data?.address) {
-              tokenSymbol = await erc20TokenContract_CALL.obtainSymbol();
+              tokenSymbol = await erc20TokenContractCall.obtainSymbol();
               try {
-                tokenDecimal = await erc20TokenContract_CALL.decimals();
+                tokenDecimal = await erc20TokenContractCall.decimals();
               } catch (err) {
                 console.log(err);
               }

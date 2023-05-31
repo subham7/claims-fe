@@ -58,7 +58,7 @@ const TokenGating = () => {
     return state.gnosis.usdcContractAddress;
   });
 
-  const { factoryContract_SEND, factoryContract_CALL } = useSmartContract();
+  const { factoryContractSend, factoryContractCall } = useSmartContract();
 
   const addTokensHandler = () => {
     setShowTokenGatingModal(true);
@@ -71,7 +71,7 @@ const TokenGating = () => {
   const tokenGatingHandler = async () => {
     try {
       setLoading(true);
-      const res = await factoryContract_SEND.setupTokenGating(
+      const res = await factoryContractSend.setupTokenGating(
         tokensList[0].tokenAddress,
         tokensList[1]?.tokenAddress
           ? tokensList[1]?.tokenAddress
@@ -116,7 +116,7 @@ const TokenGating = () => {
     try {
       setLoading(true);
       const tokenGatingDetails =
-        await factoryContract_CALL.getTokenGatingDetails(daoAddress);
+        await factoryContractCall.getTokenGatingDetails(daoAddress);
       setFetchedDetails({
         tokenA: tokenGatingDetails[0]?.tokenA,
         tokenB: tokenGatingDetails[0]?.tokenB,
@@ -159,7 +159,7 @@ const TokenGating = () => {
       setLoading(false);
     }
   }, [
-    factoryContract_CALL,
+    factoryContractCall,
     daoAddress,
     walletAddress,
     USDC_CONTRACT_ADDRESS,

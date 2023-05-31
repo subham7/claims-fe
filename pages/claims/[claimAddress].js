@@ -243,8 +243,8 @@ const ClaimAddress = () => {
 
   const { claimAddress } = router.query;
   const {
-    claimContract_CALL,
-    claimContract_SEND,
+    claimContractCall,
+    claimContractSend,
     erc20ClaimsContract,
     daoTokenContract,
   } = useSmartContract({
@@ -266,8 +266,8 @@ const ClaimAddress = () => {
     setIsLoading(true);
 
     try {
-      if (claimContract_CALL !== null) {
-        const desc = await claimContract_CALL.claimSettings();
+      if (claimContractCall !== null) {
+        const desc = await claimContractCall.claimSettings();
         setContractData(desc);
         // setClaimEnabled(desc.isEnabled);
         dispatch(addClaimEnabled(desc.isEnabled));
@@ -279,7 +279,7 @@ const ClaimAddress = () => {
 
           // remaining Balance in contract
           const remainingBalanceInContract =
-            await claimContract_CALL.claimBalance();
+            await claimContractCall.claimBalance();
 
           const remainingBalanceInUSD = convertFromWeiGovernance(
             remainingBalanceInContract,
@@ -289,10 +289,10 @@ const ClaimAddress = () => {
           setClaimBalanceRemaing(remainingBalanceInUSD);
 
           // check if token is already claimed
-          const hasClaimed = await claimContract_CALL.hasClaimed(walletAddress);
+          const hasClaimed = await claimContractCall.hasClaimed(walletAddress);
           setAlreadyClaimed(hasClaimed);
 
-          const remainingAmt = await claimContract_CALL.claimAmount(
+          const remainingAmt = await claimContractCall.claimAmount(
             walletAddress,
           );
 
@@ -395,7 +395,7 @@ const ClaimAddress = () => {
             let encodedListOfLeaves = [];
 
             addresses.map(async (data) => {
-              const res = await claimContract_CALL.encode(
+              const res = await claimContractCall.encode(
                 data.address,
                 convertToWeiGovernance(data.amount, decimals),
               );
@@ -418,9 +418,7 @@ const ClaimAddress = () => {
               desc.daoToken !== "0x0000000000000000000000000000000000000000"
             ) {
               // amount for prorata
-              const amount = await claimContract_CALL.checkAmount(
-                walletAddress,
-              );
+              const amount = await claimContractCall.checkAmount(walletAddress);
               const data = convertFromWeiGovernance(amount, decimals);
 
               setClaimableAmt(data);
@@ -439,7 +437,7 @@ const ClaimAddress = () => {
     }
   }, [
     claimAddress,
-    claimContract_CALL,
+    claimContractCall,
     claimableAmt,
     contractData.airdropToken,
     contractData.daoToken,
@@ -462,7 +460,7 @@ const ClaimAddress = () => {
 
         const root = tree.getHexRoot();
 
-        const encodedLeaf = await claimContract_CALL.encode(
+        const encodedLeaf = await claimContractCall.encode(
           walletAddress,
           convertToWeiGovernance(claimableAmt, decimalOfToken),
         );
@@ -470,11 +468,9 @@ const ClaimAddress = () => {
         const leaf = keccak256(encodedLeaf);
         const proof = tree.getHexProof(leaf);
         const amt = convertToWeiGovernance(claimInput, decimalOfToken);
-        const res = await claimContract_SEND.claim(amt, proof, encodedLeaf);
+        const res = await claimContractSend.claim(amt, proof, encodedLeaf);
 
-        const remainingAmt = await claimContract_CALL.claimAmount(
-          walletAddress,
-        );
+        const remainingAmt = await claimContractCall.claimAmount(walletAddress);
         setClaimRemaining(remainingAmt);
         setIsClaiming(false);
         setAlreadyClaimed(true);
@@ -483,15 +479,13 @@ const ClaimAddress = () => {
         showMessageHandler();
         setMessage("Successfully Claimed!");
       } else {
-        const res = await claimContract_SEND.claim(
+        const res = await claimContractSend.claim(
           convertToWeiGovernance(claimInput, decimalOfToken).toString(),
           [],
           [],
         );
 
-        const remainingAmt = await claimContract_CALL.claimAmount(
-          walletAddress,
-        );
+        const remainingAmt = await claimContractCall.claimAmount(walletAddress);
 
         const convertedRemainingAmt = convertFromWeiGovernance(
           remainingAmt,
@@ -570,13 +564,13 @@ const ClaimAddress = () => {
     (async () => {
       try {
         // check if token is already claimed
-        const hasClaimed = await claimContract_CALL.hasClaimed(walletAddress);
+        const hasClaimed = await claimContractCall.hasClaimed(walletAddress);
         setAlreadyClaimed(hasClaimed);
       } catch (err) {
         console.log(err);
       }
     })();
-  }, [claimAddress, claimContract_CALL, walletAddress]);
+  }, [claimAddress, claimContractCall, walletAddress]);
 
   return (
     <Layout1 showSidebar={false}>

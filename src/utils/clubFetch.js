@@ -8,6 +8,7 @@ import {
   addDaoAddress,
   addErc20ClubDetails,
   addErc721ClubDetails,
+  addFactoryData,
 } from "../redux/reducers/club";
 import { useConnectWallet } from "@web3-onboard/react";
 
@@ -48,7 +49,8 @@ const ClubFetch = (Component) => {
       return state.club.clubData;
     });
 
-    const { erc20DaoContract, erc721DaoContract } = useSmartContract();
+    const { erc20DaoContract, erc721DaoContract, factoryContractCall } =
+      useSmartContract();
 
     useEffect(() => {
       dispatch(addDaoAddress(Web3.utils.toChecksumAddress(daoAddress)));
@@ -119,10 +121,32 @@ const ClubFetch = (Component) => {
           if (reduxClubData.gnosisAddress) {
             if (
               reduxClubData.tokenType === "erc20" &&
-              erc20DaoContract !== null
+              erc20DaoContract !== null &&
+              factoryContractCall !== null
             ) {
               const daoDetails = await erc20DaoContract.getERC20DAOdetails();
+              const factoryData = await factoryContractCall.getDAOdetails(
+                daoAddress ? daoAddress : jid,
+              );
               const erc20BalanceResponse = await erc20DaoContract.balanceOf();
+
+              dispatch(
+                addFactoryData({
+                  assetsStoredOnGnosis: factoryData.assetsStoredOnGnosis,
+                  depositCloseTime: factoryData.depositCloseTime,
+                  depositTokenAddress: factoryData.depositTokenAddress,
+                  distributionAmount: factoryData.distributionAmount,
+                  gnosisAddress: factoryData.gnosisAddress,
+                  isDeployedByFactory: factoryData.isDeployedByFactory,
+                  isTokenGatingApplied: factoryData.isTokenGatingApplied,
+                  maxDepositPerUser: factoryData.maxDepositPerUser,
+                  merkleRoot: factoryData.merkleRoot,
+                  minDepositPerUser: factoryData.minDepositPerUser,
+                  ownerFeePerDepositPercent:
+                    factoryData.ownerFeePerDepositPercent,
+                  pricePerToken: factoryData.pricePerToken,
+                }),
+              );
 
               dispatch(
                 addErc20ClubDetails({
@@ -221,6 +245,8 @@ const ClubFetch = (Component) => {
       reduxClubData.gnosisAddress,
       reduxClubData.tokenType,
       erc20DaoContract,
+      factoryContractCall,
+      erc721DaoContract,
       dispatch,
       walletAddress,
       router,
@@ -242,13 +268,15 @@ const ClubFetch = (Component) => {
       } else {
         dispatch(setWrongNetwork(true));
       }
-    }, [daoAddress, dispatch, networkId, jid]);
+    }, [daoAddress, dispatch, jid, networkId]);
 
     useEffect(() => {
       if (wallet && networkId) {
         checkUserExists();
       }
-    }, [checkUserExists, jid, daoAddress, wallet, networkId]);
+
+      checkClubExist();
+    }, [checkUserExists, jid, daoAddress, wallet, networkId, checkClubExist]);
 
     if (tracker === true) {
       return (

@@ -75,6 +75,10 @@ const Settings = () => {
     return state.gnosis.networkHex;
   });
 
+  const factoryData = useSelector((state) => {
+    return state.club.factoryData;
+  });
+
   const router = useRouter();
   const { clubId: daoAddress } = router.query;
 
@@ -84,22 +88,14 @@ const Settings = () => {
   const remainingTimeInSecs = day2.diff(day1, "seconds");
   const remainingDays = day2.diff(day1, "day");
 
-  const {
-    erc20TokenContract_CALL,
-    factoryContract_CALL,
-    erc20DaoContract,
-    erc721DaoContract,
-  } = useSmartContract({
-    contractAddress:
-      factoryDataFetched && factoryDataFetched?.depositTokenAddress,
-  });
+  const { erc20TokenContractCall, erc20DaoContract, erc721DaoContract } =
+    useSmartContract({
+      contractAddress: factoryData && factoryData?.depositTokenAddress,
+    });
 
   const fetchErc20ContractDetails = useCallback(async () => {
     try {
-      if (factoryContract_CALL !== null && erc20DaoContract) {
-        const factoryData = await factoryContract_CALL.getDAOdetails(
-          daoAddress,
-        );
+      if (erc20DaoContract) {
         const balanceOfClubToken = await erc20DaoContract.balanceOf();
         const erc20Data = await erc20DaoContract.getERC20DAOdetails();
         const erc20DaoDecimal = await erc20DaoContract.decimals();
@@ -135,18 +131,15 @@ const Settings = () => {
     } catch (error) {
       console.log(error);
     }
-  }, [daoAddress, erc20DaoContract, factoryContract_CALL]);
+  }, [erc20DaoContract, factoryData]);
 
   const fetchErc20TokenDetails = useCallback(async () => {
     try {
-      const factoryData = await factoryContract_CALL.getDAOdetails(daoAddress);
-      setFactoryDataFetched(factoryData);
-
-      if (factoryDataFetched?.depositTokenAddress) {
-        const balanceOfToken = await erc20TokenContract_CALL.balanceOf();
-        const decimals = await erc20TokenContract_CALL.decimals();
-        const symbol = await erc20TokenContract_CALL.obtainSymbol();
-        const name = await erc20TokenContract_CALL.name();
+      if (factoryData?.depositTokenAddress) {
+        const balanceOfToken = await erc20TokenContractCall.balanceOf();
+        const decimals = await erc20TokenContractCall.decimals();
+        const symbol = await erc20TokenContractCall.obtainSymbol();
+        const name = await erc20TokenContractCall.name();
 
         const balanceConverted = convertFromWeiGovernance(
           balanceOfToken,
@@ -162,20 +155,11 @@ const Settings = () => {
     } catch (error) {
       console.log(error);
     }
-  }, [
-    daoAddress,
-    erc20TokenContract_CALL,
-    factoryContract_CALL,
-    factoryDataFetched?.depositTokenAddress,
-  ]);
+  }, [erc20TokenContractCall, factoryData?.depositTokenAddress]);
 
   const fetchErc721ContractDetails = useCallback(async () => {
     try {
-      if (factoryContract_CALL !== null && erc721DaoContract) {
-        const factoryData = await factoryContract_CALL.getDAOdetails(
-          daoAddress,
-        );
-
+      if (erc721DaoContract !== null) {
         const erc721Data = await erc721DaoContract.getERC721DAOdetails();
 
         const balanceOfClubToken = await erc721DaoContract.balanceOf();
@@ -213,7 +197,7 @@ const Settings = () => {
     } catch (error) {
       console.log(error);
     }
-  }, [daoAddress, erc721DaoContract, factoryContract_CALL]);
+  }, [erc721DaoContract, factoryData]);
 
   const fetchAssets = useCallback(async () => {
     try {

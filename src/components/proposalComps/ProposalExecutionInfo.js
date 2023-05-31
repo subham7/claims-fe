@@ -19,7 +19,7 @@ const useStyles = makeStyles({
 
 const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
   const classes = useStyles();
-  const { erc20TokenContract_CALL } = useSmartContract({
+  const { erc20TokenContractCall } = useSmartContract({
     contractAddress: proposalData?.commands[0]?.airDropToken
       ? proposalData?.commands[0]?.airDropToken
       : proposalData?.commands[0]?.customToken,
@@ -36,9 +36,9 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
 
   const fetchAirDropContractDetails = useCallback(async () => {
     try {
-      if (proposalData && erc20TokenContract_CALL !== null) {
-        const decimal = await erc20TokenContract_CALL.decimals();
-        const symbol = await erc20TokenContract_CALL.obtainSymbol();
+      if (proposalData && erc20TokenContractCall !== null) {
+        const decimal = await erc20TokenContractCall.decimals();
+        const symbol = await erc20TokenContractCall.obtainSymbol();
 
         setTokenDetails({
           decimals: decimal,
@@ -48,7 +48,7 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
     } catch (error) {
       console.log(error);
     }
-  }, [erc20TokenContract_CALL, proposalData]);
+  }, [erc20TokenContractCall, proposalData]);
 
   useEffect(() => {
     fetchAirDropContractDetails();

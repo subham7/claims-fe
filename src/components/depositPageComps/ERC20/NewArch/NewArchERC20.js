@@ -75,9 +75,9 @@ const NewArchERC20 = ({
   };
 
   const {
-    erc20TokenContract_CALL,
-    erc20TokenContract_SEND,
-    factoryContract_SEND,
+    erc20TokenContractCall,
+    erc20TokenContractSend,
+    factoryContractSend,
   } = useSmartContract({
     contractAddress: daoDetails && daoDetails?.depositTokenAddress,
   });
@@ -85,11 +85,11 @@ const NewArchERC20 = ({
   const fetchTokenDetails = useCallback(async () => {
     setLoading(true);
     try {
-      if (erc20TokenContract_CALL !== null) {
-        const balanceOfToken = await erc20TokenContract_CALL.balanceOf();
-        const decimals = await erc20TokenContract_CALL.decimals();
-        const symbol = await erc20TokenContract_CALL.obtainSymbol();
-        const name = await erc20TokenContract_CALL.name();
+      if (erc20TokenContractCall !== null) {
+        const balanceOfToken = await erc20TokenContractCall.balanceOf();
+        const decimals = await erc20TokenContractCall.decimals();
+        const symbol = await erc20TokenContractCall.obtainSymbol();
+        const name = await erc20TokenContractCall.name();
 
         const balanceConverted = convertFromWeiGovernance(
           balanceOfToken,
@@ -107,7 +107,7 @@ const NewArchERC20 = ({
       console.log(error);
       setLoading(false);
     }
-  }, [erc20TokenContract_CALL]);
+  }, [erc20TokenContractCall]);
 
   const formik = useFormik({
     initialValues: {
@@ -126,10 +126,6 @@ const NewArchERC20 = ({
           ),
           "Amount should be greater than min deposit",
         )
-        .lessThan(
-          erc20TokenDetails.tokenBalance.toFixed(2),
-          "Amount should be less than your wallet balance",
-        )
         .max(
           Number(
             convertFromWeiGovernance(
@@ -138,6 +134,10 @@ const NewArchERC20 = ({
             ),
           ),
           "Amount should be less than max deposit",
+        )
+        .lessThan(
+          erc20TokenDetails.tokenBalance,
+          "Amount can't be greater than wallet balance",
         ),
     }),
     onSubmit: async (values) => {
@@ -148,13 +148,13 @@ const NewArchERC20 = ({
           erc20TokenDetails.tokenDecimal,
         );
 
-        await erc20TokenContract_SEND.approveDeposit(
+        await erc20TokenContractSend.approveDeposit(
           FACTORY_CONTRACT_ADDRESS,
           inputValue,
           erc20TokenDetails.tokenDecimal,
         );
 
-        await factoryContract_SEND.buyGovernanceTokenERC20DAO(
+        await factoryContractSend.buyGovernanceTokenERC20DAO(
           walletAddress,
           erc20DaoAddress,
           convertToWeiGovernance(

@@ -60,7 +60,6 @@ const DashboardIndex = () => {
   const [depositLink, setDepositLink] = useState("");
   const [balanceOfUser, setBalanceOfUser] = useState(0);
   const [clubTokenMinted, setClubTokenMinted] = useState(0);
-  const [depositCloseTime, setDepositCloseTime] = useState("");
 
   const [{ wallet }] = useConnectWallet();
   const router = useRouter();
@@ -95,8 +94,11 @@ const DashboardIndex = () => {
     return state.club.clubData.tokenType;
   });
 
-  const { factoryContract_CALL, erc721TokenContract, erc20DaoContract } =
-    useSmartContract();
+  const factoryData = useSelector((state) => {
+    return state.club.factoryData;
+  });
+
+  const { erc721TokenContract, erc20DaoContract } = useSmartContract();
 
   const walletAddress = wallet?.accounts[0].address;
 
@@ -198,23 +200,6 @@ const DashboardIndex = () => {
     NETWORK_HEX,
     fetchActiveProposals,
   ]);
-
-  useEffect(() => {
-    try {
-      if (daoAddress && factoryContract_CALL !== null) {
-        const factoryContractData = async () => {
-          const factoryData = await factoryContract_CALL.getDAOdetails(
-            daoAddress,
-          );
-          setDepositCloseTime(factoryData?.depositCloseTime);
-        };
-
-        factoryContractData();
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  }, [daoAddress, factoryContract_CALL]);
 
   useEffect(() => {
     try {
@@ -672,8 +657,8 @@ const DashboardIndex = () => {
                       mr={4}
                       xs
                       sx={{ display: "flex", justifyContent: "flex-end" }}>
-                      {depositCloseTime ? (
-                        depositCloseTime * 1000 > Date.now() ? (
+                      {factoryData?.depositCloseTime ? (
+                        factoryData?.depositCloseTime * 1000 > Date.now() ? (
                           <Grid
                             container
                             sx={{

@@ -70,9 +70,9 @@ const NewArchERC721 = ({
   };
 
   const {
-    erc20TokenContract_CALL,
-    erc20TokenContract_SEND,
-    factoryContract_SEND,
+    erc20TokenContractCall,
+    erc20TokenContractSend,
+    factoryContractSend,
     erc721TokenContract,
   } = useSmartContract({
     contractAddress: daoDetails && daoDetails?.depositTokenAddress,
@@ -80,7 +80,7 @@ const NewArchERC721 = ({
 
   const fetchTokenDetails = useCallback(async () => {
     try {
-      if (erc20TokenContract_CALL && erc721TokenContract) {
+      if (erc20TokenContractCall && erc721TokenContract) {
         const balanceOfNft = await erc721TokenContract.balanceOf();
         setBalanceOfNft(balanceOfNft);
 
@@ -89,9 +89,9 @@ const NewArchERC721 = ({
         } else {
           setHasClaimed(false);
         }
-        const decimals = await erc20TokenContract_CALL.decimals();
-        const symbol = await erc20TokenContract_CALL.obtainSymbol();
-        const name = await erc20TokenContract_CALL.name();
+        const decimals = await erc20TokenContractCall.decimals();
+        const symbol = await erc20TokenContractCall.obtainSymbol();
+        const name = await erc20TokenContractCall.name();
 
         setErc20TokenDetails({
           tokenSymbol: symbol,
@@ -104,7 +104,7 @@ const NewArchERC721 = ({
     }
   }, [
     daoDetails?.maxTokensPerUser,
-    erc20TokenContract_CALL,
+    erc20TokenContractCall,
     erc721TokenContract,
   ]);
 
@@ -119,7 +119,7 @@ const NewArchERC721 = ({
   const claimNFTHandler = async () => {
     try {
       setLoading(true);
-      await erc20TokenContract_SEND.approveDeposit(
+      await erc20TokenContractSend.approveDeposit(
         FACTORY_CONTRACT_ADDRESS,
         convertFromWeiGovernance(
           daoDetails.pricePerToken,
@@ -128,7 +128,7 @@ const NewArchERC721 = ({
         erc20TokenDetails.tokenDecimal,
       );
 
-      await factoryContract_SEND.buyGovernanceTokenERC721DAO(
+      await factoryContractSend.buyGovernanceTokenERC721DAO(
         walletAddress,
         erc721DaoAddress,
         daoDetails.nftURI,

@@ -39,12 +39,12 @@ const AdditionalSettings = ({
 
   const startingTimeInNum = new Date(+daoDetails?.depositDeadline * 1000);
 
-  const { factoryContract_SEND } = useSmartContract();
+  const { factoryContractSend } = useSmartContract();
 
   const updateOwnerFee = async (ownerFee) => {
     setLoading(true);
     try {
-      const res = await factoryContract_SEND.updateOwnerFee(
+      const res = await factoryContractSend.updateOwnerFee(
         +ownerFee * 100,
         daoAddress,
       );
@@ -72,7 +72,7 @@ const AdditionalSettings = ({
   const updateDepositTime = async (depositTime) => {
     setLoading(true);
     try {
-      const res = await factoryContract_SEND.updateDepositTime(
+      const res = await factoryContractSend.updateDepositTime(
         +depositTime.toFixed(0).toString(),
         daoAddress,
       );
