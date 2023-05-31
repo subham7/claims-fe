@@ -1,4 +1,5 @@
 import {
+  Autocomplete,
   Card,
   FormControlLabel,
   Grid,
@@ -10,7 +11,6 @@ import { Step4Styles } from "./CreateClubStyles";
 
 export default function Step4(props) {
   const classes = Step4Styles();
-
   return (
     <>
       <Grid container spacing={3} minHeight={"400px"}>
@@ -69,23 +69,26 @@ export default function Step4(props) {
               <Typography mt={5} className={classes.wrapTextIcon}>
                 Enter Safe address
               </Typography>
-              <TextField
+              <Autocomplete
                 name="safeAddress"
                 className={classes.textField}
-                label="Safe address"
-                variant="outlined"
-                placeholder="0x00"
-                onChange={props.formik.handleChange}
-                onBlur={props.formik.handleBlur}
-                value={props.formik.values.safeAddress}
-                error={
-                  props.formik.touched.safeAddress &&
-                  Boolean(props.formik.errors.safeAddress)
-                }
-                helperText={
-                  props.formik.touched.safeAddress &&
-                  props.formik.errors.safeAddress
-                }
+                options={props.safes}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Safe address"
+                    variant="outlined"
+                    placeholder="0x00"
+                    error={
+                      props.formik.touched.safeAddress &&
+                      Boolean(props.formik.errors.safeAddress)
+                    }
+                    helperText={
+                      props.formik.touched.safeAddress &&
+                      props.formik.errors.safeAddress
+                    }
+                  />
+                )}
               />
             </>
           )}

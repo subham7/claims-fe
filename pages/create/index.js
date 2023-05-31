@@ -1,7 +1,7 @@
 import { Box, Button, Grid, Step, StepButton, Stepper } from "@mui/material";
 import Layout2 from "../../src/components/layouts/layout2";
 import ProtectRoute from "../../src/utils/auth";
-import { Fragment, useRef, useState } from "react";
+import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import Step1 from "../../src/components/createClubComps/Step1";
 import Step3 from "../../src/components/createClubComps/Step3";
 import { useFormik } from "formik";
@@ -26,6 +26,9 @@ import { convertToWeiGovernance } from "../../src/utils/globalFunctions";
 import WrongNetworkModal from "../../src/components/modals/WrongNetworkModal";
 import { useConnectWallet } from "@web3-onboard/react";
 import Step4 from "../../src/components/createClubComps/Step4";
+import { web3InstanceEthereum } from "../../src/utils/helper";
+import SafeApiKit from "@safe-global/api-kit";
+import { Web3Adapter } from "@safe-global/protocol-kit";
 
 const Create = () => {
   const steps = [
@@ -41,11 +44,11 @@ const Create = () => {
   const [activeStep, setActiveStep] = useState(0);
   const [completed, setCompleted] = useState({});
   const [open, setOpen] = useState(false);
+  const [allSafeAddresses, setAllSafeAddresses] = useState();
 
   const GNOSIS_DATA = useSelector((state) => {
     return state.gnosis;
   });
-
   const networkId = wallet?.chains[0]?.id;
 
   const handleStep = (step) => () => {
@@ -59,6 +62,35 @@ const Create = () => {
   const handlePrev = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
+
+  const getSafeService = useCallback(async () => {
+    if (GNOSIS_DATA.transactionUrl) {
+      const web3 = await web3InstanceEthereum();
+      const ethAdapter = new Web3Adapter({
+        web3,
+        signerAddress: localStorage.getItem("wallet"),
+      });
+      const safeService = new SafeApiKit({
+        txServiceUrl: GNOSIS_DATA.transactionUrl,
+        ethAdapter,
+      });
+      return safeService;
+    }
+  }, [GNOSIS_DATA.transactionUrl]);
+
+  const getAllSafes = async () => {
+    const safeService = await getSafeService();
+    const safes = await safeService.getSafesByOwner(
+      localStorage.getItem("wallet"),
+    );
+    setAllSafeAddresses(safes.safes);
+  };
+
+  useEffect(() => {
+    if (GNOSIS_DATA.transactionUrl) {
+      getAllSafes();
+    }
+  }, [GNOSIS_DATA.transactionUrl]);
 
   const getStepContent = (step) => {
     switch (step) {
@@ -80,7 +112,7 @@ const Create = () => {
       case 2:
         return <Step3 formik={formikStep3} />;
       case 3:
-        return <Step4 formik={formikStep4} />;
+        return <Step4 formik={formikStep4} safes={allSafeAddresses} />;
       default:
         return "Unknown step";
     }
