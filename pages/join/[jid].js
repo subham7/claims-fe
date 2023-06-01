@@ -208,9 +208,9 @@ const Join = () => {
     }
   }, [daoAddress]);
 
-  // useEffect(() => {
-  //   // fetchTokenGatingDetials();
-  // }, [fetchTokenGatingDetials]);
+  useEffect(() => {
+    fetchTokenGatingDetials();
+  }, [fetchTokenGatingDetials]);
 
   useEffect(() => {
     if (TOKEN_TYPE === "erc20") {
