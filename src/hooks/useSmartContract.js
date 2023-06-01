@@ -4,6 +4,7 @@ import ERC20DaoABI from "../abis/newArch/erc20Dao.json";
 import ERC721DaoABI from "../abis/newArch/erc721Dao.json";
 import FactoryContractABI from "../abis/newArch/factoryContract.json";
 import ClaimContractABI from "../abis/singleClaimContract.json";
+import ClaimFactoryABI from "../abis/claimContractFactory.json";
 import { useRouter } from "next/router";
 import Web3 from "web3";
 import { RPC_URL } from "../api";
@@ -65,6 +66,16 @@ const useSmartContract = (props = {}) => {
         daoAddress || clubId,
       );
 
+      const claimFactoryContractCall = new web3Call.eth.Contract(
+        ClaimFactoryABI.abi,
+        claimAddress,
+      );
+
+      const claimFactoryContractSend = new web3Send.eth.Contract(
+        ClaimFactoryABI.abi,
+        claimAddress,
+      );
+
       const claimContractCall = new web3Call.eth.Contract(
         ClaimContractABI.abi,
         claimAddress,
@@ -82,6 +93,8 @@ const useSmartContract = (props = {}) => {
         erc721DaoContractCall,
         erc721DaoContractSend,
         erc721TokenContractCall,
+        claimFactoryContractCall,
+        claimFactoryContractSend,
         claimContractCall,
         claimContractSend,
       };

@@ -8,6 +8,7 @@ import {
   setCreateSafeLoading,
 } from "../redux/reducers/gnosis";
 import { addClubData, addDaoAddress } from "../redux/reducers/club";
+// import useSmartContractMethods from "../hooks/useSmartContractMethods";
 
 export async function initiateConnection(
   params,
@@ -21,6 +22,7 @@ export async function initiateConnection(
 ) {
   dispatch(setCreateSafeLoading(true));
   dispatch(setCreateDaoAuthorized(false));
+  // const { createERC20DAO } = useSmartContractMethods();
 
   let daoAddress = null;
 

@@ -619,11 +619,11 @@ export class SmartContract {
     return this.contract.methods.decimals().call({ from: this.walletAddress });
   }
 
-  async checkUserBalance() {
-    return this.contract.methods
-      .checkUserBalance(this.walletAddress)
-      .call({ from: this.walletAddress });
-  }
+  // async checkUserBalance() {
+  //   return this.contract.methods
+  //     .checkUserBalance(this.walletAddress)
+  //     .call({ from: this.walletAddress });
+  // }
 
   async ownerAddress() {
     return this.contract.methods
@@ -834,15 +834,15 @@ export class SmartContract {
     return this.contract.methods.owner().call({ from: this.walletAddress });
   }
 
-  async nftUri() {
-    return this.contract.methods.tokenURI(0).call({ from: this.walletAddress });
-  }
+  // async nftUri() {
+  //   return this.contract.methods.tokenURI(0).call({ from: this.walletAddress });
+  // }
 
-  async maxTokensPerUser() {
-    return this.contract.methods
-      .maxTokensPerUser()
-      .call({ from: this.walletAddress });
-  }
+  // async maxTokensPerUser() {
+  //   return this.contract.methods
+  //     .maxTokensPerUser()
+  //     .call({ from: this.walletAddress });
+  // }
 
   async balanceOfNft(address) {
     return this.contract.methods
@@ -862,48 +862,48 @@ export class SmartContract {
       .call({ from: this.walletAddress });
   }
 
-  async isNftTransferable() {
-    return this.contract.methods
-      .isNftTransferable()
-      .call({ from: this.walletAddress });
-  }
+  // async isNftTransferable() {
+  //   return this.contract.methods
+  //     .isNftTransferable()
+  //     .call({ from: this.walletAddress });
+  // }
 
-  async isNftTotalSupplyUnlimited() {
-    return this.contract.methods
-      .isNftTotalSupplyUnlimited()
-      .call({ from: this.walletAddress });
-  }
+  // async isNftTotalSupplyUnlimited() {
+  //   return this.contract.methods
+  //     .isNftTotalSupplyUnlimited()
+  //     .call({ from: this.walletAddress });
+  // }
 
-  async updateMaxTokensPerUser(tokenValue) {
-    const increasedGasPrice = await getIncreaseGasPrice();
-    return this.contract.methods
-      .updateMaxTokensPerUser(tokenValue)
-      .send({ from: this.walletAddress, gasPrice: increasedGasPrice });
-  }
+  // async updateMaxTokensPerUser(tokenValue) {
+  //   const increasedGasPrice = await getIncreaseGasPrice();
+  //   return this.contract.methods
+  //     .updateMaxTokensPerUser(tokenValue)
+  //     .send({ from: this.walletAddress, gasPrice: increasedGasPrice });
+  // }
 
-  async updateTotalSupplyOfToken(newSupplyValue) {
-    const increasedGasPrice = await getIncreaseGasPrice();
-    return this.contract.methods
-      .updateTotalSupplyOfToken(newSupplyValue)
-      .send({ from: this.walletAddress, gasPrice: increasedGasPrice });
-  }
+  // async updateTotalSupplyOfToken(newSupplyValue) {
+  //   const increasedGasPrice = await getIncreaseGasPrice();
+  //   return this.contract.methods
+  //     .updateTotalSupplyOfToken(newSupplyValue)
+  //     .send({ from: this.walletAddress, gasPrice: increasedGasPrice });
+  // }
 
-  async updateNftTransferability(value) {
-    const increasedGasPrice = await getIncreaseGasPrice();
-    return this.contract.methods
-      .updateNftTransferability(value)
-      .send({ from: this.walletAddress, gasPrice: increasedGasPrice });
-  }
+  // async updateNftTransferability(value) {
+  //   const increasedGasPrice = await getIncreaseGasPrice();
+  //   return this.contract.methods
+  //     .updateNftTransferability(value)
+  //     .send({ from: this.walletAddress, gasPrice: increasedGasPrice });
+  // }
 
   async symbol() {
     return this.contract.methods.symbol().call({ from: this.walletAddress });
   }
 
-  async erc20TokensMinted() {
-    return this.contract.methods
-      .totalTokensMinted()
-      .call({ from: this.walletAddress });
-  }
+  // async erc20TokensMinted() {
+  //   return this.contract.methods
+  //     .totalTokensMinted()
+  //     .call({ from: this.walletAddress });
+  // }
 
   async depositCloseTime() {
     return this.contract.methods

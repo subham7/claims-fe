@@ -6,6 +6,7 @@ import { getIncreaseGasPrice } from "../utils/helper";
 import ERC20TokenABI from "../abis/usdcTokenContract.json";
 import ERC721TokenABI from "../abis/nft.json";
 import { convertToWei } from "../utils/globalFunctions";
+import { Web3Adapter } from "@safe-global/protocol-kit";
 
 const useSmartContractMethods = () => {
   const [{ wallet }] = useConnectWallet();
@@ -215,7 +216,404 @@ const useSmartContractMethods = () => {
       });
   };
 
+  const claimContract = async (claimSettings) => {
+    return await claimFactoryContractSend?.methods
+      ?.deployClaimContract(claimSettings)
+      .send({
+        from: walletAddress,
+        gasPrice: await getIncreaseGasPrice(),
+      });
+  };
+
+  const claimSettings = async () => {
+    return await claimContractCall?.methods?.claimSettings().call();
+  };
+
+  const claimBalance = async () => {
+    return await claimContractCall.methods.claimBalance().call();
+  };
+
+  const toggleClaim = async () => {
+    return await claimContractSend?.methods.toggleClaim().send({
+      from: this.walletAddress,
+      gasPrice: await getIncreaseGasPrice(),
+    });
+  };
+
+  const rollbackTokens = async (amount) => {
+    return await claimContractSend?.methods.rollbackTokens(amount).send({
+      from: this.walletAddress,
+      gasPrice: await getIncreaseGasPrice(),
+    });
+  };
+
+  const claim = async (amount, merkleData, leaf) => {
+    return await claimContractSend.methods
+      .claim(amount, merkleData, leaf)
+      .send({
+        from: this.walletAddress,
+        gasPrice: await getIncreaseGasPrice(),
+      });
+  };
+
+  const hasClaimed = async (walletAddress) => {
+    return await claimContractCall.methods.hasClaimed(walletAddress).call();
+  };
+
+  const claimAmount = async (walletAddress) => {
+    return await claimContractCall.methods.claimAmount(walletAddress).call();
+  };
+
+  const checkAmount = async (walletAddress) => {
+    return await claimContractCall.methods.checkAmount(walletAddress).call();
+  };
+
+  const encode = (address, amount) => {
+    return claimContractCall.methods.encode(address, amount).call();
+  };
+
+  const createERC721DAO = async (
+    clubName,
+    clubSymbol,
+    tokenUri,
+    ownerFeePerDepositPercent,
+    depositClose,
+    quorum,
+    threshold,
+    safeThreshold,
+    depositTokenAddress,
+    treasuryAddress,
+    addressList,
+    maxTokensPerUser,
+    distributeAmount,
+    pricePerToken,
+    isNftTransferable,
+    isNftTotalSupplyUnlimited,
+    isGovernanceActive,
+    allowWhiteList,
+    assetsStoredOnGnosis,
+    merkleRoot,
+  ) => {
+    return factoryContractSend.methods
+      .createERC721DAO(
+        clubName,
+        clubSymbol,
+        tokenUri,
+        ownerFeePerDepositPercent,
+        depositClose,
+        quorum,
+        threshold,
+        safeThreshold,
+        depositTokenAddress,
+        treasuryAddress,
+        addressList,
+        maxTokensPerUser,
+        distributeAmount,
+        pricePerToken,
+        isNftTransferable,
+        isNftTotalSupplyUnlimited,
+        isGovernanceActive,
+        allowWhiteList,
+        assetsStoredOnGnosis,
+        merkleRoot,
+      )
+      .send({
+        from: this.walletAddress,
+        gasPrice: await getIncreaseGasPrice(),
+      });
+  };
+
+  const createERC20DAO = async (
+    clubName,
+    clubSymbol,
+    distributeAmount,
+    pricePerToken,
+    minDepositPerUser,
+    maxDepositPerUser,
+    ownerFeePerDepositPercent,
+    depositClose,
+    quorum,
+    threshold,
+    safeThreshold,
+    depositTokenAddress,
+    treasuryAddress,
+    addressList,
+    isGovernanceActive,
+    isGtTransferable,
+    allowWhiteList,
+    assetsStoredOnGnosis,
+    merkleRoot,
+  ) => {
+    return this.contract.methods
+      .createERC20DAO(
+        clubName,
+        clubSymbol,
+        distributeAmount,
+        pricePerToken,
+        minDepositPerUser,
+        maxDepositPerUser,
+        ownerFeePerDepositPercent,
+        depositClose,
+        quorum,
+        threshold,
+        safeThreshold,
+        depositTokenAddress,
+        treasuryAddress,
+        addressList,
+        isGovernanceActive,
+        isGtTransferable,
+        allowWhiteList,
+        assetsStoredOnGnosis,
+        merkleRoot,
+      )
+      .send({
+        from: this.walletAddress,
+        gasPrice: await getIncreaseGasPrice(),
+      });
+  };
+
+  const updateProposalAndExecution = async (
+    data,
+    approvalData = "",
+    daoAddress = "",
+    gnosisAddress = "",
+    txHash = "",
+    pid,
+    tokenData,
+    executionStatus,
+    airdropContractAddress = "",
+    factoryContractAddress = "",
+  ) => {
+    const parameters = data;
+
+    const ethAdapter = new Web3Adapter({
+      web3: new Web3(window.ethereum),
+      signerAddress: walletAddress,
+    });
+    const txServiceUrl = this.gnosisTransactionUrl;
+    const safeService = new SafeApiKit({
+      txServiceUrl,
+      ethAdapter,
+    });
+
+    const safeSdk = await Safe.create({
+      ethAdapter: ethAdapter,
+      safeAddress: gnosisAddress,
+    });
+
+    const implementationContract = new web3.eth.Contract(
+      Erc20Dao.abi,
+      daoAddress,
+    );
+
+    let approvalTransaction;
+    let transaction;
+    if (approvalData !== "") {
+      approvalTransaction = {
+        to: daoAddress,
+        data: implementationContract.methods
+          .updateProposalAndExecution(
+            //usdc address
+            tokenData,
+            approvalData,
+          )
+          .encodeABI(),
+        value: "0",
+      };
+
+      transaction = {
+        to: daoAddress,
+        data: implementationContract.methods
+          .updateProposalAndExecution(
+            //airdrop address
+
+            airdropContractAddress,
+            parameters,
+          )
+          .encodeABI(),
+        value: "0",
+      };
+    } else {
+      // debugger;
+      transaction = {
+        //dao
+        to: daoAddress,
+        data: implementationContract.methods
+          .updateProposalAndExecution(
+            //factory
+            factoryContractAddress ? factoryContractAddress : daoAddress,
+            parameters,
+          )
+          .encodeABI(),
+        value: "0",
+      };
+    }
+
+    if (executionStatus !== "executed") {
+      //case for 1st signature
+      if (txHash === "") {
+        const nonce = await safeService.getNextNonce(gnosisAddress);
+        let safeTransactionData;
+        if (approvalData === "") {
+          safeTransactionData = {
+            to: transaction.to,
+            data: transaction.data,
+            value: transaction.value,
+            // operation, // Optional
+            // safeTxGas, // Optional
+            // baseGas, // Optional
+            // gasPrice, // Optional
+            // gasToken, // Optional
+            // refundReceiver, // Optional
+            nonce: nonce, // Optional
+          };
+        } else {
+          safeTransactionData = [
+            {
+              to: approvalTransaction.to,
+              data: approvalTransaction.data,
+              value: approvalTransaction.value,
+              // operation, // Optional
+              // safeTxGas, // Optional
+              // baseGas, // Optional
+              // gasPrice, // Optional
+              // gasToken, // Optional
+              // refundReceiver, // Optional
+              nonce: nonce, // Optional
+            },
+            {
+              to: transaction.to,
+              data: transaction.data,
+              value: transaction.value,
+              // operation, // Optional
+              // safeTxGas, // Optional
+              // baseGas, // Optional
+              // gasPrice, // Optional
+              // gasToken, // Optional
+              // refundReceiver, // Optional
+              nonce: nonce, // Optional
+            },
+          ];
+        }
+
+        const safeTransaction = await safeSdk.createTransaction({
+          safeTransactionData,
+        });
+        const safeTxHash = await safeSdk.getTransactionHash(safeTransaction);
+        const payload = {
+          proposalId: pid,
+          txHash: safeTxHash,
+        };
+        await createProposalTxHash(payload);
+
+        const proposeTxn = await safeService.proposeTransaction({
+          safeAddress: gnosisAddress,
+          safeTransactionData: safeTransaction.data,
+          safeTxHash: safeTxHash,
+          senderAddress: this.walletAddress,
+        });
+        const senderSignature = await safeSdk.signTypedData(
+          safeTransaction,
+          "v4",
+        );
+        await safeService.confirmTransaction(safeTxHash, senderSignature.data);
+        return proposeTxn;
+      }
+      //case for remaining signatures
+      else {
+        const proposalTxHash = await getProposalTxHash(pid);
+        const tx = await safeService.getTransaction(
+          proposalTxHash.data[0].txHash,
+        );
+        const nonce = await safeSdk.getNonce();
+        let safeTransactionData;
+
+        if (approvalData === "") {
+          safeTransactionData = {
+            to: tx.to,
+            data: tx.data,
+            value: tx.value,
+            // operation, // Optional
+            // safeTxGas, // Optional
+            // baseGas, // Optional
+            // gasPrice, // Optional
+            // gasToken, // Optional
+            // refundReceiver, // Optional
+            nonce: tx.nonce, // Optional
+          };
+        } else {
+          safeTransactionData = [
+            {
+              to: tx.dataDecoded.parameters[0].valueDecoded[0].to,
+              data: tx.dataDecoded.parameters[0].valueDecoded[0].data,
+              value: tx.dataDecoded.parameters[0].valueDecoded[0].value,
+              // operation, // Optional
+              // safeTxGas, // Optional
+              // baseGas, // Optional
+              // gasPrice, // Optional
+              // gasToken, // Optional
+              // refundReceiver, // Optional
+              nonce: tx.nonce, // Optional
+            },
+            {
+              to: tx.dataDecoded.parameters[0].valueDecoded[1].to,
+              data: tx.dataDecoded.parameters[0].valueDecoded[1].data,
+              value: tx.dataDecoded.parameters[0].valueDecoded[1].value,
+              // operation, // Optional
+              // safeTxGas, // Optional
+              // baseGas, // Optional
+              // gasPrice, // Optional
+              // gasToken, // Optional
+              // refundReceiver, // Optional
+              nonce: tx.nonce, // Optional
+            },
+          ];
+        }
+
+        const safeTxHash = tx.safeTxHash;
+        const safeTransaction = await safeSdk.createTransaction({
+          safeTransactionData,
+        });
+        // const senderSignature = await safeSdk.signTypedData(tx, "v4");
+        const senderSignature = await safeSdk.signTypedData(
+          safeTransaction,
+          "v4",
+        );
+        await safeService.confirmTransaction(safeTxHash, senderSignature.data);
+        return tx;
+      }
+    } else {
+      const proposalTxHash = await getProposalTxHash(pid);
+
+      const safetx = await safeService.getTransaction(
+        proposalTxHash.data[0].txHash,
+      );
+      const options = {
+        maxPriorityFeePerGas: null,
+        maxFeePerGas: null,
+        // from, // Optional
+        // gasPrice: increasedGasPrice,
+        // gasPrice, // Optional
+        // maxFeePerGas, // Optional
+        // maxPriorityFeePerGas // Optional
+        // nonce // Optional
+      };
+
+      const executeTxResponse = await safeSdk.executeTransaction(
+        safetx,
+        options,
+      );
+
+      const receipt =
+        executeTxResponse.transactionResponse &&
+        (await executeTxResponse.transactionResponse.wait());
+      return executeTxResponse;
+    }
+  };
+
   return {
+    createERC20DAO,
+    createERC721DAO,
     buyGovernanceTokenERC721DAO,
     buyGovernanceTokenERC20DAO,
     getDecimals,
@@ -235,6 +633,16 @@ const useSmartContractMethods = () => {
     updateDepositTime,
     setupTokenGating,
     getTokenGatingDetails,
+    claimAmount,
+    claim,
+    checkAmount,
+    encode,
+    hasClaimed,
+    rollbackTokens,
+    toggleClaim,
+    claimBalance,
+    claimSettings,
+    claimContract,
   };
 };
 
