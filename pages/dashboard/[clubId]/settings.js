@@ -12,7 +12,7 @@ import { subgraphQuery } from "../../../src/utils/subgraphs";
 import { convertFromWeiGovernance } from "../../../src/utils/globalFunctions";
 import { getAssetsByDaoAddress } from "../../../src/api/assets";
 import WrongNetworkModal from "../../../src/components/modals/WrongNetworkModal";
-import useSmartContract from "../../../src/hooks/useSmartContract";
+import useSmartContractMethods from "../../../src/hooks/useSmartContractMethods";
 
 const Settings = () => {
   const [daoDetails, setDaoDetails] = useState({
@@ -88,116 +88,112 @@ const Settings = () => {
   const remainingTimeInSecs = day2.diff(day1, "seconds");
   const remainingDays = day2.diff(day1, "day");
 
-  const { erc20TokenContractCall, erc20DaoContract, erc721DaoContract } =
-    useSmartContract({
-      contractAddress: factoryData && factoryData?.depositTokenAddress,
-    });
+  const {
+    getERC20DAOdetails,
+    getERC721DAOdetails,
+    getERC20TotalSupply,
+    getERC20Balance,
+    getDecimals,
+    getBalance,
+    getTokenName,
+    getTokenSymbol,
+    getERC721Balance,
+    getNftOwnersCount,
+  } = useSmartContractMethods();
 
   const fetchErc20ContractDetails = useCallback(async () => {
     try {
-      if (erc20DaoContract) {
-        const balanceOfClubToken = await erc20DaoContract.balanceOf();
-        const erc20Data = await erc20DaoContract.getERC20DAOdetails();
-        const erc20DaoDecimal = await erc20DaoContract.decimals();
-        const clubTokensMinted = await erc20DaoContract.totalSupply();
+      const balanceOfClubToken = getERC20Balance();
+      const erc20Data = await getERC20DAOdetails();
+      const erc20DaoDecimal = await getDecimals(daoAddress);
+      const clubTokensMinted = await getERC20TotalSupply();
 
-        if (erc20Data && factoryData)
-          setDaoDetails({
-            daoName: erc20Data.DaoName,
-            daoSymbol: erc20Data.DaoSymbol,
-            quorum: erc20Data.quorum,
-            threshold: erc20Data.threshold,
-            isGovernance: erc20Data.isGovernanceActive,
-            decimals: erc20DaoDecimal,
-            clubTokensMinted: clubTokensMinted,
-            // daoImage: fetchedImage,
-            balanceOfClubToken: convertFromWeiGovernance(
-              balanceOfClubToken,
-              18,
-            ),
-            isTokenGated: factoryData.isTokenGatingApplied,
-            minDeposit: factoryData.minDepositPerUser,
-            maxDeposit: factoryData.maxDepositPerUser,
-            pricePerToken: factoryData.pricePerToken,
-            depositDeadline: factoryData.depositCloseTime,
-            depositTokenAddress: factoryData.depositTokenAddress,
-            distributionAmt: factoryData.distributionAmount,
-            totalSupply:
-              (factoryData.distributionAmount / 10 ** 18) *
-              factoryData.pricePerToken,
-            ownerFee: factoryData.ownerFeePerDepositPercent / 100,
-          });
-      }
+      if (erc20Data && factoryData)
+        setDaoDetails({
+          daoName: erc20Data.DaoName,
+          daoSymbol: erc20Data.DaoSymbol,
+          quorum: erc20Data.quorum,
+          threshold: erc20Data.threshold,
+          isGovernance: erc20Data.isGovernanceActive,
+          decimals: erc20DaoDecimal,
+          clubTokensMinted: clubTokensMinted,
+          // daoImage: fetchedImage,
+          balanceOfClubToken: convertFromWeiGovernance(balanceOfClubToken, 18),
+          isTokenGated: factoryData.isTokenGatingApplied,
+          minDeposit: factoryData.minDepositPerUser,
+          maxDeposit: factoryData.maxDepositPerUser,
+          pricePerToken: factoryData.pricePerToken,
+          depositDeadline: factoryData.depositCloseTime,
+          depositTokenAddress: factoryData.depositTokenAddress,
+          distributionAmt: factoryData.distributionAmount,
+          totalSupply:
+            (factoryData.distributionAmount / 10 ** 18) *
+            factoryData.pricePerToken,
+          ownerFee: factoryData.ownerFeePerDepositPercent / 100,
+        });
     } catch (error) {
       console.log(error);
     }
-  }, [erc20DaoContract, factoryData]);
+  }, [daoAddress, factoryData]);
 
   const fetchErc20TokenDetails = useCallback(async () => {
     try {
-      if (factoryData?.depositTokenAddress) {
-        const balanceOfToken = await erc20TokenContractCall.balanceOf();
-        const decimals = await erc20TokenContractCall.decimals();
-        const symbol = await erc20TokenContractCall.obtainSymbol();
-        const name = await erc20TokenContractCall.name();
+      const balanceOfToken = await getBalance(factoryData.depositTokenAddress);
+      const decimals = await getDecimals(factoryData.depositTokenAddress);
+      const symbol = await getTokenSymbol(factoryData.depositTokenAddress);
+      const name = await getTokenName(factoryData.depositTokenAddress);
 
-        const balanceConverted = convertFromWeiGovernance(
-          balanceOfToken,
-          decimals,
-        );
-        setErc20TokenDetails({
-          tokenBalance: +balanceConverted,
-          tokenSymbol: symbol,
-          tokenName: name,
-          tokenDecimal: decimals,
+      const balanceConverted = convertFromWeiGovernance(
+        balanceOfToken,
+        decimals,
+      );
+      setErc20TokenDetails({
+        tokenBalance: +balanceConverted,
+        tokenSymbol: symbol,
+        tokenName: name,
+        tokenDecimal: decimals,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }, [factoryData.depositTokenAddress]);
+
+  const fetchErc721ContractDetails = useCallback(async () => {
+    try {
+      const erc721Data = await getERC721DAOdetails();
+
+      const balanceOfClubToken = await getERC721Balance();
+      const nftMinted = await getNftOwnersCount();
+
+      if (erc721Data && factoryData) {
+        setDaoDetails({
+          daoName: erc721Data.DaoName,
+          daoSymbol: erc721Data.DaoSymbol,
+          quorum: erc721Data.quorum,
+          threshold: erc721Data.threshold,
+          isGovernance: erc721Data.isGovernanceActive,
+          maxTokensPerUser: erc721Data.maxTokensPerUser,
+          isTotalSupplyUnlimited: erc721Data.isNftTotalSupplyUnlimited,
+          balanceOfClubToken: convertFromWeiGovernance(balanceOfClubToken, 18),
+          nftMinted: nftMinted,
+          isTransferable: erc721Data.isTransferable,
+          createdBy: erc721Data.ownerAddress,
+          isTokenGated: factoryData.isTokenGatingApplied,
+          minDeposit: factoryData.minDepositPerUser,
+          maxDeposit: factoryData.maxDepositPerUser,
+          pricePerToken: factoryData.pricePerToken,
+          depositDeadline: factoryData.depositCloseTime,
+          depositTokenAddress: factoryData.depositTokenAddress,
+          distributionAmt: factoryData.distributionAmount,
+          totalSupply:
+            factoryData.distributionAmount * factoryData.pricePerToken,
+          ownerFee: factoryData.ownerFeePerDepositPercent / 100,
         });
       }
     } catch (error) {
       console.log(error);
     }
-  }, [erc20TokenContractCall, factoryData?.depositTokenAddress]);
-
-  const fetchErc721ContractDetails = useCallback(async () => {
-    try {
-      if (erc721DaoContract !== null) {
-        const erc721Data = await erc721DaoContract.getERC721DAOdetails();
-
-        const balanceOfClubToken = await erc721DaoContract.balanceOf();
-        const nftMinted = await erc721DaoContract.nftOwnersCount();
-
-        if (erc721Data && factoryData) {
-          setDaoDetails({
-            daoName: erc721Data.DaoName,
-            daoSymbol: erc721Data.DaoSymbol,
-            quorum: erc721Data.quorum,
-            threshold: erc721Data.threshold,
-            isGovernance: erc721Data.isGovernanceActive,
-            maxTokensPerUser: erc721Data.maxTokensPerUser,
-            isTotalSupplyUnlimited: erc721Data.isNftTotalSupplyUnlimited,
-            balanceOfClubToken: convertFromWeiGovernance(
-              balanceOfClubToken,
-              18,
-            ),
-            nftMinted: nftMinted,
-            isTransferable: erc721Data.isTransferable,
-            createdBy: erc721Data.ownerAddress,
-            isTokenGated: factoryData.isTokenGatingApplied,
-            minDeposit: factoryData.minDepositPerUser,
-            maxDeposit: factoryData.maxDepositPerUser,
-            pricePerToken: factoryData.pricePerToken,
-            depositDeadline: factoryData.depositCloseTime,
-            depositTokenAddress: factoryData.depositTokenAddress,
-            distributionAmt: factoryData.distributionAmount,
-            totalSupply:
-              factoryData.distributionAmount * factoryData.pricePerToken,
-            ownerFee: factoryData.ownerFeePerDepositPercent / 100,
-          });
-        }
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  }, [erc721DaoContract, factoryData]);
+  }, [factoryData]);
 
   const fetchAssets = useCallback(async () => {
     try {
