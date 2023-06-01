@@ -26,9 +26,8 @@ import { convertToWeiGovernance } from "../../src/utils/globalFunctions";
 import WrongNetworkModal from "../../src/components/modals/WrongNetworkModal";
 import { useConnectWallet } from "@web3-onboard/react";
 import Step4 from "../../src/components/createClubComps/Step4";
-import { web3InstanceEthereum } from "../../src/utils/helper";
-import SafeApiKit from "@safe-global/api-kit";
-import { Web3Adapter } from "@safe-global/protocol-kit";
+import Web3 from "web3";
+import { fetchClubOwners } from "../../src/api/club";
 
 const Create = () => {
   const steps = [
@@ -44,7 +43,8 @@ const Create = () => {
   const [activeStep, setActiveStep] = useState(0);
   const [completed, setCompleted] = useState({});
   const [open, setOpen] = useState(false);
-  const [allSafeAddresses, setAllSafeAddresses] = useState();
+  const [ownersCheck, setOwnersCheck] = useState(false);
+  const [ownerHelperText, setOwnerHelperText] = useState("");
 
   const GNOSIS_DATA = useSelector((state) => {
     return state.gnosis;
@@ -62,35 +62,6 @@ const Create = () => {
   const handlePrev = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
-
-  const getSafeService = useCallback(async () => {
-    if (GNOSIS_DATA.transactionUrl) {
-      const web3 = await web3InstanceEthereum();
-      const ethAdapter = new Web3Adapter({
-        web3,
-        signerAddress: localStorage.getItem("wallet"),
-      });
-      const safeService = new SafeApiKit({
-        txServiceUrl: GNOSIS_DATA.transactionUrl,
-        ethAdapter,
-      });
-      return safeService;
-    }
-  }, [GNOSIS_DATA.transactionUrl]);
-
-  const getAllSafes = async () => {
-    const safeService = await getSafeService();
-    const safes = await safeService.getSafesByOwner(
-      localStorage.getItem("wallet"),
-    );
-    setAllSafeAddresses(safes.safes);
-  };
-
-  useEffect(() => {
-    if (GNOSIS_DATA.transactionUrl) {
-      getAllSafes();
-    }
-  }, [GNOSIS_DATA.transactionUrl]);
 
   const getStepContent = (step) => {
     switch (step) {
@@ -112,7 +83,7 @@ const Create = () => {
       case 2:
         return <Step3 formik={formikStep3} />;
       case 3:
-        return <Step4 formik={formikStep4} safes={allSafeAddresses} />;
+        return <Step4 formik={formikStep4} ownerHelperText={ownerHelperText} />;
       default:
         return "Unknown step";
     }
@@ -324,6 +295,72 @@ const Create = () => {
         formikStep4.handleSubmit();
     }
   };
+
+  const getSafeOwners = useCallback(async () => {
+    setOwnersCheck(false);
+    setOwnerHelperText("Verifying owners...");
+    const walletAddress = wallet.accounts[0].address;
+    let newAddressList = [];
+    if (
+      !formikStep3.values.addressList.includes(
+        Web3.utils.toChecksumAddress(walletAddress),
+      )
+    ) {
+      newAddressList = [
+        ...formikStep3.values.addressList,
+        Web3.utils.toChecksumAddress(walletAddress),
+      ];
+    } else {
+      newAddressList = [...formikStep3.values.addressList];
+    }
+    let owners;
+    try {
+      owners = await fetchClubOwners(
+        formikStep4.values.safeAddress,
+        GNOSIS_DATA.transactionUrl,
+      );
+      const ownerAddressesArray = owners.data.owners.map((value) =>
+        Web3.utils.toChecksumAddress(value),
+      );
+
+      ownerAddressesArray.sort((a, b) => a - b);
+      let sorted_arr1 = ownerAddressesArray.sort((a, b) => a - b);
+      let sorted_arr2 = newAddressList.sort((a, b) => a - b);
+
+      const areArraysEqual = sorted_arr1.every(
+        (element, index) => element === sorted_arr2[index],
+      );
+      if (areArraysEqual) {
+        setOwnersCheck(true);
+        setOwnerHelperText("Owners matched");
+      } else {
+        console.log("hereeeeee");
+        setOwnerHelperText(
+          "Owners of the safe does not match with the admins of the DAO",
+        );
+        setOwnersCheck(false);
+      }
+    } catch (error) {
+      setOwnerHelperText("Invalid gnosis address");
+    }
+  }, [
+    GNOSIS_DATA.transactionUrl,
+    formikStep3.values.addressList,
+    formikStep4.values.safeAddress,
+    wallet.accounts,
+  ]);
+
+  useEffect(() => {
+    if (formikStep4.values.safeAddress && GNOSIS_DATA.transactionUrl) {
+      console.log("xx");
+      getSafeOwners();
+    }
+  }, [
+    formikStep4.values.safeAddress,
+    formikStep3.values.addressList,
+    GNOSIS_DATA.transactionUrl,
+    getSafeOwners,
+  ]);
   return (
     <Layout2>
       <Grid
@@ -416,7 +453,10 @@ const Create = () => {
                       <Button
                         variant="wideButton"
                         sx={{ marginTop: "2rem" }}
-                        onClick={handleSubmit}>
+                        onClick={handleSubmit}
+                        disabled={
+                          !formikStep4.values.deploySafe && !ownersCheck
+                        }>
                         Finish
                       </Button>
                     </>

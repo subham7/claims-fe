@@ -14,10 +14,17 @@ import CustomSlider from "../slider";
 import AddCircleOutlinedIcon from "@mui/icons-material/AddCircleOutlined";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { Step3Styles } from "./CreateClubStyles";
+import { useConnectWallet } from "@web3-onboard/react";
+import Web3 from "web3";
 
 export default function Step3(props) {
   const classes = Step3Styles();
-
+  const [{ wallet }] = useConnectWallet();
+  const walletAddress = wallet.accounts[0].address;
+  const index = props.formik.values.addressList.indexOf(
+    Web3.utils.toChecksumAddress(walletAddress),
+  );
+  if (index >= 0) props.formik.values.addressList.splice(index, 1);
   return (
     <>
       <Grid container spacing={3}>

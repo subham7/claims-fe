@@ -78,9 +78,9 @@ export default function ProtectRoute(Component) {
           web3.eth.net
             .getId()
             .then((networkId) => {
-              if (!networksAvailable.includes(networkId)) {
-                setOpen(true);
-              }
+              // if (!networksAvailable.includes(networkId)) {
+              //   setOpen(true);
+              // }
               updateDynamicAddress(networkId, dispatch);
             })
             .catch((err) => {

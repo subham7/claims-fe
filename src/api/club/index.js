@@ -22,6 +22,10 @@ export async function fetchClub(clubID) {
   });
 }
 
+export async function fetchClubOwners(safeAddress, transactionUrl) {
+  return await axios.get(transactionUrl + `/api/v1/safes/${safeAddress}`);
+}
+
 export async function fetchClubbyDaoAddress(daoAddress) {
   // fetch club using DAO Address / clubId
   const resolved = {

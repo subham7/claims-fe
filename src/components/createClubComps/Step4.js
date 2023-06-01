@@ -1,5 +1,4 @@
 import {
-  Autocomplete,
   Card,
   FormControlLabel,
   Grid,
@@ -69,27 +68,36 @@ export default function Step4(props) {
               <Typography mt={5} className={classes.wrapTextIcon}>
                 Enter Safe address
               </Typography>
-              <Autocomplete
+              <TextField
                 name="safeAddress"
                 className={classes.textField}
-                options={props.safes}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Safe address"
-                    variant="outlined"
-                    placeholder="0x00"
-                    error={
-                      props.formik.touched.safeAddress &&
-                      Boolean(props.formik.errors.safeAddress)
-                    }
-                    helperText={
-                      props.formik.touched.safeAddress &&
-                      props.formik.errors.safeAddress
-                    }
-                  />
-                )}
+                label="Safe address"
+                variant="outlined"
+                placeholder="0x00"
+                onChange={props.formik.handleChange}
+                onBlur={props.formik.handleBlur}
+                value={props.formik.values.safeAddress}
+                error={
+                  props.formik.touched.safeAddress &&
+                  Boolean(props.formik.errors.safeAddress)
+                }
+                helperText={
+                  props.formik.touched.safeAddress &&
+                  props.formik.errors.safeAddress
+                }
               />
+              <p
+                style={{
+                  margin: "0",
+                  color:
+                    props.ownerHelperText ===
+                      "Owners of the safe does not match with the admins of the DAO" ||
+                    props.ownerHelperText === "Invalid gnosis address"
+                      ? "red"
+                      : "#C1D3FF",
+                }}>
+                {props.ownerHelperText}
+              </p>
             </>
           )}
         </Grid>
