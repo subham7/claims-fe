@@ -1,7 +1,7 @@
 import { Box, Button, Grid, Step, StepButton, Stepper } from "@mui/material";
 import Layout2 from "../../src/components/layouts/layout2";
 import ProtectRoute from "../../src/utils/auth";
-import { Fragment, useRef, useState } from "react";
+import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import Step1 from "../../src/components/createClubComps/Step1";
 import Step3 from "../../src/components/createClubComps/Step3";
 import { useFormik } from "formik";
@@ -26,6 +26,8 @@ import { convertToWeiGovernance } from "../../src/utils/globalFunctions";
 import WrongNetworkModal from "../../src/components/modals/WrongNetworkModal";
 import { useConnectWallet } from "@web3-onboard/react";
 import Step4 from "../../src/components/createClubComps/Step4";
+import Web3 from "web3";
+import { fetchClubOwners } from "../../src/api/club";
 
 const Create = () => {
   const steps = [
@@ -41,11 +43,12 @@ const Create = () => {
   const [activeStep, setActiveStep] = useState(0);
   const [completed, setCompleted] = useState({});
   const [open, setOpen] = useState(false);
+  const [ownersCheck, setOwnersCheck] = useState(false);
+  const [ownerHelperText, setOwnerHelperText] = useState("");
 
   const GNOSIS_DATA = useSelector((state) => {
     return state.gnosis;
   });
-
   const networkId = wallet?.chains[0]?.id;
 
   const handleStep = (step) => () => {
@@ -80,7 +83,7 @@ const Create = () => {
       case 2:
         return <Step3 formik={formikStep3} />;
       case 3:
-        return <Step4 formik={formikStep4} />;
+        return <Step4 formik={formikStep4} ownerHelperText={ownerHelperText} />;
       default:
         return "Unknown step";
     }
@@ -292,6 +295,72 @@ const Create = () => {
         formikStep4.handleSubmit();
     }
   };
+
+  const getSafeOwners = useCallback(async () => {
+    setOwnersCheck(false);
+    setOwnerHelperText("Verifying owners...");
+    const walletAddress = wallet.accounts[0].address;
+    let newAddressList = [];
+    if (
+      !formikStep3.values.addressList.includes(
+        Web3.utils.toChecksumAddress(walletAddress),
+      )
+    ) {
+      newAddressList = [
+        ...formikStep3.values.addressList,
+        Web3.utils.toChecksumAddress(walletAddress),
+      ];
+    } else {
+      newAddressList = [...formikStep3.values.addressList];
+    }
+    let owners;
+    try {
+      owners = await fetchClubOwners(
+        formikStep4.values.safeAddress,
+        GNOSIS_DATA.transactionUrl,
+      );
+      const ownerAddressesArray = owners.data.owners.map((value) =>
+        Web3.utils.toChecksumAddress(value),
+      );
+
+      ownerAddressesArray.sort((a, b) => a - b);
+      let sorted_arr1 = ownerAddressesArray.sort((a, b) => a - b);
+      let sorted_arr2 = newAddressList.sort((a, b) => a - b);
+
+      const areArraysEqual = sorted_arr1.every(
+        (element, index) => element === sorted_arr2[index],
+      );
+      if (areArraysEqual) {
+        setOwnersCheck(true);
+        setOwnerHelperText("Owners matched");
+      } else {
+        console.log("hereeeeee");
+        setOwnerHelperText(
+          "Owners of the safe does not match with the admins of the DAO",
+        );
+        setOwnersCheck(false);
+      }
+    } catch (error) {
+      setOwnerHelperText("Invalid gnosis address");
+    }
+  }, [
+    GNOSIS_DATA.transactionUrl,
+    formikStep3.values.addressList,
+    formikStep4.values.safeAddress,
+    wallet.accounts,
+  ]);
+
+  useEffect(() => {
+    if (formikStep4.values.safeAddress && GNOSIS_DATA.transactionUrl) {
+      console.log("xx");
+      getSafeOwners();
+    }
+  }, [
+    formikStep4.values.safeAddress,
+    formikStep3.values.addressList,
+    GNOSIS_DATA.transactionUrl,
+    getSafeOwners,
+  ]);
   return (
     <Layout2>
       <Grid
@@ -384,7 +453,10 @@ const Create = () => {
                       <Button
                         variant="wideButton"
                         sx={{ marginTop: "2rem" }}
-                        onClick={handleSubmit}>
+                        onClick={handleSubmit}
+                        disabled={
+                          !formikStep4.values.deploySafe && !ownersCheck
+                        }>
                         Finish
                       </Button>
                     </>
