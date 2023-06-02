@@ -11,19 +11,16 @@ import Router from "next/router";
 const useSafe = () => {
   const { createERC721DAO, createERC20DAO } = useSmartContractMethods();
 
-  async function initiateConnection(
+  const initiateConnection = async (
     params,
     dispatch,
-    gnosisTransactionUrl,
     addressList,
     clubTokenType,
-    factoryContractAddress,
     tokenURI = "",
     metadataURL = "",
-  ) {
+  ) => {
     dispatch(setCreateSafeLoading(true));
     dispatch(setCreateDaoAuthorized(false));
-    // const { createERC20DAO } = useSmartContractMethods();
 
     let daoAddress = null;
 
@@ -33,19 +30,6 @@ const useSafe = () => {
 
       let value;
       if (clubTokenType === "NFT") {
-        let modifiedTokenURI;
-        if (clubTokenType === "NFT") {
-          if (
-            tokenURI.slice(tokenURI.indexOf("/"), tokenURI?.lastIndexOf("//"))
-          ) {
-            let imgUrl = tokenURI?.split("//");
-            modifiedTokenURI = `https://${imgUrl[1]}.ipfs.dweb.link/${imgUrl[2]}`;
-          } else {
-            let imgUrl = tokenURI?.split("/");
-            modifiedTokenURI = `https://${imgUrl[2]}.ipfs.dweb.link/${imgUrl[3]}`;
-          }
-        }
-
         value = await createERC721DAO(
           params.clubName,
           params.clubSymbol,
@@ -134,7 +118,7 @@ const useSafe = () => {
       dispatch(setCreateSafeError(true));
       return "Gnosis safe connection cannot be established!";
     }
-  }
+  };
 
   return { initiateConnection };
 };

@@ -20,83 +20,122 @@ const useSmartContract = () => {
     (state) => state.gnosis.factoryContractAddress,
   );
 
-  const initializeContract = async () => {
-    const web3Call = new Web3(RPC_URL);
-    let web3Send;
+  let contractInstances = useSelector((state) => {
+    return state.contractInstances.contractInstances;
+  });
 
-    if (typeof window !== "undefined") {
-      web3Send = new Web3(window?.ethereum);
-    }
+  const initializeFactoryContracts = async () => {
+    const web3Call = new Web3(RPC_URL);
+    const web3Send = new Web3(window?.ethereum);
 
     try {
-      const factoryContractCall = new web3Call.eth.Contract(
-        FactoryContractABI.abi,
-        FACTORY_CONTRACT_ADDRESS,
-      );
+      if (FACTORY_CONTRACT_ADDRESS) {
+        const factoryContractCall = new web3Call.eth.Contract(
+          FactoryContractABI.abi,
+          FACTORY_CONTRACT_ADDRESS,
+        );
 
-      const factoryContractSend = new web3Send.eth.Contract(
-        FactoryContractABI.abi,
-        FACTORY_CONTRACT_ADDRESS,
-      );
+        const factoryContractSend = web3Send
+          ? new web3Send.eth.Contract(
+              FactoryContractABI.abi,
+              FACTORY_CONTRACT_ADDRESS,
+            )
+          : {};
 
-      const erc721TokenContractCall = new web3Call.eth.Contract(
-        ERC721TokenABI.abi,
-        daoAddress || clubId,
-      );
+        contractInstances = {
+          ...contractInstances,
+          factoryContractCall,
+          factoryContractSend,
+        };
+      }
 
-      const erc20DaoContractCall = new web3Call.eth.Contract(
-        ERC20DaoABI.abi,
-        daoAddress || clubId,
-      );
+      dispatch(setContractInstances(contractInstances));
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
-      const erc721DaoContractCall = new web3Call.eth.Contract(
-        ERC721DaoABI.abi,
-        daoAddress || clubId,
-      );
+  const initializeStationContracts = async () => {
+    const web3Call = new Web3(RPC_URL);
+    const web3Send = new Web3(window?.ethereum);
 
-      const erc20DaoContractSend = new web3Send.eth.Contract(
-        ERC20DaoABI.abi,
-        daoAddress || clubId,
-      );
+    try {
+      if (daoAddress || clubId) {
+        const erc721TokenContractCall = new web3Call.eth.Contract(
+          ERC721TokenABI.abi,
+          daoAddress || clubId,
+        );
 
-      const erc721DaoContractSend = new web3Send.eth.Contract(
-        ERC721DaoABI.abi,
-        daoAddress || clubId,
-      );
+        const erc20DaoContractCall = new web3Call.eth.Contract(
+          ERC20DaoABI.abi,
+          daoAddress || clubId,
+        );
 
-      const claimFactoryContractCall = new web3Call.eth.Contract(
-        ClaimFactoryABI.abi,
-        claimAddress,
-      );
+        const erc721DaoContractCall = new web3Call.eth.Contract(
+          ERC721DaoABI.abi,
+          daoAddress || clubId,
+        );
 
-      const claimFactoryContractSend = new web3Send.eth.Contract(
-        ClaimFactoryABI.abi,
-        claimAddress,
-      );
+        const erc20DaoContractSend = new web3Send.eth.Contract(
+          ERC20DaoABI.abi,
+          daoAddress || clubId,
+        );
 
-      const claimContractCall = new web3Call.eth.Contract(
-        ClaimContractABI.abi,
-        claimAddress,
-      );
+        const erc721DaoContractSend = new web3Send.eth.Contract(
+          ERC721DaoABI.abi,
+          daoAddress || clubId,
+        );
 
-      const claimContractSend = new web3Send.eth.Contract(
-        ClaimContractABI.abi,
-        claimAddress,
-      );
+        contractInstances = {
+          ...contractInstances,
+          erc20DaoContractCall,
+          erc20DaoContractSend,
+          erc721DaoContractCall,
+          erc721DaoContractSend,
+          erc721TokenContractCall,
+        };
+      }
 
-      const contractInstances = {
-        factoryContractCall,
-        factoryContractSend,
-        erc20DaoContractCall,
-        erc20DaoContractSend,
-        erc721DaoContractCall,
-        erc721DaoContractSend,
-        erc721TokenContractCall,
-        claimFactoryContractCall,
-        claimFactoryContractSend,
-        claimContractCall,
-        claimContractSend,
-      };
+      dispatch(setContractInstances(contractInstances));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const initializeClaimContracts = async () => {
+    const web3Call = new Web3(RPC_URL);
+    const web3Send = new Web3(window?.ethereum);
+
+    try {
+      if (claimAddress) {
+        const claimFactoryContractCall = new web3Call.eth.Contract(
+          ClaimFactoryABI.abi,
+          claimAddress,
+        );
+
+        const claimFactoryContractSend = new web3Send.eth.Contract(
+          ClaimFactoryABI.abi,
+          claimAddress,
+        );
+
+        const claimContractCall = new web3Call.eth.Contract(
+          ClaimContractABI.abi,
+          claimAddress,
+        );
+
+        const claimContractSend = new web3Send.eth.Contract(
+          ClaimContractABI.abi,
+          claimAddress,
+        );
+
+        contractInstances = {
+          ...contractInstances,
+          claimFactoryContractCall,
+          claimFactoryContractSend,
+          claimContractCall,
+          claimContractSend,
+        };
+      }
 
       dispatch(setContractInstances(contractInstances));
     } catch (error) {
@@ -105,10 +144,16 @@ const useSmartContract = () => {
   };
 
   useEffect(() => {
-    if ((daoAddress || clubId) && FACTORY_CONTRACT_ADDRESS) {
-      initializeContract();
-    }
-  }, [daoAddress, clubId, FACTORY_CONTRACT_ADDRESS]);
+    initializeFactoryContracts();
+  }, [FACTORY_CONTRACT_ADDRESS]);
+
+  useEffect(() => {
+    initializeStationContracts();
+  }, [daoAddress, clubId]);
+
+  useEffect(() => {
+    initializeClaimContracts();
+  }, [claimAddress]);
 };
 
 export default useSmartContract;

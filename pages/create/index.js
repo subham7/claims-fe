@@ -28,6 +28,7 @@ import Step4 from "../../src/components/createClubComps/Step4";
 import Web3 from "web3";
 import { fetchClubOwners } from "../../src/api/club";
 import useSafe from "../../src/hooks/useSafe";
+import useSmartContract from "../../src/hooks/useSmartContract";
 
 const Create = () => {
   const steps = [
@@ -39,6 +40,7 @@ const Create = () => {
   const dispatch = useDispatch();
   const uploadInputRef = useRef(null);
   const [{ wallet }] = useConnectWallet();
+  useSmartContract();
 
   const [activeStep, setActiveStep] = useState(0);
   const [completed, setCompleted] = useState({});
@@ -210,10 +212,8 @@ const Create = () => {
           initiateConnection(
             params,
             dispatch,
-            GNOSIS_DATA.transactionUrl,
             formikStep3.values.addressList,
             formikStep1.values.clubTokenType,
-            GNOSIS_DATA.factoryContractAddress,
             metadata.data.image.pathname,
             metadata.url,
           );
@@ -260,13 +260,12 @@ const Create = () => {
             merkleRoot:
               "0x0000000000000000000000000000000000000000000000000000000000000001",
           };
+
           initiateConnection(
             params,
             dispatch,
-            GNOSIS_DATA.transactionUrl,
             formikStep3.values.addressList,
             formikStep1.values.clubTokenType,
-            GNOSIS_DATA.factoryContractAddress,
           );
         } catch (error) {
           console.error(error);

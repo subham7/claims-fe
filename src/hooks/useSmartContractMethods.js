@@ -276,8 +276,8 @@ const useSmartContractMethods = () => {
       : await erc20DaoContractCall.methods.balanceOf(contractAddress).call();
   };
 
-  const encode = (address, amount) => {
-    return claimContractCall.methods.encode(address, amount).call();
+  const encode = async (address, amount) => {
+    return await claimContractCall.methods.encode(address, amount).call();
   };
 
   const createERC721DAO = async (
@@ -302,7 +302,7 @@ const useSmartContractMethods = () => {
     assetsStoredOnGnosis,
     merkleRoot,
   ) => {
-    return factoryContractSend.methods
+    return await factoryContractSend.methods
       .createERC721DAO(
         clubName,
         clubSymbol,
@@ -352,7 +352,7 @@ const useSmartContractMethods = () => {
     assetsStoredOnGnosis,
     merkleRoot,
   ) => {
-    return factoryContractSend.methods
+    return await factoryContractSend.methods
       .createERC20DAO(
         clubName,
         clubSymbol,

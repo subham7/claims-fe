@@ -49,7 +49,6 @@ const Settings = () => {
   });
   const [members, setMembers] = useState(0);
   const [treasuryAmount, setTreasuryAmount] = useState(0);
-  const [factoryDataFetched, setFactoryDataFetched] = useState(null);
 
   const [{ wallet }] = useConnectWallet();
 
