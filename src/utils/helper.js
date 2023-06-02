@@ -18,9 +18,13 @@ export const getSafeSdk = async (gnosisAddress, walletAddress) => {
 
 export const getIncreaseGasPrice = async () => {
   const web3 = await web3InstanceCustomRPC();
-  const gasPrice = await web3.eth.getGasPrice();
-  const increasedGasPrice = +gasPrice + 30000000000;
-  return increasedGasPrice;
+  if (!sessionStorage.getItem("gasPrice")) {
+    const gasPrice = await web3.eth.getGasPrice();
+    const increasedGasPrice = +gasPrice + 30000000000;
+    return increasedGasPrice;
+  } else {
+    return Number(sessionStorage.getItem("gasPrice"));
+  }
 };
 
 export const web3InstanceEthereum = async () => {

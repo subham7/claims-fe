@@ -3,7 +3,7 @@ import { makeStyles } from "@mui/styles";
 import React, { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { convertFromWeiGovernance } from "../../utils/globalFunctions";
-import useSmartContract from "../../hooks/useSmartContract";
+import useSmartContractMethods from "../../hooks/useSmartContractMethods";
 
 const useStyles = makeStyles({
   listFont2: {
@@ -19,11 +19,8 @@ const useStyles = makeStyles({
 
 const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
   const classes = useStyles();
-  const { erc20TokenContractCall } = useSmartContract({
-    contractAddress: proposalData?.commands[0]?.airDropToken
-      ? proposalData?.commands[0]?.airDropToken
-      : proposalData?.commands[0]?.customToken,
-  });
+
+  const { getDecimals, getTokenSymbol } = useSmartContractMethods();
 
   const tokenType = useSelector((state) => {
     return state.club.clubData.tokenType;
@@ -36,9 +33,17 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
 
   const fetchAirDropContractDetails = useCallback(async () => {
     try {
-      if (proposalData && erc20TokenContractCall !== null) {
-        const decimal = await erc20TokenContractCall.decimals();
-        const symbol = await erc20TokenContractCall.obtainSymbol();
+      if (proposalData) {
+        const decimal = await getDecimals(
+          proposalData?.commands[0]?.airDropToken
+            ? proposalData?.commands[0]?.airDropToken
+            : proposalData?.commands[0]?.customToken,
+        );
+        const symbol = await getTokenSymbol(
+          proposalData?.commands[0]?.airDropToken
+            ? proposalData?.commands[0]?.airDropToken
+            : proposalData?.commands[0]?.customToken,
+        );
 
         setTokenDetails({
           decimals: decimal,
@@ -48,7 +53,7 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
     } catch (error) {
       console.log(error);
     }
-  }, [erc20TokenContractCall, proposalData]);
+  }, [proposalData]);
 
   useEffect(() => {
     fetchAirDropContractDetails();

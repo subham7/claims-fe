@@ -8,9 +8,6 @@ import dayjs from "dayjs";
 import { makeStyles } from "@mui/styles";
 import * as yup from "yup";
 import { getTokensFromWallet } from "../../src/api/token";
-import { SmartContract } from "../../src/api/contract";
-import claimContractFactory from "../../src/abis/claimContractFactory.json";
-import usdcTokenContract from "../../src/abis/usdcTokenContract.json";
 import { convertToWeiGovernance } from "../../src/utils/globalFunctions";
 import { createClaim } from "../../src/api/claims";
 import { CLAIM_FACTORY_ADDRESS_GOERLI } from "../../src/api";
@@ -19,6 +16,7 @@ import keccak256 from "keccak256";
 import { useConnectWallet } from "@web3-onboard/react";
 import { useRouter } from "next/router";
 import { web3InstanceEthereum } from "../../src/utils/helper";
+import useSmartContractMethods from "../../src/hooks/useSmartContractMethods";
 
 const steps = ["Step1", "Step2"];
 
@@ -47,6 +45,9 @@ const Form = () => {
   const networkId = wallet?.chains[0]?.id;
   const walletAddress = wallet?.accounts[0].address;
   const router = useRouter();
+
+  const { claimContract, approveDeposit, getDecimals } =
+    useSmartContractMethods();
 
   const handleBack = () => {
     setActiveStep((prevStep) => prevStep - 1);
@@ -185,27 +186,13 @@ const Form = () => {
 
           const loadClaimsContractFactoryData_Token = async () => {
             try {
-              const claimsContract = new SmartContract(
-                claimContractFactory,
-                claimsContractAddress,
-                data.walletAddress,
-                undefined,
-                undefined,
-              );
-
-              const erc20contract = new SmartContract(
-                usdcTokenContract,
-                data.airdropTokenAddress,
-                data.walletAddress,
-                undefined,
-                undefined,
-              );
-              const decimals = await erc20contract.decimals();
+              const decimals = await getDecimals(data.airdropTokenAddress);
 
               // if airdroping from contract then approve erc20
               if (!hasAllowanceMechanism) {
                 // approve erc20
-                const res = await erc20contract.approveDeposit(
+                await approveDeposit(
+                  data.airdropTokenAddress,
                   claimsContractAddress,
                   data.numberOfTokens,
                   decimals, // decimal
@@ -241,15 +228,14 @@ const Form = () => {
                 [false, 0],
               ];
 
-              const response = await claimsContract.claimContract(
-                claimsSettings,
-              );
+              const response = await claimContract(claimsSettings);
 
               const newClaimContract =
                 response.events.NewClaimContract.returnValues._newClaimContract;
 
               if (hasAllowanceMechanism) {
-                await erc20contract.approveDeposit(
+                await approveDeposit(
+                  data.airdropTokenAddress,
                   newClaimContract,
                   data.numberOfTokens.toString(),
                   decimals,
@@ -269,7 +255,7 @@ const Form = () => {
                 addresses: [],
               });
 
-              const res = createClaim(postData);
+              createClaim(postData);
 
               setLoading(false);
 
@@ -297,29 +283,14 @@ const Form = () => {
 
           const loadClaimsContractFactoryData_CSV = async () => {
             try {
-              const claimsContract = new SmartContract(
-                claimContractFactory,
-                CLAIM_FACTORY_ADDRESS_GOERLI,
-                data.walletAddress,
-                undefined,
-                undefined,
-              );
-
-              const erc20contract = new SmartContract(
-                usdcTokenContract,
-                data.airdropTokenAddress,
-                data.walletAddress,
-                undefined,
-                undefined,
-              );
-
-              const decimals = await erc20contract.decimals();
+              const decimals = await getDecimals(data.airdropTokenAddress);
               setLoading(true);
 
               // if airdroping from contract then approve erc20
               if (!hasAllowanceMechanism) {
                 // approve erc20
-                await erc20contract.approveDeposit(
+                await approveDeposit(
+                  data.airdropTokenAddress,
                   claimsContractAddress,
                   data.numberOfTokens.toString(),
                   decimals, // decimal
@@ -357,15 +328,13 @@ const Form = () => {
                 [false, 0],
               ];
 
-              const response = await claimsContract.claimContract(
-                claimsSettings,
-              );
-
+              const response = await claimContract(claimsSettings);
               const newClaimContract =
                 response.events.NewClaimContract.returnValues._newClaimContract;
 
               if (hasAllowanceMechanism) {
-                await erc20contract.approveDeposit(
+                await approveDeposit(
+                  data.airdropTokenAddress,
                   newClaimContract,
                   data.numberOfTokens.toString(),
                   decimals,
@@ -385,7 +354,7 @@ const Form = () => {
                 addresses: data.csvObject,
               });
 
-              const res = createClaim(postData);
+              createClaim(postData);
 
               setLoading(false);
               setFinish(true);

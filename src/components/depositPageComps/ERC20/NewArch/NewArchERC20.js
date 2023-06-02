@@ -28,7 +28,8 @@ import dayjs from "dayjs";
 import { useSelector } from "react-redux";
 import { useRouter } from "next/router";
 import WrongNetworkModal from "../../../modals/WrongNetworkModal";
-import useSmartContract from "../../../../hooks/useSmartContract";
+// import useSmartContract from "../../../../hooks/useSmartContract";
+import useSmartContractMethods from "../../../../hooks/useSmartContractMethods";
 
 const NewArchERC20 = ({
   daoDetails,
@@ -75,39 +76,38 @@ const NewArchERC20 = ({
   };
 
   const {
-    erc20TokenContractCall,
-    erc20TokenContractSend,
-    factoryContractSend,
-  } = useSmartContract({
-    contractAddress: daoDetails && daoDetails?.depositTokenAddress,
-  });
+    getBalance,
+    getDecimals,
+    getTokenSymbol,
+    getTokenName,
+    approveDeposit,
+    buyGovernanceTokenERC20DAO,
+  } = useSmartContractMethods();
 
   const fetchTokenDetails = useCallback(async () => {
     setLoading(true);
     try {
-      if (erc20TokenContractCall !== null) {
-        const balanceOfToken = await erc20TokenContractCall.balanceOf();
-        const decimals = await erc20TokenContractCall.decimals();
-        const symbol = await erc20TokenContractCall.obtainSymbol();
-        const name = await erc20TokenContractCall.name();
+      const balanceOfToken = await getBalance(daoDetails.depositTokenAddress);
+      const decimals = await getDecimals(daoDetails.depositTokenAddress);
+      const symbol = await getTokenSymbol(daoDetails.depositTokenAddress);
+      const name = await getTokenName(daoDetails.depositTokenAddress);
 
-        const balanceConverted = convertFromWeiGovernance(
-          balanceOfToken,
-          decimals,
-        );
-        setErc20TokenDetails({
-          tokenBalance: +balanceConverted,
-          tokenSymbol: symbol,
-          tokenName: name,
-          tokenDecimal: decimals,
-        });
-        setLoading(false);
-      }
+      const balanceConverted = convertFromWeiGovernance(
+        balanceOfToken,
+        decimals,
+      );
+      setErc20TokenDetails({
+        tokenBalance: +balanceConverted,
+        tokenSymbol: symbol,
+        tokenName: name,
+        tokenDecimal: decimals,
+      });
+      setLoading(false);
     } catch (error) {
       console.log(error);
       setLoading(false);
     }
-  }, [erc20TokenContractCall]);
+  }, [daoDetails.depositTokenAddress]);
 
   const formik = useFormik({
     initialValues: {
@@ -148,13 +148,14 @@ const NewArchERC20 = ({
           erc20TokenDetails.tokenDecimal,
         );
 
-        await erc20TokenContractSend.approveDeposit(
+        await approveDeposit(
+          daoDetails.depositTokenAddress,
           FACTORY_CONTRACT_ADDRESS,
           inputValue,
           erc20TokenDetails.tokenDecimal,
         );
 
-        await factoryContractSend.buyGovernanceTokenERC20DAO(
+        await buyGovernanceTokenERC20DAO(
           walletAddress,
           erc20DaoAddress,
           convertToWeiGovernance(

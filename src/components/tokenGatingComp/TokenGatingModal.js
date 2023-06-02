@@ -2,9 +2,8 @@ import { Alert, Button, TextField, Typography } from "@mui/material";
 import { useFormik } from "formik";
 import React, { useState } from "react";
 import * as yup from "yup";
-import { useConnectWallet } from "@web3-onboard/react";
 import { TokenGatingModalStyles } from "./TokenGatingModalStyles";
-import useSmartContract from "../../hooks/useSmartContract";
+import useSmartContractMethods from "../../hooks/useSmartContractMethods";
 
 const Backdrop = ({ onClick }) => {
   const classes = TokenGatingModalStyles();
@@ -14,13 +13,9 @@ const Backdrop = ({ onClick }) => {
 
 const TokenGatingModal = ({ closeModal, chooseTokens }) => {
   const [notValid, setNotValid] = useState(false);
-  const [data, setData] = useState(null);
-  const [{ wallet }] = useConnectWallet();
   const classes = TokenGatingModalStyles();
 
-  const { erc20TokenContractCall } = useSmartContract({
-    contractAddress: data && data?.address,
-  });
+  const { getTokenSymbol, getDecimals } = useSmartContractMethods();
 
   const formik = useFormik({
     initialValues: {
@@ -36,28 +31,25 @@ const TokenGatingModal = ({ closeModal, chooseTokens }) => {
     }),
 
     onSubmit: (values) => {
-      setData(values);
       let tokenSymbol,
         tokenDecimal = 0;
       if (values.address) {
         const checkTokenGating = async () => {
           try {
-            if (data?.address) {
-              tokenSymbol = await erc20TokenContractCall.obtainSymbol();
-              try {
-                tokenDecimal = await erc20TokenContractCall.decimals();
-              } catch (err) {
-                console.log(err);
-              }
-
-              chooseTokens({
-                tokenSymbol: tokenSymbol,
-                tokenAddress: values.address,
-                tokenAmount: values.noOfTokens,
-                tokenDecimal: tokenDecimal,
-              });
-              closeModal();
+            tokenSymbol = await getTokenSymbol(values.address);
+            try {
+              tokenDecimal = await getDecimals(values.address);
+            } catch (err) {
+              console.log(err);
             }
+
+            chooseTokens({
+              tokenSymbol: tokenSymbol,
+              tokenAddress: values.address,
+              tokenAmount: values.noOfTokens,
+              tokenDecimal: tokenDecimal,
+            });
+            closeModal();
           } catch (error) {
             console.log(error);
 

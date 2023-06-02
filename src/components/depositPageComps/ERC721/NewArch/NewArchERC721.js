@@ -19,7 +19,8 @@ import { useRouter } from "next/router";
 import WrongNetworkModal from "../../../modals/WrongNetworkModal";
 import RemoveIcon from "@mui/icons-material/Remove";
 import AddIcon from "@mui/icons-material/Add";
-import useSmartContract from "../../../../hooks/useSmartContract";
+// import useSmartContract from "../../../../hooks/useSmartContract";
+import useSmartContractMethods from "../../../../hooks/useSmartContractMethods";
 
 const NewArchERC721 = ({
   daoDetails,
@@ -27,6 +28,7 @@ const NewArchERC721 = ({
   isTokenGated,
   isEligibleForTokenGating,
 }) => {
+  console.log(daoDetails);
   const [loading, setLoading] = useState(false);
   const [active, setActive] = useState(false);
   const [hasClaimed, setHasClaimed] = useState(false);
@@ -71,48 +73,39 @@ const NewArchERC721 = ({
   };
 
   const {
-    erc20TokenContractCall,
-    erc20TokenContractSend,
-    factoryContractSend,
-    erc721TokenContract,
-  } = useSmartContract({
-    contractAddress: daoDetails && daoDetails?.depositTokenAddress,
-  });
+    approveDeposit,
+    buyGovernanceTokenERC721DAO,
+    getDecimals,
+    getTokenSymbol,
+    getTokenName,
+    getBalance,
+  } = useSmartContractMethods();
 
   const fetchTokenDetails = useCallback(async () => {
     try {
-      if (erc20TokenContractCall && erc721TokenContract) {
-        const balanceOfNft = await erc721TokenContract.balanceOf();
-        setBalanceOfNft(balanceOfNft);
+      const balanceOfNft = await getBalance(erc721DaoAddress);
+      setBalanceOfNft(balanceOfNft);
 
-        if (+balanceOfNft >= +daoDetails?.maxTokensPerUser) {
-          setHasClaimed(true);
-        } else {
-          setHasClaimed(false);
-        }
-        const decimals = await erc20TokenContractCall.decimals();
-        const symbol = await erc20TokenContractCall.obtainSymbol();
-        const name = await erc20TokenContractCall.name();
-        const userBalance = await erc20TokenContractCall.balanceOf(
-          walletAddress,
-        );
-
-        setErc20TokenDetails({
-          tokenSymbol: symbol,
-          tokenName: name,
-          tokenDecimal: decimals,
-          userBalance: convertFromWeiGovernance(userBalance, decimals),
-        });
+      if (+balanceOfNft >= +daoDetails?.maxTokensPerUser) {
+        setHasClaimed(true);
+      } else {
+        setHasClaimed(false);
       }
+      const decimals = await getDecimals(daoDetails.depositTokenAddress);
+      const symbol = await getTokenSymbol(daoDetails.depositTokenAddress);
+      const name = await getTokenSymbol(daoDetails.depositTokenAddress);
+      const userBalance = await getBalance(daoDetails.depositTokenAddress);
+
+      setErc20TokenDetails({
+        tokenSymbol: symbol,
+        tokenName: name,
+        tokenDecimal: decimals,
+        userBalance: convertFromWeiGovernance(userBalance, decimals),
+      });
     } catch (error) {
       console.log(error);
     }
-  }, [
-    daoDetails?.maxTokensPerUser,
-    erc20TokenContractCall,
-    erc721TokenContract,
-    walletAddress,
-  ]);
+  }, [daoDetails.depositTokenAddress, daoDetails?.maxTokensPerUser]);
 
   useEffect(() => {
     if (day2 >= day1) {
@@ -125,7 +118,8 @@ const NewArchERC721 = ({
   const claimNFTHandler = async () => {
     try {
       setLoading(true);
-      await erc20TokenContractSend.approveDeposit(
+      await approveDeposit(
+        daoDetails.depositTokenAddress,
         FACTORY_CONTRACT_ADDRESS,
         convertFromWeiGovernance(
           daoDetails.pricePerToken,
@@ -134,7 +128,7 @@ const NewArchERC721 = ({
         erc20TokenDetails.tokenDecimal,
       );
 
-      await factoryContractSend.buyGovernanceTokenERC721DAO(
+      await buyGovernanceTokenERC721DAO(
         walletAddress,
         erc721DaoAddress,
         daoDetails.nftURI,

@@ -5,9 +5,11 @@ import userReducer from "./reducers/user";
 import legalReducer from "./reducers/legal";
 import createClaimReducer from "./reducers/createClaim";
 import proposalReducer from "./reducers/proposal";
+import contractInstanceReducer from "./reducers/contractInstances";
 
 export default configureStore({
   reducer: {
+    contractInstances: contractInstanceReducer,
     club: clubReducer,
     gnosis: gnosisReducer,
     legal: legalReducer,
@@ -17,8 +19,6 @@ export default configureStore({
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
-      serializableCheck: {
-        ignoredActions: ["your/action/type"],
-      },
+      serializableCheck: false,
     }),
 });
