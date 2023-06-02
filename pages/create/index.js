@@ -10,7 +10,6 @@ import ERC20Step2 from "../../src/components/createClubComps/ERC20Step2";
 import NFTStep2 from "../../src/components/createClubComps/NFTStep2";
 import dayjs from "dayjs";
 import { useSelector, useDispatch } from "react-redux";
-import { initiateConnection } from "../../src/utils/safe";
 import ErrorModal from "../../src/components/createClubComps/ErrorModal";
 import SafeDepositLoadingModal from "../../src/components/createClubComps/SafeDepositLoadingModal";
 import {
@@ -28,6 +27,7 @@ import { useConnectWallet } from "@web3-onboard/react";
 import Step4 from "../../src/components/createClubComps/Step4";
 import Web3 from "web3";
 import { fetchClubOwners } from "../../src/api/club";
+import useSafe from "../../src/hooks/useSafe";
 
 const Create = () => {
   const steps = [
@@ -45,6 +45,8 @@ const Create = () => {
   const [open, setOpen] = useState(false);
   const [ownersCheck, setOwnersCheck] = useState(false);
   const [ownerHelperText, setOwnerHelperText] = useState("");
+
+  const { initiateConnection } = useSafe();
 
   const GNOSIS_DATA = useSelector((state) => {
     return state.gnosis;

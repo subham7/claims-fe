@@ -17,7 +17,6 @@ import Layout1 from "../../src/components/layouts/layout1";
 import Countdown from "react-countdown";
 import { useDispatch } from "react-redux";
 import { addClaimEnabled } from "../../src/redux/reducers/createClaim";
-import useSmartContract from "../../src/hooks/useSmartContract";
 import useSmartContractMethods from "../../src/hooks/useSmartContractMethods";
 
 const useStyles = makeStyles({
@@ -243,15 +242,6 @@ const ClaimAddress = () => {
   const walletAddress = wallet?.accounts[0].address;
 
   const { claimAddress } = router.query;
-  const {
-    claimContractCall,
-    claimContractSend,
-    erc20ClaimsContract,
-    daoTokenContract,
-  } = useSmartContract({
-    claimsAirdropTokenAddress: contractData.airdropToken,
-    daoTokenAddress: contractData.daoToken,
-  });
 
   const {
     claimSettings,
@@ -285,7 +275,7 @@ const ClaimAddress = () => {
       // setClaimEnabled(desc.isEnabled);
       dispatch(addClaimEnabled(desc.isEnabled));
 
-      if (contractData.airdropToken && erc20ClaimsContract !== null) {
+      if (contractData.airdropToken) {
         // decimals of airdrop token
         const decimals = await getDecimals(desc.airdropToken);
         setDecimalofToken(decimals);
@@ -301,8 +291,8 @@ const ClaimAddress = () => {
         setClaimBalanceRemaing(remainingBalanceInUSD);
 
         // check if token is already claimed
-        const hasClaimed = await hasClaimed(walletAddress);
-        setAlreadyClaimed(hasClaimed);
+        const isClaimed = await hasClaimed(walletAddress);
+        setAlreadyClaimed(isClaimed);
 
         const remainingAmt = await claimAmount(walletAddress);
 
@@ -312,7 +302,7 @@ const ClaimAddress = () => {
         );
 
         if (
-          !hasClaimed &&
+          !isClaimed &&
           +remainingBalanceInUSD >= +claimableAmt &&
           (desc.permission == 0
             ? isEligibleForTokenGated
@@ -320,7 +310,7 @@ const ClaimAddress = () => {
         ) {
           setClaimRemaining(convertToWeiGovernance(claimableAmt, decimals));
         } else if (
-          !hasClaimed &&
+          !isClaimed &&
           +remainingBalanceInUSD < +claimableAmt &&
           (desc.permission == 0
             ? isEligibleForTokenGated
@@ -330,7 +320,7 @@ const ClaimAddress = () => {
             convertToWeiGovernance(remainingBalanceInUSD, decimals),
           );
         } else if (
-          hasClaimed &&
+          isClaimed &&
           +remainingBalanceInUSD >= +convertedRemainingAmt &&
           (desc.permission == 0
             ? isEligibleForTokenGated
@@ -338,7 +328,7 @@ const ClaimAddress = () => {
         ) {
           setClaimRemaining(remainingAmt);
         } else if (
-          hasClaimed &&
+          isClaimed &&
           +remainingBalanceInUSD < +convertedRemainingAmt &&
           (desc.permission == 0
             ? isEligibleForTokenGated
@@ -446,7 +436,6 @@ const ClaimAddress = () => {
     contractData.airdropToken,
     contractData.daoToken,
     dispatch,
-    erc20ClaimsContract,
     isEligibleForTokenGated,
     walletAddress,
   ]);
@@ -567,13 +556,13 @@ const ClaimAddress = () => {
     (async () => {
       try {
         // check if token is already claimed
-        const hasClaimed = await claimContractCall.hasClaimed(walletAddress);
-        setAlreadyClaimed(hasClaimed);
+        const isClaimed = await hasClaimed(walletAddress);
+        setAlreadyClaimed(isClaimed);
       } catch (err) {
         console.log(err);
       }
     })();
-  }, [claimAddress, claimContractCall, walletAddress]);
+  }, [claimAddress, walletAddress]);
 
   return (
     <Layout1 showSidebar={false}>

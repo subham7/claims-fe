@@ -22,7 +22,11 @@ const useSmartContract = () => {
 
   const initializeContract = async () => {
     const web3Call = new Web3(RPC_URL);
-    const web3Send = new Web3(window.ethereum);
+    let web3Send;
+
+    if (typeof window !== "undefined") {
+      web3Send = new Web3(window?.ethereum);
+    }
 
     try {
       const factoryContractCall = new web3Call.eth.Contract(
@@ -101,15 +105,10 @@ const useSmartContract = () => {
   };
 
   useEffect(() => {
-    if (
-      (daoAddress || clubId) &&
-      FACTORY_CONTRACT_ADDRESS &&
-      claimAddress &&
-      window
-    ) {
+    if ((daoAddress || clubId) && FACTORY_CONTRACT_ADDRESS) {
       initializeContract();
     }
-  }, [FACTORY_CONTRACT_ADDRESS, daoAddress, clubId, claimAddress, window]);
+  }, [daoAddress, clubId, FACTORY_CONTRACT_ADDRESS]);
 };
 
 export default useSmartContract;

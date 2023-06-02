@@ -24,8 +24,8 @@ import Web3 from "web3";
 import { SUBGRAPH_URL_GOERLI, SUBGRAPH_URL_POLYGON, getRpcUrl } from "../api";
 import { Backdrop, CircularProgress } from "@mui/material";
 import { getSafeSdk } from "./helper";
-import useSmartContract from "../hooks/useSmartContract";
 import useSmartContractMethods from "../hooks/useSmartContractMethods";
+import useSmartContract from "../hooks/useSmartContract";
 
 const ClubFetch = (Component) => {
   const RetrieveDataComponent = () => {

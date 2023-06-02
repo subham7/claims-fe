@@ -18,15 +18,6 @@ import { addDaoAddress } from "../src/redux/reducers/club";
 import claim from "../public/assets/images/treasury_image.png";
 import station from "../public/assets/images/gov_image.png";
 
-import {
-  getExpiryTime,
-  getJwtToken,
-  getRefreshToken,
-  setExpiryTime,
-  setJwtToken,
-  setRefreshToken,
-} from "../src/utils/auth";
-import { loginToken, refreshToken } from "../src/api/auth";
 import { useConnectWallet } from "@web3-onboard/react";
 import NewCard from "../src/components/cards/card";
 import { subgraphQuery } from "../src/utils/subgraphs";
@@ -150,39 +141,6 @@ const App = () => {
       }
 
       if (walletAddress) {
-        const getLoginToken = loginToken(walletAddress);
-
-        getLoginToken.then((response) => {
-          if (response?.status !== 200) {
-            console.log(response?.data.error);
-          } else {
-            // setExpiryTime(response.data.tokens.access.expires);
-            setExpiryTime("2023-03-19T11:07:20.810Z");
-            const expiryTime = getExpiryTime();
-            const currentDate = Date();
-            setJwtToken(response.data.tokens.access.token);
-            setRefreshToken(response.data.tokens.refresh.token);
-            if (expiryTime < currentDate) {
-              const obtainNewToken = refreshToken(
-                getRefreshToken(),
-                getJwtToken(),
-              );
-              obtainNewToken
-                .then((tokenResponse) => {
-                  if (response.status !== 200) {
-                    console.log(tokenResponse.data.error);
-                  } else {
-                    setExpiryTime(tokenResponse.data.tokens.access.expires);
-                    setJwtToken(tokenResponse.data.tokens.access.token);
-                    setRefreshToken(tokenResponse.data.tokens.refresh.token);
-                  }
-                })
-                .catch((error) => {
-                  console.log(error);
-                });
-            }
-          }
-        });
         setClubFlow(true);
       } else {
         setClubFlow(false);

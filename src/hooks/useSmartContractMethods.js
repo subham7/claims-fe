@@ -7,6 +7,7 @@ import ERC20TokenABI from "../abis/usdcTokenContract.json";
 import ERC721TokenABI from "../abis/nft.json";
 import { convertToWei } from "../utils/globalFunctions";
 import { Web3Adapter } from "@safe-global/protocol-kit";
+import { createProposalTxHash, getProposalTxHash } from "../api/proposal";
 
 const useSmartContractMethods = () => {
   const [{ wallet }] = useConnectWallet();
@@ -235,14 +236,14 @@ const useSmartContractMethods = () => {
 
   const toggleClaim = async () => {
     return await claimContractSend?.methods.toggleClaim().send({
-      from: this.walletAddress,
+      from: walletAddress,
       gasPrice: await getIncreaseGasPrice(),
     });
   };
 
   const rollbackTokens = async (amount) => {
     return await claimContractSend?.methods.rollbackTokens(amount).send({
-      from: this.walletAddress,
+      from: walletAddress,
       gasPrice: await getIncreaseGasPrice(),
     });
   };
@@ -251,7 +252,7 @@ const useSmartContractMethods = () => {
     return await claimContractSend.methods
       .claim(amount, merkleData, leaf)
       .send({
-        from: this.walletAddress,
+        from: walletAddress,
         gasPrice: await getIncreaseGasPrice(),
       });
   };
@@ -266,6 +267,12 @@ const useSmartContractMethods = () => {
 
   const checkAmount = async (walletAddress) => {
     return await claimContractCall.methods.checkAmount(walletAddress).call();
+  };
+
+  const getNftBalance = async (tokenType, contractAddress) => {
+    return tokenType === "erc721"
+      ? await erc721DaoContractCall.methods.balanceOf(contractAddress).call()
+      : await erc20DaoContractCall.methods.balanceOf(contractAddress).call();
   };
 
   const encode = (address, amount) => {
@@ -318,7 +325,7 @@ const useSmartContractMethods = () => {
         merkleRoot,
       )
       .send({
-        from: this.walletAddress,
+        from: walletAddress,
         gasPrice: await getIncreaseGasPrice(),
       });
   };
@@ -367,7 +374,7 @@ const useSmartContractMethods = () => {
         merkleRoot,
       )
       .send({
-        from: this.walletAddress,
+        from: walletAddress,
         gasPrice: await getIncreaseGasPrice(),
       });
   };
@@ -401,6 +408,7 @@ const useSmartContractMethods = () => {
       safeAddress: gnosisAddress,
     });
 
+    const web3 = new Web3(RPC_URL);
     const implementationContract = new web3.eth.Contract(
       Erc20Dao.abi,
       daoAddress,
@@ -459,12 +467,6 @@ const useSmartContractMethods = () => {
             to: transaction.to,
             data: transaction.data,
             value: transaction.value,
-            // operation, // Optional
-            // safeTxGas, // Optional
-            // baseGas, // Optional
-            // gasPrice, // Optional
-            // gasToken, // Optional
-            // refundReceiver, // Optional
             nonce: nonce, // Optional
           };
         } else {
@@ -473,24 +475,12 @@ const useSmartContractMethods = () => {
               to: approvalTransaction.to,
               data: approvalTransaction.data,
               value: approvalTransaction.value,
-              // operation, // Optional
-              // safeTxGas, // Optional
-              // baseGas, // Optional
-              // gasPrice, // Optional
-              // gasToken, // Optional
-              // refundReceiver, // Optional
               nonce: nonce, // Optional
             },
             {
               to: transaction.to,
               data: transaction.data,
               value: transaction.value,
-              // operation, // Optional
-              // safeTxGas, // Optional
-              // baseGas, // Optional
-              // gasPrice, // Optional
-              // gasToken, // Optional
-              // refundReceiver, // Optional
               nonce: nonce, // Optional
             },
           ];
@@ -510,7 +500,7 @@ const useSmartContractMethods = () => {
           safeAddress: gnosisAddress,
           safeTransactionData: safeTransaction.data,
           safeTxHash: safeTxHash,
-          senderAddress: this.walletAddress,
+          senderAddress: walletAddress,
         });
         const senderSignature = await safeSdk.signTypedData(
           safeTransaction,
@@ -533,12 +523,6 @@ const useSmartContractMethods = () => {
             to: tx.to,
             data: tx.data,
             value: tx.value,
-            // operation, // Optional
-            // safeTxGas, // Optional
-            // baseGas, // Optional
-            // gasPrice, // Optional
-            // gasToken, // Optional
-            // refundReceiver, // Optional
             nonce: tx.nonce, // Optional
           };
         } else {
@@ -547,24 +531,12 @@ const useSmartContractMethods = () => {
               to: tx.dataDecoded.parameters[0].valueDecoded[0].to,
               data: tx.dataDecoded.parameters[0].valueDecoded[0].data,
               value: tx.dataDecoded.parameters[0].valueDecoded[0].value,
-              // operation, // Optional
-              // safeTxGas, // Optional
-              // baseGas, // Optional
-              // gasPrice, // Optional
-              // gasToken, // Optional
-              // refundReceiver, // Optional
               nonce: tx.nonce, // Optional
             },
             {
               to: tx.dataDecoded.parameters[0].valueDecoded[1].to,
               data: tx.dataDecoded.parameters[0].valueDecoded[1].data,
               value: tx.dataDecoded.parameters[0].valueDecoded[1].value,
-              // operation, // Optional
-              // safeTxGas, // Optional
-              // baseGas, // Optional
-              // gasPrice, // Optional
-              // gasToken, // Optional
-              // refundReceiver, // Optional
               nonce: tx.nonce, // Optional
             },
           ];
@@ -591,12 +563,6 @@ const useSmartContractMethods = () => {
       const options = {
         maxPriorityFeePerGas: null,
         maxFeePerGas: null,
-        // from, // Optional
-        // gasPrice: increasedGasPrice,
-        // gasPrice, // Optional
-        // maxFeePerGas, // Optional
-        // maxPriorityFeePerGas // Optional
-        // nonce // Optional
       };
 
       const executeTxResponse = await safeSdk.executeTransaction(
@@ -623,6 +589,7 @@ const useSmartContractMethods = () => {
     getERC20Balance,
     getERC721Balance,
     getERC721Symbol,
+    getNftBalance,
     getNftOwnersCount,
     getERC20TotalSupply,
     getBalance,
@@ -643,6 +610,7 @@ const useSmartContractMethods = () => {
     claimBalance,
     claimSettings,
     claimContract,
+    updateProposalAndExecution,
   };
 };
 
