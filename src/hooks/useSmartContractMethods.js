@@ -6,8 +6,9 @@ import { getIncreaseGasPrice } from "../utils/helper";
 import ERC20TokenABI from "../abis/usdcTokenContract.json";
 import ERC721TokenABI from "../abis/nft.json";
 import { convertToWei } from "../utils/globalFunctions";
-import { Web3Adapter } from "@safe-global/protocol-kit";
+import Safe, { Web3Adapter } from "@safe-global/protocol-kit";
 import { createProposalTxHash, getProposalTxHash } from "../api/proposal";
+import SafeApiKit from "@safe-global/api-kit";
 
 const useSmartContractMethods = () => {
   const [{ wallet }] = useConnectWallet();
@@ -351,7 +352,7 @@ const useSmartContractMethods = () => {
     assetsStoredOnGnosis,
     merkleRoot,
   ) => {
-    return this.contract.methods
+    return factoryContractSend.methods
       .createERC20DAO(
         clubName,
         clubSymbol,
@@ -390,6 +391,7 @@ const useSmartContractMethods = () => {
     executionStatus,
     airdropContractAddress = "",
     factoryContractAddress = "",
+    gnosisTransactionUrl,
   ) => {
     const parameters = data;
 
@@ -397,7 +399,7 @@ const useSmartContractMethods = () => {
       web3: new Web3(window.ethereum),
       signerAddress: walletAddress,
     });
-    const txServiceUrl = this.gnosisTransactionUrl;
+    const txServiceUrl = gnosisTransactionUrl;
     const safeService = new SafeApiKit({
       txServiceUrl,
       ethAdapter,
@@ -408,18 +410,12 @@ const useSmartContractMethods = () => {
       safeAddress: gnosisAddress,
     });
 
-    const web3 = new Web3(RPC_URL);
-    const implementationContract = new web3.eth.Contract(
-      Erc20Dao.abi,
-      daoAddress,
-    );
-
     let approvalTransaction;
     let transaction;
     if (approvalData !== "") {
       approvalTransaction = {
         to: daoAddress,
-        data: implementationContract.methods
+        data: erc20DaoContractSend.methods
           .updateProposalAndExecution(
             //usdc address
             tokenData,
@@ -431,7 +427,7 @@ const useSmartContractMethods = () => {
 
       transaction = {
         to: daoAddress,
-        data: implementationContract.methods
+        data: erc20DaoContractSend.methods
           .updateProposalAndExecution(
             //airdrop address
 
@@ -446,7 +442,7 @@ const useSmartContractMethods = () => {
       transaction = {
         //dao
         to: daoAddress,
-        data: implementationContract.methods
+        data: erc20DaoContractSend.methods
           .updateProposalAndExecution(
             //factory
             factoryContractAddress ? factoryContractAddress : daoAddress,

@@ -306,8 +306,10 @@ const ProposalDetail = () => {
     getNftOwnersCount,
     updateProposalAndExecution,
   } = useSmartContractMethods();
+
   const getSafeService = useCallback(async () => {
     const web3 = await web3InstanceEthereum();
+
     const ethAdapter = new Web3Adapter({
       web3,
       signerAddress: walletAddress,
@@ -595,6 +597,7 @@ const ProposalDetail = () => {
       proposalData.commands[0].executionId === 3
         ? FACTORY_CONTRACT_ADDRESS
         : "",
+      GNOSIS_TRANSACTION_URL,
     );
     if (proposalStatus === "executed") {
       // fetchData()
