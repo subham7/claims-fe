@@ -11,9 +11,7 @@ import { RPC_URL } from "../api";
 import { useDispatch, useSelector } from "react-redux";
 import { setContractInstances } from "../redux/reducers/contractInstances";
 
-const useSmartContract = (props = {}) => {
-  const { contractAddress, daoTokenAddress, claimsAirdropTokenAddress } = props;
-
+const useSmartContract = () => {
   const router = useRouter();
   const { jid: daoAddress, clubId, claimAddress } = router.query;
   const dispatch = useDispatch();
@@ -24,11 +22,7 @@ const useSmartContract = (props = {}) => {
 
   const initializeContract = async () => {
     const web3Call = new Web3(RPC_URL);
-    let web3Send;
-
-    if (typeof window !== "undefined") {
-      web3Send = new Web3(window.ethereum);
-    }
+    const web3Send = new Web3(window.ethereum);
 
     try {
       const factoryContractCall = new web3Call.eth.Contract(
@@ -85,6 +79,7 @@ const useSmartContract = (props = {}) => {
         ClaimContractABI.abi,
         claimAddress,
       );
+
       const contractInstances = {
         factoryContractCall,
         factoryContractSend,
@@ -106,10 +101,15 @@ const useSmartContract = (props = {}) => {
   };
 
   useEffect(() => {
-    if (daoAddress || clubId) {
+    if (
+      (daoAddress || clubId) &&
+      FACTORY_CONTRACT_ADDRESS &&
+      claimAddress &&
+      window
+    ) {
       initializeContract();
     }
-  }, [FACTORY_CONTRACT_ADDRESS, daoAddress, clubId, claimAddress]);
+  }, [FACTORY_CONTRACT_ADDRESS, daoAddress, clubId, claimAddress, window]);
 };
 
 export default useSmartContract;
