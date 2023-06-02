@@ -102,7 +102,7 @@ const Settings = () => {
 
   const fetchErc20ContractDetails = useCallback(async () => {
     try {
-      const balanceOfClubToken = getERC20Balance();
+      const balanceOfClubToken = await getERC20Balance();
       const erc20Data = await getERC20DAOdetails();
       const erc20DaoDecimal = await getDecimals(daoAddress);
       const clubTokensMinted = await getERC20TotalSupply();

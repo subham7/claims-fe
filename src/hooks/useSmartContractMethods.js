@@ -397,7 +397,7 @@ const useSmartContractMethods = () => {
 
     const ethAdapter = new Web3Adapter({
       web3: new Web3(window.ethereum),
-      signerAddress: walletAddress,
+      signerAddress: Web3.utils.toChecksumAddress(walletAddress),
     });
     const txServiceUrl = gnosisTransactionUrl;
     const safeService = new SafeApiKit({
@@ -407,14 +407,14 @@ const useSmartContractMethods = () => {
 
     const safeSdk = await Safe.create({
       ethAdapter: ethAdapter,
-      safeAddress: gnosisAddress,
+      safeAddress: Web3.utils.toChecksumAddress(gnosisAddress),
     });
 
     let approvalTransaction;
     let transaction;
     if (approvalData !== "") {
       approvalTransaction = {
-        to: daoAddress,
+        to: Web3.utils.toChecksumAddress(daoAddress),
         data: erc20DaoContractSend.methods
           .updateProposalAndExecution(
             //usdc address
@@ -426,7 +426,7 @@ const useSmartContractMethods = () => {
       };
 
       transaction = {
-        to: daoAddress,
+        to: Web3.utils.toChecksumAddress(daoAddress),
         data: erc20DaoContractSend.methods
           .updateProposalAndExecution(
             //airdrop address
@@ -441,7 +441,7 @@ const useSmartContractMethods = () => {
       // debugger;
       transaction = {
         //dao
-        to: daoAddress,
+        to: Web3.utils.toChecksumAddress(daoAddress),
         data: erc20DaoContractSend.methods
           .updateProposalAndExecution(
             //factory
@@ -493,10 +493,10 @@ const useSmartContractMethods = () => {
         await createProposalTxHash(payload);
 
         const proposeTxn = await safeService.proposeTransaction({
-          safeAddress: gnosisAddress,
+          safeAddress: Web3.utils.toChecksumAddress(gnosisAddress),
           safeTransactionData: safeTransaction.data,
           safeTxHash: safeTxHash,
-          senderAddress: walletAddress,
+          senderAddress: Web3.utils.toChecksumAddress(walletAddress),
         });
         const senderSignature = await safeSdk.signTypedData(
           safeTransaction,

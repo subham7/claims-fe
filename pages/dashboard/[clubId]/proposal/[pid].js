@@ -309,10 +309,9 @@ const ProposalDetail = () => {
 
   const getSafeService = useCallback(async () => {
     const web3 = await web3InstanceEthereum();
-
     const ethAdapter = new Web3Adapter({
       web3,
-      signerAddress: walletAddress,
+      signerAddress: Web3.utils.toChecksumAddress(walletAddress),
     });
     const safeService = new SafeApiKit({
       txServiceUrl: GNOSIS_TRANSACTION_URL,
@@ -322,7 +321,10 @@ const ProposalDetail = () => {
   }, [GNOSIS_TRANSACTION_URL, walletAddress]);
 
   const isOwner = useCallback(async () => {
-    const safeSdk = await getSafeSdk(gnosisAddress, walletAddress);
+    const safeSdk = await getSafeSdk(
+      Web3.utils.toChecksumAddress(gnosisAddress),
+      Web3.utils.toChecksumAddress(walletAddress),
+    );
     const owners = await safeSdk.getOwners();
 
     const ownerAddressesArray = owners.map((value) =>

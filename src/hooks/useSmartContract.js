@@ -7,13 +7,16 @@ import ClaimContractABI from "../abis/singleClaimContract.json";
 import ClaimFactoryABI from "../abis/claimContractFactory.json";
 import { useRouter } from "next/router";
 import Web3 from "web3";
-import { RPC_URL } from "../api";
+import { getRpcUrl, RPC_URL } from "../api";
 import { useDispatch, useSelector } from "react-redux";
 import { setContractInstances } from "../redux/reducers/contractInstances";
+import { useConnectWallet } from "@web3-onboard/react";
 
 const useSmartContract = () => {
   const router = useRouter();
   const { jid: daoAddress, clubId, claimAddress } = router.query;
+  const [{ wallet }] = useConnectWallet();
+  const networkId = wallet?.chains[0].id;
   const dispatch = useDispatch();
 
   const FACTORY_CONTRACT_ADDRESS = useSelector(
@@ -76,15 +79,13 @@ const useSmartContract = () => {
           daoAddress || clubId,
         );
 
-        const erc20DaoContractSend = new web3Send.eth.Contract(
-          ERC20DaoABI.abi,
-          daoAddress || clubId,
-        );
+        const erc20DaoContractSend = web3Send
+          ? new web3Send.eth.Contract(ERC20DaoABI.abi, daoAddress || clubId)
+          : {};
 
-        const erc721DaoContractSend = new web3Send.eth.Contract(
-          ERC721DaoABI.abi,
-          daoAddress || clubId,
-        );
+        const erc721DaoContractSend = web3Send
+          ? new web3Send.eth.Contract(ERC721DaoABI.abi, daoAddress || clubId)
+          : {};
 
         contractInstances = {
           ...contractInstances,
@@ -113,20 +114,18 @@ const useSmartContract = () => {
           claimAddress,
         );
 
-        const claimFactoryContractSend = new web3Send.eth.Contract(
-          ClaimFactoryABI.abi,
-          claimAddress,
-        );
+        const claimFactoryContractSend = web3Send
+          ? new web3Send.eth.Contract(ClaimFactoryABI.abi, claimAddress)
+          : {};
 
         const claimContractCall = new web3Call.eth.Contract(
           ClaimContractABI.abi,
           claimAddress,
         );
 
-        const claimContractSend = new web3Send.eth.Contract(
-          ClaimContractABI.abi,
-          claimAddress,
-        );
+        const claimContractSend = web3Send
+          ? new web3Send.eth.Contract(ClaimContractABI.abi, claimAddress)
+          : {};
 
         contractInstances = {
           ...contractInstances,
@@ -144,16 +143,25 @@ const useSmartContract = () => {
   };
 
   useEffect(() => {
-    initializeFactoryContracts();
-  }, [FACTORY_CONTRACT_ADDRESS]);
+    if (networkId) {
+      getRpcUrl(networkId);
+      initializeFactoryContracts();
+    }
+  }, [FACTORY_CONTRACT_ADDRESS, networkId]);
 
   useEffect(() => {
-    initializeStationContracts();
-  }, [daoAddress, clubId]);
+    if (networkId) {
+      getRpcUrl(networkId);
+      initializeStationContracts();
+    }
+  }, [daoAddress, clubId, networkId]);
 
   useEffect(() => {
-    initializeClaimContracts();
-  }, [claimAddress]);
+    if (networkId) {
+      getRpcUrl(networkId);
+      initializeClaimContracts();
+    }
+  }, [claimAddress, networkId]);
 };
 
 export default useSmartContract;
