@@ -2,7 +2,7 @@ import { MAIN_API_URL } from "..";
 
 export const createClaim = async (jsonData) => {
   try {
-    const res = await fetch(`${MAIN_API_URL}/claim`, {
+    const res = await fetch(`${MAIN_API_URL}claim`, {
       method: "POST",
       body: jsonData,
       headers: {
@@ -20,7 +20,7 @@ export const createClaim = async (jsonData) => {
 
 export const getClaimsByUserAddress = async (userAddress) => {
   try {
-    const res = await fetch(`${MAIN_API_URL}/claim/user/${userAddress}`);
+    const res = await fetch(`${MAIN_API_URL}claim/user/${userAddress}`);
     const data = await res.json();
     return data;
   } catch (err) {
@@ -34,7 +34,7 @@ export const getClaimAmountForUser = async (
 ) => {
   try {
     const res = await fetch(
-      `${MAIN_API_URL}/claim/${claimContractAddress}/user/${userAddress}/balance`,
+      `${MAIN_API_URL}claim/${claimContractAddress}/user/${userAddress}/balance`,
     );
     const data = await res.json();
     return data;
