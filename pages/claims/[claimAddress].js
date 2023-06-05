@@ -19,6 +19,7 @@ import { useDispatch } from "react-redux";
 import { addClaimEnabled } from "../../src/redux/reducers/createClaim";
 import useSmartContractMethods from "../../src/hooks/useSmartContractMethods";
 import useSmartContract from "../../src/hooks/useSmartContract";
+import WrongNetworkModal from "../../src/components/modals/WrongNetworkModal";
 
 const useStyles = makeStyles({
   container: {
@@ -238,6 +239,8 @@ const ClaimAddress = () => {
 
   const [{ wallet }] = useConnectWallet();
   const walletAddress = wallet?.accounts[0].address;
+  const networkId = wallet?.chains[0].id;
+
   const { claimAddress } = router.query;
   useSmartContract();
 
@@ -842,6 +845,7 @@ const ClaimAddress = () => {
             </Alert>
           )
         )}
+        {networkId && networkId !== "0x89" && <WrongNetworkModal />}
 
         {/* {showClaimsEdit && (
           <ClaimsEditModal

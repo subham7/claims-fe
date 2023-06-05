@@ -18,6 +18,7 @@ import { useRouter } from "next/router";
 import { web3InstanceEthereum } from "../../src/utils/helper";
 import useSmartContractMethods from "../../src/hooks/useSmartContractMethods";
 import useSmartContract from "../../src/hooks/useSmartContract";
+import WrongNetworkModal from "../../src/components/modals/WrongNetworkModal";
 
 const steps = ["Step1", "Step2"];
 
@@ -428,6 +429,8 @@ const Form = () => {
           </Grid>
         )}
       </Grid>
+
+      {networkId && networkId !== "0x89" && <WrongNetworkModal />}
 
       {showError && (
         <Alert

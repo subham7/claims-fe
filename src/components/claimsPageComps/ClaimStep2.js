@@ -20,6 +20,7 @@ import { useDispatch } from "react-redux";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import useSmartContractMethods from "../../hooks/useSmartContractMethods";
+import WrongNetworkModal from "../modals/WrongNetworkModal";
 
 const useStyles = makeStyles({
   form: {
@@ -128,7 +129,7 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
 
   const classes = useStyles();
   const [{ wallet }] = useConnectWallet();
-  const walletAddress = wallet?.accounts[0].address;
+  const networkId = wallet?.chains[0].id;
   const dispatch = useDispatch();
 
   const hiddenFileInput = useRef(null);
@@ -397,6 +398,7 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
         >
           Finish
         </Button> */}
+        {networkId && networkId !== "0x89" && <WrongNetworkModal />}
       </form>
     </>
   );
