@@ -8,6 +8,8 @@ import claimsBanner from "../../public/assets/images/claimsBanner.png";
 import ClaimsCard from "../../src/components/claimsPageComps/ClaimsCard";
 import { getClaimsByUserAddress } from "../../src/api/claims";
 import { useConnectWallet } from "@web3-onboard/react";
+import useSmartContract from "../../src/hooks/useSmartContract";
+import WrongNetworkModal from "../../src/components/modals/WrongNetworkModal";
 
 const useStyles = makeStyles({
   container: {
@@ -96,6 +98,7 @@ const Claims = () => {
   const classes = useStyles();
   const router = useRouter();
   const [claimData, setClaimData] = useState([]);
+  useSmartContract();
 
   const createClaimHandler = () => {
     router.push("/claims/form");
@@ -103,15 +106,16 @@ const Claims = () => {
 
   const [{ wallet }] = useConnectWallet();
   const walletAddress = wallet?.accounts[0].address;
+  const networkId = wallet?.chains[0].id;
 
   useEffect(() => {
     const getData = async () => {
-      const data = await getClaimsByUserAddress(walletAddress);
+      const data = await getClaimsByUserAddress(walletAddress, networkId);
       setClaimData(data.reverse());
     };
 
     getData();
-  }, [walletAddress]);
+  }, [walletAddress, networkId]);
 
   return (
     <div className={classes.container}>
@@ -155,6 +159,8 @@ const Claims = () => {
       <div className={classes.rightDiv}>
         <Image src={claimsBanner} alt="claimBanner" height={250} width={400} />
       </div>
+
+      {networkId && networkId !== "0x89" && <WrongNetworkModal />}
     </div>
   );
 };

@@ -12,16 +12,15 @@ import {
 } from "@mui/material";
 import { BsArrowLeft } from "react-icons/bs";
 import { makeStyles } from "@mui/styles";
-import React, {  useRef, useState } from "react";
-import { SmartContract } from "../../../src/api/contract";
-import claimContractABI from "../../../src/abis/singleClaimContract.json";
-import usdcTokenContract from "../../../src/abis/usdcTokenContract.json";
+import React, { useRef, useState } from "react";
 import { convertToWeiGovernance } from "../../../src/utils/globalFunctions";
 import keccak256 from "keccak256";
 import { useConnectWallet } from "@web3-onboard/react";
 import { useDispatch } from "react-redux";
 import { useRouter } from "next/router";
 import Link from "next/link";
+import useSmartContractMethods from "../../hooks/useSmartContractMethods";
+import WrongNetworkModal from "../modals/WrongNetworkModal";
 
 const useStyles = makeStyles({
   form: {
@@ -130,11 +129,12 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
 
   const classes = useStyles();
   const [{ wallet }] = useConnectWallet();
-  const walletAddress = wallet?.accounts[0].address;
+  const networkId = wallet?.chains[0].id;
   const dispatch = useDispatch();
 
   const hiddenFileInput = useRef(null);
   // const claimsContractAddress = CLAIM_FACTORY_ADDRESS_GOERLI;
+  const { encode, getDecimals } = useSmartContractMethods();
 
   const [file, setFile] = useState("");
   const handleClick = (event) => {
@@ -145,10 +145,10 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
     values.maximumClaim = "custom";
   }
 
-  const helper = async (csvArr, claimContract, decimals) => {
+  const helper = async (csvArr, decimals) => {
     let encodedListOfLeaves = [];
     csvArr.map(async (data) => {
-      const res = await claimContract.encode(
+      const res = await encode(
         data.address,
         convertToWeiGovernance(data.amount, decimals).toString(),
       );
@@ -195,26 +195,9 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
         }
 
         try {
-          // claim contract for encoding
-          const claimContract = new SmartContract(
-            claimContractABI,
-            "0x9517a0de2c29C926684F88FDA6E5c5cCa4c47633",
-            walletAddress,
-            undefined,
-            undefined,
-          );
+          const decimals = await getDecimals(values.airdropTokenAddress);
 
-          const erc20contract = new SmartContract(
-            usdcTokenContract,
-            values.airdropTokenAddress,
-            walletAddress,
-            undefined,
-            undefined,
-          );
-
-          const decimals = await erc20contract.decimals();
-
-          const list = await helper(csvArr, claimContract, decimals);
+          const list = await helper(csvArr, decimals);
           formik.values.merkleData = list;
 
           setLoadingCsv(false);
@@ -415,6 +398,7 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
         >
           Finish
         </Button> */}
+        {networkId && networkId !== "0x89" && <WrongNetworkModal />}
       </form>
     </>
   );

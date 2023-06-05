@@ -7,7 +7,7 @@ import ClaimStep2 from "../../src/components/claimsPageComps/ClaimStep2";
 import dayjs from "dayjs";
 import { makeStyles } from "@mui/styles";
 import * as yup from "yup";
-import { getTokensFromWallet } from "../../src/api/token";
+import { getAssetsByDaoAddress } from "../../src/api/assets";
 import { convertToWeiGovernance } from "../../src/utils/globalFunctions";
 import { createClaim } from "../../src/api/claims";
 import { CLAIM_FACTORY_ADDRESS_GOERLI } from "../../src/api";
@@ -17,6 +17,8 @@ import { useConnectWallet } from "@web3-onboard/react";
 import { useRouter } from "next/router";
 import { web3InstanceEthereum } from "../../src/utils/helper";
 import useSmartContractMethods from "../../src/hooks/useSmartContractMethods";
+import useSmartContract from "../../src/hooks/useSmartContract";
+import WrongNetworkModal from "../../src/components/modals/WrongNetworkModal";
 
 const steps = ["Step1", "Step2"];
 
@@ -38,6 +40,7 @@ const Form = () => {
   const [finish, setFinish] = useState(false);
   const [errMsg, setErrMsg] = useState("");
   const [loadingTokens, setLoadingTokens] = useState(false);
+  useSmartContract();
 
   const classes = useStyles();
   const [{ wallet }] = useConnectWallet();
@@ -61,15 +64,18 @@ const Form = () => {
     setLoadingTokens(true);
     const web3 = await web3InstanceEthereum();
     const accounts = await web3.eth.getAccounts();
-    const data = await getTokensFromWallet(accounts[0], networkId);
-    setCurrentAccount(accounts[0]);
-    setTokensInWallet(data);
-    setLoadingTokens(false);
+    // const data = await getTokensFromWallet(accounts[0], networkId);
+    if (networkId && walletAddress) {
+      const tokensList = await getAssetsByDaoAddress(walletAddress, networkId);
+      setCurrentAccount(accounts[0]);
+      setTokensInWallet(tokensList.data.tokenPriceList);
+      setLoadingTokens(false);
+    }
   };
 
   useEffect(() => {
     getCurrentAccount();
-  }, []);
+  }, [walletAddress, networkId]);
 
   const formik = useFormik({
     initialValues: {
@@ -246,13 +252,14 @@ const Form = () => {
               const postData = JSON.stringify({
                 description: data.description,
                 airdropTokenContract: data.airdropTokenAddress,
-                airdropTokenSymbol: data.selectedToken.tokenSymbol,
+                airdropTokenSymbol: data.selectedToken.symbol,
                 claimContract: newClaimContract,
                 totalAmount: data.numberOfTokens,
                 endDate: new Date(data.endDate).getTime() / 1000,
                 startDate: new Date(data.startDate).getTime() / 1000,
                 createdBy: data.walletAddress.toLowerCase(),
                 addresses: [],
+                networkId: networkId,
               });
 
               createClaim(postData);
@@ -345,16 +352,17 @@ const Form = () => {
               const postData = JSON.stringify({
                 description: data.description,
                 airdropTokenContract: data.airdropTokenAddress,
-                airdropTokenSymbol: data.selectedToken.tokenSymbol,
+                airdropTokenSymbol: data.selectedToken.symbol,
                 claimContract: newClaimContract,
                 totalAmount: data.numberOfTokens,
                 endDate: new Date(data.endDate).getTime() / 1000,
                 startDate: new Date(data.startDate).getTime() / 1000,
                 createdBy: data.walletAddress.toLowerCase(),
                 addresses: data.csvObject,
+                networkId: networkId,
               });
 
-              createClaim(postData);
+              await createClaim(postData);
 
               setLoading(false);
               setFinish(true);
@@ -422,6 +430,8 @@ const Form = () => {
           </Grid>
         )}
       </Grid>
+
+      {networkId && networkId !== "0x89" && <WrongNetworkModal />}
 
       {showError && (
         <Alert

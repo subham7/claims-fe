@@ -1,5 +1,5 @@
 import Web3 from "web3";
-import { RPC_URL } from "../api";
+import { POLYGON_MAINNET_RPC_URL, RPC_URL } from "../api";
 import Safe, { Web3Adapter } from "@safe-global/protocol-kit";
 
 export const getSafeSdk = async (gnosisAddress, walletAddress) => {
@@ -33,6 +33,6 @@ export const web3InstanceEthereum = async () => {
 };
 
 export const web3InstanceCustomRPC = async () => {
-  const web3 = new Web3(RPC_URL);
+  const web3 = new Web3(RPC_URL ? RPC_URL : POLYGON_MAINNET_RPC_URL);
   return web3;
 };
