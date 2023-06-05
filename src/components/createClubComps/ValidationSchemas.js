@@ -15,7 +15,10 @@ export const ERC20Step2ValidationSchema = yup.object({
     .date()
     .min(new Date(), "Date-time must be greater than now.")
     .required("Deposit close date is required"),
-  minDepositPerUser: yup.number().required("Min deposit amount is required"),
+  minDepositPerUser: yup
+    .number()
+    .required("Min deposit amount is required")
+    .moreThan(0, "Min deposit should be greater than 0"),
   maxDepositPerUser: yup
     .number()
     .moreThan(
@@ -23,8 +26,17 @@ export const ERC20Step2ValidationSchema = yup.object({
       "Amount should be greater than min deposit",
     )
     .required("Max deposit amount is required"),
-  totalRaiseAmount: yup.number().required("Raise amount is required"),
-  pricePerToken: yup.number().required("Price per token is required"),
+  totalRaiseAmount: yup
+    .number()
+    .required("Raise amount is required")
+    .moreThan(
+      yup.ref("minDepositPerUser"),
+      "Amount should be greater than min deposit",
+    ),
+  pricePerToken: yup
+    .number()
+    .required("Price per token is required")
+    .moreThan(0, "Price should be greater than 0"),
 });
 
 export const step3ValidationSchema = yup.object({
@@ -90,16 +102,14 @@ export const proposalValidationSchema = yup.object({
         .required("Amount is required")
         .moreThan(0, "Amount should be greater than 0"),
   }),
-  userAddress: yup
-    .string("Please enter user address")
-    .when("actionCommand", {
-      is: "Mint club token",
-      then: () =>
-        yup
-          .string("Enter user address")
-          .matches(/^0x[a-zA-Z0-9]+/gm, " Proper wallet address is required")
-          .required("User address is required"),
-    }),
+  userAddress: yup.string("Please enter user address").when("actionCommand", {
+    is: "Mint club token",
+    then: () =>
+      yup
+        .string("Enter user address")
+        .matches(/^0x[a-zA-Z0-9]+/gm, " Proper wallet address is required")
+        .required("User address is required"),
+  }),
   amountOfTokens: yup.number().when(["tokenType", "actionCommand"], {
     is: (tokenType, actionCommand) =>
       tokenType === "erc20" && actionCommand === "Mint Club Token",
