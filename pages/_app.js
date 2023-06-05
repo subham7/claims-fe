@@ -12,15 +12,17 @@ import { SUBGRAPH_CLIENT } from "../src/api";
 
 function MyApp({ Component, pageProps }) {
   return (
-    <ApolloProvider client={SUBGRAPH_CLIENT}>
-      <Provider store={store}>
-        <ThemeProvider theme={theme("dark")}>
-          <Web3OnboardProvider web3Onboard={web3Onboard}>
-            <Component {...pageProps} />
-          </Web3OnboardProvider>
-        </ThemeProvider>
-      </Provider>
-    </ApolloProvider>
+    web3Onboard && (
+      <ApolloProvider client={SUBGRAPH_CLIENT}>
+        <Provider store={store}>
+          <ThemeProvider theme={theme("dark")}>
+            <Web3OnboardProvider web3Onboard={web3Onboard}>
+              <Component {...pageProps} />
+            </Web3OnboardProvider>
+          </ThemeProvider>
+        </Provider>
+      </ApolloProvider>
+    )
   );
 }
 

@@ -53,5 +53,15 @@ export const web3Onboard = init({
     icon: "<svg>My App Icon</svg>",
     description: "create DAO in 60 secs",
   },
+  accountCenter: {
+    desktop: {
+      enabled: true,
+      position: "topRight",
+    },
+    mobile: {
+      enabled: true,
+      position: "topRight",
+    },
+  },
   // disconnect: disconnectWallet({ label: primaryWallet.label }),
 });
