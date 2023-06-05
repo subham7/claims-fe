@@ -136,8 +136,6 @@ const useSmartContract = () => {
           claimFactoryContractSend,
         };
 
-        console.log("THERE", contractInstances);
-
         dispatch(setContractInstances(contractInstances));
       }
     } catch (error) {
@@ -146,11 +144,10 @@ const useSmartContract = () => {
   };
 
   const initializeClaimContracts = () => {
-    const web3Call = new Web3(RPC_URL);
     const web3Send = new Web3(window?.ethereum);
 
     try {
-      const claimContractCall = new web3Call.eth.Contract(
+      const claimContractCall = new web3Send.eth.Contract(
         ClaimContractABI.abi,
         claimAddress,
       );
@@ -186,11 +183,14 @@ const useSmartContract = () => {
     if (networkId) {
       getRpcUrl(networkId);
       initializeClaimFactoryContracts();
-      if (claimAddress) {
-        initializeClaimContracts();
-      }
     }
-  }, [networkId, claimFactoryAddress, claimAddress]);
+  }, [networkId, claimFactoryAddress]);
+
+  useEffect(() => {
+    if (claimAddress) {
+      initializeClaimContracts();
+    }
+  }, [claimAddress]);
 };
 
 export default useSmartContract;

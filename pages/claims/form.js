@@ -67,7 +67,6 @@ const Form = () => {
     // const data = await getTokensFromWallet(accounts[0], networkId);
     if (networkId && walletAddress) {
       const tokensList = await getAssetsByDaoAddress(walletAddress, networkId);
-      console.log(tokensList);
       setCurrentAccount(accounts[0]);
       setTokensInWallet(tokensList.data.tokenPriceList);
       setLoadingTokens(false);
@@ -260,6 +259,7 @@ const Form = () => {
                 startDate: new Date(data.startDate).getTime() / 1000,
                 createdBy: data.walletAddress.toLowerCase(),
                 addresses: [],
+                networkId: networkId,
               });
 
               createClaim(postData);
@@ -359,9 +359,10 @@ const Form = () => {
                 startDate: new Date(data.startDate).getTime() / 1000,
                 createdBy: data.walletAddress.toLowerCase(),
                 addresses: data.csvObject,
+                networkId: networkId,
               });
 
-              createClaim(postData);
+              await createClaim(postData);
 
               setLoading(false);
               setFinish(true);

@@ -272,7 +272,6 @@ const ClaimAddress = () => {
 
     try {
       const desc = await claimSettings();
-      console.log(desc);
       setContractData(desc);
       // setClaimEnabled(desc.isEnabled);
       dispatch(addClaimEnabled(desc.isEnabled));
@@ -365,6 +364,7 @@ const ClaimAddress = () => {
         // fetching description
         const dataFromAPI = await getClaimsByUserAddress(
           desc.creatorAddress.toLowerCase(),
+          networkId,
         );
         const computedData = dataFromAPI.filter(
           (data) => data.claimContract === claimAddress,

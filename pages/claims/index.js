@@ -110,12 +110,12 @@ const Claims = () => {
 
   useEffect(() => {
     const getData = async () => {
-      const data = await getClaimsByUserAddress(walletAddress);
+      const data = await getClaimsByUserAddress(walletAddress, networkId);
       setClaimData(data.reverse());
     };
 
     getData();
-  }, [walletAddress]);
+  }, [walletAddress, networkId]);
 
   return (
     <div className={classes.container}>

@@ -130,8 +130,6 @@ const Join = () => {
       const erc721Data = await getERC721DAOdetails();
       const nftCount = await getNftOwnersCount();
 
-      console.log("ERC721 data", erc721Data);
-
       if (erc721Data && factoryData) {
         setDaoDetails({
           daoName: erc721Data.DaoName,
