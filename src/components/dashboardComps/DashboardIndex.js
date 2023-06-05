@@ -503,7 +503,9 @@ const DashboardIndex = () => {
                     {tokenDetails.tokenPriceList ? (
                       tokenDetails.tokenPriceList.length ? (
                         //  if the tokens length is > 0 and if the token[0] (by default it will be Ether) is not equal to 0, then show the table
-                        <TableContainer component={Paper}>
+                        <TableContainer
+                          component={Paper}
+                          sx={{ overflowX: "hidden" }}>
                           <Table
                             sx={{ minWidth: 809 }}
                             aria-label="simple table">
