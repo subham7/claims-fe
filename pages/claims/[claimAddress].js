@@ -386,6 +386,7 @@ const ClaimAddress = () => {
           // converting the CSV data into merkleLeaves
           const csvData = await getClaimsByUserAddress(
             desc.creatorAddress.toLowerCase(),
+            networkId,
           );
 
           const { addresses } = csvData
