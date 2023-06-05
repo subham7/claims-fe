@@ -8,6 +8,7 @@ import claimsBanner from "../../public/assets/images/claimsBanner.png";
 import ClaimsCard from "../../src/components/claimsPageComps/ClaimsCard";
 import { getClaimsByUserAddress } from "../../src/api/claims";
 import { useConnectWallet } from "@web3-onboard/react";
+import useSmartContract from "../../src/hooks/useSmartContract";
 
 const useStyles = makeStyles({
   container: {
@@ -96,6 +97,7 @@ const Claims = () => {
   const classes = useStyles();
   const router = useRouter();
   const [claimData, setClaimData] = useState([]);
+  useSmartContract();
 
   const createClaimHandler = () => {
     router.push("/claims/form");

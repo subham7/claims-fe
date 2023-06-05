@@ -1,10 +1,11 @@
 import { useConnectWallet } from "@web3-onboard/react";
 import { useSelector } from "react-redux";
 import Web3 from "web3";
-import { RPC_URL } from "../api";
+import { POLYGON_MAINNET_RPC_URL, RPC_URL } from "../api";
 import { getIncreaseGasPrice } from "../utils/helper";
 import ERC20TokenABI from "../abis/usdcTokenContract.json";
 import ERC721TokenABI from "../abis/nft.json";
+import ClaimContractABI from "../abis/singleClaimContract.json";
 import { convertToWei } from "../utils/globalFunctions";
 import Safe, { Web3Adapter } from "@safe-global/protocol-kit";
 import { createProposalTxHash, getProposalTxHash } from "../api/proposal";
@@ -13,7 +14,7 @@ import SafeApiKit from "@safe-global/api-kit";
 const useSmartContractMethods = () => {
   const [{ wallet }] = useConnectWallet();
   const walletAddress = wallet?.accounts[0]?.address;
-  const web3Call = new Web3(RPC_URL);
+  const web3Call = new Web3(RPC_URL ? RPC_URL : POLYGON_MAINNET_RPC_URL);
 
   let web3Send;
   if (typeof window !== "undefined") {
@@ -232,7 +233,7 @@ const useSmartContractMethods = () => {
   };
 
   const claimBalance = async () => {
-    return await claimContractCall.methods.claimBalance().call();
+    return await claimContractCall?.methods.claimBalance().call();
   };
 
   const toggleClaim = async () => {
@@ -259,15 +260,15 @@ const useSmartContractMethods = () => {
   };
 
   const hasClaimed = async (walletAddress) => {
-    return await claimContractCall.methods.hasClaimed(walletAddress).call();
+    return await claimContractCall?.methods.hasClaimed(walletAddress).call();
   };
 
   const claimAmount = async (walletAddress) => {
-    return await claimContractCall.methods.claimAmount(walletAddress).call();
+    return await claimContractCall?.methods.claimAmount(walletAddress).call();
   };
 
   const checkAmount = async (walletAddress) => {
-    return await claimContractCall.methods.checkAmount(walletAddress).call();
+    return await claimContractCall?.methods.checkAmount(walletAddress).call();
   };
 
   const getNftBalance = async (tokenType, contractAddress) => {
@@ -277,7 +278,11 @@ const useSmartContractMethods = () => {
   };
 
   const encode = async (address, amount) => {
-    return await claimContractCall.methods.encode(address, amount).call();
+    const claimContract = new web3Call.eth.Contract(
+      ClaimContractABI.abi,
+      "0x7749cefB98d7e55D63b4AD8300088B01b5B1C391",
+    );
+    return await claimContract.methods.encode(address, amount).call();
   };
 
   const createERC721DAO = async (
