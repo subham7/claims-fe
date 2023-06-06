@@ -253,7 +253,7 @@ const Create = () => {
               ? formikStep4.values.safeAddress
               : "0x0000000000000000000000000000000000000000",
             isGovernanceActive: formikStep3.values.governance,
-            isGtTransferable: true,
+            isGtTransferable: false,
             allowWhiteList: false,
             merkleRoot:
               "0x0000000000000000000000000000000000000000000000000000000000000001",
