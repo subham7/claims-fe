@@ -107,7 +107,8 @@ const Settings = () => {
       const erc20DaoDecimal = await getDecimals(daoAddress);
       const clubTokensMinted = await getERC20TotalSupply();
 
-      if (erc20Data && factoryData)
+      if (erc20Data && factoryData) {
+        debugger;
         setDaoDetails({
           daoName: erc20Data.DaoName,
           daoSymbol: erc20Data.DaoSymbol,
@@ -125,11 +126,13 @@ const Settings = () => {
           depositDeadline: factoryData.depositCloseTime,
           depositTokenAddress: factoryData.depositTokenAddress,
           distributionAmt: factoryData.distributionAmount,
+
           totalSupply:
             (factoryData.distributionAmount / 10 ** 18) *
             factoryData.pricePerToken,
           ownerFee: factoryData.ownerFeePerDepositPercent / 100,
         });
+      }
     } catch (error) {
       console.log(error);
     }

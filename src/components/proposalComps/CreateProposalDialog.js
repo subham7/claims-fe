@@ -180,8 +180,7 @@ const CreateProposalDialog = ({ open, setOpen, onClose, tokenData }) => {
         commands = [
           {
             executionId: 3,
-            totalDeposits:
-              convertToWei(values.totalDeposit, 6) / factoryData?.pricePerToken,
+            totalDeposits: values.totalDeposit,
             usdcTokenSymbol: "USDC",
             usdcTokenDecimal: 6,
             usdcGovernanceTokenDecimal: 18,

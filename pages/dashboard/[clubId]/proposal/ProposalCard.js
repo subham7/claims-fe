@@ -2,6 +2,7 @@ import { Card, CardActionArea, Chip, Grid, Typography } from "@mui/material";
 import {
   calculateDays,
   convertFromWeiGovernance,
+  convertToWeiGovernance,
 } from "../../../../src/utils/globalFunctions";
 import actionIcon from "../../../../public/assets/icons/action_icon.svg";
 import tickerIcon from "../../../../public/assets/icons/ticker_icon.svg";
@@ -96,6 +97,8 @@ const ProposalCard = ({
   useEffect(() => {
     fetchAirDropContractDetails();
   }, [fetchAirDropContractDetails]);
+
+  console.log();
 
   return (
     <CardActionArea sx={{ borderRadius: "10px" }}>
@@ -376,8 +379,15 @@ const ProposalCard = ({
                           Raise Amount:
                         </Typography>
                         <Typography color="#FFFFFF">
-                          {proposal?.commands[0]?.totalDeposits *
-                            +convertFromWeiGovernance(
+                          {(convertToWeiGovernance(
+                            convertToWeiGovernance(
+                              proposal.commands[0].totalDeposits,
+                              6,
+                            ) / factoryData?.pricePerToken,
+                            18,
+                          ) /
+                            10 ** 18) *
+                            convertFromWeiGovernance(
                               factoryData?.pricePerToken,
                               6,
                             )}

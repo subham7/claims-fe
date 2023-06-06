@@ -558,6 +558,7 @@ const ProposalDetail = () => {
     if (proposalData.commands[0].executionId === 3) {
       let iface = new Interface(ABI);
 
+      debugger;
       data = iface.encodeFunctionData("updateDistributionAmount", [
         convertToWeiGovernance(
           convertToWeiGovernance(proposalData.commands[0].totalDeposits, 6) /
