@@ -2,7 +2,10 @@ import { Card, Divider, Grid, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import React, { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { convertFromWeiGovernance } from "../../utils/globalFunctions";
+import {
+  convertFromWeiGovernance,
+  convertToWeiGovernance,
+} from "../../utils/globalFunctions";
 import useSmartContractMethods from "../../hooks/useSmartContractMethods";
 
 const useStyles = makeStyles({
@@ -219,18 +222,19 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
                       </Typography>
                       <Typography className={classes.listFont2Colourless}>
                         {fetched
-                          ? proposalData?.commands[0].totalDeposits *
-                            +convertFromWeiGovernance(
+                          ? (convertToWeiGovernance(
+                              convertToWeiGovernance(
+                                proposalData.commands[0].totalDeposits,
+                                6,
+                              ) / daoDetails?.pricePerToken,
+                              18,
+                            ) /
+                              10 ** 18) *
+                            convertFromWeiGovernance(
                               daoDetails?.pricePerToken,
                               6,
                             )
-                          : // Math.pow(
-                            //   10,
-                            //   parseInt(
-                            //     proposalData?.commands[0].usdcTokenDecimal,
-                            //   ),
-                            // )
-                            null}{" "}
+                          : null}{" "}
                         {proposalData?.commands[0].usdcTokenSymbol}
                       </Typography>
                     </Grid>
