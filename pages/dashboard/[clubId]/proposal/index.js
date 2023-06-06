@@ -30,6 +30,7 @@ import {
   getProposalTxHash,
 } from "../../../../src/api/proposal";
 import { web3InstanceCustomRPC } from "../../../../src/utils/helper";
+import { useConnectWallet } from "@web3-onboard/react";
 
 const useStyles = makeStyles({
   noProposal_heading: {
@@ -58,6 +59,7 @@ const Proposal = () => {
   const dispatch = useDispatch();
   const { clubId: daoAddress } = router.query;
   const classes = useStyles();
+  const [{ wallet }] = useConnectWallet();
 
   const [selectedListItem, setSelectedListItem] = useState(
     proposalDisplayOptions[0].type,
@@ -350,7 +352,7 @@ const Proposal = () => {
         </Grid>
       </Grid>
 
-      {WRONG_NETWORK && <WrongNetworkModal />}
+      {WRONG_NETWORK && wallet && <WrongNetworkModal />}
 
       <CreateProposalDialog
         open={open}

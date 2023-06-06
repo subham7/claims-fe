@@ -264,7 +264,7 @@ const Settings = () => {
       />
       <TokenGating />
 
-      {WRONG_NETWORK && <WrongNetworkModal />}
+      {WRONG_NETWORK && wallet && <WrongNetworkModal />}
     </div>
   );
 };

@@ -885,7 +885,7 @@ const NewArchERC20 = ({
         </DialogContent>
       </Dialog> */}
 
-      {WRONG_NETWORK && <WrongNetworkModal />}
+      {WRONG_NETWORK && wallet && <WrongNetworkModal />}
 
       <Backdrop
         sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}

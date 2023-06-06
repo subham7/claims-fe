@@ -42,14 +42,16 @@ export default function Navbar2() {
       <AppBar>
         <Toolbar>
           {connecting ? (
-            <Button sx={{ mt: 2 }} className={classes.navButton}>
+            <Button
+              sx={{ mt: 2, position: "fixed", right: 16 }}
+              className={classes.navButton}>
               Connecting
             </Button>
           ) : wallet ? (
             <></>
           ) : (
             <Button
-              sx={{ mt: 2 }}
+              sx={{ mt: 2, position: "fixed", right: 16 }}
               className={classes.navButton}
               onClick={() => (wallet ? disconnect(wallet) : connect())}>
               Connect wallet

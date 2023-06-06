@@ -406,7 +406,7 @@ const NewArchERC721 = ({
           </Grid>
         )}
 
-        {WRONG_NETWORK && <WrongNetworkModal />}
+        {WRONG_NETWORK && wallet && <WrongNetworkModal />}
 
         {claimSuccessfull && showMessage ? (
           <Alert
