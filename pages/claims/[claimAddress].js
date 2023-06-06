@@ -6,7 +6,13 @@ import {
 } from "../../src/utils/globalFunctions";
 import { useRouter } from "next/router";
 import { useConnectWallet } from "@web3-onboard/react";
-import { Alert, CircularProgress, Tooltip } from "@mui/material";
+import {
+  Alert,
+  CircularProgress,
+  Grid,
+  Tooltip,
+  Typography,
+} from "@mui/material";
 import {
   getClaimAmountForUser,
   getClaimsByUserAddress,
@@ -570,273 +576,268 @@ const ClaimAddress = () => {
 
   return (
     <Layout1 showSidebar={false}>
-      <>
-        {isLoading ? (
-          <div
-            style={{
-              display: "flex",
-              height: "100vh",
-              alignItems: "center",
-              justifyContent: "center",
-            }}>
-            <CircularProgress />
-          </div>
-        ) : (
-          <>
-            {contractData ? (
-              <div className={classes.container}>
-                {/* left */}
-                <div className={classes.lefContainer}>
-                  <h2 className={classes.heading}>{description}</h2>
+      {wallet ? (
+        <>
+          {isLoading ? (
+            <div
+              style={{
+                display: "flex",
+                height: "100vh",
+                alignItems: "center",
+                justifyContent: "center",
+              }}>
+              <CircularProgress />
+            </div>
+          ) : (
+            <>
+              {contractData ? (
+                <div className={classes.container}>
+                  {/* left */}
+                  <div className={classes.lefContainer}>
+                    <h2 className={classes.heading}>{description}</h2>
 
-                  <div className={classes.addressLine}>
-                    <div className={classes.activeContainer}>
-                      <div
-                        className={`${
-                          claimActive && contractData?.isEnabled
-                            ? classes.active
-                            : classes.inactive
-                        }`}>
-                        {claimActive &&
-                        isClaimStarted &&
-                        contractData?.isEnabled
-                          ? "Active"
-                          : (!claimActive && isClaimStarted) ||
-                            !contractData?.isEnabled
-                          ? "Inactive"
-                          : !claimActive &&
-                            !isClaimStarted &&
-                            "Not started yet"}
+                    <div className={classes.addressLine}>
+                      <div className={classes.activeContainer}>
+                        <div
+                          className={`${
+                            claimActive && contractData?.isEnabled
+                              ? classes.active
+                              : classes.inactive
+                          }`}>
+                          {claimActive &&
+                          isClaimStarted &&
+                          contractData?.isEnabled
+                            ? "Active"
+                            : (!claimActive && isClaimStarted) ||
+                              !contractData?.isEnabled
+                            ? "Inactive"
+                            : !claimActive &&
+                              !isClaimStarted &&
+                              "Not started yet"}
+                        </div>
+
+                        <div className={classes.createdBy}>
+                          <p style={{ margin: 0, padding: 0 }}>Created By</p>
+                          <p
+                            style={{ margin: 0, padding: 0 }}
+                            className={classes.address}>
+                            {contractData?.creatorAddress?.slice(0, 5)}...
+                            {contractData?.creatorAddress?.slice(
+                              contractData?.creatorAddress?.length - 5,
+                            )}
+                          </p>
+                        </div>
                       </div>
 
-                      <div className={classes.createdBy}>
-                        <p style={{ margin: 0, padding: 0 }}>Created By</p>
-                        <p
-                          style={{ margin: 0, padding: 0 }}
-                          className={classes.address}>
-                          {contractData?.creatorAddress?.slice(0, 5)}...
-                          {contractData?.creatorAddress?.slice(
-                            contractData?.creatorAddress?.length - 5,
-                          )}
-                        </p>
-                      </div>
+                      {!isClaimStarted ? (
+                        <>
+                          <p className={classes.claimCloses}>
+                            Claim starts in{" "}
+                            {/* <span className={classes.time}>{endDateString}</span> */}
+                          </p>
+                          <Tooltip
+                            title={startDateString}
+                            placement="right-end">
+                            <div
+                              style={{
+                                width: "fit-content",
+                                cursor: "pointer",
+                              }}>
+                              <Countdown
+                                className={classes.closingIn}
+                                date={startingTimeInNum}
+                              />
+                            </div>
+                          </Tooltip>
+                        </>
+                      ) : (
+                        <>
+                          <p className={classes.claimCloses}>
+                            Claim ends in{" "}
+                            {/* <span className={classes.time}>{endDateString}</span> */}
+                          </p>
+                          <Tooltip title={endDateString} placement="right-end">
+                            <div
+                              style={{
+                                width: "fit-content",
+                                cursor: "pointer",
+                              }}>
+                              <Countdown
+                                className={classes.closingIn}
+                                date={endingTimeInNum}
+                              />
+                            </div>
+                          </Tooltip>
+                        </>
+                      )}
                     </div>
 
-                    {!isClaimStarted ? (
-                      <>
-                        <p className={classes.claimCloses}>
-                          Claim starts in{" "}
-                          {/* <span className={classes.time}>{endDateString}</span> */}
-                        </p>
-                        <Tooltip title={startDateString} placement="right-end">
-                          <div
-                            style={{ width: "fit-content", cursor: "pointer" }}>
-                            <Countdown
-                              className={classes.closingIn}
-                              date={startingTimeInNum}
-                            />
-                          </div>
-                        </Tooltip>
-                      </>
-                    ) : (
-                      <>
-                        <p className={classes.claimCloses}>
-                          Claim ends in{" "}
-                          {/* <span className={classes.time}>{endDateString}</span> */}
-                        </p>
-                        <Tooltip title={endDateString} placement="right-end">
-                          <div
-                            style={{ width: "fit-content", cursor: "pointer" }}>
-                            <Countdown
-                              className={classes.closingIn}
-                              date={endingTimeInNum}
-                            />
-                          </div>
-                        </Tooltip>
-                      </>
-                    )}
+                    <div className={classes.airdropContainer}>
+                      <div className={classes.div}>
+                        <p className={classes.para}>Airdrop</p>
+                        <h3 className={classes.label}>{airdropTokenName}</h3>
+                      </div>
+
+                      <div className={classes.div}>
+                        <p className={classes.para}>Size</p>
+                        <h3 className={classes.label}>{totalAmountofTokens}</h3>
+                      </div>
+
+                      <div className={classes.div}>
+                        <p className={classes.para}>Who can claim?</p>
+                        <h3 className={classes.label}>{whoCanClaim}</h3>
+                      </div>
+                    </div>
                   </div>
 
-                  <div className={classes.airdropContainer}>
-                    <div className={classes.div}>
-                      <p className={classes.para}>Airdrop</p>
-                      <h3 className={classes.label}>{airdropTokenName}</h3>
-                    </div>
-
-                    <div className={classes.div}>
-                      <p className={classes.para}>Size</p>
-                      <h3 className={classes.label}>{totalAmountofTokens}</h3>
-                    </div>
-
-                    <div className={classes.div}>
-                      <p className={classes.para}>Who can claim?</p>
-                      <h3 className={classes.label}>{whoCanClaim}</h3>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Right */}
-                <div className={classes.rightContainer}>
-                  <div className={classes.remainingClaim}>
-                    <div>
-                      <p className={classes.myClaim}>My Claim</p>
-                      <div className={classes.claims}>
-                        <p className={classes.claimAmt}>
-                          {claimableAmt ? Number(claimableAmt).toFixed(2) : 0}
-                        </p>
-                        <p className={classes.amount}>{airdropTokenName}</p>
+                  {/* Right */}
+                  <div className={classes.rightContainer}>
+                    <div className={classes.remainingClaim}>
+                      <div>
+                        <p className={classes.myClaim}>My Claim</p>
+                        <div className={classes.claims}>
+                          <p className={classes.claimAmt}>
+                            {claimableAmt ? Number(claimableAmt).toFixed(2) : 0}
+                          </p>
+                          <p className={classes.amount}>{airdropTokenName}</p>
+                        </div>
+                      </div>
+                      <div>
+                        <p className={classes.myClaim}>Remaining Amt</p>
+                        <div className={classes.claims}>
+                          <p className={classes.claimAmt}>
+                            {claimRemaining
+                              ? Number(
+                                  convertFromWeiGovernance(
+                                    claimRemaining,
+                                    decimalOfToken,
+                                  ),
+                                ).toFixed(2)
+                              : 0}
+                            {/* {claimRemaining ? claimRemaining : 0} */}
+                          </p>
+                          <p className={classes.amount}>{airdropTokenName}</p>
+                        </div>
                       </div>
                     </div>
-                    <div>
-                      <p className={classes.myClaim}>Remaining Amt</p>
-                      <div className={classes.claims}>
-                        <p className={classes.claimAmt}>
-                          {claimRemaining
-                            ? Number(
+
+                    <div className={classes.claimContainer}>
+                      <input
+                        onChange={(event) => {
+                          setClaimInput(event.target.value);
+
+                          if (
+                            event.target.value >
+                              Number(
                                 convertFromWeiGovernance(
                                   claimRemaining,
                                   decimalOfToken,
                                 ),
-                              ).toFixed(2)
-                            : 0}
-                          {/* {claimRemaining ? claimRemaining : 0} */}
-                        </p>
-                        <p className={classes.amount}>{airdropTokenName}</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className={classes.claimContainer}>
-                    <input
-                      onChange={(event) => {
-                        setClaimInput(event.target.value);
-
-                        if (
-                          event.target.value >
-                            Number(
-                              convertFromWeiGovernance(
-                                claimRemaining,
-                                decimalOfToken,
-                              ),
-                            ) ||
-                          claimInput >
-                            Number(
-                              convertFromWeiGovernance(
-                                claimRemaining,
-                                decimalOfToken,
-                              ),
-                            )
-                        ) {
-                          setShowInputError(true);
-                        } else {
-                          setShowInputError(false);
+                              ) ||
+                            claimInput >
+                              Number(
+                                convertFromWeiGovernance(
+                                  claimRemaining,
+                                  decimalOfToken,
+                                ),
+                              )
+                          ) {
+                            setShowInputError(true);
+                          } else {
+                            setShowInputError(false);
+                          }
+                        }}
+                        disabled={
+                          !claimActive ||
+                          !claimableAmt ||
+                          !contractData?.isEnabled ||
+                          (claimRemaining == 0 && alreadyClaimed)
+                            ? true
+                            : false
                         }
-                      }}
+                        value={claimInput}
+                        placeholder="0"
+                        type="number"
+                        className={classes.input}
+                      />
+                      <button
+                        disabled={
+                          (!claimActive || !contractData?.isEnabled) && true
+                        }
+                        style={
+                          !claimActive
+                            ? { cursor: "not-allowed" }
+                            : { cursor: "pointer" }
+                        }
+                        onClick={maxHandler}
+                        className={classes.max}>
+                        Max
+                      </button>
+                    </div>
+
+                    {showInputError && (
+                      <p className={classes.error}>
+                        Please enter number lesser than the remaining Amt
+                      </p>
+                    )}
+
+                    <button
+                      onClick={claimHandler}
+                      className={classes.btn}
                       disabled={
+                        (claimRemaining == 0 && alreadyClaimed && claimed) ||
                         !claimActive ||
                         !claimableAmt ||
-                        !contractData?.isEnabled ||
-                        (claimRemaining == 0 && alreadyClaimed)
+                        +claimInput <= 0 ||
+                        claimInput >= +claimRemaining ||
+                        (contractData?.permission == 0 &&
+                          !isEligibleForTokenGated)
                           ? true
                           : false
                       }
-                      value={claimInput}
-                      placeholder="0"
-                      type="number"
-                      className={classes.input}
-                    />
-                    <button
-                      disabled={
-                        (!claimActive || !contractData?.isEnabled) && true
-                      }
                       style={
-                        !claimActive
+                        (alreadyClaimed && +claimRemaining === 0) ||
+                        +claimInput <= 0 ||
+                        (contractData?.permission == 0 &&
+                          !isEligibleForTokenGated) ||
+                        +claimInput >= +claimRemaining ||
+                        !claimActive ||
+                        !claimableAmt
                           ? { cursor: "not-allowed" }
                           : { cursor: "pointer" }
-                      }
-                      onClick={maxHandler}
-                      className={classes.max}>
-                      Max
+                      }>
+                      {isClaiming ? (
+                        <CircularProgress />
+                      ) : alreadyClaimed && +claimRemaining === 0 ? (
+                        "Claimed"
+                      ) : (
+                        "Claim"
+                      )}
                     </button>
-                  </div>
-
-                  {showInputError && (
-                    <p className={classes.error}>
-                      Please enter number lesser than the remaining Amt
-                    </p>
-                  )}
-
-                  <button
-                    onClick={claimHandler}
-                    className={classes.btn}
-                    disabled={
-                      (claimRemaining == 0 && alreadyClaimed && claimed) ||
-                      !claimActive ||
-                      !claimableAmt ||
-                      +claimInput <= 0 ||
-                      claimInput >= +claimRemaining ||
-                      (contractData?.permission == 0 &&
-                        !isEligibleForTokenGated)
-                        ? true
-                        : false
-                    }
-                    style={
-                      (alreadyClaimed && +claimRemaining === 0) ||
-                      +claimInput <= 0 ||
-                      (contractData?.permission == 0 &&
-                        !isEligibleForTokenGated) ||
-                      +claimInput >= +claimRemaining ||
-                      !claimActive ||
-                      !claimableAmt
-                        ? { cursor: "not-allowed" }
-                        : { cursor: "pointer" }
-                    }>
-                    {isClaiming ? (
-                      <CircularProgress />
-                    ) : alreadyClaimed && +claimRemaining === 0 ? (
-                      "Claimed"
-                    ) : (
-                      "Claim"
-                    )}
-                  </button>
-                  {!claimableAmt && (
-                    <p className={classes.error}>
-                      You are not eligible for the claim!
-                    </p>
-                  )}
-                  {!isEligibleForTokenGated &&
-                    contractData?.permission == 0 && (
+                    {!claimableAmt && (
                       <p className={classes.error}>
-                        Only Token Holders of ${daoTokenSymbol} can claim!
+                        You are not eligible for the claim!
                       </p>
                     )}
+                    {!isEligibleForTokenGated &&
+                      contractData?.permission == 0 && (
+                        <p className={classes.error}>
+                          Only Token Holders of ${daoTokenSymbol} can claim!
+                        </p>
+                      )}
+                  </div>
                 </div>
-              </div>
-            ) : (
-              ""
-            )}
-          </>
-        )}
+              ) : (
+                ""
+              )}
+            </>
+          )}
 
-        {claimed && showMessage ? (
-          <Alert
-            severity="success"
-            sx={{
-              width: "250px",
-              position: "absolute",
-              bottom: "30px",
-              right: "20px",
-              borderRadius: "8px",
-            }}>
-            {message}
-          </Alert>
-        ) : (
-          !claimed &&
-          showMessage && (
+          {claimed && showMessage ? (
             <Alert
-              severity="error"
+              severity="success"
               sx={{
-                width: "350px",
+                width: "250px",
                 position: "absolute",
                 bottom: "30px",
                 right: "20px",
@@ -844,18 +845,54 @@ const ClaimAddress = () => {
               }}>
               {message}
             </Alert>
-          )
-        )}
-        {networkId && networkId !== "0x89" && <WrongNetworkModal />}
+          ) : (
+            !claimed &&
+            showMessage && (
+              <Alert
+                severity="error"
+                sx={{
+                  width: "350px",
+                  position: "absolute",
+                  bottom: "30px",
+                  right: "20px",
+                  borderRadius: "8px",
+                }}>
+                {message}
+              </Alert>
+            )
+          )}
+          {networkId && networkId !== "0x89" && <WrongNetworkModal />}
 
-        {/* {showClaimsEdit && (
+          {/* {showClaimsEdit && (
           <ClaimsEditModal
             claimAddress={claimAddress}
             walletAddress={walletAddress}
             onClose={onClose}
           />
         )} */}
-      </>
+        </>
+      ) : (
+        <>
+          <Grid
+            container
+            direction="column"
+            justifyContent="center"
+            alignItems="center">
+            <Grid item mt={15}>
+              <img
+                className={classes.bannerImage}
+                src="/assets/images/start_illustration.svg"
+              />
+            </Grid>
+
+            <Grid item mt={4}>
+              <Typography variant="regularText">
+                Connect wallet to claim your airdrop
+              </Typography>
+            </Grid>
+          </Grid>
+        </>
+      )}
     </Layout1>
   );
 };
