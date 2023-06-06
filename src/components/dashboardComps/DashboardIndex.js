@@ -864,7 +864,7 @@ const DashboardIndex = () => {
           </Grid>
         </Grid>
 
-        {WRONG_NETWORK && <WrongNetworkModal />}
+        {WRONG_NETWORK && wallet && <WrongNetworkModal />}
 
         <Snackbar
           //   open={openSnackBar}

@@ -218,7 +218,7 @@ const Test = () => {
           </Grid>
         </div>
 
-        {WRONG_NETWORK && <WrongNetworkModal />}
+        {WRONG_NETWORK && wallet && <WrongNetworkModal />}
 
         <Backdrop
           sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}

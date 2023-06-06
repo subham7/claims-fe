@@ -19,6 +19,7 @@ import { web3InstanceEthereum } from "../../src/utils/helper";
 import useSmartContractMethods from "../../src/hooks/useSmartContractMethods";
 import useSmartContract from "../../src/hooks/useSmartContract";
 import WrongNetworkModal from "../../src/components/modals/WrongNetworkModal";
+import Layout1 from "../../src/components/layouts/layout1";
 
 const steps = ["Step1", "Step2"];
 
@@ -419,48 +420,50 @@ const Form = () => {
   };
 
   return (
-    <div className={classes.container}>
-      <Grid container>
-        <Grid item xs={12} sx={{ padding: "20px" }}>
-          {formContent(activeStep)}
-        </Grid>
-        {formik.errors.submit && (
-          <Grid item xs={12}>
-            <FormHelperText error>{formik.errors.submit}</FormHelperText>
+    <Layout1 showSidebar={false}>
+      <div className={classes.container}>
+        <Grid container>
+          <Grid item xs={12} sx={{ padding: "20px" }}>
+            {formContent(activeStep)}
           </Grid>
+          {formik.errors.submit && (
+            <Grid item xs={12}>
+              <FormHelperText error>{formik.errors.submit}</FormHelperText>
+            </Grid>
+          )}
+        </Grid>
+
+        {networkId && networkId !== "0x89" && <WrongNetworkModal />}
+
+        {showError && (
+          <Alert
+            severity="error"
+            sx={{
+              width: "350px",
+              position: "absolute",
+              bottom: "30px",
+              right: "20px",
+              borderRadius: "8px",
+            }}>
+            {errMsg}
+          </Alert>
         )}
-      </Grid>
 
-      {networkId && networkId !== "0x89" && <WrongNetworkModal />}
-
-      {showError && (
-        <Alert
-          severity="error"
-          sx={{
-            width: "350px",
-            position: "absolute",
-            bottom: "30px",
-            right: "20px",
-            borderRadius: "8px",
-          }}>
-          {errMsg}
-        </Alert>
-      )}
-
-      {finish && (
-        <Alert
-          severity="success"
-          sx={{
-            width: "350px",
-            position: "absolute",
-            bottom: "30px",
-            right: "20px",
-            borderRadius: "8px",
-          }}>
-          {"Airdrop created successfully"}
-        </Alert>
-      )}
-    </div>
+        {finish && (
+          <Alert
+            severity="success"
+            sx={{
+              width: "350px",
+              position: "absolute",
+              bottom: "30px",
+              right: "20px",
+              borderRadius: "8px",
+            }}>
+            {"Airdrop created successfully"}
+          </Alert>
+        )}
+      </div>
+    </Layout1>
   );
 };
 

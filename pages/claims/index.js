@@ -10,6 +10,7 @@ import { getClaimsByUserAddress } from "../../src/api/claims";
 import { useConnectWallet } from "@web3-onboard/react";
 import useSmartContract from "../../src/hooks/useSmartContract";
 import WrongNetworkModal from "../../src/components/modals/WrongNetworkModal";
+import Layout1 from "../../src/components/layouts/layout1";
 
 const useStyles = makeStyles({
   container: {
@@ -118,50 +119,57 @@ const Claims = () => {
   }, [walletAddress, networkId]);
 
   return (
-    <div className={classes.container}>
-      {/* Left Side */}
-      <div className={classes.leftDiv}>
-        <div className={classes.header}>
-          <p className={classes.title}>Claims</p>
-          <button onClick={createClaimHandler} className={classes.claimDoc}>
-            Create
-          </button>
+    <Layout1 showSidebar={false}>
+      <div className={classes.container}>
+        {/* Left Side */}
+        <div className={classes.leftDiv}>
+          <div className={classes.header}>
+            <p className={classes.title}>Claims</p>
+            <button onClick={createClaimHandler} className={classes.claimDoc}>
+              Create
+            </button>
+          </div>
+
+          {!claimData.length && (
+            <div className={classes.noClaim}>
+              <p className={classes.noClaim_heading}>No claims found</p>
+              <p className={classes.noClaim_para}>
+                Bulk distribute ERC20 tokens or NFTs by creating claim pages in
+                less than 60 seconds
+              </p>
+            </div>
+          )}
+          {/* No claims exist */}
+
+          {claimData.map((item, i) => (
+            <ClaimsCard
+              key={i}
+              i={claimData.length - i - 1}
+              description={item?.description}
+              airdropTokenSymbol={item?.airdropTokenSymbol}
+              totalAmount={item?.totalAmount}
+              startDate={item?.startDate}
+              endDate={item?.endDate}
+              updatedDate={item?.updateDate}
+              claimContract={item?.claimContract}
+              createdBy={item?.createdBy}
+            />
+          ))}
         </div>
 
-        {!claimData.length && (
-          <div className={classes.noClaim}>
-            <p className={classes.noClaim_heading}>No claims found</p>
-            <p className={classes.noClaim_para}>
-              Bulk distribute ERC20 tokens or NFTs by creating claim pages in
-              less than 60 seconds
-            </p>
-          </div>
-        )}
-        {/* No claims exist */}
-
-        {claimData.map((item, i) => (
-          <ClaimsCard
-            key={i}
-            i={claimData.length - i - 1}
-            description={item?.description}
-            airdropTokenSymbol={item?.airdropTokenSymbol}
-            totalAmount={item?.totalAmount}
-            startDate={item?.startDate}
-            endDate={item?.endDate}
-            updatedDate={item?.updateDate}
-            claimContract={item?.claimContract}
-            createdBy={item?.createdBy}
+        {/* Right Side */}
+        <div className={classes.rightDiv}>
+          <Image
+            src={claimsBanner}
+            alt="claimBanner"
+            height={250}
+            width={400}
           />
-        ))}
-      </div>
+        </div>
 
-      {/* Right Side */}
-      <div className={classes.rightDiv}>
-        <Image src={claimsBanner} alt="claimBanner" height={250} width={400} />
+        {networkId && networkId !== "0x89" && <WrongNetworkModal />}
       </div>
-
-      {networkId && networkId !== "0x89" && <WrongNetworkModal />}
-    </div>
+    </Layout1>
   );
 };
 
