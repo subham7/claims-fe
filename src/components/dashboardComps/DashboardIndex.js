@@ -40,7 +40,8 @@ import {
 import { GiTwoCoins } from "react-icons/gi";
 import { IoColorPalette } from "react-icons/io5";
 import WrongNetworkModal from "../modals/WrongNetworkModal";
-import useSmartContract from "../../hooks/useSmartContract";
+import useSmartContractMethods from "../../hooks/useSmartContractMethods";
+// import useSmartContract from "../../hooks/useSmartContract";
 
 const DashboardIndex = () => {
   const clubData = useSelector((state) => {
@@ -98,7 +99,13 @@ const DashboardIndex = () => {
     return state.club.factoryData;
   });
 
-  const { erc721TokenContract, erc20DaoContract } = useSmartContract();
+  const {
+    getERC721Balance,
+    getERC721Symbol,
+    getNftOwnersCount,
+    getERC20Balance,
+    getERC20TotalSupply,
+  } = useSmartContractMethods();
 
   const walletAddress = wallet?.accounts[0].address;
 
@@ -203,15 +210,13 @@ const DashboardIndex = () => {
 
   useEffect(() => {
     try {
-      if (daoAddress && erc721TokenContract !== null) {
+      if (daoAddress) {
         const loadNftContractData = async () => {
           try {
-            const nftBalance = await erc721TokenContract.nftBalance(
-              walletAddress,
-            );
+            const nftBalance = await getERC721Balance();
             setBalanceOfUser(nftBalance);
-            const symbol = await erc721TokenContract.symbol();
-            const nftMinted = await erc721TokenContract.nftOwnersCount();
+            const symbol = await getERC721Symbol(daoAddress);
+            const nftMinted = await getNftOwnersCount();
             setClubTokenMinted(nftMinted);
           } catch (error) {
             console.log(error);
@@ -220,10 +225,10 @@ const DashboardIndex = () => {
 
         const loadSmartContractData = async () => {
           try {
-            const balance = await erc20DaoContract.nftBalance(walletAddress);
+            const balance = await getERC20Balance();
             //KEEP THIS CONSOLE
             setBalanceOfUser(balance);
-            const clubTokensMinted = await erc20DaoContract.totalSupply();
+            const clubTokensMinted = await getERC20TotalSupply();
             //KEEP THIS CONSOLE
             setClubTokenMinted(clubTokensMinted);
 
@@ -253,8 +258,11 @@ const DashboardIndex = () => {
     daoAddress,
     clubData.tokenType,
     walletAddress,
-    erc721TokenContract,
-    erc20DaoContract,
+    getERC721Balance,
+    getERC721Symbol,
+    getNftOwnersCount,
+    getERC20Balance,
+    getERC20TotalSupply,
   ]);
 
   return (
@@ -495,7 +503,9 @@ const DashboardIndex = () => {
                     {tokenDetails.tokenPriceList ? (
                       tokenDetails.tokenPriceList.length ? (
                         //  if the tokens length is > 0 and if the token[0] (by default it will be Ether) is not equal to 0, then show the table
-                        <TableContainer component={Paper}>
+                        <TableContainer
+                          component={Paper}
+                          sx={{ overflowX: "hidden" }}>
                           <Table
                             sx={{ minWidth: 809 }}
                             aria-label="simple table">

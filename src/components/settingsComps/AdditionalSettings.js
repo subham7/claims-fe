@@ -18,7 +18,7 @@ import { AdditionalSettingsStyles } from "./AdditionalSettingsStyles";
 import { useRouter } from "next/router";
 import DepositOwnerFee from "./modals/DepositOwnerFee";
 import DepositDeadline from "./modals/DepositDeadline";
-import useSmartContract from "../../hooks/useSmartContract";
+import useSmartContractMethods from "../../hooks/useSmartContractMethods";
 
 const AdditionalSettings = ({
   tokenType,
@@ -39,16 +39,12 @@ const AdditionalSettings = ({
 
   const startingTimeInNum = new Date(+daoDetails?.depositDeadline * 1000);
 
-  const { factoryContractSend } = useSmartContract();
+  const { updateDepositTime, updateOwnerFee } = useSmartContractMethods();
 
-  const updateOwnerFee = async (ownerFee) => {
+  const updateAdminFees = async (ownerFee) => {
     setLoading(true);
     try {
-      const res = await factoryContractSend.updateOwnerFee(
-        +ownerFee * 100,
-        daoAddress,
-      );
-
+      await updateOwnerFee(+ownerFee * 100, daoAddress);
       setLoading(false);
       showMessageHandler();
       setIsSuccessFull(true);
@@ -69,13 +65,10 @@ const AdditionalSettings = ({
     }
   };
 
-  const updateDepositTime = async (depositTime) => {
+  const updateDepositDeadline = async (depositTime) => {
     setLoading(true);
     try {
-      const res = await factoryContractSend.updateDepositTime(
-        +depositTime.toFixed(0).toString(),
-        daoAddress,
-      );
+      await updateDepositTime(+depositTime.toFixed(0).toString(), daoAddress);
       setLoading(false);
       showMessageHandler();
       setIsSuccessFull(true);
@@ -256,7 +249,7 @@ const AdditionalSettings = ({
           onClose={() => {
             setShowOwnerFeesModal(false);
           }}
-          updateOwnerFeesHandler={updateOwnerFee}
+          updateOwnerFeesHandler={updateAdminFees}
           loading={loading}
         />
       )}
@@ -265,7 +258,7 @@ const AdditionalSettings = ({
           onClose={() => {
             setShowDepositTimeModal(false);
           }}
-          updateDepositTimeHandler={updateDepositTime}
+          updateDepositTimeHandler={updateDepositDeadline}
           loading={loading}
         />
       )}

@@ -56,8 +56,8 @@ import ProposalInfo from "../../../../src/components/proposalComps/ProposalInfo"
 import CurrentResults from "../../../../src/components/proposalComps/CurrentResults";
 import ProposalVotes from "../../../../src/components/proposalComps/ProposalVotes";
 import WrongNetworkModal from "../../../../src/components/modals/WrongNetworkModal";
-import useSmartContract from "../../../../src/hooks/useSmartContract";
 import { getSafeSdk, web3InstanceEthereum } from "../../../../src/utils/helper";
+import useSmartContractMethods from "../../../../src/hooks/useSmartContractMethods";
 
 const useStyles = makeStyles({
   clubAssets: {
@@ -301,30 +301,30 @@ const ProposalDetail = () => {
   });
 
   const {
-    erc20DaoContract,
-    erc721DaoContract,
-    erc20DaoContractSend,
-    erc721DaoContractSend,
-  } = useSmartContract();
+    getNftBalance,
+    getERC20TotalSupply,
+    getNftOwnersCount,
+    updateProposalAndExecution,
+  } = useSmartContractMethods();
+
   const getSafeService = useCallback(async () => {
     const web3 = await web3InstanceEthereum();
     const ethAdapter = new Web3Adapter({
       web3,
-      signerAddress: walletAddress,
+      signerAddress: Web3.utils.toChecksumAddress(walletAddress),
     });
     const safeService = new SafeApiKit({
       txServiceUrl: GNOSIS_TRANSACTION_URL,
       ethAdapter,
     });
-    // const safeService = new SafeServiceClient({
-    //   txServiceUrl: GNOSIS_TRANSACTION_URL,
-    //   ethAdapter,
-    // });
     return safeService;
   }, [GNOSIS_TRANSACTION_URL, walletAddress]);
 
   const isOwner = useCallback(async () => {
-    const safeSdk = await getSafeSdk(gnosisAddress, walletAddress);
+    const safeSdk = await getSafeSdk(
+      Web3.utils.toChecksumAddress(gnosisAddress),
+      Web3.utils.toChecksumAddress(walletAddress),
+    );
     const owners = await safeSdk.getOwners();
 
     const ownerAddressesArray = owners.map((value) =>
@@ -428,15 +428,6 @@ const ProposalDetail = () => {
 
   const executeFunction = async (proposalStatus) => {
     setLoaderOpen(true);
-    let updateProposal;
-    if (
-      clubData.tokenType === "erc20" &&
-      (erc20DaoContract !== null || erc721DaoContract !== null)
-    ) {
-      updateProposal = erc20DaoContract;
-    } else {
-      updateProposal = erc721DaoContract;
-    }
 
     let data;
     let approvalData;
@@ -481,15 +472,15 @@ const ProposalDetail = () => {
           100;
         airDropAmountArray = await Promise.all(
           membersArray.map(async (member) => {
-            const balance = await updateProposal.nftBalance(
+            const balance = await getNftBalance(
               Web3.utils.toChecksumAddress(member),
             );
 
             let clubTokensMinted;
             if (clubData.tokenType === "erc20") {
-              clubTokensMinted = await updateProposal.totalSupply();
+              clubTokensMinted = await getERC20TotalSupply();
             } else {
-              clubTokensMinted = await updateProposal.nftOwnersCount();
+              clubTokensMinted = await getNftOwnersCount();
             }
 
             return (
@@ -508,15 +499,15 @@ const ProposalDetail = () => {
       } else {
         airDropAmountArray = await Promise.all(
           membersArray.map(async (member) => {
-            const balance = await updateProposal.nftBalance(
+            const balance = await getNftBalance(
               Web3.utils.toChecksumAddress(member),
             );
 
             let clubTokensMinted;
             if (clubData.tokenType === "erc20") {
-              clubTokensMinted = await updateProposal.totalSupply();
+              clubTokensMinted = await getERC20TotalSupply();
             } else {
-              clubTokensMinted = await updateProposal.nftOwnersCount();
+              clubTokensMinted = await getNftOwnersCount();
             }
 
             return (
@@ -591,18 +582,7 @@ const ProposalDetail = () => {
       ]);
     }
 
-    let updateProposalExecute;
-
-    if (
-      clubData.tokenType === "erc20" &&
-      (erc20DaoContractSend !== null || erc721DaoContractSend !== null)
-    ) {
-      updateProposalExecute = erc20DaoContractSend;
-    } else {
-      updateProposalExecute = erc721DaoContractSend;
-    }
-
-    const response = updateProposalExecute.updateProposalAndExecution(
+    const response = updateProposalAndExecution(
       data,
       approvalData,
       daoAddress,
@@ -619,6 +599,7 @@ const ProposalDetail = () => {
       proposalData.commands[0].executionId === 3
         ? FACTORY_CONTRACT_ADDRESS
         : "",
+      GNOSIS_TRANSACTION_URL,
     );
     if (proposalStatus === "executed") {
       // fetchData()

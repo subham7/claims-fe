@@ -165,7 +165,7 @@ export default function NFTStep2(props) {
                 <Grid item>
                   <Button
                     variant="contained"
-                    sx={{ fontWeight: "light" }}
+                    sx={{ fontWeight: "light", minWidth: "180px" }}
                     onClick={generateRandomNFTImage}>
                     Generate random
                   </Button>
@@ -175,13 +175,10 @@ export default function NFTStep2(props) {
 
                   <Button
                     startIcon={<UploadIcon />}
+                    variant="contained"
                     sx={{
                       fontWeight: "light",
-                      backgroundColor: "#81F5FF",
-                      color: "#3B7AFD",
-                      ":hover": {
-                        backgroundColor: "#81F5FF",
-                      },
+                      minWidth: "180px",
                     }}
                     onClick={(e) => {
                       props.uploadInputRef.current.click();
@@ -495,7 +492,7 @@ export default function NFTStep2(props) {
         )}
 
         <Card className={classes.cardPadding} mb={2}>
-          <Grid container pl={3}>
+          <Grid container pl={3} py={1}>
             <Grid
               item
               xs

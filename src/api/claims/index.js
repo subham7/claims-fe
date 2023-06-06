@@ -18,9 +18,11 @@ export const createClaim = async (jsonData) => {
   }
 };
 
-export const getClaimsByUserAddress = async (userAddress) => {
+export const getClaimsByUserAddress = async (userAddress, networkId) => {
   try {
-    const res = await fetch(`${MAIN_API_URL}claim/user/${userAddress}`);
+    const res = await fetch(
+      `${MAIN_API_URL}claim/user/${userAddress}?networkId=${networkId}`,
+    );
     const data = await res.json();
     return data;
   } catch (err) {

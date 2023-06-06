@@ -1,6 +1,4 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { SmartContract } from "../../src/api/contract";
-import ERC20ABI from "../../src/abis/usdcTokenContract.json";
 
 import { useConnectWallet } from "@web3-onboard/react";
 import Layout2 from "../../src/components/layouts/layout2";
@@ -16,7 +14,8 @@ import {
 import { useSelector } from "react-redux";
 import ClubFetch from "../../src/utils/clubFetch";
 import { Backdrop, CircularProgress } from "@mui/material";
-import useSmartContract from "../../src/hooks/useSmartContract";
+import useSmartContractMethods from "../../src/hooks/useSmartContractMethods";
+// import useSmartContract from "../../src/hooks/useSmartContract";
 
 const Join = () => {
   const [daoDetails, setDaoDetails] = useState({
@@ -47,36 +46,30 @@ const Join = () => {
   const [isTokenGated, setIsTokenGated] = useState(false);
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(false);
-
   const [{ wallet }] = useConnectWallet();
   const router = useRouter();
-
   const { jid: daoAddress } = router.query;
 
   const SUBGRAPH_URL = useSelector((state) => {
     return state.gnosis.subgraphUrl;
   });
 
-  const GNOSIS_TRANSACTION_URL = useSelector((state) => {
-    return state.gnosis.transactionUrl;
-  });
-
   const TOKEN_TYPE = useSelector((state) => {
     return state.club.clubData.tokenType;
-  });
-
-  const USDC_CONTRACT_ADDRESS = useSelector((state) => {
-    return state.gnosis.usdcContractAddress;
   });
 
   const factoryData = useSelector((state) => {
     return state.club.factoryData;
   });
 
-  const walletAddress = wallet?.accounts[0].address;
-
-  const { factoryContractCall, erc20DaoContract, erc721DaoContract } =
-    useSmartContract();
+  const {
+    getERC20TotalSupply,
+    getERC20DAOdetails,
+    getDecimals,
+    getERC721DAOdetails,
+    getNftOwnersCount,
+    getBalance,
+  } = useSmartContractMethods();
 
   /**
    * Fetching details for ERC20 comp
@@ -84,39 +77,38 @@ const Join = () => {
   const fetchErc20ContractDetails = useCallback(async () => {
     try {
       setLoading(true);
-      if (erc20DaoContract !== null) {
-        const erc20Data = await erc20DaoContract.getERC20DAOdetails();
-        const erc20DaoDecimal = await erc20DaoContract.decimals();
-        const clubTokensMinted = await erc20DaoContract.totalSupply();
 
-        if (erc20Data && factoryData)
-          setDaoDetails({
-            daoName: erc20Data.DaoName,
-            daoSymbol: erc20Data.DaoSymbol,
-            quorum: erc20Data.quorum,
-            threshold: erc20Data.threshold,
-            isGovernance: erc20Data.isGovernanceActive,
-            decimals: erc20DaoDecimal,
-            clubTokensMinted: clubTokensMinted,
-            // daoImage: fetchedImage,
-            isTokenGated: factoryData.isTokenGatingApplied,
-            minDeposit: factoryData.minDepositPerUser,
-            maxDeposit: factoryData.maxDepositPerUser,
-            pricePerToken: factoryData.pricePerToken,
-            depositDeadline: factoryData.depositCloseTime,
-            depositTokenAddress: factoryData.depositTokenAddress,
-            distributionAmt: factoryData.distributionAmount,
-            totalSupply:
-              (factoryData.distributionAmount / 10 ** 18) *
-              factoryData.pricePerToken,
-          });
-      }
+      const erc20Data = await getERC20DAOdetails();
+      const erc20DaoDecimal = await getDecimals(daoAddress);
+      const clubTokensMinted = await getERC20TotalSupply();
+
+      if (erc20Data && factoryData)
+        setDaoDetails({
+          daoName: erc20Data.DaoName,
+          daoSymbol: erc20Data.DaoSymbol,
+          quorum: erc20Data.quorum,
+          threshold: erc20Data.threshold,
+          isGovernance: erc20Data.isGovernanceActive,
+          decimals: erc20DaoDecimal,
+          clubTokensMinted: clubTokensMinted,
+          // daoImage: fetchedImage,
+          isTokenGated: factoryData.isTokenGatingApplied,
+          minDeposit: factoryData.minDepositPerUser,
+          maxDeposit: factoryData.maxDepositPerUser,
+          pricePerToken: factoryData.pricePerToken,
+          depositDeadline: factoryData.depositCloseTime,
+          depositTokenAddress: factoryData.depositTokenAddress,
+          distributionAmt: factoryData.distributionAmount,
+          totalSupply:
+            (factoryData.distributionAmount / 10 ** 18) *
+            factoryData.pricePerToken,
+        });
       setLoading(false);
     } catch (error) {
       console.log(error);
       setLoading(false);
     }
-  }, [erc20DaoContract, factoryData]);
+  }, [daoAddress, factoryData]);
 
   /**
    * Fetching details for ERC721 comp
@@ -124,6 +116,7 @@ const Join = () => {
   const fetchErc721ContractDetails = useCallback(async () => {
     try {
       setLoading(true);
+
       const clubDetails = await subgraphQuery(
         SUBGRAPH_URL,
         QUERY_CLUB_DETAILS(daoAddress),
@@ -134,69 +127,57 @@ const Join = () => {
       const data = await res.json();
       const imageUrl = convertIpfsToUrl(data.image);
 
-      if (erc721DaoContract !== null) {
-        const erc721Data = await erc721DaoContract.getERC721DAOdetails();
-        const nftCount = await erc721DaoContract.nftOwnersCount();
+      const erc721Data = await getERC721DAOdetails();
+      const nftCount = await getNftOwnersCount();
 
-        if (erc721Data && factoryData) {
-          setDaoDetails({
-            daoName: erc721Data.DaoName,
-            daoSymbol: erc721Data.DaoSymbol,
-            quorum: erc721Data.quorum,
-            threshold: erc721Data.threshold,
-            isGovernance: erc721Data.isGovernanceActive,
-            maxTokensPerUser: erc721Data.maxTokensPerUser,
-            isTotalSupplyUnlinited: erc721Data.isNftTotalSupplyUnlimited,
-            createdBy: erc721Data.ownerAddress,
-            daoImage: imageUrl,
-            nftURI: clubDetails?.stations[0].imageUrl,
-            isTokenGated: factoryData.isTokenGatingApplied,
-            minDeposit: factoryData.minDepositPerUser,
-            maxDeposit: factoryData.maxDepositPerUser,
-            pricePerToken: factoryData.pricePerToken,
-            depositDeadline: factoryData.depositCloseTime,
-            depositTokenAddress: factoryData.depositTokenAddress,
-            distributionAmt: factoryData.distributionAmount,
-            totalSupply:
-              factoryData.distributionAmount * factoryData.pricePerToken,
-            nftMinted: nftCount,
-          });
-        }
+      if (erc721Data && factoryData) {
+        setDaoDetails({
+          daoName: erc721Data.DaoName,
+          daoSymbol: erc721Data.DaoSymbol,
+          quorum: erc721Data.quorum,
+          threshold: erc721Data.threshold,
+          isGovernance: erc721Data.isGovernanceActive,
+          maxTokensPerUser: erc721Data.maxTokensPerUser,
+          isTotalSupplyUnlinited: erc721Data.isNftTotalSupplyUnlimited,
+          createdBy: erc721Data.ownerAddress,
+          daoImage: imageUrl,
+          nftURI: clubDetails?.stations[0].imageUrl,
+          isTokenGated: factoryData.isTokenGatingApplied,
+          minDeposit: factoryData.minDepositPerUser,
+          maxDeposit: factoryData.maxDepositPerUser,
+          pricePerToken: factoryData.pricePerToken,
+          depositDeadline: factoryData.depositCloseTime,
+          depositTokenAddress: factoryData.depositTokenAddress,
+          distributionAmt: factoryData.distributionAmount,
+          totalSupply:
+            factoryData.distributionAmount * factoryData.pricePerToken,
+          nftMinted: nftCount,
+        });
       }
       setLoading(false);
     } catch (error) {
       console.log(error);
       setLoading(false);
     }
-  }, [SUBGRAPH_URL, daoAddress, erc721DaoContract, factoryData]);
+  }, [SUBGRAPH_URL, daoAddress, factoryData]);
 
   const fetchTokenGatingDetials = useCallback(async () => {
     try {
       setLoading(true);
 
-      const tokenGatingDetails =
-        await factoryContractCall.getTokenGatingDetails(daoAddress);
+      const tokenGatingDetails = await contractInstance.factoryContractCall
+        .getTokenGatingDetails(daoAddress)
+        .call();
 
       if (tokenGatingDetails[0]?.length) {
         setIsTokenGated(true);
-        const tokenAContract = new SmartContract(
-          ERC20ABI,
+
+        const balanceOfTokenAInUserWallet = await getBalance(
           tokenGatingDetails[0].tokenA,
-          walletAddress,
-          USDC_CONTRACT_ADDRESS,
-          GNOSIS_TRANSACTION_URL,
         );
-
-        const tokenBContract = new SmartContract(
-          ERC20ABI,
+        const balanceOfTokenBInUserWallet = await getBalance(
           tokenGatingDetails[0].tokenB,
-          walletAddress,
-          USDC_CONTRACT_ADDRESS,
-          GNOSIS_TRANSACTION_URL,
         );
-
-        const balanceOfTokenAInUserWallet = await tokenAContract.balanceOf();
-        const balanceOfTokenBInUserWallet = await tokenBContract.balanceOf();
 
         if (tokenGatingDetails[0].operator == 0) {
           if (
@@ -223,13 +204,7 @@ const Join = () => {
       console.log(error);
       setLoading(false);
     }
-  }, [
-    factoryContractCall,
-    daoAddress,
-    walletAddress,
-    USDC_CONTRACT_ADDRESS,
-    GNOSIS_TRANSACTION_URL,
-  ]);
+  }, [daoAddress]);
 
   useEffect(() => {
     fetchTokenGatingDetials();
