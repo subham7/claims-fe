@@ -20,7 +20,7 @@ import { useDispatch } from "react-redux";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import useSmartContractMethods from "../../hooks/useSmartContractMethods";
-import WrongNetworkModal from "../modals/WrongNetworkModal";
+// import WrongNetworkModal from "../modals/WrongNetworkModal";
 
 const useStyles = makeStyles({
   form: {
@@ -263,6 +263,26 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
                   variant="outlined"
                   className={classes.input}
                 />
+
+                <Typography className={classes.label}>
+                  Token Gating Amount
+                </Typography>
+                <TextField
+                  error={
+                    formik.touched.tokenGatingAmt &&
+                    Boolean(formik.errors.tokenGatingAmt)
+                  }
+                  helperText={
+                    formik.touched.tokenGatingAmt &&
+                    formik.errors.tokenGatingAmt
+                  }
+                  onChange={formik.handleChange}
+                  value={values.tokenGatingAmt}
+                  name="tokenGatingAmt"
+                  id="tokenGatingAmt"
+                  variant="outlined"
+                  className={classes.input}
+                />
               </>
             )}
 
@@ -398,7 +418,7 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
         >
           Finish
         </Button> */}
-        {networkId && networkId !== "0x89" && <WrongNetworkModal />}
+        {/* {networkId && networkId !== "0x89" && <WrongNetworkModal />} */}
       </form>
     </>
   );

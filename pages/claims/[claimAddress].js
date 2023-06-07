@@ -25,7 +25,7 @@ import { useDispatch } from "react-redux";
 import { addClaimEnabled } from "../../src/redux/reducers/createClaim";
 import useSmartContractMethods from "../../src/hooks/useSmartContractMethods";
 import useSmartContract from "../../src/hooks/useSmartContract";
-import WrongNetworkModal from "../../src/components/modals/WrongNetworkModal";
+// import WrongNetworkModal from "../../src/components/modals/WrongNetworkModal";
 import Image from "next/image";
 
 const useStyles = makeStyles({
@@ -279,11 +279,12 @@ const ClaimAddress = () => {
 
     try {
       const desc = await claimSettings();
+      // console.log(desc);
       setContractData(desc);
       // setClaimEnabled(desc.isEnabled);
       dispatch(addClaimEnabled(desc.isEnabled));
 
-      if (contractData?.airdropToken) {
+      if (desc?.airdropToken) {
         // decimals of airdrop token
         const decimals = await getDecimals(desc.airdropToken);
         setDecimalofToken(decimals);
@@ -299,7 +300,9 @@ const ClaimAddress = () => {
         setClaimBalanceRemaing(remainingBalanceInUSD);
 
         // check if token is already claimed
-        const isClaimed = await hasClaimed(walletAddress);
+        // const isClaimed = await hasClaimed(walletAddress);
+        // console.log("su", isClaimed);
+        const isClaimed = false;
         setAlreadyClaimed(isClaimed);
 
         const remainingAmt = await claimAmount(walletAddress);
@@ -363,7 +366,7 @@ const ClaimAddress = () => {
 
         // totalAmount of tokens
         const totalAmountInNumber = convertFromWeiGovernance(
-          desc.claimAmountDetails[2],
+          desc.claimAmountDetails[1],
           decimals,
         );
         setTotalAmountOfTokens(totalAmountInNumber);
@@ -418,7 +421,7 @@ const ClaimAddress = () => {
         else {
           // claimable amount
           const airdropAmount = convertFromWeiGovernance(
-            desc.claimAmountDetails[1],
+            desc.claimAmountDetails[0],
             decimals,
           );
 
@@ -540,7 +543,7 @@ const ClaimAddress = () => {
     "0x0000000000000000000000000000000000000000000000000000000000000001"
   ) {
     whoCanClaim = "Whitelisted";
-  } else if (contractData?.permission === "3") {
+  } else if (contractData?.permission === "2") {
     whoCanClaim = "Everyone";
   } else if (contractData?.permission === "0") {
     whoCanClaim = `Token Holders (${daoTokenSymbol})`;
@@ -758,23 +761,23 @@ const ClaimAddress = () => {
                             setShowInputError(false);
                           }
                         }}
-                        disabled={
-                          !claimActive ||
-                          !claimableAmt ||
-                          !contractData?.isEnabled ||
-                          (claimRemaining == 0 && alreadyClaimed)
-                            ? true
-                            : false
-                        }
+                        // disabled={
+                        //   !claimActive ||
+                        //   !claimableAmt ||
+                        //   !contractData?.isEnabled ||
+                        //   (claimRemaining == 0 && alreadyClaimed)
+                        //     ? true
+                        //     : false
+                        // }
                         value={claimInput}
                         placeholder="0"
                         type="number"
                         className={classes.input}
                       />
                       <button
-                        disabled={
-                          (!claimActive || !contractData?.isEnabled) && true
-                        }
+                        // disabled={
+                        //   (!claimActive || !contractData?.isEnabled) && true
+                        // }
                         style={
                           !claimActive
                             ? { cursor: "not-allowed" }
@@ -795,17 +798,17 @@ const ClaimAddress = () => {
                     <button
                       onClick={claimHandler}
                       className={classes.btn}
-                      disabled={
-                        (claimRemaining == 0 && alreadyClaimed && claimed) ||
-                        !claimActive ||
-                        !claimableAmt ||
-                        +claimInput <= 0 ||
-                        claimInput >= +claimRemaining ||
-                        (contractData?.permission == 0 &&
-                          !isEligibleForTokenGated)
-                          ? true
-                          : false
-                      }
+                      // disabled={
+                      //   (claimRemaining == 0 && alreadyClaimed && claimed) ||
+                      //   !claimActive ||
+                      //   !claimableAmt ||
+                      //   +claimInput <= 0 ||
+                      //   claimInput >= +claimRemaining ||
+                      //   (contractData?.permission == 0 &&
+                      //     !isEligibleForTokenGated)
+                      //     ? true
+                      //     : false
+                      // }
                       style={
                         (alreadyClaimed && +claimRemaining === 0) ||
                         +claimInput <= 0 ||
@@ -872,7 +875,7 @@ const ClaimAddress = () => {
               </Alert>
             )
           )}
-          {networkId && networkId !== "0x89" && <WrongNetworkModal />}
+          {/* {networkId && networkId !== "0x89" && <WrongNetworkModal />} */}
 
           {/* {showClaimsEdit && (
           <ClaimsEditModal

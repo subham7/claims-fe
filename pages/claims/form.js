@@ -21,7 +21,7 @@ import { useRouter } from "next/router";
 import { web3InstanceEthereum } from "../../src/utils/helper";
 import useSmartContractMethods from "../../src/hooks/useSmartContractMethods";
 import useSmartContract from "../../src/hooks/useSmartContract";
-import WrongNetworkModal from "../../src/components/modals/WrongNetworkModal";
+// import WrongNetworkModal from "../../src/components/modals/WrongNetworkModal";
 import Layout1 from "../../src/components/layouts/layout1";
 import Image from "next/image";
 
@@ -85,7 +85,7 @@ const Form = () => {
   const formik = useFormik({
     initialValues: {
       description: "",
-      rollbackAddress: "",
+      // rollbackAddress: "",
       numberOfTokens: "",
       startDate: dayjs(Date.now() + 300000),
       endDate: dayjs(Date.now() + 600000),
@@ -95,7 +95,8 @@ const Form = () => {
       airdropTokenAddress: "", // tokenAddress
       airdropFrom: "contract", // wallet or contract,
       eligible: "csv", // token || csv || everyone
-      daoTokenAddress: "", // tokenGated
+      daoTokenAddress: "0x", // tokenGated
+      tokenGatingAmt: 0,
       maximumClaim: "proRata", // prorata or custom
       customAmount: 0,
       merkleData: [],
@@ -105,12 +106,12 @@ const Form = () => {
       description: yup
         .string("Enter one-liner description")
         .required("description is required"),
-      rollbackAddress: yup
-        .string("Enter rollback address")
-        .when("airdropFrom", {
-          is: "contract",
-          then: () => yup.string().required("Please enter rollback address"),
-        }),
+      // rollbackAddress: yup
+      //   .string("Enter rollback address")
+      //   .when("airdropFrom", {
+      //     is: "contract",
+      //     then: () => yup.string().required("Please enter rollback address"),
+      //   }),
       // .required("Rollback address is required"),
       numberOfTokens: yup
         .number()
@@ -128,6 +129,13 @@ const Form = () => {
         .when("eligible", {
           is: "token",
           then: () => yup.string().required("Enter token address"),
+        }),
+      tokenGatingAmt: yup
+        .string("Enter token gating amount")
+        .notRequired()
+        .when("eligible", {
+          is: "token",
+          then: () => yup.string().required("Enter token gating amount"),
         }),
       // .required("Dao token is required"),
       customAmount: yup
@@ -152,9 +160,9 @@ const Form = () => {
 
       const data = {
         description: values.description,
-        rollbackAddress: values.rollbackAddress
-          ? values.rollbackAddress
-          : walletAddress.toLowerCase(),
+        // rollbackAddress: values.rollbackAddress
+        //   ? values.rollbackAddress
+        //   : walletAddress.toLowerCase(),
         numberOfTokens: values.numberOfTokens.toString(),
         startDate: dayjs(values.startDate).format(),
         endDate: dayjs(values.endDate).format(),
@@ -164,9 +172,11 @@ const Form = () => {
         airdropTokenAddress: values.airdropTokenAddress,
         airdropFrom: values.airdropFrom,
         eligible: values.eligible,
-        daoTokenAddress: values.daoTokenAddress.length
-          ? values.daoTokenAddress
-          : "0x0000000000000000000000000000000000000000",
+        daoTokenAddress:
+          values.daoTokenAddress.length > 2
+            ? values.daoTokenAddress
+            : "0x0000000000000000000000000000000000000000",
+        tokenGatingAmt: values.tokenGatingAmt ? values.tokenGatingAmt : 0,
         maximumClaim: values.maximumClaim,
         customAmount:
           values.maximumClaim === "custom" ? values.customAmount.toString() : 0,
@@ -195,12 +205,20 @@ const Form = () => {
           if (data.eligible === "token") {
             eligible = 0;
           } else if (data.eligible === "everyone") {
-            eligible = 3;
+            eligible = 2;
           }
 
           const loadClaimsContractFactoryData_Token = async () => {
             try {
+              let tokenGatingDecimals = 0;
               const decimals = await getDecimals(data.airdropTokenAddress);
+
+              if (
+                data.daoTokenAddress !==
+                "0x0000000000000000000000000000000000000000"
+              ) {
+                tokenGatingDecimals = await getDecimals(data.daoTokenAddress);
+              }
 
               // if airdroping from contract then approve erc20
               if (!hasAllowanceMechanism) {
@@ -213,22 +231,43 @@ const Form = () => {
                 );
               }
 
+              /** 
+              struct ClaimSettings {
+                address creatorAddress; //Address of claim creator
+                address walletAddress; //Address of Safe/EOA
+                address airdropToken; //Address of token to airdrop
+                address daoToken; //Address of DAO token
+                uint256 tokenGatingValue; //Minimum amount required for token gating
+                uint256 startTime; //Start time of claim
+                uint256 endTime; //End time of claim
+                uint256 cooldownTime; //Time period after which users can receive tokens
+                bool hasAllowanceMechanism; //To check if token transfer is based on allowance
+                bytes32 merkleRoot; //Merkle root to validate proof
+                CLAIM_PERMISSION permission;
+                ClaimAmountDetails claimAmountDetails;
+            }
+            */
+
               const claimsSettings = [
                 data.walletAddress.toLowerCase(),
                 data.walletAddress.toLowerCase(),
                 data.airdropTokenAddress,
                 data.daoTokenAddress,
-                hasAllowanceMechanism, // false if token approved function called
-                false,
-                0,
-                true,
+                data.daoTokenAddress !==
+                "0x0000000000000000000000000000000000000000"
+                  ? convertToWeiGovernance(
+                      data.tokenGatingAmt,
+                      tokenGatingDecimals,
+                    )
+                  : 0,
+                // 0,
                 new Date(data.startDate).getTime() / 1000,
                 new Date(data.endDate).getTime() / 1000,
-                data.rollbackAddress.toLowerCase(),
+                0,
+                hasAllowanceMechanism,
                 "0x0000000000000000000000000000000000000000000000000000000000000001",
-                Number(eligible),
+                Number(eligible), // Permission ie. 0 - TG; 1 - Whitelisted; 2 - FreeForALL
                 [
-                  maximumClaim,
                   convertToWeiGovernance(
                     data.customAmount,
                     decimals,
@@ -237,10 +276,10 @@ const Form = () => {
                     data.numberOfTokens,
                     decimals,
                   ).toString(),
-                  [],
                 ],
-                [false, 0],
               ];
+
+              console.log("settings", claimsSettings);
 
               const response = await claimContract(claimsSettings);
 
@@ -286,7 +325,6 @@ const Form = () => {
               setErrMsg(err.message);
             }
           };
-
           loadClaimsContractFactoryData_Token();
         } else if (data.eligible === "csv") {
           let hasAllowanceMechanism;
@@ -450,14 +488,14 @@ const Form = () => {
           )}
         </Grid>
 
-        {networkId && networkId !== "0x89" && <WrongNetworkModal />}
+        {/* {networkId && networkId !== "0x89" && <WrongNetworkModal />} */}
 
         {showError && (
           <Alert
             severity="error"
             sx={{
               width: "350px",
-              position: "absolute",
+              position: "fixed",
               bottom: "30px",
               right: "20px",
               borderRadius: "8px",
@@ -471,7 +509,7 @@ const Form = () => {
             severity="success"
             sx={{
               width: "350px",
-              position: "absolute",
+              position: "fixed",
               bottom: "30px",
               right: "20px",
               borderRadius: "8px",

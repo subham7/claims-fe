@@ -3,8 +3,8 @@ import ERC721TokenABI from "../abis/nft.json";
 import ERC20DaoABI from "../abis/newArch/erc20Dao.json";
 import ERC721DaoABI from "../abis/newArch/erc721Dao.json";
 import FactoryContractABI from "../abis/newArch/factoryContract.json";
-import ClaimContractABI from "../abis/singleClaimContract.json";
-import ClaimFactoryABI from "../abis/claimContractFactory.json";
+import ClaimContractABI from "../abis/newArch/claimContract.json";
+import ClaimFactoryABI from "../abis/newArch/claimFactory.json";
 import { useRouter } from "next/router";
 import Web3 from "web3";
 import {

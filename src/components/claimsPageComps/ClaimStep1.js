@@ -232,7 +232,7 @@ const ClaimStep1 = ({ formik, tokensInWallet, isLoading }) => {
           </ToggleButton>
         </ToggleButtonGroup>
 
-        {/* Roll back address */}
+        {/* Roll back address
         {formik.values.airdropFrom === "contract" && (
           <>
             <Typography className={classes.label}>
@@ -258,7 +258,7 @@ const ClaimStep1 = ({ formik, tokensInWallet, isLoading }) => {
               back to this address.
             </Typography>
           </>
-        )}
+        )} */}
 
         {/* Choose Token */}
         <Typography className={classes.label}>
