@@ -5,7 +5,10 @@ import Layout2 from "../../src/components/layouts/layout2";
 import NewArchERC20 from "../../src/components/depositPageComps/ERC20/NewArch/NewArchERC20";
 import { useRouter } from "next/router";
 import NewArchERC721 from "../../src/components/depositPageComps/ERC721/NewArch/NewArchERC721";
-import { convertIpfsToUrl } from "../../src/utils/globalFunctions";
+import {
+  convertFromWeiGovernance,
+  convertIpfsToUrl,
+} from "../../src/utils/globalFunctions";
 import { subgraphQuery } from "../../src/utils/subgraphs";
 import {
   QUERY_ALL_MEMBERS,
@@ -46,6 +49,7 @@ const Join = () => {
   const [isTokenGated, setIsTokenGated] = useState(false);
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [remainingClaimAmount, setRemainingClaimAmount] = useState();
   const [{ wallet }] = useConnectWallet();
   const router = useRouter();
   const { jid: daoAddress } = router.query;
@@ -222,10 +226,23 @@ const Join = () => {
     try {
       setLoading(true);
       const fetchData = async () => {
-        if (daoAddress) {
+        if (daoAddress && daoDetails) {
           const data = await subgraphQuery(
             SUBGRAPH_URL,
             QUERY_ALL_MEMBERS(daoAddress),
+          );
+
+          const userDepositAmount = data?.users.find(
+            (user) => user.userAddress === wallet.accounts[0].address,
+          )?.depositAmount;
+
+          setRemainingClaimAmount(
+            Number(
+              convertFromWeiGovernance(
+                daoDetails.maxDeposit - userDepositAmount,
+                6,
+              ),
+            ),
           );
           setMembers(data?.users);
         }
@@ -236,7 +253,7 @@ const Join = () => {
       console.log(error);
       setLoading(false);
     }
-  }, [SUBGRAPH_URL, daoAddress]);
+  }, [SUBGRAPH_URL, daoAddress, daoDetails]);
 
   return (
     <Layout2>
@@ -247,6 +264,7 @@ const Join = () => {
           erc20DaoAddress={daoAddress}
           daoDetails={daoDetails}
           members={members}
+          remainingClaimAmount={remainingClaimAmount}
         />
       ) : TOKEN_TYPE === "erc721" ? (
         <NewArchERC721
