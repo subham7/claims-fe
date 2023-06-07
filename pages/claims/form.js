@@ -10,7 +10,10 @@ import * as yup from "yup";
 import { getAssetsByDaoAddress } from "../../src/api/assets";
 import { convertToWeiGovernance } from "../../src/utils/globalFunctions";
 import { createClaim } from "../../src/api/claims";
-import { CLAIM_FACTORY_ADDRESS_GOERLI } from "../../src/api";
+import {
+  CLAIM_FACTORY_ADDRESS_GOERLI,
+  CLAIM_FACTORY_ADDRESS_POLYGON,
+} from "../../src/api";
 import { MerkleTree } from "merkletreejs";
 import keccak256 from "keccak256";
 import { useConnectWallet } from "@web3-onboard/react";
@@ -141,7 +144,10 @@ const Form = () => {
     }),
 
     onSubmit: (values) => {
-      const claimsContractAddress = CLAIM_FACTORY_ADDRESS_GOERLI;
+      const claimsContractAddress =
+        networkId === "0x89"
+          ? CLAIM_FACTORY_ADDRESS_POLYGON
+          : CLAIM_FACTORY_ADDRESS_GOERLI;
 
       const data = {
         description: values.description,

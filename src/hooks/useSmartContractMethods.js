@@ -280,7 +280,7 @@ const useSmartContractMethods = () => {
   const encode = async (address, amount) => {
     const claimContract = new web3Call.eth.Contract(
       ClaimContractABI.abi,
-      "0x7749cefB98d7e55D63b4AD8300088B01b5B1C391",
+      "0xE25f57C5Ec956757D19169563E0caB6e7670E2EB",
     );
     return await claimContract.methods.encode(address, amount).call();
   };
