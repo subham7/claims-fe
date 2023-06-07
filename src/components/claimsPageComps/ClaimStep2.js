@@ -150,7 +150,7 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
     csvArr.map(async (data) => {
       const res = await encode(
         data.address,
-        convertToWeiGovernance(data.amount, decimals).toString(),
+        convertToWeiGovernance(data.amount, decimals),
       );
       encodedListOfLeaves.push(keccak256(res));
     });
