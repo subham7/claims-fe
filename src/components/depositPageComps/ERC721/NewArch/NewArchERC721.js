@@ -221,7 +221,7 @@ const NewArchERC721 = ({
                               text: `Just joined ${daoDetails.daoName} Station on `,
                               via: "stationxnetwork",
                             }}
-                            url={`https://test.stationx.network/join/${erc721DaoAddress}`}
+                            url={`${window.location.origin}/join/${erc721DaoAddress}`}
                           />
                         </div>
                       </div>

@@ -158,7 +158,7 @@ const NewArchERC20 = ({
       tokenInput: 0,
     },
     validationSchema:
-      remainingClaimAmount !== undefined ? remainingValidation : minValidation,
+      remainingClaimAmount === undefined ? minValidation : remainingValidation,
     onSubmit: async (values) => {
       try {
         setLoading(true);
@@ -267,7 +267,7 @@ const NewArchERC20 = ({
                             text: `Just joined ${daoDetails.daoName} Station on `,
                             via: "stationxnetwork",
                           }}
-                          //   url={`https://test.stationx.network/join/${daoAddress}`}
+                          url={`${window.location.origin}/join/${erc20DaoAddress}`}
                         />
                       </div>
                     </div>

@@ -20,7 +20,7 @@ import { styled } from "@mui/material/styles";
 import Fade from "@mui/material/Fade";
 import Link from "next/link";
 import Image from "next/image";
-import { HiDocumentDuplicate } from "react-icons/hi";
+// import { HiDocumentDuplicate } from "react-icons/hi";
 
 const useStyles = makeStyles({
   listItemIcon: {
@@ -367,7 +367,7 @@ const Sidebar = (props) => {
             </ListItemButton>
           </BootstrapTooltip>
 
-          <BootstrapTooltip title="Documents" placement="left">
+          {/* <BootstrapTooltip title="Documents" placement="left">
             <ListItemButton
               component="a"
               onClick={(e) => {
@@ -384,7 +384,7 @@ const Sidebar = (props) => {
                 <HiDocumentDuplicate size={30} />
               </ListItemIcon>
             </ListItemButton>
-          </BootstrapTooltip>
+          </BootstrapTooltip> */}
         </List>
       </Drawer>
     </Box>
