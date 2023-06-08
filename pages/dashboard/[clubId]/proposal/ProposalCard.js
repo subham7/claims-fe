@@ -98,8 +98,6 @@ const ProposalCard = ({
     fetchAirDropContractDetails();
   }, [fetchAirDropContractDetails]);
 
-  console.log();
-
   return (
     <CardActionArea sx={{ borderRadius: "10px" }}>
       <Card className={classes.mainCard}>

@@ -82,7 +82,6 @@ const ClaimsEditModal = ({ onClose, claimAddress, walletAddress }) => {
 
     try {
       const res = await toggleClaim();
-      console.log(res);
 
       setLoading(false);
       setIsEnabled(!isEnabled);

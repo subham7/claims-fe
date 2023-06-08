@@ -256,11 +256,7 @@ const ClubFetch = (Component) => {
 
     const checkClubExist = useCallback(async () => {
       const clubData = await subgraphQuery(
-        networkId == "0x5"
-          ? SUBGRAPH_URL_GOERLI
-          : networkId == "0x89"
-          ? SUBGRAPH_URL_POLYGON
-          : "",
+        networkId == "0x89" ? SUBGRAPH_URL_POLYGON : "",
         QUERY_CLUB_DETAILS(daoAddress ? daoAddress : jid),
       );
 

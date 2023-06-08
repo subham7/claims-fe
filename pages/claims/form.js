@@ -270,7 +270,7 @@ const Form = () => {
                 networkId: networkId,
               });
 
-              createClaim(postData);
+              await createClaim(postData);
 
               setLoading(false);
 

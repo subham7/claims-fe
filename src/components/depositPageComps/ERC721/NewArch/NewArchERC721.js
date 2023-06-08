@@ -28,7 +28,6 @@ const NewArchERC721 = ({
   isTokenGated,
   isEligibleForTokenGating,
 }) => {
-  console.log(daoDetails);
   const [loading, setLoading] = useState(false);
   const [active, setActive] = useState(false);
   const [hasClaimed, setHasClaimed] = useState(false);

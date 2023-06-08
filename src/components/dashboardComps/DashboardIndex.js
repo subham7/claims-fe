@@ -864,7 +864,7 @@ const DashboardIndex = () => {
           </Grid>
         </Grid>
 
-        {WRONG_NETWORK && WRONG_NETWORK === false && wallet && (
+        {WRONG_NETWORK && WRONG_NETWORK === true && wallet && (
           <WrongNetworkModal />
         )}
 
