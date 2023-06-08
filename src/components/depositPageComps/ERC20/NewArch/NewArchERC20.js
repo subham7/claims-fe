@@ -200,13 +200,13 @@ const NewArchERC20 = ({
   });
 
   useEffect(() => {
-    if (daoDetails.depositTokenAddress && daoDetails.clubTokensMinted)
+    if (daoDetails.depositTokenAddress && daoDetails.clubTokensMinted && wallet)
       fetchTokenDetails();
-  }, [fetchTokenDetails, daoDetails]);
+  }, [fetchTokenDetails, daoDetails, wallet]);
 
   return (
     <>
-      {wallet !== null ? (
+      {wallet ? (
         <>
           <Grid
             container

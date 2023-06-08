@@ -10,7 +10,10 @@ import * as yup from "yup";
 import { getAssetsByDaoAddress } from "../../src/api/assets";
 import { convertToWeiGovernance } from "../../src/utils/globalFunctions";
 import { createClaim } from "../../src/api/claims";
-import { CLAIM_FACTORY_ADDRESS_GOERLI } from "../../src/api";
+import {
+  CLAIM_FACTORY_ADDRESS_GOERLI,
+  CLAIM_FACTORY_ADDRESS_POLYGON,
+} from "../../src/api";
 import { MerkleTree } from "merkletreejs";
 import keccak256 from "keccak256";
 import { useConnectWallet } from "@web3-onboard/react";
@@ -20,6 +23,7 @@ import useSmartContractMethods from "../../src/hooks/useSmartContractMethods";
 import useSmartContract from "../../src/hooks/useSmartContract";
 import WrongNetworkModal from "../../src/components/modals/WrongNetworkModal";
 import Layout1 from "../../src/components/layouts/layout1";
+import Image from "next/image";
 
 const steps = ["Step1", "Step2"];
 
@@ -141,7 +145,10 @@ const Form = () => {
     }),
 
     onSubmit: (values) => {
-      const claimsContractAddress = CLAIM_FACTORY_ADDRESS_GOERLI;
+      const claimsContractAddress =
+        networkId === "0x89"
+          ? CLAIM_FACTORY_ADDRESS_POLYGON
+          : CLAIM_FACTORY_ADDRESS_GOERLI;
 
       const data = {
         description: values.description,
@@ -421,6 +428,16 @@ const Form = () => {
 
   return (
     <Layout1 showSidebar={false}>
+      <Image
+        src="/assets/images/monogram.png"
+        alt="StationX"
+        height={50}
+        width={50}
+        style={{ cursor: "pointer", position: "fixed" }}
+        onClick={() => {
+          router.push("/");
+        }}
+      />
       <div className={classes.container}>
         <Grid container>
           <Grid item xs={12} sx={{ padding: "20px" }}>
