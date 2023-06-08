@@ -5,14 +5,15 @@ import { BiPencil } from "react-icons/bi";
 import { AiFillCalendar } from "react-icons/ai";
 import { FaCoins } from "react-icons/fa";
 import { useRouter } from "next/router";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { addClaimContractData } from "../../redux/reducers/createClaim";
-import claimContractABI from "../../../src/abis/singleClaimContract.json";
+// import claimContractABI from "../../../src/abis/singleClaimContract.json";
 import Countdown from "react-countdown";
 import { Alert } from "@mui/material";
 import ClaimsEditModal from "./ClaimsEditModal";
 import { useConnectWallet } from "@web3-onboard/react";
-import { SmartContract } from "../../api/contract";
+// import { SmartContract } from "../../api/contract";
+import useSmartContractMethods from "../../hooks/useSmartContractMethods";
 
 const useStyles = makeStyles({
   container: {
@@ -112,6 +113,7 @@ const ClaimsCard = ({
   const [claimEnabled, setClaimEnabled] = useState(false);
 
   const [{ wallet }] = useConnectWallet();
+  const { claimSettings } = useSmartContractMethods();
   const walletAddress = wallet?.accounts[0].address;
 
   const startingTime = new Date(+startDate * 1000);
@@ -144,15 +146,15 @@ const ClaimsCard = ({
 
   const fetchContractDetails = async () => {
     try {
-      const claimSmartContract = new SmartContract(
-        claimContractABI,
-        claimContract,
-        walletAddress.toLowerCase(),
-        undefined,
-        undefined,
-      );
+      // const claimSmartContract = new SmartContract(
+      //   claimContractABI,
+      //   claimContract,
+      //   walletAddress.toLowerCase(),
+      //   undefined,
+      //   undefined,
+      // );
 
-      const desc = await claimSmartContract.claimSettings();
+      const desc = await claimSettings();
       setClaimEnabled(desc.isEnabled);
     } catch (error) {
       console.log(error);
@@ -188,10 +190,9 @@ const ClaimsCard = ({
     setShowClaimsEdit(true);
   };
 
-  const IS_CLAIM_ENABLED = useSelector((state) => {
-    return state.createClaim.claimEnabled;
-  });
-
+  // const IS_CLAIM_ENABLED = useSelector((state) => {
+  //   return state.createClaim.claimEnabled;
+  // });
 
   return (
     <div onClick={claimHandler} className={classes.container}>

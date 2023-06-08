@@ -250,9 +250,9 @@ const useSmartContractMethods = () => {
     });
   };
 
-  const claim = async (amount, merkleData, leaf) => {
+  const claim = async (amount, reciever, merkleProof, encodedData) => {
     return await claimContractSend.methods
-      .claim(amount, merkleData, leaf)
+      .claim(amount, reciever, merkleProof, encodedData)
       .send({
         from: walletAddress,
         gasPrice: await getIncreaseGasPrice(),
