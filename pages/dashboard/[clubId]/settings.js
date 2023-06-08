@@ -108,7 +108,6 @@ const Settings = () => {
       const clubTokensMinted = await getERC20TotalSupply();
 
       if (erc20Data && factoryData) {
-        debugger;
         setDaoDetails({
           daoName: erc20Data.DaoName,
           daoSymbol: erc20Data.DaoSymbol,
