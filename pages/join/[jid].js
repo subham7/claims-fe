@@ -237,15 +237,16 @@ const Join = () => {
           const userDepositAmount = data?.users.find(
             (user) => user.userAddress === wallet.accounts[0].address,
           )?.depositAmount;
-
-          setRemainingClaimAmount(
-            Number(
-              convertFromWeiGovernance(
-                daoDetails.maxDeposit - userDepositAmount,
-                6,
+          if (userDepositAmount !== undefined) {
+            setRemainingClaimAmount(
+              Number(
+                convertFromWeiGovernance(
+                  daoDetails.maxDeposit - userDepositAmount,
+                  6,
+                ),
               ),
-            ),
-          );
+            );
+          } else setRemainingClaimAmount();
           setMembers(data?.users);
         }
       };
