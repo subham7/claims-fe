@@ -87,8 +87,6 @@ const DashboardIndex = () => {
     return state.gnosis.wrongNetwork;
   });
 
-  console.log("WRONG_NETWORK", WRONG_NETWORK);
-
   const symbol = useSelector((state) => {
     return state.club.clubData.symbol;
   });
