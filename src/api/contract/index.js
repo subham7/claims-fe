@@ -368,7 +368,6 @@ export class SmartContract {
         value: "0",
       };
     } else {
-      // debugger;
       transaction = {
         //dao
         to: daoAddress,

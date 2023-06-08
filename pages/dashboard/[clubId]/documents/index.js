@@ -114,11 +114,6 @@ const Documents = () => {
     return state.legal.documentList;
   });
 
-  console.log(
-    "Docs lisft",
-    docsList ? docsList[docsList?.length - 1].updateDate : "",
-  );
-
   const { clubId: daoAddress } = router.query;
 
   const createDocHandler = () => {

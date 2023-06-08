@@ -444,7 +444,7 @@ const NewArchERC20 = ({
                     </Grid>
                     <Grid item mt={2}>
                       <Typography variant="p" className={classes.valuesStyle}>
-                        {daoDetails.isGovernance ? "By Voting" : "In-active"}
+                        {daoDetails.isGovernance ? "By Voting" : "Inactive"}
                       </Typography>
                     </Grid>
                   </Grid>
