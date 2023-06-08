@@ -16,17 +16,14 @@ import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import { AdditionalSettingsStyles } from "./AdditionalSettingsStyles";
 import { useRouter } from "next/router";
-import { SmartContract } from "../../api/contract";
-import FactoryContractABI from "../../abis/newArch/factoryContract.json";
 import DepositOwnerFee from "./modals/DepositOwnerFee";
 import DepositDeadline from "./modals/DepositDeadline";
+import useSmartContractMethods from "../../hooks/useSmartContractMethods";
 import { useSelector } from "react-redux";
 
 const AdditionalSettings = ({
   tokenType,
   daoDetails,
-  erc20TokenDetails,
-  walletAddress,
   fetchErc20ContractDetails,
   fetchErc721ContractDetails,
   isAdminUser,
@@ -34,6 +31,11 @@ const AdditionalSettings = ({
   const classes = AdditionalSettingsStyles();
   const router = useRouter();
   const { clubId: daoAddress } = router.query;
+
+  const NETWORK_HEX = useSelector((state) => {
+    return state.gnosis.networkHex;
+  });
+
   const [showDepositTimeModal, setShowDepositTimeModal] = useState(false);
   const [showOwnerFeesModal, setShowOwnerFeesModal] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -43,35 +45,12 @@ const AdditionalSettings = ({
 
   const startingTimeInNum = new Date(+daoDetails?.depositDeadline * 1000);
 
-  const GNOSIS_TRANSACTION_URL = useSelector((state) => {
-    return state.gnosis.transactionUrl;
-  });
+  const { updateDepositTime, updateOwnerFee } = useSmartContractMethods();
 
-  const FACTORY_CONTRACT_ADDRESS = useSelector((state) => {
-    return state.gnosis.factoryContractAddress;
-  });
-
-  const USDC_CONTRACT_ADDRESS = useSelector((state) => {
-    return state.gnosis.usdcContractAddress;
-  });
-
-  const updateOwnerFee = async (ownerFee) => {
+  const updateAdminFees = async (ownerFee) => {
     setLoading(true);
     try {
-      const factoryContract = new SmartContract(
-        FactoryContractABI,
-        FACTORY_CONTRACT_ADDRESS,
-        walletAddress,
-        USDC_CONTRACT_ADDRESS,
-        GNOSIS_TRANSACTION_URL,
-        true,
-      );
-
-      const res = await factoryContract.updateOwnerFee(
-        +ownerFee * 100,
-        daoAddress,
-      );
-
+      await updateOwnerFee(+ownerFee * 100, daoAddress);
       setLoading(false);
       showMessageHandler();
       setIsSuccessFull(true);
@@ -92,22 +71,10 @@ const AdditionalSettings = ({
     }
   };
 
-  const updateDepositTime = async (depositTime) => {
+  const updateDepositDeadline = async (depositTime) => {
     setLoading(true);
     try {
-      const factoryContract = new SmartContract(
-        FactoryContractABI,
-        FACTORY_CONTRACT_ADDRESS,
-        walletAddress,
-        USDC_CONTRACT_ADDRESS,
-        GNOSIS_TRANSACTION_URL,
-        true,
-      );
-
-      const res = await factoryContract.updateDepositTime(
-        +depositTime.toFixed(0).toString(),
-        daoAddress,
-      );
+      await updateDepositTime(+depositTime.toFixed(0).toString(), daoAddress);
       setLoading(false);
       showMessageHandler();
       setIsSuccessFull(true);
@@ -171,7 +138,13 @@ const AdditionalSettings = ({
                 color="primary"
                 onClick={() => {
                   window.open(
-                    `https://goerli.etherscan.io/address/${daoAddress}`,
+                    `https://${
+                      NETWORK_HEX === "0x5"
+                        ? "goerli.etherscan.io"
+                        : NETWORK_HEX === "0x89"
+                        ? "polygonscan.com"
+                        : ""
+                    }/address/${daoAddress}`,
                   );
                 }}>
                 <OpenInNewIcon className={classes.iconColor} />
@@ -288,7 +261,7 @@ const AdditionalSettings = ({
           onClose={() => {
             setShowOwnerFeesModal(false);
           }}
-          updateOwnerFeesHandler={updateOwnerFee}
+          updateOwnerFeesHandler={updateAdminFees}
           loading={loading}
         />
       )}
@@ -297,7 +270,7 @@ const AdditionalSettings = ({
           onClose={() => {
             setShowDepositTimeModal(false);
           }}
-          updateDepositTimeHandler={updateDepositTime}
+          updateDepositTimeHandler={updateDepositDeadline}
           loading={loading}
         />
       )}

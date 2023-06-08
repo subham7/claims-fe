@@ -8,6 +8,9 @@ import claimsBanner from "../../public/assets/images/claimsBanner.png";
 import ClaimsCard from "../../src/components/claimsPageComps/ClaimsCard";
 import { getClaimsByUserAddress } from "../../src/api/claims";
 import { useConnectWallet } from "@web3-onboard/react";
+import useSmartContract from "../../src/hooks/useSmartContract";
+import WrongNetworkModal from "../../src/components/modals/WrongNetworkModal";
+import Layout1 from "../../src/components/layouts/layout1";
 
 const useStyles = makeStyles({
   container: {
@@ -96,6 +99,7 @@ const Claims = () => {
   const classes = useStyles();
   const router = useRouter();
   const [claimData, setClaimData] = useState([]);
+  useSmartContract();
 
   const createClaimHandler = () => {
     router.push("/claims/form");
@@ -103,59 +107,79 @@ const Claims = () => {
 
   const [{ wallet }] = useConnectWallet();
   const walletAddress = wallet?.accounts[0].address;
+  const networkId = wallet?.chains[0].id;
 
   useEffect(() => {
     const getData = async () => {
-      const data = await getClaimsByUserAddress(walletAddress);
+      const data = await getClaimsByUserAddress(walletAddress, networkId);
       setClaimData(data.reverse());
     };
 
     getData();
-  }, [walletAddress]);
+  }, [walletAddress, networkId]);
 
   return (
-    <div className={classes.container}>
-      {/* Left Side */}
-      <div className={classes.leftDiv}>
-        <div className={classes.header}>
-          <p className={classes.title}>Claims</p>
-          <button onClick={createClaimHandler} className={classes.claimDoc}>
-            Create
-          </button>
+    <Layout1 showSidebar={false}>
+      <Image
+        src="/assets/images/monogram.png"
+        alt="StationX"
+        height={50}
+        width={50}
+        style={{ cursor: "pointer", position: "fixed" }}
+        onClick={() => {
+          router.push("/");
+        }}
+      />
+      <div className={classes.container}>
+        {/* Left Side */}
+        <div className={classes.leftDiv}>
+          <div className={classes.header}>
+            <p className={classes.title}>Claims</p>
+            <button onClick={createClaimHandler} className={classes.claimDoc}>
+              Create
+            </button>
+          </div>
+
+          {!claimData.length && (
+            <div className={classes.noClaim}>
+              <p className={classes.noClaim_heading}>No claims found</p>
+              <p className={classes.noClaim_para}>
+                Bulk distribute ERC20 tokens or NFTs by creating claim pages in
+                less than 60 seconds
+              </p>
+            </div>
+          )}
+          {/* No claims exist */}
+
+          {claimData.map((item, i) => (
+            <ClaimsCard
+              key={i}
+              i={claimData.length - i - 1}
+              description={item?.description}
+              airdropTokenSymbol={item?.airdropTokenSymbol}
+              totalAmount={item?.totalAmount}
+              startDate={item?.startDate}
+              endDate={item?.endDate}
+              updatedDate={item?.updateDate}
+              claimContract={item?.claimContract}
+              createdBy={item?.createdBy}
+            />
+          ))}
         </div>
 
-        {!claimData.length && (
-          <div className={classes.noClaim}>
-            <p className={classes.noClaim_heading}>No claims found</p>
-            <p className={classes.noClaim_para}>
-              Bulk distribute ERC20 tokens or NFTs by creating claim pages in
-              less than 60 seconds
-            </p>
-          </div>
-        )}
-        {/* No claims exist */}
-
-        {claimData.map((item, i) => (
-          <ClaimsCard
-            key={i}
-            i={claimData.length - i - 1}
-            description={item?.description}
-            airdropTokenSymbol={item?.airdropTokenSymbol}
-            totalAmount={item?.totalAmount}
-            startDate={item?.startDate}
-            endDate={item?.endDate}
-            updatedDate={item?.updateDate}
-            claimContract={item?.claimContract}
-            createdBy={item?.createdBy}
+        {/* Right Side */}
+        <div className={classes.rightDiv}>
+          <Image
+            src={claimsBanner}
+            alt="claimBanner"
+            height={250}
+            width={400}
           />
-        ))}
-      </div>
+        </div>
 
-      {/* Right Side */}
-      <div className={classes.rightDiv}>
-        <Image src={claimsBanner} alt="claimBanner" height={250} width={400} />
+        {networkId && networkId !== "0x89" && <WrongNetworkModal />}
       </div>
-    </div>
+    </Layout1>
   );
 };
 

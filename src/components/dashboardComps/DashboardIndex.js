@@ -27,16 +27,12 @@ import { useConnectWallet } from "@web3-onboard/react";
 import { useRouter } from "next/router";
 import { getAssetsByDaoAddress, getNFTsByDaoAddress } from "../../api/assets";
 import { getProposalByDaoAddress } from "../../api/proposal";
-import { SmartContract } from "../../api/contract";
 import { subgraphQuery } from "../../utils/subgraphs";
 import {
   QUERY_ALL_MEMBERS,
   QUERY_CLUB_DETAILS,
 } from "../../api/graphql/queries";
 import ClubFetch from "../../utils/clubFetch";
-import erc20DaoContractABI from "../../abis/newArch/erc20Dao.json";
-import erc721DaoContractABI from "../../abis/newArch/erc721Dao.json";
-import factoryContractABI from "../../abis/newArch/factoryContract.json";
 import {
   convertFromWeiGovernance,
   convertIpfsToUrl,
@@ -44,6 +40,8 @@ import {
 import { GiTwoCoins } from "react-icons/gi";
 import { IoColorPalette } from "react-icons/io5";
 import WrongNetworkModal from "../modals/WrongNetworkModal";
+import useSmartContractMethods from "../../hooks/useSmartContractMethods";
+// import useSmartContract from "../../hooks/useSmartContract";
 
 const DashboardIndex = () => {
   const clubData = useSelector((state) => {
@@ -63,7 +61,6 @@ const DashboardIndex = () => {
   const [depositLink, setDepositLink] = useState("");
   const [balanceOfUser, setBalanceOfUser] = useState(0);
   const [clubTokenMinted, setClubTokenMinted] = useState(0);
-  const [depositCloseTime, setDepositCloseTime] = useState("");
 
   const [{ wallet }] = useConnectWallet();
   const router = useRouter();
@@ -82,25 +79,14 @@ const DashboardIndex = () => {
     return state.gnosis.subgraphUrl;
   });
 
-  const CLUB_NETWORK_ID = useSelector((state) => {
-    return state.gnosis.clubNetworkId;
-  });
-
   const NETWORK_HEX = useSelector((state) => {
     return state.gnosis.networkHex;
-  });
-
-  const GNOSIS_TRANSACTION_URL = useSelector((state) => {
-    return state.gnosis.transactionUrl;
   });
 
   const WRONG_NETWORK = useSelector((state) => {
     return state.gnosis.wrongNetwork;
   });
 
-  const USDC_CONTRACT_ADDRESS = useSelector((state) => {
-    return state.gnosis.usdcContractAddress;
-  });
   const symbol = useSelector((state) => {
     return state.club.clubData.symbol;
   });
@@ -108,6 +94,18 @@ const DashboardIndex = () => {
   const tokenType = useSelector((state) => {
     return state.club.clubData.tokenType;
   });
+
+  const factoryData = useSelector((state) => {
+    return state.club.factoryData;
+  });
+
+  const {
+    getERC721Balance,
+    getERC721Symbol,
+    getNftOwnersCount,
+    getERC20Balance,
+    getERC20TotalSupply,
+  } = useSmartContractMethods();
 
   const walletAddress = wallet?.accounts[0].address;
 
@@ -213,48 +211,12 @@ const DashboardIndex = () => {
   useEffect(() => {
     try {
       if (daoAddress) {
-        const factoryContractData = async () => {
-          const factoryContract = new SmartContract(
-            factoryContractABI,
-            FACTORY_CONTRACT_ADDRESS,
-            walletAddress,
-            USDC_CONTRACT_ADDRESS,
-            GNOSIS_TRANSACTION_URL,
-          );
-
-          const factoryData = await factoryContract.getDAOdetails(daoAddress);
-          setDepositCloseTime(factoryData?.depositCloseTime);
-        };
-
-        factoryContractData();
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  }, [
-    FACTORY_CONTRACT_ADDRESS,
-    GNOSIS_TRANSACTION_URL,
-    USDC_CONTRACT_ADDRESS,
-    daoAddress,
-    walletAddress,
-  ]);
-
-  useEffect(() => {
-    try {
-      if (daoAddress) {
         const loadNftContractData = async () => {
           try {
-            const nftContract = new SmartContract(
-              erc721DaoContractABI,
-              daoAddress,
-              walletAddress,
-              USDC_CONTRACT_ADDRESS,
-              GNOSIS_TRANSACTION_URL,
-            );
-            const nftBalance = await nftContract.nftBalance(walletAddress);
+            const nftBalance = await getERC721Balance();
             setBalanceOfUser(nftBalance);
-            const symbol = await nftContract.symbol();
-            const nftMinted = await nftContract.nftOwnersCount();
+            const symbol = await getERC721Symbol(daoAddress);
+            const nftMinted = await getNftOwnersCount();
             setClubTokenMinted(nftMinted);
           } catch (error) {
             console.log(error);
@@ -263,17 +225,10 @@ const DashboardIndex = () => {
 
         const loadSmartContractData = async () => {
           try {
-            const erc20DaoContract = new SmartContract(
-              erc20DaoContractABI,
-              daoAddress,
-              walletAddress,
-              USDC_CONTRACT_ADDRESS,
-              GNOSIS_TRANSACTION_URL,
-            );
-            const balance = await erc20DaoContract.nftBalance(walletAddress);
+            const balance = await getERC20Balance();
             //KEEP THIS CONSOLE
             setBalanceOfUser(balance);
-            const clubTokensMinted = await erc20DaoContract.totalSupply();
+            const clubTokensMinted = await getERC20TotalSupply();
             //KEEP THIS CONSOLE
             setClubTokenMinted(clubTokensMinted);
 
@@ -303,8 +258,11 @@ const DashboardIndex = () => {
     daoAddress,
     clubData.tokenType,
     walletAddress,
-    USDC_CONTRACT_ADDRESS,
-    GNOSIS_TRANSACTION_URL,
+    getERC721Balance,
+    getERC721Symbol,
+    getNftOwnersCount,
+    getERC20Balance,
+    getERC20TotalSupply,
   ]);
 
   return (
@@ -545,7 +503,9 @@ const DashboardIndex = () => {
                     {tokenDetails.tokenPriceList ? (
                       tokenDetails.tokenPriceList.length ? (
                         //  if the tokens length is > 0 and if the token[0] (by default it will be Ether) is not equal to 0, then show the table
-                        <TableContainer component={Paper}>
+                        <TableContainer
+                          component={Paper}
+                          sx={{ overflowX: "hidden" }}>
                           <Table
                             sx={{ minWidth: 809 }}
                             aria-label="simple table">
@@ -707,8 +667,8 @@ const DashboardIndex = () => {
                       mr={4}
                       xs
                       sx={{ display: "flex", justifyContent: "flex-end" }}>
-                      {depositCloseTime ? (
-                        depositCloseTime * 1000 > Date.now() ? (
+                      {factoryData?.depositCloseTime ? (
+                        factoryData?.depositCloseTime * 1000 > Date.now() ? (
                           <Grid
                             container
                             sx={{
@@ -904,7 +864,9 @@ const DashboardIndex = () => {
           </Grid>
         </Grid>
 
-        {WRONG_NETWORK && <WrongNetworkModal chainId={CLUB_NETWORK_ID} />}
+        {WRONG_NETWORK && WRONG_NETWORK === true && wallet && (
+          <WrongNetworkModal />
+        )}
 
         <Snackbar
           //   open={openSnackBar}

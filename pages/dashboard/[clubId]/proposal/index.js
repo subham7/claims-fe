@@ -23,13 +23,14 @@ import { makeStyles } from "@mui/styles";
 import { setProposalList } from "../../../../src/redux/reducers/proposal";
 import WrongNetworkModal from "../../../../src/components/modals/WrongNetworkModal";
 import Web3 from "web3";
-import { RPC_URL } from "../../../../src/api";
 import { Web3Adapter } from "@safe-global/protocol-kit";
 import SafeApiKit from "@safe-global/api-kit";
 import {
   getProposalByDaoAddress,
   getProposalTxHash,
 } from "../../../../src/api/proposal";
+import { web3InstanceCustomRPC } from "../../../../src/utils/helper";
+import { useConnectWallet } from "@web3-onboard/react";
 
 const useStyles = makeStyles({
   noProposal_heading: {
@@ -58,6 +59,7 @@ const Proposal = () => {
   const dispatch = useDispatch();
   const { clubId: daoAddress } = router.query;
   const classes = useStyles();
+  const [{ wallet }] = useConnectWallet();
 
   const [selectedListItem, setSelectedListItem] = useState(
     proposalDisplayOptions[0].type,
@@ -76,10 +78,6 @@ const Proposal = () => {
 
   const gnosisAddress = useSelector((state) => {
     return state.club.clubData.gnosisAddress;
-  });
-
-  const CLUB_NETWORK_ID = useSelector((state) => {
-    return state.gnosis.clubNetworkId;
   });
 
   const WRONG_NETWORK = useSelector((state) => {
@@ -156,7 +154,8 @@ const Proposal = () => {
   };
 
   const getSafeService = useCallback(async () => {
-    const web3 = new Web3(RPC_URL);
+    const web3 = await web3InstanceCustomRPC();
+
     const ethAdapter = new Web3Adapter({
       web3,
       signerAddress: localStorage.getItem("wallet"),
@@ -353,7 +352,7 @@ const Proposal = () => {
         </Grid>
       </Grid>
 
-      {WRONG_NETWORK && <WrongNetworkModal chainId={CLUB_NETWORK_ID} />}
+      {WRONG_NETWORK && wallet && <WrongNetworkModal />}
 
       <CreateProposalDialog
         open={open}

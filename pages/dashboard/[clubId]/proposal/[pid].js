@@ -39,7 +39,7 @@ import ReactHtmlParser from "react-html-parser";
 import Erc721Dao from "../../../../src/abis/newArch/erc721Dao.json";
 import Erc20Dao from "../../../../src/abis/newArch/erc20Dao.json";
 import FactoryContractABI from "../../../../src/abis/newArch/factoryContract.json";
-import { SmartContract } from "../../../../src/api/contract";
+// import { SmartContract } from "../../../../src/api/contract";
 import { Interface } from "ethers";
 
 import Web3 from "web3";
@@ -56,7 +56,8 @@ import ProposalInfo from "../../../../src/components/proposalComps/ProposalInfo"
 import CurrentResults from "../../../../src/components/proposalComps/CurrentResults";
 import ProposalVotes from "../../../../src/components/proposalComps/ProposalVotes";
 import WrongNetworkModal from "../../../../src/components/modals/WrongNetworkModal";
-import { getSafeSdk } from "../../../../src/utils/helper";
+import { getSafeSdk, web3InstanceEthereum } from "../../../../src/utils/helper";
+import useSmartContractMethods from "../../../../src/hooks/useSmartContractMethods";
 
 const useStyles = makeStyles({
   clubAssets: {
@@ -237,10 +238,6 @@ const ProposalDetail = () => {
     return state.gnosis.networkHex;
   });
 
-  const USDC_CONTRACT_ADDRESS = useSelector((state) => {
-    return state.gnosis.usdcContractAddress;
-  });
-
   const clubData = useSelector((state) => {
     return state.club.clubData;
   });
@@ -281,7 +278,6 @@ const ProposalDetail = () => {
   const [message, setMessage] = useState("");
   const [failed, setFailed] = useState(false);
   const [fetched, setFetched] = useState(false);
-  const [daoDetails, setDaoDetails] = useState();
   const [members, setMembers] = useState([]);
 
   const GNOSIS_TRANSACTION_URL = useSelector((state) => {
@@ -300,29 +296,35 @@ const ProposalDetail = () => {
     return state.gnosis.actionContractAddress;
   });
 
-  const CLUB_NETWORK_ID = useSelector((state) => {
-    return state.gnosis.clubNetworkId;
+  const factoryData = useSelector((state) => {
+    return state.club.factoryData;
   });
 
+  const {
+    getNftBalance,
+    getERC20TotalSupply,
+    getNftOwnersCount,
+    updateProposalAndExecution,
+  } = useSmartContractMethods();
+
   const getSafeService = useCallback(async () => {
-    const web3 = new Web3(window.ethereum);
+    const web3 = await web3InstanceEthereum();
     const ethAdapter = new Web3Adapter({
       web3,
-      signerAddress: walletAddress,
+      signerAddress: Web3.utils.toChecksumAddress(walletAddress),
     });
     const safeService = new SafeApiKit({
       txServiceUrl: GNOSIS_TRANSACTION_URL,
       ethAdapter,
     });
-    // const safeService = new SafeServiceClient({
-    //   txServiceUrl: GNOSIS_TRANSACTION_URL,
-    //   ethAdapter,
-    // });
     return safeService;
   }, [GNOSIS_TRANSACTION_URL, walletAddress]);
 
   const isOwner = useCallback(async () => {
-    const safeSdk = await getSafeSdk(gnosisAddress, walletAddress);
+    const safeSdk = await getSafeSdk(
+      Web3.utils.toChecksumAddress(gnosisAddress),
+      Web3.utils.toChecksumAddress(walletAddress),
+    );
     const owners = await safeSdk.getOwners();
 
     const ownerAddressesArray = owners.map((value) =>
@@ -427,14 +429,6 @@ const ProposalDetail = () => {
   const executeFunction = async (proposalStatus) => {
     setLoaderOpen(true);
 
-    const updateProposal = new SmartContract(
-      clubData?.tokenType === "erc20" ? Erc20Dao : Erc721Dao,
-      daoAddress,
-      undefined,
-      USDC_CONTRACT_ADDRESS,
-      GNOSIS_TRANSACTION_URL,
-    );
-
     let data;
     let approvalData;
     let ABI;
@@ -478,15 +472,15 @@ const ProposalDetail = () => {
           100;
         airDropAmountArray = await Promise.all(
           membersArray.map(async (member) => {
-            const balance = await updateProposal.nftBalance(
+            const balance = await getNftBalance(
               Web3.utils.toChecksumAddress(member),
             );
 
             let clubTokensMinted;
             if (clubData.tokenType === "erc20") {
-              clubTokensMinted = await updateProposal.totalSupply();
+              clubTokensMinted = await getERC20TotalSupply();
             } else {
-              clubTokensMinted = await updateProposal.nftOwnersCount();
+              clubTokensMinted = await getNftOwnersCount();
             }
 
             return (
@@ -505,15 +499,15 @@ const ProposalDetail = () => {
       } else {
         airDropAmountArray = await Promise.all(
           membersArray.map(async (member) => {
-            const balance = await updateProposal.nftBalance(
+            const balance = await getNftBalance(
               Web3.utils.toChecksumAddress(member),
             );
 
             let clubTokensMinted;
             if (clubData.tokenType === "erc20") {
-              clubTokensMinted = await updateProposal.totalSupply();
+              clubTokensMinted = await getERC20TotalSupply();
             } else {
-              clubTokensMinted = await updateProposal.nftOwnersCount();
+              clubTokensMinted = await getNftOwnersCount();
             }
 
             return (
@@ -564,10 +558,11 @@ const ProposalDetail = () => {
     if (proposalData.commands[0].executionId === 3) {
       let iface = new Interface(ABI);
 
+      debugger;
       data = iface.encodeFunctionData("updateDistributionAmount", [
         convertToWeiGovernance(
           convertToWeiGovernance(proposalData.commands[0].totalDeposits, 6) /
-            daoDetails.pricePerToken,
+            factoryData?.pricePerToken,
           18,
         ),
         daoAddress,
@@ -588,16 +583,7 @@ const ProposalDetail = () => {
       ]);
     }
 
-    const updateProposalExecute = new SmartContract(
-      clubData?.tokenType === "erc20" ? Erc20Dao : Erc721Dao,
-      daoAddress,
-      undefined,
-      USDC_CONTRACT_ADDRESS,
-      GNOSIS_TRANSACTION_URL,
-      true,
-    );
-
-    const response = updateProposalExecute.updateProposalAndExecution(
+    const response = updateProposalAndExecution(
       data,
       approvalData,
       daoAddress,
@@ -614,6 +600,7 @@ const ProposalDetail = () => {
       proposalData.commands[0].executionId === 3
         ? FACTORY_CONTRACT_ADDRESS
         : "",
+      GNOSIS_TRANSACTION_URL,
     );
     if (proposalStatus === "executed") {
       // fetchData()
@@ -679,33 +666,6 @@ const ProposalDetail = () => {
       isOwner();
     }
   }, [pid]);
-
-  useEffect(() => {
-    const fetchFactoryContractDetails = async () => {
-      try {
-        const factoryContract = new SmartContract(
-          FactoryContractABI,
-          FACTORY_CONTRACT_ADDRESS,
-          walletAddress,
-          USDC_CONTRACT_ADDRESS,
-          GNOSIS_TRANSACTION_URL,
-        );
-
-        const factoryData = await factoryContract.getDAOdetails(daoAddress);
-        setDaoDetails(factoryData);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
-    fetchFactoryContractDetails();
-  }, [
-    daoAddress,
-    FACTORY_CONTRACT_ADDRESS,
-    GNOSIS_TRANSACTION_URL,
-    USDC_CONTRACT_ADDRESS,
-    walletAddress,
-  ]);
 
   if (!wallet && proposalData === null) {
     return <>loading</>;
@@ -807,8 +767,7 @@ const ProposalDetail = () => {
               <ProposalExecutionInfo
                 proposalData={proposalData}
                 fetched={fetched}
-                USDC_CONTRACT_ADDRESS={USDC_CONTRACT_ADDRESS}
-                daoDetails={daoDetails}
+                daoDetails={factoryData}
               />
 
               {proposalData?.type === "action" && (
@@ -1244,7 +1203,7 @@ const ProposalDetail = () => {
           </Grid>
         </Grid>
 
-        {WRONG_NETWORK && <WrongNetworkModal chainId={CLUB_NETWORK_ID} />}
+        {WRONG_NETWORK && wallet && <WrongNetworkModal />}
 
         <Snackbar
           open={openSnackBar}

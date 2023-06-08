@@ -2,8 +2,6 @@ import { React, useEffect } from "react";
 import { AppBar, Box, Toolbar, Button } from "@mui/material";
 import Image from "next/image";
 import { makeStyles } from "@mui/styles";
-import Web3 from "web3";
-
 import { useDispatch } from "react-redux";
 import { useRouter } from "next/router";
 import { useConnectWallet } from "@web3-onboard/react";
@@ -11,7 +9,7 @@ import { addWalletAddress } from "../redux/reducers/user";
 
 const useStyles = makeStyles({
   image: {
-    height: "40px",
+    height: "50px",
     width: "auto !important",
     zIndex: "99999 !important",
     position: "absolute",
@@ -28,13 +26,6 @@ export default function Navbar3(props) {
 
   const walletAddress = wallet?.accounts[0].address;
 
-  if (wallet) {
-    if (window.ethereum) {
-      window.web3 = new Web3(window.ethereum);
-    } else if (window.web3) {
-      window.web3 = new Web3(window.web3.currentProvider);
-    }
-  }
   useEffect(() => {
     if (wallet) {
       dispatch(addWalletAddress(wallet ? walletAddress : null));
@@ -61,8 +52,8 @@ export default function Navbar3(props) {
             {/* <Link href={"/"}> */}
             <Image
               src="/assets/images/monogram.png"
-              height="50"
-              width="50"
+              height="60"
+              width="60"
               className={classes.image}
               alt="monogram"
               onClick={() => router.push(`/`)}

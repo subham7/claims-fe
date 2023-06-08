@@ -4,16 +4,14 @@ import { TokenGatingStyle } from "./TokenGatingStyles";
 import { MdEdit } from "react-icons/md";
 import TokenGatingModal from "./TokenGatingModal";
 import { useSelector } from "react-redux";
-import FactoryContractABI from "../../abis/newArch/factoryContract.json";
-import ERC20ABI from "../../abis/usdcTokenContract.json";
 import SingleToken from "./SingleToken";
-import { SmartContract } from "../../api/contract";
 import { useConnectWallet } from "@web3-onboard/react";
 import { useRouter } from "next/router";
 import {
   convertFromWeiGovernance,
   convertToWeiGovernance,
 } from "../../utils/globalFunctions";
+import useSmartContractMethods from "../../hooks/useSmartContractMethods";
 
 const TokenGating = () => {
   const [showTokenGatingModal, setShowTokenGatingModal] = useState(false);
@@ -44,10 +42,6 @@ const TokenGating = () => {
     return state.gnosis.adminUser;
   });
 
-  const FACTORY_CONTRACT_ADDRESS = useSelector((state) => {
-    return state.gnosis.factoryContractAddress;
-  });
-
   const router = useRouter();
   const classes = TokenGatingStyle();
   const { clubId: daoAddress } = router.query;
@@ -62,6 +56,13 @@ const TokenGating = () => {
     return state.gnosis.usdcContractAddress;
   });
 
+  const {
+    getTokenGatingDetails,
+    setupTokenGating,
+    getTokenSymbol,
+    getDecimals,
+  } = useSmartContractMethods();
+
   const addTokensHandler = () => {
     setShowTokenGatingModal(true);
   };
@@ -73,16 +74,7 @@ const TokenGating = () => {
   const tokenGatingHandler = async () => {
     try {
       setLoading(true);
-      const factoryContract = new SmartContract(
-        FactoryContractABI,
-        FACTORY_CONTRACT_ADDRESS,
-        walletAddress,
-        USDC_CONTRACT_ADDRESS,
-        GNOSIS_TRANSACTION_URL,
-        true,
-      );
-
-      const res = await factoryContract.setupTokenGating(
+      await setupTokenGating(
         tokensList[0].tokenAddress,
         tokensList[1]?.tokenAddress
           ? tokensList[1]?.tokenAddress
@@ -126,17 +118,7 @@ const TokenGating = () => {
   const fetchTokenGatingDetials = useCallback(async () => {
     try {
       setLoading(true);
-      const factoryContract = new SmartContract(
-        FactoryContractABI,
-        FACTORY_CONTRACT_ADDRESS,
-        walletAddress,
-        USDC_CONTRACT_ADDRESS,
-        GNOSIS_TRANSACTION_URL,
-      );
-
-      const tokenGatingDetails = await factoryContract.getTokenGatingDetails(
-        daoAddress,
-      );
+      const tokenGatingDetails = await getTokenGatingDetails(daoAddress);
       setFetchedDetails({
         tokenA: tokenGatingDetails[0]?.tokenA,
         tokenB: tokenGatingDetails[0]?.tokenB,
@@ -146,26 +128,10 @@ const TokenGating = () => {
         comparator: tokenGatingDetails[0]?.comparator,
       });
 
-      const tokenAContract = new SmartContract(
-        ERC20ABI,
-        tokenGatingDetails[0].tokenA,
-        walletAddress,
-        USDC_CONTRACT_ADDRESS,
-        GNOSIS_TRANSACTION_URL,
-      );
-
-      const tokenBContract = new SmartContract(
-        ERC20ABI,
-        tokenGatingDetails[0].tokenB,
-        walletAddress,
-        USDC_CONTRACT_ADDRESS,
-        GNOSIS_TRANSACTION_URL,
-      );
-
-      const tokenASymbol = await tokenAContract.symbol();
-      const tokenBSymbol = await tokenBContract.symbol();
-      const tokenADecimal = await tokenAContract.decimals();
-      const tokenBDecimal = await tokenBContract.decimals();
+      const tokenASymbol = await getTokenSymbol(tokenGatingDetails[0].tokenA);
+      const tokenBSymbol = await getTokenSymbol(tokenGatingDetails[0].tokenB);
+      const tokenADecimal = await getDecimals(tokenGatingDetails[0].tokenA);
+      const tokenBDecimal = await getDecimals(tokenGatingDetails[0].tokenB);
 
       setDisplayTokenDetails({
         tokenASymbol: tokenASymbol,
@@ -178,13 +144,7 @@ const TokenGating = () => {
       console.log(error);
       setLoading(false);
     }
-  }, [
-    FACTORY_CONTRACT_ADDRESS,
-    walletAddress,
-    USDC_CONTRACT_ADDRESS,
-    GNOSIS_TRANSACTION_URL,
-    daoAddress,
-  ]);
+  }, [daoAddress]);
 
   useEffect(() => {
     fetchTokenGatingDetials();

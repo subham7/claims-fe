@@ -2,11 +2,8 @@ import { Alert, Button, TextField, Typography } from "@mui/material";
 import { useFormik } from "formik";
 import React, { useState } from "react";
 import * as yup from "yup";
-import { SmartContract } from "../../api/contract";
-import ERC20ABI from "../../abis/usdcTokenContract.json";
-import { useConnectWallet } from "@web3-onboard/react";
 import { TokenGatingModalStyles } from "./TokenGatingModalStyles";
-import { useSelector } from "react-redux";
+import useSmartContractMethods from "../../hooks/useSmartContractMethods";
 
 const Backdrop = ({ onClick }) => {
   const classes = TokenGatingModalStyles();
@@ -16,17 +13,9 @@ const Backdrop = ({ onClick }) => {
 
 const TokenGatingModal = ({ closeModal, chooseTokens }) => {
   const [notValid, setNotValid] = useState(false);
-  const [{ wallet }] = useConnectWallet();
   const classes = TokenGatingModalStyles();
-  const walletAddress = wallet?.accounts[0]?.address;
 
-  const GNOSIS_TRANSACTION_URL = useSelector((state) => {
-    return state.gnosis.transactionUrl;
-  });
-
-  const USDC_CONTRACT_ADDRESS = useSelector((state) => {
-    return state.gnosis.usdcContractAddress;
-  });
+  const { getTokenSymbol, getDecimals } = useSmartContractMethods();
 
   const formik = useFormik({
     initialValues: {
@@ -47,17 +36,9 @@ const TokenGatingModal = ({ closeModal, chooseTokens }) => {
       if (values.address) {
         const checkTokenGating = async () => {
           try {
-            const erc20contract = new SmartContract(
-              ERC20ABI,
-              values.address,
-              walletAddress,
-              USDC_CONTRACT_ADDRESS,
-              GNOSIS_TRANSACTION_URL,
-            );
-
-            tokenSymbol = await erc20contract.obtainSymbol();
+            tokenSymbol = await getTokenSymbol(values.address);
             try {
-              tokenDecimal = await erc20contract.decimals();
+              tokenDecimal = await getDecimals(values.address);
             } catch (err) {
               console.log(err);
             }

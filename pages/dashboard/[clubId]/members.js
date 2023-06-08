@@ -83,10 +83,6 @@ const Test = () => {
     return state.gnosis.subgraphUrl;
   });
 
-  const CLUB_NETWORK_ID = useSelector((state) => {
-    return state.gnosis.clubNetworkId;
-  });
-
   const handleAddressClick = (event, address) => {
     event.preventDefault();
     window.open(
@@ -222,7 +218,7 @@ const Test = () => {
           </Grid>
         </div>
 
-        {WRONG_NETWORK && <WrongNetworkModal chainId={CLUB_NETWORK_ID} />}
+        {WRONG_NETWORK && wallet && <WrongNetworkModal />}
 
         <Backdrop
           sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}

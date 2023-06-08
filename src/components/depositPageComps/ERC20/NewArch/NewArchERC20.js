@@ -17,10 +17,7 @@ import {
 import { TwitterShareButton } from "react-twitter-embed";
 import { NewArchERC20Styles } from "./NewArchERC20Styles";
 import { useConnectWallet } from "@web3-onboard/react";
-import { SmartContract } from "../../../../api/contract";
-import factoryContractABI from "../../../../abis/newArch/factoryContract.json";
 import ProgressBar from "../../../progressbar";
-import erc20ABI from "../../../../abis/usdcTokenContract.json";
 import {
   convertFromWeiGovernance,
   convertToWeiGovernance,
@@ -31,6 +28,8 @@ import dayjs from "dayjs";
 import { useSelector } from "react-redux";
 import { useRouter } from "next/router";
 import WrongNetworkModal from "../../../modals/WrongNetworkModal";
+// import useSmartContract from "../../../../hooks/useSmartContract";
+import useSmartContractMethods from "../../../../hooks/useSmartContractMethods";
 
 const NewArchERC20 = ({
   daoDetails,
@@ -38,6 +37,7 @@ const NewArchERC20 = ({
   isTokenGated,
   isEligibleForTokenGating,
   members,
+  remainingClaimAmount,
 }) => {
   const [erc20TokenDetails, setErc20TokenDetails] = useState({
     tokenSymbol: "",
@@ -55,18 +55,6 @@ const NewArchERC20 = ({
 
   const FACTORY_CONTRACT_ADDRESS = useSelector((state) => {
     return state.gnosis.factoryContractAddress;
-  });
-
-  const GNOSIS_TRANSACTION_URL = useSelector((state) => {
-    return state.gnosis.transactionUrl;
-  });
-
-  const USDC_CONTRACT_ADDRESS = useSelector((state) => {
-    return state.gnosis.usdcContractAddress;
-  });
-
-  const CLUB_NETWORK_ID = useSelector((state) => {
-    return state.gnosis.clubNetworkId;
   });
 
   const WRONG_NETWORK = useSelector((state) => {
@@ -88,21 +76,22 @@ const NewArchERC20 = ({
     }, 4000);
   };
 
+  const {
+    getBalance,
+    getDecimals,
+    getTokenSymbol,
+    getTokenName,
+    approveDeposit,
+    buyGovernanceTokenERC20DAO,
+  } = useSmartContractMethods();
+
   const fetchTokenDetails = useCallback(async () => {
     setLoading(true);
     try {
-      const erc20Contract = new SmartContract(
-        erc20ABI,
-        daoDetails.depositTokenAddress,
-        walletAddress,
-        USDC_CONTRACT_ADDRESS,
-        GNOSIS_TRANSACTION_URL,
-      );
-
-      const balanceOfToken = await erc20Contract.balanceOf();
-      const decimals = await erc20Contract.decimals();
-      const symbol = await erc20Contract.obtainSymbol();
-      const name = await erc20Contract.name();
+      const balanceOfToken = await getBalance(daoDetails.depositTokenAddress);
+      const decimals = await getDecimals(daoDetails.depositTokenAddress);
+      const symbol = await getTokenSymbol(daoDetails.depositTokenAddress);
+      const name = await getTokenName(daoDetails.depositTokenAddress);
 
       const balanceConverted = convertFromWeiGovernance(
         balanceOfToken,
@@ -119,81 +108,75 @@ const NewArchERC20 = ({
       console.log(error);
       setLoading(false);
     }
-  }, [
-    GNOSIS_TRANSACTION_URL,
-    USDC_CONTRACT_ADDRESS,
-    daoDetails.depositTokenAddress,
-    walletAddress,
-  ]);
+  }, [daoDetails.depositTokenAddress]);
+
+  const minValidation = yup.object().shape({
+    tokenInput: yup
+      .number()
+      .required("Input is required")
+      .min(
+        Number(
+          convertFromWeiGovernance(
+            daoDetails.minDeposit,
+            erc20TokenDetails.tokenDecimal,
+          ),
+        ),
+        "Amount should be greater than min deposit",
+      )
+      .lessThan(
+        erc20TokenDetails.tokenBalance,
+        "Amount can't be greater than wallet balance",
+      )
+      .max(
+        Number(
+          convertFromWeiGovernance(
+            daoDetails.maxDeposit,
+            erc20TokenDetails.tokenDecimal,
+          ),
+        ),
+        "Amount should be less than max deposit",
+      ),
+  });
+
+  const remainingValidation = yup.object().shape({
+    tokenInput: yup
+      .number()
+      .required("Input is required")
+      .min(0.0000001, "Amount should be greater than min deposit")
+      .lessThan(
+        erc20TokenDetails.tokenBalance,
+        "Amount can't be greater than wallet balance",
+      )
+      .max(
+        remainingClaimAmount,
+        "Amount should be less than remaining deposit amount",
+      ),
+  });
 
   const formik = useFormik({
     initialValues: {
       tokenInput: 0,
     },
-    validationSchema: yup.object().shape({
-      tokenInput: yup
-        .number()
-        .required("Input is required")
-        .min(
-          Number(
-            convertFromWeiGovernance(
-              daoDetails.minDeposit,
-              erc20TokenDetails.tokenDecimal,
-            ),
-          ),
-          "Amount should be greater than min deposit",
-        )
-        .lessThan(
-          erc20TokenDetails.tokenBalance.toFixed(2),
-          "Amount should be less than your wallet balance",
-        )
-        .max(
-          Number(
-            convertFromWeiGovernance(
-              daoDetails.maxDeposit,
-              erc20TokenDetails.tokenDecimal,
-            ),
-          ),
-          "Amount should be less than max deposit",
-        ),
-    }),
+    validationSchema:
+      remainingClaimAmount === undefined ? minValidation : remainingValidation,
     onSubmit: async (values) => {
       try {
         setLoading(true);
-
-        const factoryContract = new SmartContract(
-          factoryContractABI,
-          FACTORY_CONTRACT_ADDRESS,
-          walletAddress,
-          USDC_CONTRACT_ADDRESS,
-          GNOSIS_TRANSACTION_URL,
-          true,
-        );
-
-        const erc20Contract = new SmartContract(
-          erc20ABI,
-          daoDetails.depositTokenAddress,
-          walletAddress,
-          USDC_CONTRACT_ADDRESS,
-          GNOSIS_TRANSACTION_URL,
-          true,
-        );
-
         const inputValue = convertToWeiGovernance(
           values.tokenInput,
           erc20TokenDetails.tokenDecimal,
         );
 
-        await erc20Contract.approveDeposit(
+        await approveDeposit(
+          daoDetails.depositTokenAddress,
           FACTORY_CONTRACT_ADDRESS,
           inputValue,
           erc20TokenDetails.tokenDecimal,
         );
 
-        const deposit = await factoryContract.buyGovernanceTokenERC20DAO(
+        await buyGovernanceTokenERC20DAO(
           walletAddress,
           erc20DaoAddress,
-          // daoDetails.depositTokenAddress,
           convertToWeiGovernance(
             (inputValue / +daoDetails.pricePerToken).toString(),
             18,
@@ -217,13 +200,13 @@ const NewArchERC20 = ({
   });
 
   useEffect(() => {
-    if (daoDetails.depositTokenAddress && daoDetails.clubTokensMinted)
+    if (daoDetails.depositTokenAddress && daoDetails.clubTokensMinted && wallet)
       fetchTokenDetails();
-  }, [fetchTokenDetails, daoDetails]);
+  }, [fetchTokenDetails, daoDetails, wallet]);
 
   return (
     <>
-      {wallet !== null ? (
+      {wallet ? (
         <>
           <Grid
             container
@@ -284,7 +267,7 @@ const NewArchERC20 = ({
                             text: `Just joined ${daoDetails.daoName} Station on `,
                             via: "stationxnetwork",
                           }}
-                          //   url={`https://test.stationx.network/join/${daoAddress}`}
+                          url={`${window.location.origin}/join/${erc20DaoAddress}`}
                         />
                       </div>
                     </div>
@@ -616,108 +599,111 @@ const NewArchERC20 = ({
             <Grid item md={5}>
               {walletAddress ? (
                 <Card className={classes.cardJoin}>
-                  <Grid container spacing={2}>
-                    <Grid
-                      item
-                      ml={2}
-                      mt={4}
-                      mb={4}
-                      className={classes.JoinText}>
-                      <Typography variant="h4">Join Station</Typography>
+                  <form onSubmit={formik.handleSubmit}>
+                    <Grid container spacing={2}>
+                      <Grid
+                        item
+                        ml={2}
+                        mt={4}
+                        mb={4}
+                        className={classes.JoinText}>
+                        <Typography variant="h4">Join Station</Typography>
+                      </Grid>
+                      <Divider />
+                      <Grid
+                        item
+                        ml={1}
+                        mt={4}
+                        mb={4}
+                        mr={2}
+                        xs
+                        sx={{ display: "flex", justifyContent: "flex-end" }}>
+                        <Typography variant="h6" className={classes.JoinText}>
+                          {daoDetails.depositDeadline
+                            ? remainingDays >= 0 && remainingTimeInSecs > 0
+                              ? `Closes in ${
+                                  remainingDays === 0
+                                    ? remainingTimeInHours
+                                    : remainingDays
+                                } ${remainingDays === 0 ? "hours" : "days"}`
+                              : "Joining Closed"
+                            : 0}
+                        </Typography>
+                      </Grid>
                     </Grid>
-                    <Divider />
-                    <Grid
-                      item
-                      ml={1}
-                      mt={4}
-                      mb={4}
-                      mr={2}
-                      xs
-                      sx={{ display: "flex", justifyContent: "flex-end" }}>
-                      <Typography variant="h6" className={classes.JoinText}>
-                        {daoDetails.depositDeadline
-                          ? remainingDays >= 0 && remainingTimeInSecs > 0
-                            ? `Closes in ${
-                                remainingDays === 0
-                                  ? remainingTimeInHours
-                                  : remainingDays
-                              } ${remainingDays === 0 ? "hours" : "days"}`
-                            : "Joining Closed"
-                          : 0}
-                      </Typography>
-                    </Grid>
-                  </Grid>
 
-                  <Divider variant="middle" sx={{ bgcolor: "#3B7AFD" }} />
-                  <Grid container spacing={2}>
-                    <Grid item md={12} mt={2}>
-                      <Card className={classes.cardSmall}>
-                        <Grid container spacing={2}>
-                          <Grid item ml={2} mt={2} mb={0}>
-                            <Typography className={classes.cardSmallFont}>
-                              {erc20TokenDetails.tokenSymbol}
-                            </Typography>
+                    <Divider variant="middle" sx={{ bgcolor: "#3B7AFD" }} />
+                    <Grid container spacing={2}>
+                      <Grid item md={12} mt={2}>
+                        <Card className={classes.cardSmall}>
+                          <Grid container spacing={2}>
+                            <Grid item ml={2} mt={2} mb={0}>
+                              <Typography className={classes.cardSmallFont}>
+                                {erc20TokenDetails.tokenSymbol}
+                              </Typography>
+                            </Grid>
+                            <Grid
+                              item
+                              ml={2}
+                              mt={2}
+                              mb={0}
+                              xs
+                              sx={{
+                                display: "flex",
+                                justifyContent: "flex-end",
+                              }}>
+                              <Typography className={classes.cardSmallFont}>
+                                Balance:{" "}
+                                {erc20TokenDetails.tokenBalance.toFixed(2)} $
+                                {erc20TokenDetails.tokenSymbol}
+                              </Typography>
+                            </Grid>
                           </Grid>
-                          <Grid
-                            item
-                            ml={2}
-                            mt={2}
-                            mb={0}
-                            xs
-                            sx={{
-                              display: "flex",
-                              justifyContent: "flex-end",
-                            }}>
-                            <Typography className={classes.cardSmallFont}>
-                              Balance:{" "}
-                              {erc20TokenDetails.tokenBalance.toFixed(2)} $
-                              {erc20TokenDetails.tokenSymbol}
-                            </Typography>
-                          </Grid>
-                        </Grid>
-                        <Grid container spacing={2}>
-                          <Grid item ml={2} mt={1} mb={2} p={1}>
-                            <FormControl
-                              style={{ background: "#fff" }}
-                              onSubmit={formik.handleSubmit}>
-                              <TextField
-                                variant="filled"
-                                className={classes.cardLargeFont}
-                                type="number"
-                                name="tokenInput"
-                                id="tokenInput"
-                                disabled={
-                                  remainingDays >= 0 &&
-                                  remainingTimeInSecs > 0 &&
-                                  isTokenGated
-                                    ? !isEligibleForTokenGating
-                                    : remainingDays >= 0 &&
-                                      remainingTimeInSecs > 0
-                                    ? false
-                                    : true
-                                }
-                                inputProps={{
-                                  style: {
-                                    fontSize: "2em",
-                                    background: "#fff",
-                                    color: "#000",
-                                  },
-                                }}
-                                InputLabelProps={{ style: { fontSize: "1em" } }}
-                                onChange={formik.handleChange}
-                                value={formik.values.tokenInput}
-                                error={
-                                  formik.touched.tokenInput &&
-                                  Boolean(formik.errors.tokenInput)
-                                }
-                                helperText={
-                                  formik.touched.tokenInput &&
-                                  formik.errors.tokenInput
-                                }
-                              />
-                            </FormControl>
+                          <Grid container spacing={2}>
+                            <Grid item ml={2} mt={1} mb={2} p={1}>
+                              <FormControl
+                                style={{ background: "#fff" }}
+                                onSubmit={formik.handleSubmit}>
+                                <TextField
+                                  variant="filled"
+                                  className={classes.cardLargeFont}
+                                  type="number"
+                                  name="tokenInput"
+                                  id="tokenInput"
+                                  disabled={
+                                    remainingDays >= 0 &&
+                                    remainingTimeInSecs > 0 &&
+                                    isTokenGated
+                                      ? !isEligibleForTokenGating
+                                      : remainingDays >= 0 &&
+                                        remainingTimeInSecs > 0
+                                      ? false
+                                      : true
+                                  }
+                                  inputProps={{
+                                    style: {
+                                      fontSize: "2em",
+                                      background: "#fff",
+                                      color: "#000",
+                                    },
+                                  }}
+                                  InputLabelProps={{
+                                    style: { fontSize: "1em" },
+                                  }}
+                                  onChange={formik.handleChange}
+                                  value={formik.values.tokenInput}
+                                  error={
+                                    formik.touched.tokenInput &&
+                                    Boolean(formik.errors.tokenInput)
+                                  }
+                                  helperText={
+                                    formik.touched.tokenInput &&
+                                    formik.errors.tokenInput
+                                  }
+                                />
+                              </FormControl>
 
-                            {/* <Typography sx={{ color: "red" }}>
+                              {/* <Typography sx={{ color: "red" }}>
                               {depositAmount < minDeposit
                                 ? "Deposit amount should be greater than min deposit"
                                 : ""}
@@ -725,61 +711,119 @@ const NewArchERC20 = ({
                                 ? "Deposit amount should be less than max deposit"
                                 : ""}
                             </Typography> */}
-                          </Grid>
+                            </Grid>
 
-                          <Grid
-                            item
-                            ml={2}
-                            mt={1}
-                            mb={1}
-                            xs
-                            sx={{
-                              display: "flex",
-                              justifyContent: "flex-end",
-                            }}>
-                            <Button
-                              className={classes.maxTag}
-                              onClick={() => {
-                                formik.setFieldValue(
-                                  "tokenInput",
-                                  erc20TokenDetails.tokenBalance.toFixed(2),
-                                );
+                            <Grid
+                              item
+                              ml={2}
+                              mt={1}
+                              mb={1}
+                              xs
+                              sx={{
+                                display: "flex",
+                                justifyContent: "flex-end",
                               }}>
-                              Max
-                            </Button>
+                              <Button
+                                className={classes.maxTag}
+                                onClick={() => {
+                                  formik.setFieldValue(
+                                    "tokenInput",
+                                    remainingClaimAmount
+                                      ? remainingClaimAmount <
+                                        erc20TokenDetails.tokenBalance.toFixed(
+                                          2,
+                                        )
+                                        ? remainingClaimAmount
+                                        : erc20TokenDetails.tokenBalance.toFixed(
+                                            2,
+                                          )
+                                      : Number(
+                                          convertFromWeiGovernance(
+                                            daoDetails.maxDeposit,
+                                            erc20TokenDetails.tokenDecimal,
+                                          ),
+                                        ) <
+                                        erc20TokenDetails.tokenBalance.toFixed(
+                                          2,
+                                        )
+                                      ? Number(
+                                          convertFromWeiGovernance(
+                                            daoDetails.maxDeposit,
+                                            erc20TokenDetails.tokenDecimal,
+                                          ),
+                                        )
+                                      : erc20TokenDetails.tokenBalance.toFixed(
+                                          2,
+                                        ),
+                                  );
+                                }}>
+                                Max
+                              </Button>
+                            </Grid>
                           </Grid>
-                        </Grid>
-                      </Card>
+                        </Card>
+                      </Grid>
                     </Grid>
-                  </Grid>
-                  <Grid container spacing={2}>
-                    <Grid item md={12} mt={2}>
-                      <Card className={classes.cardWarning}>
-                        <Typography className={classes.JoinText}>
-                          Stations can have same names or symbols, please make
-                          sure to trust the sender for the link before
-                          depositing.
-                        </Typography>
-                      </Card>
+                    <Grid container spacing={2}>
+                      <Grid item md={12} mt={2}>
+                        <Card className={classes.cardWarning}>
+                          <Typography className={classes.JoinText}>
+                            Stations can have same names or symbols, please make
+                            sure to trust the sender for the link before
+                            depositing.
+                          </Typography>
+                        </Card>
+                      </Grid>
+                      <Grid
+                        item
+                        container
+                        ml={1}
+                        mt={1}
+                        mb={1}
+                        sx={{ display: "flex", flexDirection: "column" }}>
+                        <Button
+                          variant="primary"
+                          size="large"
+                          // onClick={formik.handleSubmit}
+                          type="submit"
+                          disabled={
+                            (remainingDays >= 0 &&
+                            remainingTimeInSecs > 0 &&
+                            isTokenGated
+                              ? !isEligibleForTokenGating
+                              : remainingDays >= 0 && remainingTimeInSecs > 0
+                              ? false
+                              : true) ||
+                            Number(
+                              convertFromWeiGovernance(
+                                daoDetails.totalSupply,
+                                6,
+                              ),
+                            ) <=
+                              Number(
+                                convertFromWeiGovernance(
+                                  daoDetails.clubTokensMinted,
+                                  daoDetails.decimals,
+                                ) *
+                                  convertFromWeiGovernance(
+                                    daoDetails.pricePerToken,
+                                    erc20TokenDetails.tokenDecimal,
+                                  ),
+                              ) ||
+                            remainingClaimAmount <= 0
+                          }>
+                          Deposit
+                        </Button>
+                        <div>
+                          {remainingClaimAmount <= 0 && (
+                            <p style={{ color: "#D87070" }}>
+                              You have reached maximum deposit limit!
+                            </p>
+                          )}
+                        </div>
+                      </Grid>
                     </Grid>
-                    <Grid item container ml={1} mt={1} mb={1}>
-                      <Button
-                        variant="primary"
-                        size="large"
-                        onClick={formik.handleSubmit}
-                        disabled={
-                          remainingDays >= 0 &&
-                          remainingTimeInSecs > 0 &&
-                          isTokenGated
-                            ? !isEligibleForTokenGating
-                            : remainingDays >= 0 && remainingTimeInSecs > 0
-                            ? false
-                            : true
-                        }>
-                        Deposit
-                      </Button>
-                    </Grid>
-                  </Grid>
+                  </form>
                 </Card>
               ) : (
                 <Card className={classes.cardJoin} height={"full"}>
@@ -921,7 +965,7 @@ const NewArchERC20 = ({
         </DialogContent>
       </Dialog> */}
 
-      {WRONG_NETWORK && <WrongNetworkModal chainId={CLUB_NETWORK_ID} />}
+      {WRONG_NETWORK && wallet && <WrongNetworkModal />}
 
       <Backdrop
         sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}

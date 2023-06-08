@@ -8,9 +8,8 @@ import {
 import { makeStyles } from "@mui/styles";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { SmartContract } from "../../api/contract";
-import claimContractABI from "../../../src/abis/singleClaimContract.json";
 import { useRouter } from "next/router";
+import useSmartContractMethods from "../../hooks/useSmartContractMethods";
 
 const useStyles = makeStyles({
   backdrop: {
@@ -75,20 +74,14 @@ const ClaimsEditModal = ({ onClose, claimAddress, walletAddress }) => {
     CLAIMS_ON !== null ? CLAIMS_ON : false,
   );
 
+  const { claimSettings, rollbackTokens, claimBalance, toggleClaim } =
+    useSmartContractMethods();
+
   const claimsToggleHandler = async (e) => {
     setLoading(true);
 
     try {
-      const claimContract = new SmartContract(
-        claimContractABI,
-        claimAddress,
-        walletAddress,
-        undefined,
-        undefined,
-      );
-
-      const res = await claimContract.toggleClaim();
-      console.log(res);
+      const res = await toggleClaim();
 
       setLoading(false);
       setIsEnabled(!isEnabled);
@@ -112,18 +105,8 @@ const ClaimsEditModal = ({ onClose, claimAddress, walletAddress }) => {
 
     try {
       setLoading(true);
-      const claimContract = new SmartContract(
-        claimContractABI,
-        claimAddress,
-        walletAddress,
-        undefined,
-        undefined,
-      );
-
-      const desc = await claimContract.claimSettings();
-
-      const claimBalance = await claimContract.claimBalance();
-      const res = await claimContract.rollbackTokens(claimBalance);
+      const balance = await claimBalance();
+      const res = await rollbackTokens(balance);
       console.log(res);
       setClaimed(true);
       setLoading(false);
@@ -136,20 +119,11 @@ const ClaimsEditModal = ({ onClose, claimAddress, walletAddress }) => {
   const fetchContractDetails = async () => {
     try {
       setLoading(true);
-      const claimContract = new SmartContract(
-        claimContractABI,
-        claimAddress,
-        walletAddress,
-        undefined,
-        undefined,
-      );
 
-      const desc = await claimContract.claimSettings();
+      const desc = await claimSettings();
       setIsEnabled(!desc.isEnabled);
-
-      const claimBalance = await claimContract.claimBalance();
-
-      if (claimBalance == 0) {
+      const balance = await claimBalance();
+      if (balance == 0) {
         setClaimed(true);
       }
 

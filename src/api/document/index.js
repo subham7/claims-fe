@@ -21,7 +21,6 @@ export const createDocument = async (jsonData) => {
 
 // get Documents by ClubID
 export const getDocumentsByClubId = async (clubId) => {
-  // return await axios.get(`${MAIN_API_URL}/club/${clubId}` )
   try {
     const res = await fetch(`${MAIN_API_URL}document/club/${clubId}`);
     const data = await res.json();

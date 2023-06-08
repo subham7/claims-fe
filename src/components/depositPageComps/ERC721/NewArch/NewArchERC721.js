@@ -12,18 +12,15 @@ import React, { useCallback, useEffect, useState } from "react";
 import { TwitterShareButton } from "react-twitter-embed";
 import { NewArchERC721Styles } from "./NewArchERC721Styles";
 import { useConnectWallet } from "@web3-onboard/react";
-import erc20ABI from "../../../../abis/usdcTokenContract.json";
-import erc721ABI from "../../../../abis/nft.json";
-
-import factoryContractABI from "../../../../abis/newArch/factoryContract.json";
 import { convertFromWeiGovernance } from "../../../../utils/globalFunctions";
-import { SmartContract } from "../../../../api/contract";
 import dayjs from "dayjs";
 import { useSelector } from "react-redux";
 import { useRouter } from "next/router";
 import WrongNetworkModal from "../../../modals/WrongNetworkModal";
 import RemoveIcon from "@mui/icons-material/Remove";
 import AddIcon from "@mui/icons-material/Add";
+// import useSmartContract from "../../../../hooks/useSmartContract";
+import useSmartContractMethods from "../../../../hooks/useSmartContractMethods";
 
 const NewArchERC721 = ({
   daoDetails,
@@ -40,6 +37,7 @@ const NewArchERC721 = ({
     tokenSymbol: "",
     tokenName: "",
     tokenDecimal: 0,
+    userBalance: 0,
   });
   const [count, setCount] = useState(1);
   const [balanceOfNft, setBalanceOfNft] = useState();
@@ -53,20 +51,8 @@ const NewArchERC721 = ({
     return state.gnosis.wrongNetwork;
   });
 
-  const CLUB_NETWORK_ID = useSelector((state) => {
-    return state.gnosis.clubNetworkId;
-  });
-
   const FACTORY_CONTRACT_ADDRESS = useSelector((state) => {
     return state.gnosis.factoryContractAddress;
-  });
-
-  const GNOSIS_TRANSACTION_URL = useSelector((state) => {
-    return state.gnosis.transactionUrl;
-  });
-
-  const USDC_CONTRACT_ADDRESS = useSelector((state) => {
-    return state.gnosis.usdcContractAddress;
   });
 
   const classes = NewArchERC721Styles();
@@ -85,25 +71,18 @@ const NewArchERC721 = ({
     }, 4000);
   };
 
+  const {
+    approveDeposit,
+    buyGovernanceTokenERC721DAO,
+    getDecimals,
+    getTokenSymbol,
+    getTokenName,
+    getBalance,
+  } = useSmartContractMethods();
+
   const fetchTokenDetails = useCallback(async () => {
     try {
-      const erc20Contract = new SmartContract(
-        erc20ABI,
-        daoDetails.depositTokenAddress,
-        walletAddress,
-        USDC_CONTRACT_ADDRESS,
-        GNOSIS_TRANSACTION_URL,
-      );
-
-      const erc721Contract = new SmartContract(
-        erc721ABI,
-        erc721DaoAddress,
-        walletAddress,
-        USDC_CONTRACT_ADDRESS,
-        GNOSIS_TRANSACTION_URL,
-      );
-
-      const balanceOfNft = await erc721Contract.balanceOf();
+      const balanceOfNft = await getBalance(erc721DaoAddress);
       setBalanceOfNft(balanceOfNft);
 
       if (+balanceOfNft >= +daoDetails?.maxTokensPerUser) {
@@ -111,26 +90,21 @@ const NewArchERC721 = ({
       } else {
         setHasClaimed(false);
       }
-      const decimals = await erc20Contract.decimals();
-      const symbol = await erc20Contract.obtainSymbol();
-      const name = await erc20Contract.name();
+      const decimals = await getDecimals(daoDetails.depositTokenAddress);
+      const symbol = await getTokenSymbol(daoDetails.depositTokenAddress);
+      const name = await getTokenSymbol(daoDetails.depositTokenAddress);
+      const userBalance = await getBalance(daoDetails.depositTokenAddress);
 
       setErc20TokenDetails({
         tokenSymbol: symbol,
         tokenName: name,
         tokenDecimal: decimals,
+        userBalance: convertFromWeiGovernance(userBalance, decimals),
       });
     } catch (error) {
       console.log(error);
     }
-  }, [
-    GNOSIS_TRANSACTION_URL,
-    USDC_CONTRACT_ADDRESS,
-    daoDetails.depositTokenAddress,
-    daoDetails.maxTokensPerUser,
-    erc721DaoAddress,
-    walletAddress,
-  ]);
+  }, [daoDetails.depositTokenAddress, daoDetails?.maxTokensPerUser]);
 
   useEffect(() => {
     if (day2 >= day1) {
@@ -143,26 +117,8 @@ const NewArchERC721 = ({
   const claimNFTHandler = async () => {
     try {
       setLoading(true);
-
-      const factoryContract = new SmartContract(
-        factoryContractABI,
-        FACTORY_CONTRACT_ADDRESS,
-        walletAddress,
-        USDC_CONTRACT_ADDRESS,
-        GNOSIS_TRANSACTION_URL,
-        true,
-      );
-
-      const erc20Contract = new SmartContract(
-        erc20ABI,
+      await approveDeposit(
         daoDetails.depositTokenAddress,
-        walletAddress,
-        USDC_CONTRACT_ADDRESS,
-        GNOSIS_TRANSACTION_URL,
-        true,
-      );
-
-      await erc20Contract.approveDeposit(
         FACTORY_CONTRACT_ADDRESS,
         convertFromWeiGovernance(
           daoDetails.pricePerToken,
@@ -171,7 +127,7 @@ const NewArchERC721 = ({
         erc20TokenDetails.tokenDecimal,
       );
 
-      const claimNFT = await factoryContract.buyGovernanceTokenERC721DAO(
+      await buyGovernanceTokenERC721DAO(
         walletAddress,
         erc721DaoAddress,
         daoDetails.nftURI,
@@ -264,7 +220,7 @@ const NewArchERC721 = ({
                               text: `Just joined ${daoDetails.daoName} Station on `,
                               via: "stationxnetwork",
                             }}
-                            url={`https://test.stationx.network/join/${erc721DaoAddress}`}
+                            url={`${window.location.origin}/join/${erc721DaoAddress}`}
                           />
                         </div>
                       </div>
@@ -287,23 +243,23 @@ const NewArchERC721 = ({
                     {daoDetails.isGovernance && (
                       <>
                         <Grid item xs={3}>
+                          <Typography variant="subtitle2" color="#C1D3FF">
+                            Quorum
+                          </Typography>
                           <Typography
                             variant="subtitle1"
                             className={classes.quoramTxt}>
                             {daoDetails.quorum / 100}%
                           </Typography>
-                          <Typography variant="subtitle2" color="#C1D3FF">
-                            Quorum
-                          </Typography>
                         </Grid>
                         <Grid item xs={3}>
+                          <Typography variant="subtitle2" color="#C1D3FF">
+                            Threshold
+                          </Typography>
                           <Typography
                             variant="subtitle1"
                             className={classes.quoramTxt}>
                             {daoDetails.threshold / 100}%
-                          </Typography>
-                          <Typography variant="subtitle2" color="#C1D3FF">
-                            Threshold
                           </Typography>
                         </Grid>
                       </>
@@ -388,7 +344,14 @@ const NewArchERC721 = ({
                         onClick={claimNFTHandler}
                         disabled={
                           (remainingDays <= 0 && remainingTimeInSecs < 0) ||
-                          hasClaimed
+                          hasClaimed ||
+                          erc20TokenDetails.userBalance <
+                            Number(
+                              convertFromWeiGovernance(
+                                daoDetails.pricePerToken,
+                                erc20TokenDetails.tokenDecimal,
+                              ),
+                            )
                             ? true
                             : isTokenGated
                             ? !isEligibleForTokenGating
@@ -442,7 +405,7 @@ const NewArchERC721 = ({
           </Grid>
         )}
 
-        {WRONG_NETWORK && <WrongNetworkModal chainId={CLUB_NETWORK_ID} />}
+        {WRONG_NETWORK && wallet && <WrongNetworkModal />}
 
         {claimSuccessfull && showMessage ? (
           <Alert

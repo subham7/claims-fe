@@ -10,7 +10,6 @@ import { Step4Styles } from "./CreateClubStyles";
 
 export default function Step4(props) {
   const classes = Step4Styles();
-
   return (
     <>
       <Grid container spacing={3} minHeight={"400px"}>
@@ -46,7 +45,6 @@ export default function Step4(props) {
                     <Switch
                       checked={props.formik.values.deploySafe}
                       // onChange={handleOperationTypeChange}
-                      disabled
                       sx={{
                         cursor: "not-allowed",
                       }}
@@ -88,6 +86,18 @@ export default function Step4(props) {
                   props.formik.errors.safeAddress
                 }
               />
+              <p
+                style={{
+                  margin: "0",
+                  color:
+                    props.ownerHelperText ===
+                      "Owners of the safe does not match with the admins of the DAO" ||
+                    props.ownerHelperText === "Invalid gnosis address"
+                      ? "red"
+                      : "#C1D3FF",
+                }}>
+                {props.ownerHelperText}
+              </p>
             </>
           )}
         </Grid>

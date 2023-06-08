@@ -18,6 +18,7 @@ import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import { useRouter } from "next/router";
+import { convertFromWeiGovernance } from "../../utils/globalFunctions";
 
 const useStyles = makeStyles({
   form: {
@@ -158,7 +159,7 @@ const ClaimStep1 = ({ formik, tokensInWallet, isLoading }) => {
 
   useEffect(() => {
     formik.values.airdropTokenAddress =
-      formik.values.selectedToken.tokenAddress;
+      formik.values.selectedToken.token_address;
   }, [formik.values]);
 
   return (
@@ -289,7 +290,7 @@ const ClaimStep1 = ({ formik, tokensInWallet, isLoading }) => {
               }>
               {tokensInWallet?.map((token, i) => (
                 <MenuItem key={i} value={token}>
-                  {token?.tokenSymbol}
+                  {token?.symbol}
                 </MenuItem>
               ))}
             </TextField>
@@ -309,7 +310,10 @@ const ClaimStep1 = ({ formik, tokensInWallet, isLoading }) => {
               <InputAdornment style={{ color: "#6475A3" }} position="end">
                 Balance:{" "}
                 {formik.values.selectedToken
-                  ? formik.values.selectedToken.tokenBalance
+                  ? convertFromWeiGovernance(
+                      formik.values.selectedToken.balance,
+                      formik.values.selectedToken.decimals,
+                    )
                   : "0"}
               </InputAdornment>
             ),
@@ -322,12 +326,18 @@ const ClaimStep1 = ({ formik, tokensInWallet, isLoading }) => {
             (formik.touched.numberOfTokens &&
               Boolean(formik.errors.numberOfTokens)) ||
             formik.values.numberOfTokens >
-              formik.values.selectedToken?.tokenBalance
+              convertFromWeiGovernance(
+                formik.values.selectedToken.balance,
+                formik.values.selectedToken.decimals,
+              )
           }
           helperText={
             (formik.touched.numberOfTokens && formik.errors.numberOfTokens) ||
             formik.values.numberOfTokens >
-              formik.values.selectedToken.tokenBalance
+              convertFromWeiGovernance(
+                formik.values.selectedToken.balance,
+                formik.values.selectedToken.decimals,
+              )
           }
         />
 

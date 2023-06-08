@@ -69,8 +69,6 @@ const DocumentCard = ({ legalDocLink, date, fileName, index, createdBy }) => {
   const { clubId: daoAddress } = router.query;
   const convertedDate = new Date(date).toLocaleDateString();
 
-  console.log("Converted Date", date, convertedDate);
-
   return (
     <div className={classes.container}>
       <div className={classes.topLine}>

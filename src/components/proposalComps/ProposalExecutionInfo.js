@@ -1,11 +1,12 @@
 import { Card, Divider, Grid, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import React, { useCallback, useEffect, useState } from "react";
-import { SmartContract } from "../../api/contract";
-import erc20ABI from "../../abis/usdcTokenContract.json";
-import { useConnectWallet } from "@web3-onboard/react";
 import { useSelector } from "react-redux";
-import { convertFromWeiGovernance } from "../../utils/globalFunctions";
+import {
+  convertFromWeiGovernance,
+  convertToWeiGovernance,
+} from "../../utils/globalFunctions";
+import useSmartContractMethods from "../../hooks/useSmartContractMethods";
 
 const useStyles = makeStyles({
   listFont2: {
@@ -19,14 +20,10 @@ const useStyles = makeStyles({
   },
 });
 
-const ProposalExecutionInfo = ({
-  proposalData,
-  fetched,
-  USDC_CONTRACT_ADDRESS,
-  daoDetails,
-}) => {
+const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
   const classes = useStyles();
-  const [{ wallet }] = useConnectWallet();
+
+  const { getDecimals, getTokenSymbol } = useSmartContractMethods();
 
   const tokenType = useSelector((state) => {
     return state.club.clubData.tokenType;
@@ -37,27 +34,19 @@ const ProposalExecutionInfo = ({
     symbol: "",
   });
 
-  const GNOSIS_TRANSACTION_URL = useSelector((state) => {
-    return state.gnosis.transactionUrl;
-  });
-
-  const walletAddress = wallet?.accounts[0].address;
-
   const fetchAirDropContractDetails = useCallback(async () => {
     try {
       if (proposalData) {
-        const airdropContract = new SmartContract(
-          erc20ABI,
+        const decimal = await getDecimals(
           proposalData?.commands[0]?.airDropToken
             ? proposalData?.commands[0]?.airDropToken
             : proposalData?.commands[0]?.customToken,
-          walletAddress,
-          USDC_CONTRACT_ADDRESS,
-          GNOSIS_TRANSACTION_URL,
         );
-
-        const decimal = await airdropContract.decimals();
-        const symbol = await airdropContract.obtainSymbol();
+        const symbol = await getTokenSymbol(
+          proposalData?.commands[0]?.airDropToken
+            ? proposalData?.commands[0]?.airDropToken
+            : proposalData?.commands[0]?.customToken,
+        );
 
         setTokenDetails({
           decimals: decimal,
@@ -67,12 +56,7 @@ const ProposalExecutionInfo = ({
     } catch (error) {
       console.log(error);
     }
-  }, [
-    GNOSIS_TRANSACTION_URL,
-    USDC_CONTRACT_ADDRESS,
-    proposalData,
-    walletAddress,
-  ]);
+  }, [proposalData]);
 
   useEffect(() => {
     fetchAirDropContractDetails();
@@ -238,18 +222,19 @@ const ProposalExecutionInfo = ({
                       </Typography>
                       <Typography className={classes.listFont2Colourless}>
                         {fetched
-                          ? proposalData?.commands[0].totalDeposits *
-                            +convertFromWeiGovernance(
+                          ? (convertToWeiGovernance(
+                              convertToWeiGovernance(
+                                proposalData.commands[0].totalDeposits,
+                                6,
+                              ) / daoDetails?.pricePerToken,
+                              18,
+                            ) /
+                              10 ** 18) *
+                            convertFromWeiGovernance(
                               daoDetails?.pricePerToken,
                               6,
                             )
-                          : // Math.pow(
-                            //   10,
-                            //   parseInt(
-                            //     proposalData?.commands[0].usdcTokenDecimal,
-                            //   ),
-                            // )
-                            null}{" "}
+                          : null}{" "}
                         {proposalData?.commands[0].usdcTokenSymbol}
                       </Typography>
                     </Grid>
