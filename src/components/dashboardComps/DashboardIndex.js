@@ -108,6 +108,7 @@ const DashboardIndex = () => {
   } = useSmartContractMethods();
 
   const walletAddress = wallet?.accounts[0].address;
+  const networkId = wallet?.chains[0].id;
 
   const fetchClubDetails = useCallback(async () => {
     try {
@@ -709,7 +710,7 @@ const DashboardIndex = () => {
                                   fontSize: "1.25em",
                                   fontFamily: "Whyte",
                                 }}>
-                                In-active
+                                Inactive
                               </Typography>
                             </Grid>
                           </Grid>
@@ -864,9 +865,7 @@ const DashboardIndex = () => {
           </Grid>
         </Grid>
 
-        {WRONG_NETWORK && WRONG_NETWORK === true && wallet && (
-          <WrongNetworkModal />
-        )}
+        {wallet && networkId !== "0x89" && <WrongNetworkModal />}
 
         <Snackbar
           //   open={openSnackBar}
