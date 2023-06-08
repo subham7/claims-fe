@@ -211,8 +211,10 @@ const Join = () => {
   }, [daoAddress]);
 
   useEffect(() => {
-    fetchTokenGatingDetials();
-  }, [fetchTokenGatingDetials]);
+    if (wallet) {
+      fetchTokenGatingDetials();
+    }
+  }, [fetchTokenGatingDetials, wallet]);
 
   useEffect(() => {
     if (TOKEN_TYPE === "erc20") {
@@ -247,13 +249,13 @@ const Join = () => {
           setMembers(data?.users);
         }
       };
-      fetchData();
+      wallet && fetchData();
       setLoading(false);
     } catch (error) {
       console.log(error);
       setLoading(false);
     }
-  }, [SUBGRAPH_URL, daoAddress, daoDetails]);
+  }, [SUBGRAPH_URL, daoAddress, daoDetails, wallet]);
 
   return (
     <Layout2>
