@@ -244,23 +244,23 @@ const NewArchERC721 = ({
                     {daoDetails.isGovernance && (
                       <>
                         <Grid item xs={3}>
+                          <Typography variant="subtitle2" color="#C1D3FF">
+                            Quorum
+                          </Typography>
                           <Typography
                             variant="subtitle1"
                             className={classes.quoramTxt}>
                             {daoDetails.quorum / 100}%
                           </Typography>
-                          <Typography variant="subtitle2" color="#C1D3FF">
-                            Quorum
-                          </Typography>
                         </Grid>
                         <Grid item xs={3}>
+                          <Typography variant="subtitle2" color="#C1D3FF">
+                            Threshold
+                          </Typography>
                           <Typography
                             variant="subtitle1"
                             className={classes.quoramTxt}>
                             {daoDetails.threshold / 100}%
-                          </Typography>
-                          <Typography variant="subtitle2" color="#C1D3FF">
-                            Threshold
                           </Typography>
                         </Grid>
                       </>
