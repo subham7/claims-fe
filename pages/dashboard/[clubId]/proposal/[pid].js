@@ -558,13 +558,13 @@ const ProposalDetail = () => {
     if (proposalData.commands[0].executionId === 3) {
       let iface = new Interface(ABI);
 
-      debugger;
-      data = iface.encodeFunctionData("updateDistributionAmount", [
+      data = iface.encodeFunctionData("updateTotalRaiseAmount", [
         convertToWeiGovernance(
           convertToWeiGovernance(proposalData.commands[0].totalDeposits, 6) /
             factoryData?.pricePerToken,
           18,
         ),
+        factoryData?.pricePerToken,
         daoAddress,
       ]);
     }

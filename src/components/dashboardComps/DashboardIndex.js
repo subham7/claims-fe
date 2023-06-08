@@ -710,7 +710,7 @@ const DashboardIndex = () => {
                                   fontSize: "1.25em",
                                   fontFamily: "Whyte",
                                 }}>
-                                In-active
+                                Inactive
                               </Typography>
                             </Grid>
                           </Grid>
