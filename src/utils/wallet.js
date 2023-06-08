@@ -57,6 +57,7 @@ export const web3Onboard = init({
     desktop: {
       enabled: true,
       position: "topRight",
+      minimal: false,
     },
     mobile: {
       enabled: true,
