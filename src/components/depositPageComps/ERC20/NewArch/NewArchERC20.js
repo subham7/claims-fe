@@ -110,29 +110,55 @@ const NewArchERC20 = ({
     }
   }, [daoDetails.depositTokenAddress]);
 
+  const minValidation = yup.object().shape({
+    tokenInput: yup
+      .number()
+      .required("Input is required")
+      .min(
+        Number(
+          convertFromWeiGovernance(
+            daoDetails.minDeposit,
+            erc20TokenDetails.tokenDecimal,
+          ),
+        ),
+        "Amount should be greater than min deposit",
+      )
+      .lessThan(
+        erc20TokenDetails.tokenBalance,
+        "Amount can't be greater than wallet balance",
+      )
+      .max(
+        Number(
+          convertFromWeiGovernance(
+            daoDetails.maxDeposit,
+            erc20TokenDetails.tokenDecimal,
+          ),
+        ),
+        "Amount should be less than max deposit",
+      ),
+  });
+
+  const remainingValidation = yup.object().shape({
+    tokenInput: yup
+      .number()
+      .required("Input is required")
+      .min(0.0000001, "Amount should be greater than min deposit")
+      .lessThan(
+        erc20TokenDetails.tokenBalance,
+        "Amount can't be greater than wallet balance",
+      )
+      .max(
+        remainingClaimAmount,
+        "Amount should be less than remaining deposit amount",
+      ),
+  });
+
   const formik = useFormik({
     initialValues: {
       tokenInput: 0,
     },
-    validationSchema: yup.object().shape({
-      tokenInput: yup
-        .number()
-        .required("Input is required")
-        .min(
-          Number(
-            convertFromWeiGovernance(
-              daoDetails.minDeposit,
-              erc20TokenDetails.tokenDecimal,
-            ),
-          ),
-          "Amount should be greater than min deposit",
-        )
-        .max(remainingClaimAmount, "Amount should be less than max deposit")
-        .lessThan(
-          erc20TokenDetails.tokenBalance,
-          "Amount can't be greater than wallet balance",
-        ),
-    }),
+    validationSchema:
+      remainingClaimAmount !== undefined ? remainingValidation : minValidation,
     onSubmit: async (values) => {
       try {
         setLoading(true);
