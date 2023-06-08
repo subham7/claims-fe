@@ -816,8 +816,8 @@ const NewArchERC20 = ({
                         </Button>
                         <div>
                           {remainingClaimAmount <= 0 && (
-                            <p style={{ color: "red" }}>
-                              you have claimed all the tokens.
+                            <p style={{ color: "#D87070" }}>
+                              You have reached maximum deposit limit!
                             </p>
                           )}
                         </div>
