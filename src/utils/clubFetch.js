@@ -22,7 +22,6 @@ import { fetchConfigById } from "../api/config";
 
 import Web3 from "web3";
 import { SUBGRAPH_URL_GOERLI, SUBGRAPH_URL_POLYGON, getRpcUrl } from "../api";
-import { Backdrop, CircularProgress } from "@mui/material";
 import { getSafeSdk } from "./helper";
 import useSmartContractMethods from "../hooks/useSmartContractMethods";
 import useSmartContract from "../hooks/useSmartContract";
@@ -271,30 +270,19 @@ const ClubFetch = (Component) => {
         dispatch(setWrongNetwork(true));
       }
     }, [daoAddress, dispatch, jid, networkId]);
+
     useEffect(() => {
       if (wallet && networkId) {
         checkUserExists();
+        checkClubExist();
       }
-      checkClubExist();
     }, [checkUserExists, jid, daoAddress, wallet, networkId, checkClubExist]);
 
-    if (tracker === true) {
-      return (
-        <div>
-          <Component />
-        </div>
-      );
-    } else {
-      return (
-        <Backdrop
-          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-          open={!tracker}
-          // onClick={handleClose}
-        >
-          <CircularProgress color="inherit" />
-        </Backdrop>
-      );
-    }
+    return (
+      <div>
+        <Component />
+      </div>
+    );
   };
   return RetrieveDataComponent;
 };
