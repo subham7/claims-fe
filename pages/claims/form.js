@@ -23,6 +23,7 @@ import useSmartContractMethods from "../../src/hooks/useSmartContractMethods";
 import useSmartContract from "../../src/hooks/useSmartContract";
 import WrongNetworkModal from "../../src/components/modals/WrongNetworkModal";
 import Layout1 from "../../src/components/layouts/layout1";
+import Image from "next/image";
 
 const steps = ["Step1", "Step2"];
 
@@ -427,6 +428,16 @@ const Form = () => {
 
   return (
     <Layout1 showSidebar={false}>
+      <Image
+        src="/assets/images/monogram.png"
+        alt="StationX"
+        height={50}
+        width={50}
+        style={{ cursor: "pointer", position: "fixed" }}
+        onClick={() => {
+          router.push("/");
+        }}
+      />
       <div className={classes.container}>
         <Grid container>
           <Grid item xs={12} sx={{ padding: "20px" }}>

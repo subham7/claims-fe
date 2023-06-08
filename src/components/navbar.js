@@ -9,7 +9,7 @@ import { addWalletAddress } from "../redux/reducers/user";
 
 const useStyles = makeStyles({
   image: {
-    height: "40px",
+    height: "50px",
     width: "auto !important",
     zIndex: "99999 !important",
     position: "absolute",
@@ -52,8 +52,8 @@ export default function Navbar3(props) {
             {/* <Link href={"/"}> */}
             <Image
               src="/assets/images/monogram.png"
-              height="50"
-              width="50"
+              height="60"
+              width="60"
               className={classes.image}
               alt="monogram"
               onClick={() => router.push(`/`)}
