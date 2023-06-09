@@ -45,7 +45,6 @@ const useStyles = makeStyles({
   },
   noProposal: {
     width: "100%",
-    margin: "0 auto",
     textAlign: "center",
     border: "1px solid #FFFFFF1A",
     borderRadius: "10px",
@@ -335,14 +334,16 @@ const Proposal = () => {
                   })}
                 </>
               ) : (
-                <div className={classes.noProposal}>
-                  <p className={classes.noProposal_heading}>
-                    No Proposals found
-                  </p>
-                  <p className={classes.noProposal_para}>
-                    Past proposals appear here.
-                  </p>
-                </div>
+                <Grid item width={"100%"}>
+                  <div className={classes.noProposal}>
+                    <p className={classes.noProposal_heading}>
+                      No Proposals found
+                    </p>
+                    <p className={classes.noProposal_para}>
+                      Past proposals appear here.
+                    </p>
+                  </div>
+                </Grid>
               )}
             </Grid>
           </Grid>
