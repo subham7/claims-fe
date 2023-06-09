@@ -51,6 +51,20 @@ const Join = () => {
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [remainingClaimAmount, setRemainingClaimAmount] = useState();
+  const [fetchedDetails, setFetchedDetails] = useState({
+    tokenA: "",
+    tokenB: "",
+    tokenAAmt: 0,
+    tokenBAmt: 0,
+    operator: 0,
+    comparator: 0,
+  });
+  const [displayTokenDetails, setDisplayTokenDetails] = useState({
+    tokenASymbol: "",
+    tokenBSymbol: "",
+    tokenADecimal: 0,
+    tokenBDecimal: 0,
+  });
   const [{ wallet }] = useConnectWallet();
   const router = useRouter();
   const { jid: daoAddress } = router.query;
@@ -78,6 +92,8 @@ const Join = () => {
     getERC721DAOdetails,
     getNftOwnersCount,
     getBalance,
+    getTokenGatingDetails,
+    getTokenSymbol,
   } = useSmartContractMethods();
 
   /**
@@ -174,9 +190,40 @@ const Join = () => {
     try {
       setLoading(true);
 
-      const tokenGatingDetails = await contractInstance.factoryContractCall
-        .getTokenGatingDetails(daoAddress)
-        .call();
+      const tokenGatingDetails = await getTokenGatingDetails(daoAddress);
+
+      setFetchedDetails({
+        tokenA: tokenGatingDetails[0]?.tokenA,
+        tokenB: tokenGatingDetails[0]?.tokenB,
+        tokenAAmt: tokenGatingDetails[0]?.value[0],
+        tokenBAmt: tokenGatingDetails[0]?.value[1],
+        operator: tokenGatingDetails[0]?.operator,
+        comparator: tokenGatingDetails[0]?.comparator,
+      });
+
+      const tokenASymbol = await getTokenSymbol(tokenGatingDetails[0].tokenA);
+      const tokenBSymbol = await getTokenSymbol(tokenGatingDetails[0]?.tokenB);
+
+      let tokenADecimal, tokenBDecimal;
+
+      try {
+        tokenADecimal = await getDecimals(tokenGatingDetails[0]?.tokenA);
+      } catch (error) {
+        console.log(error);
+      }
+
+      try {
+        tokenBDecimal = await getDecimals(tokenGatingDetails[0]?.tokenB);
+      } catch (error) {
+        console.log(error);
+      }
+
+      setDisplayTokenDetails({
+        tokenASymbol: tokenASymbol,
+        tokenBSymbol: tokenBSymbol,
+        tokenADecimal: tokenADecimal ? tokenADecimal : 0,
+        tokenBDecimal: tokenBDecimal ? tokenBDecimal : 0,
+      });
 
       if (tokenGatingDetails[0]?.length) {
         setIsTokenGated(true);
@@ -273,6 +320,8 @@ const Join = () => {
           daoDetails={daoDetails}
           members={members}
           remainingClaimAmount={remainingClaimAmount}
+          fetchedTokenGatedDetails={fetchedDetails}
+          displayTokenDetails={displayTokenDetails}
         />
       ) : TOKEN_TYPE === "erc721" ? (
         <NewArchERC721

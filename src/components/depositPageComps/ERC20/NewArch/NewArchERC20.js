@@ -38,6 +38,8 @@ const NewArchERC20 = ({
   isEligibleForTokenGating,
   members,
   remainingClaimAmount,
+  displayTokenDetails,
+  fetchedTokenGatedDetails,
 }) => {
   const [erc20TokenDetails, setErc20TokenDetails] = useState({
     tokenSymbol: "",
@@ -272,24 +274,6 @@ const NewArchERC20 = ({
                       </div>
                     </div>
                   </Grid>
-                </Grid>
-
-                <Grid>
-                  {isTokenGated && isEligibleForTokenGating ? (
-                    <>
-                      <Typography sx={{ color: "#3B7AFD", marginLeft: "30px" }}>
-                        This club is token gated. You qualify
-                      </Typography>
-                    </>
-                  ) : isTokenGated && !isEligibleForTokenGating ? (
-                    <>
-                      <Typography sx={{ color: "red", marginLeft: "30px" }}>
-                        This club is token gated. You don&apos;t qualify
-                      </Typography>
-                    </>
-                  ) : (
-                    ""
-                  )}
                 </Grid>
 
                 <Divider variant="middle" />
@@ -772,6 +756,55 @@ const NewArchERC20 = ({
                             sure to trust the sender for the link before
                             depositing.
                           </Typography>
+
+                          <Typography
+                            sx={{
+                              color: "#3A7AFD",
+                              fontFamily: "Whyte",
+                              fontSize: "22px",
+                              fontWeight: "bold",
+                              mt: "5px",
+                            }}>
+                            Conditions :
+                          </Typography>
+
+                          <ul>
+                            <li
+                              style={{
+                                fontSize: "18px",
+                                fontWeight: "500",
+                                mt: "5px",
+                              }}>
+                              ${displayTokenDetails.tokenASymbol} -{" "}
+                              {convertFromWeiGovernance(
+                                fetchedTokenGatedDetails.tokenAAmt,
+                                displayTokenDetails.tokenADecimal,
+                              )}{" "}
+                              token
+                            </li>
+
+                            {displayTokenDetails.tokenASymbol !==
+                              displayTokenDetails.tokenBSymbol && (
+                              <li
+                                style={{
+                                  fontSize: "18px",
+                                  fontWeight: "500",
+                                  mt: "5px",
+                                }}>
+                                ${displayTokenDetails.tokenBSymbol} -{" "}
+                                {displayTokenDetails.tokenBDecimal
+                                  ? convertFromWeiGovernance(
+                                      fetchedTokenGatedDetails.tokenBAmt,
+                                      displayTokenDetails.tokenBDecimal,
+                                    )
+                                  : convertFromWeiGovernance(
+                                      fetchedTokenGatedDetails.tokenBAmt,
+                                      displayTokenDetails.tokenADecimal,
+                                    )}{" "}
+                                token
+                              </li>
+                            )}
+                          </ul>
                         </Card>
                       </Grid>
                       <Grid
