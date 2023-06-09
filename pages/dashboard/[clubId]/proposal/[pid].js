@@ -788,7 +788,7 @@ const ProposalDetail = () => {
             </Grid>
 
             {/* voting process before Signature */}
-            {governance ? (
+            {governance || proposalData?.type === "survey" ? (
               <>
                 <Grid container mt={6}>
                   <Grid item md={12}>
@@ -1187,7 +1187,7 @@ const ProposalDetail = () => {
                 ownerAddresses={ownerAddresses}
               />
 
-              {isGovernanceActive && (
+              {(isGovernanceActive || proposalData?.type === "survey") && (
                 <>
                   <CurrentResults
                     proposalData={proposalData}
