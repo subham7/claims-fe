@@ -481,7 +481,6 @@ const Create = () => {
         container
         item
         paddingLeft={{ xs: 5, sm: 5, md: 10, lg: 45 }}
-        paddingTop={4}
         paddingRight={{ xs: 5, sm: 5, md: 10, lg: 45 }}
         justifyContent="center"
         alignItems="center">

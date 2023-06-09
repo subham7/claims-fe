@@ -28,7 +28,7 @@ export default function Step3(props) {
   return (
     <>
       <Grid container spacing={3}>
-        <Grid item md={12} mt={8}>
+        <Grid item md={12} mt={5}>
           <Typography className={classes.largeText}>
             Collectively manage your club’s investments through governance that
             works for you.

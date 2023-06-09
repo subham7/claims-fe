@@ -14,7 +14,7 @@ export default function Step1(props) {
   return (
     <>
       <Grid container>
-        <Grid item md={12} mt={8}>
+        <Grid item md={12} mt={4}>
           <Typography className={classes.wrapTextIcon}>Station info</Typography>
           <Typography className={classes.smallText}>
             Name & token symbol of your station are publicly visible on-chain &

@@ -129,7 +129,7 @@ export default function NFTStep2(props) {
 
   return (
     <Grid container spacing={3}>
-      <Grid item md={12} mt={8}>
+      <Grid item md={12} mt={4}>
         <Typography className={classes.largeText1}>Set Token Rules</Typography>
 
         <Typography className={classes.largeText} mt={3} mb={2}>

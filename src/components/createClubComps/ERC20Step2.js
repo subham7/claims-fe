@@ -17,7 +17,7 @@ export default function ERC20Step2(props) {
   return (
     <>
       <Grid container spacing={3}>
-        <Grid item md={12} mt={8}>
+        <Grid item md={12} mt={2}>
           <Typography className={classes.largeText} mt={3} mb={2}>
             Set deposit rules for members
           </Typography>
