@@ -137,21 +137,20 @@ export default function NFTStep2(props) {
           by raising proposals.
         </Typography>
         <br />
-        <Typography className={classes.largeText} mt={3} mb={2}>
+        <Typography className={classes.largeText} mb={2}>
           Artwork
         </Typography>
 
         {/* Image input card */}
-        <Card className={classes.cardPadding} mb={2}>
-          <Grid container pl={3} pr={1} mt={1} mb={1}>
+        <Card className={classes.cardPadding}>
+          <Grid container p={2}>
             <Grid
               item
               xs
               sx={{
                 display: "flex",
                 flexDirection: "column",
-                justifyContent: "flex-start",
-                alignItems: "start",
+                justifyContent: "flex-between",
               }}
               mt={6}
               spacing={3}>
@@ -212,23 +211,18 @@ export default function NFTStep2(props) {
             </Grid>
             <Grid
               item
-              xs
               sx={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                height: "400px",
+                height: "300px",
+                width: "300px",
                 borderRadius: "10px",
                 backgroundColor: "#19274B",
-                position: "relative",
-              }}
-              mr={3}>
+              }}>
               <Image
                 src={imageUrl || empty_nft}
                 alt={""}
                 // className={classes.emptyImage}
-                width={400}
-                height={400}
+                width={300}
+                height={300}
                 // fill
                 // sizes="100vw"
                 style={{ borderRadius: "10px" }}
@@ -528,7 +522,7 @@ export default function NFTStep2(props) {
             </Grid>
           </Grid>
         </Card>
-        <Typography variant="subtitle" color="#6475A3" sx={{}} mx={2}>
+        <Typography variant="subtitle" color="#6475A3">
           If you don’t limit the supply of your club token, your supply will be
           unlimited until the date deposits are open.
         </Typography>
