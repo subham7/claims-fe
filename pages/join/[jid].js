@@ -18,6 +18,7 @@ import { useSelector } from "react-redux";
 import ClubFetch from "../../src/utils/clubFetch";
 import { Backdrop, CircularProgress } from "@mui/material";
 import useSmartContractMethods from "../../src/hooks/useSmartContractMethods";
+import WrongNetworkModal from "../../src/components/modals/WrongNetworkModal";
 // import useSmartContract from "../../src/hooks/useSmartContract";
 
 const Join = () => {
@@ -64,6 +65,10 @@ const Join = () => {
 
   const factoryData = useSelector((state) => {
     return state.club.factoryData;
+  });
+
+  const WRONG_NETWORK = useSelector((state) => {
+    return state.gnosis.wrongNetwork;
   });
 
   const {
@@ -283,6 +288,8 @@ const Join = () => {
         open={loading}>
         <CircularProgress color="inherit" />
       </Backdrop>
+
+      {WRONG_NETWORK && wallet && <WrongNetworkModal />}
     </Layout2>
   );
 };
