@@ -16,7 +16,7 @@ import {
 } from "../../src/api/graphql/queries";
 import { useSelector } from "react-redux";
 import ClubFetch from "../../src/utils/clubFetch";
-import { Backdrop, CircularProgress } from "@mui/material";
+import { Backdrop, CircularProgress, Grid, Typography } from "@mui/material";
 import useSmartContractMethods from "../../src/hooks/useSmartContractMethods";
 import WrongNetworkModal from "../../src/components/modals/WrongNetworkModal";
 // import useSmartContract from "../../src/hooks/useSmartContract";
@@ -290,6 +290,29 @@ const Join = () => {
       </Backdrop>
 
       {WRONG_NETWORK && wallet && <WrongNetworkModal />}
+
+      {!wallet && (
+        <Grid
+          container
+          direction="column"
+          justifyContent="center"
+          alignItems="center">
+          <Grid item mt={15}>
+            <img
+              style={{ width: "60vh" }}
+              src="/assets/images/start_illustration.svg"
+            />
+          </Grid>
+          <Grid item mt={4}>
+            <Typography variant="mainHeading">Do more together</Typography>
+          </Grid>
+          <Grid item mt={4}>
+            <Typography variant="regularText">
+              Create or join a station in less than 60 seconds using StationX
+            </Typography>
+          </Grid>
+        </Grid>
+      )}
     </Layout2>
   );
 };
