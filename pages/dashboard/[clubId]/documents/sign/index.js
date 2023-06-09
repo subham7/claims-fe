@@ -39,7 +39,7 @@ const useStyles = makeStyles({
   },
   container: {
     height: "90vh",
-    width: "100vw",
+    width: "100%",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",

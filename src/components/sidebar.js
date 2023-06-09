@@ -69,11 +69,9 @@ const drawerWidth = 100;
 
 const Sidebar = (props) => {
   const classes = useStyles();
-  const { page } = props;
+  const { page, showSidebar } = props;
   const router = useRouter();
   const { clubId } = router.query;
-  // const container =
-  //   window !== undefined ? () => window().document.body : undefined;
 
   const handleDepositRedirect = () => {
     router.push(`${window.origin}/join/${clubId}`, undefined, {
@@ -266,108 +264,107 @@ const Sidebar = (props) => {
           </Link>
         </Box>
 
-        <Toolbar />
+        {showSidebar && (
+          <List style={{ marginTop: "72px" }}>
+            <BootstrapTooltip title="Dashboard" placement="left">
+              <ListItemButton
+                component="a"
+                onClick={(e) => {
+                  router.push(`/dashboard/${clubId}`, undefined, {
+                    shallow: true,
+                  });
+                }}
+                alignItems="center">
+                <ListItemIcon
+                  className={
+                    page == 1
+                      ? classes.listItemIconSelected
+                      : classes.listItemIcon
+                  }>
+                  <HomeRoundedIcon />
+                </ListItemIcon>
+              </ListItemButton>
+            </BootstrapTooltip>
 
-        <List>
-          <BootstrapTooltip title="Dashboard" placement="left">
-            <ListItemButton
-              component="a"
-              onClick={(e) => {
-                router.push(`/dashboard/${clubId}`, undefined, {
-                  shallow: true,
-                });
-              }}
-              alignItems="center">
-              <ListItemIcon
-                className={
-                  page == 1
-                    ? classes.listItemIconSelected
-                    : classes.listItemIcon
-                }>
-                <HomeRoundedIcon />
-              </ListItemIcon>
-            </ListItemButton>
-          </BootstrapTooltip>
+            <BootstrapTooltip title="Proposals" placement="left">
+              <ListItemButton
+                component="a"
+                onClick={(e) => {
+                  router.push(`/dashboard/${clubId}/proposal`, undefined, {
+                    shallow: true,
+                  });
+                }}>
+                <ListItemIcon
+                  className={
+                    page == 2
+                      ? classes.listItemIconSelected
+                      : classes.listItemIcon
+                  }>
+                  <InsertDriveFileRoundedIcon />
+                </ListItemIcon>
+              </ListItemButton>
+            </BootstrapTooltip>
 
-          <BootstrapTooltip title="Proposals" placement="left">
-            <ListItemButton
-              component="a"
-              onClick={(e) => {
-                router.push(`/dashboard/${clubId}/proposal`, undefined, {
-                  shallow: true,
-                });
-              }}>
-              <ListItemIcon
-                className={
-                  page == 2
-                    ? classes.listItemIconSelected
-                    : classes.listItemIcon
-                }>
-                <InsertDriveFileRoundedIcon />
-              </ListItemIcon>
-            </ListItemButton>
-          </BootstrapTooltip>
+            <BootstrapTooltip title="Members" placement="left">
+              <ListItemButton
+                component="a"
+                onClick={(e) => {
+                  router.push(`/dashboard/${clubId}/members`, undefined, {
+                    shallow: true,
+                  });
+                }}>
+                <ListItemIcon
+                  className={
+                    page == 3
+                      ? classes.listItemIconSelected
+                      : classes.listItemIcon
+                  }>
+                  <PeopleRoundedIcon />
+                </ListItemIcon>
+              </ListItemButton>
+            </BootstrapTooltip>
 
-          <BootstrapTooltip title="Members" placement="left">
-            <ListItemButton
-              component="a"
-              onClick={(e) => {
-                router.push(`/dashboard/${clubId}/members`, undefined, {
-                  shallow: true,
-                });
-              }}>
-              <ListItemIcon
-                className={
-                  page == 3
-                    ? classes.listItemIconSelected
-                    : classes.listItemIcon
-                }>
-                <PeopleRoundedIcon />
-              </ListItemIcon>
-            </ListItemButton>
-          </BootstrapTooltip>
+            {/*<BootstrapTooltip title="Transactions" placement="left">*/}
+            {/*  <ListItemButton >*/}
+            {/*    <ListItemIcon className={classes.listItemIcon}>*/}
+            {/*      <CompareArrowsRoundedIcon />*/}
+            {/*    </ListItemIcon>*/}
+            {/*  </ListItemButton>*/}
+            {/*</BootstrapTooltip>*/}
 
-          {/*<BootstrapTooltip title="Transactions" placement="left">*/}
-          {/*  <ListItemButton >*/}
-          {/*    <ListItemIcon className={classes.listItemIcon}>*/}
-          {/*      <CompareArrowsRoundedIcon />*/}
-          {/*    </ListItemIcon>*/}
-          {/*  </ListItemButton>*/}
-          {/*</BootstrapTooltip>*/}
+            <BootstrapTooltip title="Deposit" placement="left">
+              <ListItemButton component="a" onClick={handleDepositRedirect}>
+                <ListItemIcon
+                  className={
+                    page == 4
+                      ? classes.listItemIconSelected
+                      : classes.listItemIcon
+                  }>
+                  <AddCardIcon />
+                </ListItemIcon>
+              </ListItemButton>
+            </BootstrapTooltip>
 
-          <BootstrapTooltip title="Deposit" placement="left">
-            <ListItemButton component="a" onClick={handleDepositRedirect}>
-              <ListItemIcon
-                className={
-                  page == 4
-                    ? classes.listItemIconSelected
-                    : classes.listItemIcon
-                }>
-                <AddCardIcon />
-              </ListItemIcon>
-            </ListItemButton>
-          </BootstrapTooltip>
+            <BootstrapTooltip title="Settings" placement="left">
+              <ListItemButton
+                component="a"
+                onClick={(e) => {
+                  router.push(`/dashboard/${clubId}/settings`, undefined, {
+                    shallow: true,
+                  });
+                }}>
+                <ListItemIcon
+                  className={
+                    page == 5
+                      ? classes.listItemIconSelected
+                      : classes.listItemIcon
+                  }>
+                  <SettingsRoundedIcon />
+                </ListItemIcon>
+              </ListItemButton>
+            </BootstrapTooltip>
 
-          <BootstrapTooltip title="Settings" placement="left">
-            <ListItemButton
-              component="a"
-              onClick={(e) => {
-                router.push(`/dashboard/${clubId}/settings`, undefined, {
-                  shallow: true,
-                });
-              }}>
-              <ListItemIcon
-                className={
-                  page == 5
-                    ? classes.listItemIconSelected
-                    : classes.listItemIcon
-                }>
-                <SettingsRoundedIcon />
-              </ListItemIcon>
-            </ListItemButton>
-          </BootstrapTooltip>
-
-          {/* <BootstrapTooltip title="Documents" placement="left">
+            {/* <BootstrapTooltip title="Documents" placement="left">
             <ListItemButton
               component="a"
               onClick={(e) => {
@@ -385,7 +382,8 @@ const Sidebar = (props) => {
               </ListItemIcon>
             </ListItemButton>
           </BootstrapTooltip> */}
-        </List>
+          </List>
+        )}
       </Drawer>
     </Box>
   );

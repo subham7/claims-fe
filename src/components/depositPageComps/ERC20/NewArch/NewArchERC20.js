@@ -212,7 +212,7 @@ const NewArchERC20 = ({
             container
             spacing={2}
             paddingLeft={10}
-            paddingTop={6}
+            paddingTop={12}
             paddingRight={10}>
             <Grid item md={7}>
               <Card className={classes.cardRegular}>

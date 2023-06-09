@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Box, CssBaseline } from "@mui/material";
 
-import Navbar from "../navbar2";
+import Navbar from "../navbar";
 import Sidebar from "../sidebar";
 
 const drawerWidth = 50;
@@ -16,20 +16,15 @@ export default function Layout1(props) {
 
   return (
     <>
-      <Navbar
-        handleDrawerToggle={handleDrawerToggle}
-        page={props.page}
-        depositUrl={props.depositUrl}
-      />
+      <Navbar />
       <Box sx={{ display: "flex" }}>
         <CssBaseline />
-        {showSidebar && (
-          <Sidebar
-            mobileOpen={mobileOpen}
-            handleDrawerToggle={handleDrawerToggle}
-            page={props.page}
-          />
-        )}
+        <Sidebar
+          showSidebar={showSidebar}
+          mobileOpen={mobileOpen}
+          handleDrawerToggle={handleDrawerToggle}
+          page={props.page}
+        />
 
         <Box
           component="main"

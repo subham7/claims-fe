@@ -224,7 +224,6 @@ export default function NFTStep2(props) {
                 width={300}
                 height={300}
                 // fill
-                // sizes="100vw"
                 style={{ borderRadius: "10px" }}
                 // sx={{  width: "100%", height: "100%" }}
               />

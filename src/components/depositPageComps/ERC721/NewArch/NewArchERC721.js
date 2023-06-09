@@ -153,7 +153,7 @@ const NewArchERC721 = ({
 
   return (
     <>
-      <Grid className={classes.topGrid} container spacing={6}>
+      <Grid paddingTop={16} paddingLeft={10} container spacing={6}>
         {wallet ? (
           <>
             <Grid item md={5}>
