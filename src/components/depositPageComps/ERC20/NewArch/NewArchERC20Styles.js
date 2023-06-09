@@ -46,6 +46,12 @@ export const NewArchERC20Styles = makeStyles({
     fontSize: "21px",
     fontWeight: "bold",
   },
+  textPara: {
+    color: "#fff",
+    fontFamily: "Whyte",
+    fontSize: "16px",
+    fontWeight: "lighter",
+  },
   cardLargeFont: {
     width: "300px",
     fontSize: "2em",
