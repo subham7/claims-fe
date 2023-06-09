@@ -30,7 +30,6 @@ import { addClubData } from "../src/redux/reducers/club";
 import Layout1 from "../src/components/layouts/layout1";
 import Web3 from "web3";
 
-
 const useStyles = makeStyles({
   container: {
     maxHeight: "100vh",
