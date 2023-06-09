@@ -225,7 +225,6 @@ const App = () => {
             direction="row"
             justifyContent="center"
             alignItems="start"
-            sx={{ maxHeight: "80vh", overflow: "hidden" }}
             mt={5}
             mb={0}>
             <Grid item md={5}>
@@ -243,13 +242,13 @@ const App = () => {
                   </Grid>
                 </div>
                 <Divider className={classes.divider} />
-                <div style={{ overflowY: "scroll", maxHeight: "80vh" }}>
-                  <Stack spacing={3}>
+                <div>
+                  <div style={{ overflowY: "scroll", maxHeight: "60vh" }}>
                     {walletAddress && clubListData.length ? (
                       clubListData.reverse().map((club, key) => {
                         return (
                           <ListItemButton
-                            component="a"
+                            style={{ marginBottom: "8px" }}
                             key={key}
                             onClick={(e) => {
                               handleItemClick(clubListData[key]);
@@ -310,7 +309,7 @@ const App = () => {
                         </p>
                       </div>
                     )}
-                  </Stack>
+                  </div>
                 </div>
               </Card>
             </Grid>
