@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 
 import { useConnectWallet } from "@web3-onboard/react";
-import Layout2 from "../../src/components/layouts/layout2";
 import NewArchERC20 from "../../src/components/depositPageComps/ERC20/NewArch/NewArchERC20";
 import { useRouter } from "next/router";
 import NewArchERC721 from "../../src/components/depositPageComps/ERC721/NewArch/NewArchERC721";
@@ -19,6 +18,7 @@ import ClubFetch from "../../src/utils/clubFetch";
 import { Backdrop, CircularProgress, Grid, Typography } from "@mui/material";
 import useSmartContractMethods from "../../src/hooks/useSmartContractMethods";
 import WrongNetworkModal from "../../src/components/modals/WrongNetworkModal";
+import Layout1 from "../../src/components/layouts/layout1";
 // import useSmartContract from "../../src/hooks/useSmartContract";
 
 const Join = () => {
@@ -264,7 +264,7 @@ const Join = () => {
   }, [SUBGRAPH_URL, daoAddress, daoDetails, wallet]);
 
   return (
-    <Layout2>
+    <Layout1 showSidebar={false}>
       {TOKEN_TYPE === "erc20" ? (
         <NewArchERC20
           isTokenGated={isTokenGated}
@@ -313,7 +313,7 @@ const Join = () => {
           </Grid>
         </Grid>
       )}
-    </Layout2>
+    </Layout1>
   );
 };
 

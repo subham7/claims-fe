@@ -1,5 +1,4 @@
 import { React, useEffect, useState } from "react";
-import Layout2 from "../src/components/layouts/layout2";
 import {
   Grid,
   Button,
@@ -28,11 +27,12 @@ import {
 import { SUBGRAPH_URL_GOERLI, SUBGRAPH_URL_POLYGON } from "../src/api";
 import WrongNetworkModal from "../src/components/modals/WrongNetworkModal";
 import { addClubData } from "../src/redux/reducers/club";
+import Layout1 from "../src/components/layouts/layout1";
 
 const useStyles = makeStyles({
   container: {
     maxHeight: "100vh",
-    width: "100vw",
+    width: "100%",
   },
   yourClubText: {
     fontSize: "30px",
@@ -200,7 +200,7 @@ const App = () => {
   };
 
   return (
-    <Layout2 faucet={false}>
+    <Layout1 showSidebar={false} faucet={false}>
       <div className={classes.container}>
         {!manageStation && clubFlow && (
           <div className={classes.cardContainer}>
@@ -225,7 +225,7 @@ const App = () => {
             direction="row"
             justifyContent="center"
             alignItems="start"
-            mt={5}
+            mt={12}
             mb={0}>
             <Grid item md={5}>
               <Card>
@@ -390,7 +390,7 @@ const App = () => {
           ""
         )}
       </div>
-    </Layout2>
+    </Layout1>
   );
 };
 

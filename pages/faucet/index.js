@@ -11,11 +11,11 @@ import {
   CircularProgress,
   TextField,
 } from "@mui/material";
-import Layout2 from "../../src/components/layouts/layout2";
 import { useDispatch, useSelector } from "react-redux";
 import { SmartContract } from "../../src/api/contract";
 import { useConnectWallet } from "@web3-onboard/react";
 import { updateDynamicAddress } from "../../src/api";
+import Layout1 from "../../src/components/layouts/layout1";
 
 const useStyles = makeStyles({
   valuesStyle: {
@@ -277,7 +277,7 @@ const Faucet = (props) => {
     }
   };
   return (
-    <Layout2 faucet={false}>
+    <Layout1 showSidebar={false} faucet={false}>
       <Grid
         container
         spacing={2}
@@ -391,7 +391,7 @@ const Faucet = (props) => {
         open={open}>
         <CircularProgress color="inherit" />
       </Backdrop>
-    </Layout2>
+    </Layout1>
   );
 };
 

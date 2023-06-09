@@ -1,5 +1,4 @@
 import { Box, Button, Grid, Step, StepButton, Stepper } from "@mui/material";
-import Layout2 from "../../src/components/layouts/layout2";
 import ProtectRoute from "../../src/utils/auth";
 import { Fragment, useRef, useState } from "react";
 import Step1 from "../../src/components/createClubComps/Step1";
@@ -29,6 +28,7 @@ import { useConnectWallet } from "@web3-onboard/react";
 // import { fetchClubOwners } from "../../src/api/club";
 import useSafe from "../../src/hooks/useSafe";
 import useSmartContract from "../../src/hooks/useSmartContract";
+import Layout1 from "../../src/components/layouts/layout1";
 
 const Create = () => {
   const steps = [
@@ -476,7 +476,7 @@ const Create = () => {
   // ]);
 
   return (
-    <Layout2>
+    <Layout1 showSidebar={false}>
       <Grid
         container
         item
@@ -590,7 +590,7 @@ const Create = () => {
       </Grid>
 
       {networkId !== "0x89" && networkId !== "0x5" ? <WrongNetworkModal /> : ""}
-    </Layout2>
+    </Layout1>
   );
 };
 export default ProtectRoute(Create);
