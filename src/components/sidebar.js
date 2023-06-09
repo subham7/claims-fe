@@ -265,7 +265,7 @@ const Sidebar = (props) => {
         </Box>
 
         {showSidebar && (
-          <List>
+          <List style={{ marginTop: "72px" }}>
             <BootstrapTooltip title="Dashboard" placement="left">
               <ListItemButton
                 component="a"
