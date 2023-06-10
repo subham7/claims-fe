@@ -486,24 +486,10 @@ const NewArchERC20 = ({
                     <ProgressBar
                       value={
                         Number(
-                          convertFromWeiGovernance(
-                            +daoDetails.clubTokensMinted,
-                            +daoDetails.decimals,
-                          ) *
-                            Number(
-                              convertFromWeiGovernance(
-                                +daoDetails.pricePerToken,
-                                +erc20TokenDetails.tokenDecimal,
-                              ),
-                            ) *
+                          (daoDetails.clubTokensMinted / 10 ** 18) *
+                            daoDetails.pricePerToken *
                             100,
-                        ) /
-                        Number(
-                          convertFromWeiGovernance(
-                            +daoDetails.totalSupply.toFixed(0),
-                            +erc20TokenDetails.tokenDecimal,
-                          ),
-                        )
+                        ) / Number(daoDetails.totalSupply.toFixed(0))
                       }
                     />
                   ) : (
