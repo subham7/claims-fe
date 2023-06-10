@@ -28,6 +28,8 @@ import { SUBGRAPH_URL_GOERLI, SUBGRAPH_URL_POLYGON } from "../src/api";
 import WrongNetworkModal from "../src/components/modals/WrongNetworkModal";
 import { addClubData } from "../src/redux/reducers/club";
 import Layout1 from "../src/components/layouts/layout1";
+import Web3 from "web3";
+
 
 const useStyles = makeStyles({
   container: {
@@ -177,9 +179,13 @@ const App = () => {
         tokenType: clubData.stations[0].tokenType,
       }),
     );
-    router.push(`/dashboard/${data.daoAddress}`, undefined, {
-      shallow: true,
-    });
+    router.push(
+      `/dashboard/${Web3.utils.toChecksumAddress(data.daoAddress)}`,
+      undefined,
+      {
+        shallow: true,
+      },
+    );
   };
 
   const handleClose = (e) => {

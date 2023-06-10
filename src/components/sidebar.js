@@ -20,7 +20,8 @@ import { styled } from "@mui/material/styles";
 import Fade from "@mui/material/Fade";
 import Link from "next/link";
 import Image from "next/image";
-import { HiDocumentDuplicate } from "react-icons/hi";
+import Web3 from "web3";
+// import { HiDocumentDuplicate } from "react-icons/hi";
 
 const useStyles = makeStyles({
   listItemIcon: {
@@ -286,24 +287,28 @@ const Sidebar = (props) => {
               </ListItemButton>
             </BootstrapTooltip>
 
-            <BootstrapTooltip title="Proposals" placement="left">
-              <ListItemButton
-                component="a"
-                onClick={(e) => {
-                  router.push(`/dashboard/${clubId}/proposal`, undefined, {
+          <BootstrapTooltip title="Proposals" placement="left">
+            <ListItemButton
+              component="a"
+              onClick={(e) => {
+                router.push(
+                  `/dashboard/${Web3.utils.toChecksumAddress(clubId)}/proposal`,
+                  undefined,
+                  {
                     shallow: true,
-                  });
-                }}>
-                <ListItemIcon
-                  className={
-                    page == 2
-                      ? classes.listItemIconSelected
-                      : classes.listItemIcon
-                  }>
-                  <InsertDriveFileRoundedIcon />
-                </ListItemIcon>
-              </ListItemButton>
-            </BootstrapTooltip>
+                  },
+                );
+              }}>
+              <ListItemIcon
+                className={
+                  page == 2
+                    ? classes.listItemIconSelected
+                    : classes.listItemIcon
+                }>
+                <InsertDriveFileRoundedIcon />
+              </ListItemIcon>
+            </ListItemButton>
+          </BootstrapTooltip>
 
             <BootstrapTooltip title="Members" placement="left">
               <ListItemButton
