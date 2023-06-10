@@ -12,6 +12,7 @@ import {
   Skeleton,
   Stack,
   TextField,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import { TwitterShareButton } from "react-twitter-embed";
@@ -30,6 +31,7 @@ import { useRouter } from "next/router";
 import WrongNetworkModal from "../../../modals/WrongNetworkModal";
 // import useSmartContract from "../../../../hooks/useSmartContract";
 import useSmartContractMethods from "../../../../hooks/useSmartContractMethods";
+import { BsInfoCircle } from "react-icons/bs";
 
 const NewArchERC20 = ({
   daoDetails,
@@ -38,6 +40,8 @@ const NewArchERC20 = ({
   isEligibleForTokenGating,
   members,
   remainingClaimAmount,
+  displayTokenDetails,
+  fetchedTokenGatedDetails,
 }) => {
   const [erc20TokenDetails, setErc20TokenDetails] = useState({
     tokenSymbol: "",
@@ -56,6 +60,8 @@ const NewArchERC20 = ({
   const FACTORY_CONTRACT_ADDRESS = useSelector((state) => {
     return state.gnosis.factoryContractAddress;
   });
+
+  console.log(fetchedTokenGatedDetails, displayTokenDetails);
 
   const WRONG_NETWORK = useSelector((state) => {
     return state.gnosis.wrongNetwork;
@@ -272,24 +278,6 @@ const NewArchERC20 = ({
                       </div>
                     </div>
                   </Grid>
-                </Grid>
-
-                <Grid>
-                  {isTokenGated && isEligibleForTokenGating ? (
-                    <>
-                      <Typography sx={{ color: "#3B7AFD", marginLeft: "30px" }}>
-                        This club is token gated. You qualify
-                      </Typography>
-                    </>
-                  ) : isTokenGated && !isEligibleForTokenGating ? (
-                    <>
-                      <Typography sx={{ color: "red", marginLeft: "30px" }}>
-                        This club is token gated. You don&apos;t qualify
-                      </Typography>
-                    </>
-                  ) : (
-                    ""
-                  )}
                 </Grid>
 
                 <Divider variant="middle" />
@@ -753,11 +741,126 @@ const NewArchERC20 = ({
                     <Grid container spacing={2}>
                       <Grid item md={12} mt={2}>
                         <Card className={classes.cardWarning}>
-                          <Typography className={classes.JoinText}>
+                          <Typography className={classes.textPara}>
                             Stations can have same names or symbols, please make
                             sure to trust the sender for the link before
                             depositing.
                           </Typography>
+
+                          {isTokenGated ? (
+                            <Typography
+                              sx={{
+                                color: "#3A7AFD",
+                                fontFamily: "Whyte",
+                                fontSize: "22px",
+                                fontWeight: "bold",
+                                mt: "15px",
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "10px",
+                              }}>
+                              Eligibility
+                              <Tooltip
+                                placement="right"
+                                title="This is a token gated Station. Only holders of a specific Token/NFT can deposit and enter a Station.">
+                                <div>
+                                  <BsInfoCircle
+                                    color="#fff"
+                                    size={15}
+                                    style={{
+                                      cursor: "pointer",
+                                    }}
+                                  />
+                                </div>
+                              </Tooltip>
+                            </Typography>
+                          ) : (
+                            ""
+                          )}
+
+                          {isTokenGated ? (
+                            <>
+                              {displayTokenDetails.tokenASymbol !==
+                              displayTokenDetails.tokenBSymbol ? (
+                                <>
+                                  <Typography>
+                                    Hold{" "}
+                                    {convertFromWeiGovernance(
+                                      fetchedTokenGatedDetails.tokenAAmt,
+                                      displayTokenDetails.tokenADecimal,
+                                    )}{" "}
+                                    ${displayTokenDetails.tokenASymbol}{" "}
+                                    {fetchedTokenGatedDetails.operator == 0
+                                      ? "AND"
+                                      : "OR"}{" "}
+                                    {displayTokenDetails.tokenBDecimal
+                                      ? convertFromWeiGovernance(
+                                          fetchedTokenGatedDetails.tokenBAmt,
+                                          displayTokenDetails.tokenBDecimal,
+                                        )
+                                      : convertFromWeiGovernance(
+                                          fetchedTokenGatedDetails.tokenBAmt,
+                                          displayTokenDetails.tokenADecimal,
+                                        )}{" "}
+                                    ${displayTokenDetails.tokenBSymbol} tokens
+                                    to enter this Station
+                                  </Typography>
+                                </>
+                              ) : (
+                                <>
+                                  <Typography>
+                                    Hold{" "}
+                                    {convertFromWeiGovernance(
+                                      fetchedTokenGatedDetails.tokenAAmt,
+                                      displayTokenDetails.tokenADecimal,
+                                    )}{" "}
+                                    ${displayTokenDetails.tokenASymbol} tokens
+                                    to enter this Station
+                                  </Typography>
+                                </>
+                              )}
+                            </>
+                          ) : (
+                            ""
+                          )}
+
+                          {/* <ul>
+                            <li
+                              style={{
+                                fontSize: "18px",
+                                fontWeight: "500",
+                                mt: "5px",
+                              }}>
+                              ${displayTokenDetails.tokenASymbol} -{" "}
+                              {convertFromWeiGovernance(
+                                fetchedTokenGatedDetails.tokenAAmt,
+                                displayTokenDetails.tokenADecimal,
+                              )}{" "}
+                              token
+                            </li>
+
+                            {displayTokenDetails.tokenASymbol !==
+                              displayTokenDetails.tokenBSymbol && (
+                              <li
+                                style={{
+                                  fontSize: "18px",
+                                  fontWeight: "500",
+                                  mt: "5px",
+                                }}>
+                                ${displayTokenDetails.tokenBSymbol} -{" "}
+                                {displayTokenDetails.tokenBDecimal
+                                  ? convertFromWeiGovernance(
+                                      fetchedTokenGatedDetails.tokenBAmt,
+                                      displayTokenDetails.tokenBDecimal,
+                                    )
+                                  : convertFromWeiGovernance(
+                                      fetchedTokenGatedDetails.tokenBAmt,
+                                      displayTokenDetails.tokenADecimal,
+                                    )}{" "}
+                                token
+                              </li>
+                            )}
+                          </ul> */}
                         </Card>
                       </Grid>
                       <Grid

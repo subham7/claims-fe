@@ -152,6 +152,15 @@ const useSmartContractMethods = () => {
       });
   };
 
+  const disableTokenGating = async (daoAddress) => {
+    return await factoryContractSend?.methods
+      ?.disableTokenGating(daoAddress)
+      .send({
+        from: walletAddress,
+        gasPrice: await getIncreaseGasPrice(),
+      });
+  };
+
   const getTokenGatingDetails = async (daoAddress) => {
     return await factoryContractCall?.methods
       ?.getTokenGatingDetails(daoAddress)
@@ -599,6 +608,7 @@ const useSmartContractMethods = () => {
     updateOwnerFee,
     updateDepositTime,
     setupTokenGating,
+    disableTokenGating,
     getTokenGatingDetails,
     claimAmount,
     claim,
