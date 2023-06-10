@@ -287,28 +287,30 @@ const Sidebar = (props) => {
               </ListItemButton>
             </BootstrapTooltip>
 
-          <BootstrapTooltip title="Proposals" placement="left">
-            <ListItemButton
-              component="a"
-              onClick={(e) => {
-                router.push(
-                  `/dashboard/${Web3.utils.toChecksumAddress(clubId)}/proposal`,
-                  undefined,
-                  {
-                    shallow: true,
-                  },
-                );
-              }}>
-              <ListItemIcon
-                className={
-                  page == 2
-                    ? classes.listItemIconSelected
-                    : classes.listItemIcon
-                }>
-                <InsertDriveFileRoundedIcon />
-              </ListItemIcon>
-            </ListItemButton>
-          </BootstrapTooltip>
+            <BootstrapTooltip title="Proposals" placement="left">
+              <ListItemButton
+                component="a"
+                onClick={(e) => {
+                  router.push(
+                    `/dashboard/${Web3.utils.toChecksumAddress(
+                      clubId,
+                    )}/proposal`,
+                    undefined,
+                    {
+                      shallow: true,
+                    },
+                  );
+                }}>
+                <ListItemIcon
+                  className={
+                    page == 2
+                      ? classes.listItemIconSelected
+                      : classes.listItemIcon
+                  }>
+                  <InsertDriveFileRoundedIcon />
+                </ListItemIcon>
+              </ListItemButton>
+            </BootstrapTooltip>
 
             <BootstrapTooltip title="Members" placement="left">
               <ListItemButton
@@ -369,7 +371,7 @@ const Sidebar = (props) => {
               </ListItemButton>
             </BootstrapTooltip>
 
-            <BootstrapTooltip title="Documents" placement="left">
+            {/* <BootstrapTooltip title="Documents" placement="left">
               <ListItemButton
                 component="a"
                 onClick={(e) => {
@@ -386,7 +388,7 @@ const Sidebar = (props) => {
                   <HiDocumentDuplicate size={30} />
                 </ListItemIcon>
               </ListItemButton>
-            </BootstrapTooltip>
+            </BootstrapTooltip> */}
           </List>
         )}
       </Drawer>
