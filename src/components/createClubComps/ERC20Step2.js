@@ -110,6 +110,7 @@ export default function ERC20Step2(props) {
                       </InputAdornment>
                     ),
                   }}
+                  onWheel={(event) => event.target.blur()}
                 />
               </Grid>
             </Grid>
@@ -162,6 +163,7 @@ export default function ERC20Step2(props) {
                       </InputAdornment>
                     ),
                   }}
+                  onWheel={(event) => event.target.blur()}
                 />
               </Grid>
             </Grid>
@@ -215,6 +217,7 @@ export default function ERC20Step2(props) {
                       </InputAdornment>
                     ),
                   }}
+                  onWheel={(event) => event.target.blur()}
                 />
               </Grid>
             </Grid>
@@ -268,6 +271,7 @@ export default function ERC20Step2(props) {
                       </InputAdornment>
                     ),
                   }}
+                  onWheel={(event) => event.target.blur()}
                 />
               </Grid>
             </Grid>

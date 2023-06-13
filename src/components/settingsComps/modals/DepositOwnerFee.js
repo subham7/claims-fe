@@ -77,6 +77,7 @@ const DepositOwnerFee = ({ updateOwnerFeesHandler, onClose, loading }) => {
             onChange={formik.handleChange}
             error={formik.touched.ownerFee && Boolean(formik.errors.ownerFee)}
             helperText={formik.touched.ownerFee && formik.errors.ownerFee}
+            onWheel={(event) => event.target.blur()}
           />
 
           <Grid

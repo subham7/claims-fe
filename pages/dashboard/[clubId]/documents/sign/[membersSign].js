@@ -137,6 +137,7 @@ const MembersSign = () => {
             onChange={formik.handleChange}
             error={formik.touched.amount && Boolean(formik.errors.amount)}
             helperText={formik.touched.amount && formik.errors.amount}
+            onWheel={(event) => event.target.blur()}
           />
 
           <Typography className={classes.text}>
