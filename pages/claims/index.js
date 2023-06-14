@@ -177,7 +177,7 @@ const Claims = () => {
           />
         </div>
 
-        {showWrongNetworkModal(wallet, ne)}
+        {showWrongNetworkModal(wallet, networkId)}
       </div>
     </Layout1>
   );
