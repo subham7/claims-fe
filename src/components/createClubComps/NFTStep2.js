@@ -334,6 +334,7 @@ export default function NFTStep2(props) {
                     </InputAdornment>
                   ),
                 }}
+                onWheel={(event) => event.target.blur()}
               />
             </Grid>
           </Grid>
@@ -383,6 +384,7 @@ export default function NFTStep2(props) {
                   props.formik.touched.maxTokensPerUser &&
                   props.formik.errors.maxTokensPerUser
                 }
+                onWheel={(event) => event.target.blur()}
               />
             </Grid>
           </Grid>
@@ -478,6 +480,7 @@ export default function NFTStep2(props) {
                     props.formik.touched.totalTokenSupply &&
                     props.formik.errors.totalTokenSupply
                   }
+                  onWheel={(event) => event.target.blur()}
                 />
               </Grid>
             </Grid>

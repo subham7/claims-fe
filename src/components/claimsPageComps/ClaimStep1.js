@@ -339,6 +339,7 @@ const ClaimStep1 = ({ formik, tokensInWallet, isLoading }) => {
                 formik.values.selectedToken.decimals,
               )
           }
+          onWheel={(event) => event.target.blur()}
         />
 
         <div

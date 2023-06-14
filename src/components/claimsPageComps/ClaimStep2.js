@@ -315,6 +315,7 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
                   type="number"
                   name="customAmount"
                   id="customAmount"
+                  onWheel={(event) => event.target.blur()}
                 />
               </>
             )}

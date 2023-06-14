@@ -674,6 +674,7 @@ const NewArchERC20 = ({
                                     formik.touched.tokenInput &&
                                     formik.errors.tokenInput
                                   }
+                                  onWheel={(event) => event.target.blur()}
                                 />
                               </FormControl>
 

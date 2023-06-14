@@ -153,6 +153,7 @@ const ProposalActionForm = ({ formik, tokenData }) => {
               helperText={
                 formik.touched.amountToAirdrop && formik.errors.amountToAirdrop
               }
+              onWheel={(event) => event.target.blur()}
             />
           </Grid>
           <Grid
@@ -173,6 +174,7 @@ const ProposalActionForm = ({ formik, tokenData }) => {
               onChange={formik.handleChange}
               error={formik.touched.carryFee && Boolean(formik.errors.carryFee)}
               helperText={formik.touched.carryFee && formik.errors.carryFee}
+              onWheel={(event) => event.target.blur()}
             />
           </Grid>
         </>
@@ -227,6 +229,7 @@ const ProposalActionForm = ({ formik, tokenData }) => {
                   formik.touched.amountOfTokens &&
                   Boolean(formik.errors.amountOfTokens)
                 }
+                onWheel={(event) => event.target.blur()}
               />
             ) : (
               <TextField
@@ -246,6 +249,7 @@ const ProposalActionForm = ({ formik, tokenData }) => {
                   formik.touched.amountOfTokens721 &&
                   formik.errors.amountOfTokens721
                 }
+                onWheel={(event) => event.target.blur()}
               />
             )}
           </Grid>
@@ -270,6 +274,7 @@ const ProposalActionForm = ({ formik, tokenData }) => {
               onChange={formik.handleChange}
               error={formik.touched.quorum && Boolean(formik.errors.quorum)}
               helperText={formik.touched.quorum && formik.errors.quorum}
+              onWheel={(event) => event.target.blur()}
             />
           </Grid>
 
@@ -293,6 +298,7 @@ const ProposalActionForm = ({ formik, tokenData }) => {
                 formik.touched.threshold && Boolean(formik.errors.threshold)
               }
               helperText={formik.touched.threshold && formik.errors.threshold}
+              onWheel={(event) => event.target.blur()}
             />
           </Grid>
         </>
@@ -326,6 +332,7 @@ const ProposalActionForm = ({ formik, tokenData }) => {
             helperText={
               formik.touched.totalDeposit && formik.errors.totalDeposit
             }
+            onWheel={(event) => event.target.blur()}
           />
         </Grid>
       ) : formik.values.actionCommand === "Send token to an address" ? (
@@ -407,6 +414,7 @@ const ProposalActionForm = ({ formik, tokenData }) => {
               helperText={
                 formik.touched.amountToSend && formik.errors.amountToSend
               }
+              onWheel={(event) => event.target.blur()}
             />
           </Grid>
         </>
