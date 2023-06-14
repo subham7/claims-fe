@@ -21,7 +21,6 @@ import ClubFetch from "../../../../src/utils/clubFetch";
 import { useDispatch, useSelector } from "react-redux";
 import { makeStyles } from "@mui/styles";
 import { setProposalList } from "../../../../src/redux/reducers/proposal";
-import WrongNetworkModal from "../../../../src/components/modals/WrongNetworkModal";
 import Web3 from "web3";
 import { Web3Adapter } from "@safe-global/protocol-kit";
 import SafeApiKit from "@safe-global/api-kit";
@@ -29,7 +28,10 @@ import {
   getProposalByDaoAddress,
   getProposalTxHash,
 } from "../../../../src/api/proposal";
-import { web3InstanceCustomRPC } from "../../../../src/utils/helper";
+import {
+  showWrongNetworkModal,
+  web3InstanceCustomRPC,
+} from "../../../../src/utils/helper";
 import { useConnectWallet } from "@web3-onboard/react";
 
 const useStyles = makeStyles({
@@ -59,6 +61,7 @@ const Proposal = () => {
   const { clubId: daoAddress } = router.query;
   const classes = useStyles();
   const [{ wallet }] = useConnectWallet();
+  const networkId = wallet?.chains[0].id;
 
   const [selectedListItem, setSelectedListItem] = useState(
     proposalDisplayOptions[0].type,
@@ -353,7 +356,7 @@ const Proposal = () => {
         </Grid>
       </Grid>
 
-      {WRONG_NETWORK && wallet && <WrongNetworkModal />}
+      {showWrongNetworkModal(wallet, networkId)}
 
       <CreateProposalDialog
         open={open}

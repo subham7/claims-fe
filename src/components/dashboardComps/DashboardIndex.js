@@ -39,8 +39,8 @@ import {
 } from "../../utils/globalFunctions";
 import { GiTwoCoins } from "react-icons/gi";
 import { IoColorPalette } from "react-icons/io5";
-import WrongNetworkModal from "../modals/WrongNetworkModal";
 import useSmartContractMethods from "../../hooks/useSmartContractMethods";
+import { showWrongNetworkModal } from "../../utils/helper";
 // import useSmartContract from "../../hooks/useSmartContract";
 
 const DashboardIndex = () => {
@@ -865,7 +865,7 @@ const DashboardIndex = () => {
           </Grid>
         </Grid>
 
-        {wallet && networkId !== "0x89" && <WrongNetworkModal />}
+        {showWrongNetworkModal(wallet, networkId)}
 
         <Snackbar
           //   open={openSnackBar}

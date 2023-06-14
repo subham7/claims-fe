@@ -17,8 +17,8 @@ import { useSelector } from "react-redux";
 import ClubFetch from "../../src/utils/clubFetch";
 import { Backdrop, CircularProgress, Grid, Typography } from "@mui/material";
 import useSmartContractMethods from "../../src/hooks/useSmartContractMethods";
-import WrongNetworkModal from "../../src/components/modals/WrongNetworkModal";
 import Layout1 from "../../src/components/layouts/layout1";
+import { showWrongNetworkModal } from "../../src/utils/helper";
 // import useSmartContract from "../../src/hooks/useSmartContract";
 
 const Join = () => {
@@ -66,6 +66,7 @@ const Join = () => {
     tokenBDecimal: 0,
   });
   const [{ wallet }] = useConnectWallet();
+  const networkId = wallet?.chains[0].id;
   const router = useRouter();
   const { jid: daoAddress } = router.query;
 
@@ -338,7 +339,7 @@ const Join = () => {
         <CircularProgress color="inherit" />
       </Backdrop>
 
-      {WRONG_NETWORK && wallet && <WrongNetworkModal />}
+      {showWrongNetworkModal(wallet, networkId)}
 
       {!wallet && (
         <Grid

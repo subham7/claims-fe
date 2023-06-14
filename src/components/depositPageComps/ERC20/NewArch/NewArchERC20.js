@@ -28,10 +28,10 @@ import * as yup from "yup";
 import dayjs from "dayjs";
 import { useSelector } from "react-redux";
 import { useRouter } from "next/router";
-import WrongNetworkModal from "../../../modals/WrongNetworkModal";
 // import useSmartContract from "../../../../hooks/useSmartContract";
 import useSmartContractMethods from "../../../../hooks/useSmartContractMethods";
 import { BsInfoCircle } from "react-icons/bs";
+import { showWrongNetworkModal } from "../../../../utils/helper";
 
 const NewArchERC20 = ({
   daoDetails,
@@ -54,6 +54,7 @@ const NewArchERC20 = ({
   const [depositSuccessfull, setDepositSuccessfull] = useState(false);
   const classes = NewArchERC20Styles();
   const [{ wallet }] = useConnectWallet();
+  const networkId = wallet?.chains[0].id;
   const router = useRouter();
   const walletAddress = wallet?.accounts[0].address;
 
@@ -1055,7 +1056,7 @@ const NewArchERC20 = ({
         </DialogContent>
       </Dialog> */}
 
-      {WRONG_NETWORK && wallet && <WrongNetworkModal />}
+      {showWrongNetworkModal(wallet, networkId)}
 
       <Backdrop
         sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}

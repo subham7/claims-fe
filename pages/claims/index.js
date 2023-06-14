@@ -9,8 +9,8 @@ import ClaimsCard from "../../src/components/claimsPageComps/ClaimsCard";
 import { getClaimsByUserAddress } from "../../src/api/claims";
 import { useConnectWallet } from "@web3-onboard/react";
 import useSmartContract from "../../src/hooks/useSmartContract";
-import WrongNetworkModal from "../../src/components/modals/WrongNetworkModal";
 import Layout1 from "../../src/components/layouts/layout1";
+import { showWrongNetworkModal } from "../../src/utils/helper";
 
 const useStyles = makeStyles({
   container: {
@@ -177,7 +177,7 @@ const Claims = () => {
           />
         </div>
 
-        {networkId && networkId !== "0x89" && <WrongNetworkModal />}
+        {showWrongNetworkModal(wallet, ne)}
       </div>
     </Layout1>
   );

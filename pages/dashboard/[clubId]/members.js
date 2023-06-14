@@ -22,8 +22,8 @@ import Layout1 from "../../../src/components/layouts/layout1";
 import { convertFromWeiGovernance } from "../../../src/utils/globalFunctions";
 import { subgraphQuery } from "../../../src/utils/subgraphs";
 import ClubFetch from "../../../src/utils/clubFetch";
-import WrongNetworkModal from "../../../src/components/modals/WrongNetworkModal";
 import { useConnectWallet } from "@web3-onboard/react";
+import { showWrongNetworkModal } from "../../../src/utils/helper";
 
 const useStyles = makeStyles({
   searchField: {
@@ -218,7 +218,7 @@ const Test = () => {
           </Grid>
         </div>
 
-        {WRONG_NETWORK && wallet && <WrongNetworkModal />}
+        {showWrongNetworkModal(wallet, networkId)}
 
         <Backdrop
           sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}

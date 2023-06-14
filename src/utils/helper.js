@@ -1,6 +1,7 @@
 import Web3 from "web3";
 import { POLYGON_MAINNET_RPC_URL, RPC_URL } from "../api";
 import Safe, { Web3Adapter } from "@safe-global/protocol-kit";
+import WrongNetworkModal from "../components/modals/WrongNetworkModal";
 
 export const getSafeSdk = async (gnosisAddress, walletAddress) => {
   const web3 = await web3InstanceCustomRPC();
@@ -35,4 +36,8 @@ export const web3InstanceEthereum = async () => {
 export const web3InstanceCustomRPC = async () => {
   const web3 = new Web3(RPC_URL ? RPC_URL : POLYGON_MAINNET_RPC_URL);
   return web3;
+};
+
+export const showWrongNetworkModal = (wallet, networkId) => {
+  return wallet && networkId !== "0x89" ? <WrongNetworkModal /> : null;
 };

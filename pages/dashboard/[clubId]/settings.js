@@ -11,8 +11,8 @@ import ClubFetch from "../../../src/utils/clubFetch";
 import { subgraphQuery } from "../../../src/utils/subgraphs";
 import { convertFromWeiGovernance } from "../../../src/utils/globalFunctions";
 import { getAssetsByDaoAddress } from "../../../src/api/assets";
-import WrongNetworkModal from "../../../src/components/modals/WrongNetworkModal";
 import useSmartContractMethods from "../../../src/hooks/useSmartContractMethods";
+import { showWrongNetworkModal } from "../../../src/utils/helper";
 
 const Settings = () => {
   const [daoDetails, setDaoDetails] = useState({
@@ -53,6 +53,7 @@ const Settings = () => {
   const [{ wallet }] = useConnectWallet();
 
   const walletAddress = wallet?.accounts[0].address;
+  const networkId = wallet?.chains[0].id;
 
   const SUBGRAPH_URL = useSelector((state) => {
     return state.gnosis.subgraphUrl;
@@ -263,7 +264,7 @@ const Settings = () => {
       />
       <TokenGating />
 
-      {WRONG_NETWORK && wallet && <WrongNetworkModal />}
+      {showWrongNetworkModal(wallet, networkId)}
     </div>
   );
 };

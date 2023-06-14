@@ -55,8 +55,11 @@ import Signators from "../../../../src/components/proposalComps/Signators";
 import ProposalInfo from "../../../../src/components/proposalComps/ProposalInfo";
 import CurrentResults from "../../../../src/components/proposalComps/CurrentResults";
 import ProposalVotes from "../../../../src/components/proposalComps/ProposalVotes";
-import WrongNetworkModal from "../../../../src/components/modals/WrongNetworkModal";
-import { getSafeSdk, web3InstanceEthereum } from "../../../../src/utils/helper";
+import {
+  getSafeSdk,
+  showWrongNetworkModal,
+  web3InstanceEthereum,
+} from "../../../../src/utils/helper";
 import useSmartContractMethods from "../../../../src/hooks/useSmartContractMethods";
 
 const useStyles = makeStyles({
@@ -210,6 +213,7 @@ const ProposalDetail = () => {
   const walletAddress = Web3.utils.toChecksumAddress(
     wallet?.accounts[0].address,
   );
+  const networkId = wallet?.chains[0].id;
 
   const tokenType = useSelector((state) => {
     return state.club.clubData.tokenType;
@@ -1203,7 +1207,7 @@ const ProposalDetail = () => {
           </Grid>
         </Grid>
 
-        {WRONG_NETWORK && wallet && <WrongNetworkModal />}
+        {showWrongNetworkModal(wallet, networkId)}
 
         <Snackbar
           open={openSnackBar}

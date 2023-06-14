@@ -21,7 +21,6 @@ import {
 import { setUploadNFTLoading } from "../../src/redux/reducers/gnosis";
 import { NFTStorage } from "nft.storage";
 import { convertToWeiGovernance } from "../../src/utils/globalFunctions";
-import WrongNetworkModal from "../../src/components/modals/WrongNetworkModal";
 import { useConnectWallet } from "@web3-onboard/react";
 // import Step4 from "../../src/components/createClubComps/Step4";
 // import Web3 from "web3";
@@ -29,6 +28,7 @@ import { useConnectWallet } from "@web3-onboard/react";
 import useSafe from "../../src/hooks/useSafe";
 import useSmartContract from "../../src/hooks/useSmartContract";
 import Layout1 from "../../src/components/layouts/layout1";
+import { showWrongNetworkModal } from "../../src/utils/helper";
 
 const Create = () => {
   const steps = [
@@ -589,7 +589,7 @@ const Create = () => {
         </Box>
       </Grid>
 
-      {networkId !== "0x89" && networkId !== "0x5" ? <WrongNetworkModal /> : ""}
+      {showWrongNetworkModal(wallet, networkId)}
     </Layout1>
   );
 };

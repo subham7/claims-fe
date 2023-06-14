@@ -16,11 +16,11 @@ import { convertFromWeiGovernance } from "../../../../utils/globalFunctions";
 import dayjs from "dayjs";
 import { useSelector } from "react-redux";
 import { useRouter } from "next/router";
-import WrongNetworkModal from "../../../modals/WrongNetworkModal";
 import RemoveIcon from "@mui/icons-material/Remove";
 import AddIcon from "@mui/icons-material/Add";
 // import useSmartContract from "../../../../hooks/useSmartContract";
 import useSmartContractMethods from "../../../../hooks/useSmartContractMethods";
+import { showWrongNetworkModal } from "../../../../utils/helper";
 
 const NewArchERC721 = ({
   daoDetails,
@@ -46,6 +46,7 @@ const NewArchERC721 = ({
   const router = useRouter();
 
   const walletAddress = wallet?.accounts[0].address;
+  const networkId = wallet?.chains[0].id;
 
   const WRONG_NETWORK = useSelector((state) => {
     return state.gnosis.wrongNetwork;
@@ -405,7 +406,7 @@ const NewArchERC721 = ({
           </Grid>
         )}
 
-        {WRONG_NETWORK && wallet && <WrongNetworkModal />}
+        {showWrongNetworkModal(wallet, networkId)}
 
         {claimSuccessfull && showMessage ? (
           <Alert
