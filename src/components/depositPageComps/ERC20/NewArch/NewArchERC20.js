@@ -28,7 +28,6 @@ import * as yup from "yup";
 import dayjs from "dayjs";
 import { useSelector } from "react-redux";
 import { useRouter } from "next/router";
-// import useSmartContract from "../../../../hooks/useSmartContract";
 import useSmartContractMethods from "../../../../hooks/useSmartContractMethods";
 import { BsInfoCircle } from "react-icons/bs";
 import { showWrongNetworkModal } from "../../../../utils/helper";
@@ -61,8 +60,6 @@ const NewArchERC20 = ({
   const FACTORY_CONTRACT_ADDRESS = useSelector((state) => {
     return state.gnosis.factoryContractAddress;
   });
-
-  console.log(fetchedTokenGatedDetails, displayTokenDetails);
 
   const WRONG_NETWORK = useSelector((state) => {
     return state.gnosis.wrongNetwork;

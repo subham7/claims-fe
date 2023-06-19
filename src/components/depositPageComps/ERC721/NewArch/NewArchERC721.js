@@ -18,7 +18,6 @@ import { useSelector } from "react-redux";
 import { useRouter } from "next/router";
 import RemoveIcon from "@mui/icons-material/Remove";
 import AddIcon from "@mui/icons-material/Add";
-// import useSmartContract from "../../../../hooks/useSmartContract";
 import useSmartContractMethods from "../../../../hooks/useSmartContractMethods";
 import { showWrongNetworkModal } from "../../../../utils/helper";
 
