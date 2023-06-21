@@ -45,6 +45,7 @@ export const slice = createSlice({
       ownerFeePerDepositPercent: null,
       pricePerToken: null,
     },
+    nftsOwnedByDao: null,
   },
   reducers: {
     addDaoAddress: (state, action) => {
@@ -104,6 +105,9 @@ export const slice = createSlice({
         action.payload.ownerFeePerDepositPercent;
       state.factoryData.pricePerToken = action.payload.pricePerToken;
     },
+    addNftsOwnedByDao: (state, action) => {
+      state.nftsOwnedByDao = action.payload;
+    },
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware(),
 });
@@ -115,6 +119,7 @@ export const {
   addErc721ClubDetails,
   setClubNetworkId,
   addFactoryData,
+  addNftsOwnedByDao,
 } = slice.actions;
 
 export default slice.reducer;

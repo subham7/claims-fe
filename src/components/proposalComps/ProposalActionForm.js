@@ -23,7 +23,7 @@ const useStyles = makeStyles({
   },
 });
 
-const ProposalActionForm = ({ formik, tokenData }) => {
+const ProposalActionForm = ({ formik, tokenData, nftData }) => {
   const classes = useStyles();
 
   const tokenType = useSelector((state) => {
@@ -91,6 +91,9 @@ const ProposalActionForm = ({ formik, tokenData }) => {
 
         <MenuItem key={4} value="Send token to an address">
           Send token to an address
+        </MenuItem>
+        <MenuItem key={5} value="Send nft to an address">
+          Send nft to an address
         </MenuItem>
       </Select>
 
@@ -415,6 +418,63 @@ const ProposalActionForm = ({ formik, tokenData }) => {
                 formik.touched.amountToSend && formik.errors.amountToSend
               }
               onWheel={(event) => event.target.blur()}
+            />
+          </Grid>
+        </>
+      ) : formik.values.actionCommand === "Send nft to an address" ? (
+        <>
+          <Grid
+            container
+            direction={"column"}
+            ml={3}
+            mt={2}
+            sx={{ marginLeft: "0 !important" }}>
+            <Typography variant="proposalBody">Token to be sent</Typography>
+            <Select
+              sx={{ marginTop: "0.5rem" }}
+              value={formik.values.customToken}
+              onChange={(e) =>
+                formik.setFieldValue(
+                  "customNft",
+                  nftData.find(
+                    (token) => token.token_address === e.target.value,
+                  ).token_address,
+                )
+              }
+              renderValue={(selected) => {
+                if (selected.length === 0) {
+                  return "Select a command";
+                }
+
+                return selected;
+              }}
+              inputProps={{ "aria-label": "Without label" }}
+              name="customToken"
+              id="customToken">
+              {nftData?.map((nft) => (
+                <MenuItem key={nft.token_hash} value={nft.token_address}>
+                  {nft.token_address}
+                </MenuItem>
+              ))}
+            </Select>
+            <Typography mt={2} variant="proposalBody">
+              Receiver&apos;s wallet address *
+            </Typography>
+            <TextField
+              variant="outlined"
+              className={classes.textField}
+              placeholder="0x00"
+              name="recieverAddress"
+              id="recieverAddress"
+              value={formik.values.recieverAddress}
+              onChange={formik.handleChange}
+              error={
+                formik.touched.recieverAddress &&
+                Boolean(formik.errors.recieverAddress)
+              }
+              helperText={
+                formik.touched.recieverAddress && formik.errors.recieverAddress
+              }
             />
           </Grid>
         </>

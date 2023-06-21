@@ -61,6 +61,7 @@ import {
   web3InstanceEthereum,
 } from "../../../../src/utils/helper";
 import useSmartContractMethods from "../../../../src/hooks/useSmartContractMethods";
+import { getNFTsByDaoAddress } from "../../../../src/api/assets";
 
 const useStyles = makeStyles({
   clubAssets: {
@@ -283,6 +284,7 @@ const ProposalDetail = () => {
   const [failed, setFailed] = useState(false);
   const [fetched, setFetched] = useState(false);
   const [members, setMembers] = useState([]);
+  const [nftData, setNftData] = useState([]);
 
   const GNOSIS_TRANSACTION_URL = useSelector((state) => {
     return state.gnosis.transactionUrl;
@@ -410,6 +412,15 @@ const ProposalDetail = () => {
       }
     });
   };
+
+  const fetchNfts = useCallback(async () => {
+    try {
+      const nftsData = await getNFTsByDaoAddress(daoAddress, NETWORK_HEX);
+      setNftData(nftsData.data);
+    } catch (error) {
+      console.log(error);
+    }
+  }, [NETWORK_HEX, daoAddress]);
 
   const fetchData = useCallback(async () => {
     const proposalData = getProposalDetail(pid);
@@ -586,6 +597,19 @@ const ProposalDetail = () => {
         proposalData.commands[0].customTokenAddresses,
       ]);
     }
+    if (proposalData.commands[0].executionId === 5) {
+      const nftDetails = nftData.find(
+        (nft) => nft.token_address === proposalData.commands[0].customNft,
+      );
+
+      let iface = new Interface(ABI);
+
+      data = iface.encodeFunctionData("transferNft", [
+        proposalData.commands[0].customNft,
+        proposalData.commands[0].customTokenAddresses[0],
+        nftDetails.token_id,
+      ]);
+    }
 
     const response = updateProposalAndExecution(
       data,
@@ -667,6 +691,7 @@ const ProposalDetail = () => {
     if (pid) {
       setLoaderOpen(true);
       fetchData();
+      fetchNfts();
       isOwner();
     }
   }, [pid]);

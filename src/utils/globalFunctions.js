@@ -17,10 +17,6 @@ export const calculateTreasuryTargetShare = (treasuryBalance, totalSupply) => {
 
 // function for calculating the number of days
 export const calculateDays = (dateTime) => {
-  console.log(
-    dateTime,
-    Math.round((new Date(dateTime) - new Date()) / (1000 * 60 * 60 * 24)),
-  );
   return Math.round((new Date(dateTime) - new Date()) / (1000 * 60 * 60 * 24));
 };
 

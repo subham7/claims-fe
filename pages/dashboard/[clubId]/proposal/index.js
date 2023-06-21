@@ -106,6 +106,10 @@ const Proposal = () => {
     return state.club.erc721ClubDetails.isGovernanceActive;
   });
 
+  const nftData = useSelector((state) => {
+    return state.club.nftsOwnedByDao;
+  });
+
   const isGovernanceActive =
     tokenType === "erc20" ? isGovernanceERC20 : isGovernanceERC721;
 
@@ -363,6 +367,7 @@ const Proposal = () => {
         setOpen={setOpen}
         onClose={handleClose}
         tokenData={tokenData}
+        nftData={nftData}
       />
       <Backdrop
         sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}

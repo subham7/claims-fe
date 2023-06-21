@@ -59,7 +59,13 @@ const useStyles = makeStyles({
     marginTop: "0.5rem",
   },
 });
-const CreateProposalDialog = ({ open, setOpen, onClose, tokenData }) => {
+const CreateProposalDialog = ({
+  open,
+  setOpen,
+  onClose,
+  tokenData,
+  nftData,
+}) => {
   const classes = useStyles();
   const router = useRouter();
   const dispatch = useDispatch();
@@ -124,6 +130,7 @@ const CreateProposalDialog = ({ open, setOpen, onClose, tokenData }) => {
       customToken: tokenData ? tokenData[0]?.tokenAddress : "",
       recieverAddress: "",
       amountToSend: 0,
+      customNft: "",
     },
     validationSchema: proposalValidationSchema,
     onSubmit: async (values) => {
@@ -204,6 +211,20 @@ const CreateProposalDialog = ({ open, setOpen, onClose, tokenData }) => {
             usdcGovernanceTokenDecimal: 18,
           },
         ];
+      }
+      if (values.actionCommand === "Send nft to an address") {
+        console.log("first");
+        commands = [
+          {
+            executionId: 5,
+            customNft: values.customNft,
+            customTokenAddresses: [values.recieverAddress],
+            usdcTokenSymbol: "USDC",
+            usdcTokenDecimal: 6,
+            usdcGovernanceTokenDecimal: 18,
+          },
+        ];
+        console.log(commands);
       }
       const payload = {
         name: values.proposalTitle,
@@ -472,7 +493,11 @@ const CreateProposalDialog = ({ open, setOpen, onClose, tokenData }) => {
               >
                 Add command
               </Button> */}
-                <ProposalActionForm formik={proposal} tokenData={tokenData} />
+                <ProposalActionForm
+                  formik={proposal}
+                  tokenData={tokenData}
+                  nftData={nftData}
+                />
               </Stack>
             )}
 
