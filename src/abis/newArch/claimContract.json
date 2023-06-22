@@ -11,6 +11,11 @@
         {
           "components": [
             {
+              "internalType": "string",
+              "name": "name",
+              "type": "string"
+            },
+            {
               "internalType": "address",
               "name": "creatorAddress",
               "type": "address"
@@ -241,6 +246,19 @@
     {
       "inputs": [
         {
+          "internalType": "address",
+          "name": "_admin",
+          "type": "address"
+        }
+      ],
+      "name": "addAdmin",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
           "internalType": "uint256",
           "name": "_coolDownTime",
           "type": "uint256"
@@ -372,6 +390,11 @@
       "inputs": [],
       "name": "claimSettings",
       "outputs": [
+        {
+          "internalType": "string",
+          "name": "name",
+          "type": "string"
+        },
         {
           "internalType": "address",
           "name": "creatorAddress",

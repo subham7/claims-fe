@@ -218,9 +218,9 @@ const useSmartContractMethods = () => {
       });
   };
 
-  const claimContract = async (claimSettings) => {
+  const claimContract = async (claimSettings, totalNoOfWallets) => {
     return await claimFactoryContractSend?.methods
-      ?.deployClaimContract(claimSettings)
+      ?.deployClaimContract(claimSettings, totalNoOfWallets)
       .send({
         from: walletAddress,
         gasPrice: await getIncreaseGasPrice(),

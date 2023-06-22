@@ -169,6 +169,16 @@ const Form = () => {
         csvObject: values.csvObject,
       };
       if (activeStep === steps.length - 1) {
+        let totalNoOfWallets;
+
+        if (data.eligible === "everyone") {
+          totalNoOfWallets = 0;
+        } else if (totalNoOfWallets === "prorata") {
+          totalNoOfWallets = ""; // amount of tokenHolders
+        } else if (totalNoOfWallets === "csv") {
+          totalNoOfWallets = data.csvObject.length;
+        }
+
         if (data.eligible === "token" || data.eligible === "everyone") {
           // checking maximum claim is prorata or custom
           setLoading(true);
@@ -217,6 +227,7 @@ const Form = () => {
               }
 
               const claimsSettings = [
+                data.description,
                 data.walletAddress.toLowerCase(),
                 data.walletAddress.toLowerCase(),
                 data.airdropTokenAddress,
@@ -247,7 +258,10 @@ const Form = () => {
                 ],
               ];
 
-              const response = await claimContract(claimsSettings);
+              const response = await claimContract(
+                claimsSettings,
+                totalNoOfWallets,
+              );
 
               const newClaimContract =
                 response.events.NewClaimContract.returnValues._newClaimContract;
@@ -321,6 +335,7 @@ const Form = () => {
               const root = tree.getHexRoot();
 
               const claimsSettings = [
+                data.description,
                 data.walletAddress.toLowerCase(),
                 data.walletAddress.toLowerCase(),
                 data.airdropTokenAddress,
@@ -344,7 +359,10 @@ const Form = () => {
                 ],
               ];
 
-              const response = await claimContract(claimsSettings);
+              const response = await claimContract(
+                claimsSettings,
+                totalNoOfWallets,
+              );
               const newClaimContract =
                 response.events.NewClaimContract.returnValues._newClaimContract;
 
