@@ -199,9 +199,9 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
 
           const list = await helper(csvArr, decimals);
           formik.values.merkleData = list;
-
           setLoadingCsv(false);
         } catch (err) {
+          setLoadingCsv(false);
           console.log(err);
         }
       };

@@ -5,7 +5,6 @@ import { POLYGON_MAINNET_RPC_URL, RPC_URL } from "../api";
 import { getIncreaseGasPrice } from "../utils/helper";
 import ERC20TokenABI from "../abis/usdcTokenContract.json";
 import ERC721TokenABI from "../abis/nft.json";
-import ClaimContractABI from "../abis/singleClaimContract.json";
 import { convertToWei } from "../utils/globalFunctions";
 import Safe, { Web3Adapter } from "@safe-global/protocol-kit";
 import { createProposalTxHash, getProposalTxHash } from "../api/proposal";
@@ -278,11 +277,14 @@ const useSmartContractMethods = () => {
   };
 
   const encode = async (address, amount) => {
-    const claimContract = new web3Call.eth.Contract(
-      ClaimContractABI.abi,
-      "0xE25f57C5Ec956757D19169563E0caB6e7670E2EB",
-    );
-    return await claimContract.methods.encode(address, amount).call();
+    // Define the types and values for encoding
+    const types = ["address", "uint256"];
+    const values = [address, amount];
+
+    // Encode the address and amount together
+    const encodedData = web3Call.eth.abi.encodeParameters(types, values);
+
+    return encodedData;
   };
 
   const createERC721DAO = async (

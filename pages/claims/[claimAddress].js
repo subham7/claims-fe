@@ -1,4 +1,3 @@
-import { makeStyles } from "@mui/styles";
 import React, { useCallback, useEffect, useState } from "react";
 import {
   convertFromWeiGovernance,
@@ -27,202 +26,14 @@ import useSmartContractMethods from "../../src/hooks/useSmartContractMethods";
 import useSmartContract from "../../src/hooks/useSmartContract";
 // import WrongNetworkModal from "../../src/components/modals/WrongNetworkModal";
 import Image from "next/image";
-
-const useStyles = makeStyles({
-  container: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-evenly",
-    height: "90vh",
-    color: "white",
-    margin: "0 auto",
-  },
-
-  lefContainer: {
-    width: "630px",
-    padding: "10px",
-    flex: 0.4,
-  },
-
-  heading: {
-    fontSize: "40px",
-    fontWeight: "400",
-    margin: 0,
-  },
-
-  activeContainer: {
-    display: "flex",
-    gap: "20px",
-    alignItems: "center",
-    padding: "10px 0",
-  },
-
-  active: {
-    background: "#0ABB9240",
-    padding: "10px 20px",
-    borderRadius: "10px",
-    color: "#0ABB92",
-  },
-
-  inactive: {
-    background: "#F75F71",
-    padding: "10px 20px",
-    borderRadius: "10px",
-    // color: "",
-  },
-
-  airdropContainer: {
-    display: "flex",
-    gap: "50px",
-  },
-
-  createdBy: {
-    background: "#142243",
-    padding: "10px 10px",
-    color: "#C1D3FF",
-    borderRadius: "10px",
-    display: "flex",
-    gap: "10px",
-    alignItems: "center",
-    margin: 0,
-  },
-  claimCloses: {
-    color: "#C1D3FF",
-    fontSize: "18px",
-    fontWeight: "300",
-    margin: "10px 0",
-    marginBottom: "10px",
-    display: "flex",
-    flexDirection: "column",
-  },
-  para: {
-    color: "#C1D3FF",
-    fontSize: "16px",
-    marginBottom: "8px",
-    // padding: 0,
-  },
-  label: {
-    margin: 0,
-    padding: 0,
-  },
-  address: {
-    color: "white",
-  },
-
-  rightContainer: {
-    flex: 0.3,
-    width: "600px",
-    padding: "60px",
-    borderRadius: "20px",
-    color: "white",
-    background: "#142243",
-  },
-
-  claimContainer: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: "28px 20px",
-    border: "0.5px solid #6475A3",
-    borderRadius: "12px",
-  },
-  amount: {
-    fontSize: "24px",
-    fontWeight: "400",
-    padding: 0,
-    margin: 0,
-
-    // margin:
-  },
-
-  btn: {
-    width: "130px",
-    fontFamily: "sans-serif",
-    fontSize: "16px",
-    border: "none",
-    padding: "12px 24px",
-    color: "white",
-    background: "#3B7AFD",
-    borderRadius: "8px",
-    cursor: "pointer",
-    marginTop: "20px",
-  },
-  claimAmt: {
-    fontSize: "30px",
-    margin: 0,
-    padding: 0,
-  },
-  myClaim: {
-    margin: 0,
-    padding: 0,
-    color: "#C1D3FF",
-    fontSize: "14px",
-  },
-  claims: {
-    display: "flex",
-    marginTop: "10px",
-    alignItems: "center",
-    gap: "10px",
-    marginBottom: "20px",
-  },
-  input: {
-    fontSize: "30px",
-    outline: "none",
-    background: "transparent",
-    border: "none",
-    color: "white",
-  },
-  max: {
-    padding: "4px 12px",
-    background: "#3B7AFD",
-    borderRadius: "4px",
-    color: "white",
-    border: "none",
-    cursor: "pointer",
-  },
-  remainingClaim: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  error: {
-    color: "#FF033E",
-    fontSize: "14px",
-  },
-  nav: {
-    padding: "10px 20px",
-  },
-  countdown: {
-    width: "fit-content",
-    background: "#FEB803",
-    padding: "10px 10px",
-    fontSize: "20px",
-    borderRadius: "5px",
-    margin: 0,
-  },
-  closingIn: {
-    padding: "30px 0px",
-    borderRadius: "10px",
-    color: "#F8F5E4",
-    fontSize: "24px",
-    width: "fit-content",
-  },
-
-  div: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "-3px",
-  },
-});
+import { ClaimsStyles } from "../../src/components/claimsPageComps/ClaimsStyles";
 
 const ClaimAddress = () => {
-  const classes = useStyles();
+  const classes = ClaimsStyles();
   // const dispatch = useDispatch();
   const router = useRouter();
 
   const [contractData, setContractData] = useState([]);
-  // const [erc20Decimal, setDecimals] = useState(null);
-  // const [airdropAmountInNum, setAirdropAmountInNum] = useState(0);
   const [totalAmountofTokens, setTotalAmountOfTokens] = useState(0);
   const [airdropTokenName, setAirdropTokenName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -258,7 +69,6 @@ const ClaimAddress = () => {
     claimBalance,
     claimAmount,
     claim,
-    checkAmount,
     encode,
     getBalance,
     getTokenSymbol,
@@ -267,11 +77,10 @@ const ClaimAddress = () => {
 
   const dispatch = useDispatch();
 
-  // claims end date
+  // Times
+  const currentTime = Date.now() / 1000;
   const endDateString = new Date(contractData?.endTime * 1000).toString();
   const startDateString = new Date(contractData?.startTime * 1000).toString();
-
-  const currentTime = Date.now() / 1000;
   const startingTimeInNum = new Date(+contractData?.startTime * 1000);
   const endingTimeInNum = new Date(+contractData?.endTime * 1000);
 
@@ -317,7 +126,6 @@ const ClaimAddress = () => {
             ? isEligibleForTokenGated
             : !isEligibleForTokenGated)
         ) {
-          console.log(convertToWeiGovernance(claimableAmt, decimals));
           setClaimRemaining(convertToWeiGovernance(claimableAmt, decimals));
         } else if (
           !isClaimed &&
@@ -353,7 +161,6 @@ const ClaimAddress = () => {
 
         if (desc.permission == 0 && contractData?.daoToken) {
           const daoTokenBalance = await getBalance(desc.daoToken);
-          console.log(daoTokenBalance);
           const tokenSymbol = await getTokenSymbol(desc.daoToken);
           const daoTokenDecimal = await getDecimals(desc.daoToken);
           const tokenGatingValue = convertFromWeiGovernance(
@@ -430,17 +237,7 @@ const ClaimAddress = () => {
             desc.claimAmountDetails[0],
             decimals,
           );
-
-          if (desc.daoToken !== "0x0000000000000000000000000000000000000000") {
-            // amount for prorata
-            // const amount = await checkAmount(walletAddress);
-            // console.log(+airdropAmount);
-            // const data = convertFromWeiGovernance('11', decimals);
-
-            setClaimableAmt(airdropAmount);
-          } else {
-            setClaimableAmt(airdropAmount);
-          }
+          setClaimableAmt(airdropAmount);
         }
 
         setIsLoading(false);
@@ -479,7 +276,8 @@ const ClaimAddress = () => {
         const leaf = keccak256(encodedLeaf);
         const proof = tree.getHexProof(leaf);
         const amt = convertToWeiGovernance(claimInput, decimalOfToken);
-        await claim(amt, proof, encodedLeaf);
+
+        await claim(amt, walletAddress, proof, encodedLeaf);
 
         const claimedAmt = await claimAmount(walletAddress);
         setClaimRemaining(claimableAmt - claimedAmt);
@@ -768,23 +566,21 @@ const ClaimAddress = () => {
                             setShowInputError(false);
                           }
                         }}
-                        // disabled={
-                        //   !claimActive ||
-                        //   !claimableAmt ||
-                        //   !contractData?.isEnabled ||
-                        //   (claimRemaining == 0 && alreadyClaimed)
-                        //     ? true
-                        //     : false
-                        // }
+                        disabled={
+                          !claimActive ||
+                          !claimableAmt ||
+                          !claimEnabled ||
+                          (claimRemaining == 0 && alreadyClaimed)
+                            ? true
+                            : false
+                        }
                         value={claimInput}
                         placeholder="0"
                         type="number"
                         className={classes.input}
                       />
                       <button
-                        // disabled={
-                        //   (!claimActive || !contractData?.isEnabled) && true
-                        // }
+                        disabled={(!claimActive || !claimEnabled) && true}
                         style={
                           !claimActive
                             ? { cursor: "not-allowed" }
@@ -805,17 +601,17 @@ const ClaimAddress = () => {
                     <button
                       onClick={claimHandler}
                       className={classes.btn}
-                      // disabled={
-                      //   (claimRemaining == 0 && alreadyClaimed && claimed) ||
-                      //   !claimActive ||
-                      //   !claimableAmt ||
-                      //   +claimInput <= 0 ||
-                      //   claimInput >= +claimRemaining ||
-                      //   (contractData?.permission == 0 &&
-                      //     !isEligibleForTokenGated)
-                      //     ? true
-                      //     : false
-                      // }
+                      disabled={
+                        (claimRemaining == 0 && alreadyClaimed && claimed) ||
+                        !claimActive ||
+                        !claimableAmt ||
+                        +claimInput <= 0 ||
+                        claimInput >= +claimRemaining ||
+                        (contractData?.permission == 0 &&
+                          !isEligibleForTokenGated)
+                          ? true
+                          : false
+                      }
                       style={
                         (alreadyClaimed && +claimRemaining === 0) ||
                         +claimInput <= 0 ||

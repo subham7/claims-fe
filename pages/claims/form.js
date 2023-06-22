@@ -18,7 +18,6 @@ import { MerkleTree } from "merkletreejs";
 import keccak256 from "keccak256";
 import { useConnectWallet } from "@web3-onboard/react";
 import { useRouter } from "next/router";
-import { web3InstanceEthereum } from "../../src/utils/helper";
 import useSmartContractMethods from "../../src/hooks/useSmartContractMethods";
 import useSmartContract from "../../src/hooks/useSmartContract";
 // import WrongNetworkModal from "../../src/components/modals/WrongNetworkModal";
@@ -39,7 +38,6 @@ const useStyles = makeStyles({
 const Form = () => {
   const [activeStep, setActiveStep] = useState(0);
   const [tokensInWallet, setTokensInWallet] = useState(null);
-  const [currentAccount, setCurrentAccount] = useState("");
   const [showError, setShowError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [finish, setFinish] = useState(false);
@@ -67,12 +65,9 @@ const Form = () => {
 
   const getCurrentAccount = async () => {
     setLoadingTokens(true);
-    const web3 = await web3InstanceEthereum();
-    const accounts = await web3.eth.getAccounts();
     // const data = await getTokensFromWallet(accounts[0], networkId);
     if (networkId && walletAddress) {
       const tokensList = await getAssetsByDaoAddress(walletAddress, networkId);
-      setCurrentAccount(accounts[0]);
       setTokensInWallet(tokensList.data.tokenPriceList);
       setLoadingTokens(false);
     }
@@ -106,13 +101,6 @@ const Form = () => {
       description: yup
         .string("Enter one-liner description")
         .required("description is required"),
-      // rollbackAddress: yup
-      //   .string("Enter rollback address")
-      //   .when("airdropFrom", {
-      //     is: "contract",
-      //     then: () => yup.string().required("Please enter rollback address"),
-      //   }),
-      // .required("Rollback address is required"),
       numberOfTokens: yup
         .number()
         .required("Enter amount of tokens")
@@ -160,9 +148,6 @@ const Form = () => {
 
       const data = {
         description: values.description,
-        // rollbackAddress: values.rollbackAddress
-        //   ? values.rollbackAddress
-        //   : walletAddress.toLowerCase(),
         numberOfTokens: values.numberOfTokens.toString(),
         startDate: dayjs(values.startDate).format(),
         endDate: dayjs(values.endDate).format(),
@@ -231,23 +216,6 @@ const Form = () => {
                 );
               }
 
-              /** 
-              struct ClaimSettings {
-                address creatorAddress; //Address of claim creator
-                address walletAddress; //Address of Safe/EOA
-                address airdropToken; //Address of token to airdrop
-                address daoToken; //Address of DAO token
-                uint256 tokenGatingValue; //Minimum amount required for token gating
-                uint256 startTime; //Start time of claim
-                uint256 endTime; //End time of claim
-                uint256 cooldownTime; //Time period after which users can receive tokens
-                bool hasAllowanceMechanism; //To check if token transfer is based on allowance
-                bytes32 merkleRoot; //Merkle root to validate proof
-                CLAIM_PERMISSION permission;
-                ClaimAmountDetails claimAmountDetails;
-            }
-            */
-
               const claimsSettings = [
                 data.walletAddress.toLowerCase(),
                 data.walletAddress.toLowerCase(),
@@ -278,8 +246,6 @@ const Form = () => {
                   ).toString(),
                 ],
               ];
-
-              console.log("settings", claimsSettings);
 
               const response = await claimContract(claimsSettings);
 
@@ -312,7 +278,6 @@ const Form = () => {
               createClaim(postData);
 
               setLoading(false);
-
               setFinish(true);
               showMessageHandler(setFinish);
               setTimeout(() => {
@@ -360,25 +325,23 @@ const Form = () => {
                 data.walletAddress.toLowerCase(),
                 data.airdropTokenAddress,
                 "0x0000000000000000000000000000000000000000",
-                hasAllowanceMechanism, // false if token approved function called
-                false,
                 0,
-                true,
                 new Date(data.startDate).getTime() / 1000,
                 new Date(data.endDate).getTime() / 1000,
-                data.rollbackAddress.toLowerCase(),
+                0,
+                hasAllowanceMechanism, // false if token approved function called
                 root,
-                2,
+                1,
                 [
-                  false,
-                  0,
                   convertToWeiGovernance(
                     data.numberOfTokens,
                     decimals,
                   ).toString(),
-                  [],
+                  convertToWeiGovernance(
+                    data.numberOfTokens,
+                    decimals,
+                  ).toString(),
                 ],
-                [false, 0],
               ];
 
               const response = await claimContract(claimsSettings);

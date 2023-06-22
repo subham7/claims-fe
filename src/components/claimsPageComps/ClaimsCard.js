@@ -117,6 +117,7 @@ const ClaimsCard = ({
   const walletAddress = wallet?.accounts[0].address;
 
   const startingTime = new Date(+startDate * 1000);
+  const endingTime = new Date(+endDate * 1000);
   const convertedStartDay = new Date(startDate * 1000).getDate();
   const convertedStartMonth = new Date(startDate * 1000).toLocaleString(
     "default",
@@ -146,16 +147,8 @@ const ClaimsCard = ({
 
   const fetchContractDetails = async () => {
     try {
-      // const claimSmartContract = new SmartContract(
-      //   claimContractABI,
-      //   claimContract,
-      //   walletAddress.toLowerCase(),
-      //   undefined,
-      //   undefined,
-      // );
-
       const desc = await claimSettings();
-      setClaimEnabled(desc.isEnabled);
+      setClaimEnabled(endingTime > currentTime ? true : false);
     } catch (error) {
       console.log(error);
     }
