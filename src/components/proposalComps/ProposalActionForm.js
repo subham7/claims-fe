@@ -429,7 +429,7 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
             ml={3}
             mt={2}
             sx={{ marginLeft: "0 !important" }}>
-            <Typography variant="proposalBody">Token to be sent</Typography>
+            <Typography variant="proposalBody">Nft to be sent</Typography>
             <Select
               sx={{ marginTop: "0.5rem" }}
               value={formik.values.customToken}
@@ -451,11 +451,52 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
               inputProps={{ "aria-label": "Without label" }}
               name="customToken"
               id="customToken">
-              {nftData?.map((nft) => (
+              {nftData
+                .filter((item, index, self) => {
+                  return (
+                    index ===
+                    self.findIndex(
+                      (t) => t.token_address === item.token_address,
+                    )
+                  );
+                })
+                .map((nft) => (
+                  <MenuItem key={nft.token_hash} value={nft.token_address}>
+                    {nft.token_address}
+                  </MenuItem>
+                ))}
+            </Select>
+            <Typography mt={2} variant="proposalBody">
+              Token ID
+            </Typography>
+            <Select
+              sx={{ marginTop: "0.5rem" }}
+              value={formik.values.customToken}
+              onChange={(e) =>
+                formik.setFieldValue("customNftToken", e.target.value)
+              }
+              renderValue={(selected) => {
+                if (selected.length === 0) {
+                  return "Select a command";
+                }
+
+                return selected;
+              }}
+              inputProps={{ "aria-label": "Without label" }}
+              name="customNftToken"
+              id="customNftToken">
+              {nftData
+                .filter((nft) => nft.token_address === formik.values.customNft)
+                .map((nft) => (
+                  <MenuItem key={nft.token_hash} value={nft.token_id}>
+                    {nft.token_id}
+                  </MenuItem>
+                ))}
+              {/* {nftData?.map((nft) => (
                 <MenuItem key={nft.token_hash} value={nft.token_address}>
                   {nft.token_address}
                 </MenuItem>
-              ))}
+              ))} */}
             </Select>
             <Typography mt={2} variant="proposalBody">
               Receiver&apos;s wallet address *

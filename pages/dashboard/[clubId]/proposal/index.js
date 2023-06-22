@@ -16,7 +16,10 @@ import CreateProposalDialog from "../../../../src/components/proposalComps/Creat
 import { fetchProposals } from "../../../../src/utils/proposal";
 import { useRouter } from "next/router";
 import ProposalCard from "./ProposalCard";
-import { getAssetsByDaoAddress } from "../../../../src/api/assets";
+import {
+  getAssetsByDaoAddress,
+  getNFTsByDaoAddress,
+} from "../../../../src/api/assets";
 import ClubFetch from "../../../../src/utils/clubFetch";
 import { useDispatch, useSelector } from "react-redux";
 import { makeStyles } from "@mui/styles";
@@ -33,6 +36,7 @@ import {
   web3InstanceCustomRPC,
 } from "../../../../src/utils/helper";
 import { useConnectWallet } from "@web3-onboard/react";
+import { addNftsOwnedByDao } from "../../../../src/redux/reducers/club";
 
 const useStyles = makeStyles({
   noProposal_heading: {
@@ -63,6 +67,7 @@ const Proposal = () => {
   const [{ wallet }] = useConnectWallet();
   const networkId = wallet?.chains[0].id;
 
+  const [nftData, setNftData] = useState([]);
   const [selectedListItem, setSelectedListItem] = useState(
     proposalDisplayOptions[0].type,
   );
@@ -106,10 +111,6 @@ const Proposal = () => {
     return state.club.erc721ClubDetails.isGovernanceActive;
   });
 
-  const nftData = useSelector((state) => {
-    return state.club.nftsOwnedByDao;
-  });
-
   const isGovernanceActive =
     tokenType === "erc20" ? isGovernanceERC20 : isGovernanceERC721;
 
@@ -132,6 +133,16 @@ const Proposal = () => {
     });
     // router.push("/");
   };
+
+  const fetchNfts = useCallback(async () => {
+    try {
+      const nftsData = await getNFTsByDaoAddress(daoAddress, NETWORK_HEX);
+      setNftData(nftsData.data);
+      dispatch(addNftsOwnedByDao(nftsData.data));
+    } catch (error) {
+      console.log(error);
+    }
+  }, [NETWORK_HEX, daoAddress]);
 
   const fetchTokens = useCallback(() => {
     if (daoAddress) {
@@ -202,6 +213,7 @@ const Proposal = () => {
   useEffect(() => {
     if (daoAddress) {
       fetchTokens();
+      fetchNfts();
     }
   }, [daoAddress, fetchTokens]);
 

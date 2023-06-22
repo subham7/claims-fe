@@ -131,6 +131,7 @@ const CreateProposalDialog = ({
       recieverAddress: "",
       amountToSend: 0,
       customNft: "",
+      customNftToken: "",
     },
     validationSchema: proposalValidationSchema,
     onSubmit: async (values) => {
@@ -218,6 +219,7 @@ const CreateProposalDialog = ({
           {
             executionId: 5,
             customNft: values.customNft,
+            customNftToken: values.customNftToken,
             customTokenAddresses: [values.recieverAddress],
             usdcTokenSymbol: "USDC",
             usdcTokenDecimal: 6,

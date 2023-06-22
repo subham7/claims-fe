@@ -408,12 +408,14 @@ const useSmartContractMethods = () => {
     gnosisTransactionUrl,
   ) => {
     const parameters = data;
-
+    const web3 = new Web3(window.ethereum);
     const ethAdapter = new Web3Adapter({
-      web3: new Web3(window.ethereum),
+      web3: web3,
       signerAddress: Web3.utils.toChecksumAddress(walletAddress),
     });
+
     const txServiceUrl = gnosisTransactionUrl;
+
     const safeService = new SafeApiKit({
       txServiceUrl,
       ethAdapter,
@@ -465,7 +467,6 @@ const useSmartContractMethods = () => {
         value: "0",
       };
     }
-
     if (executionStatus !== "executed") {
       //case for 1st signature
       if (txHash === "") {
@@ -550,7 +551,6 @@ const useSmartContractMethods = () => {
             },
           ];
         }
-
         const safeTxHash = tx.safeTxHash;
         const safeTransaction = await safeSdk.createTransaction({
           safeTransactionData,
@@ -565,7 +565,6 @@ const useSmartContractMethods = () => {
       }
     } else {
       const proposalTxHash = await getProposalTxHash(pid);
-
       const safetx = await safeService.getTransaction(
         proposalTxHash.data[0].txHash,
       );
@@ -576,7 +575,7 @@ const useSmartContractMethods = () => {
 
       const executeTxResponse = await safeSdk.executeTransaction(
         safetx,
-        options,
+        // options,
       );
 
       const receipt =

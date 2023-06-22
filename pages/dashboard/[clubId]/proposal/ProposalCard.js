@@ -207,7 +207,8 @@ const ProposalCard = ({
             <Grid container spacing={1}>
               {proposal?.commands[0]?.usdcTokenSymbol &&
               !proposal?.commands[0]?.quorum &&
-              !proposal?.commands[0]?.totalDeposits ? (
+              !proposal?.commands[0]?.totalDeposits &&
+              !proposal?.commands[0].customNft ? (
                 <Grid item sx={{ display: "flex" }}>
                   <Chip
                     className={classes.timeLeftChip}
@@ -219,6 +220,30 @@ const ProposalCard = ({
                         </Typography>
                         <Typography color="#FFFFFF">
                           ${tokenDetails.symbol}
+                        </Typography>
+                      </Grid>
+                    }></Chip>
+                </Grid>
+              ) : (
+                <></>
+              )}
+
+              {proposal?.commands[0]?.executionId === 5 ? (
+                <Grid item sx={{ display: "flex" }}>
+                  <Chip
+                    className={classes.timeLeftChip}
+                    label={
+                      <Grid sx={{ display: "flex" }}>
+                        {" "}
+                        <Typography color="#C1D3FF" sx={{ marginRight: "5px" }}>
+                          Nft:
+                        </Typography>
+                        <Typography color="#FFFFFF">
+                          {proposal?.commands[0]?.customNft?.substring(0, 6) +
+                            ".........." +
+                            proposal?.commands[0]?.customNft?.substring(
+                              proposal?.commands[0]?.customNft?.length - 4,
+                            )}
                         </Typography>
                       </Grid>
                     }></Chip>
