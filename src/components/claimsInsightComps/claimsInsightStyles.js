@@ -33,14 +33,14 @@ export const ClaimsInsightStyles = makeStyles({
   },
 
   infoBottomLeftContainer: {
-    flex: "0.7",
+    flex: "0.65",
     borderRadius: "10px",
     background:
       "transparent linear-gradient(296deg, #6C63FF 0%, #363280 100%) 0% 0% no-repeat padding-box",
     padding: "30px",
   },
   infoBottomRightContainer: {
-    flex: "0.3",
+    flex: "0.35",
     borderRadius: "10px",
     padding: "30px",
     background:

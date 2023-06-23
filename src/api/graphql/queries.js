@@ -48,7 +48,7 @@ export const QUERY_CLUB_DETAILS = (daoAddress) => {
 
 export const QUERY_ALL_CLAIMS_TRANSACTIONS = (claimAddress) => {
   return `query{
-            airdrops(where: {claimAddress: "${claimAddress}"}) {
+            airdrops(where: {claimAddress: "${claimAddress}"}, orderBy: timestamp) {
               id
               txHash
               claimAddress
@@ -56,6 +56,7 @@ export const QUERY_ALL_CLAIMS_TRANSACTIONS = (claimAddress) => {
               airdropToken
               amountClaimed
               totalAmountClaimed
+              timestamp
             }
     }`;
 };
@@ -95,6 +96,8 @@ export const QUERY_ALL_CLAIMS_OF_CREATOR = (creatorAddress) => {
               totalClaimAmount
               totalUsers
               whitelistToken
+              claimType
+              timestamp
             }
     }`;
 };
@@ -123,6 +126,8 @@ export const QUERY_CLAIM_DETAILS = (claimAddress) => {
               totalClaimAmount
               totalUsers
               whitelistToken
+              claimType
+              timestamp
             }
     }`;
 };

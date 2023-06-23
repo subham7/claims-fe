@@ -1,11 +1,44 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { AiFillCopy } from "react-icons/ai";
 import { BsArrowLeftShort, BsLink45Deg } from "react-icons/bs";
 import { FiExternalLink } from "react-icons/fi";
 import { ClaimsInsightStyles } from "./claimsInsightStyles";
 
-const ClaimDescriptionInfo = () => {
+const ClaimDescriptionInfo = ({
+  description,
+  endTime,
+  startTime,
+  claimAddress,
+}) => {
+  const [claimActive, setClaimActive] = useState(false);
+  const [isClaimStarted, setIsClaimStarted] = useState(false);
+  const [claimEnabled, setClaimEnabled] = useState(false);
+
   const classes = ClaimsInsightStyles();
+  const copyHandler = () => {
+    navigator.clipboard.writeText(
+      `${window.location.origin}/claims/${claimAddress}`,
+    );
+  };
+
+  const currentTime = Date.now() / 1000;
+  const endingTimeInNum = new Date(+endTime * 1000);
+
+  useEffect(() => {
+    if (+startTime > currentTime) {
+      setClaimActive(false);
+      setIsClaimStarted(false);
+    } else if (+endTime < currentTime) {
+      setClaimActive(false);
+      setIsClaimStarted(true);
+    } else {
+      setClaimActive(true);
+      setIsClaimStarted(true);
+    }
+
+    setClaimEnabled(endingTimeInNum > currentTime ? true : false);
+  }, [endTime, startTime, currentTime, endingTimeInNum]);
+
   return (
     <div className={classes.infoTopContainer}>
       <div className={classes.flexContainer}>
@@ -25,12 +58,16 @@ const ClaimDescriptionInfo = () => {
           />
           <p
             style={{
-              background: "#0ABB92",
+              background: claimActive && claimEnabled ? "#0ABB92" : "#F75F71",
               padding: "2px 14px",
               fontSize: "14px",
               borderRadius: "25px",
             }}>
-            Live
+            {claimActive && isClaimStarted && claimEnabled
+              ? "Active"
+              : (!claimActive && isClaimStarted) || !claimEnabled
+              ? "Inactive"
+              : !claimActive && !isClaimStarted && "Not started yet"}
           </p>
         </div>
       </div>
@@ -40,12 +77,13 @@ const ClaimDescriptionInfo = () => {
           margin: 0,
           padding: 0,
         }}>
-        Shardeum’s investment token distribution
+        {description}
       </h2>
       <div className={classes.copyContainer}>
-        <p>0x51EEBc7765b246a4D16d02b28CEAC61299AB7d9d</p>
+        <p>{claimAddress}</p>
         <div className={classes.gapContainer}>
           <AiFillCopy
+            onClick={copyHandler}
             style={{
               border: "0.5px solid #6475A3",
               padding: "4px",

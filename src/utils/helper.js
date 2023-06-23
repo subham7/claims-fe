@@ -36,3 +36,37 @@ export const web3InstanceCustomRPC = async () => {
   const web3 = new Web3(RPC_URL ? RPC_URL : POLYGON_MAINNET_RPC_URL);
   return web3;
 };
+
+export const convertEpochTimeInCounterFormat = (epochTime) => {
+  const millisecondsPerMinute = 60 * 1000;
+  const millisecondsPerHour = 60 * millisecondsPerMinute;
+  const millisecondsPerDay = 24 * millisecondsPerHour;
+
+  const days = Math.floor(epochTime / millisecondsPerDay);
+  epochTime %= millisecondsPerDay;
+
+  const hours = Math.floor(epochTime / millisecondsPerHour);
+  epochTime %= millisecondsPerHour;
+
+  const minutes = Math.floor(epochTime / millisecondsPerMinute);
+
+  return `${days}D: ${hours < 10 ? "0" : ""}${hours}H: ${
+    minutes < 10 ? "0" : ""
+  }${minutes}M`;
+};
+
+function convertEpochTime(epochTime) {
+  const secondsPerMinute = 60;
+  const secondsPerHour = 60 * secondsPerMinute;
+  const secondsPerDay = 24 * secondsPerHour;
+
+  const days = Math.floor(epochTime / secondsPerDay);
+  const hours = Math.floor((epochTime % secondsPerDay) / secondsPerHour);
+  const minutes = Math.floor((epochTime % secondsPerHour) / secondsPerMinute);
+
+  return `${days}D: ${hours < 10 ? "0" : ""}${hours}H: ${
+    minutes < 10 ? "0" : ""
+  }${minutes}M`;
+}
+
+console.log(convertEpochTime(1688032070));

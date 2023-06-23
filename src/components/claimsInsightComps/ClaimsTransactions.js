@@ -8,50 +8,68 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { ClaimsInsightStyles } from "./claimsInsightStyles";
+import { subgraphQuery } from "../../utils/subgraphs";
+import { CLAIMS_SUBGRAPH_URL_GOERLI } from "../../api";
+import {
+  QUERY_ALL_CLAIMS_TRANSACTIONS,
+  QUERY_WALLET_WISE_TRANSACTIONS,
+} from "../../api/graphql/queries";
+import { convertFromWeiGovernance } from "../../utils/globalFunctions";
 
-const dummyData = [
-  {
-    date: "26/07/23",
-    wallet: "0x51f...890D",
-    totalTokens: 500,
-    claimed: 80,
-    percentage: 90,
-  },
-  {
-    date: "26/07/23",
-    wallet: "0x51f...890D",
-    totalTokens: 500,
-    claimed: 80,
-    percentage: 90,
-  },
-  {
-    date: "26/07/23",
-    wallet: "0x51f...890D",
-    totalTokens: 500,
-    claimed: 80,
-    percentage: 90,
-  },
-  {
-    date: "26/07/23",
-    wallet: "0x51f...890D",
-    totalTokens: 500,
-    claimed: 80,
-    percentage: 90,
-  },
-  {
-    date: "26/07/23",
-    wallet: "0x51f...890D",
-    totalTokens: 500,
-    claimed: 80,
-    percentage: 90,
-  },
-];
+const ClaimsTransactions = ({
+  claimAddress,
+  airdropTokenDetails,
+  maxClaimAmount,
+}) => {
+  const [walletWiseTransactionData, setWalletWiseTransactionData] = useState(
+    [],
+  );
+  const [allTransactionsData, setAllTransactionsData] = useState([]);
+  const [isWalletSelected, setIsWalletSelected] = useState(true);
+  const [isAllTransactionSelected, setIsAllTransactionSelected] =
+    useState(false);
 
-const ClaimsTransactions = () => {
   const classes = ClaimsInsightStyles();
-  const header = ["Date", "Wallet", "Total tokens", "Claimed", "Percentage"];
+  const walletHeaders = [
+    "Date",
+    "Wallet",
+    "Total tokens",
+    "Claimed",
+    "Percentage",
+  ];
+  const allTransactionHeaders = [
+    "Date",
+    "Tx Hash",
+    "Wallet",
+    "Total tokens",
+    "Claimed",
+    "Percentage",
+  ];
+
+  const fetchWalletWiseTransactions = async () => {
+    const { claimers } = await subgraphQuery(
+      CLAIMS_SUBGRAPH_URL_GOERLI,
+      QUERY_WALLET_WISE_TRANSACTIONS(claimAddress),
+    );
+    setWalletWiseTransactionData(claimers);
+  };
+
+  const fetchAllTransactions = async () => {
+    const { airdrops } = await subgraphQuery(
+      CLAIMS_SUBGRAPH_URL_GOERLI,
+      QUERY_ALL_CLAIMS_TRANSACTIONS(claimAddress),
+    );
+    setAllTransactionsData(airdrops?.reverse());
+  };
+
+  useEffect(() => {
+    if (claimAddress) {
+      fetchWalletWiseTransactions();
+      fetchAllTransactions();
+    }
+  }, [claimAddress]);
 
   return (
     <div className={classes.claimsTransactionContainer}>
@@ -62,8 +80,12 @@ const ClaimsTransactions = () => {
           margin: "20px 0",
         }}>
         <button
+          onClick={() => {
+            setIsWalletSelected(true);
+            setIsAllTransactionSelected(false);
+          }}
           style={{
-            background: "#19274B",
+            background: isWalletSelected ? "#19274B" : "#121D38",
             padding: "15px 30px ",
             borderRadius: "6px",
             border: "none",
@@ -74,8 +96,12 @@ const ClaimsTransactions = () => {
           Wallet wise
         </button>
         <button
+          onClick={() => {
+            setIsAllTransactionSelected(true);
+            setIsWalletSelected(false);
+          }}
           style={{
-            background: "#19274B",
+            background: isAllTransactionSelected ? "#19274B" : "#121D38",
             padding: "15px 20px ",
             borderRadius: "6px",
             border: "none",
@@ -95,64 +121,163 @@ const ClaimsTransactions = () => {
               overflow: "hidden",
             }}>
             <TableRow>
-              {header.map((data, key) => {
-                return (
-                  <TableCell
-                    sx={{
-                      minWidth: "100px",
-                      fontSize: "16px",
-                      background: "#142243",
-                    }}
-                    align="left"
-                    variant="tableHeading"
-                    key={key}>
-                    {data}
-                  </TableCell>
-                );
-              })}
+              {isWalletSelected ? (
+                <>
+                  {walletHeaders.map((data, key) => {
+                    return (
+                      <TableCell
+                        sx={{
+                          minWidth: "100px",
+                          fontSize: "16px",
+                          background: "#142243",
+                        }}
+                        align="left"
+                        variant="tableHeading"
+                        key={key}>
+                        {data}
+                      </TableCell>
+                    );
+                  })}
+                </>
+              ) : (
+                <>
+                  {allTransactionHeaders.map((data, key) => {
+                    return (
+                      <TableCell
+                        sx={{
+                          minWidth: "100px",
+                          fontSize: "16px",
+                          background: "#142243",
+                        }}
+                        align="left"
+                        variant="tableHeading"
+                        key={key}>
+                        {data}
+                      </TableCell>
+                    );
+                  })}
+                </>
+              )}
             </TableRow>
           </TableHead>
           <TableBody
             sx={{
               border: "0.5px solid #6475A3",
             }}>
-            {dummyData?.map((data, key) => (
-              <TableRow
-                key={key}
-                sx={{
-                  "&:last-child td, &:last-child th": { border: 0 },
-                  fontSize: "14px",
-                }}>
-                <TableCell align="left" variant="tableBody">
-                  {new Date(+data.timeStamp * 1000).toLocaleDateString()}
-                </TableCell>
-                <TableCell align="left" variant="tableBody">
-                  <Grid container direction="row" alignItems="center" gap={4}>
-                    <Grid
-                      sx={{
-                        flex: "0.7",
-                      }}
-                      item>
-                      <a className={classes.activityLink}>
-                        {data.wallet.substring(0, 6) +
-                          "......" +
-                          data.wallet.substring(data.wallet.length - 4)}{" "}
-                      </a>
-                    </Grid>
-                  </Grid>
-                </TableCell>
-                <TableCell align="left" variant="tableBody">
-                  {data.totalTokens} $USDC
-                </TableCell>
-                <TableCell align="left" variant="tableBody">
-                  {data.claimed} $USDC
-                </TableCell>
+            {isWalletSelected ? (
+              <>
+                {walletWiseTransactionData?.map((data, key) => (
+                  <TableRow
+                    key={key}
+                    sx={{
+                      "&:last-child td, &:last-child th": { border: 0 },
+                      fontSize: "12px",
+                    }}>
+                    <TableCell align="left" variant="tableBody">
+                      {new Date(Date.now()).toLocaleDateString()}
+                    </TableCell>
+                    <TableCell align="left" variant="tableBody">
+                      <Grid
+                        container
+                        direction="row"
+                        alignItems="center"
+                        gap={4}>
+                        <Grid
+                          sx={{
+                            flex: "0.7",
+                          }}
+                          item>
+                          <a className={classes.activityLink}>
+                            {data.claimerAddress.substring(0, 6) +
+                              "......" +
+                              data.claimerAddress.substring(
+                                data.claimerAddress.length - 4,
+                              )}{" "}
+                          </a>
+                        </Grid>
+                      </Grid>
+                    </TableCell>
+                    <TableCell align="left" variant="tableBody">
+                      {Number(
+                        convertFromWeiGovernance(
+                          maxClaimAmount,
+                          airdropTokenDetails.tokenDecimal,
+                        ),
+                      ).toFixed(2)}{" "}
+                      ${airdropTokenDetails.tokenSymbol}
+                    </TableCell>
+                    <TableCell align="left" variant="tableBody">
+                      {Number(
+                        convertFromWeiGovernance(
+                          data.totalAmountClaimed,
+                          airdropTokenDetails.tokenDecimal,
+                        ),
+                      ).toFixed(2)}{" "}
+                      ${airdropTokenDetails.tokenSymbol}
+                    </TableCell>
 
-                <TableCell align="left" variant="tableBody">
-                  {data.percentage} %
-                </TableCell>
-              </TableRow>
-            ))}
+                    <TableCell align="left" variant="tableBody">
+                      {Number(
+                        (+data.totalAmountClaimed / +maxClaimAmount) * 100,
+                      ).toFixed(0)}{" "}
+                      %
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </>
+            ) : (
+              <>
+                {allTransactionsData?.map((data, key) => (
+                  <TableRow
+                    key={key}
+                    sx={{
+                      "&:last-child td, &:last-child th": { border: 0 },
+                      fontSize: "12px",
+                    }}>
+                    <TableCell align="left" variant="tableBody">
+                      {new Date(+data.timestamp * 1000).toLocaleDateString()}
+                    </TableCell>
+                    <TableCell align="left" variant="tableBody">
+                      {data.txHash.substring(0, 6) +
+                        "......" +
+                        data.txHash.substring(data.txHash.length - 4)}
+                    </TableCell>
+                    <TableCell align="left" variant="tableBody">
+                      {data.claimerAddress.substring(0, 6) +
+                        "......" +
+                        data.claimerAddress.substring(
+                          data.claimerAddress.length - 4,
+                        )}
+                    </TableCell>
+                    <TableCell align="left" variant="tableBody">
+                      {Number(
+                        convertFromWeiGovernance(
+                          maxClaimAmount,
+                          airdropTokenDetails.tokenDecimal,
+                        ),
+                      ).toFixed(2)}{" "}
+                      ${airdropTokenDetails.tokenSymbol}
+                    </TableCell>
+                    <TableCell align="left" variant="tableBody">
+                      {Number(
+                        convertFromWeiGovernance(
+                          data.amountClaimed,
+                          airdropTokenDetails.tokenDecimal,
+                        ),
+                      ).toFixed(2)}{" "}
+                      ${airdropTokenDetails.tokenSymbol}
+                    </TableCell>
+
+                    <TableCell align="left" variant="tableBody">
+                      {Number(
+                        (+data.amountClaimed / +maxClaimAmount) * 100,
+                      ).toFixed(0)}{" "}
+                      %
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </>
+            )}
           </TableBody>
         </Table>
       </TableContainer>

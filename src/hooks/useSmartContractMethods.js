@@ -1,7 +1,7 @@
 import { useConnectWallet } from "@web3-onboard/react";
 import { useSelector } from "react-redux";
 import Web3 from "web3";
-import { POLYGON_MAINNET_RPC_URL, RPC_URL } from "../api";
+import { RPC_URL, GOERLI_RPC_URL } from "../api";
 import { getIncreaseGasPrice } from "../utils/helper";
 import ERC20TokenABI from "../abis/usdcTokenContract.json";
 import ERC721TokenABI from "../abis/nft.json";
@@ -13,7 +13,7 @@ import SafeApiKit from "@safe-global/api-kit";
 const useSmartContractMethods = () => {
   const [{ wallet }] = useConnectWallet();
   const walletAddress = wallet?.accounts[0]?.address;
-  const web3Call = new Web3(RPC_URL ? RPC_URL : POLYGON_MAINNET_RPC_URL);
+  const web3Call = new Web3(RPC_URL ? RPC_URL : GOERLI_RPC_URL);
 
   let web3Send;
   if (typeof window !== "undefined") {
@@ -158,6 +158,7 @@ const useSmartContractMethods = () => {
   };
 
   const getDecimals = async (contractAddress) => {
+    console.log("COntract", contractAddress, ERC20TokenABI.abi);
     const erc20TokenContractCall = new web3Call.eth.Contract(
       ERC20TokenABI.abi,
       contractAddress,

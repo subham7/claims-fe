@@ -173,11 +173,13 @@ const Form = () => {
 
         if (data.eligible === "everyone") {
           totalNoOfWallets = 0;
-        } else if (totalNoOfWallets === "prorata") {
+        } else if (data.eligible === "prorata") {
           totalNoOfWallets = ""; // amount of tokenHolders
-        } else if (totalNoOfWallets === "csv") {
-          totalNoOfWallets = data.csvObject.length;
+        } else if (data.eligible === "csv") {
+          totalNoOfWallets = data?.csvObject?.length;
         }
+
+        console.log("here", data.csvObject.length);
 
         if (data.eligible === "token" || data.eligible === "everyone") {
           // checking maximum claim is prorata or custom
@@ -358,6 +360,8 @@ const Form = () => {
                   ).toString(),
                 ],
               ];
+
+              console.log(claimsSettings, totalNoOfWallets);
 
               const response = await claimContract(
                 claimsSettings,
