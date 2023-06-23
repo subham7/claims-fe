@@ -347,7 +347,6 @@ const ProposalDetail = () => {
       const threshold = await safeSdk.getThreshold();
 
       const proposalTxHash = getProposalTxHash(pid);
-      console.log("proposalTxHash", proposalTxHash);
       proposalTxHash.then(async (result) => {
         if (
           result.status !== 200 ||
@@ -359,14 +358,12 @@ const ProposalDetail = () => {
           setTxHash(result.data[0].txHash);
           const safeService = await getSafeService();
           const tx = await safeService.getTransaction(result.data[0].txHash);
-          console.log("txxxxx", tx);
           const ownerAddresses = tx.confirmations.map(
             (confirmOwners) => confirmOwners.owner,
           );
           const pendingTxs = await safeService.getPendingTransactions(
             Web3.utils.toChecksumAddress(gnosisAddress),
           );
-          console.log("pendingTxs", pendingTxs);
           setPendingTxHash(
             pendingTxs?.results[pendingTxs.count - 1]?.safeTxHash,
           );
@@ -498,6 +495,7 @@ const ProposalDetail = () => {
         airDropAmountArray = await Promise.all(
           membersArray.map(async (member) => {
             const balance = await getNftBalance(
+              clubData.tokenType,
               Web3.utils.toChecksumAddress(member),
             );
 
@@ -525,6 +523,7 @@ const ProposalDetail = () => {
         airDropAmountArray = await Promise.all(
           membersArray.map(async (member) => {
             const balance = await getNftBalance(
+              clubData.tokenType,
               Web3.utils.toChecksumAddress(member),
             );
 
@@ -551,6 +550,7 @@ const ProposalDetail = () => {
         membersArray,
       ]);
     }
+
     if (proposalData.commands[0].executionId === 1) {
       let iface = new Interface(ABI);
 
