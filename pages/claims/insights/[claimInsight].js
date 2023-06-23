@@ -7,6 +7,7 @@ import ClaimDescriptionInfo from "../../../src/components/claimsInsightComps/Cla
 import ClaimEligibility from "../../../src/components/claimsInsightComps/ClaimEligibility";
 import ClaimEdit from "../../../src/components/claimsInsightComps/ClaimEdit";
 import ToggleClaim from "../../../src/components/claimsInsightComps/ToggleClaim";
+import ClaimsTransactions from "../../../src/components/claimsInsightComps/ClaimsTransactions";
 
 const ClaimInsight = () => {
   const classes = ClaimsInsightStyles();
@@ -27,6 +28,8 @@ const ClaimInsight = () => {
             <ClaimEligibility />
           </div>
         </div>
+
+        <ClaimsTransactions />
       </section>
     </Layout1>
   );

@@ -45,3 +45,84 @@ export const QUERY_CLUB_DETAILS = (daoAddress) => {
             }
     }`;
 };
+
+export const QUERY_ALL_CLAIMS_TRANSACTIONS = (claimAddress) => {
+  return `query{
+            airdrops(where: {claimAddress: "${claimAddress}"}) {
+              id
+              txHash
+              claimAddress
+              claimerAddress
+              airdropToken
+              amountClaimed
+              totalAmountClaimed
+            }
+    }`;
+};
+
+export const QUERY_WALLET_WISE_TRANSACTIONS = (claimAddress) => {
+  return `query{
+            claimers(where: {claimAddress: "${claimAddress}"}) {
+              claimAddress
+              claimerAddress
+              totalAmountClaimed
+              id
+            }
+    }`;
+};
+
+export const QUERY_ALL_CLAIMS_OF_CREATOR = (creatorAddress) => {
+  return `query{
+            claims(where: {creatorAddress: "${creatorAddress}"}) {
+              id
+              txHash
+              claimAddress
+              creatorAddress
+              coolDownTime
+              airdropToken
+              admins
+              description
+              endTime
+              hasAllowanceMechanism
+              maxClaimableAmount
+              merkleRoot
+              minWhitelistTokenValue
+              moderators
+              numOfUsersClaimed
+              startTime
+              tokenDistributionWallet
+              totalAmountClaimed
+              totalClaimAmount
+              totalUsers
+              whitelistToken
+            }
+    }`;
+};
+
+export const QUERY_CLAIM_DETAILS = (claimAddress) => {
+  return `query{
+            claims(where: {claimAddress: "${claimAddress}"}) {
+              id
+              txHash
+              claimAddress
+              creatorAddress
+              coolDownTime
+              airdropToken
+              admins
+              description
+              endTime
+              hasAllowanceMechanism
+              maxClaimableAmount
+              merkleRoot
+              minWhitelistTokenValue
+              moderators
+              numOfUsersClaimed
+              startTime
+              tokenDistributionWallet
+              totalAmountClaimed
+              totalClaimAmount
+              totalUsers
+              whitelistToken
+            }
+    }`;
+};
