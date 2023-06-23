@@ -485,6 +485,7 @@ const ProposalDetail = () => {
         airDropAmountArray = await Promise.all(
           membersArray.map(async (member) => {
             const balance = await getNftBalance(
+              clubData.tokenType,
               Web3.utils.toChecksumAddress(member),
             );
 
@@ -512,6 +513,7 @@ const ProposalDetail = () => {
         airDropAmountArray = await Promise.all(
           membersArray.map(async (member) => {
             const balance = await getNftBalance(
+              clubData.tokenType,
               Web3.utils.toChecksumAddress(member),
             );
 
@@ -538,6 +540,7 @@ const ProposalDetail = () => {
         membersArray,
       ]);
     }
+
     if (proposalData.commands[0].executionId === 1) {
       let iface = new Interface(ABI);
 
