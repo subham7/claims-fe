@@ -452,6 +452,7 @@ const useSmartContractMethods = () => {
         value: "0",
       };
     } else {
+      debugger;
       transaction = {
         //dao
         to: Web3.utils.toChecksumAddress(daoAddress),

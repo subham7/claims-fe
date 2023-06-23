@@ -213,7 +213,7 @@ const Proposal = () => {
   useEffect(() => {
     fetchProposalList();
   }, [daoAddress]);
-  console.log(proposalList);
+
   return (
     <Layout1 page={2}>
       <Grid container spacing={3} paddingLeft={10} paddingTop={15}>
