@@ -325,59 +325,67 @@ const ProposalDetail = () => {
   }, [GNOSIS_TRANSACTION_URL, walletAddress]);
 
   const isOwner = useCallback(async () => {
-    const safeSdk = await getSafeSdk(
-      Web3.utils.toChecksumAddress(gnosisAddress),
-      Web3.utils.toChecksumAddress(walletAddress),
-    );
-    const owners = await safeSdk.getOwners();
+    if (gnosisAddress) {
+      const safeSdk = await getSafeSdk(
+        Web3.utils.toChecksumAddress(gnosisAddress),
+        Web3.utils.toChecksumAddress(walletAddress),
+      );
+      const owners = await safeSdk.getOwners();
 
-    const ownerAddressesArray = owners.map((value) =>
-      Web3.utils.toChecksumAddress(value),
-    );
-    setOwnerAddresses(ownerAddressesArray);
+      const ownerAddressesArray = owners.map((value) =>
+        Web3.utils.toChecksumAddress(value),
+      );
+      setOwnerAddresses(ownerAddressesArray);
 
-    if (isGovernanceActive === false) {
-      if (isAdmin) {
-        setGovernance(true);
-      } else setGovernance(false);
-    } else setGovernance(true);
-    const threshold = await safeSdk.getThreshold();
+      if (isGovernanceActive === false) {
+        if (isAdmin) {
+          setGovernance(true);
+        } else setGovernance(false);
+      } else setGovernance(true);
+      const threshold = await safeSdk.getThreshold();
 
-    const proposalTxHash = getProposalTxHash(pid);
-    proposalTxHash.then(async (result) => {
-      if (
-        result.status !== 200 ||
-        (result.status === 200 && result.data.length === 0)
-      ) {
-        setTxHash("");
-      } else {
-        // txHash = result.data[0].txHash;
-        setTxHash(result.data[0].txHash);
-        const safeService = await getSafeService();
-        const tx = await safeService.getTransaction(result.data[0].txHash);
-        const ownerAddresses = tx.confirmations.map(
-          (confirmOwners) => confirmOwners.owner,
-        );
-        const pendingTxs = await safeService.getPendingTransactions(
-          Web3.utils.toChecksumAddress(gnosisAddress),
-        );
+      const proposalTxHash = getProposalTxHash(pid);
+      proposalTxHash.then(async (result) => {
+        if (
+          result.status !== 200 ||
+          (result.status === 200 && result.data.length === 0)
+        ) {
+          setTxHash("");
+        } else {
+          // txHash = result.data[0].txHash;
+          setTxHash(result.data[0].txHash);
+          const safeService = await getSafeService();
+          const tx = await safeService.getTransaction(result.data[0].txHash);
+          const ownerAddresses = tx.confirmations.map(
+            (confirmOwners) => confirmOwners.owner,
+          );
+          const pendingTxs = await safeService.getPendingTransactions(
+            Web3.utils.toChecksumAddress(gnosisAddress),
+          );
 
-        setPendingTxHash(
-          pendingTxs?.results[pendingTxs.count - 1]?.safeTxHash,
-          result.data[0].txHash,
-        );
+          setPendingTxHash(
+            pendingTxs?.results[pendingTxs.count - 1]?.safeTxHash,
+          );
 
-        setSignedOwners(ownerAddresses);
-        if (ownerAddresses.includes(walletAddress)) {
-          setSigned(true);
+          setSignedOwners(ownerAddresses);
+          if (ownerAddresses.includes(walletAddress)) {
+            setSigned(true);
+          }
+          if (ownerAddresses.length >= threshold) {
+            setExecutionReady(true);
+          }
         }
-        if (ownerAddresses.length >= threshold) {
-          setExecutionReady(true);
-        }
-      }
-      setLoaderOpen(false);
-    });
-  }, [gnosisAddress, isAdmin, isGovernanceActive, pid, walletAddress]);
+        setLoaderOpen(false);
+      });
+    }
+  }, [
+    getSafeService,
+    gnosisAddress,
+    isAdmin,
+    isGovernanceActive,
+    pid,
+    walletAddress,
+  ]);
 
   const checkUserVoted = () => {
     if (walletAddress) {
@@ -477,6 +485,7 @@ const ProposalDetail = () => {
         airDropAmountArray = await Promise.all(
           membersArray.map(async (member) => {
             const balance = await getNftBalance(
+              clubData.tokenType,
               Web3.utils.toChecksumAddress(member),
             );
 
@@ -504,6 +513,7 @@ const ProposalDetail = () => {
         airDropAmountArray = await Promise.all(
           membersArray.map(async (member) => {
             const balance = await getNftBalance(
+              clubData.tokenType,
               Web3.utils.toChecksumAddress(member),
             );
 
@@ -530,6 +540,7 @@ const ProposalDetail = () => {
         membersArray,
       ]);
     }
+
     if (proposalData.commands[0].executionId === 1) {
       let iface = new Interface(ABI);
 
@@ -669,7 +680,7 @@ const ProposalDetail = () => {
       fetchData();
       isOwner();
     }
-  }, [pid]);
+  }, [fetchData, isOwner, pid]);
 
   if (!wallet && proposalData === null) {
     return <>loading</>;
