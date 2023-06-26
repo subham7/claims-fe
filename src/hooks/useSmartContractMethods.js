@@ -242,6 +242,16 @@ const useSmartContractMethods = () => {
     });
   };
 
+  const changeClaimsStartTimeAndEndTime = async (startTime, endTime) => {
+    console.log(startTime, endTime, claimContractSend?.methods);
+    return await claimContractSend?.methods
+      .changeStartAndEndTime(startTime, endTime)
+      .send({
+        from: walletAddress,
+        gasPrice: await getIncreaseGasPrice(),
+      });
+  };
+
   const rollbackTokens = async (amount) => {
     return await claimContractSend?.methods.rollbackTokens(amount).send({
       from: walletAddress,
@@ -613,6 +623,7 @@ const useSmartContractMethods = () => {
     claimBalance,
     claimSettings,
     claimContract,
+    changeClaimsStartTimeAndEndTime,
     updateProposalAndExecution,
   };
 };

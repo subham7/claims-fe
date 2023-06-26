@@ -19,7 +19,7 @@ import { useConnectWallet } from "@web3-onboard/react";
 
 const useSmartContract = () => {
   const router = useRouter();
-  const { jid: daoAddress, clubId, claimAddress } = router.query;
+  const { jid: daoAddress, clubId, claimAddress, claimInsight } = router.query;
   const [{ wallet }] = useConnectWallet();
   const networkId = wallet?.chains[0].id;
   const dispatch = useDispatch();
@@ -145,14 +145,16 @@ const useSmartContract = () => {
 
   const initializeClaimContracts = () => {
     const web3Send = new Web3(window?.ethereum);
-
     try {
       const claimContractCall = new web3Send.eth.Contract(
         ClaimContractABI.abi,
-        claimAddress,
+        claimAddress ? claimAddress : claimInsight,
       );
       const claimContractSend = web3Send
-        ? new web3Send.eth.Contract(ClaimContractABI.abi, claimAddress)
+        ? new web3Send.eth.Contract(
+            ClaimContractABI.abi,
+            claimAddress ? claimAddress : claimInsight,
+          )
         : {};
       contractInstances = {
         ...contractInstances,
@@ -187,10 +189,10 @@ const useSmartContract = () => {
   }, [networkId, claimFactoryAddress]);
 
   useEffect(() => {
-    if (claimAddress) {
+    if (claimAddress || claimInsight) {
       initializeClaimContracts();
     }
-  }, [claimAddress]);
+  }, [claimAddress, claimInsight]);
 };
 
 export default useSmartContract;

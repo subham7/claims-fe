@@ -173,13 +173,11 @@ const Form = () => {
 
         if (data.eligible === "everyone") {
           totalNoOfWallets = 0;
-        } else if (data.eligible === "prorata") {
-          totalNoOfWallets = ""; // amount of tokenHolders
+        } else if (data.eligible === "token") {
+          totalNoOfWallets = 0; // amount of tokenHolders
         } else if (data.eligible === "csv") {
           totalNoOfWallets = data?.csvObject?.length;
         }
-
-        console.log("here", data.csvObject.length);
 
         if (data.eligible === "token" || data.eligible === "everyone") {
           // checking maximum claim is prorata or custom
@@ -207,14 +205,18 @@ const Form = () => {
 
           const loadClaimsContractFactoryData_Token = async () => {
             try {
-              let tokenGatingDecimals = 0;
+              let tokenGatingDecimals = 1;
               const decimals = await getDecimals(data.airdropTokenAddress);
 
               if (
                 data.daoTokenAddress !==
                 "0x0000000000000000000000000000000000000000"
               ) {
-                tokenGatingDecimals = await getDecimals(data.daoTokenAddress);
+                try {
+                  tokenGatingDecimals = await getDecimals(data.daoTokenAddress);
+                } catch (error) {
+                  console.log(error);
+                }
               }
 
               // if airdroping from contract then approve erc20
@@ -241,7 +243,6 @@ const Form = () => {
                       tokenGatingDecimals,
                     )
                   : 0,
-                // 0,
                 new Date(data.startDate).getTime() / 1000,
                 new Date(data.endDate).getTime() / 1000,
                 0,
@@ -259,6 +260,8 @@ const Form = () => {
                   ).toString(),
                 ],
               ];
+
+              console.log("claimSettings", claimsSettings, totalNoOfWallets);
 
               const response = await claimContract(
                 claimsSettings,

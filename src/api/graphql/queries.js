@@ -74,7 +74,7 @@ export const QUERY_WALLET_WISE_TRANSACTIONS = (claimAddress) => {
 
 export const QUERY_ALL_CLAIMS_OF_CREATOR = (creatorAddress) => {
   return `query{
-            claims(where: {creatorAddress: "${creatorAddress}"}) {
+            claims(where: {creatorAddress: "${creatorAddress}"}, orderBy: timestamp) {
               id
               txHash
               claimAddress

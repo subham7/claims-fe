@@ -14,6 +14,7 @@ import { CLAIMS_SUBGRAPH_URL_GOERLI } from "../../../src/api";
 import { QUERY_CLAIM_DETAILS } from "../../../src/api/graphql/queries";
 import { Backdrop, CircularProgress } from "@mui/material";
 import useSmartContractMethods from "../../../src/hooks/useSmartContractMethods";
+import useSmartContract from "../../../src/hooks/useSmartContract";
 
 const ClaimInsight = () => {
   const [claimsData, setClaimsData] = useState([]);
@@ -27,6 +28,7 @@ const ClaimInsight = () => {
   const router = useRouter();
   const { claimInsight: claimAddress } = router.query;
 
+  useSmartContract();
   const { getDecimals, getTokenSymbol } = useSmartContractMethods();
 
   const fetchClaimDetails = async () => {
@@ -84,9 +86,15 @@ const ClaimInsight = () => {
             </div>
           </div>
           <div className={classes.rightContainer}>
-            <ToggleClaim />
+            <ToggleClaim
+              startTime={claimsData[0]?.startTime}
+              endTime={claimsData[0]?.endTime}
+            />
             <ClaimEdit />
-            <ClaimEligibility />
+            <ClaimEligibility
+              whitelistTokenAddress={claimsData[0]?.whitelistToken}
+              minWhitelistTokenValue={claimsData[0]?.minWhitelistTokenValue}
+            />
           </div>
         </div>
 

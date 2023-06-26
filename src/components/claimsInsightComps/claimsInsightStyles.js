@@ -105,4 +105,14 @@ export const ClaimsInsightStyles = makeStyles({
     borderRadius: "10px",
     border: "0.5px solid #6475A3",
   },
+
+  eligibleToken: {
+    display: "flex",
+    width: "fit-content",
+    gap: "10px",
+    padding: "8px 10px",
+    marginTop: "15px",
+    border: "0.5px solid #6475A3",
+    borderRadius: "8px",
+  },
 });
