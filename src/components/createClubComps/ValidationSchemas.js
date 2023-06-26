@@ -170,4 +170,12 @@ export const proposalValidationSchema = yup.object({
         .required("Amount is required")
         .moreThan(0, "Amount should be greater than 0"),
   }),
+  safeThreshold: yup.number("Enter threshold").when("actionCommand", {
+    is: "Add/remove owners",
+    then: () =>
+      yup
+        .number("Enter threshold")
+        .required("Safe Threshold is required")
+        .moreThan(1, "Safe Threshold should be greater than 1"),
+  }),
 });

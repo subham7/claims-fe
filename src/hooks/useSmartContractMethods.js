@@ -406,6 +406,10 @@ const useSmartContractMethods = () => {
     airdropContractAddress = "",
     factoryContractAddress = "",
     gnosisTransactionUrl,
+    executionId,
+    ownerChangeAction,
+    ownerAddress,
+    safeThreshold,
   ) => {
     const parameters = data;
     const web3 = new Web3(window.ethereum);
@@ -453,6 +457,17 @@ const useSmartContractMethods = () => {
           .encodeABI(),
         value: "0",
       };
+    } else if (executionId === 6) {
+      if (ownerChangeAction === "add") {
+        transaction = {
+          ownerAddress,
+        };
+      } else {
+        transaction = {
+          ownerAddress,
+          threshold: 1,
+        };
+      }
     } else {
       transaction = {
         //dao
@@ -495,10 +510,18 @@ const useSmartContractMethods = () => {
             },
           ];
         }
-
-        const safeTransaction = await safeSdk.createTransaction({
-          safeTransactionData,
-        });
+        let safeTransaction;
+        if (executionId === 6) {
+          if (ownerChangeAction === "add") {
+            safeTransaction = await safeSdk.createAddOwnerTx(transaction);
+          } else {
+            safeTransaction = await safeSdk.createRemoveOwnerTx(transaction);
+          }
+        } else {
+          safeTransaction = await safeSdk.createTransaction({
+            safeTransactionData,
+          });
+        }
         const safeTxHash = await safeSdk.getTransactionHash(safeTransaction);
         const payload = {
           proposalId: pid,
@@ -552,9 +575,20 @@ const useSmartContractMethods = () => {
           ];
         }
         const safeTxHash = tx.safeTxHash;
-        const safeTransaction = await safeSdk.createTransaction({
-          safeTransactionData,
-        });
+
+        let safeTransaction;
+        if (executionId === 6) {
+          if (ownerChangeAction === "add") {
+            safeTransaction = await safeSdk.createAddOwnerTx(transaction);
+          } else {
+            safeTransaction = await safeSdk.createRemoveOwnerTx(transaction);
+          }
+        } else {
+          safeTransaction = await safeSdk.createTransaction({
+            safeTransactionData,
+          });
+        }
+
         // const senderSignature = await safeSdk.signTypedData(tx, "v4");
         const senderSignature = await safeSdk.signTypedData(
           safeTransaction,
