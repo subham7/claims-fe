@@ -163,9 +163,14 @@ const ClaimAddress = () => {
         setAirdropTokenName(name);
 
         if (desc.permission == 0 && contractData?.daoToken) {
+          let daoTokenDecimal = 1;
           const daoTokenBalance = await getBalance(desc.daoToken);
           const tokenSymbol = await getTokenSymbol(desc.daoToken);
-          const daoTokenDecimal = await getDecimals(desc.daoToken);
+          try {
+            daoTokenDecimal = await getDecimals(desc.daoToken);
+          } catch (error) {
+            console.log(error);
+          }
           const tokenGatingValue = convertFromWeiGovernance(
             desc.tokenGatingValue,
             daoTokenDecimal,
@@ -261,6 +266,7 @@ const ClaimAddress = () => {
         // const leaves = merkleLeaves.map((leaf) => keccak256(leaf));
         const tree = new MerkleTree(merkleLeaves, keccak256, { sort: true });
         const root = tree.getHexRoot();
+
         const encodedLeaf = await encode(
           walletAddress,
           convertToWeiGovernance(claimableAmt, decimalOfToken),

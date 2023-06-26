@@ -57,6 +57,9 @@ const ClaimDescriptionInfo = ({
         </div>
         <div className={classes.gapContainer}>
           <BsLink45Deg
+            onClick={() => {
+              router.push(`/claims/${claimAddress}`);
+            }}
             style={{
               border: "0.5px solid #6475A3",
               padding: "3px",
@@ -102,6 +105,12 @@ const ClaimDescriptionInfo = ({
             size={25}
           />
           <FiExternalLink
+            onClick={() => {
+              window.open(
+                `https://goerli.etherscan.io/address/${claimAddress}`,
+                "_blank",
+              );
+            }}
             style={{
               border: "0.5px solid #6475A3",
               padding: "4px",

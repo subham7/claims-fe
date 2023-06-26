@@ -17,6 +17,7 @@ import {
   QUERY_WALLET_WISE_TRANSACTIONS,
 } from "../../api/graphql/queries";
 import { convertFromWeiGovernance } from "../../utils/globalFunctions";
+import { FiExternalLink } from "react-icons/fi";
 
 const ClaimsTransactions = ({
   claimAddress,
@@ -229,9 +230,27 @@ const ClaimsTransactions = ({
                       {new Date(+data.timestamp * 1000).toLocaleDateString()}
                     </TableCell>
                     <TableCell align="left" variant="tableBody">
-                      {data.txHash.substring(0, 6) +
-                        "......" +
-                        data.txHash.substring(data.txHash.length - 4)}
+                      <div
+                        style={{
+                          display: "flex",
+                          gap: "10px",
+                          alignItems: "flex-start",
+                        }}>
+                        {data.txHash.substring(0, 6) +
+                          "......" +
+                          data.txHash.substring(data.txHash.length - 4)}
+
+                        <FiExternalLink
+                          onClick={() => {
+                            window.open(
+                              `https://goerli.etherscan.io/tx/${data.txHash}`,
+                              "_blank",
+                            );
+                          }}
+                          style={{ cursor: "pointer" }}
+                          size={15}
+                        />
+                      </div>
                     </TableCell>
                     <TableCell align="left" variant="tableBody">
                       {data.claimerAddress.substring(0, 6) +
@@ -272,6 +291,16 @@ const ClaimsTransactions = ({
           </TableBody>
         </Table>
       </TableContainer>
+
+      {!walletWiseTransactionData.length && !allTransactionsData.length && (
+        <p
+          style={{
+            textAlign: "center",
+            marginTop: "50px",
+          }}>
+          No transactions available.
+        </p>
+      )}
     </div>
   );
 };

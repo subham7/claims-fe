@@ -261,8 +261,6 @@ const Form = () => {
                 ],
               ];
 
-              console.log("claimSettings", claimsSettings, totalNoOfWallets);
-
               const response = await claimContract(
                 claimsSettings,
                 totalNoOfWallets,
@@ -363,8 +361,6 @@ const Form = () => {
                   ).toString(),
                 ],
               ];
-
-              console.log(claimsSettings, totalNoOfWallets);
 
               const response = await claimContract(
                 claimsSettings,

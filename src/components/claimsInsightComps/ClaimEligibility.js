@@ -68,7 +68,22 @@ const ClaimEligibility = ({
             <p>{whitelistTokenData.symbol}</p>
           </div>
         </>
-      ) : null}
+      ) : (
+        <div
+          style={{
+            display: "flex",
+            height: "90%",
+            alignItems: "center",
+            justifyContent: "center",
+          }}>
+          <p
+            style={{
+              color: "lightgray",
+            }}>
+            No conditions available!
+          </p>
+        </div>
+      )}
     </div>
   );
 };
