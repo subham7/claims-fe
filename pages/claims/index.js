@@ -6,11 +6,14 @@ import { useRouter } from "next/router";
 
 import claimsBanner from "../../public/assets/images/claimsBanner.png";
 import ClaimsCard from "../../src/components/claimsPageComps/ClaimsCard";
-import { getClaimsByUserAddress } from "../../src/api/claims";
+// import { getClaimsByUserAddress } from "../../src/api/claims";
 import { useConnectWallet } from "@web3-onboard/react";
 import useSmartContract from "../../src/hooks/useSmartContract";
 // import WrongNetworkModal from "../../src/components/modals/WrongNetworkModal";
 import Layout1 from "../../src/components/layouts/layout1";
+import { subgraphQuery } from "../../src/utils/subgraphs";
+import { CLAIMS_SUBGRAPH_URL_GOERLI } from "../../src/api";
+import { QUERY_ALL_CLAIMS_OF_CREATOR } from "../../src/api/graphql/queries";
 
 const useStyles = makeStyles({
   container: {
@@ -110,13 +113,21 @@ const Claims = () => {
   const networkId = wallet?.chains[0].id;
 
   useEffect(() => {
-    const getData = async () => {
-      const data = await getClaimsByUserAddress(walletAddress, networkId);
-      setClaimData(data.reverse());
+    const fetchClaims = async () => {
+      try {
+        const { claims } = await subgraphQuery(
+          CLAIMS_SUBGRAPH_URL_GOERLI,
+          QUERY_ALL_CLAIMS_OF_CREATOR(walletAddress),
+        );
+
+        setClaimData(claims?.reverse());
+      } catch (error) {
+        console.log(error);
+      }
     };
 
-    getData();
-  }, [walletAddress, networkId]);
+    fetchClaims();
+  }, [walletAddress]);
 
   return (
     <Layout1 showSidebar={false}>
@@ -156,13 +167,13 @@ const Claims = () => {
               key={i}
               i={claimData.length - i - 1}
               description={item?.description}
-              airdropTokenSymbol={item?.airdropTokenSymbol}
-              totalAmount={item?.totalAmount}
-              startDate={item?.startDate}
-              endDate={item?.endDate}
-              updatedDate={item?.updateDate}
-              claimContract={item?.claimContract}
-              createdBy={item?.createdBy}
+              airdropTokenAddress={item?.airdropToken}
+              totalAmount={item?.totalClaimAmount}
+              startDate={item?.startTime}
+              endDate={item?.endTime}
+              updatedDate={item?.timestamp}
+              claimContract={item?.claimAddress}
+              createdBy={item?.creatorAddress}
             />
           ))}
         </div>

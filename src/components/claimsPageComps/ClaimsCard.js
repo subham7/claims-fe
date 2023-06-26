@@ -5,15 +5,13 @@ import { BiPencil } from "react-icons/bi";
 import { AiFillCalendar } from "react-icons/ai";
 import { FaCoins } from "react-icons/fa";
 import { useRouter } from "next/router";
-import { useDispatch } from "react-redux";
-import { addClaimContractData } from "../../redux/reducers/createClaim";
-// import claimContractABI from "../../../src/abis/singleClaimContract.json";
 import Countdown from "react-countdown";
 import { Alert } from "@mui/material";
 import ClaimsEditModal from "./ClaimsEditModal";
 import { useConnectWallet } from "@web3-onboard/react";
-// import { SmartContract } from "../../api/contract";
 import useSmartContractMethods from "../../hooks/useSmartContractMethods";
+import { convertFromWeiGovernance } from "../../utils/globalFunctions";
+import { addClaimContractData } from "../../redux/reducers/createClaim";
 
 const useStyles = makeStyles({
   container: {
@@ -61,7 +59,7 @@ const useStyles = makeStyles({
     alignItems: "center",
   },
   title: {
-    marginTop: "10px",
+    margin: "10px 0",
     fontSize: "20px",
     fontWeight: "400",
     textAlign: "left",
@@ -95,7 +93,7 @@ const useStyles = makeStyles({
 const ClaimsCard = ({
   description,
   i,
-  airdropTokenSymbol,
+  airdropTokenAddress,
   totalAmount,
   updatedDate,
   startDate,
@@ -105,16 +103,17 @@ const ClaimsCard = ({
 }) => {
   const classes = useStyles();
   const router = useRouter();
-  const dispatch = useDispatch();
   const [isActive, setIsActive] = useState(false);
   const [isClaimStarted, setIsClaimStarted] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
   const [showClaimsEdit, setShowClaimsEdit] = useState(false);
   const [claimEnabled, setClaimEnabled] = useState(false);
+  const [symbol, setSymbol] = useState("");
+  const [decimals, setDecimals] = useState(0);
 
   const [{ wallet }] = useConnectWallet();
-  const { claimSettings } = useSmartContractMethods();
   const walletAddress = wallet?.accounts[0].address;
+  const { getDecimals, getTokenSymbol } = useSmartContractMethods();
 
   const startingTime = new Date(+startDate * 1000);
   const endingTime = new Date(+endDate * 1000);
@@ -128,11 +127,10 @@ const ClaimsCard = ({
     month: "short",
   });
 
-  const convertedDate = new Date(updatedDate).toLocaleDateString();
+  const convertedDate = new Date(updatedDate * 1000).toLocaleDateString();
   const currentTime = Date.now() / 1000;
 
   useEffect(() => {
-    // if (+startDate > currentTime || +endDate < currentTime) {
     if (+startDate > currentTime) {
       setIsActive(false);
       setIsClaimStarted(false);
@@ -147,8 +145,12 @@ const ClaimsCard = ({
 
   const fetchContractDetails = async () => {
     try {
-      const desc = await claimSettings();
       setClaimEnabled(endingTime > currentTime ? true : false);
+      const tokenDecimals = await getDecimals(airdropTokenAddress);
+      const tokenSymbol = await getTokenSymbol(airdropTokenAddress);
+
+      setDecimals(tokenDecimals);
+      setSymbol(tokenSymbol);
     } catch (error) {
       console.log(error);
     }
@@ -160,7 +162,7 @@ const ClaimsCard = ({
 
   const claimContractData = {
     description,
-    airdropTokenSymbol,
+    // airdropTokenSymbol,
     totalAmount,
     claimContract,
     createdBy,
@@ -170,7 +172,7 @@ const ClaimsCard = ({
   dispatch(addClaimContractData(claimContractData));
 
   const claimHandler = () => {
-    router.push(`/claims/${claimContract}`);
+    router.push(`/claims/insights/${claimContract}`);
   };
 
   const onClose = (e) => {
@@ -182,10 +184,6 @@ const ClaimsCard = ({
     e.stopPropagation();
     setShowClaimsEdit(true);
   };
-
-  // const IS_CLAIM_ENABLED = useSelector((state) => {
-  //   return state.createClaim.claimEnabled;
-  // });
 
   return (
     <div onClick={claimHandler} className={classes.container}>
@@ -245,13 +243,15 @@ const ClaimsCard = ({
         {/* Token */}
         <div className={classes.icons}>
           <BsFillSendFill color="#6475A3" size={12} />
-          <p className={classes.para}>{airdropTokenSymbol}</p>
+          <p className={classes.para}>{symbol}</p>
         </div>
 
         {/* No. of Tokens */}
         <div className={classes.icons}>
           <FaCoins color="#6475A3" size={12} />
-          <p className={classes.para}>{totalAmount}</p>
+          <p className={classes.para}>
+            {convertFromWeiGovernance(totalAmount, decimals)}
+          </p>
         </div>
 
         {/* Date */}

@@ -158,7 +158,6 @@ const useSmartContractMethods = () => {
   };
 
   const getDecimals = async (contractAddress) => {
-    console.log("COntract", contractAddress, ERC20TokenABI.abi);
     const erc20TokenContractCall = new web3Call.eth.Contract(
       ERC20TokenABI.abi,
       contractAddress,

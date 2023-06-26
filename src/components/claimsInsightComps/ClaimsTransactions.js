@@ -32,13 +32,7 @@ const ClaimsTransactions = ({
     useState(false);
 
   const classes = ClaimsInsightStyles();
-  const walletHeaders = [
-    "Date",
-    "Wallet",
-    "Total tokens",
-    "Claimed",
-    "Percentage",
-  ];
+  const walletHeaders = ["Wallet", "Total tokens", "Claimed", "Percentage"];
   const allTransactionHeaders = [
     "Date",
     "Tx Hash",
@@ -173,9 +167,6 @@ const ClaimsTransactions = ({
                       "&:last-child td, &:last-child th": { border: 0 },
                       fontSize: "12px",
                     }}>
-                    <TableCell align="left" variant="tableBody">
-                      {new Date(Date.now()).toLocaleDateString()}
-                    </TableCell>
                     <TableCell align="left" variant="tableBody">
                       <Grid
                         container
