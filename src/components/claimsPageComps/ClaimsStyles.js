@@ -46,6 +46,7 @@ export const ClaimsStyles = makeStyles({
   airdropContainer: {
     display: "flex",
     gap: "50px",
+    marginTop: "10px",
   },
 
   createdBy: {

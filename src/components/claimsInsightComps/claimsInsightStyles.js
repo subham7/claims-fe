@@ -64,7 +64,7 @@ export const ClaimsInsightStyles = makeStyles({
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    gap: "10px",
+    gap: "8px",
   },
 
   copyContainer: {

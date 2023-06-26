@@ -27,6 +27,9 @@ import useSmartContract from "../../src/hooks/useSmartContract";
 // import WrongNetworkModal from "../../src/components/modals/WrongNetworkModal";
 import Image from "next/image";
 import { ClaimsStyles } from "../../src/components/claimsPageComps/ClaimsStyles";
+import { subgraphQuery } from "../../src/utils/subgraphs";
+import { CLAIMS_SUBGRAPH_URL_GOERLI } from "../../src/api";
+import { QUERY_CLAIM_DETAILS } from "../../src/api/graphql/queries";
 
 const ClaimAddress = () => {
   const classes = ClaimsStyles();
@@ -37,7 +40,6 @@ const ClaimAddress = () => {
   const [totalAmountofTokens, setTotalAmountOfTokens] = useState(0);
   const [airdropTokenName, setAirdropTokenName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [description, setDescription] = useState("");
   const [isClaiming, setIsClaiming] = useState(false);
   const [message, setMessage] = useState("");
   const [claimed, setClaimed] = useState(false);
@@ -56,6 +58,7 @@ const ClaimAddress = () => {
   const [isEligibleForTokenGated, setIsEligibleForTokenGated] = useState(null);
   const [claimEnabled, setClaimEnabled] = useState(false);
   const [tokenGatingAmt, setTokenGatingAmt] = useState(0);
+  const [claimsDataSubgraph, setClaimsDataSubgraph] = useState([]);
 
   const [{ wallet }] = useConnectWallet();
   const walletAddress = wallet?.accounts[0].address;
@@ -183,16 +186,6 @@ const ClaimAddress = () => {
           decimals,
         );
         setTotalAmountOfTokens(totalAmountInNumber);
-
-        // fetching description
-        const dataFromAPI = await getClaimsByUserAddress(
-          desc.creatorAddress.toLowerCase(),
-          networkId,
-        );
-        const computedData = dataFromAPI.filter(
-          (data) => data.claimContract === claimAddress,
-        );
-        setDescription(computedData[0].description);
 
         // if merkleRoot present (whitelisted)
         if (
@@ -345,14 +338,11 @@ const ClaimAddress = () => {
   };
 
   let whoCanClaim;
-  if (
-    contractData?.merkleRoot !==
-    "0x0000000000000000000000000000000000000000000000000000000000000001"
-  ) {
+  if (claimsDataSubgraph[0]?.claimType === "1") {
     whoCanClaim = "Whitelisted";
-  } else if (contractData?.permission === "2") {
+  } else if (claimsDataSubgraph[0]?.claimType === "2") {
     whoCanClaim = "Everyone";
-  } else if (contractData?.permission === "0") {
+  } else if (claimsDataSubgraph[0]?.claimType === "0") {
     whoCanClaim = `Token Holders (${daoTokenSymbol})`;
   }
 
@@ -386,6 +376,23 @@ const ClaimAddress = () => {
     })();
   }, [claimAddress, walletAddress]);
 
+  useEffect(() => {
+    const fetchClaimsDataFromSubgraph = async () => {
+      try {
+        const { claims } = await subgraphQuery(
+          CLAIMS_SUBGRAPH_URL_GOERLI,
+          QUERY_CLAIM_DETAILS(claimAddress),
+        );
+        setClaimsDataSubgraph(claims);
+        console.log(claims);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    if (claimAddress) fetchClaimsDataFromSubgraph();
+  }, [claimAddress]);
+
   return (
     <Layout1 showSidebar={false}>
       <Image
@@ -416,7 +423,9 @@ const ClaimAddress = () => {
                 <div className={classes.container}>
                   {/* left */}
                   <div className={classes.lefContainer}>
-                    <h2 className={classes.heading}>{description}</h2>
+                    <h2 className={classes.heading}>
+                      {claimsDataSubgraph[0]?.description}
+                    </h2>
 
                     <div className={classes.addressLine}>
                       <div className={classes.activeContainer}>

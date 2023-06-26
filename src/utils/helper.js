@@ -55,18 +55,11 @@ export const convertEpochTimeInCounterFormat = (epochTime) => {
   }${minutes}M`;
 };
 
-function convertEpochTime(epochTime) {
-  const secondsPerMinute = 60;
-  const secondsPerHour = 60 * secondsPerMinute;
-  const secondsPerDay = 24 * secondsPerHour;
-
-  const days = Math.floor(epochTime / secondsPerDay);
-  const hours = Math.floor((epochTime % secondsPerDay) / secondsPerHour);
-  const minutes = Math.floor((epochTime % secondsPerHour) / secondsPerMinute);
-
-  return `${days}D: ${hours < 10 ? "0" : ""}${hours}H: ${
-    minutes < 10 ? "0" : ""
-  }${minutes}M`;
+export function formatEpochTime(epochTime) {
+  const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
+  const timeDiff = epochTime - currentTime;
+  const days = Math.floor(timeDiff / (24 * 60 * 60));
+  const hours = Math.floor((timeDiff % (24 * 60 * 60)) / (60 * 60));
+  const minutes = Math.floor((timeDiff % (60 * 60)) / 60);
+  return `${days}D: ${hours}H: ${minutes}M`;
 }
-
-console.log(convertEpochTime(1688032070));

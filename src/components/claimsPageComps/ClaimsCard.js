@@ -11,7 +11,6 @@ import ClaimsEditModal from "./ClaimsEditModal";
 import { useConnectWallet } from "@web3-onboard/react";
 import useSmartContractMethods from "../../hooks/useSmartContractMethods";
 import { convertFromWeiGovernance } from "../../utils/globalFunctions";
-import { addClaimContractData } from "../../redux/reducers/createClaim";
 
 const useStyles = makeStyles({
   container: {
@@ -169,7 +168,7 @@ const ClaimsCard = ({
     endDate,
   };
 
-  dispatch(addClaimContractData(claimContractData));
+  // dispatch(addClaimContractData(claimContractData));
 
   const claimHandler = () => {
     router.push(`/claims/insights/${claimContract}`);

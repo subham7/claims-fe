@@ -1,6 +1,6 @@
 import React from "react";
 import { convertFromWeiGovernance } from "../../utils/globalFunctions";
-import { convertEpochTimeInCounterFormat } from "../../utils/helper";
+import { formatEpochTime } from "../../utils/helper";
 import { ClaimsInsightStyles } from "./claimsInsightStyles";
 
 const TotalClaimedInfo = ({
@@ -11,9 +11,6 @@ const TotalClaimedInfo = ({
   claimType,
 }) => {
   const classes = ClaimsInsightStyles();
-
-  const endingTimeInNum = new Date(+endTime * 1000);
-  console.log(+endTime * 1000);
 
   const percentage = Number(
     (Number(
@@ -60,9 +57,7 @@ const TotalClaimedInfo = ({
         </div>
         <div>
           <p style={{ fontSize: "14px", fontWeight: "300" }}>Ends in</p>
-          <p style={{ fontWeight: "700" }}>
-            {convertEpochTimeInCounterFormat(endTime)}
-          </p>
+          <p style={{ fontWeight: "700" }}>{formatEpochTime(endTime)}</p>
         </div>
         <div>
           <p style={{ fontSize: "14px", fontWeight: "300" }}>Claim type</p>

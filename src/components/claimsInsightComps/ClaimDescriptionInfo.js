@@ -1,3 +1,4 @@
+import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { AiFillCopy } from "react-icons/ai";
 import { BsArrowLeftShort, BsLink45Deg } from "react-icons/bs";
@@ -14,6 +15,7 @@ const ClaimDescriptionInfo = ({
   const [isClaimStarted, setIsClaimStarted] = useState(false);
   const [claimEnabled, setClaimEnabled] = useState(false);
 
+  const router = useRouter();
   const classes = ClaimsInsightStyles();
   const copyHandler = () => {
     navigator.clipboard.writeText(
@@ -42,7 +44,14 @@ const ClaimDescriptionInfo = ({
   return (
     <div className={classes.infoTopContainer}>
       <div className={classes.flexContainer}>
-        <div className={classes.gapContainer}>
+        <div
+          style={{
+            cursor: "pointer",
+          }}
+          onClick={() => {
+            router.push("/claims");
+          }}
+          className={classes.gapContainer}>
           <BsArrowLeftShort size={25} />
           <p>Back</p>
         </div>
