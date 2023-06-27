@@ -428,7 +428,7 @@ const useSmartContractMethods = () => {
     let transaction;
     if (approvalData !== "") {
       approvalTransaction = {
-        to: Web3.utils.toChecksumAddress(daoAddress),
+        to: Web3.utils.toChecksumAddress(daoAddress), // gnosis for assetsstored
         data: erc20DaoContractSend.methods
           .updateProposalAndExecution(
             //usdc address
@@ -444,7 +444,6 @@ const useSmartContractMethods = () => {
         data: erc20DaoContractSend.methods
           .updateProposalAndExecution(
             //airdrop address
-
             airdropContractAddress,
             parameters,
           )
