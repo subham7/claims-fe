@@ -132,6 +132,9 @@ const CreateProposalDialog = ({
       amountToSend: 0,
       customNft: "",
       customNftToken: "",
+      ownerChangeAction: "",
+      ownerAddress: "",
+      safeThreshold: 1,
     },
     validationSchema: proposalValidationSchema,
     onSubmit: async (values) => {
@@ -221,6 +224,20 @@ const CreateProposalDialog = ({
             customNft: values.customNft,
             customNftToken: values.customNftToken,
             customTokenAddresses: [values.recieverAddress],
+            usdcTokenSymbol: "USDC",
+            usdcTokenDecimal: 6,
+            usdcGovernanceTokenDecimal: 18,
+          },
+        ];
+      }
+      if (values.actionCommand === "Add/remove owners") {
+        console.log("first");
+        commands = [
+          {
+            executionId: 6,
+            ownerChangeAction: values.ownerChangeAction,
+            ownerAddress: values.ownerAddress,
+            safeThreshold: values.safeThreshold,
             usdcTokenSymbol: "USDC",
             usdcTokenDecimal: 6,
             usdcGovernanceTokenDecimal: 18,

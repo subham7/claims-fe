@@ -634,6 +634,10 @@ const ProposalDetail = () => {
         ? FACTORY_CONTRACT_ADDRESS
         : "",
       GNOSIS_TRANSACTION_URL,
+      proposalData.commands[0].executionId,
+      proposalData.commands[0].ownerChangeAction,
+      proposalData.commands[0].ownerAddress,
+      proposalData.commands[0].safeThreshold,
     );
     if (proposalStatus === "executed") {
       // fetchData()
