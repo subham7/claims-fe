@@ -40,6 +40,7 @@ const Settings = () => {
     ownerFee: 0,
     nftMinted: 0,
     balanceOfClubToken: 0,
+    assetsStoredOnGnosis: false,
   });
   const [erc20TokenDetails, setErc20TokenDetails] = useState({
     tokenSymbol: "",
@@ -77,6 +78,10 @@ const Settings = () => {
 
   const factoryData = useSelector((state) => {
     return state.club.factoryData;
+  });
+
+  const gnosisAddress = useSelector((state) => {
+    return state.club.clubData.gnosisAddress;
   });
 
   const router = useRouter();
@@ -126,7 +131,7 @@ const Settings = () => {
           depositDeadline: factoryData.depositCloseTime,
           depositTokenAddress: factoryData.depositTokenAddress,
           distributionAmt: factoryData.distributionAmount,
-
+          assetsStoredOnGnosis: factoryData.assetsStoredOnGnosis,
           totalSupply:
             (factoryData.distributionAmount / 10 ** 18) *
             factoryData.pricePerToken,
@@ -187,6 +192,7 @@ const Settings = () => {
           depositDeadline: factoryData.depositCloseTime,
           depositTokenAddress: factoryData.depositTokenAddress,
           distributionAmt: factoryData.distributionAmount,
+          assetsStoredOnGnosis: factoryData.assetsStoredOnGnosis,
           totalSupply:
             factoryData.distributionAmount * factoryData.pricePerToken,
           ownerFee: factoryData.ownerFeePerDepositPercent / 100,
@@ -199,12 +205,15 @@ const Settings = () => {
 
   const fetchAssets = useCallback(async () => {
     try {
-      const assetsData = await getAssetsByDaoAddress(daoAddress, NETWORK_HEX);
+      const assetsData = await getAssetsByDaoAddress(
+        daoDetails.assetsStoredOnGnosis ? gnosisAddress : daoAddress,
+        NETWORK_HEX,
+      );
       setTreasuryAmount(assetsData?.data?.treasuryAmount);
     } catch (error) {
       console.log(error);
     }
-  }, [NETWORK_HEX, daoAddress]);
+  }, [NETWORK_HEX, daoAddress, daoDetails.assetsStoredOnGnosis, gnosisAddress]);
 
   useEffect(() => {
     if (tokenType === "erc20") {

@@ -99,6 +99,10 @@ const DashboardIndex = () => {
     return state.club.factoryData;
   });
 
+  const gnosisAddress = useSelector((state) => {
+    return state.club.clubData.gnosisAddress;
+  });
+
   const {
     getERC721Balance,
     getERC721Symbol,
@@ -147,7 +151,10 @@ const DashboardIndex = () => {
   const fetchAssets = useCallback(async () => {
     try {
       if (NETWORK_HEX !== "undefined") {
-        const assetsData = await getAssetsByDaoAddress(daoAddress, NETWORK_HEX);
+        const assetsData = await getAssetsByDaoAddress(
+          factoryData.assetsStoredOnGnosis ? gnosisAddress : daoAddress,
+          NETWORK_HEX,
+        );
         setTokenDetails({
           treasuryAmount: assetsData?.data?.treasuryAmount,
           tokenPriceList: assetsData?.data?.tokenPriceList,
@@ -156,16 +163,29 @@ const DashboardIndex = () => {
     } catch (error) {
       console.log(error);
     }
-  }, [NETWORK_HEX, daoAddress]);
+  }, [
+    NETWORK_HEX,
+    daoAddress,
+    factoryData.assetsStoredOnGnosis,
+    gnosisAddress,
+  ]);
 
   const fetchNfts = useCallback(async () => {
     try {
-      const nftsData = await getNFTsByDaoAddress(daoAddress, NETWORK_HEX);
+      const nftsData = await getNFTsByDaoAddress(
+        factoryData.assetsStoredOnGnosis ? gnosisAddress : daoAddress,
+        NETWORK_HEX,
+      );
       setNftData(nftsData.data);
     } catch (error) {
       console.log(error);
     }
-  }, [NETWORK_HEX, daoAddress]);
+  }, [
+    NETWORK_HEX,
+    daoAddress,
+    factoryData.assetsStoredOnGnosis,
+    gnosisAddress,
+  ]);
 
   const fetchActiveProposals = useCallback(async () => {
     try {
