@@ -205,11 +205,12 @@ const ProposalCard = ({
         <Grid container>
           <Grid item ml={2} mr={2} mt={2}>
             <Grid container spacing={1}>
-              {proposal?.commands[0]?.usdcTokenSymbol &&
-              !proposal?.commands[0]?.quorum &&
-              !proposal?.commands[0]?.totalDeposits &&
-              !proposal?.commands[0].customNft &&
-              !proposal?.commands[0]?.ownerChangeAction ? (
+              {(proposal?.commands[0]?.usdcTokenSymbol &&
+                !proposal?.commands[0]?.quorum &&
+                !proposal?.commands[0]?.totalDeposits &&
+                !proposal?.commands[0].customNft &&
+                !proposal?.commands[0]?.executionId === 6) ||
+              !proposal?.commands[0]?.executionId === 7 ? (
                 <Grid item sx={{ display: "flex" }}>
                   <Chip
                     className={classes.timeLeftChip}
@@ -253,25 +254,9 @@ const ProposalCard = ({
                 <></>
               )}
 
-              {proposal?.commands[0]?.executionId === 6 ? (
+              {proposal?.commands[0]?.executionId === 6 ||
+              proposal?.commands[0]?.executionId === 7 ? (
                 <>
-                  <Grid item sx={{ display: "flex" }}>
-                    <Chip
-                      className={classes.timeLeftChip}
-                      label={
-                        <Grid sx={{ display: "flex" }}>
-                          {" "}
-                          <Typography
-                            color="#C1D3FF"
-                            sx={{ marginRight: "5px" }}>
-                            Owner Change Command:
-                          </Typography>
-                          <Typography color="#FFFFFF">
-                            {proposal?.commands[0]?.ownerChangeAction}
-                          </Typography>
-                        </Grid>
-                      }></Chip>
-                  </Grid>
                   <Grid item sx={{ display: "flex" }}>
                     <Chip
                       className={classes.timeLeftChip}
