@@ -61,6 +61,7 @@ import {
   web3InstanceEthereum,
 } from "../../../../src/utils/helper";
 import useSmartContractMethods from "../../../../src/hooks/useSmartContractMethods";
+import { getNFTsByDaoAddress } from "../../../../src/api/assets";
 
 const useStyles = makeStyles({
   clubAssets: {
@@ -283,6 +284,7 @@ const ProposalDetail = () => {
   const [failed, setFailed] = useState(false);
   const [fetched, setFetched] = useState(false);
   const [members, setMembers] = useState([]);
+  const [nftData, setNftData] = useState([]);
 
   const GNOSIS_TRANSACTION_URL = useSelector((state) => {
     return state.gnosis.transactionUrl;
@@ -362,7 +364,6 @@ const ProposalDetail = () => {
           const pendingTxs = await safeService.getPendingTransactions(
             Web3.utils.toChecksumAddress(gnosisAddress),
           );
-
           setPendingTxHash(
             pendingTxs?.results[pendingTxs.count - 1]?.safeTxHash,
           );
@@ -419,6 +420,15 @@ const ProposalDetail = () => {
     });
   };
 
+  const fetchNfts = useCallback(async () => {
+    try {
+      const nftsData = await getNFTsByDaoAddress(daoAddress, NETWORK_HEX);
+      setNftData(nftsData.data);
+    } catch (error) {
+      console.log(error);
+    }
+  }, [NETWORK_HEX, daoAddress]);
+
   const fetchData = useCallback(async () => {
     const proposalData = getProposalDetail(pid);
 
@@ -436,7 +446,7 @@ const ProposalDetail = () => {
         setFetched(true);
       }
     });
-  }, [SUBGRAPH_URL, daoAddress, dispatch, pid]);
+  }, [SUBGRAPH_URL, daoAddress, pid]);
 
   const executeFunction = async (proposalStatus) => {
     setLoaderOpen(true);
@@ -601,7 +611,15 @@ const ProposalDetail = () => {
       membersArray = proposalData.commands[0].customTokenAddresses;
       airDropAmountArray = proposalData.commands[0].customTokenAmounts;
     }
+    if (proposalData.commands[0].executionId === 5) {
+      let iface = new Interface(ABI);
 
+      data = iface.encodeFunctionData("transferNft", [
+        proposalData.commands[0].customNft,
+        proposalData.commands[0].customTokenAddresses[0],
+        proposalData.commands[0].customNftToken,
+      ]);
+    }
     const response = updateProposalAndExecution(
       data,
       approvalData,
@@ -620,6 +638,10 @@ const ProposalDetail = () => {
         ? FACTORY_CONTRACT_ADDRESS
         : "",
       GNOSIS_TRANSACTION_URL,
+      proposalData.commands[0].executionId,
+      proposalData.commands[0].ownerChangeAction,
+      proposalData.commands[0].ownerAddress,
+      proposalData.commands[0].safeThreshold,
       proposalData,
       membersArray,
       airDropAmountArray,
@@ -685,9 +707,10 @@ const ProposalDetail = () => {
     if (pid) {
       setLoaderOpen(true);
       fetchData();
+      fetchNfts();
       isOwner();
     }
-  }, [fetchData, isOwner, pid]);
+  }, [fetchData, fetchNfts, isOwner, pid]);
 
   if (!wallet && proposalData === null) {
     return <>loading</>;

@@ -59,7 +59,13 @@ const useStyles = makeStyles({
     marginTop: "0.5rem",
   },
 });
-const CreateProposalDialog = ({ open, setOpen, onClose, tokenData }) => {
+const CreateProposalDialog = ({
+  open,
+  setOpen,
+  onClose,
+  tokenData,
+  nftData,
+}) => {
   const classes = useStyles();
   const router = useRouter();
   const dispatch = useDispatch();
@@ -124,6 +130,11 @@ const CreateProposalDialog = ({ open, setOpen, onClose, tokenData }) => {
       customToken: tokenData ? tokenData[0]?.tokenAddress : "",
       recieverAddress: "",
       amountToSend: 0,
+      customNft: "",
+      customNftToken: "",
+      ownerChangeAction: "",
+      ownerAddress: "",
+      safeThreshold: 1,
     },
     validationSchema: proposalValidationSchema,
     onSubmit: async (values) => {
@@ -199,6 +210,43 @@ const CreateProposalDialog = ({ open, setOpen, onClose, tokenData }) => {
               convertToWei(values.amountToSend, tokenDecimal),
             ],
             customTokenAddresses: [values.recieverAddress],
+            usdcTokenSymbol: "USDC",
+            usdcTokenDecimal: 6,
+            usdcGovernanceTokenDecimal: 18,
+          },
+        ];
+      }
+      if (values.actionCommand === "Send nft to an address") {
+        console.log("first");
+        commands = [
+          {
+            executionId: 5,
+            customNft: values.customNft,
+            customNftToken: values.customNftToken,
+            customTokenAddresses: [values.recieverAddress],
+            usdcTokenSymbol: "USDC",
+            usdcTokenDecimal: 6,
+            usdcGovernanceTokenDecimal: 18,
+          },
+        ];
+      }
+      if (values.actionCommand === "Add signer") {
+        commands = [
+          {
+            executionId: 6,
+            ownerAddress: values.ownerAddress,
+            usdcTokenSymbol: "USDC",
+            usdcTokenDecimal: 6,
+            usdcGovernanceTokenDecimal: 18,
+          },
+        ];
+      }
+      if (values.actionCommand === "Remove signer") {
+        commands = [
+          {
+            executionId: 7,
+            ownerAddress: values.ownerAddress,
+            safeThreshold: values.safeThreshold,
             usdcTokenSymbol: "USDC",
             usdcTokenDecimal: 6,
             usdcGovernanceTokenDecimal: 18,
@@ -472,7 +520,11 @@ const CreateProposalDialog = ({ open, setOpen, onClose, tokenData }) => {
               >
                 Add command
               </Button> */}
-                <ProposalActionForm formik={proposal} tokenData={tokenData} />
+                <ProposalActionForm
+                  formik={proposal}
+                  tokenData={tokenData}
+                  nftData={nftData}
+                />
               </Stack>
             )}
 

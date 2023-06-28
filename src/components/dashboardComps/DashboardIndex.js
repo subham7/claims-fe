@@ -19,7 +19,7 @@ import {
 } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import React, { useCallback, useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import CollectionCard from "../../../src/components/cardcontent";
 import Layout1 from "../../../src/components/layouts/layout1";
 import { DashboardStyles } from "./DashboardStyles";
@@ -41,9 +41,11 @@ import { GiTwoCoins } from "react-icons/gi";
 import { IoColorPalette } from "react-icons/io5";
 import useSmartContractMethods from "../../hooks/useSmartContractMethods";
 import { showWrongNetworkModal } from "../../utils/helper";
+import { addNftsOwnedByDao } from "../../redux/reducers/club";
 // import useSmartContract from "../../hooks/useSmartContract";
 
 const DashboardIndex = () => {
+  const dispatch = useDispatch();
   const clubData = useSelector((state) => {
     return state.club.clubData;
   });
@@ -177,6 +179,7 @@ const DashboardIndex = () => {
         NETWORK_HEX,
       );
       setNftData(nftsData.data);
+      dispatch(addNftsOwnedByDao(nftsData.data));
     } catch (error) {
       console.log(error);
     }

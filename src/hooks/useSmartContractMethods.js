@@ -439,17 +439,23 @@ const useSmartContractMethods = () => {
     airdropContractAddress = "",
     factoryContractAddress = "",
     gnosisTransactionUrl,
+    executionId,
+    ownerChangeAction,
+    ownerAddress,
+    safeThreshold,
     proposalData,
     membersArray,
     airDropAmountArray,
   ) => {
     const parameters = data;
-
+    const web3 = new Web3(window.ethereum);
     const ethAdapter = new Web3Adapter({
-      web3: new Web3(window.ethereum),
+      web3: web3,
       signerAddress: Web3.utils.toChecksumAddress(walletAddress),
     });
+    console.log(safeThreshold);
     const txServiceUrl = gnosisTransactionUrl;
+
     const safeService = new SafeApiKit({
       txServiceUrl,
       ethAdapter,
@@ -459,6 +465,8 @@ const useSmartContractMethods = () => {
       ethAdapter: ethAdapter,
       safeAddress: Web3.utils.toChecksumAddress(gnosisAddress),
     });
+
+    const nonce = await safeSdk.getNonce();
 
     let approvalTransaction;
     let transaction;
@@ -514,6 +522,17 @@ const useSmartContractMethods = () => {
           value: "0",
         };
       }
+    }else if (executionId === 6 || executionId === 7) {
+      if (executionId === 6) {
+        transaction = {
+          ownerAddress,
+        };
+      } else {
+        transaction = {
+          ownerAddress,
+          threshold: safeThreshold,
+        };
+      }
     } else {
       transaction = {
         //dao
@@ -528,7 +547,6 @@ const useSmartContractMethods = () => {
         value: "0",
       };
     }
-
     if (executionStatus !== "executed") {
       //case for 1st signature
       if (txHash === "") {
@@ -557,10 +575,18 @@ const useSmartContractMethods = () => {
             },
           ];
         }
-
-        const safeTransaction = await safeSdk.createTransaction({
-          safeTransactionData,
-        });
+        let safeTransaction;
+        if (executionId === 6 || executionId === 7) {
+          if (executionId === 6) {
+            safeTransaction = await safeSdk.createAddOwnerTx(transaction);
+          } else {
+            safeTransaction = await safeSdk.createRemoveOwnerTx(transaction);
+          }
+        } else {
+          safeTransaction = await safeSdk.createTransaction({
+            safeTransactionData,
+          });
+        }
         const safeTxHash = await safeSdk.getTransactionHash(safeTransaction);
         const payload = {
           proposalId: pid,
@@ -613,11 +639,21 @@ const useSmartContractMethods = () => {
             },
           ];
         }
-
         const safeTxHash = tx.safeTxHash;
-        const safeTransaction = await safeSdk.createTransaction({
-          safeTransactionData,
-        });
+
+        let safeTransaction;
+        if (executionId === 6 || executionId === 7) {
+          if (executionId === 6) {
+            safeTransaction = await safeSdk.createAddOwnerTx(transaction);
+          } else {
+            safeTransaction = await safeSdk.createRemoveOwnerTx(transaction);
+          }
+        } else {
+          safeTransaction = await safeSdk.createTransaction({
+            safeTransactionData,
+          });
+        }
+
         // const senderSignature = await safeSdk.signTypedData(tx, "v4");
         const senderSignature = await safeSdk.signTypedData(
           safeTransaction,
@@ -628,7 +664,6 @@ const useSmartContractMethods = () => {
       }
     } else {
       const proposalTxHash = await getProposalTxHash(pid);
-
       const safetx = await safeService.getTransaction(
         proposalTxHash.data[0].txHash,
       );
@@ -639,7 +674,7 @@ const useSmartContractMethods = () => {
 
       const executeTxResponse = await safeSdk.executeTransaction(
         safetx,
-        options,
+        // options,
       );
 
       const receipt =

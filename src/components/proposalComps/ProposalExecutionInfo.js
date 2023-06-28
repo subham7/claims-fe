@@ -284,6 +284,91 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
                   </Grid>
                 </Grid>
               </>
+            ) : proposalData?.commands[0].executionId == 5 ? (
+              <>
+                <Grid container item mb={1}>
+                  <Typography className={classes.listFont2Colourless}>
+                    Send Nft to an address
+                  </Typography>
+                </Grid>
+                <Divider />
+                <Grid container mt={1}>
+                  <Grid container spacing={3}>
+                    <Grid item xs={12} md={4}>
+                      <Typography className={classes.listFont2}>
+                        Nft Address
+                      </Typography>
+                      <Typography className={classes.listFont2Colourless}>
+                        {fetched
+                          ? proposalData.commands[0].customNft.slice(0, 6) +
+                            "...." +
+                            proposalData.commands[0].customNft.slice(
+                              proposalData.commands[0].customNft.length - 4,
+                            )
+                          : null}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={12} md={4}>
+                      <Typography className={classes.listFont2}>
+                        Nft Token Id
+                      </Typography>
+                      <Typography className={classes.listFont2Colourless}>
+                        {fetched
+                          ? proposalData.commands[0].customNftToken
+                          : null}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={12} md={4}>
+                      <Typography className={classes.listFont2}>
+                        Recipient
+                      </Typography>
+                      <Typography className={classes.listFont2Colourless}>
+                        {fetched
+                          ? proposalData.commands[0].customTokenAddresses[0].slice(
+                              0,
+                              6,
+                            ) +
+                            "...." +
+                            proposalData.commands[0].customTokenAddresses[0].slice(
+                              proposalData.commands[0].customTokenAddresses[0]
+                                .length - 4,
+                            )
+                          : null}
+                      </Typography>
+                    </Grid>
+                  </Grid>
+                </Grid>
+              </>
+            ) : proposalData?.commands[0].executionId == 6 ||
+              proposalData?.commands[0].executionId == 7 ? (
+              <>
+                <Grid container item mb={1}>
+                  <Typography className={classes.listFont2Colourless}>
+                    {proposalData?.commands[0].executionId == 6
+                      ? "Add Signer"
+                      : "Remove Signer"}
+                  </Typography>
+                </Grid>
+                <Divider />
+                <Grid container mt={1}>
+                  <Grid container spacing={3}>
+                    <Grid item xs={12} md={4}>
+                      <Typography className={classes.listFont2}>
+                        Owner Address
+                      </Typography>
+                      <Typography className={classes.listFont2Colourless}>
+                        {fetched
+                          ? proposalData.commands[0].ownerAddress.slice(0, 6) +
+                            "...." +
+                            proposalData.commands[0].ownerAddress.slice(
+                              proposalData.commands[0].ownerAddress.length - 4,
+                            )
+                          : null}
+                      </Typography>
+                    </Grid>
+                  </Grid>
+                </Grid>
+              </>
             ) : null}
           </>
         </Card>
