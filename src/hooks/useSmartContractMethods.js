@@ -10,11 +10,16 @@ import { convertToWei } from "../utils/globalFunctions";
 import Safe, { Web3Adapter } from "@safe-global/protocol-kit";
 import { createProposalTxHash, getProposalTxHash } from "../api/proposal";
 import SafeApiKit from "@safe-global/api-kit";
+import { actionContractABI } from "../abis/newArch/actionContract";
 
 const useSmartContractMethods = () => {
   const [{ wallet }] = useConnectWallet();
   const walletAddress = wallet?.accounts[0]?.address;
   const web3Call = new Web3(RPC_URL ? RPC_URL : POLYGON_MAINNET_RPC_URL);
+
+  const isAssetsStoredOnGnosis = useSelector((state) => {
+    return state.club.factoryData.assetsStoredOnGnosis;
+  });
 
   let web3Send;
   if (typeof window !== "undefined") {
@@ -28,13 +33,9 @@ const useSmartContractMethods = () => {
   const {
     factoryContractCall,
     factoryContractSend,
-    erc20TokenContractCall,
-    erc20TokenContractSend,
     erc20DaoContractCall,
     erc20DaoContractSend,
-    erc721TokenContractCall,
     erc721DaoContractCall,
-    erc721DaoContractSend,
     claimContractCall,
     claimContractSend,
     claimFactoryContractCall,
@@ -228,6 +229,38 @@ const useSmartContractMethods = () => {
       });
   };
 
+  const approveDepositWithEncodeABI = (
+    contractAddress,
+    approvalContract,
+    amount,
+  ) => {
+    const erc20TokenContractSend = new web3Send.eth.Contract(
+      ERC20TokenABI.abi,
+      contractAddress,
+    );
+
+    return erc20TokenContractSend?.methods
+      ?.approve(approvalContract, amount)
+      .encodeABI();
+  };
+
+  const airdropTokenMethodEncoded = (
+    actionContractAddress,
+    airdropTokenAddress,
+    amountArray,
+    members,
+  ) => {
+    debugger;
+    const actionContractSend = new web3Send.eth.Contract(
+      actionContractABI,
+      actionContractAddress,
+    );
+
+    return actionContractSend.methods
+      .airDropToken(airdropTokenAddress, amountArray, members)
+      .encodeABI();
+  };
+
   const claimContract = async (claimSettings) => {
     return await claimFactoryContractSend?.methods
       ?.deployClaimContract(claimSettings)
@@ -406,6 +439,9 @@ const useSmartContractMethods = () => {
     airdropContractAddress = "",
     factoryContractAddress = "",
     gnosisTransactionUrl,
+    proposalData,
+    membersArray,
+    airDropAmountArray,
   ) => {
     const parameters = data;
 
@@ -427,29 +463,57 @@ const useSmartContractMethods = () => {
     let approvalTransaction;
     let transaction;
     if (approvalData !== "") {
-      approvalTransaction = {
-        to: Web3.utils.toChecksumAddress(daoAddress), // gnosis for assetsstored
-        data: erc20DaoContractSend.methods
-          .updateProposalAndExecution(
-            //usdc address
+      if (isAssetsStoredOnGnosis) {
+        approvalTransaction = {
+          to: Web3.utils.toChecksumAddress(tokenData),
+          // data: tokenData.methods.approve(dao / action).encodeABI(), // for send/airdrop -> action & send NFT -> daoAddress
+          data: approveDepositWithEncodeABI(
             tokenData,
-            approvalData,
-          )
-          .encodeABI(),
-        value: "0",
-      };
-
-      transaction = {
-        to: Web3.utils.toChecksumAddress(daoAddress),
-        data: erc20DaoContractSend.methods
-          .updateProposalAndExecution(
-            //airdrop address
             airdropContractAddress,
-            parameters,
-          )
-          .encodeABI(),
-        value: "0",
-      };
+            proposalData.commands[0].executionId === 0
+              ? proposalData.commands[0].airDropAmount
+              : proposalData.commands[0].customTokenAmounts[0],
+          ),
+          value: "0",
+        };
+      } else {
+        approvalTransaction = {
+          to: Web3.utils.toChecksumAddress(daoAddress),
+          data: erc20DaoContractSend.methods
+            .updateProposalAndExecution(
+              //usdc address
+              tokenData,
+              approvalData,
+            )
+            .encodeABI(),
+          value: "0",
+        };
+      }
+
+      if (isAssetsStoredOnGnosis) {
+        transaction = {
+          to: Web3.utils.toChecksumAddress(airdropContractAddress),
+          data: airdropTokenMethodEncoded(
+            airdropContractAddress,
+            tokenData,
+            airDropAmountArray,
+            membersArray,
+          ),
+          value: 0,
+        };
+      } else {
+        transaction = {
+          to: Web3.utils.toChecksumAddress(daoAddress),
+          data: erc20DaoContractSend.methods
+            .updateProposalAndExecution(
+              //airdrop address
+              airdropContractAddress,
+              parameters,
+            )
+            .encodeABI(),
+          value: "0",
+        };
+      }
     } else {
       transaction = {
         //dao
