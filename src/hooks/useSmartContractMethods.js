@@ -440,7 +440,6 @@ const useSmartContractMethods = () => {
     factoryContractAddress = "",
     gnosisTransactionUrl,
     executionId,
-    ownerChangeAction,
     ownerAddress,
     safeThreshold,
     proposalData,
@@ -453,7 +452,6 @@ const useSmartContractMethods = () => {
       web3: web3,
       signerAddress: Web3.utils.toChecksumAddress(walletAddress),
     });
-    console.log(safeThreshold);
     const txServiceUrl = gnosisTransactionUrl;
 
     const safeService = new SafeApiKit({
@@ -522,7 +520,7 @@ const useSmartContractMethods = () => {
           value: "0",
         };
       }
-    }else if (executionId === 6 || executionId === 7) {
+    } else if (executionId === 6 || executionId === 7) {
       if (executionId === 6) {
         transaction = {
           ownerAddress,

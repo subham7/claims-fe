@@ -41,8 +41,6 @@ const TokenGating = () => {
     return state.gnosis.adminUser;
   });
 
-  console.log("Si", isAdminUser);
-
   const router = useRouter();
   const classes = TokenGatingStyle();
   const { clubId: daoAddress } = router.query;
@@ -124,7 +122,6 @@ const TokenGating = () => {
       const tokenASymbol = await getTokenSymbol(tokenGatingDetails[0].tokenA);
       const tokenBSymbol = await getTokenSymbol(tokenGatingDetails[0]?.tokenB);
 
-      console.log(tokenASymbol, tokenBSymbol);
       let tokenADecimal, tokenBDecimal;
 
       try {
@@ -303,7 +300,6 @@ const TokenGating = () => {
         ""
       )}
 
-      {console.log("SIII", isAdminUser, fetchedDetails.tokenA, showEditOptions)}
       {isAdminUser &&
       (fetchedDetails.tokenA === "" || fetchedDetails.tokenA === undefined) &&
       showEditOptions ? (
