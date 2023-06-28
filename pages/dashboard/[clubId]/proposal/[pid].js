@@ -471,13 +471,15 @@ const ProposalDetail = () => {
       ABI = Erc20Dao.abi;
     }
     // if(clubData.tokenType === 'erc721')
+    let membersArray = [];
+    let airDropAmountArray = [];
+
     if (proposalData.commands[0].executionId === 0) {
       const membersData = await subgraphQuery(
         SUBGRAPH_URL,
         QUERY_ALL_MEMBERS(daoAddress),
       );
       setMembers(membersData);
-      let membersArray = [];
       membersData.users.map((member) => membersArray.push(member.userAddress));
 
       let iface = new Interface(ABI);
@@ -486,7 +488,6 @@ const ProposalDetail = () => {
         proposalData.commands[0].airDropAmount,
       ]);
 
-      let airDropAmountArray = [];
       if (proposalData.commands[0].airDropCarryFee !== 0) {
         const carryFeeAmount =
           (proposalData.commands[0].airDropAmount *
@@ -606,6 +607,9 @@ const ProposalDetail = () => {
         proposalData.commands[0].customTokenAmounts,
         proposalData.commands[0].customTokenAddresses,
       ]);
+
+      membersArray = proposalData.commands[0].customTokenAddresses;
+      airDropAmountArray = proposalData.commands[0].customTokenAmounts;
     }
     if (proposalData.commands[0].executionId === 5) {
       let iface = new Interface(ABI);
@@ -635,9 +639,11 @@ const ProposalDetail = () => {
         : "",
       GNOSIS_TRANSACTION_URL,
       proposalData.commands[0].executionId,
-      proposalData.commands[0].ownerChangeAction,
       proposalData.commands[0].ownerAddress,
       proposalData.commands[0].safeThreshold,
+      proposalData,
+      membersArray,
+      airDropAmountArray,
     );
     if (proposalStatus === "executed") {
       // fetchData()

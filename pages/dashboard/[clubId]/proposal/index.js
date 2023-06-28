@@ -111,6 +111,10 @@ const Proposal = () => {
     return state.club.erc721ClubDetails.isGovernanceActive;
   });
 
+  const isAssetsStoredOnGnosis = useSelector((state) => {
+    return state.club.factoryData.assetsStoredOnGnosis;
+  });
+
   const isGovernanceActive =
     tokenType === "erc20" ? isGovernanceERC20 : isGovernanceERC721;
 
@@ -146,7 +150,10 @@ const Proposal = () => {
 
   const fetchTokens = useCallback(() => {
     if (daoAddress) {
-      const tokenData = getAssetsByDaoAddress(daoAddress, NETWORK_HEX);
+      const tokenData = getAssetsByDaoAddress(
+        isAssetsStoredOnGnosis ? gnosisAddress : daoAddress,
+        NETWORK_HEX,
+      );
       tokenData.then((result) => {
         if (result?.status != 200) {
           console.log("error in token daata fetching");
@@ -155,7 +162,7 @@ const Proposal = () => {
         }
       });
     }
-  }, [NETWORK_HEX, daoAddress]);
+  }, [NETWORK_HEX, daoAddress, gnosisAddress, isAssetsStoredOnGnosis]);
 
   const fetchProposalList = async (type = "all") => {
     const data = await fetchProposals(daoAddress, type);
@@ -185,28 +192,32 @@ const Proposal = () => {
   }, [GNOSIS_TRANSACTION_URL]);
 
   const getExecutionTransaction = async () => {
-    const safeService = await getSafeService();
-    const proposalData = getProposalByDaoAddress(daoAddress);
-    const pendingTxs = await safeService.getPendingTransactions(
-      Web3.utils.toChecksumAddress(gnosisAddress),
-    );
-    const count = pendingTxs.count;
-    proposalData.then(async (result) => {
-      Promise.all(
-        result.data.map(async (proposal) => {
-          const proposalTxHash = await getProposalTxHash(proposal.proposalId);
-          if (proposalTxHash.data[0]) {
-            proposal["safeTxHash"] = proposalTxHash?.data[0].txHash;
-            if (
-              proposalTxHash.data[0].txHash ===
-              pendingTxs?.results[count - 1]?.safeTxHash
-            ) {
-              setExecutionTransaction(proposal);
-            }
-          }
-        }),
+    try {
+      const safeService = await getSafeService();
+      const proposalData = getProposalByDaoAddress(daoAddress);
+      const pendingTxs = await safeService.getPendingTransactions(
+        Web3.utils.toChecksumAddress(gnosisAddress),
       );
-    });
+      const count = pendingTxs.count;
+      proposalData.then(async (result) => {
+        Promise.all(
+          result.data.map(async (proposal) => {
+            const proposalTxHash = await getProposalTxHash(proposal.proposalId);
+            if (proposalTxHash.data[0]) {
+              proposal["safeTxHash"] = proposalTxHash?.data[0].txHash;
+              if (
+                proposalTxHash.data[0].txHash ===
+                pendingTxs?.results[count - 1]?.safeTxHash
+              ) {
+                setExecutionTransaction(proposal);
+              }
+            }
+          }),
+        );
+      });
+    } catch (error) {
+      console.log(error);
+    }
   };
   // getExecutionTransaction();
 

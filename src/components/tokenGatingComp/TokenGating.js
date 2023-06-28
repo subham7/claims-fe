@@ -5,7 +5,6 @@ import { MdDelete } from "react-icons/md";
 import TokenGatingModal from "./TokenGatingModal";
 import { useSelector } from "react-redux";
 import SingleToken from "./SingleToken";
-import { useConnectWallet } from "@web3-onboard/react";
 import { useRouter } from "next/router";
 import {
   convertFromWeiGovernance,
@@ -37,8 +36,6 @@ const TokenGating = () => {
     useState(false);
   const [showMessage, setShowMessage] = useState(false);
   const [showEditOptions, setShowEditOptions] = useState(true);
-
-  const [{ wallet }] = useConnectWallet();
 
   const isAdminUser = useSelector((state) => {
     return state.gnosis.adminUser;
@@ -125,7 +122,6 @@ const TokenGating = () => {
       const tokenASymbol = await getTokenSymbol(tokenGatingDetails[0].tokenA);
       const tokenBSymbol = await getTokenSymbol(tokenGatingDetails[0]?.tokenB);
 
-      console.log(tokenASymbol, tokenBSymbol);
       let tokenADecimal, tokenBDecimal;
 
       try {
@@ -252,7 +248,9 @@ const TokenGating = () => {
           )}
         </div>
 
-        {isAdminUser && fetchedDetails.tokenA === "" && showEditOptions ? (
+        {isAdminUser &&
+        (fetchedDetails.tokenA === "" || fetchedDetails.tokenA === undefined) &&
+        showEditOptions ? (
           <button
             className={classes.addBtn}
             disabled={fetchedDetails?.tokenA || tokensList.length >= 2}
@@ -264,7 +262,9 @@ const TokenGating = () => {
         )}
       </div>
 
-      {isAdminUser && fetchedDetails.tokenA === "" && showEditOptions ? (
+      {isAdminUser &&
+      (fetchedDetails.tokenA === "" || fetchedDetails.tokenA === undefined) &&
+      showEditOptions ? (
         <div className={classes.switchContainer}>
           <div className={classes.match}>
             <p>Match</p>
@@ -300,7 +300,9 @@ const TokenGating = () => {
         ""
       )}
 
-      {isAdminUser && fetchedDetails.tokenA === "" && showEditOptions ? (
+      {isAdminUser &&
+      (fetchedDetails.tokenA === "" || fetchedDetails.tokenA === undefined) &&
+      showEditOptions ? (
         <button
           className={classes.saveBtn}
           disabled={!tokensList.length}

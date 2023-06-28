@@ -49,7 +49,7 @@ const useSafe = () => {
           params.isNftTotalSupplyUnlimited,
           params.isGovernanceActive,
           params.allowWhiteList,
-          false, // assets Stored on Gnosis
+          params.storeAssetsOnGnosis,
           params.merkleRoot,
         );
       } else {
@@ -71,7 +71,7 @@ const useSafe = () => {
           params.isGovernanceActive,
           params.isGtTransferable,
           params.allowWhiteList,
-          false, // assets Stored on Gnosis
+          params.storeAssetsOnGnosis,
           params.merkleRoot,
         );
       }

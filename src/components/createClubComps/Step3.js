@@ -181,6 +181,52 @@ export default function Step3(props) {
           ) : null}
           <br />
 
+          <Typography className={classes.largeText} mt={3} mb={2}>
+            Assets on Gnosis
+          </Typography>
+          <Card className={classes.cardPadding} mb={2}>
+            <Grid container pl={3} pr={1} mt={1} mb={1}>
+              <Grid
+                item
+                xs
+                sx={{
+                  display: "flex",
+                  justifyContent: "flex-start",
+                  alignItems: "center",
+                }}>
+                <Typography className={classes.largeText2}>
+                  Do you want to store assets on safe or contract?
+                </Typography>
+              </Grid>
+              <Grid
+                item
+                xs
+                sx={{
+                  display: "flex",
+                  justifyContent: "flex-end",
+                  alignItems: "center",
+                }}>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={props.formik.values.storeAssetsOnGnosis}
+                      // onChange={handleOperationTypeChange}
+                      onChange={(value) => {
+                        props.formik.setFieldValue(
+                          "storeAssetsOnGnosis",
+                          value.target.checked,
+                        );
+                      }}
+                    />
+                  }
+                  label="NO / YES"
+                  labelPlacement="top"
+                />
+              </Grid>
+            </Grid>
+          </Card>
+          <br />
+
           <Typography className={classes.largeText} mt={4} mb={2}>
             Wallet Signators
           </Typography>
