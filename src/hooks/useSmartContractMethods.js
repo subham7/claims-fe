@@ -244,6 +244,22 @@ const useSmartContractMethods = () => {
       .encodeABI();
   };
 
+  const transferNFTfromSafe = (
+    tokenAddress,
+    gnosisAddress,
+    receiverAddress,
+    tokenId,
+  ) => {
+    const erc20TokenContractSend = new web3Send.eth.Contract(
+      ERC20TokenABI.abi,
+      tokenAddress,
+    );
+
+    return erc20TokenContractSend?.methods
+      ?.transferFrom(gnosisAddress, receiverAddress, tokenId)
+      .encodeABI();
+  };
+
   const airdropTokenMethodEncoded = (
     actionContractAddress,
     airdropTokenAddress,
@@ -532,18 +548,35 @@ const useSmartContractMethods = () => {
         };
       }
     } else {
-      transaction = {
-        //dao
-        to: Web3.utils.toChecksumAddress(daoAddress),
-        data: erc20DaoContractSend.methods
-          .updateProposalAndExecution(
-            //factory
-            factoryContractAddress ? factoryContractAddress : daoAddress,
-            parameters,
-          )
-          .encodeABI(),
-        value: "0",
-      };
+      if (
+        isAssetsStoredOnGnosis &&
+        proposalData.commands[0].executionId === 5
+      ) {
+        transaction = {
+          //dao
+          to: Web3.utils.toChecksumAddress(tokenData),
+          data: transferNFTfromSafe(
+            tokenData,
+            gnosisAddress,
+            proposalData.commands[0].customTokenAddresses[0],
+            proposalData.commands[0].customNftToken,
+          ),
+          value: "0",
+        };
+      } else {
+        transaction = {
+          //dao
+          to: Web3.utils.toChecksumAddress(daoAddress),
+          data: erc20DaoContractSend.methods
+            .updateProposalAndExecution(
+              //factory
+              factoryContractAddress ? factoryContractAddress : daoAddress,
+              parameters,
+            )
+            .encodeABI(),
+          value: "0",
+        };
+      }
     }
     if (executionStatus !== "executed") {
       //case for 1st signature
