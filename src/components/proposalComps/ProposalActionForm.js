@@ -95,11 +95,11 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
         <MenuItem key={5} value="Send nft to an address">
           Send nft to an address
         </MenuItem>
-        <MenuItem key={6} value="Add owners">
-          Add owners
+        <MenuItem key={6} value="Add signer">
+          Add Signer
         </MenuItem>
-        <MenuItem key={7} value="Remove owners">
-          Remove owners
+        <MenuItem key={7} value="Remove signer">
+          Remove Signer
         </MenuItem>
       </Select>
 
@@ -525,7 +525,7 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
             />
           </Grid>
         </>
-      ) : formik.values.actionCommand === "Add owners" ? (
+      ) : formik.values.actionCommand === "Add signer" ? (
         <>
           <Grid
             container
@@ -534,7 +534,7 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
             mt={2}
             sx={{ marginLeft: "0 !important" }}>
             <Typography mt={2} variant="proposalBody">
-              Wallet address *
+              Wallet Address *
             </Typography>
             <TextField
               variant="outlined"
@@ -554,7 +554,7 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
             />
           </Grid>
         </>
-      ) : formik.values.actionCommand === "Remove owners" ? (
+      ) : formik.values.actionCommand === "Remove signer" ? (
         <>
           <Grid
             container

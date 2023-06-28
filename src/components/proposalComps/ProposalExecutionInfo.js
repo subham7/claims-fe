@@ -344,7 +344,9 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
               <>
                 <Grid container item mb={1}>
                   <Typography className={classes.listFont2Colourless}>
-                    Add/remove safe owners
+                    {proposalData?.commands[0].executionId == 6
+                      ? "Add Signer"
+                      : "Remove Signer"}
                   </Typography>
                 </Grid>
                 <Divider />

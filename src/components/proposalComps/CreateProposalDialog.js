@@ -230,7 +230,7 @@ const CreateProposalDialog = ({
           },
         ];
       }
-      if (values.actionCommand === "Add owners") {
+      if (values.actionCommand === "Add signer") {
         commands = [
           {
             executionId: 6,
@@ -241,7 +241,7 @@ const CreateProposalDialog = ({
           },
         ];
       }
-      if (values.actionCommand === "Remove owners") {
+      if (values.actionCommand === "Remove signer") {
         commands = [
           {
             executionId: 7,
