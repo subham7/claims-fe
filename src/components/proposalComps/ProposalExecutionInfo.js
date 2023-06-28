@@ -339,7 +339,8 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
                   </Grid>
                 </Grid>
               </>
-            ) : proposalData?.commands[0].executionId == 6 ? (
+            ) : proposalData?.commands[0].executionId == 6 ||
+              proposalData?.commands[0].executionId == 7 ? (
               <>
                 <Grid container item mb={1}>
                   <Typography className={classes.listFont2Colourless}>
@@ -360,16 +361,6 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
                             proposalData.commands[0].ownerAddress.slice(
                               proposalData.commands[0].ownerAddress.length - 4,
                             )
-                          : null}
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={12} md={4}>
-                      <Typography className={classes.listFont2}>
-                        Owner Change Command
-                      </Typography>
-                      <Typography className={classes.listFont2Colourless}>
-                        {fetched
-                          ? proposalData.commands[0].ownerChangeAction
                           : null}
                       </Typography>
                     </Grid>

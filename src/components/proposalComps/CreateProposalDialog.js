@@ -230,12 +230,21 @@ const CreateProposalDialog = ({
           },
         ];
       }
-      if (values.actionCommand === "Add/remove owners") {
-        console.log("first");
+      if (values.actionCommand === "Add owners") {
         commands = [
           {
             executionId: 6,
-            ownerChangeAction: values.ownerChangeAction,
+            ownerAddress: values.ownerAddress,
+            usdcTokenSymbol: "USDC",
+            usdcTokenDecimal: 6,
+            usdcGovernanceTokenDecimal: 18,
+          },
+        ];
+      }
+      if (values.actionCommand === "Remove owners") {
+        commands = [
+          {
+            executionId: 7,
             ownerAddress: values.ownerAddress,
             safeThreshold: values.safeThreshold,
             usdcTokenSymbol: "USDC",
@@ -243,7 +252,6 @@ const CreateProposalDialog = ({
             usdcGovernanceTokenDecimal: 18,
           },
         ];
-        console.log(commands);
       }
       const payload = {
         name: values.proposalTitle,

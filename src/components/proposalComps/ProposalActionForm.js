@@ -95,8 +95,11 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
         <MenuItem key={5} value="Send nft to an address">
           Send nft to an address
         </MenuItem>
-        <MenuItem key={6} value="Add/remove owners">
-          Add/remove owners
+        <MenuItem key={6} value="Add owners">
+          Add owners
+        </MenuItem>
+        <MenuItem key={7} value="Remove owners">
+          Remove owners
         </MenuItem>
       </Select>
 
@@ -522,7 +525,7 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
             />
           </Grid>
         </>
-      ) : formik.values.actionCommand === "Add/remove owners" ? (
+      ) : formik.values.actionCommand === "Add owners" ? (
         <>
           <Grid
             container
@@ -530,33 +533,8 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
             ml={3}
             mt={2}
             sx={{ marginLeft: "0 !important" }}>
-            <Typography variant="proposalBody">Add/Remove action</Typography>
-            <Select
-              sx={{ marginTop: "0.5rem" }}
-              value={formik.values.customToken}
-              onChange={(e) =>
-                formik.setFieldValue("ownerChangeAction", e.target.value)
-              }
-              renderValue={(selected) => {
-                if (selected.length === 0) {
-                  return "Select a command";
-                }
-
-                return selected;
-              }}
-              inputProps={{ "aria-label": "Without label" }}
-              name="customToken"
-              id="customToken">
-              <MenuItem key={0} value="add">
-                add
-              </MenuItem>
-              {/* {tokenType !== "erc721" ? ( */}
-              <MenuItem key={1} value="remove">
-                remove
-              </MenuItem>
-            </Select>
             <Typography mt={2} variant="proposalBody">
-              wallet address *
+              Wallet address *
             </Typography>
             <TextField
               variant="outlined"
@@ -574,30 +552,56 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
                 formik.touched.ownerAddress && formik.errors.ownerAddress
               }
             />
-            {formik.values.ownerChangeAction === "remove" ? (
-              <>
-                <Typography mt={2} variant="proposalBody">
-                  Threshold of safe
-                </Typography>
-                <TextField
-                  variant="outlined"
-                  className={classes.textField}
-                  type="number"
-                  placeholder="0x00"
-                  name="safeThreshold"
-                  id="safeThreshold"
-                  value={formik.values.safeThreshold}
-                  onChange={formik.handleChange}
-                  error={
-                    formik.touched.safeThreshold &&
-                    Boolean(formik.errors.safeThreshold)
-                  }
-                  helperText={
-                    formik.touched.safeThreshold && formik.errors.safeThreshold
-                  }
-                />
-              </>
-            ) : null}
+          </Grid>
+        </>
+      ) : formik.values.actionCommand === "Remove owners" ? (
+        <>
+          <Grid
+            container
+            direction={"column"}
+            ml={3}
+            mt={2}
+            sx={{ marginLeft: "0 !important" }}>
+            <Typography mt={2} variant="proposalBody">
+              Wallet address *
+            </Typography>
+            <TextField
+              variant="outlined"
+              className={classes.textField}
+              placeholder="0x00"
+              name="ownerAddress"
+              id="ownerAddress"
+              value={formik.values.ownerAddress}
+              onChange={formik.handleChange}
+              error={
+                formik.touched.ownerAddress &&
+                Boolean(formik.errors.ownerAddress)
+              }
+              helperText={
+                formik.touched.ownerAddress && formik.errors.ownerAddress
+              }
+            />
+
+            <Typography mt={2} variant="proposalBody">
+              Threshold of safe
+            </Typography>
+            <TextField
+              variant="outlined"
+              className={classes.textField}
+              type="number"
+              placeholder="0x00"
+              name="safeThreshold"
+              id="safeThreshold"
+              value={formik.values.safeThreshold}
+              onChange={formik.handleChange}
+              error={
+                formik.touched.safeThreshold &&
+                Boolean(formik.errors.safeThreshold)
+              }
+              helperText={
+                formik.touched.safeThreshold && formik.errors.safeThreshold
+              }
+            />
           </Grid>
         </>
       ) : null}

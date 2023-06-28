@@ -417,7 +417,7 @@ const useSmartContractMethods = () => {
       web3: web3,
       signerAddress: Web3.utils.toChecksumAddress(walletAddress),
     });
-
+    console.log(safeThreshold);
     const txServiceUrl = gnosisTransactionUrl;
 
     const safeService = new SafeApiKit({
@@ -429,6 +429,8 @@ const useSmartContractMethods = () => {
       ethAdapter: ethAdapter,
       safeAddress: Web3.utils.toChecksumAddress(gnosisAddress),
     });
+
+    const nonce = await safeSdk.getNonce();
 
     let approvalTransaction;
     let transaction;
@@ -457,15 +459,15 @@ const useSmartContractMethods = () => {
           .encodeABI(),
         value: "0",
       };
-    } else if (executionId === 6) {
-      if (ownerChangeAction === "add") {
+    } else if (executionId === 6 || executionId === 7) {
+      if (executionId === 6) {
         transaction = {
           ownerAddress,
         };
       } else {
         transaction = {
           ownerAddress,
-          threshold: 1,
+          threshold: safeThreshold,
         };
       }
     } else {
@@ -511,8 +513,8 @@ const useSmartContractMethods = () => {
           ];
         }
         let safeTransaction;
-        if (executionId === 6) {
-          if (ownerChangeAction === "add") {
+        if (executionId === 6 || executionId === 7) {
+          if (executionId === 6) {
             safeTransaction = await safeSdk.createAddOwnerTx(transaction);
           } else {
             safeTransaction = await safeSdk.createRemoveOwnerTx(transaction);
@@ -577,8 +579,8 @@ const useSmartContractMethods = () => {
         const safeTxHash = tx.safeTxHash;
 
         let safeTransaction;
-        if (executionId === 6) {
-          if (ownerChangeAction === "add") {
+        if (executionId === 6 || executionId === 7) {
+          if (executionId === 6) {
             safeTransaction = await safeSdk.createAddOwnerTx(transaction);
           } else {
             safeTransaction = await safeSdk.createRemoveOwnerTx(transaction);
