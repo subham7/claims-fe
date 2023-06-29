@@ -449,7 +449,6 @@ const Create = () => {
   //       setOwnersCheck(true);
   //       setOwnerHelperText("Owners matched");
   //     } else {
-  //       console.log("hereeeeee");
   //       setOwnerHelperText(
   //         "Owners of the safe does not match with the admins of the DAO",
   //       );
@@ -467,7 +466,6 @@ const Create = () => {
 
   // useEffect(() => {
   //   if (formikStep4.values.safeAddress && GNOSIS_DATA.transactionUrl) {
-  //     console.log("xx");
   //     getSafeOwners();
   //   }
   // }, [

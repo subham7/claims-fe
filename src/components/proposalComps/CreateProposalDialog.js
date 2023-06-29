@@ -27,10 +27,7 @@ import AddCircleRoundedIcon from "@mui/icons-material/AddCircleRounded";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ProposalActionForm from "./ProposalActionForm";
 import { proposalValidationSchema } from "../createClubComps/ValidationSchemas";
-import {
-  convertToWei,
-  convertToWeiGovernance,
-} from "../../utils/globalFunctions";
+import { convertToWeiGovernance } from "../../utils/globalFunctions";
 import { useConnectWallet } from "@web3-onboard/react";
 import { useRouter } from "next/router";
 import { createProposal } from "../../api/proposal";
@@ -207,7 +204,7 @@ const CreateProposalDialog = ({
             executionId: 4,
             customToken: values.customToken,
             customTokenAmounts: [
-              convertToWei(values.amountToSend, tokenDecimal),
+              convertToWeiGovernance(values.amountToSend, tokenDecimal),
             ],
             customTokenAddresses: [values.recieverAddress],
             usdcTokenSymbol: "USDC",
@@ -217,7 +214,6 @@ const CreateProposalDialog = ({
         ];
       }
       if (values.actionCommand === "Send nft to an address") {
-        console.log("first");
         commands = [
           {
             executionId: 5,
