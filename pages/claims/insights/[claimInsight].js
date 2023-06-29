@@ -15,6 +15,7 @@ import { QUERY_CLAIM_DETAILS } from "../../../src/api/graphql/queries";
 import { Backdrop, CircularProgress } from "@mui/material";
 import useSmartContractMethods from "../../../src/hooks/useSmartContractMethods";
 import useSmartContract from "../../../src/hooks/useSmartContract";
+import { convertToWeiGovernance } from "../../../src/utils/globalFunctions";
 
 const ClaimInsight = () => {
   const [claimsData, setClaimsData] = useState([]);
@@ -22,6 +23,7 @@ const ClaimInsight = () => {
   const [airdropTokenDetails, setAirdropTokenDetails] = useState({
     tokenDecimal: 0,
     tokenSymbol: "",
+    tokenAddress: "",
   });
 
   const classes = ClaimsInsightStyles();
@@ -29,7 +31,15 @@ const ClaimInsight = () => {
   const { claimInsight: claimAddress } = router.query;
 
   useSmartContract();
-  const { getDecimals, getTokenSymbol } = useSmartContractMethods();
+  const {
+    getDecimals,
+    getTokenSymbol,
+    addMoreTokens,
+    rollbackTokens,
+    claimBalance,
+    claimSettings,
+    modifyStartAndEndTime,
+  } = useSmartContractMethods();
 
   const fetchClaimDetails = async () => {
     setLoading(true);
@@ -46,7 +56,58 @@ const ClaimInsight = () => {
       setAirdropTokenDetails({
         tokenDecimal,
         tokenSymbol,
+        tokenAddress: claims[0].airdropToken,
       });
+      setLoading(false);
+    } catch (error) {
+      console.log(error);
+      setLoading(false);
+    }
+  };
+
+  const addMoreTokensHandler = async (noOfTokens) => {
+    setLoading(true);
+    try {
+      const amount = convertToWeiGovernance(
+        noOfTokens,
+        airdropTokenDetails?.tokenDecimal,
+      );
+
+      await addMoreTokens(amount);
+      setLoading(false);
+    } catch (error) {
+      console.log(error);
+      setLoading(false);
+    }
+  };
+
+  const rollbackTokensHandler = async (amount, rollbackAddress) => {
+    setLoading(true);
+    try {
+      const rollbackAmount = convertToWeiGovernance(
+        amount,
+        airdropTokenDetails?.tokenDecimal,
+      );
+
+      const data = await claimBalance();
+      const res = await claimSettings();
+
+      console.log("c", data);
+      console.log("c", res);
+
+      console.log("AMount,", rollbackAmount);
+      await rollbackTokens(rollbackAmount, rollbackAddress);
+      setLoading(false);
+    } catch (error) {
+      console.log(error);
+      setLoading(false);
+    }
+  };
+
+  const modifyStartAndEndTimeHandler = async (startTime, endTime) => {
+    setLoading(true);
+    try {
+      await modifyStartAndEndTime(startTime, endTime);
       setLoading(false);
     } catch (error) {
       console.log(error);
@@ -90,7 +151,14 @@ const ClaimInsight = () => {
               startTime={claimsData[0]?.startTime}
               endTime={claimsData[0]?.endTime}
             />
-            <ClaimEdit />
+            <ClaimEdit
+              addMoreTokensHandler={addMoreTokensHandler}
+              rollbackTokensHandler={rollbackTokensHandler}
+              airdropTokenDetails={airdropTokenDetails}
+              modifyStartAndEndTimeHandler={modifyStartAndEndTimeHandler}
+              endTime={claimsData[0]?.endTime}
+              startTime={claimsData[0]?.startTime}
+            />
             <ClaimEligibility
               whitelistTokenAddress={claimsData[0]?.whitelistToken}
               minWhitelistTokenValue={claimsData[0]?.minWhitelistTokenValue}

@@ -128,6 +128,13 @@ const useSmartContractMethods = () => {
       });
   };
 
+  const addMoreTokens = async (noOfTokens) => {
+    return await claimContractSend.methods?.depositTokens(noOfTokens).send({
+      from: walletAddress,
+      gasPrice: await getIncreaseGasPrice(),
+    });
+  };
+
   const setupTokenGating = async (
     tokenA,
     tokenB,
@@ -252,11 +259,22 @@ const useSmartContractMethods = () => {
       });
   };
 
-  const rollbackTokens = async (amount) => {
-    return await claimContractSend?.methods.rollbackTokens(amount).send({
-      from: walletAddress,
-      gasPrice: await getIncreaseGasPrice(),
-    });
+  const rollbackTokens = async (amount, rollbackAddress) => {
+    return await claimContractSend?.methods
+      .rollbackTokens(amount, rollbackAddress)
+      .send({
+        from: walletAddress,
+        gasPrice: await getIncreaseGasPrice(),
+      });
+  };
+
+  const modifyStartAndEndTime = async (startTime, endTime) => {
+    return await claimContractSend?.methods
+      .changeStartAndEndTime(startTime, endTime)
+      .send({
+        from: walletAddress,
+        gasPrice: await getIncreaseGasPrice(),
+      });
   };
 
   const claim = async (amount, reciever, merkleProof, encodedData) => {
@@ -625,6 +643,8 @@ const useSmartContractMethods = () => {
     claimContract,
     changeClaimsStartTimeAndEndTime,
     updateProposalAndExecution,
+    addMoreTokens,
+    modifyStartAndEndTime,
   };
 };
 
