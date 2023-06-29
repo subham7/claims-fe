@@ -28,7 +28,7 @@ import useSmartContract from "../../src/hooks/useSmartContract";
 import Image from "next/image";
 import { ClaimsStyles } from "../../src/components/claimsPageComps/ClaimsStyles";
 import { subgraphQuery } from "../../src/utils/subgraphs";
-import { CLAIMS_SUBGRAPH_URL_GOERLI } from "../../src/api";
+import { CLAIMS_SUBGRAPH_URL_POLYGON } from "../../src/api";
 import { QUERY_CLAIM_DETAILS } from "../../src/api/graphql/queries";
 
 const ClaimAddress = () => {
@@ -386,7 +386,7 @@ const ClaimAddress = () => {
     const fetchClaimsDataFromSubgraph = async () => {
       try {
         const { claims } = await subgraphQuery(
-          CLAIMS_SUBGRAPH_URL_GOERLI,
+          CLAIMS_SUBGRAPH_URL_POLYGON,
           QUERY_CLAIM_DETAILS(claimAddress),
         );
         setClaimsDataSubgraph(claims);
@@ -696,14 +696,6 @@ const ClaimAddress = () => {
             )
           )}
           {/* {networkId && networkId !== "0x89" && <WrongNetworkModal />} */}
-
-          {/* {showClaimsEdit && (
-          <ClaimsEditModal
-            claimAddress={claimAddress}
-            walletAddress={walletAddress}
-            onClose={onClose}
-          />
-        )} */}
         </>
       ) : (
         <>

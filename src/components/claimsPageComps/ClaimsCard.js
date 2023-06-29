@@ -1,13 +1,11 @@
 import { makeStyles } from "@mui/styles";
 import React, { useEffect, useState } from "react";
 import { BsLink45Deg, BsFillSendFill } from "react-icons/bs";
-import { BiPencil } from "react-icons/bi";
 import { AiFillCalendar } from "react-icons/ai";
 import { FaCoins } from "react-icons/fa";
 import { useRouter } from "next/router";
 import Countdown from "react-countdown";
 import { Alert } from "@mui/material";
-import ClaimsEditModal from "./ClaimsEditModal";
 import { useConnectWallet } from "@web3-onboard/react";
 import useSmartContractMethods from "../../hooks/useSmartContractMethods";
 import { convertFromWeiGovernance } from "../../utils/globalFunctions";
@@ -174,16 +172,6 @@ const ClaimsCard = ({
     router.push(`/claims/insights/${claimContract}`);
   };
 
-  const onClose = (e) => {
-    e.stopPropagation();
-    setShowClaimsEdit(false);
-  };
-
-  const editClaimsHandler = (e) => {
-    e.stopPropagation();
-    setShowClaimsEdit(true);
-  };
-
   return (
     <div onClick={claimHandler} className={classes.container}>
       <div className={classes.topLine}>
@@ -224,11 +212,6 @@ const ClaimsCard = ({
             }}
             size={25}
             className={classes.icons}
-          />
-          <BiPencil
-            size={25}
-            className={classes.icons}
-            onClick={editClaimsHandler}
           />
         </div>
       </div>
@@ -274,14 +257,6 @@ const ClaimsCard = ({
           }}>
           {"Copied"}
         </Alert>
-      )}
-
-      {showClaimsEdit && (
-        <ClaimsEditModal
-          walletAddress={walletAddress}
-          claimAddress={claimContract}
-          onClose={onClose}
-        />
       )}
     </div>
   );

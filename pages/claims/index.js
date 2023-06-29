@@ -12,7 +12,7 @@ import useSmartContract from "../../src/hooks/useSmartContract";
 // import WrongNetworkModal from "../../src/components/modals/WrongNetworkModal";
 import Layout1 from "../../src/components/layouts/layout1";
 import { subgraphQuery } from "../../src/utils/subgraphs";
-import { CLAIMS_SUBGRAPH_URL_GOERLI } from "../../src/api";
+import { CLAIMS_SUBGRAPH_URL_POLYGON } from "../../src/api";
 import { QUERY_ALL_CLAIMS_OF_CREATOR } from "../../src/api/graphql/queries";
 
 const useStyles = makeStyles({
@@ -116,7 +116,7 @@ const Claims = () => {
     const fetchClaims = async () => {
       try {
         const { claims } = await subgraphQuery(
-          CLAIMS_SUBGRAPH_URL_GOERLI,
+          CLAIMS_SUBGRAPH_URL_POLYGON,
           QUERY_ALL_CLAIMS_OF_CREATOR(walletAddress),
         );
 

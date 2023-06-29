@@ -11,7 +11,7 @@ import {
 import React, { useEffect, useState } from "react";
 import { ClaimsInsightStyles } from "./claimsInsightStyles";
 import { subgraphQuery } from "../../utils/subgraphs";
-import { CLAIMS_SUBGRAPH_URL_GOERLI } from "../../api";
+import { CLAIMS_SUBGRAPH_URL_POLYGON } from "../../api";
 import {
   QUERY_ALL_CLAIMS_TRANSACTIONS,
   QUERY_WALLET_WISE_TRANSACTIONS,
@@ -45,7 +45,7 @@ const ClaimsTransactions = ({
 
   const fetchWalletWiseTransactions = async () => {
     const { claimers } = await subgraphQuery(
-      CLAIMS_SUBGRAPH_URL_GOERLI,
+      CLAIMS_SUBGRAPH_URL_POLYGON,
       QUERY_WALLET_WISE_TRANSACTIONS(claimAddress),
     );
     setWalletWiseTransactionData(claimers);
@@ -53,7 +53,7 @@ const ClaimsTransactions = ({
 
   const fetchAllTransactions = async () => {
     const { airdrops } = await subgraphQuery(
-      CLAIMS_SUBGRAPH_URL_GOERLI,
+      CLAIMS_SUBGRAPH_URL_POLYGON,
       QUERY_ALL_CLAIMS_TRANSACTIONS(claimAddress),
     );
     setAllTransactionsData(airdrops?.reverse());

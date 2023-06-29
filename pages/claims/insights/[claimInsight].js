@@ -10,9 +10,9 @@ import ToggleClaim from "../../../src/components/claimsInsightComps/ToggleClaim"
 import ClaimsTransactions from "../../../src/components/claimsInsightComps/ClaimsTransactions";
 import { useRouter } from "next/router";
 import { subgraphQuery } from "../../../src/utils/subgraphs";
-import { CLAIMS_SUBGRAPH_URL_GOERLI } from "../../../src/api";
+import { CLAIMS_SUBGRAPH_URL_POLYGON } from "../../../src/api";
 import { QUERY_CLAIM_DETAILS } from "../../../src/api/graphql/queries";
-import { Backdrop, CircularProgress } from "@mui/material";
+import { Alert, Backdrop, CircularProgress } from "@mui/material";
 import useSmartContractMethods from "../../../src/hooks/useSmartContractMethods";
 import useSmartContract from "../../../src/hooks/useSmartContract";
 import { convertToWeiGovernance } from "../../../src/utils/globalFunctions";
@@ -25,6 +25,9 @@ const ClaimInsight = () => {
     tokenSymbol: "",
     tokenAddress: "",
   });
+  const [showMessage, setShowMessage] = useState(false);
+  const [message, setMessage] = useState("");
+  const [isSuccessFull, setIsSuccessFull] = useState(false);
 
   const classes = ClaimsInsightStyles();
   const router = useRouter();
@@ -45,7 +48,7 @@ const ClaimInsight = () => {
     setLoading(true);
     try {
       const { claims } = await subgraphQuery(
-        CLAIMS_SUBGRAPH_URL_GOERLI,
+        CLAIMS_SUBGRAPH_URL_POLYGON,
         QUERY_CLAIM_DETAILS(claimAddress),
       );
       setClaimsData(claims);
@@ -75,9 +78,17 @@ const ClaimInsight = () => {
 
       await addMoreTokens(amount);
       setLoading(false);
+      showMessageHandler();
+      setIsSuccessFull(true);
+      setMessage("Token added successfully!");
     } catch (error) {
       console.log(error);
       setLoading(false);
+      showMessageHandler();
+      setIsSuccessFull(false);
+      if (error.code === 4001) {
+        setMessage("Metamask Signature denied");
+      } else setMessage("Adding token failed");
     }
   };
 
@@ -89,18 +100,19 @@ const ClaimInsight = () => {
         airdropTokenDetails?.tokenDecimal,
       );
 
-      const data = await claimBalance();
-      const res = await claimSettings();
-
-      console.log("c", data);
-      console.log("c", res);
-
-      console.log("AMount,", rollbackAmount);
       await rollbackTokens(rollbackAmount, rollbackAddress);
       setLoading(false);
+      showMessageHandler();
+      setIsSuccessFull(true);
+      setMessage("Claimed successfully!");
     } catch (error) {
       console.log(error);
       setLoading(false);
+      showMessageHandler();
+      setIsSuccessFull(false);
+      if (error.code === 4001) {
+        setMessage("Metamask Signature denied");
+      } else setMessage("Claiming token failed");
     }
   };
 
@@ -109,10 +121,25 @@ const ClaimInsight = () => {
     try {
       await modifyStartAndEndTime(startTime, endTime);
       setLoading(false);
+      showMessageHandler();
+      setIsSuccessFull(true);
+      setMessage("Modified time successfully!");
     } catch (error) {
       console.log(error);
       setLoading(false);
+      showMessageHandler();
+      setIsSuccessFull(false);
+      if (error.code === 4001) {
+        setMessage("Metamask Signature denied");
+      } else setMessage("Modifying time failed");
     }
+  };
+
+  const showMessageHandler = () => {
+    setShowMessage(true);
+    setTimeout(() => {
+      setShowMessage(false);
+    }, 4000);
   };
 
   useEffect(() => {
@@ -172,6 +199,34 @@ const ClaimInsight = () => {
           maxClaimAmount={claimsData[0]?.maxClaimableAmount}
         />
       </section>
+
+      {showMessage && isSuccessFull && (
+        <Alert
+          severity="success"
+          sx={{
+            width: "300px",
+            position: "fixed",
+            bottom: "30px",
+            right: "20px",
+            borderRadius: "8px",
+          }}>
+          {message}
+        </Alert>
+      )}
+
+      {showMessage && !isSuccessFull && (
+        <Alert
+          severity="error"
+          sx={{
+            width: "300px",
+            position: "fixed",
+            bottom: "30px",
+            right: "20px",
+            borderRadius: "8px",
+          }}>
+          {message}
+        </Alert>
+      )}
 
       <Backdrop
         sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}

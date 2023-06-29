@@ -107,7 +107,7 @@ const ClaimDescriptionInfo = ({
           <FiExternalLink
             onClick={() => {
               window.open(
-                `https://goerli.etherscan.io/address/${claimAddress}`,
+                `https://polygonscan.com/address/${claimAddress}`,
                 "_blank",
               );
             }}

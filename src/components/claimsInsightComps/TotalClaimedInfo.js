@@ -57,7 +57,9 @@ const TotalClaimedInfo = ({
         </div>
         <div>
           <p style={{ fontSize: "14px", fontWeight: "300" }}>Ends in</p>
-          <p style={{ fontWeight: "700" }}>{formatEpochTime(endTime)}</p>
+          <p style={{ fontWeight: "700" }}>
+            {Date.now() / 1000 < +endTime ? formatEpochTime(endTime) : "-"}
+          </p>
         </div>
         <div>
           <p style={{ fontSize: "14px", fontWeight: "300" }}>Claim type</p>
