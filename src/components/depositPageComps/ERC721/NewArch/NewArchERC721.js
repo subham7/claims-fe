@@ -308,7 +308,6 @@ const NewArchERC721 = ({
                 <Grid item width="100%">
                   <Grid container className={classes.claimGrid}>
                     <Grid
-                      spacing={3}
                       sx={{
                         color: "#EFEFEF",
                         borderRadius: 2,

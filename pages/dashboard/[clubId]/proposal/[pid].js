@@ -39,7 +39,6 @@ import ReactHtmlParser from "react-html-parser";
 import Erc721Dao from "../../../../src/abis/newArch/erc721Dao.json";
 import Erc20Dao from "../../../../src/abis/newArch/erc20Dao.json";
 import FactoryContractABI from "../../../../src/abis/newArch/factoryContract.json";
-// import { SmartContract } from "../../../../src/api/contract";
 import { Interface } from "ethers";
 
 import Web3 from "web3";

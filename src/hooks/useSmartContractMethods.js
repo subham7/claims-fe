@@ -6,7 +6,7 @@ import { getIncreaseGasPrice } from "../utils/helper";
 import ERC20TokenABI from "../abis/usdcTokenContract.json";
 import ERC721TokenABI from "../abis/nft.json";
 import ClaimContractABI from "../abis/singleClaimContract.json";
-import { convertToWei } from "../utils/globalFunctions";
+import { convertToWeiGovernance } from "../utils/globalFunctions";
 import Safe, { Web3Adapter } from "@safe-global/protocol-kit";
 import { createProposalTxHash, getProposalTxHash } from "../api/proposal";
 import SafeApiKit from "@safe-global/api-kit";
@@ -169,45 +169,55 @@ const useSmartContractMethods = () => {
   };
 
   const getDecimals = async (contractAddress) => {
-    const erc20TokenContractCall = new web3Call.eth.Contract(
-      ERC20TokenABI.abi,
-      contractAddress,
-    );
-    return await erc20TokenContractCall.methods.decimals().call();
+    if (contractAddress) {
+      const erc20TokenContractCall = new web3Call.eth.Contract(
+        ERC20TokenABI.abi,
+        contractAddress,
+      );
+      return await erc20TokenContractCall.methods.decimals().call();
+    }
   };
 
   const getERC721Symbol = async (contractAddress) => {
-    const erc721TokenContractCall = new web3Call.eth.Contract(
-      ERC721TokenABI.abi,
-      contractAddress,
-    );
-    return await erc721TokenContractCall?.methods?.symbol().call();
+    if (contractAddress) {
+      const erc721TokenContractCall = new web3Call.eth.Contract(
+        ERC721TokenABI.abi,
+        contractAddress,
+      );
+      return await erc721TokenContractCall?.methods?.symbol().call();
+    }
   };
 
   const getBalance = async (contractAddress) => {
-    const erc20TokenContractCall = new web3Call.eth.Contract(
-      ERC20TokenABI.abi,
-      contractAddress,
-    );
-    return await erc20TokenContractCall?.methods
-      ?.balanceOf(walletAddress)
-      .call();
+    if (contractAddress) {
+      const erc20TokenContractCall = new web3Call.eth.Contract(
+        ERC20TokenABI.abi,
+        contractAddress,
+      );
+      return await erc20TokenContractCall?.methods
+        ?.balanceOf(walletAddress)
+        .call();
+    }
   };
 
   const getTokenSymbol = async (contractAddress) => {
-    const erc20TokenContractCall = new web3Call.eth.Contract(
-      ERC20TokenABI.abi,
-      contractAddress,
-    );
-    return await erc20TokenContractCall?.methods?.symbol().call();
+    if (contractAddress) {
+      const erc20TokenContractCall = new web3Call.eth.Contract(
+        ERC20TokenABI.abi,
+        contractAddress,
+      );
+      return await erc20TokenContractCall?.methods?.symbol().call();
+    }
   };
 
   const getTokenName = async (contractAddress) => {
-    const erc20TokenContractCall = new web3Call.eth.Contract(
-      ERC20TokenABI.abi,
-      contractAddress,
-    );
-    return await erc20TokenContractCall?.methods?.name().call();
+    if (contractAddress) {
+      const erc20TokenContractCall = new web3Call.eth.Contract(
+        ERC20TokenABI.abi,
+        contractAddress,
+      );
+      return await erc20TokenContractCall?.methods?.name().call();
+    }
   };
 
   const approveDeposit = async (
@@ -216,17 +226,22 @@ const useSmartContractMethods = () => {
     amount,
     usdcConvertDecimal,
   ) => {
-    const erc20TokenContractSend = new web3Send.eth.Contract(
-      ERC20TokenABI.abi,
-      contractAddress,
-    );
-    const value = convertToWei(amount, usdcConvertDecimal).toString();
-    return await erc20TokenContractSend?.methods
-      ?.approve(approvalContract, value)
-      .send({
-        from: walletAddress,
-        gasPrice: await getIncreaseGasPrice(),
-      });
+    if (contractAddress) {
+      const erc20TokenContractSend = new web3Send.eth.Contract(
+        ERC20TokenABI.abi,
+        contractAddress,
+      );
+      const value = convertToWeiGovernance(
+        amount,
+        usdcConvertDecimal,
+      ).toString();
+      return await erc20TokenContractSend?.methods
+        ?.approve(approvalContract, value)
+        .send({
+          from: walletAddress,
+          gasPrice: await getIncreaseGasPrice(),
+        });
+    }
   };
 
   const approveDepositWithEncodeABI = (
@@ -234,14 +249,16 @@ const useSmartContractMethods = () => {
     approvalContract,
     amount,
   ) => {
-    const erc20TokenContractSend = new web3Send.eth.Contract(
-      ERC20TokenABI.abi,
-      contractAddress,
-    );
+    if (contractAddress) {
+      const erc20TokenContractSend = new web3Send.eth.Contract(
+        ERC20TokenABI.abi,
+        contractAddress,
+      );
 
-    return erc20TokenContractSend?.methods
-      ?.approve(approvalContract, amount)
-      .encodeABI();
+      return erc20TokenContractSend?.methods
+        ?.approve(approvalContract, amount)
+        .encodeABI();
+    }
   };
 
   const transferNFTfromSafe = (
@@ -250,14 +267,16 @@ const useSmartContractMethods = () => {
     receiverAddress,
     tokenId,
   ) => {
-    const erc20TokenContractSend = new web3Send.eth.Contract(
-      ERC20TokenABI.abi,
-      tokenAddress,
-    );
+    if (tokenAddress) {
+      const erc20TokenContractSend = new web3Send.eth.Contract(
+        ERC20TokenABI.abi,
+        tokenAddress,
+      );
 
-    return erc20TokenContractSend?.methods
-      ?.transferFrom(gnosisAddress, receiverAddress, tokenId)
-      .encodeABI();
+      return erc20TokenContractSend?.methods
+        ?.transferFrom(gnosisAddress, receiverAddress, tokenId)
+        .encodeABI();
+    }
   };
 
   const airdropTokenMethodEncoded = (
@@ -266,15 +285,16 @@ const useSmartContractMethods = () => {
     amountArray,
     members,
   ) => {
-    debugger;
-    const actionContractSend = new web3Send.eth.Contract(
-      actionContractABI,
-      actionContractAddress,
-    );
+    if (actionContractAddress) {
+      const actionContractSend = new web3Send.eth.Contract(
+        actionContractABI,
+        actionContractAddress,
+      );
 
-    return actionContractSend.methods
-      .airDropToken(airdropTokenAddress, amountArray, members)
-      .encodeABI();
+      return actionContractSend.methods
+        .airDropToken(airdropTokenAddress, amountArray, members)
+        .encodeABI();
+    }
   };
 
   const claimContract = async (claimSettings) => {
