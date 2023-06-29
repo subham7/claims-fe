@@ -306,6 +306,10 @@ const ProposalDetail = () => {
     return state.club.factoryData;
   });
 
+  const isAssetsStoredOnGnosis = useSelector((state) => {
+    return state.club.factoryData.assetsStoredOnGnosis;
+  });
+
   const {
     getNftBalance,
     getERC20TotalSupply,
@@ -422,12 +426,15 @@ const ProposalDetail = () => {
 
   const fetchNfts = useCallback(async () => {
     try {
-      const nftsData = await getNFTsByDaoAddress(daoAddress, NETWORK_HEX);
+      const nftsData = await getNFTsByDaoAddress(
+        isAssetsStoredOnGnosis ? gnosisAddress : daoAddress,
+        NETWORK_HEX,
+      );
       setNftData(nftsData.data);
     } catch (error) {
       console.log(error);
     }
-  }, [NETWORK_HEX, daoAddress]);
+  }, [NETWORK_HEX, daoAddress, gnosisAddress, isAssetsStoredOnGnosis]);
 
   const fetchData = useCallback(async () => {
     const proposalData = getProposalDetail(pid);
@@ -631,6 +638,8 @@ const ProposalDetail = () => {
         ? proposalData.commands[0].airDropToken
         : proposalData.commands[0].executionId === 4
         ? proposalData.commands[0].customToken
+        : proposalData.commands[0].executionId === 5
+        ? proposalData.commands[0].customNft
         : "",
       proposalStatus,
       airdropContractAddress,

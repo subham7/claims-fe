@@ -140,13 +140,22 @@ const Proposal = () => {
 
   const fetchNfts = useCallback(async () => {
     try {
-      const nftsData = await getNFTsByDaoAddress(daoAddress, NETWORK_HEX);
+      const nftsData = await getNFTsByDaoAddress(
+        isAssetsStoredOnGnosis ? gnosisAddress : daoAddress,
+        NETWORK_HEX,
+      );
       setNftData(nftsData.data);
       dispatch(addNftsOwnedByDao(nftsData.data));
     } catch (error) {
       console.log(error);
     }
-  }, [NETWORK_HEX, daoAddress]);
+  }, [
+    NETWORK_HEX,
+    daoAddress,
+    dispatch,
+    gnosisAddress,
+    isAssetsStoredOnGnosis,
+  ]);
 
   const fetchTokens = useCallback(() => {
     if (daoAddress) {
