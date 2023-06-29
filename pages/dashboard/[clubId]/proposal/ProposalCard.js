@@ -205,9 +205,12 @@ const ProposalCard = ({
         <Grid container>
           <Grid item ml={2} mr={2} mt={2}>
             <Grid container spacing={1}>
-              {proposal?.commands[0]?.usdcTokenSymbol &&
-              !proposal?.commands[0]?.quorum &&
-              !proposal?.commands[0]?.totalDeposits ? (
+              {(proposal?.commands[0]?.usdcTokenSymbol &&
+                !proposal?.commands[0]?.quorum &&
+                !proposal?.commands[0]?.totalDeposits &&
+                !proposal?.commands[0].customNft &&
+                !proposal?.commands[0]?.executionId === 6) ||
+              !proposal?.commands[0]?.executionId === 7 ? (
                 <Grid item sx={{ display: "flex" }}>
                   <Chip
                     className={classes.timeLeftChip}
@@ -223,6 +226,59 @@ const ProposalCard = ({
                       </Grid>
                     }></Chip>
                 </Grid>
+              ) : (
+                <></>
+              )}
+
+              {proposal?.commands[0]?.executionId === 5 ? (
+                <Grid item sx={{ display: "flex" }}>
+                  <Chip
+                    className={classes.timeLeftChip}
+                    label={
+                      <Grid sx={{ display: "flex" }}>
+                        {" "}
+                        <Typography color="#C1D3FF" sx={{ marginRight: "5px" }}>
+                          Nft:
+                        </Typography>
+                        <Typography color="#FFFFFF">
+                          {proposal?.commands[0]?.customNft?.substring(0, 6) +
+                            ".........." +
+                            proposal?.commands[0]?.customNft?.substring(
+                              proposal?.commands[0]?.customNft?.length - 4,
+                            )}
+                        </Typography>
+                      </Grid>
+                    }></Chip>
+                </Grid>
+              ) : (
+                <></>
+              )}
+
+              {proposal?.commands[0]?.executionId === 6 ||
+              proposal?.commands[0]?.executionId === 7 ? (
+                <>
+                  <Grid item sx={{ display: "flex" }}>
+                    <Chip
+                      className={classes.timeLeftChip}
+                      label={
+                        <Grid sx={{ display: "flex" }}>
+                          {" "}
+                          <Typography
+                            color="#C1D3FF"
+                            sx={{ marginRight: "5px" }}>
+                            Owner Address:
+                          </Typography>
+                          <Typography color="#FFFFFF">
+                            {proposal?.commands[0]?.ownerAddress.slice(0, 6) +
+                              "...." +
+                              proposal?.commands[0]?.ownerAddress.slice(
+                                proposal?.commands[0]?.ownerAddress.length - 4,
+                              )}
+                          </Typography>
+                        </Grid>
+                      }></Chip>
+                  </Grid>
+                </>
               ) : (
                 <></>
               )}

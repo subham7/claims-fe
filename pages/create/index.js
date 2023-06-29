@@ -143,6 +143,7 @@ const Create = () => {
       threshold: 51,
       addressList: [],
       safeThreshold: 1,
+      storeAssetsOnGnosis: false,
     },
     validationSchema: step3ValidationSchema,
     onSubmit: async (values) => {
@@ -190,7 +191,7 @@ const Create = () => {
             isNftTotalSupplyUnlimited:
               !formikERC721Step2.values.isNftTotalSupplylimited,
             isGovernanceActive: formikStep3.values.governance,
-
+            storeAssetsOnGnosis: formikStep3.values.storeAssetsOnGnosis,
             allowWhiteList: false,
             merkleRoot:
               "0x0000000000000000000000000000000000000000000000000000000000000001",
@@ -244,6 +245,7 @@ const Create = () => {
             allowWhiteList: false,
             merkleRoot:
               "0x0000000000000000000000000000000000000000000000000000000000000001",
+            storeAssetsOnGnosis: formikStep3.values.storeAssetsOnGnosis,
           };
 
           initiateConnection(
@@ -447,7 +449,6 @@ const Create = () => {
   //       setOwnersCheck(true);
   //       setOwnerHelperText("Owners matched");
   //     } else {
-  //       console.log("hereeeeee");
   //       setOwnerHelperText(
   //         "Owners of the safe does not match with the admins of the DAO",
   //       );
@@ -465,7 +466,6 @@ const Create = () => {
 
   // useEffect(() => {
   //   if (formikStep4.values.safeAddress && GNOSIS_DATA.transactionUrl) {
-  //     console.log("xx");
   //     getSafeOwners();
   //   }
   // }, [

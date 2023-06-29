@@ -19,7 +19,7 @@ import {
 } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import React, { useCallback, useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import CollectionCard from "../../../src/components/cardcontent";
 import Layout1 from "../../../src/components/layouts/layout1";
 import { DashboardStyles } from "./DashboardStyles";
@@ -41,9 +41,11 @@ import { GiTwoCoins } from "react-icons/gi";
 import { IoColorPalette } from "react-icons/io5";
 import useSmartContractMethods from "../../hooks/useSmartContractMethods";
 import { showWrongNetworkModal } from "../../utils/helper";
+import { addNftsOwnedByDao } from "../../redux/reducers/club";
 // import useSmartContract from "../../hooks/useSmartContract";
 
 const DashboardIndex = () => {
+  const dispatch = useDispatch();
   const clubData = useSelector((state) => {
     return state.club.clubData;
   });
@@ -99,6 +101,10 @@ const DashboardIndex = () => {
     return state.club.factoryData;
   });
 
+  const gnosisAddress = useSelector((state) => {
+    return state.club.clubData.gnosisAddress;
+  });
+
   const {
     getERC721Balance,
     getERC721Symbol,
@@ -147,7 +153,10 @@ const DashboardIndex = () => {
   const fetchAssets = useCallback(async () => {
     try {
       if (NETWORK_HEX !== "undefined") {
-        const assetsData = await getAssetsByDaoAddress(daoAddress, NETWORK_HEX);
+        const assetsData = await getAssetsByDaoAddress(
+          factoryData.assetsStoredOnGnosis ? gnosisAddress : daoAddress,
+          NETWORK_HEX,
+        );
         setTokenDetails({
           treasuryAmount: assetsData?.data?.treasuryAmount,
           tokenPriceList: assetsData?.data?.tokenPriceList,
@@ -156,16 +165,30 @@ const DashboardIndex = () => {
     } catch (error) {
       console.log(error);
     }
-  }, [NETWORK_HEX, daoAddress]);
+  }, [
+    NETWORK_HEX,
+    daoAddress,
+    factoryData.assetsStoredOnGnosis,
+    gnosisAddress,
+  ]);
 
   const fetchNfts = useCallback(async () => {
     try {
-      const nftsData = await getNFTsByDaoAddress(daoAddress, NETWORK_HEX);
+      const nftsData = await getNFTsByDaoAddress(
+        factoryData.assetsStoredOnGnosis ? gnosisAddress : daoAddress,
+        NETWORK_HEX,
+      );
       setNftData(nftsData.data);
+      dispatch(addNftsOwnedByDao(nftsData.data));
     } catch (error) {
       console.log(error);
     }
-  }, [NETWORK_HEX, daoAddress]);
+  }, [
+    NETWORK_HEX,
+    daoAddress,
+    factoryData.assetsStoredOnGnosis,
+    gnosisAddress,
+  ]);
 
   const fetchActiveProposals = useCallback(async () => {
     try {

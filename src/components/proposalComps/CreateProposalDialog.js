@@ -27,10 +27,7 @@ import AddCircleRoundedIcon from "@mui/icons-material/AddCircleRounded";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ProposalActionForm from "./ProposalActionForm";
 import { proposalValidationSchema } from "../createClubComps/ValidationSchemas";
-import {
-  convertToWei,
-  convertToWeiGovernance,
-} from "../../utils/globalFunctions";
+import { convertToWeiGovernance } from "../../utils/globalFunctions";
 import { useConnectWallet } from "@web3-onboard/react";
 import { useRouter } from "next/router";
 import { createProposal } from "../../api/proposal";
@@ -59,7 +56,13 @@ const useStyles = makeStyles({
     marginTop: "0.5rem",
   },
 });
-const CreateProposalDialog = ({ open, setOpen, onClose, tokenData }) => {
+const CreateProposalDialog = ({
+  open,
+  setOpen,
+  onClose,
+  tokenData,
+  nftData,
+}) => {
   const classes = useStyles();
   const router = useRouter();
   const dispatch = useDispatch();
@@ -124,6 +127,11 @@ const CreateProposalDialog = ({ open, setOpen, onClose, tokenData }) => {
       customToken: tokenData ? tokenData[0]?.tokenAddress : "",
       recieverAddress: "",
       amountToSend: 0,
+      customNft: "",
+      customNftToken: "",
+      ownerChangeAction: "",
+      ownerAddress: "",
+      safeThreshold: 1,
     },
     validationSchema: proposalValidationSchema,
     onSubmit: async (values) => {
@@ -196,9 +204,45 @@ const CreateProposalDialog = ({ open, setOpen, onClose, tokenData }) => {
             executionId: 4,
             customToken: values.customToken,
             customTokenAmounts: [
-              convertToWei(values.amountToSend, tokenDecimal),
+              convertToWeiGovernance(values.amountToSend, tokenDecimal),
             ],
             customTokenAddresses: [values.recieverAddress],
+            usdcTokenSymbol: "USDC",
+            usdcTokenDecimal: 6,
+            usdcGovernanceTokenDecimal: 18,
+          },
+        ];
+      }
+      if (values.actionCommand === "Send nft to an address") {
+        commands = [
+          {
+            executionId: 5,
+            customNft: values.customNft,
+            customNftToken: values.customNftToken,
+            customTokenAddresses: [values.recieverAddress],
+            usdcTokenSymbol: "USDC",
+            usdcTokenDecimal: 6,
+            usdcGovernanceTokenDecimal: 18,
+          },
+        ];
+      }
+      if (values.actionCommand === "Add signer") {
+        commands = [
+          {
+            executionId: 6,
+            ownerAddress: values.ownerAddress,
+            usdcTokenSymbol: "USDC",
+            usdcTokenDecimal: 6,
+            usdcGovernanceTokenDecimal: 18,
+          },
+        ];
+      }
+      if (values.actionCommand === "Remove signer") {
+        commands = [
+          {
+            executionId: 7,
+            ownerAddress: values.ownerAddress,
+            safeThreshold: values.safeThreshold,
             usdcTokenSymbol: "USDC",
             usdcTokenDecimal: 6,
             usdcGovernanceTokenDecimal: 18,
@@ -472,7 +516,11 @@ const CreateProposalDialog = ({ open, setOpen, onClose, tokenData }) => {
               >
                 Add command
               </Button> */}
-                <ProposalActionForm formik={proposal} tokenData={tokenData} />
+                <ProposalActionForm
+                  formik={proposal}
+                  tokenData={tokenData}
+                  nftData={nftData}
+                />
               </Stack>
             )}
 
