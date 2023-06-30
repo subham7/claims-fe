@@ -151,9 +151,13 @@ const Join = () => {
       const url = convertIpfsToUrl(clubDetails?.stations[0].imageUrl);
       let imageUrl;
       if (url) {
-        const res = await fetch(url);
-        const data = await res.json();
-        imageUrl = convertIpfsToUrl(data?.image);
+        try {
+          const res = await fetch(url);
+          const data = await res.json();
+          imageUrl = convertIpfsToUrl(data?.image);
+        } catch (e) {
+          console.error(e);
+        }
       }
 
       const erc721Data = await getERC721DAOdetails();
