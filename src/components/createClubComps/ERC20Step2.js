@@ -22,9 +22,9 @@ export default function ERC20Step2(props) {
             Set deposit rules for members
           </Typography>
           <Typography className={classes.smallText} mb={2}>
-            Any new deposits will not be accepted after the last date and/or
-            funding target is met. Admins can extend deposit dates from
-            dashboard by an onchain transaction requiring gas.
+            Members automatically receive pro-rata tokens after depositing to
+            join this Station. Any new deposits will not be accepted after the
+            last date and/or funding target is met.
           </Typography>
           <Card className={classes.cardPadding} mb={2}>
             <Grid container pl={3} pr={1}>

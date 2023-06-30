@@ -38,10 +38,11 @@ export default function Step3(props) {
             Governance
           </Typography>
           <Typography className={classes.smallText} mb={2}>
-            Default mechanism is one wallet = one vote irrespective of number of
-            tokens held. Stations can raise & vote proposals to conduct surveys,
-            know community&apos;s sentiment & execute seamless actions (such a
-            airdrop tokens, reward members, etc) required day-to-day.
+            Seamlessly raise/vote on proposals inside your Station to take
+            opinions from members. Optionally, you can add governance to execute
+            transactions if and only if a proposal passes among members
+            (Transferring funds, distributing profits, airdropping assets,
+            updating governance & more).
           </Typography>
 
           <Card className={classes.cardPadding} mb={2}>

@@ -15,11 +15,10 @@ export default function Step1(props) {
     <>
       <Grid container>
         <Grid item md={12} mt={4}>
-          <Typography className={classes.wrapTextIcon}>Station info</Typography>
+          <Typography className={classes.wrapTextIcon}>Basic info</Typography>
           <Typography className={classes.smallText}>
-            Name & token symbol of your station are publicly visible on-chain &
-            can’t be changed after it is created. This can be your brand name or
-            something your community identifies with.
+            Give a name & token symbol for your station that best describes the
+            purpose or matches your tribe.
           </Typography>
           <br />
           <Typography className={classes.wrapTextIcon}>Name *</Typography>
@@ -76,10 +75,9 @@ export default function Step1(props) {
             Set token type
           </Typography>
           <Typography className={classes.smallText} mb={2}>
-            Token type that best suits your objective. For example: ERC721 for
-            membership based communities, Non-transferrable ERC20 for a
-            syndicate cap-table, transferrable ERC20 for a public DAO, etc.
-            Transferability allows trading of tokens in public markets.
+            Choose a Token type that best suits your objective. (For example:
+            ERC721 for NFT collectives or non-transferrable ERC20 for investment
+            clubs)
           </Typography>
 
           <FormControl sx={{ width: "100%" }}>

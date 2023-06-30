@@ -301,7 +301,7 @@ const App = () => {
                 <div className={classes.flex}>
                   <Grid item>
                     <Typography className={classes.yourClubText}>
-                      Your Stations
+                      My Stations
                     </Typography>
                   </Grid>
                   <Grid>
