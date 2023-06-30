@@ -132,9 +132,16 @@ const Join = () => {
       );
 
       const url = convertIpfsToUrl(clubDetails.stations[0].imageUrl);
-      const res = await fetch(url);
-      const data = await res.json();
-      const imageUrl = convertIpfsToUrl(data.image);
+      let imageUrl;
+      try {
+        if (url) {
+          const res = await fetch(url);
+          const data = await res.json();
+          imageUrl = convertIpfsToUrl(data.image);
+        }
+      } catch (e) {
+        console.error(e);
+      }
 
       const erc721Data = await getERC721DAOdetails();
       const nftCount = await getNftOwnersCount();
