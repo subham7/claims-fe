@@ -43,7 +43,12 @@ export const step3ValidationSchema = yup.object({
   addressList: yup.array().of(
     yup
       .string()
-      .matches(/^0x[a-zA-Z0-9]+/gm, " Proper wallet address is required")
+      .test("Address", "Invalid address", (values) => {
+        return values.length === 42 && values.includes("0x");
+      })
+      .test("Unique", "Values need te be unique", (values) => {
+        return new Set(values).size === values.length;
+      })
       .required("Wallet address is required"),
   ),
 });
