@@ -14,8 +14,6 @@ import { useDispatch } from "react-redux";
 import { makeStyles } from "@mui/styles";
 import Router, { useRouter } from "next/router";
 import { addDaoAddress } from "../src/redux/reducers/club";
-import claim from "../public/assets/images/treasury_image.png";
-import station from "../public/assets/images/gov_image.png";
 
 import { useConnectWallet } from "@web3-onboard/react";
 import NewCard from "../src/components/cards/card";
@@ -28,7 +26,9 @@ import { SUBGRAPH_URL_GOERLI, SUBGRAPH_URL_POLYGON } from "../src/api";
 import WrongNetworkModal from "../src/components/modals/WrongNetworkModal";
 import { addClubData } from "../src/redux/reducers/club";
 import Layout1 from "../src/components/layouts/layout1";
+import { BsFillPlayFill } from "react-icons/bs";
 import Web3 from "web3";
+import VideoModal from "../src/components/modals/VideoModal";
 
 const useStyles = makeStyles({
   container: {
@@ -76,11 +76,34 @@ const useStyles = makeStyles({
     borderRadius: "50%",
   },
   cardContainer: {
+    width: "min-content",
     display: "flex",
-    gap: "60px",
-    alignItems: "center",
+    flexDirection: "column",
     justifyContent: "center",
+    margin: "0 auto",
     minHeight: "90vh",
+  },
+  watchBtn: {
+    background: "#142243",
+    borderRadius: "50px",
+    border: "1px solid #EFEFEF",
+    width: "180px",
+    padding: 10,
+    margin: 0,
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
+    justifyContent: "center",
+    cursor: "pointer",
+  },
+  secondContainer: {
+    background: "#142243",
+    borderRadius: "20px",
+    marginTop: "20px",
+    display: "flex",
+    padding: "20px 30px",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   isAdmin: {
     fontSize: "16px",
@@ -109,6 +132,7 @@ const App = () => {
   const classes = useStyles();
   const [{ wallet }] = useConnectWallet();
   const [clubListData, setClubListData] = useState([]);
+  const [showVideoModal, setShowVideoModal] = useState(false);
 
   const [manageStation, setManageStation] = useState(false);
 
@@ -209,18 +233,58 @@ const App = () => {
       <div className={classes.container}>
         {!manageStation && clubFlow && (
           <div className={classes.cardContainer}>
-            <NewCard
-              onClick={showStationsHandler}
-              imgSrc={station}
-              title={"Manage Stations"}
-              subtitle={"Create and manage stations with few clicks"}
-            />
-            <NewCard
-              onClick={claimsHandler}
-              imgSrc={claim}
-              title={"Airdrop Tokens"}
-              subtitle={"Get your airdrop tokens from here!"}
-            />
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                gap: "30px",
+              }}>
+              <NewCard
+                onClick={showStationsHandler}
+                title={"Manage Stations"}
+                subtitle={
+                  "Creating a Station is the easiest way to start managing money/assets towards shared goals"
+                }
+                buttonText="Enter App"
+              />
+              <NewCard
+                onClick={claimsHandler}
+                title={"DropX"}
+                subtitle={
+                  "Set up custom drops instantly to distribute tokens/NFTs to your community anywhere."
+                }
+                buttonText="Enter App"
+              />
+            </div>
+            <div className={classes.secondContainer}>
+              <p
+                style={{
+                  fontSize: "20px",
+                  fontWeight: "400",
+                  color: "#EFEFEF",
+                  margin: 0,
+                  padding: 0,
+                  letterSpacing: ".8px",
+                }}>
+                Learn what communities can do with StationX
+              </p>
+              <button
+                onClick={() => {
+                  setShowVideoModal(true);
+                }}
+                className={classes.watchBtn}>
+                <BsFillPlayFill color="#EFEFEF" size={30} />
+                <p
+                  style={{
+                    fontSize: "18px",
+                    color: "#EFEFEF",
+                    margin: 0,
+                    padding: 0,
+                  }}>
+                  Watch video
+                </p>
+              </button>
+            </div>
           </div>
         )}
 
@@ -391,8 +455,13 @@ const App = () => {
 
         {walletAddress && networkId !== "0x89" && networkId !== "0x5" ? (
           <WrongNetworkModal />
-        ) : (
-          ""
+        ) : null}
+        {showVideoModal && (
+          <VideoModal
+            onClose={() => {
+              setShowVideoModal(false);
+            }}
+          />
         )}
       </div>
     </Layout1>
