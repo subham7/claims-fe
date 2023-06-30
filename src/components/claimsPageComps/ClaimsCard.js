@@ -7,12 +7,11 @@ import { FaCoins } from "react-icons/fa";
 import { useRouter } from "next/router";
 import { useDispatch, useSelector } from "react-redux";
 import { addClaimContractData } from "../../redux/reducers/createClaim";
-import claimContractABI from "../../../src/abis/singleClaimContract.json";
 import Countdown from "react-countdown";
 import { Alert } from "@mui/material";
 import ClaimsEditModal from "./ClaimsEditModal";
 import { useConnectWallet } from "@web3-onboard/react";
-import { SmartContract } from "../../api/contract";
+import useSmartContractMethods from "../../hooks/useSmartContractMethods";
 
 const useStyles = makeStyles({
   container: {
@@ -128,6 +127,8 @@ const ClaimsCard = ({
   const convertedDate = new Date(updatedDate).toLocaleDateString();
   const currentTime = Date.now() / 1000;
 
+  const { claimSettings } = useSmartContractMethods();
+
   useEffect(() => {
     // if (+startDate > currentTime || +endDate < currentTime) {
     if (+startDate > currentTime) {
@@ -144,15 +145,7 @@ const ClaimsCard = ({
 
   const fetchContractDetails = async () => {
     try {
-      const claimSmartContract = new SmartContract(
-        claimContractABI,
-        claimContract,
-        walletAddress.toLowerCase(),
-        undefined,
-        undefined,
-      );
-
-      const desc = await claimSmartContract.claimSettings();
+      const desc = await claimSettings();
       setClaimEnabled(desc.isEnabled);
     } catch (error) {
       console.log(error);
@@ -191,7 +184,6 @@ const ClaimsCard = ({
   const IS_CLAIM_ENABLED = useSelector((state) => {
     return state.createClaim.claimEnabled;
   });
-
 
   return (
     <div onClick={claimHandler} className={classes.container}>

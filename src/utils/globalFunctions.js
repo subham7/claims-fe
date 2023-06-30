@@ -17,30 +17,36 @@ export const calculateDays = (dateTime) => {
 
 // function for converting the governance token amount from decimal to Wei format
 export const convertToWeiGovernance = (convertValue, decimal) => {
-  try {
-    return ethers
-      .parseUnits(convertValue.toString(), Number(decimal))
-      .toString();
-  } catch (error) {}
+  if (decimal) {
+    try {
+      return ethers
+        .parseUnits(convertValue.toString(), Number(decimal))
+        .toString();
+    } catch (error) {}
+  }
 };
 
 // function for converting the governance token amount from Wei to decimal format
 export const convertFromWeiGovernance = (convertValue, decimal) => {
-  try {
-    return ethers.formatUnits(convertValue.toString(), Number(decimal));
-  } catch (err) {
-    console.log(err);
+  if (decimal) {
+    try {
+      return ethers.formatUnits(convertValue.toString(), Number(decimal));
+    } catch (err) {
+      console.log(err);
+    }
   }
 };
 
 export const convertIpfsToUrl = (url) => {
   let modifiedTokenURI;
-  if (url.slice(url.indexOf("/"), url?.lastIndexOf("//"))) {
+  if (url?.slice(url?.indexOf("/"), url?.lastIndexOf("//"))) {
     let imgUrl = url?.split("//");
-    modifiedTokenURI = `https://${imgUrl[1]}.ipfs.dweb.link/${imgUrl[2]}`;
+    modifiedTokenURI =
+      imgUrl && `https://${imgUrl[1]}.ipfs.dweb.link/${imgUrl[2]}`;
   } else {
     let imgUrl = url?.split("/");
-    modifiedTokenURI = `https://${imgUrl[2]}.ipfs.dweb.link/${imgUrl[3]}`;
+    modifiedTokenURI =
+      imgUrl && `https://${imgUrl[2]}.ipfs.dweb.link/${imgUrl[3]}`;
   }
   return modifiedTokenURI;
 };

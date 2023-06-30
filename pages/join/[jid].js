@@ -148,10 +148,13 @@ const Join = () => {
         QUERY_CLUB_DETAILS(daoAddress),
       );
 
-      const url = convertIpfsToUrl(clubDetails.stations[0].imageUrl);
-      const res = await fetch(url);
-      const data = await res.json();
-      const imageUrl = convertIpfsToUrl(data.image);
+      const url = convertIpfsToUrl(clubDetails?.stations[0].imageUrl);
+      let imageUrl;
+      if (url) {
+        const res = await fetch(url);
+        const data = await res.json();
+        imageUrl = convertIpfsToUrl(data?.image);
+      }
 
       const erc721Data = await getERC721DAOdetails();
       const nftCount = await getNftOwnersCount();
@@ -193,69 +196,75 @@ const Join = () => {
 
       const tokenGatingDetails = await getTokenGatingDetails(daoAddress);
 
-      setFetchedDetails({
-        tokenA: tokenGatingDetails[0]?.tokenA,
-        tokenB: tokenGatingDetails[0]?.tokenB,
-        tokenAAmt: tokenGatingDetails[0]?.value[0],
-        tokenBAmt: tokenGatingDetails[0]?.value[1],
-        operator: tokenGatingDetails[0]?.operator,
-        comparator: tokenGatingDetails[0]?.comparator,
-      });
+      if (tokenGatingDetails) {
+        setFetchedDetails({
+          tokenA: tokenGatingDetails[0]?.tokenA,
+          tokenB: tokenGatingDetails[0]?.tokenB,
+          tokenAAmt: tokenGatingDetails[0]?.value[0],
+          tokenBAmt: tokenGatingDetails[0]?.value[1],
+          operator: tokenGatingDetails[0]?.operator,
+          comparator: tokenGatingDetails[0]?.comparator,
+        });
 
-      const tokenASymbol = await getTokenSymbol(tokenGatingDetails[0].tokenA);
-      const tokenBSymbol = await getTokenSymbol(tokenGatingDetails[0]?.tokenB);
-
-      let tokenADecimal, tokenBDecimal;
-
-      try {
-        tokenADecimal = await getDecimals(tokenGatingDetails[0]?.tokenA);
-      } catch (error) {
-        console.log(error);
-      }
-
-      try {
-        tokenBDecimal = await getDecimals(tokenGatingDetails[0]?.tokenB);
-      } catch (error) {
-        console.log(error);
-      }
-
-      setDisplayTokenDetails({
-        tokenASymbol: tokenASymbol,
-        tokenBSymbol: tokenBSymbol,
-        tokenADecimal: tokenADecimal ? tokenADecimal : 0,
-        tokenBDecimal: tokenBDecimal ? tokenBDecimal : 0,
-      });
-
-      if (tokenGatingDetails[0]?.length) {
-        setIsTokenGated(true);
-
-        const balanceOfTokenAInUserWallet = await getBalance(
-          tokenGatingDetails[0].tokenA,
-        );
-        const balanceOfTokenBInUserWallet = await getBalance(
-          tokenGatingDetails[0].tokenB,
+        const tokenASymbol = await getTokenSymbol(tokenGatingDetails[0].tokenA);
+        const tokenBSymbol = await getTokenSymbol(
+          tokenGatingDetails[0]?.tokenB,
         );
 
-        if (tokenGatingDetails[0].operator == 0) {
-          if (
-            +balanceOfTokenAInUserWallet >= +tokenGatingDetails[0]?.value[0] &&
-            +balanceOfTokenBInUserWallet >= +tokenGatingDetails[0]?.value[1]
-          ) {
-            setIsEligibleForTokenGating(true);
-          } else {
-            setIsEligibleForTokenGating(false);
-          }
-        } else if (tokenGatingDetails[0].operator == 1) {
-          if (
-            +balanceOfTokenAInUserWallet >= +tokenGatingDetails[0]?.value[0] ||
-            +balanceOfTokenBInUserWallet >= +tokenGatingDetails[0]?.value[1]
-          ) {
-            setIsEligibleForTokenGating(true);
-          } else {
-            setIsEligibleForTokenGating(false);
-          }
+        let tokenADecimal, tokenBDecimal;
+
+        try {
+          tokenADecimal = await getDecimals(tokenGatingDetails[0]?.tokenA);
+        } catch (error) {
+          console.log(error);
         }
-        setLoading(false);
+
+        try {
+          tokenBDecimal = await getDecimals(tokenGatingDetails[0]?.tokenB);
+        } catch (error) {
+          console.log(error);
+        }
+
+        setDisplayTokenDetails({
+          tokenASymbol: tokenASymbol,
+          tokenBSymbol: tokenBSymbol,
+          tokenADecimal: tokenADecimal ? tokenADecimal : 0,
+          tokenBDecimal: tokenBDecimal ? tokenBDecimal : 0,
+        });
+
+        if (tokenGatingDetails[0]?.length) {
+          setIsTokenGated(true);
+
+          const balanceOfTokenAInUserWallet = await getBalance(
+            tokenGatingDetails[0].tokenA,
+          );
+          const balanceOfTokenBInUserWallet = await getBalance(
+            tokenGatingDetails[0].tokenB,
+          );
+
+          if (tokenGatingDetails[0].operator == 0) {
+            if (
+              +balanceOfTokenAInUserWallet >=
+                +tokenGatingDetails[0]?.value[0] &&
+              +balanceOfTokenBInUserWallet >= +tokenGatingDetails[0]?.value[1]
+            ) {
+              setIsEligibleForTokenGating(true);
+            } else {
+              setIsEligibleForTokenGating(false);
+            }
+          } else if (tokenGatingDetails[0].operator == 1) {
+            if (
+              +balanceOfTokenAInUserWallet >=
+                +tokenGatingDetails[0]?.value[0] ||
+              +balanceOfTokenBInUserWallet >= +tokenGatingDetails[0]?.value[1]
+            ) {
+              setIsEligibleForTokenGating(true);
+            } else {
+              setIsEligibleForTokenGating(false);
+            }
+          }
+          setLoading(false);
+        }
       }
     } catch (error) {
       console.log(error);
