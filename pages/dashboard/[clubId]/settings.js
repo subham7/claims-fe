@@ -13,6 +13,7 @@ import { convertFromWeiGovernance } from "../../../src/utils/globalFunctions";
 import { getAssetsByDaoAddress } from "../../../src/api/assets";
 import useSmartContractMethods from "../../../src/hooks/useSmartContractMethods";
 import { showWrongNetworkModal } from "../../../src/utils/helper";
+import { getClubInfo } from "../../../src/api/club";
 
 const Settings = () => {
   const [daoDetails, setDaoDetails] = useState({
@@ -50,6 +51,7 @@ const Settings = () => {
   });
   const [members, setMembers] = useState(0);
   const [treasuryAmount, setTreasuryAmount] = useState(0);
+  const [clubInfo, setClubInfo] = useState();
 
   const [{ wallet }] = useConnectWallet();
 
@@ -215,6 +217,14 @@ const Settings = () => {
     }
   }, [NETWORK_HEX, daoAddress, daoDetails.assetsStoredOnGnosis, gnosisAddress]);
 
+  const getClubInfoFn = async () => {
+    const info = await getClubInfo(daoAddress);
+    if (info.status === 200) setClubInfo(info.data[0]);
+  };
+  useEffect(() => {
+    getClubInfoFn();
+  }, [daoAddress]);
+
   useEffect(() => {
     if (tokenType === "erc20") {
       fetchErc20ContractDetails();
@@ -261,12 +271,16 @@ const Settings = () => {
         remainingDays={remainingDays}
         remainingTimeInSecs={remainingTimeInSecs}
         walletAddress={walletAddress}
+        clubInfo={clubInfo}
+        getClubInfo={getClubInfoFn}
+        isAdminUser={isAdminUser}
       />
       <AdditionalSettings
         daoDetails={daoDetails}
         erc20TokenDetails={erc20TokenDetails}
         tokenType={tokenType}
         walletAddress={walletAddress}
+        // networkId={networkId}
         fetchErc20ContractDetails={fetchErc20ContractDetails}
         fetchErc721ContractDetails={fetchErc721ContractDetails}
         isAdminUser={isAdminUser}

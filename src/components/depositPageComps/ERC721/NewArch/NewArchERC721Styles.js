@@ -3,7 +3,6 @@ import { makeStyles } from "@mui/styles";
 export const NewArchERC721Styles = makeStyles({
   topGrid: {
     paddingLeft: "6em",
-    paddingRight: "6em",
     display: "flex",
     flexDirection: "column",
     height: "100vh",
@@ -11,10 +10,14 @@ export const NewArchERC721Styles = makeStyles({
     justifyContent: "center",
     alignItems: "center",
   },
+  iconColor: {
+    fontSize: "1rem",
+    color: "#C1D3FF",
+  },
 
   nftImg: {
-    height: "450px",
-    width: "450px",
+    height: "auto",
+    width: "100%",
     borderRadius: "20px",
   },
   depositActive: {
@@ -39,7 +42,7 @@ export const NewArchERC721Styles = makeStyles({
 
   quoramTxt: {
     color: "#fff",
-    fontWeight: "bold",
+    fontWeight: "light",
   },
 
   activeIllustration: {
@@ -69,17 +72,17 @@ export const NewArchERC721Styles = makeStyles({
 
   claimGrid: {
     display: "flex",
-    justifyContent: "space-between",
+    justifyContent: "flex-start",
     border: "1px solid #C1D3FF40",
     borderRadius: "8px",
     alignItems: "center",
-    background: "#142243",
-    padding: "3em",
+    // background: "#142243",
+    padding: "1em 1.3em",
   },
 
   maxTokensTxt: {
-    color: "#6475A3",
-    fontWeight: "light",
+    color: "#FFF",
+    fontWeight: "lighter",
   },
 
   connectWalletTxtGrid: {

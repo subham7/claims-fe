@@ -4,7 +4,7 @@ import { Fragment, useRef, useState } from "react";
 import Step1 from "../../src/components/createClubComps/Step1";
 import Step3 from "../../src/components/createClubComps/Step3";
 import { useFormik } from "formik";
-import { tokenType } from "../../src/data/create";
+import { tokenType, useStationForType } from "../../src/data/create";
 import ERC20Step2 from "../../src/components/createClubComps/ERC20Step2";
 import NFTStep2 from "../../src/components/createClubComps/NFTStep2";
 import dayjs from "dayjs";
@@ -98,6 +98,8 @@ const Create = () => {
       clubName: "",
       clubSymbol: "",
       clubTokenType: tokenType[0],
+      useStationFor: useStationForType[0],
+      email: "",
     },
     validationSchema: step1ValidationSchema,
     onSubmit: (values) => {
@@ -205,6 +207,8 @@ const Create = () => {
             formikStep1.values.clubTokenType,
             metadata.data.image.pathname,
             metadata.url,
+            formikStep1.values.useStationFor,
+            formikStep1.values.email,
           );
         } catch (error) {
           console.error(error);
@@ -254,6 +258,10 @@ const Create = () => {
             dispatch,
             formikStep3.values.addressList,
             formikStep1.values.clubTokenType,
+            "",
+            "",
+            formikStep1.values.useStationFor,
+            formikStep1.values.email,
           );
         } catch (error) {
           console.error(error);

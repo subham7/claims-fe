@@ -19,6 +19,7 @@ import { Backdrop, CircularProgress, Grid, Typography } from "@mui/material";
 import useSmartContractMethods from "../../src/hooks/useSmartContractMethods";
 import Layout1 from "../../src/components/layouts/layout1";
 import { showWrongNetworkModal } from "../../src/utils/helper";
+import { getClubInfo } from "../../src/api/club";
 // import useSmartContract from "../../src/hooks/useSmartContract";
 
 const Join = () => {
@@ -65,6 +66,7 @@ const Join = () => {
     tokenADecimal: 0,
     tokenBDecimal: 0,
   });
+  const [clubInfo, setClubInfo] = useState();
   const [{ wallet }] = useConnectWallet();
   const networkId = wallet?.chains[0].id;
   const router = useRouter();
@@ -306,6 +308,12 @@ const Join = () => {
           setMembers(data?.users);
         }
       };
+
+      const clubInfo = async () => {
+        const info = await getClubInfo(daoAddress);
+        if (info.status === 200) setClubInfo(info.data[0]);
+      };
+      clubInfo();
       wallet && fetchData();
       setLoading(false);
     } catch (error) {
@@ -326,6 +334,7 @@ const Join = () => {
           remainingClaimAmount={remainingClaimAmount}
           fetchedTokenGatedDetails={fetchedDetails}
           displayTokenDetails={displayTokenDetails}
+          clubInfo={clubInfo}
         />
       ) : TOKEN_TYPE === "erc721" ? (
         <NewArchERC721
@@ -333,6 +342,7 @@ const Join = () => {
           isEligibleForTokenGating={isEligibleForTokenGating}
           erc721DaoAddress={daoAddress}
           daoDetails={daoDetails}
+          clubInfo={clubInfo}
         />
       ) : null}
 

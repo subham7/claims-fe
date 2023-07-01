@@ -18,6 +18,10 @@ import { useSelector } from "react-redux";
 import { useRouter } from "next/router";
 import RemoveIcon from "@mui/icons-material/Remove";
 import AddIcon from "@mui/icons-material/Add";
+import TelegramIcon from "@mui/icons-material/Telegram";
+import TwitterIcon from "@mui/icons-material/Twitter";
+import { RiDiscordFill } from "react-icons/ri";
+import ReactHtmlParser from "react-html-parser";
 import useSmartContractMethods from "../../../../hooks/useSmartContractMethods";
 import { showWrongNetworkModal } from "../../../../utils/helper";
 
@@ -26,6 +30,7 @@ const NewArchERC721 = ({
   erc721DaoAddress,
   isTokenGated,
   isEligibleForTokenGating,
+  clubInfo,
 }) => {
   const [loading, setLoading] = useState(false);
   const [active, setActive] = useState(false);
@@ -153,23 +158,9 @@ const NewArchERC721 = ({
 
   return (
     <>
-      <Grid paddingTop={16} paddingLeft={10} container spacing={6}>
+      <Grid className={classes.topGrid} container spacing={6}>
         {wallet ? (
           <>
-            <Grid item md={5}>
-              {daoDetails?.daoImage.includes(".mp4") ? (
-                <video className={classes.nftImg} controls>
-                  <source src={daoDetails?.daoImage} type="video/mp4" />
-                  Your browser does not support the video tag.
-                </video>
-              ) : (
-                <img
-                  src={daoDetails?.daoImage}
-                  alt="nft image"
-                  className={classes.nftImg}
-                />
-              )}
-            </Grid>
             <Grid item md={6}>
               <Grid
                 container
@@ -231,6 +222,14 @@ const NewArchERC721 = ({
                       </div>
                     </Grid>
                   </Grid>
+
+                  <div
+                    style={{
+                      color: "white",
+                    }}
+                    dangerouslySetInnerHTML={{
+                      __html: ReactHtmlParser(clubInfo?.bio),
+                    }}></div>
                 </Grid>
                 <Grid item width="100%">
                   <Typography variant="subtitle1" color="#C1D3FF">
@@ -245,30 +244,34 @@ const NewArchERC721 = ({
 
                 <Grid item width="100%">
                   <Grid container spacing={3}>
-                    {daoDetails.isGovernance && (
-                      <>
-                        <Grid item xs={3}>
-                          <Typography variant="subtitle2" color="#C1D3FF">
-                            Quorum
-                          </Typography>
-                          <Typography
-                            variant="subtitle1"
-                            className={classes.quoramTxt}>
-                            {daoDetails.quorum / 100}%
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={3}>
-                          <Typography variant="subtitle2" color="#C1D3FF">
-                            Threshold
-                          </Typography>
-                          <Typography
-                            variant="subtitle1"
-                            className={classes.quoramTxt}>
-                            {daoDetails.threshold / 100}%
-                          </Typography>
-                        </Grid>
-                      </>
-                    )}
+                    {/* {daoDetails.isGovernance && ( */}
+                    <>
+                      <Grid item xs={3}>
+                        <Typography variant="subtitle2" color="#C1D3FF">
+                          Quorum
+                        </Typography>
+                        <Typography
+                          variant="subtitle1"
+                          className={classes.quoramTxt}>
+                          {daoDetails.isGovernance
+                            ? `${daoDetails.quorum / 100}%`
+                            : "-"}
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={3}>
+                        <Typography variant="subtitle2" color="#C1D3FF">
+                          Threshold
+                        </Typography>
+                        <Typography
+                          variant="subtitle1"
+                          className={classes.quoramTxt}>
+                          {daoDetails.isGovernance
+                            ? `${daoDetails.threshold / 100}%`
+                            : "-"}
+                        </Typography>
+                      </Grid>
+                    </>
+                    {/* )} */}
 
                     <Grid item xs={4} width="fit-content">
                       <Typography variant="subtitle2" color="#C1D3FF">
@@ -297,28 +300,30 @@ const NewArchERC721 = ({
                 </Grid>
 
                 <Grid item width="100%">
-                  <Typography variant="subtitle2" color="#C1D3FF">
-                    Price
-                  </Typography>
-                  <Typography variant="h5" className={classes.quoramTxt}>
-                    {/* {daoDetails.pricePerToken / Math.pow(10, 6)}  */}
-                    {convertFromWeiGovernance(
-                      daoDetails.pricePerToken,
-                      erc20TokenDetails.tokenDecimal,
-                    )}{" "}
-                    {erc20TokenDetails.tokenSymbol}
-                  </Typography>
-                </Grid>
-
-                <Grid item width="100%">
                   <Grid container className={classes.claimGrid}>
+                    <Grid item width="100%" mb={2}>
+                      <Typography variant="subtitle1" color="#C1D3FF">
+                        Price
+                      </Typography>
+                      <Typography variant="h5" className={classes.quoramTxt}>
+                        {convertFromWeiGovernance(
+                          daoDetails.pricePerToken,
+                          erc20TokenDetails.tokenDecimal,
+                        )}{" "}
+                        {erc20TokenDetails.tokenSymbol}
+                      </Typography>
+                    </Grid>
                     <Grid
+                      spacing={3}
                       sx={{
                         color: "#EFEFEF",
                         borderRadius: 2,
                         display: "flex",
                         flexDirection: "inherit",
                         alignItems: "center",
+                        border: "1px solid #C1D3FF40",
+                        borderRadius: "8px",
+                        marginRight: "2rem",
                       }}>
                       <IconButton
                         onClick={() => {
@@ -348,57 +353,68 @@ const NewArchERC721 = ({
                         onClick={claimNFTHandler}
                         disabled={
                           (remainingDays <= 0 && remainingTimeInSecs < 0) ||
-                          hasClaimed ||
-                          erc20TokenDetails.userBalance <
-                            Number(
-                              convertFromWeiGovernance(
-                                daoDetails.pricePerToken,
-                                erc20TokenDetails.tokenDecimal,
-                              ),
-                            )
+                          hasClaimed
                             ? true
                             : isTokenGated
                             ? !isEligibleForTokenGating
                             : false
                         }
-                        sx={{ px: 8 }}>
+                        sx={{ px: 8, borderRadius: "24px", py: "0.5rem" }}>
                         {loading ? (
                           <CircularProgress />
                         ) : hasClaimed ? (
-                          "Claimed"
+                          "Minted"
                         ) : (
-                          "Claim"
+                          "Mint"
                         )}
                       </Button>
                     </Grid>
                   </Grid>
                 </Grid>
-                <Grid item>
-                  <Typography
-                    variant="subtitle2"
-                    className={classes.maxTokensTxt}>
-                    This station allows maximum of {daoDetails.maxTokensPerUser}{" "}
-                    mints per member
-                  </Typography>
-                  <Grid>
-                    {isTokenGated && isEligibleForTokenGating ? (
-                      <>
-                        <Typography sx={{ color: "#3B7AFD" }}>
-                          This club is token gated. You qualify
-                        </Typography>
-                      </>
-                    ) : isTokenGated && !isEligibleForTokenGating ? (
-                      <>
-                        <Typography sx={{ color: "red" }}>
-                          This club is token gated. You don&apos;t qualify
-                        </Typography>
-                      </>
-                    ) : (
-                      ""
-                    )}
-                  </Grid>
+                <Grid item width="100%">
+                  {clubInfo?.telegram && (
+                    <TelegramIcon
+                      sx={{ color: "#C1D3FF", marginRight: "1rem" }}
+                      onClick={() => {
+                        window.open(clubInfo?.telegram, "_blank");
+                      }}
+                    />
+                  )}
+                  {clubInfo?.discord && (
+                    <RiDiscordFill
+                      color="#C1D3FF"
+                      size={20}
+                      style={{ color: "#C1D3FF", marginRight: "1rem" }}
+                      onClick={() => {
+                        window.open(clubInfo?.discord, "_blank");
+                      }}
+                    />
+                  )}
+
+                  {clubInfo?.twitter && (
+                    <TwitterIcon
+                      sx={{ color: "#C1D3FF" }}
+                      onClick={() => {
+                        window.open(clubInfo?.twitter, "_blank");
+                      }}
+                    />
+                  )}
                 </Grid>
               </Grid>
+            </Grid>
+            <Grid item md={6}>
+              {daoDetails?.daoImage.includes(".mp4") ? (
+                <video className={classes.nftImg} controls>
+                  <source src={daoDetails?.daoImage} type="video/mp4" />
+                  Your browser does not support the video tag.
+                </video>
+              ) : (
+                <img
+                  src={daoDetails?.daoImage}
+                  alt="nft image"
+                  className={classes.nftImg}
+                />
+              )}
             </Grid>
           </>
         ) : (
