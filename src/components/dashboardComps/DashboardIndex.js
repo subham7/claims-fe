@@ -658,7 +658,7 @@ const DashboardIndex = () => {
                         className={classes.docs}
                         onClick={() => {
                           window.open(
-                            `https://stationx.substack.com/p/get-started-with-stationx-on-rinkeby`,
+                            `https://stationxnetwork.gitbook.io/docs`,
                           );
                         }}>
                         Read Docs

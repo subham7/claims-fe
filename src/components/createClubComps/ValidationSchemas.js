@@ -8,6 +8,7 @@ export const step1ValidationSchema = yup.object({
   clubSymbol: yup
     .string("Enter club symbol")
     .required("Club Symbol is required"),
+  email: yup.string("Enter email address").email("Enter valid email"),
 });
 
 export const ERC20Step2ValidationSchema = yup.object({

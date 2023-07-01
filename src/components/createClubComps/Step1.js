@@ -94,6 +94,54 @@ export default function Step1(props) {
             </Select>
           </FormControl>
           <br />
+
+          <Typography className={classes.largeText} mb={2} mt={3}>
+            What will you use the Station for? *
+          </Typography>
+          <FormControl sx={{ width: "100%" }}>
+            <Select
+              value={props.formik.values.useStationFor}
+              onChange={props.formik.handleChange}
+              inputProps={{ "aria-label": "Without label" }}
+              name="useStationFor"
+              id="useStationFor">
+              <MenuItem value={"Investment Club/Syndicate"}>
+                Investment club/Syndicate
+              </MenuItem>
+              <MenuItem value={"Fund management"}>Fund management</MenuItem>
+              <MenuItem value={"Nft memberships"}>NFT memberships</MenuItem>
+              <MenuItem value={"Charity/Impact funding"}>
+                Charity/Impact funding
+              </MenuItem>
+              <MenuItem value={"Manage grants"}>Manage grants</MenuItem>
+              <MenuItem value={"Others"}>Others</MenuItem>
+            </Select>
+          </FormControl>
+
+          <br />
+
+          <Typography mt={3} className={classes.wrapTextIcon}>
+            Email
+            <Box
+              sx={{ color: "#6475A3", ml: 1 }}
+              fontWeight="Normal"
+              display="inline">
+              (Optional)
+            </Box>
+          </Typography>
+          <TextField
+            name="email"
+            className={classes.textField}
+            variant="outlined"
+            onChange={props.formik.handleChange}
+            placeholder="johndoe@email.com"
+            onBlur={props.formik.handleBlur}
+            value={props.formik.values.email}
+            error={
+              props.formik.touched.email && Boolean(props.formik.errors.email)
+            }
+            helperText={props.formik.touched.email && props.formik.errors.email}
+          />
         </Grid>
       </Grid>
     </>

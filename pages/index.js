@@ -216,10 +216,6 @@ const App = () => {
     setOpen(false);
   };
 
-  const getImageURL = (tokenURI) => {
-    let imgUrl = tokenURI?.split("/");
-  };
-
   const showStationsHandler = () => {
     setManageStation(true);
   };
@@ -322,7 +318,6 @@ const App = () => {
                             onClick={(e) => {
                               handleItemClick(clubListData[key]);
                             }}>
-                            {getImageURL(club.imageUrl)}
                             <Grid container className={classes.flexContainer}>
                               <Grid item md={6}>
                                 <Stack spacing={0}>

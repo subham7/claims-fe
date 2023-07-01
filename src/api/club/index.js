@@ -22,6 +22,26 @@ export async function fetchClub(clubID) {
   });
 }
 
+export async function getClubInfo(daoAddress) {
+  // fetch club details using clubId
+  return await axios.get(MAIN_API_URL + `club/social/${daoAddress}`, {
+    headers: {
+      Authorization: "Bearer " + getJwtToken(),
+      "Content-Type": "application/json",
+    },
+  });
+}
+
+export async function editInfo(data) {
+  // fetch club details using clubId
+  return await axios.post(MAIN_API_URL + `club/social`, data, {
+    headers: {
+      Authorization: "Bearer " + getJwtToken(),
+      "Content-Type": "application/json",
+    },
+  });
+}
+
 export async function fetchClubOwners(safeAddress, transactionUrl) {
   return await axios.get(transactionUrl + `/api/v1/safes/${safeAddress}`);
 }
@@ -50,4 +70,21 @@ export async function fetchClubbyDaoAddress(daoAddress) {
       resolved.error = error;
       return resolved;
     });
+}
+
+export async function createClubData(data) {
+  try {
+    const response = await fetch(`https://api.stationx.network/v1/club/data`, {
+      method: "POST",
+      body: JSON.stringify(data),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const result = await response.json();
+    return result;
+  } catch (error) {
+    console.log(error);
+    return error;
+  }
 }

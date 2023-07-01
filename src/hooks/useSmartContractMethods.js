@@ -234,7 +234,7 @@ const useSmartContractMethods = () => {
       const value = convertToWeiGovernance(
         amount,
         usdcConvertDecimal,
-      ).toString();
+      )?.toString();
       return await erc20TokenContractSend?.methods
         ?.approve(approvalContract, value)
         .send({

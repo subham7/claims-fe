@@ -30,6 +30,10 @@ import { useSelector } from "react-redux";
 import { useRouter } from "next/router";
 import useSmartContractMethods from "../../../../hooks/useSmartContractMethods";
 import { BsInfoCircle } from "react-icons/bs";
+import TelegramIcon from "@mui/icons-material/Telegram";
+import TwitterIcon from "@mui/icons-material/Twitter";
+import { RiDiscordFill } from "react-icons/ri";
+import ReactHtmlParser from "react-html-parser";
 import { showWrongNetworkModal } from "../../../../utils/helper";
 
 const NewArchERC20 = ({
@@ -41,6 +45,7 @@ const NewArchERC20 = ({
   remainingClaimAmount,
   displayTokenDetails,
   fetchedTokenGatedDetails,
+  clubInfo,
 }) => {
   const [erc20TokenDetails, setErc20TokenDetails] = useState({
     tokenSymbol: "",
@@ -247,6 +252,13 @@ const NewArchERC20 = ({
                               />
                             )}
                           </Typography>
+
+                          <Grid item ml={0} mb={7}>
+                            <div
+                              dangerouslySetInnerHTML={{
+                                __html: ReactHtmlParser(clubInfo?.bio),
+                              }}></div>
+                          </Grid>
                         </Stack>
                       </Grid>
                     </Grid>
@@ -949,6 +961,35 @@ const NewArchERC20 = ({
                     </Grid>
                   </>
                 </Card>
+              )}
+            </Grid>
+            <Grid item width="100%" paddingLeft={10}>
+              {clubInfo?.telegram && (
+                <TelegramIcon
+                  sx={{ color: "#C1D3FF", marginRight: "1rem" }}
+                  onClick={() => {
+                    window.open(clubInfo?.telegram, "_blank");
+                  }}
+                />
+              )}
+              {clubInfo?.discord && (
+                <RiDiscordFill
+                  color="#C1D3FF"
+                  size={20}
+                  style={{ color: "#C1D3FF", marginRight: "1rem" }}
+                  onClick={() => {
+                    window.open(clubInfo?.discord, "_blank");
+                  }}
+                />
+              )}
+
+              {clubInfo?.twitter && (
+                <TwitterIcon
+                  sx={{ color: "#C1D3FF" }}
+                  onClick={() => {
+                    window.open(clubInfo?.twitter, "_blank");
+                  }}
+                />
               )}
             </Grid>
           </Grid>
