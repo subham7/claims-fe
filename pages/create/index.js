@@ -160,6 +160,7 @@ const Create = () => {
           description: "nft image",
           image: formikERC721Step2.values.nftImage,
         });
+
         dispatch(setUploadNFTLoading(false));
         try {
           const walletAddress = wallet.accounts[0].address;

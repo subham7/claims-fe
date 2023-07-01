@@ -37,18 +37,19 @@ export const convertFromWeiGovernance = (convertValue, decimal) => {
   }
 };
 
-export const convertIpfsToUrl = (url) => {
-  let modifiedTokenURI;
-  if (url?.slice(url?.indexOf("/"), url?.lastIndexOf("//"))) {
-    let imgUrl = url?.split("//");
-    modifiedTokenURI =
-      imgUrl && `https://${imgUrl[1]}.ipfs.dweb.link/${imgUrl[2]}`;
-  } else {
-    let imgUrl = url?.split("/");
-    modifiedTokenURI =
-      imgUrl && `https://${imgUrl[2]}.ipfs.dweb.link/${imgUrl[3]}`;
+export const getImageURL = async (url) => {
+  try {
+    const metadataHash = url.replace("ipfs://", "");
+    const metadataResponse = await fetch(
+      "https://gateway.pinata.cloud/ipfs/" + metadataHash,
+    );
+    const response = await metadataResponse.json();
+    const imgHash = response.image.replace("ipfs://", "");
+    const imgUrl = "https://gateway.pinata.cloud/ipfs/" + imgHash;
+    return imgUrl;
+  } catch (e) {
+    console.error(e);
   }
-  return modifiedTokenURI;
 };
 
 export const generateBoundary = () => {

@@ -6,7 +6,7 @@ import { useRouter } from "next/router";
 import NewArchERC721 from "../../src/components/depositPageComps/ERC721/NewArch/NewArchERC721";
 import {
   convertFromWeiGovernance,
-  convertIpfsToUrl,
+  getImageURL,
 } from "../../src/utils/globalFunctions";
 import { subgraphQuery } from "../../src/utils/subgraphs";
 import {
@@ -148,17 +148,7 @@ const Join = () => {
         QUERY_CLUB_DETAILS(daoAddress),
       );
 
-      const url = convertIpfsToUrl(clubDetails?.stations[0].imageUrl);
-      let imageUrl;
-      if (url) {
-        try {
-          const res = await fetch(url);
-          const data = await res.json();
-          imageUrl = convertIpfsToUrl(data?.image);
-        } catch (e) {
-          console.error(e);
-        }
-      }
+      const imageUrl = await getImageURL(clubDetails.stations[0].imageUrl);
 
       const erc721Data = await getERC721DAOdetails();
       const nftCount = await getNftOwnersCount();

@@ -35,7 +35,7 @@ import {
 import ClubFetch from "../../utils/clubFetch";
 import {
   convertFromWeiGovernance,
-  convertIpfsToUrl,
+  getImageURL,
 } from "../../utils/globalFunctions";
 import { GiTwoCoins } from "react-icons/gi";
 import { IoColorPalette } from "react-icons/io5";
@@ -130,10 +130,7 @@ const DashboardIndex = () => {
         );
 
         if (tokenType === "erc721") {
-          const url = convertIpfsToUrl(clubDetails.stations[0].imageUrl);
-          const res = await fetch(url);
-          const data = await res.json();
-          const imageUrl = convertIpfsToUrl(data.image);
+          const imageUrl = await getImageURL(clubDetails.stations[0].imageUrl);
 
           setClubDetails({
             clubImageUrl: imageUrl,
