@@ -9,13 +9,12 @@ import React, { useEffect, useState } from "react";
 import useSmartContractMethods from "../../hooks/useSmartContractMethods";
 import { ClaimsInsightStyles } from "./claimsInsightStyles";
 
-const ToggleClaim = ({ startTime, endTime }) => {
+const ToggleClaim = () => {
   const [loading, setLoading] = useState(false);
   const [isEnabled, setIsEnabled] = useState(true);
   const [showMessage, setShowMessage] = useState(null);
 
-  const { claimSettings, changeClaimsStartTimeAndEndTime } =
-    useSmartContractMethods();
+  const { claimSettings, toggleClaim } = useSmartContractMethods();
 
   const classes = ClaimsInsightStyles();
   const currentTime = Date.now() / 1000;
@@ -24,11 +23,7 @@ const ToggleClaim = ({ startTime, endTime }) => {
     setLoading(true);
 
     try {
-      await changeClaimsStartTimeAndEndTime(
-        startTime,
-        Number(currentTime - 2000).toFixed(0),
-      );
-
+      await toggleClaim();
       setLoading(false);
       setIsEnabled(!isEnabled);
       showMessageHandler();
@@ -81,7 +76,7 @@ const ToggleClaim = ({ startTime, endTime }) => {
           severity="error"
           sx={{
             width: "350px",
-            position: "absolute",
+            position: "fixed",
             bottom: "30px",
             right: "20px",
             borderRadius: "8px",
@@ -96,7 +91,7 @@ const ToggleClaim = ({ startTime, endTime }) => {
           severity="success"
           sx={{
             width: "350px",
-            position: "absolute",
+            position: "fixed",
             bottom: "30px",
             right: "20px",
             borderRadius: "8px",

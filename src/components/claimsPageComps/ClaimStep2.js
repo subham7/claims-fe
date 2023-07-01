@@ -264,25 +264,29 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
                   className={classes.input}
                 />
 
-                <Typography className={classes.label}>
-                  Token Gating Amount
-                </Typography>
-                <TextField
-                  error={
-                    formik.touched.tokenGatingAmt &&
-                    Boolean(formik.errors.tokenGatingAmt)
-                  }
-                  helperText={
-                    formik.touched.tokenGatingAmt &&
-                    formik.errors.tokenGatingAmt
-                  }
-                  onChange={formik.handleChange}
-                  value={values.tokenGatingAmt}
-                  name="tokenGatingAmt"
-                  id="tokenGatingAmt"
-                  variant="outlined"
-                  className={classes.input}
-                />
+                {values.maximumClaim !== "proRata" && (
+                  <>
+                    <Typography className={classes.label}>
+                      Token Gating Amount
+                    </Typography>
+                    <TextField
+                      error={
+                        formik.touched.tokenGatingAmt &&
+                        Boolean(formik.errors.tokenGatingAmt)
+                      }
+                      helperText={
+                        formik.touched.tokenGatingAmt &&
+                        formik.errors.tokenGatingAmt
+                      }
+                      onChange={formik.handleChange}
+                      value={values.tokenGatingAmt}
+                      name="tokenGatingAmt"
+                      id="tokenGatingAmt"
+                      variant="outlined"
+                      className={classes.input}
+                    />
+                  </>
+                )}
               </>
             )}
 
@@ -315,6 +319,48 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
             </RadioGroup>
 
             {/* Number of Tokens */}
+
+            {values.maximumClaim === "proRata" && (
+              <>
+                <Typography className={classes.label}>
+                  Select network on which gated-token is present *
+                </Typography>
+                <FormControl sx={{ width: "100%" }}>
+                  <Select
+                    value={values.tokenGatedNetwork}
+                    onChange={formik.handleChange}
+                    inputProps={{ "aria-label": "Without label" }}
+                    name="tokenGatedNetwork"
+                    id="tokenGatedNetwork">
+                    <MenuItem selected value={"eth-mainnet"}>
+                      Ethereum
+                    </MenuItem>
+                    <MenuItem value={"matic-mainnet"}>Polygon</MenuItem>
+                    <MenuItem value={"bsc-mainnet"}>BNB Smart Chain</MenuItem>
+                  </Select>
+                </FormControl>
+
+                <Typography className={classes.label}>
+                  Enter block number (optional)
+                </Typography>
+                <TextField
+                  variant="outlined"
+                  className={classes.input}
+                  name="blockNumber"
+                  id="blockNumber"
+                  value={formik.values.blockNumber}
+                  onChange={formik.handleChange}
+                  type="number"
+                  error={
+                    formik.touched.blockNumber &&
+                    Boolean(formik.errors.blockNumber)
+                  }
+                  helperText={
+                    formik.touched.blockNumber && formik.errors.blockNumber
+                  }
+                />
+              </>
+            )}
 
             {(values.maximumClaim === "custom" ||
               values.eligible === "everyone") && (

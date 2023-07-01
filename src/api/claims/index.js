@@ -44,3 +44,39 @@ export const getClaimAmountForUser = async (
     console.log(err);
   }
 };
+
+export const getSnapshotData = async (
+  totalClaimAmount,
+  airdropTokenAddress,
+  tokenGatingAddress,
+  tokenGatingNetwork,
+  blockNumber,
+  networkId,
+) => {
+  try {
+    const res = await fetch(
+      `${MAIN_API_URL}snapshot?totalClaimAmount=${totalClaimAmount}&airdropTokenAddress=${airdropTokenAddress}&gatingTokenAddress=${tokenGatingAddress}&gatingTokenNetwork=${tokenGatingNetwork}&blockNumber=${blockNumber}&networkId=${networkId}`,
+    );
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getProrataBalanceOfUser = async (
+  claimAddress,
+  userAddress,
+  networkId,
+) => {
+  try {
+    const res = await fetch(
+      `${MAIN_API_URL}snapshot/${claimAddress}/balance/${userAddress}?networkId=${networkId}`,
+    );
+
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+};

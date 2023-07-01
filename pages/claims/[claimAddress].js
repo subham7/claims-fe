@@ -15,6 +15,7 @@ import {
 import {
   getClaimAmountForUser,
   getClaimsByUserAddress,
+  getProrataBalanceOfUser,
 } from "../../src/api/claims";
 import MerkleTree from "merkletreejs";
 import keccak256 from "keccak256";
@@ -92,11 +93,11 @@ const ClaimAddress = () => {
 
     try {
       const desc = await claimSettings();
-      // console.log(desc);
+      console.log("DEsc", desc);
       setContractData(desc);
-      setClaimEnabled(endingTimeInNum > currentTime ? true : false);
+      setClaimEnabled(desc?.isEnabled);
       // setClaimEnabled(desc.isEnabled);
-      dispatch(addClaimEnabled(endingTimeInNum > currentTime ? true : false));
+      dispatch(addClaimEnabled(desc?.isEnabled));
 
       if (desc?.airdropToken) {
         // decimals of airdrop token
@@ -185,6 +186,21 @@ const ClaimAddress = () => {
           }
         }
 
+        if (desc.permission === "3") {
+          const amountOfTokenUserHas = await getBalance(desc?.daoToken);
+          setIsEligibleForTokenGated(+amountOfTokenUserHas > 0 ? true : false);
+
+          const prorataBalanceOfUser = await getProrataBalanceOfUser(
+            claimAddress,
+            walletAddress,
+            networkId,
+          );
+
+          const amt = prorataBalanceOfUser.claimAmount;
+
+          console.log("Prorata balance", parseFloat(amt).toLocaleString());
+        }
+
         // totalAmount of tokens
         const totalAmountInNumber = convertFromWeiGovernance(
           desc.claimAmountDetails[1],
@@ -202,7 +218,7 @@ const ClaimAddress = () => {
             walletAddress, // wallet address aayega
             claimAddress,
           );
-          setClaimableAmt(amount);
+          setClaimableAmt(10000);
 
           // converting the CSV data into merkleLeaves
           const csvData = await getClaimsByUserAddress(
@@ -514,7 +530,9 @@ const ClaimAddress = () => {
 
                       <div className={classes.div}>
                         <p className={classes.para}>Size</p>
-                        <h3 className={classes.label}>{totalAmountofTokens}</h3>
+                        <h3 className={classes.label}>
+                          {Number(totalAmountofTokens).toFixed(2)}
+                        </h3>
                       </div>
 
                       <div className={classes.div}>
@@ -623,6 +641,8 @@ const ClaimAddress = () => {
                         +claimInput <= 0 ||
                         claimInput >= +claimRemaining ||
                         (contractData?.permission == 0 &&
+                          !isEligibleForTokenGated) ||
+                        (contractData?.permission === "3" &&
                           !isEligibleForTokenGated)
                           ? true
                           : false
@@ -630,7 +650,9 @@ const ClaimAddress = () => {
                       style={
                         (alreadyClaimed && +claimRemaining === 0) ||
                         +claimInput <= 0 ||
-                        (contractData?.permission == 0 &&
+                        (contractData?.permission === "0" &&
+                          !isEligibleForTokenGated) ||
+                        (contractData?.permission === "3" &&
                           !isEligibleForTokenGated) ||
                         +claimInput >= +claimRemaining ||
                         !claimActive ||

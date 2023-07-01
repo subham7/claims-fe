@@ -12,6 +12,7 @@ const ClaimEdit = ({
   modifyStartAndEndTimeHandler,
   endTime,
   startTime,
+  hasAllowanceMechanism,
 }) => {
   const classes = ClaimsInsightStyles();
 
@@ -33,24 +34,29 @@ const ClaimEdit = ({
 
   return (
     <div className={classes.claimEditContainer}>
-      <div
-        onClick={() => {
-          setShowAddMoreTokensModal(true);
-        }}
-        style={{ cursor: "pointer" }}
-        className={classes.flexContainer}>
-        <p>Add more tokens</p>
-        <IoIosArrowForward />
-      </div>
-      <div
-        onClick={() => {
-          setShowRollbackTokensModal(true);
-        }}
-        style={{ cursor: "pointer" }}
-        className={classes.flexContainer}>
-        <p>Rollback unclaimed tokens</p>
-        <IoIosArrowForward />
-      </div>
+      {!hasAllowanceMechanism ? (
+        <>
+          <div
+            onClick={() => {
+              setShowAddMoreTokensModal(true);
+            }}
+            style={{ cursor: "pointer" }}
+            className={classes.flexContainer}>
+            <p>Add more tokens</p>
+            <IoIosArrowForward />
+          </div>
+          <div
+            onClick={() => {
+              setShowRollbackTokensModal(true);
+            }}
+            style={{ cursor: "pointer" }}
+            className={classes.flexContainer}>
+            <p>Rollback unclaimed tokens</p>
+            <IoIosArrowForward />
+          </div>
+        </>
+      ) : null}
+
       <div
         onClick={() => {
           setShowModifyTimeModal(true);

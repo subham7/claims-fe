@@ -5,7 +5,7 @@ import { RPC_URL, POLYGON_MAINNET_RPC_URL } from "../api";
 import { getIncreaseGasPrice } from "../utils/helper";
 import ERC20TokenABI from "../abis/usdcTokenContract.json";
 import ERC721TokenABI from "../abis/nft.json";
-import { convertToWei } from "../utils/globalFunctions";
+import { convertToWeiGovernance } from "../utils/globalFunctions";
 import Safe, { Web3Adapter } from "@safe-global/protocol-kit";
 import { createProposalTxHash, getProposalTxHash } from "../api/proposal";
 import SafeApiKit from "@safe-global/api-kit";
@@ -129,7 +129,7 @@ const useSmartContractMethods = () => {
   };
 
   const addMoreTokens = async (noOfTokens) => {
-    console.log(noOfTokens, claimContractSend);
+    console.log("ADD tokens", noOfTokens, claimContractSend);
     return await claimContractSend.methods?.depositTokens(noOfTokens).send({
       from: walletAddress,
       gasPrice: await getIncreaseGasPrice(),
@@ -217,7 +217,7 @@ const useSmartContractMethods = () => {
       ERC20TokenABI.abi,
       contractAddress,
     );
-    const value = convertToWei(amount, usdcConvertDecimal).toString();
+    const value = convertToWeiGovernance(amount, usdcConvertDecimal).toString();
     return await erc20TokenContractSend?.methods
       ?.approve(approvalContract, value)
       .send({
@@ -226,9 +226,19 @@ const useSmartContractMethods = () => {
       });
   };
 
-  const claimContract = async (claimSettings, totalNoOfWallets) => {
+  const claimContract = async (
+    claimSettings,
+    totalNoOfWallets,
+    blockNumber,
+    whitelistNetwork,
+  ) => {
     return await claimFactoryContractSend?.methods
-      ?.deployClaimContract(claimSettings, totalNoOfWallets)
+      ?.deployClaimContract(
+        claimSettings,
+        totalNoOfWallets,
+        blockNumber,
+        whitelistNetwork,
+      )
       .send({
         from: walletAddress,
         gasPrice: await getIncreaseGasPrice(),

@@ -39,8 +39,7 @@ const ClaimInsight = () => {
     getTokenSymbol,
     addMoreTokens,
     rollbackTokens,
-    claimBalance,
-    claimSettings,
+    approveDeposit,
     modifyStartAndEndTime,
   } = useSmartContractMethods();
 
@@ -73,9 +72,17 @@ const ClaimInsight = () => {
     try {
       const amount = convertToWeiGovernance(
         noOfTokens,
-        airdropTokenDetails?.tokenDecimal,
+        // airdropTokenDetails?.tokenDecimal,
+        18,
       );
-
+      await approveDeposit(
+        // airdropTokenDetails?.tokenAddress,
+        "0x9E7A4e9c7c7D8C18BE05537673e48aa88c0377d7",
+        claimAddress,
+        noOfTokens,
+        // airdropTokenDetails?.tokenDecimal,
+        18,
+      );
       await addMoreTokens(amount);
       setLoading(false);
       showMessageHandler();
@@ -174,10 +181,7 @@ const ClaimInsight = () => {
             </div>
           </div>
           <div className={classes.rightContainer}>
-            <ToggleClaim
-              startTime={claimsData[0]?.startTime}
-              endTime={claimsData[0]?.endTime}
-            />
+            <ToggleClaim />
             <ClaimEdit
               addMoreTokensHandler={addMoreTokensHandler}
               rollbackTokensHandler={rollbackTokensHandler}
@@ -185,6 +189,7 @@ const ClaimInsight = () => {
               modifyStartAndEndTimeHandler={modifyStartAndEndTimeHandler}
               endTime={claimsData[0]?.endTime}
               startTime={claimsData[0]?.startTime}
+              hasAllowanceMechanism={claimsData[0]?.hasAllowanceMechanism}
             />
             <ClaimEligibility
               whitelistTokenAddress={claimsData[0]?.whitelistToken}

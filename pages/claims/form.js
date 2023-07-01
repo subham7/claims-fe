@@ -9,7 +9,7 @@ import { makeStyles } from "@mui/styles";
 import * as yup from "yup";
 import { getAssetsByDaoAddress } from "../../src/api/assets";
 import { convertToWeiGovernance } from "../../src/utils/globalFunctions";
-import { createClaim } from "../../src/api/claims";
+import { createClaim, getSnapshotData } from "../../src/api/claims";
 import {
   CLAIM_FACTORY_ADDRESS_GOERLI,
   CLAIM_FACTORY_ADDRESS_POLYGON,
@@ -23,6 +23,8 @@ import useSmartContract from "../../src/hooks/useSmartContract";
 // import WrongNetworkModal from "../../src/components/modals/WrongNetworkModal";
 import Layout1 from "../../src/components/layouts/layout1";
 import Image from "next/image";
+import Moralis from "moralis";
+import { EvmChain } from "@moralisweb3/common-evm-utils";
 
 const steps = ["Step1", "Step2"];
 
@@ -43,6 +45,7 @@ const Form = () => {
   const [finish, setFinish] = useState(false);
   const [errMsg, setErrMsg] = useState("");
   const [loadingTokens, setLoadingTokens] = useState(false);
+  const [snapshotMerkleData, setSnapshotMerkleData] = useState([]);
   useSmartContract();
 
   const classes = useStyles();
@@ -77,6 +80,35 @@ const Form = () => {
     getCurrentAccount();
   }, [walletAddress, networkId]);
 
+  const fetchLatestBlockNumber = async (tokenGatedNetwork) => {
+    try {
+      if (!Moralis.Core.isStarted) {
+        await Moralis.start({
+          apiKey:
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJub25jZSI6ImM1ZmQxNzA3LWRkYTQtNDhhNi04NTBmLWRmZWFkOGY5NTEwNiIsIm9yZ0lkIjoiMjkzODE4IiwidXNlcklkIjoiMzAwNjc1IiwidHlwZUlkIjoiNWJlNTBiNmEtYmJiYi00NWVlLWJkYWQtOWE1NTg1MzViZjU1IiwidHlwZSI6IlBST0pFQ1QiLCJpYXQiOjE2ODgwNDUwMzEsImV4cCI6NDg0MzgwNTAzMX0.nB1mM16RnOjK1uZhZr6zyELAuYknxcyTwRm9hZU15Sc",
+        });
+      }
+
+      let chain;
+      if (tokenGatedNetwork === "eth-mainnet") {
+        chain = EvmChain.ETHEREUM;
+      } else if (tokenGatedNetwork === "matic-mainnet") {
+        chain = EvmChain.POLYGON;
+      } else if (tokenGatedNetwork === "bsc-mainnet") {
+        chain = EvmChain.BSC;
+      }
+
+      const response = await Moralis.EvmApi.block.getDateToBlock({
+        date: Date.now(),
+        chain,
+      });
+
+      return response.toJSON();
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
   const formik = useFormik({
     initialValues: {
       description: "",
@@ -96,6 +128,8 @@ const Form = () => {
       customAmount: 0,
       merkleData: [],
       csvObject: [],
+      tokenGatedNetwork: "eth-mainnet",
+      blockNumber: 0,
     },
     validationSchema: Yup.object().shape({
       description: yup
@@ -140,7 +174,7 @@ const Form = () => {
         }),
     }),
 
-    onSubmit: (values) => {
+    onSubmit: async (values) => {
       const claimsContractAddress =
         networkId === "0x89"
           ? CLAIM_FACTORY_ADDRESS_POLYGON
@@ -167,21 +201,66 @@ const Form = () => {
           values.maximumClaim === "custom" ? values.customAmount.toString() : 0,
         merkleData: values.merkleData,
         csvObject: values.csvObject,
+        tokenGatedNetwork: values.tokenGatedNetwork,
+        blockNumber: values.blockNumber,
       };
-      if (activeStep === steps.length - 1) {
-        let totalNoOfWallets;
 
+      console.log("Data", data);
+      if (activeStep === steps.length - 1) {
+        // fetch Block number
+
+        setLoading(true);
+        let snapshotData;
+        let blockNumber;
+        if (values.maximumClaim === "proRata") {
+          try {
+            const blockData = await fetchLatestBlockNumber(
+              data?.tokenGatedNetwork,
+            );
+
+            if (data.blockNumber > 0 && data.blockNumber > blockData.block) {
+              showMessageHandler(setShowError);
+              setErrMsg("Invalid block number!");
+              setLoading(false);
+              return;
+            }
+
+            blockNumber =
+              data.blockNumber > 0 ? data.blockNumber : blockData.block;
+
+            snapshotData = await getSnapshotData(
+              data.numberOfTokens,
+              data.airdropTokenAddress,
+              data.daoTokenAddress,
+              data.tokenGatedNetwork,
+              blockNumber,
+              networkId,
+            );
+
+            setSnapshotMerkleData(snapshotData);
+          } catch (error) {
+            console.log(error);
+            setErrMsg("Unable to fetch snapshot data");
+            showMessageHandler(setShowError);
+            setLoading(false);
+          }
+        }
+
+        let totalNoOfWallets;
         if (data.eligible === "everyone") {
           totalNoOfWallets = 0;
         } else if (data.eligible === "token") {
-          totalNoOfWallets = 0; // amount of tokenHolders
+          if (data.maximumClaim === "proRata") {
+            totalNoOfWallets = snapshotData?.numOfTokenHolders;
+          } else {
+            totalNoOfWallets = 0;
+          }
         } else if (data.eligible === "csv") {
           totalNoOfWallets = data?.csvObject?.length;
         }
 
         if (data.eligible === "token" || data.eligible === "everyone") {
           // checking maximum claim is prorata or custom
-          setLoading(true);
           let maximumClaim;
           if (data.maximumClaim === "custom") {
             maximumClaim = true;
@@ -197,10 +276,12 @@ const Form = () => {
           }
 
           let eligible;
-          if (data.eligible === "token") {
+          if (data.eligible === "token" && data.maximumClaim !== "proRata") {
             eligible = 0;
           } else if (data.eligible === "everyone") {
             eligible = 2;
+          } else if (data.maximumClaim === "proRata") {
+            eligible = 3;
           }
 
           const loadClaimsContractFactoryData_Token = async () => {
@@ -247,13 +328,21 @@ const Form = () => {
                 new Date(data.endDate).getTime() / 1000,
                 0,
                 hasAllowanceMechanism,
-                "0x0000000000000000000000000000000000000000000000000000000000000001",
+                true,
+                data.maximumClaim === "proRata"
+                  ? snapshotData?.merkleRoot
+                  : "0x0000000000000000000000000000000000000000000000000000000000000001",
                 Number(eligible), // Permission ie. 0 - TG; 1 - Whitelisted; 2 - FreeForALL
                 [
-                  convertToWeiGovernance(
-                    data.customAmount,
-                    decimals,
-                  ).toString(),
+                  data.maximumClaim === "proRata"
+                    ? convertToWeiGovernance(
+                        data.numberOfTokens,
+                        decimals,
+                      ).toString()
+                    : convertToWeiGovernance(
+                        data.customAmount,
+                        decimals,
+                      ).toString(),
                   convertToWeiGovernance(
                     data.numberOfTokens,
                     decimals,
@@ -261,9 +350,13 @@ const Form = () => {
                 ],
               ];
 
+              console.log("Claim", claimsSettings, totalNoOfWallets);
+
               const response = await claimContract(
                 claimsSettings,
                 totalNoOfWallets,
+                data.maximumClaim === "proRata" ? blockNumber : 0,
+                data.maximumClaim === "proRata" ? data.tokenGatedNetwork : "",
               );
 
               const newClaimContract =
@@ -348,6 +441,7 @@ const Form = () => {
                 new Date(data.endDate).getTime() / 1000,
                 0,
                 hasAllowanceMechanism, // false if token approved function called
+                true,
                 root,
                 1,
                 [
@@ -365,6 +459,8 @@ const Form = () => {
               const response = await claimContract(
                 claimsSettings,
                 totalNoOfWallets,
+                0,
+                "",
               );
               const newClaimContract =
                 response.events.NewClaimContract.returnValues._newClaimContract;

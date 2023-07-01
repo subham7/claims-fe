@@ -61,6 +61,11 @@
               "type": "bool"
             },
             {
+              "internalType": "bool",
+              "name": "isEnabled",
+              "type": "bool"
+            },
+            {
               "internalType": "bytes32",
               "name": "merkleRoot",
               "type": "bytes32"
@@ -441,6 +446,11 @@
           "type": "bool"
         },
         {
+          "internalType": "bool",
+          "name": "isEnabled",
+          "type": "bool"
+        },
+        {
           "internalType": "bytes32",
           "name": "merkleRoot",
           "type": "bytes32"
@@ -653,6 +663,13 @@
         }
       ],
       "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "toggleClaim",
+      "outputs": [],
+      "stateMutability": "nonpayable",
       "type": "function"
     }
   ]
