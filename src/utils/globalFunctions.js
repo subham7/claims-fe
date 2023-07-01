@@ -21,7 +21,7 @@ export const convertToWeiGovernance = (convertValue, decimal) => {
     try {
       return ethers
         .parseUnits(convertValue.toString(), Number(decimal))
-        .toString();
+        ?.toString();
     } catch (error) {}
   }
 };
@@ -30,7 +30,7 @@ export const convertToWeiGovernance = (convertValue, decimal) => {
 export const convertFromWeiGovernance = (convertValue, decimal) => {
   if (decimal) {
     try {
-      return ethers.formatUnits(convertValue.toString(), Number(decimal));
+      return ethers.formatUnits(convertValue?.toString(), Number(decimal));
     } catch (err) {
       console.log(err);
     }

@@ -67,7 +67,7 @@ const NewArchERC721 = ({
   const day2 = dayjs.unix(daoDetails.depositDeadline);
   const remainingDays = day2.diff(day1, "day");
   const remainingTimeInSecs = day2.diff(day1, "seconds");
-  const dateSum = new Date(dayjs.unix(daoDetails.depositDeadline)).toString();
+  const dateSum = new Date(dayjs.unix(daoDetails.depositDeadline))?.toString();
 
   const showMessageHandler = () => {
     setShowMessage(true);
@@ -403,7 +403,7 @@ const NewArchERC721 = ({
               </Grid>
             </Grid>
             <Grid item md={6}>
-              {daoDetails?.daoImage.includes(".mp4") ? (
+              {daoDetails?.daoImage?.includes(".mp4") ? (
                 <video className={classes.nftImg} controls>
                   <source src={daoDetails?.daoImage} type="video/mp4" />
                   Your browser does not support the video tag.
