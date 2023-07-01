@@ -49,6 +49,7 @@ export const getImageURL = async (url) => {
     return imgUrl;
   } catch (e) {
     console.error(e);
+    return;
   }
 };
 

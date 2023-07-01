@@ -294,7 +294,9 @@ const DashboardIndex = () => {
           <Grid item xs={9}>
             <Card className={classes.cardSharp1}>
               <Grid container spacing={2}>
-                {tokenType === "erc721" ? (
+                {tokenType === "erc721" &&
+                clubDetails.clubImageUrl &&
+                !clubDetails.clubImageUrl?.includes(".mp4") ? (
                   <Grid item ml={3} mt={2}>
                     <img
                       src={

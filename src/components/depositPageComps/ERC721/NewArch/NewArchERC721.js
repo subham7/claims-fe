@@ -157,7 +157,12 @@ const NewArchERC721 = ({
         {wallet ? (
           <>
             <Grid item md={5}>
-              {daoDetails?.daoImage && (
+              {daoDetails?.daoImage.includes(".mp4") ? (
+                <video className={classes.nftImg} controls>
+                  <source src={daoDetails?.daoImage} type="video/mp4" />
+                  Your browser does not support the video tag.
+                </video>
+              ) : (
                 <img
                   src={daoDetails?.daoImage}
                   alt="nft image"
