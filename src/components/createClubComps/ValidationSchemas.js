@@ -47,9 +47,6 @@ export const step3ValidationSchema = yup.object({
       .test("Address", "Invalid address", (values) => {
         return values.length === 42 && values.includes("0x");
       })
-      .test("Unique", "Values need te be unique", (values) => {
-        return new Set(values).size === values.length;
-      })
       .required("Wallet address is required"),
   ),
 });
