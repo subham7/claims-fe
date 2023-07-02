@@ -161,7 +161,7 @@ const NewArchERC721 = ({
       <Grid className={classes.topGrid} container spacing={6}>
         {wallet ? (
           <>
-            <Grid item md={6}>
+            <Grid item md={5}>
               <Grid
                 container
                 spacing={1.5}
@@ -402,7 +402,7 @@ const NewArchERC721 = ({
                 </Grid>
               </Grid>
             </Grid>
-            <Grid item md={5}>
+            <Grid item md={6}>
               {daoDetails?.daoImage && (
                 <>
                   {daoDetails?.daoImage?.includes(".mp4") ? (

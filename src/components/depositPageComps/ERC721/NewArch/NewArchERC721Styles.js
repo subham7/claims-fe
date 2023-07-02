@@ -2,9 +2,8 @@ import { makeStyles } from "@mui/styles";
 
 export const NewArchERC721Styles = makeStyles({
   topGrid: {
-    paddingLeft: "6em",
+    paddingLeft: "3em",
     display: "flex",
-    flexDirection: "column",
     height: "100vh",
     width: "100%",
     justifyContent: "center",
