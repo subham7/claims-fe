@@ -108,10 +108,16 @@ const useStyles = makeStyles({
 
 export default function NFTStep2(props) {
   const classes = useStyles();
+  const [isVideo, setIsVideo] = useState(false);
   const [imageUrl, setImageUrl] = useState(null);
 
   useEffect(() => {
     if (props.formik.values.nftImage) {
+      if (props.formik.values.nftImage.type.includes("mp4")) {
+        setIsVideo(true);
+      } else {
+        setIsVideo(false);
+      }
       setImageUrl(URL.createObjectURL(props.formik.values.nftImage));
     }
   }, [props.formik.values.nftImage]);
@@ -186,7 +192,7 @@ export default function NFTStep2(props) {
                   </Button>
                   <input
                     name="nftImage"
-                    accept="image/*"
+                    accept="image/*,video/mp4"
                     type="file"
                     id="select-image"
                     style={{ display: "none" }}
@@ -217,16 +223,29 @@ export default function NFTStep2(props) {
                 borderRadius: "10px",
                 backgroundColor: "#19274B",
               }}>
-              <Image
-                src={imageUrl || empty_nft}
-                alt={""}
-                // className={classes.emptyImage}
-                width={300}
-                height={300}
-                // fill
-                style={{ borderRadius: "10px" }}
-                // sx={{  width: "100%", height: "100%" }}
-              />
+              {isVideo ? (
+                <video
+                  style={{
+                    height: "300px",
+                    width: "300px",
+                    borderRadius: "10px",
+                  }}
+                  controls>
+                  <source src={imageUrl} type="video/mp4" />
+                  Your browser does not support the video tag.
+                </video>
+              ) : (
+                <Image
+                  src={imageUrl || empty_nft}
+                  alt={""}
+                  // className={classes.emptyImage}
+                  width={300}
+                  height={300}
+                  // fill
+                  style={{ borderRadius: "10px" }}
+                  // sx={{  width: "100%", height: "100%" }}
+                />
+              )}
             </Grid>
           </Grid>
         </Card>
