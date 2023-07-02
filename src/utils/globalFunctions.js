@@ -39,14 +39,16 @@ export const convertFromWeiGovernance = (convertValue, decimal) => {
 
 export const getImageURL = async (url) => {
   try {
-    const metadataHash = url.replace("ipfs://", "");
-    const metadataResponse = await fetch(
-      "https://gateway.pinata.cloud/ipfs/" + metadataHash,
-    );
-    const response = await metadataResponse.json();
-    const imgHash = response.image.replace("ipfs://", "");
-    const imgUrl = "https://gateway.pinata.cloud/ipfs/" + imgHash;
-    return imgUrl;
+    if (url) {
+      const metadataHash = url?.replace("ipfs://", "");
+      const metadataResponse = await fetch(
+        "https://cloudflare-ipfs.com/ipfs/" + metadataHash,
+      );
+      const response = await metadataResponse.json();
+      const imgHash = response.image.replace("ipfs://", "");
+      const imgUrl = "https://cloudflare-ipfs.com/ipfs/" + imgHash;
+      return imgUrl;
+    }
   } catch (e) {
     console.error(e);
     return;
