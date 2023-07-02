@@ -196,7 +196,7 @@ export default function Step3(props) {
                   alignItems: "center",
                 }}>
                 <Typography className={classes.largeText2}>
-                  Do you want to store assets on safe or contract?
+                  Do you want to store assets on safe?
                 </Typography>
               </Grid>
               <Grid
