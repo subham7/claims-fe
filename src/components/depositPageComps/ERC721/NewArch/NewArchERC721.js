@@ -406,7 +406,7 @@ const NewArchERC721 = ({
               {daoDetails?.daoImage && (
                 <>
                   {daoDetails?.daoImage?.includes(".mp4") ? (
-                    <video className={classes.nftImg} loop autoPlay>
+                    <video className={classes.nftImg} loop autoPlay muted>
                       <source src={daoDetails?.daoImage} type="video/mp4" />
                       Your browser does not support the video tag.
                     </video>

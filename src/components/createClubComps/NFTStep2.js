@@ -225,6 +225,7 @@ export default function NFTStep2(props) {
               }}>
               {isVideo ? (
                 <video
+                  muted
                   loop
                   autoPlay
                   style={{
