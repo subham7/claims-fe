@@ -150,7 +150,7 @@ const Join = () => {
         QUERY_CLUB_DETAILS(daoAddress),
       );
 
-      const imageUrl = await getImageURL(clubDetails.stations[0].imageUrl);
+      const imageUrl = await getImageURL(clubDetails?.stations[0].imageUrl);
 
       const erc721Data = await getERC721DAOdetails();
       const nftCount = await getNftOwnersCount();

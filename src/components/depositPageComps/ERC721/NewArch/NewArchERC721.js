@@ -402,18 +402,22 @@ const NewArchERC721 = ({
                 </Grid>
               </Grid>
             </Grid>
-            <Grid item md={6}>
-              {daoDetails?.daoImage?.includes(".mp4") ? (
-                <video className={classes.nftImg} controls>
-                  <source src={daoDetails?.daoImage} type="video/mp4" />
-                  Your browser does not support the video tag.
-                </video>
-              ) : (
-                <img
-                  src={daoDetails?.daoImage}
-                  alt="nft image"
-                  className={classes.nftImg}
-                />
+            <Grid item md={5}>
+              {daoDetails?.daoImage && (
+                <>
+                  {daoDetails?.daoImage?.includes(".mp4") ? (
+                    <video className={classes.nftImg} loop autoPlay>
+                      <source src={daoDetails?.daoImage} type="video/mp4" />
+                      Your browser does not support the video tag.
+                    </video>
+                  ) : (
+                    <img
+                      src={daoDetails?.daoImage}
+                      alt="nft image"
+                      className={classes.nftImg}
+                    />
+                  )}
+                </>
               )}
             </Grid>
           </>

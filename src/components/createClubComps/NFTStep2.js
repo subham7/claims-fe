@@ -225,12 +225,13 @@ export default function NFTStep2(props) {
               }}>
               {isVideo ? (
                 <video
+                  loop
+                  autoPlay
                   style={{
                     height: "300px",
                     width: "300px",
                     borderRadius: "10px",
-                  }}
-                  controls>
+                  }}>
                   <source src={imageUrl} type="video/mp4" />
                   Your browser does not support the video tag.
                 </video>
