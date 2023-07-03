@@ -9,6 +9,8 @@ import { Web3OnboardProvider } from "@web3-onboard/react";
 import { web3Onboard } from "../src/utils/wallet";
 import { ApolloProvider } from "@apollo/client";
 import { SUBGRAPH_CLIENT } from "../src/api";
+import { AnnouncementProvider } from "../src/components/AnnouncementContext";
+import AnnouncementBar from "../src/components/AnnouncementBar";
 
 function MyApp({ Component, pageProps }) {
   return (
@@ -16,9 +18,12 @@ function MyApp({ Component, pageProps }) {
       <ApolloProvider client={SUBGRAPH_CLIENT}>
         <Provider store={store}>
           <ThemeProvider theme={theme("dark")}>
-            <Web3OnboardProvider web3Onboard={web3Onboard}>
-              <Component {...pageProps} />
-            </Web3OnboardProvider>
+            <AnnouncementProvider>
+              <AnnouncementBar />
+              <Web3OnboardProvider web3Onboard={web3Onboard}>
+                <Component {...pageProps} />
+              </Web3OnboardProvider>
+            </AnnouncementProvider>
           </ThemeProvider>
         </Provider>
       </ApolloProvider>

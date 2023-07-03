@@ -12,6 +12,7 @@ import {
   Skeleton,
   Stack,
   TextField,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import { TwitterShareButton } from "react-twitter-embed";
@@ -27,9 +28,13 @@ import * as yup from "yup";
 import dayjs from "dayjs";
 import { useSelector } from "react-redux";
 import { useRouter } from "next/router";
-import WrongNetworkModal from "../../../modals/WrongNetworkModal";
-// import useSmartContract from "../../../../hooks/useSmartContract";
 import useSmartContractMethods from "../../../../hooks/useSmartContractMethods";
+import { BsInfoCircle } from "react-icons/bs";
+import TelegramIcon from "@mui/icons-material/Telegram";
+import TwitterIcon from "@mui/icons-material/Twitter";
+import { RiDiscordFill } from "react-icons/ri";
+import ReactHtmlParser from "react-html-parser";
+import { showWrongNetworkModal } from "../../../../utils/helper";
 
 const NewArchERC20 = ({
   daoDetails,
@@ -38,6 +43,9 @@ const NewArchERC20 = ({
   isEligibleForTokenGating,
   members,
   remainingClaimAmount,
+  displayTokenDetails,
+  fetchedTokenGatedDetails,
+  clubInfo,
 }) => {
   const [erc20TokenDetails, setErc20TokenDetails] = useState({
     tokenSymbol: "",
@@ -50,6 +58,7 @@ const NewArchERC20 = ({
   const [depositSuccessfull, setDepositSuccessfull] = useState(false);
   const classes = NewArchERC20Styles();
   const [{ wallet }] = useConnectWallet();
+  const networkId = wallet?.chains[0].id;
   const router = useRouter();
   const walletAddress = wallet?.accounts[0].address;
 
@@ -212,7 +221,7 @@ const NewArchERC20 = ({
             container
             spacing={2}
             paddingLeft={10}
-            paddingTop={6}
+            paddingTop={12}
             paddingRight={10}>
             <Grid item md={7}>
               <Card className={classes.cardRegular}>
@@ -243,6 +252,13 @@ const NewArchERC20 = ({
                               />
                             )}
                           </Typography>
+
+                          <Grid item ml={0} mb={7}>
+                            <div
+                              dangerouslySetInnerHTML={{
+                                __html: ReactHtmlParser(clubInfo?.bio),
+                              }}></div>
+                          </Grid>
                         </Stack>
                       </Grid>
                     </Grid>
@@ -272,24 +288,6 @@ const NewArchERC20 = ({
                       </div>
                     </div>
                   </Grid>
-                </Grid>
-
-                <Grid>
-                  {isTokenGated && isEligibleForTokenGating ? (
-                    <>
-                      <Typography sx={{ color: "#3B7AFD", marginLeft: "30px" }}>
-                        This club is token gated. You qualify
-                      </Typography>
-                    </>
-                  ) : isTokenGated && !isEligibleForTokenGating ? (
-                    <>
-                      <Typography sx={{ color: "red", marginLeft: "30px" }}>
-                        This club is token gated. You don&apos;t qualify
-                      </Typography>
-                    </>
-                  ) : (
-                    ""
-                  )}
                 </Grid>
 
                 <Divider variant="middle" />
@@ -486,24 +484,10 @@ const NewArchERC20 = ({
                     <ProgressBar
                       value={
                         Number(
-                          convertFromWeiGovernance(
-                            +daoDetails.clubTokensMinted,
-                            +daoDetails.decimals,
-                          ) *
-                            Number(
-                              convertFromWeiGovernance(
-                                +daoDetails.pricePerToken,
-                                +erc20TokenDetails.tokenDecimal,
-                              ),
-                            ) *
+                          (daoDetails.clubTokensMinted / 10 ** 18) *
+                            daoDetails.pricePerToken *
                             100,
-                        ) /
-                        Number(
-                          convertFromWeiGovernance(
-                            +daoDetails.totalSupply.toFixed(0),
-                            +erc20TokenDetails.tokenDecimal,
-                          ),
-                        )
+                        ) / Number(daoDetails.totalSupply.toFixed(0))
                       }
                     />
                   ) : (
@@ -700,6 +684,7 @@ const NewArchERC20 = ({
                                     formik.touched.tokenInput &&
                                     formik.errors.tokenInput
                                   }
+                                  onWheel={(event) => event.target.blur()}
                                 />
                               </FormControl>
 
@@ -767,11 +752,126 @@ const NewArchERC20 = ({
                     <Grid container spacing={2}>
                       <Grid item md={12} mt={2}>
                         <Card className={classes.cardWarning}>
-                          <Typography className={classes.JoinText}>
+                          <Typography className={classes.textPara}>
                             Stations can have same names or symbols, please make
                             sure to trust the sender for the link before
                             depositing.
                           </Typography>
+
+                          {isTokenGated ? (
+                            <Typography
+                              sx={{
+                                color: "#3A7AFD",
+                                fontFamily: "Whyte",
+                                fontSize: "22px",
+                                fontWeight: "bold",
+                                mt: "15px",
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "10px",
+                              }}>
+                              Eligibility
+                              <Tooltip
+                                placement="right"
+                                title="This is a token gated Station. Only holders of a specific Token/NFT can deposit and enter a Station.">
+                                <div>
+                                  <BsInfoCircle
+                                    color="#fff"
+                                    size={15}
+                                    style={{
+                                      cursor: "pointer",
+                                    }}
+                                  />
+                                </div>
+                              </Tooltip>
+                            </Typography>
+                          ) : (
+                            ""
+                          )}
+
+                          {isTokenGated ? (
+                            <>
+                              {displayTokenDetails.tokenASymbol !==
+                              displayTokenDetails.tokenBSymbol ? (
+                                <>
+                                  <Typography>
+                                    Hold{" "}
+                                    {convertFromWeiGovernance(
+                                      fetchedTokenGatedDetails.tokenAAmt,
+                                      displayTokenDetails.tokenADecimal,
+                                    )}{" "}
+                                    ${displayTokenDetails.tokenASymbol}{" "}
+                                    {fetchedTokenGatedDetails.operator == 0
+                                      ? "AND"
+                                      : "OR"}{" "}
+                                    {displayTokenDetails.tokenBDecimal
+                                      ? convertFromWeiGovernance(
+                                          fetchedTokenGatedDetails.tokenBAmt,
+                                          displayTokenDetails.tokenBDecimal,
+                                        )
+                                      : convertFromWeiGovernance(
+                                          fetchedTokenGatedDetails.tokenBAmt,
+                                          displayTokenDetails.tokenADecimal,
+                                        )}{" "}
+                                    ${displayTokenDetails.tokenBSymbol} tokens
+                                    to enter this Station
+                                  </Typography>
+                                </>
+                              ) : (
+                                <>
+                                  <Typography>
+                                    Hold{" "}
+                                    {convertFromWeiGovernance(
+                                      fetchedTokenGatedDetails.tokenAAmt,
+                                      displayTokenDetails.tokenADecimal,
+                                    )}{" "}
+                                    ${displayTokenDetails.tokenASymbol} tokens
+                                    to enter this Station
+                                  </Typography>
+                                </>
+                              )}
+                            </>
+                          ) : (
+                            ""
+                          )}
+
+                          {/* <ul>
+                            <li
+                              style={{
+                                fontSize: "18px",
+                                fontWeight: "500",
+                                mt: "5px",
+                              }}>
+                              ${displayTokenDetails.tokenASymbol} -{" "}
+                              {convertFromWeiGovernance(
+                                fetchedTokenGatedDetails.tokenAAmt,
+                                displayTokenDetails.tokenADecimal,
+                              )}{" "}
+                              token
+                            </li>
+
+                            {displayTokenDetails.tokenASymbol !==
+                              displayTokenDetails.tokenBSymbol && (
+                              <li
+                                style={{
+                                  fontSize: "18px",
+                                  fontWeight: "500",
+                                  mt: "5px",
+                                }}>
+                                ${displayTokenDetails.tokenBSymbol} -{" "}
+                                {displayTokenDetails.tokenBDecimal
+                                  ? convertFromWeiGovernance(
+                                      fetchedTokenGatedDetails.tokenBAmt,
+                                      displayTokenDetails.tokenBDecimal,
+                                    )
+                                  : convertFromWeiGovernance(
+                                      fetchedTokenGatedDetails.tokenBAmt,
+                                      displayTokenDetails.tokenADecimal,
+                                    )}{" "}
+                                token
+                              </li>
+                            )}
+                          </ul> */}
                         </Card>
                       </Grid>
                       <Grid
@@ -861,6 +961,35 @@ const NewArchERC20 = ({
                     </Grid>
                   </>
                 </Card>
+              )}
+            </Grid>
+            <Grid item width="100%" paddingLeft={10}>
+              {clubInfo?.telegram && (
+                <TelegramIcon
+                  sx={{ color: "#C1D3FF", marginRight: "1rem" }}
+                  onClick={() => {
+                    window.open(clubInfo?.telegram, "_blank");
+                  }}
+                />
+              )}
+              {clubInfo?.discord && (
+                <RiDiscordFill
+                  color="#C1D3FF"
+                  size={20}
+                  style={{ color: "#C1D3FF", marginRight: "1rem" }}
+                  onClick={() => {
+                    window.open(clubInfo?.discord, "_blank");
+                  }}
+                />
+              )}
+
+              {clubInfo?.twitter && (
+                <TwitterIcon
+                  sx={{ color: "#C1D3FF" }}
+                  onClick={() => {
+                    window.open(clubInfo?.twitter, "_blank");
+                  }}
+                />
               )}
             </Grid>
           </Grid>
@@ -965,7 +1094,7 @@ const NewArchERC20 = ({
         </DialogContent>
       </Dialog> */}
 
-      {WRONG_NETWORK && wallet && <WrongNetworkModal />}
+      {showWrongNetworkModal(wallet, networkId)}
 
       <Backdrop
         sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}

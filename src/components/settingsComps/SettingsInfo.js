@@ -9,7 +9,7 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import React from "react";
+import React, { useState } from "react";
 import Layout1 from "../layouts/layout1";
 import ProgressBar from "../progressbar";
 
@@ -18,6 +18,13 @@ import {
   calculateTreasuryTargetShare,
   convertFromWeiGovernance,
 } from "../../utils/globalFunctions";
+import EditIcon from "@mui/icons-material/Edit";
+import { useRouter } from "next/router";
+import TelegramIcon from "@mui/icons-material/Telegram";
+import TwitterIcon from "@mui/icons-material/Twitter";
+import { RiDiscordFill } from "react-icons/ri";
+import ReactHtmlParser from "react-html-parser";
+import EditClubInfo from "./modals/EditClubInfo";
 
 const SettingsInfo = ({
   daoDetails,
@@ -28,8 +35,20 @@ const SettingsInfo = ({
   remainingDays,
   walletAddress,
   remainingTimeInSecs,
+  clubInfo,
+  getClubInfo,
+  isAdminUser,
 }) => {
   const classes = SettingsInfoStlyes();
+  const [open, setOpen] = useState(false);
+  const router = useRouter();
+  const { clubId: daoAddress } = router.query;
+
+  const handleClose = (event, reason) => {
+    if (reason !== "backdropClick" && reason !== "escapeKeyDown") {
+      setOpen(false);
+    }
+  };
 
   return (
     <>
@@ -37,7 +56,10 @@ const SettingsInfo = ({
         <Grid container spacing={3} paddingLeft={10} paddingTop={15}>
           <Grid item md={9}>
             <Card className={classes.cardRegular}>
-              <Grid container spacing={2}>
+              <Grid
+                container
+                spacing={2}
+                sx={{ display: "flex", justifyContent: "space-between" }}>
                 {/* <Grid item mt={3} ml={3}>
                   <img
                     src={daoDetails.daoImage ?? null}
@@ -45,7 +67,7 @@ const SettingsInfo = ({
                     alt="profile_pic"
                   />
                 </Grid> */}
-                <Grid item ml={4} mt={4} mb={7}>
+                <Grid item ml={4} mt={4}>
                   <Stack spacing={0}>
                     <Typography variant="h4">
                       {daoDetails.daoName ? daoDetails.daoName : null}
@@ -55,7 +77,46 @@ const SettingsInfo = ({
                     </Typography>
                   </Stack>
                 </Grid>
+
+                <Grid item ml={4} mb={7}>
+                  {clubInfo?.twitter && (
+                    <TwitterIcon
+                      onClick={() => window.open(clubInfo?.twitter, "_blank")}
+                      className={classes.icon}
+                      size={20}
+                    />
+                  )}
+                  {clubInfo?.discord && (
+                    <RiDiscordFill
+                      onClick={() => window.open(clubInfo?.discord, "_blank")}
+                      className={classes.icon}
+                      size={20}
+                    />
+                  )}
+                  {clubInfo?.telegram && (
+                    <TelegramIcon
+                      onClick={() => window.open(clubInfo?.telegram, "_blank")}
+                      className={classes.icon}
+                      size={20}
+                    />
+                  )}
+                  {isAdminUser && (
+                    <EditIcon
+                      onClick={() => setOpen(true)}
+                      className={classes.icon}
+                      size={20}
+                    />
+                  )}
+                </Grid>
               </Grid>
+
+              <Grid item ml={4} mb={7}>
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: ReactHtmlParser(clubInfo?.bio),
+                  }}></div>
+              </Grid>
+
               <Divider variant="middle" />
               <Paper
                 style={{
@@ -627,36 +688,14 @@ const SettingsInfo = ({
           </Grid>
         </Grid>
 
-        {/* This is the temporary coming soon dialogue */}
-        {/* <Dialog
-          open={tempOpen}
-          onClose={handleTempClose}
-          scroll="body"
-          PaperProps={{ classes: { root: classes.modalStyle } }}
-          fullWidth
-          maxWidth="lg"
-        >
-          <DialogContent
-            sx={{ overflow: "hidden", backgroundColor: "#19274B" }}
-          >
-            <Grid
-              container
-              justifyContent="center"
-              alignItems="center"
-              direction="column"
-              mt={3}
-            >
-              <Grid item>
-                <img src="/assets/images/comingsoon.svg" />
-              </Grid>
-              <Grid item m={3}>
-                <Typography className={classes.dialogBox}>
-                  Hold tight! Coming soon
-                </Typography>
-              </Grid>
-            </Grid>
-          </DialogContent>
-        </Dialog> */}
+        <EditClubInfo
+          open={open}
+          setOpen={setOpen}
+          onClose={handleClose}
+          daoAddress={daoAddress}
+          clubInfo={clubInfo}
+          getClubInfo={getClubInfo}
+        />
 
         <Backdrop
           sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}

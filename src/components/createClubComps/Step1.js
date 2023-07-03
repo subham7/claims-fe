@@ -14,12 +14,11 @@ export default function Step1(props) {
   return (
     <>
       <Grid container>
-        <Grid item md={12} mt={8}>
-          <Typography className={classes.wrapTextIcon}>Station info</Typography>
+        <Grid item md={12} mt={4}>
+          <Typography className={classes.wrapTextIcon}>Basic info</Typography>
           <Typography className={classes.smallText}>
-            Name & token symbol of your station are publicly visible on-chain &
-            can’t be changed after it is created. This can be your brand name or
-            something your community identifies with.
+            Give a name & token symbol for your station that best describes the
+            purpose or matches your tribe.
           </Typography>
           <br />
           <Typography className={classes.wrapTextIcon}>Name *</Typography>
@@ -76,10 +75,9 @@ export default function Step1(props) {
             Set token type
           </Typography>
           <Typography className={classes.smallText} mb={2}>
-            Token type that best suits your objective. For example: ERC721 for
-            membership based communities, Non-transferrable ERC20 for a
-            syndicate cap-table, transferrable ERC20 for a public DAO, etc.
-            Transferability allows trading of tokens in public markets.
+            Choose a Token type that best suits your objective. (For example:
+            ERC721 for NFT collectives or non-transferrable ERC20 for investment
+            clubs)
           </Typography>
 
           <FormControl sx={{ width: "100%" }}>
@@ -96,6 +94,54 @@ export default function Step1(props) {
             </Select>
           </FormControl>
           <br />
+
+          <Typography className={classes.largeText} mb={2} mt={3}>
+            What will you use the Station for? *
+          </Typography>
+          <FormControl sx={{ width: "100%" }}>
+            <Select
+              value={props.formik.values.useStationFor}
+              onChange={props.formik.handleChange}
+              inputProps={{ "aria-label": "Without label" }}
+              name="useStationFor"
+              id="useStationFor">
+              <MenuItem value={"Investment Club/Syndicate"}>
+                Investment club/Syndicate
+              </MenuItem>
+              <MenuItem value={"Fund management"}>Fund management</MenuItem>
+              <MenuItem value={"Nft memberships"}>NFT memberships</MenuItem>
+              <MenuItem value={"Charity/Impact funding"}>
+                Charity/Impact funding
+              </MenuItem>
+              <MenuItem value={"Manage grants"}>Manage grants</MenuItem>
+              <MenuItem value={"Others"}>Others</MenuItem>
+            </Select>
+          </FormControl>
+
+          <br />
+
+          <Typography mt={3} className={classes.wrapTextIcon}>
+            Email
+            <Box
+              sx={{ color: "#6475A3", ml: 1 }}
+              fontWeight="Normal"
+              display="inline">
+              (Optional)
+            </Box>
+          </Typography>
+          <TextField
+            name="email"
+            className={classes.textField}
+            variant="outlined"
+            onChange={props.formik.handleChange}
+            placeholder="johndoe@email.com"
+            onBlur={props.formik.handleBlur}
+            value={props.formik.values.email}
+            error={
+              props.formik.touched.email && Boolean(props.formik.errors.email)
+            }
+            helperText={props.formik.touched.email && props.formik.errors.email}
+          />
         </Grid>
       </Grid>
     </>

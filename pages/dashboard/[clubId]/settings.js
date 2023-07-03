@@ -11,8 +11,9 @@ import ClubFetch from "../../../src/utils/clubFetch";
 import { subgraphQuery } from "../../../src/utils/subgraphs";
 import { convertFromWeiGovernance } from "../../../src/utils/globalFunctions";
 import { getAssetsByDaoAddress } from "../../../src/api/assets";
-import WrongNetworkModal from "../../../src/components/modals/WrongNetworkModal";
 import useSmartContractMethods from "../../../src/hooks/useSmartContractMethods";
+import { showWrongNetworkModal } from "../../../src/utils/helper";
+import { getClubInfo } from "../../../src/api/club";
 
 const Settings = () => {
   const [daoDetails, setDaoDetails] = useState({
@@ -40,6 +41,7 @@ const Settings = () => {
     ownerFee: 0,
     nftMinted: 0,
     balanceOfClubToken: 0,
+    assetsStoredOnGnosis: false,
   });
   const [erc20TokenDetails, setErc20TokenDetails] = useState({
     tokenSymbol: "",
@@ -49,10 +51,12 @@ const Settings = () => {
   });
   const [members, setMembers] = useState(0);
   const [treasuryAmount, setTreasuryAmount] = useState(0);
+  const [clubInfo, setClubInfo] = useState();
 
   const [{ wallet }] = useConnectWallet();
 
   const walletAddress = wallet?.accounts[0].address;
+  const networkId = wallet?.chains[0].id;
 
   const SUBGRAPH_URL = useSelector((state) => {
     return state.gnosis.subgraphUrl;
@@ -76,6 +80,10 @@ const Settings = () => {
 
   const factoryData = useSelector((state) => {
     return state.club.factoryData;
+  });
+
+  const gnosisAddress = useSelector((state) => {
+    return state.club.clubData.gnosisAddress;
   });
 
   const router = useRouter();
@@ -125,7 +133,7 @@ const Settings = () => {
           depositDeadline: factoryData.depositCloseTime,
           depositTokenAddress: factoryData.depositTokenAddress,
           distributionAmt: factoryData.distributionAmount,
-
+          assetsStoredOnGnosis: factoryData.assetsStoredOnGnosis,
           totalSupply:
             (factoryData.distributionAmount / 10 ** 18) *
             factoryData.pricePerToken,
@@ -186,6 +194,7 @@ const Settings = () => {
           depositDeadline: factoryData.depositCloseTime,
           depositTokenAddress: factoryData.depositTokenAddress,
           distributionAmt: factoryData.distributionAmount,
+          assetsStoredOnGnosis: factoryData.assetsStoredOnGnosis,
           totalSupply:
             factoryData.distributionAmount * factoryData.pricePerToken,
           ownerFee: factoryData.ownerFeePerDepositPercent / 100,
@@ -198,12 +207,23 @@ const Settings = () => {
 
   const fetchAssets = useCallback(async () => {
     try {
-      const assetsData = await getAssetsByDaoAddress(daoAddress, NETWORK_HEX);
+      const assetsData = await getAssetsByDaoAddress(
+        daoDetails.assetsStoredOnGnosis ? gnosisAddress : daoAddress,
+        NETWORK_HEX,
+      );
       setTreasuryAmount(assetsData?.data?.treasuryAmount);
     } catch (error) {
       console.log(error);
     }
-  }, [NETWORK_HEX, daoAddress]);
+  }, [NETWORK_HEX, daoAddress, daoDetails.assetsStoredOnGnosis, gnosisAddress]);
+
+  const getClubInfoFn = async () => {
+    const info = await getClubInfo(daoAddress);
+    if (info.status === 200) setClubInfo(info.data[0]);
+  };
+  useEffect(() => {
+    getClubInfoFn();
+  }, [daoAddress]);
 
   useEffect(() => {
     if (tokenType === "erc20") {
@@ -251,19 +271,23 @@ const Settings = () => {
         remainingDays={remainingDays}
         remainingTimeInSecs={remainingTimeInSecs}
         walletAddress={walletAddress}
+        clubInfo={clubInfo}
+        getClubInfo={getClubInfoFn}
+        isAdminUser={isAdminUser}
       />
       <AdditionalSettings
         daoDetails={daoDetails}
         erc20TokenDetails={erc20TokenDetails}
         tokenType={tokenType}
         walletAddress={walletAddress}
+        // networkId={networkId}
         fetchErc20ContractDetails={fetchErc20ContractDetails}
         fetchErc721ContractDetails={fetchErc721ContractDetails}
         isAdminUser={isAdminUser}
       />
       <TokenGating />
 
-      {WRONG_NETWORK && wallet && <WrongNetworkModal />}
+      {showWrongNetworkModal(wallet, networkId)}
     </div>
   );
 };

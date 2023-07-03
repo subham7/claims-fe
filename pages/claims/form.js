@@ -18,10 +18,12 @@ import { MerkleTree } from "merkletreejs";
 import keccak256 from "keccak256";
 import { useConnectWallet } from "@web3-onboard/react";
 import { useRouter } from "next/router";
-import { web3InstanceEthereum } from "../../src/utils/helper";
+import {
+  showWrongNetworkModal,
+  web3InstanceEthereum,
+} from "../../src/utils/helper";
 import useSmartContractMethods from "../../src/hooks/useSmartContractMethods";
 import useSmartContract from "../../src/hooks/useSmartContract";
-import WrongNetworkModal from "../../src/components/modals/WrongNetworkModal";
 import Layout1 from "../../src/components/layouts/layout1";
 import Image from "next/image";
 
@@ -450,7 +452,7 @@ const Form = () => {
           )}
         </Grid>
 
-        {networkId && networkId !== "0x89" && <WrongNetworkModal />}
+        {showWrongNetworkModal(wallet, networkId)}
 
         {showError && (
           <Alert

@@ -25,8 +25,8 @@ import { useDispatch } from "react-redux";
 import { addClaimEnabled } from "../../src/redux/reducers/createClaim";
 import useSmartContractMethods from "../../src/hooks/useSmartContractMethods";
 import useSmartContract from "../../src/hooks/useSmartContract";
-import WrongNetworkModal from "../../src/components/modals/WrongNetworkModal";
 import Image from "next/image";
+import { showWrongNetworkModal } from "../../src/utils/helper";
 
 const useStyles = makeStyles({
   container: {
@@ -769,6 +769,7 @@ const ClaimAddress = () => {
                         value={claimInput}
                         placeholder="0"
                         type="number"
+                        onWheel={(event) => event.target.blur()}
                         className={classes.input}
                       />
                       <button
@@ -872,7 +873,7 @@ const ClaimAddress = () => {
               </Alert>
             )
           )}
-          {networkId && networkId !== "0x89" && <WrongNetworkModal />}
+          {showWrongNetworkModal(wallet, networkId)}
 
           {/* {showClaimsEdit && (
           <ClaimsEditModal

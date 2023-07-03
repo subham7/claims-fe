@@ -1,11 +1,10 @@
 import { Box, Button, Grid, Step, StepButton, Stepper } from "@mui/material";
-import Layout2 from "../../src/components/layouts/layout2";
 import ProtectRoute from "../../src/utils/auth";
 import { Fragment, useRef, useState } from "react";
 import Step1 from "../../src/components/createClubComps/Step1";
 import Step3 from "../../src/components/createClubComps/Step3";
 import { useFormik } from "formik";
-import { tokenType } from "../../src/data/create";
+import { tokenType, useStationForType } from "../../src/data/create";
 import ERC20Step2 from "../../src/components/createClubComps/ERC20Step2";
 import NFTStep2 from "../../src/components/createClubComps/NFTStep2";
 import dayjs from "dayjs";
@@ -22,13 +21,14 @@ import {
 import { setUploadNFTLoading } from "../../src/redux/reducers/gnosis";
 import { NFTStorage } from "nft.storage";
 import { convertToWeiGovernance } from "../../src/utils/globalFunctions";
-import WrongNetworkModal from "../../src/components/modals/WrongNetworkModal";
 import { useConnectWallet } from "@web3-onboard/react";
 // import Step4 from "../../src/components/createClubComps/Step4";
 // import Web3 from "web3";
 // import { fetchClubOwners } from "../../src/api/club";
 import useSafe from "../../src/hooks/useSafe";
 import useSmartContract from "../../src/hooks/useSmartContract";
+import Layout1 from "../../src/components/layouts/layout1";
+import { showWrongNetworkModal } from "../../src/utils/helper";
 
 const Create = () => {
   const steps = [
@@ -98,6 +98,8 @@ const Create = () => {
       clubName: "",
       clubSymbol: "",
       clubTokenType: tokenType[0],
+      useStationFor: useStationForType[0],
+      email: "",
     },
     validationSchema: step1ValidationSchema,
     onSubmit: (values) => {
@@ -143,6 +145,7 @@ const Create = () => {
       threshold: 51,
       addressList: [],
       safeThreshold: 1,
+      storeAssetsOnGnosis: false,
     },
     validationSchema: step3ValidationSchema,
     onSubmit: async (values) => {
@@ -159,6 +162,7 @@ const Create = () => {
           description: "nft image",
           image: formikERC721Step2.values.nftImage,
         });
+
         dispatch(setUploadNFTLoading(false));
         try {
           const walletAddress = wallet.accounts[0].address;
@@ -190,7 +194,7 @@ const Create = () => {
             isNftTotalSupplyUnlimited:
               !formikERC721Step2.values.isNftTotalSupplylimited,
             isGovernanceActive: formikStep3.values.governance,
-
+            storeAssetsOnGnosis: formikStep3.values.storeAssetsOnGnosis,
             allowWhiteList: false,
             merkleRoot:
               "0x0000000000000000000000000000000000000000000000000000000000000001",
@@ -203,6 +207,8 @@ const Create = () => {
             formikStep1.values.clubTokenType,
             metadata.data.image.pathname,
             metadata.url,
+            formikStep1.values.useStationFor,
+            formikStep1.values.email,
           );
         } catch (error) {
           console.error(error);
@@ -244,6 +250,7 @@ const Create = () => {
             allowWhiteList: false,
             merkleRoot:
               "0x0000000000000000000000000000000000000000000000000000000000000001",
+            storeAssetsOnGnosis: formikStep3.values.storeAssetsOnGnosis,
           };
 
           initiateConnection(
@@ -251,6 +258,10 @@ const Create = () => {
             dispatch,
             formikStep3.values.addressList,
             formikStep1.values.clubTokenType,
+            "",
+            "",
+            formikStep1.values.useStationFor,
+            formikStep1.values.email,
           );
         } catch (error) {
           console.error(error);
@@ -447,7 +458,6 @@ const Create = () => {
   //       setOwnersCheck(true);
   //       setOwnerHelperText("Owners matched");
   //     } else {
-  //       console.log("hereeeeee");
   //       setOwnerHelperText(
   //         "Owners of the safe does not match with the admins of the DAO",
   //       );
@@ -465,7 +475,6 @@ const Create = () => {
 
   // useEffect(() => {
   //   if (formikStep4.values.safeAddress && GNOSIS_DATA.transactionUrl) {
-  //     console.log("xx");
   //     getSafeOwners();
   //   }
   // }, [
@@ -476,12 +485,11 @@ const Create = () => {
   // ]);
 
   return (
-    <Layout2>
+    <Layout1 showSidebar={false}>
       <Grid
         container
         item
         paddingLeft={{ xs: 5, sm: 5, md: 10, lg: 45 }}
-        paddingTop={4}
         paddingRight={{ xs: 5, sm: 5, md: 10, lg: 45 }}
         justifyContent="center"
         alignItems="center">
@@ -590,8 +598,8 @@ const Create = () => {
         </Box>
       </Grid>
 
-      {networkId !== "0x89" && networkId !== "0x5" ? <WrongNetworkModal /> : ""}
-    </Layout2>
+      {showWrongNetworkModal(wallet, networkId)}
+    </Layout1>
   );
 };
 export default ProtectRoute(Create);

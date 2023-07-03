@@ -27,6 +27,7 @@ export const TokenGatingStyle = makeStyles({
     border: "0.5px solid #6475A3",
     padding: "6px",
     borderRadius: "8px",
+    cursor: "pointer",
   },
 
   conditions: {
@@ -46,7 +47,7 @@ export const TokenGatingStyle = makeStyles({
 
   addBtn: {
     color: "inherit",
-    background: "#C74988",
+    background: "#3A7AFD",
     height: "40px",
     width: "40px",
     borderRadius: "50px",
@@ -75,7 +76,7 @@ export const TokenGatingStyle = makeStyles({
     alignSelf: "flex-end",
     marginTop: "20px",
     color: "white",
-    background: "#D83C8A",
+    background: "#3A7AFD",
     cursor: "pointer",
   },
   tokensList: {

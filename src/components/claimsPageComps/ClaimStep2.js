@@ -20,7 +20,7 @@ import { useDispatch } from "react-redux";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import useSmartContractMethods from "../../hooks/useSmartContractMethods";
-import WrongNetworkModal from "../modals/WrongNetworkModal";
+import { showWrongNetworkModal } from "../../utils/helper";
 
 const useStyles = makeStyles({
   form: {
@@ -315,6 +315,7 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
                   type="number"
                   name="customAmount"
                   id="customAmount"
+                  onWheel={(event) => event.target.blur()}
                 />
               </>
             )}
@@ -398,7 +399,7 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
         >
           Finish
         </Button> */}
-        {networkId && networkId !== "0x89" && <WrongNetworkModal />}
+        {showWrongNetworkModal(wallet, networkId)}
       </form>
     </>
   );

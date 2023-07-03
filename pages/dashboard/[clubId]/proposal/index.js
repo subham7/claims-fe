@@ -16,12 +16,14 @@ import CreateProposalDialog from "../../../../src/components/proposalComps/Creat
 import { fetchProposals } from "../../../../src/utils/proposal";
 import { useRouter } from "next/router";
 import ProposalCard from "./ProposalCard";
-import { getAssetsByDaoAddress } from "../../../../src/api/assets";
+import {
+  getAssetsByDaoAddress,
+  getNFTsByDaoAddress,
+} from "../../../../src/api/assets";
 import ClubFetch from "../../../../src/utils/clubFetch";
 import { useDispatch, useSelector } from "react-redux";
 import { makeStyles } from "@mui/styles";
 import { setProposalList } from "../../../../src/redux/reducers/proposal";
-import WrongNetworkModal from "../../../../src/components/modals/WrongNetworkModal";
 import Web3 from "web3";
 import { Web3Adapter } from "@safe-global/protocol-kit";
 import SafeApiKit from "@safe-global/api-kit";
@@ -29,8 +31,12 @@ import {
   getProposalByDaoAddress,
   getProposalTxHash,
 } from "../../../../src/api/proposal";
-import { web3InstanceCustomRPC } from "../../../../src/utils/helper";
+import {
+  showWrongNetworkModal,
+  web3InstanceCustomRPC,
+} from "../../../../src/utils/helper";
 import { useConnectWallet } from "@web3-onboard/react";
+import { addNftsOwnedByDao } from "../../../../src/redux/reducers/club";
 
 const useStyles = makeStyles({
   noProposal_heading: {
@@ -45,7 +51,6 @@ const useStyles = makeStyles({
   },
   noProposal: {
     width: "100%",
-    margin: "0 auto",
     textAlign: "center",
     border: "1px solid #FFFFFF1A",
     borderRadius: "10px",
@@ -60,7 +65,9 @@ const Proposal = () => {
   const { clubId: daoAddress } = router.query;
   const classes = useStyles();
   const [{ wallet }] = useConnectWallet();
+  const networkId = wallet?.chains[0].id;
 
+  const [nftData, setNftData] = useState([]);
   const [selectedListItem, setSelectedListItem] = useState(
     proposalDisplayOptions[0].type,
   );
@@ -104,6 +111,10 @@ const Proposal = () => {
     return state.club.erc721ClubDetails.isGovernanceActive;
   });
 
+  const isAssetsStoredOnGnosis = useSelector((state) => {
+    return state.club.factoryData.assetsStoredOnGnosis;
+  });
+
   const isGovernanceActive =
     tokenType === "erc20" ? isGovernanceERC20 : isGovernanceERC721;
 
@@ -127,9 +138,31 @@ const Proposal = () => {
     // router.push("/");
   };
 
+  const fetchNfts = useCallback(async () => {
+    try {
+      const nftsData = await getNFTsByDaoAddress(
+        isAssetsStoredOnGnosis ? gnosisAddress : daoAddress,
+        NETWORK_HEX,
+      );
+      setNftData(nftsData.data);
+      dispatch(addNftsOwnedByDao(nftsData.data));
+    } catch (error) {
+      console.log(error);
+    }
+  }, [
+    NETWORK_HEX,
+    daoAddress,
+    dispatch,
+    gnosisAddress,
+    isAssetsStoredOnGnosis,
+  ]);
+
   const fetchTokens = useCallback(() => {
     if (daoAddress) {
-      const tokenData = getAssetsByDaoAddress(daoAddress, NETWORK_HEX);
+      const tokenData = getAssetsByDaoAddress(
+        isAssetsStoredOnGnosis ? gnosisAddress : daoAddress,
+        NETWORK_HEX,
+      );
       tokenData.then((result) => {
         if (result?.status != 200) {
           console.log("error in token daata fetching");
@@ -138,7 +171,7 @@ const Proposal = () => {
         }
       });
     }
-  }, [NETWORK_HEX, daoAddress]);
+  }, [NETWORK_HEX, daoAddress, gnosisAddress, isAssetsStoredOnGnosis]);
 
   const fetchProposalList = async (type = "all") => {
     const data = await fetchProposals(daoAddress, type);
@@ -168,34 +201,39 @@ const Proposal = () => {
   }, [GNOSIS_TRANSACTION_URL]);
 
   const getExecutionTransaction = async () => {
-    const safeService = await getSafeService();
-    const proposalData = getProposalByDaoAddress(daoAddress);
-    const pendingTxs = await safeService.getPendingTransactions(
-      Web3.utils.toChecksumAddress(gnosisAddress),
-    );
-    const count = pendingTxs.count;
-    proposalData.then(async (result) => {
-      Promise.all(
-        result.data.map(async (proposal) => {
-          const proposalTxHash = await getProposalTxHash(proposal.proposalId);
-          if (proposalTxHash.data[0]) {
-            proposal["safeTxHash"] = proposalTxHash?.data[0].txHash;
-            if (
-              proposalTxHash.data[0].txHash ===
-              pendingTxs?.results[count - 1]?.safeTxHash
-            ) {
-              setExecutionTransaction(proposal);
-            }
-          }
-        }),
+    try {
+      const safeService = await getSafeService();
+      const proposalData = getProposalByDaoAddress(daoAddress);
+      const pendingTxs = await safeService.getPendingTransactions(
+        Web3.utils.toChecksumAddress(gnosisAddress),
       );
-    });
+      const count = pendingTxs.count;
+      proposalData.then(async (result) => {
+        Promise.all(
+          result.data.map(async (proposal) => {
+            const proposalTxHash = await getProposalTxHash(proposal.proposalId);
+            if (proposalTxHash.data[0]) {
+              proposal["safeTxHash"] = proposalTxHash?.data[0].txHash;
+              if (
+                proposalTxHash.data[0].txHash ===
+                pendingTxs?.results[count - 1]?.safeTxHash
+              ) {
+                setExecutionTransaction(proposal);
+              }
+            }
+          }),
+        );
+      });
+    } catch (error) {
+      console.log(error);
+    }
   };
   // getExecutionTransaction();
 
   useEffect(() => {
     if (daoAddress) {
       fetchTokens();
+      fetchNfts();
     }
   }, [daoAddress, fetchTokens]);
 
@@ -211,7 +249,7 @@ const Proposal = () => {
   useEffect(() => {
     fetchProposalList();
   }, [daoAddress]);
-  console.log(proposalList);
+
   return (
     <Layout1 page={2}>
       <Grid container spacing={3} paddingLeft={10} paddingTop={15}>
@@ -335,14 +373,16 @@ const Proposal = () => {
                   })}
                 </>
               ) : (
-                <div className={classes.noProposal}>
-                  <p className={classes.noProposal_heading}>
-                    No Proposals found
-                  </p>
-                  <p className={classes.noProposal_para}>
-                    Past proposals appear here.
-                  </p>
-                </div>
+                <Grid item width={"100%"}>
+                  <div className={classes.noProposal}>
+                    <p className={classes.noProposal_heading}>
+                      No Proposals found
+                    </p>
+                    <p className={classes.noProposal_para}>
+                      Past proposals appear here.
+                    </p>
+                  </div>
+                </Grid>
               )}
             </Grid>
           </Grid>
@@ -352,13 +392,14 @@ const Proposal = () => {
         </Grid>
       </Grid>
 
-      {WRONG_NETWORK && wallet && <WrongNetworkModal />}
+      {showWrongNetworkModal(wallet, networkId)}
 
       <CreateProposalDialog
         open={open}
         setOpen={setOpen}
         onClose={handleClose}
         tokenData={tokenData}
+        nftData={nftData}
       />
       <Backdrop
         sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}

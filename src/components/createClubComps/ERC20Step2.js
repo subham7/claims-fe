@@ -17,14 +17,14 @@ export default function ERC20Step2(props) {
   return (
     <>
       <Grid container spacing={3}>
-        <Grid item md={12} mt={8}>
+        <Grid item md={12} mt={2}>
           <Typography className={classes.largeText} mt={3} mb={2}>
             Set deposit rules for members
           </Typography>
           <Typography className={classes.smallText} mb={2}>
-            Any new deposits will not be accepted after the last date and/or
-            funding target is met. Admins can extend deposit dates from
-            dashboard by an onchain transaction requiring gas.
+            Members automatically receive pro-rata tokens after depositing to
+            join this Station. Any new deposits will not be accepted after the
+            last date and/or funding target is met.
           </Typography>
           <Card className={classes.cardPadding} mb={2}>
             <Grid container pl={3} pr={1}>
@@ -110,6 +110,7 @@ export default function ERC20Step2(props) {
                       </InputAdornment>
                     ),
                   }}
+                  onWheel={(event) => event.target.blur()}
                 />
               </Grid>
             </Grid>
@@ -162,6 +163,7 @@ export default function ERC20Step2(props) {
                       </InputAdornment>
                     ),
                   }}
+                  onWheel={(event) => event.target.blur()}
                 />
               </Grid>
             </Grid>
@@ -215,6 +217,7 @@ export default function ERC20Step2(props) {
                       </InputAdornment>
                     ),
                   }}
+                  onWheel={(event) => event.target.blur()}
                 />
               </Grid>
             </Grid>
@@ -268,6 +271,7 @@ export default function ERC20Step2(props) {
                       </InputAdornment>
                     ),
                   }}
+                  onWheel={(event) => event.target.blur()}
                 />
               </Grid>
             </Grid>

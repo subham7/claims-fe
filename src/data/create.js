@@ -5,6 +5,15 @@ export const tokenType = [
   // "Custom ERC20 Token (Coming soon!)",
 ];
 
+export const useStationForType = [
+  "Investment Club/Syndicate",
+  "Fund management",
+  "Nft memberships",
+  "Charity/Impact funding",
+  "Manage grants",
+  "Others",
+];
+
 const today = new Date();
 export const dateTill = [
   {

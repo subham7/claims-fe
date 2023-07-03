@@ -1,13 +1,12 @@
 import React, { useCallback, useEffect, useState } from "react";
 
 import { useConnectWallet } from "@web3-onboard/react";
-import Layout2 from "../../src/components/layouts/layout2";
 import NewArchERC20 from "../../src/components/depositPageComps/ERC20/NewArch/NewArchERC20";
 import { useRouter } from "next/router";
 import NewArchERC721 from "../../src/components/depositPageComps/ERC721/NewArch/NewArchERC721";
 import {
   convertFromWeiGovernance,
-  convertIpfsToUrl,
+  getImageURL,
 } from "../../src/utils/globalFunctions";
 import { subgraphQuery } from "../../src/utils/subgraphs";
 import {
@@ -18,7 +17,9 @@ import { useSelector } from "react-redux";
 import ClubFetch from "../../src/utils/clubFetch";
 import { Backdrop, CircularProgress, Grid, Typography } from "@mui/material";
 import useSmartContractMethods from "../../src/hooks/useSmartContractMethods";
-import WrongNetworkModal from "../../src/components/modals/WrongNetworkModal";
+import Layout1 from "../../src/components/layouts/layout1";
+import { showWrongNetworkModal } from "../../src/utils/helper";
+import { getClubInfo } from "../../src/api/club";
 // import useSmartContract from "../../src/hooks/useSmartContract";
 
 const Join = () => {
@@ -51,7 +52,23 @@ const Join = () => {
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [remainingClaimAmount, setRemainingClaimAmount] = useState();
+  const [fetchedDetails, setFetchedDetails] = useState({
+    tokenA: "",
+    tokenB: "",
+    tokenAAmt: 0,
+    tokenBAmt: 0,
+    operator: 0,
+    comparator: 0,
+  });
+  const [displayTokenDetails, setDisplayTokenDetails] = useState({
+    tokenASymbol: "",
+    tokenBSymbol: "",
+    tokenADecimal: 0,
+    tokenBDecimal: 0,
+  });
+  const [clubInfo, setClubInfo] = useState();
   const [{ wallet }] = useConnectWallet();
+  const networkId = wallet?.chains[0].id;
   const router = useRouter();
   const { jid: daoAddress } = router.query;
 
@@ -78,6 +95,8 @@ const Join = () => {
     getERC721DAOdetails,
     getNftOwnersCount,
     getBalance,
+    getTokenGatingDetails,
+    getTokenSymbol,
   } = useSmartContractMethods();
 
   /**
@@ -131,17 +150,7 @@ const Join = () => {
         QUERY_CLUB_DETAILS(daoAddress),
       );
 
-      const url = convertIpfsToUrl(clubDetails.stations[0].imageUrl);
-      let imageUrl;
-      try {
-        if (url) {
-          const res = await fetch(url);
-          const data = await res.json();
-          imageUrl = convertIpfsToUrl(data.image);
-        }
-      } catch (e) {
-        console.error(e);
-      }
+      const imageUrl = await getImageURL(clubDetails?.stations[0].imageUrl);
 
       const erc721Data = await getERC721DAOdetails();
       const nftCount = await getNftOwnersCount();
@@ -181,40 +190,77 @@ const Join = () => {
     try {
       setLoading(true);
 
-      const tokenGatingDetails = await contractInstance.factoryContractCall
-        .getTokenGatingDetails(daoAddress)
-        .call();
+      const tokenGatingDetails = await getTokenGatingDetails(daoAddress);
 
-      if (tokenGatingDetails[0]?.length) {
-        setIsTokenGated(true);
+      if (tokenGatingDetails) {
+        setFetchedDetails({
+          tokenA: tokenGatingDetails[0]?.tokenA,
+          tokenB: tokenGatingDetails[0]?.tokenB,
+          tokenAAmt: tokenGatingDetails[0]?.value[0],
+          tokenBAmt: tokenGatingDetails[0]?.value[1],
+          operator: tokenGatingDetails[0]?.operator,
+          comparator: tokenGatingDetails[0]?.comparator,
+        });
 
-        const balanceOfTokenAInUserWallet = await getBalance(
-          tokenGatingDetails[0].tokenA,
+        const tokenASymbol = await getTokenSymbol(tokenGatingDetails[0].tokenA);
+        const tokenBSymbol = await getTokenSymbol(
+          tokenGatingDetails[0]?.tokenB,
         );
-        const balanceOfTokenBInUserWallet = await getBalance(
-          tokenGatingDetails[0].tokenB,
-        );
 
-        if (tokenGatingDetails[0].operator == 0) {
-          if (
-            +balanceOfTokenAInUserWallet >= +tokenGatingDetails[0]?.value[0] &&
-            +balanceOfTokenBInUserWallet >= +tokenGatingDetails[0]?.value[1]
-          ) {
-            setIsEligibleForTokenGating(true);
-          } else {
-            setIsEligibleForTokenGating(false);
-          }
-        } else if (tokenGatingDetails[0].operator == 1) {
-          if (
-            +balanceOfTokenAInUserWallet >= +tokenGatingDetails[0]?.value[0] ||
-            +balanceOfTokenBInUserWallet >= +tokenGatingDetails[0]?.value[1]
-          ) {
-            setIsEligibleForTokenGating(true);
-          } else {
-            setIsEligibleForTokenGating(false);
-          }
+        let tokenADecimal, tokenBDecimal;
+
+        try {
+          tokenADecimal = await getDecimals(tokenGatingDetails[0]?.tokenA);
+        } catch (error) {
+          console.log(error);
         }
-        setLoading(false);
+
+        try {
+          tokenBDecimal = await getDecimals(tokenGatingDetails[0]?.tokenB);
+        } catch (error) {
+          console.log(error);
+        }
+
+        setDisplayTokenDetails({
+          tokenASymbol: tokenASymbol,
+          tokenBSymbol: tokenBSymbol,
+          tokenADecimal: tokenADecimal ? tokenADecimal : 0,
+          tokenBDecimal: tokenBDecimal ? tokenBDecimal : 0,
+        });
+
+        if (tokenGatingDetails[0]?.length) {
+          setIsTokenGated(true);
+
+          const balanceOfTokenAInUserWallet = await getBalance(
+            tokenGatingDetails[0].tokenA,
+          );
+          const balanceOfTokenBInUserWallet = await getBalance(
+            tokenGatingDetails[0].tokenB,
+          );
+
+          if (tokenGatingDetails[0].operator == 0) {
+            if (
+              +balanceOfTokenAInUserWallet >=
+                +tokenGatingDetails[0]?.value[0] &&
+              +balanceOfTokenBInUserWallet >= +tokenGatingDetails[0]?.value[1]
+            ) {
+              setIsEligibleForTokenGating(true);
+            } else {
+              setIsEligibleForTokenGating(false);
+            }
+          } else if (tokenGatingDetails[0].operator == 1) {
+            if (
+              +balanceOfTokenAInUserWallet >=
+                +tokenGatingDetails[0]?.value[0] ||
+              +balanceOfTokenBInUserWallet >= +tokenGatingDetails[0]?.value[1]
+            ) {
+              setIsEligibleForTokenGating(true);
+            } else {
+              setIsEligibleForTokenGating(false);
+            }
+          }
+          setLoading(false);
+        }
       }
     } catch (error) {
       console.log(error);
@@ -262,6 +308,12 @@ const Join = () => {
           setMembers(data?.users);
         }
       };
+
+      const clubInfo = async () => {
+        const info = await getClubInfo(daoAddress);
+        if (info.status === 200) setClubInfo(info.data[0]);
+      };
+      clubInfo();
       wallet && fetchData();
       setLoading(false);
     } catch (error) {
@@ -271,7 +323,7 @@ const Join = () => {
   }, [SUBGRAPH_URL, daoAddress, daoDetails, wallet]);
 
   return (
-    <Layout2>
+    <Layout1 showSidebar={false}>
       {TOKEN_TYPE === "erc20" ? (
         <NewArchERC20
           isTokenGated={isTokenGated}
@@ -280,6 +332,9 @@ const Join = () => {
           daoDetails={daoDetails}
           members={members}
           remainingClaimAmount={remainingClaimAmount}
+          fetchedTokenGatedDetails={fetchedDetails}
+          displayTokenDetails={displayTokenDetails}
+          clubInfo={clubInfo}
         />
       ) : TOKEN_TYPE === "erc721" ? (
         <NewArchERC721
@@ -287,6 +342,7 @@ const Join = () => {
           isEligibleForTokenGating={isEligibleForTokenGating}
           erc721DaoAddress={daoAddress}
           daoDetails={daoDetails}
+          clubInfo={clubInfo}
         />
       ) : null}
 
@@ -296,7 +352,7 @@ const Join = () => {
         <CircularProgress color="inherit" />
       </Backdrop>
 
-      {WRONG_NETWORK && wallet && <WrongNetworkModal />}
+      {showWrongNetworkModal(wallet, networkId)}
 
       {!wallet && (
         <Grid
@@ -320,7 +376,7 @@ const Join = () => {
           </Grid>
         </Grid>
       )}
-    </Layout2>
+    </Layout1>
   );
 };
 

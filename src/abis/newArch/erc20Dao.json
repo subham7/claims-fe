@@ -76,6 +76,27 @@
       "type": "error"
     },
     {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "required",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "current",
+          "type": "uint256"
+        }
+      ],
+      "name": "InsufficientAllowance",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "InsufficientBalance",
+      "type": "error"
+    },
+    {
       "inputs": [],
       "name": "InsufficientFunds",
       "type": "error"
@@ -303,34 +324,6 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "_airdropTokenAddress",
-          "type": "address"
-        },
-        {
-          "internalType": "uint256",
-          "name": "_airdropAmount",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "_ownersAirdropFees",
-          "type": "uint256"
-        },
-        {
-          "internalType": "address[]",
-          "name": "_members",
-          "type": "address[]"
-        }
-      ],
-      "name": "airDropToken",
-      "outputs": [],
-      "stateMutability": "nonpayable",
       "type": "function"
     },
     {
@@ -829,29 +822,6 @@
         }
       ],
       "name": "revokeRole",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "_customTokenAddress",
-          "type": "address"
-        },
-        {
-          "internalType": "uint256[]",
-          "name": "_amountArray",
-          "type": "uint256[]"
-        },
-        {
-          "internalType": "address[]",
-          "name": "_addresses",
-          "type": "address[]"
-        }
-      ],
-      "name": "sendCustomToken",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"

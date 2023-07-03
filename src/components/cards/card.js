@@ -1,20 +1,21 @@
+import { Button } from "@mui/material";
 import { makeStyles } from "@mui/styles";
-import Image from "next/image";
 import React from "react";
 
 const useStyles = makeStyles({
   card: {
     display: "flex",
     flexDirection: "column",
-    padding: "40px 30px 30px 30px",
-    borderRadius: "10px",
+    padding: "30px 40px",
+    borderRadius: "20px",
     // boxShadow: 'rgba(99, 99, 99, 0.2) 0px 2px 8px 0px',
     // margin: '0 auto',
-    width: "381px",
+    width: "481px",
     background: "#142243",
     cursor: "pointer",
     height: "fit-content",
-    alignItems: "center",
+    alignItems: "flex-start",
+    minHeight: "300px",
   },
   img: {
     objectFit: "contain",
@@ -23,29 +24,25 @@ const useStyles = makeStyles({
     fontSize: "28px",
     fontWeight: "500",
     color: "white",
-    marginBottom: 4,
+    marginBottom: "0",
   },
   subtitle: {
     fontSize: "14px",
     color: "lightgray",
-    marginTop: 0,
+    margin: "2rem 0px ",
   },
 });
 
-const NewCard = ({ imgSrc, title, subtitle, onClick }) => {
+const NewCard = ({ title, subtitle, onClick, buttonText }) => {
   const classes = useStyles();
 
   return (
-    <div onClick={onClick} className={classes.card}>
-      <Image
-        className={classes.img}
-        src={imgSrc}
-        alt={title}
-        width={300}
-        height={195}
-      />
+    <div className={classes.card}>
       <h2 className={classes.title}>{title}</h2>
       <p className={classes.subtitle}>{subtitle}</p>
+      <Button sx={{ borderRadius: "24px" }} onClick={onClick}>
+        {buttonText}
+      </Button>
     </div>
   );
 };

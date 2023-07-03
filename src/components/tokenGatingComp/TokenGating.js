@@ -1,17 +1,17 @@
 import { Alert, Backdrop, CircularProgress, Switch } from "@mui/material";
 import React, { useCallback, useEffect, useState } from "react";
 import { TokenGatingStyle } from "./TokenGatingStyles";
-import { MdEdit } from "react-icons/md";
+import { MdDelete } from "react-icons/md";
 import TokenGatingModal from "./TokenGatingModal";
 import { useSelector } from "react-redux";
 import SingleToken from "./SingleToken";
-import { useConnectWallet } from "@web3-onboard/react";
 import { useRouter } from "next/router";
 import {
   convertFromWeiGovernance,
   convertToWeiGovernance,
 } from "../../utils/globalFunctions";
 import useSmartContractMethods from "../../hooks/useSmartContractMethods";
+import ClubFetch from "../../utils/clubFetch";
 
 const TokenGating = () => {
   const [showTokenGatingModal, setShowTokenGatingModal] = useState(false);
@@ -35,8 +35,7 @@ const TokenGating = () => {
   const [isTokenGatingSuccessfull, setIsTokenGatingSuccessfull] =
     useState(false);
   const [showMessage, setShowMessage] = useState(false);
-
-  const [{ wallet }] = useConnectWallet();
+  const [showEditOptions, setShowEditOptions] = useState(true);
 
   const isAdminUser = useSelector((state) => {
     return state.gnosis.adminUser;
@@ -46,21 +45,12 @@ const TokenGating = () => {
   const classes = TokenGatingStyle();
   const { clubId: daoAddress } = router.query;
 
-  const walletAddress = wallet?.accounts[0].address;
-
-  const GNOSIS_TRANSACTION_URL = useSelector((state) => {
-    return state.gnosis.transactionUrl;
-  });
-
-  const USDC_CONTRACT_ADDRESS = useSelector((state) => {
-    return state.gnosis.usdcContractAddress;
-  });
-
   const {
     getTokenGatingDetails,
     setupTokenGating,
     getTokenSymbol,
     getDecimals,
+    disableTokenGating,
   } = useSmartContractMethods();
 
   const addTokensHandler = () => {
@@ -99,6 +89,7 @@ const TokenGating = () => {
       );
       setLoading(false);
       setIsTokenGatingSuccessfull(true);
+      setShowEditOptions(false);
       showMessageHandler();
     } catch (error) {
       console.log(error);
@@ -115,7 +106,7 @@ const TokenGating = () => {
     }, 4000);
   };
 
-  const fetchTokenGatingDetials = useCallback(async () => {
+  const fetchTokenGatingDetails = useCallback(async () => {
     try {
       setLoading(true);
       const tokenGatingDetails = await getTokenGatingDetails(daoAddress);
@@ -129,15 +120,22 @@ const TokenGating = () => {
       });
 
       const tokenASymbol = await getTokenSymbol(tokenGatingDetails[0].tokenA);
-      const tokenBSymbol = await getTokenSymbol(tokenGatingDetails[0].tokenB);
-      const tokenADecimal = await getDecimals(tokenGatingDetails[0].tokenA);
-      const tokenBDecimal = await getDecimals(tokenGatingDetails[0].tokenB);
+      const tokenBSymbol = await getTokenSymbol(tokenGatingDetails[0]?.tokenB);
+
+      let tokenADecimal, tokenBDecimal;
+
+      try {
+        tokenADecimal = await getDecimals(tokenGatingDetails[0]?.tokenA);
+        tokenBDecimal = await getDecimals(tokenGatingDetails[0]?.tokenB);
+      } catch (error) {
+        console.log(error);
+      }
 
       setDisplayTokenDetails({
         tokenASymbol: tokenASymbol,
         tokenBSymbol: tokenBSymbol,
-        tokenADecimal: tokenADecimal,
-        tokenBDecimal: tokenBDecimal,
+        tokenADecimal: tokenADecimal ? tokenADecimal : 0,
+        tokenBDecimal: tokenBDecimal ? tokenBDecimal : 0,
       });
       setLoading(false);
     } catch (error) {
@@ -147,8 +145,8 @@ const TokenGating = () => {
   }, [daoAddress]);
 
   useEffect(() => {
-    fetchTokenGatingDetials();
-  }, [fetchTokenGatingDetials]);
+    fetchTokenGatingDetails();
+  }, [fetchTokenGatingDetails]);
 
   return (
     <div className={classes.container}>
@@ -156,8 +154,27 @@ const TokenGating = () => {
         <p className={classes.title}>Token Gating</p>
 
         {isAdminUser && (
-          <div className={classes.icon}>
-            <MdEdit size={20} />
+          <div
+            onClick={async () => {
+              try {
+                setLoading(true);
+                await disableTokenGating(daoAddress);
+                await fetchTokenGatingDetails();
+                setFetchedDetails({
+                  tokenA: "",
+                  tokenB: "",
+                  tokenAAmt: 0,
+                  tokenBAmt: 0,
+                  operator: 0,
+                  comparator: 0,
+                });
+                setLoading(false);
+              } catch (error) {
+                setLoading(false);
+              }
+            }}
+            className={classes.icon}>
+            <MdDelete size={20} />
           </div>
         )}
       </div>
@@ -201,18 +218,29 @@ const TokenGating = () => {
                   <SingleToken
                     tokenAddress={fetchedDetails.tokenA}
                     tokenSymbol={displayTokenDetails.tokenASymbol}
-                    tokenAmount={convertFromWeiGovernance(
-                      fetchedDetails.tokenAAmt,
-                      displayTokenDetails.tokenADecimal,
-                    )}
+                    tokenAmount={
+                      displayTokenDetails.tokenADecimal
+                        ? convertFromWeiGovernance(
+                            fetchedDetails.tokenAAmt,
+                            displayTokenDetails.tokenADecimal,
+                          )
+                        : fetchedDetails.tokenAAmt
+                    }
                   />
                   <SingleToken
                     tokenAddress={fetchedDetails.tokenB}
                     tokenSymbol={displayTokenDetails.tokenBSymbol}
-                    tokenAmount={convertFromWeiGovernance(
-                      fetchedDetails.tokenBAmt,
-                      displayTokenDetails.tokenBDecimal,
-                    )}
+                    tokenAmount={
+                      displayTokenDetails.tokenBDecimal
+                        ? convertFromWeiGovernance(
+                            fetchedDetails.tokenBAmt,
+                            displayTokenDetails.tokenBDecimal,
+                          )
+                        : convertFromWeiGovernance(
+                            fetchedDetails.tokenBAmt,
+                            displayTokenDetails.tokenADecimal,
+                          )
+                    }
                   />
                 </>
               )}
@@ -220,17 +248,23 @@ const TokenGating = () => {
           )}
         </div>
 
-        {isAdminUser && (
+        {isAdminUser &&
+        (fetchedDetails.tokenA === "" || fetchedDetails.tokenA === undefined) &&
+        showEditOptions ? (
           <button
             className={classes.addBtn}
             disabled={fetchedDetails?.tokenA || tokensList.length >= 2}
             onClick={addTokensHandler}>
             +
           </button>
+        ) : (
+          ""
         )}
       </div>
 
-      {isAdminUser && (
+      {isAdminUser &&
+      (fetchedDetails.tokenA === "" || fetchedDetails.tokenA === undefined) &&
+      showEditOptions ? (
         <div className={classes.switchContainer}>
           <div className={classes.match}>
             <p>Match</p>
@@ -250,7 +284,7 @@ const TokenGating = () => {
               checkedIcon={
                 <div
                   style={{
-                    background: "#C64988",
+                    background: "#3A7AFD",
                     height: "25px",
                     width: "25px",
                     borderRadius: "100px",
@@ -262,9 +296,13 @@ const TokenGating = () => {
 
           <p>condition(s)</p>
         </div>
+      ) : (
+        ""
       )}
 
-      {isAdminUser ? (
+      {isAdminUser &&
+      (fetchedDetails.tokenA === "" || fetchedDetails.tokenA === undefined) &&
+      showEditOptions ? (
         <button
           className={classes.saveBtn}
           disabled={!tokensList.length}
@@ -319,4 +357,4 @@ const TokenGating = () => {
   );
 };
 
-export default TokenGating;
+export default ClubFetch(TokenGating);

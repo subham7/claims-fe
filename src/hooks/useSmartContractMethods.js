@@ -6,15 +6,20 @@ import { getIncreaseGasPrice } from "../utils/helper";
 import ERC20TokenABI from "../abis/usdcTokenContract.json";
 import ERC721TokenABI from "../abis/nft.json";
 import ClaimContractABI from "../abis/singleClaimContract.json";
-import { convertToWei } from "../utils/globalFunctions";
+import { convertToWeiGovernance } from "../utils/globalFunctions";
 import Safe, { Web3Adapter } from "@safe-global/protocol-kit";
 import { createProposalTxHash, getProposalTxHash } from "../api/proposal";
 import SafeApiKit from "@safe-global/api-kit";
+import { actionContractABI } from "../abis/newArch/actionContract";
 
 const useSmartContractMethods = () => {
   const [{ wallet }] = useConnectWallet();
   const walletAddress = wallet?.accounts[0]?.address;
   const web3Call = new Web3(RPC_URL ? RPC_URL : POLYGON_MAINNET_RPC_URL);
+
+  const isAssetsStoredOnGnosis = useSelector((state) => {
+    return state.club.factoryData.assetsStoredOnGnosis;
+  });
 
   let web3Send;
   if (typeof window !== "undefined") {
@@ -28,13 +33,9 @@ const useSmartContractMethods = () => {
   const {
     factoryContractCall,
     factoryContractSend,
-    erc20TokenContractCall,
-    erc20TokenContractSend,
     erc20DaoContractCall,
     erc20DaoContractSend,
-    erc721TokenContractCall,
     erc721DaoContractCall,
-    erc721DaoContractSend,
     claimContractCall,
     claimContractSend,
     claimFactoryContractCall,
@@ -152,6 +153,15 @@ const useSmartContractMethods = () => {
       });
   };
 
+  const disableTokenGating = async (daoAddress) => {
+    return await factoryContractSend?.methods
+      ?.disableTokenGating(daoAddress)
+      .send({
+        from: walletAddress,
+        gasPrice: await getIncreaseGasPrice(),
+      });
+  };
+
   const getTokenGatingDetails = async (daoAddress) => {
     return await factoryContractCall?.methods
       ?.getTokenGatingDetails(daoAddress)
@@ -159,45 +169,55 @@ const useSmartContractMethods = () => {
   };
 
   const getDecimals = async (contractAddress) => {
-    const erc20TokenContractCall = new web3Call.eth.Contract(
-      ERC20TokenABI.abi,
-      contractAddress,
-    );
-    return await erc20TokenContractCall.methods.decimals().call();
+    if (contractAddress) {
+      const erc20TokenContractCall = new web3Call.eth.Contract(
+        ERC20TokenABI.abi,
+        contractAddress,
+      );
+      return await erc20TokenContractCall.methods.decimals().call();
+    }
   };
 
   const getERC721Symbol = async (contractAddress) => {
-    const erc721TokenContractCall = new web3Call.eth.Contract(
-      ERC721TokenABI.abi,
-      contractAddress,
-    );
-    return await erc721TokenContractCall?.methods?.symbol().call();
+    if (contractAddress) {
+      const erc721TokenContractCall = new web3Call.eth.Contract(
+        ERC721TokenABI.abi,
+        contractAddress,
+      );
+      return await erc721TokenContractCall?.methods?.symbol().call();
+    }
   };
 
   const getBalance = async (contractAddress) => {
-    const erc20TokenContractCall = new web3Call.eth.Contract(
-      ERC20TokenABI.abi,
-      contractAddress,
-    );
-    return await erc20TokenContractCall?.methods
-      ?.balanceOf(walletAddress)
-      .call();
+    if (contractAddress) {
+      const erc20TokenContractCall = new web3Call.eth.Contract(
+        ERC20TokenABI.abi,
+        contractAddress,
+      );
+      return await erc20TokenContractCall?.methods
+        ?.balanceOf(walletAddress)
+        .call();
+    }
   };
 
   const getTokenSymbol = async (contractAddress) => {
-    const erc20TokenContractCall = new web3Call.eth.Contract(
-      ERC20TokenABI.abi,
-      contractAddress,
-    );
-    return await erc20TokenContractCall?.methods?.symbol().call();
+    if (contractAddress) {
+      const erc20TokenContractCall = new web3Call.eth.Contract(
+        ERC20TokenABI.abi,
+        contractAddress,
+      );
+      return await erc20TokenContractCall?.methods?.symbol().call();
+    }
   };
 
   const getTokenName = async (contractAddress) => {
-    const erc20TokenContractCall = new web3Call.eth.Contract(
-      ERC20TokenABI.abi,
-      contractAddress,
-    );
-    return await erc20TokenContractCall?.methods?.name().call();
+    if (contractAddress) {
+      const erc20TokenContractCall = new web3Call.eth.Contract(
+        ERC20TokenABI.abi,
+        contractAddress,
+      );
+      return await erc20TokenContractCall?.methods?.name().call();
+    }
   };
 
   const approveDeposit = async (
@@ -206,17 +226,75 @@ const useSmartContractMethods = () => {
     amount,
     usdcConvertDecimal,
   ) => {
-    const erc20TokenContractSend = new web3Send.eth.Contract(
-      ERC20TokenABI.abi,
-      contractAddress,
-    );
-    const value = convertToWei(amount, usdcConvertDecimal).toString();
-    return await erc20TokenContractSend?.methods
-      ?.approve(approvalContract, value)
-      .send({
-        from: walletAddress,
-        gasPrice: await getIncreaseGasPrice(),
-      });
+    if (contractAddress) {
+      const erc20TokenContractSend = new web3Send.eth.Contract(
+        ERC20TokenABI.abi,
+        contractAddress,
+      );
+      const value = convertToWeiGovernance(
+        amount,
+        usdcConvertDecimal,
+      )?.toString();
+      return await erc20TokenContractSend?.methods
+        ?.approve(approvalContract, value)
+        .send({
+          from: walletAddress,
+          gasPrice: await getIncreaseGasPrice(),
+        });
+    }
+  };
+
+  const approveDepositWithEncodeABI = (
+    contractAddress,
+    approvalContract,
+    amount,
+  ) => {
+    if (contractAddress) {
+      const erc20TokenContractSend = new web3Send.eth.Contract(
+        ERC20TokenABI.abi,
+        contractAddress,
+      );
+
+      return erc20TokenContractSend?.methods
+        ?.approve(approvalContract, amount)
+        .encodeABI();
+    }
+  };
+
+  const transferNFTfromSafe = (
+    tokenAddress,
+    gnosisAddress,
+    receiverAddress,
+    tokenId,
+  ) => {
+    if (tokenAddress) {
+      const erc20TokenContractSend = new web3Send.eth.Contract(
+        ERC20TokenABI.abi,
+        tokenAddress,
+      );
+
+      return erc20TokenContractSend?.methods
+        ?.transferFrom(gnosisAddress, receiverAddress, tokenId)
+        .encodeABI();
+    }
+  };
+
+  const airdropTokenMethodEncoded = (
+    actionContractAddress,
+    airdropTokenAddress,
+    amountArray,
+    members,
+  ) => {
+    if (actionContractAddress) {
+      const actionContractSend = new web3Send.eth.Contract(
+        actionContractABI,
+        actionContractAddress,
+      );
+
+      return actionContractSend.methods
+        .airDropToken(airdropTokenAddress, amountArray, members)
+        .encodeABI();
+    }
   };
 
   const claimContract = async (claimSettings) => {
@@ -397,14 +475,21 @@ const useSmartContractMethods = () => {
     airdropContractAddress = "",
     factoryContractAddress = "",
     gnosisTransactionUrl,
+    executionId,
+    ownerAddress,
+    safeThreshold,
+    proposalData,
+    membersArray,
+    airDropAmountArray,
   ) => {
     const parameters = data;
-
+    const web3 = new Web3(window.ethereum);
     const ethAdapter = new Web3Adapter({
-      web3: new Web3(window.ethereum),
+      web3: web3,
       signerAddress: Web3.utils.toChecksumAddress(walletAddress),
     });
     const txServiceUrl = gnosisTransactionUrl;
+
     const safeService = new SafeApiKit({
       txServiceUrl,
       ethAdapter,
@@ -415,48 +500,104 @@ const useSmartContractMethods = () => {
       safeAddress: Web3.utils.toChecksumAddress(gnosisAddress),
     });
 
+    const nonce = await safeSdk.getNonce();
+
     let approvalTransaction;
     let transaction;
     if (approvalData !== "") {
-      approvalTransaction = {
-        to: Web3.utils.toChecksumAddress(daoAddress),
-        data: erc20DaoContractSend.methods
-          .updateProposalAndExecution(
-            //usdc address
+      if (isAssetsStoredOnGnosis) {
+        approvalTransaction = {
+          to: Web3.utils.toChecksumAddress(tokenData),
+          // data: tokenData.methods.approve(dao / action).encodeABI(), // for send/airdrop -> action & send NFT -> daoAddress
+          data: approveDepositWithEncodeABI(
             tokenData,
-            approvalData,
-          )
-          .encodeABI(),
-        value: "0",
-      };
-
-      transaction = {
-        to: Web3.utils.toChecksumAddress(daoAddress),
-        data: erc20DaoContractSend.methods
-          .updateProposalAndExecution(
-            //airdrop address
-
             airdropContractAddress,
-            parameters,
-          )
-          .encodeABI(),
-        value: "0",
-      };
-    } else {
-      transaction = {
-        //dao
-        to: Web3.utils.toChecksumAddress(daoAddress),
-        data: erc20DaoContractSend.methods
-          .updateProposalAndExecution(
-            //factory
-            factoryContractAddress ? factoryContractAddress : daoAddress,
-            parameters,
-          )
-          .encodeABI(),
-        value: "0",
-      };
-    }
+            proposalData.commands[0].executionId === 0
+              ? proposalData.commands[0].airDropAmount
+              : proposalData.commands[0].customTokenAmounts[0],
+          ),
+          value: "0",
+        };
+      } else {
+        approvalTransaction = {
+          to: Web3.utils.toChecksumAddress(daoAddress),
+          data: erc20DaoContractSend.methods
+            .updateProposalAndExecution(
+              //usdc address
+              tokenData,
+              approvalData,
+            )
+            .encodeABI(),
+          value: "0",
+        };
+      }
 
+      if (isAssetsStoredOnGnosis) {
+        transaction = {
+          to: Web3.utils.toChecksumAddress(airdropContractAddress),
+          data: airdropTokenMethodEncoded(
+            airdropContractAddress,
+            tokenData,
+            airDropAmountArray,
+            membersArray,
+          ),
+          value: 0,
+        };
+      } else {
+        transaction = {
+          to: Web3.utils.toChecksumAddress(daoAddress),
+          data: erc20DaoContractSend.methods
+            .updateProposalAndExecution(
+              //airdrop address
+              airdropContractAddress,
+              parameters,
+            )
+            .encodeABI(),
+          value: "0",
+        };
+      }
+    } else if (executionId === 6 || executionId === 7) {
+      if (executionId === 6) {
+        transaction = {
+          ownerAddress,
+        };
+      } else {
+        transaction = {
+          ownerAddress,
+          threshold: safeThreshold,
+        };
+      }
+    } else {
+      if (
+        isAssetsStoredOnGnosis &&
+        proposalData.commands[0].executionId === 5
+      ) {
+        transaction = {
+          //dao
+          to: Web3.utils.toChecksumAddress(tokenData),
+          data: transferNFTfromSafe(
+            tokenData,
+            gnosisAddress,
+            proposalData.commands[0].customTokenAddresses[0],
+            proposalData.commands[0].customNftToken,
+          ),
+          value: "0",
+        };
+      } else {
+        transaction = {
+          //dao
+          to: Web3.utils.toChecksumAddress(daoAddress),
+          data: erc20DaoContractSend.methods
+            .updateProposalAndExecution(
+              //factory
+              factoryContractAddress ? factoryContractAddress : daoAddress,
+              parameters,
+            )
+            .encodeABI(),
+          value: "0",
+        };
+      }
+    }
     if (executionStatus !== "executed") {
       //case for 1st signature
       if (txHash === "") {
@@ -485,10 +626,18 @@ const useSmartContractMethods = () => {
             },
           ];
         }
-
-        const safeTransaction = await safeSdk.createTransaction({
-          safeTransactionData,
-        });
+        let safeTransaction;
+        if (executionId === 6 || executionId === 7) {
+          if (executionId === 6) {
+            safeTransaction = await safeSdk.createAddOwnerTx(transaction);
+          } else {
+            safeTransaction = await safeSdk.createRemoveOwnerTx(transaction);
+          }
+        } else {
+          safeTransaction = await safeSdk.createTransaction({
+            safeTransactionData,
+          });
+        }
         const safeTxHash = await safeSdk.getTransactionHash(safeTransaction);
         const payload = {
           proposalId: pid,
@@ -541,11 +690,21 @@ const useSmartContractMethods = () => {
             },
           ];
         }
-
         const safeTxHash = tx.safeTxHash;
-        const safeTransaction = await safeSdk.createTransaction({
-          safeTransactionData,
-        });
+
+        let safeTransaction;
+        if (executionId === 6 || executionId === 7) {
+          if (executionId === 6) {
+            safeTransaction = await safeSdk.createAddOwnerTx(transaction);
+          } else {
+            safeTransaction = await safeSdk.createRemoveOwnerTx(transaction);
+          }
+        } else {
+          safeTransaction = await safeSdk.createTransaction({
+            safeTransactionData,
+          });
+        }
+
         // const senderSignature = await safeSdk.signTypedData(tx, "v4");
         const senderSignature = await safeSdk.signTypedData(
           safeTransaction,
@@ -556,7 +715,6 @@ const useSmartContractMethods = () => {
       }
     } else {
       const proposalTxHash = await getProposalTxHash(pid);
-
       const safetx = await safeService.getTransaction(
         proposalTxHash.data[0].txHash,
       );
@@ -567,7 +725,7 @@ const useSmartContractMethods = () => {
 
       const executeTxResponse = await safeSdk.executeTransaction(
         safetx,
-        options,
+        // options,
       );
 
       const receipt =
@@ -599,6 +757,7 @@ const useSmartContractMethods = () => {
     updateOwnerFee,
     updateDepositTime,
     setupTokenGating,
+    disableTokenGating,
     getTokenGatingDetails,
     claimAmount,
     claim,

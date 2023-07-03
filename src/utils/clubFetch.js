@@ -129,23 +129,25 @@ const ClubFetch = (Component) => {
               daoAddress ? daoAddress : jid,
             );
 
-            dispatch(
-              addFactoryData({
-                assetsStoredOnGnosis: factoryData.assetsStoredOnGnosis,
-                depositCloseTime: factoryData.depositCloseTime,
-                depositTokenAddress: factoryData.depositTokenAddress,
-                distributionAmount: factoryData.distributionAmount,
-                gnosisAddress: factoryData.gnosisAddress,
-                isDeployedByFactory: factoryData.isDeployedByFactory,
-                isTokenGatingApplied: factoryData.isTokenGatingApplied,
-                maxDepositPerUser: factoryData.maxDepositPerUser,
-                merkleRoot: factoryData.merkleRoot,
-                minDepositPerUser: factoryData.minDepositPerUser,
-                ownerFeePerDepositPercent:
-                  factoryData.ownerFeePerDepositPercent,
-                pricePerToken: factoryData.pricePerToken,
-              }),
-            );
+            if (factoryData) {
+              dispatch(
+                addFactoryData({
+                  assetsStoredOnGnosis: factoryData?.assetsStoredOnGnosis,
+                  depositCloseTime: factoryData.depositCloseTime,
+                  depositTokenAddress: factoryData.depositTokenAddress,
+                  distributionAmount: factoryData.distributionAmount,
+                  gnosisAddress: factoryData.gnosisAddress,
+                  isDeployedByFactory: factoryData.isDeployedByFactory,
+                  isTokenGatingApplied: factoryData.isTokenGatingApplied,
+                  maxDepositPerUser: factoryData.maxDepositPerUser,
+                  merkleRoot: factoryData.merkleRoot,
+                  minDepositPerUser: factoryData.minDepositPerUser,
+                  ownerFeePerDepositPercent:
+                    factoryData.ownerFeePerDepositPercent,
+                  pricePerToken: factoryData.pricePerToken,
+                }),
+              );
+            }
 
             if (reduxClubData.tokenType === "erc20") {
               const daoDetails = await getERC20DAOdetails();

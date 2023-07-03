@@ -28,7 +28,7 @@ export default function Step3(props) {
   return (
     <>
       <Grid container spacing={3}>
-        <Grid item md={12} mt={8}>
+        <Grid item md={12} mt={5}>
           <Typography className={classes.largeText}>
             Collectively manage your club’s investments through governance that
             works for you.
@@ -38,10 +38,11 @@ export default function Step3(props) {
             Governance
           </Typography>
           <Typography className={classes.smallText} mb={2}>
-            Default mechanism is one wallet = one vote irrespective of number of
-            tokens held. Stations can raise & vote proposals to conduct surveys,
-            know community&apos;s sentiment & execute seamless actions (such a
-            airdrop tokens, reward members, etc) required day-to-day.
+            Seamlessly raise/vote on proposals inside your Station to take
+            opinions from members. Optionally, you can add governance to execute
+            transactions if and only if a proposal passes among members
+            (Transferring funds, distributing profits, airdropping assets,
+            updating governance & more).
           </Typography>
 
           <Card className={classes.cardPadding} mb={2}>
@@ -179,6 +180,52 @@ export default function Step3(props) {
               </Card>
             </>
           ) : null}
+          <br />
+
+          <Typography className={classes.largeText} mt={3} mb={2}>
+            Assets on Gnosis
+          </Typography>
+          <Card className={classes.cardPadding} mb={2}>
+            <Grid container pl={3} pr={1} mt={1} mb={1}>
+              <Grid
+                item
+                xs
+                sx={{
+                  display: "flex",
+                  justifyContent: "flex-start",
+                  alignItems: "center",
+                }}>
+                <Typography className={classes.largeText2}>
+                  Do you want to store assets on safe?
+                </Typography>
+              </Grid>
+              <Grid
+                item
+                xs
+                sx={{
+                  display: "flex",
+                  justifyContent: "flex-end",
+                  alignItems: "center",
+                }}>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={props.formik.values.storeAssetsOnGnosis}
+                      // onChange={handleOperationTypeChange}
+                      onChange={(value) => {
+                        props.formik.setFieldValue(
+                          "storeAssetsOnGnosis",
+                          value.target.checked,
+                        );
+                      }}
+                    />
+                  }
+                  label="NO / YES"
+                  labelPlacement="top"
+                />
+              </Grid>
+            </Grid>
+          </Card>
           <br />
 
           <Typography className={classes.largeText} mt={4} mb={2}>
