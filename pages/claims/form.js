@@ -9,7 +9,11 @@ import { makeStyles } from "@mui/styles";
 import * as yup from "yup";
 import { getAssetsByDaoAddress } from "../../src/api/assets";
 import { convertToWeiGovernance } from "../../src/utils/globalFunctions";
-import { createClaim, getSnapshotData } from "../../src/api/claims";
+import {
+  createClaim,
+  getSnapshotData,
+  sendMerkleTree,
+} from "../../src/api/claims";
 import {
   CLAIM_FACTORY_ADDRESS_GOERLI,
   CLAIM_FACTORY_ADDRESS_POLYGON,
@@ -212,6 +216,7 @@ const Form = () => {
         setLoading(true);
         let snapshotData;
         let blockNumber;
+
         if (values.maximumClaim === "proRata") {
           try {
             const blockData = await fetchLatestBlockNumber(
@@ -386,6 +391,15 @@ const Form = () => {
               });
 
               createClaim(postData);
+
+              if (data.maximumClaim === "proRata") {
+                const merkleData = JSON.stringify({
+                  claimAddress: newClaimContract,
+                  merkleTree: snapshotData?.merkleTree,
+                });
+
+                await sendMerkleTree(merkleData);
+              }
 
               setLoading(false);
               setFinish(true);

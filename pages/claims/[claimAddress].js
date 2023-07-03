@@ -210,12 +210,15 @@ const ClaimAddress = () => {
           setClaimableAmt(+amount);
 
           let encodedListOfLeaves = [];
-        } else if (desc.permission === "2") {
+        } else if (desc.permission === "1") {
           // getting claim amount from API
+          console.log("here");
           const { amount } = await getClaimAmountForUser(
             walletAddress, // wallet address aayega
             claimAddress,
           );
+
+          console.log("AMpount", amount, walletAddress, claimAddress);
           // setClaimableAmt(10000);
           setClaimableAmt(amount);
 
@@ -279,6 +282,8 @@ const ClaimAddress = () => {
       ) {
         // const leaves = merkleLeaves.map((leaf) => keccak256(leaf));
         const tree = new MerkleTree(merkleLeaves, keccak256, { sort: true });
+
+        console.log("tree", tree);
 
         const encodedLeaf = await encode(
           walletAddress,
@@ -596,21 +601,21 @@ const ClaimAddress = () => {
                             setShowInputError(false);
                           }
                         }}
-                        disabled={
-                          !claimActive ||
-                          !claimableAmt ||
-                          !claimEnabled ||
-                          (claimRemaining == 0 && alreadyClaimed)
-                            ? true
-                            : false
-                        }
+                        // disabled={
+                        //   !claimActive ||
+                        //   !claimableAmt ||
+                        //   !claimEnabled ||
+                        //   (claimRemaining == 0 && alreadyClaimed)
+                        //     ? true
+                        //     : false
+                        // }
                         value={claimInput}
                         placeholder="0"
                         type="number"
                         className={classes.input}
                       />
                       <button
-                        disabled={(!claimActive || !claimEnabled) && true}
+                        // disabled={(!claimActive || !claimEnabled) && true}
                         style={
                           !claimActive
                             ? { cursor: "not-allowed" }
@@ -631,19 +636,19 @@ const ClaimAddress = () => {
                     <button
                       onClick={claimHandler}
                       className={classes.btn}
-                      disabled={
-                        (claimRemaining == 0 && alreadyClaimed && claimed) ||
-                        !claimActive ||
-                        !claimableAmt ||
-                        +claimInput <= 0 ||
-                        claimInput >= +claimRemaining ||
-                        (contractData?.permission == 0 &&
-                          !isEligibleForTokenGated) ||
-                        (contractData?.permission === "3" &&
-                          !isEligibleForTokenGated)
-                          ? true
-                          : false
-                      }
+                      // disabled={
+                      //   (claimRemaining == 0 && alreadyClaimed && claimed) ||
+                      //   !claimActive ||
+                      //   !claimableAmt ||
+                      //   +claimInput <= 0 ||
+                      //   claimInput >= +claimRemaining ||
+                      //   (contractData?.permission == 0 &&
+                      //     !isEligibleForTokenGated) ||
+                      //   (contractData?.permission === "3" &&
+                      //     !isEligibleForTokenGated)
+                      //     ? true
+                      //     : false
+                      // }
                       style={
                         (alreadyClaimed && +claimRemaining === 0) ||
                         +claimInput <= 0 ||

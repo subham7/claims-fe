@@ -80,3 +80,21 @@ export const getProrataBalanceOfUser = async (
     console.log(error);
   }
 };
+
+export const sendMerkleTree = async (jsonData) => {
+  try {
+    const res = await fetch(`${MAIN_API_URL}snapshot/create`, {
+      method: "POST",
+      body: jsonData,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const data = await res.json();
+    console.log(data);
+    return data;
+  } catch (err) {
+    console.log(err);
+  }
+};
