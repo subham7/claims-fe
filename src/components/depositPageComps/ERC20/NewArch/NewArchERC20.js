@@ -54,7 +54,6 @@ const NewArchERC20 = ({
     tokenDecimal: 0,
   });
   const [loading, setLoading] = useState(false);
-  const [showMoreDesc, setShowMoreDesc] = useState(false);
   const [showMessage, setShowMessage] = useState(false);
   const [depositSuccessfull, setDepositSuccessfull] = useState(false);
 
@@ -256,29 +255,17 @@ const NewArchERC20 = ({
                           </Typography>
 
                           <Grid item ml={0} mb={7}>
-                            {!showMoreDesc ? (
+                            <div
+                              style={{
+                                maxHeight: "200px",
+                                overflowY: "scroll",
+                                marginTop: "20px",
+                              }}>
                               <div
-                                style={{
-                                  marginTop: "20px",
-                                }}
                                 dangerouslySetInnerHTML={{
-                                  __html: ReactHtmlParser(
-                                    clubInfo?.bio?.substring(0, 1000),
-                                  ),
+                                  __html: ReactHtmlParser(clubInfo?.bio),
                                 }}></div>
-                            ) : (
-                              <div
-                                style={{
-                                  maxHeight: "200px",
-                                  overflowY: "scroll",
-                                  marginTop: "20px",
-                                }}>
-                                <div
-                                  dangerouslySetInnerHTML={{
-                                    __html: ReactHtmlParser(clubInfo?.bio),
-                                  }}></div>
-                              </div>
-                            )}
+                            </div>
                           </Grid>
                         </Stack>
                       </Grid>

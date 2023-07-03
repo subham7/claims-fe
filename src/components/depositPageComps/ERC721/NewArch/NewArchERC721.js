@@ -224,43 +224,17 @@ const NewArchERC721 = ({
                     </Grid>
                   </Grid>
 
-                  {!showMoreDesc ? (
-                    <div
-                      style={{
-                        marginTop: "20px",
-                      }}
-                      dangerouslySetInnerHTML={{
-                        __html: ReactHtmlParser(
-                          clubInfo?.bio?.substring(0, 1000),
-                        ),
-                      }}></div>
-                  ) : (
-                    <div
-                      style={{
-                        maxHeight: "200px",
-                        overflowY: "scroll",
-                        marginTop: "20px",
-                      }}>
-                      <div
-                        dangerouslySetInnerHTML={{
-                          __html: ReactHtmlParser(clubInfo?.bio),
-                        }}></div>
-                    </div>
-                  )}
-
-                  <p
+                  <div
                     style={{
-                      cursor: "pointer",
-                      textAlign: "right",
-                      fontSize: "14px",
-                      color: "#C1D3FF",
-                      textDecoration: "underline",
-                    }}
-                    onClick={() => {
-                      setShowMoreDesc(!showMoreDesc);
+                      maxHeight: "200px",
+                      overflowY: "scroll",
+                      marginTop: "20px",
                     }}>
-                    See {!showMoreDesc ? "More" : "Less"}
-                  </p>
+                    <div
+                      dangerouslySetInnerHTML={{
+                        __html: ReactHtmlParser(clubInfo?.bio),
+                      }}></div>
+                  </div>
                 </Grid>
                 <Grid item width="100%">
                   <Typography variant="subtitle1" color="#C1D3FF">
