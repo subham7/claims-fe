@@ -3,6 +3,7 @@ import { AppBar, Box, Toolbar, Button } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 
 import { useConnectWallet } from "@web3-onboard/react";
+import { useRouter } from "next/router";
 
 const useStyles = makeStyles({
   image: {
@@ -30,6 +31,9 @@ export default function Navbar() {
   const classes = useStyles();
   const [{ wallet, connecting }, connect, disconnect] = useConnectWallet();
 
+  const router = useRouter();
+  const walletAddress = wallet?.accounts[0]?.address;
+
   if (wallet) {
     return;
   }
@@ -38,22 +42,28 @@ export default function Navbar() {
     <Box sx={{ flexGrow: 1 }}>
       <AppBar>
         <Toolbar>
-          {connecting ? (
-            <Button
-              sx={{ mt: 2, position: "fixed", right: 16 }}
-              className={classes.navButton}>
-              Connecting
-            </Button>
-          ) : wallet ? (
-            <></>
-          ) : (
-            <Button
-              sx={{ mt: 2, position: "fixed", right: 16 }}
-              className={classes.navButton}
-              onClick={() => (wallet ? disconnect(wallet) : connect())}>
-              Connect wallet
-            </Button>
-          )}
+          <>
+            {router.pathname.includes("/join") && !walletAddress ? null : (
+              <>
+                {connecting ? (
+                  <Button
+                    sx={{ mt: 2, position: "fixed", right: 16 }}
+                    className={classes.navButton}>
+                    Connecting
+                  </Button>
+                ) : wallet ? (
+                  <></>
+                ) : (
+                  <Button
+                    sx={{ mt: 2, position: "fixed", right: 16 }}
+                    className={classes.navButton}
+                    onClick={() => (wallet ? disconnect(wallet) : connect())}>
+                    Connect wallet
+                  </Button>
+                )}
+              </>
+            )}
+          </>
         </Toolbar>
       </AppBar>
     </Box>

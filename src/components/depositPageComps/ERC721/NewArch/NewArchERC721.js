@@ -158,8 +158,8 @@ const NewArchERC721 = ({
 
   return (
     <>
-      <Grid className={classes.topGrid} container spacing={6}>
-        {wallet ? (
+      {walletAddress ? (
+        <Grid className={classes.topGrid} container spacing={6}>
           <>
             <Grid item md={5}>
               <Grid
@@ -421,33 +421,12 @@ const NewArchERC721 = ({
               )}
             </Grid>
           </>
-        ) : (
-          <Grid className={classes.connectWalletTxtGrid}>
-            <Typography variant="h5" className={classes.quoramTxt}>
-              Please connect your wallet
-            </Typography>
-          </Grid>
-        )}
 
-        {showWrongNetworkModal(wallet, networkId)}
+          {showWrongNetworkModal(wallet, networkId)}
 
-        {claimSuccessfull && showMessage ? (
-          <Alert
-            severity="success"
-            sx={{
-              width: "250px",
-              position: "fixed",
-              bottom: "30px",
-              right: "20px",
-              borderRadius: "8px",
-            }}>
-            Transaction Successfull
-          </Alert>
-        ) : (
-          !claimSuccessfull &&
-          showMessage && (
+          {claimSuccessfull && showMessage ? (
             <Alert
-              severity="error"
+              severity="success"
               sx={{
                 width: "250px",
                 position: "fixed",
@@ -455,11 +434,26 @@ const NewArchERC721 = ({
                 right: "20px",
                 borderRadius: "8px",
               }}>
-              Transaction Failed
+              Transaction Successfull
             </Alert>
-          )
-        )}
-      </Grid>
+          ) : (
+            !claimSuccessfull &&
+            showMessage && (
+              <Alert
+                severity="error"
+                sx={{
+                  width: "250px",
+                  position: "fixed",
+                  bottom: "30px",
+                  right: "20px",
+                  borderRadius: "8px",
+                }}>
+                Transaction Failed
+              </Alert>
+            )
+          )}
+        </Grid>
+      ) : null}
     </>
   );
 };
