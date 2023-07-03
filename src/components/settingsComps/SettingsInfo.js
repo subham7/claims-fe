@@ -43,6 +43,7 @@ const SettingsInfo = ({
   const [open, setOpen] = useState(false);
   const router = useRouter();
   const { clubId: daoAddress } = router.query;
+  const [showMoreDesc, setShowMoreDesc] = useState(false);
 
   const handleClose = (event, reason) => {
     if (reason !== "backdropClick" && reason !== "escapeKeyDown") {
@@ -111,10 +112,40 @@ const SettingsInfo = ({
               </Grid>
 
               <Grid item ml={4} mb={7}>
-                <div
-                  dangerouslySetInnerHTML={{
-                    __html: ReactHtmlParser(clubInfo?.bio),
-                  }}></div>
+                {!showMoreDesc ? (
+                  <div
+                    dangerouslySetInnerHTML={{
+                      __html: ReactHtmlParser(
+                        clubInfo?.bio?.substring(0, 1000),
+                      ),
+                    }}></div>
+                ) : (
+                  <div
+                    style={{
+                      maxHeight: "200px",
+                      overflowY: "scroll",
+                      marginTop: "20px",
+                    }}>
+                    <div
+                      dangerouslySetInnerHTML={{
+                        __html: ReactHtmlParser(clubInfo?.bio),
+                      }}></div>
+                  </div>
+                )}
+
+                <p
+                  style={{
+                    cursor: "pointer",
+                    textAlign: "right",
+                    fontSize: "14px",
+                    color: "#C1D3FF",
+                    textDecoration: "underline",
+                  }}
+                  onClick={() => {
+                    setShowMoreDesc(!showMoreDesc);
+                  }}>
+                  See {!showMoreDesc ? "More" : "Less"}
+                </p>
               </Grid>
 
               <Divider variant="middle" />
