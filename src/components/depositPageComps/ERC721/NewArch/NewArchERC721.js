@@ -4,7 +4,6 @@ import {
   CircularProgress,
   Grid,
   IconButton,
-  Skeleton,
   Typography,
 } from "@mui/material";
 import React, { useCallback, useEffect, useState } from "react";
@@ -228,7 +227,7 @@ const NewArchERC721 = ({
                     style={{
                       maxHeight: "200px",
                       overflowY: "scroll",
-                      marginTop: "20px",
+                      margin: "20px 0",
                     }}>
                     <div
                       dangerouslySetInnerHTML={{
@@ -236,7 +235,7 @@ const NewArchERC721 = ({
                       }}></div>
                   </div>
                 </Grid>
-                <Grid item width="100%">
+                {/* <Grid item width="100%">
                   <Typography variant="subtitle1" color="#C1D3FF">
                     Mint closes on{" "}
                     {daoDetails.depositDeadline ? (
@@ -245,7 +244,7 @@ const NewArchERC721 = ({
                       <Skeleton variant="rectangular" width={100} height={25} />
                     )}
                   </Typography>
-                </Grid>
+                </Grid> */}
 
                 <Grid item width="100%">
                   <Grid container spacing={3}>
