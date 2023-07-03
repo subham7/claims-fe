@@ -423,9 +423,28 @@ const NewArchERC721 = ({
           </>
         ) : (
           <Grid className={classes.connectWalletTxtGrid}>
-            <Typography variant="h5" className={classes.quoramTxt}>
-              Please connect your wallet
-            </Typography>
+            <Grid
+              container
+              direction="column"
+              justifyContent="center"
+              alignItems="center">
+              <Grid item mt={15}>
+                <img
+                  className={classes.bannerImage}
+                  src="/assets/images/start_illustration.svg"
+                />
+              </Grid>
+              <Grid item mt={4}>
+                <Typography variant="mainHeading">
+                  Connect your wallet to StationX
+                </Typography>
+              </Grid>
+              <Grid item mt={4}>
+                <Typography variant="regularText">
+                  You’re all set! Connect wallet to join this Station 🛸
+                </Typography>
+              </Grid>
+            </Grid>
           </Grid>
         )}
 

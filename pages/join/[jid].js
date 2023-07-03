@@ -356,22 +356,26 @@ const Join = () => {
 
       {!wallet && (
         <Grid
+          sx={{
+            height: "95vh",
+          }}
           container
           direction="column"
           justifyContent="center"
           alignItems="center">
-          <Grid item mt={15}>
-            <img
-              style={{ width: "60vh" }}
-              src="/assets/images/start_illustration.svg"
-            />
-          </Grid>
           <Grid item mt={4}>
-            <Typography variant="mainHeading">Do more together</Typography>
+            <Typography
+              sx={{
+                fontSize: "2.3em",
+                fontFamily: "Whyte",
+                color: "#F5F5F5",
+              }}>
+              Connect your wallet to StationX
+            </Typography>
           </Grid>
-          <Grid item mt={4}>
+          <Grid item mt={1}>
             <Typography variant="regularText">
-              Create or join a station in less than 60 seconds using StationX
+              You’re all set! Connect wallet to join this Station 🛸
             </Typography>
           </Grid>
         </Grid>

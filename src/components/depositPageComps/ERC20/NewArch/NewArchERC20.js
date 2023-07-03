@@ -1010,14 +1010,26 @@ const NewArchERC20 = ({
               justifyContent: "center",
             }}>
             <Grid
-              sx={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-              }}>
-              <Typography variant="h5" color={"white"} fontWeight="bold">
-                Please connect your wallet
-              </Typography>
+              container
+              direction="column"
+              justifyContent="center"
+              alignItems="center">
+              <Grid item mt={15}>
+                <img
+                  className={classes.bannerImage}
+                  src="/assets/images/start_illustration.svg"
+                />
+              </Grid>
+              <Grid item mt={4}>
+                <Typography variant="mainHeading">
+                  Connect your wallet to StationX
+                </Typography>
+              </Grid>
+              <Grid item mt={4}>
+                <Typography variant="regularText">
+                  You’re all set! Connect wallet to join this Station 🛸
+                </Typography>
+              </Grid>
             </Grid>
           </Grid>
         </>
