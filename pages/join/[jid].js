@@ -15,12 +15,41 @@ import {
 } from "../../src/api/graphql/queries";
 import { useSelector } from "react-redux";
 import ClubFetch from "../../src/utils/clubFetch";
-import { Backdrop, CircularProgress, Grid, Typography } from "@mui/material";
+import {
+  Backdrop,
+  Button,
+  CircularProgress,
+  Grid,
+  Typography,
+} from "@mui/material";
 import useSmartContractMethods from "../../src/hooks/useSmartContractMethods";
 import Layout1 from "../../src/components/layouts/layout1";
 import { showWrongNetworkModal } from "../../src/utils/helper";
 import { getClubInfo } from "../../src/api/club";
+import { makeStyles } from "@mui/styles";
 // import useSmartContract from "../../src/hooks/useSmartContract";
+
+const useStyles = makeStyles({
+  image: {
+    height: "40px",
+    width: "auto !important",
+    zIndex: "2000",
+    cursor: "pointer",
+  },
+  navbarText: {
+    flexGrow: 1,
+    fontSize: "18px",
+    color: "#C1D3FF",
+  },
+  navButton: {
+    borderRadius: "10px",
+    height: "auto",
+    background: "#111D38 0% 0% no-repeat padding-box",
+    border: "1px solid #C1D3FF40",
+    opacity: "1",
+    fontSize: "18px",
+  },
+});
 
 const Join = () => {
   const [daoDetails, setDaoDetails] = useState({
@@ -67,7 +96,9 @@ const Join = () => {
     tokenBDecimal: 0,
   });
   const [clubInfo, setClubInfo] = useState();
-  const [{ wallet }] = useConnectWallet();
+  const [{ wallet, connecting }, connect, disconnect] = useConnectWallet();
+
+  const classes = useStyles();
   const networkId = wallet?.chains[0].id;
   const router = useRouter();
   const { jid: daoAddress } = router.query;
@@ -377,6 +408,25 @@ const Join = () => {
             <Typography variant="regularText">
               You’re all set! Connect wallet to join this Station 🛸
             </Typography>
+          </Grid>
+
+          <Grid item mt={3}>
+            {connecting ? (
+              <Button
+                // sx={{ mt: 2, position: "fixed", right: 16 }}
+                className={classes.navButton}>
+                Connecting
+              </Button>
+            ) : wallet ? (
+              <></>
+            ) : (
+              <Button
+                // sx={{ mt: 2, position: "fixed", right: 16 }}
+                className={classes.navButton}
+                onClick={() => (wallet ? disconnect(wallet) : connect())}>
+                Connect wallet
+              </Button>
+            )}
           </Grid>
         </Grid>
       )}

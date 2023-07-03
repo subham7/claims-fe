@@ -215,7 +215,7 @@ const NewArchERC20 = ({
 
   return (
     <>
-      {wallet ? (
+      {walletAddress ? (
         <>
           <Grid
             container
@@ -994,46 +994,7 @@ const NewArchERC20 = ({
             </Grid>
           </Grid>
         </>
-      ) : (
-        <>
-          <Grid
-            container
-            spacing={6}
-            paddingLeft={10}
-            paddingTop={15}
-            paddingRight={10}
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              height: "100vh",
-              width: "100%",
-              justifyContent: "center",
-            }}>
-            <Grid
-              container
-              direction="column"
-              justifyContent="center"
-              alignItems="center">
-              <Grid item mt={15}>
-                <img
-                  className={classes.bannerImage}
-                  src="/assets/images/start_illustration.svg"
-                />
-              </Grid>
-              <Grid item mt={4}>
-                <Typography variant="mainHeading">
-                  Connect your wallet to StationX
-                </Typography>
-              </Grid>
-              <Grid item mt={4}>
-                <Typography variant="regularText">
-                  You’re all set! Connect wallet to join this Station 🛸
-                </Typography>
-              </Grid>
-            </Grid>
-          </Grid>
-        </>
-      )}
+      ) : null}
       {depositSuccessfull && showMessage ? (
         <Alert
           severity="success"
