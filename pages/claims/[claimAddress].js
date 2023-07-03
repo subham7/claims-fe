@@ -15,7 +15,6 @@ import {
 import {
   getClaimAmountForUser,
   getClaimsByUserAddress,
-  getProrataBalanceOfUser,
 } from "../../src/api/claims";
 import MerkleTree from "merkletreejs";
 import keccak256 from "keccak256";
@@ -163,6 +162,14 @@ const ClaimAddress = () => {
         const name = await getTokenSymbol(desc.airdropToken);
         setAirdropTokenName(name);
 
+        // totalAmount of tokens
+        const totalAmountInNumber = convertFromWeiGovernance(
+          desc.claimAmountDetails[1],
+          decimals,
+        );
+        setTotalAmountOfTokens(totalAmountInNumber);
+
+        // if tokenGated
         if (desc.permission == 0 && contractData?.daoToken) {
           let daoTokenDecimal = 1;
           const daoTokenBalance = await getBalance(desc.daoToken);
@@ -186,39 +193,31 @@ const ClaimAddress = () => {
           }
         }
 
+        // if merkle
         if (desc.permission === "3") {
           const amountOfTokenUserHas = await getBalance(desc?.daoToken);
           setIsEligibleForTokenGated(+amountOfTokenUserHas > 0 ? true : false);
 
-          const prorataBalanceOfUser = await getProrataBalanceOfUser(
-            claimAddress,
-            walletAddress,
-            networkId,
-          );
+          // const prorataBalanceOfUser = await getProrataBalanceOfUser(
+          //   claimAddress,
+          //   walletAddress,
+          //   networkId,
+          // );
 
-          const amt = prorataBalanceOfUser.claimAmount;
+          const amount = "1234389439430490394";
+          // console.log("Prorata balance", parseFloat(amt).toLocaleString());
 
-          console.log("Prorata balance", parseFloat(amt).toLocaleString());
-        }
+          setClaimableAmt(+amount);
 
-        // totalAmount of tokens
-        const totalAmountInNumber = convertFromWeiGovernance(
-          desc.claimAmountDetails[1],
-          decimals,
-        );
-        setTotalAmountOfTokens(totalAmountInNumber);
-
-        // if merkleRoot present (whitelisted)
-        if (
-          desc.merkleRoot !==
-          "0x0000000000000000000000000000000000000000000000000000000000000001"
-        ) {
+          let encodedListOfLeaves = [];
+        } else if (desc.permission === "2") {
           // getting claim amount from API
           const { amount } = await getClaimAmountForUser(
             walletAddress, // wallet address aayega
             claimAddress,
           );
-          setClaimableAmt(10000);
+          // setClaimableAmt(10000);
+          setClaimableAmt(amount);
 
           // converting the CSV data into merkleLeaves
           const csvData = await getClaimsByUserAddress(
@@ -243,7 +242,6 @@ const ClaimAddress = () => {
           // setting merkleLeaves
           setMerkleLeaves(encodedListOfLeaves);
         }
-
         // free for all (no merkleRoot)
         else {
           // claimable amount
@@ -281,7 +279,6 @@ const ClaimAddress = () => {
       ) {
         // const leaves = merkleLeaves.map((leaf) => keccak256(leaf));
         const tree = new MerkleTree(merkleLeaves, keccak256, { sort: true });
-        const root = tree.getHexRoot();
 
         const encodedLeaf = await encode(
           walletAddress,
