@@ -45,6 +45,7 @@ const NewArchERC721 = ({
   });
   const [count, setCount] = useState(1);
   const [balanceOfNft, setBalanceOfNft] = useState();
+  const [showMoreDesc, setShowMoreDesc] = useState(false);
 
   const [{ wallet }] = useConnectWallet();
   const router = useRouter();
@@ -223,13 +224,43 @@ const NewArchERC721 = ({
                     </Grid>
                   </Grid>
 
-                  <div
+                  {!showMoreDesc ? (
+                    <div
+                      style={{
+                        marginTop: "20px",
+                      }}
+                      dangerouslySetInnerHTML={{
+                        __html: ReactHtmlParser(
+                          clubInfo?.bio?.substring(0, 1000),
+                        ),
+                      }}></div>
+                  ) : (
+                    <div
+                      style={{
+                        maxHeight: "200px",
+                        overflowY: "scroll",
+                        marginTop: "20px",
+                      }}>
+                      <div
+                        dangerouslySetInnerHTML={{
+                          __html: ReactHtmlParser(clubInfo?.bio),
+                        }}></div>
+                    </div>
+                  )}
+
+                  <p
                     style={{
-                      color: "white",
+                      cursor: "pointer",
+                      textAlign: "right",
+                      fontSize: "14px",
+                      color: "#C1D3FF",
+                      textDecoration: "underline",
                     }}
-                    dangerouslySetInnerHTML={{
-                      __html: ReactHtmlParser(clubInfo?.bio),
-                    }}></div>
+                    onClick={() => {
+                      setShowMoreDesc(!showMoreDesc);
+                    }}>
+                    See {!showMoreDesc ? "More" : "Less"}
+                  </p>
                 </Grid>
                 <Grid item width="100%">
                   <Typography variant="subtitle1" color="#C1D3FF">
