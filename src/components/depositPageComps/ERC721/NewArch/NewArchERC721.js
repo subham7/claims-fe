@@ -246,6 +246,15 @@ const NewArchERC721 = ({
                   </Typography>
                 </Grid> */}
 
+                {erc721DaoAddress ===
+                  "0xff28393E299E8f580677F682C03373dA7c94136F" && (
+                  <Grid item width="100%">
+                    <Typography variant="subtitle1" color="#C1D3FF">
+                      NOTE: Proceed to opensea to check your NFT
+                    </Typography>
+                  </Grid>
+                )}
+
                 <Grid item width="100%">
                   <Grid container spacing={3}>
                     {/* {daoDetails.isGovernance && ( */}
