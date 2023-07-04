@@ -299,10 +299,7 @@ const ClaimAddress = () => {
 
         const { amount, proof } = data;
 
-        const encodedLeaf = await encode(
-          walletAddress,
-          convertToWeiGovernance(amount, decimalOfToken),
-        );
+        const encodedLeaf = await encode(walletAddress, amount);
 
         await claim(amount, walletAddress, proof, encodedLeaf);
 
