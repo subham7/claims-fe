@@ -4,7 +4,6 @@ import {
   CircularProgress,
   Grid,
   IconButton,
-  Skeleton,
   Typography,
 } from "@mui/material";
 import React, { useCallback, useEffect, useState } from "react";
@@ -16,19 +15,22 @@ import { convertFromWeiGovernance } from "../../../../utils/globalFunctions";
 import dayjs from "dayjs";
 import { useSelector } from "react-redux";
 import { useRouter } from "next/router";
-import WrongNetworkModal from "../../../modals/WrongNetworkModal";
 import RemoveIcon from "@mui/icons-material/Remove";
 import AddIcon from "@mui/icons-material/Add";
-// import useSmartContract from "../../../../hooks/useSmartContract";
+import TelegramIcon from "@mui/icons-material/Telegram";
+import TwitterIcon from "@mui/icons-material/Twitter";
+import { RiDiscordFill } from "react-icons/ri";
+import ReactHtmlParser from "react-html-parser";
 import useSmartContractMethods from "../../../../hooks/useSmartContractMethods";
+import { showWrongNetworkModal } from "../../../../utils/helper";
 
 const NewArchERC721 = ({
   daoDetails,
   erc721DaoAddress,
   isTokenGated,
   isEligibleForTokenGating,
+  clubInfo,
 }) => {
-  console.log(daoDetails);
   const [loading, setLoading] = useState(false);
   const [active, setActive] = useState(false);
   const [hasClaimed, setHasClaimed] = useState(false);
@@ -42,11 +44,13 @@ const NewArchERC721 = ({
   });
   const [count, setCount] = useState(1);
   const [balanceOfNft, setBalanceOfNft] = useState();
+  const [showMoreDesc, setShowMoreDesc] = useState(false);
 
   const [{ wallet }] = useConnectWallet();
   const router = useRouter();
 
   const walletAddress = wallet?.accounts[0].address;
+  const networkId = wallet?.chains[0].id;
 
   const WRONG_NETWORK = useSelector((state) => {
     return state.gnosis.wrongNetwork;
@@ -63,7 +67,7 @@ const NewArchERC721 = ({
   const day2 = dayjs.unix(daoDetails.depositDeadline);
   const remainingDays = day2.diff(day1, "day");
   const remainingTimeInSecs = day2.diff(day1, "seconds");
-  const dateSum = new Date(dayjs.unix(daoDetails.depositDeadline)).toString();
+  const dateSum = new Date(dayjs.unix(daoDetails.depositDeadline))?.toString();
 
   const showMessageHandler = () => {
     setShowMessage(true);
@@ -154,19 +158,10 @@ const NewArchERC721 = ({
 
   return (
     <>
-      <Grid className={classes.topGrid} container spacing={6}>
-        {wallet ? (
+      {walletAddress ? (
+        <Grid className={classes.topGrid} container spacing={6}>
           <>
             <Grid item md={5}>
-              {daoDetails?.daoImage && (
-                <img
-                  src={daoDetails?.daoImage}
-                  alt="nft image"
-                  className={classes.nftImg}
-                />
-              )}
-            </Grid>
-            <Grid item md={6}>
               <Grid
                 container
                 spacing={1.5}
@@ -221,14 +216,26 @@ const NewArchERC721 = ({
                               text: `Just joined ${daoDetails.daoName} Station on `,
                               via: "stationxnetwork",
                             }}
-                            url={`https://test.stationx.network/join/${erc721DaoAddress}`}
+                            url={`${window.location.origin}/join/${erc721DaoAddress}`}
                           />
                         </div>
                       </div>
                     </Grid>
                   </Grid>
+
+                  <div
+                    style={{
+                      maxHeight: "200px",
+                      overflowY: "scroll",
+                      margin: "20px 0",
+                    }}>
+                    <div
+                      dangerouslySetInnerHTML={{
+                        __html: ReactHtmlParser(clubInfo?.bio),
+                      }}></div>
+                  </div>
                 </Grid>
-                <Grid item width="100%">
+                {/* <Grid item width="100%">
                   <Typography variant="subtitle1" color="#C1D3FF">
                     Mint closes on{" "}
                     {daoDetails.depositDeadline ? (
@@ -237,34 +244,47 @@ const NewArchERC721 = ({
                       <Skeleton variant="rectangular" width={100} height={25} />
                     )}
                   </Typography>
-                </Grid>
+                </Grid> */}
+
+                {erc721DaoAddress ===
+                  "0xff28393E299E8f580677F682C03373dA7c94136F" && (
+                  <Grid item width="100%">
+                    <Typography variant="subtitle1" color="#C1D3FF">
+                      NOTE: Proceed to opensea to check your NFT
+                    </Typography>
+                  </Grid>
+                )}
 
                 <Grid item width="100%">
                   <Grid container spacing={3}>
-                    {daoDetails.isGovernance && (
-                      <>
-                        <Grid item xs={3}>
-                          <Typography
-                            variant="subtitle1"
-                            className={classes.quoramTxt}>
-                            {daoDetails.quorum / 100}%
-                          </Typography>
-                          <Typography variant="subtitle2" color="#C1D3FF">
-                            Quorum
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={3}>
-                          <Typography
-                            variant="subtitle1"
-                            className={classes.quoramTxt}>
-                            {daoDetails.threshold / 100}%
-                          </Typography>
-                          <Typography variant="subtitle2" color="#C1D3FF">
-                            Threshold
-                          </Typography>
-                        </Grid>
-                      </>
-                    )}
+                    {/* {daoDetails.isGovernance && ( */}
+                    <>
+                      <Grid item xs={3}>
+                        <Typography variant="subtitle2" color="#C1D3FF">
+                          Quorum
+                        </Typography>
+                        <Typography
+                          variant="subtitle1"
+                          className={classes.quoramTxt}>
+                          {daoDetails.isGovernance
+                            ? `${daoDetails.quorum / 100}%`
+                            : "-"}
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={3}>
+                        <Typography variant="subtitle2" color="#C1D3FF">
+                          Threshold
+                        </Typography>
+                        <Typography
+                          variant="subtitle1"
+                          className={classes.quoramTxt}>
+                          {daoDetails.isGovernance
+                            ? `${daoDetails.threshold / 100}%`
+                            : "-"}
+                        </Typography>
+                      </Grid>
+                    </>
+                    {/* )} */}
 
                     <Grid item xs={4} width="fit-content">
                       <Typography variant="subtitle2" color="#C1D3FF">
@@ -293,21 +313,19 @@ const NewArchERC721 = ({
                 </Grid>
 
                 <Grid item width="100%">
-                  <Typography variant="subtitle2" color="#C1D3FF">
-                    Price
-                  </Typography>
-                  <Typography variant="h5" className={classes.quoramTxt}>
-                    {/* {daoDetails.pricePerToken / Math.pow(10, 6)}  */}
-                    {convertFromWeiGovernance(
-                      daoDetails.pricePerToken,
-                      erc20TokenDetails.tokenDecimal,
-                    )}{" "}
-                    {erc20TokenDetails.tokenSymbol}
-                  </Typography>
-                </Grid>
-
-                <Grid item width="100%">
                   <Grid container className={classes.claimGrid}>
+                    <Grid item width="100%" mb={2}>
+                      <Typography variant="subtitle1" color="#C1D3FF">
+                        Price
+                      </Typography>
+                      <Typography variant="h5" className={classes.quoramTxt}>
+                        {convertFromWeiGovernance(
+                          daoDetails.pricePerToken,
+                          erc20TokenDetails.tokenDecimal,
+                        )}{" "}
+                        {erc20TokenDetails.tokenSymbol}
+                      </Typography>
+                    </Grid>
                     <Grid
                       spacing={3}
                       sx={{
@@ -316,6 +334,9 @@ const NewArchERC721 = ({
                         display: "flex",
                         flexDirection: "inherit",
                         alignItems: "center",
+                        border: "1px solid #C1D3FF40",
+                        borderRadius: "8px",
+                        marginRight: "2rem",
                       }}>
                       <IconButton
                         onClick={() => {
@@ -345,86 +366,80 @@ const NewArchERC721 = ({
                         onClick={claimNFTHandler}
                         disabled={
                           (remainingDays <= 0 && remainingTimeInSecs < 0) ||
-                          hasClaimed ||
-                          erc20TokenDetails.userBalance <
-                            Number(
-                              convertFromWeiGovernance(
-                                daoDetails.pricePerToken,
-                                erc20TokenDetails.tokenDecimal,
-                              ),
-                            )
+                          hasClaimed
                             ? true
                             : isTokenGated
                             ? !isEligibleForTokenGating
                             : false
                         }
-                        sx={{ px: 8 }}>
+                        sx={{ px: 8, borderRadius: "24px", py: "0.5rem" }}>
                         {loading ? (
                           <CircularProgress />
                         ) : hasClaimed ? (
-                          "Claimed"
+                          "Minted"
                         ) : (
-                          "Claim"
+                          "Mint"
                         )}
                       </Button>
                     </Grid>
                   </Grid>
                 </Grid>
-                <Grid item>
-                  <Typography
-                    variant="subtitle2"
-                    className={classes.maxTokensTxt}>
-                    This station allows maximum of {daoDetails.maxTokensPerUser}{" "}
-                    mints per member
-                  </Typography>
-                  <Grid>
-                    {isTokenGated && isEligibleForTokenGating ? (
-                      <>
-                        <Typography sx={{ color: "#3B7AFD" }}>
-                          This club is token gated. You qualify
-                        </Typography>
-                      </>
-                    ) : isTokenGated && !isEligibleForTokenGating ? (
-                      <>
-                        <Typography sx={{ color: "red" }}>
-                          This club is token gated. You don&apos;t qualify
-                        </Typography>
-                      </>
-                    ) : (
-                      ""
-                    )}
-                  </Grid>
+                <Grid item width="100%">
+                  {clubInfo?.telegram && (
+                    <TelegramIcon
+                      sx={{ color: "#C1D3FF", marginRight: "1rem" }}
+                      onClick={() => {
+                        window.open(clubInfo?.telegram, "_blank");
+                      }}
+                    />
+                  )}
+                  {clubInfo?.discord && (
+                    <RiDiscordFill
+                      color="#C1D3FF"
+                      size={20}
+                      style={{ color: "#C1D3FF", marginRight: "1rem" }}
+                      onClick={() => {
+                        window.open(clubInfo?.discord, "_blank");
+                      }}
+                    />
+                  )}
+
+                  {clubInfo?.twitter && (
+                    <TwitterIcon
+                      sx={{ color: "#C1D3FF" }}
+                      onClick={() => {
+                        window.open(clubInfo?.twitter, "_blank");
+                      }}
+                    />
+                  )}
                 </Grid>
               </Grid>
             </Grid>
+            <Grid item md={6}>
+              {daoDetails?.daoImage && (
+                <>
+                  {daoDetails?.daoImage?.includes(".mp4") ? (
+                    <video className={classes.nftImg} loop autoPlay muted>
+                      <source src={daoDetails?.daoImage} type="video/mp4" />
+                      Your browser does not support the video tag.
+                    </video>
+                  ) : (
+                    <img
+                      src={daoDetails?.daoImage}
+                      alt="nft image"
+                      className={classes.nftImg}
+                    />
+                  )}
+                </>
+              )}
+            </Grid>
           </>
-        ) : (
-          <Grid className={classes.connectWalletTxtGrid}>
-            <Typography variant="h5" className={classes.quoramTxt}>
-              Please connect your wallet
-            </Typography>
-          </Grid>
-        )}
 
-        {WRONG_NETWORK && wallet && <WrongNetworkModal />}
+          {showWrongNetworkModal(wallet, networkId)}
 
-        {claimSuccessfull && showMessage ? (
-          <Alert
-            severity="success"
-            sx={{
-              width: "250px",
-              position: "fixed",
-              bottom: "30px",
-              right: "20px",
-              borderRadius: "8px",
-            }}>
-            Transaction Successfull
-          </Alert>
-        ) : (
-          !claimSuccessfull &&
-          showMessage && (
+          {claimSuccessfull && showMessage ? (
             <Alert
-              severity="error"
+              severity="success"
               sx={{
                 width: "250px",
                 position: "fixed",
@@ -432,11 +447,26 @@ const NewArchERC721 = ({
                 right: "20px",
                 borderRadius: "8px",
               }}>
-              Transaction Failed
+              Transaction Successfull
             </Alert>
-          )
-        )}
-      </Grid>
+          ) : (
+            !claimSuccessfull &&
+            showMessage && (
+              <Alert
+                severity="error"
+                sx={{
+                  width: "250px",
+                  position: "fixed",
+                  bottom: "30px",
+                  right: "20px",
+                  borderRadius: "8px",
+                }}>
+                Transaction Failed
+              </Alert>
+            )
+          )}
+        </Grid>
+      ) : null}
     </>
   );
 };

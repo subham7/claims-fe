@@ -390,7 +390,7 @@ const Form = () => {
                 networkId: networkId,
               });
 
-              createClaim(postData);
+              await createClaim(postData);
 
               // if (data.maximumClaim === "proRata") {
               //   const merkleData = JSON.stringify({

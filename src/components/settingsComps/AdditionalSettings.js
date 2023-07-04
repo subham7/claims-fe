@@ -19,6 +19,7 @@ import { useRouter } from "next/router";
 import DepositOwnerFee from "./modals/DepositOwnerFee";
 import DepositDeadline from "./modals/DepositDeadline";
 import useSmartContractMethods from "../../hooks/useSmartContractMethods";
+import { useSelector } from "react-redux";
 
 const AdditionalSettings = ({
   tokenType,
@@ -30,6 +31,11 @@ const AdditionalSettings = ({
   const classes = AdditionalSettingsStyles();
   const router = useRouter();
   const { clubId: daoAddress } = router.query;
+
+  const NETWORK_HEX = useSelector((state) => {
+    return state.gnosis.networkHex;
+  });
+
   const [showDepositTimeModal, setShowDepositTimeModal] = useState(false);
   const [showOwnerFeesModal, setShowOwnerFeesModal] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -132,7 +138,13 @@ const AdditionalSettings = ({
                 color="primary"
                 onClick={() => {
                   window.open(
-                    `https://goerli.etherscan.io/address/${daoAddress}`,
+                    `https://${
+                      NETWORK_HEX === "0x5"
+                        ? "goerli.etherscan.io"
+                        : NETWORK_HEX === "0x89"
+                        ? "polygonscan.com"
+                        : ""
+                    }/address/${daoAddress}`,
                   );
                 }}>
                 <OpenInNewIcon className={classes.iconColor} />

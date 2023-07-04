@@ -1,13 +1,12 @@
 import React, { useCallback, useEffect, useState } from "react";
 
 import { useConnectWallet } from "@web3-onboard/react";
-import Layout2 from "../../src/components/layouts/layout2";
 import NewArchERC20 from "../../src/components/depositPageComps/ERC20/NewArch/NewArchERC20";
 import { useRouter } from "next/router";
 import NewArchERC721 from "../../src/components/depositPageComps/ERC721/NewArch/NewArchERC721";
 import {
   convertFromWeiGovernance,
-  convertIpfsToUrl,
+  getImageURL,
 } from "../../src/utils/globalFunctions";
 import { subgraphQuery } from "../../src/utils/subgraphs";
 import {
@@ -16,9 +15,41 @@ import {
 } from "../../src/api/graphql/queries";
 import { useSelector } from "react-redux";
 import ClubFetch from "../../src/utils/clubFetch";
-import { Backdrop, CircularProgress } from "@mui/material";
+import {
+  Backdrop,
+  Button,
+  CircularProgress,
+  Grid,
+  Typography,
+} from "@mui/material";
 import useSmartContractMethods from "../../src/hooks/useSmartContractMethods";
+import Layout1 from "../../src/components/layouts/layout1";
+import { showWrongNetworkModal } from "../../src/utils/helper";
+import { getClubInfo } from "../../src/api/club";
+import { makeStyles } from "@mui/styles";
 // import useSmartContract from "../../src/hooks/useSmartContract";
+
+const useStyles = makeStyles({
+  image: {
+    height: "40px",
+    width: "auto !important",
+    zIndex: "2000",
+    cursor: "pointer",
+  },
+  navbarText: {
+    flexGrow: 1,
+    fontSize: "18px",
+    color: "#C1D3FF",
+  },
+  navButton: {
+    borderRadius: "10px",
+    height: "auto",
+    background: "#111D38 0% 0% no-repeat padding-box",
+    border: "1px solid #C1D3FF40",
+    opacity: "1",
+    fontSize: "18px",
+  },
+});
 
 const Join = () => {
   const [daoDetails, setDaoDetails] = useState({
@@ -50,7 +81,25 @@ const Join = () => {
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [remainingClaimAmount, setRemainingClaimAmount] = useState();
-  const [{ wallet }] = useConnectWallet();
+  const [fetchedDetails, setFetchedDetails] = useState({
+    tokenA: "",
+    tokenB: "",
+    tokenAAmt: 0,
+    tokenBAmt: 0,
+    operator: 0,
+    comparator: 0,
+  });
+  const [displayTokenDetails, setDisplayTokenDetails] = useState({
+    tokenASymbol: "",
+    tokenBSymbol: "",
+    tokenADecimal: 0,
+    tokenBDecimal: 0,
+  });
+  const [clubInfo, setClubInfo] = useState();
+  const [{ wallet, connecting }, connect, disconnect] = useConnectWallet();
+
+  const classes = useStyles();
+  const networkId = wallet?.chains[0].id;
   const router = useRouter();
   const { jid: daoAddress } = router.query;
 
@@ -66,6 +115,10 @@ const Join = () => {
     return state.club.factoryData;
   });
 
+  const WRONG_NETWORK = useSelector((state) => {
+    return state.gnosis.wrongNetwork;
+  });
+
   const {
     getERC20TotalSupply,
     getERC20DAOdetails,
@@ -73,6 +126,8 @@ const Join = () => {
     getERC721DAOdetails,
     getNftOwnersCount,
     getBalance,
+    getTokenGatingDetails,
+    getTokenSymbol,
   } = useSmartContractMethods();
 
   /**
@@ -126,10 +181,7 @@ const Join = () => {
         QUERY_CLUB_DETAILS(daoAddress),
       );
 
-      const url = convertIpfsToUrl(clubDetails.stations[0].imageUrl);
-      const res = await fetch(url);
-      const data = await res.json();
-      const imageUrl = convertIpfsToUrl(data.image);
+      const imageUrl = await getImageURL(clubDetails?.stations[0].imageUrl);
 
       const erc721Data = await getERC721DAOdetails();
       const nftCount = await getNftOwnersCount();
@@ -169,40 +221,77 @@ const Join = () => {
     try {
       setLoading(true);
 
-      const tokenGatingDetails = await contractInstance.factoryContractCall
-        .getTokenGatingDetails(daoAddress)
-        .call();
+      const tokenGatingDetails = await getTokenGatingDetails(daoAddress);
 
-      if (tokenGatingDetails[0]?.length) {
-        setIsTokenGated(true);
+      if (tokenGatingDetails) {
+        setFetchedDetails({
+          tokenA: tokenGatingDetails[0]?.tokenA,
+          tokenB: tokenGatingDetails[0]?.tokenB,
+          tokenAAmt: tokenGatingDetails[0]?.value[0],
+          tokenBAmt: tokenGatingDetails[0]?.value[1],
+          operator: tokenGatingDetails[0]?.operator,
+          comparator: tokenGatingDetails[0]?.comparator,
+        });
 
-        const balanceOfTokenAInUserWallet = await getBalance(
-          tokenGatingDetails[0].tokenA,
+        const tokenASymbol = await getTokenSymbol(tokenGatingDetails[0].tokenA);
+        const tokenBSymbol = await getTokenSymbol(
+          tokenGatingDetails[0]?.tokenB,
         );
-        const balanceOfTokenBInUserWallet = await getBalance(
-          tokenGatingDetails[0].tokenB,
-        );
 
-        if (tokenGatingDetails[0].operator == 0) {
-          if (
-            +balanceOfTokenAInUserWallet >= +tokenGatingDetails[0]?.value[0] &&
-            +balanceOfTokenBInUserWallet >= +tokenGatingDetails[0]?.value[1]
-          ) {
-            setIsEligibleForTokenGating(true);
-          } else {
-            setIsEligibleForTokenGating(false);
-          }
-        } else if (tokenGatingDetails[0].operator == 1) {
-          if (
-            +balanceOfTokenAInUserWallet >= +tokenGatingDetails[0]?.value[0] ||
-            +balanceOfTokenBInUserWallet >= +tokenGatingDetails[0]?.value[1]
-          ) {
-            setIsEligibleForTokenGating(true);
-          } else {
-            setIsEligibleForTokenGating(false);
-          }
+        let tokenADecimal, tokenBDecimal;
+
+        try {
+          tokenADecimal = await getDecimals(tokenGatingDetails[0]?.tokenA);
+        } catch (error) {
+          console.log(error);
         }
-        setLoading(false);
+
+        try {
+          tokenBDecimal = await getDecimals(tokenGatingDetails[0]?.tokenB);
+        } catch (error) {
+          console.log(error);
+        }
+
+        setDisplayTokenDetails({
+          tokenASymbol: tokenASymbol,
+          tokenBSymbol: tokenBSymbol,
+          tokenADecimal: tokenADecimal ? tokenADecimal : 0,
+          tokenBDecimal: tokenBDecimal ? tokenBDecimal : 0,
+        });
+
+        if (tokenGatingDetails[0]?.length) {
+          setIsTokenGated(true);
+
+          const balanceOfTokenAInUserWallet = await getBalance(
+            tokenGatingDetails[0].tokenA,
+          );
+          const balanceOfTokenBInUserWallet = await getBalance(
+            tokenGatingDetails[0].tokenB,
+          );
+
+          if (tokenGatingDetails[0].operator == 0) {
+            if (
+              +balanceOfTokenAInUserWallet >=
+                +tokenGatingDetails[0]?.value[0] &&
+              +balanceOfTokenBInUserWallet >= +tokenGatingDetails[0]?.value[1]
+            ) {
+              setIsEligibleForTokenGating(true);
+            } else {
+              setIsEligibleForTokenGating(false);
+            }
+          } else if (tokenGatingDetails[0].operator == 1) {
+            if (
+              +balanceOfTokenAInUserWallet >=
+                +tokenGatingDetails[0]?.value[0] ||
+              +balanceOfTokenBInUserWallet >= +tokenGatingDetails[0]?.value[1]
+            ) {
+              setIsEligibleForTokenGating(true);
+            } else {
+              setIsEligibleForTokenGating(false);
+            }
+          }
+          setLoading(false);
+        }
       }
     } catch (error) {
       console.log(error);
@@ -211,8 +300,10 @@ const Join = () => {
   }, [daoAddress]);
 
   useEffect(() => {
-    fetchTokenGatingDetials();
-  }, [fetchTokenGatingDetials]);
+    if (wallet) {
+      fetchTokenGatingDetials();
+    }
+  }, [fetchTokenGatingDetials, wallet]);
 
   useEffect(() => {
     if (TOKEN_TYPE === "erc20") {
@@ -235,28 +326,35 @@ const Join = () => {
           const userDepositAmount = data?.users.find(
             (user) => user.userAddress === wallet.accounts[0].address,
           )?.depositAmount;
-
-          setRemainingClaimAmount(
-            Number(
-              convertFromWeiGovernance(
-                daoDetails.maxDeposit - userDepositAmount,
-                6,
+          if (userDepositAmount !== undefined) {
+            setRemainingClaimAmount(
+              Number(
+                convertFromWeiGovernance(
+                  daoDetails.maxDeposit - userDepositAmount,
+                  6,
+                ),
               ),
-            ),
-          );
+            );
+          } else setRemainingClaimAmount();
           setMembers(data?.users);
         }
       };
-      fetchData();
+
+      const clubInfo = async () => {
+        const info = await getClubInfo(daoAddress);
+        if (info.status === 200) setClubInfo(info.data[0]);
+      };
+      clubInfo();
+      wallet && fetchData();
       setLoading(false);
     } catch (error) {
       console.log(error);
       setLoading(false);
     }
-  }, [SUBGRAPH_URL, daoAddress, daoDetails]);
+  }, [SUBGRAPH_URL, daoAddress, daoDetails, wallet]);
 
   return (
-    <Layout2>
+    <Layout1 showSidebar={false}>
       {TOKEN_TYPE === "erc20" ? (
         <NewArchERC20
           isTokenGated={isTokenGated}
@@ -265,6 +363,9 @@ const Join = () => {
           daoDetails={daoDetails}
           members={members}
           remainingClaimAmount={remainingClaimAmount}
+          fetchedTokenGatedDetails={fetchedDetails}
+          displayTokenDetails={displayTokenDetails}
+          clubInfo={clubInfo}
         />
       ) : TOKEN_TYPE === "erc721" ? (
         <NewArchERC721
@@ -272,6 +373,7 @@ const Join = () => {
           isEligibleForTokenGating={isEligibleForTokenGating}
           erc721DaoAddress={daoAddress}
           daoDetails={daoDetails}
+          clubInfo={clubInfo}
         />
       ) : null}
 
@@ -280,7 +382,55 @@ const Join = () => {
         open={loading}>
         <CircularProgress color="inherit" />
       </Backdrop>
-    </Layout2>
+
+      {showWrongNetworkModal(wallet, networkId)}
+
+      {!wallet && (
+        <Grid
+          sx={{
+            height: "95vh",
+          }}
+          container
+          direction="column"
+          justifyContent="center"
+          alignItems="center">
+          <Grid item mt={4}>
+            <Typography
+              sx={{
+                fontSize: "2.3em",
+                fontFamily: "Whyte",
+                color: "#F5F5F5",
+              }}>
+              Connect your wallet to StationX
+            </Typography>
+          </Grid>
+          <Grid item mt={1}>
+            <Typography variant="regularText">
+              You’re all set! Connect wallet to join this Station 🛸
+            </Typography>
+          </Grid>
+
+          <Grid item mt={3}>
+            {connecting ? (
+              <Button
+                // sx={{ mt: 2, position: "fixed", right: 16 }}
+                className={classes.navButton}>
+                Connecting
+              </Button>
+            ) : wallet ? (
+              <></>
+            ) : (
+              <Button
+                // sx={{ mt: 2, position: "fixed", right: 16 }}
+                className={classes.navButton}
+                onClick={() => (wallet ? disconnect(wallet) : connect())}>
+                Connect wallet
+              </Button>
+            )}
+          </Grid>
+        </Grid>
+      )}
+    </Layout1>
   );
 };
 

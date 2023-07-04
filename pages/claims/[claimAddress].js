@@ -619,6 +619,7 @@ const ClaimAddress = () => {
                         value={claimInput}
                         placeholder="0"
                         type="number"
+                        onWheel={(event) => event.target.blur()}
                         className={classes.input}
                       />
                       <button

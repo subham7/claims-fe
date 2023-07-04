@@ -15,7 +15,7 @@ const useStyles = makeStyles({
   backdrop: {
     position: "fixed",
     height: "100vh",
-    width: "100vw",
+    width: "100%",
     top: 0,
     left: 0,
     background: "#000000",
@@ -82,7 +82,6 @@ const ClaimsEditModal = ({ onClose, claimAddress, walletAddress }) => {
 
     try {
       const res = await toggleClaim();
-      console.log(res);
 
       setLoading(false);
       setIsEnabled(!isEnabled);
@@ -108,7 +107,6 @@ const ClaimsEditModal = ({ onClose, claimAddress, walletAddress }) => {
       setLoading(true);
       const balance = await claimBalance();
       const res = await rollbackTokens(balance);
-      console.log(res);
       setClaimed(true);
       setLoading(false);
     } catch (error) {

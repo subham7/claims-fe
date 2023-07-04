@@ -7,6 +7,7 @@ import {
   setCreateSafeLoading,
 } from "../redux/reducers/gnosis";
 import Router from "next/router";
+import { createClubData } from "../api/club";
 
 const useSafe = () => {
   const { createERC721DAO, createERC20DAO } = useSmartContractMethods();
@@ -18,6 +19,8 @@ const useSafe = () => {
     clubTokenType,
     tokenURI = "",
     metadataURL = "",
+    useStationFor,
+    email = "",
   ) => {
     dispatch(setCreateSafeLoading(true));
     dispatch(setCreateDaoAuthorized(false));
@@ -49,7 +52,7 @@ const useSafe = () => {
           params.isNftTotalSupplyUnlimited,
           params.isGovernanceActive,
           params.allowWhiteList,
-          false, // assets Stored on Gnosis
+          params.storeAssetsOnGnosis,
           params.merkleRoot,
         );
       } else {
@@ -71,7 +74,7 @@ const useSafe = () => {
           params.isGovernanceActive,
           params.isGtTransferable,
           params.allowWhiteList,
-          false, // assets Stored on Gnosis
+          params.storeAssetsOnGnosis,
           params.merkleRoot,
         );
       }
@@ -97,6 +100,13 @@ const useSafe = () => {
             ? value.events[2].address
             : value.events[0].address;
         dispatch(addDaoAddress(daoAddress));
+
+        await createClubData({
+          daoAddress,
+          clubType: useStationFor,
+          deployerEmail: email,
+        });
+
         const { pathname } = Router;
         if (pathname == "/create") {
           Router.push(`/dashboard/${daoAddress}?clubCreate=true`, undefined, {

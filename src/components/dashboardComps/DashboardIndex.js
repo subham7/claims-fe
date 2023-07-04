@@ -19,7 +19,7 @@ import {
 } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import React, { useCallback, useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import CollectionCard from "../../../src/components/cardcontent";
 import Layout1 from "../../../src/components/layouts/layout1";
 import { DashboardStyles } from "./DashboardStyles";
@@ -35,15 +35,17 @@ import {
 import ClubFetch from "../../utils/clubFetch";
 import {
   convertFromWeiGovernance,
-  convertIpfsToUrl,
+  getImageURL,
 } from "../../utils/globalFunctions";
 import { GiTwoCoins } from "react-icons/gi";
 import { IoColorPalette } from "react-icons/io5";
-import WrongNetworkModal from "../modals/WrongNetworkModal";
 import useSmartContractMethods from "../../hooks/useSmartContractMethods";
+import { showWrongNetworkModal } from "../../utils/helper";
+import { addNftsOwnedByDao } from "../../redux/reducers/club";
 // import useSmartContract from "../../hooks/useSmartContract";
 
 const DashboardIndex = () => {
+  const dispatch = useDispatch();
   const clubData = useSelector((state) => {
     return state.club.clubData;
   });
@@ -99,6 +101,10 @@ const DashboardIndex = () => {
     return state.club.factoryData;
   });
 
+  const gnosisAddress = useSelector((state) => {
+    return state.club.clubData.gnosisAddress;
+  });
+
   const {
     getERC721Balance,
     getERC721Symbol,
@@ -108,6 +114,7 @@ const DashboardIndex = () => {
   } = useSmartContractMethods();
 
   const walletAddress = wallet?.accounts[0].address;
+  const networkId = wallet?.chains[0].id;
 
   const fetchClubDetails = useCallback(async () => {
     try {
@@ -123,10 +130,7 @@ const DashboardIndex = () => {
         );
 
         if (tokenType === "erc721") {
-          const url = convertIpfsToUrl(clubDetails.stations[0].imageUrl);
-          const res = await fetch(url);
-          const data = await res.json();
-          const imageUrl = convertIpfsToUrl(data.image);
+          const imageUrl = await getImageURL(clubDetails.stations[0].imageUrl);
 
           setClubDetails({
             clubImageUrl: imageUrl,
@@ -146,7 +150,10 @@ const DashboardIndex = () => {
   const fetchAssets = useCallback(async () => {
     try {
       if (NETWORK_HEX !== "undefined") {
-        const assetsData = await getAssetsByDaoAddress(daoAddress, NETWORK_HEX);
+        const assetsData = await getAssetsByDaoAddress(
+          factoryData.assetsStoredOnGnosis ? gnosisAddress : daoAddress,
+          NETWORK_HEX,
+        );
         setTokenDetails({
           treasuryAmount: assetsData?.data?.treasuryAmount,
           tokenPriceList: assetsData?.data?.tokenPriceList,
@@ -155,16 +162,30 @@ const DashboardIndex = () => {
     } catch (error) {
       console.log(error);
     }
-  }, [NETWORK_HEX, daoAddress]);
+  }, [
+    NETWORK_HEX,
+    daoAddress,
+    factoryData.assetsStoredOnGnosis,
+    gnosisAddress,
+  ]);
 
   const fetchNfts = useCallback(async () => {
     try {
-      const nftsData = await getNFTsByDaoAddress(daoAddress, NETWORK_HEX);
+      const nftsData = await getNFTsByDaoAddress(
+        factoryData.assetsStoredOnGnosis ? gnosisAddress : daoAddress,
+        NETWORK_HEX,
+      );
       setNftData(nftsData.data);
+      dispatch(addNftsOwnedByDao(nftsData.data));
     } catch (error) {
       console.log(error);
     }
-  }, [NETWORK_HEX, daoAddress]);
+  }, [
+    NETWORK_HEX,
+    daoAddress,
+    factoryData.assetsStoredOnGnosis,
+    gnosisAddress,
+  ]);
 
   const fetchActiveProposals = useCallback(async () => {
     try {
@@ -273,7 +294,9 @@ const DashboardIndex = () => {
           <Grid item xs={9}>
             <Card className={classes.cardSharp1}>
               <Grid container spacing={2}>
-                {tokenType === "erc721" ? (
+                {tokenType === "erc721" &&
+                clubDetails.clubImageUrl &&
+                !clubDetails.clubImageUrl?.includes(".mp4") ? (
                   <Grid item ml={3} mt={2}>
                     <img
                       src={
@@ -635,7 +658,7 @@ const DashboardIndex = () => {
                         className={classes.docs}
                         onClick={() => {
                           window.open(
-                            `https://stationx.substack.com/p/get-started-with-stationx-on-rinkeby`,
+                            `https://stationxnetwork.gitbook.io/docs`,
                           );
                         }}>
                         Read Docs
@@ -709,7 +732,7 @@ const DashboardIndex = () => {
                                   fontSize: "1.25em",
                                   fontFamily: "Whyte",
                                 }}>
-                                In-active
+                                Inactive
                               </Typography>
                             </Grid>
                           </Grid>
@@ -864,7 +887,7 @@ const DashboardIndex = () => {
           </Grid>
         </Grid>
 
-        {WRONG_NETWORK && wallet && <WrongNetworkModal />}
+        {showWrongNetworkModal(wallet, networkId)}
 
         <Snackbar
           //   open={openSnackBar}

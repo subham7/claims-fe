@@ -127,6 +127,8 @@ const ClaimsCard = ({
   const convertedDate = new Date(updatedDate * 1000).toLocaleDateString();
   const currentTime = Date.now() / 1000;
 
+  const { claimSettings } = useSmartContractMethods();
+
   useEffect(() => {
     if (+startDate > currentTime) {
       setIsActive(false);

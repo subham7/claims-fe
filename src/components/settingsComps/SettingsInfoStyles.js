@@ -1,6 +1,9 @@
 import { makeStyles } from "@mui/styles";
 
 export const SettingsInfoStlyes = makeStyles({
+  icon: {
+    marginRight: "0.5rem",
+  },
   valuesStyle: {
     fontSize: "21px",
     fontWeight: "normal",

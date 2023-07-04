@@ -22,7 +22,6 @@ import { fetchConfigById } from "../api/config";
 
 import Web3 from "web3";
 import { SUBGRAPH_URL_GOERLI, SUBGRAPH_URL_POLYGON, getRpcUrl } from "../api";
-import { Backdrop, CircularProgress } from "@mui/material";
 import { getSafeSdk } from "./helper";
 import useSmartContractMethods from "../hooks/useSmartContractMethods";
 import useSmartContract from "../hooks/useSmartContract";
@@ -130,23 +129,25 @@ const ClubFetch = (Component) => {
               daoAddress ? daoAddress : jid,
             );
 
-            dispatch(
-              addFactoryData({
-                assetsStoredOnGnosis: factoryData.assetsStoredOnGnosis,
-                depositCloseTime: factoryData.depositCloseTime,
-                depositTokenAddress: factoryData.depositTokenAddress,
-                distributionAmount: factoryData.distributionAmount,
-                gnosisAddress: factoryData.gnosisAddress,
-                isDeployedByFactory: factoryData.isDeployedByFactory,
-                isTokenGatingApplied: factoryData.isTokenGatingApplied,
-                maxDepositPerUser: factoryData.maxDepositPerUser,
-                merkleRoot: factoryData.merkleRoot,
-                minDepositPerUser: factoryData.minDepositPerUser,
-                ownerFeePerDepositPercent:
-                  factoryData.ownerFeePerDepositPercent,
-                pricePerToken: factoryData.pricePerToken,
-              }),
-            );
+            if (factoryData) {
+              dispatch(
+                addFactoryData({
+                  assetsStoredOnGnosis: factoryData?.assetsStoredOnGnosis,
+                  depositCloseTime: factoryData.depositCloseTime,
+                  depositTokenAddress: factoryData.depositTokenAddress,
+                  distributionAmount: factoryData.distributionAmount,
+                  gnosisAddress: factoryData.gnosisAddress,
+                  isDeployedByFactory: factoryData.isDeployedByFactory,
+                  isTokenGatingApplied: factoryData.isTokenGatingApplied,
+                  maxDepositPerUser: factoryData.maxDepositPerUser,
+                  merkleRoot: factoryData.merkleRoot,
+                  minDepositPerUser: factoryData.minDepositPerUser,
+                  ownerFeePerDepositPercent:
+                    factoryData.ownerFeePerDepositPercent,
+                  pricePerToken: factoryData.pricePerToken,
+                }),
+              );
+            }
 
             if (reduxClubData.tokenType === "erc20") {
               const daoDetails = await getERC20DAOdetails();
@@ -257,11 +258,7 @@ const ClubFetch = (Component) => {
 
     const checkClubExist = useCallback(async () => {
       const clubData = await subgraphQuery(
-        networkId == "0x5"
-          ? SUBGRAPH_URL_GOERLI
-          : networkId == "0x89"
-          ? SUBGRAPH_URL_POLYGON
-          : "",
+        networkId == "0x89" ? SUBGRAPH_URL_POLYGON : "",
         QUERY_CLUB_DETAILS(daoAddress ? daoAddress : jid),
       );
 
@@ -271,30 +268,19 @@ const ClubFetch = (Component) => {
         dispatch(setWrongNetwork(true));
       }
     }, [daoAddress, dispatch, jid, networkId]);
+
     useEffect(() => {
       if (wallet && networkId) {
         checkUserExists();
+        checkClubExist();
       }
-      checkClubExist();
     }, [checkUserExists, jid, daoAddress, wallet, networkId, checkClubExist]);
 
-    if (tracker === true) {
-      return (
-        <div>
-          <Component />
-        </div>
-      );
-    } else {
-      return (
-        <Backdrop
-          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-          open={!tracker}
-          // onClick={handleClose}
-        >
-          <CircularProgress color="inherit" />
-        </Backdrop>
-      );
-    }
+    return (
+      <div>
+        <Component />
+      </div>
+    );
   };
   return RetrieveDataComponent;
 };

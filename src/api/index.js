@@ -83,6 +83,7 @@ export function updateDynamicAddress(networkId, dispatch) {
 export let RPC_URL;
 
 export function getRpcUrl(networkId) {
-  if (networkId == "0x89") RPC_URL = process.env.NEXT_PUBLIC_RPC_URL;
+  if (networkId == "0x89")
+    RPC_URL = process.env.NEXT_PUBLIC_POLYGON_MAINNET_RPC_URL;
   else if (networkId == "0x5") RPC_URL = process.env.NEXT_PUBLIC_GOERLI_RPC_URL;
 }

@@ -5,8 +5,6 @@ import { Backdrop, Button } from "@mui/material";
 import { fetchConfig } from "../api/config";
 import { updateDynamicAddress } from "../api";
 import Web3 from "web3";
-import { SmartContract } from "../api/contract";
-import ImplementationContract from "../abis/implementationABI.json";
 import { useConnectWallet } from "@web3-onboard/react";
 import { useCallback } from "react";
 
@@ -127,42 +125,4 @@ export function getRefreshToken() {
 
 export function setRefreshToken(token) {
   sessionStorage.setItem("refreshToken", token);
-}
-
-export function authenticateUser(
-  clubId,
-  walletAddress,
-  daoAddress,
-  USDC_CONTRACT_ADDRESS,
-  GNOSIS_TRANSACTION_URL,
-) {
-  try {
-    if (
-      clubId &&
-      walletAddress &&
-      daoAddress &&
-      USDC_CONTRACT_ADDRESS &&
-      GNOSIS_TRANSACTION_URL
-    ) {
-      const factoryContract = new SmartContract(
-        ImplementationContract,
-        daoAddress,
-        undefined,
-        USDC_CONTRACT_ADDRESS,
-        GNOSIS_TRANSACTION_URL,
-      );
-      const response = factoryContract.userDetails();
-      response.then((result) => {
-        if (result[0]) {
-          // is admin
-          return true;
-        } else {
-          // is not an admin
-          return false;
-        }
-      });
-    }
-  } catch (error) {
-    console.log(error);
-  }
 }

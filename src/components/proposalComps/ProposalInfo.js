@@ -66,7 +66,7 @@ const ProposalInfo = ({
           <Typography className={classes.proposalThreshold}>
             {isGovernanceActive
               ? Number(
-                  Math.ceil(members.users?.length * threshold) / 100,
+                  Math.ceil(members?.users?.length * threshold) / 100,
                 ).toFixed(0)
               : Number(
                   Math.ceil(ownerAddresses?.length * threshold) / 100,

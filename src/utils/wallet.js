@@ -8,19 +8,19 @@ const MATIC_MAINNET_RPC = "https://matic-mainnet.chainstacklabs.com";
 const ETH_MAINNET_RPC = `https://mainnet.infura.io/v3/${INFURA_ID}`;
 const ETH_GOERLI_RPC = `https://eth-goerli.g.alchemy.com/v2/kVRnoC6Kb95260vGYxLHCD7J_ZyfYEtu`;
 
-const ethereumMainnet = {
-  id: "0x1",
-  token: "ETH",
-  label: "Ethereum Mainnet",
-  rpcUrl: ETH_MAINNET_RPC,
-};
+// const ethereumMainnet = {
+//   id: "0x1",
+//   token: "ETH",
+//   label: "Ethereum Mainnet",
+//   rpcUrl: ETH_MAINNET_RPC,
+// };
 
-const ethereumGoerli = {
-  id: "0x5",
-  token: "gETH",
-  label: "Ethereum Goerli Testnet",
-  rpcUrl: ETH_GOERLI_RPC,
-};
+// const ethereumGoerli = {
+//   id: "0x5",
+//   token: "gETH",
+//   label: "Ethereum Goerli Testnet",
+//   rpcUrl: ETH_GOERLI_RPC,
+// };
 
 const polygonMainnet = {
   id: "0x89",
@@ -29,7 +29,7 @@ const polygonMainnet = {
   rpcUrl: POLYGON_MAINNET_RPC_URL,
 };
 
-const chains = [ethereumMainnet, ethereumGoerli, polygonMainnet];
+const chains = [polygonMainnet];
 const wallets = [injectedModule()];
 
 const customTheme = {
