@@ -15,6 +15,7 @@ import {
 import {
   getClaimAmountForUser,
   getClaimsByUserAddress,
+  // getProrataBalanceOfUser,
 } from "../../src/api/claims";
 import MerkleTree from "merkletreejs";
 import keccak256 from "keccak256";
@@ -211,6 +212,7 @@ const ClaimAddress = () => {
 
           let encodedListOfLeaves = [];
         } else if (desc.permission === "1") {
+        } else if (desc.permission === "2") {
           // getting claim amount from API
           console.log("here");
           const { amount } = await getClaimAmountForUser(
