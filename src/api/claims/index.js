@@ -45,7 +45,7 @@ export const getClaimAmountForUser = async (
   }
 };
 
-export const getSnapshotData = async (
+export const createSnapShot = async (
   totalClaimAmount,
   airdropTokenAddress,
   tokenGatingAddress,
@@ -54,47 +54,53 @@ export const getSnapshotData = async (
   networkId,
 ) => {
   try {
-    const res = await fetch(
-      `${MAIN_API_URL}snapshot?totalClaimAmount=${totalClaimAmount}&airdropTokenAddress=${airdropTokenAddress}&gatingTokenAddress=${tokenGatingAddress}&gatingTokenNetwork=${tokenGatingNetwork}&blockNumber=${blockNumber}&networkId=${networkId}`,
-    );
-    const data = await res.json();
-    return data;
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-export const getProrataBalanceOfUser = async (
-  claimAddress,
-  userAddress,
-  networkId,
-) => {
-  try {
-    const res = await fetch(
-      `${MAIN_API_URL}snapshot/${claimAddress}/balance/${userAddress}?networkId=${networkId}`,
-    );
-
-    const data = await res.json();
-    return data;
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-export const sendMerkleTree = async (jsonData) => {
-  try {
     const res = await fetch(`${MAIN_API_URL}snapshot/create`, {
       method: "POST",
-      body: jsonData,
+      body: JSON.stringify({
+        totalClaimAmount: Number(totalClaimAmount) * 10 ** 18,
+        airdropTokenAddress,
+        gatingTokenAddress: tokenGatingAddress,
+        gatingTokenNetwork: tokenGatingNetwork,
+        blockNumber,
+        networkId,
+      }),
       headers: {
         "Content-Type": "application/json",
       },
     });
-
     const data = await res.json();
-    console.log(data);
     return data;
-  } catch (err) {
-    console.log(err);
+  } catch (error) {
+    console.log(error);
   }
 };
+
+export const getUserProofAndBalance = async (merkleRoot, userAddress) => {
+  try {
+    const res = await fetch(
+      `${MAIN_API_URL}snapshot/user/${userAddress}?merkleRoot=${merkleRoot}`,
+    );
+
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+// export const sendMerkleTree = async (jsonData) => {
+//   try {
+//     const res = await fetch(`${MAIN_API_URL}snapshot/create`, {
+//       method: "POST",
+//       body: jsonData,
+//       headers: {
+//         "Content-Type": "application/json",
+//       },
+//     });
+
+//     const data = await res.json();
+//     return data;
+//   } catch (err) {
+//     console.log(err);
+//   }
+// };

@@ -11,8 +11,8 @@ import { getAssetsByDaoAddress } from "../../src/api/assets";
 import { convertToWeiGovernance } from "../../src/utils/globalFunctions";
 import {
   createClaim,
-  getSnapshotData,
-  sendMerkleTree,
+  createSnapShot,
+  // sendMerkleTree,
 } from "../../src/api/claims";
 import {
   CLAIM_FACTORY_ADDRESS_GOERLI,
@@ -233,7 +233,7 @@ const Form = () => {
             blockNumber =
               data.blockNumber > 0 ? data.blockNumber : blockData.block;
 
-            snapshotData = await getSnapshotData(
+            snapshotData = await createSnapShot(
               data.numberOfTokens,
               data.airdropTokenAddress,
               data.daoTokenAddress,
@@ -392,14 +392,14 @@ const Form = () => {
 
               createClaim(postData);
 
-              if (data.maximumClaim === "proRata") {
-                const merkleData = JSON.stringify({
-                  claimAddress: newClaimContract,
-                  merkleTree: snapshotData?.merkleTree,
-                });
+              // if (data.maximumClaim === "proRata") {
+              //   const merkleData = JSON.stringify({
+              //     claimAddress: newClaimContract,
+              //     merkleTree: snapshotData?.merkleTree,
+              //   });
 
-                await sendMerkleTree(merkleData);
-              }
+              //   await sendMerkleTree(merkleData);
+              // }
 
               setLoading(false);
               setFinish(true);

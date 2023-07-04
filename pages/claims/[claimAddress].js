@@ -15,9 +15,9 @@ import {
 import {
   getClaimAmountForUser,
   getClaimsByUserAddress,
-  // getProrataBalanceOfUser,
+  getUserProofAndBalance,
 } from "../../src/api/claims";
-import MerkleTree from "merkletreejs";
+// import MerkleTree from "merkletreejs";
 import keccak256 from "keccak256";
 import Layout1 from "../../src/components/layouts/layout1";
 import Countdown from "react-countdown";
@@ -199,18 +199,14 @@ const ClaimAddress = () => {
           const amountOfTokenUserHas = await getBalance(desc?.daoToken);
           setIsEligibleForTokenGated(+amountOfTokenUserHas > 0 ? true : false);
 
-          // const prorataBalanceOfUser = await getProrataBalanceOfUser(
-          //   claimAddress,
-          //   walletAddress,
-          //   networkId,
-          // );
+          const userProofAndBalance = await getUserProofAndBalance(
+            claimAddress,
+            walletAddress,
+          );
 
-          const amount = "1234389439430490394";
-          // console.log("Prorata balance", parseFloat(amt).toLocaleString());
+          // const amount = "1234389439430490394";
 
-          setClaimableAmt(+amount);
-
-          let encodedListOfLeaves = [];
+          setClaimableAmt(userProofAndBalance.balance);
         } else if (desc.permission === "1") {
         } else if (desc.permission === "2") {
           // getting claim amount from API
@@ -283,20 +279,32 @@ const ClaimAddress = () => {
         "0x0000000000000000000000000000000000000000000000000000000000000001"
       ) {
         // const leaves = merkleLeaves.map((leaf) => keccak256(leaf));
-        const tree = new MerkleTree(merkleLeaves, keccak256, { sort: true });
+        // const tree = new MerkleTree(merkleLeaves, keccak256, { sort: true });
 
-        console.log("tree", tree);
+        // console.log("tree", tree);
+
+        // const encodedLeaf = await encode(
+        //   walletAddress,
+        //   convertToWeiGovernance(claimableAmt, decimalOfToken),
+        // );
+
+        // const leaf = keccak256(encodedLeaf);
+        // const proof = tree.getHexProof(leaf);
+        // const amt = convertToWeiGovernance(claimInput, decimalOfToken);
+
+        const data = await getUserProofAndBalance(
+          contractData?.merkleRoot,
+          walletAddress,
+        );
+
+        const { amount, proof } = data;
 
         const encodedLeaf = await encode(
           walletAddress,
-          convertToWeiGovernance(claimableAmt, decimalOfToken),
+          convertToWeiGovernance(amount, decimalOfToken),
         );
 
-        const leaf = keccak256(encodedLeaf);
-        const proof = tree.getHexProof(leaf);
-        const amt = convertToWeiGovernance(claimInput, decimalOfToken);
-
-        await claim(amt, walletAddress, proof, encodedLeaf);
+        await claim(amount, walletAddress, proof, encodedLeaf);
 
         const claimedAmt = await claimAmount(walletAddress);
         setClaimRemaining(claimableAmt - claimedAmt);
