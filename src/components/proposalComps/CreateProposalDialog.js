@@ -132,6 +132,7 @@ const CreateProposalDialog = ({
       ownerChangeAction: "",
       ownerAddress: "",
       safeThreshold: 1,
+      nftLink: "",
     },
     validationSchema: proposalValidationSchema,
     onSubmit: async (values) => {
@@ -243,6 +244,17 @@ const CreateProposalDialog = ({
             executionId: 7,
             ownerAddress: values.ownerAddress,
             safeThreshold: values.safeThreshold,
+            usdcTokenSymbol: "USDC",
+            usdcTokenDecimal: 6,
+            usdcGovernanceTokenDecimal: 18,
+          },
+        ];
+      }
+      if (values.actionCommand === "Buy nft") {
+        commands = [
+          {
+            executionId: 8,
+            nftLink: values.nftLink,
             usdcTokenSymbol: "USDC",
             usdcTokenDecimal: 6,
             usdcGovernanceTokenDecimal: 18,

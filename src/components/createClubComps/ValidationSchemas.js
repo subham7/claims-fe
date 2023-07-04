@@ -184,4 +184,8 @@ export const proposalValidationSchema = yup.object({
           .required("Safe Threshold is required")
           .moreThan(1, "Safe Threshold should be greater than 1"),
     }),
+  nftLink: yup.string("Please enter nft Link").when("actionCommand", {
+    is: "Buy nft",
+    then: () => yup.string("Enter nft link").required("Nft link is required"),
+  }),
 });

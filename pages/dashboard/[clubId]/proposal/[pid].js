@@ -60,7 +60,12 @@ import {
   web3InstanceEthereum,
 } from "../../../../src/utils/helper";
 import useSmartContractMethods from "../../../../src/hooks/useSmartContractMethods";
-import { getNFTsByDaoAddress } from "../../../../src/api/assets";
+import {
+  fulfillOrder,
+  getNFTsByDaoAddress,
+  retrieveNftListing,
+} from "../../../../src/api/assets";
+import seaportABI from "../../../../src/abis/seaport.json";
 
 const useStyles = makeStyles({
   clubAssets: {
@@ -459,6 +464,7 @@ const ProposalDetail = () => {
 
     let data;
     let approvalData;
+    let transactionData;
     let ABI;
     if (
       proposalData.commands[0].executionId === 0 ||
@@ -471,6 +477,8 @@ const ProposalDetail = () => {
       ];
     } else if (proposalData.commands[0].executionId === 3) {
       ABI = FactoryContractABI.abi;
+    } else if (proposalData.commands[0].executionId === 8) {
+      ABI = seaportABI;
     } else if (clubData.tokenType === "erc721") {
       ABI = Erc721Dao.abi;
     } else if (clubData.tokenType === "erc20") {
@@ -626,6 +634,89 @@ const ProposalDetail = () => {
         proposalData.commands[0].customNftToken,
       ]);
     }
+    if (proposalData.commands[0].executionId === 8) {
+      const parts = proposalData.commands[0].nftLink.split("/");
+
+      const linkData = parts.slice(-3);
+      console.log(linkData);
+      const nftdata = await retrieveNftListing(
+        linkData[0],
+        linkData[1],
+        linkData[2],
+      );
+
+      if (nftdata) {
+        // const offer = {
+        //   hash: data.data.orders[0].order_hash,
+        //   chain: linkData[0],
+        //   protocol_address: data.data.orders[0].protocol_address,
+        // };
+        const offer = {
+          hash: nftdata.data.orders[0].order_hash,
+          chain: linkData[0],
+          protocol_address: nftdata.data.orders[0].protocol_address,
+        };
+
+        const fulfiller = {
+          address: daoAddress,
+        };
+        const consideration = {
+          asset_contract_address: linkData[1],
+          token_id: linkData[2],
+        };
+        console.log(offer, fulfiller, consideration);
+        transactionData = await fulfillOrder(offer, fulfiller, consideration);
+        console.log(transactionData);
+        console.log(ABI);
+        let iface = new Interface(ABI);
+
+        data = iface.encodeFunctionData("fulfillBasicOrder_efficient_6GL6yc", [
+          [
+            transactionData.fulfillment_data.transaction.input_data.parameters
+              .considerationToken,
+            transactionData.fulfillment_data.transaction.input_data.parameters
+              .considerationIdentifier,
+            transactionData.fulfillment_data.transaction.input_data.parameters
+              .considerationAmount,
+            transactionData.fulfillment_data.transaction.input_data.parameters
+              .offerer,
+            transactionData.fulfillment_data.transaction.input_data.parameters
+              .zone,
+            transactionData.fulfillment_data.transaction.input_data.parameters
+              .offerToken,
+            transactionData.fulfillment_data.transaction.input_data.parameters
+              .offerIdentifier,
+            transactionData.fulfillment_data.transaction.input_data.parameters
+              .offerAmount,
+            transactionData.fulfillment_data.transaction.input_data.parameters
+              .basicOrderType,
+            transactionData.fulfillment_data.transaction.input_data.parameters
+              .startTime,
+            transactionData.fulfillment_data.transaction.input_data.parameters
+              .endTime,
+            transactionData.fulfillment_data.transaction.input_data.parameters
+              .zoneHash,
+            transactionData.fulfillment_data.transaction.input_data.parameters
+              .salt,
+            transactionData.fulfillment_data.transaction.input_data.parameters
+              .offererConduitKey,
+            transactionData.fulfillment_data.transaction.input_data.parameters
+              .fulfillerConduitKey,
+            transactionData.fulfillment_data.transaction.input_data.parameters
+              .totalOriginalAdditionalRecipients,
+            transactionData.fulfillment_data.transaction.input_data.parameters
+              .additionalRecipients,
+            transactionData.fulfillment_data.transaction.input_data.parameters
+              .signature,
+          ],
+          // {
+          //   value:
+          //     transactionData.fulfillment_data.transaction.input_data.parameters
+          //       .offerAmount,
+          // },
+        ]);
+      }
+    }
     const response = updateProposalAndExecution(
       data,
       approvalData,
@@ -652,6 +743,7 @@ const ProposalDetail = () => {
       proposalData,
       membersArray,
       airDropAmountArray,
+      transactionData,
     );
     if (proposalStatus === "executed") {
       // fetchData()

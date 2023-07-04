@@ -101,6 +101,9 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
         <MenuItem key={7} value="Remove signer">
           Remove Signer
         </MenuItem>
+        <MenuItem key={8} value="Buy nft">
+          Buy Nft
+        </MenuItem>
       </Select>
 
       {formik.values.actionCommand === "Distribute token to members" ? (
@@ -604,6 +607,28 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
             />
           </Grid>
         </>
+      ) : formik.values.actionCommand === "Buy nft" ? (
+        <Grid
+          container
+          direction={"column"}
+          ml={3}
+          mt={2}
+          sx={{ marginLeft: "0 !important" }}>
+          <Typography mt={2} variant="proposalBody">
+            Opensea NFT Link *
+          </Typography>
+          <TextField
+            variant="outlined"
+            className={classes.textField}
+            placeholder="nft link"
+            name="nftLink"
+            id="nftLink"
+            value={formik.values.nftLink}
+            onChange={formik.handleChange}
+            error={formik.touched.nftLink && Boolean(formik.errors.nftLink)}
+            helperText={formik.touched.nftLink && formik.errors.nftLink}
+          />
+        </Grid>
       ) : null}
     </Stack>
   );

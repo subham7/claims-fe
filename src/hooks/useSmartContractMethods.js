@@ -5,6 +5,7 @@ import { POLYGON_MAINNET_RPC_URL, RPC_URL } from "../api";
 import { getIncreaseGasPrice } from "../utils/helper";
 import ERC20TokenABI from "../abis/usdcTokenContract.json";
 import ERC721TokenABI from "../abis/nft.json";
+import seaportABI from "../abis/seaport.json";
 import ClaimContractABI from "../abis/singleClaimContract.json";
 import { convertToWeiGovernance } from "../utils/globalFunctions";
 import Safe, { Web3Adapter } from "@safe-global/protocol-kit";
@@ -481,7 +482,9 @@ const useSmartContractMethods = () => {
     proposalData,
     membersArray,
     airDropAmountArray,
+    transactionData = "",
   ) => {
+    console.log(transactionData);
     const parameters = data;
     const web3 = new Web3(window.ethereum);
     const ethAdapter = new Web3Adapter({
@@ -505,6 +508,7 @@ const useSmartContractMethods = () => {
     let approvalTransaction;
     let transaction;
     if (approvalData !== "") {
+      console.log("here in approval data");
       if (isAssetsStoredOnGnosis) {
         approvalTransaction = {
           to: Web3.utils.toChecksumAddress(tokenData),
@@ -556,7 +560,26 @@ const useSmartContractMethods = () => {
           value: "0",
         };
       }
-    } else if (executionId === 6 || executionId === 7) {
+    }
+    // else if (transactionData !== "") {
+    //   console.log("first");
+    //   const web3Send = new Web3(window?.ethereum);
+    //   const seaportContract = new web3Send.eth.Contract(
+    //     seaportABI,
+    //     "0x00000000000000ADc04C56Bf30aC9d3c0aAF14dC",
+    //   );
+    //   transaction = {
+    //     from: isAssetsStoredOnGnosis ? gnosisAddress : daoAddress,
+    //     to: transactionData.fulfillment_data.transaction.to,
+    //     data: seaportContract.methods.fulfillBasicOrder_efficient_6GL6yc(
+    //       transactionData.fulfillment_data.transaction.input_data.parameters,
+    //     ),
+    //     value: transactionData.fulfillment_data.transaction.value.toString(),
+    //   };
+    //   console.log("transactoin", transaction);
+    // }
+    else if (executionId === 6 || executionId === 7) {
+      console.log("in 6,7");
       if (executionId === 6) {
         transaction = {
           ownerAddress,
@@ -568,6 +591,7 @@ const useSmartContractMethods = () => {
         };
       }
     } else {
+      console.log("in else");
       if (
         isAssetsStoredOnGnosis &&
         proposalData.commands[0].executionId === 5
@@ -583,6 +607,44 @@ const useSmartContractMethods = () => {
           ),
           value: "0",
         };
+      } else if (transactionData) {
+        if (isAssetsStoredOnGnosis) {
+          console.log(transactionData.fulfillment_data.transaction.value);
+          console.log(
+            transactionData.fulfillment_data.transaction.value.toString(),
+          );
+          const seaportContract = new web3Send.eth.Contract(
+            seaportABI,
+            "0x00000000000000ADc04C56Bf30aC9d3c0aAF14dC",
+          );
+          transaction = {
+            to: Web3.utils.toChecksumAddress(
+              "0x00000000000000ADc04C56Bf30aC9d3c0aAF14dC",
+            ),
+            data: seaportContract.methods
+              .fulfillBasicOrder_efficient_6GL6yc(
+                transactionData.fulfillment_data.transaction.input_data
+                  .parameters,
+              )
+              .encodeABI(),
+            value:
+              transactionData.fulfillment_data.transaction.value.toString(),
+          };
+          console.log(transaction);
+        } else {
+          transaction = {
+            to: Web3.utils.toChecksumAddress(daoAddress),
+            data: erc20DaoContractSend.methods
+              .updateProposalAndExecution(
+                Web3.utils.toChecksumAddress(
+                  "0x00000000000000ADc04C56Bf30aC9d3c0aAF14dC",
+                ),
+                parameters,
+              )
+              .encodeABI(),
+            value: "10000000000000000",
+          };
+        }
       } else {
         transaction = {
           //dao
@@ -599,6 +661,7 @@ const useSmartContractMethods = () => {
       }
     }
     if (executionStatus !== "executed") {
+      console.log("first");
       //case for 1st signature
       if (txHash === "") {
         const nonce = await safeService.getNextNonce(gnosisAddress);
@@ -610,6 +673,7 @@ const useSmartContractMethods = () => {
             value: transaction.value,
             nonce: nonce, // Optional
           };
+          console.log("safeTransactionData", safeTransactionData);
         } else {
           safeTransactionData = [
             {
@@ -637,6 +701,7 @@ const useSmartContractMethods = () => {
           safeTransaction = await safeSdk.createTransaction({
             safeTransactionData,
           });
+          console.log("safeTransaction", safeTransaction);
         }
         const safeTxHash = await safeSdk.getTransactionHash(safeTransaction);
         const payload = {
