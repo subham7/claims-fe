@@ -130,7 +130,6 @@ const useSmartContractMethods = () => {
   };
 
   const addMoreTokens = async (noOfTokens) => {
-    console.log("ADD tokens", noOfTokens, claimContractSend);
     return await claimContractSend.methods?.depositTokens(noOfTokens).send({
       from: walletAddress,
       gasPrice: await getIncreaseGasPrice(),
@@ -339,7 +338,6 @@ const useSmartContractMethods = () => {
   };
 
   const changeClaimsStartTimeAndEndTime = async (startTime, endTime) => {
-    console.log(startTime, endTime, claimContractSend?.methods);
     return await claimContractSend?.methods
       .changeStartAndEndTime(startTime, endTime)
       .send({

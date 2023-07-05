@@ -105,6 +105,7 @@ const ClaimAddress = () => {
 
         // remaining Balance in contract
         const remainingBalanceInContract = await claimBalance();
+
         const remainingBalanceInUSD = convertFromWeiGovernance(
           remainingBalanceInContract,
           decimals,
@@ -117,6 +118,7 @@ const ClaimAddress = () => {
         setClaimBalanceRemaing(remainingBalanceInUSD);
 
         const claimedAmt = await claimAmount(walletAddress);
+
         const isClaimed = claimedAmt > 0 ? true : false;
         setAlreadyClaimed(isClaimed);
 
@@ -231,10 +233,16 @@ const ClaimAddress = () => {
           // setting merkleLeaves
           setMerkleLeaves(encodedListOfLeaves);
         } else if (desc.permission === "3") {
-          const amountOfTokenUserHas = await getBalance(desc?.daoToken);
-          const tokenSymbol = await getTokenSymbol(desc.daoToken);
-          setDaoTokenSymbol(tokenSymbol);
-          setIsEligibleForTokenGated(+amountOfTokenUserHas > 0 ? true : false);
+          try {
+            const amountOfTokenUserHas = await getBalance(desc?.daoToken);
+            const tokenSymbol = await getTokenSymbol(desc.daoToken);
+            setDaoTokenSymbol(tokenSymbol);
+            setIsEligibleForTokenGated(
+              +amountOfTokenUserHas > 0 ? true : false,
+            );
+          } catch (e) {
+            console.log(e);
+          }
 
           const userProofAndBalance = await getUserProofAndBalance(
             contractData?.merkleRoot,
@@ -319,8 +327,6 @@ const ClaimAddress = () => {
 
         const claimedAmt = await claimAmount(walletAddress);
 
-        debugger;
-
         const remainingAmt = claimableAmt - claimedAmt;
 
         const remainingAmtInUSD = convertFromWeiGovernance(
@@ -373,7 +379,7 @@ const ClaimAddress = () => {
   } else if (claimsDataSubgraph[0]?.claimType === "0") {
     whoCanClaim = `Token Holders (${daoTokenSymbol})`;
   } else if (claimsDataSubgraph[0]?.claimType === "3") {
-    whoCanClaim = `Token Holders (${daoTokenSymbol})`;
+    whoCanClaim = `Token Holders ${daoTokenSymbol}`;
   }
 
   useEffect(() => {
