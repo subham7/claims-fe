@@ -72,16 +72,13 @@ const ClaimInsight = () => {
     try {
       const amount = convertToWeiGovernance(
         noOfTokens,
-        // airdropTokenDetails?.tokenDecimal,
-        18,
+        airdropTokenDetails?.tokenDecimal,
       );
       await approveDeposit(
-        // airdropTokenDetails?.tokenAddress,
-        "0x9E7A4e9c7c7D8C18BE05537673e48aa88c0377d7",
+        airdropTokenDetails?.tokenAddress,
         claimAddress,
         noOfTokens,
-        // airdropTokenDetails?.tokenDecimal,
-        18,
+        airdropTokenDetails?.tokenDecimal,
       );
       await addMoreTokens(amount);
       setLoading(false);
