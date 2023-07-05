@@ -109,35 +109,36 @@ const ClaimAddress = () => {
           remainingBalanceInContract,
           decimals,
         );
-        // const claimableAmtInUSD = convertFromWeiGovernance(
-        //   claimableAmt,
-        //   decimals,
-        // );
+        const claimableAmtInUSD = convertFromWeiGovernance(
+          claimableAmt,
+          decimals,
+        );
+
         setClaimBalanceRemaing(remainingBalanceInUSD);
 
         const claimedAmt = await claimAmount(walletAddress);
         const isClaimed = claimedAmt > 0 ? true : false;
         setAlreadyClaimed(isClaimed);
 
-        // const convertedClaimedAmount = convertFromWeiGovernance(
-        //   claimedAmt,
-        //   decimals,
-        // );
-
         const remainingAmt = claimableAmt - claimedAmt;
+
+        const remainingAmtInUSD = convertFromWeiGovernance(
+          claimedAmt,
+          decimals,
+        );
 
         setClaimRemaining(remainingAmt);
 
         if (!isClaimed) {
           if (
-            +remainingBalanceInUSD >= +claimableAmt &&
+            +remainingBalanceInUSD >= +claimableAmtInUSD &&
             (desc.permission == 0
               ? isEligibleForTokenGated
               : !isEligibleForTokenGated)
           ) {
-            setClaimRemaining(convertToWeiGovernance(remainingAmt, decimals));
+            setClaimRemaining(claimableAmt);
           } else if (
-            +remainingBalanceInUSD < +claimableAmt &&
+            +remainingBalanceInUSD < +claimableAmtInUSD &&
             (desc.permission == 0
               ? isEligibleForTokenGated
               : !isEligibleForTokenGated)
@@ -148,14 +149,14 @@ const ClaimAddress = () => {
           }
         } else {
           if (
-            +remainingBalanceInUSD >= +remainingAmt &&
+            +remainingBalanceInUSD >= +remainingAmtInUSD &&
             (desc.permission == 0
               ? isEligibleForTokenGated
               : !isEligibleForTokenGated)
           ) {
-            setClaimRemaining(convertToWeiGovernance(remainingAmt, decimals));
+            setClaimRemaining(remainingAmt);
           } else if (
-            +remainingBalanceInUSD < +remainingAmt &&
+            +remainingBalanceInUSD < +remainingAmtInUSD &&
             (desc.permission == 0
               ? isEligibleForTokenGated
               : !isEligibleForTokenGated)
@@ -318,20 +319,19 @@ const ClaimAddress = () => {
 
         const claimedAmt = await claimAmount(walletAddress);
 
-        const convertedClaimedAmount = convertFromWeiGovernance(
-          claimedAmt,
+        debugger;
+
+        const remainingAmt = claimableAmt - claimedAmt;
+
+        const remainingAmtInUSD = convertFromWeiGovernance(
+          remainingAmt,
           decimalOfToken,
         );
-        const remainingAmt = claimableAmt - convertedClaimedAmount;
 
-        if (+claimBalanceRemaing >= +remainingAmt) {
-          setClaimRemaining(
-            convertToWeiGovernance(remainingAmt, decimalOfToken),
-          );
+        if (+claimBalanceRemaing >= +remainingAmtInUSD) {
+          setClaimRemaining(remainingAmt);
         } else {
-          setClaimRemaining(
-            convertToWeiGovernance(claimBalanceRemaing, decimalOfToken),
-          );
+          setClaimRemaining(claimBalanceRemaing);
         }
 
         setIsClaiming(false);
@@ -361,7 +361,7 @@ const ClaimAddress = () => {
     if (+claimRemaining === 0 && !alreadyClaimed && claimBalanceRemaing) {
       setClaimInput(claimableAmt);
     } else {
-      setClaimInput(convertFromWeiGovernance(claimRemaining, decimalOfToken));
+      setClaimInput(claimRemaining);
     }
   };
 
