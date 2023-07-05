@@ -261,6 +261,17 @@ const CreateProposalDialog = ({
           },
         ];
       }
+      if (values.actionCommand === "Sell nft") {
+        commands = [
+          {
+            executionId: 9,
+            nftLink: values.nftLink,
+            usdcTokenSymbol: "USDC",
+            usdcTokenDecimal: 6,
+            usdcGovernanceTokenDecimal: 18,
+          },
+        ];
+      }
       const payload = {
         name: values.proposalTitle,
         description: values.proposalDescription,
