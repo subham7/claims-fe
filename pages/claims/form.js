@@ -209,7 +209,6 @@ const Form = () => {
         blockNumber: values.blockNumber,
       };
 
-      console.log("Data", data);
       if (activeStep === steps.length - 1) {
         // fetch Block number
 
@@ -354,8 +353,6 @@ const Form = () => {
                   ).toString(),
                 ],
               ];
-
-              console.log("Claim", claimsSettings, totalNoOfWallets);
 
               const response = await claimContract(
                 claimsSettings,
