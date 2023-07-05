@@ -10,6 +10,7 @@ import {
   TableCell,
   TableContainer,
   TableHead,
+  TablePagination,
   TableRow,
   Typography,
 } from "@mui/material";
@@ -17,7 +18,7 @@ import { makeStyles } from "@mui/styles";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { QUERY_ALL_MEMBERS } from "../../../src/api/graphql/queries";
+import { QUERY_PAGINATED_MEMBERS } from "../../../src/api/graphql/queries";
 import Layout1 from "../../../src/components/layouts/layout1";
 import { convertFromWeiGovernance } from "../../../src/utils/globalFunctions";
 import { subgraphQuery } from "../../../src/utils/subgraphs";
@@ -83,6 +84,10 @@ const Test = () => {
     return state.gnosis.subgraphUrl;
   });
 
+  const Members_Count = useSelector((state) => {
+    return state.club.clubData.membersCount;
+  });
+
   const handleAddressClick = (event, address) => {
     event.preventDefault();
     window.open(
@@ -95,7 +100,6 @@ const Test = () => {
       }/address/${address}`,
     );
   };
-
   useEffect(() => {
     try {
       setLoading(true);
@@ -103,11 +107,9 @@ const Test = () => {
         if (daoAddress) {
           const data = await subgraphQuery(
             SUBGRAPH_URL,
-            QUERY_ALL_MEMBERS(daoAddress),
+            QUERY_PAGINATED_MEMBERS(daoAddress, 20, 0),
+            "users",
           );
-          let membersArray = [];
-          data?.users?.map((member) => membersArray.push(member.userAddress));
-
           setMembersData(data?.users);
         }
       };
@@ -118,6 +120,31 @@ const Test = () => {
       setLoading(false);
     }
   }, [SUBGRAPH_URL, daoAddress]);
+
+  const [page, setPage] = React.useState(0);
+
+  const [rowsPerPage, setRowsPerPage] = React.useState(50);
+
+  const handleChangePage = async (event, newPage) => {
+    console.log("1", skip);
+
+    try {
+      setPage(newPage);
+      const newSkip = newPage * rowsPerPage;
+      const data = await subgraphQuery(
+        SUBGRAPH_URL,
+        QUERY_PAGINATED_MEMBERS(daoAddress, 20, newSkip),
+      );
+      setMembersData(data?.users);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(event.target.value);
+    setPage(0);
+  };
 
   return (
     <>
@@ -213,6 +240,15 @@ const Test = () => {
                     ))}
                   </TableBody>
                 </Table>
+                <TablePagination
+                  rowsPerPageOptions={[5, 10, 25]}
+                  component="div"
+                  count={Members_Count}
+                  rowsPerPage={20}
+                  page={page}
+                  onPageChange={handleChangePage}
+                  // onRowsPerPageChange={handleChangeRowsPerPage}
+                />
               </TableContainer>
             </Grid>
           </Grid>

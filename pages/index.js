@@ -200,6 +200,7 @@ const App = () => {
         ownerAddress: clubData.stations[0].ownerAddress,
         symbol: clubData.stations[0].symbol,
         tokenType: clubData.stations[0].tokenType,
+        membersCount: clubData.stations[0].membersCount,
       }),
     );
     router.push(
