@@ -423,7 +423,7 @@ const Form = () => {
 
           const loadClaimsContractFactoryData_CSV = async () => {
             try {
-              const decimals = await getDecimals(data.airdropTokenAddress);
+              const decimals = await getDecimals(data?.airdropTokenAddress);
               setLoading(true);
 
               // if airdroping from contract then approve erc20
@@ -449,9 +449,13 @@ const Form = () => {
               // post data in api
               const postData = JSON.stringify({
                 snapshot: csvData,
+                tokenAddress: data.airdropTokenAddress,
               });
 
-              const root = await createClaimCsv(postData);
+              const responseCreateClaim = await createClaimCsv(
+                postData,
+                networkId,
+              );
 
               const claimsSettings = [
                 data.description,
@@ -465,7 +469,7 @@ const Form = () => {
                 0,
                 hasAllowanceMechanism, // false if token approved function called
                 true,
-                root,
+                responseCreateClaim?.merkleRoot,
                 1,
                 [
                   convertToWeiGovernance(

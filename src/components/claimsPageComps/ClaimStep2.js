@@ -18,7 +18,7 @@ import { useConnectWallet } from "@web3-onboard/react";
 import { useDispatch } from "react-redux";
 import { useRouter } from "next/router";
 import Link from "next/link";
-import useSmartContractMethods from "../../hooks/useSmartContractMethods";
+// import useSmartContractMethods from "../../hooks/useSmartContractMethods";
 import { showWrongNetworkModal } from "../../utils/helper";
 
 const useStyles = makeStyles({
@@ -133,7 +133,7 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
 
   const hiddenFileInput = useRef(null);
   // const claimsContractAddress = CLAIM_FACTORY_ADDRESS_GOERLI;
-  const { encode, getDecimals } = useSmartContractMethods();
+  // const { encode, getDecimals } = useSmartContractMethods();
 
   const [file, setFile] = useState("");
   const handleClick = (event) => {
@@ -191,14 +191,7 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
           setCsvError(true);
         }
 
-        try {
-          // const list = await helper(csvArr);
-          formik.values.merkleData = [];
-          setLoadingCsv(false);
-        } catch (err) {
-          setLoadingCsv(false);
-          console.log(err);
-        }
+        setLoadingCsv(false);
       };
     }
   };

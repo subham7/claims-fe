@@ -1,14 +1,17 @@
 import { MAIN_API_URL } from "..";
 
-export const createClaimCsv = async (jsonData) => {
+export const createClaimCsv = async (jsonData, networkId) => {
   try {
-    const res = await fetch(`${MAIN_API_URL}snapshot/create/csv`, {
-      method: "POST",
-      body: jsonData,
-      headers: {
-        "Content-Type": "application/json",
+    const res = await fetch(
+      `${MAIN_API_URL}snapshot/create/csv?networkId=${networkId}`,
+      {
+        method: "POST",
+        body: jsonData,
+        headers: {
+          "Content-Type": "application/json",
+        },
       },
-    });
+    );
 
     const data = await res.json();
     return data;

@@ -269,28 +269,14 @@ const ClaimAddress = () => {
         contractData?.merkleRoot !==
         "0x0000000000000000000000000000000000000000000000000000000000000001"
       ) {
-        let encodedLeaf;
-        let proof;
         const data = await getUserProofAndBalance(
           contractData?.merkleRoot,
           walletAddress,
         );
 
-        const { amount, proof: proofFromBe } = data;
+        const { amount, proof } = data;
 
-        // if (contractData.permission === "1") {
-        //   // const leaves = merkleLeaves.map((leaf) => keccak256(leaf));
-        //   const tree = new MerkleTree(merkleLeaves, keccak256, { sort: true });
-
-        //   encodedLeaf = encode(walletAddress, amount);
-
-        //   const leaf = keccak256(encodedLeaf);
-        //   proof = tree.getHexProof(leaf);
-        //   console.log(tree.getHexRoot(), contractData?.merkleRoot);
-        // } else {
-        proof = proofFromBe;
-        encodedLeaf = encode(walletAddress, amount);
-        // }
+        const encodedLeaf = encode(walletAddress, amount);
 
         await claim(
           convertToWeiGovernance(claimInput, decimalOfToken).toString(),
