@@ -172,6 +172,7 @@ const ClaimAddress = () => {
           desc.claimAmountDetails[1],
           decimals,
         );
+
         setTotalAmountOfTokens(totalAmountInNumber);
 
         // if tokenGated

@@ -209,6 +209,8 @@ const Form = () => {
         blockNumber: values.blockNumber,
       };
 
+      const decimals = await getDecimals(data.airdropTokenAddress);
+
       if (activeStep === steps.length - 1) {
         // fetch Block number
 
@@ -233,7 +235,7 @@ const Form = () => {
               data.blockNumber > 0 ? data.blockNumber : blockData.block;
 
             snapshotData = await createSnapShot(
-              data.numberOfTokens,
+              data.numberOfTokens * 10 ** decimals,
               data.airdropTokenAddress,
               data.daoTokenAddress,
               data.tokenGatedNetwork,
@@ -291,7 +293,6 @@ const Form = () => {
           const loadClaimsContractFactoryData_Token = async () => {
             try {
               let tokenGatingDecimals = 1;
-              const decimals = await getDecimals(data.airdropTokenAddress);
 
               if (
                 data.daoTokenAddress !==
