@@ -154,21 +154,21 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
   //   return encodedListOfLeaves;
   // };
 
-  const handleChange = (event) => {
+  const handleChange = async (event) => {
     const fileUploaded = event.target.files[0];
+    setLoadingCsv(true);
     setFile(fileUploaded);
 
     // new instance of fileReader class
     const reader = new FileReader();
 
     if (fileUploaded) {
-      reader.readAsText(fileUploaded);
+      await reader.readAsText(fileUploaded);
 
       // converting .csv file into array of objects
       reader.onload = async (event) => {
         const csvData = event.target.result;
 
-        setLoadingCsv(true);
         const csvArr = csvData
           .split("\r\n")
           .map((data) => data.split(","))

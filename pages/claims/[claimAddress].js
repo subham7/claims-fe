@@ -204,7 +204,7 @@ const ClaimAddress = () => {
             walletAddress,
           );
 
-          setClaimableAmt(amount * 10 ** decimals);
+          setClaimableAmt(amount);
 
           // converting the CSV data into merkleLeaves
           // const csvData = await getCsvUserData(contractData.merkleRoot);
@@ -545,7 +545,7 @@ const ClaimAddress = () => {
                                     claimableAmt,
                                     decimalOfToken,
                                   ),
-                                ).toFixed(5)
+                                ).toFixed(2)
                               : 0}
                           </p>
                           <p className={classes.amount}>{airdropTokenName}</p>
@@ -561,7 +561,7 @@ const ClaimAddress = () => {
                                     claimRemaining,
                                     decimalOfToken,
                                   ),
-                                ).toFixed(5)
+                                ).toFixed(2)
                               : 0}
                             {/* {claimRemaining ? claimRemaining : 0} */}
                           </p>
