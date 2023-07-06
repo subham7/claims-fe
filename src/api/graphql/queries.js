@@ -13,9 +13,23 @@ export const QUERY_ALL_MEMBERS = (daoAddress) => {
     }`;
 };
 
-export const QUERY_PAGINATED_MEMBERS = (daoAddress, first, skip) => {
+export const QUERY_PAGINATED_MEMBERS = (
+  daoAddress,
+  first,
+  skip,
+  startDate,
+  endDate,
+) => {
   return `query{
-        users(where: {daoAddress :"${daoAddress}"}, first: ${first}, skip: ${skip} ){
+    users(
+      where: {
+        daoAddress: "${daoAddress}",
+        timeStamp_gte: ${startDate},
+        timeStamp_lte: ${endDate}
+      },
+      first: ${first},
+      skip: ${skip}
+    ) {
           id
           gtAmount
           depositAmount

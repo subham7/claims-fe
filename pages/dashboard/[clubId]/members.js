@@ -1,6 +1,7 @@
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import {
   Backdrop,
+  Button,
   CircularProgress,
   Grid,
   IconButton,
@@ -24,7 +25,17 @@ import { convertFromWeiGovernance } from "../../../src/utils/globalFunctions";
 import { subgraphQuery } from "../../../src/utils/subgraphs";
 import ClubFetch from "../../../src/utils/clubFetch";
 import { useConnectWallet } from "@web3-onboard/react";
-import { showWrongNetworkModal } from "../../../src/utils/helper";
+import {
+  getAllEntities,
+  showWrongNetworkModal,
+} from "../../../src/utils/helper";
+import { useFormik } from "formik";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
+
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import dayjs from "dayjs";
+import { saveAs } from "file-saver";
 
 const useStyles = makeStyles({
   searchField: {
@@ -58,6 +69,7 @@ const useStyles = makeStyles({
 const Test = () => {
   const [membersData, setMembersData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [downloadLoading, setDownloadLoading] = useState(false);
 
   const header = [
     "Member address",
@@ -107,7 +119,7 @@ const Test = () => {
         if (daoAddress) {
           const data = await subgraphQuery(
             SUBGRAPH_URL,
-            QUERY_PAGINATED_MEMBERS(daoAddress, 20, 0),
+            QUERY_PAGINATED_MEMBERS(daoAddress, 20, 0, 1685613616, Date.now()),
             "users",
           );
           setMembersData(data?.users);
@@ -133,7 +145,13 @@ const Test = () => {
       const newSkip = newPage * rowsPerPage;
       const data = await subgraphQuery(
         SUBGRAPH_URL,
-        QUERY_PAGINATED_MEMBERS(daoAddress, 20, newSkip),
+        QUERY_PAGINATED_MEMBERS(
+          daoAddress,
+          20,
+          newSkip,
+          1685613616,
+          Date.now(),
+        ),
       );
       setMembersData(data?.users);
     } catch (error) {
@@ -144,6 +162,56 @@ const Test = () => {
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(event.target.value);
     setPage(0);
+  };
+
+  const formik = useFormik({
+    initialValues: {
+      startDate: "",
+      endDate: "",
+    },
+
+    // validationSchema: ERC721Step2ValidationSchema,
+
+    onSubmit: async (values) => {
+      setDownloadLoading(true);
+      const membersData = await getAllEntities(
+        SUBGRAPH_URL,
+        daoAddress ? daoAddress : pid,
+        "users",
+        dayjs(values.startDate).unix(),
+        dayjs(values.endDate).unix(),
+      );
+      const csvData = await convertDataToCSV(membersData); // Convert the membersData array to CSV format
+
+      const blob = new Blob([csvData], { type: "text/csv;charset=utf-8" });
+      saveAs(blob, "members.csv");
+      // Trigger the download with the file-saver library
+      setDownloadLoading(false);
+    },
+  });
+
+  const convertDataToCSV = async (data) => {
+    const rows = await Promise.all(
+      data.map(async (item) => {
+        const timestamp = new Date(+item.timeStamp * 1000);
+        const date = timestamp.toLocaleDateString();
+        const time = timestamp.toLocaleTimeString();
+        return [
+          item.userAddress,
+          item.depositAmount,
+          item.gtAmount,
+          `${date} ${time}`,
+        ].join(",");
+      }),
+    );
+    const header = [
+      "Member address",
+      "Deposit amount",
+      "Station tokens",
+      "Joined on",
+    ].join(",");
+
+    return [header, ...rows].join("\n");
   };
 
   return (
@@ -157,7 +225,46 @@ const Test = () => {
                   <Typography variant="title">Station Members</Typography>
                 </Grid>
               </Grid>
-
+              <Grid
+                container
+                spacing={3}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                }}
+                mb={4}>
+                <Grid item>
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DateTimePicker
+                      value={formik.values.startDate}
+                      // minDateTime={dayjs(Date.now())}
+                      onChange={(value) => {
+                        formik.setFieldValue("startDate", value);
+                      }}
+                    />
+                  </LocalizationProvider>
+                </Grid>
+                <Grid item>
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DateTimePicker
+                      value={formik.values.endDate}
+                      maxDateTime={dayjs(Date.now())}
+                      onChange={(value) => {
+                        formik.setFieldValue("endDate", value);
+                      }}
+                    />
+                  </LocalizationProvider>
+                </Grid>
+                <Grid item>
+                  <Button onClick={formik.handleSubmit}>
+                    {downloadLoading ? (
+                      <CircularProgress color="inherit" />
+                    ) : (
+                      "Download CSV"
+                    )}{" "}
+                  </Button>
+                </Grid>
+              </Grid>
               <TableContainer component={Paper}>
                 <Table sx={{ minWidth: 809 }} aria-label="simple table">
                   <TableHead>
