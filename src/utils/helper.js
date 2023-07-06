@@ -38,6 +38,32 @@ export const web3InstanceCustomRPC = async () => {
   return web3;
 };
 
+export const convertEpochTimeInCounterFormat = (epochTime) => {
+  const millisecondsPerMinute = 60 * 1000;
+  const millisecondsPerHour = 60 * millisecondsPerMinute;
+  const millisecondsPerDay = 24 * millisecondsPerHour;
+
+  const days = Math.floor(epochTime / millisecondsPerDay);
+  epochTime %= millisecondsPerDay;
+
+  const hours = Math.floor(epochTime / millisecondsPerHour);
+  epochTime %= millisecondsPerHour;
+
+  const minutes = Math.floor(epochTime / millisecondsPerMinute);
+
+  return `${days}D: ${hours < 10 ? "0" : ""}${hours}H: ${
+    minutes < 10 ? "0" : ""
+  }${minutes}M`;
+};
+
+export function formatEpochTime(epochTime) {
+  const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
+  const timeDiff = epochTime - currentTime;
+  const days = Math.floor(timeDiff / (24 * 60 * 60));
+  const hours = Math.floor((timeDiff % (24 * 60 * 60)) / (60 * 60));
+  const minutes = Math.floor((timeDiff % (60 * 60)) / 60);
+  return `${days}D: ${hours}H: ${minutes}M`;
+}
 export const showWrongNetworkModal = (wallet, networkId) => {
   return wallet && networkId !== "0x89" ? <WrongNetworkModal /> : null;
 };

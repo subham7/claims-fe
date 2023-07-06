@@ -121,6 +121,7 @@ const ClaimsEditModal = ({ onClose, claimAddress, walletAddress }) => {
 
       const desc = await claimSettings();
       setIsEnabled(!desc.isEnabled);
+
       const balance = await claimBalance();
       if (balance == 0) {
         setClaimed(true);

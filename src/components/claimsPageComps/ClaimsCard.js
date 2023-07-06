@@ -1,17 +1,14 @@
 import { makeStyles } from "@mui/styles";
 import React, { useEffect, useState } from "react";
 import { BsLink45Deg, BsFillSendFill } from "react-icons/bs";
-import { BiPencil } from "react-icons/bi";
 import { AiFillCalendar } from "react-icons/ai";
 import { FaCoins } from "react-icons/fa";
 import { useRouter } from "next/router";
-import { useDispatch, useSelector } from "react-redux";
-import { addClaimContractData } from "../../redux/reducers/createClaim";
 import Countdown from "react-countdown";
 import { Alert } from "@mui/material";
-import ClaimsEditModal from "./ClaimsEditModal";
 import { useConnectWallet } from "@web3-onboard/react";
 import useSmartContractMethods from "../../hooks/useSmartContractMethods";
+import { convertFromWeiGovernance } from "../../utils/globalFunctions";
 
 const useStyles = makeStyles({
   container: {
@@ -59,7 +56,7 @@ const useStyles = makeStyles({
     alignItems: "center",
   },
   title: {
-    marginTop: "10px",
+    margin: "10px 0",
     fontSize: "20px",
     fontWeight: "400",
     textAlign: "left",
@@ -93,7 +90,7 @@ const useStyles = makeStyles({
 const ClaimsCard = ({
   description,
   i,
-  airdropTokenSymbol,
+  airdropTokenAddress,
   totalAmount,
   updatedDate,
   startDate,
@@ -103,17 +100,20 @@ const ClaimsCard = ({
 }) => {
   const classes = useStyles();
   const router = useRouter();
-  const dispatch = useDispatch();
   const [isActive, setIsActive] = useState(false);
   const [isClaimStarted, setIsClaimStarted] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
   const [showClaimsEdit, setShowClaimsEdit] = useState(false);
   const [claimEnabled, setClaimEnabled] = useState(false);
+  const [symbol, setSymbol] = useState("");
+  const [decimals, setDecimals] = useState(0);
 
   const [{ wallet }] = useConnectWallet();
   const walletAddress = wallet?.accounts[0].address;
+  const { getDecimals, getTokenSymbol } = useSmartContractMethods();
 
   const startingTime = new Date(+startDate * 1000);
+  const endingTime = new Date(+endDate * 1000);
   const convertedStartDay = new Date(startDate * 1000).getDate();
   const convertedStartMonth = new Date(startDate * 1000).toLocaleString(
     "default",
@@ -124,13 +124,12 @@ const ClaimsCard = ({
     month: "short",
   });
 
-  const convertedDate = new Date(updatedDate).toLocaleDateString();
+  const convertedDate = new Date(updatedDate * 1000).toLocaleDateString();
   const currentTime = Date.now() / 1000;
 
   const { claimSettings } = useSmartContractMethods();
 
   useEffect(() => {
-    // if (+startDate > currentTime || +endDate < currentTime) {
     if (+startDate > currentTime) {
       setIsActive(false);
       setIsClaimStarted(false);
@@ -145,8 +144,12 @@ const ClaimsCard = ({
 
   const fetchContractDetails = async () => {
     try {
-      const desc = await claimSettings();
-      setClaimEnabled(desc.isEnabled);
+      setClaimEnabled(endingTime > currentTime ? true : false);
+      const tokenDecimals = await getDecimals(airdropTokenAddress);
+      const tokenSymbol = await getTokenSymbol(airdropTokenAddress);
+
+      setDecimals(tokenDecimals);
+      setSymbol(tokenSymbol);
     } catch (error) {
       console.log(error);
     }
@@ -158,32 +161,18 @@ const ClaimsCard = ({
 
   const claimContractData = {
     description,
-    airdropTokenSymbol,
+    // airdropTokenSymbol,
     totalAmount,
     claimContract,
     createdBy,
     endDate,
   };
 
-  dispatch(addClaimContractData(claimContractData));
+  // dispatch(addClaimContractData(claimContractData));
 
   const claimHandler = () => {
-    router.push(`/claims/${claimContract}`);
+    router.push(`/claims/insights/${claimContract}`);
   };
-
-  const onClose = (e) => {
-    e.stopPropagation();
-    setShowClaimsEdit(false);
-  };
-
-  const editClaimsHandler = (e) => {
-    e.stopPropagation();
-    setShowClaimsEdit(true);
-  };
-
-  const IS_CLAIM_ENABLED = useSelector((state) => {
-    return state.createClaim.claimEnabled;
-  });
 
   return (
     <div onClick={claimHandler} className={classes.container}>
@@ -226,11 +215,6 @@ const ClaimsCard = ({
             size={25}
             className={classes.icons}
           />
-          <BiPencil
-            size={25}
-            className={classes.icons}
-            onClick={editClaimsHandler}
-          />
         </div>
       </div>
 
@@ -243,13 +227,15 @@ const ClaimsCard = ({
         {/* Token */}
         <div className={classes.icons}>
           <BsFillSendFill color="#6475A3" size={12} />
-          <p className={classes.para}>{airdropTokenSymbol}</p>
+          <p className={classes.para}>{symbol}</p>
         </div>
 
         {/* No. of Tokens */}
         <div className={classes.icons}>
           <FaCoins color="#6475A3" size={12} />
-          <p className={classes.para}>{totalAmount}</p>
+          <p className={classes.para}>
+            {convertFromWeiGovernance(totalAmount, decimals)}
+          </p>
         </div>
 
         {/* Date */}
@@ -273,14 +259,6 @@ const ClaimsCard = ({
           }}>
           {"Copied"}
         </Alert>
-      )}
-
-      {showClaimsEdit && (
-        <ClaimsEditModal
-          walletAddress={walletAddress}
-          claimAddress={claimContract}
-          onClose={onClose}
-        />
       )}
     </div>
   );
