@@ -9,23 +9,26 @@ import { makeStyles } from "@mui/styles";
 import * as yup from "yup";
 import { getAssetsByDaoAddress } from "../../src/api/assets";
 import { convertToWeiGovernance } from "../../src/utils/globalFunctions";
-import { createClaim } from "../../src/api/claims";
+import {
+  createClaimCsv,
+  createSnapShot,
+  // sendMerkleTree,
+} from "../../src/api/claims";
 import {
   CLAIM_FACTORY_ADDRESS_GOERLI,
   CLAIM_FACTORY_ADDRESS_POLYGON,
 } from "../../src/api";
-import { MerkleTree } from "merkletreejs";
-import keccak256 from "keccak256";
+// import { MerkleTree } from "merkletreejs";
+// import keccak256 from "keccak256";
 import { useConnectWallet } from "@web3-onboard/react";
 import { useRouter } from "next/router";
-import {
-  showWrongNetworkModal,
-  web3InstanceEthereum,
-} from "../../src/utils/helper";
 import useSmartContractMethods from "../../src/hooks/useSmartContractMethods";
 import useSmartContract from "../../src/hooks/useSmartContract";
+// import WrongNetworkModal from "../../src/components/modals/WrongNetworkModal";
 import Layout1 from "../../src/components/layouts/layout1";
 import Image from "next/image";
+import Moralis from "moralis";
+import { EvmChain } from "@moralisweb3/common-evm-utils";
 
 const steps = ["Step1", "Step2"];
 
@@ -41,12 +44,12 @@ const useStyles = makeStyles({
 const Form = () => {
   const [activeStep, setActiveStep] = useState(0);
   const [tokensInWallet, setTokensInWallet] = useState(null);
-  const [currentAccount, setCurrentAccount] = useState("");
   const [showError, setShowError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [finish, setFinish] = useState(false);
   const [errMsg, setErrMsg] = useState("");
   const [loadingTokens, setLoadingTokens] = useState(false);
+  const [snapshotMerkleData, setSnapshotMerkleData] = useState([]);
   useSmartContract();
 
   const classes = useStyles();
@@ -69,12 +72,9 @@ const Form = () => {
 
   const getCurrentAccount = async () => {
     setLoadingTokens(true);
-    const web3 = await web3InstanceEthereum();
-    const accounts = await web3.eth.getAccounts();
     // const data = await getTokensFromWallet(accounts[0], networkId);
     if (networkId && walletAddress) {
       const tokensList = await getAssetsByDaoAddress(walletAddress, networkId);
-      setCurrentAccount(accounts[0]);
       setTokensInWallet(tokensList.data.tokenPriceList);
       setLoadingTokens(false);
     }
@@ -84,10 +84,39 @@ const Form = () => {
     getCurrentAccount();
   }, [walletAddress, networkId]);
 
+  const fetchLatestBlockNumber = async (tokenGatedNetwork) => {
+    try {
+      if (!Moralis.Core.isStarted) {
+        await Moralis.start({
+          apiKey:
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJub25jZSI6ImM1ZmQxNzA3LWRkYTQtNDhhNi04NTBmLWRmZWFkOGY5NTEwNiIsIm9yZ0lkIjoiMjkzODE4IiwidXNlcklkIjoiMzAwNjc1IiwidHlwZUlkIjoiNWJlNTBiNmEtYmJiYi00NWVlLWJkYWQtOWE1NTg1MzViZjU1IiwidHlwZSI6IlBST0pFQ1QiLCJpYXQiOjE2ODgwNDUwMzEsImV4cCI6NDg0MzgwNTAzMX0.nB1mM16RnOjK1uZhZr6zyELAuYknxcyTwRm9hZU15Sc",
+        });
+      }
+
+      let chain;
+      if (tokenGatedNetwork === "eth-mainnet") {
+        chain = EvmChain.ETHEREUM;
+      } else if (tokenGatedNetwork === "matic-mainnet") {
+        chain = EvmChain.POLYGON;
+      } else if (tokenGatedNetwork === "bsc-mainnet") {
+        chain = EvmChain.BSC;
+      }
+
+      const response = await Moralis.EvmApi.block.getDateToBlock({
+        date: Date.now(),
+        chain,
+      });
+
+      return response.toJSON();
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
   const formik = useFormik({
     initialValues: {
       description: "",
-      rollbackAddress: "",
+      // rollbackAddress: "",
       numberOfTokens: "",
       startDate: dayjs(Date.now() + 300000),
       endDate: dayjs(Date.now() + 600000),
@@ -98,22 +127,18 @@ const Form = () => {
       airdropFrom: "contract", // wallet or contract,
       eligible: "csv", // token || csv || everyone
       daoTokenAddress: "", // tokenGated
-      maximumClaim: "proRata", // prorata or custom
+      tokenGatingAmt: 0,
+      maximumClaim: "", // prorata or custom
       customAmount: 0,
       merkleData: [],
       csvObject: [],
+      tokenGatedNetwork: "eth-mainnet",
+      blockNumber: 0,
     },
     validationSchema: Yup.object().shape({
       description: yup
         .string("Enter one-liner description")
         .required("description is required"),
-      rollbackAddress: yup
-        .string("Enter rollback address")
-        .when("airdropFrom", {
-          is: "contract",
-          then: () => yup.string().required("Please enter rollback address"),
-        }),
-      // .required("Rollback address is required"),
       numberOfTokens: yup
         .number()
         .required("Enter amount of tokens")
@@ -131,6 +156,13 @@ const Form = () => {
           is: "token",
           then: () => yup.string().required("Enter token address"),
         }),
+      tokenGatingAmt: yup
+        .string("Enter token gating amount")
+        .notRequired()
+        .when("eligible", {
+          is: "token",
+          then: () => yup.string().required("Enter token gating amount"),
+        }),
       // .required("Dao token is required"),
       customAmount: yup
         .number("Enter custom Amount")
@@ -146,7 +178,7 @@ const Form = () => {
         }),
     }),
 
-    onSubmit: (values) => {
+    onSubmit: async (values) => {
       const claimsContractAddress =
         networkId === "0x89"
           ? CLAIM_FACTORY_ADDRESS_POLYGON
@@ -154,9 +186,6 @@ const Form = () => {
 
       const data = {
         description: values.description,
-        rollbackAddress: values.rollbackAddress
-          ? values.rollbackAddress
-          : walletAddress.toLowerCase(),
         numberOfTokens: values.numberOfTokens.toString(),
         startDate: dayjs(values.startDate).format(),
         endDate: dayjs(values.endDate).format(),
@@ -166,19 +195,78 @@ const Form = () => {
         airdropTokenAddress: values.airdropTokenAddress,
         airdropFrom: values.airdropFrom,
         eligible: values.eligible,
-        daoTokenAddress: values.daoTokenAddress.length
-          ? values.daoTokenAddress
-          : "0x0000000000000000000000000000000000000000",
+        daoTokenAddress:
+          values.daoTokenAddress.length > 2
+            ? values.daoTokenAddress
+            : "0x0000000000000000000000000000000000000000",
+        tokenGatingAmt: values.tokenGatingAmt ? values.tokenGatingAmt : 0,
         maximumClaim: values.maximumClaim,
         customAmount:
           values.maximumClaim === "custom" ? values.customAmount.toString() : 0,
         merkleData: values.merkleData,
         csvObject: values.csvObject,
+        tokenGatedNetwork: values.tokenGatedNetwork,
+        blockNumber: values.blockNumber,
       };
+
+      const decimals = await getDecimals(data.airdropTokenAddress);
+
       if (activeStep === steps.length - 1) {
+        // fetch Block number
+
+        setLoading(true);
+        let snapshotData;
+        let blockNumber;
+
+        if (values.maximumClaim === "proRata") {
+          try {
+            const blockData = await fetchLatestBlockNumber(
+              data?.tokenGatedNetwork,
+            );
+
+            if (data.blockNumber > 0 && data.blockNumber > blockData.block) {
+              showMessageHandler(setShowError);
+              setErrMsg("Invalid block number!");
+              setLoading(false);
+              return;
+            }
+
+            blockNumber =
+              data.blockNumber > 0 ? data.blockNumber : blockData.block;
+
+            snapshotData = await createSnapShot(
+              data.numberOfTokens * 10 ** decimals,
+              data.airdropTokenAddress,
+              data.daoTokenAddress,
+              data.tokenGatedNetwork,
+              blockNumber,
+              networkId,
+            );
+
+            setSnapshotMerkleData(snapshotData);
+          } catch (error) {
+            console.log(error);
+            setErrMsg("Unable to fetch snapshot data");
+            showMessageHandler(setShowError);
+            setLoading(false);
+          }
+        }
+
+        let totalNoOfWallets;
+        if (data.eligible === "everyone") {
+          totalNoOfWallets = 0;
+        } else if (data.eligible === "token") {
+          if (data.maximumClaim === "proRata") {
+            totalNoOfWallets = snapshotData?.numOfTokenHolders;
+          } else {
+            totalNoOfWallets = 0;
+          }
+        } else if (data.eligible === "csv") {
+          totalNoOfWallets = data?.csvObject?.length;
+        }
+
         if (data.eligible === "token" || data.eligible === "everyone") {
           // checking maximum claim is prorata or custom
-          setLoading(true);
           let maximumClaim;
           if (data.maximumClaim === "custom") {
             maximumClaim = true;
@@ -194,15 +282,28 @@ const Form = () => {
           }
 
           let eligible;
-          if (data.eligible === "token") {
+          if (data.eligible === "token" && data.maximumClaim !== "proRata") {
             eligible = 0;
           } else if (data.eligible === "everyone") {
+            eligible = 2;
+          } else if (data.maximumClaim === "proRata") {
             eligible = 3;
           }
 
           const loadClaimsContractFactoryData_Token = async () => {
             try {
-              const decimals = await getDecimals(data.airdropTokenAddress);
+              let tokenGatingDecimals = 1;
+
+              if (
+                data.daoTokenAddress !==
+                "0x0000000000000000000000000000000000000000"
+              ) {
+                try {
+                  tokenGatingDecimals = await getDecimals(data.daoTokenAddress);
+                } catch (error) {
+                  console.log(error);
+                }
+              }
 
               // if airdroping from contract then approve erc20
               if (!hasAllowanceMechanism) {
@@ -216,35 +317,50 @@ const Form = () => {
               }
 
               const claimsSettings = [
+                data.description,
                 data.walletAddress.toLowerCase(),
                 data.walletAddress.toLowerCase(),
                 data.airdropTokenAddress,
                 data.daoTokenAddress,
-                hasAllowanceMechanism, // false if token approved function called
-                false,
-                0,
-                true,
+                data.daoTokenAddress !==
+                "0x0000000000000000000000000000000000000000"
+                  ? convertToWeiGovernance(
+                      data.tokenGatingAmt,
+                      tokenGatingDecimals,
+                    )
+                  : 0,
                 new Date(data.startDate).getTime() / 1000,
                 new Date(data.endDate).getTime() / 1000,
-                data.rollbackAddress.toLowerCase(),
-                "0x0000000000000000000000000000000000000000000000000000000000000001",
-                Number(eligible),
+                0,
+                hasAllowanceMechanism,
+                true,
+                data.maximumClaim === "proRata"
+                  ? snapshotData?.merkleRoot
+                  : "0x0000000000000000000000000000000000000000000000000000000000000001",
+                Number(eligible), // Permission ie. 0 - TG; 1 - Whitelisted; 2 - FreeForALL
                 [
-                  maximumClaim,
-                  convertToWeiGovernance(
-                    data.customAmount,
-                    decimals,
-                  ).toString(),
+                  data.maximumClaim === "proRata"
+                    ? convertToWeiGovernance(
+                        data.numberOfTokens,
+                        decimals,
+                      ).toString()
+                    : convertToWeiGovernance(
+                        data.customAmount,
+                        decimals,
+                      ).toString(),
                   convertToWeiGovernance(
                     data.numberOfTokens,
                     decimals,
                   ).toString(),
-                  [],
                 ],
-                [false, 0],
               ];
 
-              const response = await claimContract(claimsSettings);
+              const response = await claimContract(
+                claimsSettings,
+                totalNoOfWallets,
+                data.maximumClaim === "proRata" ? blockNumber : 0,
+                data.maximumClaim === "proRata" ? data.tokenGatedNetwork : "",
+              );
 
               const newClaimContract =
                 response.events.NewClaimContract.returnValues._newClaimContract;
@@ -259,23 +375,31 @@ const Form = () => {
               }
 
               // post data in api
-              const postData = JSON.stringify({
-                description: data.description,
-                airdropTokenContract: data.airdropTokenAddress,
-                airdropTokenSymbol: data.selectedToken.symbol,
-                claimContract: newClaimContract,
-                totalAmount: data.numberOfTokens,
-                endDate: new Date(data.endDate).getTime() / 1000,
-                startDate: new Date(data.startDate).getTime() / 1000,
-                createdBy: data.walletAddress.toLowerCase(),
-                addresses: [],
-                networkId: networkId,
-              });
+              // const postData = JSON.stringify({
+              //   description: data.description,
+              //   airdropTokenContract: data.airdropTokenAddress,
+              //   airdropTokenSymbol: data.selectedToken.symbol,
+              //   claimContract: newClaimContract,
+              //   totalAmount: data.numberOfTokens,
+              //   endDate: new Date(data.endDate).getTime() / 1000,
+              //   startDate: new Date(data.startDate).getTime() / 1000,
+              //   createdBy: data.walletAddress.toLowerCase(),
+              //   addresses: [],
+              //   networkId: networkId,
+              // });
 
-              await createClaim(postData);
+              // await createClaim(postData);
+
+              // if (data.maximumClaim === "proRata") {
+              //   const merkleData = JSON.stringify({
+              //     claimAddress: newClaimContract,
+              //     merkleTree: snapshotData?.merkleTree,
+              //   });
+
+              //   await sendMerkleTree(merkleData);
+              // }
 
               setLoading(false);
-
               setFinish(true);
               showMessageHandler(setFinish);
               setTimeout(() => {
@@ -300,7 +424,7 @@ const Form = () => {
 
           const loadClaimsContractFactoryData_CSV = async () => {
             try {
-              const decimals = await getDecimals(data.airdropTokenAddress);
+              const decimals = await getDecimals(data?.airdropTokenAddress);
               setLoading(true);
 
               // if airdroping from contract then approve erc20
@@ -314,38 +438,59 @@ const Form = () => {
                 );
               }
 
-              const tree = new MerkleTree(data.merkleData, keccak256, {
-                sort: true,
+              const csvData = data.csvObject
+                .filter((item) => item.address)
+                .map((item) => {
+                  return {
+                    userAddress: item.address,
+                    amount: item.amount,
+                  };
+                });
+
+              // post data in api
+              const postData = JSON.stringify({
+                snapshot: csvData,
+                tokenAddress: data.airdropTokenAddress,
               });
-              const root = tree.getHexRoot();
+
+              const responseCreateClaim = await createClaimCsv(
+                postData,
+                networkId,
+              );
 
               const claimsSettings = [
+                data.description,
                 data.walletAddress.toLowerCase(),
                 data.walletAddress.toLowerCase(),
                 data.airdropTokenAddress,
                 "0x0000000000000000000000000000000000000000",
-                hasAllowanceMechanism, // false if token approved function called
-                false,
                 0,
-                true,
                 new Date(data.startDate).getTime() / 1000,
                 new Date(data.endDate).getTime() / 1000,
-                data.rollbackAddress.toLowerCase(),
-                root,
-                2,
+                0,
+                hasAllowanceMechanism, // false if token approved function called
+                true,
+                responseCreateClaim?.merkleRoot,
+                1,
                 [
-                  false,
-                  0,
                   convertToWeiGovernance(
                     data.numberOfTokens,
                     decimals,
                   ).toString(),
-                  [],
+                  convertToWeiGovernance(
+                    data.numberOfTokens,
+                    decimals,
+                  ).toString(),
                 ],
-                [false, 0],
               ];
 
-              const response = await claimContract(claimsSettings);
+              const response = await claimContract(
+                claimsSettings,
+                totalNoOfWallets,
+                0,
+                "",
+              );
+
               const newClaimContract =
                 response.events.NewClaimContract.returnValues._newClaimContract;
 
@@ -357,22 +502,6 @@ const Form = () => {
                   decimals,
                 );
               }
-
-              // post data in api
-              const postData = JSON.stringify({
-                description: data.description,
-                airdropTokenContract: data.airdropTokenAddress,
-                airdropTokenSymbol: data.selectedToken.symbol,
-                claimContract: newClaimContract,
-                totalAmount: data.numberOfTokens,
-                endDate: new Date(data.endDate).getTime() / 1000,
-                startDate: new Date(data.startDate).getTime() / 1000,
-                createdBy: data.walletAddress.toLowerCase(),
-                addresses: data.csvObject,
-                networkId: networkId,
-              });
-
-              await createClaim(postData);
 
               setLoading(false);
               setFinish(true);
@@ -452,14 +581,14 @@ const Form = () => {
           )}
         </Grid>
 
-        {showWrongNetworkModal(wallet, networkId)}
+        {/* {networkId && networkId !== "0x89" && <WrongNetworkModal />} */}
 
         {showError && (
           <Alert
             severity="error"
             sx={{
               width: "350px",
-              position: "absolute",
+              position: "fixed",
               bottom: "30px",
               right: "20px",
               borderRadius: "8px",
@@ -473,7 +602,7 @@ const Form = () => {
             severity="success"
             sx={{
               width: "350px",
-              position: "absolute",
+              position: "fixed",
               bottom: "30px",
               right: "20px",
               borderRadius: "8px",
