@@ -12,12 +12,9 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import {
-  getClaimsByUserAddress,
-  getUserProofAndBalance,
-} from "../../src/api/claims";
+import { getUserProofAndBalance } from "../../src/api/claims";
 // import MerkleTree from "merkletreejs";
-import keccak256 from "keccak256";
+// import keccak256 from "keccak256";
 import Layout1 from "../../src/components/layouts/layout1";
 import Countdown from "react-countdown";
 import { useDispatch } from "react-redux";
@@ -46,7 +43,7 @@ const ClaimAddress = () => {
   const [alreadyClaimed, setAlreadyClaimed] = useState(false);
   const [claimableAmt, setClaimableAmt] = useState(0);
   const [decimalOfToken, setDecimalofToken] = useState(0);
-  const [merkleLeaves, setMerkleLeaves] = useState([]);
+  // const [merkleLeaves, setMerkleLeaves] = useState([]);
   const [claimActive, setClaimActive] = useState(false);
   const [claimInput, setClaimInput] = useState(0);
   const [showInputError, setShowInputError] = useState(false);
@@ -210,29 +207,19 @@ const ClaimAddress = () => {
           setClaimableAmt(amount * 10 ** decimals);
 
           // converting the CSV data into merkleLeaves
-          const csvData = await getClaimsByUserAddress(
-            desc.creatorAddress.toLowerCase(),
-            networkId,
-          );
+          // const csvData = await getCsvUserData(contractData.merkleRoot);
 
-          const { addresses } = csvData
-            .reverse()
-            .find((address) => address.claimContract === claimAddress);
+          // let encodedListOfLeaves = [];
 
-          let encodedListOfLeaves = [];
+          // csvData[0].snapshot.map((data) => {
+          //   if (data.address) {
+          //     const res = encode(data.address, data.amount);
+          //     encodedListOfLeaves.push(keccak256(res));
+          //   }
+          // });
 
-          addresses.map(async (data) => {
-            if (data.address) {
-              const res = await encode(
-                data.address,
-                convertToWeiGovernance(data.amount, decimals),
-              );
-              encodedListOfLeaves.push(keccak256(res));
-            }
-          });
-
-          // setting merkleLeaves
-          setMerkleLeaves(encodedListOfLeaves);
+          // // setting merkleLeaves
+          // setMerkleLeaves(encodedListOfLeaves);
         } else if (desc.permission === "3") {
           try {
             const amountOfTokenUserHas = await getBalance(desc?.daoToken);
@@ -282,26 +269,28 @@ const ClaimAddress = () => {
         contractData?.merkleRoot !==
         "0x0000000000000000000000000000000000000000000000000000000000000001"
       ) {
-        // const leaves = merkleLeaves.map((leaf) => keccak256(leaf));
-        // const tree = new MerkleTree(merkleLeaves, keccak256, { sort: true });
-
-        // const encodedLeaf = await encode(
-        //   walletAddress,
-        //   convertToWeiGovernance(claimableAmt, decimalOfToken),
-        // );
-
-        // const leaf = keccak256(encodedLeaf);
-        // const proof = tree.getHexProof(leaf);
-        // const amt = convertToWeiGovernance(claimInput, decimalOfToken);
-
+        let encodedLeaf;
+        let proof;
         const data = await getUserProofAndBalance(
           contractData?.merkleRoot,
           walletAddress,
         );
 
-        const { amount, proof } = data;
+        const { amount, proof: proofFromBe } = data;
 
-        const encodedLeaf = await encode(walletAddress, amount);
+        // if (contractData.permission === "1") {
+        //   // const leaves = merkleLeaves.map((leaf) => keccak256(leaf));
+        //   const tree = new MerkleTree(merkleLeaves, keccak256, { sort: true });
+
+        //   encodedLeaf = encode(walletAddress, amount);
+
+        //   const leaf = keccak256(encodedLeaf);
+        //   proof = tree.getHexProof(leaf);
+        //   console.log(tree.getHexRoot(), contractData?.merkleRoot);
+        // } else {
+        proof = proofFromBe;
+        encodedLeaf = encode(walletAddress, amount);
+        // }
 
         await claim(
           convertToWeiGovernance(claimInput, decimalOfToken).toString(),
@@ -364,11 +353,12 @@ const ClaimAddress = () => {
     }, 4000);
   };
 
-  const maxHandler = () => {
+  const maxHandler = async () => {
+    const decimals = await getDecimals(contractData.airdropToken);
     if (+claimRemaining === 0 && !alreadyClaimed && claimBalanceRemaing) {
-      setClaimInput(claimableAmt);
+      setClaimInput(claimableAmt / 10 ** decimals);
     } else {
-      setClaimInput(claimRemaining);
+      setClaimInput(claimRemaining / 10 ** decimals);
     }
   };
 

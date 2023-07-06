@@ -18,8 +18,8 @@ import {
   CLAIM_FACTORY_ADDRESS_GOERLI,
   CLAIM_FACTORY_ADDRESS_POLYGON,
 } from "../../src/api";
-import { MerkleTree } from "merkletreejs";
-import keccak256 from "keccak256";
+// import { MerkleTree } from "merkletreejs";
+// import keccak256 from "keccak256";
 import { useConnectWallet } from "@web3-onboard/react";
 import { useRouter } from "next/router";
 import useSmartContractMethods from "../../src/hooks/useSmartContractMethods";
@@ -126,7 +126,7 @@ const Form = () => {
       airdropTokenAddress: "", // tokenAddress
       airdropFrom: "contract", // wallet or contract,
       eligible: "csv", // token || csv || everyone
-      daoTokenAddress: "0x", // tokenGated
+      daoTokenAddress: "", // tokenGated
       tokenGatingAmt: 0,
       maximumClaim: "", // prorata or custom
       customAmount: 0,
@@ -437,11 +437,21 @@ const Form = () => {
                 );
               }
 
-              const tree = new MerkleTree(data.merkleData, keccak256, {
-                sort: true,
+              const csvData = data.csvObject
+                .filter((item) => item.address)
+                .map((item) => {
+                  return {
+                    userAddress: item.address,
+                    amount: item.amount,
+                  };
+                });
+
+              // post data in api
+              const postData = JSON.stringify({
+                snapshot: csvData,
               });
 
-              const root = tree.getHexRoot();
+              const root = await createClaimCsv(postData);
 
               const claimsSettings = [
                 data.description,
@@ -487,23 +497,6 @@ const Form = () => {
                   decimals,
                 );
               }
-
-              const csvData = data.csvObject
-                .filter((item) => item.address)
-                .map((item) => {
-                  return {
-                    userAddress: item.address,
-                    amount: item.amount,
-                  };
-                });
-
-              // post data in api
-              const postData = JSON.stringify({
-                snapshot: csvData,
-                merkleRoot: root,
-              });
-
-              await createClaimCsv(postData);
 
               setLoading(false);
               setFinish(true);

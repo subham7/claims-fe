@@ -13,8 +13,7 @@ import {
 import { BsArrowLeft } from "react-icons/bs";
 import { makeStyles } from "@mui/styles";
 import React, { useRef, useState } from "react";
-import { convertToWeiGovernance } from "../../../src/utils/globalFunctions";
-import keccak256 from "keccak256";
+// import keccak256 from "keccak256";
 import { useConnectWallet } from "@web3-onboard/react";
 import { useDispatch } from "react-redux";
 import { useRouter } from "next/router";
@@ -145,18 +144,15 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
     values.maximumClaim = "custom";
   }
 
-  const helper = async (csvArr, decimals) => {
-    let encodedListOfLeaves = [];
-    csvArr.map(async (data) => {
-      const res = await encode(
-        data.address,
-        convertToWeiGovernance(data.amount, decimals),
-      );
-      encodedListOfLeaves.push(keccak256(res));
-    });
+  // const helper = async (csvArr) => {
+  //   let encodedListOfLeaves = [];
+  //   csvArr.map((data) => {
+  //     const res = encode(data.address, data.amount);
+  //     encodedListOfLeaves.push(keccak256(res));
+  //   });
 
-    return encodedListOfLeaves;
-  };
+  //   return encodedListOfLeaves;
+  // };
 
   const handleChange = (event) => {
     const fileUploaded = event.target.files[0];
@@ -176,6 +172,7 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
         const csvArr = csvData
           .split("\r\n")
           .map((data) => data.split(","))
+          .filter((data) => data[0])
           .map((data) => ({
             address: data[0].toLowerCase(),
             amount: +data[1],
@@ -195,10 +192,8 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
         }
 
         try {
-          const decimals = await getDecimals(values.airdropTokenAddress);
-
-          const list = await helper(csvArr, decimals);
-          formik.values.merkleData = list;
+          // const list = await helper(csvArr);
+          formik.values.merkleData = [];
           setLoadingCsv(false);
         } catch (err) {
           setLoadingCsv(false);

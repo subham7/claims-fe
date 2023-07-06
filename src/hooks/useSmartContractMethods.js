@@ -178,7 +178,7 @@ const useSmartContractMethods = () => {
     if (contractAddress) {
       const erc20TokenContractCall = new web3Call.eth.Contract(
         ERC20TokenABI.abi,
-        contractAddress,
+        Web3.utils.toChecksumAddress(contractAddress),
       );
       return await erc20TokenContractCall.methods.decimals().call();
     }
@@ -391,7 +391,7 @@ const useSmartContractMethods = () => {
       : await erc20DaoContractCall.methods.balanceOf(contractAddress).call();
   };
 
-  const encode = async (address, amount) => {
+  const encode = (address, amount) => {
     // Define the types and values for encoding
     const types = ["address", "uint256"];
     const values = [address, amount];

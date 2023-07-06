@@ -17,11 +17,9 @@ export const createClaimCsv = async (jsonData) => {
   }
 };
 
-export const getClaimsByUserAddress = async (userAddress, networkId) => {
+export const getCsvUserData = async (merkleRoot) => {
   try {
-    const res = await fetch(
-      `${MAIN_API_URL}claim/user/${userAddress}?networkId=${networkId}`,
-    );
+    const res = await fetch(`${MAIN_API_URL}snapshot/${merkleRoot}`);
     const data = await res.json();
     return data;
   } catch (err) {
