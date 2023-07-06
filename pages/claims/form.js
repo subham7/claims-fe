@@ -10,7 +10,7 @@ import * as yup from "yup";
 import { getAssetsByDaoAddress } from "../../src/api/assets";
 import { convertToWeiGovernance } from "../../src/utils/globalFunctions";
 import {
-  createClaim,
+  createClaimCsv,
   createSnapShot,
   // sendMerkleTree,
 } from "../../src/api/claims";
@@ -128,7 +128,7 @@ const Form = () => {
       eligible: "csv", // token || csv || everyone
       daoTokenAddress: "0x", // tokenGated
       tokenGatingAmt: 0,
-      maximumClaim: "proRata", // prorata or custom
+      maximumClaim: "", // prorata or custom
       customAmount: 0,
       merkleData: [],
       csvObject: [],
@@ -374,20 +374,20 @@ const Form = () => {
               }
 
               // post data in api
-              const postData = JSON.stringify({
-                description: data.description,
-                airdropTokenContract: data.airdropTokenAddress,
-                airdropTokenSymbol: data.selectedToken.symbol,
-                claimContract: newClaimContract,
-                totalAmount: data.numberOfTokens,
-                endDate: new Date(data.endDate).getTime() / 1000,
-                startDate: new Date(data.startDate).getTime() / 1000,
-                createdBy: data.walletAddress.toLowerCase(),
-                addresses: [],
-                networkId: networkId,
-              });
+              // const postData = JSON.stringify({
+              //   description: data.description,
+              //   airdropTokenContract: data.airdropTokenAddress,
+              //   airdropTokenSymbol: data.selectedToken.symbol,
+              //   claimContract: newClaimContract,
+              //   totalAmount: data.numberOfTokens,
+              //   endDate: new Date(data.endDate).getTime() / 1000,
+              //   startDate: new Date(data.startDate).getTime() / 1000,
+              //   createdBy: data.walletAddress.toLowerCase(),
+              //   addresses: [],
+              //   networkId: networkId,
+              // });
 
-              await createClaim(postData);
+              // await createClaim(postData);
 
               // if (data.maximumClaim === "proRata") {
               //   const merkleData = JSON.stringify({
@@ -411,6 +411,7 @@ const Form = () => {
               setErrMsg(err.message);
             }
           };
+
           loadClaimsContractFactoryData_Token();
         } else if (data.eligible === "csv") {
           let hasAllowanceMechanism;
@@ -439,6 +440,7 @@ const Form = () => {
               const tree = new MerkleTree(data.merkleData, keccak256, {
                 sort: true,
               });
+
               const root = tree.getHexRoot();
 
               const claimsSettings = [
@@ -473,6 +475,7 @@ const Form = () => {
                 0,
                 "",
               );
+
               const newClaimContract =
                 response.events.NewClaimContract.returnValues._newClaimContract;
 
@@ -485,21 +488,22 @@ const Form = () => {
                 );
               }
 
+              const csvData = data.csvObject
+                .filter((item) => item.address)
+                .map((item) => {
+                  return {
+                    userAddress: item.address,
+                    amount: item.amount,
+                  };
+                });
+
               // post data in api
               const postData = JSON.stringify({
-                description: data.description,
-                airdropTokenContract: data.airdropTokenAddress,
-                airdropTokenSymbol: data.selectedToken.symbol,
-                claimContract: newClaimContract,
-                totalAmount: data.numberOfTokens,
-                endDate: new Date(data.endDate).getTime() / 1000,
-                startDate: new Date(data.startDate).getTime() / 1000,
-                createdBy: data.walletAddress.toLowerCase(),
-                addresses: data.csvObject,
-                networkId: networkId,
+                snapshot: csvData,
+                merkleRoot: root,
               });
 
-              await createClaim(postData);
+              await createClaimCsv(postData);
 
               setLoading(false);
               setFinish(true);

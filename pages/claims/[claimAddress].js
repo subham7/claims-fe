@@ -13,7 +13,6 @@ import {
   Typography,
 } from "@mui/material";
 import {
-  getClaimAmountForUser,
   getClaimsByUserAddress,
   getUserProofAndBalance,
 } from "../../src/api/claims";
@@ -203,12 +202,12 @@ const ClaimAddress = () => {
           }
         } else if (desc.permission === "1") {
           // getting claim amount from API
-          const { amount } = await getClaimAmountForUser(
+          const { amount } = await getUserProofAndBalance(
+            contractData.merkleRoot,
             walletAddress,
-            claimAddress,
           );
 
-          setClaimableAmt(amount);
+          setClaimableAmt(amount * 10 ** decimals);
 
           // converting the CSV data into merkleLeaves
           const csvData = await getClaimsByUserAddress(
@@ -223,11 +222,13 @@ const ClaimAddress = () => {
           let encodedListOfLeaves = [];
 
           addresses.map(async (data) => {
-            const res = await encode(
-              data.address,
-              convertToWeiGovernance(data.amount, decimals),
-            );
-            encodedListOfLeaves.push(keccak256(res));
+            if (data.address) {
+              const res = await encode(
+                data.address,
+                convertToWeiGovernance(data.amount, decimals),
+              );
+              encodedListOfLeaves.push(keccak256(res));
+            }
           });
 
           // setting merkleLeaves
