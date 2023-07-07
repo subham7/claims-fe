@@ -306,15 +306,15 @@ const Form = () => {
               }
 
               // if airdroping from contract then approve erc20
-              // if (!hasAllowanceMechanism) {
-              //   // approve erc20
-              //   await approveDeposit(
-              //     data.airdropTokenAddress,
-              //     claimsContractAddress,
-              //     data.numberOfTokens,
-              //     decimals, // decimal
-              //   );
-              // }
+              if (!hasAllowanceMechanism) {
+                // approve erc20
+                await approveDeposit(
+                  data.airdropTokenAddress,
+                  claimsContractAddress,
+                  data.numberOfTokens,
+                  decimals, // decimal
+                );
+              }
 
               const claimsSettings = [
                 data.description,
