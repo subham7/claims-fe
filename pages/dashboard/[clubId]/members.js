@@ -167,10 +167,10 @@ const Test = () => {
     setRowsPerPage(event.target.value);
     setPage(0);
   };
-
+  console.log(deployedTime, dayjs(deployedTime + 3600 * 1000 * 24));
   const formik = useFormik({
     initialValues: {
-      startDate: "",
+      startDate: dayjs(deployedTime + 3600 * 1000 * 24),
       endDate: "",
     },
 
@@ -238,6 +238,7 @@ const Test = () => {
                 }}
                 mb={4}>
                 <Grid item>
+                  {console.log(formik.values.startDate)}
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <DateTimePicker
                       value={formik.values.startDate}

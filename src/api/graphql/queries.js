@@ -72,6 +72,7 @@ export const QUERY_CLUB_DETAILS = (daoAddress) => {
               imageUrl
               isGovernanceActive
               membersCount
+              timeStamp
             }
     }`;
 };
