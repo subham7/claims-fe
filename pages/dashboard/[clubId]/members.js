@@ -100,6 +100,10 @@ const Test = () => {
     return state.club.clubData.membersCount;
   });
 
+  const deployedTime = useSelector((state) => {
+    return state.club.clubData.deployedTime;
+  });
+
   const handleAddressClick = (event, address) => {
     event.preventDefault();
     window.open(
@@ -237,7 +241,7 @@ const Test = () => {
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <DateTimePicker
                       value={formik.values.startDate}
-                      // minDateTime={dayjs(Date.now())}
+                      minDateTime={dayjs(deployedTime)}
                       onChange={(value) => {
                         formik.setFieldValue("startDate", value);
                       }}

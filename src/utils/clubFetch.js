@@ -113,6 +113,7 @@ const ClubFetch = (Component) => {
                 symbol: clubData.stations[0].symbol,
                 tokenType: clubData.stations[0].tokenType,
                 membersCount: clubData.stations[0].membersCount,
+                deployedTime: clubData.stations[0].deployedTime,
               }),
             );
           }

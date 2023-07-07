@@ -12,6 +12,7 @@ export const slice = createSlice({
       symbol: null,
       tokenType: null,
       membersCount: null,
+      deployedTime: null,
     },
     erc20ClubDetails: {
       quorum: null,
@@ -60,6 +61,7 @@ export const slice = createSlice({
       state.clubData.symbol = action.payload.symbol;
       state.clubData.tokenType = action.payload.tokenType;
       state.clubData.membersCount = action.payload.membersCount;
+      state.clubData.deployedTime = action.payload.deployedTime;
     },
     addErc20ClubDetails: (state, action) => {
       state.erc20ClubDetails.quorum = action.payload.quorum;
