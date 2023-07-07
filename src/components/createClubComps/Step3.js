@@ -1,4 +1,5 @@
 import {
+  Autocomplete,
   Box,
   Card,
   Grid,
@@ -16,21 +17,24 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { Step3Styles } from "./CreateClubStyles";
 import { useConnectWallet } from "@web3-onboard/react";
 import Web3 from "web3";
-import { useEffect } from "react";
-import { getSafeSdk } from "../../utils/helper";
+import { useCallback, useEffect } from "react";
+import { getSafeSdk, web3InstanceEthereum } from "../../utils/helper";
 import { useState } from "react";
 import { useSelector } from "react-redux";
+import SafeApiKit from "@safe-global/api-kit";
+import { Web3Adapter } from "@safe-global/protocol-kit";
 
 export default function Step3(props) {
   const classes = Step3Styles();
   const [{ wallet }] = useConnectWallet();
   const walletAddress = wallet.accounts[0].address;
 
-  const gnosisAddress = useSelector((state) => {
-    return state.club.clubData.gnosisAddress;
+  const GNOSIS_DATA = useSelector((state) => {
+    return state.gnosis;
   });
 
   const [ownerAddresses, setOwnerAddresses] = useState();
+  const [allSafeAddresses, setAllSafeAddresses] = useState();
 
   const index = props.formik.values.addressList.indexOf(
     Web3.utils.toChecksumAddress(walletAddress),
@@ -50,6 +54,33 @@ export default function Step3(props) {
     );
     setOwnerAddresses(ownerAddressesArray);
   };
+
+  const getSafeService = useCallback(async () => {
+    if (GNOSIS_DATA.transactionUrl) {
+      const web3 = await web3InstanceEthereum();
+      const ethAdapter = new Web3Adapter({
+        web3,
+        signerAddress: localStorage.getItem("wallet"),
+      });
+      const safeService = new SafeApiKit({
+        txServiceUrl: GNOSIS_DATA.transactionUrl,
+        ethAdapter,
+      });
+      return safeService;
+    }
+  }, [GNOSIS_DATA.transactionUrl]);
+
+  const getAllSafes = async () => {
+    const safeService = await getSafeService();
+    const safes = await safeService.getSafesByOwner(
+      localStorage.getItem("wallet"),
+    );
+    setAllSafeAddresses(safes.safes);
+  };
+
+  useEffect(() => {
+    if (props.formik.values.deploySafe === "oldSafe") getAllSafes();
+  }, [props.formik.values.deploySafe, GNOSIS_DATA.transactionUrl]);
 
   useEffect(() => {
     console.log("first", props.formik.values.safeAddress);
@@ -97,7 +128,6 @@ export default function Step3(props) {
               <p className={classes.label}>I already have a multisig wallet</p>
             </ToggleButton>
           </ToggleButtonGroup>
-          <br />
 
           {/* {props.formik.values.deploySafe} */}
           {props.formik.values.deploySafe === "oldSafe" && (
@@ -105,24 +135,33 @@ export default function Step3(props) {
               <Typography mt={5} className={classes.wrapTextIcon}>
                 Select from existing multi-sig wallet(s)
               </Typography>
-              <TextField
+              <Autocomplete
                 name="safeAddress"
                 className={classes.textField}
-                label="Safe address"
-                variant="outlined"
-                placeholder="0x00"
-                onChange={props.formik.handleChange}
-                onBlur={props.formik.handleBlur}
-                value={props.formik.values.safeAddress}
-                error={
-                  props.formik.touched.safeAddress &&
-                  Boolean(props.formik.errors.safeAddress)
-                }
-                helperText={
-                  props.formik.touched.safeAddress &&
-                  props.formik.errors.safeAddress
-                }
+                options={allSafeAddresses}
+                onChange={(e, newValue) => {
+                  console.log(e.target, newValue);
+                  props.formik.setFieldValue("safeAddress", newValue);
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    name="safeAddress"
+                    {...params}
+                    label="Safe address"
+                    variant="outlined"
+                    placeholder="0x00"
+                    error={
+                      props.formik.touched.safeAddress &&
+                      Boolean(props.formik.errors.safeAddress)
+                    }
+                    helperText={
+                      props.formik.touched.safeAddress &&
+                      props.formik.errors.safeAddress
+                    }
+                  />
+                )}
               />
+
               <p
                 style={{
                   margin: "0",
@@ -137,9 +176,9 @@ export default function Step3(props) {
               </p>
             </>
           )}
-          <br />
+
           {props.formik.values.deploySafe === "oldSafe" &&
-            props.formik.values.safeAddress.length && (
+            props.formik.values.safeAddress.length > 0 && (
               <>
                 <Typography className={classes.largeText} mt={4} mb={2}>
                   Signators
@@ -350,7 +389,6 @@ export default function Step3(props) {
             </>
           )}
 
-          <br />
           <Typography className={classes.largeText} mt={3} mb={2}>
             Governance
           </Typography>
