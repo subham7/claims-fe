@@ -177,9 +177,11 @@ const Create = () => {
             depositClose: dayjs(formikERC721Step2.values.depositClose).unix(),
             quorum: formikStep3.values.quorum * 100,
             threshold: formikStep3.values.threshold * 100,
-            safeThreshold: formikStep3.values.safeThreshold,
+            safeThreshold: formikStep3.values.safeThreshold ?? 0,
             depositTokenAddress: GNOSIS_DATA.usdcContractAddress,
-            treasuryAddress: "0x0000000000000000000000000000000000000000",
+            treasuryAddress:
+              formikStep3.values.safeAddress ??
+              "0x0000000000000000000000000000000000000000",
             maxTokensPerUser: formikERC721Step2.values.maxTokensPerUser,
             distributeAmount: formikERC721Step2.values.isNftTotalSupplylimited
               ? convertToWeiGovernance(
@@ -195,7 +197,8 @@ const Create = () => {
             isNftTransferable: formikERC721Step2.values.isNftTransferable,
             isNftTotalSupplyUnlimited:
               !formikERC721Step2.values.isNftTotalSupplylimited,
-            isGovernanceActive: formikStep3.values.governance,
+            isGovernanceActive:
+              formikStep3.values.governance === "governance" ? true : false,
             storeAssetsOnGnosis: formikStep3.values.storeAssetsOnGnosis,
             allowWhiteList: false,
             merkleRoot:
@@ -244,10 +247,13 @@ const Create = () => {
             depositClose: dayjs(formikERC20Step2.values.depositClose).unix(),
             quorum: formikStep3.values.quorum * 100,
             threshold: formikStep3.values.threshold * 100,
-            safeThreshold: formikStep3.values.safeThreshold,
+            safeThreshold: formikStep3.values.safeThreshold ?? 0,
             depositTokenAddress: GNOSIS_DATA.usdcContractAddress,
-            treasuryAddress: "0x0000000000000000000000000000000000000000",
-            isGovernanceActive: formikStep3.values.governance,
+            treasuryAddress:
+              formikStep3.values.safeAddress ??
+              "0x0000000000000000000000000000000000000000",
+            isGovernanceActive:
+              formikStep3.values.governance === "governance" ? true : false,
             isGtTransferable: false,
             allowWhiteList: false,
             merkleRoot:
