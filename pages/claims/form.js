@@ -125,7 +125,7 @@ const Form = () => {
       walletAddress: "",
       airdropTokenAddress: "", // tokenAddress
       airdropFrom: "contract", // wallet or contract,
-      eligible: "csv", // token || csv || everyone
+      eligible: "everyone", // token || csv || everyone
       daoTokenAddress: "", // tokenGated
       tokenGatingAmt: 0,
       maximumClaim: "", // prorata or custom
@@ -306,15 +306,15 @@ const Form = () => {
               }
 
               // if airdroping from contract then approve erc20
-              if (!hasAllowanceMechanism) {
-                // approve erc20
-                await approveDeposit(
-                  data.airdropTokenAddress,
-                  claimsContractAddress,
-                  data.numberOfTokens,
-                  decimals, // decimal
-                );
-              }
+              // if (!hasAllowanceMechanism) {
+              //   // approve erc20
+              //   await approveDeposit(
+              //     data.airdropTokenAddress,
+              //     claimsContractAddress,
+              //     data.numberOfTokens,
+              //     decimals, // decimal
+              //   );
+              // }
 
               const claimsSettings = [
                 data.description,
@@ -354,6 +354,8 @@ const Form = () => {
                   ).toString(),
                 ],
               ];
+
+              console.log({ claimsSettings });
 
               const response = await claimContract(
                 claimsSettings,

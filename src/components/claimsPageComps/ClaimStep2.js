@@ -13,12 +13,10 @@ import {
 import { BsArrowLeft } from "react-icons/bs";
 import { makeStyles } from "@mui/styles";
 import React, { useRef, useState } from "react";
-// import keccak256 from "keccak256";
 import { useConnectWallet } from "@web3-onboard/react";
 import { useDispatch } from "react-redux";
 import { useRouter } from "next/router";
 import Link from "next/link";
-// import useSmartContractMethods from "../../hooks/useSmartContractMethods";
 import { showWrongNetworkModal } from "../../utils/helper";
 
 const useStyles = makeStyles({
@@ -132,8 +130,6 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
   const dispatch = useDispatch();
 
   const hiddenFileInput = useRef(null);
-  // const claimsContractAddress = CLAIM_FACTORY_ADDRESS_GOERLI;
-  // const { encode, getDecimals } = useSmartContractMethods();
 
   const [file, setFile] = useState("");
   const handleClick = (event) => {
