@@ -16,7 +16,7 @@ const LensterShareButton = ({ daoName, daoAddress, message = "" }) => {
         marginTop: "-2px",
       }}>
       <Image
-        src="/assets/icons/lenster.jpeg"
+        src="/assets/icons/lenster-comp.jpeg"
         alt="Share on Lenster"
         height={20}
         width={20}
