@@ -115,14 +115,14 @@ export default function Step3(props) {
               name="deploySafe"
               value="newSafe"
               id="deploySafe">
-              <p className={classes.label}>Create a new multisig wallet</p>
+              Create a new multisig wallet
             </ToggleButton>
             <ToggleButton
               className={classes.leftContainer}
               name="deploySafe"
               id="deploySafe"
               value="oldSafe">
-              <p className={classes.label}>I already have a multisig wallet</p>
+              I already have a multisig wallet
             </ToggleButton>
           </ToggleButtonGroup>
 
@@ -407,14 +407,14 @@ export default function Step3(props) {
               name="governance"
               value="non-governance"
               id="governance">
-              <p className={classes.label}>Admin(s) only</p>
+              Admin(s) only
             </ToggleButton>
             <ToggleButton
               className={classes.leftContainer}
               name="governance"
               id="governance"
               value="governance">
-              <p className={classes.label}>Community governance</p>
+              Community governance
             </ToggleButton>
           </ToggleButtonGroup>
 
