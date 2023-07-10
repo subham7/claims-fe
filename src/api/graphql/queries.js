@@ -98,6 +98,7 @@ export const QUERY_ALL_CLAIMS_OF_CREATOR = (creatorAddress) => {
               whitelistToken
               claimType
               timestamp
+              isActive
             }
     }`;
 };
@@ -128,6 +129,7 @@ export const QUERY_CLAIM_DETAILS = (claimAddress) => {
               whitelistToken
               claimType
               timestamp
+              isActive
             }
     }`;
 };

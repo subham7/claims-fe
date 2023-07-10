@@ -185,3 +185,49 @@ export const proposalValidationSchema = yup.object({
           .moreThan(1, "Safe Threshold should be greater than 1"),
     }),
 });
+
+export const claimStep1ValidationSchema = yup.object({
+  description: yup
+    .string("Enter one-liner description")
+    .required("description is required"),
+  numberOfTokens: yup
+    .number()
+    .required("Enter amount of tokens")
+    .moreThan(0, "Amount should be greater than 0"),
+  startDate: yup.date().required("start date is required"),
+  endDate: yup
+    .date()
+    .required("end date is required")
+    .min(yup.ref("startDate")),
+  selectedToken: yup.object({}).required("Token is required"),
+});
+
+export const claimStep2ValidationSchema = yup.object({
+  daoTokenAddress: yup
+    .string("Enter dao address")
+    .notRequired()
+    .when("eligible", {
+      is: "token",
+      then: () => yup.string().required("Enter token address"),
+    }),
+  tokenGatingAmt: yup
+    .string("Enter token gating amount")
+    .notRequired()
+    .when("eligible", {
+      is: "token",
+      then: () => yup.string().required("Enter token gating amount"),
+    }),
+  // .required("Dao token is required"),
+  customAmount: yup
+    .number("Enter custom Amount")
+    .notRequired()
+    .when("maximumClaim", {
+      is: "custom",
+      then: () =>
+        yup
+          .number("Enter custom Amount")
+          // .required("Please enter custom amount")
+          .moreThan(0, "Amount should be greater than 0"),
+      // .lessThan(yup.ref("numberOfTokens")),
+    }),
+});

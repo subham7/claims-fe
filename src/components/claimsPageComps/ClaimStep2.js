@@ -117,7 +117,7 @@ const useStyles = makeStyles({
   },
 });
 
-const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
+const ClaimStep2 = ({ handleBack, formik, finish, loading, formikStep1 }) => {
   const { values } = formik;
   const router = useRouter();
 
@@ -183,7 +183,7 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
           initialValue,
         );
 
-        if (sumOfAmt > values.numberOfTokens) {
+        if (sumOfAmt > formikStep1.values.numberOfTokens) {
           setCsvError(true);
         }
 

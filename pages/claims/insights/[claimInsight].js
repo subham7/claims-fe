@@ -124,7 +124,10 @@ const ClaimInsight = () => {
   const modifyStartAndEndTimeHandler = async (startTime, endTime) => {
     setLoading(true);
     try {
-      await modifyStartAndEndTime(startTime, endTime);
+      await modifyStartAndEndTime(
+        Number(startTime).toFixed(0),
+        Number(endTime).toFixed(0),
+      );
       setLoading(false);
       showMessageHandler();
       setIsSuccessFull(true);

@@ -1,12 +1,10 @@
 import { useEffect, useState } from "react";
 import { useFormik } from "formik";
-import * as Yup from "yup";
 import { Grid, FormHelperText, Alert } from "@mui/material";
 import ClaimStep1 from "../../src/components/claimsPageComps/ClaimStep1";
 import ClaimStep2 from "../../src/components/claimsPageComps/ClaimStep2";
 import dayjs from "dayjs";
 import { makeStyles } from "@mui/styles";
-import * as yup from "yup";
 import { getAssetsByDaoAddress } from "../../src/api/assets";
 import { convertToWeiGovernance } from "../../src/utils/globalFunctions";
 import {
@@ -29,6 +27,10 @@ import Layout1 from "../../src/components/layouts/layout1";
 import Image from "next/image";
 import Moralis from "moralis";
 import { EvmChain } from "@moralisweb3/common-evm-utils";
+import {
+  claimStep1ValidationSchema,
+  claimStep2ValidationSchema,
+} from "../../src/components/createClubComps/ValidationSchemas";
 
 const steps = ["Step1", "Step2"];
 
@@ -113,7 +115,7 @@ const Form = () => {
     }
   };
 
-  const formik = useFormik({
+  const formikStep1 = useFormik({
     initialValues: {
       description: "",
       // rollbackAddress: "",
@@ -125,6 +127,15 @@ const Form = () => {
       walletAddress: "",
       airdropTokenAddress: "", // tokenAddress
       airdropFrom: "contract", // wallet or contract,
+    },
+    validationSchema: claimStep1ValidationSchema,
+    onSubmit: (values) => {
+      handleNext();
+    },
+  });
+
+  const formikStep2 = useFormik({
+    initialValues: {
       eligible: "everyone", // token || csv || everyone
       daoTokenAddress: "", // tokenGated
       tokenGatingAmt: 0,
@@ -135,49 +146,7 @@ const Form = () => {
       tokenGatedNetwork: "eth-mainnet",
       blockNumber: 0,
     },
-    validationSchema: Yup.object().shape({
-      description: yup
-        .string("Enter one-liner description")
-        .required("description is required"),
-      numberOfTokens: yup
-        .number()
-        .required("Enter amount of tokens")
-        .moreThan(0, "Amount should be greater than 0"),
-      startDate: yup.date().required("start date is required"),
-      endDate: yup
-        .date()
-        .required("end date is required")
-        .min(yup.ref("startDate")),
-      selectedToken: yup.object({}).required("Token is required"),
-      daoTokenAddress: yup
-        .string("Enter dao address")
-        .notRequired()
-        .when("eligible", {
-          is: "token",
-          then: () => yup.string().required("Enter token address"),
-        }),
-      tokenGatingAmt: yup
-        .string("Enter token gating amount")
-        .notRequired()
-        .when("eligible", {
-          is: "token",
-          then: () => yup.string().required("Enter token gating amount"),
-        }),
-      // .required("Dao token is required"),
-      customAmount: yup
-        .number("Enter custom Amount")
-        .notRequired()
-        .when("maximumClaim", {
-          is: "custom",
-          then: () =>
-            yup
-              .number("Enter custom Amount")
-              // .required("Please enter custom amount")
-              .moreThan(0, "Amount should be greater than 0")
-              .lessThan(yup.ref("numberOfTokens")),
-        }),
-    }),
-
+    validationSchema: claimStep2ValidationSchema,
     onSubmit: async (values) => {
       const claimsContractAddress =
         networkId === "0x89"
@@ -185,343 +154,341 @@ const Form = () => {
           : CLAIM_FACTORY_ADDRESS_GOERLI;
 
       const data = {
-        description: values.description,
-        numberOfTokens: values.numberOfTokens.toString(),
-        startDate: dayjs(values.startDate).format(),
-        endDate: dayjs(values.endDate).format(),
-        recieveTokens: values.recieveTokens,
-        selectedToken: values.selectedToken,
+        description: formikStep1.values.description,
+        numberOfTokens: formikStep1.values.numberOfTokens.toString(),
+        startDate: dayjs(formikStep1.values.startDate).format(),
+        endDate: dayjs(formikStep1.values.endDate).format(),
+        recieveTokens: formikStep1.values.recieveTokens,
+        selectedToken: formikStep1.values.selectedToken,
         walletAddress: walletAddress.toLowerCase(),
-        airdropTokenAddress: values.airdropTokenAddress,
-        airdropFrom: values.airdropFrom,
-        eligible: values.eligible,
+        airdropTokenAddress: formikStep1.values.airdropTokenAddress,
+        airdropFrom: formikStep1.values.airdropFrom,
+        eligible: values?.eligible,
         daoTokenAddress:
-          values.daoTokenAddress.length > 2
-            ? values.daoTokenAddress
+          values?.daoTokenAddress.length > 2
+            ? values?.daoTokenAddress
             : "0x0000000000000000000000000000000000000000",
-        tokenGatingAmt: values.tokenGatingAmt ? values.tokenGatingAmt : 0,
-        maximumClaim: values.maximumClaim,
+        tokenGatingAmt: values?.tokenGatingAmt ? values?.tokenGatingAmt : 0,
+        maximumClaim: values?.maximumClaim,
         customAmount:
-          values.maximumClaim === "custom" ? values.customAmount.toString() : 0,
-        merkleData: values.merkleData,
-        csvObject: values.csvObject,
-        tokenGatedNetwork: values.tokenGatedNetwork,
-        blockNumber: values.blockNumber,
+          values?.maximumClaim === "custom"
+            ? values?.customAmount.toString()
+            : 0,
+        merkleData: values?.merkleData,
+        csvObject: values?.csvObject,
+        tokenGatedNetwork: values?.tokenGatedNetwork,
+        blockNumber: values?.blockNumber,
       };
 
       const decimals = await getDecimals(data.airdropTokenAddress);
 
-      if (activeStep === steps.length - 1) {
-        // fetch Block number
+      // fetch Block number
 
-        setLoading(true);
-        let snapshotData;
-        let blockNumber;
+      setLoading(true);
+      let snapshotData;
+      let blockNumber;
 
-        if (values.maximumClaim === "proRata") {
+      if (values.maximumClaim === "proRata") {
+        try {
+          const blockData = await fetchLatestBlockNumber(
+            data?.tokenGatedNetwork,
+          );
+
+          if (data.blockNumber > 0 && data.blockNumber > blockData.block) {
+            showMessageHandler(setShowError);
+            setErrMsg("Invalid block number!");
+            setLoading(false);
+            return;
+          }
+
+          blockNumber =
+            data.blockNumber > 0 ? data.blockNumber : blockData.block;
+
+          snapshotData = await createSnapShot(
+            data.numberOfTokens * 10 ** decimals,
+            data.airdropTokenAddress,
+            data.daoTokenAddress,
+            data.tokenGatedNetwork,
+            blockNumber,
+            networkId,
+          );
+
+          setSnapshotMerkleData(snapshotData);
+        } catch (error) {
+          console.log(error);
+          setErrMsg("Unable to fetch snapshot data");
+          showMessageHandler(setShowError);
+          setLoading(false);
+        }
+      }
+
+      let totalNoOfWallets;
+      if (data.eligible === "everyone") {
+        totalNoOfWallets = 0;
+      } else if (data.eligible === "token") {
+        if (data.maximumClaim === "proRata") {
+          totalNoOfWallets = snapshotData?.numOfTokenHolders;
+        } else {
+          totalNoOfWallets = 0;
+        }
+      } else if (data.eligible === "csv") {
+        totalNoOfWallets = data?.csvObject?.length;
+      }
+
+      if (data.eligible === "token" || data.eligible === "everyone") {
+        // checking maximum claim is prorata or custom
+        let maximumClaim;
+        if (data.maximumClaim === "custom") {
+          maximumClaim = true;
+        } else {
+          maximumClaim = false;
+        }
+
+        let hasAllowanceMechanism;
+        if (data.airdropFrom === "wallet") {
+          hasAllowanceMechanism = true;
+        } else {
+          hasAllowanceMechanism = false;
+        }
+
+        let eligible;
+        if (data.eligible === "token" && data.maximumClaim !== "proRata") {
+          eligible = 0;
+        } else if (data.eligible === "everyone") {
+          eligible = 2;
+        } else if (data.maximumClaim === "proRata") {
+          eligible = 3;
+        }
+
+        const loadClaimsContractFactoryData_Token = async () => {
           try {
-            const blockData = await fetchLatestBlockNumber(
-              data?.tokenGatedNetwork,
-            );
+            let tokenGatingDecimals = 1;
 
-            if (data.blockNumber > 0 && data.blockNumber > blockData.block) {
-              showMessageHandler(setShowError);
-              setErrMsg("Invalid block number!");
-              setLoading(false);
-              return;
+            if (
+              data.daoTokenAddress !==
+              "0x0000000000000000000000000000000000000000"
+            ) {
+              try {
+                tokenGatingDecimals = await getDecimals(data.daoTokenAddress);
+              } catch (error) {
+                console.log(error);
+              }
             }
 
-            blockNumber =
-              data.blockNumber > 0 ? data.blockNumber : blockData.block;
+            // if airdroping from contract then approve erc20
+            if (!hasAllowanceMechanism) {
+              // approve erc20
+              await approveDeposit(
+                data.airdropTokenAddress,
+                claimsContractAddress,
+                data.numberOfTokens,
+                decimals, // decimal
+              );
+            }
 
-            snapshotData = await createSnapShot(
-              data.numberOfTokens * 10 ** decimals,
+            const claimsSettings = [
+              data.description,
+              data.walletAddress.toLowerCase(),
+              data.walletAddress.toLowerCase(),
               data.airdropTokenAddress,
               data.daoTokenAddress,
-              data.tokenGatedNetwork,
-              blockNumber,
+              data.daoTokenAddress !==
+              "0x0000000000000000000000000000000000000000"
+                ? convertToWeiGovernance(
+                    data.tokenGatingAmt,
+                    tokenGatingDecimals,
+                  )
+                : 0,
+              new Date(data.startDate).getTime() / 1000,
+              new Date(data.endDate).getTime() / 1000,
+              0,
+              hasAllowanceMechanism,
+              true,
+              data.maximumClaim === "proRata"
+                ? snapshotData?.merkleRoot
+                : "0x0000000000000000000000000000000000000000000000000000000000000001",
+              Number(eligible), // Permission ie. 0 - TG; 1 - Whitelisted; 2 - FreeForALL
+              [
+                data.maximumClaim === "proRata"
+                  ? convertToWeiGovernance(
+                      data.numberOfTokens,
+                      decimals,
+                    ).toString()
+                  : convertToWeiGovernance(
+                      data.customAmount,
+                      decimals,
+                    ).toString(),
+                convertToWeiGovernance(
+                  data.numberOfTokens,
+                  decimals,
+                ).toString(),
+              ],
+            ];
+
+            console.log({ claimsSettings });
+
+            const response = await claimContract(
+              claimsSettings,
+              totalNoOfWallets,
+              data.maximumClaim === "proRata" ? blockNumber : 0,
+              data.maximumClaim === "proRata" ? data.tokenGatedNetwork : "",
+            );
+
+            const newClaimContract =
+              response.events.NewClaimContract.returnValues._newClaimContract;
+
+            if (hasAllowanceMechanism) {
+              await approveDeposit(
+                data.airdropTokenAddress,
+                newClaimContract,
+                data.numberOfTokens.toString(),
+                decimals,
+              );
+            }
+
+            // post data in api
+            // const postData = JSON.stringify({
+            //   description: data.description,
+            //   airdropTokenContract: data.airdropTokenAddress,
+            //   airdropTokenSymbol: data.selectedToken.symbol,
+            //   claimContract: newClaimContract,
+            //   totalAmount: data.numberOfTokens,
+            //   endDate: new Date(data.endDate).getTime() / 1000,
+            //   startDate: new Date(data.startDate).getTime() / 1000,
+            //   createdBy: data.walletAddress.toLowerCase(),
+            //   addresses: [],
+            //   networkId: networkId,
+            // });
+
+            // await createClaim(postData);
+
+            // if (data.maximumClaim === "proRata") {
+            //   const merkleData = JSON.stringify({
+            //     claimAddress: newClaimContract,
+            //     merkleTree: snapshotData?.merkleTree,
+            //   });
+
+            //   await sendMerkleTree(merkleData);
+            // }
+
+            setLoading(false);
+            setFinish(true);
+            showMessageHandler(setFinish);
+            setTimeout(() => {
+              router.push("/claims");
+            }, 3000);
+          } catch (err) {
+            console.log(err);
+            setLoading(false);
+            showMessageHandler(setShowError);
+            setErrMsg(err.message);
+          }
+        };
+
+        loadClaimsContractFactoryData_Token();
+      } else if (data.eligible === "csv") {
+        let hasAllowanceMechanism;
+        if (data.airdropFrom === "wallet") {
+          hasAllowanceMechanism = true;
+        } else {
+          hasAllowanceMechanism = false;
+        }
+
+        const loadClaimsContractFactoryData_CSV = async () => {
+          try {
+            const decimals = await getDecimals(data?.airdropTokenAddress);
+            setLoading(true);
+
+            // if airdroping from contract then approve erc20
+            if (!hasAllowanceMechanism) {
+              // approve erc20
+              await approveDeposit(
+                data.airdropTokenAddress,
+                claimsContractAddress,
+                data.numberOfTokens.toString(),
+                decimals, // decimal
+              );
+            }
+
+            const csvData = data.csvObject
+              .filter((item) => item.address)
+              .map((item) => {
+                return {
+                  userAddress: item.address,
+                  amount: item.amount,
+                };
+              });
+
+            // post data in api
+            const postData = JSON.stringify({
+              snapshot: csvData,
+              tokenAddress: data.airdropTokenAddress,
+            });
+
+            const responseCreateClaim = await createClaimCsv(
+              postData,
               networkId,
             );
 
-            setSnapshotMerkleData(snapshotData);
-          } catch (error) {
-            console.log(error);
-            setErrMsg("Unable to fetch snapshot data");
-            showMessageHandler(setShowError);
-            setLoading(false);
-          }
-        }
-
-        let totalNoOfWallets;
-        if (data.eligible === "everyone") {
-          totalNoOfWallets = 0;
-        } else if (data.eligible === "token") {
-          if (data.maximumClaim === "proRata") {
-            totalNoOfWallets = snapshotData?.numOfTokenHolders;
-          } else {
-            totalNoOfWallets = 0;
-          }
-        } else if (data.eligible === "csv") {
-          totalNoOfWallets = data?.csvObject?.length;
-        }
-
-        if (data.eligible === "token" || data.eligible === "everyone") {
-          // checking maximum claim is prorata or custom
-          let maximumClaim;
-          if (data.maximumClaim === "custom") {
-            maximumClaim = true;
-          } else {
-            maximumClaim = false;
-          }
-
-          let hasAllowanceMechanism;
-          if (data.airdropFrom === "wallet") {
-            hasAllowanceMechanism = true;
-          } else {
-            hasAllowanceMechanism = false;
-          }
-
-          let eligible;
-          if (data.eligible === "token" && data.maximumClaim !== "proRata") {
-            eligible = 0;
-          } else if (data.eligible === "everyone") {
-            eligible = 2;
-          } else if (data.maximumClaim === "proRata") {
-            eligible = 3;
-          }
-
-          const loadClaimsContractFactoryData_Token = async () => {
-            try {
-              let tokenGatingDecimals = 1;
-
-              if (
-                data.daoTokenAddress !==
-                "0x0000000000000000000000000000000000000000"
-              ) {
-                try {
-                  tokenGatingDecimals = await getDecimals(data.daoTokenAddress);
-                } catch (error) {
-                  console.log(error);
-                }
-              }
-
-              // if airdroping from contract then approve erc20
-              if (!hasAllowanceMechanism) {
-                // approve erc20
-                await approveDeposit(
-                  data.airdropTokenAddress,
-                  claimsContractAddress,
+            const claimsSettings = [
+              data.description,
+              data.walletAddress.toLowerCase(),
+              data.walletAddress.toLowerCase(),
+              data.airdropTokenAddress,
+              "0x0000000000000000000000000000000000000000",
+              0,
+              new Date(data.startDate).getTime() / 1000,
+              new Date(data.endDate).getTime() / 1000,
+              0,
+              hasAllowanceMechanism, // false if token approved function called
+              true,
+              responseCreateClaim?.merkleRoot,
+              1,
+              [
+                convertToWeiGovernance(
                   data.numberOfTokens,
-                  decimals, // decimal
-                );
-              }
-
-              const claimsSettings = [
-                data.description,
-                data.walletAddress.toLowerCase(),
-                data.walletAddress.toLowerCase(),
-                data.airdropTokenAddress,
-                data.daoTokenAddress,
-                data.daoTokenAddress !==
-                "0x0000000000000000000000000000000000000000"
-                  ? convertToWeiGovernance(
-                      data.tokenGatingAmt,
-                      tokenGatingDecimals,
-                    )
-                  : 0,
-                new Date(data.startDate).getTime() / 1000,
-                new Date(data.endDate).getTime() / 1000,
-                0,
-                hasAllowanceMechanism,
-                true,
-                data.maximumClaim === "proRata"
-                  ? snapshotData?.merkleRoot
-                  : "0x0000000000000000000000000000000000000000000000000000000000000001",
-                Number(eligible), // Permission ie. 0 - TG; 1 - Whitelisted; 2 - FreeForALL
-                [
-                  data.maximumClaim === "proRata"
-                    ? convertToWeiGovernance(
-                        data.numberOfTokens,
-                        decimals,
-                      ).toString()
-                    : convertToWeiGovernance(
-                        data.customAmount,
-                        decimals,
-                      ).toString(),
-                  convertToWeiGovernance(
-                    data.numberOfTokens,
-                    decimals,
-                  ).toString(),
-                ],
-              ];
-
-              console.log({ claimsSettings });
-
-              const response = await claimContract(
-                claimsSettings,
-                totalNoOfWallets,
-                data.maximumClaim === "proRata" ? blockNumber : 0,
-                data.maximumClaim === "proRata" ? data.tokenGatedNetwork : "",
-              );
-
-              const newClaimContract =
-                response.events.NewClaimContract.returnValues._newClaimContract;
-
-              if (hasAllowanceMechanism) {
-                await approveDeposit(
-                  data.airdropTokenAddress,
-                  newClaimContract,
-                  data.numberOfTokens.toString(),
                   decimals,
-                );
-              }
+                ).toString(),
+                convertToWeiGovernance(
+                  data.numberOfTokens,
+                  decimals,
+                ).toString(),
+              ],
+            ];
 
-              // post data in api
-              // const postData = JSON.stringify({
-              //   description: data.description,
-              //   airdropTokenContract: data.airdropTokenAddress,
-              //   airdropTokenSymbol: data.selectedToken.symbol,
-              //   claimContract: newClaimContract,
-              //   totalAmount: data.numberOfTokens,
-              //   endDate: new Date(data.endDate).getTime() / 1000,
-              //   startDate: new Date(data.startDate).getTime() / 1000,
-              //   createdBy: data.walletAddress.toLowerCase(),
-              //   addresses: [],
-              //   networkId: networkId,
-              // });
+            const response = await claimContract(
+              claimsSettings,
+              totalNoOfWallets,
+              0,
+              "",
+            );
 
-              // await createClaim(postData);
+            const newClaimContract =
+              response.events.NewClaimContract.returnValues._newClaimContract;
 
-              // if (data.maximumClaim === "proRata") {
-              //   const merkleData = JSON.stringify({
-              //     claimAddress: newClaimContract,
-              //     merkleTree: snapshotData?.merkleTree,
-              //   });
-
-              //   await sendMerkleTree(merkleData);
-              // }
-
-              setLoading(false);
-              setFinish(true);
-              showMessageHandler(setFinish);
-              setTimeout(() => {
-                router.push("/claims");
-              }, 3000);
-            } catch (err) {
-              console.log(err);
-              setLoading(false);
-              showMessageHandler(setShowError);
-              setErrMsg(err.message);
+            if (hasAllowanceMechanism) {
+              await approveDeposit(
+                data.airdropTokenAddress,
+                newClaimContract,
+                data.numberOfTokens.toString(),
+                decimals,
+              );
             }
-          };
 
-          loadClaimsContractFactoryData_Token();
-        } else if (data.eligible === "csv") {
-          let hasAllowanceMechanism;
-          if (data.airdropFrom === "wallet") {
-            hasAllowanceMechanism = true;
-          } else {
-            hasAllowanceMechanism = false;
+            setLoading(false);
+            setFinish(true);
+            showMessageHandler(setFinish);
+            setTimeout(() => {
+              router.push("/claims");
+            }, 3000);
+          } catch (err) {
+            console.log(err);
+            setLoading(false);
+            showMessageHandler(setShowError);
+            setErrMsg(err.message);
           }
-
-          const loadClaimsContractFactoryData_CSV = async () => {
-            try {
-              const decimals = await getDecimals(data?.airdropTokenAddress);
-              setLoading(true);
-
-              // if airdroping from contract then approve erc20
-              if (!hasAllowanceMechanism) {
-                // approve erc20
-                await approveDeposit(
-                  data.airdropTokenAddress,
-                  claimsContractAddress,
-                  data.numberOfTokens.toString(),
-                  decimals, // decimal
-                );
-              }
-
-              const csvData = data.csvObject
-                .filter((item) => item.address)
-                .map((item) => {
-                  return {
-                    userAddress: item.address,
-                    amount: item.amount,
-                  };
-                });
-
-              // post data in api
-              const postData = JSON.stringify({
-                snapshot: csvData,
-                tokenAddress: data.airdropTokenAddress,
-              });
-
-              const responseCreateClaim = await createClaimCsv(
-                postData,
-                networkId,
-              );
-
-              const claimsSettings = [
-                data.description,
-                data.walletAddress.toLowerCase(),
-                data.walletAddress.toLowerCase(),
-                data.airdropTokenAddress,
-                "0x0000000000000000000000000000000000000000",
-                0,
-                new Date(data.startDate).getTime() / 1000,
-                new Date(data.endDate).getTime() / 1000,
-                0,
-                hasAllowanceMechanism, // false if token approved function called
-                true,
-                responseCreateClaim?.merkleRoot,
-                1,
-                [
-                  convertToWeiGovernance(
-                    data.numberOfTokens,
-                    decimals,
-                  ).toString(),
-                  convertToWeiGovernance(
-                    data.numberOfTokens,
-                    decimals,
-                  ).toString(),
-                ],
-              ];
-
-              const response = await claimContract(
-                claimsSettings,
-                totalNoOfWallets,
-                0,
-                "",
-              );
-
-              const newClaimContract =
-                response.events.NewClaimContract.returnValues._newClaimContract;
-
-              if (hasAllowanceMechanism) {
-                await approveDeposit(
-                  data.airdropTokenAddress,
-                  newClaimContract,
-                  data.numberOfTokens.toString(),
-                  decimals,
-                );
-              }
-
-              setLoading(false);
-              setFinish(true);
-              showMessageHandler(setFinish);
-              setTimeout(() => {
-                router.push("/claims");
-              }, 3000);
-            } catch (err) {
-              console.log(err);
-              setLoading(false);
-              showMessageHandler(setShowError);
-              setErrMsg(err.message);
-            }
-          };
-          loadClaimsContractFactoryData_CSV();
-        }
-      } else {
-        setActiveStep((prevStep) => prevStep + 1);
+        };
+        loadClaimsContractFactoryData_CSV();
       }
     },
   });
@@ -531,7 +498,7 @@ const Form = () => {
       case 0:
         return (
           <ClaimStep1
-            formik={formik}
+            formik={formikStep1}
             handleNext={handleNext}
             setActiveStep={setActiveStep}
             tokensInWallet={tokensInWallet}
@@ -541,7 +508,8 @@ const Form = () => {
       case 1:
         return (
           <ClaimStep2
-            formik={formik}
+            formik={formikStep2}
+            formikStep1={formikStep1}
             handleBack={handleBack}
             handleNext={handleNext}
             setActiveStep={setActiveStep}
@@ -576,9 +544,9 @@ const Form = () => {
           <Grid item xs={12} sx={{ padding: "20px" }}>
             {formContent(activeStep)}
           </Grid>
-          {formik.errors.submit && (
+          {formikStep1.errors.submit && (
             <Grid item xs={12}>
-              <FormHelperText error>{formik.errors.submit}</FormHelperText>
+              <FormHelperText error>{formikStep1.errors.submit}</FormHelperText>
             </Grid>
           )}
         </Grid>
