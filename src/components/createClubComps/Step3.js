@@ -315,6 +315,7 @@ export default function Step3(props) {
                                   props.formik?.errors?.addressList[key]
                                 : null
                             }
+                            disabled={key === 0}
                           />
                           <IconButton
                             aria-label="add"
@@ -322,7 +323,8 @@ export default function Step3(props) {
                               const list = [...props.formik.values.addressList];
                               list.splice(key, 1);
                               props.formik.setFieldValue("addressList", list);
-                            }}>
+                            }}
+                            disabled={key === 0}>
                             <DeleteIcon />
                           </IconButton>
                         </Grid>
@@ -371,7 +373,7 @@ export default function Step3(props) {
                         marks
                         min={1}
                         valueLabelDisplay={"on"}
-                        max={props.formik.values.addressList.length + 1}
+                        max={props.formik.values.addressList.length}
                         onChange={(value) => {
                           props.formik.setFieldValue(
                             "safeThreshold",

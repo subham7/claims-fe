@@ -145,7 +145,7 @@ const Create = () => {
       governance: "governance",
       quorum: 1,
       threshold: 51,
-      addressList: [],
+      addressList: [wallet.accounts[0].address],
       safeThreshold: 1,
       storeAssetsOnGnosis: true,
     },
@@ -167,9 +167,6 @@ const Create = () => {
 
         dispatch(setUploadNFTLoading(false));
         try {
-          const walletAddress = wallet.accounts[0].address;
-          formikStep3.values.addressList.unshift(walletAddress);
-
           const params = {
             clubName: formikStep1.values.clubName,
             clubSymbol: formikStep1.values.clubSymbol,
@@ -180,8 +177,9 @@ const Create = () => {
             safeThreshold: formikStep3.values.safeThreshold ?? 0,
             depositTokenAddress: GNOSIS_DATA.usdcContractAddress,
             treasuryAddress:
-              formikStep3.values.safeAddress ??
-              "0x0000000000000000000000000000000000000000",
+              formikStep3.values.safeAddress.length > 0
+                ? formikStep3.values.safeAddress
+                : "0x0000000000000000000000000000000000000000",
             maxTokensPerUser: formikERC721Step2.values.maxTokensPerUser,
             distributeAmount: formikERC721Step2.values.isNftTotalSupplylimited
               ? convertToWeiGovernance(
@@ -220,9 +218,6 @@ const Create = () => {
         }
       } else {
         try {
-          const walletAddress = wallet.accounts[0].address;
-
-          formikStep3.values.addressList.unshift(walletAddress);
           const params = {
             clubName: formikStep1.values.clubName,
             clubSymbol: formikStep1.values.clubSymbol,
@@ -250,8 +245,9 @@ const Create = () => {
             safeThreshold: formikStep3.values.safeThreshold ?? 0,
             depositTokenAddress: GNOSIS_DATA.usdcContractAddress,
             treasuryAddress:
-              formikStep3.values.safeAddress ??
-              "0x0000000000000000000000000000000000000000",
+              formikStep3.values.safeAddress.length > 0
+                ? formikStep3.values.safeAddress
+                : "0x0000000000000000000000000000000000000000",
             isGovernanceActive:
               formikStep3.values.governance === "governance" ? true : false,
             isGtTransferable: false,

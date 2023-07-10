@@ -41,14 +41,39 @@ export const ERC20Step2ValidationSchema = yup.object({
 });
 
 export const step3ValidationSchema = yup.object({
-  addressList: yup.array().of(
-    yup
-      .string()
-      .test("Address", "Invalid address", (values) => {
-        return values.length === 42 && values.includes("0x");
-      })
-      .required("Wallet address is required"),
-  ),
+  addressList: yup
+    .array()
+    .of(
+      yup
+        .string()
+        .test("Address", "Invalid address", (value) => {
+          console.log("value", value);
+          return value && value.length === 42 && value.startsWith("0x");
+        })
+        .required("Wallet address is required"),
+    )
+    .test("Duplicate address", "Duplicate address found", function (value) {
+      if (value) {
+        const uniqueSet = new Set(value);
+        const isUnique = uniqueSet.size === value.length;
+
+        if (!isUnique) {
+          const duplicates = [];
+          value.forEach((address, index) => {
+            if (value.indexOf(address) !== index) {
+              duplicates.push(index);
+            }
+          });
+
+          return this.createError({
+            path: `addressList[${duplicates[0]}]`,
+            message: "Duplicate address found",
+          });
+        }
+      }
+
+      return true;
+    }),
 });
 
 export const step4ValidationSchema = yup.object({
