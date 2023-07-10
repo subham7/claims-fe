@@ -23,6 +23,7 @@ import { RiDiscordFill } from "react-icons/ri";
 import ReactHtmlParser from "react-html-parser";
 import useSmartContractMethods from "../../../../hooks/useSmartContractMethods";
 import { showWrongNetworkModal } from "../../../../utils/helper";
+import LensterShareButton from "../../../LensterShareButton";
 
 const NewArchERC721 = ({
   daoDetails,
@@ -159,7 +160,7 @@ const NewArchERC721 = ({
   return (
     <>
       {walletAddress ? (
-        <Grid className={classes.topGrid} container spacing={6}>
+        <Grid className={classes.topGrid} container spacing={5}>
           <>
             <Grid item md={5}>
               <Grid
@@ -206,20 +207,27 @@ const NewArchERC721 = ({
                       </Typography>
                     </Grid>
 
-                    <Grid item sx={{ display: "flex", alignItems: "center" }}>
-                      <div className="centerContent">
-                        <div className="selfCenter spaceBetween">
-                          <TwitterShareButton
-                            onLoad={function noRefCheck() {}}
-                            options={{
-                              size: "large",
-                              text: `Just joined ${daoDetails.daoName} Station on `,
-                              via: "stationxnetwork",
-                            }}
-                            url={`${window.location.origin}/join/${erc721DaoAddress}`}
-                          />
-                        </div>
-                      </div>
+                    <Grid
+                      item
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "6px",
+                      }}>
+                      <TwitterShareButton
+                        onLoad={function noRefCheck() {}}
+                        options={{
+                          size: "large",
+                          text: `Just joined ${daoDetails.daoName} Station on `,
+                          via: "stationxnetwork",
+                        }}
+                        url={`${window.location.origin}/join/${erc721DaoAddress}`}
+                      />
+
+                      <LensterShareButton
+                        daoAddress={erc721DaoAddress}
+                        daoName={daoDetails?.daoName}
+                      />
                     </Grid>
                   </Grid>
 
