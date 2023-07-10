@@ -243,7 +243,7 @@ const ClaimsTransactions = ({
                         <FiExternalLink
                           onClick={() => {
                             window.open(
-                              `https://goerli.etherscan.io/tx/${data.txHash}`,
+                              `https://polygonscan.com/tx/${data.txHash}`,
                               "_blank",
                             );
                           }}

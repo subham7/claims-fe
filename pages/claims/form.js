@@ -125,7 +125,7 @@ const Form = () => {
       walletAddress: "",
       airdropTokenAddress: "", // tokenAddress
       airdropFrom: "contract", // wallet or contract,
-      eligible: "csv", // token || csv || everyone
+      eligible: "everyone", // token || csv || everyone
       daoTokenAddress: "", // tokenGated
       tokenGatingAmt: 0,
       maximumClaim: "", // prorata or custom
@@ -354,6 +354,8 @@ const Form = () => {
                   ).toString(),
                 ],
               ];
+
+              console.log({ claimsSettings });
 
               const response = await claimContract(
                 claimsSettings,
