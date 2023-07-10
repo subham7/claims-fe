@@ -325,8 +325,6 @@ const Form = () => {
               ],
             ];
 
-            console.log({ claimsSettings });
-
             const response = await claimContract(
               claimsSettings,
               totalNoOfWallets,
