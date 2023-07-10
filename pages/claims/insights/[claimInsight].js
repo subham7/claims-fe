@@ -164,6 +164,7 @@ const ClaimInsight = () => {
               endTime={claimsData[0]?.endTime}
               startTime={claimsData[0]?.startTime}
               claimAddress={claimAddress}
+              isActive={claimsData[0]?.isActive}
             />
             <div className={classes.infoBottomContainer}>
               <TotalClaimedInfo
@@ -182,7 +183,7 @@ const ClaimInsight = () => {
             </div>
           </div>
           <div className={classes.rightContainer}>
-            <ToggleClaim />
+            <ToggleClaim isActive={claimsData[0]?.isActive} />
             <ClaimEdit
               addMoreTokensHandler={addMoreTokensHandler}
               rollbackTokensHandler={rollbackTokensHandler}

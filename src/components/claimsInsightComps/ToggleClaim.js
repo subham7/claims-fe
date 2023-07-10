@@ -9,15 +9,14 @@ import React, { useEffect, useState } from "react";
 import useSmartContractMethods from "../../hooks/useSmartContractMethods";
 import { ClaimsInsightStyles } from "./claimsInsightStyles";
 
-const ToggleClaim = () => {
+const ToggleClaim = ({ isActive }) => {
   const [loading, setLoading] = useState(false);
   const [isEnabled, setIsEnabled] = useState(true);
   const [showMessage, setShowMessage] = useState(null);
 
-  const { claimSettings, toggleClaim } = useSmartContractMethods();
+  const { toggleClaim } = useSmartContractMethods();
 
   const classes = ClaimsInsightStyles();
-  const currentTime = Date.now() / 1000;
 
   const claimsToggleHandler = async (e) => {
     setLoading(true);
@@ -44,9 +43,7 @@ const ToggleClaim = () => {
   const fetchContractDetails = async () => {
     try {
       setLoading(true);
-      const desc = await claimSettings();
-      const endingTimeInNum = new Date(+desc?.endTime * 1000);
-      setIsEnabled(endingTimeInNum > currentTime ? true : false);
+      setIsEnabled(isActive);
       setLoading(false);
     } catch (error) {
       console.log(error);
@@ -56,22 +53,22 @@ const ToggleClaim = () => {
 
   useEffect(() => {
     fetchContractDetails();
-  }, []);
+  }, [isActive]);
 
   return (
     <div className={classes.toggleClaimContainer}>
-      <p>Turn on/off claims</p>
+      <p>Turn off/on claims</p>
       <FormControlLabel
         control={
           <Switch
-            checked={!isEnabled}
+            checked={isEnabled}
             onChange={claimsToggleHandler}
             inputProps={{ "aria-label": "controlled" }}
           />
         }
       />
 
-      {showMessage && isEnabled && (
+      {showMessage && !isEnabled && (
         <Alert
           severity="error"
           sx={{
@@ -86,7 +83,7 @@ const ToggleClaim = () => {
         </Alert>
       )}
 
-      {showMessage && !isEnabled && (
+      {showMessage && isEnabled && (
         <Alert
           severity="success"
           sx={{
