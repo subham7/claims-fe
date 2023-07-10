@@ -47,7 +47,6 @@ export const step3ValidationSchema = yup.object({
       yup
         .string()
         .test("Address", "Invalid address", (value) => {
-          console.log("value", value);
           return value && value.length === 42 && value.startsWith("0x");
         })
         .required("Wallet address is required"),

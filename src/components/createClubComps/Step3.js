@@ -42,7 +42,6 @@ export default function Step3(props) {
   if (index >= 0) props.formik.values.addressList.splice(index, 1);
 
   const fetchOwners = async (gnosisAddress) => {
-    console.log(gnosisAddress, walletAddress);
     const safeSdk = await getSafeSdk(
       Web3.utils.toChecksumAddress(gnosisAddress),
       Web3.utils.toChecksumAddress(walletAddress),
@@ -83,11 +82,9 @@ export default function Step3(props) {
   }, [props.formik.values.deploySafe, GNOSIS_DATA.transactionUrl]);
 
   useEffect(() => {
-    console.log("first", props.formik.values.safeAddress);
     if (props.formik.values.safeAddress.length)
       fetchOwners(props.formik.values.safeAddress);
   }, [props.formik.values.safeAddress]);
-  console.log(ownerAddresses);
   return (
     <>
       <Grid container spacing={3}>
@@ -140,7 +137,6 @@ export default function Step3(props) {
                 className={classes.textField}
                 options={allSafeAddresses}
                 onChange={(e, newValue) => {
-                  console.log(e.target, newValue);
                   props.formik.setFieldValue("safeAddress", newValue);
                 }}
                 renderInput={(params) => (
