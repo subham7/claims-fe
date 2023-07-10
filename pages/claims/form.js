@@ -90,8 +90,7 @@ const Form = () => {
     try {
       if (!Moralis.Core.isStarted) {
         await Moralis.start({
-          apiKey:
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJub25jZSI6ImM1ZmQxNzA3LWRkYTQtNDhhNi04NTBmLWRmZWFkOGY5NTEwNiIsIm9yZ0lkIjoiMjkzODE4IiwidXNlcklkIjoiMzAwNjc1IiwidHlwZUlkIjoiNWJlNTBiNmEtYmJiYi00NWVlLWJkYWQtOWE1NTg1MzViZjU1IiwidHlwZSI6IlBST0pFQ1QiLCJpYXQiOjE2ODgwNDUwMzEsImV4cCI6NDg0MzgwNTAzMX0.nB1mM16RnOjK1uZhZr6zyELAuYknxcyTwRm9hZU15Sc",
+          apiKey: process.env.NEXT_PUBLIC_MORALIS_API_KEY,
         });
       }
 

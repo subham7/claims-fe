@@ -174,6 +174,7 @@ const Claims = () => {
               updatedDate={item?.timestamp}
               claimContract={item?.claimAddress}
               createdBy={item?.creatorAddress}
+              isActive={item?.isActive}
             />
           ))}
         </div>

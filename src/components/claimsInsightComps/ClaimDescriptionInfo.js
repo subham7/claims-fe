@@ -10,6 +10,7 @@ const ClaimDescriptionInfo = ({
   endTime,
   startTime,
   claimAddress,
+  isActive,
 }) => {
   const [claimActive, setClaimActive] = useState(false);
   const [isClaimStarted, setIsClaimStarted] = useState(false);
@@ -38,8 +39,8 @@ const ClaimDescriptionInfo = ({
       setIsClaimStarted(true);
     }
 
-    setClaimEnabled(endingTimeInNum > currentTime ? true : false);
-  }, [endTime, startTime, currentTime, endingTimeInNum]);
+    setClaimEnabled(isActive);
+  }, [endTime, startTime, currentTime, endingTimeInNum, isActive]);
 
   return (
     <div className={classes.infoTopContainer}>
