@@ -35,6 +35,7 @@ import TwitterIcon from "@mui/icons-material/Twitter";
 import { RiDiscordFill } from "react-icons/ri";
 import ReactHtmlParser from "react-html-parser";
 import { showWrongNetworkModal } from "../../../../utils/helper";
+import LensterShareButton from "../../../LensterShareButton";
 
 const NewArchERC20 = ({
   daoDetails,
@@ -282,18 +283,26 @@ const NewArchERC20 = ({
                     }}>
                     {/* enter your code here */}
 
-                    <div className="centerContent">
-                      <div className="selfCenter spaceBetween">
-                        <TwitterShareButton
-                          onLoad={function noRefCheck() {}}
-                          options={{
-                            size: "large",
-                            text: `Just joined ${daoDetails.daoName} Station on `,
-                            via: "stationxnetwork",
-                          }}
-                          url={`${window.location.origin}/join/${erc20DaoAddress}`}
-                        />
-                      </div>
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "12px",
+                      }}>
+                      <TwitterShareButton
+                        onLoad={function noRefCheck() {}}
+                        options={{
+                          size: "large",
+                          text: `Just joined ${daoDetails.daoName} Station on `,
+                          via: "stationxnetwork",
+                        }}
+                        url={`${window.location.origin}/join/${erc20DaoAddress}`}
+                      />
+
+                      <LensterShareButton
+                        daoAddress={erc20DaoAddress}
+                        daoName={daoDetails?.daoName}
+                      />
                     </div>
                   </Grid>
                 </Grid>

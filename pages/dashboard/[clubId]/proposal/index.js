@@ -43,6 +43,7 @@ const useStyles = makeStyles({
     fontSize: "18px",
     fontWeight: "400",
     color: "white",
+    marginBottom: "10px",
   },
   noProposal_para: {
     fontSize: "14px",
@@ -54,7 +55,7 @@ const useStyles = makeStyles({
     textAlign: "center",
     border: "1px solid #FFFFFF1A",
     borderRadius: "10px",
-    padding: "10px 30px",
+    padding: "30px 30px",
     marginTop: "50px",
   },
 });
