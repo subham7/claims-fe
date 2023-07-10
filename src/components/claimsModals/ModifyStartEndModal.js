@@ -21,7 +21,11 @@ const ModifyStartEndModal = ({
     onSubmit: (value) => {
       const newStartTime = new Date(value.startTime).getTime() / 1000;
       const newEndTime = new Date(value.endTime).getTime() / 1000;
-      modifyStartAndEndTimeHandler(newStartTime, newEndTime);
+
+      modifyStartAndEndTimeHandler(
+        newStartTime > +startTime ? newStartTime : +startTime,
+        newEndTime > +endTime ? newEndTime : +endTime,
+      );
       onClose();
     },
   });

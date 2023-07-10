@@ -97,19 +97,18 @@ const ClaimsCard = ({
   endDate,
   claimContract,
   createdBy,
+  isActive: active,
 }) => {
   const classes = useStyles();
   const router = useRouter();
   const [isActive, setIsActive] = useState(false);
   const [isClaimStarted, setIsClaimStarted] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
-  const [showClaimsEdit, setShowClaimsEdit] = useState(false);
   const [claimEnabled, setClaimEnabled] = useState(false);
   const [symbol, setSymbol] = useState("");
   const [decimals, setDecimals] = useState(0);
 
   const [{ wallet }] = useConnectWallet();
-  const walletAddress = wallet?.accounts[0].address;
   const { getDecimals, getTokenSymbol } = useSmartContractMethods();
 
   const startingTime = new Date(+startDate * 1000);
@@ -144,7 +143,7 @@ const ClaimsCard = ({
 
   const fetchContractDetails = async () => {
     try {
-      setClaimEnabled(endingTime > currentTime ? true : false);
+      setClaimEnabled(active);
       const tokenDecimals = await getDecimals(airdropTokenAddress);
       const tokenSymbol = await getTokenSymbol(airdropTokenAddress);
 

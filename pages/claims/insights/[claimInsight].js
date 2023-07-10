@@ -124,7 +124,10 @@ const ClaimInsight = () => {
   const modifyStartAndEndTimeHandler = async (startTime, endTime) => {
     setLoading(true);
     try {
-      await modifyStartAndEndTime(startTime, endTime);
+      await modifyStartAndEndTime(
+        Number(startTime).toFixed(0),
+        Number(endTime).toFixed(0),
+      );
       setLoading(false);
       showMessageHandler();
       setIsSuccessFull(true);
@@ -161,6 +164,7 @@ const ClaimInsight = () => {
               endTime={claimsData[0]?.endTime}
               startTime={claimsData[0]?.startTime}
               claimAddress={claimAddress}
+              isActive={claimsData[0]?.isActive}
             />
             <div className={classes.infoBottomContainer}>
               <TotalClaimedInfo
@@ -179,7 +183,7 @@ const ClaimInsight = () => {
             </div>
           </div>
           <div className={classes.rightContainer}>
-            <ToggleClaim />
+            <ToggleClaim isActive={claimsData[0]?.isActive} />
             <ClaimEdit
               addMoreTokensHandler={addMoreTokensHandler}
               rollbackTokensHandler={rollbackTokensHandler}

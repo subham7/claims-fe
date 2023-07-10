@@ -41,14 +41,38 @@ export const ERC20Step2ValidationSchema = yup.object({
 });
 
 export const step3ValidationSchema = yup.object({
-  addressList: yup.array().of(
-    yup
-      .string()
-      .test("Address", "Invalid address", (values) => {
-        return values.length === 42 && values.includes("0x");
-      })
-      .required("Wallet address is required"),
-  ),
+  addressList: yup
+    .array()
+    .of(
+      yup
+        .string()
+        .test("Address", "Invalid address", (value) => {
+          return value && value.length === 42 && value.startsWith("0x");
+        })
+        .required("Wallet address is required"),
+    )
+    .test("Duplicate address", "Duplicate address found", function (value) {
+      if (value) {
+        const uniqueSet = new Set(value);
+        const isUnique = uniqueSet.size === value.length;
+
+        if (!isUnique) {
+          const duplicates = [];
+          value.forEach((address, index) => {
+            if (value.indexOf(address) !== index) {
+              duplicates.push(index);
+            }
+          });
+
+          return this.createError({
+            path: `addressList[${duplicates[0]}]`,
+            message: "Duplicate address found",
+          });
+        }
+      }
+
+      return true;
+    }),
 });
 
 export const step4ValidationSchema = yup.object({
@@ -183,5 +207,51 @@ export const proposalValidationSchema = yup.object({
           .number("Enter threshold")
           .required("Safe Threshold is required")
           .moreThan(1, "Safe Threshold should be greater than 1"),
+    }),
+});
+
+export const claimStep1ValidationSchema = yup.object({
+  description: yup
+    .string("Enter one-liner description")
+    .required("description is required"),
+  numberOfTokens: yup
+    .number()
+    .required("Enter amount of tokens")
+    .moreThan(0, "Amount should be greater than 0"),
+  startDate: yup.date().required("start date is required"),
+  endDate: yup
+    .date()
+    .required("end date is required")
+    .min(yup.ref("startDate")),
+  selectedToken: yup.object({}).required("Token is required"),
+});
+
+export const claimStep2ValidationSchema = yup.object({
+  daoTokenAddress: yup
+    .string("Enter dao address")
+    .notRequired()
+    .when("eligible", {
+      is: "token",
+      then: () => yup.string().required("Enter token address"),
+    }),
+  tokenGatingAmt: yup
+    .string("Enter token gating amount")
+    .notRequired()
+    .when("eligible", {
+      is: "token",
+      then: () => yup.string().required("Enter token gating amount"),
+    }),
+  // .required("Dao token is required"),
+  customAmount: yup
+    .number("Enter custom Amount")
+    .notRequired()
+    .when("maximumClaim", {
+      is: "custom",
+      then: () =>
+        yup
+          .number("Enter custom Amount")
+          // .required("Please enter custom amount")
+          .moreThan(0, "Amount should be greater than 0"),
+      // .lessThan(yup.ref("numberOfTokens")),
     }),
 });

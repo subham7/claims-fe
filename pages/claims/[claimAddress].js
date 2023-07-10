@@ -327,6 +327,8 @@ const ClaimAddress = () => {
       }
     } catch (err) {
       console.log(err);
+      setClaimed(false);
+      setMessage("Some Error Occured!");
       showMessageHandler();
       setMessage(err.message);
       setIsClaiming(false);
@@ -494,7 +496,7 @@ const ClaimAddress = () => {
                       ) : (
                         <>
                           <p className={classes.claimCloses}>
-                            Claim ends in{" "}
+                            Claim ends in
                             {/* <span className={classes.time}>{endDateString}</span> */}
                           </p>
                           <Tooltip title={endDateString} placement="right-end">
@@ -633,19 +635,19 @@ const ClaimAddress = () => {
                     <button
                       onClick={claimHandler}
                       className={classes.btn}
-                      // disabled={
-                      //   (claimRemaining == 0 && alreadyClaimed && claimed) ||
-                      //   !claimActive ||
-                      //   !claimableAmt ||
-                      //   +claimInput <= 0 ||
-                      //   claimInput >= +claimRemaining ||
-                      //   (contractData?.permission == 0 &&
-                      //     !isEligibleForTokenGated) ||
-                      //   (contractData?.permission === "3" &&
-                      //     !isEligibleForTokenGated)
-                      //     ? true
-                      //     : false
-                      // }
+                      disabled={
+                        (claimRemaining == 0 && alreadyClaimed && claimed) ||
+                        !claimActive ||
+                        !claimableAmt ||
+                        +claimInput <= 0 ||
+                        claimInput >= +claimRemaining ||
+                        (contractData?.permission == 0 &&
+                          !isEligibleForTokenGated) ||
+                        (contractData?.permission === "3" &&
+                          !isEligibleForTokenGated)
+                          ? true
+                          : false
+                      }
                       style={
                         (alreadyClaimed && +claimRemaining === 0) ||
                         +claimInput <= 0 ||
