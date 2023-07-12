@@ -220,47 +220,27 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
             mt={2}
             sx={{ marginLeft: "0 !important" }}>
             <Typography variant="proposalBody">Amount of Tokens *</Typography>
-            {tokenType === "erc20" ? (
-              <TextField
-                variant="outlined"
-                className={classes.textField}
-                placeholder="0"
-                type="number"
-                name="amountOfTokens"
-                id="amountOfTokens"
-                value={formik.values.amountOfTokens}
-                onChange={formik.handleChange}
-                error={
-                  formik.touched.amountOfTokens &&
-                  Boolean(formik.errors.amountOfTokens)
-                }
-                helperText={
-                  formik.touched.amountOfTokens &&
-                  Boolean(formik.errors.amountOfTokens)
-                }
-                onWheel={(event) => event.target.blur()}
-              />
-            ) : (
-              <TextField
-                variant="outlined"
-                className={classes.textField}
-                placeholder="0"
-                type="number"
-                name="amountOfTokens721"
-                id="amountOfTokens721"
-                value={formik.values.amountOfTokens721}
-                onChange={formik.handleChange}
-                error={
-                  formik.touched.amountOfTokens721 &&
-                  Boolean(formik.errors.amountOfTokens721)
-                }
-                helperText={
-                  formik.touched.amountOfTokens721 &&
-                  formik.errors.amountOfTokens721
-                }
-                onWheel={(event) => event.target.blur()}
-              />
-            )}
+            {console.log(formik)}
+
+            <TextField
+              variant="outlined"
+              className={classes.textField}
+              placeholder="Enter amount of tokens"
+              type="number"
+              name="amountOfTokens"
+              id="amountOfTokens"
+              value={formik.values.amountOfTokens}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={
+                formik.touched.amountOfTokens &&
+                Boolean(formik.errors.amountOfTokens)
+              }
+              helperText={
+                formik.touched.amountOfTokens && formik.errors.amountOfTokens
+              }
+              onWheel={(event) => event.target.blur()}
+            />
           </Grid>
         </>
       ) : formik.values.actionCommand === "Update Governance Settings" ? (
@@ -372,7 +352,13 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
               }}
               inputProps={{ "aria-label": "Without label" }}
               name="customToken"
-              id="customToken">
+              id="customToken"
+              error={
+                formik.touched.customToken && Boolean(formik.errors.customToken)
+              }
+              helperText={
+                formik.touched.customToken && formik.errors.customToken
+              }>
               {tokenData.map((token) => (
                 <MenuItem key={token.name} value={token.name}>
                   {token.name}
@@ -429,6 +415,7 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
         </>
       ) : formik.values.actionCommand === "Send nft to an address" ? (
         <>
+          {console.log(formik)}
           <Grid
             container
             direction={"column"}
@@ -456,7 +443,13 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
               }}
               inputProps={{ "aria-label": "Without label" }}
               name="customToken"
-              id="customToken">
+              id="customToken"
+              error={
+                formik.touched.customToken && Boolean(formik.errors.customToken)
+              }
+              helperText={
+                formik.touched.customToken && formik.errors.customToken
+              }>
               {nftData
                 .filter((item, index, self) => {
                   return (
@@ -490,7 +483,14 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
               }}
               inputProps={{ "aria-label": "Without label" }}
               name="customNftToken"
-              id="customNftToken">
+              id="customNftToken"
+              error={
+                formik.touched.customNftToken &&
+                Boolean(formik.errors.customNftToken)
+              }
+              helperText={
+                formik.touched.customNftToken && formik.errors.customNftToken
+              }>
               {nftData
                 .filter((nft) => nft.token_address === formik.values.customNft)
                 .map((nft) => (

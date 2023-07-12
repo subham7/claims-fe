@@ -121,6 +121,18 @@ export const proposalValidationSchema = yup.object({
         .string("Enter proposal action")
         .required("Action command is required"),
   }),
+  customToken: yup.string("Enter proposal action").when("actionCommand", {
+    is: (actionCommand) =>
+      actionCommand === "Send token to an address" ||
+      actionCommand === "Send nft to an address",
+    then: () =>
+      yup.string("Enter custom token").required("Custom token is required"),
+  }),
+  customNftToken: yup.string("Enter proposal action").when("actionCommand", {
+    is: "Send nft to an address",
+    then: () =>
+      yup.string("Enter custom token").required("Custom token is required"),
+  }),
   amountToAirdrop: yup.number("Enter amount of tokens").when("actionCommand", {
     is: "Distribute token to members",
     then: () =>
@@ -137,22 +149,31 @@ export const proposalValidationSchema = yup.object({
         .matches(/^0x[a-zA-Z0-9]+/gm, " Proper wallet address is required")
         .required("User address is required"),
   }),
-  amountOfTokens: yup.number().when(["tokenType", "actionCommand"], {
-    is: (tokenType, actionCommand) =>
-      tokenType === "erc20" && actionCommand === "Mint Club Token",
-    then: yup
-      .number()
-      .required("Amount is required")
-      .moreThan(0, "Amount should be greater than 0"),
+  amountOfTokens: yup.number().when("actionCommand", {
+    is: "Mint club token",
+    then: () =>
+      yup
+        .number()
+        .required("Amount is required")
+        .moreThan(0, "Amount should be greater than 0"),
   }),
-  amountOfTokens721: yup.number().when(["tokenType", "actionCommand"], {
-    is: (tokenType, actionCommand) =>
-      tokenType === "erc721" && actionCommand === "Mint Club Token",
-    then: yup
-      .number()
-      .required("Amount is required")
-      .moreThan(0, "Amount should be greater than 0"),
-  }),
+
+  // amountOfTokens: yup.number().when(["tokenType", "actionCommand"], {
+  //   is: (tokenType, actionCommand) =>
+  //     tokenType === "erc20" && actionCommand === "Mint club token",
+  //   then: yup
+  //     .number()
+  //     .required("Amount is required")
+  //     .moreThan(0, "Amount should be greater than 0"),
+  // }),
+  // amountOfTokens721: yup.number().when(["tokenType", "actionCommand"], {
+  //   is: (tokenType, actionCommand) =>
+  //     tokenType === "erc721" && actionCommand === "Mint club token",
+  //   then: yup
+  //     .number()
+  //     .required("Amount is required")
+  //     .moreThan(0, "Amount should be greater than 0"),
+  // }),
   quorum: yup.number("Enter Quorum in percentage").when("actionCommand", {
     is: "Update Governance Settings",
     then: () =>

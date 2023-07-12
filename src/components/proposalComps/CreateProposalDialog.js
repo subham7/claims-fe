@@ -124,7 +124,7 @@ const CreateProposalDialog = ({
       quorum: 0,
       threshold: 0,
       totalDeposit: 0,
-      customToken: tokenData ? tokenData[0]?.tokenAddress : "",
+      customToken: "",
       recieverAddress: "",
       amountToSend: 0,
       customNft: "",
