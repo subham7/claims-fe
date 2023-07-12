@@ -35,6 +35,7 @@ import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
+import * as yup from "yup";
 import { saveAs } from "file-saver";
 
 const useStyles = makeStyles({
@@ -167,14 +168,28 @@ const Test = () => {
     setRowsPerPage(event.target.value);
     setPage(0);
   };
-  console.log(deployedTime, dayjs(deployedTime + 3600 * 1000 * 24));
+
+  const MembersValidationSchema = yup.object({
+    startDate: yup
+      .date()
+      .min(
+        dayjs(deployedTime * 1000),
+        "Date-time must be after the station is deployed.",
+      )
+      .required("Start date is required"),
+    endDate: yup
+      .date()
+      .max(dayjs(Date.now()), "Date-time must be less than now.")
+      .required("End date is required"),
+  });
+
   const formik = useFormik({
     initialValues: {
-      startDate: dayjs(deployedTime + 3600 * 1000 * 24),
-      endDate: "",
+      startDate: dayjs(deployedTime * 1000),
+      endDate: dayjs(Date.now() * 1000),
     },
 
-    // validationSchema: ERC721Step2ValidationSchema,
+    validationSchema: MembersValidationSchema,
 
     onSubmit: async (values) => {
       setDownloadLoading(true);
@@ -193,7 +208,7 @@ const Test = () => {
       setDownloadLoading(false);
     },
   });
-
+  console.log(formik);
   const convertDataToCSV = async (data) => {
     const rows = await Promise.all(
       data.map(async (item) => {
@@ -234,22 +249,33 @@ const Test = () => {
                 spacing={3}
                 style={{
                   display: "flex",
-                  alignItems: "center",
+                  alignItems: "start",
                 }}
                 mb={4}>
-                <Grid item>
+                <Grid item style={{ display: "flex", flexDirection: "column" }}>
                   {console.log(formik.values.startDate)}
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <DateTimePicker
                       value={formik.values.startDate}
-                      minDateTime={dayjs(deployedTime)}
+                      minDateTime={dayjs(deployedTime * 1000)}
                       onChange={(value) => {
                         formik.setFieldValue("startDate", value);
                       }}
+                      onBlur={formik.handleBlur}
+                      error={
+                        formik.touched.startDate &&
+                        Boolean(formik.errors.startDate)
+                      }
+                      helperText={
+                        formik.touched.startDate && formik.errors.startDate
+                      }
                     />
                   </LocalizationProvider>
+                  <Typography variant="caption" color="error">
+                    {formik.touched.startDate && formik.errors.startDate}
+                  </Typography>
                 </Grid>
-                <Grid item>
+                <Grid item style={{ display: "flex", flexDirection: "column" }}>
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <DateTimePicker
                       value={formik.values.endDate}
@@ -257,11 +283,23 @@ const Test = () => {
                       onChange={(value) => {
                         formik.setFieldValue("endDate", value);
                       }}
+                      onBlur={formik.handleBlur}
+                      error={
+                        formik.touched.endDate && Boolean(formik.errors.endDate)
+                      }
+                      helperText={
+                        formik.touched.endDate && formik.errors.endDate
+                      }
                     />
                   </LocalizationProvider>
+                  <Typography variant="caption" color="error">
+                    {formik.touched.endDate && formik.errors.endDate}
+                  </Typography>
                 </Grid>
                 <Grid item>
-                  <Button onClick={formik.handleSubmit}>
+                  <Button
+                    onClick={formik.handleSubmit}
+                    style={{ height: "55px" }}>
                     {downloadLoading ? (
                       <CircularProgress color="inherit" />
                     ) : (
