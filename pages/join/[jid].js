@@ -3,7 +3,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useConnectWallet } from "@web3-onboard/react";
 import NewArchERC20 from "../../src/components/depositPageComps/ERC20/NewArch/NewArchERC20";
 import { useRouter } from "next/router";
-import NewArchERC721 from "../../src/components/depositPageComps/ERC721/NewArch/NewArchERC721";
+// import NewArchERC721 from "../../src/components/depositPageComps/ERC721/NewArch/NewArchERC721";
 import {
   convertFromWeiGovernance,
   getImageURL,
@@ -27,6 +27,7 @@ import Layout1 from "../../src/components/layouts/layout1";
 import { showWrongNetworkModal } from "../../src/utils/helper";
 import { getClubInfo } from "../../src/api/club";
 import { makeStyles } from "@mui/styles";
+import ERC721 from "../../src/components/depositPageComps/ERC721/NewArch/ERC721";
 // import useSmartContract from "../../src/hooks/useSmartContract";
 
 const useStyles = makeStyles({
@@ -368,10 +369,15 @@ const Join = () => {
           clubInfo={clubInfo}
         />
       ) : TOKEN_TYPE === "erc721" ? (
-        <NewArchERC721
-          isTokenGated={isTokenGated}
-          isEligibleForTokenGating={isEligibleForTokenGating}
-          erc721DaoAddress={daoAddress}
+        // <NewArchERC721
+        //   isTokenGated={isTokenGated}
+        //   isEligibleForTokenGating={isEligibleForTokenGating}
+        //   erc721DaoAddress={daoAddress}
+        //   daoDetails={daoDetails}
+        //   clubInfo={clubInfo}
+        // />
+        <ERC721
+          daoAddress={daoAddress}
           daoDetails={daoDetails}
           clubInfo={clubInfo}
         />

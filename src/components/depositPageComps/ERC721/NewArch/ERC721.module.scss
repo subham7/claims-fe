@@ -1,0 +1,121 @@
+.mainContainer {
+  border: 0.5px solid #6475a3;
+  background: #101d38;
+  border-radius: 16px;
+  width: 90%;
+  margin: 80px auto;
+  padding: 30px;
+  display: flex;
+  justify-content: space-between;
+  gap: 60px;
+}
+
+.leftContainer {
+  flex: 55;
+}
+
+.rightContainer {
+  flex: 45;
+}
+
+.flexContainer {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin: 8px 0 16px 0;
+}
+
+.isActive {
+  background-color: #05735940;
+  color: #0abb92;
+  padding: 0.3em 1em;
+  border-radius: 0.3em;
+  display: flex;
+  align-items: center;
+  border: 0.5px solid #077d62;
+}
+
+.isInactive {
+  background-color: #d5533840;
+  color: #d55338;
+  padding: 0.3em 1em;
+  border-radius: 0.3em;
+  display: flex;
+  align-items: center;
+  border: 0.5px solid #d55338;
+}
+
+.executedIllustration {
+  height: 12px;
+  width: 12px;
+  background-color: #d55338;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.activeIllustration {
+  height: 12px;
+  width: 12px;
+  background-color: #0abb92;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.createdBy {
+  background: #101d38;
+  color: white;
+  padding: 0.3em 0.5em;
+  border-radius: 6px;
+  border: 0.5px solid #6475a3;
+}
+
+.heading {
+  font-size: 44px;
+  font-weight: 200px;
+}
+
+.subtitle {
+  font-size: 20px;
+  font-weight: 100px;
+}
+
+.smallText {
+  font-size: 16px;
+}
+
+.priceContainer {
+  border: 0.5px solid #6475a3;
+  border-radius: 16px;
+  padding: 30px;
+}
+
+.counterContainer {
+  color: #efefef;
+  border-radius: 2;
+  display: flex;
+  flex-direction: inherit;
+  align-items: center;
+  border: 1px solid #c1d3ff40;
+  border-radius: 8px;
+  margin-right: 2rem;
+}
+
+.icons {
+  border: 0.5px solid #6475a3;
+  padding: 6px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.timer {
+  display: flex;
+  margin: 10px 0 16px 0;
+}
+
+.timer > p {
+  border: 0.5px solid #6475a3;
+  font-size: 20px;
+  padding: 8px 16px;
+  border-radius: 12px;
+  margin-right: 8px;
+}
