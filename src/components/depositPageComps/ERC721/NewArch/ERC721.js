@@ -1,19 +1,6 @@
-import {
-  Alert,
-  Button,
-  CircularProgress,
-  // CircularProgress,
-  Grid,
-  IconButton,
-  Typography,
-} from "@mui/material";
+import { Alert } from "@mui/material";
 import React, { useCallback, useEffect, useState } from "react";
 import classes from "./ERC721.module.scss";
-import RemoveIcon from "@mui/icons-material/Remove";
-import AddIcon from "@mui/icons-material/Add";
-import { TbWorld } from "react-icons/tb";
-import { BiLogoTelegram } from "react-icons/bi";
-import { FaDiscord, FaTwitter } from "react-icons/fa";
 import { subgraphQuery } from "../../../../utils/subgraphs";
 import { QUERY_CLUB_DETAILS } from "../../../../api/graphql/queries";
 import { useSelector } from "react-redux";
@@ -23,9 +10,12 @@ import {
 } from "../../../../utils/globalFunctions";
 import useSmartContractMethods from "../../../../hooks/useSmartContractMethods";
 import { useConnectWallet } from "@web3-onboard/react";
-import ReactHtmlParser from "react-html-parser";
 import dayjs from "dayjs";
 import { showWrongNetworkModal } from "../../../../utils/helper";
+import About from "./About";
+import NFTimg from "./NFTimg";
+import PriceSection from "./PriceSection";
+import ERC721Icons from "./ERC721Icons";
 
 const ERC721 = ({ daoAddress, daoDetails, clubInfo }) => {
   const [clubData, setClubData] = useState([]);
@@ -55,7 +45,6 @@ const ERC721 = ({ daoAddress, daoDetails, clubInfo }) => {
     buyGovernanceTokenERC721DAO,
     getDecimals,
     getTokenSymbol,
-    getTokenName,
     getBalance,
   } = useSmartContractMethods();
 
@@ -100,7 +89,12 @@ const ERC721 = ({ daoAddress, daoDetails, clubInfo }) => {
     } catch (error) {
       console.log(error);
     }
-  }, [Deposit_Token_Address, daoAddress]);
+  }, [
+    Deposit_Token_Address,
+    balanceOfNft,
+    daoAddress,
+    daoDetails?.maxTokensPerUser,
+  ]);
 
   const showMessageHandler = () => {
     setShowMessage(true);
@@ -133,7 +127,7 @@ const ERC721 = ({ daoAddress, daoDetails, clubInfo }) => {
       );
       setLoading(false);
       setClaimSuccessfull(true);
-      router.push(`/dashboard/${erc721DaoAddress}`, undefined, {
+      router.push(`/dashboard/${daoAddress}`, undefined, {
         shallow: true,
       });
       showMessageHandler();
@@ -181,12 +175,12 @@ const ERC721 = ({ daoAddress, daoDetails, clubInfo }) => {
           <div className={classes.flexContainer}>
             {active ? (
               <p className={classes.isActive}>
-                <div className={classes.activeIllustration}></div>
+                <span className={classes.activeIllustration}></span>
                 Active
               </p>
             ) : (
               <p className={classes.isInactive}>
-                <div className={classes.executedIllustration}></div>
+                <span className={classes.executedIllustration}></span>
                 Finished
               </p>
             )}
@@ -196,37 +190,8 @@ const ERC721 = ({ daoAddress, daoDetails, clubInfo }) => {
                 5,
               )}...${clubData?.ownerAddress?.slice(-5)}`}
             </p>
-            <TbWorld size={30} className={classes.icons} />
 
-            {clubInfo?.telegram && (
-              <BiLogoTelegram
-                size={30}
-                className={classes.icons}
-                onClick={() => {
-                  window.open(clubInfo?.telegram, "_blank");
-                }}
-              />
-            )}
-
-            {clubInfo?.discord ? (
-              <FaDiscord
-                size={30}
-                className={classes.icons}
-                onClick={() => {
-                  window.open(clubInfo?.discord, "_blank");
-                }}
-              />
-            ) : null}
-
-            {clubInfo?.twitter && (
-              <FaTwitter
-                size={30}
-                className={classes.icons}
-                onClick={() => {
-                  window.open(clubInfo?.twitter, "_blank");
-                }}
-              />
-            )}
+            <ERC721Icons clubInfo={clubInfo} />
           </div>
           <p className={classes.smallText}>Minting closes in</p>
 
@@ -237,138 +202,21 @@ const ERC721 = ({ daoAddress, daoDetails, clubInfo }) => {
             <p>00</p>
           </div>
 
-          <div className={classes.priceContainer}>
-            <p
-              style={{
-                marginBottom: "10px",
-              }}
-              className={classes.subtitle}>
-              {clubData?.membersCount} collected out of{" "}
-              {clubData?.raiseAmount === "0"
-                ? "unlimited"
-                : clubData?.raiseAmount}{" "}
-              NFTs
-            </p>
-            <p
-              style={{
-                color: "#C1D3FE",
-              }}
-              className={classes.smallText}>
-              Price
-            </p>
-            <p
-              style={{
-                marginBottom: "12px",
-                padding: 0,
-              }}
-              className={classes.heading}>
-              {convertFromWeiGovernance(clubData?.pricePerToken, 6)} USDC
-            </p>
-
-            <div
-              style={{
-                display: "flex",
-              }}>
-              <Grid spacing={3} className={classes.counterContainer}>
-                <IconButton
-                  onClick={() => {
-                    count > 1 ? setCount(count - 1) : 1;
-                  }}>
-                  <RemoveIcon sx={{ color: "#EFEFEF", fontSize: 20 }} />
-                </IconButton>
-                <Typography variant="h6" color="" sx={{ fontWeight: "bold" }}>
-                  {count}
-                </Typography>
-                <IconButton
-                  // onClick={() =>
-                  //   count < daoDetails.maxTokensPerUser - balanceOfNft
-                  //     ? setCount(count + 1)
-                  //     : daoDetails.maxTokensPerUser
-                  // }
-                  onClick={() => {
-                    setCount(count + 1);
-                  }}
-                  color="#000">
-                  <AddIcon sx={{ color: "#EFEFEF", fontSize: 20 }} />
-                </IconButton>
-              </Grid>
-              <Button
-                onClick={claimNFTHandler}
-                disabled={
-                  (remainingDays <= 0 && remainingTimeInSecs < 0) || hasClaimed
-                    ? true
-                    : // : isTokenGated
-                      // ? !isEligibleForTokenGating
-                      false
-                }
-                sx={{ px: 8, borderRadius: "24px", py: "0.5rem" }}>
-                {loading ? (
-                  <CircularProgress />
-                ) : hasClaimed ? (
-                  "Minted"
-                ) : (
-                  "Mint"
-                )}
-              </Button>
-            </div>
-            <p
-              style={{
-                marginTop: "12px",
-              }}
-              className={classes.smallText}>
-              Note: This station allows maximum of 1 mint(s) per address
-            </p>
-          </div>
+          <PriceSection
+            claimNFTHandler={claimNFTHandler}
+            clubData={clubData}
+            count={count}
+            hasClaimed={hasClaimed}
+            loading={loading}
+            remainingDays={remainingDays}
+            remainingTimeInSecs={remainingTimeInSecs}
+            setCount={setCount}
+          />
         </div>
-        <div className={classes.rightContainer}>
-          {/* <img
-            alt="nft img"
-            height={500}
-            width={500}
-            src={imgUrl}
-            style={{
-              borderRadius: "20px",
-            }}
-          /> */}
-
-          {imgUrl && (
-            <>
-              {imgUrl.includes(".mp4") ? (
-                <video className={classes.nftImg} loop autoPlay muted>
-                  <source src={imgUrl} type="video/mp4" />
-                  Your browser does not support the video tag.
-                </video>
-              ) : (
-                <img
-                  src={imgUrl}
-                  alt="nft image"
-                  height={500}
-                  width={500}
-                  style={{
-                    borderRadius: "20px",
-                  }}
-                />
-              )}
-            </>
-          )}
-        </div>
+        <NFTimg imgUrl={imgUrl} />
       </div>
 
-      {clubInfo?.bio ? (
-        <div className={classes.mainContainer}>
-          <div
-            style={{
-              maxHeight: "200px",
-              overflowY: "scroll",
-              margin: "20px 0",
-            }}>
-            <div
-              dangerouslySetInnerHTML={{
-                __html: ReactHtmlParser(clubInfo?.bio),
-              }}></div>
-          </div>
-        </div>
-      ) : null}
+      {clubInfo?.bio ? <About bio={clubInfo?.bio} /> : null}
 
       {showWrongNetworkModal(wallet, networkId)}
 

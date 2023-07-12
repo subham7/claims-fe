@@ -16,6 +16,9 @@
 
 .rightContainer {
   flex: 45;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .flexContainer {
@@ -115,7 +118,7 @@
 .timer > p {
   border: 0.5px solid #6475a3;
   font-size: 20px;
-  padding: 8px 16px;
-  border-radius: 12px;
+  padding: 16px 24px;
+  border-radius: 20px;
   margin-right: 8px;
 }
