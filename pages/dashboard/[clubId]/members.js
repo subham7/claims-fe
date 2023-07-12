@@ -143,8 +143,6 @@ const Test = () => {
   const [rowsPerPage, setRowsPerPage] = React.useState(50);
 
   const handleChangePage = async (event, newPage) => {
-    console.log("1", skip);
-
     try {
       setPage(newPage);
       const newSkip = newPage * rowsPerPage;
@@ -208,7 +206,6 @@ const Test = () => {
       setDownloadLoading(false);
     },
   });
-  console.log(formik);
   const convertDataToCSV = async (data) => {
     const rows = await Promise.all(
       data.map(async (item) => {
@@ -253,7 +250,6 @@ const Test = () => {
                 }}
                 mb={4}>
                 <Grid item style={{ display: "flex", flexDirection: "column" }}>
-                  {console.log(formik.values.startDate)}
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <DateTimePicker
                       value={formik.values.startDate}
