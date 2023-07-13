@@ -20,6 +20,9 @@ const PriceSection = ({
   hasClaimed,
   count,
   setCount,
+  balanceOfNft,
+  isTokenGated,
+  isEligibleForTokenGating,
 }) => {
   return (
     <div className={classes.priceContainer}>
@@ -63,14 +66,11 @@ const PriceSection = ({
             {count}
           </Typography>
           <IconButton
-            // onClick={() =>
-            //   count < daoDetails.maxTokensPerUser - balanceOfNft
-            //     ? setCount(count + 1)
-            //     : daoDetails.maxTokensPerUser
-            // }
-            onClick={() => {
-              setCount(count + 1);
-            }}
+            onClick={() =>
+              count < clubData?.maxTokensPerUser - balanceOfNft
+                ? setCount(count + 1)
+                : clubData?.maxTokensPerUser
+            }
             color="#000">
             <AddIcon sx={{ color: "#EFEFEF", fontSize: 20 }} />
           </IconButton>
@@ -80,9 +80,9 @@ const PriceSection = ({
           disabled={
             (remainingDays <= 0 && remainingTimeInSecs < 0) || hasClaimed
               ? true
-              : // : isTokenGated
-                // ? !isEligibleForTokenGating
-                false
+              : isTokenGated
+              ? !isEligibleForTokenGating
+              : false
           }
           sx={{ px: 8, borderRadius: "24px", py: "0.5rem" }}>
           {loading ? <CircularProgress /> : hasClaimed ? "Minted" : "Mint"}
@@ -93,7 +93,8 @@ const PriceSection = ({
           marginTop: "12px",
         }}
         className={classes.smallText}>
-        Note: This station allows maximum of 1 mint(s) per address
+        Note: This station allows maximum of {clubData?.maxTokensPerUser}{" "}
+        mint(s) per address
       </p>
     </div>
   );

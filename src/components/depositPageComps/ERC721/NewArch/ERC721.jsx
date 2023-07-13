@@ -15,9 +15,15 @@ import { showWrongNetworkModal } from "../../../../utils/helper";
 import About from "./About";
 import NFTimg from "./NFTimg";
 import PriceSection from "./PriceSection";
-import ERC721Icons from "./ERC721Icons";
+import Header from "./Header";
 
-const ERC721 = ({ daoAddress, daoDetails, clubInfo }) => {
+const ERC721 = ({
+  daoAddress,
+  clubInfo,
+  isEligibleForTokenGating,
+  isTokenGated,
+  daoDetails,
+}) => {
   const [clubData, setClubData] = useState([]);
   const [count, setCount] = useState(1);
   const [balanceOfNft, setBalanceOfNft] = useState();
@@ -36,7 +42,7 @@ const ERC721 = ({ daoAddress, daoDetails, clubInfo }) => {
 
   const day = Math.floor(new Date().getTime() / 1000.0);
   const day1 = dayjs.unix(day);
-  const day2 = dayjs.unix(daoDetails.depositDeadline);
+  const day2 = dayjs.unix(daoDetails?.depositDeadline);
   const remainingDays = day2.diff(day1, "day");
   const remainingTimeInSecs = day2.diff(day1, "seconds");
 
@@ -69,7 +75,7 @@ const ERC721 = ({ daoAddress, daoDetails, clubInfo }) => {
       const balance = await getBalance(daoAddress);
       setBalanceOfNft(balance);
 
-      if (+balanceOfNft >= +daoDetails?.maxTokensPerUser) {
+      if (+balanceOfNft >= +clubData?.maxTokensPerUser) {
         setHasClaimed(true);
       } else {
         setHasClaimed(false);
@@ -93,7 +99,7 @@ const ERC721 = ({ daoAddress, daoDetails, clubInfo }) => {
     Deposit_Token_Address,
     balanceOfNft,
     daoAddress,
-    daoDetails?.maxTokensPerUser,
+    clubData?.maxTokensPerUser,
   ]);
 
   const showMessageHandler = () => {
@@ -171,37 +177,12 @@ const ERC721 = ({ daoAddress, daoDetails, clubInfo }) => {
     <div className={classes.pageContainer}>
       <div className={classes.mainContainer}>
         <div className={classes.leftContainer}>
-          <p className={classes.heading}>{clubData?.name}</p>
-          <div className={classes.flexContainer}>
-            {active ? (
-              <p className={classes.isActive}>
-                <span className={classes.activeIllustration}></span>
-                Active
-              </p>
-            ) : (
-              <p className={classes.isInactive}>
-                <span className={classes.executedIllustration}></span>
-                Finished
-              </p>
-            )}
-            <p className={classes.createdBy}>
-              {`${clubData?.ownerAddress?.slice(
-                0,
-                5,
-              )}...${clubData?.ownerAddress?.slice(-5)}`}
-            </p>
-
-            <ERC721Icons clubInfo={clubInfo} />
-          </div>
-          <p className={classes.smallText}>Minting closes in</p>
-
-          <div className={classes.timer}>
-            <p>00</p>
-            <p>00</p>
-            <p>00</p>
-            <p>00</p>
-          </div>
-
+          <Header
+            isErc20={false}
+            active={active}
+            clubData={clubData}
+            clubInfo={clubInfo}
+          />
           <PriceSection
             claimNFTHandler={claimNFTHandler}
             clubData={clubData}
@@ -211,6 +192,9 @@ const ERC721 = ({ daoAddress, daoDetails, clubInfo }) => {
             remainingDays={remainingDays}
             remainingTimeInSecs={remainingTimeInSecs}
             setCount={setCount}
+            balanceOfNft={balanceOfNft}
+            isEligibleForTokenGating={isEligibleForTokenGating}
+            isTokenGated={isTokenGated}
           />
         </div>
         <NFTimg imgUrl={imgUrl} />

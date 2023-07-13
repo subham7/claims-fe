@@ -1,0 +1,130 @@
+.mainContainer {
+  border: 0.5px solid #6475a3;
+  background: #101d38;
+  border-radius: 16px;
+  width: 90%;
+  margin: 80px auto;
+  padding: 30px;
+  display: flex;
+  justify-content: space-between;
+  // gap: 60px;
+
+  .leftContainer {
+    flex: 0.4;
+    width: 600px;
+  }
+
+  .rightContainer {
+    flex: 0.5;
+    background: #142243;
+    padding: 20px 32px;
+    border-radius: 20px;
+    max-width: 600px;
+
+    .inputContainer {
+      display: flex;
+      background: #111d38;
+      align-items: center;
+      border-radius: 20px;
+      padding: 20px;
+
+      input {
+        background: inherit;
+        border: none;
+        outline: none;
+        color: white;
+        width: 250px;
+        font-size: 32px;
+        padding: 10px;
+        border-radius: 20px;
+      }
+    }
+
+    button {
+      background: #3b7afd;
+      padding: 12px 40px;
+      color: white;
+      font-size: 20px;
+      font-weight: 500;
+      border: none;
+      outline: none;
+      border-radius: 20rem;
+      margin-top: 20px;
+      cursor: pointer;
+      font-weight: 600;
+
+      &:disabled {
+        background-color: #8d8d8d;
+        cursor: not-allowed;
+
+        &:hover {
+          background: #8d8d8d;
+          color: white;
+        }
+      }
+
+      &:hover {
+        background: white;
+        color: #3b7afd;
+      }
+    }
+  }
+}
+
+.detailsContainer {
+  width: 90%;
+  margin-top: 40px;
+}
+
+.flexContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 8px 0 16px 0;
+
+  div {
+    width: 300px;
+    .title {
+      font-weight: 500;
+    }
+
+    p {
+      font-size: 18px;
+      font-weight: 700;
+    }
+  }
+
+  .balance {
+    background: #19274b;
+    padding: 4px 10px;
+    border-radius: 8px;
+  }
+}
+
+.heading {
+  font-size: 44px;
+  font-weight: 200px;
+}
+
+.subtitle {
+  font-size: 28px;
+  font-weight: 100px;
+}
+
+.smallText {
+  margin-top: 40px;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.usdc {
+  border: 0.5px solid #6475a3;
+  border-radius: 20rem;
+  padding: 8px 16px 8px 8px;
+  display: flex;
+  align-items: center;
+}
+
+.errorText {
+  color: #ec4a4a;
+}

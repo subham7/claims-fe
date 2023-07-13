@@ -4,7 +4,8 @@ import ReactHtmlParser from "react-html-parser";
 
 const About = ({ bio }) => {
   return (
-    <div className={classes.mainContainer}>
+    <div className={classes.aboutContainer}>
+      <p className={classes.subtitle}>About</p>
       <div
         style={{
           maxHeight: "200px",

@@ -12,15 +12,7 @@ const NFTimg = ({ imgUrl }) => {
               Your browser does not support the video tag.
             </video>
           ) : (
-            <img
-              src={imgUrl}
-              alt="nft image"
-              height={520}
-              width={520}
-              style={{
-                borderRadius: "20px",
-              }}
-            />
+            <img src={imgUrl} alt="nft image" className={classes.nftImg} />
           )}
         </>
       )}

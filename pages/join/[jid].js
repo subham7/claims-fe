@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 
 import { useConnectWallet } from "@web3-onboard/react";
-import NewArchERC20 from "../../src/components/depositPageComps/ERC20/NewArch/NewArchERC20";
 import { useRouter } from "next/router";
 // import NewArchERC721 from "../../src/components/depositPageComps/ERC721/NewArch/NewArchERC721";
 import {
@@ -28,6 +27,7 @@ import { showWrongNetworkModal } from "../../src/utils/helper";
 import { getClubInfo } from "../../src/api/club";
 import { makeStyles } from "@mui/styles";
 import ERC721 from "../../src/components/depositPageComps/ERC721/NewArch/ERC721";
+import ERC20 from "../../src/components/depositPageComps/ERC20/NewArch/ERC20";
 // import useSmartContract from "../../src/hooks/useSmartContract";
 
 const useStyles = makeStyles({
@@ -357,16 +357,24 @@ const Join = () => {
   return (
     <Layout1 showSidebar={false}>
       {TOKEN_TYPE === "erc20" ? (
-        <NewArchERC20
-          isTokenGated={isTokenGated}
-          isEligibleForTokenGating={isEligibleForTokenGating}
-          erc20DaoAddress={daoAddress}
-          daoDetails={daoDetails}
-          members={members}
-          remainingClaimAmount={remainingClaimAmount}
-          fetchedTokenGatedDetails={fetchedDetails}
-          displayTokenDetails={displayTokenDetails}
+        // <NewArchERC20
+        //   isTokenGated={isTokenGated}
+        //   isEligibleForTokenGating={isEligibleForTokenGating}
+        //   erc20DaoAddress={daoAddress}
+        //   daoDetails={daoDetails}
+        //   members={members}
+        //   remainingClaimAmount={remainingClaimAmount}
+        //   fetchedTokenGatedDetails={fetchedDetails}
+        //   displayTokenDetails={displayTokenDetails}
+        //   clubInfo={clubInfo}
+        // />
+        <ERC20
           clubInfo={clubInfo}
+          daoAddress={daoAddress}
+          remainingClaimAmount={remainingClaimAmount}
+          isTokenGated={isTokenGated}
+          daoDetails={daoDetails}
+          isEligibleForTokenGating={isEligibleForTokenGating}
         />
       ) : TOKEN_TYPE === "erc721" ? (
         // <NewArchERC721
@@ -378,8 +386,10 @@ const Join = () => {
         // />
         <ERC721
           daoAddress={daoAddress}
-          daoDetails={daoDetails}
           clubInfo={clubInfo}
+          isTokenGated={isTokenGated}
+          daoDetails={daoDetails}
+          isEligibleForTokenGating={isEligibleForTokenGating}
         />
       ) : null}
 

@@ -52,6 +52,8 @@ export const QUERY_CLUB_DETAILS = (daoAddress) => {
               distributionAmount
               maxDepositAmount
               minDepositAmount
+              maxTokensPerUser
+              depositDeadline
             }
     }`;
 };
