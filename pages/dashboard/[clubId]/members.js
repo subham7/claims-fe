@@ -184,7 +184,7 @@ const Test = () => {
   const formik = useFormik({
     initialValues: {
       startDate: dayjs(deployedTime * 1000),
-      endDate: dayjs(Date.now() * 1000),
+      endDate: dayjs(Date.now()),
     },
 
     validationSchema: MembersValidationSchema,
