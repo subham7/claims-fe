@@ -124,7 +124,13 @@ const Test = () => {
         if (daoAddress) {
           const data = await subgraphQuery(
             SUBGRAPH_URL,
-            QUERY_PAGINATED_MEMBERS(daoAddress, 20, 0, 1685613616, Date.now()),
+            QUERY_PAGINATED_MEMBERS(
+              daoAddress,
+              20,
+              0,
+              deployedTime,
+              Date.now(),
+            ),
             "users",
           );
           setMembersData(data?.users);
