@@ -65,6 +65,7 @@
     "react-twitter-embed": "^4.0.4",
     "redux": "^4.1.2",
     "redux-thunk": "^2.4.1",
+    "sass": "^1.63.6",
     "web3": "^1.9.0",
     "yup": "^1.0.2"
   },
