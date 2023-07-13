@@ -26,7 +26,6 @@ import QuillEditor from "../quillEditor";
 import AddCircleRoundedIcon from "@mui/icons-material/AddCircleRounded";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ProposalActionForm from "./ProposalActionForm";
-import { proposalValidationSchema } from "../createClubComps/ValidationSchemas";
 import { convertToWeiGovernance } from "../../utils/globalFunctions";
 import { useConnectWallet } from "@web3-onboard/react";
 import { useRouter } from "next/router";
@@ -35,6 +34,7 @@ import { fetchProposals } from "../../utils/proposal";
 import { useDispatch, useSelector } from "react-redux";
 import { setProposalList } from "../../redux/reducers/proposal";
 import Web3 from "web3";
+import * as yup from "yup";
 
 const useStyles = makeStyles({
   modalStyle: {
@@ -56,6 +56,7 @@ const useStyles = makeStyles({
     marginTop: "0.5rem",
   },
 });
+
 const CreateProposalDialog = ({
   open,
   setOpen,
@@ -106,6 +107,172 @@ const CreateProposalDialog = ({
     setLoaderOpen(false);
   };
 
+  const proposalValidationSchema = yup.object({
+    proposalDeadline: yup.date().required("Deposit close date is required"),
+    proposalTitle: yup
+      .string("Enter proposal title")
+      .required("Title is required"),
+    proposalDescription: yup
+      .string("Enter proposal description")
+      .required("Description is required"),
+    optionList: yup.array().of(
+      yup.object({
+        text: yup.string().required("Option is required"),
+      }),
+    ),
+    actionCommand: yup.string("Enter proposal action").when("typeOfProposal", {
+      is: "action",
+      then: () =>
+        yup
+          .string("Enter proposal action")
+          .required("Action command is required"),
+    }),
+    customToken: yup.string("Enter proposal action").when("actionCommand", {
+      is: (actionCommand) =>
+        actionCommand === "Send token to an address" ||
+        actionCommand === "Send nft to an address",
+      then: () =>
+        yup.string("Enter custom token").required("Custom token is required"),
+    }),
+    customNftToken: yup.string("Enter proposal action").when("actionCommand", {
+      is: "Send nft to an address",
+      then: () =>
+        yup.string("Enter custom token").required("Custom token is required"),
+    }),
+    airdropToken: yup.string("Enter airdrop token").when("actionCommand", {
+      is: "Distribute token to members",
+      then: () =>
+        yup.string("Enter airdrop token").required("Airdrop token is required"),
+    }),
+    amountToAirdrop: yup
+      .number("Enter amount of tokens")
+      .when("actionCommand", {
+        is: "Distribute token to members",
+        then: () =>
+          yup
+            .number("Enter amount of tokens")
+            .required("Amount is required")
+            .lessThan(
+              proposal.values.airdropToken &&
+                tokenData.find((token) => {
+                  return token.token_address === proposal.values.airdropToken;
+                })?.balance /
+                  10 **
+                    tokenData.find((token) => {
+                      return (
+                        token.token_address === proposal.values.airdropToken
+                      );
+                    }).decimals,
+              "Amount is greater than balance",
+            )
+            .moreThan(0, "Amount should be greater than 0"),
+      }),
+    userAddress: yup.string("Please enter user address").when("actionCommand", {
+      is: "Mint club token",
+      then: () =>
+        yup
+          .string("Enter user address")
+          .matches(/^0x[a-zA-Z0-9]+/gm, " Proper wallet address is required")
+          .required("User address is required"),
+    }),
+    amountOfTokens: yup.number().when("actionCommand", {
+      is: "Mint club token",
+      then: () =>
+        yup
+          .number()
+          .required("Amount is required")
+          .moreThan(0, "Amount should be greater than 0"),
+    }),
+
+    // amountOfTokens: yup.number().when(["tokenType", "actionCommand"], {
+    //   is: (tokenType, actionCommand) =>
+    //     tokenType === "erc20" && actionCommand === "Mint club token",
+    //   then: yup
+    //     .number()
+    //     .required("Amount is required")
+    //     .moreThan(0, "Amount should be greater than 0"),
+    // }),
+    // amountOfTokens721: yup.number().when(["tokenType", "actionCommand"], {
+    //   is: (tokenType, actionCommand) =>
+    //     tokenType === "erc721" && actionCommand === "Mint club token",
+    //   then: yup
+    //     .number()
+    //     .required("Amount is required")
+    //     .moreThan(0, "Amount should be greater than 0"),
+    // }),
+    quorum: yup.number("Enter Quorum in percentage").when("actionCommand", {
+      is: "Update Governance Settings",
+      then: () =>
+        yup
+          .number("Enter Quorum in percentage")
+          .required("Quorum is required")
+          .moreThan(0, "Quorum should be greater than 0")
+          .max(100, "Quorum should be less than 100"),
+    }),
+    threshold: yup
+      .number("Enter Threshold in percentage")
+      .when("actionCommand", {
+        is: "Update Governance Settings",
+        then: () =>
+          yup
+            .number("Enter Threshold in percentage")
+            .required("Threshold is required")
+            .moreThan(0, "Threshold should be greater than 0")
+            .max(100, "Threshold should be less than 100"),
+      }),
+    totalDeposit: yup
+      .number("Enter total deposit amount")
+      .when("actionCommand", {
+        is: "Change total raise amount",
+        then: () =>
+          yup
+            .number("Enter total deposit amount")
+            .required("Total deposit is required")
+            .moreThan(0, "Total deposit should be greater than 0"),
+      }),
+    recieverAddress: yup
+      .string("Please enter reciever address")
+      .when("actionCommand", {
+        is: "Send token to an address",
+        then: () =>
+          yup
+            .string("Enter reciever address")
+            .matches(/^0x[a-zA-Z0-9]+/gm, " Proper wallet address is required")
+            .required("Reciever address is required"),
+      }),
+    amountToSend: yup.number("Enter amount to be sent").when("actionCommand", {
+      is: "Send token to an address",
+      then: () =>
+        yup
+          .number("Enter amount to be sent")
+          .required("Amount is required")
+          .lessThan(
+            proposal.values.customToken &&
+              tokenData.find((token) => {
+                return token.token_address === proposal.values.customToken;
+              })?.balance /
+                10 **
+                  tokenData.find((token) => {
+                    return token.token_address === proposal.values.customToken;
+                  }).decimals,
+            "Amount is greater than balance",
+          )
+          .moreThan(0, "Amount should be greater than 0"),
+    }),
+    safeThreshold: yup
+      .number("Enter threshold")
+      .when(["actionCommand", "ownerChangeAction"], {
+        is: (actionCommand, ownerChangeAction) =>
+          actionCommand === "Add/remove owners" &&
+          ownerChangeAction === "remove",
+        then: () =>
+          yup
+            .number("Enter threshold")
+            .required("Safe Threshold is required")
+            .moreThan(1, "Safe Threshold should be greater than 1"),
+      }),
+  });
+
   const proposal = useFormik({
     initialValues: {
       tokenType: tokenType,
@@ -115,7 +282,7 @@ const CreateProposalDialog = ({
       proposalDescription: "",
       optionList: [{ text: "Yes" }, { text: "No" }, { text: "Abstain" }],
       actionCommand: "",
-      airdropToken: tokenData ? tokenData[0]?.tokenAddress : "",
+      airdropToken: "",
       amountToAirdrop: 0,
       carryFee: 0,
       userAddress: "",
@@ -279,7 +446,6 @@ const CreateProposalDialog = ({
       });
     },
   });
-
   return (
     <>
       <Dialog
@@ -548,7 +714,8 @@ const CreateProposalDialog = ({
                 <Button
                   variant="primary"
                   type="submit"
-                  sx={{ display: "flex", alignItems: "center" }}>
+                  sx={{ display: "flex", alignItems: "center" }}
+                  disabled={proposal.errors.length}>
                   {loaderOpen ? (
                     <CircularProgress
                       color="inherit"

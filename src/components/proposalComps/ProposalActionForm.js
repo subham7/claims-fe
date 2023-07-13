@@ -131,7 +131,13 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
               }}
               inputProps={{ "aria-label": "Without label" }}
               name="airdropToken"
-              id="airdropToken">
+              id="airdropToken"
+              error={
+                formik.touched.customToken && Boolean(formik.errors.customToken)
+              }
+              helperText={
+                formik.touched.customToken && formik.errors.customToken
+              }>
               {tokenData.map((token) => (
                 <MenuItem key={token.name} value={token.name}>
                   {token.name}
@@ -155,6 +161,26 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
               id="amountToAirdrop"
               value={formik.values.amountToAirdrop}
               onChange={formik.handleChange}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment style={{ color: "#6475A3" }} position="end">
+                    Balance:{" "}
+                    {formik.values.airdropToken
+                      ? tokenData.find((token) => {
+                          return (
+                            token.token_address === formik.values.airdropToken
+                          );
+                        }).balance /
+                        10 **
+                          tokenData.find((token) => {
+                            return (
+                              token.token_address === formik.values.airdropToken
+                            );
+                          }).decimals
+                      : "0"}
+                  </InputAdornment>
+                ),
+              }}
               error={
                 formik.touched.amountToAirdrop &&
                 Boolean(formik.errors.amountToAirdrop)
@@ -402,6 +428,26 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
               id="amountToSend"
               value={formik.values.amountToSend}
               onChange={formik.handleChange}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment style={{ color: "#6475A3" }} position="end">
+                    Balance:{" "}
+                    {formik.values.customToken
+                      ? tokenData.find((token) => {
+                          return (
+                            token.token_address === formik.values.customToken
+                          );
+                        }).balance /
+                        10 **
+                          tokenData.find((token) => {
+                            return (
+                              token.token_address === formik.values.customToken
+                            );
+                          }).decimals
+                      : "0"}
+                  </InputAdornment>
+                ),
+              }}
               error={
                 formik.touched.amountToSend &&
                 Boolean(formik.errors.amountToSend)
