@@ -41,7 +41,7 @@ const Settings = () => {
     ownerFee: 0,
     nftMinted: 0,
     balanceOfClubToken: 0,
-    assetsStoredOnGnosis: false,
+    assetsStoredOnGnosis: true,
   });
   const [erc20TokenDetails, setErc20TokenDetails] = useState({
     tokenSymbol: "",
@@ -280,6 +280,7 @@ const Settings = () => {
         erc20TokenDetails={erc20TokenDetails}
         tokenType={tokenType}
         walletAddress={walletAddress}
+        gnosisAddress={gnosisAddress}
         // networkId={networkId}
         fetchErc20ContractDetails={fetchErc20ContractDetails}
         fetchErc721ContractDetails={fetchErc721ContractDetails}
