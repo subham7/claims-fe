@@ -1,17 +1,9 @@
 import React, { useCallback, useEffect, useState } from "react";
-
 import { useConnectWallet } from "@web3-onboard/react";
 import { useRouter } from "next/router";
-// import NewArchERC721 from "../../src/components/depositPageComps/ERC721/NewArch/NewArchERC721";
-import {
-  convertFromWeiGovernance,
-  getImageURL,
-} from "../../src/utils/globalFunctions";
+import { convertFromWeiGovernance } from "../../src/utils/globalFunctions";
 import { subgraphQuery } from "../../src/utils/subgraphs";
-import {
-  QUERY_ALL_MEMBERS,
-  QUERY_CLUB_DETAILS,
-} from "../../src/api/graphql/queries";
+import { QUERY_ALL_MEMBERS } from "../../src/api/graphql/queries";
 import { useSelector } from "react-redux";
 import ClubFetch from "../../src/utils/clubFetch";
 import {
@@ -28,7 +20,6 @@ import { getClubInfo } from "../../src/api/club";
 import { makeStyles } from "@mui/styles";
 import ERC721 from "../../src/components/depositPageComps/ERC721/NewArch/ERC721";
 import ERC20 from "../../src/components/depositPageComps/ERC20/NewArch/ERC20";
-// import useSmartContract from "../../src/hooks/useSmartContract";
 
 const useStyles = makeStyles({
   image: {
@@ -54,27 +45,7 @@ const useStyles = makeStyles({
 
 const Join = () => {
   const [daoDetails, setDaoDetails] = useState({
-    daoName: "",
-    daoSymbol: "",
-    decimals: 0,
-    daoImage: "",
-    clubTokensMinted: 0,
-    quorum: 0,
-    threshold: 0,
-    isGovernance: false,
-    isTokenGated: false,
-    isTotalSupplyUnlinited: false,
-    minDeposit: 0,
-    maxDeposit: 0,
-    totalSupply: 0,
     depositDeadline: 0,
-    pricePerToken: 0,
-    distributionAmt: 0,
-    depositTokenAddress: "",
-    createdBy: "",
-    maxTokensPerUser: 0,
-    nftURI: "",
-    nftMinted: 0,
   });
   const [isEligibleForTokenGating, setIsEligibleForTokenGating] =
     useState(false);
@@ -121,11 +92,8 @@ const Join = () => {
   });
 
   const {
-    getERC20TotalSupply,
-    getERC20DAOdetails,
     getDecimals,
-    getERC721DAOdetails,
-    getNftOwnersCount,
+
     getBalance,
     getTokenGatingDetails,
     getTokenSymbol,
@@ -137,38 +105,17 @@ const Join = () => {
   const fetchErc20ContractDetails = useCallback(async () => {
     try {
       setLoading(true);
-
-      const erc20Data = await getERC20DAOdetails();
-      const erc20DaoDecimal = await getDecimals(daoAddress);
-      const clubTokensMinted = await getERC20TotalSupply();
-
-      if (erc20Data && factoryData)
+      if (factoryData)
         setDaoDetails({
-          daoName: erc20Data.DaoName,
-          daoSymbol: erc20Data.DaoSymbol,
-          quorum: erc20Data.quorum,
-          threshold: erc20Data.threshold,
-          isGovernance: erc20Data.isGovernanceActive,
-          decimals: erc20DaoDecimal,
-          clubTokensMinted: clubTokensMinted,
-          // daoImage: fetchedImage,
-          isTokenGated: factoryData.isTokenGatingApplied,
-          minDeposit: factoryData.minDepositPerUser,
-          maxDeposit: factoryData.maxDepositPerUser,
-          pricePerToken: factoryData.pricePerToken,
           depositDeadline: factoryData.depositCloseTime,
-          depositTokenAddress: factoryData.depositTokenAddress,
-          distributionAmt: factoryData.distributionAmount,
-          totalSupply:
-            (factoryData.distributionAmount / 10 ** 18) *
-            factoryData.pricePerToken,
         });
+
       setLoading(false);
     } catch (error) {
       console.log(error);
       setLoading(false);
     }
-  }, [daoAddress, factoryData]);
+  }, [factoryData]);
 
   /**
    * Fetching details for ERC721 comp
@@ -177,38 +124,9 @@ const Join = () => {
     try {
       setLoading(true);
 
-      const clubDetails = await subgraphQuery(
-        SUBGRAPH_URL,
-        QUERY_CLUB_DETAILS(daoAddress),
-      );
-
-      const imageUrl = await getImageURL(clubDetails?.stations[0].imageUrl);
-
-      const erc721Data = await getERC721DAOdetails();
-      const nftCount = await getNftOwnersCount();
-
-      if (erc721Data && factoryData) {
+      if (factoryData) {
         setDaoDetails({
-          daoName: erc721Data.DaoName,
-          daoSymbol: erc721Data.DaoSymbol,
-          quorum: erc721Data.quorum,
-          threshold: erc721Data.threshold,
-          isGovernance: erc721Data.isGovernanceActive,
-          maxTokensPerUser: erc721Data.maxTokensPerUser,
-          isTotalSupplyUnlinited: erc721Data.isNftTotalSupplyUnlimited,
-          createdBy: erc721Data.ownerAddress,
-          daoImage: imageUrl,
-          nftURI: clubDetails?.stations[0].imageUrl,
-          isTokenGated: factoryData.isTokenGatingApplied,
-          minDeposit: factoryData.minDepositPerUser,
-          maxDeposit: factoryData.maxDepositPerUser,
-          pricePerToken: factoryData.pricePerToken,
           depositDeadline: factoryData.depositCloseTime,
-          depositTokenAddress: factoryData.depositTokenAddress,
-          distributionAmt: factoryData.distributionAmount,
-          totalSupply:
-            factoryData.distributionAmount * factoryData.pricePerToken,
-          nftMinted: nftCount,
         });
       }
       setLoading(false);
@@ -216,7 +134,7 @@ const Join = () => {
       console.log(error);
       setLoading(false);
     }
-  }, [SUBGRAPH_URL, daoAddress, factoryData]);
+  }, [factoryData]);
 
   const fetchTokenGatingDetials = useCallback(async () => {
     try {
@@ -357,17 +275,6 @@ const Join = () => {
   return (
     <Layout1 showSidebar={false}>
       {TOKEN_TYPE === "erc20" ? (
-        // <NewArchERC20
-        //   isTokenGated={isTokenGated}
-        //   isEligibleForTokenGating={isEligibleForTokenGating}
-        //   erc20DaoAddress={daoAddress}
-        //   daoDetails={daoDetails}
-        //   members={members}
-        //   remainingClaimAmount={remainingClaimAmount}
-        //   fetchedTokenGatedDetails={fetchedDetails}
-        //   displayTokenDetails={displayTokenDetails}
-        //   clubInfo={clubInfo}
-        // />
         <ERC20
           clubInfo={clubInfo}
           daoAddress={daoAddress}
@@ -377,13 +284,6 @@ const Join = () => {
           isEligibleForTokenGating={isEligibleForTokenGating}
         />
       ) : TOKEN_TYPE === "erc721" ? (
-        // <NewArchERC721
-        //   isTokenGated={isTokenGated}
-        //   isEligibleForTokenGating={isEligibleForTokenGating}
-        //   erc721DaoAddress={daoAddress}
-        //   daoDetails={daoDetails}
-        //   clubInfo={clubInfo}
-        // />
         <ERC721
           daoAddress={daoAddress}
           clubInfo={clubInfo}

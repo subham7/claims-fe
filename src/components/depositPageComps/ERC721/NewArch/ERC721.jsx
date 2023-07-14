@@ -182,6 +182,7 @@ const ERC721 = ({
             active={active}
             clubData={clubData}
             clubInfo={clubInfo}
+            deadline={daoDetails.depositDeadline}
           />
           <PriceSection
             claimNFTHandler={claimNFTHandler}
