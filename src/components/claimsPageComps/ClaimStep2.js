@@ -13,13 +13,10 @@ import {
 import { BsArrowLeft } from "react-icons/bs";
 import { makeStyles } from "@mui/styles";
 import React, { useRef, useState } from "react";
-import { convertToWeiGovernance } from "../../../src/utils/globalFunctions";
-import keccak256 from "keccak256";
 import { useConnectWallet } from "@web3-onboard/react";
 import { useDispatch } from "react-redux";
 import { useRouter } from "next/router";
 import Link from "next/link";
-import useSmartContractMethods from "../../hooks/useSmartContractMethods";
 import { showWrongNetworkModal } from "../../utils/helper";
 
 const useStyles = makeStyles({
@@ -120,7 +117,7 @@ const useStyles = makeStyles({
   },
 });
 
-const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
+const ClaimStep2 = ({ handleBack, formik, finish, loading, formikStep1 }) => {
   const { values } = formik;
   const router = useRouter();
 
@@ -133,8 +130,6 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
   const dispatch = useDispatch();
 
   const hiddenFileInput = useRef(null);
-  // const claimsContractAddress = CLAIM_FACTORY_ADDRESS_GOERLI;
-  const { encode, getDecimals } = useSmartContractMethods();
 
   const [file, setFile] = useState("");
   const handleClick = (event) => {
@@ -145,37 +140,35 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
     values.maximumClaim = "custom";
   }
 
-  const helper = async (csvArr, decimals) => {
-    let encodedListOfLeaves = [];
-    csvArr.map(async (data) => {
-      const res = await encode(
-        data.address,
-        convertToWeiGovernance(data.amount, decimals),
-      );
-      encodedListOfLeaves.push(keccak256(res));
-    });
+  // const helper = async (csvArr) => {
+  //   let encodedListOfLeaves = [];
+  //   csvArr.map((data) => {
+  //     const res = encode(data.address, data.amount);
+  //     encodedListOfLeaves.push(keccak256(res));
+  //   });
 
-    return encodedListOfLeaves;
-  };
+  //   return encodedListOfLeaves;
+  // };
 
-  const handleChange = (event) => {
+  const handleChange = async (event) => {
     const fileUploaded = event.target.files[0];
+    setLoadingCsv(true);
     setFile(fileUploaded);
 
     // new instance of fileReader class
     const reader = new FileReader();
 
     if (fileUploaded) {
-      reader.readAsText(fileUploaded);
+      await reader.readAsText(fileUploaded);
 
       // converting .csv file into array of objects
       reader.onload = async (event) => {
         const csvData = event.target.result;
 
-        setLoadingCsv(true);
         const csvArr = csvData
           .split("\r\n")
           .map((data) => data.split(","))
+          .filter((data) => data[0])
           .map((data) => ({
             address: data[0].toLowerCase(),
             amount: +data[1],
@@ -190,20 +183,11 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
           initialValue,
         );
 
-        if (sumOfAmt > values.numberOfTokens) {
+        if (sumOfAmt > formikStep1.values.numberOfTokens) {
           setCsvError(true);
         }
 
-        try {
-          const decimals = await getDecimals(values.airdropTokenAddress);
-
-          const list = await helper(csvArr, decimals);
-          formik.values.merkleData = list;
-
-          setLoadingCsv(false);
-        } catch (err) {
-          console.log(err);
-        }
+        setLoadingCsv(false);
       };
     }
   };
@@ -263,6 +247,30 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
                   variant="outlined"
                   className={classes.input}
                 />
+
+                {values.maximumClaim !== "proRata" && (
+                  <>
+                    <Typography className={classes.label}>
+                      Token Gating Amount
+                    </Typography>
+                    <TextField
+                      error={
+                        formik.touched.tokenGatingAmt &&
+                        Boolean(formik.errors.tokenGatingAmt)
+                      }
+                      helperText={
+                        formik.touched.tokenGatingAmt &&
+                        formik.errors.tokenGatingAmt
+                      }
+                      onChange={formik.handleChange}
+                      value={values.tokenGatingAmt}
+                      name="tokenGatingAmt"
+                      id="tokenGatingAmt"
+                      variant="outlined"
+                      className={classes.input}
+                    />
+                  </>
+                )}
               </>
             )}
 
@@ -295,6 +303,48 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading }) => {
             </RadioGroup>
 
             {/* Number of Tokens */}
+
+            {values.maximumClaim === "proRata" && (
+              <>
+                <Typography className={classes.label}>
+                  Select network on which gated-token is present *
+                </Typography>
+                <FormControl sx={{ width: "100%" }}>
+                  <Select
+                    value={values.tokenGatedNetwork}
+                    onChange={formik.handleChange}
+                    inputProps={{ "aria-label": "Without label" }}
+                    name="tokenGatedNetwork"
+                    id="tokenGatedNetwork">
+                    <MenuItem selected value={"eth-mainnet"}>
+                      Ethereum
+                    </MenuItem>
+                    <MenuItem value={"matic-mainnet"}>Polygon</MenuItem>
+                    <MenuItem value={"bsc-mainnet"}>BNB Smart Chain</MenuItem>
+                  </Select>
+                </FormControl>
+
+                <Typography className={classes.label}>
+                  Enter block number (optional)
+                </Typography>
+                <TextField
+                  variant="outlined"
+                  className={classes.input}
+                  name="blockNumber"
+                  id="blockNumber"
+                  value={formik.values.blockNumber}
+                  onChange={formik.handleChange}
+                  type="number"
+                  error={
+                    formik.touched.blockNumber &&
+                    Boolean(formik.errors.blockNumber)
+                  }
+                  helperText={
+                    formik.touched.blockNumber && formik.errors.blockNumber
+                  }
+                />
+              </>
+            )}
 
             {(values.maximumClaim === "custom" ||
               values.eligible === "everyone") && (

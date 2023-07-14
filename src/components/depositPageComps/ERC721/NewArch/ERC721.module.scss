@@ -1,0 +1,146 @@
+$border: 0.5px solid #6475a3;
+$background-primary: #101d38;
+$active-background: #05735940;
+$active-text: #0abb92;
+$inactive-background: #d5533840;
+$inactive-text: #d55338;
+
+.mainContainer {
+  border: $border;
+  background: $background-primary;
+  border-radius: 16px;
+  width: 90%;
+  margin: 80px auto;
+  padding: 30px;
+  display: flex;
+  justify-content: space-between;
+  gap: 60px;
+
+  .leftContainer {
+    flex: 55;
+  }
+
+  .rightContainer {
+    flex: 45;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}
+
+.flexContainer {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin: 8px 0 16px 0;
+}
+
+.aboutContainer {
+  border: $border;
+  background: $background-primary;
+  border-radius: 16px;
+  width: 90%;
+  margin: 80px auto;
+  padding: 30px;
+}
+
+.isActive {
+  background-color: $active-background;
+  color: $active-text;
+  padding: 0.3em 1em;
+  border-radius: 0.3em;
+  display: flex;
+  align-items: center;
+  border: 0.5px solid $active-text;
+}
+
+.isInactive {
+  background-color: $inactive-background;
+  color: $inactive-text;
+  padding: 0.3em 1em;
+  border-radius: 0.3em;
+  display: flex;
+  align-items: center;
+  border: 0.5px solid $inactive-text;
+}
+
+.executedIllustration {
+  height: 12px;
+  width: 12px;
+  background-color: $inactive-text;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.activeIllustration {
+  height: 12px;
+  width: 12px;
+  background-color: $active-text;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.createdBy {
+  background: $background-primary;
+  color: white;
+  padding: 0.3em 0.5em;
+  border-radius: 6px;
+  border: $border;
+}
+
+.heading {
+  font-size: 44px;
+  font-weight: 200px;
+}
+
+.subtitle {
+  font-size: 20px;
+  font-weight: 100px;
+}
+
+.smallText {
+  font-size: 16px;
+}
+
+.priceContainer {
+  border: $border;
+  border-radius: 16px;
+  padding: 30px;
+}
+
+.counterContainer {
+  color: #efefef;
+  border-radius: 2;
+  display: flex;
+  flex-direction: inherit;
+  align-items: center;
+  border: 1px solid #c1d3ff40;
+  border-radius: 8px;
+  margin-right: 2rem;
+}
+
+.icons {
+  border: $border;
+  padding: 6px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.timer {
+  display: flex;
+  margin: 10px 0 16px 0;
+
+  p {
+    border: $border;
+    font-size: 20px;
+    padding: 16px 24px;
+    border-radius: 20px;
+    margin-right: 8px;
+  }
+}
+
+.nftImg {
+  height: auto;
+  width: 100%;
+  border-radius: 20px;
+}

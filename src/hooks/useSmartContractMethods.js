@@ -1,11 +1,10 @@
 import { useConnectWallet } from "@web3-onboard/react";
 import { useSelector } from "react-redux";
 import Web3 from "web3";
-import { POLYGON_MAINNET_RPC_URL, RPC_URL } from "../api";
+import { RPC_URL, POLYGON_MAINNET_RPC_URL } from "../api";
 import { getIncreaseGasPrice } from "../utils/helper";
 import ERC20TokenABI from "../abis/usdcTokenContract.json";
 import ERC721TokenABI from "../abis/nft.json";
-import ClaimContractABI from "../abis/singleClaimContract.json";
 import { convertToWeiGovernance } from "../utils/globalFunctions";
 import Safe, { Web3Adapter } from "@safe-global/protocol-kit";
 import { createProposalTxHash, getProposalTxHash } from "../api/proposal";
@@ -130,6 +129,13 @@ const useSmartContractMethods = () => {
       });
   };
 
+  const addMoreTokens = async (noOfTokens) => {
+    return await claimContractSend.methods?.depositTokens(noOfTokens).send({
+      from: walletAddress,
+      gasPrice: await getIncreaseGasPrice(),
+    });
+  };
+
   const setupTokenGating = async (
     tokenA,
     tokenB,
@@ -172,7 +178,7 @@ const useSmartContractMethods = () => {
     if (contractAddress) {
       const erc20TokenContractCall = new web3Call.eth.Contract(
         ERC20TokenABI.abi,
-        contractAddress,
+        Web3.utils.toChecksumAddress(contractAddress),
       );
       return await erc20TokenContractCall.methods.decimals().call();
     }
@@ -297,9 +303,19 @@ const useSmartContractMethods = () => {
     }
   };
 
-  const claimContract = async (claimSettings) => {
+  const claimContract = async (
+    claimSettings,
+    totalNoOfWallets,
+    blockNumber,
+    whitelistNetwork,
+  ) => {
     return await claimFactoryContractSend?.methods
-      ?.deployClaimContract(claimSettings)
+      ?.deployClaimContract(
+        claimSettings,
+        totalNoOfWallets,
+        blockNumber,
+        whitelistNetwork,
+      )
       .send({
         from: walletAddress,
         gasPrice: await getIncreaseGasPrice(),
@@ -321,16 +337,36 @@ const useSmartContractMethods = () => {
     });
   };
 
-  const rollbackTokens = async (amount) => {
-    return await claimContractSend?.methods.rollbackTokens(amount).send({
-      from: walletAddress,
-      gasPrice: await getIncreaseGasPrice(),
-    });
+  const changeClaimsStartTimeAndEndTime = async (startTime, endTime) => {
+    return await claimContractSend?.methods
+      .changeStartAndEndTime(startTime, endTime)
+      .send({
+        from: walletAddress,
+        gasPrice: await getIncreaseGasPrice(),
+      });
   };
 
-  const claim = async (amount, merkleData, leaf) => {
+  const rollbackTokens = async (amount, rollbackAddress) => {
+    return await claimContractSend?.methods
+      .rollbackTokens(amount, rollbackAddress)
+      .send({
+        from: walletAddress,
+        gasPrice: await getIncreaseGasPrice(),
+      });
+  };
+
+  const modifyStartAndEndTime = async (startTime, endTime) => {
+    return await claimContractSend?.methods
+      .changeStartAndEndTime(startTime, endTime)
+      .send({
+        from: walletAddress,
+        gasPrice: await getIncreaseGasPrice(),
+      });
+  };
+
+  const claim = async (amount, reciever, merkleProof, encodedData) => {
     return await claimContractSend.methods
-      .claim(amount, merkleData, leaf)
+      .claim(amount, reciever, merkleProof, encodedData)
       .send({
         from: walletAddress,
         gasPrice: await getIncreaseGasPrice(),
@@ -355,12 +391,15 @@ const useSmartContractMethods = () => {
       : await erc20DaoContractCall.methods.balanceOf(contractAddress).call();
   };
 
-  const encode = async (address, amount) => {
-    const claimContract = new web3Call.eth.Contract(
-      ClaimContractABI.abi,
-      "0xE25f57C5Ec956757D19169563E0caB6e7670E2EB",
-    );
-    return await claimContract.methods.encode(address, amount).call();
+  const encode = (address, amount) => {
+    // Define the types and values for encoding
+    const types = ["address", "uint256"];
+    const values = [address, amount];
+
+    // Encode the address and amount together
+    const encodedData = web3Call.eth.abi.encodeParameters(types, values);
+
+    return encodedData;
   };
 
   const createERC721DAO = async (
@@ -769,7 +808,10 @@ const useSmartContractMethods = () => {
     claimBalance,
     claimSettings,
     claimContract,
+    changeClaimsStartTimeAndEndTime,
     updateProposalAndExecution,
+    addMoreTokens,
+    modifyStartAndEndTime,
   };
 };
 

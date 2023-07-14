@@ -21,6 +21,7 @@ export const TokenGatingStyle = makeStyles({
 
   title: {
     fontSize: "32px",
+    marginBottom: "20px",
   },
 
   icon: {

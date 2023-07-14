@@ -1,4 +1,3 @@
-import { makeStyles } from "@mui/styles";
 import React, { useCallback, useEffect, useState } from "react";
 import {
   convertFromWeiGovernance,
@@ -13,227 +12,38 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import {
-  getClaimAmountForUser,
-  getClaimsByUserAddress,
-} from "../../src/api/claims";
-import MerkleTree from "merkletreejs";
-import keccak256 from "keccak256";
+import { getUserProofAndBalance } from "../../src/api/claims";
+// import MerkleTree from "merkletreejs";
+// import keccak256 from "keccak256";
 import Layout1 from "../../src/components/layouts/layout1";
 import Countdown from "react-countdown";
 import { useDispatch } from "react-redux";
 import { addClaimEnabled } from "../../src/redux/reducers/createClaim";
 import useSmartContractMethods from "../../src/hooks/useSmartContractMethods";
 import useSmartContract from "../../src/hooks/useSmartContract";
+// import WrongNetworkModal from "../../src/components/modals/WrongNetworkModal";
 import Image from "next/image";
-import { showWrongNetworkModal } from "../../src/utils/helper";
-
-const useStyles = makeStyles({
-  container: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-evenly",
-    height: "90vh",
-    color: "white",
-    margin: "0 auto",
-  },
-
-  lefContainer: {
-    width: "630px",
-    padding: "10px",
-    flex: 0.4,
-  },
-
-  heading: {
-    fontSize: "40px",
-    fontWeight: "400",
-    margin: 0,
-  },
-
-  activeContainer: {
-    display: "flex",
-    gap: "20px",
-    alignItems: "center",
-    padding: "10px 0",
-  },
-
-  active: {
-    background: "#0ABB9240",
-    padding: "10px 20px",
-    borderRadius: "10px",
-    color: "#0ABB92",
-  },
-
-  inactive: {
-    background: "#F75F71",
-    padding: "10px 20px",
-    borderRadius: "10px",
-    // color: "",
-  },
-
-  airdropContainer: {
-    display: "flex",
-    gap: "50px",
-  },
-
-  createdBy: {
-    background: "#142243",
-    padding: "10px 10px",
-    color: "#C1D3FF",
-    borderRadius: "10px",
-    display: "flex",
-    gap: "10px",
-    alignItems: "center",
-    margin: 0,
-  },
-  claimCloses: {
-    color: "#C1D3FF",
-    fontSize: "18px",
-    fontWeight: "300",
-    margin: "10px 0",
-    marginBottom: "10px",
-    display: "flex",
-    flexDirection: "column",
-  },
-  para: {
-    color: "#C1D3FF",
-    fontSize: "16px",
-    marginBottom: "8px",
-    // padding: 0,
-  },
-  label: {
-    margin: 0,
-    padding: 0,
-  },
-  address: {
-    color: "white",
-  },
-
-  rightContainer: {
-    flex: 0.3,
-    width: "600px",
-    padding: "60px",
-    borderRadius: "20px",
-    color: "white",
-    background: "#142243",
-  },
-
-  claimContainer: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: "28px 20px",
-    border: "0.5px solid #6475A3",
-    borderRadius: "12px",
-  },
-  amount: {
-    fontSize: "24px",
-    fontWeight: "400",
-    padding: 0,
-    margin: 0,
-
-    // margin:
-  },
-
-  btn: {
-    width: "130px",
-    fontFamily: "sans-serif",
-    fontSize: "16px",
-    border: "none",
-    padding: "12px 24px",
-    color: "white",
-    background: "#3B7AFD",
-    borderRadius: "8px",
-    cursor: "pointer",
-    marginTop: "20px",
-  },
-  claimAmt: {
-    fontSize: "30px",
-    margin: 0,
-    padding: 0,
-  },
-  myClaim: {
-    margin: 0,
-    padding: 0,
-    color: "#C1D3FF",
-    fontSize: "14px",
-  },
-  claims: {
-    display: "flex",
-    marginTop: "10px",
-    alignItems: "center",
-    gap: "10px",
-    marginBottom: "20px",
-  },
-  input: {
-    fontSize: "30px",
-    outline: "none",
-    background: "transparent",
-    border: "none",
-    color: "white",
-  },
-  max: {
-    padding: "4px 12px",
-    background: "#3B7AFD",
-    borderRadius: "4px",
-    color: "white",
-    border: "none",
-    cursor: "pointer",
-  },
-  remainingClaim: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  error: {
-    color: "#FF033E",
-    fontSize: "14px",
-  },
-  nav: {
-    padding: "10px 20px",
-  },
-  countdown: {
-    width: "fit-content",
-    background: "#FEB803",
-    padding: "10px 10px",
-    fontSize: "20px",
-    borderRadius: "5px",
-    margin: 0,
-  },
-  closingIn: {
-    padding: "30px 0px",
-    borderRadius: "10px",
-    color: "#F8F5E4",
-    fontSize: "24px",
-    width: "fit-content",
-  },
-
-  div: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "-3px",
-  },
-});
+import { ClaimsStyles } from "../../src/components/claimsPageComps/ClaimsStyles";
+import { subgraphQuery } from "../../src/utils/subgraphs";
+import { CLAIMS_SUBGRAPH_URL_POLYGON } from "../../src/api";
+import { QUERY_CLAIM_DETAILS } from "../../src/api/graphql/queries";
 
 const ClaimAddress = () => {
-  const classes = useStyles();
+  const classes = ClaimsStyles();
   // const dispatch = useDispatch();
   const router = useRouter();
 
   const [contractData, setContractData] = useState([]);
-  // const [erc20Decimal, setDecimals] = useState(null);
-  const [airdropAmountInNum, setAirdropAmountInNum] = useState(0);
   const [totalAmountofTokens, setTotalAmountOfTokens] = useState(0);
   const [airdropTokenName, setAirdropTokenName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [description, setDescription] = useState("");
   const [isClaiming, setIsClaiming] = useState(false);
   const [message, setMessage] = useState("");
   const [claimed, setClaimed] = useState(false);
   const [alreadyClaimed, setAlreadyClaimed] = useState(false);
   const [claimableAmt, setClaimableAmt] = useState(0);
   const [decimalOfToken, setDecimalofToken] = useState(0);
-  const [merkleLeaves, setMerkleLeaves] = useState([]);
+  // const [merkleLeaves, setMerkleLeaves] = useState([]);
   const [claimActive, setClaimActive] = useState(false);
   const [claimInput, setClaimInput] = useState(0);
   const [showInputError, setShowInputError] = useState(false);
@@ -243,6 +53,9 @@ const ClaimAddress = () => {
   const [daoTokenSymbol, setDaoTokenSymbol] = useState("");
   const [isClaimStarted, setIsClaimStarted] = useState(false);
   const [isEligibleForTokenGated, setIsEligibleForTokenGated] = useState(null);
+  const [claimEnabled, setClaimEnabled] = useState(false);
+  const [tokenGatingAmt, setTokenGatingAmt] = useState(0);
+  const [claimsDataSubgraph, setClaimsDataSubgraph] = useState([]);
 
   const [{ wallet }] = useConnectWallet();
   const walletAddress = wallet?.accounts[0].address;
@@ -254,10 +67,8 @@ const ClaimAddress = () => {
   const {
     claimSettings,
     claimBalance,
-    hasClaimed,
     claimAmount,
     claim,
-    checkAmount,
     encode,
     getBalance,
     getTokenSymbol,
@@ -266,11 +77,10 @@ const ClaimAddress = () => {
 
   const dispatch = useDispatch();
 
-  // claims end date
+  // Times
+  const currentTime = Date.now() / 1000;
   const endDateString = new Date(contractData?.endTime * 1000).toString();
   const startDateString = new Date(contractData?.startTime * 1000).toString();
-
-  const currentTime = Date.now() / 1000;
   const startingTimeInNum = new Date(+contractData?.startTime * 1000);
   const endingTimeInNum = new Date(+contractData?.endTime * 1000);
 
@@ -280,10 +90,11 @@ const ClaimAddress = () => {
     try {
       const desc = await claimSettings();
       setContractData(desc);
+      setClaimEnabled(desc?.isEnabled);
       // setClaimEnabled(desc.isEnabled);
-      dispatch(addClaimEnabled(desc.isEnabled));
+      dispatch(addClaimEnabled(desc?.isEnabled));
 
-      if (contractData?.airdropToken) {
+      if (desc?.airdropToken) {
         // decimals of airdrop token
         const decimals = await getDecimals(desc.airdropToken);
         setDecimalofToken(decimals);
@@ -295,142 +106,143 @@ const ClaimAddress = () => {
           remainingBalanceInContract,
           decimals,
         );
-
-        setClaimBalanceRemaing(remainingBalanceInUSD);
-
-        // check if token is already claimed
-        const isClaimed = await hasClaimed(walletAddress);
-        setAlreadyClaimed(isClaimed);
-
-        const remainingAmt = await claimAmount(walletAddress);
-
-        const convertedRemainingAmt = convertFromWeiGovernance(
-          remainingAmt,
+        const claimableAmtInUSD = convertFromWeiGovernance(
+          claimableAmt,
           decimals,
         );
 
-        if (
-          !isClaimed &&
-          +remainingBalanceInUSD >= +claimableAmt &&
-          (desc.permission == 0
-            ? isEligibleForTokenGated
-            : !isEligibleForTokenGated)
-        ) {
-          setClaimRemaining(convertToWeiGovernance(claimableAmt, decimals));
-        } else if (
-          !isClaimed &&
-          +remainingBalanceInUSD < +claimableAmt &&
-          (desc.permission == 0
-            ? isEligibleForTokenGated
-            : !isEligibleForTokenGated)
-        ) {
-          setClaimRemaining(
-            convertToWeiGovernance(remainingBalanceInUSD, decimals),
-          );
-        } else if (
-          isClaimed &&
-          +remainingBalanceInUSD >= +convertedRemainingAmt &&
-          (desc.permission == 0
-            ? isEligibleForTokenGated
-            : !isEligibleForTokenGated)
-        ) {
-          setClaimRemaining(remainingAmt);
-        } else if (
-          isClaimed &&
-          +remainingBalanceInUSD < +convertedRemainingAmt &&
-          (desc.permission == 0
-            ? isEligibleForTokenGated
-            : !isEligibleForTokenGated)
-        ) {
-          setClaimRemaining(remainingBalanceInContract);
+        setClaimBalanceRemaing(remainingBalanceInUSD);
+
+        const claimedAmt = await claimAmount(walletAddress);
+
+        const isClaimed = claimedAmt > 0 ? true : false;
+        setAlreadyClaimed(isClaimed);
+
+        const remainingAmt = claimableAmt - claimedAmt;
+
+        const remainingAmtInUSD = convertFromWeiGovernance(
+          claimedAmt,
+          decimals,
+        );
+
+        setClaimRemaining(remainingAmt);
+
+        if (!isClaimed) {
+          if (
+            +remainingBalanceInUSD >= +claimableAmtInUSD &&
+            (desc.permission == 0
+              ? isEligibleForTokenGated
+              : !isEligibleForTokenGated)
+          ) {
+            setClaimRemaining(claimableAmt);
+          } else if (
+            +remainingBalanceInUSD < +claimableAmtInUSD &&
+            (desc.permission == 0
+              ? isEligibleForTokenGated
+              : !isEligibleForTokenGated)
+          ) {
+            setClaimRemaining(
+              convertToWeiGovernance(remainingBalanceInUSD, decimals),
+            );
+          }
+        } else {
+          if (
+            +remainingBalanceInUSD >= +remainingAmtInUSD &&
+            (desc.permission == 0
+              ? isEligibleForTokenGated
+              : !isEligibleForTokenGated)
+          ) {
+            setClaimRemaining(remainingAmt);
+          } else if (
+            +remainingBalanceInUSD < +remainingAmtInUSD &&
+            (desc.permission == 0
+              ? isEligibleForTokenGated
+              : !isEligibleForTokenGated)
+          ) {
+            setClaimRemaining(remainingBalanceInContract);
+          }
         }
 
         // aridropToken Name
         const name = await getTokenSymbol(desc.airdropToken);
         setAirdropTokenName(name);
 
-        if (desc.permission == 0 && contractData?.daoToken) {
-          const daoTokenBalance = await getBalance(desc.daoToken);
-          const tokenSymbol = await getTokenSymbol(desc.daoToken);
-          setDaoTokenSymbol(tokenSymbol);
-
-          if (+daoTokenBalance === 0) {
-            setIsEligibleForTokenGated(false);
-          } else {
-            setIsEligibleForTokenGated(true);
-          }
-        }
-
         // totalAmount of tokens
         const totalAmountInNumber = convertFromWeiGovernance(
-          desc.claimAmountDetails[2],
+          desc.claimAmountDetails[1],
           decimals,
         );
+
         setTotalAmountOfTokens(totalAmountInNumber);
 
-        // fetching description
-        const dataFromAPI = await getClaimsByUserAddress(
-          desc.creatorAddress.toLowerCase(),
-          networkId,
-        );
-        const computedData = dataFromAPI.filter(
-          (data) => data.claimContract === claimAddress,
-        );
-        setDescription(computedData[0].description);
-
-        // if merkleRoot present (whitelisted)
-        if (
-          desc.merkleRoot !==
-          "0x0000000000000000000000000000000000000000000000000000000000000001"
-        ) {
-          // getting claim amount from API
-          const { amount } = await getClaimAmountForUser(
-            walletAddress, // wallet address aayega
-            claimAddress,
+        // if tokenGated
+        if (desc.permission === "0" && contractData?.daoToken) {
+          let daoTokenDecimal = 1;
+          const daoTokenBalance = await getBalance(desc.daoToken);
+          const tokenSymbol = await getTokenSymbol(desc.daoToken);
+          try {
+            daoTokenDecimal = await getDecimals(desc.daoToken);
+          } catch (error) {
+            console.log(error);
+          }
+          const tokenGatingValue = convertFromWeiGovernance(
+            desc.tokenGatingValue,
+            daoTokenDecimal,
           );
+
+          setTokenGatingAmt(tokenGatingValue);
+          setDaoTokenSymbol(tokenSymbol);
+
+          if (+daoTokenBalance >= +desc.tokenGatingValue) {
+            setIsEligibleForTokenGated(true);
+          } else {
+            setIsEligibleForTokenGated(false);
+          }
+        } else if (desc.permission === "1") {
+          // getting claim amount from API
+          const { amount } = await getUserProofAndBalance(
+            contractData.merkleRoot,
+            walletAddress,
+          );
+
           setClaimableAmt(amount);
 
           // converting the CSV data into merkleLeaves
-          const csvData = await getClaimsByUserAddress(
-            desc.creatorAddress.toLowerCase(),
-            networkId,
+          // const csvData = await getCsvUserData(contractData.merkleRoot);
+
+          // let encodedListOfLeaves = [];
+
+          // csvData[0].snapshot.map((data) => {
+          //   if (data.address) {
+          //     const res = encode(data.address, data.amount);
+          //     encodedListOfLeaves.push(keccak256(res));
+          //   }
+          // });
+
+          // // setting merkleLeaves
+          // setMerkleLeaves(encodedListOfLeaves);
+        } else if (desc.permission === "3") {
+          try {
+            const amountOfTokenUserHas = await getBalance(desc?.daoToken);
+            const tokenSymbol = await getTokenSymbol(desc.daoToken);
+            setDaoTokenSymbol(tokenSymbol);
+            setIsEligibleForTokenGated(
+              +amountOfTokenUserHas > 0 ? true : false,
+            );
+          } catch (e) {
+            console.log(e);
+          }
+
+          const userProofAndBalance = await getUserProofAndBalance(
+            contractData?.merkleRoot,
+            walletAddress,
           );
 
-          const { addresses } = csvData
-            .reverse()
-            .find((address) => address.claimContract === claimAddress);
-
-          let encodedListOfLeaves = [];
-
-          addresses.map(async (data) => {
-            const res = await encode(
-              data.address,
-              convertToWeiGovernance(data.amount, decimals),
-            );
-            encodedListOfLeaves.push(keccak256(res));
-          });
-
-          // setting merkleLeaves
-          setMerkleLeaves(encodedListOfLeaves);
+          setClaimableAmt(userProofAndBalance.amount);
         }
-
         // free for all (no merkleRoot)
         else {
-          // claimable amount
-          const airdropAmount = convertFromWeiGovernance(
-            desc.claimAmountDetails[1],
-            decimals,
-          );
-
-          if (desc.daoToken !== "0x0000000000000000000000000000000000000000") {
-            // amount for prorata
-            const amount = await checkAmount(walletAddress);
-            const data = convertFromWeiGovernance(amount, decimals);
-
-            setClaimableAmt(data);
-          } else {
-            setClaimableAmt(airdropAmount);
-          }
+          setClaimableAmt(desc.claimAmountDetails[0]);
         }
 
         setIsLoading(false);
@@ -444,10 +256,10 @@ const ClaimAddress = () => {
   }, [
     claimAddress,
     claimableAmt,
-    contractData?.airdropToken,
     contractData?.daoToken,
     dispatch,
     isEligibleForTokenGated,
+    networkId,
     walletAddress,
   ]);
 
@@ -458,23 +270,24 @@ const ClaimAddress = () => {
         contractData?.merkleRoot !==
         "0x0000000000000000000000000000000000000000000000000000000000000001"
       ) {
-        // const leaves = merkleLeaves.map((leaf) => keccak256(leaf));
-        const tree = new MerkleTree(merkleLeaves, keccak256, { sort: true });
-
-        const root = tree.getHexRoot();
-
-        const encodedLeaf = await encode(
+        const data = await getUserProofAndBalance(
+          contractData?.merkleRoot,
           walletAddress,
-          convertToWeiGovernance(claimableAmt, decimalOfToken),
         );
 
-        const leaf = keccak256(encodedLeaf);
-        const proof = tree.getHexProof(leaf);
-        const amt = convertToWeiGovernance(claimInput, decimalOfToken);
-        await claim(amt, proof, encodedLeaf);
+        const { amount, proof } = data;
 
-        const remainingAmt = await claimAmount(walletAddress);
-        setClaimRemaining(remainingAmt);
+        const encodedLeaf = encode(walletAddress, amount);
+
+        await claim(
+          convertToWeiGovernance(claimInput, decimalOfToken).toString(),
+          walletAddress,
+          proof,
+          encodedLeaf,
+        );
+
+        const claimedAmt = await claimAmount(walletAddress);
+        setClaimRemaining(claimableAmt - claimedAmt);
         setIsClaiming(false);
         setAlreadyClaimed(true);
         setClaimed(true);
@@ -484,23 +297,24 @@ const ClaimAddress = () => {
       } else {
         await claim(
           convertToWeiGovernance(claimInput, decimalOfToken).toString(),
+          walletAddress,
           [],
-          [],
+          0,
         );
 
-        const remainingAmt = await claimAmount(walletAddress);
+        const claimedAmt = await claimAmount(walletAddress);
 
-        const convertedRemainingAmt = convertFromWeiGovernance(
+        const remainingAmt = claimableAmt - claimedAmt;
+
+        const remainingAmtInUSD = convertFromWeiGovernance(
           remainingAmt,
           decimalOfToken,
         );
 
-        if (+claimBalanceRemaing >= +convertedRemainingAmt) {
+        if (+claimBalanceRemaing >= +remainingAmtInUSD) {
           setClaimRemaining(remainingAmt);
         } else {
-          setClaimRemaining(
-            convertToWeiGovernance(claimBalanceRemaing, decimalOfToken),
-          );
+          setClaimRemaining(claimBalanceRemaing);
         }
 
         setIsClaiming(false);
@@ -513,6 +327,8 @@ const ClaimAddress = () => {
       }
     } catch (err) {
       console.log(err);
+      setClaimed(false);
+      setMessage("Some Error Occured!");
       showMessageHandler();
       setMessage(err.message);
       setIsClaiming(false);
@@ -526,24 +342,24 @@ const ClaimAddress = () => {
     }, 4000);
   };
 
-  const maxHandler = () => {
+  const maxHandler = async () => {
+    const decimals = await getDecimals(contractData.airdropToken);
     if (+claimRemaining === 0 && !alreadyClaimed && claimBalanceRemaing) {
-      setClaimInput(claimableAmt);
+      setClaimInput(claimableAmt / 10 ** decimals);
     } else {
-      setClaimInput(convertFromWeiGovernance(claimRemaining, decimalOfToken));
+      setClaimInput(claimRemaining / 10 ** decimals);
     }
   };
 
   let whoCanClaim;
-  if (
-    contractData?.merkleRoot !==
-    "0x0000000000000000000000000000000000000000000000000000000000000001"
-  ) {
+  if (claimsDataSubgraph[0]?.claimType === "1") {
     whoCanClaim = "Whitelisted";
-  } else if (contractData?.permission === "3") {
+  } else if (claimsDataSubgraph[0]?.claimType === "2") {
     whoCanClaim = "Everyone";
-  } else if (contractData?.permission === "0") {
+  } else if (claimsDataSubgraph[0]?.claimType === "0") {
     whoCanClaim = `Token Holders (${daoTokenSymbol})`;
+  } else if (claimsDataSubgraph[0]?.claimType === "3") {
+    whoCanClaim = `Token Holders ${daoTokenSymbol}`;
   }
 
   useEffect(() => {
@@ -567,13 +383,30 @@ const ClaimAddress = () => {
     (async () => {
       try {
         // check if token is already claimed
-        const isClaimed = await hasClaimed(walletAddress);
+        const claimedAmt = await claimAmount(walletAddress);
+        const isClaimed = claimedAmt > 0 ? true : false;
         setAlreadyClaimed(isClaimed);
       } catch (err) {
         console.log(err);
       }
     })();
   }, [claimAddress, walletAddress]);
+
+  useEffect(() => {
+    const fetchClaimsDataFromSubgraph = async () => {
+      try {
+        const { claims } = await subgraphQuery(
+          CLAIMS_SUBGRAPH_URL_POLYGON,
+          QUERY_CLAIM_DETAILS(claimAddress),
+        );
+        setClaimsDataSubgraph(claims);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    if (claimAddress) fetchClaimsDataFromSubgraph();
+  }, [claimAddress]);
 
   return (
     <Layout1 showSidebar={false}>
@@ -605,22 +438,21 @@ const ClaimAddress = () => {
                 <div className={classes.container}>
                   {/* left */}
                   <div className={classes.lefContainer}>
-                    <h2 className={classes.heading}>{description}</h2>
+                    <h2 className={classes.heading}>
+                      {claimsDataSubgraph[0]?.description}
+                    </h2>
 
                     <div className={classes.addressLine}>
                       <div className={classes.activeContainer}>
                         <div
                           className={`${
-                            claimActive && contractData?.isEnabled
+                            claimActive && claimEnabled
                               ? classes.active
                               : classes.inactive
                           }`}>
-                          {claimActive &&
-                          isClaimStarted &&
-                          contractData?.isEnabled
+                          {claimActive && isClaimStarted && claimEnabled
                             ? "Active"
-                            : (!claimActive && isClaimStarted) ||
-                              !contractData?.isEnabled
+                            : (!claimActive && isClaimStarted) || !claimEnabled
                             ? "Inactive"
                             : !claimActive &&
                               !isClaimStarted &&
@@ -664,7 +496,7 @@ const ClaimAddress = () => {
                       ) : (
                         <>
                           <p className={classes.claimCloses}>
-                            Claim ends in{" "}
+                            Claim ends in
                             {/* <span className={classes.time}>{endDateString}</span> */}
                           </p>
                           <Tooltip title={endDateString} placement="right-end">
@@ -691,7 +523,9 @@ const ClaimAddress = () => {
 
                       <div className={classes.div}>
                         <p className={classes.para}>Size</p>
-                        <h3 className={classes.label}>{totalAmountofTokens}</h3>
+                        <h3 className={classes.label}>
+                          {Number(totalAmountofTokens).toFixed(2)}
+                        </h3>
                       </div>
 
                       <div className={classes.div}>
@@ -708,7 +542,14 @@ const ClaimAddress = () => {
                         <p className={classes.myClaim}>My Claim</p>
                         <div className={classes.claims}>
                           <p className={classes.claimAmt}>
-                            {claimableAmt ? Number(claimableAmt).toFixed(2) : 0}
+                            {claimableAmt
+                              ? Number(
+                                  convertFromWeiGovernance(
+                                    claimableAmt,
+                                    decimalOfToken,
+                                  ),
+                                ).toFixed(2)
+                              : 0}
                           </p>
                           <p className={classes.amount}>{airdropTokenName}</p>
                         </div>
@@ -758,14 +599,14 @@ const ClaimAddress = () => {
                             setShowInputError(false);
                           }
                         }}
-                        disabled={
-                          !claimActive ||
-                          !claimableAmt ||
-                          !contractData?.isEnabled ||
-                          (claimRemaining == 0 && alreadyClaimed)
-                            ? true
-                            : false
-                        }
+                        // disabled={
+                        //   !claimActive ||
+                        //   !claimableAmt ||
+                        //   !claimEnabled ||
+                        //   (claimRemaining == 0 && alreadyClaimed)
+                        //     ? true
+                        //     : false
+                        // }
                         value={claimInput}
                         placeholder="0"
                         type="number"
@@ -773,9 +614,7 @@ const ClaimAddress = () => {
                         className={classes.input}
                       />
                       <button
-                        disabled={
-                          (!claimActive || !contractData?.isEnabled) && true
-                        }
+                        // disabled={(!claimActive || !claimEnabled) && true}
                         style={
                           !claimActive
                             ? { cursor: "not-allowed" }
@@ -803,6 +642,8 @@ const ClaimAddress = () => {
                         +claimInput <= 0 ||
                         claimInput >= +claimRemaining ||
                         (contractData?.permission == 0 &&
+                          !isEligibleForTokenGated) ||
+                        (contractData?.permission === "3" &&
                           !isEligibleForTokenGated)
                           ? true
                           : false
@@ -810,7 +651,9 @@ const ClaimAddress = () => {
                       style={
                         (alreadyClaimed && +claimRemaining === 0) ||
                         +claimInput <= 0 ||
-                        (contractData?.permission == 0 &&
+                        (contractData?.permission === "0" &&
+                          !isEligibleForTokenGated) ||
+                        (contractData?.permission === "3" &&
                           !isEligibleForTokenGated) ||
                         +claimInput >= +claimRemaining ||
                         !claimActive ||
@@ -834,7 +677,9 @@ const ClaimAddress = () => {
                     {!isEligibleForTokenGated &&
                       contractData?.permission == 0 && (
                         <p className={classes.error}>
-                          Only Token Holders of ${daoTokenSymbol} can claim!
+                          Only Token Holders of ${daoTokenSymbol} with more than{" "}
+                          {Number(tokenGatingAmt).toFixed(0) + " "}
+                          can claim!
                         </p>
                       )}
                   </div>
@@ -873,15 +718,7 @@ const ClaimAddress = () => {
               </Alert>
             )
           )}
-          {showWrongNetworkModal(wallet, networkId)}
-
-          {/* {showClaimsEdit && (
-          <ClaimsEditModal
-            claimAddress={claimAddress}
-            walletAddress={walletAddress}
-            onClose={onClose}
-          />
-        )} */}
+          {/* {networkId && networkId !== "0x89" && <WrongNetworkModal />} */}
         </>
       ) : (
         <>

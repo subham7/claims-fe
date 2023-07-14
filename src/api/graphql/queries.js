@@ -65,14 +65,112 @@ export const QUERY_CLUB_DETAILS = (daoAddress) => {
               ownerAddress
               daoAddress
               gnosisAddress
-              name
+              totalAmountRaised
               tokenType
-              symbol
-              isGtTransferable
-              imageUrl
-              isGovernanceActive
-              membersCount
               timeStamp
+              threshold
+              symbol
+              raiseAmount
+              quorum
+              pricePerToken
+              name
+              membersCount
+              isGtTransferable
+              isGovernanceActive
+              imageUrl
+              distributionAmount
+              maxDepositAmount
+              minDepositAmount
+              maxTokensPerUser
+              depositDeadline
+            }
+    }`;
+};
+
+export const QUERY_ALL_CLAIMS_TRANSACTIONS = (claimAddress) => {
+  return `query{
+            airdrops(where: {claimAddress: "${claimAddress}"}, orderBy: timestamp) {
+              id
+              txHash
+              claimAddress
+              claimerAddress
+              airdropToken
+              amountClaimed
+              totalAmountClaimed
+              timestamp
+            }
+    }`;
+};
+
+export const QUERY_WALLET_WISE_TRANSACTIONS = (claimAddress) => {
+  return `query{
+            claimers(where: {claimAddress: "${claimAddress}"}) {
+              claimAddress
+              claimerAddress
+              totalAmountClaimed
+              id
+            }
+    }`;
+};
+
+export const QUERY_ALL_CLAIMS_OF_CREATOR = (creatorAddress) => {
+  return `query{
+            claims(where: {creatorAddress: "${creatorAddress}"}, orderBy: timestamp) {
+              id
+              txHash
+              claimAddress
+              creatorAddress
+              coolDownTime
+              airdropToken
+              admins
+              description
+              endTime
+              hasAllowanceMechanism
+              maxClaimableAmount
+              merkleRoot
+              minWhitelistTokenValue
+              moderators
+              numOfUsersClaimed
+              startTime
+              tokenDistributionWallet
+              totalAmountClaimed
+              totalClaimAmount
+              totalUsers
+              whitelistToken
+              claimType
+              timestamp
+              isActive
+            }
+    }`;
+};
+
+export const QUERY_CLAIM_DETAILS = (claimAddress) => {
+  return `query{
+            claims(where: {claimAddress: "${claimAddress}"}) {
+              id
+              txHash
+              claimAddress
+              creatorAddress
+              coolDownTime
+              airdropToken
+              admins
+              description
+              endTime
+              hasAllowanceMechanism
+              maxClaimableAmount
+              merkleRoot
+              minWhitelistTokenValue
+              moderators
+              numOfUsersClaimed
+              startTime
+              tokenDistributionWallet
+              totalAmountClaimed
+              totalClaimAmount
+              totalUsers
+              whitelistToken
+              claimType
+              timestamp
+              isActive
             }
     }`;
 };

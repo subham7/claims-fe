@@ -97,10 +97,6 @@ const DepositDeadline = ({ updateDepositTimeHandler, onClose, loading }) => {
             </Button>
           </Grid>
         </form>
-
-        {/* <Backdrop sx={{ color: "#fff", zIndex: 1000 }} open={loading}>
-          <CircularProgress color="inherit" />
-        </Backdrop> */}
       </div>
     </>
   );
