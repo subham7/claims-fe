@@ -1,4 +1,5 @@
 import { Alert, Backdrop, CircularProgress, Switch } from "@mui/material";
+import Button from "@components/ui/button/Button";
 import React, { useCallback, useEffect, useState } from "react";
 import { TokenGatingStyle } from "./TokenGatingStyles";
 import { MdDelete } from "react-icons/md";
@@ -291,27 +292,29 @@ const TokenGating = () => {
                   }}></div>
               }
             />
-            <p>any</p>
+            <p>any condition(s)</p>
           </div>
-
-          <p>condition(s)</p>
+          <div className={classes.saveBtn}>
+            <Button disabled={!tokensList.length} onClick={tokenGatingHandler}>
+              Save changes
+            </Button>
+          </div>
         </div>
       ) : (
         ""
       )}
 
-      {isAdminUser &&
+      {/* {isAdminUser &&
       (fetchedDetails.tokenA === "" || fetchedDetails.tokenA === undefined) &&
       showEditOptions ? (
-        <button
-          className={classes.saveBtn}
-          disabled={!tokensList.length}
-          onClick={tokenGatingHandler}>
-          Save changes
-        </button>
+        <div>
+          <Button disabled={!tokensList.length} onClick={tokenGatingHandler}>
+            Save changes
+          </Button>
+        </div>
       ) : (
         ""
-      )}
+      )} */}
 
       {showTokenGatingModal && (
         <TokenGatingModal

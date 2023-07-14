@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useState } from "react";
+import Button from "@components/ui/button/Button";
 import {
   Alert,
   Backdrop,
-  Button,
   Card,
   CardMedia,
   CircularProgress,
@@ -716,42 +716,43 @@ const NewArchERC20 = ({
                                 display: "flex",
                                 justifyContent: "flex-end",
                               }}>
-                              <Button
-                                className={classes.maxTag}
-                                onClick={() => {
-                                  formik.setFieldValue(
-                                    "tokenInput",
-                                    remainingClaimAmount
-                                      ? remainingClaimAmount <
-                                        erc20TokenDetails.tokenBalance.toFixed(
-                                          2,
-                                        )
-                                        ? remainingClaimAmount
-                                        : erc20TokenDetails.tokenBalance.toFixed(
+                              <div>
+                                <Button
+                                  onClick={() => {
+                                    formik.setFieldValue(
+                                      "tokenInput",
+                                      remainingClaimAmount
+                                        ? remainingClaimAmount <
+                                          erc20TokenDetails.tokenBalance.toFixed(
                                             2,
                                           )
-                                      : Number(
-                                          convertFromWeiGovernance(
-                                            daoDetails.maxDeposit,
-                                            erc20TokenDetails.tokenDecimal,
+                                          ? remainingClaimAmount
+                                          : erc20TokenDetails.tokenBalance.toFixed(
+                                              2,
+                                            )
+                                        : Number(
+                                            convertFromWeiGovernance(
+                                              daoDetails.maxDeposit,
+                                              erc20TokenDetails.tokenDecimal,
+                                            ),
+                                          ) <
+                                          erc20TokenDetails.tokenBalance.toFixed(
+                                            2,
+                                          )
+                                        ? Number(
+                                            convertFromWeiGovernance(
+                                              daoDetails.maxDeposit,
+                                              erc20TokenDetails.tokenDecimal,
+                                            ),
+                                          )
+                                        : erc20TokenDetails.tokenBalance.toFixed(
+                                            2,
                                           ),
-                                        ) <
-                                        erc20TokenDetails.tokenBalance.toFixed(
-                                          2,
-                                        )
-                                      ? Number(
-                                          convertFromWeiGovernance(
-                                            daoDetails.maxDeposit,
-                                            erc20TokenDetails.tokenDecimal,
-                                          ),
-                                        )
-                                      : erc20TokenDetails.tokenBalance.toFixed(
-                                          2,
-                                        ),
-                                  );
-                                }}>
-                                Max
-                              </Button>
+                                    );
+                                  }}>
+                                  Max
+                                </Button>
+                              </div>
                             </Grid>
                           </Grid>
                         </Card>
@@ -890,10 +891,7 @@ const NewArchERC20 = ({
                         mb={1}
                         sx={{ display: "flex", flexDirection: "column" }}>
                         <Button
-                          variant="primary"
-                          size="large"
-                          // onClick={formik.handleSubmit}
-                          type="submit"
+                          onClick={formik.handleSubmit}
                           disabled={
                             (remainingDays >= 0 &&
                             remainingTimeInSecs > 0 &&

@@ -1,13 +1,15 @@
 import React from "react";
 import styles from "./Button.module.scss";
 
-const Button = ({ children, onClick }) => {
+const Button = ({ children, onClick, disabled = false }) => {
   const handleClick = () => {
-    onClick();
+    if (!disabled) onClick();
   };
 
   return (
-    <div className={styles.button} onClick={handleClick}>
+    <div
+      className={styles.button + " " + (disabled && styles.disabled)}
+      onClick={handleClick}>
       {children}
     </div>
   );

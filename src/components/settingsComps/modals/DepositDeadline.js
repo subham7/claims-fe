@@ -1,4 +1,5 @@
-import { Button, Grid, Typography } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
+import Button from "@components/ui/button/Button";
 import { makeStyles } from "@mui/styles";
 import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -89,12 +90,8 @@ const DepositDeadline = ({ updateDepositTimeHandler, onClose, loading }) => {
               gap: "30px",
               marginTop: "20px",
             }}>
-            <Button onClick={formik.handleSubmit} variant="primary">
-              Update
-            </Button>
-            <Button onClick={onClose} variant="primary">
-              Cancel
-            </Button>
+            <Button onClick={formik.handleSubmit}>Update</Button>
+            <Button onClick={onClose}>Cancel</Button>
           </Grid>
         </form>
       </div>

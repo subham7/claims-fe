@@ -1,17 +1,25 @@
 @import "./../../../../styles/variables.scss";
 
 .button {
+  margin: 5px;
   font: 20px;
   font-weight: 400;
   display: flex;
   align-items: center;
+  justify-content: center;
   text-align: center;
   padding: 12px 28px;
-  color: $dove;
-  background-color: $blue_lagoon;
+  color: $white;
+  cursor: pointer;
+  background-color: $primary;
   border-radius: 48px;
   &:hover {
-    background-color: $dove;
-    color: $blue_lagoon;
+    background-color: $white;
+    color: $primary;
   }
+}
+
+.disabled {
+  background-color: $button_disabled !important;
+  cursor: unset !important;
 }

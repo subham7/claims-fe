@@ -1,4 +1,5 @@
-import { Box, Button, Grid, Step, StepButton, Stepper } from "@mui/material";
+import { Box, Grid, Step, StepButton, Stepper } from "@mui/material";
+import Button from "@components/ui/button/Button";
 import ProtectRoute from "../../src/utils/auth";
 import { Fragment, useRef, useState } from "react";
 import Step1 from "../../src/components/createClubComps/Step1";
@@ -554,46 +555,15 @@ const Create = () => {
                   mt={2}>
                   {getStepContent(activeStep)}
                   {!activeStep == 0 && activeStep !== steps.length - 1 && (
-                    <Button
-                      variant="wideButton"
-                      sx={{
-                        marginTop: "2rem",
-                        marginBottom: "6rem",
-                        marginRight: "1rem",
-                      }}
-                      onClick={handlePrev}>
-                      Prev
-                    </Button>
+                    <Button onClick={handlePrev}>Prev</Button>
                   )}
                   {activeStep === steps.length - 1 ? (
                     <>
-                      <Button
-                        variant="wideButton"
-                        sx={{
-                          marginTop: "2rem",
-                          marginRight: "1rem",
-                        }}
-                        onClick={handlePrev}>
-                        Prev
-                      </Button>
-                      <Button
-                        variant="wideButton"
-                        sx={{ marginTop: "2rem" }}
-                        onClick={handleSubmit}
-                        // disabled={
-                        //   !formikStep4.values.deploySafe && !ownersCheck
-                        // }
-                      >
-                        Finish
-                      </Button>
+                      <Button onClick={handlePrev}>Prev</Button>
+                      <Button onClick={handleSubmit}>Finish</Button>
                     </>
                   ) : (
-                    <Button
-                      variant="wideButton"
-                      sx={{ marginTop: "2rem", marginBottom: "6rem" }}
-                      onClick={handleSubmit}>
-                      Next
-                    </Button>
+                    <Button onClick={handleSubmit}>Next</Button>
                   )}
                 </Grid>
               </Fragment>
