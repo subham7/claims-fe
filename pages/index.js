@@ -192,6 +192,7 @@ const App = () => {
         : "",
       QUERY_CLUB_DETAILS(data.daoAddress),
     );
+    console.log(clubData);
     dispatch(
       addClubData({
         gnosisAddress: clubData.stations[0].gnosisAddress,
@@ -200,6 +201,8 @@ const App = () => {
         ownerAddress: clubData.stations[0].ownerAddress,
         symbol: clubData.stations[0].symbol,
         tokenType: clubData.stations[0].tokenType,
+        membersCount: clubData.stations[0].membersCount,
+        deployedTime: clubData.stations[0].timeStamp,
       }),
     );
     router.push(

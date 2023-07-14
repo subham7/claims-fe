@@ -13,6 +13,35 @@ export const QUERY_ALL_MEMBERS = (daoAddress) => {
     }`;
 };
 
+export const QUERY_PAGINATED_MEMBERS = (
+  daoAddress,
+  first,
+  skip,
+  startDate,
+  endDate,
+) => {
+  return `query{
+    users(
+      where: {
+        daoAddress: "${daoAddress}",
+        timeStamp_gte: ${startDate},
+        timeStamp_lte: ${endDate}
+      },
+      first: ${first},
+      skip: ${skip}
+    ) {
+          id
+          gtAmount
+          depositAmount
+          isAdmin
+          timeStamp
+          userAddress
+          tokenAddress
+          daoAddress
+        }
+    }`;
+};
+
 export const QUERY_CLUBS_FROM_WALLET_ADDRESS = (userAddress) => {
   return `query{
         users(  orderBy: timeStamp where: {userAddress: "${userAddress}"}){
