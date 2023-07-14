@@ -1,6 +1,12 @@
+$border: 0.5px solid #6475a3;
+$background-secondary: #3b7afd;
+$background-primary: #101d38;
+$background-input: #111d38;
+$error: #ec4a4a;
+
 .mainContainer {
-  border: 0.5px solid #6475a3;
-  background: #101d38;
+  border: $border;
+  background: $background-primary;
   border-radius: 16px;
   width: 90%;
   margin: 80px auto;
@@ -23,7 +29,7 @@
 
     .inputContainer {
       display: flex;
-      background: #111d38;
+      background: $background-input;
       align-items: center;
       border-radius: 20px;
       padding: 20px;
@@ -41,7 +47,7 @@
     }
 
     button {
-      background: #3b7afd;
+      background: $background-secondary;
       padding: 12px 40px;
       color: white;
       font-size: 20px;
@@ -65,7 +71,7 @@
 
       &:hover {
         background: white;
-        color: #3b7afd;
+        color: $background-secondary;
       }
     }
   }
@@ -118,7 +124,7 @@
 }
 
 .usdc {
-  border: 0.5px solid #6475a3;
+  border: $border;
   border-radius: 20rem;
   padding: 8px 16px 8px 8px;
   display: flex;
@@ -126,5 +132,5 @@
 }
 
 .errorText {
-  color: #ec4a4a;
+  color: $error;
 }

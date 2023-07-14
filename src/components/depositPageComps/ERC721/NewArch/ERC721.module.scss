@@ -1,6 +1,13 @@
+$border: 0.5px solid #6475a3;
+$background-primary: #101d38;
+$active-background: #05735940;
+$active-text: #0abb92;
+$inactive-background: #d5533840;
+$inactive-text: #d55338;
+
 .mainContainer {
-  border: 0.5px solid #6475a3;
-  background: #101d38;
+  border: $border;
+  background: $background-primary;
   border-radius: 16px;
   width: 90%;
   margin: 80px auto;
@@ -29,8 +36,8 @@
 }
 
 .aboutContainer {
-  border: 0.5px solid #6475a3;
-  background: #101d38;
+  border: $border;
+  background: $background-primary;
   border-radius: 16px;
   width: 90%;
   margin: 80px auto;
@@ -38,29 +45,29 @@
 }
 
 .isActive {
-  background-color: #05735940;
-  color: #0abb92;
+  background-color: $active-background;
+  color: $active-text;
   padding: 0.3em 1em;
   border-radius: 0.3em;
   display: flex;
   align-items: center;
-  border: 0.5px solid #077d62;
+  border: 0.5px solid $active-text;
 }
 
 .isInactive {
-  background-color: #d5533840;
-  color: #d55338;
+  background-color: $inactive-background;
+  color: $inactive-text;
   padding: 0.3em 1em;
   border-radius: 0.3em;
   display: flex;
   align-items: center;
-  border: 0.5px solid #d55338;
+  border: 0.5px solid $inactive-text;
 }
 
 .executedIllustration {
   height: 12px;
   width: 12px;
-  background-color: #d55338;
+  background-color: $inactive-text;
   border-radius: 50%;
   margin-right: 10px;
 }
@@ -68,17 +75,17 @@
 .activeIllustration {
   height: 12px;
   width: 12px;
-  background-color: #0abb92;
+  background-color: $active-text;
   border-radius: 50%;
   margin-right: 10px;
 }
 
 .createdBy {
-  background: #101d38;
+  background: $background-primary;
   color: white;
   padding: 0.3em 0.5em;
   border-radius: 6px;
-  border: 0.5px solid #6475a3;
+  border: $border;
 }
 
 .heading {
@@ -96,7 +103,7 @@
 }
 
 .priceContainer {
-  border: 0.5px solid #6475a3;
+  border: $border;
   border-radius: 16px;
   padding: 30px;
 }
@@ -113,7 +120,7 @@
 }
 
 .icons {
-  border: 0.5px solid #6475a3;
+  border: $border;
   padding: 6px;
   border-radius: 4px;
   cursor: pointer;
@@ -124,7 +131,7 @@
   margin: 10px 0 16px 0;
 
   p {
-    border: 0.5px solid #6475a3;
+    border: $border;
     font-size: 20px;
     padding: 16px 24px;
     border-radius: 20px;
