@@ -36,12 +36,24 @@ export const QUERY_CLUB_DETAILS = (daoAddress) => {
               ownerAddress
               daoAddress
               gnosisAddress
-              name
+              totalAmountRaised
               tokenType
+              timeStamp
+              threshold
               symbol
+              raiseAmount
+              quorum
+              pricePerToken
+              name
+              membersCount
               isGtTransferable
-              imageUrl
               isGovernanceActive
+              imageUrl
+              distributionAmount
+              maxDepositAmount
+              minDepositAmount
+              maxTokensPerUser
+              depositDeadline
             }
     }`;
 };
