@@ -201,7 +201,9 @@ const ERC721 = ({
         <NFTimg imgUrl={imgUrl} />
       </div>
 
-      {clubInfo?.bio ? <About bio={clubInfo?.bio} /> : null}
+      {clubInfo?.bio ? (
+        <About bio={clubInfo?.bio} daoAddress={daoAddress} />
+      ) : null}
 
       {showWrongNetworkModal(wallet, networkId)}
 

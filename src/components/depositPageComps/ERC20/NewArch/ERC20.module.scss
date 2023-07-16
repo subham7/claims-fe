@@ -134,3 +134,16 @@ $error: #ec4a4a;
 .errorText {
   color: $error;
 }
+
+
+.tokenGateInfo {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  background-color: #c1d3ff1a;
+  padding: 10px 20px;
+  border-radius: 10px;
+  border: 0.5px solid #6475a3;
+  font-size: 14px;
+  margin-top: 10px;
+}

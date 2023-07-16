@@ -15,8 +15,6 @@ const Header = ({ clubData, clubInfo, active, isErc20 = true, deadline }) => {
       const currentTime = Math.floor(Date.now() / 1000);
       let timeDifference = +deadline - currentTime;
 
-      console.log(+timeDifference);
-
       if (timeDifference < 0) {
         // Timer has reached or passed the deadline
         timeDifference = 0;
@@ -28,8 +26,6 @@ const Header = ({ clubData, clubInfo, active, isErc20 = true, deadline }) => {
       const days = Math.floor(timeDifference / (24 * 60 * 60));
 
       setTimer({ days, hours, minutes, seconds });
-
-      console.log(days, hours, minutes);
     };
 
     // Update the timer every second
