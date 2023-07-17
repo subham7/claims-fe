@@ -1,15 +1,16 @@
 @import "./../../../../styles/variables.scss";
 
 .button {
+  border: none;
   width: fit-content;
   margin: 5px;
-  font: 20px;
+  font-size: 16px;
   font-weight: 400;
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 12px 28px;
+  padding: 14px 32px;
   color: $white;
   cursor: pointer;
   background-color: $primary;
@@ -31,6 +32,6 @@
   background-color: $button_disabled !important;
   cursor: default !important;
   &:hover {
-    color: unset;
+    color: $white;
   }
 }

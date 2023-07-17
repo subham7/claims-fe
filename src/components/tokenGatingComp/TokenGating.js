@@ -294,27 +294,13 @@ const TokenGating = () => {
             />
             <p>any condition(s)</p>
           </div>
-          <div className={classes.saveBtn}>
-            <Button disabled={!tokensList.length} onClick={tokenGatingHandler}>
-              Save changes
-            </Button>
-          </div>
-        </div>
-      ) : (
-        ""
-      )}
-
-      {/* {isAdminUser &&
-      (fetchedDetails.tokenA === "" || fetchedDetails.tokenA === undefined) &&
-      showEditOptions ? (
-        <div>
           <Button disabled={!tokensList.length} onClick={tokenGatingHandler}>
             Save changes
           </Button>
         </div>
       ) : (
         ""
-      )} */}
+      )}
 
       {showTokenGatingModal && (
         <TokenGatingModal

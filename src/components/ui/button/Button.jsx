@@ -2,21 +2,18 @@ import React from "react";
 import styles from "./Button.module.scss";
 
 const Button = ({ variant = "pill", children, onClick, disabled = false }) => {
-  let buttonStyles =
-    styles.button +
-    " " +
-    (variant === "normal" ? styles.normal : styles.pill) +
-    " " +
-    (disabled && styles.disabled);
+  let buttonStyles = `${styles.button} ${styles[variant]} ${
+    disabled && styles.disabled
+  }`;
 
   const handleClick = () => {
-    if (!disabled) onClick();
+    onClick();
   };
 
   return (
-    <div className={buttonStyles} onClick={handleClick}>
+    <button className={buttonStyles} onClick={handleClick} disabled={disabled}>
       {children}
-    </div>
+    </button>
   );
 };
 

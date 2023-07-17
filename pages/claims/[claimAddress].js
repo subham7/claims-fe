@@ -648,21 +648,7 @@ const ClaimAddress = () => {
                     <Button
                       onClick={claimHandler}
                       variant="normal"
-                      disabled={isClaimButtonDisabled}
-                      // style={
-                      //   (alreadyClaimed && +claimRemaining === 0) ||
-                      //   +claimInput <= 0 ||
-                      //   (contractData?.permission === "0" &&
-                      //     !isEligibleForTokenGated) ||
-                      //   (contractData?.permission === "3" &&
-                      //     !isEligibleForTokenGated) ||
-                      //   +claimInput >= +claimRemaining ||
-                      //   !claimActive ||
-                      //   !claimableAmt
-                      //     ? { cursor: "not-allowed" }
-                      //     : { cursor: "pointer" }
-                      // }
-                    >
+                      disabled={isClaimButtonDisabled}>
                       {isClaiming ? (
                         <CircularProgress size={25} />
                       ) : alreadyClaimed && +claimRemaining === 0 ? (

@@ -71,9 +71,6 @@ export const TokenGatingStyle = makeStyles({
     color: "gray",
   },
 
-  saveBtn: {
-    // alignSelf: "flex-end",
-  },
   tokensList: {
     display: "flex",
     alignItems: "center",
