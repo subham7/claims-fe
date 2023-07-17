@@ -1,4 +1,5 @@
-import { Button, Grid, TextField, Typography } from "@mui/material";
+import { Grid, TextField, Typography } from "@mui/material";
+import Button from "@components/ui/button/Button";
 import { makeStyles } from "@mui/styles";
 import { useFormik } from "formik";
 import * as yup from "yup";
@@ -87,15 +88,8 @@ const DepositOwnerFee = ({ updateOwnerFeesHandler, onClose, loading }) => {
               gap: "30px",
               marginTop: "20px",
             }}>
-            <Button
-              type="submit"
-              onClick={formik.handleSubmit}
-              variant="primary">
-              Update
-            </Button>
-            <Button onClick={onClose} variant="primary">
-              Cancel
-            </Button>
+            <Button onClick={formik.handleSubmit}>Update</Button>
+            <Button onClick={onClose}>Cancel</Button>
           </Grid>
         </form>
       </div>

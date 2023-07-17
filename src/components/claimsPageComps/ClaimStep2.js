@@ -1,5 +1,5 @@
 import {
-  Button,
+  // Button,
   CircularProgress,
   FormControl,
   FormControlLabel,
@@ -10,6 +10,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import Button from "@components/ui/button/Button";
 import { BsArrowLeft } from "react-icons/bs";
 import { makeStyles } from "@mui/styles";
 import React, { useRef, useState } from "react";
@@ -190,6 +191,18 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading, formikStep1 }) => {
         setLoadingCsv(false);
       };
     }
+  };
+
+  const isButtonDisabled = () => {
+    return csvError ||
+      (values.eligible === "everyone" &&
+        (values.customAmount <= 0 || !values.customAmount)) ||
+      (values.eligible === "token" &&
+        values.maximumClaim === "custom" &&
+        values.customAmount <= 0) ||
+      (values.eligible === "csv" && values.csvObject.length === 0)
+      ? true
+      : false;
   };
 
   return (
@@ -384,7 +397,7 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading, formikStep1 }) => {
                 disabled
                 value={file?.name}
               />
-              <Button onClick={handleClick} className={classes.uploadBtn}>
+              <Button onClick={handleClick} variant="normal">
                 Upload
               </Button>
               <input
@@ -414,41 +427,20 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading, formikStep1 }) => {
         {/* Next */}
         {finish ? (
           <Button
-            type="button"
             onClick={() => {
               router.push("/claims");
             }}
-            variant="contained"
-            className={classes.finish}>
+            variant="normal">
             Go back to claims
           </Button>
         ) : (
           <Button
-            disabled={
-              csvError ||
-              (values.eligible === "everyone" &&
-                (values.customAmount <= 0 || !values.customAmount)) ||
-              (values.eligible === "token" &&
-                values.maximumClaim === "custom" &&
-                values.customAmount <= 0) ||
-              (values.eligible === "csv" && values.csvObject.length === 0)
-                ? true
-                : false
-            }
+            disabled={isButtonDisabled()}
             onClick={formik.handleSubmit}
-            variant="contained"
-            className={classes.btn}>
-            {loading || loadingCsv ? <CircularProgress /> : "Finish"}
+            variant="normal">
+            {loading || loadingCsv ? <CircularProgress size={25} /> : "Finish"}
           </Button>
         )}
-
-        {/* <Button
-          variant="contained"
-          onClick={formik.handleSubmit}
-          className={classes.finish}
-        >
-          Finish
-        </Button> */}
         {showWrongNetworkModal(wallet, networkId)}
       </form>
     </>

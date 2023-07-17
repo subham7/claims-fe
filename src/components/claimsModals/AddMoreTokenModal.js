@@ -1,4 +1,4 @@
-import { Button } from "@mui/material";
+import Button from "@components/ui/button/Button";
 import React, { useEffect, useState } from "react";
 import { ClaimModalStyles } from "./ClaimModalStyles";
 import ModalCard from "./ModalCard";
@@ -91,24 +91,13 @@ const AddMoreTokenModal = ({
       </div>
 
       <div className={classes.buttonContainers}>
-        <Button
-          onClick={onClose}
-          sx={{
-            fontSize: "18px",
-            background: "#fff",
-            color: "#3A7AFD",
-          }}
-          variant="primary">
+        <Button onClick={onClose} variant="pill">
           Cancel
         </Button>
         <Button
-          sx={{
-            fontSize: "18px",
-            width: "130px",
-          }}
           disabled={formik.values.noOfTokens <= 0}
           onClick={formik.handleSubmit}
-          variant="primary">
+          variant="pill">
           Add
         </Button>
       </div>

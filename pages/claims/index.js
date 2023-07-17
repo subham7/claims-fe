@@ -1,5 +1,6 @@
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
+import Button from "@components/ui/button/Button";
 import settingsImg from "../../public/assets/images/settings.png";
 import { makeStyles } from "@mui/styles";
 import { useRouter } from "next/router";
@@ -146,9 +147,9 @@ const Claims = () => {
         <div className={classes.leftDiv}>
           <div className={classes.header}>
             <p className={classes.title}>Claims</p>
-            <button onClick={createClaimHandler} className={classes.claimDoc}>
+            <Button onClick={createClaimHandler} variant="normal">
               Create
-            </button>
+            </Button>
           </div>
 
           {!claimData.length && (

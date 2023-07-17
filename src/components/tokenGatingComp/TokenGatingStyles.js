@@ -63,23 +63,15 @@ export const TokenGatingStyle = makeStyles({
   },
 
   switchContainer: {
+    padding: "0px 16px",
     display: "flex",
+    flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-between",
     gap: "20px",
     color: "gray",
   },
 
-  saveBtn: {
-    width: "150px",
-    padding: "15px",
-    borderRadius: "200px",
-    border: "none",
-    alignSelf: "flex-end",
-    marginTop: "20px",
-    color: "white",
-    background: "#3A7AFD",
-    cursor: "pointer",
-  },
   tokensList: {
     display: "flex",
     alignItems: "center",

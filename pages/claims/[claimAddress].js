@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
+import Button from "@components/ui/button/Button";
 import {
   convertFromWeiGovernance,
   convertToWeiGovernance,
@@ -408,6 +409,18 @@ const ClaimAddress = () => {
     if (claimAddress) fetchClaimsDataFromSubgraph();
   }, [claimAddress]);
 
+  const isClaimButtonDisabled = () => {
+    return (claimRemaining == 0 && alreadyClaimed && claimed) ||
+      !claimActive ||
+      !claimableAmt ||
+      +claimInput <= 0 ||
+      claimInput >= +claimRemaining ||
+      (contractData?.permission == 0 && !isEligibleForTokenGated) ||
+      (contractData?.permission === "3" && !isEligibleForTokenGated)
+      ? true
+      : false;
+  };
+
   return (
     <Layout1 showSidebar={false}>
       <Image
@@ -632,43 +645,18 @@ const ClaimAddress = () => {
                       </p>
                     )}
 
-                    <button
+                    <Button
                       onClick={claimHandler}
-                      className={classes.btn}
-                      disabled={
-                        (claimRemaining == 0 && alreadyClaimed && claimed) ||
-                        !claimActive ||
-                        !claimableAmt ||
-                        +claimInput <= 0 ||
-                        claimInput >= +claimRemaining ||
-                        (contractData?.permission == 0 &&
-                          !isEligibleForTokenGated) ||
-                        (contractData?.permission === "3" &&
-                          !isEligibleForTokenGated)
-                          ? true
-                          : false
-                      }
-                      style={
-                        (alreadyClaimed && +claimRemaining === 0) ||
-                        +claimInput <= 0 ||
-                        (contractData?.permission === "0" &&
-                          !isEligibleForTokenGated) ||
-                        (contractData?.permission === "3" &&
-                          !isEligibleForTokenGated) ||
-                        +claimInput >= +claimRemaining ||
-                        !claimActive ||
-                        !claimableAmt
-                          ? { cursor: "not-allowed" }
-                          : { cursor: "pointer" }
-                      }>
+                      variant="normal"
+                      disabled={isClaimButtonDisabled}>
                       {isClaiming ? (
-                        <CircularProgress />
+                        <CircularProgress size={25} />
                       ) : alreadyClaimed && +claimRemaining === 0 ? (
                         "Claimed"
                       ) : (
                         "Claim"
                       )}
-                    </button>
+                    </Button>
                     {!claimableAmt && (
                       <p className={classes.error}>
                         You are not eligible for the claim!

@@ -1,5 +1,4 @@
 import {
-  Button,
   FormControl,
   InputAdornment,
   MenuItem,
@@ -8,6 +7,7 @@ import {
   ToggleButtonGroup,
   ToggleButton,
 } from "@mui/material";
+import Button from "@components/ui/button/Button";
 import { BsArrowLeft } from "react-icons/bs";
 import { makeStyles } from "@mui/styles";
 import React, { useEffect } from "react";
@@ -399,11 +399,7 @@ const ClaimStep1 = ({ formik, tokensInWallet, isLoading }) => {
         </FormControl> */}
 
         {/* {/* Next */}
-        <Button
-          onClick={formik.handleSubmit}
-          type="submit"
-          variant="contained"
-          className={classes.btn}>
+        <Button onClick={formik.handleSubmit} variant="normal">
           Next
         </Button>
       </form>
