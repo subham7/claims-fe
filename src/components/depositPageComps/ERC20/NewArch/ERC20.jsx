@@ -193,8 +193,6 @@ const ERC20 = ({
       );
 
       setClubData(stations[0]);
-
-      console.log("Data", stations);
     };
 
     fetchSubgraphData();

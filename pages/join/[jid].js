@@ -20,6 +20,7 @@ import { getClubInfo } from "../../src/api/club";
 import { makeStyles } from "@mui/styles";
 import ERC721 from "../../src/components/depositPageComps/ERC721/NewArch/ERC721";
 import ERC20 from "../../src/components/depositPageComps/ERC20/NewArch/ERC20";
+import useSmartContract from "../../src/hooks/useSmartContract";
 
 const useStyles = makeStyles({
   image: {
@@ -93,6 +94,7 @@ const Join = () => {
     return state.gnosis.wrongNetwork;
   });
 
+  useSmartContract();
   const { getDecimals, getBalance, getTokenGatingDetails, getTokenSymbol } =
     useSmartContractMethods();
 
