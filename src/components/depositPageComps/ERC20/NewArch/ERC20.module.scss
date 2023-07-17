@@ -102,9 +102,18 @@ $error: #ec4a4a;
   }
 
   .balance {
-    background: #19274b;
+    background: #1e2e5a;
     padding: 4px 10px;
     border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: fit-content;
+
+    p {
+      font-size: 16px;
+      font-weight: 400;
+    }
   }
 }
 
@@ -135,7 +144,6 @@ $error: #ec4a4a;
 .errorText {
   color: $error;
 }
-
 
 .tokenGateInfo {
   display: flex;

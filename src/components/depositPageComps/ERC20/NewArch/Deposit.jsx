@@ -3,6 +3,7 @@ import React from "react";
 import { convertFromWeiGovernance } from "../../../../utils/globalFunctions";
 import ProgressBar from "../../../progressbar";
 import classes from "./ERC20.module.scss";
+import { IoIosWallet } from "react-icons/io";
 
 const Deposit = ({
   erc20TokenDetails,
@@ -18,10 +19,14 @@ const Deposit = ({
     <div className={classes.rightContainer}>
       <div className={classes.flexContainer}>
         <p className={classes.subtitle}>Join this station</p>
-        <p className={classes.balance}>
-          Balance: {Number(erc20TokenDetails?.userBalance).toFixed(3)}{" "}
-          {erc20TokenDetails?.tokenSymbol}
-        </p>
+        <div className={classes.balance}>
+          <IoIosWallet size={22} />
+
+          <p>
+            {Number(erc20TokenDetails?.userBalance).toFixed(3)}{" "}
+            {erc20TokenDetails?.tokenSymbol}
+          </p>
+        </div>
       </div>
 
       <div className={classes.inputContainer}>
