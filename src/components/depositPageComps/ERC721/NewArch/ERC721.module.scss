@@ -1,5 +1,6 @@
 $border: 0.5px solid #6475a3;
 $background-primary: #101d38;
+$background-secondary: #19274b;
 $active-background: #05735940;
 $active-text: #0abb92;
 $inactive-background: #d5533840;
@@ -35,23 +36,14 @@ $inactive-text: #d55338;
   margin: 8px 0 16px 0;
 }
 
-.aboutContainer {
-  border: $border;
-  background: $background-primary;
-  border-radius: 16px;
-  width: 90%;
-  margin: 80px auto;
-  padding: 30px;
-}
-
 .isActive {
   background-color: $active-background;
   color: $active-text;
   padding: 0.3em 1em;
-  border-radius: 0.3em;
+  border-radius: 0.8em;
   display: flex;
   align-items: center;
-  border: 0.5px solid $active-text;
+  border: 0.3px solid $active-text;
 }
 
 .isInactive {
@@ -81,15 +73,23 @@ $inactive-text: #d55338;
 }
 
 .createdBy {
-  background: $background-primary;
+  background: $background-secondary;
   color: white;
   padding: 0.3em 0.5em;
   border-radius: 6px;
-  border: $border;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
 }
 
 .heading {
   font-size: 44px;
+  font-weight: 200px;
+}
+
+.subheading {
+  font-size: 32px;
   font-weight: 200px;
 }
 
@@ -120,10 +120,10 @@ $inactive-text: #d55338;
 }
 
 .icons {
-  border: $border;
   padding: 6px;
   border-radius: 4px;
   cursor: pointer;
+  background: $background-secondary;
 }
 
 .timer {
@@ -136,6 +136,7 @@ $inactive-text: #d55338;
     padding: 16px 24px;
     border-radius: 20px;
     margin-right: 8px;
+    background-color: #38435e;
   }
 }
 
@@ -143,4 +144,54 @@ $inactive-text: #d55338;
   height: auto;
   width: 100%;
   border-radius: 20px;
+}
+
+.tokenGateInfo {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  background-color: #c1d3ff1a;
+  padding: 10px 20px;
+  border-radius: 10px;
+  border: 0.5px solid #6475a3;
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+.container {
+  display: flex;
+  width: 90%;
+  margin: 0px auto;
+  gap: 40px;
+  margin-bottom: 20px;
+
+  .aboutContainer {
+    border: $border;
+    background: $background-primary;
+    border-radius: 16px;
+    width: 90%;
+    margin: 0px auto;
+    padding: 30px;
+    flex: 60;
+  }
+
+  .activityContainer {
+    border: $border;
+    background: $background-primary;
+    border-radius: 16px;
+    width: 90%;
+    margin: 0px auto;
+    padding: 30px;
+    flex: 40;
+
+    div {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      .time {
+        color: #c1d3ff;
+      }
+    }
+  }
 }

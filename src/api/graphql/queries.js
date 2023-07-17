@@ -13,6 +13,20 @@ export const QUERY_ALL_MEMBERS = (daoAddress) => {
     }`;
 };
 
+
+export const QUERY_LATEST_MEMBERS = (daoAddress) => {
+  return `query{
+      users(
+        where: {daoAddress: "${daoAddress}"}
+        first: 5
+        orderBy: timeStamp
+      ) {
+        userAddress
+        timeStamp
+      }
+  }`;
+}
+
 export const QUERY_PAGINATED_MEMBERS = (
   daoAddress,
   first,

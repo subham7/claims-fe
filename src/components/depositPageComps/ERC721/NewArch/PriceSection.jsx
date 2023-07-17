@@ -10,6 +10,7 @@ import { convertFromWeiGovernance } from "../../../../utils/globalFunctions";
 import classes from "./ERC721.module.scss";
 import RemoveIcon from "@mui/icons-material/Remove";
 import AddIcon from "@mui/icons-material/Add";
+import { BsInfoCircleFill } from "react-icons/bs";
 
 const PriceSection = ({
   clubData,
@@ -96,6 +97,16 @@ const PriceSection = ({
         Note: This station allows maximum of {clubData?.maxTokensPerUser}{" "}
         mint(s) per address
       </p>
+
+      {isTokenGated ? (
+        <div className={classes.tokenGateInfo}>
+          <BsInfoCircleFill color="#C1D3FF" />
+          <p>
+            Access to join this Station is <span>restricted</span> by the
+            admin(s)
+          </p>
+        </div>
+      ) : null}
     </div>
   );
 };

@@ -1,8 +1,9 @@
 import React from "react";
+import { BsInfoCircleFill } from "react-icons/bs";
 import { convertFromWeiGovernance } from "../../../../utils/globalFunctions";
 import classes from "./ERC20.module.scss";
 
-const ERC20Details = ({ clubData, erc20TokenDetails }) => {
+const ERC20Details = ({ clubData, erc20TokenDetails, isTokenGated }) => {
   return (
     <div className={classes.detailsContainer}>
       <div className={classes.flexContainer}>
@@ -58,6 +59,16 @@ const ERC20Details = ({ clubData, erc20TokenDetails }) => {
           </p>
         </div>
       </div>
+
+      {isTokenGated ? (
+        <div className={classes.tokenGateInfo}>
+          <BsInfoCircleFill color="#C1D3FF" />
+          <p>
+            Access to join this Station is <span>restricted</span> by the
+            admin(s)
+          </p>
+        </div>
+      ) : null}
     </div>
   );
 };

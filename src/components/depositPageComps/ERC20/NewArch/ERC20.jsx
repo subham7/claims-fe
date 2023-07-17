@@ -79,7 +79,7 @@ const ERC20 = ({
       .min(
         Number(
           convertFromWeiGovernance(
-            clubData?.minDepositAmount,
+            daoDetails?.minDeposit,
             erc20TokenDetails.tokenDecimal,
           ),
         ),
@@ -92,7 +92,7 @@ const ERC20 = ({
       .max(
         Number(
           convertFromWeiGovernance(
-            clubData?.maxDepositAmount,
+            daoDetails?.maxDeposit,
             erc20TokenDetails.tokenDecimal,
           ),
         ),
@@ -193,8 +193,6 @@ const ERC20 = ({
       );
 
       setClubData(stations[0]);
-
-      console.log("Data", stations);
     };
 
     fetchSubgraphData();
@@ -226,6 +224,7 @@ const ERC20 = ({
           <ERC20Details
             clubData={clubData}
             erc20TokenDetails={erc20TokenDetails}
+            isTokenGated={isTokenGated}
           />
         </div>
 
@@ -241,7 +240,9 @@ const ERC20 = ({
         />
       </div>
 
-      {clubInfo?.bio ? <About bio={clubInfo?.bio} /> : null}
+      {clubInfo?.bio ? (
+        <About bio={clubInfo?.bio} daoAddress={daoAddress} />
+      ) : null}
 
       {showWrongNetworkModal(wallet, networkId)}
 

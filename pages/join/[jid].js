@@ -20,6 +20,7 @@ import { getClubInfo } from "../../src/api/club";
 import { makeStyles } from "@mui/styles";
 import ERC721 from "../../src/components/depositPageComps/ERC721/NewArch/ERC721";
 import ERC20 from "../../src/components/depositPageComps/ERC20/NewArch/ERC20";
+import useSmartContract from "../../src/hooks/useSmartContract";
 
 const useStyles = makeStyles({
   image: {
@@ -46,6 +47,8 @@ const useStyles = makeStyles({
 const Join = () => {
   const [daoDetails, setDaoDetails] = useState({
     depositDeadline: 0,
+    minDeposit: 0,
+    maxDeposit: 0,
   });
   const [isEligibleForTokenGating, setIsEligibleForTokenGating] =
     useState(false);
@@ -91,13 +94,9 @@ const Join = () => {
     return state.gnosis.wrongNetwork;
   });
 
-  const {
-    getDecimals,
-
-    getBalance,
-    getTokenGatingDetails,
-    getTokenSymbol,
-  } = useSmartContractMethods();
+  useSmartContract();
+  const { getDecimals, getBalance, getTokenGatingDetails, getTokenSymbol } =
+    useSmartContractMethods();
 
   /**
    * Fetching details for ERC20 comp
@@ -108,6 +107,8 @@ const Join = () => {
       if (factoryData)
         setDaoDetails({
           depositDeadline: factoryData.depositCloseTime,
+          minDeposit: factoryData.minDepositPerUser,
+          maxDeposit: factoryData.maxDepositPerUser,
         });
 
       setLoading(false);

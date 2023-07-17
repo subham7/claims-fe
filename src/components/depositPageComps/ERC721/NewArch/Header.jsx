@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import classes from "./ERC721.module.scss";
 import ERC721Icons from "./ERC721Icons";
+import { RiShareBoxLine } from "react-icons/ri";
 
 const Header = ({ clubData, clubInfo, active, isErc20 = true, deadline }) => {
   const [timer, setTimer] = useState({
@@ -15,8 +16,6 @@ const Header = ({ clubData, clubInfo, active, isErc20 = true, deadline }) => {
       const currentTime = Math.floor(Date.now() / 1000);
       let timeDifference = +deadline - currentTime;
 
-      console.log(+timeDifference);
-
       if (timeDifference < 0) {
         // Timer has reached or passed the deadline
         timeDifference = 0;
@@ -28,8 +27,6 @@ const Header = ({ clubData, clubInfo, active, isErc20 = true, deadline }) => {
       const days = Math.floor(timeDifference / (24 * 60 * 60));
 
       setTimer({ days, hours, minutes, seconds });
-
-      console.log(days, hours, minutes);
     };
 
     // Update the timer every second
@@ -54,12 +51,20 @@ const Header = ({ clubData, clubInfo, active, isErc20 = true, deadline }) => {
             Finished
           </p>
         )}
-        <p className={classes.createdBy}>
-          {`${clubData?.ownerAddress?.slice(
+        <div
+          onClick={() => {
+            window.open(
+              `https://polygonscan.com/address/${clubData?.ownerAddress}`,
+              "_blank",
+            );
+          }}
+          className={classes.createdBy}>
+          <p>{`${clubData?.ownerAddress?.slice(
             0,
             5,
-          )}...${clubData?.ownerAddress?.slice(-5)}`}
-        </p>
+          )}...${clubData?.ownerAddress?.slice(-5)}`}</p>
+          <RiShareBoxLine size={16} />
+        </div>
 
         <ERC721Icons clubInfo={clubInfo} />
       </div>
