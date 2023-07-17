@@ -92,6 +92,7 @@ export const ClaimsStyles = makeStyles({
   },
 
   claimContainer: {
+    marginBottom: "15px",
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",

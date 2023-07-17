@@ -209,6 +209,51 @@ const NewArchERC20 = ({
     },
   });
 
+  const handleMaxButtonClick = () => {
+    formik.setFieldValue(
+      "tokenInput",
+      remainingClaimAmount
+        ? remainingClaimAmount < erc20TokenDetails.tokenBalance.toFixed(2)
+          ? remainingClaimAmount
+          : erc20TokenDetails.tokenBalance.toFixed(2)
+        : Number(
+            convertFromWeiGovernance(
+              daoDetails.maxDeposit,
+              erc20TokenDetails.tokenDecimal,
+            ),
+          ) < erc20TokenDetails.tokenBalance.toFixed(2)
+        ? Number(
+            convertFromWeiGovernance(
+              daoDetails.maxDeposit,
+              erc20TokenDetails.tokenDecimal,
+            ),
+          )
+        : erc20TokenDetails.tokenBalance.toFixed(2),
+    );
+  };
+
+  const isDepositButtonDisabled = () => {
+    return (
+      (remainingDays >= 0 && remainingTimeInSecs > 0 && isTokenGated
+        ? !isEligibleForTokenGating
+        : remainingDays >= 0 && remainingTimeInSecs > 0
+        ? false
+        : true) ||
+      Number(convertFromWeiGovernance(daoDetails.totalSupply, 6)) <=
+        Number(
+          convertFromWeiGovernance(
+            daoDetails.clubTokensMinted,
+            daoDetails.decimals,
+          ) *
+            convertFromWeiGovernance(
+              daoDetails.pricePerToken,
+              erc20TokenDetails.tokenDecimal,
+            ),
+        ) ||
+      remainingClaimAmount <= 0
+    );
+  };
+
   useEffect(() => {
     if (daoDetails.depositTokenAddress && daoDetails.clubTokensMinted && wallet)
       fetchTokenDetails();
@@ -717,39 +762,7 @@ const NewArchERC20 = ({
                                 justifyContent: "flex-end",
                               }}>
                               <div>
-                                <Button
-                                  onClick={() => {
-                                    formik.setFieldValue(
-                                      "tokenInput",
-                                      remainingClaimAmount
-                                        ? remainingClaimAmount <
-                                          erc20TokenDetails.tokenBalance.toFixed(
-                                            2,
-                                          )
-                                          ? remainingClaimAmount
-                                          : erc20TokenDetails.tokenBalance.toFixed(
-                                              2,
-                                            )
-                                        : Number(
-                                            convertFromWeiGovernance(
-                                              daoDetails.maxDeposit,
-                                              erc20TokenDetails.tokenDecimal,
-                                            ),
-                                          ) <
-                                          erc20TokenDetails.tokenBalance.toFixed(
-                                            2,
-                                          )
-                                        ? Number(
-                                            convertFromWeiGovernance(
-                                              daoDetails.maxDeposit,
-                                              erc20TokenDetails.tokenDecimal,
-                                            ),
-                                          )
-                                        : erc20TokenDetails.tokenBalance.toFixed(
-                                            2,
-                                          ),
-                                    );
-                                  }}>
+                                <Button onClick={handleMaxButtonClick}>
                                   Max
                                 </Button>
                               </div>
@@ -892,32 +905,7 @@ const NewArchERC20 = ({
                         sx={{ display: "flex", flexDirection: "column" }}>
                         <Button
                           onClick={formik.handleSubmit}
-                          disabled={
-                            (remainingDays >= 0 &&
-                            remainingTimeInSecs > 0 &&
-                            isTokenGated
-                              ? !isEligibleForTokenGating
-                              : remainingDays >= 0 && remainingTimeInSecs > 0
-                              ? false
-                              : true) ||
-                            Number(
-                              convertFromWeiGovernance(
-                                daoDetails.totalSupply,
-                                6,
-                              ),
-                            ) <=
-                              Number(
-                                convertFromWeiGovernance(
-                                  daoDetails.clubTokensMinted,
-                                  daoDetails.decimals,
-                                ) *
-                                  convertFromWeiGovernance(
-                                    daoDetails.pricePerToken,
-                                    erc20TokenDetails.tokenDecimal,
-                                  ),
-                              ) ||
-                            remainingClaimAmount <= 0
-                          }>
+                          disabled={isDepositButtonDisabled()}>
                           Deposit
                         </Button>
                         <div>

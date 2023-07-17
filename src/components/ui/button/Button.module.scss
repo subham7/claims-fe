@@ -1,6 +1,7 @@
 @import "./../../../../styles/variables.scss";
 
 .button {
+  width: fit-content;
   margin: 5px;
   font: 20px;
   font-weight: 400;
@@ -12,14 +13,24 @@
   color: $white;
   cursor: pointer;
   background-color: $primary;
-  border-radius: 48px;
   &:hover {
     background-color: $white;
     color: $primary;
   }
 }
 
+.normal {
+  border-radius: 8px;
+}
+
+.pill {
+  border-radius: 48px;
+}
+
 .disabled {
   background-color: $button_disabled !important;
-  cursor: unset !important;
+  cursor: default !important;
+  &:hover {
+    color: unset;
+  }
 }
