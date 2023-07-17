@@ -1,5 +1,6 @@
 $border: 0.5px solid #6475a3;
 $background-primary: #101d38;
+$background-secondary: #19274b;
 $active-background: #05735940;
 $active-text: #0abb92;
 $inactive-background: #d5533840;
@@ -39,10 +40,10 @@ $inactive-text: #d55338;
   background-color: $active-background;
   color: $active-text;
   padding: 0.3em 1em;
-  border-radius: 0.3em;
+  border-radius: 0.8em;
   display: flex;
   align-items: center;
-  border: 0.5px solid $active-text;
+  border: 0.3px solid $active-text;
 }
 
 .isInactive {
@@ -72,11 +73,14 @@ $inactive-text: #d55338;
 }
 
 .createdBy {
-  background: $background-primary;
+  background: $background-secondary;
   color: white;
   padding: 0.3em 0.5em;
   border-radius: 6px;
-  border: $border;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
 }
 
 .heading {
@@ -116,10 +120,10 @@ $inactive-text: #d55338;
 }
 
 .icons {
-  border: $border;
   padding: 6px;
   border-radius: 4px;
   cursor: pointer;
+  background: $background-secondary;
 }
 
 .timer {
@@ -132,6 +136,7 @@ $inactive-text: #d55338;
     padding: 16px 24px;
     border-radius: 20px;
     margin-right: 8px;
+    background-color: #38435e;
   }
 }
 

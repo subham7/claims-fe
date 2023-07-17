@@ -4,6 +4,7 @@ import ReactHtmlParser from "react-html-parser";
 import { subgraphQuery } from "../../../../utils/subgraphs";
 import { SUBGRAPH_URL_POLYGON } from "../../../../api";
 import { QUERY_LATEST_MEMBERS } from "../../../../api/graphql/queries";
+import { returnRemainingTime } from "../../../../utils/helper";
 
 const About = ({ bio, daoAddress }) => {
   const [members, setMembers] = useState([]);
@@ -48,7 +49,10 @@ const About = ({ bio, daoAddress }) => {
               {member?.userAddress.slice(member?.userAddress.length - 5)} joined
               this station
             </p>
-            <p className={classes.time}>2 min ago</p>
+            <p className={classes.time}>
+              {" "}
+              {returnRemainingTime(+member?.timeStamp)} ago
+            </p>
           </div>
         ))}
       </div>

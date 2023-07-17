@@ -17,7 +17,7 @@ const Deposit = ({
   return (
     <div className={classes.rightContainer}>
       <div className={classes.flexContainer}>
-        <p className={classes.subtitle}>Join this Station</p>
+        <p className={classes.subtitle}>Join this station</p>
         <p className={classes.balance}>
           Balance: {Number(erc20TokenDetails?.userBalance).toFixed(3)}{" "}
           {erc20TokenDetails?.tokenSymbol}
@@ -61,7 +61,11 @@ const Deposit = ({
         Deposit
       </button>
 
-      <p className={classes.smallText}>
+      <p
+        style={{
+          marginBottom: "8px",
+        }}
+        className={classes.smallText}>
         {convertFromWeiGovernance(
           clubData?.totalAmountRaised,
           erc20TokenDetails.tokenDecimal,

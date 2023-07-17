@@ -64,6 +64,23 @@ export function formatEpochTime(epochTime) {
   const minutes = Math.floor((timeDiff % (60 * 60)) / 60);
   return `${days}D: ${hours}H: ${minutes}M`;
 }
+
+export function returnRemainingTime(epochTime) {
+  const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
+  const timeDiff = epochTime - currentTime;
+  const days = Math.abs(Math.floor(timeDiff / (24 * 60 * 60)));
+  const hours = Math.abs(Math.floor((timeDiff % (24 * 60 * 60)) / (60 * 60)));
+  const minutes = Math.abs(Math.floor((timeDiff % (60 * 60)) / 60));
+
+  return days > 0
+    ? `${days} days`
+    : (days === 0) & (hours > 0)
+    ? `${hours} hours`
+    : days === 0 && hours === 0
+    ? `${minutes} mins`
+    : 0;
+}
+
 export const showWrongNetworkModal = (wallet, networkId) => {
   return wallet && networkId !== "0x89" ? <WrongNetworkModal /> : null;
 };

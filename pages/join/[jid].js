@@ -46,6 +46,8 @@ const useStyles = makeStyles({
 const Join = () => {
   const [daoDetails, setDaoDetails] = useState({
     depositDeadline: 0,
+    minDeposit: 0,
+    maxDeposit: 0,
   });
   const [isEligibleForTokenGating, setIsEligibleForTokenGating] =
     useState(false);
@@ -91,13 +93,8 @@ const Join = () => {
     return state.gnosis.wrongNetwork;
   });
 
-  const {
-    getDecimals,
-
-    getBalance,
-    getTokenGatingDetails,
-    getTokenSymbol,
-  } = useSmartContractMethods();
+  const { getDecimals, getBalance, getTokenGatingDetails, getTokenSymbol } =
+    useSmartContractMethods();
 
   /**
    * Fetching details for ERC20 comp
@@ -108,6 +105,8 @@ const Join = () => {
       if (factoryData)
         setDaoDetails({
           depositDeadline: factoryData.depositCloseTime,
+          minDeposit: factoryData.minDepositPerUser,
+          maxDeposit: factoryData.maxDepositPerUser,
         });
 
       setLoading(false);
