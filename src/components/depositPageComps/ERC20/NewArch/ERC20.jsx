@@ -79,8 +79,8 @@ const ERC20 = ({
       .min(
         Number(
           convertFromWeiGovernance(
-            daoDetails?.minDeposit,
-            erc20TokenDetails.tokenDecimal,
+            clubData?.minDepositAmount,
+            erc20TokenDetails?.tokenDecimal,
           ),
         ),
         "Amount should be greater than min deposit",
@@ -92,8 +92,8 @@ const ERC20 = ({
       .max(
         Number(
           convertFromWeiGovernance(
-            daoDetails?.maxDeposit,
-            erc20TokenDetails.tokenDecimal,
+            clubData?.maxDepositAmount,
+            erc20TokenDetails?.tokenDecimal,
           ),
         ),
         "Amount should be less than max deposit",
@@ -106,7 +106,7 @@ const ERC20 = ({
       .required("Input is required")
       .min(0.0000001, "Amount should be greater than min deposit")
       .lessThan(
-        erc20TokenDetails.tokenBalance,
+        erc20TokenDetails?.tokenBalance,
         "Amount can't be greater than wallet balance",
       )
       .max(
