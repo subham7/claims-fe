@@ -638,7 +638,6 @@ const ProposalDetail = () => {
       const parts = proposalData.commands[0].nftLink.split("/");
 
       const linkData = parts.slice(-3);
-      console.log(linkData);
       const nftdata = await retrieveNftListing(
         linkData[0],
         linkData[1],
@@ -664,10 +663,7 @@ const ProposalDetail = () => {
           asset_contract_address: linkData[1],
           token_id: linkData[2],
         };
-        console.log(offer, fulfiller, consideration);
         transactionData = await fulfillOrder(offer, fulfiller, consideration);
-        console.log(transactionData);
-        console.log(ABI);
         let iface = new Interface(ABI);
 
         data = iface.encodeFunctionData("fulfillBasicOrder_efficient_6GL6yc", [
