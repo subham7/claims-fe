@@ -16,12 +16,12 @@ $error: #ec4a4a;
   // gap: 60px;
 
   .leftContainer {
-    flex: 0.4;
+    flex: 60;
     width: 600px;
   }
 
   .rightContainer {
-    flex: 0.5;
+    flex: 40;
     background: #142243;
     padding: 20px 32px;
     border-radius: 20px;
@@ -32,8 +32,9 @@ $error: #ec4a4a;
       background: $background-input;
       align-items: center;
       border-radius: 20px;
-      padding: 20px;
-      gap: 20px;
+      padding: 20px 28px;
+      // gap: 20px;
+      justify-content: space-between;
 
       input {
         background: inherit;
@@ -42,7 +43,7 @@ $error: #ec4a4a;
         color: white;
         width: 250px;
         font-size: 32px;
-        padding: 10px;
+        padding: 10px 4px;
         border-radius: 20px;
       }
     }
@@ -79,7 +80,7 @@ $error: #ec4a4a;
 }
 
 .detailsContainer {
-  width: 90%;
+  width: 75%;
   margin-top: 40px;
 }
 
@@ -90,7 +91,7 @@ $error: #ec4a4a;
   margin: 8px 0 16px 0;
 
   div {
-    width: 300px;
+    width: 100px;
     .title {
       font-weight: 500;
     }
