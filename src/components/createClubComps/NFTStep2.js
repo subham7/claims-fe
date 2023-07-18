@@ -1,13 +1,12 @@
 import {
-  Button,
   Card,
   FormControlLabel,
   Grid,
   InputAdornment,
   Switch,
-  TextField,
   Typography,
 } from "@mui/material";
+import { Button, TextField } from "@components/ui";
 import { makeStyles } from "@mui/styles";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
@@ -168,10 +167,7 @@ export default function NFTStep2(props) {
               </Typography>
               <Grid container spacing={2} mb={2}>
                 <Grid item>
-                  <Button
-                    variant="contained"
-                    sx={{ fontWeight: "light", minWidth: "180px" }}
-                    onClick={generateRandomNFTImage}>
+                  <Button variant="normal" onClick={generateRandomNFTImage}>
                     Generate random
                   </Button>
                 </Grid>
@@ -180,11 +176,7 @@ export default function NFTStep2(props) {
 
                   <Button
                     startIcon={<UploadIcon />}
-                    variant="contained"
-                    sx={{
-                      fontWeight: "light",
-                      minWidth: "180px",
-                    }}
+                    variant="normal"
                     onClick={(e) => {
                       props.uploadInputRef.current.click();
                     }}>
@@ -333,7 +325,6 @@ export default function NFTStep2(props) {
               mr={3}>
               <TextField
                 name="pricePerToken"
-                className={classes.textField}
                 type="number"
                 placeholder="Ex:10"
                 variant="outlined"
@@ -391,7 +382,6 @@ export default function NFTStep2(props) {
               <TextField
                 name="maxTokensPerUser"
                 type="number"
-                className={classes.textField}
                 label="Eg: 100"
                 variant="outlined"
                 onChange={props.formik.handleChange}
@@ -486,7 +476,6 @@ export default function NFTStep2(props) {
                 mr={3}>
                 <TextField
                   name="totalTokenSupply"
-                  className={classes.textField}
                   type="number"
                   placeholder="Ex:200"
                   variant="outlined"

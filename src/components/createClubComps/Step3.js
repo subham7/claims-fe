@@ -5,11 +5,12 @@ import {
   Grid,
   IconButton,
   Slider,
-  TextField,
+  // TextField,
   ToggleButton,
   ToggleButtonGroup,
   Typography,
 } from "@mui/material";
+import { TextField } from "@components/ui";
 
 import CustomSlider from "../slider";
 import AddCircleOutlinedIcon from "@mui/icons-material/AddCircleOutlined";
@@ -180,7 +181,15 @@ export default function Step3(props) {
                   Signators
                 </Typography>
                 {ownerAddresses?.length > 0 ? (
-                  <Grid container pr={1} mt={2} mb={2}>
+                  <Grid
+                    container
+                    pr={1}
+                    mt={2}
+                    mb={2}
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                    }}>
                     {ownerAddresses.map((data, key) => {
                       return (
                         <Grid
@@ -198,13 +207,6 @@ export default function Step3(props) {
                             variant="outlined"
                             value={ownerAddresses[key]}
                             placeholder={"0x"}
-                            sx={{
-                              m: 1,
-                              ml: 0,
-                              width: 443,
-                              mt: 1,
-                              borderRadius: "10px",
-                            }}
                           />
                           <IconButton
                             aria-label="add"
@@ -267,7 +269,16 @@ export default function Step3(props) {
                 </Grid>
 
                 {props.formik.values.addressList?.length > 0 ? (
-                  <Grid container pl={3} pr={1} mt={2} mb={2}>
+                  <Grid
+                    container
+                    pl={3}
+                    pr={1}
+                    mt={2}
+                    mb={2}
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                    }}>
                     {props.formik.values.addressList.map((data, key) => {
                       return (
                         <Grid
@@ -281,7 +292,6 @@ export default function Step3(props) {
                           key={key}>
                           <TextField
                             label="Wallet address"
-                            // error={!/^0x[a-zA-Z0-9]+/gm.test(addressList[key])}
                             variant="outlined"
                             value={props.formik.values.addressList[key]}
                             onChange={(e, value) => {
@@ -291,12 +301,6 @@ export default function Step3(props) {
                               props.formik.setFieldValue("addressList", list);
                             }}
                             placeholder={"0x"}
-                            sx={{
-                              m: 1,
-                              width: 443,
-                              mt: 1,
-                              borderRadius: "10px",
-                            }}
                             error={
                               Boolean(props.formik.errors.addressList)
                                 ? props.formik.touched.addressList &&

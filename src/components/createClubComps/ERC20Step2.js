@@ -1,10 +1,5 @@
-import {
-  Card,
-  Grid,
-  InputAdornment,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Card, Grid, InputAdornment, Typography } from "@mui/material";
+import { TextField } from "@components/ui";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -88,7 +83,6 @@ export default function ERC20Step2(props) {
                 }}>
                 <TextField
                   name="minDepositPerUser"
-                  className={classes.textField}
                   type="number"
                   placeholder="Ex:100"
                   variant="outlined"
@@ -141,7 +135,6 @@ export default function ERC20Step2(props) {
                 }}>
                 <TextField
                   name="maxDepositPerUser"
-                  className={classes.textField}
                   type="number"
                   placeholder="Ex:1000"
                   variant="outlined"
@@ -195,7 +188,6 @@ export default function ERC20Step2(props) {
                 }}>
                 <TextField
                   name="totalRaiseAmount"
-                  className={classes.textField}
                   type="number"
                   placeholder="Ex:1000"
                   variant="outlined"
@@ -249,7 +241,6 @@ export default function ERC20Step2(props) {
                 }}>
                 <TextField
                   name="pricePerToken"
-                  className={classes.textField}
                   type="number"
                   placeholder="Ex:10"
                   variant="outlined"

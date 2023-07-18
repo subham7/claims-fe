@@ -4,9 +4,9 @@ import {
   Grid,
   MenuItem,
   Select,
-  TextField,
   Typography,
 } from "@mui/material";
+import { TextField } from "@components/ui";
 import { Step1Styles } from "./CreateClubStyles";
 
 export default function Step1(props) {
@@ -24,7 +24,6 @@ export default function Step1(props) {
           <Typography className={classes.wrapTextIcon}>Name *</Typography>
           <TextField
             name="clubName"
-            className={classes.textField}
             label="Eg: Degen Collective / PurpleDAO / Phoenix club"
             variant="outlined"
             onChange={props.formik.handleChange}
@@ -50,7 +49,6 @@ export default function Step1(props) {
           </Typography>
           <TextField
             name="clubSymbol"
-            className={classes.textField}
             label="Eg: DGC / PDAO / PXC"
             variant="outlined"
             onChange={props.formik.handleChange}
@@ -131,7 +129,6 @@ export default function Step1(props) {
           </Typography>
           <TextField
             name="email"
-            className={classes.textField}
             variant="outlined"
             onChange={props.formik.handleChange}
             placeholder="johndoe@email.com"
