@@ -17,11 +17,11 @@ export const TokenGatingStyle = makeStyles({
     alignItems: "center",
     width: "100%",
     justifyContent: "space-between",
+    marginBottom: "20px",
   },
 
   title: {
     fontSize: "32px",
-    marginBottom: "20px",
   },
 
   icon: {
@@ -32,13 +32,14 @@ export const TokenGatingStyle = makeStyles({
   },
 
   conditions: {
-    padding: "20px",
+    padding: "32px 20px",
     border: "1px solid #6475A350",
     borderRadius: "8px",
     width: "full",
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
+    marginBottom: "20px",
   },
 
   conditionTxt: {

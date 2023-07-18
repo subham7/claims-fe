@@ -69,7 +69,7 @@ export function formatEpochTime(epochTime) {
 
 export function returnRemainingTime(epochTime) {
   const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
-  const timeDiff = epochTime - currentTime;
+  const timeDiff = currentTime - epochTime;
   const days = Math.abs(Math.floor(timeDiff / (24 * 60 * 60)));
   const hours = Math.abs(Math.floor((timeDiff % (24 * 60 * 60)) / (60 * 60)));
   const minutes = Math.abs(Math.floor((timeDiff % (60 * 60)) / 60));
