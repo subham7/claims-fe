@@ -5,9 +5,9 @@ import {
   DialogContent,
   Grid,
   Snackbar,
-  TextField,
   Typography,
 } from "@mui/material";
+import { TextField } from "@components/ui";
 import Button from "@components/ui/button/Button";
 import { makeStyles } from "@mui/styles";
 import { useFormik } from "formik";
@@ -156,7 +156,6 @@ const EditClubInfo = (props) => {
               <Typography className={classes.wrapTextIcon}>Twitter</Typography>
               <TextField
                 name="twitter"
-                className={classes.textField}
                 placeholder="Paste URL here"
                 variant="outlined"
                 onChange={formik.handleChange}
@@ -171,7 +170,6 @@ const EditClubInfo = (props) => {
               <Typography className={classes.wrapTextIcon}>Discord</Typography>
               <TextField
                 name="discord"
-                className={classes.textField}
                 placeholder="Paste URL here"
                 variant="outlined"
                 onChange={formik.handleChange}
@@ -186,7 +184,6 @@ const EditClubInfo = (props) => {
               <Typography className={classes.wrapTextIcon}>Telegram</Typography>
               <TextField
                 name="telegram"
-                className={classes.textField}
                 placeholder="Paste URL here"
                 variant="outlined"
                 onChange={formik.handleChange}
