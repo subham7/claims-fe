@@ -1,7 +1,13 @@
 import React from "react";
 import styles from "./Button.module.scss";
 
-const Button = ({ variant = "pill", children, onClick, disabled = false }) => {
+const Button = ({
+  variant = "pill",
+  children,
+  onClick,
+  disabled = false,
+  type = "button",
+}) => {
   let buttonStyles = `${styles.button} ${styles[variant]} ${
     disabled && styles.disabled
   }`;
@@ -11,7 +17,11 @@ const Button = ({ variant = "pill", children, onClick, disabled = false }) => {
   };
 
   return (
-    <button className={buttonStyles} onClick={handleClick} disabled={disabled}>
+    <button
+      type={type}
+      className={buttonStyles}
+      onClick={handleClick}
+      disabled={disabled}>
       {children}
     </button>
   );
