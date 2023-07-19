@@ -22,9 +22,10 @@ const useStyles = makeStyles({
     display: "flex",
     gap: "30px",
     marginBottom: "60px",
+    justifyContent: "space-around",
   },
   leftDiv: {
-    flex: "0.65",
+    flex: "0.7",
     margin: 0,
   },
   header: {
