@@ -426,7 +426,8 @@ const NewArchERC721 = ({
             <Grid item md={6}>
               {daoDetails?.daoImage && (
                 <>
-                  {daoDetails?.daoImage?.includes(".mp4") ? (
+                  {daoDetails?.daoImage?.includes(".mp4") ||
+                  daoDetails?.daoImage?.includes(".MP4") ? (
                     <video className={classes.nftImg} loop autoPlay muted>
                       <source src={daoDetails?.daoImage} type="video/mp4" />
                       Your browser does not support the video tag.
