@@ -94,6 +94,7 @@ export default function Layout1(props) {
               sx={{
                 flexGrow: 1,
                 width: { sm: `calc(100% - ${drawerWidth}px)` },
+                paddingX: showSidebar ? "0px" : "60px",
               }}>
               <div style={{ padding: "12px 32px 0px 40px" }}>
                 {props.children}
