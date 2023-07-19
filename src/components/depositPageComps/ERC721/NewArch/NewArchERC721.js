@@ -417,7 +417,13 @@ const NewArchERC721 = ({
             </Grid>
             <Grid item md={6}>
               {daoDetails?.daoImage && (
-                <>
+                <div
+                  style={{
+                    maxHeight: "80vh",
+                    overflow: "hidden",
+                    objectFit: "cover",
+                    borderRadius: "20px",
+                  }}>
                   {daoDetails?.daoImage?.includes(".mp4") ||
                   daoDetails?.daoImage?.includes(".MP4") ? (
                     <video className={classes.nftImg} loop autoPlay muted>
@@ -431,7 +437,7 @@ const NewArchERC721 = ({
                       className={classes.nftImg}
                     />
                   )}
-                </>
+                </div>
               )}
             </Grid>
           </>

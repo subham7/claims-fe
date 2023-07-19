@@ -295,8 +295,8 @@ const DashboardIndex = () => {
             <Card className={classes.cardSharp1}>
               <Grid container spacing={2}>
                 {tokenType === "erc721" &&
-                clubDetails.clubImageUrl &&
-                !clubDetails.clubImageUrl?.includes(".mp4") ? (
+                !clubDetails.clubImageUrl?.includes(".mp4") &&
+                !clubDetails.clubImageUrl?.includes(".MP4") ? (
                   <Grid item ml={3} mt={2}>
                     <img
                       src={
@@ -308,6 +308,35 @@ const DashboardIndex = () => {
                       alt="profile_pic"
                       className={classes.profilePic}
                     />
+                  </Grid>
+                ) : clubDetails.clubImageUrl?.includes(".mp4") ||
+                  clubDetails.clubImageUrl?.includes(".MP4") ? (
+                  <Grid
+                    style={{
+                      width: "110px",
+                      height: "110px",
+                    }}
+                    item
+                    ml={3}
+                    mt={2}>
+                    <video
+                      style={{
+                        width: "110px",
+                        height: "110px",
+                      }}
+                      loop
+                      autoPlay
+                      muted>
+                      <source
+                        src={
+                          clubDetails.clubImageUrl
+                            ? clubDetails.clubImageUrl
+                            : null
+                        }
+                        type="video/mp4"
+                      />
+                      Your browser does not support the video tag.
+                    </video>
                   </Grid>
                 ) : null}
 
