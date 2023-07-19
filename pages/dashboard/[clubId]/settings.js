@@ -14,6 +14,7 @@ import { getAssetsByDaoAddress } from "../../../src/api/assets";
 import useSmartContractMethods from "../../../src/hooks/useSmartContractMethods";
 import { showWrongNetworkModal } from "../../../src/utils/helper";
 import { getClubInfo } from "../../../src/api/club";
+import Layout1 from "@components/layouts/layout1";
 
 const Settings = () => {
   const [daoDetails, setDaoDetails] = useState({
@@ -261,7 +262,7 @@ const Settings = () => {
   }, [fetchAssets]);
 
   return (
-    <div>
+    <Layout1 page={5}>
       <SettingsInfo
         daoDetails={daoDetails}
         erc20TokenDetails={erc20TokenDetails}
@@ -289,7 +290,7 @@ const Settings = () => {
       <TokenGating />
 
       {showWrongNetworkModal(wallet, networkId)}
-    </div>
+    </Layout1>
   );
 };
 

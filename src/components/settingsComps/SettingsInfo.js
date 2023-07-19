@@ -10,7 +10,6 @@ import {
   Typography,
 } from "@mui/material";
 import React, { useState } from "react";
-import Layout1 from "../layouts/layout1";
 import ProgressBar from "../progressbar";
 
 import { SettingsInfoStlyes } from "./SettingsInfoStyles";
@@ -52,9 +51,9 @@ const SettingsInfo = ({
   };
 
   return (
-    <Layout1 page={5}>
-      <Grid container spacing={3} paddingLeft={10} paddingTop={15}>
-        <Grid item md={9}>
+    <>
+      <Grid container spacing={3} paddingTop={15}>
+        <Grid sx={{ width: "70%" }} item>
           <Card className={classes.cardRegular}>
             <Grid
               container
@@ -703,7 +702,7 @@ const SettingsInfo = ({
       >
         <CircularProgress color="inherit" />
       </Backdrop>
-    </Layout1>
+    </>
   );
 };
 
