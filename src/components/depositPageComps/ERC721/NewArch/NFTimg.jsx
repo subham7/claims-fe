@@ -6,7 +6,7 @@ const NFTimg = ({ imgUrl }) => {
     <div className={classes.rightContainer}>
       {imgUrl && (
         <>
-          {imgUrl.includes(".mp4") ? (
+          {imgUrl.includes(".mp4") || imgUrl.includes(".MP4") ? (
             <video className={classes.nftImg} loop autoPlay muted>
               <source src={imgUrl} type="video/mp4" />
               Your browser does not support the video tag.
