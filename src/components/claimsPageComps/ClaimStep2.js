@@ -18,7 +18,6 @@ import { useConnectWallet } from "@web3-onboard/react";
 import { useDispatch } from "react-redux";
 import { useRouter } from "next/router";
 import Link from "next/link";
-import { showWrongNetworkModal } from "../../utils/helper";
 
 const useStyles = makeStyles({
   form: {
@@ -127,7 +126,6 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading, formikStep1 }) => {
 
   const classes = useStyles();
   const [{ wallet }] = useConnectWallet();
-  const networkId = wallet?.chains[0].id;
   const dispatch = useDispatch();
 
   const hiddenFileInput = useRef(null);
@@ -441,7 +439,6 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading, formikStep1 }) => {
             {loading || loadingCsv ? <CircularProgress size={25} /> : "Finish"}
           </Button>
         )}
-        {showWrongNetworkModal(wallet, networkId)}
       </form>
     </>
   );

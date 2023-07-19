@@ -14,7 +14,6 @@ import classes from "./ERC20.module.scss";
 import * as yup from "yup";
 import { useConnectWallet } from "@web3-onboard/react";
 import { useRouter } from "next/router";
-import { showWrongNetworkModal } from "../../../../utils/helper";
 import { Alert, Backdrop, CircularProgress } from "@mui/material";
 import dayjs from "dayjs";
 import Deposit from "./Deposit";
@@ -40,7 +39,6 @@ const ERC20 = ({
   const [depositSuccessfull, setDepositSuccessfull] = useState(false);
 
   const [{ wallet }] = useConnectWallet();
-  const networkId = wallet?.chains[0].id;
   const router = useRouter();
   const walletAddress = wallet?.accounts[0].address;
 
@@ -248,8 +246,6 @@ const ERC20 = ({
       {clubInfo?.bio ? (
         <About bio={clubInfo?.bio} daoAddress={daoAddress} />
       ) : null}
-
-      {showWrongNetworkModal(wallet, networkId)}
 
       {depositSuccessfull && showMessage ? (
         <Alert

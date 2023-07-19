@@ -40,7 +40,6 @@ import {
 import { GiTwoCoins } from "react-icons/gi";
 import { IoColorPalette } from "react-icons/io5";
 import useSmartContractMethods from "../../hooks/useSmartContractMethods";
-import { showWrongNetworkModal } from "../../utils/helper";
 import { addNftsOwnedByDao } from "../../redux/reducers/club";
 // import useSmartContract from "../../hooks/useSmartContract";
 
@@ -114,7 +113,6 @@ const DashboardIndex = () => {
   } = useSmartContractMethods();
 
   const walletAddress = wallet?.accounts[0].address;
-  const networkId = wallet?.chains[0].id;
 
   const fetchClubDetails = useCallback(async () => {
     try {
@@ -884,8 +882,6 @@ const DashboardIndex = () => {
           </Stack>
         </Grid>
       </Grid>
-
-      {showWrongNetworkModal(wallet, networkId)}
 
       <Snackbar
         //   open={openSnackBar}

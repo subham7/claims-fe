@@ -31,11 +31,7 @@ import {
   getProposalByDaoAddress,
   getProposalTxHash,
 } from "../../../../src/api/proposal";
-import {
-  showWrongNetworkModal,
-  web3InstanceCustomRPC,
-} from "../../../../src/utils/helper";
-import { useConnectWallet } from "@web3-onboard/react";
+import { web3InstanceCustomRPC } from "../../../../src/utils/helper";
 import { addNftsOwnedByDao } from "../../../../src/redux/reducers/club";
 
 const useStyles = makeStyles({
@@ -65,8 +61,6 @@ const Proposal = () => {
   const dispatch = useDispatch();
   const { clubId: daoAddress } = router.query;
   const classes = useStyles();
-  const [{ wallet }] = useConnectWallet();
-  const networkId = wallet?.chains[0].id;
 
   const [nftData, setNftData] = useState([]);
   const [selectedListItem, setSelectedListItem] = useState(
@@ -392,8 +386,6 @@ const Proposal = () => {
           <DocsCard />
         </Grid>
       </Grid>
-
-      {showWrongNetworkModal(wallet, networkId)}
 
       <CreateProposalDialog
         open={open}

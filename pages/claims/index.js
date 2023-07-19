@@ -111,7 +111,6 @@ const Claims = () => {
 
   const [{ wallet }] = useConnectWallet();
   const walletAddress = wallet?.accounts[0].address;
-  const networkId = wallet?.chains[0].id;
 
   useEffect(() => {
     const fetchClaims = async () => {

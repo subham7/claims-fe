@@ -380,35 +380,7 @@ const App = () => {
               </Card>
             </Grid>
           </Grid>
-        ) : (
-          <>
-            {!manageStation && !wallet && (
-              <Grid
-                container
-                direction="column"
-                justifyContent="center"
-                alignItems="center">
-                <Grid item mt={15}>
-                  <img
-                    className={classes.bannerImage}
-                    src="/assets/images/start_illustration.svg"
-                  />
-                </Grid>
-                <Grid item mt={4}>
-                  <Typography variant="mainHeading">
-                    Do more together
-                  </Typography>
-                </Grid>
-                <Grid item mt={4}>
-                  <Typography variant="regularText">
-                    Create or join a station in less than 60 seconds using
-                    StationX
-                  </Typography>
-                </Grid>
-              </Grid>
-            )}
-          </>
-        )}
+        ) : null}
 
         <Dialog
           open={open}
