@@ -1,6 +1,5 @@
 import {
   Alert,
-  Button,
   CircularProgress,
   Dialog,
   DialogContent,
@@ -9,6 +8,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import Button from "@components/ui/button/Button";
 import { makeStyles } from "@mui/styles";
 import { useFormik } from "formik";
 import React, { useEffect, useState } from "react";
@@ -120,7 +120,7 @@ const EditClubInfo = (props) => {
             backgroundColor: "#19274B",
             padding: "3rem",
           }}>
-          <form onSubmit={formik.handleSubmit} className={classes.form}>
+          <form className={classes.form}>
             <Grid item md={6} mb={2}>
               <Typography className={classes.wrapTextIcon}>Add Bio</Typography>
               <QuillEditor
@@ -210,7 +210,6 @@ const EditClubInfo = (props) => {
                   alignItems: "center",
                 }}>
                 <Button
-                  variant="primary"
                   onClick={() => {
                     formik.resetForm();
                     setLoaderOpen(false);
@@ -220,15 +219,9 @@ const EditClubInfo = (props) => {
                 </Button>
               </Grid>
               <Grid item>
-                <Button
-                  variant="primary"
-                  type="submit"
-                  sx={{ display: "flex", alignItems: "center" }}>
+                <Button onClick={() => formik.handleSubmit()}>
                   {loaderOpen ? (
-                    <CircularProgress
-                      color="inherit"
-                      sx={{ width: "inherit" }}
-                    />
+                    <CircularProgress color="inherit" size={25} />
                   ) : (
                     "Save Changes"
                   )}

@@ -3,12 +3,12 @@ import { makeStyles } from "@mui/styles";
 export const TokenGatingStyle = makeStyles({
   container: {
     background: "#142243",
-    marginLeft: "130px",
-    width: "65%",
+    width: "70%",
     borderRadius: "12px",
     padding: "50px 30px",
     display: "flex",
     flexDirection: "column",
+    marginBottom: "60px",
   },
 
   heading: {
@@ -17,6 +17,7 @@ export const TokenGatingStyle = makeStyles({
     alignItems: "center",
     width: "100%",
     justifyContent: "space-between",
+    marginBottom: "20px",
   },
 
   title: {
@@ -31,13 +32,14 @@ export const TokenGatingStyle = makeStyles({
   },
 
   conditions: {
-    padding: "20px",
+    padding: "32px 20px",
     border: "1px solid #6475A350",
     borderRadius: "8px",
     width: "full",
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
+    marginBottom: "20px",
   },
 
   conditionTxt: {
@@ -62,23 +64,15 @@ export const TokenGatingStyle = makeStyles({
   },
 
   switchContainer: {
+    padding: "0px 16px",
     display: "flex",
+    flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-between",
     gap: "20px",
     color: "gray",
   },
 
-  saveBtn: {
-    width: "150px",
-    padding: "15px",
-    borderRadius: "200px",
-    border: "none",
-    alignSelf: "flex-end",
-    marginTop: "20px",
-    color: "white",
-    background: "#3A7AFD",
-    cursor: "pointer",
-  },
   tokensList: {
     display: "flex",
     alignItems: "center",

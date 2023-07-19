@@ -80,22 +80,6 @@ export const NewArchERC20Styles = makeStyles({
     opacity: 1,
     border: "1px solid #C1D3FF",
   },
-  maxTag: {
-    borderRadius: "17px",
-    width: "98px",
-    height: "34px",
-    opacity: "1",
-    padding: "10px",
-    justifyContent: "center",
-    display: "flex",
-    alignItems: "center",
-    backgroundColor: " #3B7AFD",
-    fontSize: "20px",
-    "&:hover": {
-      background: "#F5F5F5",
-      color: "#3B7AFD",
-    },
-  },
   openTag: {
     width: "60px",
     height: "20px",

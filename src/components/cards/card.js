@@ -1,4 +1,4 @@
-import { Button } from "@mui/material";
+import Button from "@components/ui/button/Button";
 import { makeStyles } from "@mui/styles";
 import React from "react";
 
@@ -40,9 +40,7 @@ const NewCard = ({ title, subtitle, onClick, buttonText }) => {
     <div className={classes.card}>
       <h2 className={classes.title}>{title}</h2>
       <p className={classes.subtitle}>{subtitle}</p>
-      <Button sx={{ borderRadius: "24px" }} onClick={onClick}>
-        {buttonText}
-      </Button>
+      <Button onClick={onClick}>{buttonText}</Button>
     </div>
   );
 };

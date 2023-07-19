@@ -13,6 +13,49 @@ export const QUERY_ALL_MEMBERS = (daoAddress) => {
     }`;
 };
 
+
+export const QUERY_LATEST_MEMBERS = (daoAddress) => {
+  return `query{
+      users(
+        where: {daoAddress: "${daoAddress}"}
+        first: 5
+        orderBy: timeStamp
+      ) {
+        userAddress
+        timeStamp
+      }
+  }`;
+}
+
+export const QUERY_PAGINATED_MEMBERS = (
+  daoAddress,
+  first,
+  skip,
+  startDate,
+  endDate,
+) => {
+  return `query{
+    users(
+      where: {
+        daoAddress: "${daoAddress}",
+        timeStamp_gte: ${startDate},
+        timeStamp_lte: ${endDate}
+      },
+      first: ${first},
+      skip: ${skip}
+    ) {
+          id
+          gtAmount
+          depositAmount
+          isAdmin
+          timeStamp
+          userAddress
+          tokenAddress
+          daoAddress
+        }
+    }`;
+};
+
 export const QUERY_CLUBS_FROM_WALLET_ADDRESS = (userAddress) => {
   return `query{
         users(  orderBy: timeStamp where: {userAddress: "${userAddress}"}){
@@ -36,12 +79,24 @@ export const QUERY_CLUB_DETAILS = (daoAddress) => {
               ownerAddress
               daoAddress
               gnosisAddress
-              name
+              totalAmountRaised
               tokenType
+              timeStamp
+              threshold
               symbol
+              raiseAmount
+              quorum
+              pricePerToken
+              name
+              membersCount
               isGtTransferable
-              imageUrl
               isGovernanceActive
+              imageUrl
+              distributionAmount
+              maxDepositAmount
+              minDepositAmount
+              maxTokensPerUser
+              depositDeadline
             }
     }`;
 };

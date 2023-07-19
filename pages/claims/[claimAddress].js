@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
+import Button from "@components/ui/button/Button";
 import {
   convertFromWeiGovernance,
   convertToWeiGovernance,
@@ -22,7 +23,6 @@ import { addClaimEnabled } from "../../src/redux/reducers/createClaim";
 import useSmartContractMethods from "../../src/hooks/useSmartContractMethods";
 import useSmartContract from "../../src/hooks/useSmartContract";
 // import WrongNetworkModal from "../../src/components/modals/WrongNetworkModal";
-import Image from "next/image";
 import { ClaimsStyles } from "../../src/components/claimsPageComps/ClaimsStyles";
 import { subgraphQuery } from "../../src/utils/subgraphs";
 import { CLAIMS_SUBGRAPH_URL_POLYGON } from "../../src/api";
@@ -408,18 +408,20 @@ const ClaimAddress = () => {
     if (claimAddress) fetchClaimsDataFromSubgraph();
   }, [claimAddress]);
 
+  const isClaimButtonDisabled = () => {
+    return (claimRemaining == 0 && alreadyClaimed && claimed) ||
+      !claimActive ||
+      !claimableAmt ||
+      +claimInput <= 0 ||
+      claimInput >= +claimRemaining ||
+      (contractData?.permission == 0 && !isEligibleForTokenGated) ||
+      (contractData?.permission === "3" && !isEligibleForTokenGated)
+      ? true
+      : false;
+  };
+
   return (
     <Layout1 showSidebar={false}>
-      <Image
-        src="/assets/images/monogram.png"
-        alt="StationX"
-        height={50}
-        width={50}
-        style={{ cursor: "pointer", position: "fixed" }}
-        onClick={() => {
-          router.push("/");
-        }}
-      />
       {wallet ? (
         <>
           {isLoading ? (
@@ -632,43 +634,18 @@ const ClaimAddress = () => {
                       </p>
                     )}
 
-                    <button
+                    <Button
                       onClick={claimHandler}
-                      className={classes.btn}
-                      disabled={
-                        (claimRemaining == 0 && alreadyClaimed && claimed) ||
-                        !claimActive ||
-                        !claimableAmt ||
-                        +claimInput <= 0 ||
-                        claimInput >= +claimRemaining ||
-                        (contractData?.permission == 0 &&
-                          !isEligibleForTokenGated) ||
-                        (contractData?.permission === "3" &&
-                          !isEligibleForTokenGated)
-                          ? true
-                          : false
-                      }
-                      style={
-                        (alreadyClaimed && +claimRemaining === 0) ||
-                        +claimInput <= 0 ||
-                        (contractData?.permission === "0" &&
-                          !isEligibleForTokenGated) ||
-                        (contractData?.permission === "3" &&
-                          !isEligibleForTokenGated) ||
-                        +claimInput >= +claimRemaining ||
-                        !claimActive ||
-                        !claimableAmt
-                          ? { cursor: "not-allowed" }
-                          : { cursor: "pointer" }
-                      }>
+                      variant="normal"
+                      disabled={isClaimButtonDisabled}>
                       {isClaiming ? (
-                        <CircularProgress />
+                        <CircularProgress size={25} />
                       ) : alreadyClaimed && +claimRemaining === 0 ? (
                         "Claimed"
                       ) : (
                         "Claim"
                       )}
-                    </button>
+                    </Button>
                     {!claimableAmt && (
                       <p className={classes.error}>
                         You are not eligible for the claim!

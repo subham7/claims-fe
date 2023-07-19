@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useState } from "react";
+import Button from "@components/ui/button/Button";
 import {
   Alert,
   Backdrop,
-  Button,
   Card,
   CardMedia,
   CircularProgress,
@@ -35,6 +35,7 @@ import TwitterIcon from "@mui/icons-material/Twitter";
 import { RiDiscordFill } from "react-icons/ri";
 import ReactHtmlParser from "react-html-parser";
 import { showWrongNetworkModal } from "../../../../utils/helper";
+import LensterShareButton from "../../../LensterShareButton";
 
 const NewArchERC20 = ({
   daoDetails,
@@ -209,6 +210,51 @@ const NewArchERC20 = ({
     },
   });
 
+  const handleMaxButtonClick = () => {
+    formik.setFieldValue(
+      "tokenInput",
+      remainingClaimAmount
+        ? remainingClaimAmount < erc20TokenDetails.tokenBalance.toFixed(2)
+          ? remainingClaimAmount
+          : erc20TokenDetails.tokenBalance.toFixed(2)
+        : Number(
+            convertFromWeiGovernance(
+              daoDetails.maxDeposit,
+              erc20TokenDetails.tokenDecimal,
+            ),
+          ) < erc20TokenDetails.tokenBalance.toFixed(2)
+        ? Number(
+            convertFromWeiGovernance(
+              daoDetails.maxDeposit,
+              erc20TokenDetails.tokenDecimal,
+            ),
+          )
+        : erc20TokenDetails.tokenBalance.toFixed(2),
+    );
+  };
+
+  const isDepositButtonDisabled = () => {
+    return (
+      (remainingDays >= 0 && remainingTimeInSecs > 0 && isTokenGated
+        ? !isEligibleForTokenGating
+        : remainingDays >= 0 && remainingTimeInSecs > 0
+        ? false
+        : true) ||
+      Number(convertFromWeiGovernance(daoDetails.totalSupply, 6)) <=
+        Number(
+          convertFromWeiGovernance(
+            daoDetails.clubTokensMinted,
+            daoDetails.decimals,
+          ) *
+            convertFromWeiGovernance(
+              daoDetails.pricePerToken,
+              erc20TokenDetails.tokenDecimal,
+            ),
+        ) ||
+      remainingClaimAmount <= 0
+    );
+  };
+
   useEffect(() => {
     if (daoDetails.depositTokenAddress && daoDetails.clubTokensMinted && wallet)
       fetchTokenDetails();
@@ -282,18 +328,26 @@ const NewArchERC20 = ({
                     }}>
                     {/* enter your code here */}
 
-                    <div className="centerContent">
-                      <div className="selfCenter spaceBetween">
-                        <TwitterShareButton
-                          onLoad={function noRefCheck() {}}
-                          options={{
-                            size: "large",
-                            text: `Just joined ${daoDetails.daoName} Station on `,
-                            via: "stationxnetwork",
-                          }}
-                          url={`${window.location.origin}/join/${erc20DaoAddress}`}
-                        />
-                      </div>
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "12px",
+                      }}>
+                      <TwitterShareButton
+                        onLoad={function noRefCheck() {}}
+                        options={{
+                          size: "large",
+                          text: `Just joined ${daoDetails.daoName} Station on `,
+                          via: "stationxnetwork",
+                        }}
+                        url={`${window.location.origin}/join/${erc20DaoAddress}`}
+                      />
+
+                      <LensterShareButton
+                        daoAddress={erc20DaoAddress}
+                        daoName={daoDetails?.daoName}
+                      />
                     </div>
                   </Grid>
                 </Grid>
@@ -716,42 +770,11 @@ const NewArchERC20 = ({
                                 display: "flex",
                                 justifyContent: "flex-end",
                               }}>
-                              <Button
-                                className={classes.maxTag}
-                                onClick={() => {
-                                  formik.setFieldValue(
-                                    "tokenInput",
-                                    remainingClaimAmount
-                                      ? remainingClaimAmount <
-                                        erc20TokenDetails.tokenBalance.toFixed(
-                                          2,
-                                        )
-                                        ? remainingClaimAmount
-                                        : erc20TokenDetails.tokenBalance.toFixed(
-                                            2,
-                                          )
-                                      : Number(
-                                          convertFromWeiGovernance(
-                                            daoDetails.maxDeposit,
-                                            erc20TokenDetails.tokenDecimal,
-                                          ),
-                                        ) <
-                                        erc20TokenDetails.tokenBalance.toFixed(
-                                          2,
-                                        )
-                                      ? Number(
-                                          convertFromWeiGovernance(
-                                            daoDetails.maxDeposit,
-                                            erc20TokenDetails.tokenDecimal,
-                                          ),
-                                        )
-                                      : erc20TokenDetails.tokenBalance.toFixed(
-                                          2,
-                                        ),
-                                  );
-                                }}>
-                                Max
-                              </Button>
+                              <div>
+                                <Button onClick={handleMaxButtonClick}>
+                                  Max
+                                </Button>
+                              </div>
                             </Grid>
                           </Grid>
                         </Card>
@@ -890,36 +913,8 @@ const NewArchERC20 = ({
                         mb={1}
                         sx={{ display: "flex", flexDirection: "column" }}>
                         <Button
-                          variant="primary"
-                          size="large"
-                          // onClick={formik.handleSubmit}
-                          type="submit"
-                          disabled={
-                            (remainingDays >= 0 &&
-                            remainingTimeInSecs > 0 &&
-                            isTokenGated
-                              ? !isEligibleForTokenGating
-                              : remainingDays >= 0 && remainingTimeInSecs > 0
-                              ? false
-                              : true) ||
-                            Number(
-                              convertFromWeiGovernance(
-                                daoDetails.totalSupply,
-                                6,
-                              ),
-                            ) <=
-                              Number(
-                                convertFromWeiGovernance(
-                                  daoDetails.clubTokensMinted,
-                                  daoDetails.decimals,
-                                ) *
-                                  convertFromWeiGovernance(
-                                    daoDetails.pricePerToken,
-                                    erc20TokenDetails.tokenDecimal,
-                                  ),
-                              ) ||
-                            remainingClaimAmount <= 0
-                          }>
+                          onClick={formik.handleSubmit}
+                          disabled={isDepositButtonDisabled()}>
                           Deposit
                         </Button>
                         <div>

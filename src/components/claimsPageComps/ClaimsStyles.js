@@ -11,7 +11,6 @@ export const ClaimsStyles = makeStyles({
   },
 
   lefContainer: {
-    width: "630px",
     padding: "10px",
     flex: 0.4,
   },
@@ -72,19 +71,19 @@ export const ClaimsStyles = makeStyles({
     color: "#C1D3FF",
     fontSize: "16px",
     marginBottom: "8px",
-    // padding: 0,
   },
+
   label: {
     margin: 0,
     padding: 0,
   },
+
   address: {
     color: "white",
   },
 
   rightContainer: {
     flex: 0.3,
-    width: "600px",
     padding: "60px",
     borderRadius: "20px",
     color: "white",
@@ -92,6 +91,7 @@ export const ClaimsStyles = makeStyles({
   },
 
   claimContainer: {
+    marginBottom: "15px",
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",

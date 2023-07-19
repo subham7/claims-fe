@@ -1,5 +1,4 @@
 import {
-  Button,
   FormControl,
   InputAdornment,
   MenuItem,
@@ -8,6 +7,7 @@ import {
   ToggleButtonGroup,
   ToggleButton,
 } from "@mui/material";
+import Button from "@components/ui/button/Button";
 import { BsArrowLeft } from "react-icons/bs";
 import { makeStyles } from "@mui/styles";
 import React, { useEffect } from "react";
@@ -212,23 +212,40 @@ const ClaimStep1 = ({ formik, tokensInWallet, isLoading }) => {
             name="airdropFrom"
             value="contract"
             id="airdropFrom">
-            <BsFillSendFill size={20} />
-            <p className={classes.label}>Claim Contract</p>
-            <p className={classes.smallText}>
-              Users will claim tokens from custom claim contract{" "}
-              <span>(recommended)</span>
-            </p>
+            <div
+              onClick={() => {
+                formik.setFieldValue("airdropFrom", "contract");
+              }}>
+              <BsFillSendFill size={20} />
+              <p className={classes.label}>Claim Contract</p>
+              <p className={classes.smallText}>
+                Users will claim tokens from custom claim contract{" "}
+                <span> (recommended)</span>
+              </p>
+            </div>
           </ToggleButton>
+
           <ToggleButton
             className={classes.leftContainer}
             name="airdropFrom"
             id="airdropFrom"
             value="wallet">
-            <IoWalletSharp size={20} />
-            <p className={classes.label}>My Wallet</p>
-            <p className={classes.smallText}>
-              Users will claim tokens from your wallet
-            </p>
+            <div
+              onClick={() => {
+                formik.setFieldValue("airdropFrom", "wallet");
+              }}>
+              <IoWalletSharp size={20} />
+              <p
+                className={classes.label}
+                onClick={(event) => {
+                  event.stopPropagation(); // Prevent event propagation
+                }}>
+                My Wallet
+              </p>
+              <p className={classes.smallText}>
+                Users will claim tokens from your wallet
+              </p>
+            </div>
           </ToggleButton>
         </ToggleButtonGroup>
 
@@ -349,6 +366,7 @@ const ClaimStep1 = ({ formik, tokensInWallet, isLoading }) => {
             alignItems: "center",
             justifyContent: "space-between",
             width: "100%",
+            marginBottom: "40px",
           }}>
           {/* Claim Start */}
 
@@ -399,11 +417,8 @@ const ClaimStep1 = ({ formik, tokensInWallet, isLoading }) => {
         </FormControl> */}
 
         {/* {/* Next */}
-        <Button
-          onClick={formik.handleSubmit}
-          type="submit"
-          variant="contained"
-          className={classes.btn}>
+
+        <Button onClick={formik.handleSubmit} variant="normal">
           Next
         </Button>
       </form>

@@ -1,4 +1,5 @@
 import { Alert, Backdrop, CircularProgress, Switch } from "@mui/material";
+import Button from "@components/ui/button/Button";
 import React, { useCallback, useEffect, useState } from "react";
 import { TokenGatingStyle } from "./TokenGatingStyles";
 import { MdDelete } from "react-icons/md";
@@ -87,6 +88,7 @@ const TokenGating = () => {
         ], // Minimum user balance of tokenA & tokenB
         daoAddress,
       );
+      fetchTokenGatingDetails();
       setLoading(false);
       setIsTokenGatingSuccessfull(true);
       setShowEditOptions(false);
@@ -153,7 +155,7 @@ const TokenGating = () => {
       <div className={classes.heading}>
         <p className={classes.title}>Token Gating</p>
 
-        {isAdminUser && (
+        {isAdminUser && fetchedDetails?.tokenA?.length ? (
           <div
             onClick={async () => {
               try {
@@ -176,7 +178,7 @@ const TokenGating = () => {
             className={classes.icon}>
             <MdDelete size={20} />
           </div>
-        )}
+        ) : null}
       </div>
 
       <div className={classes.conditions}>
@@ -291,24 +293,12 @@ const TokenGating = () => {
                   }}></div>
               }
             />
-            <p>any</p>
+            <p>any condition(s)</p>
           </div>
-
-          <p>condition(s)</p>
+          <Button disabled={!tokensList.length} onClick={tokenGatingHandler}>
+            Save changes
+          </Button>
         </div>
-      ) : (
-        ""
-      )}
-
-      {isAdminUser &&
-      (fetchedDetails.tokenA === "" || fetchedDetails.tokenA === undefined) &&
-      showEditOptions ? (
-        <button
-          className={classes.saveBtn}
-          disabled={!tokensList.length}
-          onClick={tokenGatingHandler}>
-          Save changes
-        </button>
       ) : (
         ""
       )}
