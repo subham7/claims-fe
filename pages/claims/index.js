@@ -18,10 +18,10 @@ import { QUERY_ALL_CLAIMS_OF_CREATOR } from "../../src/api/graphql/queries";
 
 const useStyles = makeStyles({
   container: {
-    marginLeft: "80px",
     marginTop: "120px",
     display: "flex",
     gap: "30px",
+    marginBottom: "60px",
   },
   leftDiv: {
     flex: "0.65",
