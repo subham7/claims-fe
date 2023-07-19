@@ -366,6 +366,7 @@ const ClaimStep1 = ({ formik, tokensInWallet, isLoading }) => {
             alignItems: "center",
             justifyContent: "space-between",
             width: "100%",
+            marginBottom: "40px",
           }}>
           {/* Claim Start */}
 
@@ -416,6 +417,7 @@ const ClaimStep1 = ({ formik, tokensInWallet, isLoading }) => {
         </FormControl> */}
 
         {/* {/* Next */}
+
         <Button onClick={formik.handleSubmit} variant="normal">
           Next
         </Button>

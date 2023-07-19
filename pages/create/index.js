@@ -494,8 +494,8 @@ const Create = () => {
       <Grid
         container
         item
-        paddingLeft={{ xs: 5, sm: 5, md: 10, lg: 45 }}
-        paddingRight={{ xs: 5, sm: 5, md: 10, lg: 45 }}
+        paddingLeft={{ xs: 5, sm: 5, md: 10, lg: 36 }}
+        paddingRight={{ xs: 5, sm: 5, md: 10, lg: 40 }}
         justifyContent="center"
         alignItems="center">
         <Box
@@ -556,7 +556,12 @@ const Create = () => {
                   mb={8}>
                   {getStepContent(activeStep)}
                   {!activeStep == 0 && activeStep !== steps.length - 1 && (
-                    <Button onClick={handlePrev}>Prev</Button>
+                    <div
+                      style={{
+                        marginTop: "12px",
+                      }}>
+                      <Button onClick={handlePrev}>Prev</Button>
+                    </div>
                   )}
                   {activeStep === steps.length - 1 ? (
                     <>
@@ -564,7 +569,12 @@ const Create = () => {
                       <Button onClick={handleSubmit}>Finish</Button>
                     </>
                   ) : (
-                    <Button onClick={handleSubmit}>Next</Button>
+                    <div
+                      style={{
+                        marginTop: "12px",
+                      }}>
+                      <Button onClick={handleSubmit}>Next</Button>
+                    </div>
                   )}
                 </Grid>
               </Fragment>
