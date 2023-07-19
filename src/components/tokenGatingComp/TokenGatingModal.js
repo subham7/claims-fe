@@ -32,7 +32,7 @@ const TokenGatingModal = ({ closeModal, chooseTokens }) => {
 
     onSubmit: (values) => {
       let tokenSymbol,
-        tokenDecimal = 0;
+        tokenDecimal = 1;
       if (values.address) {
         const checkTokenGating = async () => {
           try {

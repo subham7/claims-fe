@@ -136,8 +136,8 @@ const TokenGating = () => {
       setDisplayTokenDetails({
         tokenASymbol: tokenASymbol,
         tokenBSymbol: tokenBSymbol,
-        tokenADecimal: tokenADecimal ? tokenADecimal : 0,
-        tokenBDecimal: tokenBDecimal ? tokenBDecimal : 0,
+        tokenADecimal: tokenADecimal ? tokenADecimal : 1,
+        tokenBDecimal: tokenBDecimal ? tokenBDecimal : 1,
       });
       setLoading(false);
     } catch (error) {
