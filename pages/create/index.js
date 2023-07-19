@@ -552,7 +552,8 @@ const Create = () => {
                   direction="row"
                   justifyContent="flex-end"
                   alignItems="center"
-                  mt={2}>
+                  mt={2}
+                  mb={8}>
                   {getStepContent(activeStep)}
                   {!activeStep == 0 && activeStep !== steps.length - 1 && (
                     <Button onClick={handlePrev}>Prev</Button>

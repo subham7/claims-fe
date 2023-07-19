@@ -192,7 +192,6 @@ const App = () => {
         : "",
       QUERY_CLUB_DETAILS(data.daoAddress),
     );
-    console.log(clubData);
     dispatch(
       addClubData({
         gnosisAddress: clubData.stations[0].gnosisAddress,

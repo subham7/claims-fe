@@ -290,7 +290,7 @@ const DashboardIndex = () => {
     <>
       <Layout1 page={1} depositUrl={depositLink}>
         {/* <Layout1 page={1} depositUrl={depositLink}> */}
-        <Grid container paddingLeft={8} paddingTop={13} spacing={3}>
+        <Grid container paddingLeft={8} paddingTop={13} spacing={3} mb={8}>
           <Grid item xs={9}>
             <Card className={classes.cardSharp1}>
               <Grid container spacing={2}>

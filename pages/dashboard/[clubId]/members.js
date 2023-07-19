@@ -78,6 +78,7 @@ const Test = () => {
     "Station tokens",
     "Joined on",
   ];
+
   const router = useRouter();
   const classes = useStyles();
   const { clubId: daoAddress } = router.query;
@@ -189,7 +190,7 @@ const Test = () => {
 
   const formik = useFormik({
     initialValues: {
-      startDate: dayjs(deployedTime * 1000),
+      startDate: deployedTime ? dayjs(deployedTime * 1000) : dayjs(Date.now()),
       endDate: dayjs(Date.now()),
     },
 
@@ -212,6 +213,7 @@ const Test = () => {
       setDownloadLoading(false);
     },
   });
+
   const convertDataToCSV = async (data) => {
     const rows = await Promise.all(
       data.map(async (item) => {
@@ -239,10 +241,10 @@ const Test = () => {
   return (
     <>
       <Layout1 page={3}>
-        <div style={{ padding: "110px 80px" }}>
+        <div style={{ padding: "80px" }}>
           <Grid container spacing={3}>
-            <Grid item md={9}>
-              <Grid container mb={10}>
+            <Grid item md={9} mb={8}>
+              <Grid container mb={4}>
                 <Grid item>
                   <Typography variant="title">Station Members</Typography>
                 </Grid>

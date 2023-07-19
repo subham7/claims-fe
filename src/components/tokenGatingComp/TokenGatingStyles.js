@@ -9,6 +9,7 @@ export const TokenGatingStyle = makeStyles({
     padding: "50px 30px",
     display: "flex",
     flexDirection: "column",
+    marginBottom: "60px",
   },
 
   heading: {

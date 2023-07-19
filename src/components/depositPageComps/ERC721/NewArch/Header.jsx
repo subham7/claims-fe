@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import classes from "./ERC721.module.scss";
-import ERC721Icons from "./ERC721Icons";
+import HeaderIcons from "./HeaderIcons";
 import { RiShareBoxLine } from "react-icons/ri";
 
 const Header = ({ clubData, clubInfo, active, isErc20 = true, deadline }) => {
@@ -66,7 +66,7 @@ const Header = ({ clubData, clubInfo, active, isErc20 = true, deadline }) => {
           <RiShareBoxLine size={16} />
         </div>
 
-        <ERC721Icons clubInfo={clubInfo} />
+        <HeaderIcons clubInfo={clubInfo} />
       </div>
       <p className={classes.smallText}>
         {isErc20 ? "Deposit Closes in" : "Minting closes in"}

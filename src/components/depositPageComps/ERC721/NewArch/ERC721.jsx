@@ -122,8 +122,6 @@ const ERC721 = ({
         erc20TokenDetails.tokenDecimal,
       );
 
-      console.log(walletAddress, daoAddress, clubData?.imageUrl, count, []);
-
       await buyGovernanceTokenERC721DAO(
         walletAddress,
         daoAddress,
@@ -146,19 +144,23 @@ const ERC721 = ({
 
   useEffect(() => {
     const fetchSubgraphData = async () => {
-      const { stations } = await subgraphQuery(
+      const response = await subgraphQuery(
         SUBGRAPH_URL,
         QUERY_CLUB_DETAILS(daoAddress),
       );
 
-      setClubData(stations[0]);
+      if (response) {
+        const { stations } = response;
 
-      console.log("Data", stations);
-      const imageUrl = await getImageURL(stations[0].imageUrl);
-      setImgUrl(imageUrl);
+        setClubData(stations[0]);
+
+        const imageUrl = await getImageURL(stations[0].imageUrl);
+        setImgUrl(imageUrl);
+      }
     };
-
-    fetchSubgraphData();
+    if (daoAddress) {
+      fetchSubgraphData();
+    }
   }, [SUBGRAPH_URL, daoAddress]);
 
   useEffect(() => {

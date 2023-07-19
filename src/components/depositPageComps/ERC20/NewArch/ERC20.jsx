@@ -187,15 +187,20 @@ const ERC20 = ({
 
   useEffect(() => {
     const fetchSubgraphData = async () => {
-      const { stations } = await subgraphQuery(
+      const response = await subgraphQuery(
         SUBGRAPH_URL,
         QUERY_CLUB_DETAILS(daoAddress),
       );
 
-      setClubData(stations[0]);
+      if (response) {
+        const { stations } = response;
+        setClubData(stations[0]);
+      }
     };
 
-    fetchSubgraphData();
+    if (daoAddress) {
+      fetchSubgraphData();
+    }
   }, [SUBGRAPH_URL, daoAddress]);
 
   useEffect(() => {
