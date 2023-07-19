@@ -2,12 +2,11 @@ import {
   FormControl,
   InputAdornment,
   MenuItem,
-  TextField,
   Typography,
   ToggleButtonGroup,
   ToggleButton,
 } from "@mui/material";
-import Button from "@components/ui/button/Button";
+import { Button, TextField } from "@components/ui";
 import { BsArrowLeft } from "react-icons/bs";
 import { makeStyles } from "@mui/styles";
 import React, { useEffect } from "react";
@@ -34,23 +33,6 @@ const useStyles = makeStyles({
     fontSize: "36px",
     fontWeight: "400",
     marginBottom: "40px",
-  },
-  input: {
-    width: "100%",
-    marginTop: "6px",
-    color: "#6475A3",
-    borderRadius: "8px",
-    "& input[type=number]": {
-      "-moz-appearance": "textfield",
-    },
-    "& input[type=number]::-webkit-outer-spin-button": {
-      "-webkit-appearance": "none",
-      margin: 0,
-    },
-    "& input[type=number]::-webkit-inner-spin-button": {
-      "-webkit-appearance": "none",
-      margin: 0,
-    },
   },
   label: {
     marginTop: "30px",
@@ -183,7 +165,6 @@ const ClaimStep1 = ({ formik, tokensInWallet, isLoading }) => {
         </Typography>
         <TextField
           variant="outlined"
-          className={classes.input}
           name="description"
           id="description"
           value={formik.values.description}
@@ -266,15 +247,10 @@ const ClaimStep1 = ({ formik, tokensInWallet, isLoading }) => {
         </Typography>
         <FormControl sx={{ width: "100%" }}>
           {isLoading ? (
-            <TextField
-              className={classes.text}
-              disabled
-              placeholder="Loading tokens..."
-            />
+            <TextField disabled placeholder="Loading tokens..." />
           ) : (
             <TextField
               variant="outlined"
-              className={classes.input}
               name="selectedToken"
               id="selectedToken"
               value={formik.values.selectedToken}
@@ -303,7 +279,6 @@ const ClaimStep1 = ({ formik, tokensInWallet, isLoading }) => {
         {/* Number of Tokens */}
         <Typography className={classes.label}>Number of Tokens *</Typography>
         <TextField
-          className={classes.input}
           type="number"
           InputProps={{
             endAdornment: (
@@ -344,15 +319,15 @@ const ClaimStep1 = ({ formik, tokensInWallet, isLoading }) => {
 
         <div
           style={{
+            width: "100%",
             display: "flex",
-            gap: "30px",
             alignItems: "center",
             justifyContent: "space-between",
-            width: "100%",
+            marginBottom: "24px",
           }}>
           {/* Claim Start */}
 
-          <div style={{ width: "100%" }}>
+          <div>
             <Typography className={classes.label}>Claims start on</Typography>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DateTimePicker
@@ -367,7 +342,7 @@ const ClaimStep1 = ({ formik, tokensInWallet, isLoading }) => {
 
           {/* Claim End */}
 
-          <div style={{ width: "100%" }}>
+          <div>
             <Typography className={classes.label}>Claims end on</Typography>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DateTimePicker

@@ -1,7 +1,6 @@
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import {
   Backdrop,
-  Button,
   CircularProgress,
   Grid,
   IconButton,
@@ -15,6 +14,7 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
+import { Button } from "@components/ui";
 import { makeStyles } from "@mui/styles";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
@@ -299,14 +299,12 @@ const Test = () => {
                   </Typography>
                 </Grid>
                 <Grid item>
-                  <Button
-                    onClick={formik.handleSubmit}
-                    style={{ height: "55px" }}>
+                  <Button onClick={formik.handleSubmit} variant="normal">
                     {downloadLoading ? (
-                      <CircularProgress color="inherit" />
+                      <CircularProgress color="inherit" size={24} />
                     ) : (
                       "Download CSV"
-                    )}{" "}
+                    )}
                   </Button>
                 </Grid>
               </Grid>

@@ -1,5 +1,4 @@
 import {
-  // Button,
   CircularProgress,
   FormControl,
   FormControlLabel,
@@ -7,10 +6,9 @@ import {
   Radio,
   RadioGroup,
   Select,
-  TextField,
   Typography,
 } from "@mui/material";
-import Button from "@components/ui/button/Button";
+import { Button, TextField } from "@components/ui";
 import { BsArrowLeft } from "react-icons/bs";
 import { makeStyles } from "@mui/styles";
 import React, { useRef, useState } from "react";
@@ -108,13 +106,6 @@ const useStyles = makeStyles({
   uploadBtn: {
     border: "1px solid lightgray",
     background: "transparent",
-  },
-
-  finish: {
-    width: "200px",
-    fontFamily: "sans-serif",
-    fontSize: "16px",
-    marginTop: "20px",
   },
 });
 
@@ -258,7 +249,6 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading, formikStep1 }) => {
                   name="daoTokenAddress"
                   id="daoTokenAddress"
                   variant="outlined"
-                  className={classes.input}
                 />
 
                 {values.maximumClaim !== "proRata" && (
@@ -280,7 +270,6 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading, formikStep1 }) => {
                       name="tokenGatingAmt"
                       id="tokenGatingAmt"
                       variant="outlined"
-                      className={classes.input}
                     />
                   </>
                 )}
@@ -342,7 +331,6 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading, formikStep1 }) => {
                 </Typography>
                 <TextField
                   variant="outlined"
-                  className={classes.input}
                   name="blockNumber"
                   id="blockNumber"
                   value={formik.values.blockNumber}
@@ -364,8 +352,6 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading, formikStep1 }) => {
               <>
                 <Typography className={classes.label}>Enter Amount</Typography>
                 <TextField
-                  // error={userData?.numberOfTokens < customAmount}
-                  className={classes.input}
                   value={values.customAmount}
                   onChange={formik.handleChange}
                   error={
