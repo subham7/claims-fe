@@ -95,6 +95,13 @@ const Join = () => {
   });
 
   useSmartContract();
+
+  const contractInstances = useSelector((state) => {
+    return state.contractInstances.contractInstances;
+  });
+
+  const { factoryContractCall } = contractInstances;
+
   const { getDecimals, getBalance, getTokenGatingDetails, getTokenSymbol } =
     useSmartContractMethods();
 
@@ -137,7 +144,7 @@ const Join = () => {
     }
   }, [factoryData]);
 
-  const fetchTokenGatingDetials = useCallback(async () => {
+  const fetchTokenGatingDetials = async () => {
     try {
       setLoading(true);
 
@@ -217,13 +224,13 @@ const Join = () => {
       console.log(error);
       setLoading(false);
     }
-  }, [daoAddress]);
+  };
 
   useEffect(() => {
-    if (wallet) {
+    if (wallet && daoAddress && factoryContractCall) {
       fetchTokenGatingDetials();
     }
-  }, [fetchTokenGatingDetials, wallet]);
+  }, [wallet, daoAddress, factoryContractCall]);
 
   useEffect(() => {
     if (TOKEN_TYPE === "erc20") {
