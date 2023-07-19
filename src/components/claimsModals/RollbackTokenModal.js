@@ -1,5 +1,5 @@
-import { TextField, Typography } from "@mui/material";
-import Button from "@components/ui/button/Button";
+import { Typography } from "@mui/material";
+import { Button, TextField } from "@components/ui/";
 import { useFormik } from "formik";
 import React from "react";
 import { ClaimModalStyles } from "./ClaimModalStyles";
@@ -35,7 +35,6 @@ const RollbackTokenModal = ({ onClose, rollbackTokensHandler }) => {
         </Typography>
         <TextField
           variant="outlined"
-          className={classes.input}
           name="rollbackAddress"
           id="rollbackAddress"
           placeholder="Paste address here"
