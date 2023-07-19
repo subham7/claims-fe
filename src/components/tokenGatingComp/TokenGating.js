@@ -88,6 +88,7 @@ const TokenGating = () => {
         ], // Minimum user balance of tokenA & tokenB
         daoAddress,
       );
+      fetchTokenGatingDetails();
       setLoading(false);
       setIsTokenGatingSuccessfull(true);
       setShowEditOptions(false);
@@ -154,7 +155,7 @@ const TokenGating = () => {
       <div className={classes.heading}>
         <p className={classes.title}>Token Gating</p>
 
-        {isAdminUser && (
+        {isAdminUser && fetchedDetails?.tokenA?.length ? (
           <div
             onClick={async () => {
               try {
@@ -177,7 +178,7 @@ const TokenGating = () => {
             className={classes.icon}>
             <MdDelete size={20} />
           </div>
-        )}
+        ) : null}
       </div>
 
       <div className={classes.conditions}>

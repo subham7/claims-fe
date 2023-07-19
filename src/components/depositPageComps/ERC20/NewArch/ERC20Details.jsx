@@ -8,7 +8,7 @@ const ERC20Details = ({ clubData, erc20TokenDetails, isTokenGated }) => {
     <div className={classes.detailsContainer}>
       <div className={classes.flexContainer}>
         <div>
-          <p className={classes.title}>Minium</p>
+          <p className={classes.title}>Min. Deposit</p>
           <p>
             {convertFromWeiGovernance(
               clubData?.minDepositAmount,
@@ -19,7 +19,7 @@ const ERC20Details = ({ clubData, erc20TokenDetails, isTokenGated }) => {
         </div>
 
         <div>
-          <p className={classes.title}>Maximum</p>
+          <p className={classes.title}>Max. Deposit</p>
           <p>
             {convertFromWeiGovernance(
               clubData?.maxDepositAmount,

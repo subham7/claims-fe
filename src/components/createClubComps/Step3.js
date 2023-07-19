@@ -83,7 +83,7 @@ export default function Step3(props) {
   }, [props.formik.values.deploySafe, GNOSIS_DATA.transactionUrl]);
 
   useEffect(() => {
-    if (props.formik.values.safeAddress.length)
+    if (props.formik.values.safeAddress?.length)
       fetchOwners(props.formik.values.safeAddress);
   }, [props.formik.values.safeAddress]);
   return (
@@ -175,7 +175,7 @@ export default function Step3(props) {
           )}
 
           {props.formik.values.deploySafe === "oldSafe" &&
-            props.formik.values.safeAddress.length > 0 && (
+            props.formik.values.safeAddress?.length > 0 && (
               <>
                 <Typography className={classes.largeText} mt={4} mb={2}>
                   Signators
@@ -334,7 +334,7 @@ export default function Step3(props) {
                 ) : null}
               </Card>
 
-              {props.formik.values.addressList.length ? (
+              {props.formik.values.addressList?.length ? (
                 <>
                   <Grid
                     container
@@ -373,7 +373,7 @@ export default function Step3(props) {
                         marks
                         min={1}
                         valueLabelDisplay={"on"}
-                        max={props.formik.values.addressList.length}
+                        max={props.formik.values.addressList?.length}
                         onChange={(value) => {
                           props.formik.setFieldValue(
                             "safeThreshold",
