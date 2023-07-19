@@ -19,6 +19,9 @@ $inactive-text: #d55338;
 
   .leftContainer {
     flex: 55;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
   }
 
   .rightContainer {
