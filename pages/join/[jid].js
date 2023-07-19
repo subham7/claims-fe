@@ -58,10 +58,6 @@ const Join = () => {
     return state.club.factoryData;
   });
 
-  const WRONG_NETWORK = useSelector((state) => {
-    return state.gnosis.wrongNetwork;
-  });
-
   useSmartContract();
   const { getDecimals, getBalance, getTokenGatingDetails, getTokenSymbol } =
     useSmartContractMethods();

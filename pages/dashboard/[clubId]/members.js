@@ -87,10 +87,6 @@ const Test = () => {
     return state.club.clubData.tokenType;
   });
 
-  const WRONG_NETWORK = useSelector((state) => {
-    return state.gnosis.wrongNetwork;
-  });
-
   const SUBGRAPH_URL = useSelector((state) => {
     return state.gnosis.subgraphUrl;
   });

@@ -69,10 +69,6 @@ const Settings = () => {
     return state.gnosis.adminUser;
   });
 
-  const WRONG_NETWORK = useSelector((state) => {
-    return state.gnosis.wrongNetwork;
-  });
-
   const NETWORK_HEX = useSelector((state) => {
     return state.gnosis.networkHex;
   });

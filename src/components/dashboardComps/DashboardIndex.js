@@ -84,10 +84,6 @@ const DashboardIndex = () => {
     return state.gnosis.networkHex;
   });
 
-  const WRONG_NETWORK = useSelector((state) => {
-    return state.gnosis.wrongNetwork;
-  });
-
   const symbol = useSelector((state) => {
     return state.club.clubData.symbol;
   });

@@ -288,10 +288,6 @@ const ProposalDetail = () => {
     return state.gnosis.factoryContractAddress;
   });
 
-  const WRONG_NETWORK = useSelector((state) => {
-    return state.gnosis.wrongNetwork;
-  });
-
   const AIRDROP_ACTION_ADDRESS = useSelector((state) => {
     return state.gnosis.actionContractAddress;
   });

@@ -82,10 +82,6 @@ const Proposal = () => {
     return state.club.clubData.gnosisAddress;
   });
 
-  const WRONG_NETWORK = useSelector((state) => {
-    return state.gnosis.wrongNetwork;
-  });
-
   const proposalList = useSelector((state) => {
     return state.proposal.proposalList;
   });
