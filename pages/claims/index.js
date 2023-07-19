@@ -132,16 +132,6 @@ const Claims = () => {
 
   return (
     <Layout1 showSidebar={false}>
-      <Image
-        src="/assets/images/monogram.png"
-        alt="StationX"
-        height={50}
-        width={50}
-        style={{ cursor: "pointer", position: "fixed" }}
-        onClick={() => {
-          router.push("/");
-        }}
-      />
       <div className={classes.container}>
         {/* Left Side */}
         <div className={classes.leftDiv}>

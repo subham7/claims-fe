@@ -23,7 +23,6 @@ import { addClaimEnabled } from "../../src/redux/reducers/createClaim";
 import useSmartContractMethods from "../../src/hooks/useSmartContractMethods";
 import useSmartContract from "../../src/hooks/useSmartContract";
 // import WrongNetworkModal from "../../src/components/modals/WrongNetworkModal";
-import Image from "next/image";
 import { ClaimsStyles } from "../../src/components/claimsPageComps/ClaimsStyles";
 import { subgraphQuery } from "../../src/utils/subgraphs";
 import { CLAIMS_SUBGRAPH_URL_POLYGON } from "../../src/api";
@@ -423,16 +422,6 @@ const ClaimAddress = () => {
 
   return (
     <Layout1 showSidebar={false}>
-      <Image
-        src="/assets/images/monogram.png"
-        alt="StationX"
-        height={50}
-        width={50}
-        style={{ cursor: "pointer", position: "fixed" }}
-        onClick={() => {
-          router.push("/");
-        }}
-      />
       {wallet ? (
         <>
           {isLoading ? (

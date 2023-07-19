@@ -241,7 +241,7 @@ const Test = () => {
   return (
     <>
       <Layout1 page={3}>
-        <div style={{ padding: "80px" }}>
+        <div style={{ paddingTop: "80px" }}>
           <Grid container spacing={3}>
             <Grid item md={9} mb={8}>
               <Grid container mb={4}>

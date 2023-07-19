@@ -10,7 +10,6 @@ export const DashboardStyles = makeStyles({
     width: "Infinity",
     height: "164px",
     padding: "0px",
-
     background: "#6A66FF no-repeat",
     variant: "outlined",
   },
