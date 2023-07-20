@@ -25,10 +25,7 @@ import { convertFromWeiGovernance } from "../../../src/utils/globalFunctions";
 import { subgraphQuery } from "../../../src/utils/subgraphs";
 import ClubFetch from "../../../src/utils/clubFetch";
 import { useConnectWallet } from "@web3-onboard/react";
-import {
-  getAllEntities,
-  showWrongNetworkModal,
-} from "../../../src/utils/helper";
+import { getAllEntities } from "../../../src/utils/helper";
 import { useFormik } from "formik";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
@@ -88,10 +85,6 @@ const Test = () => {
 
   const tokenType = useSelector((state) => {
     return state.club.clubData.tokenType;
-  });
-
-  const WRONG_NETWORK = useSelector((state) => {
-    return state.gnosis.wrongNetwork;
   });
 
   const SUBGRAPH_URL = useSelector((state) => {
@@ -407,8 +400,6 @@ const Test = () => {
             </Grid>
           </Grid>
         </div>
-
-        {showWrongNetworkModal(wallet, networkId)}
 
         <Backdrop
           sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}

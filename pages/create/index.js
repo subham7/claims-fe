@@ -29,7 +29,6 @@ import { useConnectWallet } from "@web3-onboard/react";
 import useSafe from "../../src/hooks/useSafe";
 import useSmartContract from "../../src/hooks/useSmartContract";
 import Layout1 from "../../src/components/layouts/layout1";
-import { showWrongNetworkModal } from "../../src/utils/helper";
 
 const Create = () => {
   const steps = [
@@ -46,8 +45,6 @@ const Create = () => {
   const [activeStep, setActiveStep] = useState(0);
   const [completed, setCompleted] = useState({});
   const [open, setOpen] = useState(false);
-  const [ownersCheck, setOwnersCheck] = useState(false);
-  const [ownerHelperText, setOwnerHelperText] = useState("");
 
   const { initiateConnection } = useSafe();
 
@@ -582,8 +579,6 @@ const Create = () => {
           </form>
         </Box>
       </Grid>
-
-      {showWrongNetworkModal(wallet, networkId)}
     </Layout1>
   );
 };

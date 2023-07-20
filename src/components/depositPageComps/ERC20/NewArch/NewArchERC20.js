@@ -34,7 +34,6 @@ import TelegramIcon from "@mui/icons-material/Telegram";
 import TwitterIcon from "@mui/icons-material/Twitter";
 import { RiDiscordFill } from "react-icons/ri";
 import ReactHtmlParser from "react-html-parser";
-import { showWrongNetworkModal } from "../../../../utils/helper";
 import LensterShareButton from "../../../LensterShareButton";
 
 const NewArchERC20 = ({
@@ -66,10 +65,6 @@ const NewArchERC20 = ({
 
   const FACTORY_CONTRACT_ADDRESS = useSelector((state) => {
     return state.gnosis.factoryContractAddress;
-  });
-
-  const WRONG_NETWORK = useSelector((state) => {
-    return state.gnosis.wrongNetwork;
   });
 
   const day = Math.floor(new Date().getTime() / 1000.0);
@@ -1069,8 +1064,6 @@ const NewArchERC20 = ({
           </Grid>
         </DialogContent>
       </Dialog> */}
-
-      {showWrongNetworkModal(wallet, networkId)}
 
       <Backdrop
         sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}

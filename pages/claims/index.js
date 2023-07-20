@@ -22,9 +22,10 @@ const useStyles = makeStyles({
     display: "flex",
     gap: "30px",
     marginBottom: "60px",
+    justifyContent: "space-around",
   },
   leftDiv: {
-    flex: "0.65",
+    flex: "0.7",
     margin: 0,
   },
   header: {
@@ -111,7 +112,6 @@ const Claims = () => {
 
   const [{ wallet }] = useConnectWallet();
   const walletAddress = wallet?.accounts[0].address;
-  const networkId = wallet?.chains[0].id;
 
   useEffect(() => {
     const fetchClaims = async () => {

@@ -11,7 +11,6 @@ import {
 import useSmartContractMethods from "../../../../hooks/useSmartContractMethods";
 import { useConnectWallet } from "@web3-onboard/react";
 import dayjs from "dayjs";
-import { showWrongNetworkModal } from "../../../../utils/helper";
 import About from "./About";
 import NFTimg from "./NFTimg";
 import PriceSection from "./PriceSection";
@@ -56,7 +55,6 @@ const ERC721 = ({
 
   const [{ wallet }] = useConnectWallet();
   const walletAddress = wallet?.accounts[0].address;
-  const networkId = wallet?.chains[0].id;
 
   const SUBGRAPH_URL = useSelector((state) => {
     return state.gnosis.subgraphUrl;
@@ -207,8 +205,6 @@ const ERC721 = ({
       {clubInfo?.bio ? (
         <About bio={clubInfo?.bio} daoAddress={daoAddress} />
       ) : null}
-
-      {showWrongNetworkModal(wallet, networkId)}
 
       {claimSuccessfull && showMessage ? (
         <Alert

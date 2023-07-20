@@ -22,7 +22,6 @@ import TwitterIcon from "@mui/icons-material/Twitter";
 import { RiDiscordFill } from "react-icons/ri";
 import ReactHtmlParser from "react-html-parser";
 import useSmartContractMethods from "../../../../hooks/useSmartContractMethods";
-import { showWrongNetworkModal } from "../../../../utils/helper";
 import LensterShareButton from "../../../LensterShareButton";
 
 const NewArchERC721 = ({
@@ -51,11 +50,6 @@ const NewArchERC721 = ({
   const router = useRouter();
 
   const walletAddress = wallet?.accounts[0].address;
-  const networkId = wallet?.chains[0].id;
-
-  const WRONG_NETWORK = useSelector((state) => {
-    return state.gnosis.wrongNetwork;
-  });
 
   const FACTORY_CONTRACT_ADDRESS = useSelector((state) => {
     return state.gnosis.factoryContractAddress;
@@ -449,8 +443,6 @@ const NewArchERC721 = ({
               )}
             </Grid>
           </>
-
-          {showWrongNetworkModal(wallet, networkId)}
 
           {claimSuccessfull && showMessage ? (
             <Alert
