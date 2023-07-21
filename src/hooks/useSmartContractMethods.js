@@ -246,7 +246,7 @@ const useSmartContractMethods = () => {
         .allowance(walletAddress, approvalContract)
         .call();
 
-      if (currentAllowance >= value) {
+      if (Number(currentAllowance) >= Number(value)) {
         return;
       } else {
         return await erc20TokenContractSend?.methods
