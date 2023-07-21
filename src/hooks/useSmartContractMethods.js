@@ -242,10 +242,9 @@ const useSmartContractMethods = () => {
         usdcConvertDecimal,
       )?.toString();
 
-      const currentAllowance = await erc20TokenContractSend.methods.allowance(
-        walletAddress,
-        approvalContract,
-      );
+      const currentAllowance = await erc20TokenContractSend.methods
+        .allowance(walletAddress, approvalContract)
+        .call();
 
       if (currentAllowance >= value) {
         return;
