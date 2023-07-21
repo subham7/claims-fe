@@ -1,4 +1,5 @@
 import {
+  Button,
   Grid,
   InputAdornment,
   MenuItem,
@@ -100,6 +101,9 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
         </MenuItem>
         <MenuItem key={7} value="Remove signer">
           Remove Signer
+        </MenuItem>
+        <MenuItem key={8} value="whitelist deposit">
+          Whitelist Deposit
         </MenuItem>
       </Select>
 
@@ -604,6 +608,26 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
             />
           </Grid>
         </>
+      ) : formik.values.actionCommand === "whitelist deposit" ? (
+        <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
+          <TextField
+            className={classes.input}
+            onClick={handleClick}
+            onChange={handleChange}
+            disabled
+            value={file?.name}
+          />
+          <Button onClick={handleClick} variant="normal">
+            Upload
+          </Button>
+          <input
+            type="file"
+            accept=".csv"
+            ref={hiddenFileInput}
+            onChange={handleChange}
+            style={{ display: "none" }}
+          />
+        </div>
       ) : null}
     </Stack>
   );

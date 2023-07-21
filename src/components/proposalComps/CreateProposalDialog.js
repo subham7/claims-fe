@@ -132,6 +132,7 @@ const CreateProposalDialog = ({
       ownerChangeAction: "",
       ownerAddress: "",
       safeThreshold: 1,
+      csvObject: [],
     },
     validationSchema: proposalValidationSchema,
     onSubmit: async (values) => {
