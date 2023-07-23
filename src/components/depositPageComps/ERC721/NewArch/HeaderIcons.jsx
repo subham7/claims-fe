@@ -1,38 +1,38 @@
 import React from "react";
 import { BiLogoTelegram } from "react-icons/bi";
+import styles from "./ERC721.module.scss";
 import { FaDiscord, FaTwitter } from "react-icons/fa";
-import classes from "./ERC721.module.scss";
 import { TbWorld } from "react-icons/tb";
 
-const ERC721Icons = ({ clubInfo }) => {
+const HeaderIcons = ({ clubInfo }) => {
   return (
     <>
-      <TbWorld size={30} className={classes.icons} />
+      <TbWorld size={32} className={styles.icons} />
 
       {clubInfo?.telegram && (
         <BiLogoTelegram
-          size={30}
-          className={classes.icons}
+          size={32}
+          className={styles.icons}
           onClick={() => {
             window.open(clubInfo?.telegram, "_blank");
           }}
         />
       )}
 
-      {clubInfo?.discord ? (
+      {clubInfo?.discord && (
         <FaDiscord
-          size={30}
-          className={classes.icons}
+          size={32}
+          className={styles.icons}
           onClick={() => {
             window.open(clubInfo?.discord, "_blank");
           }}
         />
-      ) : null}
+      )}
 
       {clubInfo?.twitter && (
         <FaTwitter
-          size={30}
-          className={classes.icons}
+          size={32}
+          className={styles.icons}
           onClick={() => {
             window.open(clubInfo?.twitter, "_blank");
           }}
@@ -42,4 +42,4 @@ const ERC721Icons = ({ clubInfo }) => {
   );
 };
 
-export default ERC721Icons;
+export default HeaderIcons;

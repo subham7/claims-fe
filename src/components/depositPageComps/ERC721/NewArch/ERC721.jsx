@@ -11,7 +11,6 @@ import {
 import useSmartContractMethods from "../../../../hooks/useSmartContractMethods";
 import { useConnectWallet } from "@web3-onboard/react";
 import dayjs from "dayjs";
-import { showWrongNetworkModal } from "../../../../utils/helper";
 import About from "./About";
 import NFTimg from "./NFTimg";
 import PriceSection from "./PriceSection";
@@ -56,7 +55,6 @@ const ERC721 = ({
 
   const [{ wallet }] = useConnectWallet();
   const walletAddress = wallet?.accounts[0].address;
-  const networkId = wallet?.chains[0].id;
 
   const SUBGRAPH_URL = useSelector((state) => {
     return state.gnosis.subgraphUrl;
@@ -122,8 +120,6 @@ const ERC721 = ({
         erc20TokenDetails.tokenDecimal,
       );
 
-      console.log(walletAddress, daoAddress, clubData?.imageUrl, count, []);
-
       await buyGovernanceTokenERC721DAO(
         walletAddress,
         daoAddress,
@@ -146,19 +142,23 @@ const ERC721 = ({
 
   useEffect(() => {
     const fetchSubgraphData = async () => {
-      const { stations } = await subgraphQuery(
+      const response = await subgraphQuery(
         SUBGRAPH_URL,
         QUERY_CLUB_DETAILS(daoAddress),
       );
 
-      setClubData(stations[0]);
+      if (response) {
+        const { stations } = response;
 
-      console.log("Data", stations);
-      const imageUrl = await getImageURL(stations[0].imageUrl);
-      setImgUrl(imageUrl);
+        setClubData(stations[0]);
+
+        const imageUrl = await getImageURL(stations[0].imageUrl);
+        setImgUrl(imageUrl);
+      }
     };
-
-    fetchSubgraphData();
+    if (daoAddress) {
+      fetchSubgraphData();
+    }
   }, [SUBGRAPH_URL, daoAddress]);
 
   useEffect(() => {
@@ -183,6 +183,7 @@ const ERC721 = ({
             clubData={clubData}
             clubInfo={clubInfo}
             deadline={daoDetails.depositDeadline}
+            daoAddress={daoAddress}
           />
           <PriceSection
             claimNFTHandler={claimNFTHandler}
@@ -204,8 +205,6 @@ const ERC721 = ({
       {clubInfo?.bio ? (
         <About bio={clubInfo?.bio} daoAddress={daoAddress} />
       ) : null}
-
-      {showWrongNetworkModal(wallet, networkId)}
 
       {claimSuccessfull && showMessage ? (
         <Alert

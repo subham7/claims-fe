@@ -29,7 +29,6 @@ import { useConnectWallet } from "@web3-onboard/react";
 import useSafe from "../../src/hooks/useSafe";
 import useSmartContract from "../../src/hooks/useSmartContract";
 import Layout1 from "../../src/components/layouts/layout1";
-import { showWrongNetworkModal } from "../../src/utils/helper";
 
 const Create = () => {
   const steps = [
@@ -46,8 +45,6 @@ const Create = () => {
   const [activeStep, setActiveStep] = useState(0);
   const [completed, setCompleted] = useState({});
   const [open, setOpen] = useState(false);
-  const [ownersCheck, setOwnersCheck] = useState(false);
-  const [ownerHelperText, setOwnerHelperText] = useState("");
 
   const { initiateConnection } = useSafe();
 
@@ -495,8 +492,8 @@ const Create = () => {
       <Grid
         container
         item
-        paddingLeft={{ xs: 5, sm: 5, md: 10, lg: 45 }}
-        paddingRight={{ xs: 5, sm: 5, md: 10, lg: 45 }}
+        paddingLeft={{ xs: 5, sm: 5, md: 10, lg: 36 }}
+        paddingRight={{ xs: 5, sm: 5, md: 10, lg: 40 }}
         justifyContent="center"
         alignItems="center">
         <Box
@@ -553,10 +550,16 @@ const Create = () => {
                   direction="row"
                   justifyContent="flex-end"
                   alignItems="center"
-                  mt={2}>
+                  mt={2}
+                  mb={8}>
                   {getStepContent(activeStep)}
                   {!activeStep == 0 && activeStep !== steps.length - 1 && (
-                    <Button onClick={handlePrev}>Prev</Button>
+                    <div
+                      style={{
+                        marginTop: "12px",
+                      }}>
+                      <Button onClick={handlePrev}>Prev</Button>
+                    </div>
                   )}
                   {activeStep === steps.length - 1 ? (
                     <>
@@ -564,7 +567,12 @@ const Create = () => {
                       <Button onClick={handleSubmit}>Finish</Button>
                     </>
                   ) : (
-                    <Button onClick={handleSubmit}>Next</Button>
+                    <div
+                      style={{
+                        marginTop: "12px",
+                      }}>
+                      <Button onClick={handleSubmit}>Next</Button>
+                    </div>
                   )}
                 </Grid>
               </Fragment>
@@ -572,8 +580,6 @@ const Create = () => {
           </form>
         </Box>
       </Grid>
-
-      {showWrongNetworkModal(wallet, networkId)}
     </Layout1>
   );
 };

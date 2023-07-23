@@ -192,7 +192,6 @@ const App = () => {
         : "",
       QUERY_CLUB_DETAILS(data.daoAddress),
     );
-    console.log(clubData);
     dispatch(
       addClubData({
         gnosisAddress: clubData.stations[0].gnosisAddress,
@@ -312,49 +311,65 @@ const App = () => {
                 <Divider className={classes.divider} />
                 <div>
                   <div style={{ overflowY: "scroll", maxHeight: "60vh" }}>
+                    {console.log(clubListData)}
                     {walletAddress && clubListData.length ? (
-                      clubListData.reverse().map((club, key) => {
-                        return (
-                          <ListItemButton
-                            style={{ marginBottom: "8px" }}
-                            key={key}
-                            onClick={(e) => {
-                              handleItemClick(clubListData[key]);
-                            }}>
-                            <Grid container className={classes.flexContainer}>
-                              <Grid item md={6}>
-                                <Stack spacing={0}>
-                                  <Typography className={classes.yourClubText}>
-                                    {club.daoName}
-                                  </Typography>
-                                  <Typography className={classes.clubAddress}>
-                                    {`${club.userAddress.substring(
-                                      0,
-                                      9,
-                                    )}......${club.userAddress.substring(
-                                      club.userAddress.length - 6,
-                                    )}`}
-                                  </Typography>
-                                </Stack>
+                      clubListData
+                        .reverse()
+                        .filter(
+                          (club) =>
+                            club.daoAddress !==
+                              "0xBd1FAB87bE86fec9336aE49131998D9fA5A00eB0" ||
+                            club.daoAddress !==
+                              "0x2608d54d10527fD4a6a7Bab0306DFbF9CA95A1Bb" ||
+                            club.daoAddress !==
+                              "0x067a544f00840056c8CdB7f9D9d73Ac3611D37c9" ||
+                            club.daoAddress !==
+                              "0x1Ae43fb8283E45AE90d5BD9249cc7227FD6eCc73",
+                        )
+                        .map((club, key) => {
+                          return (
+                            <ListItemButton
+                              style={{ marginBottom: "8px" }}
+                              key={key}
+                              onClick={(e) => {
+                                handleItemClick(clubListData[key]);
+                              }}>
+                              {console.log(club)}
+                              <Grid container className={classes.flexContainer}>
+                                <Grid item md={6}>
+                                  <Stack spacing={0}>
+                                    <Typography
+                                      className={classes.yourClubText}>
+                                      {club.daoName}
+                                    </Typography>
+                                    <Typography className={classes.clubAddress}>
+                                      {`${club.userAddress.substring(
+                                        0,
+                                        9,
+                                      )}......${club.userAddress.substring(
+                                        club.userAddress.length - 6,
+                                      )}`}
+                                    </Typography>
+                                  </Stack>
+                                </Grid>
+                                <Grid>
+                                  <Stack
+                                    spacing={0}
+                                    alignItems="flex-end"
+                                    justifyContent="flex-end">
+                                    <Typography
+                                      className={
+                                        classes.createClubButton
+                                      }></Typography>
+                                    <Typography className={classes.isAdmin}>
+                                      {club.isAdmin ? "Admin" : "Member"}
+                                    </Typography>
+                                  </Stack>
+                                </Grid>
                               </Grid>
-                              <Grid>
-                                <Stack
-                                  spacing={0}
-                                  alignItems="flex-end"
-                                  justifyContent="flex-end">
-                                  <Typography
-                                    className={
-                                      classes.createClubButton
-                                    }></Typography>
-                                  <Typography className={classes.isAdmin}>
-                                    {club.isAdmin ? "Admin" : "Member"}
-                                  </Typography>
-                                </Stack>
-                              </Grid>
-                            </Grid>
-                          </ListItemButton>
-                        );
-                      })
+                            </ListItemButton>
+                          );
+                        })
                     ) : (
                       <div
                         style={{
@@ -381,35 +396,7 @@ const App = () => {
               </Card>
             </Grid>
           </Grid>
-        ) : (
-          <>
-            {!manageStation && !wallet && (
-              <Grid
-                container
-                direction="column"
-                justifyContent="center"
-                alignItems="center">
-                <Grid item mt={15}>
-                  <img
-                    className={classes.bannerImage}
-                    src="/assets/images/start_illustration.svg"
-                  />
-                </Grid>
-                <Grid item mt={4}>
-                  <Typography variant="mainHeading">
-                    Do more together
-                  </Typography>
-                </Grid>
-                <Grid item mt={4}>
-                  <Typography variant="regularText">
-                    Create or join a station in less than 60 seconds using
-                    StationX
-                  </Typography>
-                </Grid>
-              </Grid>
-            )}
-          </>
-        )}
+        ) : null}
 
         <Dialog
           open={open}

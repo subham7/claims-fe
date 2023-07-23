@@ -18,13 +18,14 @@ import { QUERY_ALL_CLAIMS_OF_CREATOR } from "../../src/api/graphql/queries";
 
 const useStyles = makeStyles({
   container: {
-    marginLeft: "80px",
     marginTop: "120px",
     display: "flex",
     gap: "30px",
+    marginBottom: "60px",
+    justifyContent: "space-around",
   },
   leftDiv: {
-    flex: "0.65",
+    flex: "0.7",
     margin: 0,
   },
   header: {
@@ -111,7 +112,6 @@ const Claims = () => {
 
   const [{ wallet }] = useConnectWallet();
   const walletAddress = wallet?.accounts[0].address;
-  const networkId = wallet?.chains[0].id;
 
   useEffect(() => {
     const fetchClaims = async () => {
@@ -132,16 +132,6 @@ const Claims = () => {
 
   return (
     <Layout1 showSidebar={false}>
-      <Image
-        src="/assets/images/monogram.png"
-        alt="StationX"
-        height={50}
-        width={50}
-        style={{ cursor: "pointer", position: "fixed" }}
-        onClick={() => {
-          router.push("/");
-        }}
-      />
       <div className={classes.container}>
         {/* Left Side */}
         <div className={classes.leftDiv}>

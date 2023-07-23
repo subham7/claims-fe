@@ -54,11 +54,7 @@ import Signators from "../../../../src/components/proposalComps/Signators";
 import ProposalInfo from "../../../../src/components/proposalComps/ProposalInfo";
 import CurrentResults from "../../../../src/components/proposalComps/CurrentResults";
 import ProposalVotes from "../../../../src/components/proposalComps/ProposalVotes";
-import {
-  getSafeSdk,
-  showWrongNetworkModal,
-  web3InstanceEthereum,
-} from "../../../../src/utils/helper";
+import { getSafeSdk, web3InstanceEthereum } from "../../../../src/utils/helper";
 import useSmartContractMethods from "../../../../src/hooks/useSmartContractMethods";
 import { getNFTsByDaoAddress } from "../../../../src/api/assets";
 
@@ -213,7 +209,6 @@ const ProposalDetail = () => {
   const walletAddress = Web3.utils.toChecksumAddress(
     wallet?.accounts[0].address,
   );
-  const networkId = wallet?.chains[0].id;
 
   const tokenType = useSelector((state) => {
     return state.club.clubData.tokenType;
@@ -291,10 +286,6 @@ const ProposalDetail = () => {
 
   const FACTORY_CONTRACT_ADDRESS = useSelector((state) => {
     return state.gnosis.factoryContractAddress;
-  });
-
-  const WRONG_NETWORK = useSelector((state) => {
-    return state.gnosis.wrongNetwork;
   });
 
   const AIRDROP_ACTION_ADDRESS = useSelector((state) => {
@@ -726,7 +717,7 @@ const ProposalDetail = () => {
   return (
     <>
       <Layout1 page={2}>
-        <Grid container spacing={6} paddingLeft={10} paddingTop={10}>
+        <Grid container spacing={6} paddingTop={10} mb={8}>
           <Grid item md={8.5}>
             {/* back button */}
             <Grid container spacing={1} ml={-4} onClick={() => router.back()}>
@@ -1254,8 +1245,6 @@ const ProposalDetail = () => {
             </Stack>
           </Grid>
         </Grid>
-
-        {showWrongNetworkModal(wallet, networkId)}
 
         <Snackbar
           open={openSnackBar}

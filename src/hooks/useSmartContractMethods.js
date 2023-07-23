@@ -241,12 +241,21 @@ const useSmartContractMethods = () => {
         amount,
         usdcConvertDecimal,
       )?.toString();
-      return await erc20TokenContractSend?.methods
-        ?.approve(approvalContract, value)
-        .send({
-          from: walletAddress,
-          gasPrice: await getIncreaseGasPrice(),
-        });
+
+      const currentAllowance = await erc20TokenContractSend.methods
+        .allowance(walletAddress, approvalContract)
+        .call();
+
+      if (Number(currentAllowance) >= Number(value)) {
+        return;
+      } else {
+        return await erc20TokenContractSend?.methods
+          ?.approve(approvalContract, value)
+          .send({
+            from: walletAddress,
+            gasPrice: await getIncreaseGasPrice(),
+          });
+      }
     }
   };
 
@@ -539,8 +548,6 @@ const useSmartContractMethods = () => {
       safeAddress: Web3.utils.toChecksumAddress(gnosisAddress),
     });
 
-    const nonce = await safeSdk.getNonce();
-
     let approvalTransaction;
     let transaction;
     if (approvalData !== "") {
@@ -568,6 +575,7 @@ const useSmartContractMethods = () => {
             )
             .encodeABI(),
           value: "0",
+          gasPrice: await getIncreaseGasPrice(),
         };
       }
 
@@ -581,6 +589,7 @@ const useSmartContractMethods = () => {
             membersArray,
           ),
           value: 0,
+          gasPrice: await getIncreaseGasPrice(),
         };
       } else {
         transaction = {
@@ -593,6 +602,7 @@ const useSmartContractMethods = () => {
             )
             .encodeABI(),
           value: "0",
+          gasPrice: await getIncreaseGasPrice(),
         };
       }
     } else if (executionId === 6 || executionId === 7) {
@@ -621,6 +631,7 @@ const useSmartContractMethods = () => {
             proposalData.commands[0].customNftToken,
           ),
           value: "0",
+          gasPrice: await getIncreaseGasPrice(),
         };
       } else {
         transaction = {
@@ -634,6 +645,7 @@ const useSmartContractMethods = () => {
             )
             .encodeABI(),
           value: "0",
+          gasPrice: await getIncreaseGasPrice(),
         };
       }
     }
@@ -648,6 +660,7 @@ const useSmartContractMethods = () => {
             data: transaction.data,
             value: transaction.value,
             nonce: nonce, // Optional
+            gasPrice: await getIncreaseGasPrice(),
           };
         } else {
           safeTransactionData = [
@@ -656,12 +669,14 @@ const useSmartContractMethods = () => {
               data: approvalTransaction.data,
               value: approvalTransaction.value,
               nonce: nonce, // Optional
+              gasPrice: await getIncreaseGasPrice(),
             },
             {
               to: transaction.to,
               data: transaction.data,
               value: transaction.value,
               nonce: nonce, // Optional
+              gasPrice: await getIncreaseGasPrice(),
             },
           ];
         }

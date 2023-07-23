@@ -1,9 +1,16 @@
 import React, { useEffect, useState } from "react";
 import classes from "./ERC721.module.scss";
-import ERC721Icons from "./ERC721Icons";
+import HeaderIcons from "./HeaderIcons";
 import { RiShareBoxLine } from "react-icons/ri";
 
-const Header = ({ clubData, clubInfo, active, isErc20 = true, deadline }) => {
+const Header = ({
+  clubData,
+  clubInfo,
+  active,
+  isErc20 = true,
+  deadline,
+  daoAddress,
+}) => {
   const [timer, setTimer] = useState({
     days: 0,
     hours: 0,
@@ -37,7 +44,7 @@ const Header = ({ clubData, clubInfo, active, isErc20 = true, deadline }) => {
   }, [deadline]);
 
   return (
-    <>
+    <div>
       <p className={classes.heading}>{clubData?.name}</p>
       <div className={classes.flexContainer}>
         {active ? (
@@ -54,31 +61,33 @@ const Header = ({ clubData, clubInfo, active, isErc20 = true, deadline }) => {
         <div
           onClick={() => {
             window.open(
-              `https://polygonscan.com/address/${clubData?.ownerAddress}`,
+              `https://polygonscan.com/address/${daoAddress}`,
               "_blank",
             );
           }}
           className={classes.createdBy}>
-          <p>{`${clubData?.ownerAddress?.slice(
-            0,
-            5,
-          )}...${clubData?.ownerAddress?.slice(-5)}`}</p>
+          <p>{`${daoAddress?.slice(0, 5)}...${daoAddress?.slice(-5)}`}</p>
           <RiShareBoxLine size={16} />
         </div>
 
-        <ERC721Icons clubInfo={clubInfo} />
+        <HeaderIcons clubInfo={clubInfo} />
       </div>
-      <p className={classes.smallText}>
-        {isErc20 ? "Deposit Closes in" : "Minting closes in"}
-      </p>
 
-      <div className={classes.timer}>
-        <p>{timer.days}</p>
-        <p>{timer.hours}</p>
-        <p>{timer.minutes}</p>
-        <p>{timer.seconds}</p>
-      </div>
-    </>
+      {isErc20 ? (
+        <>
+          <p className={classes.smallText}>
+            {isErc20 ? "Deposit Closes in" : "Minting closes in"}
+          </p>
+
+          <div className={classes.timer}>
+            <p>{timer.days}</p>
+            <p>{timer.hours}</p>
+            <p>{timer.minutes}</p>
+            <p>{timer.seconds}</p>
+          </div>
+        </>
+      ) : null}
+    </div>
   );
 };
 

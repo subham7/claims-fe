@@ -12,8 +12,8 @@ import { subgraphQuery } from "../../../src/utils/subgraphs";
 import { convertFromWeiGovernance } from "../../../src/utils/globalFunctions";
 import { getAssetsByDaoAddress } from "../../../src/api/assets";
 import useSmartContractMethods from "../../../src/hooks/useSmartContractMethods";
-import { showWrongNetworkModal } from "../../../src/utils/helper";
 import { getClubInfo } from "../../../src/api/club";
+import Layout1 from "@components/layouts/layout1";
 
 const Settings = () => {
   const [daoDetails, setDaoDetails] = useState({
@@ -56,7 +56,6 @@ const Settings = () => {
   const [{ wallet }] = useConnectWallet();
 
   const walletAddress = wallet?.accounts[0].address;
-  const networkId = wallet?.chains[0].id;
 
   const SUBGRAPH_URL = useSelector((state) => {
     return state.gnosis.subgraphUrl;
@@ -68,10 +67,6 @@ const Settings = () => {
 
   const isAdminUser = useSelector((state) => {
     return state.gnosis.adminUser;
-  });
-
-  const WRONG_NETWORK = useSelector((state) => {
-    return state.gnosis.wrongNetwork;
   });
 
   const NETWORK_HEX = useSelector((state) => {
@@ -261,7 +256,7 @@ const Settings = () => {
   }, [fetchAssets]);
 
   return (
-    <div>
+    <Layout1 page={5}>
       <SettingsInfo
         daoDetails={daoDetails}
         erc20TokenDetails={erc20TokenDetails}
@@ -287,9 +282,7 @@ const Settings = () => {
         isAdminUser={isAdminUser}
       />
       <TokenGating />
-
-      {showWrongNetworkModal(wallet, networkId)}
-    </div>
+    </Layout1>
   );
 };
 

@@ -16,7 +16,6 @@ import { useConnectWallet } from "@web3-onboard/react";
 import { useDispatch } from "react-redux";
 import { useRouter } from "next/router";
 import Link from "next/link";
-import { showWrongNetworkModal } from "../../utils/helper";
 
 const useStyles = makeStyles({
   form: {
@@ -118,7 +117,6 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading, formikStep1 }) => {
 
   const classes = useStyles();
   const [{ wallet }] = useConnectWallet();
-  const networkId = wallet?.chains[0].id;
   const dispatch = useDispatch();
 
   const hiddenFileInput = useRef(null);
@@ -412,22 +410,35 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading, formikStep1 }) => {
 
         {/* Next */}
         {finish ? (
-          <Button
-            onClick={() => {
-              router.push("/claims");
-            }}
-            variant="normal">
-            Go back to claims
-          </Button>
+          <div
+            style={{
+              marginTop: "20px",
+            }}>
+            <Button
+              onClick={() => {
+                router.push("/claims");
+              }}
+              variant="normal">
+              Go back to claims
+            </Button>
+          </div>
         ) : (
-          <Button
-            disabled={isButtonDisabled()}
-            onClick={formik.handleSubmit}
-            variant="normal">
-            {loading || loadingCsv ? <CircularProgress size={25} /> : "Finish"}
-          </Button>
+          <div
+            style={{
+              marginTop: "20px",
+            }}>
+            <Button
+              disabled={isButtonDisabled()}
+              onClick={formik.handleSubmit}
+              variant="normal">
+              {loading || loadingCsv ? (
+                <CircularProgress size={25} />
+              ) : (
+                "Finish"
+              )}
+            </Button>
+          </div>
         )}
-        {showWrongNetworkModal(wallet, networkId)}
       </form>
     </>
   );
