@@ -1,0 +1,39 @@
+@import "./../../../../styles/variables.scss";
+
+.typography-variant-heading_lg {
+  font-size: 48px;
+  font-weight: 450;
+}
+.typography-variant-heading_md {
+  font-size: 28px;
+  font-weight: 450;
+}
+.typography-variant-heading_sm {
+  font-size: 24px;
+  font-weight: 450;
+}
+.typography-variant-subheading {
+  font-size: 20px;
+  font-weight: 400;
+}
+.typography-variant-body_lg {
+  font-size: 20px;
+  font-weight: 350;
+}
+.typography-variant-body_md {
+  font-size: 18px;
+  font-weight: 350;
+}
+.typography-variant-body_sm {
+  font-size: 16px;
+  font-weight: 350;
+}
+.typography-color-primary {
+  color: $typography-primary;
+}
+.typography-color-gray {
+  color: $typography-gray;
+}
+.typography-color-blue {
+  color: $typography-powderblue;
+}
