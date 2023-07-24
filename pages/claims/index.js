@@ -119,7 +119,7 @@ const Claims = () => {
         {/* Left Side */}
         <div className={classes.leftDiv}>
           <div className={classes.header}>
-            <Typography variant="heading_lg">Claims</Typography>
+            <Typography variant="heading">Claims</Typography>
             <Button onClick={createClaimHandler} variant="normal">
               Create
             </Button>
@@ -127,8 +127,8 @@ const Claims = () => {
 
           {!claimData.length && (
             <div className={classes.noClaim}>
-              <Typography variant="heading_sm">No claims found</Typography>
-              <Typography variant="body_sm">
+              <Typography variant="heading">No claims found</Typography>
+              <Typography variant="body">
                 Bulk distribute ERC20 tokens or NFTs by creating claim pages in
                 less than 60 seconds
               </Typography>

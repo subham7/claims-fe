@@ -1,75 +1,23 @@
 @import "./../../../../styles/variables.scss";
 
 /* headings typography */
-.typography-variant-heading_lg {
-  font-size: 48px;
+.typography-variant-heading {
+  font-size: xx-large;
   font-weight: 500;
   font-family: Whyte;
 }
-.typography-variant-heading_md {
-  font-size: 28px;
-  font-weight: 500;
-  font-family: Whyte;
-}
-.typography-variant-heading_sm {
-  font-size: 24px;
-  font-weight: 450;
-  font-family: Whyte;
-}
-.typography-variant-heading_xs {
-  font-size: 19px;
-  font-weight: 450;
-  font-family: Whyte;
-}
-
-/* subheadings */
 .typography-variant-subheading {
-  font-size: 24px;
-  font-weight: 400;
+  font-size: x-large;
+  font-weight: 500;
   font-family: Whyte;
 }
-
-/* body typography */
-.typography-variant-body_lg {
-  font-size: 20px;
-  font-weight: 400;
-}
-.typography-variant-body_md {
-  font-size: 18px;
-  font-weight: 400;
-}
-.typography-variant-body_sm {
-  font-size: 16px;
-  font-weight: 400;
-}
-
-/* forms typography*/
-.typography-variant-input_heading {
-  font-size: 20px;
+.typography-variant-body {
+  font-size: large;
   font-weight: 450;
   font-family: Whyte;
-  color: $typography-powderblue !important;
 }
-.typography-variant-input_desc {
-  font-size: 16px;
-  font-weight: 400;
-  color: $typography-darkblue !important;
-}
-.typography-variant-input_placeholder {
-  font-size: 19px;
+.typography-variant-info {
+  font-size: medium;
   font-weight: 450;
-}
-
-/* colors */
-.typography-color-primary {
-  color: $typography-primary;
-}
-.typography-color-gray {
-  color: $typography-gray;
-}
-.typography-color-blue {
-  color: $typography-powderblue;
-}
-.typography-color-darkblue {
-  color: $typography-darkblue;
+  font-family: Whyte;
 }

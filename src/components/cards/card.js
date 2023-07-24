@@ -26,8 +26,8 @@ const NewCard = ({ title, subtitle, onClick, buttonText }) => {
 
   return (
     <div className={classes.card}>
-      <Typography variant="heading_md">{title}</Typography>
-      <Typography variant="body_md">{subtitle}</Typography>
+      <Typography variant="heading">{title}</Typography>
+      <Typography variant="body">{subtitle}</Typography>
       <Button onClick={onClick}>{buttonText}</Button>
     </div>
   );

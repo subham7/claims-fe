@@ -298,7 +298,7 @@ const App = () => {
               <Card>
                 <div className={classes.flex}>
                   <Grid item>
-                    <Typography variant="heading_md">My Stations</Typography>
+                    <Typography variant="heading">My Stations</Typography>
                   </Grid>
                   <Grid>
                     <Button onClick={handleCreateButtonClick}>
@@ -339,7 +339,9 @@ const App = () => {
                                     <Typography variant="subheading">
                                       {club.daoName}
                                     </Typography>
-                                    <Typography variant="body_md" color="blue">
+                                    <Typography
+                                      variant="body"
+                                      className="text-blue">
                                       {`${club.userAddress.substring(
                                         0,
                                         9,
@@ -355,10 +357,8 @@ const App = () => {
                                     alignItems="flex-end"
                                     justifyContent="flex-end">
                                     <Typography
-                                      className={
-                                        classes.createClubButton
-                                      }></Typography>
-                                    <Typography className={classes.isAdmin}>
+                                      variant="body"
+                                      className="text-blue">
                                       {club.isAdmin ? "Admin" : "Member"}
                                     </Typography>
                                   </Stack>
