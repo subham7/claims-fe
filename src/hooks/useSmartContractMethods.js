@@ -765,13 +765,12 @@ const useSmartContractMethods = () => {
         proposalTxHash.data[0].txHash,
       );
       const options = {
-        maxPriorityFeePerGas: null,
-        maxFeePerGas: null,
+        gasPrice: await getIncreaseGasPrice(),
       };
 
       const executeTxResponse = await safeSdk.executeTransaction(
         safetx,
-        // options,
+        options,
       );
 
       const receipt =
