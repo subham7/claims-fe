@@ -6,10 +6,14 @@ const variantsMapping = {
   heading_lg: "h1",
   heading_md: "h2",
   heading_sm: "h3",
+  heading_xs: "h4",
   subheading: "h6",
   body_lg: "p",
   body_md: "p",
   body_sm: "p",
+  input_heading: "h4",
+  input_desc: "p",
+  input_placeholder: "p",
 };
 
 const Typography = ({

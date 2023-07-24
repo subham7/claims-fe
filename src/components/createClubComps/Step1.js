@@ -4,9 +4,9 @@ import {
   Grid,
   MenuItem,
   Select,
-  Typography,
+  // Typography,
 } from "@mui/material";
-import { TextField } from "@components/ui";
+import { TextField, Typography } from "@components/ui";
 import { Step1Styles } from "./CreateClubStyles";
 
 export default function Step1(props) {
@@ -15,13 +15,13 @@ export default function Step1(props) {
     <>
       <Grid container>
         <Grid item md={12} mt={4}>
-          <Typography className={classes.wrapTextIcon}>Basic info</Typography>
-          <Typography className={classes.smallText}>
+          <Typography variant="input_heading">Basic info</Typography>
+          <Typography variant="input_desc">
             Give a name & token symbol for your station that best describes the
             purpose or matches your tribe.
           </Typography>
           <br />
-          <Typography className={classes.wrapTextIcon}>Name *</Typography>
+          <Typography variant="input_heading">Name *</Typography>
           <TextField
             name="clubName"
             label="Eg: Degen Collective / PurpleDAO / Phoenix club"
@@ -38,7 +38,10 @@ export default function Step1(props) {
             }
           />
           <br />
-          <Typography className={classes.wrapTextIcon}>
+          <Typography
+            variant="input_heading"
+            // className={classes.wrapTextIcon}
+          >
             Symbol *{" "}
             <Box
               sx={{ color: "#6475A3", ml: 1 }}
@@ -63,7 +66,10 @@ export default function Step1(props) {
             }
           />
           <br />
-          <Typography className={classes.smallText}>
+          <Typography
+            variant="input_desc"
+            // className={classes.smallText}
+          >
             You can choose to make your token public or private along with other
             rules in the next steps.
           </Typography>

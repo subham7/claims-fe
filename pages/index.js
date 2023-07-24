@@ -2,14 +2,14 @@ import { React, useEffect, useState } from "react";
 import {
   Grid,
   Card,
-  Typography,
+  // Typography,
   Divider,
   Stack,
   ListItemButton,
   DialogContent,
   Dialog,
 } from "@mui/material";
-import Button from "@components/ui/button/Button";
+import { Button, Typography } from "@components/ui";
 import { useDispatch } from "react-redux";
 import { makeStyles } from "@mui/styles";
 import Router, { useRouter } from "next/router";
@@ -298,9 +298,7 @@ const App = () => {
               <Card>
                 <div className={classes.flex}>
                   <Grid item>
-                    <Typography className={classes.yourClubText}>
-                      My Stations
-                    </Typography>
+                    <Typography variant="heading_md">My Stations</Typography>
                   </Grid>
                   <Grid>
                     <Button onClick={handleCreateButtonClick}>
@@ -338,11 +336,10 @@ const App = () => {
                               <Grid container className={classes.flexContainer}>
                                 <Grid item md={6}>
                                   <Stack spacing={0}>
-                                    <Typography
-                                      className={classes.yourClubText}>
+                                    <Typography variant="subheading">
                                       {club.daoName}
                                     </Typography>
-                                    <Typography className={classes.clubAddress}>
+                                    <Typography variant="body_md" color="blue">
                                       {`${club.userAddress.substring(
                                         0,
                                         9,
