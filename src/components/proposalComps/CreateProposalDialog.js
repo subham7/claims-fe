@@ -250,6 +250,20 @@ const CreateProposalDialog = ({
           },
         ];
       }
+      if (values.actionCommand === "whitelist deposit") {
+        // api call for merkle root,
+
+        commands = [
+          {
+            executionId: 8,
+            merkleRoot: "",
+            usdcTokenSymbol: "USDC",
+            usdcTokenDecimal: 6,
+            usdcGovernanceTokenDecimal: 18,
+          },
+        ];
+      }
+
       const payload = {
         name: values.proposalTitle,
         description: values.proposalDescription,

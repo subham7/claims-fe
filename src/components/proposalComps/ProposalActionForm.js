@@ -9,10 +9,11 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import React from "react";
+import React, { useRef, useState } from "react";
 import { commandTypeList } from "../../data/dashboard";
 import { makeStyles } from "@mui/styles";
 import { useSelector } from "react-redux";
+import Link from "next/link";
 
 const useStyles = makeStyles({
   textField: {
@@ -25,6 +26,10 @@ const useStyles = makeStyles({
 });
 
 const ProposalActionForm = ({ formik, tokenData, nftData }) => {
+  const hiddenFileInput = useRef(null);
+  const [file, setFile] = useState("");
+  const [loadingCsv, setLoadingCsv] = useState(false);
+
   const classes = useStyles();
 
   const tokenType = useSelector((state) => {
@@ -41,6 +46,41 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
 
   const isGovernanceActive =
     tokenType === "erc20" ? isGovernanceERC20 : isGovernanceERC721;
+
+  const handleClick = (event) => {
+    hiddenFileInput.current.click();
+  };
+
+  const handleChange = async (event) => {
+    const fileUploaded = event.target.files[0];
+    setLoadingCsv(true);
+    setFile(fileUploaded);
+
+    // new instance of fileReader class
+    const reader = new FileReader();
+
+    if (fileUploaded) {
+      await reader.readAsText(fileUploaded);
+
+      // converting .csv file into array of objects
+      reader.onload = async (event) => {
+        const csvData = event.target.result;
+
+        const csvArr = csvData
+          .split("\r\n")
+          .map((data) => data.split(","))
+          .filter((data) => data[0])
+          .map((data) => ({
+            address: data[0].toLowerCase(),
+          }));
+
+        console.log("CSV", csvArr);
+        // setCSVObject(csvArr);
+        formik.values.csvObject = csvArr;
+        setLoadingCsv(false);
+      };
+    }
+  };
 
   return (
     <Stack sx={{ marginTop: "1rem" }}>
@@ -609,25 +649,46 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
           </Grid>
         </>
       ) : formik.values.actionCommand === "whitelist deposit" ? (
-        <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
-          <TextField
-            className={classes.input}
-            onClick={handleClick}
-            onChange={handleChange}
-            disabled
-            value={file?.name}
-          />
-          <Button onClick={handleClick} variant="normal">
-            Upload
-          </Button>
-          <input
-            type="file"
-            accept=".csv"
-            ref={hiddenFileInput}
-            onChange={handleChange}
-            style={{ display: "none" }}
-          />
-        </div>
+        <>
+          <Typography mt={2} variant="proposalBody">
+            Upload your CSV file
+          </Typography>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "20px",
+              marginTop: "8px",
+            }}>
+            <TextField
+              style={{
+                width: "100%",
+              }}
+              className={classes.input}
+              onClick={handleClick}
+              onChange={handleChange}
+              disabled
+              value={file?.name}
+            />
+            <Button onClick={handleClick} variant="normal">
+              Upload
+            </Button>
+            <input
+              type="file"
+              accept=".csv"
+              ref={hiddenFileInput}
+              onChange={handleChange}
+              style={{ display: "none" }}
+            />
+          </div>
+
+          <Typography mt={1} variant="proposalSubHeading">
+            Download sample from{" "}
+            <span style={{ color: "#3a7afd" }}>
+              <Link href={"/assets/csv/addresses.csv"}>here</Link>
+            </span>
+          </Typography>
+        </>
       ) : null}
     </Stack>
   );
