@@ -73,18 +73,27 @@ const TokenGating = () => {
         checked ? 1 : 0, // Operator for token checks (0 for AND and 1 for OR)
         0, // 0 for Greater, 1 for Below and 2 for Equal,
         [
-          convertToWeiGovernance(
-            tokensList[0].tokenAmount,
-            tokensList[0].tokenDecimal,
-          ),
-          convertToWeiGovernance(
-            tokensList[1]?.tokenAmount
+          tokensList[0].tokenDecimal === 0
+            ? tokensList[0].tokenAmount
+            : convertToWeiGovernance(
+                tokensList[0].tokenAmount,
+                tokensList[0].tokenDecimal,
+              ),
+
+          // only if second token added
+          tokensList[1]?.tokenAmount > 0
+            ? tokensList[1]?.tokenAmount && tokensList[1]?.tokenDecimal === 0
               ? tokensList[1]?.tokenAmount
-              : tokensList[0]?.tokenAmount,
-            tokensList[1]?.tokenDecimal
-              ? tokensList[1]?.tokenDecimal
-              : tokensList[0].tokenDecimal,
-          ),
+              : convertToWeiGovernance(
+                  tokensList[1]?.tokenAmount,
+                  tokensList[1]?.tokenDecimal,
+                )
+            : tokensList[0]?.tokenDecimal === 0
+            ? tokensList[0]?.tokenAmount
+            : convertToWeiGovernance(
+                tokensList[0]?.tokenAmount,
+                tokensList[0]?.tokenDecimal,
+              ),
         ], // Minimum user balance of tokenA & tokenB
         daoAddress,
       );
@@ -112,6 +121,7 @@ const TokenGating = () => {
     try {
       setLoading(true);
       const tokenGatingDetails = await getTokenGatingDetails(daoAddress);
+
       setFetchedDetails({
         tokenA: tokenGatingDetails[0]?.tokenA,
         tokenB: tokenGatingDetails[0]?.tokenB,
@@ -128,6 +138,11 @@ const TokenGating = () => {
 
       try {
         tokenADecimal = await getDecimals(tokenGatingDetails[0]?.tokenA);
+      } catch (error) {
+        console.log(error);
+      }
+
+      try {
         tokenBDecimal = await getDecimals(tokenGatingDetails[0]?.tokenB);
       } catch (error) {
         console.log(error);
@@ -136,8 +151,8 @@ const TokenGating = () => {
       setDisplayTokenDetails({
         tokenASymbol: tokenASymbol,
         tokenBSymbol: tokenBSymbol,
-        tokenADecimal: tokenADecimal ? tokenADecimal : 1,
-        tokenBDecimal: tokenBDecimal ? tokenBDecimal : 1,
+        tokenADecimal: tokenADecimal ? tokenADecimal : 0,
+        tokenBDecimal: tokenBDecimal ? tokenBDecimal : 0,
       });
       setLoading(false);
     } catch (error) {
@@ -209,10 +224,14 @@ const TokenGating = () => {
                   <SingleToken
                     tokenAddress={fetchedDetails.tokenA}
                     tokenSymbol={displayTokenDetails.tokenASymbol}
-                    tokenAmount={convertFromWeiGovernance(
-                      fetchedDetails.tokenAAmt,
-                      displayTokenDetails.tokenADecimal,
-                    )}
+                    tokenAmount={
+                      displayTokenDetails?.tokenADecimal === 0
+                        ? fetchedDetails.tokenAAmt
+                        : convertFromWeiGovernance(
+                            fetchedDetails.tokenAAmt,
+                            displayTokenDetails.tokenADecimal,
+                          )
+                    }
                   />
                 </>
               ) : (
