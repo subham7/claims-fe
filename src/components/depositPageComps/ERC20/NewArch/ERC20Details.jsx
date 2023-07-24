@@ -64,8 +64,8 @@ const ERC20Details = ({ clubData, erc20TokenDetails, isTokenGated }) => {
         <div className={classes.tokenGateInfo}>
           <BsInfoCircleFill color="#C1D3FF" />
           <p>
-            Access to join this Station is <span>restricted</span> by the
-            admin(s)
+            This Station is token-gated. Please check the about section to know
+            more.
           </p>
         </div>
       ) : null}
