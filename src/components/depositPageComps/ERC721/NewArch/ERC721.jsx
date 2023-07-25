@@ -15,6 +15,7 @@ import About from "./About";
 import NFTimg from "./NFTimg";
 import PriceSection from "./PriceSection";
 import Header from "./Header";
+import { useRouter } from "next/router";
 
 const ERC721 = ({
   daoAddress,
@@ -68,6 +69,8 @@ const ERC721 = ({
   const Deposit_Token_Address = useSelector((state) => {
     return state.club.factoryData.depositTokenAddress;
   });
+
+  const router = useRouter();
 
   const fetchTokenDetails = useCallback(async () => {
     try {

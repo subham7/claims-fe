@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useState } from "react";
 import Layout1 from "../../../../src/components/layouts/layout1";
 import {
   Backdrop,
-  Button,
   CircularProgress,
   Grid,
   MenuItem,
@@ -10,6 +9,7 @@ import {
   Select,
   Typography,
 } from "@mui/material";
+import { Button } from "@components/ui";
 import { proposalDisplayOptions } from "../../../../src/data/dashboard";
 import DocsCard from "../../../../src/components/proposalComps/DocsCard";
 import CreateProposalDialog from "../../../../src/components/proposalComps/CreateProposalDialog";
@@ -270,7 +270,7 @@ const Proposal = () => {
                   xs
                   sx={{ display: "flex", justifyContent: "flex-end" }}>
                   <Select
-                    sx={{ height: "80%", textTransform: "capitalize" }}
+                    sx={{ height: "75%", textTransform: "capitalize" }}
                     value={selectedListItem}
                     onChange={handleFilterChange}
                     input={<OutlinedInput />}
@@ -299,25 +299,13 @@ const Proposal = () => {
 
                 {isGovernanceActive ? (
                   <Grid item>
-                    <Button
-                      variant="contained"
-                      size="large"
-                      sx={{
-                        height: "80%",
-                      }}
-                      onClick={handleClickOpen}>
+                    <Button variant="normal" onClick={handleClickOpen}>
                       Propose
                     </Button>
                   </Grid>
                 ) : isAdminUser ? (
                   <Grid item>
-                    <Button
-                      variant="contained"
-                      size="large"
-                      sx={{
-                        height: "80%",
-                      }}
-                      onClick={handleClickOpen}>
+                    <Button variant="normal" onClick={handleClickOpen}>
                       Propose
                     </Button>
                   </Grid>

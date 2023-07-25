@@ -242,12 +242,11 @@ const useSmartContractMethods = () => {
         usdcConvertDecimal,
       )?.toString();
 
-      const currentAllowance = await erc20TokenContractSend.methods.allowance(
-        walletAddress,
-        approvalContract,
-      );
+      const currentAllowance = await erc20TokenContractSend.methods
+        .allowance(walletAddress, approvalContract)
+        .call();
 
-      if (currentAllowance >= value) {
+      if (Number(currentAllowance) >= Number(value)) {
         return;
       } else {
         return await erc20TokenContractSend?.methods
@@ -569,7 +568,6 @@ const useSmartContractMethods = () => {
             )
             .encodeABI(),
           value: "0",
-          // gasPrice: await getIncreaseGasPrice(),
         };
         transaction = {
           //dao
@@ -582,7 +580,6 @@ const useSmartContractMethods = () => {
             )
             .encodeABI(),
           value: "0",
-          // gasPrice: await getIncreaseGasPrice(),
         };
       } else {
         if (isAssetsStoredOnGnosis) {
@@ -609,7 +606,6 @@ const useSmartContractMethods = () => {
               )
               .encodeABI(),
             value: "0",
-            // gasPrice: await getIncreaseGasPrice(),
           };
         }
 
@@ -623,7 +619,6 @@ const useSmartContractMethods = () => {
               membersArray,
             ),
             value: 0,
-            // gasPrice: await getIncreaseGasPrice(),
           };
         } else {
           transaction = {
@@ -636,7 +631,6 @@ const useSmartContractMethods = () => {
               )
               .encodeABI(),
             value: "0",
-            // gasPrice: await getIncreaseGasPrice(),
           };
         }
       }
@@ -666,7 +660,6 @@ const useSmartContractMethods = () => {
             proposalData.commands[0].customNftToken,
           ),
           value: "0",
-          // gasPrice: await getIncreaseGasPrice(),
         };
       } else {
         transaction = {
@@ -680,7 +673,6 @@ const useSmartContractMethods = () => {
             )
             .encodeABI(),
           value: "0",
-          // gasPrice: await getIncreaseGasPrice(),
         };
       }
     }
@@ -695,7 +687,6 @@ const useSmartContractMethods = () => {
             data: transaction.data,
             value: transaction.value,
             nonce: nonce, // Optional
-            // gasPrice: await getIncreaseGasPrice(),
           };
         } else {
           safeTransactionData = [
@@ -704,14 +695,12 @@ const useSmartContractMethods = () => {
               data: approvalTransaction.data,
               value: approvalTransaction.value,
               nonce: nonce, // Optional
-              // gasPrice: await getIncreaseGasPrice(),
             },
             {
               to: transaction.to,
               data: transaction.data,
               value: transaction.value,
               nonce: nonce, // Optional
-              // gasPrice: await getIncreaseGasPrice(),
             },
           ];
         }
@@ -808,13 +797,12 @@ const useSmartContractMethods = () => {
         proposalTxHash.data[0].txHash,
       );
       const options = {
-        maxPriorityFeePerGas: null,
-        maxFeePerGas: null,
+        gasPrice: await getIncreaseGasPrice(),
       };
 
       const executeTxResponse = await safeSdk.executeTransaction(
         safetx,
-        // options,
+        options,
       );
 
       const receipt =

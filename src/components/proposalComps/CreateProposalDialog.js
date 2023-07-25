@@ -1,6 +1,5 @@
 import {
   Alert,
-  Button,
   CircularProgress,
   Dialog,
   DialogContent,
@@ -12,9 +11,9 @@ import {
   Select,
   Snackbar,
   Stack,
-  TextField,
   Typography,
 } from "@mui/material";
+import { Button, TextField } from "@components/ui";
 import { makeStyles } from "@mui/styles";
 import { useFormik } from "formik";
 import React, { useState } from "react";
@@ -377,7 +376,6 @@ const CreateProposalDialog = ({
 
               <TextField
                 variant="outlined"
-                className={classes.textField}
                 placeholder="Add a one liner title here"
                 name="proposalTitle"
                 id="proposalTitle"
@@ -451,7 +449,15 @@ const CreateProposalDialog = ({
               <>
                 <Stack mt={3}>
                   {proposal.values.optionList?.length > 0 ? (
-                    <Grid container pr={1} mt={2} mb={2}>
+                    <Grid
+                      container
+                      pr={1}
+                      mt={2}
+                      mb={2}
+                      sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                      }}>
                       {proposal.values.optionList.map((data, key) => {
                         return (
                           <Grid
@@ -514,33 +520,19 @@ const CreateProposalDialog = ({
                     </Grid>
                   ) : null}
                   <Button
-                    variant={"primary"}
-                    //   className={classes.btn}
-                    sx={{ width: "30%" }}
                     onClick={(value) => {
                       proposal.setFieldValue("optionList", [
                         ...proposal.values.optionList,
                         { text: "" },
                       ]);
-                    }}
-                    startIcon={<AddCircleRoundedIcon />}>
+                    }}>
+                    <AddCircleRoundedIcon />
                     Add Option
                   </Button>
                 </Stack>
               </>
             ) : (
               <Stack>
-                {/* <Typography variant="proposalBody">
-                Choose a command for this proposal to execute
-              </Typography>
-              <Button
-                variant="primary"
-                sx={{ width: "40%" }}
-                startIcon={<AddCircleRoundedIcon />}
-                // onClick={handleAddNewCommand}
-              >
-                Add command
-              </Button> */}
                 <ProposalActionForm
                   formik={proposal}
                   tokenData={tokenData}
@@ -560,7 +552,6 @@ const CreateProposalDialog = ({
                   alignItems: "center",
                 }}>
                 <Button
-                  variant="primary"
                   onClick={() => {
                     proposal.resetForm();
                     setLoaderOpen(false);
@@ -570,15 +561,9 @@ const CreateProposalDialog = ({
                 </Button>
               </Grid>
               <Grid item>
-                <Button
-                  variant="primary"
-                  type="submit"
-                  sx={{ display: "flex", alignItems: "center" }}>
+                <Button type="submit">
                   {loaderOpen ? (
-                    <CircularProgress
-                      color="inherit"
-                      sx={{ width: "inherit" }}
-                    />
+                    <CircularProgress color="inherit" size={25} />
                   ) : (
                     "Submit"
                   )}

@@ -1,4 +1,4 @@
-import Button from "@components/ui/button/Button";
+import { Button } from "@components/ui";
 import React, { useEffect, useState } from "react";
 import { ClaimModalStyles } from "./ClaimModalStyles";
 import ModalCard from "./ModalCard";

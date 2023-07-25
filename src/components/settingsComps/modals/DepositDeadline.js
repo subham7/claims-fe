@@ -1,5 +1,5 @@
 import { Grid, Typography } from "@mui/material";
-import Button from "@components/ui/button/Button";
+import { Button } from "@components/ui";
 import { makeStyles } from "@mui/styles";
 import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
