@@ -563,8 +563,10 @@ const Create = () => {
                   )}
                   {activeStep === steps.length - 1 ? (
                     <>
-                      <Button onClick={handlePrev}>Prev</Button>
-                      <Button onClick={handleSubmit}>Finish</Button>
+                      <div className="f-d">
+                        <Button onClick={handlePrev}>Prev</Button>
+                        <Button onClick={handleSubmit}>Finish</Button>
+                      </div>
                     </>
                   ) : (
                     <div
