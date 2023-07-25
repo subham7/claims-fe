@@ -460,7 +460,10 @@ const ProposalDetail = () => {
         "function contractCalls(address _to, bytes memory _data)",
         "function airDropToken(address _airdropTokenAddress,uint256[] memory _airdropAmountArray,address[] memory _members)",
       ];
-    } else if (proposalData.commands[0].executionId === 3) {
+    } else if (
+      proposalData.commands[0].executionId === 3 ||
+      proposalData.commands[0].executionId === 10
+    ) {
       ABI = FactoryContractABI.abi;
     } else if (clubData.tokenType === "erc721") {
       ABI = Erc721Dao.abi;
@@ -617,6 +620,18 @@ const ProposalDetail = () => {
         proposalData.commands[0].customNftToken,
       ]);
     }
+
+    if (proposalData.commands[0].executionId === 10) {
+      let iface = new Interface(ABI);
+      let iface2 = new Interface(Erc20Dao.abi);
+
+      approvalData = iface2.encodeFunctionData("toggleOnlyAllowWhitelist", []);
+
+      data = iface.encodeFunctionData("changeMerkleRoot", [
+        daoAddress,
+        proposalData.commands[0]?.merkleRoot?.merkleRoot,
+      ]);
+    }
     const response = updateProposalAndExecution(
       data,
       approvalData,
@@ -633,7 +648,8 @@ const ProposalDetail = () => {
         : "",
       proposalStatus,
       airdropContractAddress,
-      proposalData.commands[0].executionId === 3
+      proposalData.commands[0].executionId === 3 ||
+        proposalData.commands[0].executionId === 10
         ? FACTORY_CONTRACT_ADDRESS
         : "",
       GNOSIS_TRANSACTION_URL,

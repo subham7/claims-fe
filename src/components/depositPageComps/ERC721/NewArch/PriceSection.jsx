@@ -24,6 +24,7 @@ const PriceSection = ({
   balanceOfNft,
   isTokenGated,
   isEligibleForTokenGating,
+  whitelistUserData,
 }) => {
   return (
     <div className={classes.priceContainer}>
@@ -79,7 +80,10 @@ const PriceSection = ({
         <Button
           onClick={claimNFTHandler}
           disabled={
-            (remainingDays <= 0 && remainingTimeInSecs < 0) || hasClaimed
+            (remainingDays <= 0 && remainingTimeInSecs < 0) ||
+            hasClaimed ||
+            (whitelistUserData?.setWhitelist === true &&
+              whitelistUserData?.proof === null)
               ? true
               : isTokenGated
               ? !isEligibleForTokenGating
@@ -98,7 +102,9 @@ const PriceSection = ({
         mint(s) per address
       </p>
 
-      {isTokenGated ? (
+      {isTokenGated ||
+      (whitelistUserData?.setWhitelist === true &&
+        whitelistUserData?.proof === null) ? (
         <div className={classes.tokenGateInfo}>
           <BsInfoCircleFill color="#C1D3FF" />
           <p>

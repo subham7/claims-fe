@@ -369,6 +369,37 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
                   </Grid>
                 </Grid>
               </>
+            ) : proposalData?.commands[0].executionId == 10 ? (
+              <>
+                <Grid container item mb={1}>
+                  <Typography className={classes.listFont2Colourless}>
+                    Add whitelisting to the station
+                  </Typography>
+                </Grid>
+                <Divider />
+                <Grid container mt={1}>
+                  <Grid container spacing={3}>
+                    <Grid item xs={12} md={4}>
+                      <Typography className={classes.listFont2}>
+                        Toggle Whitelisting
+                      </Typography>
+                      <Typography className={classes.listFont2Colourless}>
+                        {fetched && proposalData?.commands[0]?.allowWhitelisting
+                          ? "Yes"
+                          : "No"}
+                      </Typography>
+                    </Grid>
+                    {/* <Grid item xs={12} md={4}>
+                      <Typography className={classes.listFont2}>
+                        Threshold
+                      </Typography>
+                      <Typography className={classes.listFont2Colourless}>
+                        {fetched ? proposalData?.commands[0].threshold : null}%
+                      </Typography>
+                    </Grid> */}
+                  </Grid>
+                </Grid>
+              </>
             ) : null}
           </>
         </Card>

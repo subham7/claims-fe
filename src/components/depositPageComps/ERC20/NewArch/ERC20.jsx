@@ -26,6 +26,7 @@ const ERC20 = ({
   daoDetails,
   isEligibleForTokenGating,
   isTokenGated,
+  whitelistUserData,
 }) => {
   const [clubData, setClubData] = useState([]);
   const [active, setActive] = useState(false);
@@ -142,7 +143,7 @@ const ERC20 = ({
             (inputValue / +clubData?.pricePerToken).toString(),
             18,
           ),
-          [],
+          whitelistUserData?.proof ? whitelistUserData.proof : [],
         );
 
         setLoading(false);
@@ -229,6 +230,7 @@ const ERC20 = ({
             clubData={clubData}
             erc20TokenDetails={erc20TokenDetails}
             isTokenGated={isTokenGated}
+            whitelistUserData={whitelistUserData}
           />
         </div>
 
@@ -241,6 +243,7 @@ const ERC20 = ({
           remainingClaimAmount={remainingClaimAmount}
           remainingDays={remainingDays}
           remainingTimeInSecs={remainingTimeInSecs}
+          whitelistUserData={whitelistUserData}
         />
       </div>
 
