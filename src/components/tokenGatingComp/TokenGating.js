@@ -1,5 +1,5 @@
 import { Alert, Backdrop, CircularProgress, Switch } from "@mui/material";
-import Button from "@components/ui/button/Button";
+import { Button } from "@components/ui";
 import React, { useCallback, useEffect, useState } from "react";
 import { TokenGatingStyle } from "./TokenGatingStyles";
 import { MdDelete } from "react-icons/md";

@@ -4,7 +4,7 @@ import theme from "../src/theme/theme";
 import store from "../src/redux/store";
 import { Provider } from "react-redux";
 import "../styles/fonts.css";
-import "../styles/globals.css";
+import "../styles/globals.scss";
 import { Web3OnboardProvider } from "@web3-onboard/react";
 import { web3Onboard } from "../src/utils/wallet";
 import { ApolloProvider } from "@apollo/client";

@@ -331,6 +331,7 @@ const Create = () => {
   //             "0x0000000000000000000000000000000000000000000000000000000000000001",
   //         };
 
+  <Button onClick={handlePrev}>Prev</Button>;
   //         initiateConnection(
   //           params,
   //           dispatch,
@@ -562,8 +563,10 @@ const Create = () => {
                   )}
                   {activeStep === steps.length - 1 ? (
                     <>
-                      <Button onClick={handlePrev}>Prev</Button>
-                      <Button onClick={handleSubmit}>Finish</Button>
+                      <div className="f-d">
+                        <Button onClick={handlePrev}>Prev</Button>
+                        <Button onClick={handleSubmit}>Finish</Button>
+                      </div>
                     </>
                   ) : (
                     <div

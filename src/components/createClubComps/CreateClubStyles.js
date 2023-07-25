@@ -1,12 +1,6 @@
 import { makeStyles } from "@mui/styles";
 
 export const Step1Styles = makeStyles({
-  textField: {
-    width: "100%",
-    margin: "16px 0 25px 0",
-    fontSize: "18px",
-    fontFamily: "Whyte",
-  },
   largeText: {
     fontSize: "18px",
     color: "#C1D3FF",
