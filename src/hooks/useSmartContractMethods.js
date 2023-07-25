@@ -295,6 +295,12 @@ const useSmartContractMethods = () => {
     }
   };
 
+  const toggleWhitelist = async () => {
+    return await erc20DaoContractSend?.methods
+      ?.toggleOnlyAllowWhitelist()
+      .encodeABI();
+  };
+
   const airdropTokenMethodEncoded = (
     actionContractAddress,
     airdropTokenAddress,
@@ -552,59 +558,87 @@ const useSmartContractMethods = () => {
     let approvalTransaction;
     let transaction;
     if (approvalData !== "") {
-      if (isAssetsStoredOnGnosis) {
-        approvalTransaction = {
-          to: Web3.utils.toChecksumAddress(tokenData),
-          // data: tokenData.methods.approve(dao / action).encodeABI(), // for send/airdrop -> action & send NFT -> daoAddress
-          data: approveDepositWithEncodeABI(
-            tokenData,
-            airdropContractAddress,
-            proposalData.commands[0].executionId === 0
-              ? proposalData.commands[0].airDropAmount
-              : proposalData.commands[0].customTokenAmounts[0],
-          ),
-          value: "0",
-        };
-      } else {
+      if (proposalData.commands[0].executionId === 10) {
         approvalTransaction = {
           to: Web3.utils.toChecksumAddress(daoAddress),
           data: erc20DaoContractSend.methods
             .updateProposalAndExecution(
               //usdc address
-              tokenData,
+              daoAddress,
               approvalData,
             )
             .encodeABI(),
           value: "0",
-          gasPrice: await getIncreaseGasPrice(),
+          // gasPrice: await getIncreaseGasPrice(),
         };
-      }
-
-      if (isAssetsStoredOnGnosis) {
         transaction = {
-          to: Web3.utils.toChecksumAddress(airdropContractAddress),
-          data: airdropTokenMethodEncoded(
-            airdropContractAddress,
-            tokenData,
-            airDropAmountArray,
-            membersArray,
-          ),
-          value: 0,
-          gasPrice: await getIncreaseGasPrice(),
-        };
-      } else {
-        transaction = {
+          //dao
           to: Web3.utils.toChecksumAddress(daoAddress),
           data: erc20DaoContractSend.methods
             .updateProposalAndExecution(
-              //airdrop address
-              airdropContractAddress,
+              //factory
+              factoryContractAddress ? factoryContractAddress : daoAddress,
               parameters,
             )
             .encodeABI(),
           value: "0",
-          gasPrice: await getIncreaseGasPrice(),
+          // gasPrice: await getIncreaseGasPrice(),
         };
+      } else {
+        if (isAssetsStoredOnGnosis) {
+          approvalTransaction = {
+            to: Web3.utils.toChecksumAddress(tokenData),
+            // data: tokenData.methods.approve(dao / action).encodeABI(), // for send/airdrop -> action & send NFT -> daoAddress
+            data: approveDepositWithEncodeABI(
+              tokenData,
+              airdropContractAddress,
+              proposalData.commands[0].executionId === 0
+                ? proposalData.commands[0].airDropAmount
+                : proposalData.commands[0].customTokenAmounts[0],
+            ),
+            value: "0",
+          };
+        } else {
+          approvalTransaction = {
+            to: Web3.utils.toChecksumAddress(daoAddress),
+            data: erc20DaoContractSend.methods
+              .updateProposalAndExecution(
+                //usdc address
+                tokenData,
+                approvalData,
+              )
+              .encodeABI(),
+            value: "0",
+            // gasPrice: await getIncreaseGasPrice(),
+          };
+        }
+
+        if (isAssetsStoredOnGnosis) {
+          transaction = {
+            to: Web3.utils.toChecksumAddress(airdropContractAddress),
+            data: airdropTokenMethodEncoded(
+              airdropContractAddress,
+              tokenData,
+              airDropAmountArray,
+              membersArray,
+            ),
+            value: 0,
+            // gasPrice: await getIncreaseGasPrice(),
+          };
+        } else {
+          transaction = {
+            to: Web3.utils.toChecksumAddress(daoAddress),
+            data: erc20DaoContractSend.methods
+              .updateProposalAndExecution(
+                //airdrop address
+                airdropContractAddress,
+                parameters,
+              )
+              .encodeABI(),
+            value: "0",
+            // gasPrice: await getIncreaseGasPrice(),
+          };
+        }
       }
     } else if (executionId === 6 || executionId === 7) {
       if (executionId === 6) {
@@ -632,7 +666,7 @@ const useSmartContractMethods = () => {
             proposalData.commands[0].customNftToken,
           ),
           value: "0",
-          gasPrice: await getIncreaseGasPrice(),
+          // gasPrice: await getIncreaseGasPrice(),
         };
       } else {
         transaction = {
@@ -646,7 +680,7 @@ const useSmartContractMethods = () => {
             )
             .encodeABI(),
           value: "0",
-          gasPrice: await getIncreaseGasPrice(),
+          // gasPrice: await getIncreaseGasPrice(),
         };
       }
     }
@@ -661,7 +695,7 @@ const useSmartContractMethods = () => {
             data: transaction.data,
             value: transaction.value,
             nonce: nonce, // Optional
-            gasPrice: await getIncreaseGasPrice(),
+            // gasPrice: await getIncreaseGasPrice(),
           };
         } else {
           safeTransactionData = [
@@ -670,14 +704,14 @@ const useSmartContractMethods = () => {
               data: approvalTransaction.data,
               value: approvalTransaction.value,
               nonce: nonce, // Optional
-              gasPrice: await getIncreaseGasPrice(),
+              // gasPrice: await getIncreaseGasPrice(),
             },
             {
               to: transaction.to,
               data: transaction.data,
               value: transaction.value,
               nonce: nonce, // Optional
-              gasPrice: await getIncreaseGasPrice(),
+              // gasPrice: await getIncreaseGasPrice(),
             },
           ];
         }
@@ -828,6 +862,7 @@ const useSmartContractMethods = () => {
     updateProposalAndExecution,
     addMoreTokens,
     modifyStartAndEndTime,
+    toggleWhitelist,
   };
 };
 

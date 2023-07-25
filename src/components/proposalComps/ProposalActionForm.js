@@ -65,16 +65,7 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
       // converting .csv file into array of objects
       reader.onload = async (event) => {
         const csvData = event.target.result;
-
-        const csvArr = csvData
-          .split("\r\n")
-          .map((data) => data.split(","))
-          .filter((data) => data[0])
-          .map((data) => ({
-            address: data[0].toLowerCase(),
-          }));
-
-        console.log("CSV", csvArr);
+        const csvArr = csvData.split("\r\n");
         // setCSVObject(csvArr);
         formik.values.csvObject = csvArr;
         setLoadingCsv(false);

@@ -3,7 +3,14 @@ import { BsInfoCircleFill } from "react-icons/bs";
 import { convertFromWeiGovernance } from "../../../../utils/globalFunctions";
 import classes from "./ERC20.module.scss";
 
-const ERC20Details = ({ clubData, erc20TokenDetails, isTokenGated }) => {
+const ERC20Details = ({
+  clubData,
+  erc20TokenDetails,
+  isTokenGated,
+  whitelistUserData,
+}) => {
+  console.log(whitelistUserData);
+
   return (
     <div className={classes.detailsContainer}>
       <div className={classes.flexContainer}>
@@ -60,7 +67,9 @@ const ERC20Details = ({ clubData, erc20TokenDetails, isTokenGated }) => {
         </div>
       </div>
 
-      {isTokenGated ? (
+      {isTokenGated ||
+      (whitelistUserData?.setWhitelist === true &&
+        whitelistUserData?.proof === null) ? (
         <div className={classes.tokenGateInfo}>
           <BsInfoCircleFill color="#C1D3FF" />
           <p>

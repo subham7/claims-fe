@@ -41,8 +41,6 @@ const ProposalCard = ({
 
   const { getDecimals, getTokenSymbol } = useSmartContractMethods();
 
-  const walletAddress = wallet?.accounts[0].address;
-
   const fetchAirDropContractDetails = useCallback(async () => {
     try {
       if (proposal) {
@@ -282,6 +280,26 @@ const ProposalCard = ({
               ) : (
                 <></>
               )}
+
+              {proposal?.commands[0]?.executionId === 10 ? (
+                <Grid item sx={{ display: "flex" }}>
+                  <Chip
+                    className={classes.timeLeftChip}
+                    label={
+                      <Grid sx={{ display: "flex" }}>
+                        {" "}
+                        <Typography color="#C1D3FF" sx={{ marginRight: "5px" }}>
+                          Allow whitelisting:
+                        </Typography>
+                        <Typography color="#FFFFFF">
+                          {proposal?.commands[0]?.allowWhitelisting
+                            ? "Yes"
+                            : "No"}
+                        </Typography>
+                      </Grid>
+                    }></Chip>
+                </Grid>
+              ) : null}
 
               {proposal?.commands[0]?.airDropAmount ? (
                 <Grid item>

@@ -35,6 +35,7 @@ import { fetchProposals } from "../../utils/proposal";
 import { useDispatch, useSelector } from "react-redux";
 import { setProposalList } from "../../redux/reducers/proposal";
 import Web3 from "web3";
+import { getWhiteListMerkleRoot } from "api/whitelist";
 
 const useStyles = makeStyles({
   modalStyle: {
@@ -73,6 +74,8 @@ const CreateProposalDialog = ({
   const walletAddress = Web3.utils.toChecksumAddress(
     wallet?.accounts[0].address,
   );
+
+  const networkId = wallet?.chains[0].id;
 
   const tokenType = useSelector((state) => {
     return state.club.clubData.tokenType;
@@ -253,10 +256,17 @@ const CreateProposalDialog = ({
       if (values.actionCommand === "whitelist deposit") {
         // api call for merkle root,
 
+        const data = {
+          daoAddress,
+          whitelist: values.csvObject,
+        };
+
+        const merkleRoot = await getWhiteListMerkleRoot(networkId, data);
         commands = [
           {
-            executionId: 8,
-            merkleRoot: "",
+            executionId: 10,
+            merkleRoot: merkleRoot,
+            allowWhitelisting: true,
             usdcTokenSymbol: "USDC",
             usdcTokenDecimal: 6,
             usdcGovernanceTokenDecimal: 18,

@@ -13,6 +13,7 @@ import { getClubInfo } from "../../src/api/club";
 import ERC721 from "../../src/components/depositPageComps/ERC721/NewArch/ERC721";
 import ERC20 from "../../src/components/depositPageComps/ERC20/NewArch/ERC20";
 import useSmartContract from "../../src/hooks/useSmartContract";
+import { getWhitelistMerkleProof } from "api/whitelist";
 
 const Join = () => {
   const [daoDetails, setDaoDetails] = useState({
@@ -26,6 +27,7 @@ const Join = () => {
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [remainingClaimAmount, setRemainingClaimAmount] = useState();
+  const [whitelistUserData, setWhitelistUserData] = useState();
   const [fetchedDetails, setFetchedDetails] = useState({
     tokenA: "",
     tokenB: "",
@@ -42,6 +44,7 @@ const Join = () => {
   });
   const [clubInfo, setClubInfo] = useState();
   const [{ wallet }] = useConnectWallet();
+  const walletAddress = wallet?.accounts[0].address;
 
   const router = useRouter();
   const { jid: daoAddress } = router.query;
@@ -246,6 +249,22 @@ const Join = () => {
     }
   }, [SUBGRAPH_URL, daoAddress, daoDetails, wallet]);
 
+  useEffect(() => {
+    const fetchMerkleProof = async () => {
+      try {
+        const whitelistData = await getWhitelistMerkleProof(
+          daoAddress,
+          walletAddress,
+        );
+
+        setWhitelistUserData(whitelistData);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchMerkleProof();
+  }, [daoAddress, walletAddress]);
+
   return (
     <Layout1 showSidebar={false}>
       {TOKEN_TYPE === "erc20" ? (
@@ -256,6 +275,7 @@ const Join = () => {
           isTokenGated={isTokenGated}
           daoDetails={daoDetails}
           isEligibleForTokenGating={isEligibleForTokenGating}
+          whitelistUserData={whitelistUserData}
         />
       ) : TOKEN_TYPE === "erc721" ? (
         <ERC721
@@ -264,6 +284,7 @@ const Join = () => {
           isTokenGated={isTokenGated}
           daoDetails={daoDetails}
           isEligibleForTokenGating={isEligibleForTokenGating}
+          whitelistUserData={whitelistUserData}
         />
       ) : null}
 

@@ -22,6 +22,7 @@ const ERC721 = ({
   isEligibleForTokenGating,
   isTokenGated,
   daoDetails,
+  whitelistUserData,
 }) => {
   const [clubData, setClubData] = useState([]);
   const [count, setCount] = useState(1);
@@ -125,7 +126,7 @@ const ERC721 = ({
         daoAddress,
         clubData?.imageUrl,
         count,
-        [],
+        whitelistUserData?.proof ? whitelistUserData.proof : [],
       );
       setLoading(false);
       setClaimSuccessfull(true);
@@ -197,6 +198,7 @@ const ERC721 = ({
             balanceOfNft={balanceOfNft}
             isEligibleForTokenGating={isEligibleForTokenGating}
             isTokenGated={isTokenGated}
+            whitelistUserData={whitelistUserData}
           />
         </div>
         <NFTimg imgUrl={imgUrl} />
