@@ -111,9 +111,7 @@ const Join = () => {
   const fetchTokenGatingDetials = async () => {
     try {
       setLoading(true);
-
       const tokenGatingDetails = await getTokenGatingDetails(daoAddress);
-
       if (tokenGatingDetails) {
         setFetchedDetails({
           tokenA: tokenGatingDetails[0]?.tokenA,

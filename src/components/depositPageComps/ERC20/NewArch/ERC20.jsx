@@ -218,6 +218,7 @@ const ERC20 = ({
       <div className={classes.mainContainer}>
         <div className={classes.leftContainer}>
           <Header
+            daoAddress={daoAddress}
             active={active}
             clubData={clubData}
             clubInfo={clubInfo}
