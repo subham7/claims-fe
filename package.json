@@ -34,6 +34,7 @@
     "@mui/x-date-pickers": "^6.0.3",
     "@react-pdf/renderer": "^3.1.7",
     "@reduxjs/toolkit": "^1.8.1",
+    "@safe-global/safe-apps-sdk": "^7.11.0",
     "@safe-global/api-kit": "^1.0.1",
     "@safe-global/protocol-kit": "^0.1.1",
     "@safe-global/safe-core-sdk-types": "^1.9.1",

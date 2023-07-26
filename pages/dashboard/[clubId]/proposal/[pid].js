@@ -22,7 +22,6 @@ import {
   castVote,
   getProposalDetail,
   getProposalTxHash,
-  patchProposalExecuted,
 } from "../../../../src/api/proposal";
 import { useDispatch, useSelector } from "react-redux";
 import ClubFetch from "../../../../src/utils/clubFetch";
@@ -66,6 +65,7 @@ import {
   retrieveNftListing,
 } from "../../../../src/api/assets";
 import seaportABI from "../../../../src/abis/seaport.json";
+import SafeAppsSDK from "@safe-global/safe-apps-sdk";
 
 const useStyles = makeStyles({
   clubAssets: {
@@ -219,6 +219,11 @@ const ProposalDetail = () => {
     wallet?.accounts[0].address,
   );
   const networkId = wallet?.chains[0].id;
+
+  const sdk = new SafeAppsSDK({
+    allowedDomains: [/gnosis-safe.io$/, /safe.global$/, /5afe.dev$/],
+    debug: true,
+  });
 
   const tokenType = useSelector((state) => {
     return state.club.clubData.tokenType;
@@ -459,6 +464,27 @@ const ProposalDetail = () => {
     });
   }, [SUBGRAPH_URL, daoAddress, pid]);
 
+  async function signTypedData(payload) {
+    console.log("here", sdk.communicator);
+    // HACK(nlordell): Not released yet...
+    debugger;
+    try {
+      await sdk.communicator.send("rpcCall", {
+        call: "eth_signTransaction",
+        params: [{ offChainSigning: true }],
+      });
+    } catch (error) {
+      debugger;
+      console.log(error);
+    }
+
+    debugger;
+    console.log(payload);
+    const result = await sdk.txs.signTypedMessage(payload);
+    console.log(result);
+    return result;
+  }
+
   const executeFunction = async (proposalStatus) => {
     setLoaderOpen(true);
 
@@ -479,7 +505,10 @@ const ProposalDetail = () => {
       ABI = FactoryContractABI.abi;
     } else if (proposalData.commands[0].executionId === 8) {
       ABI = seaportABI;
-    } else if (clubData.tokenType === "erc721") {
+    } else if (
+      proposalData.commands[0].executionId === 9 ||
+      clubData.tokenType === "erc721"
+    ) {
       ABI = Erc721Dao.abi;
     } else if (clubData.tokenType === "erc20") {
       ABI = Erc20Dao.abi;
@@ -705,90 +734,187 @@ const ProposalDetail = () => {
             transactionData.fulfillment_data.transaction.input_data.parameters
               .signature,
           ],
-          // {
-          //   value:
-          //     transactionData.fulfillment_data.transaction.input_data.parameters
-          //       .offerAmount,
-          // },
         ]);
       }
     }
-    const response = updateProposalAndExecution(
-      data,
-      approvalData,
-      daoAddress,
-      Web3.utils.toChecksumAddress(gnosisAddress),
-      txHash,
-      pid,
-      proposalData.commands[0].executionId === 0
-        ? proposalData.commands[0].airDropToken
-        : proposalData.commands[0].executionId === 4
-        ? proposalData.commands[0].customToken
-        : proposalData.commands[0].executionId === 5
-        ? proposalData.commands[0].customNft
-        : "",
-      proposalStatus,
-      airdropContractAddress,
-      proposalData.commands[0].executionId === 3
-        ? FACTORY_CONTRACT_ADDRESS
-        : "",
-      GNOSIS_TRANSACTION_URL,
-      proposalData.commands[0].executionId,
-      proposalData.commands[0].ownerAddress,
-      proposalData.commands[0].safeThreshold,
-      proposalData,
-      membersArray,
-      airDropAmountArray,
-      transactionData,
-    );
-    if (proposalStatus === "executed") {
-      // fetchData()
-      response.then(
-        (result) => {
-          result.promiEvent.on("confirmation", () => {
-            const updateStatus = patchProposalExecuted(pid);
-            updateStatus.then((result) => {
-              if (result.status !== 200) {
-                setExecuted(false);
-                setOpenSnackBar(true);
-                setMessage("execution status update failed!");
-                setFailed(true);
-                setLoaderOpen(false);
-              } else {
-                fetchData();
-                setExecuted(true);
-                setOpenSnackBar(true);
-                setMessage("execution successful!");
-                setFailed(false);
-                setLoaderOpen(false);
-              }
-            });
-          });
-        },
-        (error) => {
-          console.error(error);
-          setExecuted(false);
-          setOpenSnackBar(true);
-          setMessage("execution failed!");
-          setFailed(true);
-          setLoaderOpen(false);
-        },
+    if (proposalData.commands[0].executionId === 9) {
+      const parts = proposalData.commands[0].nftLink.split("/");
+
+      const linkData = parts.slice(-3);
+      console.log(linkData);
+      let iface = new Interface(ABI);
+
+      approvalData = iface.encodeFunctionData("setApprovalForAll", [
+        "0x1E0049783F008A0085193E00003D00cd54003c71",
+        true,
+      ]);
+
+      // data = iface.encodeFunctionData("eth_signTransaction", [
+      //   [
+      //     gnosisAddress,
+      //     JSON.stringify({
+      //       offerer: gnosisAddress,
+      //       zone: "0x0000000000000000000000000000000000000000",
+      //       zoneHash:
+      //         "0x0000000000000000000000000000000000000000000000000000000000000000",
+      //       startTime: 1690260419,
+      //       endTime: 1692938817,
+      //       orderType: 0,
+      //       offer: [
+      //         {
+      //           itemType: 2, // erc 721
+      //           token: "0xed55e4477b795eaa9bb4bca24df42214e1a05c18", // nft contract address
+      //           identifierOrCriteria: "1",
+      //           startAmount: "1",
+      //           endAmount: "1",
+      //         },
+      //       ],
+      //       consideration: [
+      //         {
+      //           itemType: 0, // same
+      //           token: "0x0000000000000000000000000000000000000000",
+      //           identifierOrCriteria: "0",
+      //           startAmount: "9750000000000000000",
+      //           endAmount: "9750000000000000000",
+      //           recipient: "0xed55e4477b795eaa9bb4bca24df42214e1a05c18",
+      //         },
+      //         {
+      //           itemType: 0, // same
+      //           token: "0x0000000000000000000000000000000000000000", // same
+      //           identifierOrCriteria: "0", // same
+      //           startAmount: "250000000000000000", // same
+      //           endAmount: "250000000000000000", // same
+      //           recipient: "0x0000a26b00c1F0DF003000390027140000fAa719", // 0x0000a26b00c1F0DF003000390027140000fAa719
+      //         },
+      //       ],
+      //       salt: "12686911856931635052326433555881236148",
+      //       conduitKey:
+      //         "0x0000007b02230091a7ed01230072f7006a004d60a8d4e71d599b8104250f0000",
+      //       protocol_address: "0x00000000000000ADc04C56Bf30aC9d3c0aAF14dC",
+      //     }),
+      //   ],
+      // ]);
+
+      await signTypedData(
+        JSON.stringify({
+          offerer: gnosisAddress,
+          zone: "0x0000000000000000000000000000000000000000",
+          zoneHash:
+            "0x0000000000000000000000000000000000000000000000000000000000000000",
+          startTime: 1690260419,
+          endTime: 1692938817,
+          orderType: 0,
+          offer: [
+            {
+              itemType: 2, // erc 721
+              token: "0xed55e4477b795eaa9bb4bca24df42214e1a05c18", // nft contract address
+              identifierOrCriteria: "1",
+              startAmount: "1",
+              endAmount: "1",
+            },
+          ],
+          consideration: [
+            {
+              itemType: 0, // same
+              token: "0x0000000000000000000000000000000000000000",
+              identifierOrCriteria: "0",
+              startAmount: "9750000000000000000",
+              endAmount: "9750000000000000000",
+              recipient: "0xed55e4477b795eaa9bb4bca24df42214e1a05c18",
+            },
+            {
+              itemType: 0, // same
+              token: "0x0000000000000000000000000000000000000000", // same
+              identifierOrCriteria: "0", // same
+              startAmount: "250000000000000000", // same
+              endAmount: "250000000000000000", // same
+              recipient: "0x0000a26b00c1F0DF003000390027140000fAa719", // 0x0000a26b00c1F0DF003000390027140000fAa719
+            },
+          ],
+          salt: "12686911856931635052326433555881236148",
+          conduitKey:
+            "0x0000007b02230091a7ed01230072f7006a004d60a8d4e71d599b8104250f0000",
+          protocol_address: "0x00000000000000ADc04C56Bf30aC9d3c0aAF14dC",
+        }),
       );
-    } else {
-      await response
-        .then(async (result) => {
-          setSigned(true);
-          isOwner();
-        })
-        .catch((err) => {
-          console.error(err);
-          setSigned(false);
-          setOpenSnackBar(true);
-          setMessage("Signature failed!");
-          setFailed(true);
-          setLoaderOpen(false);
-        });
+      // console.log(data);
     }
+    // const response = updateProposalAndExecution(
+    //   data,
+    //   approvalData,
+    //   daoAddress,
+    //   Web3.utils.toChecksumAddress(gnosisAddress),
+    //   txHash,
+    //   pid,
+    //   proposalData.commands[0].executionId === 0
+    //     ? proposalData.commands[0].airDropToken
+    //     : proposalData.commands[0].executionId === 4
+    //     ? proposalData.commands[0].customToken
+    //     : proposalData.commands[0].executionId === 5
+    //     ? proposalData.commands[0].customNft
+    //     : "",
+    //   proposalStatus,
+    //   airdropContractAddress,
+    //   proposalData.commands[0].executionId === 3
+    //     ? FACTORY_CONTRACT_ADDRESS
+    //     : "",
+    //   GNOSIS_TRANSACTION_URL,
+    //   proposalData.commands[0].executionId,
+    //   proposalData.commands[0].ownerAddress,
+    //   proposalData.commands[0].safeThreshold,
+    //   proposalData,
+    //   membersArray,
+    //   airDropAmountArray,
+    //   transactionData,
+    // );
+    // if (proposalStatus === "executed") {
+    //   // fetchData()
+    //   response.then(
+    //     (result) => {
+    //       result.promiEvent.on("confirmation", () => {
+    //         const updateStatus = patchProposalExecuted(pid);
+    //         updateStatus.then((result) => {
+    //           if (result.status !== 200) {
+    //             setExecuted(false);
+    //             setOpenSnackBar(true);
+    //             setMessage("execution status update failed!");
+    //             setFailed(true);
+    //             setLoaderOpen(false);
+    //           } else {
+    //             fetchData();
+    //             setExecuted(true);
+    //             setOpenSnackBar(true);
+    //             setMessage("execution successful!");
+    //             setFailed(false);
+    //             setLoaderOpen(false);
+    //           }
+    //         });
+    //       });
+    //     },
+    //     (error) => {
+    //       console.error(error);
+    //       setExecuted(false);
+    //       setOpenSnackBar(true);
+    //       setMessage("execution failed!");
+    //       setFailed(true);
+    //       setLoaderOpen(false);
+    //     },
+    //   );
+    // } else {
+    //   await response
+    //     .then(async (result) => {
+    //       setSigned(true);
+    //       isOwner();
+    //     })
+    //     .catch((err) => {
+    //       console.error(err);
+    //       setSigned(false);
+    //       setOpenSnackBar(true);
+    //       setMessage("Signature failed!");
+    //       setFailed(true);
+    //       setLoaderOpen(false);
+    //     });
+    // }
   };
 
   const handleSnackBarClose = (event, reason) => {

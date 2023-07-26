@@ -511,7 +511,7 @@ const useSmartContractMethods = () => {
       console.log("here in approval data");
       if (isAssetsStoredOnGnosis) {
         approvalTransaction = {
-          to: Web3.utils.toChecksumAddress(tokenData),
+          to: Web3.utils.toChecksumAddress(tokenData), //nft
           // data: tokenData.methods.approve(dao / action).encodeABI(), // for send/airdrop -> action & send NFT -> daoAddress
           data: approveDepositWithEncodeABI(
             tokenData,
