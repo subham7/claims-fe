@@ -36,9 +36,6 @@ const Transactions = () => {
   const gnosisAddress = useSelector((state) => {
     return state.club.clubData.gnosisAddress;
   });
-  const userAdddress = useSelector((state) => {
-    return state.user.wallet;
-  });
 
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState(filters[0]);
@@ -141,14 +138,14 @@ const Transactions = () => {
                         </TableCell>
 
                         <TableCell align="left">
-                          {txn.to_address === userAdddress && (
+                          {txn.to_address === gnosisAddress && (
                             <Chip
                               variant="outlined"
                               color="success"
                               label="RECEIVED"
                             />
                           )}
-                          {txn.from_address === userAdddress && (
+                          {txn.from_address === gnosisAddress && (
                             <Chip
                               variant="outlined"
                               color="error"
