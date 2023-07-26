@@ -461,7 +461,7 @@ export default function Step3(props) {
           </Card> */}
           <br />
 
-          {props.formik.values.governance ? (
+          {props.formik.values.governance === "governance" ? (
             <>
               <Grid
                 container
