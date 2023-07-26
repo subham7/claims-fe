@@ -1,7 +1,6 @@
 import { React, useEffect, useState } from "react";
 import {
   Grid,
-  Button,
   Card,
   Typography,
   Divider,
@@ -10,6 +9,7 @@ import {
   DialogContent,
   Dialog,
 } from "@mui/material";
+import Button from "@components/ui/button/Button";
 import { useDispatch } from "react-redux";
 import { makeStyles } from "@mui/styles";
 import Router, { useRouter } from "next/router";
@@ -200,6 +200,8 @@ const App = () => {
         ownerAddress: clubData.stations[0].ownerAddress,
         symbol: clubData.stations[0].symbol,
         tokenType: clubData.stations[0].tokenType,
+        membersCount: clubData.stations[0].membersCount,
+        deployedTime: clubData.stations[0].timeStamp,
       }),
     );
     router.push(
@@ -301,7 +303,7 @@ const App = () => {
                     </Typography>
                   </Grid>
                   <Grid>
-                    <Button variant="primary" onClick={handleCreateButtonClick}>
+                    <Button onClick={handleCreateButtonClick}>
                       Create new
                     </Button>
                   </Grid>

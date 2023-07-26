@@ -241,12 +241,21 @@ const useSmartContractMethods = () => {
         amount,
         usdcConvertDecimal,
       )?.toString();
-      return await erc20TokenContractSend?.methods
-        ?.approve(approvalContract, value)
-        .send({
-          from: walletAddress,
-          gasPrice: await getIncreaseGasPrice(),
-        });
+
+      const currentAllowance = await erc20TokenContractSend.methods
+        .allowance(walletAddress, approvalContract)
+        .call();
+
+      if (Number(currentAllowance) >= Number(value)) {
+        return;
+      } else {
+        return await erc20TokenContractSend?.methods
+          ?.approve(approvalContract, value)
+          .send({
+            from: walletAddress,
+            gasPrice: await getIncreaseGasPrice(),
+          });
+      }
     }
   };
 
@@ -539,8 +548,6 @@ const useSmartContractMethods = () => {
       safeAddress: Web3.utils.toChecksumAddress(gnosisAddress),
     });
 
-    const nonce = await safeSdk.getNonce();
-
     let approvalTransaction;
     let transaction;
     if (approvalData !== "") {
@@ -758,13 +765,12 @@ const useSmartContractMethods = () => {
         proposalTxHash.data[0].txHash,
       );
       const options = {
-        maxPriorityFeePerGas: null,
-        maxFeePerGas: null,
+        gasPrice: await getIncreaseGasPrice(),
       };
 
       const executeTxResponse = await safeSdk.executeTransaction(
         safetx,
-        // options,
+        options,
       );
 
       const receipt =

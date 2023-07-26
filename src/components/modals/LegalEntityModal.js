@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { TwitterShareButton } from "react-twitter-embed";
 import { IoMdClose } from "react-icons/io";
+import LensterShareButton from "../LensterShareButton";
 
 const useStyles = makeStyles({
   backdrop: {
@@ -193,8 +194,8 @@ const LegalEntityModal = ({
               mt={5}>
               {/* enter your code here */}
 
-              <div className="centerContent">
-                <div className="selfCenter spaceBetween">
+              <div>
+                <div>
                   <TwitterShareButton
                     onLoad={function noRefCheck() {}}
                     options={{
@@ -203,6 +204,11 @@ const LegalEntityModal = ({
                       via: "stationxnetwork",
                     }}
                     url={`${window.location.origin}/join/${daoAddress}`}
+                  />
+
+                  <LensterShareButton
+                    daoAddress={daoAddress}
+                    message="Just created a Station on StationX"
                   />
                 </div>
               </div>

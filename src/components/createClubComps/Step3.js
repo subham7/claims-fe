@@ -82,7 +82,7 @@ export default function Step3(props) {
   }, [props.formik.values.deploySafe, GNOSIS_DATA.transactionUrl]);
 
   useEffect(() => {
-    if (props.formik.values.safeAddress.length)
+    if (props.formik.values.safeAddress?.length)
       fetchOwners(props.formik.values.safeAddress);
   }, [props.formik.values.safeAddress]);
   return (
@@ -115,14 +115,14 @@ export default function Step3(props) {
               name="deploySafe"
               value="newSafe"
               id="deploySafe">
-              <p className={classes.label}>Create a new multisig wallet</p>
+              Create a new multisig wallet
             </ToggleButton>
             <ToggleButton
               className={classes.leftContainer}
               name="deploySafe"
               id="deploySafe"
               value="oldSafe">
-              <p className={classes.label}>I already have a multisig wallet</p>
+              I already have a multisig wallet
             </ToggleButton>
           </ToggleButtonGroup>
 
@@ -174,14 +174,14 @@ export default function Step3(props) {
           )}
 
           {props.formik.values.deploySafe === "oldSafe" &&
-            props.formik.values.safeAddress.length > 0 && (
+            props.formik.values.safeAddress?.length > 0 && (
               <>
                 <Typography className={classes.largeText} mt={4} mb={2}>
                   Signators
                 </Typography>
                 {ownerAddresses?.length > 0 ? (
                   <Grid container pr={1} mt={2} mb={2}>
-                    {ownerAddresses.map((data, key) => {
+                    {ownerAddresses?.map((data, key) => {
                       return (
                         <Grid
                           item
@@ -330,7 +330,7 @@ export default function Step3(props) {
                 ) : null}
               </Card>
 
-              {props.formik.values.addressList.length ? (
+              {props.formik.values.addressList?.length ? (
                 <>
                   <Grid
                     container
@@ -369,7 +369,7 @@ export default function Step3(props) {
                         marks
                         min={1}
                         valueLabelDisplay={"on"}
-                        max={props.formik.values.addressList.length}
+                        max={props.formik.values.addressList?.length}
                         onChange={(value) => {
                           props.formik.setFieldValue(
                             "safeThreshold",
@@ -407,14 +407,14 @@ export default function Step3(props) {
               name="governance"
               value="non-governance"
               id="governance">
-              <p className={classes.label}>Admin(s) only</p>
+              Admin(s) only
             </ToggleButton>
             <ToggleButton
               className={classes.leftContainer}
               name="governance"
               id="governance"
               value="governance">
-              <p className={classes.label}>Community governance</p>
+              Community governance
             </ToggleButton>
           </ToggleButtonGroup>
 

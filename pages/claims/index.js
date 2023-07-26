@@ -1,5 +1,6 @@
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
+import Button from "@components/ui/button/Button";
 import settingsImg from "../../public/assets/images/settings.png";
 import { makeStyles } from "@mui/styles";
 import { useRouter } from "next/router";
@@ -17,10 +18,10 @@ import { QUERY_ALL_CLAIMS_OF_CREATOR } from "../../src/api/graphql/queries";
 
 const useStyles = makeStyles({
   container: {
-    marginLeft: "80px",
     marginTop: "120px",
     display: "flex",
     gap: "30px",
+    marginBottom: "60px",
   },
   leftDiv: {
     flex: "0.65",
@@ -131,24 +132,14 @@ const Claims = () => {
 
   return (
     <Layout1 showSidebar={false}>
-      <Image
-        src="/assets/images/monogram.png"
-        alt="StationX"
-        height={50}
-        width={50}
-        style={{ cursor: "pointer", position: "fixed" }}
-        onClick={() => {
-          router.push("/");
-        }}
-      />
       <div className={classes.container}>
         {/* Left Side */}
         <div className={classes.leftDiv}>
           <div className={classes.header}>
             <p className={classes.title}>Claims</p>
-            <button onClick={createClaimHandler} className={classes.claimDoc}>
+            <Button onClick={createClaimHandler} variant="normal">
               Create
-            </button>
+            </Button>
           </div>
 
           {!claimData.length && (

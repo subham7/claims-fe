@@ -1,4 +1,5 @@
-import { Button, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
+import Button from "@components/ui/button/Button";
 import { useFormik } from "formik";
 import React from "react";
 import { ClaimModalStyles } from "./ClaimModalStyles";
@@ -66,25 +67,8 @@ const ModifyStartEndModal = ({
       </form>
 
       <div className={classes.buttonContainers}>
-        <Button
-          onClick={onClose}
-          sx={{
-            fontSize: "18px",
-            background: "#fff",
-            color: "#3A7AFD",
-          }}
-          variant="primary">
-          Cancel
-        </Button>
-        <Button
-          sx={{
-            fontSize: "18px",
-            width: "130px",
-          }}
-          onClick={formik.handleSubmit}
-          variant="primary">
-          Save
-        </Button>
+        <Button onClick={onClose}>Cancel</Button>
+        <Button onClick={formik.handleSubmit}>Save</Button>
       </div>
     </ModalCard>
   );
