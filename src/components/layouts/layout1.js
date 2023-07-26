@@ -6,6 +6,8 @@ import Button from "@components/ui/button/Button";
 import { useConnectWallet } from "@web3-onboard/react";
 import { makeStyles } from "@mui/styles";
 import { showWrongNetworkModal } from "utils/helper";
+import { useDispatch } from "react-redux";
+import { addWalletAddress } from "redux/reducers/user";
 
 const drawerWidth = 50;
 
@@ -26,6 +28,15 @@ export default function Layout1(props) {
   const [{ wallet, connecting }, connect, disconnect] = useConnectWallet();
   const networkId = wallet?.chains[0].id;
   const classes = useStyles();
+  const dispatch = useDispatch();
+
+  React.useEffect(() => {
+    if (wallet) {
+      dispatch(addWalletAddress(wallet.accounts[0].address));
+    } else {
+      dispatch(addWalletAddress(""));
+    }
+  }, [wallet]);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
