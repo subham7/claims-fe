@@ -373,30 +373,25 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
               <>
                 <Grid container item mb={1}>
                   <Typography className={classes.listFont2Colourless}>
-                    Add whitelisting to the station
+                    Enable whitelist for deposit
                   </Typography>
                 </Grid>
                 <Divider />
-                <Grid container mt={1}>
+                <Grid container mt={1} maxHeight={"330px"} overflow="auto">
                   <Grid container spacing={3}>
                     <Grid item xs={12} md={4}>
-                      <Typography className={classes.listFont2}>
-                        Toggle Whitelisting
+                      <Typography mb={1} className={classes.listFont2}>
+                        Whitelisted addresses
                       </Typography>
-                      <Typography className={classes.listFont2Colourless}>
-                        {fetched && proposalData?.commands[0]?.allowWhitelisting
-                          ? "Yes"
-                          : "No"}
-                      </Typography>
+
+                      {proposalData?.commands[0]?.whitelistAddresses.map(
+                        (address, index) => (
+                          <Typography key={index} mb={0.5}>
+                            {address}
+                          </Typography>
+                        ),
+                      )}
                     </Grid>
-                    {/* <Grid item xs={12} md={4}>
-                      <Typography className={classes.listFont2}>
-                        Threshold
-                      </Typography>
-                      <Typography className={classes.listFont2Colourless}>
-                        {fetched ? proposalData?.commands[0].threshold : null}%
-                      </Typography>
-                    </Grid> */}
                   </Grid>
                 </Grid>
               </>

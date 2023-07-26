@@ -289,12 +289,7 @@ const ProposalCard = ({
                       <Grid sx={{ display: "flex" }}>
                         {" "}
                         <Typography color="#C1D3FF" sx={{ marginRight: "5px" }}>
-                          Allow whitelisting:
-                        </Typography>
-                        <Typography color="#FFFFFF">
-                          {proposal?.commands[0]?.allowWhitelisting
-                            ? "Yes"
-                            : "No"}
+                          Enable whitelisting
                         </Typography>
                       </Grid>
                     }></Chip>

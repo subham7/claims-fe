@@ -265,6 +265,7 @@ const CreateProposalDialog = ({
           {
             executionId: 10,
             merkleRoot: merkleRoot,
+            whitelistAddresses: values.csvObject,
             allowWhitelisting: true,
             usdcTokenSymbol: "USDC",
             usdcTokenDecimal: 6,
