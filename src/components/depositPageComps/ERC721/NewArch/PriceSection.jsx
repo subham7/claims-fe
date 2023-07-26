@@ -33,7 +33,10 @@ const PriceSection = ({
         }}
         className={classes.subtitle}>
         {clubData?.membersCount} collected out of{" "}
-        {clubData?.raiseAmount === "0" ? "unlimited" : clubData?.raiseAmount}{" "}
+        {clubData?.raiseAmount === "0"
+          ? "unlimited"
+          : convertFromWeiGovernance(clubData.distributionAmount, 18) *
+            convertFromWeiGovernance(clubData.pricePerToken, 6)}{" "}
         NFTs
       </p>
       <p
