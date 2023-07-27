@@ -5,8 +5,10 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { useSelector } from "react-redux";
 import SearchIcon from "@mui/icons-material/Search";
+import ExpandCircleDownIcon from "@mui/icons-material/ExpandCircleDown";
 import Layout1 from "@components/layouts/layout1";
 import { TextField, Typography } from "@components/ui";
+import Image from "next/image";
 import {
   InputAdornment,
   Select,
@@ -23,7 +25,6 @@ import {
   TableContainer,
   Paper,
 } from "@mui/material";
-import Image from "next/image";
 
 dayjs.extend(relativeTime);
 
@@ -159,16 +160,45 @@ const Transactions = () => {
                             <TableCell align="left">
                               {txn.to.toLowerCase() === gnosisAddress && (
                                 <Chip
+                                  icon={
+                                    <ExpandCircleDownIcon
+                                      sx={{
+                                        color: "#0ABB92 !important",
+                                      }}
+                                    />
+                                  }
+                                  className="f-d f-h-c f-ht-r"
+                                  sx={{
+                                    color: "#A0FFE6",
+                                    background:
+                                      "#0ABB921A 0% 0% no-repeat padding-box",
+                                    width: "135px",
+                                  }}
                                   variant="outlined"
                                   color="success"
-                                  label="RECEIVED"
+                                  label="Received"
                                 />
                               )}
                               {txn.from.toLowerCase() === gnosisAddress && (
                                 <Chip
+                                  icon={
+                                    <ExpandCircleDownIcon
+                                      sx={{
+                                        transform: "rotate(180deg)",
+                                        color: "#D55438 !important",
+                                      }}
+                                    />
+                                  }
+                                  className="f-d f-h-c f-ht-r"
+                                  sx={{
+                                    color: "#FFD5E5",
+                                    background:
+                                      "#D554381A 0% 0% no-repeat padding-box;",
+                                    width: "135px",
+                                  }}
                                   variant="outlined"
                                   color="error"
-                                  label="WITHDRAWAL"
+                                  label="Withdrawal"
                                 />
                               )}
                             </TableCell>
@@ -211,14 +241,15 @@ const Transactions = () => {
                       );
                     })}
                 </TableBody>
-
-                {/* Loader */}
-                {transactions.length === 0 && (
-                  <div className="f-d w-70 f-h-c f-v-c">
-                    <CircularProgress />
-                  </div>
-                )}
               </Table>
+
+              {/* Loader */}
+              {transactions.length === 0 && (
+                <div className="tb-pad-2 f-d f-h-c f-v-c">
+                  <CircularProgress />
+                </div>
+              )}
+
               <TablePagination
                 align="right"
                 rowsPerPageOptions={[5, 10, 25]}
