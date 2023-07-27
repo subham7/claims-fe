@@ -19,6 +19,9 @@ import {
   Tooltip,
   CircularProgress,
   Chip,
+  TablePagination,
+  TableContainer,
+  Paper,
 } from "@mui/material";
 import Image from "next/image";
 // import Moralis from "moralis";
@@ -36,6 +39,10 @@ const Transactions = () => {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState(filters[0]);
   const [transactions, setTransactions] = useState([]);
+  const [paginationSettings, setPaginationSettings] = useState({
+    page: 0,
+    noOfRowsPerPage: 5,
+  });
 
   const fetchTransactions = async () => {
     const address = Web3.utils.toChecksumAddress(gnosisAddress);
@@ -50,13 +57,6 @@ const Transactions = () => {
     });
     console.log(transfers);
     setTransactions(transfers);
-
-    console.log(Web3.utils.toChecksumAddress(gnosisAddress));
-    console.log(
-      transactions.forEach((txn) =>
-        console.log(txn.to === Web3.utils.toChecksumAddress(gnosisAddress)),
-      ),
-    );
   };
 
   useEffect(() => {
@@ -68,6 +68,16 @@ const Transactions = () => {
   const handleAddressClick = (event, address) => {
     event.preventDefault();
     window.open(`https://polygonscan.com/address/${address}`);
+  };
+
+  const handleChangePage = (event, newPage) => {
+    setPaginationSettings({ ...paginationSettings, page: newPage });
+  };
+  const handleChangeRowsPerPage = (event) => {
+    setPaginationSettings({
+      page: 0,
+      noOfRowsPerPage: parseInt(event.target.value, 10),
+    });
   };
 
   return (
@@ -113,95 +123,106 @@ const Transactions = () => {
 
           {/* Table */}
           <div>
-            <Table sx={{ minWidth: 809 }} aria-label="simple table">
-              <TableHead>
-                {tableHeaders.map((data, key) => (
-                  <TableCell align="left" variant="tableHeading" key={key}>
-                    {data}
-                  </TableCell>
-                ))}
-              </TableHead>
+            <TableContainer component={Paper}>
+              <Table sx={{ minWidth: 809 }} aria-label="simple table">
+                <TableHead>
+                  {tableHeaders.map((data, key) => (
+                    <TableCell align="left" variant="tableHeading" key={key}>
+                      {data}
+                    </TableCell>
+                  ))}
+                </TableHead>
 
-              <TableBody>
-                {transactions?.map((txn, key) => {
-                  return (
-                    <>
-                      <TableRow key={txn.transactionHash}>
-                        <TableCell align="left">
-                          <div className="f-d f-v-c f-gap-8">
-                            <Image
-                              width={30}
-                              height={30}
-                              src={txn.tokenInfo.logoUri}
-                              alt=""
-                            />
+                <TableBody>
+                  {transactions?.map((txn, key) => {
+                    return (
+                      <>
+                        <TableRow key={txn.transactionHash}>
+                          <TableCell align="left">
+                            <div className="f-d f-v-c f-gap-8">
+                              <Image
+                                width={30}
+                                height={30}
+                                src={txn.tokenInfo.logoUri}
+                                alt=""
+                              />
+                              <Typography variant="info">
+                                {txn.tokenInfo.name}
+                              </Typography>
+                            </div>
+                          </TableCell>
+
+                          <TableCell align="left">
+                            {txn.to.toLowerCase() === gnosisAddress && (
+                              <Chip
+                                variant="outlined"
+                                color="success"
+                                label="RECEIVED"
+                              />
+                            )}
+                            {txn.from.toLowerCase() === gnosisAddress && (
+                              <Chip
+                                variant="outlined"
+                                color="error"
+                                label="WITHDRAWAL"
+                              />
+                            )}
+                          </TableCell>
+
+                          <TableCell align="left">
                             <Typography variant="info">
-                              {txn.tokenInfo.name}
+                              {dayjs(txn.executionDate).fromNow()}
                             </Typography>
-                          </div>
-                        </TableCell>
+                          </TableCell>
 
-                        <TableCell align="left">
-                          {txn.to.toLowerCase() === gnosisAddress && (
-                            <Chip
-                              variant="outlined"
-                              color="success"
-                              label="RECEIVED"
-                            />
-                          )}
-                          {txn.from.toLowerCase() === gnosisAddress && (
-                            <Chip
-                              variant="outlined"
-                              color="error"
-                              label="WITHDRAWAL"
-                            />
-                          )}
-                        </TableCell>
+                          <TableCell align="left">
+                            <Typography variant="info" className="text-blue">
+                              <Tooltip title={txn.from}>
+                                <a
+                                  onClick={(e) => {
+                                    handleAddressClick(e, txn.from);
+                                  }}>
+                                  {txn.from.substring(0, 10) + "... "}
+                                </a>
+                              </Tooltip>
+                              /
+                              <Tooltip title={txn.to}>
+                                <a
+                                  onClick={(e) => {
+                                    handleAddressClick(e, txn.to);
+                                  }}>
+                                  {txn.to.substring(0, 10) + "..."}
+                                </a>
+                              </Tooltip>
+                            </Typography>
+                          </TableCell>
 
-                        <TableCell align="left">
-                          <Typography variant="info">
-                            {dayjs(txn.executionDate).fromNow()}
-                          </Typography>
-                        </TableCell>
-
-                        <TableCell align="left">
-                          <Typography variant="info" className="text-blue">
-                            <Tooltip title={txn.from}>
-                              <a
-                                onClick={(e) => {
-                                  handleAddressClick(e, txn.from);
-                                }}>
-                                {txn.from.substring(0, 10) + "... "}
-                              </a>
-                            </Tooltip>
-                            /
-                            <Tooltip title={txn.to}>
-                              <a
-                                onClick={(e) => {
-                                  handleAddressClick(e, txn.to);
-                                }}>
-                                {txn.to.substring(0, 10) + "..."}
-                              </a>
-                            </Tooltip>
-                          </Typography>
-                        </TableCell>
-
-                        <TableCell align="left">
-                          <Typography variant="info">
-                            {txn.value / 10 ** txn.tokenInfo.decimals} $
-                          </Typography>
-                        </TableCell>
-                      </TableRow>
-                    </>
-                  );
-                })}
-              </TableBody>
-            </Table>
-            {transactions.length === 0 && (
-              <div className="f-d w-70 f-h-c f-v-c">
-                <CircularProgress />
-              </div>
-            )}
+                          <TableCell align="left">
+                            <Typography variant="info">
+                              {txn.value / 10 ** txn.tokenInfo.decimals} $
+                            </Typography>
+                          </TableCell>
+                        </TableRow>
+                      </>
+                    );
+                  })}
+                </TableBody>
+                {transactions.length === 0 && (
+                  <div className="f-d w-70 f-h-c f-v-c">
+                    <CircularProgress />
+                  </div>
+                )}
+                <TablePagination
+                  rowsPerPageOptions={[5, 10, 25]}
+                  component="row"
+                  count={transactions.length}
+                  rowsPerPage={paginationSettings.noOfRowsPerPage}
+                  page={paginationSettings.pageNumber}
+                  onPageChange={handleChangePage}
+                  onRowsPerPageChange={handleChangeRowsPerPage}
+                />
+              </Table>
+            </TableContainer>
           </div>
         </div>
       </Layout1>
