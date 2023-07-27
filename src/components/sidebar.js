@@ -4,6 +4,7 @@ import PeopleRoundedIcon from "@mui/icons-material/PeopleRounded";
 import InsertDriveFileRoundedIcon from "@mui/icons-material/InsertDriveFileRounded";
 import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
 import AddCardIcon from "@mui/icons-material/AddCard";
+import CompareArrowsIcon from "@mui/icons-material/CompareArrows";
 import { makeStyles } from "@mui/styles";
 import {
   Box,
@@ -172,13 +173,24 @@ const Sidebar = (props) => {
               </ListItemButton>
             </BootstrapTooltip>
 
-            {/*<BootstrapTooltip title="Transactions" placement="left">*/}
-            {/*  <ListItemButton >*/}
-            {/*    <ListItemIcon className={classes.listItemIcon}>*/}
-            {/*      <CompareArrowsRoundedIcon />*/}
-            {/*    </ListItemIcon>*/}
-            {/*  </ListItemButton>*/}
-            {/*</BootstrapTooltip>*/}
+            <BootstrapTooltip title="Transactions" placement="left">
+              <ListItemButton
+                component="a"
+                onClick={(e) => {
+                  router.push(`/dashboard/${clubId}/transactions`, undefined, {
+                    shallow: true,
+                  });
+                }}>
+                <ListItemIcon
+                  className={
+                    page == 6
+                      ? classes.listItemIconSelected
+                      : classes.listItemIcon
+                  }>
+                  <CompareArrowsIcon />
+                </ListItemIcon>
+              </ListItemButton>
+            </BootstrapTooltip>
 
             <BootstrapTooltip title="Deposit" placement="left">
               <ListItemButton component="a" onClick={handleDepositRedirect}>
