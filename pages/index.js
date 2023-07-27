@@ -311,20 +311,36 @@ const App = () => {
                 <Divider className={classes.divider} />
                 <div>
                   <div style={{ overflowY: "scroll", maxHeight: "60vh" }}>
+                    {/* {console.log(
+                      clubListData.map((club) => {
+                        if (
+                          club.daoAddress ===
+                          "0xe9c8342477576b0f4ee05be057146063a9b3b156"
+                        ) {
+                          console.log(club.daoAddress);
+                        }
+                      }),
+                    )}
                     {console.log(clubListData)}
+                    {console.log(
+                      clubListData.filter((club) => {
+                        club.daoAddress ===
+                          "0xe9c8342477576b0f4ee05be057146063a9b3b156";
+                      }),
+                    )} */}
                     {walletAddress && clubListData.length ? (
                       clubListData
                         .reverse()
                         .filter(
                           (club) =>
                             club.daoAddress !==
-                              "0xBd1FAB87bE86fec9336aE49131998D9fA5A00eB0" ||
+                              "0xbd1fab87be86fec9336ae49131998d9fa5a00eb0" &&
                             club.daoAddress !==
-                              "0x2608d54d10527fD4a6a7Bab0306DFbF9CA95A1Bb" ||
+                              "0x2608d54d10527fd4a6a7bab0306dfbf9ca95a1bb" &&
                             club.daoAddress !==
-                              "0x067a544f00840056c8CdB7f9D9d73Ac3611D37c9" ||
+                              "0x067a544f00840056c8cdb7f9d9d73ac3611d37c9" &&
                             club.daoAddress !==
-                              "0x1Ae43fb8283E45AE90d5BD9249cc7227FD6eCc73",
+                              "0x1ae43fb8283e45ae90d5bd9249cc7227fd6ecc73",
                         )
                         .map((club, key) => {
                           return (
