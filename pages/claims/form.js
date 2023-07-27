@@ -138,7 +138,7 @@ const Form = () => {
       daoTokenAddress: "", // tokenGated
       tokenGatingAmt: 0,
       maximumClaim: "", // prorata or custom
-      customAmount: 0,
+      customAmount: 1,
       merkleData: [],
       csvObject: [],
       tokenGatedNetwork: "eth-mainnet",

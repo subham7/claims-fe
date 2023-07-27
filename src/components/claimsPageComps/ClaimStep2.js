@@ -7,8 +7,9 @@ import {
   RadioGroup,
   Select,
   Typography,
+  Button,
 } from "@mui/material";
-import { Button, TextField } from "@components/ui";
+import { TextField } from "@components/ui";
 import { BsArrowLeft } from "react-icons/bs";
 import { makeStyles } from "@mui/styles";
 import React, { useRef, useState } from "react";
@@ -105,6 +106,12 @@ const useStyles = makeStyles({
   uploadBtn: {
     border: "1px solid lightgray",
     background: "transparent",
+  },
+  finish: {
+    width: "200px",
+    fontFamily: "sans-serif",
+    fontSize: "16px",
+    marginTop: "20px",
   },
 });
 
@@ -410,34 +417,33 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading, formikStep1 }) => {
 
         {/* Next */}
         {finish ? (
-          <div
-            style={{
-              marginTop: "20px",
-            }}>
-            <Button
-              onClick={() => {
-                router.push("/claims");
-              }}
-              variant="normal">
-              Go back to claims
-            </Button>
-          </div>
+          <Button
+            type="button"
+            onClick={() => {
+              router.push("/claims");
+            }}
+            variant="contained"
+            className={classes.finish}>
+            Go back to claims
+          </Button>
         ) : (
-          <div
-            style={{
-              marginTop: "20px",
-            }}>
-            <Button
-              disabled={isButtonDisabled()}
-              onClick={formik.handleSubmit}
-              variant="normal">
-              {loading || loadingCsv ? (
-                <CircularProgress size={25} />
-              ) : (
-                "Finish"
-              )}
-            </Button>
-          </div>
+          <Button
+            disabled={
+              csvError ||
+              (values.eligible === "everyone" &&
+                (values.customAmount <= 0 || !values.customAmount)) ||
+              (values.eligible === "token" &&
+                values.maximumClaim === "custom" &&
+                values.customAmount <= 0) ||
+              (values.eligible === "csv" && values.csvObject.length === 0)
+                ? true
+                : false
+            }
+            onClick={formik.handleSubmit}
+            variant="contained"
+            className={classes.btn}>
+            {loading || loadingCsv ? <CircularProgress /> : "Finish"}
+          </Button>
         )}
       </form>
     </>
