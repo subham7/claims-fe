@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import axios from "axios";
+import Web3 from "web3";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { useSelector } from "react-redux";
@@ -18,21 +20,15 @@ import {
   CircularProgress,
   Chip,
 } from "@mui/material";
-import Moralis from "moralis";
-import { EvmChain } from "@moralisweb3/common-evm-utils";
+import Image from "next/image";
+// import Moralis from "moralis";
+// import { EvmChain } from "@moralisweb3/common-evm-utils";
 
 dayjs.extend(relativeTime);
 
 const Transactions = () => {
   const filters = ["All", "Withdrawal", "Received"];
-  const tableHeaders = [
-    "Token",
-    "Amount",
-    "Tag",
-    "Age",
-    "From/To",
-    "Value (in $)",
-  ];
+  const tableHeaders = ["Token", "Tag", "Age", "From/To", "Value (in $)"];
   const gnosisAddress = useSelector((state) => {
     return state.club.clubData.gnosisAddress;
   });
@@ -42,23 +38,25 @@ const Transactions = () => {
   const [transactions, setTransactions] = useState([]);
 
   const fetchTransactions = async () => {
-    try {
-      if (!Moralis.Core.isStarted) {
-        await Moralis.start({
-          apiKey: process.env.NEXT_PUBLIC_MORALIS_API_KEY,
-        });
-      }
-      const chain = EvmChain.POLYGON;
-      const address = gnosisAddress;
-      const response = await Moralis.EvmApi.transaction.getWalletTransactions({
-        address,
-        chain,
-      });
-      console.log(response.toJSON().result);
-      setTransactions(response.toJSON().result);
-    } catch (err) {
-      console.log(err);
-    }
+    const address = Web3.utils.toChecksumAddress(gnosisAddress);
+    const res = await axios.get(
+      `https://safe-transaction-polygon.safe.global/api/v1/safes/${address}/all-transactions/?ordering=hash&executed=true&queued=false`,
+    );
+    let results = res.data.results;
+    let transfers = [];
+
+    results.forEach((res) => {
+      transfers = [...transfers, ...res.transfers];
+    });
+    console.log(transfers);
+    setTransactions(transfers);
+
+    console.log(Web3.utils.toChecksumAddress(gnosisAddress));
+    console.log(
+      transactions.forEach((txn) =>
+        console.log(txn.to === Web3.utils.toChecksumAddress(gnosisAddress)),
+      ),
+    );
   };
 
   useEffect(() => {
@@ -128,24 +126,30 @@ const Transactions = () => {
                 {transactions?.map((txn, key) => {
                   return (
                     <>
-                      <TableRow key={txn.hash}>
+                      <TableRow key={txn.transactionHash}>
                         <TableCell align="left">
-                          <Typography variant="info">Ethereum</Typography>
+                          <div className="f-d f-v-c f-gap-8">
+                            <Image
+                              width={30}
+                              height={30}
+                              src={txn.tokenInfo.logoUri}
+                              alt=""
+                            />
+                            <Typography variant="info">
+                              {txn.tokenInfo.name}
+                            </Typography>
+                          </div>
                         </TableCell>
 
                         <TableCell align="left">
-                          <Typography variant="info">$$$</Typography>
-                        </TableCell>
-
-                        <TableCell align="left">
-                          {txn.to_address === gnosisAddress && (
+                          {txn.to.toLowerCase() === gnosisAddress && (
                             <Chip
                               variant="outlined"
                               color="success"
                               label="RECEIVED"
                             />
                           )}
-                          {txn.from_address === gnosisAddress && (
+                          {txn.from.toLowerCase() === gnosisAddress && (
                             <Chip
                               variant="outlined"
                               color="error"
@@ -156,34 +160,36 @@ const Transactions = () => {
 
                         <TableCell align="left">
                           <Typography variant="info">
-                            {dayjs(txn.block_timestamp).fromNow()}
+                            {dayjs(txn.executionDate).fromNow()}
                           </Typography>
                         </TableCell>
 
                         <TableCell align="left">
                           <Typography variant="info" className="text-blue">
-                            <Tooltip title={txn.from_address}>
+                            <Tooltip title={txn.from}>
                               <a
                                 onClick={(e) => {
-                                  handleAddressClick(e, txn.from_address);
+                                  handleAddressClick(e, txn.from);
                                 }}>
-                                {txn.from_address.substring(0, 10) + "... "}
+                                {txn.from.substring(0, 10) + "... "}
                               </a>
                             </Tooltip>
                             /
-                            <Tooltip title={txn.to_address}>
+                            <Tooltip title={txn.to}>
                               <a
                                 onClick={(e) => {
-                                  handleAddressClick(e, txn.to_address);
+                                  handleAddressClick(e, txn.to);
                                 }}>
-                                {txn.to_address.substring(0, 10) + "..."}
+                                {txn.to.substring(0, 10) + "..."}
                               </a>
                             </Tooltip>
                           </Typography>
                         </TableCell>
 
                         <TableCell align="left">
-                          <Typography variant="info">{txn.value} $</Typography>
+                          <Typography variant="info">
+                            {txn.value / 10 ** txn.tokenInfo.decimals} $
+                          </Typography>
                         </TableCell>
                       </TableRow>
                     </>
