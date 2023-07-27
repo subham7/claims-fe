@@ -2,14 +2,14 @@ import { React, useEffect, useState } from "react";
 import {
   Grid,
   Card,
-  Typography,
+  // Typography,
   Divider,
   Stack,
   ListItemButton,
   DialogContent,
   Dialog,
 } from "@mui/material";
-import Button from "@components/ui/button/Button";
+import { Button, Typography } from "@components/ui";
 import { useDispatch } from "react-redux";
 import { makeStyles } from "@mui/styles";
 import Router, { useRouter } from "next/router";
@@ -298,9 +298,7 @@ const App = () => {
               <Card>
                 <div className={classes.flex}>
                   <Grid item>
-                    <Typography className={classes.yourClubText}>
-                      My Stations
-                    </Typography>
+                    <Typography variant="heading">My Stations</Typography>
                   </Grid>
                   <Grid>
                     <Button onClick={handleCreateButtonClick}>
@@ -338,11 +336,12 @@ const App = () => {
                               <Grid container className={classes.flexContainer}>
                                 <Grid item md={6}>
                                   <Stack spacing={0}>
-                                    <Typography
-                                      className={classes.yourClubText}>
+                                    <Typography variant="subheading">
                                       {club.daoName}
                                     </Typography>
-                                    <Typography className={classes.clubAddress}>
+                                    <Typography
+                                      variant="body"
+                                      className="text-blue">
                                       {`${club.userAddress.substring(
                                         0,
                                         9,
@@ -358,10 +357,8 @@ const App = () => {
                                     alignItems="flex-end"
                                     justifyContent="flex-end">
                                     <Typography
-                                      className={
-                                        classes.createClubButton
-                                      }></Typography>
-                                    <Typography className={classes.isAdmin}>
+                                      variant="body"
+                                      className="text-blue">
                                       {club.isAdmin ? "Admin" : "Member"}
                                     </Typography>
                                   </Stack>
@@ -396,35 +393,7 @@ const App = () => {
               </Card>
             </Grid>
           </Grid>
-        ) : (
-          <>
-            {!manageStation && !wallet && (
-              <Grid
-                container
-                direction="column"
-                justifyContent="center"
-                alignItems="center">
-                <Grid item mt={15}>
-                  <img
-                    className={classes.bannerImage}
-                    src="/assets/images/start_illustration.svg"
-                  />
-                </Grid>
-                <Grid item mt={4}>
-                  <Typography variant="mainHeading">
-                    Do more together
-                  </Typography>
-                </Grid>
-                <Grid item mt={4}>
-                  <Typography variant="regularText">
-                    Create or join a station in less than 60 seconds using
-                    StationX
-                  </Typography>
-                </Grid>
-              </Grid>
-            )}
-          </>
-        )}
+        ) : null}
 
         <Dialog
           open={open}

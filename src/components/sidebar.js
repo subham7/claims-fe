@@ -89,8 +89,9 @@ const Sidebar = (props) => {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          minHeight: "100vh",
+          minHeight: showSidebar ? "100vh" : "fit-content",
           paddingTop: "2rem",
+          position: showSidebar ? "inherit" : "fixed",
         }}
         open>
         <Box>

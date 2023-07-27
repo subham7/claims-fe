@@ -54,11 +54,7 @@ import Signators from "../../../../src/components/proposalComps/Signators";
 import ProposalInfo from "../../../../src/components/proposalComps/ProposalInfo";
 import CurrentResults from "../../../../src/components/proposalComps/CurrentResults";
 import ProposalVotes from "../../../../src/components/proposalComps/ProposalVotes";
-import {
-  getSafeSdk,
-  showWrongNetworkModal,
-  web3InstanceEthereum,
-} from "../../../../src/utils/helper";
+import { getSafeSdk, web3InstanceEthereum } from "../../../../src/utils/helper";
 import useSmartContractMethods from "../../../../src/hooks/useSmartContractMethods";
 import { getNFTsByDaoAddress } from "../../../../src/api/assets";
 
@@ -213,7 +209,6 @@ const ProposalDetail = () => {
   const walletAddress = Web3.utils.toChecksumAddress(
     wallet?.accounts[0].address,
   );
-  const networkId = wallet?.chains[0].id;
 
   const tokenType = useSelector((state) => {
     return state.club.clubData.tokenType;
@@ -291,10 +286,6 @@ const ProposalDetail = () => {
 
   const FACTORY_CONTRACT_ADDRESS = useSelector((state) => {
     return state.gnosis.factoryContractAddress;
-  });
-
-  const WRONG_NETWORK = useSelector((state) => {
-    return state.gnosis.wrongNetwork;
   });
 
   const AIRDROP_ACTION_ADDRESS = useSelector((state) => {
@@ -469,7 +460,10 @@ const ProposalDetail = () => {
         "function contractCalls(address _to, bytes memory _data)",
         "function airDropToken(address _airdropTokenAddress,uint256[] memory _airdropAmountArray,address[] memory _members)",
       ];
-    } else if (proposalData.commands[0].executionId === 3) {
+    } else if (
+      proposalData.commands[0].executionId === 3 ||
+      proposalData.commands[0].executionId === 10
+    ) {
       ABI = FactoryContractABI.abi;
     } else if (clubData.tokenType === "erc721") {
       ABI = Erc721Dao.abi;
@@ -626,6 +620,18 @@ const ProposalDetail = () => {
         proposalData.commands[0].customNftToken,
       ]);
     }
+
+    if (proposalData.commands[0].executionId === 10) {
+      let iface = new Interface(ABI);
+      let iface2 = new Interface(Erc20Dao.abi);
+
+      approvalData = iface2.encodeFunctionData("toggleOnlyAllowWhitelist", []);
+
+      data = iface.encodeFunctionData("changeMerkleRoot", [
+        daoAddress,
+        proposalData.commands[0]?.merkleRoot?.merkleRoot,
+      ]);
+    }
     const response = updateProposalAndExecution(
       data,
       approvalData,
@@ -642,7 +648,8 @@ const ProposalDetail = () => {
         : "",
       proposalStatus,
       airdropContractAddress,
-      proposalData.commands[0].executionId === 3
+      proposalData.commands[0].executionId === 3 ||
+        proposalData.commands[0].executionId === 10
         ? FACTORY_CONTRACT_ADDRESS
         : "",
       GNOSIS_TRANSACTION_URL,
@@ -1254,8 +1261,6 @@ const ProposalDetail = () => {
             </Stack>
           </Grid>
         </Grid>
-
-        {showWrongNetworkModal(wallet, networkId)}
 
         <Snackbar
           open={openSnackBar}

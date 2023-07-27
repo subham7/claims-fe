@@ -1,5 +1,5 @@
 import { Typography } from "@mui/material";
-import Button from "@components/ui/button/Button";
+import { Button } from "@components/ui";
 import { useFormik } from "formik";
 import React from "react";
 import { ClaimModalStyles } from "./ClaimModalStyles";

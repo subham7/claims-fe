@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useState } from "react";
 import Layout1 from "../../../../src/components/layouts/layout1";
 import {
   Backdrop,
-  Button,
   CircularProgress,
   Grid,
   MenuItem,
@@ -10,6 +9,7 @@ import {
   Select,
   Typography,
 } from "@mui/material";
+import { Button } from "@components/ui";
 import { proposalDisplayOptions } from "../../../../src/data/dashboard";
 import DocsCard from "../../../../src/components/proposalComps/DocsCard";
 import CreateProposalDialog from "../../../../src/components/proposalComps/CreateProposalDialog";
@@ -31,11 +31,7 @@ import {
   getProposalByDaoAddress,
   getProposalTxHash,
 } from "../../../../src/api/proposal";
-import {
-  showWrongNetworkModal,
-  web3InstanceCustomRPC,
-} from "../../../../src/utils/helper";
-import { useConnectWallet } from "@web3-onboard/react";
+import { web3InstanceCustomRPC } from "../../../../src/utils/helper";
 import { addNftsOwnedByDao } from "../../../../src/redux/reducers/club";
 
 const useStyles = makeStyles({
@@ -65,8 +61,6 @@ const Proposal = () => {
   const dispatch = useDispatch();
   const { clubId: daoAddress } = router.query;
   const classes = useStyles();
-  const [{ wallet }] = useConnectWallet();
-  const networkId = wallet?.chains[0].id;
 
   const [nftData, setNftData] = useState([]);
   const [selectedListItem, setSelectedListItem] = useState(
@@ -86,10 +80,6 @@ const Proposal = () => {
 
   const gnosisAddress = useSelector((state) => {
     return state.club.clubData.gnosisAddress;
-  });
-
-  const WRONG_NETWORK = useSelector((state) => {
-    return state.gnosis.wrongNetwork;
   });
 
   const proposalList = useSelector((state) => {
@@ -280,7 +270,7 @@ const Proposal = () => {
                   xs
                   sx={{ display: "flex", justifyContent: "flex-end" }}>
                   <Select
-                    sx={{ height: "80%", textTransform: "capitalize" }}
+                    sx={{ height: "75%", textTransform: "capitalize" }}
                     value={selectedListItem}
                     onChange={handleFilterChange}
                     input={<OutlinedInput />}
@@ -309,25 +299,13 @@ const Proposal = () => {
 
                 {isGovernanceActive ? (
                   <Grid item>
-                    <Button
-                      variant="contained"
-                      size="large"
-                      sx={{
-                        height: "80%",
-                      }}
-                      onClick={handleClickOpen}>
+                    <Button variant="normal" onClick={handleClickOpen}>
                       Propose
                     </Button>
                   </Grid>
                 ) : isAdminUser ? (
                   <Grid item>
-                    <Button
-                      variant="contained"
-                      size="large"
-                      sx={{
-                        height: "80%",
-                      }}
-                      onClick={handleClickOpen}>
+                    <Button variant="normal" onClick={handleClickOpen}>
                       Propose
                     </Button>
                   </Grid>
@@ -392,8 +370,6 @@ const Proposal = () => {
           <DocsCard />
         </Grid>
       </Grid>
-
-      {showWrongNetworkModal(wallet, networkId)}
 
       <CreateProposalDialog
         open={open}

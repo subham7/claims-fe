@@ -1,6 +1,6 @@
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
-import Button from "@components/ui/button/Button";
+import { Button, Typography } from "@components/ui";
 import settingsImg from "../../public/assets/images/settings.png";
 import { makeStyles } from "@mui/styles";
 import { useRouter } from "next/router";
@@ -22,22 +22,16 @@ const useStyles = makeStyles({
     display: "flex",
     gap: "30px",
     marginBottom: "60px",
+    justifyContent: "space-around",
   },
   leftDiv: {
-    flex: "0.65",
+    flex: "0.7",
     margin: 0,
   },
   header: {
     display: "flex",
     justifyContent: "space-between",
-    alignItems: "flex-start",
-  },
-  title: {
-    fontSize: "46px",
-    fontWeight: "500",
-    alignSelf: "flex-start",
-    marginTop: "0px",
-    color: "white",
+    alignItems: "center",
   },
   claimDoc: {
     width: "130px",
@@ -80,16 +74,6 @@ const useStyles = makeStyles({
     padding: "10px 30px",
     marginTop: "20px",
   },
-  noClaim_heading: {
-    fontSize: "18px",
-    fontWeight: "400",
-    color: "white",
-  },
-  noClaim_para: {
-    fontSize: "14px",
-    fontWeight: "400",
-    color: "lightgray",
-  },
   proposalInfoCard: {
     background: settingsImg,
     backgroundColor: "#81f5f4",
@@ -111,7 +95,6 @@ const Claims = () => {
 
   const [{ wallet }] = useConnectWallet();
   const walletAddress = wallet?.accounts[0].address;
-  const networkId = wallet?.chains[0].id;
 
   useEffect(() => {
     const fetchClaims = async () => {
@@ -136,7 +119,7 @@ const Claims = () => {
         {/* Left Side */}
         <div className={classes.leftDiv}>
           <div className={classes.header}>
-            <p className={classes.title}>Claims</p>
+            <Typography variant="heading">Claims</Typography>
             <Button onClick={createClaimHandler} variant="normal">
               Create
             </Button>
@@ -144,11 +127,11 @@ const Claims = () => {
 
           {!claimData.length && (
             <div className={classes.noClaim}>
-              <p className={classes.noClaim_heading}>No claims found</p>
-              <p className={classes.noClaim_para}>
+              <Typography variant="heading">No claims found</Typography>
+              <Typography variant="body">
                 Bulk distribute ERC20 tokens or NFTs by creating claim pages in
                 less than 60 seconds
-              </p>
+              </Typography>
             </div>
           )}
           {/* No claims exist */}

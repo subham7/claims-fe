@@ -1,5 +1,5 @@
 import { React } from "react";
-import { AppBar, Box, Toolbar, Button } from "@mui/material";
+import { Button } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 
 import { useConnectWallet } from "@web3-onboard/react";
@@ -39,33 +39,29 @@ export default function Navbar() {
   }
 
   return (
-    <Box sx={{ flexGrow: 1 }}>
-      <AppBar>
-        <Toolbar>
+    <div>
+      <>
+        {router.pathname.includes("/join") && !walletAddress ? null : (
           <>
-            {router.pathname.includes("/join") && !walletAddress ? null : (
-              <>
-                {connecting ? (
-                  <Button
-                    sx={{ mt: 2, position: "fixed", right: 16 }}
-                    className={classes.navButton}>
-                    Connecting
-                  </Button>
-                ) : wallet ? (
-                  <></>
-                ) : (
-                  <Button
-                    sx={{ mt: 2, position: "fixed", right: 16 }}
-                    className={classes.navButton}
-                    onClick={() => (wallet ? disconnect(wallet) : connect())}>
-                    Connect wallet
-                  </Button>
-                )}
-              </>
+            {connecting ? (
+              <Button
+                sx={{ mt: 2, position: "fixed", right: 16 }}
+                className={classes.navButton}>
+                Connecting
+              </Button>
+            ) : wallet ? (
+              <></>
+            ) : (
+              <Button
+                sx={{ mt: 2, position: "fixed", right: 16 }}
+                className={classes.navButton}
+                onClick={() => (wallet ? disconnect(wallet) : connect())}>
+                Connect wallet
+              </Button>
             )}
           </>
-        </Toolbar>
-      </AppBar>
-    </Box>
+        )}
+      </>
+    </div>
   );
 }

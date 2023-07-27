@@ -369,6 +369,32 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
                   </Grid>
                 </Grid>
               </>
+            ) : proposalData?.commands[0].executionId == 10 ? (
+              <>
+                <Grid container item mb={1}>
+                  <Typography className={classes.listFont2Colourless}>
+                    Enable whitelist for deposit
+                  </Typography>
+                </Grid>
+                <Divider />
+                <Grid container mt={1} maxHeight={"330px"} overflow="auto">
+                  <Grid container spacing={3}>
+                    <Grid item xs={12} md={4}>
+                      <Typography mb={1} className={classes.listFont2}>
+                        Whitelisted addresses
+                      </Typography>
+
+                      {proposalData?.commands[0]?.whitelistAddresses.map(
+                        (address, index) => (
+                          <Typography key={index} mb={0.5}>
+                            {address}
+                          </Typography>
+                        ),
+                      )}
+                    </Grid>
+                  </Grid>
+                </Grid>
+              </>
             ) : null}
           </>
         </Card>

@@ -29,7 +29,6 @@ import { useConnectWallet } from "@web3-onboard/react";
 import useSafe from "../../src/hooks/useSafe";
 import useSmartContract from "../../src/hooks/useSmartContract";
 import Layout1 from "../../src/components/layouts/layout1";
-import { showWrongNetworkModal } from "../../src/utils/helper";
 
 const Create = () => {
   const steps = [
@@ -46,8 +45,6 @@ const Create = () => {
   const [activeStep, setActiveStep] = useState(0);
   const [completed, setCompleted] = useState({});
   const [open, setOpen] = useState(false);
-  const [ownersCheck, setOwnersCheck] = useState(false);
-  const [ownerHelperText, setOwnerHelperText] = useState("");
 
   const { initiateConnection } = useSafe();
 
@@ -334,6 +331,7 @@ const Create = () => {
   //             "0x0000000000000000000000000000000000000000000000000000000000000001",
   //         };
 
+  <Button onClick={handlePrev}>Prev</Button>;
   //         initiateConnection(
   //           params,
   //           dispatch,
@@ -565,8 +563,10 @@ const Create = () => {
                   )}
                   {activeStep === steps.length - 1 ? (
                     <>
-                      <Button onClick={handlePrev}>Prev</Button>
-                      <Button onClick={handleSubmit}>Finish</Button>
+                      <div className="f-d">
+                        <Button onClick={handlePrev}>Prev</Button>
+                        <Button onClick={handleSubmit}>Finish</Button>
+                      </div>
                     </>
                   ) : (
                     <div
@@ -582,8 +582,6 @@ const Create = () => {
           </form>
         </Box>
       </Grid>
-
-      {showWrongNetworkModal(wallet, networkId)}
     </Layout1>
   );
 };

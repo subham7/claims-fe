@@ -14,7 +14,6 @@ import classes from "./ERC20.module.scss";
 import * as yup from "yup";
 import { useConnectWallet } from "@web3-onboard/react";
 import { useRouter } from "next/router";
-import { showWrongNetworkModal } from "../../../../utils/helper";
 import { Alert, Backdrop, CircularProgress } from "@mui/material";
 import dayjs from "dayjs";
 import Deposit from "./Deposit";
@@ -27,6 +26,7 @@ const ERC20 = ({
   daoDetails,
   isEligibleForTokenGating,
   isTokenGated,
+  whitelistUserData,
 }) => {
   const [clubData, setClubData] = useState([]);
   const [active, setActive] = useState(false);
@@ -40,7 +40,6 @@ const ERC20 = ({
   const [depositSuccessfull, setDepositSuccessfull] = useState(false);
 
   const [{ wallet }] = useConnectWallet();
-  const networkId = wallet?.chains[0].id;
   const router = useRouter();
   const walletAddress = wallet?.accounts[0].address;
 
@@ -144,7 +143,7 @@ const ERC20 = ({
             (inputValue / +clubData?.pricePerToken).toString(),
             18,
           ),
-          [],
+          whitelistUserData?.proof ? whitelistUserData.proof : [],
         );
 
         setLoading(false);
@@ -231,6 +230,7 @@ const ERC20 = ({
             clubData={clubData}
             erc20TokenDetails={erc20TokenDetails}
             isTokenGated={isTokenGated}
+            whitelistUserData={whitelistUserData}
           />
         </div>
 
@@ -243,14 +243,13 @@ const ERC20 = ({
           remainingClaimAmount={remainingClaimAmount}
           remainingDays={remainingDays}
           remainingTimeInSecs={remainingTimeInSecs}
+          whitelistUserData={whitelistUserData}
         />
       </div>
 
       {clubInfo?.bio ? (
         <About bio={clubInfo?.bio} daoAddress={daoAddress} />
       ) : null}
-
-      {showWrongNetworkModal(wallet, networkId)}
 
       {depositSuccessfull && showMessage ? (
         <Alert
