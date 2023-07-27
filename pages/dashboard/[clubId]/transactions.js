@@ -50,13 +50,12 @@ const Transactions = () => {
     const res = await axios.get(
       `https://safe-transaction-polygon.safe.global/api/v1/safes/${address}/all-transactions/?ordering=hash&executed=true&queued=false`,
     );
-    let results = res.data.results;
+    const results = res.data.results;
     let transfers = [];
 
     results.forEach((res) => {
       transfers = [...transfers, ...res.transfers];
     });
-    console.log(transfers);
     setTransactions(transfers);
   };
 
@@ -125,7 +124,14 @@ const Transactions = () => {
           {/* Table */}
           <div>
             <TableContainer component={Paper}>
-              <Table sx={{ minWidth: 809 }} aria-label="simple table">
+              {/* Loader */}
+              {transactions.length === 0 && (
+                <div className="tb-pad-2 f-d f-h-c f-v-c">
+                  <CircularProgress />
+                </div>
+              )}
+
+              <Table>
                 <TableHead>
                   {tableHeaders.map((data, key) => (
                     <TableCell align="left" variant="tableHeading" key={key}>
@@ -167,13 +173,7 @@ const Transactions = () => {
                                       }}
                                     />
                                   }
-                                  className="f-d f-h-c f-ht-r"
-                                  sx={{
-                                    color: "#A0FFE6",
-                                    background:
-                                      "#0ABB921A 0% 0% no-repeat padding-box",
-                                    width: "135px",
-                                  }}
+                                  className="f-d f-h-c f-ht-r text-primary"
                                   variant="outlined"
                                   color="success"
                                   label="Received"
@@ -189,13 +189,7 @@ const Transactions = () => {
                                       }}
                                     />
                                   }
-                                  className="f-d f-h-c f-ht-r"
-                                  sx={{
-                                    color: "#FFD5E5",
-                                    background:
-                                      "#D554381A 0% 0% no-repeat padding-box;",
-                                    width: "135px",
-                                  }}
+                                  className="f-d f-h-c f-ht-r text-primary"
                                   variant="outlined"
                                   color="error"
                                   label="Withdrawal"
@@ -242,13 +236,6 @@ const Transactions = () => {
                     })}
                 </TableBody>
               </Table>
-
-              {/* Loader */}
-              {transactions.length === 0 && (
-                <div className="tb-pad-2 f-d f-h-c f-v-c">
-                  <CircularProgress />
-                </div>
-              )}
 
               <TablePagination
                 align="right"
