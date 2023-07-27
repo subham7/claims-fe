@@ -6,43 +6,14 @@ import { subgraphQuery } from "../../src/utils/subgraphs";
 import { QUERY_ALL_MEMBERS } from "../../src/api/graphql/queries";
 import { useSelector } from "react-redux";
 import ClubFetch from "../../src/utils/clubFetch";
-import {
-  Backdrop,
-  Button,
-  CircularProgress,
-  Grid,
-  Typography,
-} from "@mui/material";
+import { Backdrop, CircularProgress } from "@mui/material";
 import useSmartContractMethods from "../../src/hooks/useSmartContractMethods";
 import Layout1 from "../../src/components/layouts/layout1";
-import { showWrongNetworkModal } from "../../src/utils/helper";
 import { getClubInfo } from "../../src/api/club";
-import { makeStyles } from "@mui/styles";
 import ERC721 from "../../src/components/depositPageComps/ERC721/NewArch/ERC721";
 import ERC20 from "../../src/components/depositPageComps/ERC20/NewArch/ERC20";
 import useSmartContract from "../../src/hooks/useSmartContract";
-
-const useStyles = makeStyles({
-  image: {
-    height: "40px",
-    width: "auto !important",
-    zIndex: "2000",
-    cursor: "pointer",
-  },
-  navbarText: {
-    flexGrow: 1,
-    fontSize: "18px",
-    color: "#C1D3FF",
-  },
-  navButton: {
-    borderRadius: "10px",
-    height: "auto",
-    background: "#111D38 0% 0% no-repeat padding-box",
-    border: "1px solid #C1D3FF40",
-    opacity: "1",
-    fontSize: "18px",
-  },
-});
+import { getWhitelistMerkleProof } from "api/whitelist";
 
 const Join = () => {
   const [daoDetails, setDaoDetails] = useState({
@@ -56,6 +27,7 @@ const Join = () => {
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [remainingClaimAmount, setRemainingClaimAmount] = useState();
+  const [whitelistUserData, setWhitelistUserData] = useState();
   const [fetchedDetails, setFetchedDetails] = useState({
     tokenA: "",
     tokenB: "",
@@ -71,10 +43,9 @@ const Join = () => {
     tokenBDecimal: 0,
   });
   const [clubInfo, setClubInfo] = useState();
-  const [{ wallet, connecting }, connect, disconnect] = useConnectWallet();
+  const [{ wallet }] = useConnectWallet();
+  const walletAddress = wallet?.accounts[0].address;
 
-  const classes = useStyles();
-  const networkId = wallet?.chains[0].id;
   const router = useRouter();
   const { jid: daoAddress } = router.query;
 
@@ -88,10 +59,6 @@ const Join = () => {
 
   const factoryData = useSelector((state) => {
     return state.club.factoryData;
-  });
-
-  const WRONG_NETWORK = useSelector((state) => {
-    return state.gnosis.wrongNetwork;
   });
 
   useSmartContract();
@@ -280,6 +247,22 @@ const Join = () => {
     }
   }, [SUBGRAPH_URL, daoAddress, daoDetails, wallet]);
 
+  useEffect(() => {
+    const fetchMerkleProof = async () => {
+      try {
+        const whitelistData = await getWhitelistMerkleProof(
+          daoAddress,
+          walletAddress,
+        );
+
+        setWhitelistUserData(whitelistData);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchMerkleProof();
+  }, [daoAddress, walletAddress]);
+
   return (
     <Layout1 showSidebar={false}>
       {TOKEN_TYPE === "erc20" ? (
@@ -290,6 +273,7 @@ const Join = () => {
           isTokenGated={isTokenGated}
           daoDetails={daoDetails}
           isEligibleForTokenGating={isEligibleForTokenGating}
+          whitelistUserData={whitelistUserData}
         />
       ) : TOKEN_TYPE === "erc721" ? (
         <ERC721
@@ -298,6 +282,7 @@ const Join = () => {
           isTokenGated={isTokenGated}
           daoDetails={daoDetails}
           isEligibleForTokenGating={isEligibleForTokenGating}
+          whitelistUserData={whitelistUserData}
         />
       ) : null}
 
@@ -306,54 +291,6 @@ const Join = () => {
         open={loading}>
         <CircularProgress color="inherit" />
       </Backdrop>
-
-      {showWrongNetworkModal(wallet, networkId)}
-
-      {!wallet && (
-        <Grid
-          sx={{
-            height: "95vh",
-          }}
-          container
-          direction="column"
-          justifyContent="center"
-          alignItems="center">
-          <Grid item mt={4}>
-            <Typography
-              sx={{
-                fontSize: "2.3em",
-                fontFamily: "Whyte",
-                color: "#F5F5F5",
-              }}>
-              Connect your wallet to StationX
-            </Typography>
-          </Grid>
-          <Grid item mt={1}>
-            <Typography variant="regularText">
-              You’re all set! Connect wallet to join this Station 🛸
-            </Typography>
-          </Grid>
-
-          <Grid item mt={3}>
-            {connecting ? (
-              <Button
-                // sx={{ mt: 2, position: "fixed", right: 16 }}
-                className={classes.navButton}>
-                Connecting
-              </Button>
-            ) : wallet ? (
-              <></>
-            ) : (
-              <Button
-                // sx={{ mt: 2, position: "fixed", right: 16 }}
-                className={classes.navButton}
-                onClick={() => (wallet ? disconnect(wallet) : connect())}>
-                Connect wallet
-              </Button>
-            )}
-          </Grid>
-        </Grid>
-      )}
     </Layout1>
   );
 };

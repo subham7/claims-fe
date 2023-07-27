@@ -14,6 +14,7 @@ const Deposit = ({
   isEligibleForTokenGating,
   isTokenGated,
   clubData,
+  whitelistUserData,
 }) => {
   return (
     <div className={classes.rightContainer}>
@@ -60,7 +61,9 @@ const Deposit = ({
             ? false
             : true) ||
           +clubData?.raiseAmount <= +clubData?.totalAmountRaised ||
-          +remainingClaimAmount <= 0
+          +remainingClaimAmount <= 0 ||
+          (whitelistUserData?.setWhitelist === true &&
+            whitelistUserData?.proof === null)
         }
         onClick={formik.handleSubmit}>
         Deposit

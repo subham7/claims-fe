@@ -1,6 +1,5 @@
 import {
   Alert,
-  Button,
   CircularProgress,
   Dialog,
   DialogContent,
@@ -12,9 +11,9 @@ import {
   Select,
   Snackbar,
   Stack,
-  TextField,
   Typography,
 } from "@mui/material";
+import { Button, TextField } from "@components/ui";
 import { makeStyles } from "@mui/styles";
 import { useFormik } from "formik";
 import React, { useState } from "react";
@@ -35,6 +34,7 @@ import { fetchProposals } from "../../utils/proposal";
 import { useDispatch, useSelector } from "react-redux";
 import { setProposalList } from "../../redux/reducers/proposal";
 import Web3 from "web3";
+import { getWhiteListMerkleRoot } from "api/whitelist";
 
 const useStyles = makeStyles({
   modalStyle: {
@@ -73,6 +73,8 @@ const CreateProposalDialog = ({
   const walletAddress = Web3.utils.toChecksumAddress(
     wallet?.accounts[0].address,
   );
+
+  const networkId = wallet?.chains[0].id;
 
   const tokenType = useSelector((state) => {
     return state.club.clubData.tokenType;
@@ -132,6 +134,7 @@ const CreateProposalDialog = ({
       ownerChangeAction: "",
       ownerAddress: "",
       safeThreshold: 1,
+      csvObject: [],
     },
     validationSchema: proposalValidationSchema,
     onSubmit: async (values) => {
@@ -249,6 +252,28 @@ const CreateProposalDialog = ({
           },
         ];
       }
+      if (values.actionCommand === "whitelist deposit") {
+        // api call for merkle root,
+
+        const data = {
+          daoAddress,
+          whitelist: values.csvObject,
+        };
+
+        const merkleRoot = await getWhiteListMerkleRoot(networkId, data);
+        commands = [
+          {
+            executionId: 10,
+            merkleRoot: merkleRoot,
+            whitelistAddresses: values.csvObject,
+            allowWhitelisting: true,
+            usdcTokenSymbol: "USDC",
+            usdcTokenDecimal: 6,
+            usdcGovernanceTokenDecimal: 18,
+          },
+        ];
+      }
+
       const payload = {
         name: values.proposalTitle,
         description: values.proposalDescription,
@@ -352,7 +377,6 @@ const CreateProposalDialog = ({
 
               <TextField
                 variant="outlined"
-                className={classes.textField}
                 placeholder="Add a one liner title here"
                 name="proposalTitle"
                 id="proposalTitle"
@@ -426,7 +450,15 @@ const CreateProposalDialog = ({
               <>
                 <Stack mt={3}>
                   {proposal.values.optionList?.length > 0 ? (
-                    <Grid container pr={1} mt={2} mb={2}>
+                    <Grid
+                      container
+                      pr={1}
+                      mt={2}
+                      mb={2}
+                      sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                      }}>
                       {proposal.values.optionList.map((data, key) => {
                         return (
                           <Grid
@@ -489,33 +521,19 @@ const CreateProposalDialog = ({
                     </Grid>
                   ) : null}
                   <Button
-                    variant={"primary"}
-                    //   className={classes.btn}
-                    sx={{ width: "30%" }}
                     onClick={(value) => {
                       proposal.setFieldValue("optionList", [
                         ...proposal.values.optionList,
                         { text: "" },
                       ]);
-                    }}
-                    startIcon={<AddCircleRoundedIcon />}>
+                    }}>
+                    <AddCircleRoundedIcon />
                     Add Option
                   </Button>
                 </Stack>
               </>
             ) : (
               <Stack>
-                {/* <Typography variant="proposalBody">
-                Choose a command for this proposal to execute
-              </Typography>
-              <Button
-                variant="primary"
-                sx={{ width: "40%" }}
-                startIcon={<AddCircleRoundedIcon />}
-                // onClick={handleAddNewCommand}
-              >
-                Add command
-              </Button> */}
                 <ProposalActionForm
                   formik={proposal}
                   tokenData={tokenData}
@@ -535,7 +553,6 @@ const CreateProposalDialog = ({
                   alignItems: "center",
                 }}>
                 <Button
-                  variant="primary"
                   onClick={() => {
                     proposal.resetForm();
                     setLoaderOpen(false);
@@ -545,15 +562,9 @@ const CreateProposalDialog = ({
                 </Button>
               </Grid>
               <Grid item>
-                <Button
-                  variant="primary"
-                  type="submit"
-                  sx={{ display: "flex", alignItems: "center" }}>
+                <Button type="submit">
                   {loaderOpen ? (
-                    <CircularProgress
-                      color="inherit"
-                      sx={{ width: "inherit" }}
-                    />
+                    <CircularProgress color="inherit" size={25} />
                   ) : (
                     "Submit"
                   )}
