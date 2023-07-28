@@ -7,9 +7,8 @@ import {
   RadioGroup,
   Select,
   Typography,
-  Button,
 } from "@mui/material";
-import { TextField } from "@components/ui";
+import { Button, TextField } from "@components/ui";
 import { BsArrowLeft } from "react-icons/bs";
 import { makeStyles } from "@mui/styles";
 import React, { useRef, useState } from "react";
@@ -418,7 +417,6 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading, formikStep1 }) => {
         {/* Next */}
         {finish ? (
           <Button
-            type="button"
             onClick={() => {
               router.push("/claims");
             }}
@@ -428,19 +426,8 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading, formikStep1 }) => {
           </Button>
         ) : (
           <Button
-            disabled={
-              csvError ||
-              (values.eligible === "everyone" &&
-                (values.customAmount <= 0 || !values.customAmount)) ||
-              (values.eligible === "token" &&
-                values.maximumClaim === "custom" &&
-                values.customAmount <= 0) ||
-              (values.eligible === "csv" && values.csvObject.length === 0)
-                ? true
-                : false
-            }
+            disabled={isButtonDisabled()}
             onClick={formik.handleSubmit}
-            variant="contained"
             className={classes.btn}>
             {loading || loadingCsv ? <CircularProgress /> : "Finish"}
           </Button>
