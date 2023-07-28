@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import Button from "@components/ui/button/Button";
+// import Button from "@components/ui/button/Button";
 import {
   convertFromWeiGovernance,
   convertToWeiGovernance,
@@ -617,18 +617,42 @@ const ClaimAddress = () => {
                   </p>
                 )}
 
-                <Button
+                <button
                   onClick={claimHandler}
-                  variant="normal"
-                  disabled={isClaimButtonDisabled}>
+                  className={classes.btn}
+                  disabled={
+                    (claimRemaining == 0 && alreadyClaimed && claimed) ||
+                    !claimActive ||
+                    !claimableAmt ||
+                    +claimInput <= 0 ||
+                    claimInput >= +claimRemaining ||
+                    (contractData.permission == 0 && !isEligibleForTokenGated)
+                      ? true
+                      : false
+                  }
+                  style={
+                    (alreadyClaimed && +claimRemaining === 0) ||
+                    +claimInput <= 0 ||
+                    (contractData.permission == 0 &&
+                      !isEligibleForTokenGated) ||
+                    +claimInput >= +claimRemaining ||
+                    !claimActive ||
+                    !claimableAmt
+                      ? {
+                          cursor: "not-allowed",
+                          background: "#34354180",
+                          color: "gray",
+                        }
+                      : { cursor: "pointer" }
+                  }>
                   {isClaiming ? (
-                    <CircularProgress size={25} />
+                    <CircularProgress />
                   ) : alreadyClaimed && +claimRemaining === 0 ? (
                     "Claimed"
                   ) : (
                     "Claim"
                   )}
-                </Button>
+                </button>
                 {!claimableAmt && (
                   <p className={classes.error}>
                     You are not eligible for the claim!

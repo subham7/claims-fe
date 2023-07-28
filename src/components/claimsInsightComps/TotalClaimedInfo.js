@@ -26,7 +26,7 @@ const TotalClaimedInfo = ({
         ),
       )) *
       100,
-  ).toFixed(0);
+  ).toFixed(2);
 
   return (
     <div className={classes.infoBottomLeftContainer}>
