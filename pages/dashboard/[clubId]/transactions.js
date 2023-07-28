@@ -37,6 +37,7 @@ const Transactions = () => {
 
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState(filters[0]);
+  const [loading, setLoading] = useState(true);
   const [transactions, setTransactions] = useState([]);
   const [paginationSettings, setPaginationSettings] = useState({
     page: 0,
@@ -56,6 +57,7 @@ const Transactions = () => {
     results.forEach((res) => {
       transfers = [...transfers, ...res.transfers];
     });
+    setLoading(false);
     setTransactions(transfers);
   };
 
@@ -125,9 +127,16 @@ const Transactions = () => {
           <div>
             <TableContainer component={Paper}>
               {/* Loader */}
-              {transactions.length === 0 && (
+              {loading && (
                 <div className="tb-pad-2 f-d f-h-c f-v-c">
                   <CircularProgress />
+                </div>
+              )}
+              {!loading && transactions.length === 0 && (
+                <div className="tb-pad-2 f-d f-h-c f-v-c">
+                  <Typography variant="body">
+                    No Transactions to show
+                  </Typography>
                 </div>
               )}
 
