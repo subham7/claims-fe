@@ -173,6 +173,9 @@ const Transactions = () => {
                                       }}
                                     />
                                   }
+                                  sx={{
+                                    width: "135px",
+                                  }}
                                   className="f-d f-h-c f-ht-r text-primary"
                                   variant="outlined"
                                   color="success"
@@ -189,6 +192,9 @@ const Transactions = () => {
                                       }}
                                     />
                                   }
+                                  sx={{
+                                    width: "135px",
+                                  }}
                                   className="f-d f-h-c f-ht-r text-primary"
                                   variant="outlined"
                                   color="error"
