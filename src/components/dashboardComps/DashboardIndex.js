@@ -330,7 +330,7 @@ const DashboardIndex = () => {
                 </Grid>
               ) : null}
 
-              <Grid item ml={1} mt={4}>
+              <Grid item ml={1}>
                 <Stack spacing={0}>
                   <Typography variant="heading">
                     {clubData.name ? (
@@ -681,15 +681,7 @@ const DashboardIndex = () => {
                             <div className={classes.activeIllustration}></div>
                           </Grid>
                           <Grid item>
-                            <Typography
-                              variant="info"
-                              style={{
-                                color: "#0ABB92",
-                                fontSize: "1.25em",
-                                fontFamily: "Whyte",
-                              }}>
-                              Active
-                            </Typography>
+                            <Typography variant="info">Active</Typography>
                           </Grid>
                         </Grid>
                       ) : (
@@ -704,15 +696,7 @@ const DashboardIndex = () => {
                             <div className={classes.inactiveIllustration}></div>
                           </Grid>
                           <Grid item>
-                            <Typography
-                              variant="info"
-                              style={{
-                                color: "#0ABB92",
-                                fontSize: "1.25em",
-                                fontFamily: "Whyte",
-                              }}>
-                              Inactive
-                            </Typography>
+                            <Typography variant="info">Inactive</Typography>
                           </Grid>
                         </Grid>
                       )
