@@ -23,7 +23,7 @@ import {
   getProposalTxHash,
   patchProposalExecuted,
 } from "../../../../src/api/proposal";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import ClubFetch from "../../../../src/utils/clubFetch";
 import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import CloseIcon from "@mui/icons-material/Close";
@@ -202,7 +202,6 @@ const useStyles = makeStyles({
 const ProposalDetail = () => {
   const classes = useStyles();
   const router = useRouter();
-  const dispatch = useDispatch();
   const { pid, clubId: daoAddress } = router.query;
 
   const { address: walletAddress } = useAccount();
@@ -723,7 +722,7 @@ const ProposalDetail = () => {
     }
   }, [fetchData, fetchNfts, isOwner, pid]);
 
-  if (!wallet && proposalData === null) {
+  if (!walletAddress && proposalData === null) {
     return <>loading</>;
   }
 
