@@ -49,7 +49,7 @@ input::-webkit-inner-spin-button {
   color: $typography-gray;
 }
 .text-blue {
-  color: $typography-powderblue;
+  color: $typography-powderblue !important;
 }
 .text-darkblue {
   color: $typography-darkblue;
