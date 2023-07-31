@@ -82,8 +82,9 @@ export default function Step3(props) {
     if (props.formik.values.safeAddress?.length)
       fetchOwners(props.formik.values.safeAddress);
   }, [props.formik.values.safeAddress]);
+
   return (
-    <div className="f-d f-vt tb-pad-d">
+    <div className="f-d f-vt t-pad-d w-100">
       {/* <Grid item md={12} mt={5}> */}
       <Typography variant="body" className="text-blue">
         Collectively manage your club’s investments through governance that
