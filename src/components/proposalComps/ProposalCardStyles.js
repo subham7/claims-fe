@@ -88,11 +88,13 @@ export const ProposalCardStyles = makeStyles({
     border: "1px solid #0ABB92",
     background: "transparent",
     textTransform: "capitalize",
+    paddingLeft: "8px",
   },
   surveyChip: {
     border: "1px solid #6C63FF",
     background: "transparent",
     textTransform: "capitalize",
+    paddingLeft: "8px",
   },
   timeLeftChip: {
     background: "#111D38",
@@ -164,5 +166,6 @@ export const ProposalCardStyles = makeStyles({
   flexContainer: {
     display: "flex",
     alignItems: "center",
+    justifyContent: "center",
   },
 });

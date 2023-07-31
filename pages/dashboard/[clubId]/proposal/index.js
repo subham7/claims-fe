@@ -7,9 +7,9 @@ import {
   MenuItem,
   OutlinedInput,
   Select,
-  Typography,
+  // Typography,
 } from "@mui/material";
-import { Button } from "@components/ui";
+import { Button, Typography } from "@components/ui";
 import { proposalDisplayOptions } from "../../../../src/data/dashboard";
 import DocsCard from "../../../../src/components/proposalComps/DocsCard";
 import CreateProposalDialog from "../../../../src/components/proposalComps/CreateProposalDialog";
@@ -255,7 +255,7 @@ const Proposal = () => {
               lg: "row",
             }}>
             <Grid item>
-              <Typography variant="title">All Proposals</Typography>
+              <Typography variant="heading">All Proposals</Typography>
             </Grid>
             <Grid
               item

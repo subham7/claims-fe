@@ -43,7 +43,7 @@ input::-webkit-inner-spin-button {
 
 /* text colors */
 .text-primary {
-  color: $typography-primary !important;
+  color: $typography-primary;
 }
 .text-gray {
   color: $typography-gray;
@@ -69,6 +69,13 @@ input::-webkit-inner-spin-button {
 .lr-pad-1 {
   padding-right: 1rem;
   padding-left: 1rem;
+}
+
+.l-pad-1 {
+  padding-left: 1rem;
+}
+.r-pad-1 {
+  padding-right: 1rem;
 }
 
 .lr-pad-2 {
