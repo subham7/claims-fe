@@ -15,7 +15,6 @@ import {
   Typography,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
-import { useConnectWallet } from "@web3-onboard/react";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import {
@@ -57,6 +56,7 @@ import ProposalVotes from "../../../../src/components/proposalComps/ProposalVote
 import { getSafeSdk, web3InstanceEthereum } from "../../../../src/utils/helper";
 import useSmartContractMethods from "../../../../src/hooks/useSmartContractMethods";
 import { getNFTsByDaoAddress } from "../../../../src/api/assets";
+import { useAccount } from "wagmi";
 
 const useStyles = makeStyles({
   clubAssets: {
@@ -205,10 +205,7 @@ const ProposalDetail = () => {
   const dispatch = useDispatch();
   const { pid, clubId: daoAddress } = router.query;
 
-  const [{ wallet }] = useConnectWallet();
-  const walletAddress = Web3.utils.toChecksumAddress(
-    wallet?.accounts[0].address,
-  );
+  const { address: walletAddress } = useAccount();
 
   const tokenType = useSelector((state) => {
     return state.club.clubData.tokenType;

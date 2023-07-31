@@ -17,7 +17,6 @@ import {
 } from "@mui/material";
 import { TwitterShareButton } from "react-twitter-embed";
 import { NewArchERC20Styles } from "./NewArchERC20Styles";
-import { useConnectWallet } from "@web3-onboard/react";
 import ProgressBar from "../../../progressbar";
 import {
   convertFromWeiGovernance,
@@ -58,10 +57,9 @@ const NewArchERC20 = ({
   const [depositSuccessfull, setDepositSuccessfull] = useState(false);
 
   const classes = NewArchERC20Styles();
-  const [{ wallet }] = useConnectWallet();
-  const networkId = wallet?.chains[0].id;
   const router = useRouter();
-  const walletAddress = wallet?.accounts[0].address;
+
+  const { address: walletAddress } = useAccount();
 
   const FACTORY_CONTRACT_ADDRESS = useSelector((state) => {
     return state.gnosis.factoryContractAddress;
@@ -251,9 +249,13 @@ const NewArchERC20 = ({
   };
 
   useEffect(() => {
-    if (daoDetails.depositTokenAddress && daoDetails.clubTokensMinted && wallet)
+    if (
+      daoDetails.depositTokenAddress &&
+      daoDetails.clubTokensMinted &&
+      walletAddress
+    )
       fetchTokenDetails();
-  }, [fetchTokenDetails, daoDetails, wallet]);
+  }, [fetchTokenDetails, daoDetails, walletAddress]);
 
   return (
     <>

@@ -195,3 +195,10 @@ input::-webkit-inner-spin-button {
 .br-50 {
   border-radius: 50px !important;
 }
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  padding: 16px 32px;
+  align-items: center;
+}

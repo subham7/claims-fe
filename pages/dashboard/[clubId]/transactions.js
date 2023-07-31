@@ -85,7 +85,7 @@ const Transactions = () => {
   return (
     <>
       <Layout1 page={6}>
-        <div className="f-d f-vt f-h-c tb-pad-6 w-70">
+        <div className="f-d f-vt f-h-c w-70">
           <Typography variant="heading">Station Transactions</Typography>
 
           {/* Search Bar */}

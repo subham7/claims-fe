@@ -10,21 +10,14 @@ import surveyIcon from "../../../../public/assets/icons/survey_icon.svg";
 import React, { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
 import { useSelector } from "react-redux";
-import { useConnectWallet } from "@web3-onboard/react";
 import { useRouter } from "next/router";
 import { ProposalCardStyles } from "../../../../src/components/proposalComps/ProposalCardStyles";
 import useSmartContractMethods from "../../../../src/hooks/useSmartContractMethods";
 
-const ProposalCard = ({
-  proposal,
-  indexKey,
-
-  executionTransaction,
-}) => {
+const ProposalCard = ({ proposal }) => {
   const classes = ProposalCardStyles();
   const router = useRouter();
   const { clubId: daoAddress } = router.query;
-  const [{ wallet }] = useConnectWallet();
 
   const tokenType = useSelector((state) => {
     return state.club.clubData.tokenType;

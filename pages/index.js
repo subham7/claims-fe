@@ -2,7 +2,6 @@ import { React, useEffect, useState } from "react";
 import {
   Grid,
   Card,
-  // Typography,
   Divider,
   Stack,
   ListItemButton,
@@ -14,21 +13,19 @@ import { useDispatch } from "react-redux";
 import { makeStyles } from "@mui/styles";
 import Router, { useRouter } from "next/router";
 import { addDaoAddress } from "../src/redux/reducers/club";
-
-import { useConnectWallet } from "@web3-onboard/react";
 import NewCard from "../src/components/cards/card";
 import { subgraphQuery } from "../src/utils/subgraphs";
 import {
   QUERY_CLUBS_FROM_WALLET_ADDRESS,
   QUERY_CLUB_DETAILS,
 } from "../src/api/graphql/queries";
-import { SUBGRAPH_URL_GOERLI, SUBGRAPH_URL_POLYGON } from "../src/api";
-import WrongNetworkModal from "../src/components/modals/WrongNetworkModal";
+import { SUBGRAPH_URL_POLYGON } from "../src/api";
 import { addClubData } from "../src/redux/reducers/club";
 import Layout1 from "../src/components/layouts/layout1";
 import { BsFillPlayFill } from "react-icons/bs";
 import Web3 from "web3";
 import VideoModal from "../src/components/modals/VideoModal";
+import { useAccount, useNetwork } from "wagmi";
 
 const useStyles = makeStyles({
   container: {
@@ -81,7 +78,7 @@ const useStyles = makeStyles({
     flexDirection: "column",
     justifyContent: "center",
     margin: "0 auto",
-    minHeight: "90vh",
+    minHeight: "70vh",
   },
   watchBtn: {
     background: "#142243",
@@ -130,7 +127,7 @@ const App = () => {
   const dispatch = useDispatch();
   const [clubFlow, setClubFlow] = useState(false);
   const classes = useStyles();
-  const [{ wallet }] = useConnectWallet();
+  const { address: walletAddress } = useAccount();
   const [clubListData, setClubListData] = useState([]);
   const [showVideoModal, setShowVideoModal] = useState(false);
 
@@ -138,10 +135,8 @@ const App = () => {
 
   const [open, setOpen] = useState(false);
   const router = useRouter();
-
-  const networkId = wallet?.chains[0]?.id;
-
-  const walletAddress = wallet?.accounts[0].address;
+  const { chain } = useNetwork();
+  const networkId = Web3.utils.numberToHex(chain.id);
 
   useEffect(() => {
     try {
@@ -292,7 +287,7 @@ const App = () => {
             direction="row"
             justifyContent="center"
             alignItems="start"
-            mt={12}
+            mt={2}
             mb={0}>
             <Grid item md={5}>
               <Card>
@@ -450,10 +445,6 @@ const App = () => {
             </Grid>
           </DialogContent>
         </Dialog>
-
-        {walletAddress && networkId !== "0x89" && networkId !== "0x5" ? (
-          <WrongNetworkModal />
-        ) : null}
         {showVideoModal && (
           <VideoModal
             onClose={() => {

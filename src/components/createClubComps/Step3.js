@@ -13,7 +13,6 @@ import CustomSlider from "../slider";
 import AddCircleOutlinedIcon from "@mui/icons-material/AddCircleOutlined";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { Step3Styles } from "./CreateClubStyles";
-import { useConnectWallet } from "@web3-onboard/react";
 import Web3 from "web3";
 import { useCallback, useEffect } from "react";
 import { getSafeSdk, web3InstanceEthereum } from "../../utils/helper";
@@ -21,11 +20,11 @@ import { useState } from "react";
 import { useSelector } from "react-redux";
 import SafeApiKit from "@safe-global/api-kit";
 import { Web3Adapter } from "@safe-global/protocol-kit";
+import { useAccount } from "wagmi";
 
 export default function Step3(props) {
   const classes = Step3Styles();
-  const [{ wallet }] = useConnectWallet();
-  const walletAddress = wallet.accounts[0].address;
+  const { address: walletAddress } = useAccount();
 
   const GNOSIS_DATA = useSelector((state) => {
     return state.gnosis;
