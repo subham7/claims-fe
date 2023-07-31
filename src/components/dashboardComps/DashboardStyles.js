@@ -280,18 +280,13 @@ export const DashboardStyles = makeStyles({
     width: "100%",
   },
   docimg: {
-    right: "0",
     marginLeft: "52%",
-    marginTop: "20%",
     width: "80%",
-    sx: { position: "absolute", bottom: 0 },
   },
   valueDetailStyle: {
     color: "#81F5FF",
   },
   docs: {
-    position: "absolute",
-    top: "330px",
     color: "white",
     textDecoration: "underline",
     fontSize: "18px",
