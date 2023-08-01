@@ -563,10 +563,10 @@ const DashboardIndex = () => {
                                       {data.symbol}
                                     </TableCell>
                                     <TableCell align="left" variant="tableBody">
-                                      {data.value}
+                                      {Number(data.value).toFixed(4)}
                                     </TableCell>
                                     <TableCell align="left" variant="tableBody">
-                                      ${data.usd.usdValue.toFixed(2)}
+                                      ${Number(data.usd.usdValue).toFixed(4)}
                                     </TableCell>
                                   </TableRow>
                                 );
