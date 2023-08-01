@@ -46,7 +46,7 @@ const ClaimAddress = () => {
   const [tokenGatingAmt, setTokenGatingAmt] = useState(0);
   const [claimsDataSubgraph, setClaimsDataSubgraph] = useState([]);
 
-  const { address: walletAddress } = useAccount;
+  const { address: walletAddress } = useAccount();
 
   const { claimAddress } = router.query;
   useSmartContract();
