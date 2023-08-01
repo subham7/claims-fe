@@ -3,7 +3,7 @@ import { TextField, Typography } from "@components/ui";
 
 export default function Step1(props) {
   return (
-    <div className="f-d f-vt f-v-s t-pad-d">
+    <div className="f-d f-vt f-v-s t-pad-d w-100">
       <Typography variant="body" className="text-blue">
         Basic info
       </Typography>
