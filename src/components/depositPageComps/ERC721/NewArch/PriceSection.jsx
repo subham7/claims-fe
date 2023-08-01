@@ -25,6 +25,7 @@ const PriceSection = ({
   isTokenGated,
   isEligibleForTokenGating,
   whitelistUserData,
+  nftMinted,
 }) => {
   return (
     <div className={classes.priceContainer}>
@@ -33,7 +34,7 @@ const PriceSection = ({
           marginBottom: "10px",
         }}
         className={classes.subtitle}>
-        {clubData?.membersCount} collected out of{" "}
+        {nftMinted} collected out of{" "}
         {clubData?.raiseAmount === "0"
           ? "unlimited"
           : convertFromWeiGovernance(clubData.distributionAmount, 18) *
