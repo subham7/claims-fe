@@ -73,8 +73,6 @@ export default function Step1(props) {
         for NFT collectives or non-transferrable ERC20 for investment clubs)
       </Typography>
 
-      <br />
-
       <FormControl sx={{ width: "100%" }}>
         <Select
           value={props.formik.values.clubTokenType}
@@ -94,8 +92,6 @@ export default function Step1(props) {
       <Typography variant="body" className="text-blue">
         What will you use the Station for? *
       </Typography>
-
-      <br />
 
       <FormControl sx={{ width: "100%" }}>
         <Select

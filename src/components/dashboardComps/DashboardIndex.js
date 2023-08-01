@@ -273,20 +273,20 @@ const DashboardIndex = () => {
       <Grid container paddingTop={2} spacing={3} mb={8}>
         <Grid item xs={9}>
           <Card className={classes.cardSharp1}>
-            <Grid container spacing={2}>
+            <Grid display="flex" alignItems="center" container spacing={2}>
               {tokenType === "erc721" &&
               !clubDetails.clubImageUrl?.includes(".mp4") &&
               !clubDetails.clubImageUrl?.includes(".MP4") ? (
-                <Grid item ml={3} mt={2}>
+                <div>
                   <img
                     src={
                       clubDetails.clubImageUrl ? clubDetails.clubImageUrl : null
                     }
-                    width="110px"
+                    width="80px"
                     alt="profile_pic"
                     className={classes.profilePic}
                   />
-                </Grid>
+                </div>
               ) : clubDetails.clubImageUrl?.includes(".mp4") ||
                 clubDetails.clubImageUrl?.includes(".MP4") ? (
                 <Grid
@@ -572,7 +572,7 @@ const DashboardIndex = () => {
                       alignItems: "flex-start",
                     }}>
                     <IoColorPalette size={30} />
-                    <Typography variant="heading">Collectibles</Typography>
+                    <Typography variant="subheading">Collectibles</Typography>
                   </div>
                   <Grid container maxWidth={"70vw"}>
                     {nftData ? (

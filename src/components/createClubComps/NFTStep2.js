@@ -144,7 +144,7 @@ export default function NFTStep2(props) {
 
       {/* price of nft input */}
       <Card className="tb-pad-0 tb-mar-1">
-        <div className="f-d f-v-c f-h-sb lr-pad-1">
+        <div className="f-d f-v-c f-h-sb lr-pad-1 tb-pad-1">
           <div>
             <Typography variant="body">Set price per NFT (in USDC)</Typography>
           </div>
@@ -180,7 +180,7 @@ export default function NFTStep2(props) {
 
       {/* max mints allowed per wallet input */}
       <Card className="tb-pad-0 tb-mar-1">
-        <div className="f-d f-v-c f-h-sb lr-pad-1">
+        <div className="f-d f-v-c f-h-sb lr-pad-1 tb-pad-1">
           <div>
             <Typography variant="body">
               Max. mints allowed per wallet
