@@ -13,7 +13,7 @@ const Button = ({
   }`;
 
   const handleClick = () => {
-    onClick && onClick();
+    onClick();
   };
 
   return (
