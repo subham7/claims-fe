@@ -15,15 +15,14 @@ import {
   TableHead,
   TableRow,
   TextField,
-  Typography,
 } from "@mui/material";
+import { Typography } from "@components/ui";
 import { Box, Stack } from "@mui/system";
 import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import CollectionCard from "../../../src/components/cardcontent";
 import Layout1 from "../../../src/components/layouts/layout1";
 import { DashboardStyles } from "./DashboardStyles";
-import { useConnectWallet } from "@web3-onboard/react";
 import { useRouter } from "next/router";
 import { getAssetsByDaoAddress, getNFTsByDaoAddress } from "../../api/assets";
 import { getProposalByDaoAddress } from "../../api/proposal";
@@ -41,6 +40,7 @@ import { GiTwoCoins } from "react-icons/gi";
 import { IoColorPalette } from "react-icons/io5";
 import useSmartContractMethods from "../../hooks/useSmartContractMethods";
 import { addNftsOwnedByDao } from "../../redux/reducers/club";
+import { useAccount } from "wagmi";
 // import useSmartContract from "../../hooks/useSmartContract";
 
 const DashboardIndex = () => {
@@ -59,18 +59,13 @@ const DashboardIndex = () => {
   });
   const [nftData, setNftData] = useState([]);
   const [proposalData, setProposalData] = useState([]);
-  const [depositLink, setDepositLink] = useState("");
   const [balanceOfUser, setBalanceOfUser] = useState(0);
   const [clubTokenMinted, setClubTokenMinted] = useState(0);
 
-  const [{ wallet }] = useConnectWallet();
+  const { address: walletAddress } = useAccount();
   const router = useRouter();
   const classes = DashboardStyles();
   const { clubId: daoAddress } = router.query;
-
-  const FACTORY_CONTRACT_ADDRESS = useSelector((state) => {
-    return state.gnosis.factoryContractAddress;
-  });
 
   const isAdmin = useSelector((state) => {
     return state.gnosis.adminUser;
@@ -107,8 +102,6 @@ const DashboardIndex = () => {
     getERC20Balance,
     getERC20TotalSupply,
   } = useSmartContractMethods();
-
-  const walletAddress = wallet?.accounts[0].address;
 
   const fetchClubDetails = useCallback(async () => {
     try {
@@ -247,11 +240,6 @@ const DashboardIndex = () => {
             //KEEP THIS CONSOLE
             setClubTokenMinted(clubTokensMinted);
 
-            setDepositLink(
-              typeof window !== "undefined" && window.location.origin
-                ? `${window.location.origin}/join/${daoAddress}`
-                : null,
-            );
             // setDataFetched(true);
           } catch (e) {
             console.log(e);
@@ -282,7 +270,7 @@ const DashboardIndex = () => {
 
   return (
     <Layout1 page={1}>
-      <Grid container paddingTop={13} spacing={3} mb={8}>
+      <Grid container paddingTop={2} spacing={3} mb={8}>
         <Grid item xs={9}>
           <Card className={classes.cardSharp1}>
             <Grid display="flex" alignItems="center" container spacing={2}>
@@ -330,9 +318,9 @@ const DashboardIndex = () => {
                 </Grid>
               ) : null}
 
-              <Grid item ml={1} mt={4}>
+              <Grid item ml={1}>
                 <Stack spacing={0}>
-                  <Typography variant="h3">
+                  <Typography variant="heading">
                     {clubData.name ? (
                       clubData.name
                     ) : (
@@ -340,10 +328,9 @@ const DashboardIndex = () => {
                     )}
                   </Typography>
                   <Grid container item direction="row" paddingBottom={4} mt={1}>
-                    <Typography variant="regularText2" mr={1}>
-                      {clubDetails.noOfMembers}
+                    <Typography variant="info" className="text-blue">
+                      {clubDetails.noOfMembers} Members
                     </Typography>
-                    <Typography variant="regularText2">Members</Typography>
                   </Grid>
                 </Stack>
               </Grid>
@@ -353,10 +340,8 @@ const DashboardIndex = () => {
                 <Card className={classes.firstCard}>
                   <Grid item mt={4} ml={5}>
                     <Grid container item direction="column">
-                      <Typography variant="regularText4" fontSize={"21px"}>
-                        Total assets
-                      </Typography>
-                      <Typography fontSize={"48px"} fontWeight="bold">
+                      <Typography vvariant="body">Total assets</Typography>
+                      <Typography variant="heading">
                         $
                         {tokenDetails ? (
                           tokenDetails.treasuryAmount
@@ -405,17 +390,9 @@ const DashboardIndex = () => {
                       }}>
                       <Grid item>
                         <Box className={classes.cardOverlay}>
-                          <Typography
-                            variant="regularText4"
-                            fontSize={"21px"}
-                            sx={{ margin: "0px" }}>
-                            My share
-                          </Typography>
+                          <Typography variant="body">My share</Typography>
                           {clubData.tokenType === "erc721" ? (
-                            <Typography
-                              fontSize={"48px"}
-                              fontWeight="bold"
-                              sx={{ margin: "0px" }}>
+                            <Typography variant="heading">
                               {balanceOfUser !== null &&
                               clubTokenMinted !== null &&
                               isNaN(
@@ -443,7 +420,7 @@ const DashboardIndex = () => {
                               %
                             </Typography>
                           ) : (
-                            <Typography fontSize={"48px"} fontWeight="bold">
+                            <Typography variant="heading">
                               {balanceOfUser !== null &&
                               clubTokenMinted !== null &&
                               isNaN(
@@ -491,9 +468,7 @@ const DashboardIndex = () => {
                   direction={{ xs: "column", sm: "column" }}
                   spacing={{ xs: 1, sm: 2, md: 4 }}>
                   <Grid container item mt={8}>
-                    <Typography className={classes.clubAssets}>
-                      All Assets
-                    </Typography>
+                    <Typography variant="heading">All Assets</Typography>
                   </Grid>
                   {/* <Grid container mt={4}>
                       <Grid item>
@@ -524,7 +499,7 @@ const DashboardIndex = () => {
                       alignItems: "flex-start",
                     }}>
                     <GiTwoCoins size={30} />
-                    <Typography variant="subHeading">Tokens</Typography>
+                    <Typography variant="subheading">Tokens</Typography>
                   </div>
 
                   {tokenDetails.tokenPriceList ? (
@@ -640,10 +615,7 @@ const DashboardIndex = () => {
               <Grid>
                 <Grid>
                   <Grid item>
-                    <Typography
-                      variant="getStartedClub"
-                      fontSize={"36px"}
-                      color={"white"}>
+                    <Typography variant="heading">
                       Docs to help you get started
                     </Typography>
                   </Grid>
@@ -677,7 +649,7 @@ const DashboardIndex = () => {
               <Card className={classes.thirdCard}>
                 <Grid container m={2}>
                   <Grid item>
-                    <Typography fontSize={"24px"}>Joining link</Typography>
+                    <Typography variant="subheading">Joining link</Typography>
                   </Grid>
                   <Grid
                     item
@@ -697,14 +669,7 @@ const DashboardIndex = () => {
                             <div className={classes.activeIllustration}></div>
                           </Grid>
                           <Grid item>
-                            <Typography
-                              sx={{
-                                color: "#0ABB92",
-                                fontSize: "1.25em",
-                                fontFamily: "Whyte",
-                              }}>
-                              Active
-                            </Typography>
+                            <Typography variant="info">Active</Typography>
                           </Grid>
                         </Grid>
                       ) : (
@@ -719,14 +684,7 @@ const DashboardIndex = () => {
                             <div className={classes.inactiveIllustration}></div>
                           </Grid>
                           <Grid item>
-                            <Typography
-                              sx={{
-                                color: "#D55438",
-                                fontSize: "1.25em",
-                                fontFamily: "Whyte",
-                              }}>
-                              Inactive
-                            </Typography>
+                            <Typography variant="info">Inactive</Typography>
                           </Grid>
                         </Grid>
                       )
@@ -760,7 +718,7 @@ const DashboardIndex = () => {
 
                 <Grid container>
                   <Grid item md={12} mt={4} ml={1} mr={1}>
-                    <Typography variant="regularText5">
+                    <Typography variant="info" className="text-blue">
                       Share the link with new members to deposit & join this
                       Station.
                     </Typography>
@@ -774,7 +732,7 @@ const DashboardIndex = () => {
             <Card className={classes.fourthCard}>
               <Grid container m={2}>
                 <Grid item>
-                  <Typography fontSize={"24px"}>Recent Proposals</Typography>
+                  <Typography variant="subheading">Recent Proposals</Typography>
                 </Grid>
               </Grid>
               {proposalData.length > 0 ? (
@@ -805,14 +763,14 @@ const DashboardIndex = () => {
                                           </Typography>
                                         </Grid> */}
                                       <Grid item>
-                                        <Typography
-                                          className={classes.card5text2}>
+                                        <Typography variant="body">
                                           {data.name}
                                         </Typography>
                                       </Grid>
                                       <Grid item>
                                         <Typography
-                                          className={classes.card5text1}>
+                                          variant="info"
+                                          className="text-blue">
                                           Expired on{" "}
                                           {new Date(
                                             data.votingDuration,
@@ -846,7 +804,7 @@ const DashboardIndex = () => {
                   alignItems="center"
                   minHeight={"120px"}>
                   <Grid item>
-                    <Typography className={classes.card2text1}>
+                    <Typography variant="info" className="text-blue">
                       No proposals raised yet
                     </Typography>
                   </Grid>
