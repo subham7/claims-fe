@@ -33,10 +33,10 @@ export default function Step3(props) {
   const [ownerAddresses, setOwnerAddresses] = useState();
   const [allSafeAddresses, setAllSafeAddresses] = useState();
 
-  const index = props.formik.values.addressList.indexOf(
-    Web3.utils.toChecksumAddress(walletAddress),
-  );
-  if (index >= 0) props.formik.values.addressList.splice(index, 1);
+  // const index = props.formik.values.addressList.indexOf(
+  //   Web3.utils.toChecksumAddress(walletAddress),
+  // );
+  // if (index >= 0) props.formik.values.addressList.splice(index, 1);
 
   const fetchOwners = async (gnosisAddress) => {
     const safeSdk = await getSafeSdk(

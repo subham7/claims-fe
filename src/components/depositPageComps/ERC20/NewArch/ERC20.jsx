@@ -121,7 +121,6 @@ const ERC20 = ({
       remainingClaimAmount === undefined ? minValidation : remainingValidation,
     onSubmit: async (values) => {
       try {
-        console.log(values.tokenInput);
         setLoading(true);
         const inputValue = convertToWeiGovernance(
           values.tokenInput,
