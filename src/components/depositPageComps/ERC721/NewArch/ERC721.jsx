@@ -201,6 +201,7 @@ const ERC721 = ({
             isEligibleForTokenGating={isEligibleForTokenGating}
             isTokenGated={isTokenGated}
             whitelistUserData={whitelistUserData}
+            nftMinted={daoDetails?.nftMinted}
           />
         </div>
         <NFTimg imgUrl={imgUrl} />

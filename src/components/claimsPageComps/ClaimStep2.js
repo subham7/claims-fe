@@ -103,6 +103,7 @@ const useStyles = makeStyles({
     border: "1px solid lightgray",
     background: "transparent",
   },
+
   finish: {
     width: "200px",
     fontFamily: "sans-serif",

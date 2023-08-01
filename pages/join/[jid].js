@@ -20,6 +20,7 @@ const Join = () => {
     depositDeadline: 0,
     minDeposit: 0,
     maxDeposit: 0,
+    nftMinted: 0,
   });
   const [isEligibleForTokenGating, setIsEligibleForTokenGating] =
     useState(false);
@@ -69,8 +70,13 @@ const Join = () => {
 
   const { factoryContractCall } = contractInstances;
 
-  const { getDecimals, getBalance, getTokenGatingDetails, getTokenSymbol } =
-    useSmartContractMethods();
+  const {
+    getDecimals,
+    getBalance,
+    getTokenGatingDetails,
+    getTokenSymbol,
+    getNftOwnersCount,
+  } = useSmartContractMethods();
 
   /**
    * Fetching details for ERC20 comp
@@ -98,10 +104,12 @@ const Join = () => {
   const fetchErc721ContractDetails = useCallback(async () => {
     try {
       setLoading(true);
+      const nftMinted = await getNftOwnersCount();
 
       if (factoryData) {
         setDaoDetails({
           depositDeadline: factoryData.depositCloseTime,
+          nftMinted: nftMinted,
         });
       }
       setLoading(false);

@@ -1,14 +1,14 @@
-import { Card, CardActionArea, Chip, Grid, Typography } from "@mui/material";
+import { Card, CardActionArea, Chip, Grid } from "@mui/material";
+import { Typography } from "@components/ui";
 import {
   calculateDays,
   convertFromWeiGovernance,
   convertToWeiGovernance,
 } from "../../../../src/utils/globalFunctions";
-import actionIcon from "../../../../public/assets/icons/action_icon.svg";
-import tickerIcon from "../../../../public/assets/icons/ticker_icon.svg";
-import surveyIcon from "../../../../public/assets/icons/survey_icon.svg";
+import SvgTickerIcon from "../../../../public/assets/icons/ticker_icon.js";
+import SvgActionIcon from "../../../../public/assets/icons/action_icon.js";
+import SvgSurveyIcon from "../../../../public/assets/icons/survey_icon.js";
 import React, { useCallback, useEffect, useState } from "react";
-import Image from "next/image";
 import { useSelector } from "react-redux";
 import { useRouter } from "next/router";
 import { ProposalCardStyles } from "../../../../src/components/proposalComps/ProposalCardStyles";
@@ -94,7 +94,7 @@ const ProposalCard = ({ proposal }) => {
       <Card className={classes.mainCard}>
         <Grid container>
           <Grid item ml={2} mr={2}>
-            <Typography className={classes.cardFont}>
+            <Typography variant="body" className="text-blue">
               Proposed by{" "}
               {proposal?.createdBy.substring(0, 6) +
                 ".........." +
@@ -123,17 +123,11 @@ const ProposalCard = ({ proposal }) => {
               <Grid item>
                 <Chip
                   className={classes.timeLeftChip}
+                  icon={<SvgTickerIcon />}
                   label={
-                    <Grid container className={classes.flexContainer}>
-                      <Image src={tickerIcon} alt="ticker-icon" />
-                      <Typography ml={1}>
-                        {" "}
-                        {calculateDays(proposal?.votingDuration) <= 0
-                          ? "Voting closed"
-                          : calculateDays(proposal?.votingDuration) +
-                            " days left"}
-                      </Typography>
-                    </Grid>
+                    calculateDays(proposal?.votingDuration) <= 0
+                      ? "Voting closed"
+                      : calculateDays(proposal?.votingDuration) + " days left"
                   }
                 />
               </Grid>
@@ -144,16 +138,14 @@ const ProposalCard = ({ proposal }) => {
                       ? classes.actionChip
                       : classes.surveyChip
                   }
-                  label={
-                    <Grid container className={classes.flexContainer}>
-                      {proposal?.type === "action" ? (
-                        <Image src={actionIcon} alt="action-icon" />
-                      ) : (
-                        <Image src={surveyIcon} alt="survey-icon" />
-                      )}
-                      <Typography ml={1}>{proposal?.type}</Typography>
-                    </Grid>
+                  icon={
+                    proposal?.type === "action" ? (
+                      <SvgActionIcon />
+                    ) : (
+                      <SvgSurveyIcon />
+                    )
                   }
+                  label={proposal?.type}
                 />
               </Grid>
               <Grid item>
@@ -181,18 +173,16 @@ const ProposalCard = ({ proposal }) => {
         </Grid>
         <Grid container>
           <Grid item ml={2} mr={2}>
-            <Typography className={classes.cardFont1}>
-              {proposal?.name}
-            </Typography>
+            <Typography variant="subheading">{proposal?.name}</Typography>
           </Grid>
         </Grid>
-        <Grid container>
-          <Grid item ml={2} mr={2}>
-            <Typography className={classes.cardFont}>
-              {/* {proposal?.description.substring(0, 200)}... */}
-            </Typography>
-          </Grid>
-        </Grid>
+        {/* <Grid container> */}
+        {/* <Grid item ml={2} mr={2}> */}
+        {/* <Typography className={classes.cardFont}> */}
+        {/* {proposal?.description.substring(0, 200)}... */}
+        {/* </Typography> */}
+        {/* </Grid> */}
+        {/* </Grid> */}
         <Grid container>
           <Grid item ml={2} mr={2} mt={2}>
             <Grid container spacing={1}>
@@ -206,15 +196,14 @@ const ProposalCard = ({ proposal }) => {
                   <Chip
                     className={classes.timeLeftChip}
                     label={
-                      <Grid sx={{ display: "flex" }}>
-                        {" "}
-                        <Typography color="#C1D3FF" sx={{ marginRight: "5px" }}>
+                      <div className="f-d f-v-c tb-pad-1">
+                        <Typography variant="info" className="text-blue">
                           Asset:
                         </Typography>
-                        <Typography color="#FFFFFF">
+                        <Typography variant="info">
                           ${tokenDetails.symbol}
                         </Typography>
-                      </Grid>
+                      </div>
                     }></Chip>
                 </Grid>
               ) : (
@@ -226,19 +215,18 @@ const ProposalCard = ({ proposal }) => {
                   <Chip
                     className={classes.timeLeftChip}
                     label={
-                      <Grid sx={{ display: "flex" }}>
-                        {" "}
-                        <Typography color="#C1D3FF" sx={{ marginRight: "5px" }}>
+                      <div className="f-d f-v-c tb-pad-1">
+                        <Typography variant="info" className="text-blue">
                           Nft:
                         </Typography>
-                        <Typography color="#FFFFFF">
+                        <Typography variant="info">
                           {proposal?.commands[0]?.customNft?.substring(0, 6) +
                             ".........." +
                             proposal?.commands[0]?.customNft?.substring(
                               proposal?.commands[0]?.customNft?.length - 4,
                             )}
                         </Typography>
-                      </Grid>
+                      </div>
                     }></Chip>
                 </Grid>
               ) : (
@@ -252,21 +240,18 @@ const ProposalCard = ({ proposal }) => {
                     <Chip
                       className={classes.timeLeftChip}
                       label={
-                        <Grid sx={{ display: "flex" }}>
-                          {" "}
-                          <Typography
-                            color="#C1D3FF"
-                            sx={{ marginRight: "5px" }}>
+                        <div className="f-d f-v-c tb-pad-1">
+                          <Typography variant="info" className="text-blue">
                             Owner Address:
                           </Typography>
-                          <Typography color="#FFFFFF">
+                          <Typography variant="info">
                             {proposal?.commands[0]?.ownerAddress.slice(0, 6) +
                               "...." +
                               proposal?.commands[0]?.ownerAddress.slice(
                                 proposal?.commands[0]?.ownerAddress.length - 4,
                               )}
                           </Typography>
-                        </Grid>
+                        </div>
                       }></Chip>
                   </Grid>
                 </>
@@ -279,12 +264,11 @@ const ProposalCard = ({ proposal }) => {
                   <Chip
                     className={classes.timeLeftChip}
                     label={
-                      <Grid sx={{ display: "flex" }}>
-                        {" "}
-                        <Typography color="#C1D3FF" sx={{ marginRight: "5px" }}>
+                      <div className="f-d f-v-c tb-pad-1">
+                        <Typography variant="info">
                           Enable whitelisting
                         </Typography>
-                      </Grid>
+                      </div>
                     }></Chip>
                 </Grid>
               ) : null}
@@ -292,23 +276,23 @@ const ProposalCard = ({ proposal }) => {
               {proposal?.commands[0]?.airDropAmount ? (
                 <Grid item>
                   <Chip
+                    size="medium"
                     className={classes.timeLeftChip}
                     label={
                       proposal?.commands[0].airDropAmount ? (
-                        <Grid sx={{ display: "flex" }}>
-                          {" "}
+                        <div className="f-d f-v-c tb-pad-1">
                           <Typography
-                            color="#C1D3FF"
-                            sx={{ marginRight: "5px" }}>
+                            variant="info"
+                            className="text-blue r-pad-1">
                             Amount:
                           </Typography>
-                          <Typography color="#FFFFFF">
+                          <Typography variant="info">
                             {convertFromWeiGovernance(
                               proposal?.commands[0].airDropAmount,
                               tokenDetails.decimals,
                             )}
                           </Typography>
-                        </Grid>
+                        </div>
                       ) : null
                     }></Chip>
                 </Grid>
@@ -320,14 +304,13 @@ const ProposalCard = ({ proposal }) => {
                     className={classes.timeLeftChip}
                     label={
                       proposal.commands[0].mintGTAmounts[0] ? (
-                        <Grid sx={{ display: "flex" }}>
-                          {" "}
+                        <div className="f-d f-v-c tb-pad-1">
                           <Typography
-                            color="#C1D3FF"
-                            sx={{ marginRight: "5px" }}>
+                            variant="info"
+                            className="text-blue r-pad-1">
                             Amount:
                           </Typography>
-                          <Typography color="#FFFFFF">
+                          <Typography variant="info">
                             {tokenType === "erc20"
                               ? Number(
                                   convertFromWeiGovernance(
@@ -337,7 +320,7 @@ const ProposalCard = ({ proposal }) => {
                                 )
                               : proposal?.commands[0].mintGTAmounts[0]}
                           </Typography>
-                        </Grid>
+                        </div>
                       ) : null
                     }></Chip>
                 </Grid>
@@ -348,16 +331,18 @@ const ProposalCard = ({ proposal }) => {
                   <Chip
                     className={classes.timeLeftChip}
                     label={
-                      <Grid sx={{ display: "flex" }}>
+                      <div className="f-d f-v-c tb-pad-1">
                         {" "}
-                        <Typography color="#C1D3FF" sx={{ marginRight: "5px" }}>
+                        <Typography
+                          variant="info"
+                          className="text-blue r-pad-1">
                           Amount:
                         </Typography>
-                        <Typography color="#FFFFFF">
+                        <Typography variant="info">
                           {proposal.commands[0].customTokenAmounts[0] /
                             10 ** tokenDetails.decimals}
                         </Typography>
-                      </Grid>
+                      </div>
                     }></Chip>
                 </Grid>
               ) : null}
@@ -367,12 +352,13 @@ const ProposalCard = ({ proposal }) => {
                   <Chip
                     className={classes.timeLeftChip}
                     label={
-                      <Grid sx={{ display: "flex" }}>
-                        {" "}
-                        <Typography color="#C1D3FF" sx={{ marginRight: "5px" }}>
+                      <div className="f-d f-v-c tb-pad-1">
+                        <Typography
+                          variant="info"
+                          className="text-blue r-pad-1">
                           Recipient:
                         </Typography>
-                        <Typography color="#FFFFFF">
+                        <Typography variant="info">
                           {proposal?.commands[0]?.customTokenAddresses[0].substring(
                             0,
                             6,
@@ -383,7 +369,7 @@ const ProposalCard = ({ proposal }) => {
                                 .length - 4,
                             )}
                         </Typography>
-                      </Grid>
+                      </div>
                     }></Chip>
                 </Grid>
               ) : null}
@@ -395,34 +381,33 @@ const ProposalCard = ({ proposal }) => {
                     <Chip
                       className={classes.timeLeftChip}
                       label={
-                        <Grid sx={{ display: "flex" }}>
+                        <div className="f-d f-v-c tb-pad-1">
                           {" "}
                           <Typography
-                            color="#C1D3FF"
-                            sx={{ marginRight: "5px" }}>
+                            variant="info"
+                            className="text-blue r-pad-1">
                             Quorum:
                           </Typography>
-                          <Typography color="#FFFFFF">
+                          <Typography variant="info">
                             {proposal?.commands[0]?.quorum}
                           </Typography>
-                        </Grid>
+                        </div>
                       }></Chip>
                   </Grid>
                   <Grid item>
                     <Chip
                       className={classes.timeLeftChip}
                       label={
-                        <Grid sx={{ display: "flex" }}>
-                          {" "}
+                        <div className="f-d f-v-c tb-pad-1">
                           <Typography
-                            color="#C1D3FF"
-                            sx={{ marginRight: "5px" }}>
+                            variant="info"
+                            className="text-blue r-pad-1">
                             Threshold:
                           </Typography>
-                          <Typography color="#FFFFFF">
+                          <Typography variant="info">
                             {proposal?.commands[0]?.threshold}
                           </Typography>
-                        </Grid>
+                        </div>
                       }></Chip>
                   </Grid>
                 </>
@@ -433,12 +418,14 @@ const ProposalCard = ({ proposal }) => {
                   <Chip
                     className={classes.timeLeftChip}
                     label={
-                      <Grid sx={{ display: "flex" }}>
+                      <div className="f-d f-v-c tb-pad-1">
                         {" "}
-                        <Typography color="#C1D3FF" sx={{ marginRight: "5px" }}>
+                        <Typography
+                          variant="info"
+                          className="text-blue r-pad-1">
                           Raise Amount:
                         </Typography>
-                        <Typography color="#FFFFFF">
+                        <Typography variant="info">
                           {(convertToWeiGovernance(
                             convertToWeiGovernance(
                               proposal.commands[0].totalDeposits,
@@ -452,7 +439,7 @@ const ProposalCard = ({ proposal }) => {
                               6,
                             )}
                         </Typography>
-                      </Grid>
+                      </div>
                     }></Chip>
                 </Grid>
               ) : null}

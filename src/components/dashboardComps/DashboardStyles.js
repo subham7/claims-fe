@@ -295,6 +295,7 @@ export const DashboardStyles = makeStyles({
     },
   },
   profilePic: {
+    marginLeft: "16px",
     borderRadius: "50%",
     textAlign: "center",
   },

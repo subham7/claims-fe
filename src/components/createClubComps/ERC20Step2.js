@@ -45,7 +45,7 @@ export default function ERC20Step2(props) {
         <br />
 
         <Card className={classes.cardPadding} mb={2}>
-          <div className="f-d f-v-c f-h-sb lr-pad-1">
+          <div className="f-d f-v-c f-h-sb lr-pad-1 tb-pad-1">
             <div>
               <Typography variant="body" className="text-blue">
                 Min. deposit amount per wallet *
@@ -84,7 +84,7 @@ export default function ERC20Step2(props) {
         <br />
 
         <Card className={classes.cardPadding} mb={2}>
-          <div className="f-d f-v-c f-h-sb lr-pad-1">
+          <div className="f-d f-v-c f-h-sb lr-pad-1 tb-pad-1">
             <div>
               <Typography variant="body" className="text-blue">
                 Max. deposit amount per wallet *
@@ -123,7 +123,7 @@ export default function ERC20Step2(props) {
         <br />
 
         <Card className={classes.cardPadding} mb={2}>
-          <div className="f-d f-v-c f-h-sb lr-pad-1">
+          <div className="f-d f-v-c f-h-sb lr-pad-1 tb-pad-1">
             <div>
               <Typography variant="body" className="text-blue">
                 Total amount your Station is raising *
@@ -162,7 +162,7 @@ export default function ERC20Step2(props) {
         <br />
 
         <Card className={classes.cardPadding} mb={2}>
-          <div className="f-d f-v-c f-h-sb lr-pad-1">
+          <div className="f-d f-v-c f-h-sb lr-pad-1 tb-pad-1">
             <div>
               <Typography variant="body" className="text-blue">
                 Price per token *

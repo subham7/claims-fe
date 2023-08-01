@@ -2,12 +2,12 @@ import React from "react";
 import { BiLogoTelegram } from "react-icons/bi";
 import styles from "./ERC721.module.scss";
 import { FaDiscord, FaTwitter } from "react-icons/fa";
-import { TbWorld } from "react-icons/tb";
+// import { TbWorld } from "react-icons/tb";
 
 const HeaderIcons = ({ clubInfo }) => {
   return (
     <>
-      <TbWorld size={32} className={styles.icons} />
+      {/* <TbWorld size={32} className={styles.icons} /> */}
 
       {clubInfo?.telegram && (
         <BiLogoTelegram

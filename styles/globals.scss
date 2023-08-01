@@ -62,7 +62,7 @@ input::-webkit-inner-spin-button {
 }
 
 .t-pad-d {
-  padding-top: 3rem;
+  padding-top: 2rem;
 }
 
 .lr-pad-1 {
@@ -70,9 +70,24 @@ input::-webkit-inner-spin-button {
   padding-left: 1rem;
 }
 
+.l-pad-1 {
+  padding-left: 1rem;
+}
+.r-pad-1 {
+  padding-right: 1rem;
+}
+
 .lr-pad-2 {
   padding-right: 2rem;
   padding-left: 2rem;
+}
+
+.b-pad-1 {
+  padding-bottom: 1rem;
+}
+
+.b-mar-1 {
+  margin-bottom: 1rem;
 }
 
 .tb-pad-1 {
