@@ -2,6 +2,10 @@ import React, { useEffect, useState } from "react";
 import classes from "./ERC721.module.scss";
 import HeaderIcons from "./HeaderIcons";
 import { RiShareBoxLine } from "react-icons/ri";
+import { MdIosShare } from "react-icons/md";
+import { Menu, MenuItem } from "@mui/material";
+import LensterShareButton from "@components/LensterShareButton";
+import { TwitterShareButton } from "react-twitter-embed";
 
 const Header = ({
   clubData,
@@ -17,6 +21,15 @@ const Header = ({
     minutes: 0,
     seconds: 0,
   });
+
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const open = Boolean(anchorEl);
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
 
   useEffect(() => {
     const updateTimer = () => {
@@ -68,6 +81,45 @@ const Header = ({
           className={classes.createdBy}>
           <p>{`${daoAddress?.slice(0, 5)}...${daoAddress?.slice(-5)}`}</p>
           <RiShareBoxLine size={16} />
+        </div>
+
+        <div>
+          <MdIosShare
+            size={35}
+            className={classes.icons}
+            id="basic-button"
+            aria-controls={open ? "basic-menu" : undefined}
+            aria-haspopup="true"
+            aria-expanded={open ? "true" : undefined}
+            onClick={handleClick}
+          />
+          <Menu
+            id="basic-menu"
+            anchorEl={anchorEl}
+            open={open}
+            onClose={handleClose}
+            MenuListProps={{
+              "aria-labelledby": "basic-button",
+            }}>
+            <MenuItem>
+              <LensterShareButton
+                daoAddress={daoAddress}
+                daoName={clubData?.name}
+              />
+            </MenuItem>
+            <MenuItem>
+              {" "}
+              <TwitterShareButton
+                onLoad={function noRefCheck() {}}
+                options={{
+                  size: "large",
+                  text: `Just joined ${clubData?.name} Station on `,
+                  via: "stationxnetwork",
+                }}
+                url={`${window.location.origin}/join/${daoAddress}`}
+              />
+            </MenuItem>
+          </Menu>
         </div>
 
         <HeaderIcons clubInfo={clubInfo} />
