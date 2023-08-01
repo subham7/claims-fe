@@ -9,13 +9,13 @@ import {
   getImageURL,
 } from "../../../../utils/globalFunctions";
 import useSmartContractMethods from "../../../../hooks/useSmartContractMethods";
+import { useConnectWallet } from "@web3-onboard/react";
 import dayjs from "dayjs";
 import About from "./About";
 import NFTimg from "./NFTimg";
 import PriceSection from "./PriceSection";
 import Header from "./Header";
 import { useRouter } from "next/router";
-import { useAccount } from "wagmi";
 
 const ERC721 = ({
   daoAddress,
@@ -55,7 +55,8 @@ const ERC721 = ({
     getBalance,
   } = useSmartContractMethods();
 
-  const { address: walletAddress } = useAccount();
+  const [{ wallet }] = useConnectWallet();
+  const walletAddress = wallet?.accounts[0].address;
 
   const SUBGRAPH_URL = useSelector((state) => {
     return state.gnosis.subgraphUrl;

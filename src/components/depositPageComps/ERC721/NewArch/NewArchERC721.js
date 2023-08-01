@@ -10,6 +10,7 @@ import React, { useCallback, useEffect, useState } from "react";
 
 import { TwitterShareButton } from "react-twitter-embed";
 import { NewArchERC721Styles } from "./NewArchERC721Styles";
+import { useConnectWallet } from "@web3-onboard/react";
 import { convertFromWeiGovernance } from "../../../../utils/globalFunctions";
 import dayjs from "dayjs";
 import { useSelector } from "react-redux";
@@ -22,7 +23,6 @@ import { RiDiscordFill } from "react-icons/ri";
 import ReactHtmlParser from "react-html-parser";
 import useSmartContractMethods from "../../../../hooks/useSmartContractMethods";
 import LensterShareButton from "../../../LensterShareButton";
-import { useAccount } from "wagmi";
 
 const NewArchERC721 = ({
   daoDetails,
@@ -46,9 +46,10 @@ const NewArchERC721 = ({
   const [balanceOfNft, setBalanceOfNft] = useState();
   const [showMoreDesc, setShowMoreDesc] = useState(false);
 
+  const [{ wallet }] = useConnectWallet();
   const router = useRouter();
 
-  const { address: walletAddress } = useAccount();
+  const walletAddress = wallet?.accounts[0].address;
 
   const FACTORY_CONTRACT_ADDRESS = useSelector((state) => {
     return state.gnosis.factoryContractAddress;
@@ -61,6 +62,7 @@ const NewArchERC721 = ({
   const day2 = dayjs.unix(daoDetails.depositDeadline);
   const remainingDays = day2.diff(day1, "day");
   const remainingTimeInSecs = day2.diff(day1, "seconds");
+  const dateSum = new Date(dayjs.unix(daoDetails.depositDeadline))?.toString();
 
   const showMessageHandler = () => {
     setShowMessage(true);
@@ -235,6 +237,16 @@ const NewArchERC721 = ({
                       }}></div>
                   </div>
                 </Grid>
+                {/* <Grid item width="100%">
+                  <Typography variant="subtitle1" color="#C1D3FF">
+                    Mint closes on{" "}
+                    {daoDetails.depositDeadline ? (
+                      dateSum
+                    ) : (
+                      <Skeleton variant="rectangular" width={100} height={25} />
+                    )}
+                  </Typography>
+                </Grid> */}
 
                 {erc721DaoAddress ===
                   "0xff28393E299E8f580677F682C03373dA7c94136F" && (

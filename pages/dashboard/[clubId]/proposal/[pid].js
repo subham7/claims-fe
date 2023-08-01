@@ -15,6 +15,7 @@ import {
   Typography,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
+import { useConnectWallet } from "@web3-onboard/react";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import {
@@ -23,7 +24,7 @@ import {
   getProposalTxHash,
   patchProposalExecuted,
 } from "../../../../src/api/proposal";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import ClubFetch from "../../../../src/utils/clubFetch";
 import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import CloseIcon from "@mui/icons-material/Close";
@@ -56,7 +57,6 @@ import ProposalVotes from "../../../../src/components/proposalComps/ProposalVote
 import { getSafeSdk, web3InstanceEthereum } from "../../../../src/utils/helper";
 import useSmartContractMethods from "../../../../src/hooks/useSmartContractMethods";
 import { getNFTsByDaoAddress } from "../../../../src/api/assets";
-import { useAccount } from "wagmi";
 
 const useStyles = makeStyles({
   clubAssets: {
@@ -202,9 +202,13 @@ const useStyles = makeStyles({
 const ProposalDetail = () => {
   const classes = useStyles();
   const router = useRouter();
+  const dispatch = useDispatch();
   const { pid, clubId: daoAddress } = router.query;
 
-  const { address: walletAddress } = useAccount();
+  const [{ wallet }] = useConnectWallet();
+  const walletAddress = Web3.utils.toChecksumAddress(
+    wallet?.accounts[0].address,
+  );
 
   const tokenType = useSelector((state) => {
     return state.club.clubData.tokenType;
@@ -722,14 +726,14 @@ const ProposalDetail = () => {
     }
   }, [fetchData, fetchNfts, isOwner, pid]);
 
-  if (!walletAddress && proposalData === null) {
+  if (!wallet && proposalData === null) {
     return <>loading</>;
   }
 
   return (
     <>
       <Layout1 page={2}>
-        <Grid container spacing={6} paddingTop={2} mb={8}>
+        <Grid container spacing={6} paddingTop={10} mb={8}>
           <Grid item md={8.5}>
             {/* back button */}
             <Grid container spacing={1} ml={-4} onClick={() => router.back()}>
