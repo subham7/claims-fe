@@ -50,7 +50,9 @@ export default function NFTStep2(props) {
 
       {/* Image input card */}
       <Card className="tb-mar-1">
-        <div className="f-d tb-pad-min lr-pad-1">
+        <div
+          style={{ justifyContent: "space-between" }}
+          className="f-d tb-pad-min lr-pad-1">
           <div className="f-d f-vt lr-pad-2 tb-pad-2">
             <Typography variant="body">Upload Image</Typography>
 
@@ -264,7 +266,7 @@ export default function NFTStep2(props) {
       )}
 
       <Card className="tb-pad-0 tb-mar-1">
-        <div className="f-d f-v-c f-h-sb lr-pad-1 tb-pad-min">
+        <div className="f-d f-v-c f-h-sb lr-pad-1 tb-pad-1">
           <Typography variant="body">Last date to close deposits</Typography>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DateTimePicker
