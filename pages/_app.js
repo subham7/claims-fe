@@ -38,9 +38,7 @@ function MyApp({ Component, pageProps }) {
           <ThemeProvider theme={theme("dark")}>
             <AnnouncementProvider>
               <AnnouncementBar />
-              {/* <Web3OnboardProvider web3Onboard={web3Onboard}> */}
               <Component {...pageProps} />
-              {/* </Web3OnboardProvider> */}
             </AnnouncementProvider>
           </ThemeProvider>
         </Provider>
