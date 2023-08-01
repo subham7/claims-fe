@@ -52,7 +52,7 @@ export default function NFTStep2(props) {
       <Card className="tb-mar-1">
         <div
           style={{ justifyContent: "space-between" }}
-          className="f-d tb-pad-min lr-pad-1">
+          className="f-d lr-pad-1">
           <div className="f-d f-vt lr-pad-2 tb-pad-2">
             <Typography variant="body">Upload Image</Typography>
 
@@ -124,7 +124,7 @@ export default function NFTStep2(props) {
 
       {/* Membership transfer input */}
       <Card className="tb-pad-0 tb-mar-1">
-        <div className="f-d f-v-c f-h-sb tb-pad-min lr-pad-1">
+        <div className="f-d f-v-c f-h-sb lr-pad-1">
           <Typography variant="body">Make membership transferable</Typography>
           <FormControlLabel
             control={
@@ -146,7 +146,7 @@ export default function NFTStep2(props) {
 
       {/* price of nft input */}
       <Card className="tb-pad-0 tb-mar-1">
-        <div className="f-d f-v-c f-h-sb lr-pad-1 tb-pad-min">
+        <div className="f-d f-v-c f-h-sb lr-pad-1">
           <div>
             <Typography variant="body">Set price per NFT (in USDC)</Typography>
           </div>
@@ -182,7 +182,7 @@ export default function NFTStep2(props) {
 
       {/* max mints allowed per wallet input */}
       <Card className="tb-pad-0 tb-mar-1">
-        <div className="f-d f-v-c f-h-sb lr-pad-1 tb-pad-min">
+        <div className="f-d f-v-c f-h-sb lr-pad-1">
           <div>
             <Typography variant="body">
               Max. mints allowed per wallet
@@ -213,7 +213,7 @@ export default function NFTStep2(props) {
 
       {/* limit token supply input */}
       <Card className="tb-pad-0 tb-mar-1">
-        <div className="f-d f-v-c f-h-sb lr-pad-1 tb-pad-min">
+        <div className="f-d f-v-c f-h-sb lr-pad-1">
           <Typography variant="body">
             Limit total supply of the token
           </Typography>
