@@ -691,6 +691,7 @@ const useSmartContractMethods = () => {
           ];
         }
         let safeTransaction;
+
         if (executionId === 6 || executionId === 7) {
           if (executionId === 6) {
             safeTransaction = await safeSdk.createAddOwnerTx(transaction);
@@ -701,6 +702,7 @@ const useSmartContractMethods = () => {
           safeTransaction = await safeSdk.createTransaction({
             safeTransactionData,
           });
+
           console.log("safeTransaction", safeTransaction);
         }
         const safeTxHash = await safeSdk.getTransactionHash(safeTransaction);
@@ -758,6 +760,7 @@ const useSmartContractMethods = () => {
         const safeTxHash = tx.safeTxHash;
 
         let safeTransaction;
+        let rejectionTransaction;
         if (executionId === 6 || executionId === 7) {
           if (executionId === 6) {
             safeTransaction = await safeSdk.createAddOwnerTx(transaction);
@@ -768,11 +771,16 @@ const useSmartContractMethods = () => {
           safeTransaction = await safeSdk.createTransaction({
             safeTransactionData,
           });
+          if (executionStatus === "cancel") {
+            rejectionTransaction = await safeSdk.createRejectionTransaction(
+              safeTransaction.data.nonce,
+            );
+          }
         }
 
         // const senderSignature = await safeSdk.signTypedData(tx, "v4");
         const senderSignature = await safeSdk.signTypedData(
-          safeTransaction,
+          executionStatus === "cancel" ? rejectionTransaction : safeTransaction,
           "v4",
         );
         await safeService.confirmTransaction(safeTxHash, senderSignature.data);
