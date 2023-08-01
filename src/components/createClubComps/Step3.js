@@ -369,7 +369,7 @@ export default function Step3(props) {
         </ToggleButton>
       </ToggleButtonGroup>
 
-      {props.formik.values.governance ? (
+      {props.formik.values.governance === "governance" ? (
         <>
           <div>
             <Typography className={classes.largeText2}>
