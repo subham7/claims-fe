@@ -186,6 +186,23 @@ const AdditionalSettings = ({
                 <ContentCopyIcon className={classes.iconColor} />
               </IconButton>
             </Grid>
+            <Grid item>
+              <IconButton
+                color="primary"
+                onClick={() => {
+                  window.open(
+                    `https://${
+                      NETWORK_HEX === "0x5"
+                        ? "goerli.etherscan.io"
+                        : NETWORK_HEX === "0x89"
+                        ? "polygonscan.com"
+                        : ""
+                    }/address/${gnosisAddress}`,
+                  );
+                }}>
+                <OpenInNewIcon className={classes.iconColor} />
+              </IconButton>
+            </Grid>
 
             <Grid item mr={4} mt={1}>
               <Typography variant="p" className={classes.valuesStyle}>
