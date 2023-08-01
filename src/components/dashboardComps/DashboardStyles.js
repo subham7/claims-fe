@@ -22,14 +22,14 @@ export const DashboardStyles = makeStyles({
     background: "#0ABB92 no-repeat padding-box",
   },
   thirdCard: {
-    width: "22vw",
+    // width: "22vw",
     // height: "351px",
     background: "#121D38",
     border: ".5px solid #6475A3",
   },
   fifthCard: {
-    width: "22vw",
-    height: "370px",
+    // width: "22vw",
+    // height: "370px",
     background: "#121D38",
     border: ".5px solid #6475A3",
     color: "white",
@@ -47,7 +47,7 @@ export const DashboardStyles = makeStyles({
     borderRadius: "10px",
     opacity: 1,
     width: "100%",
-    height: "370px",
+    // height: "370px",
     border: ".5px solid #6475A3",
   },
   cardSharp2: {
@@ -212,7 +212,7 @@ export const DashboardStyles = makeStyles({
     color: "#FFFFFF",
   },
   fourthCard: {
-    width: "22vw",
+    // width: "22vw",
     background: "#121D38",
     borderRadius: "10px",
     border: ".5px solid #6475A3",
@@ -280,18 +280,13 @@ export const DashboardStyles = makeStyles({
     width: "100%",
   },
   docimg: {
-    right: "0",
     marginLeft: "52%",
-    marginTop: "20%",
     width: "80%",
-    sx: { position: "absolute", bottom: 0 },
   },
   valueDetailStyle: {
     color: "#81F5FF",
   },
   docs: {
-    position: "absolute",
-    top: "330px",
     color: "white",
     textDecoration: "underline",
     fontSize: "18px",

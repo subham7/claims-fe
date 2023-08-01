@@ -3,7 +3,11 @@ const nextConfig = {
   reactStrictMode: true,
   swcMinify: false,
   images: {
-    domains: ["clubprofilepics.s3.ap-south-1.amazonaws.com", "./public/*"],
+    domains: [
+      "clubprofilepics.s3.ap-south-1.amazonaws.com",
+      "safe-transaction-assets.safe.global",
+      "./public/*",
+    ],
   },
   webpack: (config, { isServer }) => {
     // Only run this for the client-side bundle

@@ -7,22 +7,14 @@ import dayjs from "dayjs";
 import { makeStyles } from "@mui/styles";
 import { getAssetsByDaoAddress } from "../../src/api/assets";
 import { convertToWeiGovernance } from "../../src/utils/globalFunctions";
-import {
-  createClaimCsv,
-  createSnapShot,
-  // sendMerkleTree,
-} from "../../src/api/claims";
+import { createClaimCsv, createSnapShot } from "../../src/api/claims";
 import {
   CLAIM_FACTORY_ADDRESS_GOERLI,
   CLAIM_FACTORY_ADDRESS_POLYGON,
 } from "../../src/api";
-// import { MerkleTree } from "merkletreejs";
-// import keccak256 from "keccak256";
-import { useConnectWallet } from "@web3-onboard/react";
 import { useRouter } from "next/router";
 import useSmartContractMethods from "../../src/hooks/useSmartContractMethods";
 import useSmartContract from "../../src/hooks/useSmartContract";
-// import WrongNetworkModal from "../../src/components/modals/WrongNetworkModal";
 import Layout1 from "../../src/components/layouts/layout1";
 import Moralis from "moralis";
 import { EvmChain } from "@moralisweb3/common-evm-utils";
@@ -30,6 +22,8 @@ import {
   claimStep1ValidationSchema,
   claimStep2ValidationSchema,
 } from "../../src/components/createClubComps/ValidationSchemas";
+import { useAccount, useNetwork } from "wagmi";
+import Web3 from "web3";
 
 const steps = ["Step1", "Step2"];
 
@@ -54,10 +48,10 @@ const Form = () => {
   useSmartContract();
 
   const classes = useStyles();
-  const [{ wallet }] = useConnectWallet();
 
-  const networkId = wallet?.chains[0]?.id;
-  const walletAddress = wallet?.accounts[0].address;
+  const { address: walletAddress } = useAccount();
+  const { chain } = useNetwork();
+  const networkId = Web3.utils.numberToHex(chain?.id);
   const router = useRouter();
 
   const { claimContract, approveDeposit, getDecimals } =
@@ -536,8 +530,6 @@ const Form = () => {
             </Grid>
           )}
         </Grid>
-
-        {/* {networkId && networkId !== "0x89" && <WrongNetworkModal />} */}
 
         {showError && (
           <Alert

@@ -24,7 +24,6 @@ import Layout1 from "../../../src/components/layouts/layout1";
 import { convertFromWeiGovernance } from "../../../src/utils/globalFunctions";
 import { subgraphQuery } from "../../../src/utils/subgraphs";
 import ClubFetch from "../../../src/utils/clubFetch";
-import { useConnectWallet } from "@web3-onboard/react";
 import { getAllEntities } from "../../../src/utils/helper";
 import { useFormik } from "formik";
 import { LocalizationProvider } from "@mui/x-date-pickers";
@@ -34,6 +33,8 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import * as yup from "yup";
 import { saveAs } from "file-saver";
+import { useNetwork } from "wagmi";
+import Web3 from "web3";
 
 const useStyles = makeStyles({
   searchField: {
@@ -79,9 +80,9 @@ const Test = () => {
   const router = useRouter();
   const classes = useStyles();
   const { clubId: daoAddress } = router.query;
-  const [{ wallet }] = useConnectWallet();
 
-  const networkId = wallet?.chains[0].id;
+  const { chain } = useNetwork();
+  const networkId = Web3.utils.numberToHex(chain?.id);
 
   const tokenType = useSelector((state) => {
     return state.club.clubData.tokenType;
@@ -234,170 +235,162 @@ const Test = () => {
   return (
     <>
       <Layout1 page={3}>
-        <div style={{ paddingTop: "80px" }}>
-          <Grid container spacing={3}>
-            <Grid item md={9} mb={8}>
-              <Grid container mb={4}>
-                <Grid item>
-                  <Typography variant="title">Station Members</Typography>
-                </Grid>
+        <Grid container spacing={3}>
+          <Grid item md={9} mb={8}>
+            <Grid container mb={4}>
+              <Grid item>
+                <Typography variant="title">Station Members</Typography>
               </Grid>
-              <Grid
-                container
-                spacing={3}
-                style={{
-                  display: "flex",
-                  alignItems: "start",
-                }}
-                mb={4}>
-                <Grid item style={{ display: "flex", flexDirection: "column" }}>
-                  <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DateTimePicker
-                      value={formik.values.startDate}
-                      minDateTime={dayjs(deployedTime * 1000)}
-                      onChange={(value) => {
-                        formik.setFieldValue("startDate", value);
-                      }}
-                      onBlur={formik.handleBlur}
-                      error={
-                        formik.touched.startDate &&
-                        Boolean(formik.errors.startDate)
-                      }
-                      helperText={
-                        formik.touched.startDate && formik.errors.startDate
-                      }
-                    />
-                  </LocalizationProvider>
-                  <Typography variant="caption" color="error">
-                    {formik.touched.startDate && formik.errors.startDate}
-                  </Typography>
-                </Grid>
-                <Grid item style={{ display: "flex", flexDirection: "column" }}>
-                  <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DateTimePicker
-                      value={formik.values.endDate}
-                      maxDateTime={dayjs(Date.now())}
-                      onChange={(value) => {
-                        formik.setFieldValue("endDate", value);
-                      }}
-                      onBlur={formik.handleBlur}
-                      error={
-                        formik.touched.endDate && Boolean(formik.errors.endDate)
-                      }
-                      helperText={
-                        formik.touched.endDate && formik.errors.endDate
-                      }
-                    />
-                  </LocalizationProvider>
-                  <Typography variant="caption" color="error">
-                    {formik.touched.endDate && formik.errors.endDate}
-                  </Typography>
-                </Grid>
-                <Grid item>
-                  <Button onClick={formik.handleSubmit} variant="normal">
-                    {downloadLoading ? (
-                      <CircularProgress color="inherit" size={24} />
-                    ) : (
-                      "Download CSV"
-                    )}
-                  </Button>
-                </Grid>
-              </Grid>
-              <TableContainer component={Paper}>
-                <Table sx={{ minWidth: 809 }} aria-label="simple table">
-                  <TableHead>
-                    <TableRow>
-                      {header.map((data, key) => {
-                        return (
-                          <TableCell
-                            align="left"
-                            variant="tableHeading"
-                            key={key}>
-                            {data}
-                          </TableCell>
-                        );
-                      })}
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {membersData?.map((data, key) => (
-                      <TableRow
-                        key={key}
-                        sx={{
-                          "&:last-child td, &:last-child th": { border: 0 },
-                        }}>
-                        <TableCell align="left" variant="tableBody">
-                          <Grid
-                            container
-                            direction="row"
-                            alignItems="center"
-                            gap={4}>
-                            <Grid
-                              sx={{
-                                flex: "0.7",
-                              }}
-                              item>
-                              <a
-                                className={classes.activityLink}
-                                onClick={(e) => {
-                                  handleAddressClick(e, data.userAddress);
-                                }}>
-                                {" "}
-                                {data.userAddress.substring(0, 6) +
-                                  "......" +
-                                  data.userAddress.substring(
-                                    data.userAddress.length - 4,
-                                  )}{" "}
-                              </a>
-                            </Grid>
-                            <Grid item flex={0.3}>
-                              <IconButton
-                                color="primary"
-                                onClick={(e) => {
-                                  handleAddressClick(e, data.userAddress);
-                                }}>
-                                <OpenInNewIcon
-                                  className={classes.activityLink}
-                                />
-                              </IconButton>
-                            </Grid>
-                          </Grid>
-                        </TableCell>
-                        <TableCell align="left" variant="tableBody">
-                          {Number(
-                            convertFromWeiGovernance(data.depositAmount, 6),
-                          ).toFixed(2)}{" "}
-                          USDC
-                        </TableCell>
-                        <TableCell align="left" variant="tableBody">
-                          {tokenType === "erc20"
-                            ? Number(
-                                convertFromWeiGovernance(data?.gtAmount, 18),
-                              ).toFixed(2)
-                            : data?.gtAmount}
-                        </TableCell>
-                        <TableCell align="left" variant="tableBody">
-                          {new Date(
-                            +data.timeStamp * 1000,
-                          ).toLocaleDateString()}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-                <TablePagination
-                  rowsPerPageOptions={[5, 10, 25]}
-                  component="div"
-                  count={Members_Count}
-                  rowsPerPage={20}
-                  page={page}
-                  onPageChange={handleChangePage}
-                  // onRowsPerPageChange={handleChangeRowsPerPage}
-                />
-              </TableContainer>
             </Grid>
+            <Grid
+              container
+              spacing={3}
+              style={{
+                display: "flex",
+                alignItems: "start",
+              }}
+              mb={4}>
+              <Grid item style={{ display: "flex", flexDirection: "column" }}>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DateTimePicker
+                    value={formik.values.startDate}
+                    minDateTime={dayjs(deployedTime * 1000)}
+                    onChange={(value) => {
+                      formik.setFieldValue("startDate", value);
+                    }}
+                    onBlur={formik.handleBlur}
+                    error={
+                      formik.touched.startDate &&
+                      Boolean(formik.errors.startDate)
+                    }
+                    helperText={
+                      formik.touched.startDate && formik.errors.startDate
+                    }
+                  />
+                </LocalizationProvider>
+                <Typography variant="caption" color="error">
+                  {formik.touched.startDate && formik.errors.startDate}
+                </Typography>
+              </Grid>
+              <Grid item style={{ display: "flex", flexDirection: "column" }}>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DateTimePicker
+                    value={formik.values.endDate}
+                    maxDateTime={dayjs(Date.now())}
+                    onChange={(value) => {
+                      formik.setFieldValue("endDate", value);
+                    }}
+                    onBlur={formik.handleBlur}
+                    error={
+                      formik.touched.endDate && Boolean(formik.errors.endDate)
+                    }
+                    helperText={formik.touched.endDate && formik.errors.endDate}
+                  />
+                </LocalizationProvider>
+                <Typography variant="caption" color="error">
+                  {formik.touched.endDate && formik.errors.endDate}
+                </Typography>
+              </Grid>
+              <Grid item>
+                <Button onClick={formik.handleSubmit} variant="normal">
+                  {downloadLoading ? (
+                    <CircularProgress color="inherit" size={24} />
+                  ) : (
+                    "Download CSV"
+                  )}
+                </Button>
+              </Grid>
+            </Grid>
+            <TableContainer component={Paper}>
+              <Table sx={{ minWidth: 809 }} aria-label="simple table">
+                <TableHead>
+                  <TableRow>
+                    {header.map((data, key) => {
+                      return (
+                        <TableCell
+                          align="left"
+                          variant="tableHeading"
+                          key={key}>
+                          {data}
+                        </TableCell>
+                      );
+                    })}
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {membersData?.map((data, key) => (
+                    <TableRow
+                      key={key}
+                      sx={{
+                        "&:last-child td, &:last-child th": { border: 0 },
+                      }}>
+                      <TableCell align="left" variant="tableBody">
+                        <Grid
+                          container
+                          direction="row"
+                          alignItems="center"
+                          gap={4}>
+                          <Grid
+                            sx={{
+                              flex: "0.7",
+                            }}
+                            item>
+                            <a
+                              className={classes.activityLink}
+                              onClick={(e) => {
+                                handleAddressClick(e, data.userAddress);
+                              }}>
+                              {" "}
+                              {data.userAddress.substring(0, 6) +
+                                "......" +
+                                data.userAddress.substring(
+                                  data.userAddress.length - 4,
+                                )}{" "}
+                            </a>
+                          </Grid>
+                          <Grid item flex={0.3}>
+                            <IconButton
+                              color="primary"
+                              onClick={(e) => {
+                                handleAddressClick(e, data.userAddress);
+                              }}>
+                              <OpenInNewIcon className={classes.activityLink} />
+                            </IconButton>
+                          </Grid>
+                        </Grid>
+                      </TableCell>
+                      <TableCell align="left" variant="tableBody">
+                        {Number(
+                          convertFromWeiGovernance(data.depositAmount, 6),
+                        ).toFixed(2)}{" "}
+                        USDC
+                      </TableCell>
+                      <TableCell align="left" variant="tableBody">
+                        {tokenType === "erc20"
+                          ? Number(
+                              convertFromWeiGovernance(data?.gtAmount, 18),
+                            ).toFixed(2)
+                          : data?.gtAmount}
+                      </TableCell>
+                      <TableCell align="left" variant="tableBody">
+                        {new Date(+data.timeStamp * 1000).toLocaleDateString()}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+              <TablePagination
+                rowsPerPageOptions={[5, 10, 25]}
+                component="div"
+                count={Members_Count}
+                rowsPerPage={20}
+                page={page}
+                onPageChange={handleChangePage}
+                // onRowsPerPageChange={handleChangeRowsPerPage}
+              />
+            </TableContainer>
           </Grid>
-        </div>
+        </Grid>
 
         <Backdrop
           sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}

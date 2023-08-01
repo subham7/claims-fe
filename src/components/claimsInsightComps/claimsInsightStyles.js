@@ -2,7 +2,6 @@ import { makeStyles } from "@mui/styles";
 
 export const ClaimsInsightStyles = makeStyles({
   mainContainer: {
-    marginTop: "90px",
     marginBottom: "60px",
     minHeight: "100vh",
   },

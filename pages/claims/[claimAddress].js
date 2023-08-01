@@ -1,11 +1,9 @@
 import React, { useCallback, useEffect, useState } from "react";
-// import Button from "@components/ui/button/Button";
 import {
   convertFromWeiGovernance,
   convertToWeiGovernance,
 } from "../../src/utils/globalFunctions";
 import { useRouter } from "next/router";
-import { useConnectWallet } from "@web3-onboard/react";
 import { Alert, CircularProgress, Tooltip } from "@mui/material";
 import { getUserProofAndBalance } from "../../src/api/claims";
 import Layout1 from "../../src/components/layouts/layout1";
@@ -18,6 +16,8 @@ import { ClaimsStyles } from "../../src/components/claimsPageComps/ClaimsStyles"
 import { subgraphQuery } from "../../src/utils/subgraphs";
 import { CLAIMS_SUBGRAPH_URL_POLYGON } from "../../src/api";
 import { QUERY_CLAIM_DETAILS } from "../../src/api/graphql/queries";
+import Button from "@components/ui/button/Button";
+import { useAccount } from "wagmi";
 
 const ClaimAddress = () => {
   const classes = ClaimsStyles();
@@ -46,9 +46,7 @@ const ClaimAddress = () => {
   const [tokenGatingAmt, setTokenGatingAmt] = useState(0);
   const [claimsDataSubgraph, setClaimsDataSubgraph] = useState([]);
 
-  const [{ wallet }] = useConnectWallet();
-  const walletAddress = wallet?.accounts[0].address;
-  const networkId = wallet?.chains[0].id;
+  const { address: walletAddress } = useAccount;
 
   const { claimAddress } = router.query;
   useSmartContract();
@@ -248,7 +246,6 @@ const ClaimAddress = () => {
     contractData?.daoToken,
     dispatch,
     isEligibleForTokenGated,
-    networkId,
     walletAddress,
   ]);
 
@@ -415,7 +412,7 @@ const ClaimAddress = () => {
         <div
           style={{
             display: "flex",
-            height: "100vh",
+            height: "70vh",
             alignItems: "center",
             justifyContent: "center",
           }}>
@@ -617,42 +614,18 @@ const ClaimAddress = () => {
                   </p>
                 )}
 
-                <button
+                <Button
                   onClick={claimHandler}
-                  className={classes.btn}
-                  disabled={
-                    (claimRemaining == 0 && alreadyClaimed && claimed) ||
-                    !claimActive ||
-                    !claimableAmt ||
-                    +claimInput <= 0 ||
-                    claimInput >= +claimRemaining ||
-                    (contractData.permission == 0 && !isEligibleForTokenGated)
-                      ? true
-                      : false
-                  }
-                  style={
-                    (alreadyClaimed && +claimRemaining === 0) ||
-                    +claimInput <= 0 ||
-                    (contractData.permission == 0 &&
-                      !isEligibleForTokenGated) ||
-                    +claimInput >= +claimRemaining ||
-                    !claimActive ||
-                    !claimableAmt
-                      ? {
-                          cursor: "not-allowed",
-                          background: "#34354180",
-                          color: "gray",
-                        }
-                      : { cursor: "pointer" }
-                  }>
+                  variant="normal"
+                  disabled={isClaimButtonDisabled()}>
                   {isClaiming ? (
-                    <CircularProgress />
+                    <CircularProgress size={25} />
                   ) : alreadyClaimed && +claimRemaining === 0 ? (
                     "Claimed"
                   ) : (
                     "Claim"
                   )}
-                </button>
+                </Button>
                 {!claimableAmt && (
                   <p className={classes.error}>
                     You are not eligible for the claim!
