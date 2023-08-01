@@ -18,6 +18,7 @@ import { CLAIMS_SUBGRAPH_URL_POLYGON } from "../../src/api";
 import { QUERY_CLAIM_DETAILS } from "../../src/api/graphql/queries";
 import Button from "@components/ui/button/Button";
 import { useAccount, useNetwork } from "wagmi";
+import Web3 from "web3";
 
 const ClaimAddress = () => {
   const classes = ClaimsStyles();
