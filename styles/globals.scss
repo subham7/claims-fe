@@ -61,9 +61,8 @@ input::-webkit-inner-spin-button {
   padding-left: 6rem;
 }
 
-.tb-pad-d {
+.t-pad-d {
   padding-top: 3rem;
-  padding-bottom: 3rem;
 }
 
 .lr-pad-1 {
@@ -201,4 +200,17 @@ input::-webkit-inner-spin-button {
 /* border classes*/
 .br-50 {
   border-radius: 50px !important;
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  padding: 16px 32px;
+  align-items: center;
+}
+
+.step-buttons {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
 }

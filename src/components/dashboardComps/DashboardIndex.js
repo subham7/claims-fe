@@ -23,7 +23,6 @@ import { useDispatch, useSelector } from "react-redux";
 import CollectionCard from "../../../src/components/cardcontent";
 import Layout1 from "../../../src/components/layouts/layout1";
 import { DashboardStyles } from "./DashboardStyles";
-import { useConnectWallet } from "@web3-onboard/react";
 import { useRouter } from "next/router";
 import { getAssetsByDaoAddress, getNFTsByDaoAddress } from "../../api/assets";
 import { getProposalByDaoAddress } from "../../api/proposal";
@@ -41,6 +40,7 @@ import { GiTwoCoins } from "react-icons/gi";
 import { IoColorPalette } from "react-icons/io5";
 import useSmartContractMethods from "../../hooks/useSmartContractMethods";
 import { addNftsOwnedByDao } from "../../redux/reducers/club";
+import { useAccount } from "wagmi";
 // import useSmartContract from "../../hooks/useSmartContract";
 
 const DashboardIndex = () => {
@@ -59,18 +59,13 @@ const DashboardIndex = () => {
   });
   const [nftData, setNftData] = useState([]);
   const [proposalData, setProposalData] = useState([]);
-  const [depositLink, setDepositLink] = useState("");
   const [balanceOfUser, setBalanceOfUser] = useState(0);
   const [clubTokenMinted, setClubTokenMinted] = useState(0);
 
-  const [{ wallet }] = useConnectWallet();
+  const { address: walletAddress } = useAccount();
   const router = useRouter();
   const classes = DashboardStyles();
   const { clubId: daoAddress } = router.query;
-
-  const FACTORY_CONTRACT_ADDRESS = useSelector((state) => {
-    return state.gnosis.factoryContractAddress;
-  });
 
   const isAdmin = useSelector((state) => {
     return state.gnosis.adminUser;
@@ -107,8 +102,6 @@ const DashboardIndex = () => {
     getERC20Balance,
     getERC20TotalSupply,
   } = useSmartContractMethods();
-
-  const walletAddress = wallet?.accounts[0].address;
 
   const fetchClubDetails = useCallback(async () => {
     try {
@@ -247,11 +240,6 @@ const DashboardIndex = () => {
             //KEEP THIS CONSOLE
             setClubTokenMinted(clubTokensMinted);
 
-            setDepositLink(
-              typeof window !== "undefined" && window.location.origin
-                ? `${window.location.origin}/join/${daoAddress}`
-                : null,
-            );
             // setDataFetched(true);
           } catch (e) {
             console.log(e);
@@ -282,7 +270,7 @@ const DashboardIndex = () => {
 
   return (
     <Layout1 page={1}>
-      <Grid container paddingTop={13} spacing={3} mb={8}>
+      <Grid container paddingTop={2} spacing={3} mb={8}>
         <Grid item xs={9}>
           <Card className={classes.cardSharp1}>
             <Grid container spacing={2}>

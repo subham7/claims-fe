@@ -12,8 +12,6 @@ import { Button, TextField } from "@components/ui";
 import { BsArrowLeft } from "react-icons/bs";
 import { makeStyles } from "@mui/styles";
 import React, { useRef, useState } from "react";
-import { useConnectWallet } from "@web3-onboard/react";
-import { useDispatch } from "react-redux";
 import { useRouter } from "next/router";
 import Link from "next/link";
 
@@ -22,7 +20,7 @@ const useStyles = makeStyles({
     display: "flex-col",
     alignItems: "center",
     justifyContent: "center",
-    margin: "170px auto",
+    margin: "20px auto",
     width: "550px",
     color: "white",
   },
@@ -73,7 +71,6 @@ const useStyles = makeStyles({
   },
 
   back: {
-    marginTop: "30px",
     fontWeight: "300",
     marginBottom: "4px",
     display: "flex",
@@ -122,8 +119,6 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading, formikStep1 }) => {
   const [loadingCsv, setLoadingCsv] = useState(false);
 
   const classes = useStyles();
-  const [{ wallet }] = useConnectWallet();
-  const dispatch = useDispatch();
 
   const hiddenFileInput = useRef(null);
 

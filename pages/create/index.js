@@ -22,13 +22,13 @@ import {
 import { setUploadNFTLoading } from "../../src/redux/reducers/gnosis";
 import { NFTStorage } from "nft.storage";
 import { convertToWeiGovernance } from "../../src/utils/globalFunctions";
-import { useConnectWallet } from "@web3-onboard/react";
 // import Step4 from "../../src/components/createClubComps/Step4";
 // import Web3 from "web3";
 // import { fetchClubOwners } from "../../src/api/club";
 import useSafe from "../../src/hooks/useSafe";
 import useSmartContract from "../../src/hooks/useSmartContract";
 import Layout1 from "../../src/components/layouts/layout1";
+import { useAccount } from "wagmi";
 
 const Create = () => {
   const steps = [
@@ -39,7 +39,9 @@ const Create = () => {
   ];
   const dispatch = useDispatch();
   const uploadInputRef = useRef(null);
-  const [{ wallet }] = useConnectWallet();
+
+  const { address: walletAddress } = useAccount();
+
   useSmartContract();
 
   const [activeStep, setActiveStep] = useState(0);
@@ -51,7 +53,6 @@ const Create = () => {
   const GNOSIS_DATA = useSelector((state) => {
     return state.gnosis;
   });
-  const networkId = wallet?.chains[0]?.id;
 
   const handleStep = (step) => () => {
     setActiveStep(step);
@@ -143,7 +144,7 @@ const Create = () => {
       governance: "governance",
       quorum: 1,
       threshold: 51,
-      addressList: [wallet.accounts[0].address],
+      addressList: [walletAddress],
       safeThreshold: 1,
       storeAssetsOnGnosis: true,
     },
@@ -492,13 +493,10 @@ const Create = () => {
       <Grid
         container
         item
-        paddingLeft={{ xs: 5, sm: 5, md: 10, lg: 36 }}
-        paddingRight={{ xs: 5, sm: 5, md: 10, lg: 40 }}
+        paddingX={24}
         justifyContent="center"
         alignItems="center">
-        <Box
-          width={{ xs: "60%", sm: "70%", md: "80%", lg: "100%" }}
-          paddingTop={10}>
+        <Box width={{ xs: "60%", sm: "70%", md: "80%", lg: "100%" }}>
           <form noValidate autoComplete="off">
             <Stepper activeStep={activeStep}>
               {steps.map((label, index) => {
@@ -548,34 +546,36 @@ const Create = () => {
                 <Grid
                   container
                   direction="row"
-                  justifyContent="flex-end"
+                  justifyContent="center"
                   alignItems="center"
                   mt={2}
                   mb={8}>
                   {getStepContent(activeStep)}
-                  {!activeStep == 0 && activeStep !== steps.length - 1 && (
-                    <div
-                      style={{
-                        marginTop: "12px",
-                      }}>
-                      <Button onClick={handlePrev}>Prev</Button>
-                    </div>
-                  )}
-                  {activeStep === steps.length - 1 ? (
-                    <>
-                      <div className="f-d">
+                  <div className="step-buttons">
+                    {!activeStep == 0 && activeStep !== steps.length - 1 && (
+                      <div
+                        style={{
+                          marginTop: "12px",
+                        }}>
                         <Button onClick={handlePrev}>Prev</Button>
-                        <Button onClick={handleSubmit}>Finish</Button>
                       </div>
-                    </>
-                  ) : (
-                    <div
-                      style={{
-                        marginTop: "12px",
-                      }}>
-                      <Button onClick={handleSubmit}>Next</Button>
-                    </div>
-                  )}
+                    )}
+                    {activeStep === steps.length - 1 ? (
+                      <>
+                        <div className="f-d">
+                          <Button onClick={handlePrev}>Prev</Button>
+                          <Button onClick={handleSubmit}>Finish</Button>
+                        </div>
+                      </>
+                    ) : (
+                      <div
+                        style={{
+                          marginTop: "12px",
+                        }}>
+                        <Button onClick={handleSubmit}>Next</Button>
+                      </div>
+                    )}
+                  </div>
                 </Grid>
               </Fragment>
             )}
