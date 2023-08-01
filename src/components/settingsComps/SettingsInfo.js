@@ -623,7 +623,9 @@ const SettingsInfo = ({
                   <Stack spacing={1}>
                     {daoDetails.isGovernance && (
                       <Typography variant="settingText">
-                        Total Raise Amount
+                        {tokenType === "erc721"
+                          ? " Total NFT Supply"
+                          : "Total Raise Amount"}
                       </Typography>
                     )}
 
