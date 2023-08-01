@@ -36,7 +36,7 @@ export default function NFTStep2(props) {
   };
 
   return (
-    <div className="f-d f-vt tb-pad-2">
+    <div className="f-d f-vt tb-pad-2 w-100">
       <Typography variant="heading">Set Token Rules</Typography>
 
       <Typography variant="body" className="text-blue tb-pad-1">
@@ -50,7 +50,7 @@ export default function NFTStep2(props) {
 
       {/* Image input card */}
       <Card className="tb-mar-1">
-        <div className="f-d tb-pad-1 lr-pad-1">
+        <div className="f-d tb-pad-min lr-pad-1">
           <div className="f-d f-vt lr-pad-2 tb-pad-2">
             <Typography variant="body">Upload Image</Typography>
 
@@ -122,7 +122,7 @@ export default function NFTStep2(props) {
 
       {/* Membership transfer input */}
       <Card className="tb-pad-0 tb-mar-1">
-        <div className="f-d f-v-c f-h-sb tb-pad-1 lr-pad-1">
+        <div className="f-d f-v-c f-h-sb tb-pad-min lr-pad-1">
           <Typography variant="body">Make membership transferable</Typography>
           <FormControlLabel
             control={
@@ -144,7 +144,7 @@ export default function NFTStep2(props) {
 
       {/* price of nft input */}
       <Card className="tb-pad-0 tb-mar-1">
-        <div className="f-d f-v-c f-h-sb lr-pad-1 tb-pad-1">
+        <div className="f-d f-v-c f-h-sb lr-pad-1 tb-pad-min">
           <div>
             <Typography variant="body">Set price per NFT (in USDC)</Typography>
           </div>
@@ -180,7 +180,7 @@ export default function NFTStep2(props) {
 
       {/* max mints allowed per wallet input */}
       <Card className="tb-pad-0 tb-mar-1">
-        <div className="f-d f-v-c f-h-sb lr-pad-1 tb-pad-1">
+        <div className="f-d f-v-c f-h-sb lr-pad-1 tb-pad-min">
           <div>
             <Typography variant="body">
               Max. mints allowed per wallet
@@ -211,7 +211,7 @@ export default function NFTStep2(props) {
 
       {/* limit token supply input */}
       <Card className="tb-pad-0 tb-mar-1">
-        <div className="f-d f-v-c f-h-sb lr-pad-1 tb-pad-1">
+        <div className="f-d f-v-c f-h-sb lr-pad-1 tb-pad-min">
           <Typography variant="body">
             Limit total supply of the token
           </Typography>
@@ -264,7 +264,7 @@ export default function NFTStep2(props) {
       )}
 
       <Card className="tb-pad-0 tb-mar-1">
-        <div className="f-d f-v-c f-h-sb lr-pad-1 tb-pad-1">
+        <div className="f-d f-v-c f-h-sb lr-pad-1 tb-pad-min">
           <Typography variant="body">Last date to close deposits</Typography>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DateTimePicker

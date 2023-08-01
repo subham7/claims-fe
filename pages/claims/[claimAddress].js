@@ -26,7 +26,7 @@ const ClaimAddress = () => {
   const [contractData, setContractData] = useState([]);
   const [totalAmountofTokens, setTotalAmountOfTokens] = useState(0);
   const [airdropTokenName, setAirdropTokenName] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [isClaiming, setIsClaiming] = useState(false);
   const [message, setMessage] = useState("");
   const [claimed, setClaimed] = useState(false);
@@ -408,7 +408,7 @@ const ClaimAddress = () => {
 
   return (
     <Layout1 showSidebar={false}>
-      {isLoading || !contractData ? (
+      {isLoading ? (
         <div
           style={{
             display: "flex",
