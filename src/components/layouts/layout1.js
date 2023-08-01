@@ -47,7 +47,7 @@ export default function Layout1(props) {
         {!walletAddress ? (
           <Grid
             sx={{
-              height: "95vh",
+              height: "75vh",
             }}
             container
             direction="column"
