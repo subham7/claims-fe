@@ -28,7 +28,7 @@ const LensterShareButton = ({ daoName, daoAddress, message = "" }) => {
             : `Just joined ${daoName} Station on stationxnetwork!`
         }&url=${
           window.location.origin
-        }/join/${daoAddress}&via=StationX&hashtags=lens,web3,stationX`}
+        }/join/${daoAddress}&hashtags=lens,web3,stationX`}
         style={{
           color: "#fff",
           fontWeight: "600",
