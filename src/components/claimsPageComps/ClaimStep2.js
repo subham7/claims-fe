@@ -410,7 +410,6 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading, formikStep1 }) => {
           </>
         )}
 
-        {/* Next */}
         {finish ? (
           <Button
             onClick={() => {

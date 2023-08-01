@@ -1,5 +1,6 @@
 import React from "react";
 import styles from "./Button.module.scss";
+import classNames from "classnames";
 
 const Button = ({
   variant = "pill",
@@ -7,6 +8,7 @@ const Button = ({
   onClick,
   disabled = false,
   type = "button",
+  className,
 }) => {
   let buttonStyles = `${styles.button} ${styles[variant]} ${
     disabled && styles.disabled
@@ -19,7 +21,7 @@ const Button = ({
   return (
     <button
       type={type}
-      className={buttonStyles}
+      className={classNames(buttonStyles, className)}
       onClick={handleClick}
       disabled={disabled}>
       {children}

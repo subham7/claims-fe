@@ -392,9 +392,7 @@ const ClaimStep1 = ({ formik, tokensInWallet, isLoading }) => {
 
         {/* {/* Next */}
 
-        <Button onClick={formik.handleSubmit} variant="normal">
-          Next
-        </Button>
+        <Button onClick={formik.handleSubmit}>Next</Button>
       </form>
     </>
   );
