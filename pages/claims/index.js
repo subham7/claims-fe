@@ -7,18 +7,15 @@ import { useRouter } from "next/router";
 
 import claimsBanner from "../../public/assets/images/claimsBanner.png";
 import ClaimsCard from "../../src/components/claimsPageComps/ClaimsCard";
-// import { getClaimsByUserAddress } from "../../src/api/claims";
-import { useConnectWallet } from "@web3-onboard/react";
 import useSmartContract from "../../src/hooks/useSmartContract";
-// import WrongNetworkModal from "../../src/components/modals/WrongNetworkModal";
 import Layout1 from "../../src/components/layouts/layout1";
 import { subgraphQuery } from "../../src/utils/subgraphs";
 import { CLAIMS_SUBGRAPH_URL_POLYGON } from "../../src/api";
 import { QUERY_ALL_CLAIMS_OF_CREATOR } from "../../src/api/graphql/queries";
+import { useAccount } from "wagmi";
 
 const useStyles = makeStyles({
   container: {
-    marginTop: "120px",
     display: "flex",
     gap: "30px",
     marginBottom: "60px",
@@ -93,8 +90,7 @@ const Claims = () => {
     router.push("/claims/form");
   };
 
-  const [{ wallet }] = useConnectWallet();
-  const walletAddress = wallet?.accounts[0].address;
+  const { address: walletAddress } = useAccount();
 
   useEffect(() => {
     const fetchClaims = async () => {
@@ -162,8 +158,6 @@ const Claims = () => {
             width={400}
           />
         </div>
-
-        {/* {networkId && networkId !== "0x89" && <WrongNetworkModal />} */}
       </div>
     </Layout1>
   );

@@ -27,14 +27,14 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import ProposalActionForm from "./ProposalActionForm";
 import { proposalValidationSchema } from "../createClubComps/ValidationSchemas";
 import { convertToWeiGovernance } from "../../utils/globalFunctions";
-import { useConnectWallet } from "@web3-onboard/react";
 import { useRouter } from "next/router";
 import { createProposal } from "../../api/proposal";
 import { fetchProposals } from "../../utils/proposal";
 import { useDispatch, useSelector } from "react-redux";
 import { setProposalList } from "../../redux/reducers/proposal";
-import Web3 from "web3";
 import { getWhiteListMerkleRoot } from "api/whitelist";
+import { useAccount, useNetwork } from "wagmi";
+import Web3 from "web3";
 
 const useStyles = makeStyles({
   modalStyle: {
@@ -68,13 +68,9 @@ const CreateProposalDialog = ({
   const dispatch = useDispatch();
 
   const { clubId } = router.query;
-  const [{ wallet }] = useConnectWallet();
-
-  const walletAddress = Web3.utils.toChecksumAddress(
-    wallet?.accounts[0].address,
-  );
-
-  const networkId = wallet?.chains[0].id;
+  const { address: walletAddress } = useAccount();
+  const { chain } = useNetwork();
+  const networkId = Web3.utils.numberToHex(chain?.id);
 
   const tokenType = useSelector((state) => {
     return state.club.clubData.tokenType;

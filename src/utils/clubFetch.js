@@ -10,7 +10,6 @@ import {
   addErc721ClubDetails,
   addFactoryData,
 } from "../redux/reducers/club";
-import { useConnectWallet } from "@web3-onboard/react";
 
 import {
   addContractAddress,
@@ -25,21 +24,20 @@ import { SUBGRAPH_URL_GOERLI, SUBGRAPH_URL_POLYGON, getRpcUrl } from "../api";
 import { getSafeSdk } from "./helper";
 import useSmartContractMethods from "../hooks/useSmartContractMethods";
 import useSmartContract from "../hooks/useSmartContract";
+import { useAccount, useNetwork } from "wagmi";
 
 const ClubFetch = (Component) => {
   const RetrieveDataComponent = () => {
     const [tracker, setTracker] = useState(false);
     const router = useRouter();
     const dispatch = useDispatch();
-    const [{ wallet }] = useConnectWallet();
-    const networkId = wallet?.chains[0]?.id;
+    const { chain } = useNetwork();
+    const networkId = Web3.utils.numberToHex(chain?.id);
     useSmartContract();
 
-    const walletAddress = Web3.utils.toChecksumAddress(
-      wallet?.accounts[0].address,
-    );
+    const { address: walletAddress } = useAccount();
 
-    if (wallet) {
+    if (walletAddress) {
       localStorage.setItem("wallet", walletAddress);
     }
 
@@ -125,7 +123,7 @@ const ClubFetch = (Component) => {
 
     const checkUserExists = useCallback(async () => {
       try {
-        if ((daoAddress && wallet) || (jid && wallet)) {
+        if ((daoAddress && walletAddress) || (jid && walletAddress)) {
           if (reduxClubData.gnosisAddress) {
             const factoryData = await getDaoDetails(
               daoAddress ? daoAddress : jid,
@@ -244,7 +242,6 @@ const ClubFetch = (Component) => {
       }
     }, [
       daoAddress,
-      wallet,
       jid,
       reduxClubData.gnosisAddress,
       reduxClubData.tokenType,
@@ -272,11 +269,18 @@ const ClubFetch = (Component) => {
     }, [daoAddress, dispatch, jid, networkId]);
 
     useEffect(() => {
-      if (wallet && networkId) {
+      if (walletAddress && networkId) {
         checkUserExists();
         checkClubExist();
       }
-    }, [checkUserExists, jid, daoAddress, wallet, networkId, checkClubExist]);
+    }, [
+      checkUserExists,
+      jid,
+      daoAddress,
+      walletAddress,
+      networkId,
+      checkClubExist,
+    ]);
 
     return (
       <div>

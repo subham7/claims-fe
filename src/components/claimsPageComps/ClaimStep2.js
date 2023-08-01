@@ -7,14 +7,11 @@ import {
   RadioGroup,
   Select,
   Typography,
-  Button,
 } from "@mui/material";
-import { TextField } from "@components/ui";
+import { Button, TextField } from "@components/ui";
 import { BsArrowLeft } from "react-icons/bs";
 import { makeStyles } from "@mui/styles";
 import React, { useRef, useState } from "react";
-import { useConnectWallet } from "@web3-onboard/react";
-import { useDispatch } from "react-redux";
 import { useRouter } from "next/router";
 import Link from "next/link";
 
@@ -23,7 +20,7 @@ const useStyles = makeStyles({
     display: "flex-col",
     alignItems: "center",
     justifyContent: "center",
-    margin: "170px auto",
+    margin: "20px auto",
     width: "550px",
     color: "white",
   },
@@ -74,7 +71,6 @@ const useStyles = makeStyles({
   },
 
   back: {
-    marginTop: "30px",
     fontWeight: "300",
     marginBottom: "4px",
     display: "flex",
@@ -123,8 +119,6 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading, formikStep1 }) => {
   const [loadingCsv, setLoadingCsv] = useState(false);
 
   const classes = useStyles();
-  const [{ wallet }] = useConnectWallet();
-  const dispatch = useDispatch();
 
   const hiddenFileInput = useRef(null);
 
@@ -418,7 +412,6 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading, formikStep1 }) => {
         {/* Next */}
         {finish ? (
           <Button
-            type="button"
             onClick={() => {
               router.push("/claims");
             }}
@@ -428,19 +421,8 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading, formikStep1 }) => {
           </Button>
         ) : (
           <Button
-            disabled={
-              csvError ||
-              (values.eligible === "everyone" &&
-                (values.customAmount <= 0 || !values.customAmount)) ||
-              (values.eligible === "token" &&
-                values.maximumClaim === "custom" &&
-                values.customAmount <= 0) ||
-              (values.eligible === "csv" && values.csvObject.length === 0)
-                ? true
-                : false
-            }
+            disabled={isButtonDisabled()}
             onClick={formik.handleSubmit}
-            variant="contained"
             className={classes.btn}>
             {loading || loadingCsv ? <CircularProgress /> : "Finish"}
           </Button>

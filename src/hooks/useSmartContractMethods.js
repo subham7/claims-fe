@@ -1,4 +1,3 @@
-import { useConnectWallet } from "@web3-onboard/react";
 import { useSelector } from "react-redux";
 import Web3 from "web3";
 import { RPC_URL, POLYGON_MAINNET_RPC_URL } from "../api";
@@ -10,10 +9,10 @@ import Safe, { Web3Adapter } from "@safe-global/protocol-kit";
 import { createProposalTxHash, getProposalTxHash } from "../api/proposal";
 import SafeApiKit from "@safe-global/api-kit";
 import { actionContractABI } from "../abis/newArch/actionContract";
+import { useAccount } from "wagmi";
 
 const useSmartContractMethods = () => {
-  const [{ wallet }] = useConnectWallet();
-  const walletAddress = wallet?.accounts[0]?.address;
+  const { address: walletAddress } = useAccount();
   const web3Call = new Web3(RPC_URL ? RPC_URL : POLYGON_MAINNET_RPC_URL);
 
   const isAssetsStoredOnGnosis = useSelector((state) => {

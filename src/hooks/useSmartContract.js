@@ -15,13 +15,13 @@ import {
 } from "../api";
 import { useDispatch, useSelector } from "react-redux";
 import { setContractInstances } from "../redux/reducers/contractInstances";
-import { useConnectWallet } from "@web3-onboard/react";
+import { useNetwork } from "wagmi";
 
 const useSmartContract = () => {
   const router = useRouter();
   const { jid: daoAddress, clubId, claimAddress, claimInsight } = router.query;
-  const [{ wallet }] = useConnectWallet();
-  const networkId = wallet?.chains[0].id;
+  const { chain } = useNetwork();
+  const networkId = Web3.utils.numberToHex(chain?.id);
   const dispatch = useDispatch();
 
   const FACTORY_CONTRACT_ADDRESS = useSelector(
