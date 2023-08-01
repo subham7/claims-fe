@@ -17,7 +17,7 @@ import { subgraphQuery } from "../../src/utils/subgraphs";
 import { CLAIMS_SUBGRAPH_URL_POLYGON } from "../../src/api";
 import { QUERY_CLAIM_DETAILS } from "../../src/api/graphql/queries";
 import Button from "@components/ui/button/Button";
-import { useAccount } from "wagmi";
+import { useAccount, useNetwork } from "wagmi";
 
 const ClaimAddress = () => {
   const classes = ClaimsStyles();
@@ -47,6 +47,8 @@ const ClaimAddress = () => {
   const [claimsDataSubgraph, setClaimsDataSubgraph] = useState([]);
 
   const { address: walletAddress } = useAccount();
+  const { chain } = useNetwork();
+  const networkId = Web3.utils.numberToHex(chain?.id);
 
   const { claimAddress } = router.query;
   useSmartContract();
@@ -241,6 +243,7 @@ const ClaimAddress = () => {
       setIsLoading(false);
     }
   }, [
+    networkId,
     claimAddress,
     claimableAmt,
     contractData?.daoToken,
