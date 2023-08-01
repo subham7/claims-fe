@@ -729,7 +729,7 @@ const ProposalDetail = () => {
   return (
     <>
       <Layout1 page={2}>
-        <Grid container spacing={6} paddingTop={10} mb={8}>
+        <Grid container spacing={6} paddingTop={2} mb={8}>
           <Grid item md={8.5}>
             {/* back button */}
             <Grid container spacing={1} ml={-4} onClick={() => router.back()}>
