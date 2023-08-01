@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
+import { useConnectWallet } from "@web3-onboard/react";
 import { useRouter } from "next/router";
 import { convertFromWeiGovernance } from "../../src/utils/globalFunctions";
 import { subgraphQuery } from "../../src/utils/subgraphs";
@@ -13,7 +14,6 @@ import ERC721 from "../../src/components/depositPageComps/ERC721/NewArch/ERC721"
 import ERC20 from "../../src/components/depositPageComps/ERC20/NewArch/ERC20";
 import useSmartContract from "../../src/hooks/useSmartContract";
 import { getWhitelistMerkleProof } from "api/whitelist";
-import { useAccount } from "wagmi";
 
 const Join = () => {
   const [daoDetails, setDaoDetails] = useState({
@@ -43,8 +43,8 @@ const Join = () => {
     tokenBDecimal: 0,
   });
   const [clubInfo, setClubInfo] = useState();
-
-  const { address: walletAddress } = useAccount();
+  const [{ wallet }] = useConnectWallet();
+  const walletAddress = wallet?.accounts[0].address;
 
   const router = useRouter();
   const { jid: daoAddress } = router.query;
@@ -192,10 +192,10 @@ const Join = () => {
   };
 
   useEffect(() => {
-    if (walletAddress && daoAddress && factoryContractCall) {
+    if (wallet && daoAddress && factoryContractCall) {
       fetchTokenGatingDetials();
     }
-  }, [walletAddress, daoAddress, factoryContractCall]);
+  }, [wallet, daoAddress, factoryContractCall]);
 
   useEffect(() => {
     if (TOKEN_TYPE === "erc20") {
@@ -216,7 +216,7 @@ const Join = () => {
           );
 
           const userDepositAmount = data?.users.find(
-            (user) => user.userAddress === walletAddress,
+            (user) => user.userAddress === wallet.accounts[0].address,
           )?.depositAmount;
           if (userDepositAmount !== undefined && +userDepositAmount > 0) {
             setRemainingClaimAmount(
@@ -239,13 +239,13 @@ const Join = () => {
         if (info.status === 200) setClubInfo(info.data[0]);
       };
       clubInfo();
-      walletAddress && fetchData();
+      wallet && fetchData();
       setLoading(false);
     } catch (error) {
       console.log(error);
       setLoading(false);
     }
-  }, [SUBGRAPH_URL, daoAddress, daoDetails, walletAddress]);
+  }, [SUBGRAPH_URL, daoAddress, daoDetails, wallet]);
 
   useEffect(() => {
     const fetchMerkleProof = async () => {

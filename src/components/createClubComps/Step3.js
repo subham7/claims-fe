@@ -13,6 +13,7 @@ import CustomSlider from "../slider";
 import AddCircleOutlinedIcon from "@mui/icons-material/AddCircleOutlined";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { Step3Styles } from "./CreateClubStyles";
+import { useConnectWallet } from "@web3-onboard/react";
 import Web3 from "web3";
 import { useCallback, useEffect } from "react";
 import { getSafeSdk, web3InstanceEthereum } from "../../utils/helper";
@@ -20,11 +21,11 @@ import { useState } from "react";
 import { useSelector } from "react-redux";
 import SafeApiKit from "@safe-global/api-kit";
 import { Web3Adapter } from "@safe-global/protocol-kit";
-import { useAccount } from "wagmi";
 
 export default function Step3(props) {
   const classes = Step3Styles();
-  const { address: walletAddress } = useAccount();
+  const [{ wallet }] = useConnectWallet();
+  const walletAddress = wallet.accounts[0].address;
 
   const GNOSIS_DATA = useSelector((state) => {
     return state.gnosis;
@@ -33,10 +34,10 @@ export default function Step3(props) {
   const [ownerAddresses, setOwnerAddresses] = useState();
   const [allSafeAddresses, setAllSafeAddresses] = useState();
 
-  // const index = props.formik.values.addressList.indexOf(
-  //   Web3.utils.toChecksumAddress(walletAddress),
-  // );
-  // if (index >= 0) props.formik.values.addressList.splice(index, 1);
+  const index = props.formik.values.addressList.indexOf(
+    Web3.utils.toChecksumAddress(walletAddress),
+  );
+  if (index >= 0) props.formik.values.addressList.splice(index, 1);
 
   const fetchOwners = async (gnosisAddress) => {
     const safeSdk = await getSafeSdk(
@@ -82,9 +83,8 @@ export default function Step3(props) {
     if (props.formik.values.safeAddress?.length)
       fetchOwners(props.formik.values.safeAddress);
   }, [props.formik.values.safeAddress]);
-
   return (
-    <div className="f-d f-vt t-pad-d w-100">
+    <div className="f-d f-vt tb-pad-d">
       {/* <Grid item md={12} mt={5}> */}
       <Typography variant="body" className="text-blue">
         Collectively manage your club’s investments through governance that

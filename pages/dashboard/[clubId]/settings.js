@@ -1,3 +1,4 @@
+import { useConnectWallet } from "@web3-onboard/react";
 import dayjs from "dayjs";
 import { useRouter } from "next/router";
 import React, { useCallback, useEffect, useState } from "react";
@@ -13,7 +14,6 @@ import { getAssetsByDaoAddress } from "../../../src/api/assets";
 import useSmartContractMethods from "../../../src/hooks/useSmartContractMethods";
 import { getClubInfo } from "../../../src/api/club";
 import Layout1 from "@components/layouts/layout1";
-import { useAccount } from "wagmi";
 
 const Settings = () => {
   const [daoDetails, setDaoDetails] = useState({
@@ -53,7 +53,9 @@ const Settings = () => {
   const [treasuryAmount, setTreasuryAmount] = useState(0);
   const [clubInfo, setClubInfo] = useState();
 
-  const { address: walletAddress } = useAccount();
+  const [{ wallet }] = useConnectWallet();
+
+  const walletAddress = wallet?.accounts[0].address;
 
   const SUBGRAPH_URL = useSelector((state) => {
     return state.gnosis.subgraphUrl;

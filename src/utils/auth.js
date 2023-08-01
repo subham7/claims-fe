@@ -1,23 +1,29 @@
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/router";
 import { useDispatch } from "react-redux";
 import { Backdrop, Button } from "@mui/material";
 import { fetchConfig } from "../api/config";
 import { updateDynamicAddress } from "../api";
 import Web3 from "web3";
+import { useConnectWallet } from "@web3-onboard/react";
 import { useCallback } from "react";
-import { useAccount } from "wagmi";
 
 export default function ProtectRoute(Component) {
   const AuthenticatedComponent = () => {
+    const router = useRouter();
     const dispatch = useDispatch();
+    const [{ wallet }] = useConnectWallet();
+    // const [walletAddress, setWalletAddress] = useState(null);
 
     const [redirect, setRedirect] = useState(false);
     const [networks, setNetworks] = useState([]);
     const [networksFetched, setNetworksFetched] = useState(false);
 
-    const { address: walletAddress } = useAccount();
+    const walletAddress = Web3.utils.toChecksumAddress(
+      wallet?.accounts[0].address,
+    );
 
-    if (walletAddress) {
+    if (wallet) {
       localStorage.setItem("wallet", walletAddress);
     }
 
@@ -42,13 +48,14 @@ export default function ProtectRoute(Component) {
     };
 
     const handleMount = useCallback(async () => {
-      if (!walletAddress) {
+      if (!wallet) {
         setRedirect(true);
       }
       if (redirect) {
+        // router.push("/");
         setRedirect(false);
       }
-    }, [redirect, walletAddress]);
+    }, [redirect, wallet]);
 
     useEffect(() => {
       handleMount();
@@ -83,7 +90,7 @@ export default function ProtectRoute(Component) {
       }
     }, [networksFetched, networks, dispatch]);
 
-    return walletAddress ? (
+    return wallet ? (
       <Component wallet={walletAddress} />
     ) : (
       <Backdrop

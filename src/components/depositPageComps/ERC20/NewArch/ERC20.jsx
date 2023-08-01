@@ -12,12 +12,12 @@ import About from "../../ERC721/NewArch/About";
 import Header from "../../ERC721/NewArch/Header";
 import classes from "./ERC20.module.scss";
 import * as yup from "yup";
+import { useConnectWallet } from "@web3-onboard/react";
 import { useRouter } from "next/router";
 import { Alert, Backdrop, CircularProgress } from "@mui/material";
 import dayjs from "dayjs";
 import Deposit from "./Deposit";
 import ERC20Details from "./ERC20Details";
-import { useAccount } from "wagmi";
 
 const ERC20 = ({
   clubInfo,
@@ -39,8 +39,9 @@ const ERC20 = ({
   const [showMessage, setShowMessage] = useState(false);
   const [depositSuccessfull, setDepositSuccessfull] = useState(false);
 
-  const { address: walletAddress } = useAccount();
+  const [{ wallet }] = useConnectWallet();
   const router = useRouter();
+  const walletAddress = wallet?.accounts[0].address;
 
   const day = Math.floor(new Date().getTime() / 1000.0);
   const day1 = dayjs.unix(day);
@@ -121,6 +122,7 @@ const ERC20 = ({
       remainingClaimAmount === undefined ? minValidation : remainingValidation,
     onSubmit: async (values) => {
       try {
+        console.log(values.tokenInput);
         setLoading(true);
         const inputValue = convertToWeiGovernance(
           values.tokenInput,
