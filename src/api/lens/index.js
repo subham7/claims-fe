@@ -11,3 +11,12 @@ export const fetchProfileFollowers = gql`
     }
   }
 `;
+
+export const fetchProfileByHandle = gql`
+  query fetchProfileByHandle($handle: Handle!) {
+    profile(request: { handle: $handle }) {
+      id
+      name
+    }
+  }
+`;

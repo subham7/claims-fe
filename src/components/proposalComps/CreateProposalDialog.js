@@ -35,7 +35,7 @@ import { setProposalList } from "../../redux/reducers/proposal";
 import { getWhiteListMerkleRoot } from "api/whitelist";
 import { useAccount, useNetwork } from "wagmi";
 import Web3 from "web3";
-import { fetchProfileFollowers } from "api/lens";
+import { fetchProfileByHandle, fetchProfileFollowers } from "api/lens";
 import { apolloClient } from "../../../pages/_app";
 
 const useStyles = makeStyles({
@@ -108,9 +108,14 @@ const CreateProposalDialog = ({
 
   const handleFetchFollowers = async (profileId) => {
     try {
+      const profile = await apolloClient.query({
+        query: fetchProfileByHandle,
+        variables: { handle: profileId },
+      });
+
       const { data } = await apolloClient.query({
         query: fetchProfileFollowers,
-        variables: { profileId },
+        variables: { profileId: profile?.data?.profile?.id },
       });
 
       let followersAddressArray = [];

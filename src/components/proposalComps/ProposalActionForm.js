@@ -690,11 +690,11 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
           ml={3}
           mt={2}
           sx={{ marginLeft: "0 !important" }}>
-          <Typography variant="proposalBody">Lens Profile Id *</Typography>
+          <Typography variant="proposalBody">Lens username *</Typography>
           <TextField
             variant="outlined"
             className={classes.textField}
-            placeholder="johndoe"
+            placeholder="johndoe.lens"
             type="text"
             name="lensId"
             id="lensId"
