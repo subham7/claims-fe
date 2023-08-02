@@ -199,6 +199,11 @@ input::-webkit-inner-spin-button {
 .w-100 {
   width: 100%;
 }
+
+.w-80 {
+  width: 80%;
+}
+
 .w-70 {
   width: 70%;
 }
@@ -213,6 +218,10 @@ input::-webkit-inner-spin-button {
 /* border classes*/
 .br-50 {
   border-radius: 50px !important;
+}
+
+.c-pointer {
+  cursor: pointer;
 }
 
 .navbar {
