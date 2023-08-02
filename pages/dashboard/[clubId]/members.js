@@ -239,7 +239,9 @@ const Test = () => {
           <Grid item md={9} mb={8}>
             <Grid container mb={4}>
               <Grid item>
-                <Typography variant="title">Station Members</Typography>
+                <Typography variant="title" sx={{ fontSize: "xx-large" }}>
+                  Station Members
+                </Typography>
               </Grid>
             </Grid>
             <Grid

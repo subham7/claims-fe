@@ -254,7 +254,7 @@ const Proposal = () => {
               md: "column",
               lg: "row",
             }}>
-            <Grid item>
+            <Grid item mb={4}>
               <Typography variant="heading">All Proposals</Typography>
             </Grid>
             <Grid

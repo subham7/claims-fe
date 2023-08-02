@@ -109,7 +109,9 @@ const Transactions = () => {
     <>
       <Layout1 page={6}>
         <div className="f-d f-vt f-h-c w-80">
-          <Typography variant="heading">Station Transactions</Typography>
+          <Typography variant="heading" style={{ marginBottom: "16px" }}>
+            Station Transactions
+          </Typography>
           {/* Table */}
           <div>
             {/* Loader */}
