@@ -26,7 +26,14 @@ dayjs.extend(relativeTime);
 
 const Transactions = () => {
   const filters = ["All", "Withdrawal", "Received"];
-  const tableHeaders = ["Hash", "Tag", "Age", "From/To", "Value (in $)"];
+  const tableHeaders = [
+    "Token",
+    "Txn Hash",
+    "Tag",
+    "Age",
+    "From/To",
+    "Tokens ",
+  ];
   const gnosisAddress = useSelector((state) => {
     return state.club.clubData.gnosisAddress;
   });
@@ -53,7 +60,17 @@ const Transactions = () => {
     results.forEach((item) => {
       item.transfers?.forEach((res) => {
         if (res?.type === "ETHER_TRANSFER") {
-          transfers = [...transfers, { ...res, tokenInfo: { decimals: 18 } }];
+          transfers = [
+            ...transfers,
+            {
+              ...res,
+              tokenInfo: {
+                decimals: 18,
+                name: "MATIC",
+                logoUri: "https://cryptologos.cc/logos/polygon-matic-logo.svg",
+              },
+            },
+          ];
         }
         if (res?.type === "ERC20_TRANSFER") {
           transfers = [...transfers, res];
@@ -90,7 +107,7 @@ const Transactions = () => {
   return (
     <>
       <Layout1 page={6}>
-        <div className="f-d f-vt f-h-c w-70">
+        <div className="f-d f-vt f-h-c w-80">
           <Typography variant="heading">Station Transactions</Typography>
           {/* Table */}
           <div>
@@ -125,6 +142,24 @@ const Transactions = () => {
                         return (
                           <>
                             <TableRow key={txn.transactionHash}>
+                              <TableCell align="left">
+                                <div className="f-d f-v-c f-gap-8">
+                                  <img
+                                    style={{ width: "25px", height: "25px" }}
+                                    src={txn.tokenInfo?.logoUri}
+                                    alt=""
+                                    onError={({ target }) => {
+                                      target.onerror = null;
+                                      target.src =
+                                        "https://cryptologos.cc/logos/ethereum-eth-logo.svg";
+                                    }}
+                                  />
+                                  <Typography variant="info">
+                                    {txn.tokenInfo?.name}
+                                  </Typography>
+                                </div>
+                              </TableCell>
+
                               <TableCell align="left">
                                 <div className="f-d f-v-c f-gap-8">
                                   <Typography
@@ -220,12 +255,9 @@ const Transactions = () => {
 
                               <TableCell align="left">
                                 <Typography variant="body">
-                                  {txn.value == 0 || txn.value == null
+                                  {txn.value == null
                                     ? "---"
-                                    : `$ ${
-                                        txn.value /
-                                        10 ** txn.tokenInfo?.decimals
-                                      }`}
+                                    : txn.value / 10 ** txn.tokenInfo?.decimals}
                                 </Typography>
                               </TableCell>
                             </TableRow>
