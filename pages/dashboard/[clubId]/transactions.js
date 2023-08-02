@@ -1,3 +1,4 @@
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Web3 from "web3";
@@ -7,7 +8,6 @@ import { useSelector } from "react-redux";
 import ExpandCircleDownIcon from "@mui/icons-material/ExpandCircleDown";
 import Layout1 from "@components/layouts/layout1";
 import { Typography } from "@components/ui";
-import Image from "next/image";
 import {
   TableBody,
   Table,
@@ -26,13 +26,11 @@ dayjs.extend(relativeTime);
 
 const Transactions = () => {
   const filters = ["All", "Withdrawal", "Received"];
-  const tableHeaders = ["Token", "Tag", "Age", "From/To", "Value (in $)"];
+  const tableHeaders = ["Hash", "Tag", "Age", "From/To", "Value (in $)"];
   const gnosisAddress = useSelector((state) => {
     return state.club.clubData.gnosisAddress;
   });
 
-  const [search, setSearch] = useState("");
-  const [filter, setFilter] = useState(filters[0]);
   const [loading, setLoading] = useState(true);
   const [transactions, setTransactions] = useState([]);
   const [paginationSettings, setPaginationSettings] = useState({
@@ -50,8 +48,17 @@ const Transactions = () => {
     const results = res.data.results;
     let transfers = [];
 
-    results.forEach((res) => {
-      transfers = [...transfers, ...res.transfers];
+    /*      (1) filter for type 'ETHER_TRANSFER' & 'ERC20_TRANSFER' 
+            (2) In case of 'ETHER_TRANSFER' decimals = 18 else its already present */
+    results.forEach((item) => {
+      item.transfers?.forEach((res) => {
+        if (res?.type === "ETHER_TRANSFER") {
+          transfers = [...transfers, { ...res, tokenInfo: { decimals: 18 } }];
+        }
+        if (res?.type === "ERC20_TRANSFER") {
+          transfers = [...transfers, res];
+        }
+      });
     });
     setLoading(false);
     setTransactions(transfers);
@@ -61,11 +68,13 @@ const Transactions = () => {
     fetchTransactions();
   }, []);
 
-  const handleFilterChange = () => {};
-
   const handleAddressClick = (event, address) => {
     event.preventDefault();
     window.open(`https://polygonscan.com/address/${address}`);
+  };
+  const handleHashClick = (event, hash) => {
+    event.preventDefault();
+    window.open(`https://polygonscan.com/tx/${hash}`);
   };
 
   const handleChangePage = (event, newPage) => {
@@ -83,40 +92,6 @@ const Transactions = () => {
       <Layout1 page={6}>
         <div className="f-d f-vt f-h-c w-70">
           <Typography variant="heading">Station Transactions</Typography>
-          {/* Search Bar
-          <div className="f-d f-v-c f-h-s f-gap-16 w-70">
-            <div className="w-70">
-              <TextField
-                variant="outlined"
-                label="Search"
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment>
-                      <SearchIcon />
-                    </InputAdornment>
-                  ),
-                  style: { borderRadius: "50px" },
-                }}
-              />
-            </div>
-            <div className="w-30">
-              <Select
-                className="w-100 br-50"
-                value={"All"}
-                onChange={handleFilterChange}
-                inputProps={{
-                  "aria-label": "Without label",
-                }}
-                name="clubTokenType"
-                id="clubTokenType">
-                {filters.map((item) => (
-                  <MenuItem key={item} value={item}>
-                    {item}
-                  </MenuItem>
-                ))}
-              </Select>
-            </div>
-          </div> */}
           {/* Table */}
           <div>
             {/* Loader */}
@@ -146,20 +121,29 @@ const Transactions = () => {
                         page * noOfRowsPerPage,
                         (page + 1) * noOfRowsPerPage,
                       )
-                      .map((txn, key) => {
+                      .map((txn) => {
                         return (
                           <>
                             <TableRow key={txn.transactionHash}>
                               <TableCell align="left">
                                 <div className="f-d f-v-c f-gap-8">
-                                  <Image
-                                    width={30}
-                                    height={30}
-                                    src={txn.tokenInfo.logoUri}
-                                    alt=""
-                                  />
-                                  <Typography variant="info">
-                                    {txn.tokenInfo.name}
+                                  <Typography
+                                    variant="info"
+                                    className="text-blue">
+                                    <Tooltip title={txn.transactionHash}>
+                                      <div
+                                        className="f-d f-gap-8 c-pointer"
+                                        onClick={(e) => {
+                                          handleHashClick(
+                                            e,
+                                            txn.transactionHash,
+                                          );
+                                        }}>
+                                        {txn.transactionHash?.substring(0, 10) +
+                                          "... "}
+                                        <OpenInNewIcon className="c-pointer" />
+                                      </div>
+                                    </Tooltip>
                                   </Typography>
                                 </div>
                               </TableCell>
@@ -183,7 +167,7 @@ const Transactions = () => {
                                     label="Received"
                                   />
                                 )}
-                                {txn.from.toLowerCase() === gnosisAddress && (
+                                {txn.from?.toLowerCase() === gnosisAddress && (
                                   <Chip
                                     icon={
                                       <ExpandCircleDownIcon
@@ -206,7 +190,7 @@ const Transactions = () => {
 
                               <TableCell align="left">
                                 <Typography variant="info">
-                                  {dayjs(txn.executionDate).fromNow()}
+                                  {dayjs(txn?.executionDate).fromNow()}
                                 </Typography>
                               </TableCell>
 
@@ -214,12 +198,12 @@ const Transactions = () => {
                                 <Typography
                                   variant="info"
                                   className="text-blue">
-                                  <Tooltip title={txn.from}>
+                                  <Tooltip title={txn?.from}>
                                     <a
                                       onClick={(e) => {
                                         handleAddressClick(e, txn.from);
                                       }}>
-                                      {txn.from.substring(0, 10) + "... "}
+                                      {txn.from?.substring(0, 10) + "... "}
                                     </a>
                                   </Tooltip>
                                   /
@@ -228,7 +212,7 @@ const Transactions = () => {
                                       onClick={(e) => {
                                         handleAddressClick(e, txn.to);
                                       }}>
-                                      {txn.to.substring(0, 10) + "..."}
+                                      {txn.to?.substring(0, 10) + "..."}
                                     </a>
                                   </Tooltip>
                                 </Typography>
@@ -236,7 +220,12 @@ const Transactions = () => {
 
                               <TableCell align="left">
                                 <Typography variant="body">
-                                  ${txn.value / 10 ** txn.tokenInfo.decimals}
+                                  {txn.value == 0 || txn.value == null
+                                    ? "---"
+                                    : `$ ${
+                                        txn.value /
+                                        10 ** txn.tokenInfo?.decimals
+                                      }`}
                                 </Typography>
                               </TableCell>
                             </TableRow>
