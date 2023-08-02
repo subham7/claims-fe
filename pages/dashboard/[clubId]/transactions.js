@@ -21,11 +21,11 @@ import {
   TableContainer,
   Paper,
 } from "@mui/material";
+import ClubFetch from "utils/clubFetch";
 
 dayjs.extend(relativeTime);
 
 const Transactions = () => {
-  const filters = ["All", "Withdrawal", "Received"];
   const tableHeaders = [
     "Token",
     "Txn Hash",
@@ -48,6 +48,7 @@ const Transactions = () => {
   const { page, noOfRowsPerPage } = paginationSettings;
 
   const fetchTransactions = async () => {
+    setLoading(true);
     const address = Web3.utils.toChecksumAddress(gnosisAddress);
     const res = await axios.get(
       `https://safe-transaction-polygon.safe.global/api/v1/safes/${address}/all-transactions/?ordering=hash&executed=true&queued=false`,
@@ -82,8 +83,8 @@ const Transactions = () => {
   };
 
   useEffect(() => {
-    fetchTransactions();
-  }, []);
+    if (gnosisAddress) fetchTransactions();
+  }, [gnosisAddress]);
 
   const handleAddressClick = (event, address) => {
     event.preventDefault();
@@ -286,4 +287,4 @@ const Transactions = () => {
   );
 };
 
-export default Transactions;
+export default ClubFetch(Transactions);
