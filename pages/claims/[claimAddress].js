@@ -8,7 +8,7 @@ import { Alert, CircularProgress, Tooltip } from "@mui/material";
 import { getUserProofAndBalance } from "../../src/api/claims";
 import Layout1 from "../../src/components/layouts/layout1";
 import Countdown from "react-countdown";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { addClaimEnabled } from "../../src/redux/reducers/createClaim";
 import useSmartContractMethods from "../../src/hooks/useSmartContractMethods";
 import useSmartContract from "../../src/hooks/useSmartContract";
@@ -53,6 +53,10 @@ const ClaimAddress = () => {
 
   const { claimAddress } = router.query;
   useSmartContract();
+
+  let contractInstances = useSelector((state) => {
+    return state.contractInstances.contractInstances;
+  });
 
   const {
     claimSettings,
@@ -247,6 +251,7 @@ const ClaimAddress = () => {
     isEligibleForTokenGated,
     networkId,
     claimAddress,
+    contractInstances,
   ]);
 
   const claimHandler = async () => {
