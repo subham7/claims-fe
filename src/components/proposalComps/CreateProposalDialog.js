@@ -35,6 +35,8 @@ import { setProposalList } from "../../redux/reducers/proposal";
 import { getWhiteListMerkleRoot } from "api/whitelist";
 import { useAccount, useNetwork } from "wagmi";
 import Web3 from "web3";
+import { fetchProfileFollowers } from "api/lens";
+import { apolloClient } from "../../../pages/_app";
 
 const useStyles = makeStyles({
   modalStyle: {
@@ -104,6 +106,24 @@ const CreateProposalDialog = ({
     setLoaderOpen(false);
   };
 
+  const handleFetchFollowers = async (profileId) => {
+    try {
+      const { data } = await apolloClient.query({
+        query: fetchProfileFollowers,
+        variables: { profileId },
+      });
+
+      let followersAddressArray = [];
+      data?.followers?.items.map((follower) => {
+        followersAddressArray.push(follower.wallet.address);
+      });
+
+      return followersAddressArray;
+    } catch (error) {
+      console.error("Error fetching followers:", error.message);
+    }
+  };
+
   const proposal = useFormik({
     initialValues: {
       tokenType: tokenType,
@@ -131,6 +151,7 @@ const CreateProposalDialog = ({
       ownerAddress: "",
       safeThreshold: 1,
       csvObject: [],
+      lensId: "",
     },
     validationSchema: proposalValidationSchema,
     onSubmit: async (values) => {
@@ -248,20 +269,37 @@ const CreateProposalDialog = ({
           },
         ];
       }
-      if (values.actionCommand === "whitelist deposit") {
-        // api call for merkle root,
+      if (
+        values.actionCommand === "whitelist deposit" ||
+        values.actionCommand === "whitelist with lens followers"
+      ) {
+        let data;
+        let followersAddresses;
 
-        const data = {
-          daoAddress,
-          whitelist: values.csvObject,
-        };
+        if (values.actionCommand === "whitelist deposit") {
+          data = {
+            daoAddress,
+            whitelist: values.csvObject,
+          };
+        } else if (values.actionCommand === "whitelist with lens followers") {
+          followersAddresses = await handleFetchFollowers(values.lensId);
+
+          data = {
+            daoAddress,
+            whitelist: followersAddresses,
+          };
+        }
 
         const merkleRoot = await getWhiteListMerkleRoot(networkId, data);
         commands = [
           {
-            executionId: 10,
+            executionId: values.actionCommand === "whitelist deposit" ? 10 : 11,
             merkleRoot: merkleRoot,
-            whitelistAddresses: values.csvObject,
+            lensId:
+              values.actionCommand === "whitelist with lens followers"
+                ? values.lensId
+                : null,
+            whitelistAddresses: followersAddresses,
             allowWhitelisting: true,
             usdcTokenSymbol: "USDC",
             usdcTokenDecimal: 6,

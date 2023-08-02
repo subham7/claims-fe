@@ -5,8 +5,7 @@ import store from "../src/redux/store";
 import { Provider } from "react-redux";
 import "../styles/fonts.css";
 import "../styles/globals.scss";
-import { ApolloProvider } from "@apollo/client";
-import { SUBGRAPH_CLIENT } from "../src/api";
+import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
 import { AnnouncementProvider } from "../src/components/AnnouncementContext";
 import AnnouncementBar from "../src/components/AnnouncementBar";
 import {
@@ -17,6 +16,13 @@ import {
 import { Web3Modal } from "@web3modal/react";
 import { configureChains, createConfig, WagmiConfig } from "wagmi";
 import { polygon } from "wagmi/chains";
+
+const API_URL = "https://api.lens.dev";
+
+export const apolloClient = new ApolloClient({
+  uri: API_URL,
+  cache: new InMemoryCache(),
+});
 
 const chains = [polygon];
 const projectId = "35b31c8ffbfd99ac267e35ecdf60530a";
@@ -32,7 +38,7 @@ const ethereumClient = new EthereumClient(wagmiConfig, chains);
 
 function MyApp({ Component, pageProps }) {
   return (
-    <ApolloProvider client={SUBGRAPH_CLIENT}>
+    <ApolloProvider client={apolloClient}>
       <WagmiConfig config={wagmiConfig}>
         <Provider store={store}>
           <ThemeProvider theme={theme("dark")}>

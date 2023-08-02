@@ -23,7 +23,7 @@
     "*.js": "eslint --cache --fix"
   },
   "dependencies": {
-    "@apollo/client": "^3.7.13",
+    "@apollo/client": "^3.7.17",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.8.1",
     "@metamask/jazzicon": "^2.0.0",
@@ -47,7 +47,7 @@
     "ethers": "^6.3.0",
     "file-saver": "^2.0.5",
     "formik": "^2.2.9",
-    "graphql": "^16.6.0",
+    "graphql": "^16.7.1",
     "html2canvas": "^1.4.1",
     "keccak256": "^1.0.6",
     "merkletreejs": "^0.3.9",

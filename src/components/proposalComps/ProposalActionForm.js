@@ -136,6 +136,9 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
         <MenuItem key={8} value="whitelist deposit">
           Whitelist Deposit
         </MenuItem>
+        <MenuItem key={8} value="whitelist with lens followers">
+          Whitelist with Lens followers
+        </MenuItem>
       </Select>
 
       {formik.values.actionCommand === "Distribute token to members" ? (
@@ -680,6 +683,28 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
             </span>
           </Typography>
         </>
+      ) : formik.values.actionCommand === "whitelist with lens followers" ? (
+        <Grid
+          container
+          direction={"column"}
+          ml={3}
+          mt={2}
+          sx={{ marginLeft: "0 !important" }}>
+          <Typography variant="proposalBody">Lens Profile Id *</Typography>
+          <TextField
+            variant="outlined"
+            className={classes.textField}
+            placeholder="johndoe"
+            type="text"
+            name="lensId"
+            id="lensId"
+            value={formik.values.lensId}
+            onChange={formik.handleChange}
+            error={formik.touched.lensId && Boolean(formik.errors.lensId)}
+            helperText={formik.touched.lensId && Boolean(formik.errors.lensId)}
+            onWheel={(event) => event.target.blur()}
+          />
+        </Grid>
       ) : null}
     </Stack>
   );

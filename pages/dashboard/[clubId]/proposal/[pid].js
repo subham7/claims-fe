@@ -458,7 +458,8 @@ const ProposalDetail = () => {
       ];
     } else if (
       proposalData.commands[0].executionId === 3 ||
-      proposalData.commands[0].executionId === 10
+      proposalData.commands[0].executionId === 10 ||
+      proposalData.commands[0].executionId === 11
     ) {
       ABI = FactoryContractABI.abi;
     } else if (clubData.tokenType === "erc721") {
@@ -617,7 +618,10 @@ const ProposalDetail = () => {
       ]);
     }
 
-    if (proposalData.commands[0].executionId === 10) {
+    if (
+      proposalData.commands[0].executionId === 10 ||
+      proposalData.commands[0].executionId === 11
+    ) {
       let iface = new Interface(ABI);
       let iface2 = new Interface(Erc20Dao.abi);
 
@@ -645,7 +649,8 @@ const ProposalDetail = () => {
       proposalStatus,
       airdropContractAddress,
       proposalData.commands[0].executionId === 3 ||
-        proposalData.commands[0].executionId === 10
+        proposalData.commands[0].executionId === 10 ||
+        proposalData.commands[0].executionId === 11
         ? FACTORY_CONTRACT_ADDRESS
         : "",
       GNOSIS_TRANSACTION_URL,
