@@ -462,15 +462,10 @@ const DashboardIndex = () => {
             </Stack>
           </Card>
           <Grid item md={9}>
-            <Stack>
-              <Grid item>
-                <Stack
-                  direction={{ xs: "column", sm: "column" }}
-                  spacing={{ xs: 1, sm: 2, md: 4 }}>
-                  <Grid container item mt={8}>
-                    <Typography variant="heading">All Assets</Typography>
-                  </Grid>
-                  {/* <Grid container mt={4}>
+            <div style={{ marginTop: "32px" }}>
+              <Typography variant="heading">All Assets</Typography>
+            </div>
+            {/* <Grid container mt={4}>
                       <Grid item>
                         <ButtonDropDown label="All" />
                       </Grid>
@@ -492,121 +487,109 @@ const DashboardIndex = () => {
                         />
                       </Grid>
                     </Grid> */}
-                  <div
-                    style={{
-                      display: "flex",
-                      gap: "10px",
-                      alignItems: "flex-start",
-                    }}>
-                    <GiTwoCoins size={30} />
-                    <Typography variant="subheading">Tokens</Typography>
-                  </div>
+            <div
+              style={{
+                display: "flex",
+                gap: "10px",
+                alignItems: "flex-start",
+                marginTop: "20px",
+                marginBottom: "12px",
+              }}>
+              <GiTwoCoins size={30} />
+              <Typography variant="subheading">Tokens</Typography>
+            </div>
 
-                  {tokenDetails.tokenPriceList ? (
-                    tokenDetails.tokenPriceList.length ? (
-                      //  if the tokens length is > 0 and if the token[0] (by default it will be Ether) is not equal to 0, then show the table
-                      <TableContainer
-                        component={Paper}
-                        sx={{ overflowX: "hidden" }}>
-                        <Table sx={{ minWidth: 809 }} aria-label="simple table">
-                          <TableHead>
-                            <TableRow>
-                              <TableCell align="left" variant="tableHeading">
-                                Token
+            {tokenDetails.tokenPriceList ? (
+              tokenDetails.tokenPriceList.length ? (
+                //  if the tokens length is > 0 and if the token[0] (by default it will be Ether) is not equal to 0, then show the table
+                <TableContainer component={Paper} sx={{ overflowX: "hidden" }}>
+                  <Table aria-label="simple table">
+                    <TableHead>
+                      <TableRow>
+                        <TableCell align="left" variant="tableHeading">
+                          Token
+                        </TableCell>
+                        <TableCell align="left" variant="tableHeading">
+                          Balance
+                        </TableCell>
+                        <TableCell align="left" variant="tableHeading">
+                          Value (USD)
+                        </TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {tokenDetails.tokenPriceList.map((data, key) => {
+                        if (data.value !== 0) {
+                          return (
+                            <TableRow key={key}>
+                              <TableCell align="left" variant="tableBody">
+                                {data.symbol}
                               </TableCell>
-                              <TableCell align="left" variant="tableHeading">
-                                Balance
+                              <TableCell align="left" variant="tableBody">
+                                {data.value}
                               </TableCell>
-                              <TableCell align="left" variant="tableHeading">
-                                Value (USD)
+                              <TableCell align="left" variant="tableBody">
+                                ${data.usd.usdValue.toFixed(2)}
                               </TableCell>
                             </TableRow>
-                          </TableHead>
-                          <TableBody>
-                            {tokenDetails.tokenPriceList.map((data, key) => {
-                              if (data.value !== 0) {
-                                return (
-                                  <TableRow
-                                    key={key}
-                                    sx={{
-                                      "&:last-child td, &:last-child th": {
-                                        border: 0,
-                                      },
-                                    }}>
-                                    <TableCell align="left" variant="tableBody">
-                                      <></>
-                                      {data.symbol}
-                                    </TableCell>
-                                    <TableCell align="left" variant="tableBody">
-                                      {data.value}
-                                    </TableCell>
-                                    <TableCell align="left" variant="tableBody">
-                                      ${data.usd.usdValue.toFixed(2)}
-                                    </TableCell>
-                                  </TableRow>
-                                );
-                              }
-                            })}
-                          </TableBody>
-                        </Table>
-                      </TableContainer>
-                    ) : (
-                      <Grid
-                        item
-                        justifyContent="center"
-                        alignItems="center"
-                        md={10}>
-                        <img
-                          src="/assets/images/tokens_banner.png"
-                          alt="token-banner"
-                          className={classes.banner}
-                        />
-                      </Grid>
-                    )
-                  ) : null}
+                          );
+                        }
+                      })}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              ) : (
+                <Grid item justifyContent="center" alignItems="center" md={10}>
+                  <img
+                    src="/assets/images/tokens_banner.png"
+                    alt="token-banner"
+                    className={classes.banner}
+                  />
+                </Grid>
+              )
+            ) : null}
 
-                  <div
-                    style={{
-                      display: "flex",
-                      gap: "10px",
-                      alignItems: "flex-start",
-                    }}>
-                    <IoColorPalette size={30} />
-                    <Typography variant="subheading">Collectibles</Typography>
-                  </div>
-                  <Grid container maxWidth={"70vw"}>
-                    {nftData ? (
-                      nftData.length > 0 ? (
-                        nftData.map((data, key) => (
-                          <Grid item m={1} key={key} gap={3}>
-                            <CollectionCard
-                              metadata={data.metadata}
-                              tokenName={data.name}
-                              tokenSymbol={data.symbol}
-                              nftData={data}
-                            />
-                          </Grid>
-                        ))
-                      ) : (
-                        <Grid
-                          item
-                          justifyContent="center"
-                          alignItems="center"
-                          md={10}>
-                          <img
-                            src="/assets/images/NFT_banner.png"
-                            alt="proposal-banner"
-                            className={classes.banner}
-                          />
-                        </Grid>
-                      )
-                    ) : null}
+            <div
+              style={{
+                display: "flex",
+                gap: "10px",
+                alignItems: "flex-start",
+                marginTop: "20px",
+                marginBottom: "12px",
+              }}>
+              <IoColorPalette size={30} />
+              <Typography variant="subheading">Collectibles</Typography>
+            </div>
+            <Grid container maxWidth={"70vw"}>
+              {nftData ? (
+                nftData.length > 0 ? (
+                  nftData.map((data, key) => (
+                    <Grid item m={1} key={key} gap={3}>
+                      <CollectionCard
+                        metadata={data.metadata}
+                        tokenName={data.name}
+                        tokenSymbol={data.symbol}
+                        nftData={data}
+                      />
+                    </Grid>
+                  ))
+                ) : (
+                  <Grid
+                    item
+                    justifyContent="center"
+                    alignItems="center"
+                    md={10}>
+                    <img
+                      src="/assets/images/NFT_banner.png"
+                      alt="proposal-banner"
+                      className={classes.banner}
+                    />
                   </Grid>
-                  {/* <Typography mt={16} mb={5} variant="subHeading">Off-chain investments</Typography>
+                )
+              ) : null}
+            </Grid>
+            {/* <Typography mt={16} mb={5} variant="subHeading">Off-chain investments</Typography>
                       <BasicTable /> */}
-                </Stack>
-              </Grid>
-            </Stack>
           </Grid>
         </Grid>
         <Grid item md={3}>
