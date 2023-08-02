@@ -108,12 +108,8 @@ const ClaimAddress = () => {
         const isClaimed = claimedAmt > 0 ? true : false;
         setAlreadyClaimed(isClaimed);
 
-        const remainingAmt = claimableAmt - claimedAmt;
-
-        const remainingAmtInUSD = convertFromWeiGovernance(
-          claimedAmt,
-          decimals,
-        );
+        const remainingAmt = +claimableAmt - +claimedAmt;
+        const remainingAmtInUSD = remainingAmt / 10 ** decimals;
 
         setClaimRemaining(remainingAmt);
 
@@ -192,7 +188,7 @@ const ClaimAddress = () => {
           // getting claim amount from API
           const { amount } = await getUserProofAndBalance(
             contractData.merkleRoot,
-            walletAddress,
+            walletAddress.toLowerCase(),
           );
 
           setClaimableAmt(amount);
@@ -225,7 +221,7 @@ const ClaimAddress = () => {
 
           const userProofAndBalance = await getUserProofAndBalance(
             contractData?.merkleRoot,
-            walletAddress,
+            walletAddress.toLowerCase(),
           );
 
           setClaimableAmt(userProofAndBalance.amount);
@@ -244,13 +240,13 @@ const ClaimAddress = () => {
       setIsLoading(false);
     }
   }, [
+    claimableAmt,
+    walletAddress,
+    contractData?.daoToken,
+    contractData?.merkleRoot,
+    isEligibleForTokenGated,
     networkId,
     claimAddress,
-    claimableAmt,
-    contractData?.daoToken,
-    dispatch,
-    isEligibleForTokenGated,
-    walletAddress,
   ]);
 
   const claimHandler = async () => {
@@ -262,7 +258,7 @@ const ClaimAddress = () => {
       ) {
         const data = await getUserProofAndBalance(
           contractData?.merkleRoot,
-          walletAddress,
+          walletAddress.toLowerCase(),
         );
 
         const { amount, proof } = data;
@@ -294,12 +290,9 @@ const ClaimAddress = () => {
 
         const claimedAmt = await claimAmount(walletAddress);
 
-        const remainingAmt = claimableAmt - claimedAmt;
+        const remainingAmt = +claimableAmt - +claimedAmt;
 
-        const remainingAmtInUSD = convertFromWeiGovernance(
-          remainingAmt,
-          decimalOfToken,
-        );
+        const remainingAmtInUSD = remainingAmt / 10 ** decimalOfToken;
 
         if (+claimBalanceRemaing >= +remainingAmtInUSD) {
           setClaimRemaining(remainingAmt);
@@ -543,12 +536,7 @@ const ClaimAddress = () => {
                 <div className={classes.claims}>
                   <p className={classes.claimAmt}>
                     {claimRemaining
-                      ? Number(
-                          convertFromWeiGovernance(
-                            claimRemaining,
-                            decimalOfToken,
-                          ),
-                        ).toFixed(2)
+                      ? Number(claimRemaining / 10 ** decimalOfToken).toFixed(2)
                       : 0}
                     {/* {claimRemaining ? claimRemaining : 0} */}
                   </p>
