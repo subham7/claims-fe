@@ -97,6 +97,7 @@ const CreateProposalDialog = ({
   const [loaderOpen, setLoaderOpen] = useState(false);
   const [openSnackBar, setOpenSnackBar] = useState(false);
   const [failed, setFailed] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleSnackBarClose = (event, reason) => {
     if (reason === "clickaway") {
@@ -113,6 +114,12 @@ const CreateProposalDialog = ({
         variables: { handle: profileId },
       });
 
+      if (profile?.data?.profile === null) {
+        setOpenSnackBar(true);
+        setFailed(true);
+        throw new Error("No profile found");
+      }
+
       const { data } = await apolloClient.query({
         query: fetchProfileFollowers,
         variables: { profileId: profile?.data?.profile?.id },
@@ -125,7 +132,8 @@ const CreateProposalDialog = ({
 
       return followersAddressArray;
     } catch (error) {
-      console.error("Error fetching followers:", error.message);
+      setErrorMessage(error.message);
+      setLoaderOpen(false);
     }
   };
 
@@ -160,187 +168,202 @@ const CreateProposalDialog = ({
     },
     validationSchema: proposalValidationSchema,
     onSubmit: async (values) => {
-      let commands;
-      setLoaderOpen(true);
-      if (values.actionCommand === "Distribute token to members") {
-        const airDropTokenDecimal = tokenData.find(
-          (token) => token.token_address === values.airdropToken,
-        ).decimals;
-        commands = [
-          {
-            executionId: 0,
-            airDropToken: values.airdropToken,
-            airDropAmount: convertToWeiGovernance(
-              values.amountToAirdrop,
-              airDropTokenDecimal,
-            ).toString(),
-            airDropCarryFee: values.carryFee,
-            usdcTokenSymbol: "USDC",
-            usdcTokenDecimal: 6,
-            usdcGovernanceTokenDecimal: 18,
-          },
-        ];
-      }
-      if (values.actionCommand === "Mint club token") {
-        commands = [
-          {
-            executionId: 1,
-            mintGTAddresses: [values.userAddress],
-            mintGTAmounts: [
-              clubData.tokenType === "erc20"
-                ? convertToWeiGovernance(values.amountOfTokens, 18)
-                : values.amountOfTokens721,
-            ],
-            usdcTokenSymbol: "USDC",
-            usdcTokenDecimal: 6,
-            usdcGovernanceTokenDecimal: 18,
-          },
-        ];
-      }
-      if (values.actionCommand === "Update Governance Settings") {
-        commands = [
-          {
-            executionId: 2,
-            quorum: values.quorum,
-            threshold: values.threshold,
-            usdcTokenSymbol: "USDC",
-            usdcTokenDecimal: 6,
-            usdcGovernanceTokenDecimal: 18,
-          },
-        ];
-      }
-      if (values.actionCommand === "Change total raise amount") {
-        commands = [
-          {
-            executionId: 3,
-            totalDeposits: values.totalDeposit,
-            usdcTokenSymbol: "USDC",
-            usdcTokenDecimal: 6,
-            usdcGovernanceTokenDecimal: 18,
-          },
-        ];
-      }
-      if (values.actionCommand === "Send token to an address") {
-        const tokenDecimal = tokenData.find(
-          (token) => token.token_address === values.customToken,
-        ).decimals;
-        commands = [
-          {
-            executionId: 4,
-            customToken: values.customToken,
-            customTokenAmounts: [
-              convertToWeiGovernance(values.amountToSend, tokenDecimal),
-            ],
-            customTokenAddresses: [values.recieverAddress],
-            usdcTokenSymbol: "USDC",
-            usdcTokenDecimal: 6,
-            usdcGovernanceTokenDecimal: 18,
-          },
-        ];
-      }
-      if (values.actionCommand === "Send nft to an address") {
-        commands = [
-          {
-            executionId: 5,
-            customNft: values.customNft,
-            customNftToken: values.customNftToken,
-            customTokenAddresses: [values.recieverAddress],
-            usdcTokenSymbol: "USDC",
-            usdcTokenDecimal: 6,
-            usdcGovernanceTokenDecimal: 18,
-          },
-        ];
-      }
-      if (values.actionCommand === "Add signer") {
-        commands = [
-          {
-            executionId: 6,
-            ownerAddress: values.ownerAddress,
-            usdcTokenSymbol: "USDC",
-            usdcTokenDecimal: 6,
-            usdcGovernanceTokenDecimal: 18,
-          },
-        ];
-      }
-      if (values.actionCommand === "Remove signer") {
-        commands = [
-          {
-            executionId: 7,
-            ownerAddress: values.ownerAddress,
-            safeThreshold: values.safeThreshold,
-            usdcTokenSymbol: "USDC",
-            usdcTokenDecimal: 6,
-            usdcGovernanceTokenDecimal: 18,
-          },
-        ];
-      }
-      if (
-        values.actionCommand === "whitelist deposit" ||
-        values.actionCommand === "whitelist with lens followers"
-      ) {
-        let data;
-        let followersAddresses;
+      try {
+        let commands;
+        setLoaderOpen(true);
+        if (values.actionCommand === "Distribute token to members") {
+          const airDropTokenDecimal = tokenData.find(
+            (token) => token.token_address === values.airdropToken,
+          ).decimals;
+          commands = [
+            {
+              executionId: 0,
+              airDropToken: values.airdropToken,
+              airDropAmount: convertToWeiGovernance(
+                values.amountToAirdrop,
+                airDropTokenDecimal,
+              ).toString(),
+              airDropCarryFee: values.carryFee,
+              usdcTokenSymbol: "USDC",
+              usdcTokenDecimal: 6,
+              usdcGovernanceTokenDecimal: 18,
+            },
+          ];
+        }
+        if (values.actionCommand === "Mint club token") {
+          commands = [
+            {
+              executionId: 1,
+              mintGTAddresses: [values.userAddress],
+              mintGTAmounts: [
+                clubData.tokenType === "erc20"
+                  ? convertToWeiGovernance(values.amountOfTokens, 18)
+                  : values.amountOfTokens721,
+              ],
+              usdcTokenSymbol: "USDC",
+              usdcTokenDecimal: 6,
+              usdcGovernanceTokenDecimal: 18,
+            },
+          ];
+        }
+        if (values.actionCommand === "Update Governance Settings") {
+          commands = [
+            {
+              executionId: 2,
+              quorum: values.quorum,
+              threshold: values.threshold,
+              usdcTokenSymbol: "USDC",
+              usdcTokenDecimal: 6,
+              usdcGovernanceTokenDecimal: 18,
+            },
+          ];
+        }
+        if (values.actionCommand === "Change total raise amount") {
+          commands = [
+            {
+              executionId: 3,
+              totalDeposits: values.totalDeposit,
+              usdcTokenSymbol: "USDC",
+              usdcTokenDecimal: 6,
+              usdcGovernanceTokenDecimal: 18,
+            },
+          ];
+        }
+        if (values.actionCommand === "Send token to an address") {
+          const tokenDecimal = tokenData.find(
+            (token) => token.token_address === values.customToken,
+          ).decimals;
+          commands = [
+            {
+              executionId: 4,
+              customToken: values.customToken,
+              customTokenAmounts: [
+                convertToWeiGovernance(values.amountToSend, tokenDecimal),
+              ],
+              customTokenAddresses: [values.recieverAddress],
+              usdcTokenSymbol: "USDC",
+              usdcTokenDecimal: 6,
+              usdcGovernanceTokenDecimal: 18,
+            },
+          ];
+        }
+        if (values.actionCommand === "Send nft to an address") {
+          commands = [
+            {
+              executionId: 5,
+              customNft: values.customNft,
+              customNftToken: values.customNftToken,
+              customTokenAddresses: [values.recieverAddress],
+              usdcTokenSymbol: "USDC",
+              usdcTokenDecimal: 6,
+              usdcGovernanceTokenDecimal: 18,
+            },
+          ];
+        }
+        if (values.actionCommand === "Add signer") {
+          commands = [
+            {
+              executionId: 6,
+              ownerAddress: values.ownerAddress,
+              usdcTokenSymbol: "USDC",
+              usdcTokenDecimal: 6,
+              usdcGovernanceTokenDecimal: 18,
+            },
+          ];
+        }
+        if (values.actionCommand === "Remove signer") {
+          commands = [
+            {
+              executionId: 7,
+              ownerAddress: values.ownerAddress,
+              safeThreshold: values.safeThreshold,
+              usdcTokenSymbol: "USDC",
+              usdcTokenDecimal: 6,
+              usdcGovernanceTokenDecimal: 18,
+            },
+          ];
+        }
+        if (
+          values.actionCommand === "whitelist deposit" ||
+          values.actionCommand === "whitelist with lens followers"
+        ) {
+          let data;
+          let followersAddresses;
 
-        if (values.actionCommand === "whitelist deposit") {
-          data = {
-            daoAddress,
-            whitelist: values.csvObject,
-          };
-        } else if (values.actionCommand === "whitelist with lens followers") {
-          followersAddresses = await handleFetchFollowers(values.lensId);
+          if (values.actionCommand === "whitelist deposit") {
+            data = {
+              daoAddress,
+              whitelist: values.csvObject,
+            };
+          } else if (values.actionCommand === "whitelist with lens followers") {
+            followersAddresses = await handleFetchFollowers(values.lensId);
 
-          data = {
-            daoAddress,
-            whitelist: followersAddresses,
-          };
+            if (
+              followersAddresses === undefined ||
+              !followersAddresses.length
+            ) {
+              setOpenSnackBar(true);
+              setFailed(true);
+              setLoaderOpen(false);
+              throw new Error("No followers found");
+            }
+
+            data = {
+              daoAddress,
+              whitelist: followersAddresses,
+            };
+          }
+
+          const merkleRoot = await getWhiteListMerkleRoot(networkId, data);
+          commands = [
+            {
+              executionId:
+                values.actionCommand === "whitelist deposit" ? 10 : 11,
+              merkleRoot: merkleRoot,
+              lensId:
+                values.actionCommand === "whitelist with lens followers"
+                  ? values.lensId
+                  : null,
+              whitelistAddresses: followersAddresses,
+              allowWhitelisting: true,
+              usdcTokenSymbol: "USDC",
+              usdcTokenDecimal: 6,
+              usdcGovernanceTokenDecimal: 18,
+            },
+          ];
         }
 
-        const merkleRoot = await getWhiteListMerkleRoot(networkId, data);
-        commands = [
-          {
-            executionId: values.actionCommand === "whitelist deposit" ? 10 : 11,
-            merkleRoot: merkleRoot,
-            lensId:
-              values.actionCommand === "whitelist with lens followers"
-                ? values.lensId
-                : null,
-            whitelistAddresses: followersAddresses,
-            allowWhitelisting: true,
-            usdcTokenSymbol: "USDC",
-            usdcTokenDecimal: 6,
-            usdcGovernanceTokenDecimal: 18,
-          },
-        ];
+        const payload = {
+          name: values.proposalTitle,
+          description: values.proposalDescription,
+          createdBy: walletAddress,
+          clubId: clubId,
+          votingDuration: dayjs(values.proposalDeadline).unix(),
+          votingOptions: values.optionList,
+          commands: commands,
+          type: values.typeOfProposal,
+          tokenType: clubData.tokenType,
+          daoAddress: daoAddress,
+        };
+
+        const createRequest = createProposal(payload, NETWORK_HEX);
+        createRequest.then(async (result) => {
+          if (result.status !== 201) {
+            setOpenSnackBar(true);
+            setFailed(true);
+            setLoaderOpen(false);
+          } else {
+            const proposalData = await fetchProposals(clubId);
+            dispatch(setProposalList(proposalData));
+            setOpenSnackBar(true);
+            setFailed(false);
+            setOpen(false);
+            setLoaderOpen(false);
+          }
+        });
+      } catch (error) {
+        setErrorMessage(error.message);
       }
-
-      const payload = {
-        name: values.proposalTitle,
-        description: values.proposalDescription,
-        createdBy: walletAddress,
-        clubId: clubId,
-        votingDuration: dayjs(values.proposalDeadline).unix(),
-        votingOptions: values.optionList,
-        commands: commands,
-        type: values.typeOfProposal,
-        tokenType: clubData.tokenType,
-        daoAddress: daoAddress,
-      };
-
-      const createRequest = createProposal(payload, NETWORK_HEX);
-      createRequest.then(async (result) => {
-        if (result.status !== 201) {
-          setOpenSnackBar(true);
-          setFailed(true);
-          setLoaderOpen(false);
-        } else {
-          const proposalData = await fetchProposals(clubId);
-          dispatch(setProposalList(proposalData));
-          setOpenSnackBar(true);
-          setFailed(false);
-          setOpen(false);
-          setLoaderOpen(false);
-        }
-      });
     },
   });
 
@@ -630,7 +653,7 @@ const CreateProposalDialog = ({
             onClose={handleSnackBarClose}
             severity="error"
             sx={{ width: "100%" }}>
-            Proposal creation failed!
+            {errorMessage ? errorMessage : "Proposal creation failed!"}
           </Alert>
         )}
       </Snackbar>

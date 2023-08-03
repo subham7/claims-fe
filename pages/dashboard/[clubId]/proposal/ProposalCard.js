@@ -278,10 +278,8 @@ const ProposalCard = ({ proposal }) => {
                   <Chip
                     className={classes.timeLeftChip}
                     label={
-                      <div className="f-d f-v-c tb-pad-1">
-                        <Typography variant="info">
-                          Lens profile id:{" "}
-                        </Typography>
+                      <div className="f-d f-v-c tb-pad-1 f-gap-4">
+                        <Typography variant="info">Lens profile id:</Typography>
                         <Typography variant="info">
                           {proposal?.commands[0]?.lensId}
                         </Typography>
