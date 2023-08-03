@@ -22,8 +22,8 @@ export default function ERC20Step2(props) {
           date and/or funding target is met.
         </Typography>
 
-        <Card className={classes.cardPadding} mb={2}>
-          <div className="f-d f-v-c f-h-sb tb-pad-1 lr-pad-1">
+        <Card>
+          <div className="f-d f-v-c f-h-sb">
             <div>
               <Typography variant="body" className="text-blue">
                 Last date for members to deposit & join
@@ -44,8 +44,8 @@ export default function ERC20Step2(props) {
 
         <br />
 
-        <Card className={classes.cardPadding} mb={2}>
-          <div className="f-d f-v-c f-h-sb lr-pad-1 tb-pad-1">
+        <Card>
+          <div className="f-d f-v-c f-h-sb">
             <div>
               <Typography variant="body" className="text-blue">
                 Min. deposit amount per wallet *
@@ -83,8 +83,8 @@ export default function ERC20Step2(props) {
 
         <br />
 
-        <Card className={classes.cardPadding} mb={2}>
-          <div className="f-d f-v-c f-h-sb lr-pad-1 tb-pad-1">
+        <Card mb={2}>
+          <div className="f-d f-v-c f-h-sb">
             <div>
               <Typography variant="body" className="text-blue">
                 Max. deposit amount per wallet *
@@ -122,8 +122,8 @@ export default function ERC20Step2(props) {
 
         <br />
 
-        <Card className={classes.cardPadding} mb={2}>
-          <div className="f-d f-v-c f-h-sb lr-pad-1 tb-pad-1">
+        <Card>
+          <div className="f-d f-v-c f-h-sb">
             <div>
               <Typography variant="body" className="text-blue">
                 Total amount your Station is raising *
@@ -161,8 +161,8 @@ export default function ERC20Step2(props) {
 
         <br />
 
-        <Card className={classes.cardPadding} mb={2}>
-          <div className="f-d f-v-c f-h-sb lr-pad-1 tb-pad-1">
+        <Card>
+          <div className="f-d f-v-c f-h-sb">
             <div>
               <Typography variant="body" className="text-blue">
                 Price per token *
@@ -197,6 +197,7 @@ export default function ERC20Step2(props) {
             </div>
           </div>
         </Card>
+        <br />
       </div>
     </>
   );
