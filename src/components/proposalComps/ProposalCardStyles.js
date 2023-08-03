@@ -1,6 +1,12 @@
 import { makeStyles } from "@mui/styles";
 
 export const ProposalCardStyles = makeStyles({
+  proposalHeader: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: "1rem",
+  },
   clubAssets: {
     fontFamily: "Whyte",
     fontSize: "48px",

@@ -17,7 +17,7 @@ import {
   TextField,
 } from "@mui/material";
 import { Typography } from "@components/ui";
-import { Box, Stack } from "@mui/system";
+import { Stack } from "@mui/system";
 import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import CollectionCard from "../../../src/components/cardcontent";
@@ -327,7 +327,7 @@ const DashboardIndex = () => {
                       <Skeleton variant="rectangular" width={100} height={25} />
                     )}
                   </Typography>
-                  <Grid container item direction="row" paddingBottom={4} mt={1}>
+                  <Grid container item direction="row" paddingBottom={2}>
                     <Typography variant="info" className="text-blue">
                       {clubDetails.noOfMembers} Members
                     </Typography>
@@ -338,30 +338,28 @@ const DashboardIndex = () => {
             <Stack direction={{ xs: "column", sm: "row" }} spacing={3}>
               <Grid item xs={12}>
                 <Card className={classes.firstCard}>
-                  <Grid item mt={4} ml={5}>
-                    <Grid container item direction="column">
-                      <Typography vvariant="body">Total assets</Typography>
-                      <Typography variant="heading">
-                        $
-                        {tokenDetails ? (
-                          tokenDetails.treasuryAmount
-                        ) : (
-                          <Skeleton
-                            variant="rectangular"
-                            width={100}
-                            height={25}
-                          />
-                        )}
-                      </Typography>
-                      <CardMedia
-                        image="/assets/images/treasurywallet.png"
-                        component="img"
-                        className={classes.media}
-                        alt="ownershipshare"
-                        sx={{ position: "sticky", zIndex: 0 }}
-                      />
-                    </Grid>
-                  </Grid>
+                  <div className={classes.statsDiv}>
+                    <Typography vvariant="body">Total assets</Typography>
+                    <Typography variant="heading">
+                      $
+                      {tokenDetails ? (
+                        tokenDetails.treasuryAmount
+                      ) : (
+                        <Skeleton
+                          variant="rectangular"
+                          width={100}
+                          height={25}
+                        />
+                      )}
+                    </Typography>
+                  </div>
+                  <CardMedia
+                    image="/assets/images/treasurywallet.png"
+                    component="img"
+                    className={classes.media}
+                    alt="ownershipshare"
+                    sx={{ position: "sticky", zIndex: 0 }}
+                  />
                 </Card>
               </Grid>
               <Grid
@@ -380,97 +378,62 @@ const DashboardIndex = () => {
                       paddingTop: "px",
                     }}
                   />
-                  <Grid container>
-                    <Grid
-                      container
-                      direction={{
-                        xs: "column",
-                        sm: "column",
-                        md: "column",
-                      }}>
-                      <Grid item>
-                        <Box className={classes.cardOverlay}>
-                          <Typography variant="body">My share</Typography>
-                          {clubData.tokenType === "erc721" ? (
-                            <Typography variant="heading">
-                              {balanceOfUser !== null &&
-                              clubTokenMinted !== null &&
-                              isNaN(
-                                Number(
-                                  (convertFromWeiGovernance(balanceOfUser, 18) /
-                                    convertFromWeiGovernance(
-                                      clubTokenMinted,
-                                      18,
-                                    )) *
-                                    100,
-                                ).toFixed(2),
-                              )
-                                ? 0
-                                : Number(
-                                    (convertFromWeiGovernance(
-                                      balanceOfUser,
-                                      18,
-                                    ) /
-                                      convertFromWeiGovernance(
-                                        clubTokenMinted,
-                                        18,
-                                      )) *
-                                      100,
-                                  ).toFixed(2)}
-                              %
-                            </Typography>
-                          ) : (
-                            <Typography variant="heading">
-                              {balanceOfUser !== null &&
-                              clubTokenMinted !== null &&
-                              isNaN(
-                                Number(
-                                  (convertFromWeiGovernance(balanceOfUser, 18) /
-                                    convertFromWeiGovernance(
-                                      clubTokenMinted,
-                                      18,
-                                    )) *
-                                    100,
-                                ).toFixed(2),
-                              )
-                                ? 0
-                                : Number(
-                                    (convertFromWeiGovernance(
-                                      balanceOfUser,
-                                      18,
-                                    ) /
-                                      convertFromWeiGovernance(
-                                        clubTokenMinted,
-                                        18,
-                                      )) *
-                                      100,
-                                  ).toFixed(2)}
-                              %
-                            </Typography>
-                          )}
-                          {balanceOfUser === null || balanceOfUser === 0 ? (
-                            <Typography>
-                              {balanceOfUser} {symbol}
-                            </Typography>
-                          ) : null}
-                        </Box>
-                      </Grid>
-                    </Grid>
-                  </Grid>
+                  <div className={classes.statsDiv}>
+                    <Typography variant="body">My share</Typography>
+                    {clubData.tokenType === "erc721" ? (
+                      <Typography variant="heading">
+                        {balanceOfUser !== null &&
+                        clubTokenMinted !== null &&
+                        isNaN(
+                          Number(
+                            (convertFromWeiGovernance(balanceOfUser, 18) /
+                              convertFromWeiGovernance(clubTokenMinted, 18)) *
+                              100,
+                          ).toFixed(2),
+                        )
+                          ? 0
+                          : Number(
+                              (convertFromWeiGovernance(balanceOfUser, 18) /
+                                convertFromWeiGovernance(clubTokenMinted, 18)) *
+                                100,
+                            ).toFixed(2)}
+                        %
+                      </Typography>
+                    ) : (
+                      <Typography variant="heading">
+                        {balanceOfUser !== null &&
+                        clubTokenMinted !== null &&
+                        isNaN(
+                          Number(
+                            (convertFromWeiGovernance(balanceOfUser, 18) /
+                              convertFromWeiGovernance(clubTokenMinted, 18)) *
+                              100,
+                          ).toFixed(2),
+                        )
+                          ? 0
+                          : Number(
+                              (convertFromWeiGovernance(balanceOfUser, 18) /
+                                convertFromWeiGovernance(clubTokenMinted, 18)) *
+                                100,
+                            ).toFixed(2)}
+                        %
+                      </Typography>
+                    )}
+                    {balanceOfUser === null || balanceOfUser === 0 ? (
+                      <Typography>
+                        {balanceOfUser} {symbol}
+                      </Typography>
+                    ) : null}
+                  </div>
                 </Card>
               </Grid>
             </Stack>
           </Card>
           <Grid item md={9}>
-            <Stack>
-              <Grid item>
-                <Stack
-                  direction={{ xs: "column", sm: "column" }}
-                  spacing={{ xs: 1, sm: 2, md: 4 }}>
-                  <Grid container item mt={8}>
-                    <Typography variant="heading">All Assets</Typography>
-                  </Grid>
-                  {/* <Grid container mt={4}>
+            <div style={{ marginTop: "32px" }}>
+              <Typography variant="heading">All Assets</Typography>
+            </div>
+            {/* <Grid container mt={4}>
                       <Grid item>
                         <ButtonDropDown label="All" />
                       </Grid>
@@ -492,121 +455,109 @@ const DashboardIndex = () => {
                         />
                       </Grid>
                     </Grid> */}
-                  <div
-                    style={{
-                      display: "flex",
-                      gap: "10px",
-                      alignItems: "flex-start",
-                    }}>
-                    <GiTwoCoins size={30} />
-                    <Typography variant="subheading">Tokens</Typography>
-                  </div>
+            <div
+              style={{
+                display: "flex",
+                gap: "10px",
+                alignItems: "flex-start",
+                marginTop: "20px",
+                marginBottom: "12px",
+              }}>
+              <GiTwoCoins size={30} />
+              <Typography variant="subheading">Tokens</Typography>
+            </div>
 
-                  {tokenDetails.tokenPriceList ? (
-                    tokenDetails.tokenPriceList.length ? (
-                      //  if the tokens length is > 0 and if the token[0] (by default it will be Ether) is not equal to 0, then show the table
-                      <TableContainer
-                        component={Paper}
-                        sx={{ overflowX: "hidden" }}>
-                        <Table sx={{ minWidth: 809 }} aria-label="simple table">
-                          <TableHead>
-                            <TableRow>
-                              <TableCell align="left" variant="tableHeading">
-                                Token
+            {tokenDetails.tokenPriceList ? (
+              tokenDetails.tokenPriceList.length ? (
+                //  if the tokens length is > 0 and if the token[0] (by default it will be Ether) is not equal to 0, then show the table
+                <TableContainer component={Paper} sx={{ overflowX: "hidden" }}>
+                  <Table aria-label="simple table">
+                    <TableHead>
+                      <TableRow>
+                        <TableCell align="left" variant="tableHeading">
+                          Token
+                        </TableCell>
+                        <TableCell align="left" variant="tableHeading">
+                          Balance
+                        </TableCell>
+                        <TableCell align="left" variant="tableHeading">
+                          Value (USD)
+                        </TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {tokenDetails.tokenPriceList.map((data, key) => {
+                        if (data.value !== 0) {
+                          return (
+                            <TableRow key={key}>
+                              <TableCell align="left" variant="tableBody">
+                                {data.symbol}
                               </TableCell>
-                              <TableCell align="left" variant="tableHeading">
-                                Balance
+                              <TableCell align="left" variant="tableBody">
+                                {data.value}
                               </TableCell>
-                              <TableCell align="left" variant="tableHeading">
-                                Value (USD)
+                              <TableCell align="left" variant="tableBody">
+                                ${data.usd.usdValue.toFixed(2)}
                               </TableCell>
                             </TableRow>
-                          </TableHead>
-                          <TableBody>
-                            {tokenDetails.tokenPriceList.map((data, key) => {
-                              if (data.value !== 0) {
-                                return (
-                                  <TableRow
-                                    key={key}
-                                    sx={{
-                                      "&:last-child td, &:last-child th": {
-                                        border: 0,
-                                      },
-                                    }}>
-                                    <TableCell align="left" variant="tableBody">
-                                      <></>
-                                      {data.symbol}
-                                    </TableCell>
-                                    <TableCell align="left" variant="tableBody">
-                                      {data.value}
-                                    </TableCell>
-                                    <TableCell align="left" variant="tableBody">
-                                      ${data.usd.usdValue.toFixed(2)}
-                                    </TableCell>
-                                  </TableRow>
-                                );
-                              }
-                            })}
-                          </TableBody>
-                        </Table>
-                      </TableContainer>
-                    ) : (
-                      <Grid
-                        item
-                        justifyContent="center"
-                        alignItems="center"
-                        md={10}>
-                        <img
-                          src="/assets/images/tokens_banner.png"
-                          alt="token-banner"
-                          className={classes.banner}
-                        />
-                      </Grid>
-                    )
-                  ) : null}
+                          );
+                        }
+                      })}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              ) : (
+                <Grid item justifyContent="center" alignItems="center" md={10}>
+                  <img
+                    src="/assets/images/tokens_banner.png"
+                    alt="token-banner"
+                    className={classes.banner}
+                  />
+                </Grid>
+              )
+            ) : null}
 
-                  <div
-                    style={{
-                      display: "flex",
-                      gap: "10px",
-                      alignItems: "flex-start",
-                    }}>
-                    <IoColorPalette size={30} />
-                    <Typography variant="subheading">Collectibles</Typography>
-                  </div>
-                  <Grid container maxWidth={"70vw"}>
-                    {nftData ? (
-                      nftData.length > 0 ? (
-                        nftData.map((data, key) => (
-                          <Grid item m={1} key={key} gap={3}>
-                            <CollectionCard
-                              metadata={data.metadata}
-                              tokenName={data.name}
-                              tokenSymbol={data.symbol}
-                              nftData={data}
-                            />
-                          </Grid>
-                        ))
-                      ) : (
-                        <Grid
-                          item
-                          justifyContent="center"
-                          alignItems="center"
-                          md={10}>
-                          <img
-                            src="/assets/images/NFT_banner.png"
-                            alt="proposal-banner"
-                            className={classes.banner}
-                          />
-                        </Grid>
-                      )
-                    ) : null}
+            <div
+              style={{
+                display: "flex",
+                gap: "10px",
+                alignItems: "flex-start",
+                marginTop: "20px",
+                marginBottom: "12px",
+              }}>
+              <IoColorPalette size={30} />
+              <Typography variant="subheading">Collectibles</Typography>
+            </div>
+            <Grid container maxWidth={"70vw"}>
+              {nftData ? (
+                nftData.length > 0 ? (
+                  nftData.map((data, key) => (
+                    <Grid item m={1} key={key} gap={3}>
+                      <CollectionCard
+                        metadata={data.metadata}
+                        tokenName={data.name}
+                        tokenSymbol={data.symbol}
+                        nftData={data}
+                      />
+                    </Grid>
+                  ))
+                ) : (
+                  <Grid
+                    item
+                    justifyContent="center"
+                    alignItems="center"
+                    md={10}>
+                    <img
+                      src="/assets/images/NFT_banner.png"
+                      alt="proposal-banner"
+                      className={classes.banner}
+                    />
                   </Grid>
-                  {/* <Typography mt={16} mb={5} variant="subHeading">Off-chain investments</Typography>
+                )
+              ) : null}
+            </Grid>
+            {/* <Typography mt={16} mb={5} variant="subHeading">Off-chain investments</Typography>
                       <BasicTable /> */}
-                </Stack>
-              </Grid>
-            </Stack>
           </Grid>
         </Grid>
         <Grid item md={3}>
@@ -644,7 +595,7 @@ const DashboardIndex = () => {
             </Card>
           </Stack>
 
-          <Stack mt={2}>
+          <Stack mt={3}>
             {isAdmin ? (
               <Card className={classes.thirdCard}>
                 <Grid container m={2}>
@@ -728,7 +679,7 @@ const DashboardIndex = () => {
             ) : null}
           </Stack>
 
-          <Stack mt={2}>
+          <Stack mt={3}>
             <Card className={classes.fourthCard}>
               <Grid container m={2}>
                 <Grid item>

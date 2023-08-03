@@ -49,11 +49,9 @@ export default function NFTStep2(props) {
       </Typography>
 
       {/* Image input card */}
-      <Card className="tb-mar-1">
-        <div
-          style={{ justifyContent: "space-between" }}
-          className="f-d lr-pad-1">
-          <div className="f-d f-vt lr-pad-2 tb-pad-2">
+      <Card>
+        <div style={{ justifyContent: "space-between" }} className="f-d">
+          <div className="f-d f-vt tb-pad-2">
             <Typography variant="body">Upload Image</Typography>
 
             <div className="f-d tb-pad-1">
@@ -122,9 +120,11 @@ export default function NFTStep2(props) {
         Token Rules
       </Typography>
 
+      <br />
+
       {/* Membership transfer input */}
-      <Card className="tb-pad-0 tb-mar-1">
-        <div className="f-d f-v-c f-h-sb lr-pad-1">
+      <Card>
+        <div className="f-d f-v-c f-h-sb">
           <Typography variant="body">Make membership transferable</Typography>
           <FormControlLabel
             control={
@@ -144,9 +144,10 @@ export default function NFTStep2(props) {
         </div>
       </Card>
 
+      <br />
       {/* price of nft input */}
-      <Card className="tb-pad-0 tb-mar-1">
-        <div className="f-d f-v-c f-h-sb lr-pad-1">
+      <Card>
+        <div className="f-d f-v-c f-h-sb">
           <div>
             <Typography variant="body">Set price per NFT (in USDC)</Typography>
           </div>
@@ -180,9 +181,10 @@ export default function NFTStep2(props) {
         </div>
       </Card>
 
+      <br />
       {/* max mints allowed per wallet input */}
-      <Card className="tb-pad-0 tb-mar-1">
-        <div className="f-d f-v-c f-h-sb lr-pad-1">
+      <Card>
+        <div className="f-d f-v-c f-h-sb">
           <div>
             <Typography variant="body">
               Max. mints allowed per wallet
@@ -210,10 +212,10 @@ export default function NFTStep2(props) {
           </div>
         </div>
       </Card>
-
+      <br />
       {/* limit token supply input */}
-      <Card className="tb-pad-0 tb-mar-1">
-        <div className="f-d f-v-c f-h-sb lr-pad-1">
+      <Card>
+        <div className="f-d f-v-c f-h-sb">
           <Typography variant="body">
             Limit total supply of the token
           </Typography>
@@ -234,10 +236,11 @@ export default function NFTStep2(props) {
           />
         </div>
       </Card>
+      <br />
 
       {props.formik.values.isNftTotalSupplylimited && (
-        <Card className="tb-pad-0 tb-mar-1">
-          <div className="f-d f-v-c f-h-sb lr-pad-1">
+        <Card>
+          <div className="f-d f-v-c f-h-sb">
             <div>
               <Typography variant="body">Set total token supply</Typography>
             </div>
@@ -265,8 +268,10 @@ export default function NFTStep2(props) {
         </Card>
       )}
 
-      <Card className="tb-pad-0 tb-mar-1">
-        <div className="f-d f-v-c f-h-sb lr-pad-1 tb-pad-1">
+      <br />
+
+      <Card>
+        <div className="f-d f-v-c f-h-sb">
           <Typography variant="body">Last date to close deposits</Typography>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DateTimePicker
@@ -279,6 +284,8 @@ export default function NFTStep2(props) {
           </LocalizationProvider>
         </div>
       </Card>
+
+      <br />
       <Typography variant="info" className="text-darkblue">
         If you don’t limit the supply of your club token, your supply will be
         unlimited until the date deposits are open.
