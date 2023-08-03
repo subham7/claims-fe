@@ -92,7 +92,7 @@ const ProposalCard = ({ proposal }) => {
   return (
     <CardActionArea sx={{ borderRadius: "10px" }}>
       <Card className={classes.mainCard}>
-        <Grid container className="tb-pad-1">
+        <Grid container>
           <Grid item ml={2} mr={2}>
             <Typography variant="body" className="text-blue">
               Proposed by{" "}
