@@ -20,3 +20,18 @@ export const fetchProfileByHandle = gql`
     }
   }
 `;
+
+export const fetchCommentsProfileByPost = gql`
+  query CommentFeed($request: PublicationsQueryRequest!) {
+    publications(request: $request) {
+      items {
+        ... on Comment {
+          profile {
+            name
+            ownedBy
+          }
+        }
+      }
+    }
+  }
+`;
