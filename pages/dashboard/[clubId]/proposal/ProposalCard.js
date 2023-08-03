@@ -248,15 +248,22 @@ const ProposalCard = ({ proposal }) => {
               </Grid>
             ) : null}
 
-            {proposal?.commands[0]?.executionId === 11 ? (
+            {proposal?.commands[0]?.executionId === 11 ||
+            proposal?.commands[0]?.executionId === 12 ? (
               <Grid item sx={{ display: "flex" }}>
                 <Chip
                   className={classes.timeLeftChip}
                   label={
                     <div className="f-d f-v-c tb-pad-1 f-gap-4">
-                      <Typography variant="info">Lens profile id:</Typography>
                       <Typography variant="info">
-                        {proposal?.commands[0]?.lensId}
+                        {proposal?.commands[0]?.executionId === 11
+                          ? "Lens profile id:"
+                          : "Lens post link:"}
+                      </Typography>
+                      <Typography variant="info">
+                        {proposal?.commands[0]?.executionId === 11
+                          ? proposal?.commands[0]?.lensId
+                          : proposal?.commands[0]?.lensPostLink}
                       </Typography>
                     </div>
                   }></Chip>

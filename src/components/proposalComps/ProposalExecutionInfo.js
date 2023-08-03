@@ -370,7 +370,8 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
                 </Grid>
               </>
             ) : proposalData?.commands[0].executionId == 10 ||
-              proposalData?.commands[0].executionId == 11 ? (
+              proposalData?.commands[0].executionId == 11 ||
+              proposalData?.commands[0].executionId == 12 ? (
               <>
                 <Grid container item mb={1}>
                   <Typography className={classes.listFont2Colourless}>

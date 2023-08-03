@@ -35,8 +35,10 @@ import { setProposalList } from "../../redux/reducers/proposal";
 import { getWhiteListMerkleRoot } from "api/whitelist";
 import { useAccount, useNetwork } from "wagmi";
 import Web3 from "web3";
-import { fetchProfileByHandle, fetchProfileFollowers } from "api/lens";
-import { apolloClient } from "../../../pages/_app";
+import {
+  handleFetchCommentAddresses,
+  handleFetchFollowers,
+} from "utils/lensHelper";
 
 const useStyles = makeStyles({
   modalStyle: {
@@ -107,36 +109,6 @@ const CreateProposalDialog = ({
     setLoaderOpen(false);
   };
 
-  const handleFetchFollowers = async (profileId) => {
-    try {
-      const profile = await apolloClient.query({
-        query: fetchProfileByHandle,
-        variables: { handle: profileId },
-      });
-
-      if (profile?.data?.profile === null) {
-        setOpenSnackBar(true);
-        setFailed(true);
-        throw new Error("No profile found");
-      }
-
-      const { data } = await apolloClient.query({
-        query: fetchProfileFollowers,
-        variables: { profileId: profile?.data?.profile?.id },
-      });
-
-      let followersAddressArray = [];
-      data?.followers?.items.map((follower) => {
-        followersAddressArray.push(follower.wallet.address);
-      });
-
-      return followersAddressArray;
-    } catch (error) {
-      setErrorMessage(error.message);
-      setLoaderOpen(false);
-    }
-  };
-
   const proposal = useFormik({
     initialValues: {
       tokenType: tokenType,
@@ -165,6 +137,7 @@ const CreateProposalDialog = ({
       safeThreshold: 1,
       csvObject: [],
       lensId: "",
+      lensPostLink: "",
     },
     validationSchema: proposalValidationSchema,
     onSubmit: async (values) => {
@@ -285,7 +258,8 @@ const CreateProposalDialog = ({
         }
         if (
           values.actionCommand === "whitelist deposit" ||
-          values.actionCommand === "whitelist with lens followers"
+          values.actionCommand === "whitelist with lens followers" ||
+          values.actionCommand === "whitelist with lens post's comments"
         ) {
           let data;
           let followersAddresses;
@@ -298,15 +272,16 @@ const CreateProposalDialog = ({
           } else if (values.actionCommand === "whitelist with lens followers") {
             followersAddresses = await handleFetchFollowers(values.lensId);
 
-            if (
-              followersAddresses === undefined ||
-              !followersAddresses.length
-            ) {
-              setOpenSnackBar(true);
-              setFailed(true);
-              setLoaderOpen(false);
-              throw new Error("No followers found");
-            }
+            data = {
+              daoAddress,
+              whitelist: followersAddresses,
+            };
+          } else if (
+            values.actionCommand === "whitelist with lens post's comments"
+          ) {
+            followersAddresses = await handleFetchCommentAddresses(
+              values.lensPostLink,
+            );
 
             data = {
               daoAddress,
@@ -315,14 +290,23 @@ const CreateProposalDialog = ({
           }
 
           const merkleRoot = await getWhiteListMerkleRoot(networkId, data);
+
           commands = [
             {
               executionId:
-                values.actionCommand === "whitelist deposit" ? 10 : 11,
+                values.actionCommand === "whitelist deposit"
+                  ? 10
+                  : values.actionCommand === "whitelist with lens followers"
+                  ? 11
+                  : 12,
               merkleRoot: merkleRoot,
               lensId:
                 values.actionCommand === "whitelist with lens followers"
                   ? values.lensId
+                  : null,
+              lensPostLink:
+                values.actionCommand === "whitelist with lens post's comments"
+                  ? values.lensPostLink
                   : null,
               whitelistAddresses: followersAddresses,
               allowWhitelisting: true,
@@ -362,7 +346,10 @@ const CreateProposalDialog = ({
           }
         });
       } catch (error) {
-        setErrorMessage(error.message);
+        setErrorMessage(error.message ?? error);
+        setLoaderOpen(false);
+        setOpenSnackBar(true);
+        setFailed(true);
       }
     },
   });
