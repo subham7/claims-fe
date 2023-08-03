@@ -57,6 +57,8 @@ import { getSafeSdk, web3InstanceEthereum } from "../../../../src/utils/helper";
 import useSmartContractMethods from "../../../../src/hooks/useSmartContractMethods";
 import { getNFTsByDaoAddress } from "../../../../src/api/assets";
 import { useAccount } from "wagmi";
+import Button from "@components/ui/button/Button";
+import { executeRejectTx } from "./helper";
 
 const useStyles = makeStyles({
   clubAssets: {
@@ -656,6 +658,7 @@ const ProposalDetail = () => {
       membersArray,
       airDropAmountArray,
     );
+
     if (proposalStatus === "executed") {
       // fetchData()
       response.then(
@@ -794,7 +797,6 @@ const ProposalDetail = () => {
                     />
                   </Grid>
                   <Grid item>
-                    {" "}
                     <Chip
                       className={
                         proposalData?.status === "active"
@@ -812,6 +814,27 @@ const ProposalDetail = () => {
                         proposalData?.status?.slice(1)
                       }
                     />
+                  </Grid>
+                  <Grid item>
+                    <Button
+                      onClick={() => {
+                        executeRejectTx({
+                          pid,
+                          gnosisTransactionUrl: GNOSIS_TRANSACTION_URL,
+                          gnosisAddress,
+                          walletAddress,
+                        });
+                        // rejectSafeTx({
+                        //   pid,
+                        //   gnosisTransactionUrl: GNOSIS_TRANSACTION_URL,
+                        //   gnosisAddress,
+                        //   NETWORK_HEX,
+                        //   daoAddress,
+                        //   walletAddress,
+                        // });
+                      }}>
+                      {signed ? "Reject" : "Cancel"}
+                    </Button>
                   </Grid>
                 </Grid>
               </Grid>
