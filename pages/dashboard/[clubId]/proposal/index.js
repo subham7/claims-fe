@@ -254,7 +254,7 @@ const Proposal = () => {
               md: "column",
               lg: "row",
             }}>
-            <Grid item>
+            <Grid item mb={4}>
               <Typography variant="heading">All Proposals</Typography>
             </Grid>
             <Grid
@@ -270,7 +270,7 @@ const Proposal = () => {
                   xs
                   sx={{ display: "flex", justifyContent: "flex-end" }}>
                   <Select
-                    sx={{ height: "75%", textTransform: "capitalize" }}
+                    sx={{ height: "60%", textTransform: "capitalize" }}
                     value={selectedListItem}
                     onChange={handleFilterChange}
                     input={<OutlinedInput />}

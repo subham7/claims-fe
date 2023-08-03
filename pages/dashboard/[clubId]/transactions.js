@@ -109,7 +109,9 @@ const Transactions = () => {
     <>
       <Layout1 page={6}>
         <div className="f-d f-vt f-h-c w-80">
-          <Typography variant="heading">Station Transactions</Typography>
+          <div className="b-pad-1">
+            <Typography variant="heading">Station Transactions</Typography>
+          </div>
           {/* Table */}
           <div>
             {/* Loader */}
@@ -146,7 +148,11 @@ const Transactions = () => {
                               <TableCell align="left">
                                 <div className="f-d f-v-c f-gap-8">
                                   <img
-                                    style={{ width: "25px", height: "25px" }}
+                                    style={{
+                                      width: "25px",
+                                      height: "25px",
+                                      marginBottom: "6px",
+                                    }}
                                     src={txn.tokenInfo?.logoUri}
                                     alt=""
                                     onError={({ target }) => {
@@ -168,7 +174,7 @@ const Transactions = () => {
                                     className="text-blue">
                                     <Tooltip title={txn.transactionHash}>
                                       <div
-                                        className="f-d f-gap-8 c-pointer"
+                                        className="f-d f-gap-8 f-v-c c-pointer"
                                         onClick={(e) => {
                                           handleHashClick(
                                             e,
@@ -177,7 +183,10 @@ const Transactions = () => {
                                         }}>
                                         {txn.transactionHash?.substring(0, 10) +
                                           "... "}
-                                        <OpenInNewIcon className="c-pointer" />
+                                        <OpenInNewIcon
+                                          className="c-pointer"
+                                          style={{ marginBottom: "12px" }}
+                                        />
                                       </div>
                                     </Tooltip>
                                   </Typography>
