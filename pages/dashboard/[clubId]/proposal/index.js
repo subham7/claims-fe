@@ -317,7 +317,9 @@ const Proposal = () => {
                 <>
                   {executionTransaction && (
                     <>
-                      <h2>Queued Transactions</h2>
+                      <Grid item>
+                        <h2>Queued Transactions</h2>
+                      </Grid>
                       <Grid
                         item
                         onClick={(e) => {
@@ -332,7 +334,11 @@ const Proposal = () => {
                       </Grid>
                     </>
                   )}
-                  {executionTransaction && <h2>Proposals</h2>}
+                  {executionTransaction && (
+                    <Grid item>
+                      <h2>Proposals</h2>
+                    </Grid>
+                  )}
                   {proposalList.map((proposal, key) => {
                     return (
                       <Grid

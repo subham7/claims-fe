@@ -17,7 +17,7 @@ import {
   TextField,
 } from "@mui/material";
 import { Typography } from "@components/ui";
-import { Box, Stack } from "@mui/system";
+import { Stack } from "@mui/system";
 import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import CollectionCard from "../../../src/components/cardcontent";
@@ -327,7 +327,7 @@ const DashboardIndex = () => {
                       <Skeleton variant="rectangular" width={100} height={25} />
                     )}
                   </Typography>
-                  <Grid container item direction="row" paddingBottom={4} mt={1}>
+                  <Grid container item direction="row" paddingBottom={2}>
                     <Typography variant="info" className="text-blue">
                       {clubDetails.noOfMembers} Members
                     </Typography>
@@ -338,30 +338,28 @@ const DashboardIndex = () => {
             <Stack direction={{ xs: "column", sm: "row" }} spacing={3}>
               <Grid item xs={12}>
                 <Card className={classes.firstCard}>
-                  <Grid item mt={4} ml={5}>
-                    <Grid container item direction="column">
-                      <Typography vvariant="body">Total assets</Typography>
-                      <Typography variant="heading">
-                        $
-                        {tokenDetails ? (
-                          tokenDetails.treasuryAmount
-                        ) : (
-                          <Skeleton
-                            variant="rectangular"
-                            width={100}
-                            height={25}
-                          />
-                        )}
-                      </Typography>
-                      <CardMedia
-                        image="/assets/images/treasurywallet.png"
-                        component="img"
-                        className={classes.media}
-                        alt="ownershipshare"
-                        sx={{ position: "sticky", zIndex: 0 }}
-                      />
-                    </Grid>
-                  </Grid>
+                  <div className={classes.statsDiv}>
+                    <Typography vvariant="body">Total assets</Typography>
+                    <Typography variant="heading">
+                      $
+                      {tokenDetails ? (
+                        tokenDetails.treasuryAmount
+                      ) : (
+                        <Skeleton
+                          variant="rectangular"
+                          width={100}
+                          height={25}
+                        />
+                      )}
+                    </Typography>
+                  </div>
+                  <CardMedia
+                    image="/assets/images/treasurywallet.png"
+                    component="img"
+                    className={classes.media}
+                    alt="ownershipshare"
+                    sx={{ position: "sticky", zIndex: 0 }}
+                  />
                 </Card>
               </Grid>
               <Grid
@@ -380,83 +378,53 @@ const DashboardIndex = () => {
                       paddingTop: "px",
                     }}
                   />
-                  <Grid container>
-                    <Grid
-                      container
-                      direction={{
-                        xs: "column",
-                        sm: "column",
-                        md: "column",
-                      }}>
-                      <Grid item>
-                        <Box className={classes.cardOverlay}>
-                          <Typography variant="body">My share</Typography>
-                          {clubData.tokenType === "erc721" ? (
-                            <Typography variant="heading">
-                              {balanceOfUser !== null &&
-                              clubTokenMinted !== null &&
-                              isNaN(
-                                Number(
-                                  (convertFromWeiGovernance(balanceOfUser, 18) /
-                                    convertFromWeiGovernance(
-                                      clubTokenMinted,
-                                      18,
-                                    )) *
-                                    100,
-                                ).toFixed(2),
-                              )
-                                ? 0
-                                : Number(
-                                    (convertFromWeiGovernance(
-                                      balanceOfUser,
-                                      18,
-                                    ) /
-                                      convertFromWeiGovernance(
-                                        clubTokenMinted,
-                                        18,
-                                      )) *
-                                      100,
-                                  ).toFixed(2)}
-                              %
-                            </Typography>
-                          ) : (
-                            <Typography variant="heading">
-                              {balanceOfUser !== null &&
-                              clubTokenMinted !== null &&
-                              isNaN(
-                                Number(
-                                  (convertFromWeiGovernance(balanceOfUser, 18) /
-                                    convertFromWeiGovernance(
-                                      clubTokenMinted,
-                                      18,
-                                    )) *
-                                    100,
-                                ).toFixed(2),
-                              )
-                                ? 0
-                                : Number(
-                                    (convertFromWeiGovernance(
-                                      balanceOfUser,
-                                      18,
-                                    ) /
-                                      convertFromWeiGovernance(
-                                        clubTokenMinted,
-                                        18,
-                                      )) *
-                                      100,
-                                  ).toFixed(2)}
-                              %
-                            </Typography>
-                          )}
-                          {balanceOfUser === null || balanceOfUser === 0 ? (
-                            <Typography>
-                              {balanceOfUser} {symbol}
-                            </Typography>
-                          ) : null}
-                        </Box>
-                      </Grid>
-                    </Grid>
-                  </Grid>
+                  <div className={classes.statsDiv}>
+                    <Typography variant="body">My share</Typography>
+                    {clubData.tokenType === "erc721" ? (
+                      <Typography variant="heading">
+                        {balanceOfUser !== null &&
+                        clubTokenMinted !== null &&
+                        isNaN(
+                          Number(
+                            (convertFromWeiGovernance(balanceOfUser, 18) /
+                              convertFromWeiGovernance(clubTokenMinted, 18)) *
+                              100,
+                          ).toFixed(2),
+                        )
+                          ? 0
+                          : Number(
+                              (convertFromWeiGovernance(balanceOfUser, 18) /
+                                convertFromWeiGovernance(clubTokenMinted, 18)) *
+                                100,
+                            ).toFixed(2)}
+                        %
+                      </Typography>
+                    ) : (
+                      <Typography variant="heading">
+                        {balanceOfUser !== null &&
+                        clubTokenMinted !== null &&
+                        isNaN(
+                          Number(
+                            (convertFromWeiGovernance(balanceOfUser, 18) /
+                              convertFromWeiGovernance(clubTokenMinted, 18)) *
+                              100,
+                          ).toFixed(2),
+                        )
+                          ? 0
+                          : Number(
+                              (convertFromWeiGovernance(balanceOfUser, 18) /
+                                convertFromWeiGovernance(clubTokenMinted, 18)) *
+                                100,
+                            ).toFixed(2)}
+                        %
+                      </Typography>
+                    )}
+                    {balanceOfUser === null || balanceOfUser === 0 ? (
+                      <Typography>
+                        {balanceOfUser} {symbol}
+                      </Typography>
+                    ) : null}
+                  </div>
                 </Card>
               </Grid>
             </Stack>
@@ -627,7 +595,7 @@ const DashboardIndex = () => {
             </Card>
           </Stack>
 
-          <Stack mt={2}>
+          <Stack mt={3}>
             {isAdmin ? (
               <Card className={classes.thirdCard}>
                 <Grid container m={2}>
@@ -711,7 +679,7 @@ const DashboardIndex = () => {
             ) : null}
           </Stack>
 
-          <Stack mt={2}>
+          <Stack mt={3}>
             <Card className={classes.fourthCard}>
               <Grid container m={2}>
                 <Grid item>
