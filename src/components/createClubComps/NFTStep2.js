@@ -120,8 +120,6 @@ export default function NFTStep2(props) {
         Token Rules
       </Typography>
 
-      <br />
-
       {/* Membership transfer input */}
       <Card>
         <div className="f-d f-v-c f-h-sb">
@@ -236,39 +234,41 @@ export default function NFTStep2(props) {
           />
         </div>
       </Card>
+
       <br />
 
       {props.formik.values.isNftTotalSupplylimited && (
-        <Card>
-          <div className="f-d f-v-c f-h-sb">
-            <div>
-              <Typography variant="body">Set total token supply</Typography>
+        <>
+          <Card>
+            <div className="f-d f-v-c f-h-sb">
+              <div>
+                <Typography variant="body">Set total token supply</Typography>
+              </div>
+              <div className="w-50">
+                <TextField
+                  name="totalTokenSupply"
+                  type="number"
+                  placeholder="Ex:200"
+                  variant="outlined"
+                  onChange={props.formik.handleChange}
+                  onBlur={props.formik.handleBlur}
+                  value={props.formik.values.totalTokenSupply}
+                  error={
+                    props.formik.touched.totalTokenSupply &&
+                    Boolean(props.formik.errors.totalTokenSupply)
+                  }
+                  helperText={
+                    props.formik.touched.totalTokenSupply &&
+                    props.formik.errors.totalTokenSupply
+                  }
+                  onWheel={(event) => event.target.blur()}
+                />
+              </div>
             </div>
-            <div className="w-50">
-              <TextField
-                name="totalTokenSupply"
-                type="number"
-                placeholder="Ex:200"
-                variant="outlined"
-                onChange={props.formik.handleChange}
-                onBlur={props.formik.handleBlur}
-                value={props.formik.values.totalTokenSupply}
-                error={
-                  props.formik.touched.totalTokenSupply &&
-                  Boolean(props.formik.errors.totalTokenSupply)
-                }
-                helperText={
-                  props.formik.touched.totalTokenSupply &&
-                  props.formik.errors.totalTokenSupply
-                }
-                onWheel={(event) => event.target.blur()}
-              />
-            </div>
-          </div>
-        </Card>
+          </Card>
+          <br />
+        </>
       )}
-
-      <br />
 
       <Card>
         <div className="f-d f-v-c f-h-sb">
