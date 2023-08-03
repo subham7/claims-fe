@@ -16,14 +16,11 @@ export async function createProposal(data, networkId) {
   );
 }
 
-export async function createCancelProposal(data, networkId, safeTxHash) {
+export async function createCancelProposal(data, networkId) {
   // create proposal API
   return await axios.post(
     MAIN_API_URL + `proposal/create/cancel?networkId=${networkId}`,
-    {
-      proposalData: data,
-      safeTxHash,
-    },
+    data,
     {
       headers: {
         Authorization: "Bearer " + getJwtToken(),

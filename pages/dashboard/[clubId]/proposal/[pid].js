@@ -58,7 +58,7 @@ import useSmartContractMethods from "../../../../src/hooks/useSmartContractMetho
 import { getNFTsByDaoAddress } from "../../../../src/api/assets";
 import { useAccount } from "wagmi";
 import Button from "@components/ui/button/Button";
-import { executeRejectTx } from "./helper";
+import { createRejectSafeTx, executeRejectTx } from "./helper";
 
 const useStyles = makeStyles({
   clubAssets: {
@@ -815,27 +815,32 @@ const ProposalDetail = () => {
                       }
                     />
                   </Grid>
-                  <Grid item>
-                    <Button
-                      onClick={() => {
-                        executeRejectTx({
-                          pid,
-                          gnosisTransactionUrl: GNOSIS_TRANSACTION_URL,
-                          gnosisAddress,
-                          walletAddress,
-                        });
-                        // rejectSafeTx({
-                        //   pid,
-                        //   gnosisTransactionUrl: GNOSIS_TRANSACTION_URL,
-                        //   gnosisAddress,
-                        //   NETWORK_HEX,
-                        //   daoAddress,
-                        //   walletAddress,
-                        // });
-                      }}>
-                      {signed ? "Reject" : "Cancel"}
-                    </Button>
-                  </Grid>
+                  {signed && (
+                    <Grid item>
+                      <Button
+                        onClick={() => {
+                          if (proposalData?.cancelProposalId) {
+                            executeRejectTx({
+                              pid: proposalData?.cancelProposalId,
+                              gnosisTransactionUrl: GNOSIS_TRANSACTION_URL,
+                              gnosisAddress,
+                              walletAddress,
+                            });
+                          } else {
+                            createRejectSafeTx({
+                              pid,
+                              gnosisTransactionUrl: GNOSIS_TRANSACTION_URL,
+                              gnosisAddress,
+                              NETWORK_HEX,
+                              daoAddress,
+                              walletAddress,
+                            });
+                          }
+                        }}>
+                        Reject
+                      </Button>
+                    </Grid>
+                  )}
                 </Grid>
               </Grid>
             </Grid>

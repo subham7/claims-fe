@@ -84,14 +84,6 @@ const CreateProposalDialog = ({
     return state.club.daoAddress;
   });
 
-  const NETWORK_HEX = useSelector((state) => {
-    return state.gnosis.networkHex;
-  });
-
-  const factoryData = useSelector((state) => {
-    return state.club.factoryData;
-  });
-
   const [loaderOpen, setLoaderOpen] = useState(false);
   const [openSnackBar, setOpenSnackBar] = useState(false);
   const [failed, setFailed] = useState(false);
@@ -283,7 +275,7 @@ const CreateProposalDialog = ({
         daoAddress: daoAddress,
       };
 
-      const createRequest = createProposal(payload, NETWORK_HEX);
+      const createRequest = createProposal(payload, networkId);
       createRequest.then(async (result) => {
         if (result.status !== 201) {
           setOpenSnackBar(true);

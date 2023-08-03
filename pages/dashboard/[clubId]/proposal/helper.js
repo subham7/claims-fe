@@ -3,7 +3,7 @@ import Safe, { Web3Adapter } from "@safe-global/protocol-kit";
 import { createCancelProposal, getProposalTxHash } from "api/proposal";
 import Web3 from "web3";
 
-export const rejectSafeTx = async ({
+export const createRejectSafeTx = async ({
   pid,
   gnosisTransactionUrl,
   gnosisAddress,
@@ -57,23 +57,19 @@ export const rejectSafeTx = async ({
     await safeService.confirmTransaction(safeTxHash, senderSignature.data);
 
     const cancelPayload = {
-      name: "Cancel Proposal",
-      description: "",
-      createdBy: walletAddress,
-      clubId: daoAddress,
-      votingDuration: 0,
-      votingOptions: [{ text: "Yes" }, { text: "No" }, { text: "Abstain" }],
-      commands: [
-        {
-          proposalId: pid,
-        },
-      ],
-      type: "cancel",
-      tokenType: "",
-      daoAddress: daoAddress,
+      proposalData: {
+        createdBy: walletAddress,
+        commands: [
+          {
+            proposalId: pid,
+          },
+        ],
+        daoAddress,
+      },
+      txHash: safeTxHash,
     };
 
-    await createCancelProposal(cancelPayload, network, safeTxHash);
+    await createCancelProposal(cancelPayload, network);
 
     return proposeTxn;
   } catch (e) {
@@ -104,7 +100,7 @@ export const executeRejectTx = async ({
     const proposalTxHash = await getProposalTxHash(pid);
 
     const safetx = await safeService.getTransaction(
-      "0xbd51bbe2d93270ee5b84568317ce499c3631f37c34cada2e379a0e890c3401a8", //proposalTxHash.data[0].txHash,
+      proposalTxHash.data[0].txHash,
     );
 
     const safeSdk = await Safe.create({
