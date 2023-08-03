@@ -270,7 +270,7 @@ const Proposal = () => {
                   xs
                   sx={{ display: "flex", justifyContent: "flex-end" }}>
                   <Select
-                    sx={{ height: "75%", textTransform: "capitalize" }}
+                    sx={{ height: "60%", textTransform: "capitalize" }}
                     value={selectedListItem}
                     onChange={handleFilterChange}
                     input={<OutlinedInput />}
