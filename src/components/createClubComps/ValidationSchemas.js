@@ -179,6 +179,11 @@ export const proposalValidationSchema = yup.object({
         .required("Total deposit is required")
         .moreThan(0, "Total deposit should be greater than 0"),
   }),
+  lensId: yup.string("Please enter lens id").when("actionCommand", {
+    is: "whitelist with lens followers",
+    then: () =>
+      yup.string("Enter lens profile id").required("Lens id is required"),
+  }),
   recieverAddress: yup
     .string("Please enter reciever address")
     .when("actionCommand", {

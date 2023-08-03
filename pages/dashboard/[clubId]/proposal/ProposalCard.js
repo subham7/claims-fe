@@ -248,6 +248,21 @@ const ProposalCard = ({ proposal }) => {
               </Grid>
             ) : null}
 
+            {proposal?.commands[0]?.executionId === 11 ? (
+              <Grid item sx={{ display: "flex" }}>
+                <Chip
+                  className={classes.timeLeftChip}
+                  label={
+                    <div className="f-d f-v-c tb-pad-1 f-gap-4">
+                      <Typography variant="info">Lens profile id:</Typography>
+                      <Typography variant="info">
+                        {proposal?.commands[0]?.lensId}
+                      </Typography>
+                    </div>
+                  }></Chip>
+              </Grid>
+            ) : null}
+
             {proposal?.commands[0]?.airDropAmount ? (
               <Grid item>
                 <Chip
