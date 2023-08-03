@@ -14,7 +14,7 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
-import { Button } from "@components/ui";
+import { Typography as CustomTypography, Button } from "@components/ui";
 import { makeStyles } from "@mui/styles";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
@@ -239,9 +239,9 @@ const Test = () => {
           <Grid item md={9} mb={8}>
             <Grid container mb={4}>
               <Grid item>
-                <Typography variant="title" sx={{ fontSize: "xx-large" }}>
+                <CustomTypography variant="heading">
                   Station Members
-                </Typography>
+                </CustomTypography>
               </Grid>
             </Grid>
             <Grid
