@@ -184,6 +184,15 @@ export const proposalValidationSchema = yup.object({
     then: () =>
       yup.string("Enter lens profile id").required("Lens id is required"),
   }),
+
+  lensPostLink: yup.string("Please enter lens id").when("actionCommand", {
+    is: "whitelist with lens post's comments",
+    then: () =>
+      yup
+        .string("Enter lens post's link")
+        .required("Lens post's link is required"),
+  }),
+
   recieverAddress: yup
     .string("Please enter reciever address")
     .when("actionCommand", {
