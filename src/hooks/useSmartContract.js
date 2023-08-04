@@ -21,7 +21,7 @@ const useSmartContract = () => {
   const router = useRouter();
   const { jid: daoAddress, clubId, claimAddress, claimInsight } = router.query;
   const { chain } = useNetwork();
-  const networkId = Web3.utils.numberToHex(chain?.id);
+  const networkId = "0x" + chain?.id.toString(16);
   const dispatch = useDispatch();
 
   const FACTORY_CONTRACT_ADDRESS = useSelector(

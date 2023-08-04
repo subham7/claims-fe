@@ -34,7 +34,6 @@ import dayjs from "dayjs";
 import * as yup from "yup";
 import { saveAs } from "file-saver";
 import { useNetwork } from "wagmi";
-import Web3 from "web3";
 
 const useStyles = makeStyles({
   searchField: {
@@ -82,7 +81,7 @@ const Test = () => {
   const { clubId: daoAddress } = router.query;
 
   const { chain } = useNetwork();
-  const networkId = Web3.utils.numberToHex(chain?.id);
+  const networkId = "0x" + chain?.id.toString(16);
 
   const tokenType = useSelector((state) => {
     return state.club.clubData.tokenType;

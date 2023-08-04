@@ -7,7 +7,6 @@ import { useDispatch } from "react-redux";
 import { addWalletAddress } from "redux/reducers/user";
 import { useAccount, useNetwork } from "wagmi";
 import { Web3Button } from "@web3modal/react";
-import Web3 from "web3";
 
 const drawerWidth = 50;
 
@@ -16,7 +15,7 @@ export default function Layout1(props) {
   const { showSidebar = true } = props;
   const { address: walletAddress } = useAccount();
   const { chain } = useNetwork();
-  const networkId = Web3.utils.numberToHex(chain?.id);
+  const networkId = "0x" + chain?.id.toString(16);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -44,7 +43,7 @@ export default function Layout1(props) {
           />
         )}
 
-        {!walletAddress ? (
+        {!walletAddress || !networkId ? (
           <Grid
             sx={{
               height: "75vh",

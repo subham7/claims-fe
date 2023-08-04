@@ -77,6 +77,57 @@ export const createRejectSafeTx = async ({
   }
 };
 
+export const signRejectTx = async ({ pid, gnosisTransactionUrl }) => {
+  try {
+    const web3 = new Web3(window.ethereum);
+    const ethAdapter = new Web3Adapter({
+      web3: web3,
+      signerAddress: Web3.utils.toChecksumAddress(walletAddress),
+    });
+
+    const txServiceUrl = gnosisTransactionUrl;
+
+    const safeService = new SafeApiKit({
+      txServiceUrl,
+      ethAdapter,
+    });
+
+    const proposalTxHash = await getProposalTxHash(pid);
+    const tx = await safeService.getTransaction(proposalTxHash.data[0].txHash);
+
+    const safeTransactionData = [
+      {
+        to: tx.dataDecoded.parameters[0].valueDecoded[0].to,
+        data: tx.dataDecoded.parameters[0].valueDecoded[0].data,
+        value: tx.dataDecoded.parameters[0].valueDecoded[0].value,
+        nonce: tx.nonce, // Optional
+      },
+      {
+        to: tx.dataDecoded.parameters[0].valueDecoded[1].to,
+        data: tx.dataDecoded.parameters[0].valueDecoded[1].data,
+        value: tx.dataDecoded.parameters[0].valueDecoded[1].value,
+        nonce: tx.nonce, // Optional
+      },
+    ];
+
+    const safeTxHash = tx.safeTxHash;
+
+    let safeTransaction;
+
+    safeTransaction = await safeSdk.createTransaction({
+      safeTransactionData,
+    });
+
+    const senderSignature = await safeSdk.signTypedData(safeTransaction, "v4");
+
+    await safeService.confirmTransaction(safeTxHash, senderSignature.data);
+    return true;
+  } catch (e) {
+    console.error(e);
+    return false;
+  }
+};
+
 export const executeRejectTx = async ({
   pid,
   walletAddress,

@@ -136,7 +136,7 @@ const App = () => {
   const [open, setOpen] = useState(false);
   const router = useRouter();
   const { chain } = useNetwork();
-  const networkId = Web3.utils.numberToHex(chain?.id);
+  const networkId = "0x" + chain?.id.toString(16);
 
   useEffect(() => {
     try {

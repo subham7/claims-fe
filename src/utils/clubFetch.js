@@ -32,7 +32,7 @@ const ClubFetch = (Component) => {
     const router = useRouter();
     const dispatch = useDispatch();
     const { chain } = useNetwork();
-    const networkId = Web3.utils.numberToHex(chain?.id);
+    const networkId = "0x" + chain?.id.toString(16);
     useSmartContract();
 
     const { address: walletAddress } = useAccount();

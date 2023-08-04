@@ -274,7 +274,6 @@ const Settings = () => {
         tokenType={tokenType}
         walletAddress={walletAddress}
         gnosisAddress={gnosisAddress}
-        // networkId={networkId}
         fetchErc20ContractDetails={fetchErc20ContractDetails}
         fetchErc721ContractDetails={fetchErc721ContractDetails}
         isAdminUser={isAdminUser}

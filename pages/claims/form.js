@@ -23,7 +23,6 @@ import {
   claimStep2ValidationSchema,
 } from "../../src/components/createClubComps/ValidationSchemas";
 import { useAccount, useNetwork } from "wagmi";
-import Web3 from "web3";
 
 const steps = ["Step1", "Step2"];
 
@@ -51,7 +50,7 @@ const Form = () => {
 
   const { address: walletAddress } = useAccount();
   const { chain } = useNetwork();
-  const networkId = Web3.utils.numberToHex(chain?.id);
+  const networkId = "0x" + chain?.id.toString(16);
   const router = useRouter();
 
   const { claimContract, approveDeposit, getDecimals } =

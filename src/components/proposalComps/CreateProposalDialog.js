@@ -34,7 +34,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { setProposalList } from "../../redux/reducers/proposal";
 import { getWhiteListMerkleRoot } from "api/whitelist";
 import { useAccount, useNetwork } from "wagmi";
-import Web3 from "web3";
 
 const useStyles = makeStyles({
   modalStyle: {
@@ -56,6 +55,7 @@ const useStyles = makeStyles({
     marginTop: "0.5rem",
   },
 });
+
 const CreateProposalDialog = ({
   open,
   setOpen,
@@ -70,7 +70,7 @@ const CreateProposalDialog = ({
   const { clubId } = router.query;
   const { address: walletAddress } = useAccount();
   const { chain } = useNetwork();
-  const networkId = Web3.utils.numberToHex(chain?.id);
+  const networkId = "0x" + chain?.id.toString(16);
 
   const tokenType = useSelector((state) => {
     return state.club.clubData.tokenType;
