@@ -369,7 +369,9 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
                   </Grid>
                 </Grid>
               </>
-            ) : proposalData?.commands[0].executionId == 10 ? (
+            ) : proposalData?.commands[0].executionId == 10 ||
+              proposalData?.commands[0].executionId == 11 ||
+              proposalData?.commands[0].executionId == 12 ? (
               <>
                 <Grid container item mb={1}>
                   <Typography className={classes.listFont2Colourless}>
@@ -377,7 +379,7 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
                   </Typography>
                 </Grid>
                 <Divider />
-                <Grid container mt={1} maxHeight={"330px"} overflow="auto">
+                <Grid container mt={1} maxHeight={"300px"} overflow="auto">
                   <Grid container spacing={3}>
                     <Grid item xs={12} md={4}>
                       <Typography mb={1} className={classes.listFont2}>

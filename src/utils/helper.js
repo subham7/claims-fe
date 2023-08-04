@@ -117,3 +117,15 @@ export const getAllEntities = async (
     console.log(error);
   }
 };
+
+export const extractPartFromUrl = (url) => {
+  try {
+    const parsedUrl = new URL(url);
+    const pathname = parsedUrl.pathname;
+    const parts = pathname.split("/");
+    return parts[parts.length - 1];
+  } catch (error) {
+    console.error("Invalid URL:", error);
+    return null;
+  }
+};

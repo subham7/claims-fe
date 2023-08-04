@@ -556,7 +556,11 @@ const useSmartContractMethods = () => {
     let approvalTransaction;
     let transaction;
     if (approvalData !== "") {
-      if (proposalData.commands[0].executionId === 10) {
+      if (
+        proposalData.commands[0].executionId === 10 ||
+        proposalData.commands[0].executionId === 11 ||
+        proposalData?.commands[0].executionId == 12
+      ) {
         approvalTransaction = {
           to: Web3.utils.toChecksumAddress(daoAddress),
           data: erc20DaoContractSend.methods
