@@ -58,7 +58,7 @@ import useSmartContractMethods from "../../../../src/hooks/useSmartContractMetho
 import { getNFTsByDaoAddress } from "../../../../src/api/assets";
 import { useAccount } from "wagmi";
 import Button from "@components/ui/button/Button";
-import { createRejectSafeTx, executeRejectTx } from "./helper";
+import { createRejectSafeTx, executeRejectTx } from "utils/proposal";
 
 const useStyles = makeStyles({
   clubAssets: {
