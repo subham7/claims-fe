@@ -460,7 +460,8 @@ const ProposalDetail = () => {
       proposalData.commands[0].executionId === 3 ||
       proposalData.commands[0].executionId === 10 ||
       proposalData.commands[0].executionId === 11 ||
-      proposalData?.commands[0].executionId == 12
+      proposalData?.commands[0].executionId === 12 ||
+      proposalData?.commands[0].executionId === 13
     ) {
       ABI = FactoryContractABI.abi;
     } else if (clubData.tokenType === "erc721") {
@@ -634,6 +635,17 @@ const ProposalDetail = () => {
         proposalData.commands[0]?.merkleRoot?.merkleRoot,
       ]);
     }
+
+    if (proposalData.commands[0].executionId === 13) {
+      let iface = new Interface(ABI);
+
+      data = iface.encodeFunctionData("updateTotalRaiseAmount", [
+        factoryData?.distributionAmount,
+        convertToWeiGovernance(proposalData.commands[0]?.pricePerToken, 6),
+        daoAddress,
+      ]);
+    }
+
     const response = updateProposalAndExecution(
       data,
       approvalData,
@@ -653,7 +665,8 @@ const ProposalDetail = () => {
       proposalData.commands[0].executionId === 3 ||
         proposalData.commands[0].executionId === 10 ||
         proposalData.commands[0].executionId === 11 ||
-        proposalData?.commands[0].executionId == 12
+        proposalData?.commands[0].executionId === 12 ||
+        proposalData.commands[0].executionId === 13
         ? FACTORY_CONTRACT_ADDRESS
         : "",
       GNOSIS_TRANSACTION_URL,

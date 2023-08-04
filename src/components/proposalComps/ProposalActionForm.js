@@ -136,11 +136,14 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
         <MenuItem key={8} value="whitelist deposit">
           Whitelist Deposit
         </MenuItem>
-        <MenuItem key={8} value="whitelist with lens followers">
+        <MenuItem key={9} value="whitelist with lens followers">
           Whitelist with Lens followers
         </MenuItem>
-        <MenuItem key={8} value="whitelist with lens post's comments">
+        <MenuItem key={10} value="whitelist with lens post's comments">
           Whitelist with Lens post&apos;s comments
+        </MenuItem>
+        <MenuItem key={11} value="update price per token">
+          Update price per token
         </MenuItem>
       </Select>
 
@@ -731,6 +734,40 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
             }
             helperText={
               formik.touched.lensPostLink && Boolean(formik.errors.lensPostLink)
+            }
+            onWheel={(event) => event.target.blur()}
+          />
+        </Grid>
+      ) : formik.values.actionCommand === "update price per token" ? (
+        <Grid
+          container
+          direction={"column"}
+          ml={3}
+          mt={2}
+          sx={{ marginLeft: "0 !important" }}>
+          <Typography variant="proposalBody">Price of token *</Typography>
+          <TextField
+            variant="outlined"
+            className={classes.textField}
+            placeholder="0"
+            type="number"
+            name="pricePerToken"
+            id="pricePerToken"
+            value={formik.values.pricePerToken}
+            onChange={formik.handleChange}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment style={{ color: "#6475A3" }} position="end">
+                  USDC
+                </InputAdornment>
+              ),
+            }}
+            error={
+              formik.touched.pricePerToken &&
+              Boolean(formik.errors.pricePerToken)
+            }
+            helperText={
+              formik.touched.pricePerToken && formik.errors.pricePerToken
             }
             onWheel={(event) => event.target.blur()}
           />
