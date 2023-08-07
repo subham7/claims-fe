@@ -1,30 +1,23 @@
-import { Card, CardActionArea, Chip, Grid, Typography } from "@mui/material";
+import { Card, CardActionArea, Chip, Grid } from "@mui/material";
+import { Typography } from "@components/ui";
 import {
   calculateDays,
   convertFromWeiGovernance,
   convertToWeiGovernance,
 } from "../../../../src/utils/globalFunctions";
-import actionIcon from "../../../../public/assets/icons/action_icon.svg";
-import tickerIcon from "../../../../public/assets/icons/ticker_icon.svg";
-import surveyIcon from "../../../../public/assets/icons/survey_icon.svg";
+import SvgTickerIcon from "../../../../public/assets/icons/ticker_icon.js";
+import SvgActionIcon from "../../../../public/assets/icons/action_icon.js";
+import SvgSurveyIcon from "../../../../public/assets/icons/survey_icon.js";
 import React, { useCallback, useEffect, useState } from "react";
-import Image from "next/image";
 import { useSelector } from "react-redux";
-import { useConnectWallet } from "@web3-onboard/react";
 import { useRouter } from "next/router";
 import { ProposalCardStyles } from "../../../../src/components/proposalComps/ProposalCardStyles";
 import useSmartContractMethods from "../../../../src/hooks/useSmartContractMethods";
 
-const ProposalCard = ({
-  proposal,
-  indexKey,
-
-  executionTransaction,
-}) => {
+const ProposalCard = ({ proposal }) => {
   const classes = ProposalCardStyles();
   const router = useRouter();
   const { clubId: daoAddress } = router.query;
-  const [{ wallet }] = useConnectWallet();
 
   const tokenType = useSelector((state) => {
     return state.club.clubData.tokenType;
@@ -97,11 +90,11 @@ const ProposalCard = ({
   }, [fetchAirDropContractDetails]);
 
   return (
-    <CardActionArea sx={{ borderRadius: "10px" }}>
+    <CardActionArea>
       <Card className={classes.mainCard}>
-        <Grid container>
-          <Grid item ml={2} mr={2}>
-            <Typography className={classes.cardFont}>
+        <div className={classes.proposalHeader}>
+          <div>
+            <Typography variant="body" className="text-blue">
               Proposed by{" "}
               {proposal?.createdBy.substring(0, 6) +
                 ".........." +
@@ -110,362 +103,339 @@ const ProposalCard = ({
                 )}{" "}
               on {new Date(String(proposal?.updateDate)).toLocaleDateString()}
             </Typography>
-          </Grid>
-          <Grid
-            item
-            ml={1}
-            mr={1}
-            xs
-            sx={{
-              display: "flex",
-              justifyContent: "flex-end",
-            }}>
+          </div>
+          <div>
             <Grid
               container
-              spacing={1}
+              gap={1}
               sx={{
                 display: "flex",
                 justifyContent: "flex-end",
               }}>
+              <Chip
+                className={classes.timeLeftChip}
+                icon={<SvgTickerIcon />}
+                label={
+                  calculateDays(proposal?.votingDuration) <= 0
+                    ? "Voting closed"
+                    : calculateDays(proposal?.votingDuration) + " days left"
+                }
+              />
+              <Chip
+                className={
+                  proposal?.type === "action"
+                    ? classes.actionChip
+                    : classes.surveyChip
+                }
+                icon={
+                  proposal?.type === "action" ? (
+                    <SvgActionIcon />
+                  ) : (
+                    <SvgSurveyIcon />
+                  )
+                }
+                label={proposal?.type}
+              />
+              <Chip
+                className={
+                  proposal?.status === "active"
+                    ? classes.cardFontActive
+                    : proposal?.status === "passed"
+                    ? classes.cardFontPassed
+                    : proposal?.status === "executed"
+                    ? classes.cardFontExecuted
+                    : proposal?.status === "failed"
+                    ? classes.cardFontFailed
+                    : classes.cardFontFailed
+                }
+                label={
+                  proposal?.status.charAt(0).toUpperCase() +
+                  proposal?.status.slice(1)
+                }
+              />
+            </Grid>
+          </div>
+        </div>
+        <div className="b-mar-1">
+          <Typography variant="subheading">{proposal?.name}</Typography>
+        </div>
+        <div>
+          <Grid container spacing={1}>
+            {(proposal?.commands[0]?.usdcTokenSymbol &&
+              !proposal?.commands[0]?.quorum &&
+              !proposal?.commands[0]?.totalDeposits &&
+              !proposal?.commands[0].customNft &&
+              !proposal?.commands[0]?.executionId === 6) ||
+            !proposal?.commands[0]?.executionId === 7 ? (
+              <Grid item sx={{ display: "flex" }}>
+                <Chip
+                  className={classes.timeLeftChip}
+                  label={
+                    <div className="f-d f-v-c tb-pad-1">
+                      <Typography variant="info" className="text-blue">
+                        Asset:
+                      </Typography>
+                      <Typography variant="info">
+                        ${tokenDetails.symbol}
+                      </Typography>
+                    </div>
+                  }></Chip>
+              </Grid>
+            ) : (
+              <></>
+            )}
+
+            {proposal?.commands[0]?.executionId === 5 ? (
+              <Grid item sx={{ display: "flex" }}>
+                <Chip
+                  className={classes.timeLeftChip}
+                  label={
+                    <div className="f-d f-v-c tb-pad-1">
+                      <Typography variant="info" className="text-blue">
+                        Nft:
+                      </Typography>
+                      <Typography variant="info">
+                        {proposal?.commands[0]?.customNft?.substring(0, 6) +
+                          ".........." +
+                          proposal?.commands[0]?.customNft?.substring(
+                            proposal?.commands[0]?.customNft?.length - 4,
+                          )}
+                      </Typography>
+                    </div>
+                  }></Chip>
+              </Grid>
+            ) : (
+              <></>
+            )}
+
+            {proposal?.commands[0]?.executionId === 6 ||
+            proposal?.commands[0]?.executionId === 7 ? (
+              <>
+                <Grid item sx={{ display: "flex" }}>
+                  <Chip
+                    className={classes.timeLeftChip}
+                    label={
+                      <div className="f-d f-v-c tb-pad-1">
+                        <Typography variant="info" className="text-blue">
+                          Owner Address:
+                        </Typography>
+                        <Typography variant="info">
+                          {proposal?.commands[0]?.ownerAddress.slice(0, 6) +
+                            "...." +
+                            proposal?.commands[0]?.ownerAddress.slice(
+                              proposal?.commands[0]?.ownerAddress.length - 4,
+                            )}
+                        </Typography>
+                      </div>
+                    }></Chip>
+                </Grid>
+              </>
+            ) : (
+              <></>
+            )}
+
+            {proposal?.commands[0]?.executionId === 10 ? (
+              <Grid item sx={{ display: "flex" }}>
+                <Chip
+                  className={classes.timeLeftChip}
+                  label={
+                    <div className="f-d f-v-c tb-pad-1">
+                      <Typography variant="info">
+                        Enable whitelisting
+                      </Typography>
+                    </div>
+                  }></Chip>
+              </Grid>
+            ) : null}
+
+            {proposal?.commands[0]?.executionId === 11 ||
+            proposal?.commands[0]?.executionId === 12 ? (
+              <Grid item sx={{ display: "flex" }}>
+                <Chip
+                  className={classes.timeLeftChip}
+                  label={
+                    <div className="f-d f-v-c tb-pad-1 f-gap-4">
+                      <Typography variant="info">
+                        {proposal?.commands[0]?.executionId === 11
+                          ? "Lens profile id:"
+                          : "Lens post link:"}
+                      </Typography>
+                      <Typography variant="info">
+                        {proposal?.commands[0]?.executionId === 11
+                          ? proposal?.commands[0]?.lensId
+                          : proposal?.commands[0]?.lensPostLink}
+                      </Typography>
+                    </div>
+                  }></Chip>
+              </Grid>
+            ) : null}
+
+            {proposal?.commands[0]?.airDropAmount ? (
+              <Grid item>
+                <Chip
+                  size="medium"
+                  className={classes.timeLeftChip}
+                  label={
+                    proposal?.commands[0].airDropAmount ? (
+                      <div className="f-d f-v-c tb-pad-1">
+                        <Typography
+                          variant="info"
+                          className="text-blue r-pad-1">
+                          Amount:
+                        </Typography>
+                        <Typography variant="info">
+                          {convertFromWeiGovernance(
+                            proposal?.commands[0].airDropAmount,
+                            tokenDetails.decimals,
+                          )}
+                        </Typography>
+                      </div>
+                    ) : null
+                  }></Chip>
+              </Grid>
+            ) : null}
+
+            {proposal?.commands[0]?.executionId === 1 ? (
               <Grid item>
                 <Chip
                   className={classes.timeLeftChip}
                   label={
-                    <Grid container className={classes.flexContainer}>
-                      <Image src={tickerIcon} alt="ticker-icon" />
-                      <Typography ml={1}>
-                        {" "}
-                        {calculateDays(proposal?.votingDuration) <= 0
-                          ? "Voting closed"
-                          : calculateDays(proposal?.votingDuration) +
-                            " days left"}
-                      </Typography>
-                    </Grid>
-                  }
-                />
-              </Grid>
-              <Grid item>
-                <Chip
-                  className={
-                    proposal?.type === "action"
-                      ? classes.actionChip
-                      : classes.surveyChip
-                  }
-                  label={
-                    <Grid container className={classes.flexContainer}>
-                      {proposal?.type === "action" ? (
-                        <Image src={actionIcon} alt="action-icon" />
-                      ) : (
-                        <Image src={surveyIcon} alt="survey-icon" />
-                      )}
-                      <Typography ml={1}>{proposal?.type}</Typography>
-                    </Grid>
-                  }
-                />
-              </Grid>
-              <Grid item>
-                {" "}
-                <Chip
-                  className={
-                    proposal?.status === "active"
-                      ? classes.cardFontActive
-                      : proposal?.status === "passed"
-                      ? classes.cardFontPassed
-                      : proposal?.status === "executed"
-                      ? classes.cardFontExecuted
-                      : proposal?.status === "failed"
-                      ? classes.cardFontFailed
-                      : classes.cardFontFailed
-                  }
-                  label={
-                    proposal?.status.charAt(0).toUpperCase() +
-                    proposal?.status.slice(1)
-                  }
-                />
-              </Grid>
-            </Grid>
-          </Grid>
-        </Grid>
-        <Grid container>
-          <Grid item ml={2} mr={2}>
-            <Typography className={classes.cardFont1}>
-              {proposal?.name}
-            </Typography>
-          </Grid>
-        </Grid>
-        <Grid container>
-          <Grid item ml={2} mr={2}>
-            <Typography className={classes.cardFont}>
-              {/* {proposal?.description.substring(0, 200)}... */}
-            </Typography>
-          </Grid>
-        </Grid>
-        <Grid container>
-          <Grid item ml={2} mr={2} mt={2}>
-            <Grid container spacing={1}>
-              {(proposal?.commands[0]?.usdcTokenSymbol &&
-                !proposal?.commands[0]?.quorum &&
-                !proposal?.commands[0]?.totalDeposits &&
-                !proposal?.commands[0].customNft &&
-                !proposal?.commands[0]?.executionId === 6) ||
-              !proposal?.commands[0]?.executionId === 7 ? (
-                <Grid item sx={{ display: "flex" }}>
-                  <Chip
-                    className={classes.timeLeftChip}
-                    label={
-                      <Grid sx={{ display: "flex" }}>
-                        {" "}
-                        <Typography color="#C1D3FF" sx={{ marginRight: "5px" }}>
-                          Asset:
-                        </Typography>
-                        <Typography color="#FFFFFF">
-                          ${tokenDetails.symbol}
-                        </Typography>
-                      </Grid>
-                    }></Chip>
-                </Grid>
-              ) : (
-                <></>
-              )}
-
-              {proposal?.commands[0]?.executionId === 5 ? (
-                <Grid item sx={{ display: "flex" }}>
-                  <Chip
-                    className={classes.timeLeftChip}
-                    label={
-                      <Grid sx={{ display: "flex" }}>
-                        {" "}
-                        <Typography color="#C1D3FF" sx={{ marginRight: "5px" }}>
-                          Nft:
-                        </Typography>
-                        <Typography color="#FFFFFF">
-                          {proposal?.commands[0]?.customNft?.substring(0, 6) +
-                            ".........." +
-                            proposal?.commands[0]?.customNft?.substring(
-                              proposal?.commands[0]?.customNft?.length - 4,
-                            )}
-                        </Typography>
-                      </Grid>
-                    }></Chip>
-                </Grid>
-              ) : (
-                <></>
-              )}
-
-              {proposal?.commands[0]?.executionId === 6 ||
-              proposal?.commands[0]?.executionId === 7 ? (
-                <>
-                  <Grid item sx={{ display: "flex" }}>
-                    <Chip
-                      className={classes.timeLeftChip}
-                      label={
-                        <Grid sx={{ display: "flex" }}>
-                          {" "}
-                          <Typography
-                            color="#C1D3FF"
-                            sx={{ marginRight: "5px" }}>
-                            Owner Address:
-                          </Typography>
-                          <Typography color="#FFFFFF">
-                            {proposal?.commands[0]?.ownerAddress.slice(0, 6) +
-                              "...." +
-                              proposal?.commands[0]?.ownerAddress.slice(
-                                proposal?.commands[0]?.ownerAddress.length - 4,
-                              )}
-                          </Typography>
-                        </Grid>
-                      }></Chip>
-                  </Grid>
-                </>
-              ) : (
-                <></>
-              )}
-
-              {proposal?.commands[0]?.executionId === 10 ? (
-                <Grid item sx={{ display: "flex" }}>
-                  <Chip
-                    className={classes.timeLeftChip}
-                    label={
-                      <Grid sx={{ display: "flex" }}>
-                        {" "}
-                        <Typography color="#C1D3FF" sx={{ marginRight: "5px" }}>
-                          Enable whitelisting
-                        </Typography>
-                      </Grid>
-                    }></Chip>
-                </Grid>
-              ) : null}
-
-              {proposal?.commands[0]?.airDropAmount ? (
-                <Grid item>
-                  <Chip
-                    className={classes.timeLeftChip}
-                    label={
-                      proposal?.commands[0].airDropAmount ? (
-                        <Grid sx={{ display: "flex" }}>
-                          {" "}
-                          <Typography
-                            color="#C1D3FF"
-                            sx={{ marginRight: "5px" }}>
-                            Amount:
-                          </Typography>
-                          <Typography color="#FFFFFF">
-                            {convertFromWeiGovernance(
-                              proposal?.commands[0].airDropAmount,
-                              tokenDetails.decimals,
-                            )}
-                          </Typography>
-                        </Grid>
-                      ) : null
-                    }></Chip>
-                </Grid>
-              ) : null}
-
-              {proposal?.commands[0]?.executionId === 1 ? (
-                <Grid item>
-                  <Chip
-                    className={classes.timeLeftChip}
-                    label={
-                      proposal.commands[0].mintGTAmounts[0] ? (
-                        <Grid sx={{ display: "flex" }}>
-                          {" "}
-                          <Typography
-                            color="#C1D3FF"
-                            sx={{ marginRight: "5px" }}>
-                            Amount:
-                          </Typography>
-                          <Typography color="#FFFFFF">
-                            {tokenType === "erc20"
-                              ? Number(
-                                  convertFromWeiGovernance(
-                                    proposal?.commands[0].mintGTAmounts[0],
-                                    tokenDetails.decimals,
-                                  ),
-                                )
-                              : proposal?.commands[0].mintGTAmounts[0]}
-                          </Typography>
-                        </Grid>
-                      ) : null
-                    }></Chip>
-                </Grid>
-              ) : null}
-
-              {proposal?.commands[0]?.customTokenAmounts ? (
-                <Grid item>
-                  <Chip
-                    className={classes.timeLeftChip}
-                    label={
-                      <Grid sx={{ display: "flex" }}>
-                        {" "}
-                        <Typography color="#C1D3FF" sx={{ marginRight: "5px" }}>
+                    proposal.commands[0].mintGTAmounts[0] ? (
+                      <div className="f-d f-v-c tb-pad-1">
+                        <Typography
+                          variant="info"
+                          className="text-blue r-pad-1">
                           Amount:
                         </Typography>
-                        <Typography color="#FFFFFF">
-                          {proposal.commands[0].customTokenAmounts[0] /
-                            10 ** tokenDetails.decimals}
+                        <Typography variant="info">
+                          {tokenType === "erc20"
+                            ? Number(
+                                convertFromWeiGovernance(
+                                  proposal?.commands[0].mintGTAmounts[0],
+                                  tokenDetails.decimals,
+                                ),
+                              )
+                            : proposal?.commands[0].mintGTAmounts[0]}
                         </Typography>
-                      </Grid>
-                    }></Chip>
-                </Grid>
-              ) : null}
+                      </div>
+                    ) : null
+                  }></Chip>
+              </Grid>
+            ) : null}
 
-              {proposal?.commands[0]?.customTokenAddresses ? (
+            {proposal?.commands[0]?.customTokenAmounts ? (
+              <Grid item>
+                <Chip
+                  className={classes.timeLeftChip}
+                  label={
+                    <div className="f-d f-v-c tb-pad-1">
+                      {" "}
+                      <Typography variant="info" className="text-blue r-pad-1">
+                        Amount:
+                      </Typography>
+                      <Typography variant="info">
+                        {proposal.commands[0].customTokenAmounts[0] /
+                          10 ** tokenDetails.decimals}
+                      </Typography>
+                    </div>
+                  }></Chip>
+              </Grid>
+            ) : null}
+
+            {proposal?.commands[0]?.customTokenAddresses ? (
+              <Grid item>
+                <Chip
+                  className={classes.timeLeftChip}
+                  label={
+                    <div className="f-d f-v-c tb-pad-1">
+                      <Typography variant="info" className="text-blue r-pad-1">
+                        Recipient:
+                      </Typography>
+                      <Typography variant="info">
+                        {proposal?.commands[0]?.customTokenAddresses[0].substring(
+                          0,
+                          6,
+                        ) +
+                          "....." +
+                          proposal?.commands[0]?.customTokenAddresses[0].substring(
+                            proposal?.commands[0]?.customTokenAddresses[0]
+                              .length - 4,
+                          )}
+                      </Typography>
+                    </div>
+                  }></Chip>
+              </Grid>
+            ) : null}
+
+            {proposal?.commands[0]?.quorum &&
+            proposal?.commands[0]?.threshold ? (
+              <>
                 <Grid item>
                   <Chip
                     className={classes.timeLeftChip}
                     label={
-                      <Grid sx={{ display: "flex" }}>
+                      <div className="f-d f-v-c tb-pad-1">
                         {" "}
-                        <Typography color="#C1D3FF" sx={{ marginRight: "5px" }}>
-                          Recipient:
+                        <Typography
+                          variant="info"
+                          className="text-blue r-pad-1">
+                          Quorum:
                         </Typography>
-                        <Typography color="#FFFFFF">
-                          {proposal?.commands[0]?.customTokenAddresses[0].substring(
-                            0,
+                        <Typography variant="info">
+                          {proposal?.commands[0]?.quorum}
+                        </Typography>
+                      </div>
+                    }></Chip>
+                </Grid>
+                <Grid item>
+                  <Chip
+                    className={classes.timeLeftChip}
+                    label={
+                      <div className="f-d f-v-c tb-pad-1">
+                        <Typography
+                          variant="info"
+                          className="text-blue r-pad-1">
+                          Threshold:
+                        </Typography>
+                        <Typography variant="info">
+                          {proposal?.commands[0]?.threshold}
+                        </Typography>
+                      </div>
+                    }></Chip>
+                </Grid>
+              </>
+            ) : null}
+
+            {proposal?.commands[0]?.totalDeposits ? (
+              <Grid item>
+                <Chip
+                  className={classes.timeLeftChip}
+                  label={
+                    <div className="f-d f-v-c tb-pad-1">
+                      {" "}
+                      <Typography variant="info" className="text-blue r-pad-1">
+                        Raise Amount:
+                      </Typography>
+                      <Typography variant="info">
+                        {(convertToWeiGovernance(
+                          convertToWeiGovernance(
+                            proposal.commands[0].totalDeposits,
                             6,
-                          ) +
-                            "....." +
-                            proposal?.commands[0]?.customTokenAddresses[0].substring(
-                              proposal?.commands[0]?.customTokenAddresses[0]
-                                .length - 4,
-                            )}
-                        </Typography>
-                      </Grid>
-                    }></Chip>
-                </Grid>
-              ) : null}
-
-              {proposal?.commands[0]?.quorum &&
-              proposal?.commands[0]?.threshold ? (
-                <>
-                  <Grid item>
-                    <Chip
-                      className={classes.timeLeftChip}
-                      label={
-                        <Grid sx={{ display: "flex" }}>
-                          {" "}
-                          <Typography
-                            color="#C1D3FF"
-                            sx={{ marginRight: "5px" }}>
-                            Quorum:
-                          </Typography>
-                          <Typography color="#FFFFFF">
-                            {proposal?.commands[0]?.quorum}
-                          </Typography>
-                        </Grid>
-                      }></Chip>
-                  </Grid>
-                  <Grid item>
-                    <Chip
-                      className={classes.timeLeftChip}
-                      label={
-                        <Grid sx={{ display: "flex" }}>
-                          {" "}
-                          <Typography
-                            color="#C1D3FF"
-                            sx={{ marginRight: "5px" }}>
-                            Threshold:
-                          </Typography>
-                          <Typography color="#FFFFFF">
-                            {proposal?.commands[0]?.threshold}
-                          </Typography>
-                        </Grid>
-                      }></Chip>
-                  </Grid>
-                </>
-              ) : null}
-
-              {proposal?.commands[0]?.totalDeposits ? (
-                <Grid item>
-                  <Chip
-                    className={classes.timeLeftChip}
-                    label={
-                      <Grid sx={{ display: "flex" }}>
-                        {" "}
-                        <Typography color="#C1D3FF" sx={{ marginRight: "5px" }}>
-                          Raise Amount:
-                        </Typography>
-                        <Typography color="#FFFFFF">
-                          {(convertToWeiGovernance(
-                            convertToWeiGovernance(
-                              proposal.commands[0].totalDeposits,
-                              6,
-                            ) / factoryData?.pricePerToken,
-                            18,
-                          ) /
-                            10 ** 18) *
-                            convertFromWeiGovernance(
-                              factoryData?.pricePerToken,
-                              6,
-                            )}
-                        </Typography>
-                      </Grid>
-                    }></Chip>
-                </Grid>
-              ) : null}
-            </Grid>
+                          ) / factoryData?.pricePerToken,
+                          18,
+                        ) /
+                          10 ** 18) *
+                          convertFromWeiGovernance(
+                            factoryData?.pricePerToken,
+                            6,
+                          )}
+                      </Typography>
+                    </div>
+                  }></Chip>
+              </Grid>
+            ) : null}
           </Grid>
-        </Grid>
+        </div>
       </Card>
     </CardActionArea>
   );

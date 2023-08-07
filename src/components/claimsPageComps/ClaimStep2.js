@@ -12,8 +12,6 @@ import { Button, TextField } from "@components/ui";
 import { BsArrowLeft } from "react-icons/bs";
 import { makeStyles } from "@mui/styles";
 import React, { useRef, useState } from "react";
-import { useConnectWallet } from "@web3-onboard/react";
-import { useDispatch } from "react-redux";
 import { useRouter } from "next/router";
 import Link from "next/link";
 
@@ -22,7 +20,7 @@ const useStyles = makeStyles({
     display: "flex-col",
     alignItems: "center",
     justifyContent: "center",
-    margin: "170px auto",
+    margin: "20px auto",
     width: "550px",
     color: "white",
   },
@@ -73,7 +71,6 @@ const useStyles = makeStyles({
   },
 
   back: {
-    marginTop: "30px",
     fontWeight: "300",
     marginBottom: "4px",
     display: "flex",
@@ -106,6 +103,13 @@ const useStyles = makeStyles({
     border: "1px solid lightgray",
     background: "transparent",
   },
+
+  finish: {
+    width: "200px",
+    fontFamily: "sans-serif",
+    fontSize: "16px",
+    marginTop: "20px",
+  },
 });
 
 const ClaimStep2 = ({ handleBack, formik, finish, loading, formikStep1 }) => {
@@ -116,8 +120,6 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading, formikStep1 }) => {
   const [loadingCsv, setLoadingCsv] = useState(false);
 
   const classes = useStyles();
-  const [{ wallet }] = useConnectWallet();
-  const dispatch = useDispatch();
 
   const hiddenFileInput = useRef(null);
 
@@ -408,36 +410,22 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading, formikStep1 }) => {
           </>
         )}
 
-        {/* Next */}
         {finish ? (
-          <div
-            style={{
-              marginTop: "20px",
-            }}>
-            <Button
-              onClick={() => {
-                router.push("/claims");
-              }}
-              variant="normal">
-              Go back to claims
-            </Button>
-          </div>
+          <Button
+            onClick={() => {
+              router.push("/claims");
+            }}
+            variant="contained"
+            className={classes.finish}>
+            Go back to claims
+          </Button>
         ) : (
-          <div
-            style={{
-              marginTop: "20px",
-            }}>
-            <Button
-              disabled={isButtonDisabled()}
-              onClick={formik.handleSubmit}
-              variant="normal">
-              {loading || loadingCsv ? (
-                <CircularProgress size={25} />
-              ) : (
-                "Finish"
-              )}
-            </Button>
-          </div>
+          <Button
+            disabled={isButtonDisabled()}
+            onClick={formik.handleSubmit}
+            className={classes.btn}>
+            {loading || loadingCsv ? <CircularProgress /> : "Finish"}
+          </Button>
         )}
       </form>
     </>

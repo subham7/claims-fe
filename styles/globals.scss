@@ -61,9 +61,8 @@ input::-webkit-inner-spin-button {
   padding-left: 6rem;
 }
 
-.tb-pad-d {
-  padding-top: 3rem;
-  padding-bottom: 3rem;
+.t-pad-d {
+  padding-top: 2rem;
 }
 
 .lr-pad-1 {
@@ -71,9 +70,33 @@ input::-webkit-inner-spin-button {
   padding-left: 1rem;
 }
 
+.l-pad-1 {
+  padding-left: 1rem;
+}
+.r-pad-1 {
+  padding-right: 1rem;
+}
+
 .lr-pad-2 {
   padding-right: 2rem;
   padding-left: 2rem;
+}
+
+.b-pad-min {
+  padding-bottom: 4px;
+}
+
+.b-pad-1 {
+  padding-bottom: 1rem;
+}
+
+.b-mar-1 {
+  margin-bottom: 1rem;
+}
+
+.tb-pad-min {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
 }
 
 .tb-pad-1 {
@@ -180,6 +203,11 @@ input::-webkit-inner-spin-button {
 .w-100 {
   width: 100%;
 }
+
+.w-80 {
+  width: 80%;
+}
+
 .w-70 {
   width: 70%;
 }
@@ -194,4 +222,21 @@ input::-webkit-inner-spin-button {
 /* border classes*/
 .br-50 {
   border-radius: 50px !important;
+}
+
+.c-pointer {
+  cursor: pointer;
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  padding: 16px 32px;
+  align-items: center;
+}
+
+.step-buttons {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
 }

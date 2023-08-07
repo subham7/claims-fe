@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { BsPencil } from "react-icons/bs";
 import useSmartContractMethods from "../../hooks/useSmartContractMethods";
 import { convertFromWeiGovernance } from "../../utils/globalFunctions";
 import { ClaimsInsightStyles } from "./claimsInsightStyles";
@@ -43,7 +42,7 @@ const ClaimEligibility = ({
     <div className={classes.eligibilityContainer}>
       <div className={classes.flexContainer}>
         <p>Conditions for eligibility</p>
-        <BsPencil
+        {/* <BsPencil
           style={{
             border: "0.5px solid #6475A3",
             padding: "5px",
@@ -51,7 +50,7 @@ const ClaimEligibility = ({
             cursor: "pointer",
           }}
           size={25}
-        />
+        /> */}
       </div>
 
       {whitelistTokenAddress !==

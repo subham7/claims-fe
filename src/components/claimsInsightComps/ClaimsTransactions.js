@@ -211,7 +211,7 @@ const ClaimsTransactions = ({
                     <TableCell align="left" variant="tableBody">
                       {Number(
                         (+data.totalAmountClaimed / +maxClaimAmount) * 100,
-                      ).toFixed(0)}{" "}
+                      ).toFixed(2)}{" "}
                       %
                     </TableCell>
                   </TableRow>
@@ -281,7 +281,7 @@ const ClaimsTransactions = ({
                     <TableCell align="left" variant="tableBody">
                       {Number(
                         (+data.amountClaimed / +maxClaimAmount) * 100,
-                      ).toFixed(0)}{" "}
+                      ).toFixed(2)}{" "}
                       %
                     </TableCell>
                   </TableRow>

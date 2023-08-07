@@ -7,9 +7,9 @@ import {
   MenuItem,
   OutlinedInput,
   Select,
-  Typography,
+  // Typography,
 } from "@mui/material";
-import { Button } from "@components/ui";
+import { Button, Typography } from "@components/ui";
 import { proposalDisplayOptions } from "../../../../src/data/dashboard";
 import DocsCard from "../../../../src/components/proposalComps/DocsCard";
 import CreateProposalDialog from "../../../../src/components/proposalComps/CreateProposalDialog";
@@ -243,7 +243,7 @@ const Proposal = () => {
 
   return (
     <Layout1 page={2}>
-      <Grid container spacing={3} paddingTop={15}>
+      <Grid container spacing={3} paddingTop={2}>
         <Grid item md={8}>
           <Grid
             container
@@ -254,8 +254,8 @@ const Proposal = () => {
               md: "column",
               lg: "row",
             }}>
-            <Grid item>
-              <Typography variant="title">All Proposals</Typography>
+            <Grid item mb={4}>
+              <Typography variant="heading">All Proposals</Typography>
             </Grid>
             <Grid
               item
@@ -270,7 +270,7 @@ const Proposal = () => {
                   xs
                   sx={{ display: "flex", justifyContent: "flex-end" }}>
                   <Select
-                    sx={{ height: "75%", textTransform: "capitalize" }}
+                    sx={{ height: "60%", textTransform: "capitalize" }}
                     value={selectedListItem}
                     onChange={handleFilterChange}
                     input={<OutlinedInput />}
@@ -317,7 +317,9 @@ const Proposal = () => {
                 <>
                   {executionTransaction && (
                     <>
-                      <h2>Queued Transactions</h2>
+                      <Grid item>
+                        <h2>Queued Transactions</h2>
+                      </Grid>
                       <Grid
                         item
                         onClick={(e) => {
@@ -332,7 +334,11 @@ const Proposal = () => {
                       </Grid>
                     </>
                   )}
-                  {executionTransaction && <h2>Proposals</h2>}
+                  {executionTransaction && (
+                    <Grid item>
+                      <h2>Proposals</h2>
+                    </Grid>
+                  )}
                   {proposalList.map((proposal, key) => {
                     return (
                       <Grid

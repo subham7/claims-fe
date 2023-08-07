@@ -73,7 +73,6 @@ const ClaimInsight = () => {
       const amount = convertToWeiGovernance(
         noOfTokens,
         airdropTokenDetails?.tokenDecimal,
-        c,
       );
       await approveDeposit(
         airdropTokenDetails?.tokenAddress,

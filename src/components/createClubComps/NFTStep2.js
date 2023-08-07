@@ -36,7 +36,7 @@ export default function NFTStep2(props) {
   };
 
   return (
-    <div className="f-d f-vt tb-pad-2">
+    <div className="f-d f-vt tb-pad-2 w-100">
       <Typography variant="heading">Set Token Rules</Typography>
 
       <Typography variant="body" className="text-blue tb-pad-1">
@@ -49,9 +49,9 @@ export default function NFTStep2(props) {
       </Typography>
 
       {/* Image input card */}
-      <Card className="tb-mar-1">
-        <div className="f-d tb-pad-1 lr-pad-1">
-          <div className="f-d f-vt lr-pad-2 tb-pad-2">
+      <Card>
+        <div style={{ justifyContent: "space-between" }} className="f-d">
+          <div className="f-d f-vt tb-pad-2">
             <Typography variant="body">Upload Image</Typography>
 
             <div className="f-d tb-pad-1">
@@ -121,8 +121,8 @@ export default function NFTStep2(props) {
       </Typography>
 
       {/* Membership transfer input */}
-      <Card className="tb-pad-0 tb-mar-1">
-        <div className="f-d f-v-c f-h-sb tb-pad-1 lr-pad-1">
+      <Card>
+        <div className="f-d f-v-c f-h-sb">
           <Typography variant="body">Make membership transferable</Typography>
           <FormControlLabel
             control={
@@ -142,9 +142,10 @@ export default function NFTStep2(props) {
         </div>
       </Card>
 
+      <br />
       {/* price of nft input */}
-      <Card className="tb-pad-0 tb-mar-1">
-        <div className="f-d f-v-c f-h-sb lr-pad-1">
+      <Card>
+        <div className="f-d f-v-c f-h-sb">
           <div>
             <Typography variant="body">Set price per NFT (in USDC)</Typography>
           </div>
@@ -178,9 +179,10 @@ export default function NFTStep2(props) {
         </div>
       </Card>
 
+      <br />
       {/* max mints allowed per wallet input */}
-      <Card className="tb-pad-0 tb-mar-1">
-        <div className="f-d f-v-c f-h-sb lr-pad-1">
+      <Card>
+        <div className="f-d f-v-c f-h-sb">
           <div>
             <Typography variant="body">
               Max. mints allowed per wallet
@@ -208,10 +210,10 @@ export default function NFTStep2(props) {
           </div>
         </div>
       </Card>
-
+      <br />
       {/* limit token supply input */}
-      <Card className="tb-pad-0 tb-mar-1">
-        <div className="f-d f-v-c f-h-sb lr-pad-1 tb-pad-1">
+      <Card>
+        <div className="f-d f-v-c f-h-sb">
           <Typography variant="body">
             Limit total supply of the token
           </Typography>
@@ -233,38 +235,43 @@ export default function NFTStep2(props) {
         </div>
       </Card>
 
+      <br />
+
       {props.formik.values.isNftTotalSupplylimited && (
-        <Card className="tb-pad-0 tb-mar-1">
-          <div className="f-d f-v-c f-h-sb lr-pad-1">
-            <div>
-              <Typography variant="body">Set total token supply</Typography>
+        <>
+          <Card>
+            <div className="f-d f-v-c f-h-sb">
+              <div>
+                <Typography variant="body">Set total token supply</Typography>
+              </div>
+              <div className="w-50">
+                <TextField
+                  name="totalTokenSupply"
+                  type="number"
+                  placeholder="Ex:200"
+                  variant="outlined"
+                  onChange={props.formik.handleChange}
+                  onBlur={props.formik.handleBlur}
+                  value={props.formik.values.totalTokenSupply}
+                  error={
+                    props.formik.touched.totalTokenSupply &&
+                    Boolean(props.formik.errors.totalTokenSupply)
+                  }
+                  helperText={
+                    props.formik.touched.totalTokenSupply &&
+                    props.formik.errors.totalTokenSupply
+                  }
+                  onWheel={(event) => event.target.blur()}
+                />
+              </div>
             </div>
-            <div className="w-50">
-              <TextField
-                name="totalTokenSupply"
-                type="number"
-                placeholder="Ex:200"
-                variant="outlined"
-                onChange={props.formik.handleChange}
-                onBlur={props.formik.handleBlur}
-                value={props.formik.values.totalTokenSupply}
-                error={
-                  props.formik.touched.totalTokenSupply &&
-                  Boolean(props.formik.errors.totalTokenSupply)
-                }
-                helperText={
-                  props.formik.touched.totalTokenSupply &&
-                  props.formik.errors.totalTokenSupply
-                }
-                onWheel={(event) => event.target.blur()}
-              />
-            </div>
-          </div>
-        </Card>
+          </Card>
+          <br />
+        </>
       )}
 
-      <Card className="tb-pad-0 tb-mar-1">
-        <div className="f-d f-v-c f-h-sb lr-pad-1 tb-pad-1">
+      <Card>
+        <div className="f-d f-v-c f-h-sb">
           <Typography variant="body">Last date to close deposits</Typography>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DateTimePicker
@@ -277,6 +284,8 @@ export default function NFTStep2(props) {
           </LocalizationProvider>
         </div>
       </Card>
+
+      <br />
       <Typography variant="info" className="text-darkblue">
         If you don’t limit the supply of your club token, your supply will be
         unlimited until the date deposits are open.

@@ -3,7 +3,7 @@ import { TextField, Typography } from "@components/ui";
 
 export default function Step1(props) {
   return (
-    <div className="f-d f-vt f-v-s tb-pad-d">
+    <div className="f-d f-vt f-v-s t-pad-d w-100">
       <Typography variant="body" className="text-blue">
         Basic info
       </Typography>
@@ -14,7 +14,7 @@ export default function Step1(props) {
 
       <br />
 
-      <Typography variant="body" className="text-blue">
+      <Typography variant="body" className="text-blue b-pad-min">
         Name *
       </Typography>
       <TextField
@@ -34,7 +34,7 @@ export default function Step1(props) {
 
       <br />
 
-      <Typography variant="body" className="text-blue">
+      <Typography variant="body" className="text-blue b-pad-min">
         Symbol *{" "}
         <Box
           sx={{ color: "#6475A3", ml: 1 }}
@@ -43,21 +43,23 @@ export default function Step1(props) {
           (Ticker)
         </Box>
       </Typography>
-      <TextField
-        name="clubSymbol"
-        label="Eg: DGC / PDAO / PXC"
-        variant="outlined"
-        onChange={props.formik.handleChange}
-        onBlur={props.formik.handleBlur}
-        value={props.formik.values.clubSymbol}
-        error={
-          props.formik.touched.clubSymbol &&
-          Boolean(props.formik.errors.clubSymbol)
-        }
-        helperText={
-          props.formik.touched.clubSymbol && props.formik.errors.clubSymbol
-        }
-      />
+      <div className="b-pad-min w-100">
+        <TextField
+          name="clubSymbol"
+          label="Eg: DGC / PDAO / PXC"
+          variant="outlined"
+          onChange={props.formik.handleChange}
+          onBlur={props.formik.handleBlur}
+          value={props.formik.values.clubSymbol}
+          error={
+            props.formik.touched.clubSymbol &&
+            Boolean(props.formik.errors.clubSymbol)
+          }
+          helperText={
+            props.formik.touched.clubSymbol && props.formik.errors.clubSymbol
+          }
+        />
+      </div>
       <Typography variant="info" className="text-darkblue">
         You can choose to make your token public or private along with other
         rules in the next steps.
@@ -72,8 +74,6 @@ export default function Step1(props) {
         Choose a Token type that best suits your objective. (For example: ERC721
         for NFT collectives or non-transferrable ERC20 for investment clubs)
       </Typography>
-
-      <br />
 
       <FormControl sx={{ width: "100%" }}>
         <Select
@@ -94,8 +94,6 @@ export default function Step1(props) {
       <Typography variant="body" className="text-blue">
         What will you use the Station for? *
       </Typography>
-
-      <br />
 
       <FormControl sx={{ width: "100%" }}>
         <Select
