@@ -265,6 +265,8 @@ const CreateProposalDialog = ({
           let followersAddresses;
 
           if (values.actionCommand === "whitelist deposit") {
+            followersAddresses = values.csvObject;
+
             data = {
               daoAddress,
               whitelist: values.csvObject,
