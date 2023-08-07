@@ -5,8 +5,8 @@ import styles from "./Typography.module.scss";
 const variantsMapping = {
   heading: "h1",
   subheading: "h3",
-  body: "p",
-  info: "p",
+  body: "div",
+  info: "div",
 };
 
 const Typography = ({ variant = "body", children, className, ...props }) => {

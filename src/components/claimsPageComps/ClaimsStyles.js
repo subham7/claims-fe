@@ -5,7 +5,7 @@ export const ClaimsStyles = makeStyles({
     display: "flex",
     alignItems: "center",
     justifyContent: "space-evenly",
-    height: "90vh",
+    height: "70vh",
     color: "white",
     margin: "0 auto",
   },

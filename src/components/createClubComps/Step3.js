@@ -13,7 +13,6 @@ import CustomSlider from "../slider";
 import AddCircleOutlinedIcon from "@mui/icons-material/AddCircleOutlined";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { Step3Styles } from "./CreateClubStyles";
-import { useConnectWallet } from "@web3-onboard/react";
 import Web3 from "web3";
 import { useCallback, useEffect } from "react";
 import { getSafeSdk, web3InstanceEthereum } from "../../utils/helper";
@@ -21,11 +20,11 @@ import { useState } from "react";
 import { useSelector } from "react-redux";
 import SafeApiKit from "@safe-global/api-kit";
 import { Web3Adapter } from "@safe-global/protocol-kit";
+import { useAccount } from "wagmi";
 
 export default function Step3(props) {
   const classes = Step3Styles();
-  const [{ wallet }] = useConnectWallet();
-  const walletAddress = wallet.accounts[0].address;
+  const { address: walletAddress } = useAccount();
 
   const GNOSIS_DATA = useSelector((state) => {
     return state.gnosis;
@@ -34,10 +33,10 @@ export default function Step3(props) {
   const [ownerAddresses, setOwnerAddresses] = useState();
   const [allSafeAddresses, setAllSafeAddresses] = useState();
 
-  const index = props.formik.values.addressList.indexOf(
-    Web3.utils.toChecksumAddress(walletAddress),
-  );
-  if (index >= 0) props.formik.values.addressList.splice(index, 1);
+  // const index = props.formik.values.addressList.indexOf(
+  //   Web3.utils.toChecksumAddress(walletAddress),
+  // );
+  // if (index >= 0) props.formik.values.addressList.splice(index, 1);
 
   const fetchOwners = async (gnosisAddress) => {
     const safeSdk = await getSafeSdk(
@@ -83,15 +82,15 @@ export default function Step3(props) {
     if (props.formik.values.safeAddress?.length)
       fetchOwners(props.formik.values.safeAddress);
   }, [props.formik.values.safeAddress]);
+
   return (
-    <div className="f-d f-vt tb-pad-d">
-      {/* <Grid item md={12} mt={5}> */}
+    <div className="f-d f-vt t-pad-d w-100">
       <Typography variant="body" className="text-blue">
         Collectively manage your club’s investments through governance that
         works for you.
       </Typography>
-      {/* <br /> */}
-      <Typography variant="body" className="text-blue tb-pad-1">
+      <br />
+      <Typography variant="body" className="text-blue">
         Configure Treasury
       </Typography>
       <Typography variant="info" className="text-darkblue">
@@ -106,7 +105,7 @@ export default function Step3(props) {
         aria-label="deploySafe"
         name="deploySafe"
         id="deploySafe"
-        className="tb-pad-2"
+        className="b-pad-1"
         // className={classes.selectContainer}
       >
         <ToggleButton
@@ -209,13 +208,15 @@ export default function Step3(props) {
             ) : null}
           </>
         )}
+
+      <br />
       {props.formik.values.deploySafe === "newSafe" && (
         <>
           <Typography variant="body" className="text-blue">
             Wallet Signators
           </Typography>
 
-          <Card className="tb-pad-0 tb-mar-2">
+          <Card className="tb-pad-0 b-mar-1">
             <div className="tb-pad-1 ">
               <div className="f-d f-v-c f-h-sb">
                 <div>
@@ -291,6 +292,8 @@ export default function Step3(props) {
             </div>
           </Card>
 
+          <br />
+
           {props.formik.values.addressList?.length ? (
             <div>
               <div>
@@ -311,7 +314,7 @@ export default function Step3(props) {
                   </Box>{" "}
                 </Typography>
               </div>
-              <Card className="tb-mar-2">
+              <Card className="b-mar-1">
                 <div className="tb-pad-1 lr-pad-1">
                   <Slider
                     defaultValue={1}
@@ -337,10 +340,12 @@ export default function Step3(props) {
         </>
       )}
 
+      <br />
+
       <Typography variant="body" className="text-blue">
         Governance
       </Typography>
-      <Typography variant="info" className="text-darkblue tb-pad-1">
+      <Typography variant="info" className="text-darkblue">
         Who can create transaction(s) inside your station?
       </Typography>
 
@@ -352,7 +357,7 @@ export default function Step3(props) {
         aria-label="governance"
         name="governance"
         id="governance"
-        className="tb-pad-2">
+        className="b-pad-1">
         <ToggleButton
           className={classes.rightContainer}
           name="governance"
@@ -368,7 +373,7 @@ export default function Step3(props) {
           Community governance
         </ToggleButton>
       </ToggleButtonGroup>
-
+      <br />
       {props.formik.values.governance === "governance" ? (
         <>
           <div>
@@ -389,7 +394,7 @@ export default function Step3(props) {
               </Box>{" "}
             </Typography>
           </div>
-          <Card className="tb-mar-1">
+          <Card className="b-mar-1">
             <div className="tb-pad-1 lr-pad-1">
               <CustomSlider
                 onChange={(value) => {
@@ -401,6 +406,7 @@ export default function Step3(props) {
               />
             </div>
           </Card>
+          <br />
 
           <div>
             <Typography variant="body">
@@ -420,7 +426,7 @@ export default function Step3(props) {
               </Box>{" "}
             </Typography>
           </div>
-          <Card className="tb-mar-1">
+          <Card className="b-mar-1">
             <div className="tb-pad-1 lr-pad-1">
               <CustomSlider
                 onChange={(value) => {

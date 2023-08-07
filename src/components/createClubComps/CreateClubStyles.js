@@ -80,11 +80,6 @@ export const ERC20Step2Styles = makeStyles({
     width: "208px",
     fontFamily: "Whyte",
   },
-  cardPadding: {
-    margin: 0,
-    padding: 0,
-    borderRadius: "10px",
-  },
   addCircleColour: {
     color: "#C1D3FF",
     fontFamily: "Whyte",

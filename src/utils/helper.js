@@ -83,8 +83,8 @@ export function returnRemainingTime(epochTime) {
     : 0;
 }
 
-export const showWrongNetworkModal = (wallet, networkId) => {
-  return wallet && networkId !== "0x89" ? <WrongNetworkModal /> : null;
+export const showWrongNetworkModal = (walletAddress, networkId) => {
+  return walletAddress && networkId !== "0x89" ? <WrongNetworkModal /> : null;
 };
 
 export const getAllEntities = async (
@@ -115,5 +115,17 @@ export const getAllEntities = async (
     return allEntities;
   } catch (error) {
     console.log(error);
+  }
+};
+
+export const extractPartFromUrl = (url) => {
+  try {
+    const parsedUrl = new URL(url);
+    const pathname = parsedUrl.pathname;
+    const parts = pathname.split("/");
+    return parts[parts.length - 1];
+  } catch (error) {
+    console.error("Invalid URL:", error);
+    return null;
   }
 };

@@ -52,7 +52,7 @@ const SettingsInfo = ({
 
   return (
     <>
-      <Grid container spacing={3} paddingTop={15}>
+      <Grid container spacing={3} paddingTop={2}>
         <Grid sx={{ width: "70%" }} item>
           <Card className={classes.cardRegular}>
             <Grid
@@ -623,7 +623,9 @@ const SettingsInfo = ({
                   <Stack spacing={1}>
                     {daoDetails.isGovernance && (
                       <Typography variant="settingText">
-                        Total Raise Amount
+                        {tokenType === "erc721"
+                          ? " Total NFT Supply"
+                          : "Total Raise Amount"}
                       </Typography>
                     )}
 

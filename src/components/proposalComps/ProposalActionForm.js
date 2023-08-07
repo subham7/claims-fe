@@ -136,6 +136,15 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
         <MenuItem key={8} value="whitelist deposit">
           Whitelist Deposit
         </MenuItem>
+        <MenuItem key={9} value="whitelist with lens followers">
+          Whitelist with Lens followers
+        </MenuItem>
+        <MenuItem key={10} value="whitelist with lens post's comments">
+          Whitelist with Lens post&apos;s comments
+        </MenuItem>
+        <MenuItem key={11} value="update price per token">
+          Update price per token
+        </MenuItem>
       </Select>
 
       {formik.values.actionCommand === "Distribute token to members" ? (
@@ -680,6 +689,89 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
             </span>
           </Typography>
         </>
+      ) : formik.values.actionCommand === "whitelist with lens followers" ? (
+        <Grid
+          container
+          direction={"column"}
+          ml={3}
+          mt={2}
+          sx={{ marginLeft: "0 !important" }}>
+          <Typography variant="proposalBody">Lens username *</Typography>
+          <TextField
+            variant="outlined"
+            className={classes.textField}
+            placeholder="johndoe.lens"
+            type="text"
+            name="lensId"
+            id="lensId"
+            value={formik.values.lensId}
+            onChange={formik.handleChange}
+            error={formik.touched.lensId && Boolean(formik.errors.lensId)}
+            helperText={formik.touched.lensId && Boolean(formik.errors.lensId)}
+            onWheel={(event) => event.target.blur()}
+          />
+        </Grid>
+      ) : formik.values.actionCommand ===
+        "whitelist with lens post's comments" ? (
+        <Grid
+          container
+          direction={"column"}
+          ml={3}
+          mt={2}
+          sx={{ marginLeft: "0 !important" }}>
+          <Typography variant="proposalBody">Lens post link *</Typography>
+          <TextField
+            variant="outlined"
+            className={classes.textField}
+            placeholder="https://lenster.xyz/posts/0x01a14e-0x018e"
+            type="text"
+            name="lensPostLink"
+            id="lensPostLink"
+            value={formik.values.lensPostLink}
+            onChange={formik.handleChange}
+            error={
+              formik.touched.lensPostLink && Boolean(formik.errors.lensPostLink)
+            }
+            helperText={
+              formik.touched.lensPostLink && Boolean(formik.errors.lensPostLink)
+            }
+            onWheel={(event) => event.target.blur()}
+          />
+        </Grid>
+      ) : formik.values.actionCommand === "update price per token" ? (
+        <Grid
+          container
+          direction={"column"}
+          ml={3}
+          mt={2}
+          sx={{ marginLeft: "0 !important" }}>
+          <Typography variant="proposalBody">Price of token *</Typography>
+          <TextField
+            variant="outlined"
+            className={classes.textField}
+            placeholder="0"
+            type="number"
+            name="pricePerToken"
+            id="pricePerToken"
+            value={formik.values.pricePerToken}
+            onChange={formik.handleChange}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment style={{ color: "#6475A3" }} position="end">
+                  USDC
+                </InputAdornment>
+              ),
+            }}
+            error={
+              formik.touched.pricePerToken &&
+              Boolean(formik.errors.pricePerToken)
+            }
+            helperText={
+              formik.touched.pricePerToken && formik.errors.pricePerToken
+            }
+            onWheel={(event) => event.target.blur()}
+          />
+        </Grid>
       ) : null}
     </Stack>
   );

@@ -5,6 +5,14 @@ export const DashboardStyles = makeStyles({
     position: "absolute",
     bottom: 0,
   },
+  statsDiv: {
+    display: "flex",
+    flexDirection: "column",
+    margin: "0px",
+    height: "100%",
+    justifyContent: "center",
+    marginLeft: "32px",
+  },
   firstCard: {
     position: "relative",
     width: "Infinity",
@@ -22,32 +30,25 @@ export const DashboardStyles = makeStyles({
     background: "#0ABB92 no-repeat padding-box",
   },
   thirdCard: {
-    width: "22vw",
+    // width: "22vw",
     // height: "351px",
     background: "#121D38",
     border: ".5px solid #6475A3",
   },
   fifthCard: {
-    width: "22vw",
-    height: "370px",
+    // width: "22vw",
+    // height: "370px",
     background: "#121D38",
     border: ".5px solid #6475A3",
     color: "white",
     position: "relative",
-  },
-  cardOverlay: {
-    position: "absolute",
-    top: "30px",
-    left: "30px",
-    right: "30px",
-    bottom: "30px",
   },
   cardSharp1: {
     backgroundColor: "#121D38",
     borderRadius: "10px",
     opacity: 1,
     width: "100%",
-    height: "370px",
+    // height: "370px",
     border: ".5px solid #6475A3",
   },
   cardSharp2: {
@@ -212,7 +213,7 @@ export const DashboardStyles = makeStyles({
     color: "#FFFFFF",
   },
   fourthCard: {
-    width: "22vw",
+    // width: "22vw",
     background: "#121D38",
     borderRadius: "10px",
     border: ".5px solid #6475A3",
@@ -280,18 +281,14 @@ export const DashboardStyles = makeStyles({
     width: "100%",
   },
   docimg: {
-    right: "0",
     marginLeft: "52%",
-    marginTop: "20%",
     width: "80%",
-    sx: { position: "absolute", bottom: 0 },
+    marginTop: "-9%",
   },
   valueDetailStyle: {
     color: "#81F5FF",
   },
   docs: {
-    position: "absolute",
-    top: "330px",
     color: "white",
     textDecoration: "underline",
     fontSize: "18px",
@@ -300,6 +297,7 @@ export const DashboardStyles = makeStyles({
     },
   },
   profilePic: {
+    marginLeft: "16px",
     borderRadius: "50%",
     textAlign: "center",
   },

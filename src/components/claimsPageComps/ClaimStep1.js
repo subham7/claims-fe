@@ -24,7 +24,7 @@ const useStyles = makeStyles({
     display: "flex-col",
     alignItems: "center",
     justifyContent: "center",
-    margin: "170px auto",
+    margin: "40px auto",
     width: "600px",
     color: "white",
   },
@@ -52,7 +52,6 @@ const useStyles = makeStyles({
   },
 
   back: {
-    marginTop: "30px",
     fontWeight: "300",
     marginBottom: "4px",
     display: "flex",
@@ -393,9 +392,7 @@ const ClaimStep1 = ({ formik, tokensInWallet, isLoading }) => {
 
         {/* {/* Next */}
 
-        <Button onClick={formik.handleSubmit} variant="normal">
-          Next
-        </Button>
+        <Button onClick={formik.handleSubmit}>Next</Button>
       </form>
     </>
   );

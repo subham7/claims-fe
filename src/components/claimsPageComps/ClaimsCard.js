@@ -6,7 +6,6 @@ import { FaCoins } from "react-icons/fa";
 import { useRouter } from "next/router";
 import Countdown from "react-countdown";
 import { Alert } from "@mui/material";
-import { useConnectWallet } from "@web3-onboard/react";
 import useSmartContractMethods from "../../hooks/useSmartContractMethods";
 import { convertFromWeiGovernance } from "../../utils/globalFunctions";
 
@@ -108,7 +107,6 @@ const ClaimsCard = ({
   const [symbol, setSymbol] = useState("");
   const [decimals, setDecimals] = useState(0);
 
-  const [{ wallet }] = useConnectWallet();
   const { getDecimals, getTokenSymbol } = useSmartContractMethods();
 
   const startingTime = new Date(+startDate * 1000);
