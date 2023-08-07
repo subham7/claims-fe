@@ -260,7 +260,7 @@ const Join = () => {
       try {
         const whitelistData = await getWhitelistMerkleProof(
           daoAddress,
-          walletAddress,
+          walletAddress.toLowerCase(),
         );
 
         setWhitelistUserData(whitelistData);
