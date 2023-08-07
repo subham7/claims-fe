@@ -653,6 +653,8 @@ const useSmartContractMethods = () => {
     ownerAddress,
     safeThreshold,
     gnosisAddress,
+    airDropAmountArray,
+    membersArray,
   ) => {
     let transaction;
     let approvalTransaction;
@@ -838,6 +840,8 @@ const useSmartContractMethods = () => {
       ownerAddress,
       safeThreshold,
       gnosisAddress,
+      airDropAmountArray,
+      membersArray,
     );
 
     if (executionStatus !== "executed") {
