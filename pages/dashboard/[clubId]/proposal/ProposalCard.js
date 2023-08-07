@@ -270,6 +270,24 @@ const ProposalCard = ({ proposal }) => {
               </Grid>
             ) : null}
 
+            {proposal?.commands[0]?.executionId === 13 ? (
+              <Grid item>
+                <Chip
+                  className={classes.timeLeftChip}
+                  label={
+                    <div className="f-d f-v-c tb-pad-1">
+                      {" "}
+                      <Typography variant="info" className="text-blue r-pad-1">
+                        Price per token:
+                      </Typography>
+                      <Typography variant="info">
+                        {proposal.commands[0]?.pricePerToken} USDC
+                      </Typography>
+                    </div>
+                  }></Chip>
+              </Grid>
+            ) : null}
+
             {proposal?.commands[0]?.airDropAmount ? (
               <Grid item>
                 <Chip

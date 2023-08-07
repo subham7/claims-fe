@@ -124,6 +124,7 @@ const CreateProposalDialog = ({
       userAddress: "",
       amountOfTokens: 0,
       amountOfTokens721: 0,
+      pricePerToken: 0,
       quorum: 0,
       threshold: 0,
       totalDeposit: 0,
@@ -312,6 +313,17 @@ const CreateProposalDialog = ({
                   : null,
               whitelistAddresses: followersAddresses,
               allowWhitelisting: true,
+              usdcTokenSymbol: "USDC",
+              usdcTokenDecimal: 6,
+              usdcGovernanceTokenDecimal: 18,
+            },
+          ];
+        }
+        if (values.actionCommand === "update price per token") {
+          commands = [
+            {
+              executionId: 13,
+              pricePerToken: values.pricePerToken,
               usdcTokenSymbol: "USDC",
               usdcTokenDecimal: 6,
               usdcGovernanceTokenDecimal: 18,
