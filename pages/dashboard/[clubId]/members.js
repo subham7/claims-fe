@@ -3,7 +3,6 @@ import {
   Backdrop,
   CircularProgress,
   Grid,
-  IconButton,
   Paper,
   Table,
   TableBody,
@@ -12,9 +11,10 @@ import {
   TableHead,
   TablePagination,
   TableRow,
-  Typography,
+  Tooltip,
+  // Typography,
 } from "@mui/material";
-import { Typography as CustomTypography, Button } from "@components/ui";
+import { Typography, Button } from "@components/ui";
 import { makeStyles } from "@mui/styles";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
@@ -239,9 +239,7 @@ const Test = () => {
           <Grid item md={9} mb={8}>
             <Grid container mb={4}>
               <Grid item>
-                <CustomTypography variant="heading">
-                  Station Members
-                </CustomTypography>
+                <Typography variant="heading">Station Members</Typography>
               </Grid>
             </Grid>
             <Grid
@@ -270,7 +268,7 @@ const Test = () => {
                     }
                   />
                 </LocalizationProvider>
-                <Typography variant="caption" color="error">
+                <Typography variant="body" className="text-error">
                   {formik.touched.startDate && formik.errors.startDate}
                 </Typography>
               </Grid>
@@ -289,7 +287,7 @@ const Test = () => {
                     helperText={formik.touched.endDate && formik.errors.endDate}
                   />
                 </LocalizationProvider>
-                <Typography variant="caption" color="error">
+                <Typography variant="body" color="text-error">
                   {formik.touched.endDate && formik.errors.endDate}
                 </Typography>
               </Grid>
@@ -326,56 +324,50 @@ const Test = () => {
                       sx={{
                         "&:last-child td, &:last-child th": { border: 0 },
                       }}>
-                      <TableCell align="left" variant="tableBody">
-                        <Grid
-                          container
-                          direction="row"
-                          alignItems="center"
-                          gap={4}>
-                          <Grid
-                            sx={{
-                              flex: "0.7",
-                            }}
-                            item>
-                            <a
-                              className={classes.activityLink}
+                      <TableCell align="left">
+                        <Typography variant="body" className="text-blue">
+                          <Tooltip title={data.userAddress}>
+                            <div
+                              className="f-d f-v-c  f-gap-8 c-pointer"
                               onClick={(e) => {
                                 handleAddressClick(e, data.userAddress);
                               }}>
-                              {" "}
-                              {data.userAddress.substring(0, 6) +
+                              {data.userAddress.substring(0, 8) +
                                 "......" +
                                 data.userAddress.substring(
                                   data.userAddress.length - 4,
-                                )}{" "}
-                            </a>
-                          </Grid>
-                          <Grid item flex={0.3}>
-                            <IconButton
-                              color="primary"
-                              onClick={(e) => {
-                                handleAddressClick(e, data.userAddress);
-                              }}>
-                              <OpenInNewIcon className={classes.activityLink} />
-                            </IconButton>
-                          </Grid>
-                        </Grid>
+                                )}
+                              <OpenInNewIcon style={{ marginBottom: "12px" }} />
+                            </div>
+                          </Tooltip>
+                        </Typography>
                       </TableCell>
-                      <TableCell align="left" variant="tableBody">
-                        {Number(
-                          convertFromWeiGovernance(data.depositAmount, 6),
-                        ).toFixed(2)}{" "}
-                        USDC
+
+                      <TableCell align="left">
+                        <Typography variant="body">
+                          {Number(
+                            convertFromWeiGovernance(data.depositAmount, 6),
+                          ).toFixed(2)}{" "}
+                          USDC
+                        </Typography>
                       </TableCell>
-                      <TableCell align="left" variant="tableBody">
-                        {tokenType === "erc20"
-                          ? Number(
-                              convertFromWeiGovernance(data?.gtAmount, 18),
-                            ).toFixed(2)
-                          : data?.gtAmount}
+
+                      <TableCell align="left">
+                        <Typography variant="body">
+                          {tokenType === "erc20"
+                            ? Number(
+                                convertFromWeiGovernance(data?.gtAmount, 18),
+                              ).toFixed(2)
+                            : data?.gtAmount}
+                        </Typography>
                       </TableCell>
-                      <TableCell align="left" variant="tableBody">
-                        {new Date(+data.timeStamp * 1000).toLocaleDateString()}
+
+                      <TableCell align="left">
+                        <Typography variant="body">
+                          {new Date(
+                            +data.timeStamp * 1000,
+                          ).toLocaleDateString()}
+                        </Typography>
                       </TableCell>
                     </TableRow>
                   ))}
