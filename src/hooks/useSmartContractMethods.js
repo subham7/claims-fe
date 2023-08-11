@@ -382,6 +382,8 @@ const useSmartContractMethods = () => {
   };
 
   const claim = async (amount, reciever, merkleProof, encodedData) => {
+    console.log("ENCode");
+
     return await claimContractSend.methods
       .claim(amount, reciever, merkleProof, encodedData)
       .send({
