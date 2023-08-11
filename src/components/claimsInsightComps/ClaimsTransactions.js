@@ -11,13 +11,18 @@ import {
 import React, { useEffect, useState } from "react";
 import { ClaimsInsightStyles } from "./claimsInsightStyles";
 import { subgraphQuery } from "../../utils/subgraphs";
-import { CLAIMS_SUBGRAPH_URL_POLYGON } from "../../api";
+import {
+  CLAIMS_SUBGRAPH_URL_BASE,
+  CLAIMS_SUBGRAPH_URL_POLYGON,
+} from "../../api";
 import {
   QUERY_ALL_CLAIMS_TRANSACTIONS,
   QUERY_WALLET_WISE_TRANSACTIONS,
 } from "../../api/graphql/queries";
 import { convertFromWeiGovernance } from "../../utils/globalFunctions";
 import { FiExternalLink } from "react-icons/fi";
+import { useNetwork } from "wagmi";
+import Web3 from "web3";
 
 const ClaimsTransactions = ({
   claimAddress,
@@ -31,6 +36,8 @@ const ClaimsTransactions = ({
   const [isWalletSelected, setIsWalletSelected] = useState(true);
   const [isAllTransactionSelected, setIsAllTransactionSelected] =
     useState(false);
+  const { chain } = useNetwork();
+  const networkId = Web3.utils.numberToHex(chain?.id);
 
   const classes = ClaimsInsightStyles();
   const walletHeaders = ["Wallet", "Total tokens", "Claimed", "Percentage"];
@@ -45,7 +52,11 @@ const ClaimsTransactions = ({
 
   const fetchWalletWiseTransactions = async () => {
     const { claimers } = await subgraphQuery(
-      CLAIMS_SUBGRAPH_URL_POLYGON,
+      networkId === "0x89"
+        ? CLAIMS_SUBGRAPH_URL_POLYGON
+        : networkId === "0x2105"
+        ? CLAIMS_SUBGRAPH_URL_BASE
+        : null,
       QUERY_WALLET_WISE_TRANSACTIONS(claimAddress),
     );
     setWalletWiseTransactionData(claimers);
@@ -53,7 +64,11 @@ const ClaimsTransactions = ({
 
   const fetchAllTransactions = async () => {
     const { airdrops } = await subgraphQuery(
-      CLAIMS_SUBGRAPH_URL_POLYGON,
+      networkId === "0x89"
+        ? CLAIMS_SUBGRAPH_URL_POLYGON
+        : networkId === "0x2105"
+        ? CLAIMS_SUBGRAPH_URL_BASE
+        : null,
       QUERY_ALL_CLAIMS_TRANSACTIONS(claimAddress),
     );
     setAllTransactionsData(airdrops?.reverse());

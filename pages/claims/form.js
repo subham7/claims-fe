@@ -5,10 +5,11 @@ import ClaimStep1 from "../../src/components/claimsPageComps/ClaimStep1";
 import ClaimStep2 from "../../src/components/claimsPageComps/ClaimStep2";
 import dayjs from "dayjs";
 import { makeStyles } from "@mui/styles";
-import { getAssetsByDaoAddress } from "../../src/api/assets";
+// import { getAssetsByDaoAddress } from "../../src/api/assets";
 import { convertToWeiGovernance } from "../../src/utils/globalFunctions";
 import { createClaimCsv, createSnapShot } from "../../src/api/claims";
 import {
+  CLAIM_FACTORY_ADDRESS_BASE,
   CLAIM_FACTORY_ADDRESS_GOERLI,
   CLAIM_FACTORY_ADDRESS_POLYGON,
 } from "../../src/api";
@@ -24,6 +25,7 @@ import {
 } from "../../src/components/createClubComps/ValidationSchemas";
 import { useAccount, useNetwork } from "wagmi";
 import Web3 from "web3";
+import { getTokensList } from "api/token";
 
 const steps = ["Step1", "Step2"];
 
@@ -66,12 +68,17 @@ const Form = () => {
   };
 
   const getCurrentAccount = async () => {
-    setLoadingTokens(true);
-    // const data = await getTokensFromWallet(accounts[0], networkId);
-    if (networkId && walletAddress) {
-      const tokensList = await getAssetsByDaoAddress(walletAddress, networkId);
-      setTokensInWallet(tokensList.data.tokenPriceList);
-      setLoadingTokens(false);
+    try {
+      setLoadingTokens(true);
+      // const data = await getTokensFromWallet(accounts[0], networkId);
+      if (networkId && walletAddress) {
+        const tokensList = await getTokensList("base-mainnet", walletAddress);
+
+        setTokensInWallet(tokensList?.data?.items);
+        setLoadingTokens(false);
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -143,6 +150,8 @@ const Form = () => {
       const claimsContractAddress =
         networkId === "0x89"
           ? CLAIM_FACTORY_ADDRESS_POLYGON
+          : networkId === "0x2105"
+          ? CLAIM_FACTORY_ADDRESS_BASE
           : CLAIM_FACTORY_ADDRESS_GOERLI;
 
       const data = {
@@ -274,7 +283,7 @@ const Form = () => {
                 data.airdropTokenAddress,
                 claimsContractAddress,
                 data.numberOfTokens,
-                decimals, // decimal
+                decimals,
               );
             }
 

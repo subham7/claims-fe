@@ -1,5 +1,9 @@
 import axios from "axios";
-import { GOERLI_RPC_URL, POLYGON_MAINNET_RPC_URL } from "../index";
+import {
+  COVALENT_API,
+  GOERLI_RPC_URL,
+  POLYGON_MAINNET_RPC_URL,
+} from "../index";
 
 export const getTokensFromWallet = async (address, networkId) => {
   try {
@@ -16,9 +20,9 @@ export const getTokensFromWallet = async (address, networkId) => {
     const config = {
       method: "post",
       url:
-        networkId == "0x5"
+        networkId === "0x5"
           ? GOERLI_RPC_URL
-          : networkId == "0x89"
+          : networkId === "0x89"
           ? POLYGON_MAINNET_RPC_URL
           : "",
       headers: {
@@ -53,9 +57,9 @@ export const getTokensFromWallet = async (address, networkId) => {
         const options = {
           method: "POST",
           url:
-            networkId == "0x5"
+            networkId === "0x5"
               ? GOERLI_RPC_URL
-              : networkId == "0x89"
+              : networkId === "0x89"
               ? POLYGON_MAINNET_RPC_URL
               : "",
           headers: {
@@ -226,6 +230,24 @@ export const getTokenMetadata = async (address, networkId) => {
     const result = await main();
 
     return result;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getTokensList = async (networkName, walletAddress) => {
+  try {
+    let headers = new Headers();
+    headers.set("Authorization", `Bearer ${COVALENT_API}`);
+    const res = await fetch(
+      `https://api.covalenthq.com/v1/${networkName}/address/${walletAddress}/balances_v2/`,
+      {
+        method: "GET",
+        headers: headers,
+      },
+    );
+    const data = await res.json();
+    return data;
   } catch (error) {
     console.log(error);
   }

@@ -9,10 +9,13 @@ import Safe, { Web3Adapter } from "@safe-global/protocol-kit";
 import { createProposalTxHash, getProposalTxHash } from "../api/proposal";
 import SafeApiKit from "@safe-global/api-kit";
 import { actionContractABI } from "../abis/newArch/actionContract";
-import { useAccount } from "wagmi";
+import { useAccount, useNetwork } from "wagmi";
 
 const useSmartContractMethods = () => {
   const { address: walletAddress } = useAccount();
+  const { chain } = useNetwork();
+  const networkId = Web3.utils.numberToHex(chain?.id);
+
   const web3Call = new Web3(RPC_URL ? RPC_URL : POLYGON_MAINNET_RPC_URL);
 
   const isAssetsStoredOnGnosis = useSelector((state) => {
@@ -131,7 +134,7 @@ const useSmartContractMethods = () => {
   const addMoreTokens = async (noOfTokens) => {
     return await claimContractSend.methods?.depositTokens(noOfTokens).send({
       from: walletAddress,
-      gasPrice: await getIncreaseGasPrice(),
+      gasPrice: await getIncreaseGasPrice(networkId),
     });
   };
 
@@ -252,7 +255,7 @@ const useSmartContractMethods = () => {
           ?.approve(approvalContract, value)
           .send({
             from: walletAddress,
-            gasPrice: await getIncreaseGasPrice(),
+            gasPrice: await getIncreaseGasPrice(networkId),
           });
       }
     }
@@ -332,7 +335,7 @@ const useSmartContractMethods = () => {
       )
       .send({
         from: walletAddress,
-        gasPrice: await getIncreaseGasPrice(),
+        gasPrice: await getIncreaseGasPrice(networkId),
       });
   };
 
@@ -347,7 +350,7 @@ const useSmartContractMethods = () => {
   const toggleClaim = async () => {
     return await claimContractSend?.methods.toggleClaim().send({
       from: walletAddress,
-      gasPrice: await getIncreaseGasPrice(),
+      gasPrice: await getIncreaseGasPrice(networkId),
     });
   };
 
@@ -356,7 +359,7 @@ const useSmartContractMethods = () => {
       .changeStartAndEndTime(startTime, endTime)
       .send({
         from: walletAddress,
-        gasPrice: await getIncreaseGasPrice(),
+        gasPrice: await getIncreaseGasPrice(networkId),
       });
   };
 
@@ -365,7 +368,7 @@ const useSmartContractMethods = () => {
       .rollbackTokens(amount, rollbackAddress)
       .send({
         from: walletAddress,
-        gasPrice: await getIncreaseGasPrice(),
+        gasPrice: await getIncreaseGasPrice(networkId),
       });
   };
 
@@ -374,7 +377,7 @@ const useSmartContractMethods = () => {
       .changeStartAndEndTime(startTime, endTime)
       .send({
         from: walletAddress,
-        gasPrice: await getIncreaseGasPrice(),
+        gasPrice: await getIncreaseGasPrice(networkId),
       });
   };
 
@@ -383,7 +386,7 @@ const useSmartContractMethods = () => {
       .claim(amount, reciever, merkleProof, encodedData)
       .send({
         from: walletAddress,
-        gasPrice: await getIncreaseGasPrice(),
+        gasPrice: await getIncreaseGasPrice(networkId),
       });
   };
 

@@ -19,11 +19,19 @@ export const getSafeSdk = async (gnosisAddress, walletAddress) => {
   return safeSdk;
 };
 
-export const getIncreaseGasPrice = async () => {
+export const getIncreaseGasPrice = async (networkId = "0x89") => {
   const web3 = await web3InstanceCustomRPC();
   if (!sessionStorage.getItem("gasPrice")) {
     const gasPrice = await web3.eth.getGasPrice();
-    const increasedGasPrice = +gasPrice + 30000000000;
+
+    let increasedGasPrice;
+
+    if (networkId === "0x89") {
+      increasedGasPrice = +gasPrice + 30000000000;
+    } else {
+      increasedGasPrice = +gasPrice + 1000;
+    }
+
     return increasedGasPrice;
   } else {
     return Number(sessionStorage.getItem("gasPrice"));

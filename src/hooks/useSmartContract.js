@@ -8,6 +8,7 @@ import ClaimFactoryABI from "../abis/newArch/claimFactory.json";
 import { useRouter } from "next/router";
 import Web3 from "web3";
 import {
+  CLAIM_FACTORY_ADDRESS_BASE,
   CLAIM_FACTORY_ADDRESS_GOERLI,
   CLAIM_FACTORY_ADDRESS_POLYGON,
   getRpcUrl,
@@ -37,6 +38,8 @@ const useSmartContract = () => {
       ? CLAIM_FACTORY_ADDRESS_GOERLI
       : networkId === "0x89"
       ? CLAIM_FACTORY_ADDRESS_POLYGON
+      : networkId === "0x2105"
+      ? CLAIM_FACTORY_ADDRESS_BASE
       : "";
 
   const initializeFactoryContracts = async () => {

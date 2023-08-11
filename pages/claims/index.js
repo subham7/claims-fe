@@ -10,9 +10,13 @@ import ClaimsCard from "../../src/components/claimsPageComps/ClaimsCard";
 import useSmartContract from "../../src/hooks/useSmartContract";
 import Layout1 from "../../src/components/layouts/layout1";
 import { subgraphQuery } from "../../src/utils/subgraphs";
-import { CLAIMS_SUBGRAPH_URL_POLYGON } from "../../src/api";
+import {
+  CLAIMS_SUBGRAPH_URL_BASE,
+  CLAIMS_SUBGRAPH_URL_POLYGON,
+} from "../../src/api";
 import { QUERY_ALL_CLAIMS_OF_CREATOR } from "../../src/api/graphql/queries";
-import { useAccount } from "wagmi";
+import { useAccount, useNetwork } from "wagmi";
+import Web3 from "web3";
 
 const useStyles = makeStyles({
   container: {
@@ -84,6 +88,9 @@ const Claims = () => {
   const classes = useStyles();
   const router = useRouter();
   const [claimData, setClaimData] = useState([]);
+  const { chain } = useNetwork();
+  const networkId = Web3.utils.numberToHex(chain?.id);
+
   useSmartContract();
 
   const createClaimHandler = () => {
@@ -96,7 +103,11 @@ const Claims = () => {
     const fetchClaims = async () => {
       try {
         const { claims } = await subgraphQuery(
-          CLAIMS_SUBGRAPH_URL_POLYGON,
+          networkId === "0x89"
+            ? CLAIMS_SUBGRAPH_URL_POLYGON
+            : networkId === "0x2105"
+            ? CLAIMS_SUBGRAPH_URL_BASE
+            : null,
           QUERY_ALL_CLAIMS_OF_CREATOR(walletAddress),
         );
 
@@ -107,7 +118,7 @@ const Claims = () => {
     };
 
     fetchClaims();
-  }, [walletAddress]);
+  }, [networkId, walletAddress]);
 
   return (
     <Layout1 showSidebar={false}>
