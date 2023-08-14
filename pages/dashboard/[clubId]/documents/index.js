@@ -34,7 +34,7 @@ const useStyles = makeStyles({
   },
   createDoc: {
     width: "150px",
-    fontFamily: "sans-serif",
+
     fontSize: "16px",
     border: "none",
     padding: "18px 24px",

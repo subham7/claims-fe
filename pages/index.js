@@ -36,11 +36,10 @@ const useStyles = makeStyles({
     fontSize: "30px",
     color: "#F5F5F5",
     opacity: 1,
-    fontFamily: "Whyte",
   },
   createClubButton: {
     fontSize: "22px",
-    fontFamily: "Whyte",
+
     borderRadius: "30px",
   },
   divider: {
@@ -57,7 +56,6 @@ const useStyles = makeStyles({
     fontSize: "16px",
     color: "#C1D3FF",
     opacity: 1,
-    fontFamily: "Whyte",
   },
   bannerImage: {
     width: "60vh",
@@ -106,7 +104,6 @@ const useStyles = makeStyles({
     fontSize: "16px",
     color: "#C1D3FF",
     opacity: 1,
-    fontFamily: "Whyte",
   },
   flexContainer: {
     display: "flex",

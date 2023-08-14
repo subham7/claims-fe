@@ -10,11 +10,11 @@ import useSmartContractMethods from "../../hooks/useSmartContractMethods";
 
 const useStyles = makeStyles({
   listFont2: {
-    fontSize: "19px",
+    fontSize: "18px",
     color: "#C1D3FF",
   },
   listFont2Colourless: {
-    fontSize: "19px",
+    fontSize: "18px",
     color: "#FFFFFF",
     fontWeight: "bold",
   },

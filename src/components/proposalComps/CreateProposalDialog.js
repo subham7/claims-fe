@@ -46,7 +46,6 @@ const useStyles = makeStyles({
     backgroundColor: "#19274B",
   },
   dialogBox: {
-    fontFamily: "Whyte",
     fontSize: "38px",
     color: "#FFFFFF",
     opacity: 1,
@@ -56,7 +55,7 @@ const useStyles = makeStyles({
     width: "100%",
     // margin: "16px 0 25px 0",
     fontSize: "18px",
-    fontFamily: "Whyte",
+
     marginTop: "0.5rem",
   },
 });
@@ -478,7 +477,7 @@ const CreateProposalDialog = ({
                   backgroundColor: "#19274B",
                   fontSize: "18px",
                   color: "#C1D3FF",
-                  fontFamily: "Whyte",
+
                   margin: "0.5rem 0",
                 }}
                 name="proposalDescription"

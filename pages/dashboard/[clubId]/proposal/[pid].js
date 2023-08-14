@@ -96,11 +96,11 @@ const useStyles = makeStyles({
     color: "#C1D3FF",
   },
   listFont2: {
-    fontSize: "19px",
+    fontSize: "18px",
     color: "#C1D3FF",
   },
   listFont2Colourless: {
-    fontSize: "19px",
+    fontSize: "18px",
     color: "#FFFFFF",
     fontWeight: "bold",
   },
@@ -113,7 +113,7 @@ const useStyles = makeStyles({
     color: "#C1D3FF",
   },
   cardFont1: {
-    fontSize: "19px",
+    fontSize: "18px",
     color: "#EFEFEF",
   },
   successfulMessageText: {

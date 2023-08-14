@@ -84,7 +84,6 @@ const useStyles = makeStyles((theme) => ({
     "& .ql-container": {
       height: "16vh",
       //   "border": "none",
-
       border: `1px solid #d32f2f`,
       borderBottomRightRadius: "12px",
       borderBottomLeftRadius: "12px",

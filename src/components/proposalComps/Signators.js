@@ -6,7 +6,7 @@ import { makeStyles } from "@mui/styles";
 
 const useStyles = makeStyles({
   listFont2: {
-    fontSize: "19px",
+    fontSize: "18px",
     color: "#C1D3FF",
   },
 });
