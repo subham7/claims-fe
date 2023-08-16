@@ -138,7 +138,7 @@ const Form = () => {
       eligible: "everyone", // token || csv || everyone
       daoTokenAddress: "", // tokenGated
       tokenGatingAmt: 0,
-      maximumClaim: "", // prorata or custom
+      maximumClaim: "custom", // prorata or custom
       customAmount: 1,
       merkleData: [],
       csvObject: [],
@@ -206,7 +206,7 @@ const Form = () => {
             data.blockNumber > 0 ? data.blockNumber : blockData.block;
 
           snapshotData = await createSnapShot(
-            data.numberOfTokens * 10 ** decimals,
+            convertToWeiGovernance(data.numberOfTokens, decimals),
             data.airdropTokenAddress,
             data.daoTokenAddress,
             data.tokenGatedNetwork,
@@ -374,7 +374,7 @@ const Form = () => {
             setFinish(true);
             showMessageHandler(setFinish);
             setTimeout(() => {
-              router.push("/claims");
+              router.push(`/claims`);
             }, 3000);
           } catch (err) {
             console.log(err);
@@ -478,7 +478,7 @@ const Form = () => {
             setFinish(true);
             showMessageHandler(setFinish);
             setTimeout(() => {
-              router.push("/claims");
+              router.push(`/claims`);
             }, 3000);
           } catch (err) {
             console.log(err);
@@ -527,7 +527,7 @@ const Form = () => {
   };
 
   return (
-    <Layout1 showSidebar={false}>
+    <Layout1 showSidebar={false} isClaims={true}>
       <div className={classes.container}>
         <Grid container>
           <Grid item xs={12} sx={{ padding: "20px" }}>

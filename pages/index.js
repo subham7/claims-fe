@@ -222,7 +222,7 @@ const App = () => {
   };
 
   return (
-    <Layout1 showSidebar={false} faucet={false}>
+    <Layout1 showSidebar={false} faucet={false} isClaims={true}>
       <div className={classes.container}>
         {!manageStation && clubFlow && (
           <div className={classes.cardContainer}>

@@ -121,7 +121,7 @@ const Claims = () => {
   }, [networkId, walletAddress]);
 
   return (
-    <Layout1 showSidebar={false}>
+    <Layout1 showSidebar={false} isClaims={true}>
       <div className={classes.container}>
         {/* Left Side */}
         <div className={classes.leftDiv}>
@@ -156,6 +156,7 @@ const Claims = () => {
               claimContract={item?.claimAddress}
               createdBy={item?.creatorAddress}
               isActive={item?.isActive}
+              claimsNetwork={item?.networkId}
             />
           ))}
         </div>

@@ -91,8 +91,28 @@ export function returnRemainingTime(epochTime) {
     : 0;
 }
 
-export const showWrongNetworkModal = (walletAddress, networkId) => {
-  return walletAddress && networkId !== "0x89" ? <WrongNetworkModal /> : null;
+export const showWrongNetworkModal = (
+  walletAddress,
+  networkId,
+  isClaims = false,
+  claimsNetwork,
+) => {
+  console.log(walletAddress, networkId, isClaims, claimsNetwork);
+
+  if (isClaims) {
+    if (claimsNetwork && claimsNetwork !== networkId) {
+      return <WrongNetworkModal chainId={parseInt(claimsNetwork, 16)} />;
+    }
+
+    console.log("HEREEE");
+    return walletAddress && networkId !== "0x89" && networkId !== "0x2105" ? (
+      <WrongNetworkModal />
+    ) : null;
+  }
+
+  return walletAddress && networkId !== "0x89" ? (
+    <WrongNetworkModal isClaims={isClaims} />
+  ) : null;
 };
 
 export const getAllEntities = async (

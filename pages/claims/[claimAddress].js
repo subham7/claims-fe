@@ -54,7 +54,7 @@ const ClaimAddress = () => {
   const { chain } = useNetwork();
   const networkId = Web3.utils.numberToHex(chain?.id);
 
-  const { claimAddress } = router.query;
+  const { claimAddress, network } = router.query;
   useSmartContract();
 
   let contractInstances = useSelector((state) => {
@@ -416,7 +416,7 @@ const ClaimAddress = () => {
   };
 
   return (
-    <Layout1 showSidebar={false}>
+    <Layout1 showSidebar={false} isClaims={true} claimsNetwork={network}>
       {isLoading ? (
         <div
           style={{
@@ -583,14 +583,14 @@ const ClaimAddress = () => {
                     setShowInputError(false);
                   }
                 }}
-                // disabled={
-                //   !claimActive ||
-                //   !claimableAmt ||
-                //   !claimEnabled ||
-                //   (claimRemaining == 0 && alreadyClaimed)
-                //     ? true
-                //     : false
-                // }
+                disabled={
+                  !claimActive ||
+                  !claimableAmt ||
+                  !claimEnabled ||
+                  (claimRemaining == 0 && alreadyClaimed)
+                    ? true
+                    : false
+                }
                 value={claimInput}
                 placeholder="0"
                 type="number"

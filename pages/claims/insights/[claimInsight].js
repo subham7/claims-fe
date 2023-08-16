@@ -165,7 +165,7 @@ const ClaimInsight = () => {
   }, [claimAddress, networkId]);
 
   return (
-    <Layout1 showSidebar={false}>
+    <Layout1 showSidebar={false} isClaims={true}>
       <section className={classes.mainContainer}>
         <div className={classes.claimInfoContainer}>
           <div className={classes.leftContainer}>
@@ -175,6 +175,7 @@ const ClaimInsight = () => {
               startTime={claimsData[0]?.startTime}
               claimAddress={claimAddress}
               isActive={claimsData[0]?.isActive}
+              claimsNetwork={claimsData[0]?.networkId}
             />
             <div className={classes.infoBottomContainer}>
               <TotalClaimedInfo
