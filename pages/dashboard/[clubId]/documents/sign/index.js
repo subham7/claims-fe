@@ -25,7 +25,7 @@ const DocumentPDF = dynamic(() => import("../pdfGenerator"), {
 const useStyles = makeStyles({
   btn: {
     width: "150px",
-    fontFamily: "sans-serif",
+
     fontSize: "18px",
     border: "none",
     padding: "12px 20px",

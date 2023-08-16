@@ -21,9 +21,8 @@ export const AdditionalSettingsStyles = makeStyles({
   },
 
   valuesStyle: {
-    fontSize: "21px",
+    fontSize: "20px",
     fontWeight: "normal",
-    fontFamily: "Whyte",
   },
   link: {
     color: "#3B7AFD",
@@ -34,8 +33,7 @@ export const AdditionalSettingsStyles = makeStyles({
     },
   },
   text: {
-    fontSize: "21px",
+    fontSize: "20px",
     fontWeight: "normal",
-    fontFamily: "Whyte",
   },
 });

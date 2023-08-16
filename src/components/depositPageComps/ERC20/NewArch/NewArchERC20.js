@@ -790,7 +790,7 @@ const NewArchERC20 = ({
                             <Typography
                               sx={{
                                 color: "#3A7AFD",
-                                fontFamily: "Whyte",
+
                                 fontSize: "22px",
                                 fontWeight: "bold",
                                 mt: "15px",

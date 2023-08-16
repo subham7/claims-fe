@@ -21,7 +21,6 @@ const useStyles = makeStyles({
     // margin: "16px 0 25px 0",
     marginTop: "0.5rem",
     fontSize: "18px",
-    fontFamily: "Whyte",
   },
 });
 

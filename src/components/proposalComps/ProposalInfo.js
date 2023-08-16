@@ -5,16 +5,16 @@ import React from "react";
 
 const useStyles = makeStyles({
   listFont2: {
-    fontSize: "19px",
+    fontSize: "18px",
     color: "#C1D3FF",
   },
   listFont2Colourless: {
-    fontSize: "19px",
+    fontSize: "18px",
     color: "#FFFFFF",
     fontWeight: "bold",
   },
   proposalThreshold: {
-    fontSize: "19px",
+    fontSize: "18px",
     color: "#0ABB92",
     fontWeight: "bold",
   },

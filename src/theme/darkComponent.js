@@ -139,14 +139,13 @@ export const darkComponents = {
         props: { variant: "tableBody" },
         style: {
           fontSize: "1.375em",
-          fontFamily: "Whyte",
         },
       },
       {
         props: { variant: "tableHeading" },
         style: {
           fontSize: "1.375em",
-          fontFamily: "Whyte",
+
           color: "#C1D3FF",
         },
       },
@@ -195,14 +194,13 @@ export const darkComponents = {
         props: { variant: "mainHeading" },
         style: {
           fontSize: "2.875em",
-          fontFamily: "Whyte",
+
           color: "#F5F5F5",
         },
       },
       {
         props: { variant: "regularText" },
         style: {
-          fontFamily: "Whyte",
           fontSize: "1.3125em",
           color: "#C1D3FF",
         },
@@ -211,7 +209,7 @@ export const darkComponents = {
         props: { variant: "regularText2" },
         style: {
           fontSize: "1.1875em",
-          fontFamily: "Whyte",
+
           color: "#C1D3FF",
         },
       },
@@ -219,21 +217,19 @@ export const darkComponents = {
         props: { variant: "regularText3" },
         style: {
           fontSize: "1.375em",
-          fontFamily: "Whyte",
         },
       },
       {
         props: { variant: "regularText4" },
         style: {
           fontSize: "1.25em",
-          fontFamily: "Whyte",
         },
       },
       {
         props: { variant: "regularText5" },
         style: {
           fontSize: "1.1875em",
-          fontFamily: "Whyte",
+
           color: "#C1D3FF",
         },
       },
@@ -241,21 +237,19 @@ export const darkComponents = {
         props: { variant: "subHeading" },
         style: {
           fontSize: "1.875em",
-          fontFamily: "Whyte",
+
           color: "#F5F5F5",
         },
       },
       {
         props: { variant: "cardFont1" },
         style: {
-          fontFamily: "Whyte",
           fontSize: "1.3125em",
         },
       },
       {
         props: { variant: "cardFont2" },
         style: {
-          fontFamily: "Whyte",
           fontSize: "0.9375em",
           color: "#C1D3FF",
         },
@@ -271,7 +265,6 @@ export const darkComponents = {
       {
         props: { variant: "title" },
         style: {
-          fontFamily: "Whyte",
           fontSize: "3em",
           color: "#FFFFFF",
         },
@@ -294,7 +287,7 @@ export const darkComponents = {
         props: { variant: "settingText" },
         style: {
           fontSize: "1.375em",
-          fontFamily: "Whyte",
+
           color: "#C1D3FF",
         },
       },
@@ -302,7 +295,7 @@ export const darkComponents = {
         props: { variant: "getStartedClub" },
         style: {
           fontSize: "2.125em",
-          fontFamily: "Whyte",
+
           color: "#111D38",
         },
       },
@@ -310,7 +303,6 @@ export const darkComponents = {
         props: { variant: "Docs" },
         style: {
           fontSize: "1.2em",
-          fontFamily: "Whyte",
         },
       },
     ],
@@ -324,7 +316,7 @@ export const darkComponents = {
           backgroundColor: "#C1D3FF33",
           color: "#C1D3FF",
           fontSize: "2rem",
-          fontFamily: "Whyte",
+
           textTransform: "uppercase",
         },
       },
@@ -335,7 +327,7 @@ export const darkComponents = {
           backgroundColor: "#C1D3FF33",
           color: "#C1D3FF",
           fontSize: "3rem",
-          fontFamily: "Whyte",
+
           textTransform: "uppercase",
         },
       },

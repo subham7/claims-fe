@@ -58,14 +58,12 @@ export const DashboardStyles = makeStyles({
     opacity: 1,
   },
   card1text1: {
-    fontFamily: "Whyte",
     fontSize: "3.4vh",
     color: "#EFEFEF",
     textTransform: "uppercase",
     opacity: "1",
   },
   card1text2: {
-    fontFamily: "Whyte",
     fontSize: "2.2vh",
     color: "#C1D3FF",
     textTransform: "uppercase",
@@ -73,15 +71,12 @@ export const DashboardStyles = makeStyles({
     paddingLeft: "10px",
   },
   card1text3: {
-    fontFamily: "Whyte",
-
-    fontSize: "15px",
+    fontSize: "14px",
     color: "#C1D3FF",
 
     opacity: "1",
   },
   card1text4: {
-    fontFamily: "Whyte",
     fontWeight: "bold",
     fontSize: "50px",
     color: "#EFEFEF",
@@ -89,83 +84,69 @@ export const DashboardStyles = makeStyles({
     opacity: "1",
   },
   card1text5: {
-    fontFamily: "Whyte",
     fontSize: "22px",
     color: "#C1D3FF",
     textTransform: "uppercase",
     opacity: "1",
   },
   card2text1: {
-    fontFamily: "Whyte",
     fontSize: "20px",
     color: "#C1D3FF",
     opacity: "1",
   },
   card2text2: {
-    fontFamily: "Whyte",
     fontSize: "20px",
     color: "#EFEFEF",
     opacity: "1",
   },
   card2text3: {
-    fontFamily: "Whyte",
     fontSize: "22px",
     color: "#0ABB92",
     opacity: "1",
   },
   card2text4: {
-    fontFamily: "Whyte",
     fontSize: "18px",
     color: "#C1D3FF",
     opacity: "1",
   },
   card2text5: {
-    fontFamily: "Whyte",
     fontSize: "22px",
     color: "#EFEFEF",
     opacity: "1",
   },
   card2text6: {
-    fontFamily: "Whyte",
     fontSize: "18px",
     color: "#C1D3FF",
     opacity: "1",
   },
   card2text7: {
-    fontFamily: "Whyte",
     fontSize: "22px",
     color: "#EFEFEF",
     opacity: "1",
   },
   card2text8: {
-    fontFamily: "Whyte",
     fontSize: "18px",
     color: "#EFEFEF",
     opacity: "1",
   },
   card2text9: {
-    fontFamily: "Whyte",
     fontSize: "22px",
     color: "#C1D3FF",
     textTransform: "uppercase",
     opacity: "1",
   },
   card3text1: {
-    fontSize: "19px",
-    fontFamily: "Whyte",
+    fontSize: "18px",
   },
   card3text2: {
-    fontFamily: "Whyte",
-    fontSize: "19px",
+    fontSize: "18px",
     color: "#0ABB92",
   },
   card3text3: {
-    fontFamily: "Whyte",
     width: "354px",
     color: "#C1D3FF",
   },
   card3text4: {
-    fontFamily: "Whyte",
     textAlign: "left",
     fontSize: "6px",
     letteSpacing: "0.2px",
@@ -207,7 +188,6 @@ export const DashboardStyles = makeStyles({
     paddingLeft: "20%",
   },
   clubAssets: {
-    fontFamily: "Whyte",
     fontSize: "42px",
     fontWeight: "400",
     color: "#FFFFFF",
@@ -226,13 +206,11 @@ export const DashboardStyles = makeStyles({
     borderRadius: "50%",
   },
   card5text1: {
-    fontFamily: "Whyte",
     fontSize: "16px",
     color: "#C1D3FF",
     opacity: "1",
   },
   card5text2: {
-    fontFamily: "Whyte",
     fontSize: "20px",
     fontWeight: "400",
     color: "#EFEFEF",
@@ -255,21 +233,17 @@ export const DashboardStyles = makeStyles({
     width: "70%",
   },
   tableheading: {
-    fontFamily: "Whyte",
     color: "#C1D3FF",
     fontSize: "22px",
   },
   tablecontent: {
-    fontFamily: "Whyte",
     fontSize: "22px",
     color: "#F5F5F5",
   },
   tablecontent2: {
-    fontFamily: "Whyte",
     fontSize: "22px",
   },
   membersTitleSmall: {
-    fontFamily: "Whyte",
     fontSize: "24px",
     color: "#FFFFFF",
     backgroundColor: "#19274B",
@@ -315,6 +289,5 @@ export const DashboardStyles = makeStyles({
   },
   legalEntityText: {
     fontSize: "20px",
-    fontFamily: "sans-serif",
   },
 });

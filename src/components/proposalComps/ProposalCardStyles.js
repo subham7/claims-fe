@@ -8,7 +8,6 @@ export const ProposalCardStyles = makeStyles({
     marginBottom: "1rem",
   },
   clubAssets: {
-    fontFamily: "Whyte",
     fontSize: "48px",
     color: "#FFFFFF",
   },
@@ -24,7 +23,6 @@ export const ProposalCardStyles = makeStyles({
     background: "#3B7AFD 0% 0% no-repeat padding-box",
     borderRadius: "10px",
     fontSize: "22px",
-    fontFamily: "Whyte",
   },
   searchField: {
     width: "28.5vw",
@@ -78,17 +76,14 @@ export const ProposalCardStyles = makeStyles({
   listFont: {
     fontSize: "22px",
     color: "#C1D3FF",
-    fontFamily: "Whyte",
   },
   cardFont: {
     fontSize: "18px",
     color: "#C1D3FF",
-    fontFamily: "Whyte",
   },
   cardFont1: {
     fontSize: "24px",
     color: "#EFEFEF",
-    fontFamily: "Whyte",
   },
   actionChip: {
     border: "1px solid #0ABB92",
@@ -127,7 +122,6 @@ export const ProposalCardStyles = makeStyles({
     padding: "5px 5px 5px 5px",
   },
   dialogBox: {
-    fontFamily: "Whyte",
     fontSize: "38px",
     color: "#FFFFFF",
     opacity: 1,
@@ -157,8 +151,7 @@ export const ProposalCardStyles = makeStyles({
     backgroundColor: "#142243",
   },
   daysFont: {
-    fontFamily: "Whyte",
-    fontSize: "21px",
+    fontSize: "20px",
     color: "#FFFFFF",
   },
   datePicker: {

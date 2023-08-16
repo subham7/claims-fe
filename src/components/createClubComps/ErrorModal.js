@@ -27,7 +27,7 @@ const useStyles = makeStyles({
   },
   title: {
     letterSpacing: "0.4px",
-    fontFamily: "sans-serif",
+
     fontSize: "28px",
     color: "red",
   },
