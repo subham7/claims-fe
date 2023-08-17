@@ -4,14 +4,12 @@ import {
   CircularProgress,
   Grid,
   IconButton,
-  Skeleton,
   Typography,
 } from "@mui/material";
 import React, { useCallback, useEffect, useState } from "react";
 
 import { TwitterShareButton } from "react-twitter-embed";
 import { NewArchERC721Styles } from "./NewArchERC721Styles";
-import { useConnectWallet } from "@web3-onboard/react";
 import { convertFromWeiGovernance } from "../../../../utils/globalFunctions";
 import dayjs from "dayjs";
 import { useSelector } from "react-redux";
@@ -23,7 +21,8 @@ import TwitterIcon from "@mui/icons-material/Twitter";
 import { RiDiscordFill } from "react-icons/ri";
 import ReactHtmlParser from "react-html-parser";
 import useSmartContractMethods from "../../../../hooks/useSmartContractMethods";
-import { showWrongNetworkModal } from "../../../../utils/helper";
+import LensterShareButton from "../../../LensterShareButton";
+import { useAccount } from "wagmi";
 
 const NewArchERC721 = ({
   daoDetails,
@@ -45,16 +44,11 @@ const NewArchERC721 = ({
   });
   const [count, setCount] = useState(1);
   const [balanceOfNft, setBalanceOfNft] = useState();
+  const [showMoreDesc, setShowMoreDesc] = useState(false);
 
-  const [{ wallet }] = useConnectWallet();
   const router = useRouter();
 
-  const walletAddress = wallet?.accounts[0].address;
-  const networkId = wallet?.chains[0].id;
-
-  const WRONG_NETWORK = useSelector((state) => {
-    return state.gnosis.wrongNetwork;
-  });
+  const { address: walletAddress } = useAccount();
 
   const FACTORY_CONTRACT_ADDRESS = useSelector((state) => {
     return state.gnosis.factoryContractAddress;
@@ -67,7 +61,6 @@ const NewArchERC721 = ({
   const day2 = dayjs.unix(daoDetails.depositDeadline);
   const remainingDays = day2.diff(day1, "day");
   const remainingTimeInSecs = day2.diff(day1, "seconds");
-  const dateSum = new Date(dayjs.unix(daoDetails.depositDeadline))?.toString();
 
   const showMessageHandler = () => {
     setShowMessage(true);
@@ -158,8 +151,8 @@ const NewArchERC721 = ({
 
   return (
     <>
-      <Grid className={classes.topGrid} container spacing={6}>
-        {wallet ? (
+      {walletAddress ? (
+        <Grid className={classes.topGrid} container spacing={5}>
           <>
             <Grid item md={5}>
               <Grid
@@ -206,41 +199,51 @@ const NewArchERC721 = ({
                       </Typography>
                     </Grid>
 
-                    <Grid item sx={{ display: "flex", alignItems: "center" }}>
-                      <div className="centerContent">
-                        <div className="selfCenter spaceBetween">
-                          <TwitterShareButton
-                            onLoad={function noRefCheck() {}}
-                            options={{
-                              size: "large",
-                              text: `Just joined ${daoDetails.daoName} Station on `,
-                              via: "stationxnetwork",
-                            }}
-                            url={`${window.location.origin}/join/${erc721DaoAddress}`}
-                          />
-                        </div>
-                      </div>
+                    <Grid
+                      item
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "6px",
+                      }}>
+                      <TwitterShareButton
+                        onLoad={function noRefCheck() {}}
+                        options={{
+                          size: "large",
+                          text: `Just joined ${daoDetails.daoName} Station on `,
+                          via: "stationxnetwork",
+                        }}
+                        url={`${window.location.origin}/join/${erc721DaoAddress}`}
+                      />
+
+                      <LensterShareButton
+                        daoAddress={erc721DaoAddress}
+                        daoName={daoDetails?.daoName}
+                      />
                     </Grid>
                   </Grid>
 
                   <div
                     style={{
-                      color: "white",
-                    }}
-                    dangerouslySetInnerHTML={{
-                      __html: ReactHtmlParser(clubInfo?.bio),
-                    }}></div>
+                      maxHeight: "200px",
+                      overflowY: "scroll",
+                      margin: "20px 0",
+                    }}>
+                    <div
+                      dangerouslySetInnerHTML={{
+                        __html: ReactHtmlParser(clubInfo?.bio),
+                      }}></div>
+                  </div>
                 </Grid>
-                <Grid item width="100%">
-                  <Typography variant="subtitle1" color="#C1D3FF">
-                    Mint closes on{" "}
-                    {daoDetails.depositDeadline ? (
-                      dateSum
-                    ) : (
-                      <Skeleton variant="rectangular" width={100} height={25} />
-                    )}
-                  </Typography>
-                </Grid>
+
+                {erc721DaoAddress ===
+                  "0xff28393E299E8f580677F682C03373dA7c94136F" && (
+                  <Grid item width="100%">
+                    <Typography variant="subtitle1" color="#C1D3FF">
+                      NOTE: Proceed to opensea to check your NFT
+                    </Typography>
+                  </Grid>
+                )}
 
                 <Grid item width="100%">
                   <Grid container spacing={3}>
@@ -404,8 +407,15 @@ const NewArchERC721 = ({
             </Grid>
             <Grid item md={6}>
               {daoDetails?.daoImage && (
-                <>
-                  {daoDetails?.daoImage?.includes(".mp4") ? (
+                <div
+                  style={{
+                    maxHeight: "80vh",
+                    overflow: "hidden",
+                    objectFit: "cover",
+                    borderRadius: "20px",
+                  }}>
+                  {daoDetails?.daoImage?.includes(".mp4") ||
+                  daoDetails?.daoImage?.includes(".MP4") ? (
                     <video className={classes.nftImg} loop autoPlay muted>
                       <source src={daoDetails?.daoImage} type="video/mp4" />
                       Your browser does not support the video tag.
@@ -417,37 +427,14 @@ const NewArchERC721 = ({
                       className={classes.nftImg}
                     />
                   )}
-                </>
+                </div>
               )}
             </Grid>
           </>
-        ) : (
-          <Grid className={classes.connectWalletTxtGrid}>
-            <Typography variant="h5" className={classes.quoramTxt}>
-              Please connect your wallet
-            </Typography>
-          </Grid>
-        )}
 
-        {showWrongNetworkModal(wallet, networkId)}
-
-        {claimSuccessfull && showMessage ? (
-          <Alert
-            severity="success"
-            sx={{
-              width: "250px",
-              position: "fixed",
-              bottom: "30px",
-              right: "20px",
-              borderRadius: "8px",
-            }}>
-            Transaction Successfull
-          </Alert>
-        ) : (
-          !claimSuccessfull &&
-          showMessage && (
+          {claimSuccessfull && showMessage ? (
             <Alert
-              severity="error"
+              severity="success"
               sx={{
                 width: "250px",
                 position: "fixed",
@@ -455,11 +442,26 @@ const NewArchERC721 = ({
                 right: "20px",
                 borderRadius: "8px",
               }}>
-              Transaction Failed
+              Transaction Successfull
             </Alert>
-          )
-        )}
-      </Grid>
+          ) : (
+            !claimSuccessfull &&
+            showMessage && (
+              <Alert
+                severity="error"
+                sx={{
+                  width: "250px",
+                  position: "fixed",
+                  bottom: "30px",
+                  right: "20px",
+                  borderRadius: "8px",
+                }}>
+                Transaction Failed
+              </Alert>
+            )
+          )}
+        </Grid>
+      ) : null}
     </>
   );
 };

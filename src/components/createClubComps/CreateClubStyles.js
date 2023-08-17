@@ -1,12 +1,6 @@
 import { makeStyles } from "@mui/styles";
 
 export const Step1Styles = makeStyles({
-  textField: {
-    width: "100%",
-    margin: "16px 0 25px 0",
-    fontSize: "18px",
-    fontFamily: "Whyte",
-  },
   largeText: {
     fontSize: "18px",
     color: "#C1D3FF",
@@ -86,11 +80,6 @@ export const ERC20Step2Styles = makeStyles({
     width: "208px",
     fontFamily: "Whyte",
   },
-  cardPadding: {
-    margin: 0,
-    padding: 0,
-    borderRadius: "10px",
-  },
   addCircleColour: {
     color: "#C1D3FF",
     fontFamily: "Whyte",
@@ -117,6 +106,43 @@ export const ERC20Step2Styles = makeStyles({
 });
 
 export const Step3Styles = makeStyles({
+  selectContainer: {
+    border: "0.5px solid #6475A3",
+    display: "flex",
+    borderRadius: "10px",
+  },
+  leftContainer: {
+    flex: "0.5",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: "40px",
+    flexDirection: "column",
+    borderRadius: "10px",
+    cursor: "pointer",
+    border: "1px solid none",
+  },
+  rightContainer: {
+    flex: "0.5",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: "40px 40px",
+    flexDirection: "column",
+    borderRadius: "10px",
+    cursor: "pointer",
+    border: "1px solid none",
+  },
+  selectedContainer: {
+    flex: "0.5",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "column",
+    cursor: "pointer",
+    border: "1px solid #3B7AFD",
+    borderRadius: "10px",
+  },
   textField: {
     width: "100%",
     margin: "16px 0 25px 0",

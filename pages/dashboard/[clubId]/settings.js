@@ -1,4 +1,3 @@
-import { useConnectWallet } from "@web3-onboard/react";
 import dayjs from "dayjs";
 import { useRouter } from "next/router";
 import React, { useCallback, useEffect, useState } from "react";
@@ -12,8 +11,9 @@ import { subgraphQuery } from "../../../src/utils/subgraphs";
 import { convertFromWeiGovernance } from "../../../src/utils/globalFunctions";
 import { getAssetsByDaoAddress } from "../../../src/api/assets";
 import useSmartContractMethods from "../../../src/hooks/useSmartContractMethods";
-import { showWrongNetworkModal } from "../../../src/utils/helper";
 import { getClubInfo } from "../../../src/api/club";
+import Layout1 from "@components/layouts/layout1";
+import { useAccount } from "wagmi";
 
 const Settings = () => {
   const [daoDetails, setDaoDetails] = useState({
@@ -41,7 +41,7 @@ const Settings = () => {
     ownerFee: 0,
     nftMinted: 0,
     balanceOfClubToken: 0,
-    assetsStoredOnGnosis: false,
+    assetsStoredOnGnosis: true,
   });
   const [erc20TokenDetails, setErc20TokenDetails] = useState({
     tokenSymbol: "",
@@ -53,10 +53,7 @@ const Settings = () => {
   const [treasuryAmount, setTreasuryAmount] = useState(0);
   const [clubInfo, setClubInfo] = useState();
 
-  const [{ wallet }] = useConnectWallet();
-
-  const walletAddress = wallet?.accounts[0].address;
-  const networkId = wallet?.chains[0].id;
+  const { address: walletAddress } = useAccount();
 
   const SUBGRAPH_URL = useSelector((state) => {
     return state.gnosis.subgraphUrl;
@@ -68,10 +65,6 @@ const Settings = () => {
 
   const isAdminUser = useSelector((state) => {
     return state.gnosis.adminUser;
-  });
-
-  const WRONG_NETWORK = useSelector((state) => {
-    return state.gnosis.wrongNetwork;
   });
 
   const NETWORK_HEX = useSelector((state) => {
@@ -261,7 +254,7 @@ const Settings = () => {
   }, [fetchAssets]);
 
   return (
-    <div>
+    <Layout1 page={5}>
       <SettingsInfo
         daoDetails={daoDetails}
         erc20TokenDetails={erc20TokenDetails}
@@ -280,15 +273,13 @@ const Settings = () => {
         erc20TokenDetails={erc20TokenDetails}
         tokenType={tokenType}
         walletAddress={walletAddress}
-        // networkId={networkId}
+        gnosisAddress={gnosisAddress}
         fetchErc20ContractDetails={fetchErc20ContractDetails}
         fetchErc721ContractDetails={fetchErc721ContractDetails}
         isAdminUser={isAdminUser}
       />
       <TokenGating />
-
-      {showWrongNetworkModal(wallet, networkId)}
-    </div>
+    </Layout1>
   );
 };
 

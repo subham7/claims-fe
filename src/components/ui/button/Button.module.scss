@@ -1,0 +1,38 @@
+@import "./../../../../styles/variables.scss";
+
+.button {
+  border: none;
+  width: fit-content;
+  margin-right: 10px;
+  font-size: 16px;
+  font-weight: 400;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-align: center;
+  padding: 14px 32px;
+  color: $white;
+  cursor: pointer;
+  background-color: $primary;
+  &:hover {
+    background-color: $white;
+    color: $primary;
+  }
+}
+
+.normal {
+  border-radius: 8px;
+}
+
+.pill {
+  border-radius: 48px;
+}
+
+.disabled {
+  background-color: $button_disabled !important;
+  cursor: default !important;
+  &:hover {
+    color: $white;
+  }
+}

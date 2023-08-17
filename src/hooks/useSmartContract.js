@@ -3,8 +3,8 @@ import ERC721TokenABI from "../abis/nft.json";
 import ERC20DaoABI from "../abis/newArch/erc20Dao.json";
 import ERC721DaoABI from "../abis/newArch/erc721Dao.json";
 import FactoryContractABI from "../abis/newArch/factoryContract.json";
-import ClaimContractABI from "../abis/singleClaimContract.json";
-import ClaimFactoryABI from "../abis/claimContractFactory.json";
+import ClaimContractABI from "../abis/newArch/claimContract.json";
+import ClaimFactoryABI from "../abis/newArch/claimFactory.json";
 import { useRouter } from "next/router";
 import Web3 from "web3";
 import {
@@ -15,13 +15,13 @@ import {
 } from "../api";
 import { useDispatch, useSelector } from "react-redux";
 import { setContractInstances } from "../redux/reducers/contractInstances";
-import { useConnectWallet } from "@web3-onboard/react";
+import { useNetwork } from "wagmi";
 
 const useSmartContract = () => {
   const router = useRouter();
-  const { jid: daoAddress, clubId, claimAddress } = router.query;
-  const [{ wallet }] = useConnectWallet();
-  const networkId = wallet?.chains[0].id;
+  const { jid: daoAddress, clubId, claimAddress, claimInsight } = router.query;
+  const { chain } = useNetwork();
+  const networkId = "0x" + chain?.id.toString(16);
   const dispatch = useDispatch();
 
   const FACTORY_CONTRACT_ADDRESS = useSelector(
@@ -145,14 +145,16 @@ const useSmartContract = () => {
 
   const initializeClaimContracts = () => {
     const web3Send = new Web3(window?.ethereum);
-
     try {
       const claimContractCall = new web3Send.eth.Contract(
         ClaimContractABI.abi,
-        claimAddress,
+        claimAddress ? claimAddress : claimInsight,
       );
       const claimContractSend = web3Send
-        ? new web3Send.eth.Contract(ClaimContractABI.abi, claimAddress)
+        ? new web3Send.eth.Contract(
+            ClaimContractABI.abi,
+            claimAddress ? claimAddress : claimInsight,
+          )
         : {};
       contractInstances = {
         ...contractInstances,
@@ -187,10 +189,10 @@ const useSmartContract = () => {
   }, [networkId, claimFactoryAddress]);
 
   useEffect(() => {
-    if (claimAddress) {
+    if (claimAddress || claimInsight) {
       initializeClaimContracts();
     }
-  }, [claimAddress]);
+  }, [claimAddress, claimInsight]);
 };
 
 export default useSmartContract;

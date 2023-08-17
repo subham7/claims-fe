@@ -27,6 +27,7 @@ const AdditionalSettings = ({
   fetchErc20ContractDetails,
   fetchErc721ContractDetails,
   isAdminUser,
+  gnosisAddress,
 }) => {
   const classes = AdditionalSettingsStyles();
   const router = useRouter();
@@ -112,7 +113,6 @@ const AdditionalSettings = ({
   return (
     <div className={classes.container}>
       <Typography className={classes.heading}>Additional Details</Typography>
-
       <Stack spacing={3} ml={3}>
         <Divider />
         <Grid
@@ -120,7 +120,7 @@ const AdditionalSettings = ({
           sx={{ display: "flex", justifyContent: "space-between" }}>
           <Grid item>
             <Typography variant="settingText">
-              Station contract address
+              Token contract address
             </Typography>
           </Grid>
           <Grid sx={{ display: "flex", alignItems: "center" }}>
@@ -168,6 +168,59 @@ const AdditionalSettings = ({
           </Grid>
         </Grid>
 
+        <Divider />
+        <Grid
+          container
+          sx={{ display: "flex", justifyContent: "space-between" }}>
+          <Grid item>
+            <Typography variant="settingText">Treasury address</Typography>
+          </Grid>
+
+          <Grid sx={{ display: "flex", alignItems: "center" }}>
+            <Grid item>
+              <IconButton
+                color="primary"
+                onClick={() => {
+                  navigator.clipboard.writeText(gnosisAddress);
+                }}>
+                <ContentCopyIcon className={classes.iconColor} />
+              </IconButton>
+            </Grid>
+            <Grid item>
+              <IconButton
+                color="primary"
+                onClick={() => {
+                  window.open(
+                    `https://${
+                      NETWORK_HEX === "0x5"
+                        ? "goerli.etherscan.io"
+                        : NETWORK_HEX === "0x89"
+                        ? "polygonscan.com"
+                        : ""
+                    }/address/${gnosisAddress}`,
+                  );
+                }}>
+                <OpenInNewIcon className={classes.iconColor} />
+              </IconButton>
+            </Grid>
+
+            <Grid item mr={4} mt={1}>
+              <Typography variant="p" className={classes.valuesStyle}>
+                {daoDetails ? (
+                  gnosisAddress?.substring(0, 6) +
+                  "......" +
+                  gnosisAddress?.substring(gnosisAddress.length - 4)
+                ) : tokenType === "erc721" ? (
+                  gnosisAddress?.substring(0, 6) +
+                  "......" +
+                  gnosisAddress?.substring(gnosisAddress.length - 4)
+                ) : (
+                  <Skeleton variant="rectangular" width={100} height={25} />
+                )}
+              </Typography>
+            </Grid>
+          </Grid>
+        </Grid>
         <Divider />
       </Stack>
 

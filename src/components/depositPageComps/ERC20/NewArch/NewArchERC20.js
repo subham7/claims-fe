@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useState } from "react";
+import Button from "@components/ui/button/Button";
 import {
   Alert,
   Backdrop,
-  Button,
   Card,
   CardMedia,
   CircularProgress,
@@ -17,7 +17,6 @@ import {
 } from "@mui/material";
 import { TwitterShareButton } from "react-twitter-embed";
 import { NewArchERC20Styles } from "./NewArchERC20Styles";
-import { useConnectWallet } from "@web3-onboard/react";
 import ProgressBar from "../../../progressbar";
 import {
   convertFromWeiGovernance,
@@ -34,7 +33,7 @@ import TelegramIcon from "@mui/icons-material/Telegram";
 import TwitterIcon from "@mui/icons-material/Twitter";
 import { RiDiscordFill } from "react-icons/ri";
 import ReactHtmlParser from "react-html-parser";
-import { showWrongNetworkModal } from "../../../../utils/helper";
+import LensterShareButton from "../../../LensterShareButton";
 
 const NewArchERC20 = ({
   daoDetails,
@@ -56,18 +55,14 @@ const NewArchERC20 = ({
   const [loading, setLoading] = useState(false);
   const [showMessage, setShowMessage] = useState(false);
   const [depositSuccessfull, setDepositSuccessfull] = useState(false);
+
   const classes = NewArchERC20Styles();
-  const [{ wallet }] = useConnectWallet();
-  const networkId = wallet?.chains[0].id;
   const router = useRouter();
-  const walletAddress = wallet?.accounts[0].address;
+
+  const { address: walletAddress } = useAccount();
 
   const FACTORY_CONTRACT_ADDRESS = useSelector((state) => {
     return state.gnosis.factoryContractAddress;
-  });
-
-  const WRONG_NETWORK = useSelector((state) => {
-    return state.gnosis.wrongNetwork;
   });
 
   const day = Math.floor(new Date().getTime() / 1000.0);
@@ -208,14 +203,63 @@ const NewArchERC20 = ({
     },
   });
 
+  const handleMaxButtonClick = () => {
+    formik.setFieldValue(
+      "tokenInput",
+      remainingClaimAmount
+        ? remainingClaimAmount < erc20TokenDetails.tokenBalance.toFixed(2)
+          ? remainingClaimAmount
+          : erc20TokenDetails.tokenBalance.toFixed(2)
+        : Number(
+            convertFromWeiGovernance(
+              daoDetails.maxDeposit,
+              erc20TokenDetails.tokenDecimal,
+            ),
+          ) < erc20TokenDetails.tokenBalance.toFixed(2)
+        ? Number(
+            convertFromWeiGovernance(
+              daoDetails.maxDeposit,
+              erc20TokenDetails.tokenDecimal,
+            ),
+          )
+        : erc20TokenDetails.tokenBalance.toFixed(2),
+    );
+  };
+
+  const isDepositButtonDisabled = () => {
+    return (
+      (remainingDays >= 0 && remainingTimeInSecs > 0 && isTokenGated
+        ? !isEligibleForTokenGating
+        : remainingDays >= 0 && remainingTimeInSecs > 0
+        ? false
+        : true) ||
+      Number(convertFromWeiGovernance(daoDetails.totalSupply, 6)) <=
+        Number(
+          convertFromWeiGovernance(
+            daoDetails.clubTokensMinted,
+            daoDetails.decimals,
+          ) *
+            convertFromWeiGovernance(
+              daoDetails.pricePerToken,
+              erc20TokenDetails.tokenDecimal,
+            ),
+        ) ||
+      remainingClaimAmount <= 0
+    );
+  };
+
   useEffect(() => {
-    if (daoDetails.depositTokenAddress && daoDetails.clubTokensMinted && wallet)
+    if (
+      daoDetails.depositTokenAddress &&
+      daoDetails.clubTokensMinted &&
+      walletAddress
+    )
       fetchTokenDetails();
-  }, [fetchTokenDetails, daoDetails, wallet]);
+  }, [fetchTokenDetails, daoDetails, walletAddress]);
 
   return (
     <>
-      {wallet ? (
+      {walletAddress ? (
         <>
           <Grid
             container
@@ -255,9 +299,16 @@ const NewArchERC20 = ({
 
                           <Grid item ml={0} mb={7}>
                             <div
-                              dangerouslySetInnerHTML={{
-                                __html: ReactHtmlParser(clubInfo?.bio),
-                              }}></div>
+                              style={{
+                                maxHeight: "200px",
+                                overflowY: "scroll",
+                                marginTop: "20px",
+                              }}>
+                              <div
+                                dangerouslySetInnerHTML={{
+                                  __html: ReactHtmlParser(clubInfo?.bio),
+                                }}></div>
+                            </div>
                           </Grid>
                         </Stack>
                       </Grid>
@@ -274,18 +325,26 @@ const NewArchERC20 = ({
                     }}>
                     {/* enter your code here */}
 
-                    <div className="centerContent">
-                      <div className="selfCenter spaceBetween">
-                        <TwitterShareButton
-                          onLoad={function noRefCheck() {}}
-                          options={{
-                            size: "large",
-                            text: `Just joined ${daoDetails.daoName} Station on `,
-                            via: "stationxnetwork",
-                          }}
-                          url={`${window.location.origin}/join/${erc20DaoAddress}`}
-                        />
-                      </div>
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "12px",
+                      }}>
+                      <TwitterShareButton
+                        onLoad={function noRefCheck() {}}
+                        options={{
+                          size: "large",
+                          text: `Just joined ${daoDetails.daoName} Station on `,
+                          via: "stationxnetwork",
+                        }}
+                        url={`${window.location.origin}/join/${erc20DaoAddress}`}
+                      />
+
+                      <LensterShareButton
+                        daoAddress={erc20DaoAddress}
+                        daoName={daoDetails?.daoName}
+                      />
                     </div>
                   </Grid>
                 </Grid>
@@ -708,42 +767,11 @@ const NewArchERC20 = ({
                                 display: "flex",
                                 justifyContent: "flex-end",
                               }}>
-                              <Button
-                                className={classes.maxTag}
-                                onClick={() => {
-                                  formik.setFieldValue(
-                                    "tokenInput",
-                                    remainingClaimAmount
-                                      ? remainingClaimAmount <
-                                        erc20TokenDetails.tokenBalance.toFixed(
-                                          2,
-                                        )
-                                        ? remainingClaimAmount
-                                        : erc20TokenDetails.tokenBalance.toFixed(
-                                            2,
-                                          )
-                                      : Number(
-                                          convertFromWeiGovernance(
-                                            daoDetails.maxDeposit,
-                                            erc20TokenDetails.tokenDecimal,
-                                          ),
-                                        ) <
-                                        erc20TokenDetails.tokenBalance.toFixed(
-                                          2,
-                                        )
-                                      ? Number(
-                                          convertFromWeiGovernance(
-                                            daoDetails.maxDeposit,
-                                            erc20TokenDetails.tokenDecimal,
-                                          ),
-                                        )
-                                      : erc20TokenDetails.tokenBalance.toFixed(
-                                          2,
-                                        ),
-                                  );
-                                }}>
-                                Max
-                              </Button>
+                              <div>
+                                <Button onClick={handleMaxButtonClick}>
+                                  Max
+                                </Button>
+                              </div>
                             </Grid>
                           </Grid>
                         </Card>
@@ -882,36 +910,8 @@ const NewArchERC20 = ({
                         mb={1}
                         sx={{ display: "flex", flexDirection: "column" }}>
                         <Button
-                          variant="primary"
-                          size="large"
-                          // onClick={formik.handleSubmit}
-                          type="submit"
-                          disabled={
-                            (remainingDays >= 0 &&
-                            remainingTimeInSecs > 0 &&
-                            isTokenGated
-                              ? !isEligibleForTokenGating
-                              : remainingDays >= 0 && remainingTimeInSecs > 0
-                              ? false
-                              : true) ||
-                            Number(
-                              convertFromWeiGovernance(
-                                daoDetails.totalSupply,
-                                6,
-                              ),
-                            ) <=
-                              Number(
-                                convertFromWeiGovernance(
-                                  daoDetails.clubTokensMinted,
-                                  daoDetails.decimals,
-                                ) *
-                                  convertFromWeiGovernance(
-                                    daoDetails.pricePerToken,
-                                    erc20TokenDetails.tokenDecimal,
-                                  ),
-                              ) ||
-                            remainingClaimAmount <= 0
-                          }>
+                          onClick={formik.handleSubmit}
+                          disabled={isDepositButtonDisabled()}>
                           Deposit
                         </Button>
                         <div>
@@ -994,34 +994,7 @@ const NewArchERC20 = ({
             </Grid>
           </Grid>
         </>
-      ) : (
-        <>
-          <Grid
-            container
-            spacing={6}
-            paddingLeft={10}
-            paddingTop={15}
-            paddingRight={10}
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              height: "100vh",
-              width: "100%",
-              justifyContent: "center",
-            }}>
-            <Grid
-              sx={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-              }}>
-              <Typography variant="h5" color={"white"} fontWeight="bold">
-                Please connect your wallet
-              </Typography>
-            </Grid>
-          </Grid>
-        </>
-      )}
+      ) : null}
       {depositSuccessfull && showMessage ? (
         <Alert
           severity="success"
@@ -1093,8 +1066,6 @@ const NewArchERC20 = ({
           </Grid>
         </DialogContent>
       </Dialog> */}
-
-      {showWrongNetworkModal(wallet, networkId)}
 
       <Backdrop
         sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}

@@ -1,4 +1,5 @@
 import {
+  Button,
   Grid,
   InputAdornment,
   MenuItem,
@@ -8,10 +9,11 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import React from "react";
+import React, { useRef, useState } from "react";
 import { commandTypeList } from "../../data/dashboard";
 import { makeStyles } from "@mui/styles";
 import { useSelector } from "react-redux";
+import Link from "next/link";
 
 const useStyles = makeStyles({
   textField: {
@@ -24,6 +26,10 @@ const useStyles = makeStyles({
 });
 
 const ProposalActionForm = ({ formik, tokenData, nftData }) => {
+  const hiddenFileInput = useRef(null);
+  const [file, setFile] = useState("");
+  const [loadingCsv, setLoadingCsv] = useState(false);
+
   const classes = useStyles();
 
   const tokenType = useSelector((state) => {
@@ -40,6 +46,32 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
 
   const isGovernanceActive =
     tokenType === "erc20" ? isGovernanceERC20 : isGovernanceERC721;
+
+  const handleClick = (event) => {
+    hiddenFileInput.current.click();
+  };
+
+  const handleChange = async (event) => {
+    const fileUploaded = event.target.files[0];
+    setLoadingCsv(true);
+    setFile(fileUploaded);
+
+    // new instance of fileReader class
+    const reader = new FileReader();
+
+    if (fileUploaded) {
+      await reader.readAsText(fileUploaded);
+
+      // converting .csv file into array of objects
+      reader.onload = async (event) => {
+        const csvData = event.target.result;
+        const csvArr = csvData.split("\r\n");
+        // setCSVObject(csvArr);
+        formik.values.csvObject = csvArr;
+        setLoadingCsv(false);
+      };
+    }
+  };
 
   return (
     <Stack sx={{ marginTop: "1rem" }}>
@@ -106,6 +138,15 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
         </MenuItem>
         <MenuItem key={9} value="Sell nft">
           Sell Nft
+        </MenuItem>
+        <MenuItem key={10} value="whitelist deposit">
+          Whitelist Deposit
+        </MenuItem>
+        <MenuItem key={11} value="whitelist with lens followers">
+          Whitelist with Lens followers
+        </MenuItem>
+        <MenuItem key={12} value="whitelist with lens post's comments">
+          Whitelist with Lens post&apos;s comments
         </MenuItem>
       </Select>
 
@@ -652,6 +693,96 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
             onChange={formik.handleChange}
             error={formik.touched.nftLink && Boolean(formik.errors.nftLink)}
             helperText={formik.touched.nftLink && formik.errors.nftLink}
+          />
+        </Grid>
+      ) : formik.values.actionCommand === "whitelist deposit" ? (
+        <>
+          <Typography mt={2} variant="proposalBody">
+            Upload your CSV file
+          </Typography>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "20px",
+              marginTop: "8px",
+            }}>
+            <TextField
+              style={{
+                width: "100%",
+              }}
+              className={classes.input}
+              onClick={handleClick}
+              onChange={handleChange}
+              disabled
+              value={file?.name}
+            />
+            <Button onClick={handleClick} variant="normal">
+              Upload
+            </Button>
+            <input
+              type="file"
+              accept=".csv"
+              ref={hiddenFileInput}
+              onChange={handleChange}
+              style={{ display: "none" }}
+            />
+          </div>
+
+          <Typography mt={1} variant="proposalSubHeading">
+            Download sample from{" "}
+            <span style={{ color: "#3a7afd" }}>
+              <Link href={"/assets/csv/addresses.csv"}>here</Link>
+            </span>
+          </Typography>
+        </>
+      ) : formik.values.actionCommand === "whitelist with lens followers" ? (
+        <Grid
+          container
+          direction={"column"}
+          ml={3}
+          mt={2}
+          sx={{ marginLeft: "0 !important" }}>
+          <Typography variant="proposalBody">Lens username *</Typography>
+          <TextField
+            variant="outlined"
+            className={classes.textField}
+            placeholder="johndoe.lens"
+            type="text"
+            name="lensId"
+            id="lensId"
+            value={formik.values.lensId}
+            onChange={formik.handleChange}
+            error={formik.touched.lensId && Boolean(formik.errors.lensId)}
+            helperText={formik.touched.lensId && Boolean(formik.errors.lensId)}
+            onWheel={(event) => event.target.blur()}
+          />
+        </Grid>
+      ) : formik.values.actionCommand ===
+        "whitelist with lens post's comments" ? (
+        <Grid
+          container
+          direction={"column"}
+          ml={3}
+          mt={2}
+          sx={{ marginLeft: "0 !important" }}>
+          <Typography variant="proposalBody">Lens post link *</Typography>
+          <TextField
+            variant="outlined"
+            className={classes.textField}
+            placeholder="https://lenster.xyz/posts/0x01a14e-0x018e"
+            type="text"
+            name="lensPostLink"
+            id="lensPostLink"
+            value={formik.values.lensPostLink}
+            onChange={formik.handleChange}
+            error={
+              formik.touched.lensPostLink && Boolean(formik.errors.lensPostLink)
+            }
+            helperText={
+              formik.touched.lensPostLink && Boolean(formik.errors.lensPostLink)
+            }
+            onWheel={(event) => event.target.blur()}
           />
         </Grid>
       ) : null}

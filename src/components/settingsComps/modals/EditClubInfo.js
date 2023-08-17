@@ -1,14 +1,14 @@
 import {
   Alert,
-  Button,
   CircularProgress,
   Dialog,
   DialogContent,
   Grid,
   Snackbar,
-  TextField,
   Typography,
 } from "@mui/material";
+import { TextField } from "@components/ui";
+import Button from "@components/ui/button/Button";
 import { makeStyles } from "@mui/styles";
 import { useFormik } from "formik";
 import React, { useEffect, useState } from "react";
@@ -120,7 +120,7 @@ const EditClubInfo = (props) => {
             backgroundColor: "#19274B",
             padding: "3rem",
           }}>
-          <form onSubmit={formik.handleSubmit} className={classes.form}>
+          <form className={classes.form}>
             <Grid item md={6} mb={2}>
               <Typography className={classes.wrapTextIcon}>Add Bio</Typography>
               <QuillEditor
@@ -156,7 +156,6 @@ const EditClubInfo = (props) => {
               <Typography className={classes.wrapTextIcon}>Twitter</Typography>
               <TextField
                 name="twitter"
-                className={classes.textField}
                 placeholder="Paste URL here"
                 variant="outlined"
                 onChange={formik.handleChange}
@@ -171,7 +170,6 @@ const EditClubInfo = (props) => {
               <Typography className={classes.wrapTextIcon}>Discord</Typography>
               <TextField
                 name="discord"
-                className={classes.textField}
                 placeholder="Paste URL here"
                 variant="outlined"
                 onChange={formik.handleChange}
@@ -186,7 +184,6 @@ const EditClubInfo = (props) => {
               <Typography className={classes.wrapTextIcon}>Telegram</Typography>
               <TextField
                 name="telegram"
-                className={classes.textField}
                 placeholder="Paste URL here"
                 variant="outlined"
                 onChange={formik.handleChange}
@@ -210,7 +207,6 @@ const EditClubInfo = (props) => {
                   alignItems: "center",
                 }}>
                 <Button
-                  variant="primary"
                   onClick={() => {
                     formik.resetForm();
                     setLoaderOpen(false);
@@ -220,15 +216,9 @@ const EditClubInfo = (props) => {
                 </Button>
               </Grid>
               <Grid item>
-                <Button
-                  variant="primary"
-                  type="submit"
-                  sx={{ display: "flex", alignItems: "center" }}>
+                <Button onClick={() => formik.handleSubmit()}>
                   {loaderOpen ? (
-                    <CircularProgress
-                      color="inherit"
-                      sx={{ width: "inherit" }}
-                    />
+                    <CircularProgress color="inherit" size={25} />
                   ) : (
                     "Save Changes"
                   )}

@@ -1,39 +1,34 @@
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
+import { Button, Typography } from "@components/ui";
 import settingsImg from "../../public/assets/images/settings.png";
 import { makeStyles } from "@mui/styles";
 import { useRouter } from "next/router";
 
 import claimsBanner from "../../public/assets/images/claimsBanner.png";
 import ClaimsCard from "../../src/components/claimsPageComps/ClaimsCard";
-import { getClaimsByUserAddress } from "../../src/api/claims";
-import { useConnectWallet } from "@web3-onboard/react";
 import useSmartContract from "../../src/hooks/useSmartContract";
 import Layout1 from "../../src/components/layouts/layout1";
-import { showWrongNetworkModal } from "../../src/utils/helper";
+import { subgraphQuery } from "../../src/utils/subgraphs";
+import { CLAIMS_SUBGRAPH_URL_POLYGON } from "../../src/api";
+import { QUERY_ALL_CLAIMS_OF_CREATOR } from "../../src/api/graphql/queries";
+import { useAccount } from "wagmi";
 
 const useStyles = makeStyles({
   container: {
-    marginLeft: "80px",
-    marginTop: "120px",
     display: "flex",
     gap: "30px",
+    marginBottom: "60px",
+    justifyContent: "space-around",
   },
   leftDiv: {
-    flex: "0.65",
+    flex: "0.7",
     margin: 0,
   },
   header: {
     display: "flex",
     justifyContent: "space-between",
-    alignItems: "flex-start",
-  },
-  title: {
-    fontSize: "46px",
-    fontWeight: "500",
-    alignSelf: "flex-start",
-    marginTop: "0px",
-    color: "white",
+    alignItems: "center",
   },
   claimDoc: {
     width: "130px",
@@ -76,16 +71,6 @@ const useStyles = makeStyles({
     padding: "10px 30px",
     marginTop: "20px",
   },
-  noClaim_heading: {
-    fontSize: "18px",
-    fontWeight: "400",
-    color: "white",
-  },
-  noClaim_para: {
-    fontSize: "14px",
-    fontWeight: "400",
-    color: "lightgray",
-  },
   proposalInfoCard: {
     background: settingsImg,
     backgroundColor: "#81f5f4",
@@ -105,48 +90,44 @@ const Claims = () => {
     router.push("/claims/form");
   };
 
-  const [{ wallet }] = useConnectWallet();
-  const walletAddress = wallet?.accounts[0].address;
-  const networkId = wallet?.chains[0].id;
+  const { address: walletAddress } = useAccount();
 
   useEffect(() => {
-    const getData = async () => {
-      const data = await getClaimsByUserAddress(walletAddress, networkId);
-      setClaimData(data.reverse());
+    const fetchClaims = async () => {
+      try {
+        const { claims } = await subgraphQuery(
+          CLAIMS_SUBGRAPH_URL_POLYGON,
+          QUERY_ALL_CLAIMS_OF_CREATOR(walletAddress),
+        );
+
+        setClaimData(claims?.reverse());
+      } catch (error) {
+        console.log(error);
+      }
     };
 
-    getData();
-  }, [walletAddress, networkId]);
+    fetchClaims();
+  }, [walletAddress]);
 
   return (
     <Layout1 showSidebar={false}>
-      <Image
-        src="/assets/images/monogram.png"
-        alt="StationX"
-        height={50}
-        width={50}
-        style={{ cursor: "pointer", position: "fixed" }}
-        onClick={() => {
-          router.push("/");
-        }}
-      />
       <div className={classes.container}>
         {/* Left Side */}
         <div className={classes.leftDiv}>
           <div className={classes.header}>
-            <p className={classes.title}>Claims</p>
-            <button onClick={createClaimHandler} className={classes.claimDoc}>
+            <Typography variant="heading">Claims</Typography>
+            <Button onClick={createClaimHandler} variant="normal">
               Create
-            </button>
+            </Button>
           </div>
 
           {!claimData.length && (
             <div className={classes.noClaim}>
-              <p className={classes.noClaim_heading}>No claims found</p>
-              <p className={classes.noClaim_para}>
+              <Typography variant="heading">No claims found</Typography>
+              <Typography variant="body">
                 Bulk distribute ERC20 tokens or NFTs by creating claim pages in
                 less than 60 seconds
-              </p>
+              </Typography>
             </div>
           )}
           {/* No claims exist */}
@@ -156,13 +137,14 @@ const Claims = () => {
               key={i}
               i={claimData.length - i - 1}
               description={item?.description}
-              airdropTokenSymbol={item?.airdropTokenSymbol}
-              totalAmount={item?.totalAmount}
-              startDate={item?.startDate}
-              endDate={item?.endDate}
-              updatedDate={item?.updateDate}
-              claimContract={item?.claimContract}
-              createdBy={item?.createdBy}
+              airdropTokenAddress={item?.airdropToken}
+              totalAmount={item?.totalClaimAmount}
+              startDate={item?.startTime}
+              endDate={item?.endTime}
+              updatedDate={item?.timestamp}
+              claimContract={item?.claimAddress}
+              createdBy={item?.creatorAddress}
+              isActive={item?.isActive}
             />
           ))}
         </div>
@@ -176,8 +158,6 @@ const Claims = () => {
             width={400}
           />
         </div>
-
-        {showWrongNetworkModal(wallet, networkId)}
       </div>
     </Layout1>
   );

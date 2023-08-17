@@ -2,14 +2,14 @@ import React, { useCallback, useEffect, useState } from "react";
 import Layout1 from "../../../../src/components/layouts/layout1";
 import {
   Backdrop,
-  Button,
   CircularProgress,
   Grid,
   MenuItem,
   OutlinedInput,
   Select,
-  Typography,
+  // Typography,
 } from "@mui/material";
+import { Button, Typography } from "@components/ui";
 import { proposalDisplayOptions } from "../../../../src/data/dashboard";
 import DocsCard from "../../../../src/components/proposalComps/DocsCard";
 import CreateProposalDialog from "../../../../src/components/proposalComps/CreateProposalDialog";
@@ -31,11 +31,7 @@ import {
   getProposalByDaoAddress,
   getProposalTxHash,
 } from "../../../../src/api/proposal";
-import {
-  showWrongNetworkModal,
-  web3InstanceCustomRPC,
-} from "../../../../src/utils/helper";
-import { useConnectWallet } from "@web3-onboard/react";
+import { web3InstanceCustomRPC } from "../../../../src/utils/helper";
 import { addNftsOwnedByDao } from "../../../../src/redux/reducers/club";
 
 const useStyles = makeStyles({
@@ -43,6 +39,7 @@ const useStyles = makeStyles({
     fontSize: "18px",
     fontWeight: "400",
     color: "white",
+    marginBottom: "10px",
   },
   noProposal_para: {
     fontSize: "14px",
@@ -54,7 +51,7 @@ const useStyles = makeStyles({
     textAlign: "center",
     border: "1px solid #FFFFFF1A",
     borderRadius: "10px",
-    padding: "10px 30px",
+    padding: "30px 30px",
     marginTop: "50px",
   },
 });
@@ -64,8 +61,6 @@ const Proposal = () => {
   const dispatch = useDispatch();
   const { clubId: daoAddress } = router.query;
   const classes = useStyles();
-  const [{ wallet }] = useConnectWallet();
-  const networkId = wallet?.chains[0].id;
 
   const [nftData, setNftData] = useState([]);
   const [selectedListItem, setSelectedListItem] = useState(
@@ -85,10 +80,6 @@ const Proposal = () => {
 
   const gnosisAddress = useSelector((state) => {
     return state.club.clubData.gnosisAddress;
-  });
-
-  const WRONG_NETWORK = useSelector((state) => {
-    return state.gnosis.wrongNetwork;
   });
 
   const proposalList = useSelector((state) => {
@@ -252,7 +243,7 @@ const Proposal = () => {
 
   return (
     <Layout1 page={2}>
-      <Grid container spacing={3} paddingLeft={10} paddingTop={15}>
+      <Grid container spacing={3} paddingTop={2}>
         <Grid item md={8}>
           <Grid
             container
@@ -263,8 +254,8 @@ const Proposal = () => {
               md: "column",
               lg: "row",
             }}>
-            <Grid item>
-              <Typography variant="title">All Proposals</Typography>
+            <Grid item mb={4}>
+              <Typography variant="heading">All Proposals</Typography>
             </Grid>
             <Grid
               item
@@ -279,7 +270,7 @@ const Proposal = () => {
                   xs
                   sx={{ display: "flex", justifyContent: "flex-end" }}>
                   <Select
-                    sx={{ height: "80%", textTransform: "capitalize" }}
+                    sx={{ height: "60%", textTransform: "capitalize" }}
                     value={selectedListItem}
                     onChange={handleFilterChange}
                     input={<OutlinedInput />}
@@ -308,25 +299,13 @@ const Proposal = () => {
 
                 {isGovernanceActive ? (
                   <Grid item>
-                    <Button
-                      variant="contained"
-                      size="large"
-                      sx={{
-                        height: "80%",
-                      }}
-                      onClick={handleClickOpen}>
+                    <Button variant="normal" onClick={handleClickOpen}>
                       Propose
                     </Button>
                   </Grid>
                 ) : isAdminUser ? (
                   <Grid item>
-                    <Button
-                      variant="contained"
-                      size="large"
-                      sx={{
-                        height: "80%",
-                      }}
-                      onClick={handleClickOpen}>
+                    <Button variant="normal" onClick={handleClickOpen}>
                       Propose
                     </Button>
                   </Grid>
@@ -338,7 +317,9 @@ const Proposal = () => {
                 <>
                   {executionTransaction && (
                     <>
-                      <h2>Queued Transactions</h2>
+                      <Grid item>
+                        <h2>Queued Transactions</h2>
+                      </Grid>
                       <Grid
                         item
                         onClick={(e) => {
@@ -353,7 +334,11 @@ const Proposal = () => {
                       </Grid>
                     </>
                   )}
-                  {executionTransaction && <h2>Proposals</h2>}
+                  {executionTransaction && (
+                    <Grid item>
+                      <h2>Proposals</h2>
+                    </Grid>
+                  )}
                   {proposalList.map((proposal, key) => {
                     return (
                       <Grid
@@ -391,8 +376,6 @@ const Proposal = () => {
           <DocsCard />
         </Grid>
       </Grid>
-
-      {showWrongNetworkModal(wallet, networkId)}
 
       <CreateProposalDialog
         open={open}

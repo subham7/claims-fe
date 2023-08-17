@@ -15,7 +15,6 @@ import {
   Typography,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
-import { useConnectWallet } from "@web3-onboard/react";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import {
@@ -23,7 +22,7 @@ import {
   getProposalDetail,
   getProposalTxHash,
 } from "../../../../src/api/proposal";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import ClubFetch from "../../../../src/utils/clubFetch";
 import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import CloseIcon from "@mui/icons-material/Close";
@@ -53,11 +52,7 @@ import Signators from "../../../../src/components/proposalComps/Signators";
 import ProposalInfo from "../../../../src/components/proposalComps/ProposalInfo";
 import CurrentResults from "../../../../src/components/proposalComps/CurrentResults";
 import ProposalVotes from "../../../../src/components/proposalComps/ProposalVotes";
-import {
-  getSafeSdk,
-  showWrongNetworkModal,
-  web3InstanceEthereum,
-} from "../../../../src/utils/helper";
+import { getSafeSdk, web3InstanceEthereum } from "../../../../src/utils/helper";
 import useSmartContractMethods from "../../../../src/hooks/useSmartContractMethods";
 import {
   fulfillOrder,
@@ -66,6 +61,9 @@ import {
 } from "../../../../src/api/assets";
 import seaportABI from "../../../../src/abis/seaport.json";
 import SafeAppsSDK from "@safe-global/safe-apps-sdk";
+import { useAccount } from "wagmi";
+// import Button from "@components/ui/button/Button";
+import { createRejectSafeTx, executeRejectTx } from "utils/proposal";
 
 const useStyles = makeStyles({
   clubAssets: {
@@ -214,14 +212,9 @@ const useStyles = makeStyles({
 const ProposalDetail = () => {
   const classes = useStyles();
   const router = useRouter();
-  const dispatch = useDispatch();
   const { pid, clubId: daoAddress } = router.query;
 
-  const [{ wallet }] = useConnectWallet();
-  const walletAddress = Web3.utils.toChecksumAddress(
-    wallet?.accounts[0].address,
-  );
-  const networkId = wallet?.chains[0].id;
+  const { address: walletAddress } = useAccount();
 
   const sdk = new SafeAppsSDK({
     allowedDomains: [/gnosis-safe.io$/, /safe.global$/, /5afe.dev$/],
@@ -304,10 +297,6 @@ const ProposalDetail = () => {
 
   const FACTORY_CONTRACT_ADDRESS = useSelector((state) => {
     return state.gnosis.factoryContractAddress;
-  });
-
-  const WRONG_NETWORK = useSelector((state) => {
-    return state.gnosis.wrongNetwork;
   });
 
   const AIRDROP_ACTION_ADDRESS = useSelector((state) => {
@@ -504,7 +493,12 @@ const ProposalDetail = () => {
         "function contractCalls(address _to, bytes memory _data)",
         "function airDropToken(address _airdropTokenAddress,uint256[] memory _airdropAmountArray,address[] memory _members)",
       ];
-    } else if (proposalData.commands[0].executionId === 3) {
+    } else if (
+      proposalData.commands[0].executionId === 3 ||
+      proposalData.commands[0].executionId === 10 ||
+      proposalData.commands[0].executionId === 11 ||
+      proposalData?.commands[0].executionId == 12
+    ) {
       ABI = FactoryContractABI.abi;
     } else if (proposalData.commands[0].executionId === 8) {
       ABI = seaportABI;
@@ -842,6 +836,22 @@ const ProposalDetail = () => {
       // );
       // console.log(data);
     }
+
+    if (
+      proposalData.commands[0].executionId === 10 ||
+      proposalData.commands[0].executionId === 11 ||
+      proposalData?.commands[0].executionId == 12
+    ) {
+      let iface = new Interface(ABI);
+      let iface2 = new Interface(Erc20Dao.abi);
+
+      approvalData = iface2.encodeFunctionData("toggleOnlyAllowWhitelist", []);
+
+      data = iface.encodeFunctionData("changeMerkleRoot", [
+        daoAddress,
+        proposalData.commands[0]?.merkleRoot?.merkleRoot,
+      ]);
+    }
     const response = updateProposalAndExecution(
       data,
       approvalData,
@@ -858,7 +868,10 @@ const ProposalDetail = () => {
         : "",
       proposalStatus,
       airdropContractAddress,
-      proposalData.commands[0].executionId === 3
+      proposalData.commands[0].executionId === 3 ||
+        proposalData.commands[0].executionId === 10 ||
+        proposalData.commands[0].executionId === 11 ||
+        proposalData?.commands[0].executionId == 12
         ? FACTORY_CONTRACT_ADDRESS
         : "",
       GNOSIS_TRANSACTION_URL,
@@ -870,6 +883,7 @@ const ProposalDetail = () => {
       airDropAmountArray,
       transactionData,
     );
+
     if (proposalStatus === "executed") {
       // fetchData()
       response.then(
@@ -920,6 +934,40 @@ const ProposalDetail = () => {
     }
   };
 
+  const createRejectSafeTransaction = async () => {
+    setLoaderOpen(true);
+    const response = await executeRejectTx({
+      pid: proposalData?.cancelProposalId,
+      gnosisTransactionUrl: GNOSIS_TRANSACTION_URL,
+      gnosisAddress,
+      walletAddress,
+    });
+    if (response) {
+      const updateStatus = patchProposalExecuted(pid);
+      updateStatus.then((result) => {
+        if (result.status !== 200) {
+          setExecuted(false);
+          setOpenSnackBar(true);
+          setMessage("execution status update failed!");
+          setFailed(true);
+          setLoaderOpen(false);
+        } else {
+          fetchData();
+          setExecuted(true);
+          setOpenSnackBar(true);
+          setMessage("execution successful!");
+          setFailed(false);
+          setLoaderOpen(false);
+        }
+      });
+    } else {
+      setOpenSnackBar(true);
+      setMessage("Signature failed!");
+      setFailed(true);
+      setLoaderOpen(false);
+    }
+  };
+
   const handleSnackBarClose = (event, reason) => {
     if (reason === "clickaway") {
       return;
@@ -936,14 +984,14 @@ const ProposalDetail = () => {
     }
   }, [fetchData, fetchNfts, isOwner, pid]);
 
-  if (!wallet && proposalData === null) {
+  if (!walletAddress && proposalData === null) {
     return <>loading</>;
   }
 
   return (
     <>
       <Layout1 page={2}>
-        <Grid container spacing={6} paddingLeft={10} paddingTop={10}>
+        <Grid container spacing={6} paddingTop={2} mb={8}>
           <Grid item md={8.5}>
             {/* back button */}
             <Grid container spacing={1} ml={-4} onClick={() => router.back()}>
@@ -1008,7 +1056,6 @@ const ProposalDetail = () => {
                     />
                   </Grid>
                   <Grid item>
-                    {" "}
                     <Chip
                       className={
                         proposalData?.status === "active"
@@ -1175,83 +1222,112 @@ const ProposalDetail = () => {
                       ) : proposalData?.status === "passed" ? (
                         isAdmin ? (
                           <Card>
-                            {console.log(proposalData)}
-                            <Card
-                              className={
-                                executed
-                                  ? classes.mainCardButtonSuccess
-                                  : classes.mainCardButton
-                              }
-                              justifyContent="center"
-                              alignItems="center"
-                              onClick={() => executeFunction("cancel")}>
-                              <Grid item>
-                                <Typography className={classes.cardFont1}>
-                                  Cancel
-                                </Typography>
-                              </Grid>
-                            </Card>
-                            <Card
-                              className={
-                                executed
-                                  ? classes.mainCardButtonSuccess
-                                  : classes.mainCardButton
-                              }
-                              onClick={
-                                executionReady
-                                  ? pendingTxHash === txHash
-                                    ? () => {
-                                        executeFunction("executed");
-                                      }
+                            {console.log(
+                              "xxxxx",
+                              proposalData[0]?.cancelProposalId,
+                            )}
+                            {proposalData[0]?.cancelProposalId !==
+                              undefined && (
+                              <Card
+                                className={
+                                  executed
+                                    ? classes.mainCardButtonSuccess
+                                    : classes.mainCardButton
+                                }
+                                onClick={
+                                  executionReady
+                                    ? pendingTxHash === txHash
+                                      ? () => {
+                                          executeFunction("executed");
+                                        }
+                                      : () => {
+                                          setOpenSnackBar(true);
+                                          setFailed(true);
+                                          setMessage(
+                                            "execute txns with smaller nonce first",
+                                          );
+                                        }
                                     : () => {
-                                        setOpenSnackBar(true);
-                                        setFailed(true);
-                                        setMessage(
-                                          "execute txns with smaller nonce first",
-                                        );
+                                        executeFunction("passed");
                                       }
-                                  : () => {
-                                      executeFunction("passed");
-                                    }
-                              }
-                              disabled={
-                                (!executionReady && signed) || executed
-                              }>
-                              <Grid
-                                container
-                                justifyContent="center"
-                                alignItems="center">
-                                {signed && !executionReady ? (
-                                  <Grid item mt={0.5}>
-                                    <CheckCircleRoundedIcon />
-                                  </Grid>
-                                ) : (
-                                  <Grid item></Grid>
-                                )}
+                                }
+                                disabled={
+                                  (!executionReady && signed) || executed
+                                }>
+                                <Grid
+                                  container
+                                  justifyContent="center"
+                                  alignItems="center">
+                                  {signed && !executionReady ? (
+                                    <Grid item mt={0.5}>
+                                      <CheckCircleRoundedIcon />
+                                    </Grid>
+                                  ) : (
+                                    <Grid item></Grid>
+                                  )}
 
-                                {executed && signed ? (
-                                  <Grid item>
-                                    <Typography className={classes.cardFont1}>
-                                      Executed Successfully
-                                    </Typography>
-                                  </Grid>
-                                ) : executionReady ? (
-                                  <Grid item>
-                                    <Typography className={classes.cardFont1}>
-                                      Execute Now
-                                    </Typography>
-                                  </Grid>
-                                ) : !executionReady && !executed ? (
-                                  <Grid item>
-                                    <Typography className={classes.cardFont1}>
-                                      {signed
-                                        ? "Signed Succesfully"
-                                        : "Sign Now"}
-                                    </Typography>
-                                  </Grid>
-                                ) : null}
-                              </Grid>
-                            </Card>
+                                  {executed && signed ? (
+                                    <Grid item>
+                                      <Typography className={classes.cardFont1}>
+                                        Executed Successfully
+                                      </Typography>
+                                    </Grid>
+                                  ) : executionReady ? (
+                                    <Grid item>
+                                      <Typography className={classes.cardFont1}>
+                                        Execute Now
+                                      </Typography>
+                                    </Grid>
+                                  ) : !executionReady && !executed ? (
+                                    <Grid item>
+                                      <Typography className={classes.cardFont1}>
+                                        {signed
+                                          ? "Signed Succesfully"
+                                          : "Sign Now"}
+                                      </Typography>
+                                    </Grid>
+                                  ) : null}
+                                </Grid>
+                              </Card>
+                            )}
+
+                            {signed && (
+                              <Card
+                                className={
+                                  executed
+                                    ? classes.mainCardButtonSuccess
+                                    : classes.mainCardButton
+                                }
+                                onClick={() => {
+                                  if (proposalData?.cancelProposalId) {
+                                    createRejectSafeTransaction();
+                                  } else {
+                                    createRejectSafeTx({
+                                      pid,
+                                      gnosisTransactionUrl:
+                                        GNOSIS_TRANSACTION_URL,
+                                      gnosisAddress,
+                                      NETWORK_HEX,
+                                      daoAddress,
+                                      walletAddress,
+                                    });
+                                  }
+                                }}>
+                                <Grid item>
+                                  <Typography
+                                    className={classes.cardFont1}
+                                    style={{
+                                      display: "flex",
+                                      justifyContent: "center",
+                                      alignItems: "center",
+                                    }}>
+                                    {proposalData?.cancelProposalId
+                                      ? "Execute Reject Transaction"
+                                      : "Sign Reject Transaction"}
+                                  </Typography>
+                                </Grid>
+                              </Card>
+                            )}
                           </Card>
                         ) : (
                           <Card sx={{ width: "100%" }}>
@@ -1487,8 +1563,6 @@ const ProposalDetail = () => {
             </Stack>
           </Grid>
         </Grid>
-
-        {showWrongNetworkModal(wallet, networkId)}
 
         <Snackbar
           open={openSnackBar}

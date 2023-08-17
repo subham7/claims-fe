@@ -1,13 +1,12 @@
 import {
-  Button,
   FormControl,
   InputAdornment,
   MenuItem,
-  TextField,
   Typography,
   ToggleButtonGroup,
   ToggleButton,
 } from "@mui/material";
+import { Button, TextField } from "@components/ui";
 import { BsArrowLeft } from "react-icons/bs";
 import { makeStyles } from "@mui/styles";
 import React, { useEffect } from "react";
@@ -25,7 +24,7 @@ const useStyles = makeStyles({
     display: "flex-col",
     alignItems: "center",
     justifyContent: "center",
-    margin: "170px auto",
+    margin: "40px auto",
     width: "600px",
     color: "white",
   },
@@ -34,23 +33,6 @@ const useStyles = makeStyles({
     fontSize: "36px",
     fontWeight: "400",
     marginBottom: "40px",
-  },
-  input: {
-    width: "100%",
-    marginTop: "6px",
-    color: "#6475A3",
-    borderRadius: "8px",
-    "& input[type=number]": {
-      "-moz-appearance": "textfield",
-    },
-    "& input[type=number]::-webkit-outer-spin-button": {
-      "-webkit-appearance": "none",
-      margin: 0,
-    },
-    "& input[type=number]::-webkit-inner-spin-button": {
-      "-webkit-appearance": "none",
-      margin: 0,
-    },
   },
   label: {
     marginTop: "30px",
@@ -70,7 +52,6 @@ const useStyles = makeStyles({
   },
 
   back: {
-    marginTop: "30px",
     fontWeight: "300",
     marginBottom: "4px",
     display: "flex",
@@ -183,7 +164,6 @@ const ClaimStep1 = ({ formik, tokensInWallet, isLoading }) => {
         </Typography>
         <TextField
           variant="outlined"
-          className={classes.input}
           name="description"
           id="description"
           value={formik.values.description}
@@ -212,27 +192,44 @@ const ClaimStep1 = ({ formik, tokensInWallet, isLoading }) => {
             name="airdropFrom"
             value="contract"
             id="airdropFrom">
-            <BsFillSendFill size={20} />
-            <p className={classes.label}>Claim Contract</p>
-            <p className={classes.smallText}>
-              Users will claim tokens from custom claim contract{" "}
-              <span>(recommended)</span>
-            </p>
+            <div
+              onClick={() => {
+                formik.setFieldValue("airdropFrom", "contract");
+              }}>
+              <BsFillSendFill size={20} />
+              <p className={classes.label}>Claim Contract</p>
+              <p className={classes.smallText}>
+                Users will claim tokens from custom claim contract{" "}
+                <span> (recommended)</span>
+              </p>
+            </div>
           </ToggleButton>
+
           <ToggleButton
             className={classes.leftContainer}
             name="airdropFrom"
             id="airdropFrom"
             value="wallet">
-            <IoWalletSharp size={20} />
-            <p className={classes.label}>My Wallet</p>
-            <p className={classes.smallText}>
-              Users will claim tokens from your wallet
-            </p>
+            <div
+              onClick={() => {
+                formik.setFieldValue("airdropFrom", "wallet");
+              }}>
+              <IoWalletSharp size={20} />
+              <p
+                className={classes.label}
+                onClick={(event) => {
+                  event.stopPropagation(); // Prevent event propagation
+                }}>
+                My Wallet
+              </p>
+              <p className={classes.smallText}>
+                Users will claim tokens from your wallet
+              </p>
+            </div>
           </ToggleButton>
         </ToggleButtonGroup>
 
-        {/* Roll back address */}
+        {/* Roll back address
         {formik.values.airdropFrom === "contract" && (
           <>
             <Typography className={classes.label}>
@@ -258,7 +255,7 @@ const ClaimStep1 = ({ formik, tokensInWallet, isLoading }) => {
               back to this address.
             </Typography>
           </>
-        )}
+        )} */}
 
         {/* Choose Token */}
         <Typography className={classes.label}>
@@ -266,15 +263,10 @@ const ClaimStep1 = ({ formik, tokensInWallet, isLoading }) => {
         </Typography>
         <FormControl sx={{ width: "100%" }}>
           {isLoading ? (
-            <TextField
-              className={classes.text}
-              disabled
-              placeholder="Loading tokens..."
-            />
+            <TextField disabled placeholder="Loading tokens..." />
           ) : (
             <TextField
               variant="outlined"
-              className={classes.input}
               name="selectedToken"
               id="selectedToken"
               value={formik.values.selectedToken}
@@ -303,7 +295,6 @@ const ClaimStep1 = ({ formik, tokensInWallet, isLoading }) => {
         {/* Number of Tokens */}
         <Typography className={classes.label}>Number of Tokens *</Typography>
         <TextField
-          className={classes.input}
           type="number"
           InputProps={{
             endAdornment: (
@@ -344,15 +335,16 @@ const ClaimStep1 = ({ formik, tokensInWallet, isLoading }) => {
 
         <div
           style={{
+            width: "100%",
             display: "flex",
-            gap: "30px",
             alignItems: "center",
             justifyContent: "space-between",
             width: "100%",
+            marginBottom: "40px",
           }}>
           {/* Claim Start */}
 
-          <div style={{ width: "100%" }}>
+          <div>
             <Typography className={classes.label}>Claims start on</Typography>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DateTimePicker
@@ -367,7 +359,7 @@ const ClaimStep1 = ({ formik, tokensInWallet, isLoading }) => {
 
           {/* Claim End */}
 
-          <div style={{ width: "100%" }}>
+          <div>
             <Typography className={classes.label}>Claims end on</Typography>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DateTimePicker
@@ -399,13 +391,8 @@ const ClaimStep1 = ({ formik, tokensInWallet, isLoading }) => {
         </FormControl> */}
 
         {/* {/* Next */}
-        <Button
-          onClick={formik.handleSubmit}
-          type="submit"
-          variant="contained"
-          className={classes.btn}>
-          Next
-        </Button>
+
+        <Button onClick={formik.handleSubmit}>Next</Button>
       </form>
     </>
   );

@@ -1,34 +1,31 @@
 import { React, useEffect, useState } from "react";
 import {
   Grid,
-  Button,
   Card,
-  Typography,
   Divider,
   Stack,
   ListItemButton,
   DialogContent,
   Dialog,
 } from "@mui/material";
+import { Button, Typography } from "@components/ui";
 import { useDispatch } from "react-redux";
 import { makeStyles } from "@mui/styles";
 import Router, { useRouter } from "next/router";
 import { addDaoAddress } from "../src/redux/reducers/club";
-
-import { useConnectWallet } from "@web3-onboard/react";
 import NewCard from "../src/components/cards/card";
 import { subgraphQuery } from "../src/utils/subgraphs";
 import {
   QUERY_CLUBS_FROM_WALLET_ADDRESS,
   QUERY_CLUB_DETAILS,
 } from "../src/api/graphql/queries";
-import { SUBGRAPH_URL_GOERLI, SUBGRAPH_URL_POLYGON } from "../src/api";
-import WrongNetworkModal from "../src/components/modals/WrongNetworkModal";
+import { SUBGRAPH_URL_POLYGON } from "../src/api";
 import { addClubData } from "../src/redux/reducers/club";
 import Layout1 from "../src/components/layouts/layout1";
 import { BsFillPlayFill } from "react-icons/bs";
 import Web3 from "web3";
 import VideoModal from "../src/components/modals/VideoModal";
+import { useAccount, useNetwork } from "wagmi";
 
 const useStyles = makeStyles({
   container: {
@@ -81,7 +78,7 @@ const useStyles = makeStyles({
     flexDirection: "column",
     justifyContent: "center",
     margin: "0 auto",
-    minHeight: "90vh",
+    minHeight: "70vh",
   },
   watchBtn: {
     background: "#142243",
@@ -130,7 +127,7 @@ const App = () => {
   const dispatch = useDispatch();
   const [clubFlow, setClubFlow] = useState(false);
   const classes = useStyles();
-  const [{ wallet }] = useConnectWallet();
+  const { address: walletAddress } = useAccount();
   const [clubListData, setClubListData] = useState([]);
   const [showVideoModal, setShowVideoModal] = useState(false);
 
@@ -138,10 +135,8 @@ const App = () => {
 
   const [open, setOpen] = useState(false);
   const router = useRouter();
-
-  const networkId = wallet?.chains[0]?.id;
-
-  const walletAddress = wallet?.accounts[0].address;
+  const { chain } = useNetwork();
+  const networkId = "0x" + chain?.id.toString(16);
 
   useEffect(() => {
     try {
@@ -200,6 +195,8 @@ const App = () => {
         ownerAddress: clubData.stations[0].ownerAddress,
         symbol: clubData.stations[0].symbol,
         tokenType: clubData.stations[0].tokenType,
+        membersCount: clubData.stations[0].membersCount,
+        deployedTime: clubData.stations[0].timeStamp,
       }),
     );
     router.push(
@@ -290,18 +287,16 @@ const App = () => {
             direction="row"
             justifyContent="center"
             alignItems="start"
-            mt={12}
+            mt={2}
             mb={0}>
             <Grid item md={5}>
               <Card>
                 <div className={classes.flex}>
                   <Grid item>
-                    <Typography className={classes.yourClubText}>
-                      My Stations
-                    </Typography>
+                    <Typography variant="heading">My Stations</Typography>
                   </Grid>
                   <Grid>
-                    <Button variant="primary" onClick={handleCreateButtonClick}>
+                    <Button onClick={handleCreateButtonClick}>
                       Create new
                     </Button>
                   </Grid>
@@ -309,49 +304,80 @@ const App = () => {
                 <Divider className={classes.divider} />
                 <div>
                   <div style={{ overflowY: "scroll", maxHeight: "60vh" }}>
+                    {/* {console.log(
+                      clubListData.map((club) => {
+                        if (
+                          club.daoAddress ===
+                          "0xe9c8342477576b0f4ee05be057146063a9b3b156"
+                        ) {
+                          console.log(club.daoAddress);
+                        }
+                      }),
+                    )}
+                    {console.log(clubListData)}
+                    {console.log(
+                      clubListData.filter((club) => {
+                        club.daoAddress ===
+                          "0xe9c8342477576b0f4ee05be057146063a9b3b156";
+                      }),
+                    )} */}
                     {walletAddress && clubListData.length ? (
-                      clubListData.reverse().map((club, key) => {
-                        return (
-                          <ListItemButton
-                            style={{ marginBottom: "8px" }}
-                            key={key}
-                            onClick={(e) => {
-                              handleItemClick(clubListData[key]);
-                            }}>
-                            <Grid container className={classes.flexContainer}>
-                              <Grid item md={6}>
-                                <Stack spacing={0}>
-                                  <Typography className={classes.yourClubText}>
-                                    {club.daoName}
-                                  </Typography>
-                                  <Typography className={classes.clubAddress}>
-                                    {`${club.userAddress.substring(
-                                      0,
-                                      9,
-                                    )}......${club.userAddress.substring(
-                                      club.userAddress.length - 6,
-                                    )}`}
-                                  </Typography>
-                                </Stack>
+                      clubListData
+                        .reverse()
+                        .filter(
+                          (club) =>
+                            club.daoAddress !==
+                              "0xbd1fab87be86fec9336ae49131998d9fa5a00eb0" &&
+                            club.daoAddress !==
+                              "0x2608d54d10527fd4a6a7bab0306dfbf9ca95a1bb" &&
+                            club.daoAddress !==
+                              "0x067a544f00840056c8cdb7f9d9d73ac3611d37c9" &&
+                            club.daoAddress !==
+                              "0x1ae43fb8283e45ae90d5bd9249cc7227fd6ecc73",
+                        )
+                        .map((club, key) => {
+                          return (
+                            <ListItemButton
+                              style={{ marginBottom: "8px" }}
+                              key={key}
+                              onClick={(e) => {
+                                handleItemClick(clubListData[key]);
+                              }}>
+                              {console.log(club)}
+                              <Grid container className={classes.flexContainer}>
+                                <Grid item md={6}>
+                                  <Stack spacing={0}>
+                                    <Typography variant="subheading">
+                                      {club.daoName}
+                                    </Typography>
+                                    <Typography
+                                      variant="body"
+                                      className="text-blue">
+                                      {`${club.userAddress.substring(
+                                        0,
+                                        9,
+                                      )}......${club.userAddress.substring(
+                                        club.userAddress.length - 6,
+                                      )}`}
+                                    </Typography>
+                                  </Stack>
+                                </Grid>
+                                <Grid>
+                                  <Stack
+                                    spacing={0}
+                                    alignItems="flex-end"
+                                    justifyContent="flex-end">
+                                    <Typography
+                                      variant="body"
+                                      className="text-blue">
+                                      {club.isAdmin ? "Admin" : "Member"}
+                                    </Typography>
+                                  </Stack>
+                                </Grid>
                               </Grid>
-                              <Grid>
-                                <Stack
-                                  spacing={0}
-                                  alignItems="flex-end"
-                                  justifyContent="flex-end">
-                                  <Typography
-                                    className={
-                                      classes.createClubButton
-                                    }></Typography>
-                                  <Typography className={classes.isAdmin}>
-                                    {club.isAdmin ? "Admin" : "Member"}
-                                  </Typography>
-                                </Stack>
-                              </Grid>
-                            </Grid>
-                          </ListItemButton>
-                        );
-                      })
+                            </ListItemButton>
+                          );
+                        })
                     ) : (
                       <div
                         style={{
@@ -378,35 +404,7 @@ const App = () => {
               </Card>
             </Grid>
           </Grid>
-        ) : (
-          <>
-            {!manageStation && !wallet && (
-              <Grid
-                container
-                direction="column"
-                justifyContent="center"
-                alignItems="center">
-                <Grid item mt={15}>
-                  <img
-                    className={classes.bannerImage}
-                    src="/assets/images/start_illustration.svg"
-                  />
-                </Grid>
-                <Grid item mt={4}>
-                  <Typography variant="mainHeading">
-                    Do more together
-                  </Typography>
-                </Grid>
-                <Grid item mt={4}>
-                  <Typography variant="regularText">
-                    Create or join a station in less than 60 seconds using
-                    StationX
-                  </Typography>
-                </Grid>
-              </Grid>
-            )}
-          </>
-        )}
+        ) : null}
 
         <Dialog
           open={open}
@@ -447,10 +445,6 @@ const App = () => {
             </Grid>
           </DialogContent>
         </Dialog>
-
-        {walletAddress && networkId !== "0x89" && networkId !== "0x5" ? (
-          <WrongNetworkModal />
-        ) : null}
         {showVideoModal && (
           <VideoModal
             onClose={() => {

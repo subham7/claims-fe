@@ -1,4 +1,6 @@
-import { Button, Grid, TextField, Typography } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
+import { TextField } from "@components/ui";
+import Button from "@components/ui/button/Button";
 import { makeStyles } from "@mui/styles";
 import { useFormik } from "formik";
 import * as yup from "yup";
@@ -68,7 +70,6 @@ const DepositOwnerFee = ({ updateOwnerFeesHandler, onClose, loading }) => {
         </Typography>
         <form style={{ width: "100%" }}>
           <TextField
-            sx={{ width: "100%" }}
             type="number"
             placeholder="Enter owner fees in percentage"
             name="ownerFee"
@@ -87,15 +88,8 @@ const DepositOwnerFee = ({ updateOwnerFeesHandler, onClose, loading }) => {
               gap: "30px",
               marginTop: "20px",
             }}>
-            <Button
-              type="submit"
-              onClick={formik.handleSubmit}
-              variant="primary">
-              Update
-            </Button>
-            <Button onClick={onClose} variant="primary">
-              Cancel
-            </Button>
+            <Button onClick={formik.handleSubmit}>Update</Button>
+            <Button onClick={onClose}>Cancel</Button>
           </Grid>
         </form>
       </div>

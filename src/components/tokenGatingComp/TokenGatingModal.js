@@ -1,4 +1,5 @@
-import { Alert, Button, TextField, Typography } from "@mui/material";
+import { Alert, Button, Typography } from "@mui/material";
+import { TextField } from "@components/ui";
 import { useFormik } from "formik";
 import React, { useState } from "react";
 import * as yup from "yup";
@@ -47,7 +48,7 @@ const TokenGatingModal = ({ closeModal, chooseTokens }) => {
               tokenSymbol: tokenSymbol,
               tokenAddress: values.address,
               tokenAmount: values.noOfTokens,
-              tokenDecimal: tokenDecimal,
+              tokenDecimal: tokenDecimal ? tokenDecimal : 0,
             });
             closeModal();
           } catch (error) {
@@ -74,7 +75,6 @@ const TokenGatingModal = ({ closeModal, chooseTokens }) => {
             <TextField
               name="address"
               id="address"
-              className={classes.input}
               type="text"
               placeholder="Paste address here"
               value={formik.values.address}
@@ -91,7 +91,6 @@ const TokenGatingModal = ({ closeModal, chooseTokens }) => {
             <TextField
               name="noOfTokens"
               id="noOfTokens"
-              className={classes.input}
               type={"number"}
               placeholder="Eg. 100"
               value={formik.values.noOfTokens}
