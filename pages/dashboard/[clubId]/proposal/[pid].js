@@ -57,7 +57,7 @@ import { getSafeSdk, web3InstanceEthereum } from "../../../../src/utils/helper";
 import useSmartContractMethods from "../../../../src/hooks/useSmartContractMethods";
 import { getNFTsByDaoAddress } from "../../../../src/api/assets";
 import { useAccount } from "wagmi";
-import Button from "@components/ui/button/Button";
+// import Button from "@components/ui/button/Button";
 import { createRejectSafeTx, executeRejectTx } from "utils/proposal";
 
 const useStyles = makeStyles({
@@ -717,6 +717,40 @@ const ProposalDetail = () => {
     }
   };
 
+  const createRejectSafeTransaction = async () => {
+    setLoaderOpen(true);
+    const response = await executeRejectTx({
+      pid: proposalData?.cancelProposalId,
+      gnosisTransactionUrl: GNOSIS_TRANSACTION_URL,
+      gnosisAddress,
+      walletAddress,
+    });
+    if (response) {
+      const updateStatus = patchProposalExecuted(pid);
+      updateStatus.then((result) => {
+        if (result.status !== 200) {
+          setExecuted(false);
+          setOpenSnackBar(true);
+          setMessage("execution status update failed!");
+          setFailed(true);
+          setLoaderOpen(false);
+        } else {
+          fetchData();
+          setExecuted(true);
+          setOpenSnackBar(true);
+          setMessage("execution successful!");
+          setFailed(false);
+          setLoaderOpen(false);
+        }
+      });
+    } else {
+      setOpenSnackBar(true);
+      setMessage("Signature failed!");
+      setFailed(true);
+      setLoaderOpen(false);
+    }
+  };
+
   const handleSnackBarClose = (event, reason) => {
     if (reason === "clickaway") {
       return;
@@ -823,32 +857,6 @@ const ProposalDetail = () => {
                       }
                     />
                   </Grid>
-                  {signed && (
-                    <Grid item>
-                      <Button
-                        onClick={() => {
-                          if (proposalData?.cancelProposalId) {
-                            executeRejectTx({
-                              pid: proposalData?.cancelProposalId,
-                              gnosisTransactionUrl: GNOSIS_TRANSACTION_URL,
-                              gnosisAddress,
-                              walletAddress,
-                            });
-                          } else {
-                            createRejectSafeTx({
-                              pid,
-                              gnosisTransactionUrl: GNOSIS_TRANSACTION_URL,
-                              gnosisAddress,
-                              NETWORK_HEX,
-                              daoAddress,
-                              walletAddress,
-                            });
-                          }
-                        }}>
-                        Reject
-                      </Button>
-                    </Grid>
-                  )}
                 </Grid>
               </Grid>
             </Grid>
@@ -997,67 +1005,112 @@ const ProposalDetail = () => {
                       ) : proposalData?.status === "passed" ? (
                         isAdmin ? (
                           <Card>
-                            <Card
-                              className={
-                                executed
-                                  ? classes.mainCardButtonSuccess
-                                  : classes.mainCardButton
-                              }
-                              onClick={
-                                executionReady
-                                  ? pendingTxHash === txHash
-                                    ? () => {
-                                        executeFunction("executed");
-                                      }
+                            {console.log(
+                              "xxxxx",
+                              proposalData[0]?.cancelProposalId,
+                            )}
+                            {proposalData[0]?.cancelProposalId !==
+                              undefined && (
+                              <Card
+                                className={
+                                  executed
+                                    ? classes.mainCardButtonSuccess
+                                    : classes.mainCardButton
+                                }
+                                onClick={
+                                  executionReady
+                                    ? pendingTxHash === txHash
+                                      ? () => {
+                                          executeFunction("executed");
+                                        }
+                                      : () => {
+                                          setOpenSnackBar(true);
+                                          setFailed(true);
+                                          setMessage(
+                                            "execute txns with smaller nonce first",
+                                          );
+                                        }
                                     : () => {
-                                        setOpenSnackBar(true);
-                                        setFailed(true);
-                                        setMessage(
-                                          "execute txns with smaller nonce first",
-                                        );
+                                        executeFunction("passed");
                                       }
-                                  : () => {
-                                      executeFunction("passed");
-                                    }
-                              }
-                              disabled={
-                                (!executionReady && signed) || executed
-                              }>
-                              <Grid
-                                container
-                                justifyContent="center"
-                                alignItems="center">
-                                {signed && !executionReady ? (
-                                  <Grid item mt={0.5}>
-                                    <CheckCircleRoundedIcon />
-                                  </Grid>
-                                ) : (
-                                  <Grid item></Grid>
-                                )}
+                                }
+                                disabled={
+                                  (!executionReady && signed) || executed
+                                }>
+                                <Grid
+                                  container
+                                  justifyContent="center"
+                                  alignItems="center">
+                                  {signed && !executionReady ? (
+                                    <Grid item mt={0.5}>
+                                      <CheckCircleRoundedIcon />
+                                    </Grid>
+                                  ) : (
+                                    <Grid item></Grid>
+                                  )}
 
-                                {executed && signed ? (
-                                  <Grid item>
-                                    <Typography className={classes.cardFont1}>
-                                      Executed Successfully
-                                    </Typography>
-                                  </Grid>
-                                ) : executionReady ? (
-                                  <Grid item>
-                                    <Typography className={classes.cardFont1}>
-                                      Execute Now
-                                    </Typography>
-                                  </Grid>
-                                ) : !executionReady && !executed ? (
-                                  <Grid item>
-                                    <Typography className={classes.cardFont1}>
-                                      {signed
-                                        ? "Signed Succesfully"
-                                        : "Sign Now"}
-                                    </Typography>
-                                  </Grid>
-                                ) : null}
-                              </Grid>
-                            </Card>
+                                  {executed && signed ? (
+                                    <Grid item>
+                                      <Typography className={classes.cardFont1}>
+                                        Executed Successfully
+                                      </Typography>
+                                    </Grid>
+                                  ) : executionReady ? (
+                                    <Grid item>
+                                      <Typography className={classes.cardFont1}>
+                                        Execute Now
+                                      </Typography>
+                                    </Grid>
+                                  ) : !executionReady && !executed ? (
+                                    <Grid item>
+                                      <Typography className={classes.cardFont1}>
+                                        {signed
+                                          ? "Signed Succesfully"
+                                          : "Sign Now"}
+                                      </Typography>
+                                    </Grid>
+                                  ) : null}
+                                </Grid>
+                              </Card>
+                            )}
+
+                            {signed && (
+                              <Card
+                                className={
+                                  executed
+                                    ? classes.mainCardButtonSuccess
+                                    : classes.mainCardButton
+                                }
+                                onClick={() => {
+                                  if (proposalData?.cancelProposalId) {
+                                    createRejectSafeTransaction();
+                                  } else {
+                                    createRejectSafeTx({
+                                      pid,
+                                      gnosisTransactionUrl:
+                                        GNOSIS_TRANSACTION_URL,
+                                      gnosisAddress,
+                                      NETWORK_HEX,
+                                      daoAddress,
+                                      walletAddress,
+                                    });
+                                  }
+                                }}>
+                                <Grid item>
+                                  <Typography
+                                    className={classes.cardFont1}
+                                    style={{
+                                      display: "flex",
+                                      justifyContent: "center",
+                                      alignItems: "center",
+                                    }}>
+                                    {proposalData?.cancelProposalId
+                                      ? "Execute Reject Transaction"
+                                      : "Sign Reject Transaction"}
+                                  </Typography>
+                                </Grid>
+                              </Card>
+                            )}
                           </Card>
                         ) : (
                           <Card sx={{ width: "100%" }}>
