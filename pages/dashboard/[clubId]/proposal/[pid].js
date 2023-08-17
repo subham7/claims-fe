@@ -21,6 +21,7 @@ import {
   castVote,
   getProposalDetail,
   getProposalTxHash,
+  patchProposalExecuted,
 } from "../../../../src/api/proposal";
 import { useSelector } from "react-redux";
 import ClubFetch from "../../../../src/utils/clubFetch";
@@ -1226,7 +1227,7 @@ const ProposalDetail = () => {
                               "xxxxx",
                               proposalData[0]?.cancelProposalId,
                             )}
-                            {proposalData[0]?.cancelProposalId !==
+                            {proposalData[0]?.cancelProposalId ===
                               undefined && (
                               <Card
                                 className={
@@ -1266,7 +1267,10 @@ const ProposalDetail = () => {
                                     <Grid item></Grid>
                                   )}
 
-                                  {executed && signed ? (
+                                  {executed &&
+                                  signed &&
+                                  proposalData[0].cancelProposalId !==
+                                    undefined ? (
                                     <Grid item>
                                       <Typography className={classes.cardFont1}>
                                         Executed Successfully
