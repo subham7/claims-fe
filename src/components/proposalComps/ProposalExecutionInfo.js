@@ -7,6 +7,7 @@ import {
   convertToWeiGovernance,
 } from "../../utils/globalFunctions";
 import useSmartContractMethods from "../../hooks/useSmartContractMethods";
+import { extractNftAdressAndId } from "utils/helper";
 
 const useStyles = makeStyles({
   listFont2: {
@@ -393,6 +394,48 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
                           </Typography>
                         ),
                       )}
+                    </Grid>
+                  </Grid>
+                </Grid>
+              </>
+            ) : proposalData?.commands[0].executionId == 8 ||
+              proposalData?.commands[0].executionId == 9 ? (
+              <>
+                <Grid container item mb={1}>
+                  <Typography className={classes.listFont2Colourless}>
+                    {proposalData?.commands[0].executionId == 8
+                      ? "Buy NFT from Opensea"
+                      : "Sell NFT from Opensea"}
+                  </Typography>
+                </Grid>
+                <Divider />
+                <Grid container mt={1}>
+                  <Grid container spacing={3}>
+                    <Grid item xs={12} md={4}>
+                      <Typography className={classes.listFont2}>
+                        NFT Address
+                      </Typography>
+                      <Typography className={classes.listFont2Colourless}>
+                        {extractNftAdressAndId(
+                          proposalData.commands[0].nftLink,
+                        ).nftAddress.slice(0, 6)}
+                        ....
+                        {extractNftAdressAndId(
+                          proposalData.commands[0].nftLink,
+                        ).nftAddress.slice(-6)}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={12} md={4}>
+                      <Typography className={classes.listFont2}>
+                        Token Id
+                      </Typography>
+                      <Typography className={classes.listFont2Colourless}>
+                        {
+                          extractNftAdressAndId(
+                            proposalData.commands[0].nftLink,
+                          ).tokenId
+                        }
+                      </Typography>
                     </Grid>
                   </Grid>
                 </Grid>

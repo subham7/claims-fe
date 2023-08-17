@@ -129,3 +129,20 @@ export const extractPartFromUrl = (url) => {
     return null;
   }
 };
+
+export const extractNftAdressAndId = (url) => {
+  try {
+    const parsedUrl = new URL(url);
+    const pathname = parsedUrl.pathname;
+    const parts = pathname.split("/");
+
+    console.log("Parts", parts);
+    return {
+      nftAddress: parts[parts.length - 2],
+      tokenId: parts[parts.length - 1],
+    };
+  } catch (error) {
+    console.error("Invalid URL:", error);
+    return null;
+  }
+};
