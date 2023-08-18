@@ -457,6 +457,24 @@ const ProposalDetail = () => {
     });
   }, [SUBGRAPH_URL, daoAddress, pid]);
 
+  const nftListingExists = async () => {
+    const parts = proposalData.commands[0].nftLink.split("/");
+
+    const linkData = parts.slice(-3);
+    const nftdata = await retrieveNftListing(
+      linkData[0],
+      linkData[1],
+      linkData[2],
+    );
+    console.log("sdfasf", nftdata);
+  };
+
+  useEffect(() => {
+    if (proposalData) {
+      nftListingExists();
+    }
+  }, [proposalData]);
+
   async function signTypedData(payload) {
     console.log("here", sdk.communicator);
     // HACK(nlordell): Not released yet...
@@ -1225,10 +1243,9 @@ const ProposalDetail = () => {
                           <Card>
                             {console.log(
                               "xxxxx",
-                              proposalData[0]?.cancelProposalId,
+                              proposalData.cancelProposalId,
                             )}
-                            {proposalData[0]?.cancelProposalId ===
-                              undefined && (
+                            {proposalData?.cancelProposalId === undefined && (
                               <Card
                                 className={
                                   executed
@@ -1267,10 +1284,7 @@ const ProposalDetail = () => {
                                     <Grid item></Grid>
                                   )}
 
-                                  {executed &&
-                                  signed &&
-                                  proposalData[0].cancelProposalId !==
-                                    undefined ? (
+                                  {executed && signed ? (
                                     <Grid item>
                                       <Typography className={classes.cardFont1}>
                                         Executed Successfully

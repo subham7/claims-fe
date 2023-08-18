@@ -3,6 +3,7 @@ import SafeApiKit from "@safe-global/api-kit";
 import Safe, { Web3Adapter } from "@safe-global/protocol-kit";
 import { createCancelProposal, getProposalTxHash } from "api/proposal";
 import Web3 from "web3";
+import { getIncreaseGasPrice } from "./helper";
 
 export const fetchProposals = async (clubId, type) => {
   let proposalData;
@@ -119,7 +120,11 @@ export const executeRejectTx = async ({
       safeAddress: Web3.utils.toChecksumAddress(gnosisAddress),
     });
 
-    await safeSdk.executeTransaction(safetx);
+    const options = {
+      gasPrice: await getIncreaseGasPrice(),
+    };
+
+    await safeSdk.executeTransaction(safetx, options);
 
     return true;
   } catch (e) {
