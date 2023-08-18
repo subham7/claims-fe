@@ -1,14 +1,14 @@
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
-import Layout1 from "../../../src/components/layouts/layout1";
+import Layout1 from "../../src/components/layouts/layout1";
 import settingsImg from "../../../../public/assets/images/settings.png";
 import { makeStyles } from "@mui/styles";
 import { useRouter } from "next/router";
 import { Card, Grid, Link, Typography } from "@mui/material";
-import LegalEntityModal from "../../../src/components/modals/LegalEntityModal";
+import LegalEntityModal from "../../src/components/modals/LegalEntityModal";
 import { useSelector } from "react-redux";
-import { getDocumentsByClubId } from "../../../src/api/document";
-import DocumentCard from "../../../src/components/documentPageComps/DocumentCard";
+import { getDocumentsByClubId } from "../../src/api/document";
+import DocumentCard from "../../src/components/documentPageComps/DocumentCard";
 
 const useStyles = makeStyles({
   container: {

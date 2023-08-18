@@ -11,7 +11,6 @@ import { convertFromWeiGovernance } from "../../src/utils/globalFunctions";
 import { getAssetsByDaoAddress } from "../../src/api/assets";
 import useSmartContractMethods from "../../src/hooks/useSmartContractMethods";
 import { getClubInfo } from "../../src/api/club";
-import Layout1 from "@components/layouts/layout1";
 import { useAccount } from "wagmi";
 
 const Settings = () => {
@@ -253,7 +252,7 @@ const Settings = () => {
   }, [fetchAssets]);
 
   return (
-    <Layout1 page={5}>
+    <>
       <SettingsInfo
         daoDetails={daoDetails}
         erc20TokenDetails={erc20TokenDetails}
@@ -279,7 +278,7 @@ const Settings = () => {
         isAdminUser={isAdminUser}
       />
       <TokenGating />
-    </Layout1>
+    </>
   );
 };
 

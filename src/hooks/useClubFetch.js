@@ -27,7 +27,6 @@ import useSmartContract from "./useSmartContract";
 import { useAccount, useNetwork } from "wagmi";
 
 const useClubFetch = (daoAddress) => {
-  debugger;
   const router = useRouter();
   const dispatch = useDispatch();
   const { chain } = useNetwork();

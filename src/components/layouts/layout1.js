@@ -13,7 +13,6 @@ import useClubFetch from "hooks/useClubFetch";
 const drawerWidth = 50;
 
 export default function Layout1(props) {
-  debugger;
   const [mobileOpen, setMobileOpen] = useState(false);
   const { showSidebar = true, daoAddress } = props;
   useClubFetch(daoAddress);

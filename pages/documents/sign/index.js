@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import Layout1 from "../../../../src/components/layouts/layout1";
+import Layout1 from "../../../src/components/layouts/layout1";
 import dynamic from "next/dynamic";
 import { makeStyles } from "@mui/styles";
 import { pdf } from "@react-pdf/renderer";
@@ -10,14 +10,14 @@ import {
   createDocument,
   getDocumentsByClubId,
   sentFileByEmail,
-} from "../../../../src/api/document";
+} from "../../../src/api/document";
 import {
   addDocumentList,
   addLegalDocLink,
-} from "../../../../src/redux/reducers/legal";
+} from "../../../src/redux/reducers/legal";
 import { PdfFile } from "../pdfGenerator";
-import LegalEntityModal from "../../../../src/components/modals/LegalEntityModal";
-import { web3InstanceEthereum } from "../../../../src/utils/helper";
+import LegalEntityModal from "../../../src/components/modals/LegalEntityModal";
+import { web3InstanceEthereum } from "../../../src/utils/helper";
 const DocumentPDF = dynamic(() => import("../pdfGenerator"), {
   ssr: false,
 });
