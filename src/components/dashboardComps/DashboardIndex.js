@@ -21,7 +21,6 @@ import { Stack } from "@mui/system";
 import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import CollectionCard from "../../../src/components/cardcontent";
-import Layout1 from "../../../src/components/layouts/layout1";
 import { DashboardStyles } from "./DashboardStyles";
 import { useRouter } from "next/router";
 import { getAssetsByDaoAddress, getNFTsByDaoAddress } from "../../api/assets";
@@ -31,7 +30,6 @@ import {
   QUERY_ALL_MEMBERS,
   QUERY_CLUB_DETAILS,
 } from "../../api/graphql/queries";
-import ClubFetch from "../../utils/clubFetch";
 import {
   convertFromWeiGovernance,
   getImageURL,
@@ -269,7 +267,7 @@ const DashboardIndex = () => {
   ]);
 
   return (
-    <Layout1 page={1}>
+    <>
       <Grid container paddingTop={2} spacing={3} mb={8}>
         <Grid item xs={9}>
           <Card className={classes.cardSharp1}>
@@ -810,16 +808,8 @@ const DashboardIndex = () => {
               </Alert>
             ) : null} */}
       </Snackbar>
-
-      {/* {tweetModal && (
-            <LegalEntityModal
-              isTwitter={true}
-              daoAddress={daoAddress}
-              onClose={() => setTweetModal(false)}
-            />
-          )} */}
-    </Layout1>
+    </>
   );
 };
 
-export default ClubFetch(DashboardIndex);
+export default DashboardIndex;

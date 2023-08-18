@@ -12,7 +12,6 @@ import {
   convertToWeiGovernance,
 } from "../../utils/globalFunctions";
 import useSmartContractMethods from "../../hooks/useSmartContractMethods";
-import ClubFetch from "../../utils/clubFetch";
 
 const TokenGating = () => {
   const [showTokenGatingModal, setShowTokenGatingModal] = useState(false);
@@ -366,4 +365,4 @@ const TokenGating = () => {
   );
 };
 
-export default ClubFetch(TokenGating);
+export default TokenGating;

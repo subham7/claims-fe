@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import Layout1 from "../../../../src/components/layouts/layout1";
+import Layout1 from "../../src/components/layouts/layout1";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import {
   Alert,
@@ -22,16 +22,15 @@ import {
   getProposalDetail,
   getProposalTxHash,
   patchProposalExecuted,
-} from "../../../../src/api/proposal";
+} from "../../src/api/proposal";
 import { useSelector } from "react-redux";
-import ClubFetch from "../../../../src/utils/clubFetch";
 import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import CloseIcon from "@mui/icons-material/Close";
 import tickerIcon from "../../../../public/assets/icons/ticker_icon.svg";
 import {
   calculateDays,
   convertToWeiGovernance,
-} from "../../../../src/utils/globalFunctions";
+} from "../../src/utils/globalFunctions";
 import actionIcon from "../../../../public/assets/icons/action_icon.svg";
 import surveyIcon from "../../../../public/assets/icons/survey_icon.svg";
 import ReactHtmlParser from "react-html-parser";
@@ -43,19 +42,19 @@ import { Interface } from "ethers";
 import Web3 from "web3";
 import { Web3Adapter } from "@safe-global/protocol-kit";
 import SafeApiKit from "@safe-global/api-kit";
-import { subgraphQuery } from "../../../../src/utils/subgraphs";
+import { subgraphQuery } from "../../src/utils/subgraphs";
 import {
   QUERY_ALL_MEMBERS,
   QUERY_CLUB_DETAILS,
-} from "../../../../src/api/graphql/queries";
-import ProposalExecutionInfo from "../../../../src/components/proposalComps/ProposalExecutionInfo";
-import Signators from "../../../../src/components/proposalComps/Signators";
-import ProposalInfo from "../../../../src/components/proposalComps/ProposalInfo";
-import CurrentResults from "../../../../src/components/proposalComps/CurrentResults";
-import ProposalVotes from "../../../../src/components/proposalComps/ProposalVotes";
-import { getSafeSdk, web3InstanceEthereum } from "../../../../src/utils/helper";
-import useSmartContractMethods from "../../../../src/hooks/useSmartContractMethods";
-import { getNFTsByDaoAddress } from "../../../../src/api/assets";
+} from "../../src/api/graphql/queries";
+import ProposalExecutionInfo from "../../src/components/proposalComps/ProposalExecutionInfo";
+import Signators from "../../src/components/proposalComps/Signators";
+import ProposalInfo from "../../src/components/proposalComps/ProposalInfo";
+import CurrentResults from "../../src/components/proposalComps/CurrentResults";
+import ProposalVotes from "../../src/components/proposalComps/ProposalVotes";
+import { getSafeSdk, web3InstanceEthereum } from "../../src/utils/helper";
+import useSmartContractMethods from "../../src/hooks/useSmartContractMethods";
+import { getNFTsByDaoAddress } from "../../src/api/assets";
 import { useAccount } from "wagmi";
 
 const useStyles = makeStyles({
@@ -1310,4 +1309,4 @@ const ProposalDetail = () => {
   );
 };
 
-export default ClubFetch(ProposalDetail);
+export default ProposalDetail;

@@ -19,12 +19,11 @@ import { makeStyles } from "@mui/styles";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { QUERY_PAGINATED_MEMBERS } from "../../../src/api/graphql/queries";
-import Layout1 from "../../../src/components/layouts/layout1";
-import { convertFromWeiGovernance } from "../../../src/utils/globalFunctions";
-import { subgraphQuery } from "../../../src/utils/subgraphs";
-import ClubFetch from "../../../src/utils/clubFetch";
-import { getAllEntities } from "../../../src/utils/helper";
+import { QUERY_PAGINATED_MEMBERS } from "../../src/api/graphql/queries";
+import Layout1 from "../../src/components/layouts/layout1";
+import { convertFromWeiGovernance } from "../../src/utils/globalFunctions";
+import { subgraphQuery } from "../../src/utils/subgraphs";
+import { getAllEntities } from "../../src/utils/helper";
 import { useFormik } from "formik";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
@@ -396,4 +395,4 @@ const Test = () => {
   );
 };
 
-export default ClubFetch(Test);
+export default Test;

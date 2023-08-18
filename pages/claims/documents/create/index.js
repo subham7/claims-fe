@@ -1,12 +1,12 @@
 import { Button, TextField, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import React from "react";
-import Layout1 from "../../../../../src/components/layouts/layout1";
+import Layout1 from "../../../../src/components/layouts/layout1";
 import * as yup from "yup";
 import { useFormik } from "formik";
 import { useRouter } from "next/router";
 import { useDispatch } from "react-redux";
-import { addAdminFormData } from "../../../../../src/redux/reducers/legal";
+import { addAdminFormData } from "../../../../src/redux/reducers/legal";
 
 const useStyles = makeStyles({
   form: {

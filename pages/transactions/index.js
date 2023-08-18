@@ -21,7 +21,6 @@ import {
   TableContainer,
   Paper,
 } from "@mui/material";
-import ClubFetch from "utils/clubFetch";
 
 dayjs.extend(relativeTime);
 
@@ -296,4 +295,4 @@ const Transactions = () => {
   );
 };
 
-export default ClubFetch(Transactions);
+export default Transactions;

@@ -2,16 +2,15 @@ import dayjs from "dayjs";
 import { useRouter } from "next/router";
 import React, { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { QUERY_ALL_MEMBERS } from "../../../src/api/graphql/queries";
-import AdditionalSettings from "../../../src/components/settingsComps/AdditionalSettings";
-import SettingsInfo from "../../../src/components/settingsComps/SettingsInfo";
-import TokenGating from "../../../src/components/tokenGatingComp/TokenGating";
-import ClubFetch from "../../../src/utils/clubFetch";
-import { subgraphQuery } from "../../../src/utils/subgraphs";
-import { convertFromWeiGovernance } from "../../../src/utils/globalFunctions";
-import { getAssetsByDaoAddress } from "../../../src/api/assets";
-import useSmartContractMethods from "../../../src/hooks/useSmartContractMethods";
-import { getClubInfo } from "../../../src/api/club";
+import { QUERY_ALL_MEMBERS } from "../../src/api/graphql/queries";
+import AdditionalSettings from "../../src/components/settingsComps/AdditionalSettings";
+import SettingsInfo from "../../src/components/settingsComps/SettingsInfo";
+import TokenGating from "../../src/components/tokenGatingComp/TokenGating";
+import { subgraphQuery } from "../../src/utils/subgraphs";
+import { convertFromWeiGovernance } from "../../src/utils/globalFunctions";
+import { getAssetsByDaoAddress } from "../../src/api/assets";
+import useSmartContractMethods from "../../src/hooks/useSmartContractMethods";
+import { getClubInfo } from "../../src/api/club";
 import Layout1 from "@components/layouts/layout1";
 import { useAccount } from "wagmi";
 
@@ -284,4 +283,4 @@ const Settings = () => {
   );
 };
 
-export default ClubFetch(Settings);
+export default Settings;

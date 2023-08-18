@@ -8,12 +8,15 @@ import { addWalletAddress } from "redux/reducers/user";
 import { useAccount, useNetwork } from "wagmi";
 import { Web3Button } from "@web3modal/react";
 import Web3 from "web3";
+import useClubFetch from "hooks/useClubFetch";
 
 const drawerWidth = 50;
 
 export default function Layout1(props) {
+  debugger;
   const [mobileOpen, setMobileOpen] = useState(false);
-  const { showSidebar = true } = props;
+  const { showSidebar = true, daoAddress } = props;
+  useClubFetch(daoAddress);
   const { address: walletAddress } = useAccount();
   const { chain } = useNetwork();
   const networkId = Web3.utils.numberToHex(chain?.id);

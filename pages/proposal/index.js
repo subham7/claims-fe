@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import Layout1 from "../../../../src/components/layouts/layout1";
+import Layout1 from "../../src/components/layouts/layout1";
 import {
   Backdrop,
   CircularProgress,
@@ -10,29 +10,28 @@ import {
   // Typography,
 } from "@mui/material";
 import { Button, Typography } from "@components/ui";
-import { proposalDisplayOptions } from "../../../../src/data/dashboard";
-import DocsCard from "../../../../src/components/proposalComps/DocsCard";
-import CreateProposalDialog from "../../../../src/components/proposalComps/CreateProposalDialog";
-import { fetchProposals } from "../../../../src/utils/proposal";
+import { proposalDisplayOptions } from "../../src/data/dashboard";
+import DocsCard from "../../src/components/proposalComps/DocsCard";
+import CreateProposalDialog from "../../src/components/proposalComps/CreateProposalDialog";
+import { fetchProposals } from "../../src/utils/proposal";
 import { useRouter } from "next/router";
 import ProposalCard from "./ProposalCard";
 import {
   getAssetsByDaoAddress,
   getNFTsByDaoAddress,
-} from "../../../../src/api/assets";
-import ClubFetch from "../../../../src/utils/clubFetch";
+} from "../../src/api/assets";
 import { useDispatch, useSelector } from "react-redux";
 import { makeStyles } from "@mui/styles";
-import { setProposalList } from "../../../../src/redux/reducers/proposal";
+import { setProposalList } from "../../src/redux/reducers/proposal";
 import Web3 from "web3";
 import { Web3Adapter } from "@safe-global/protocol-kit";
 import SafeApiKit from "@safe-global/api-kit";
 import {
   getProposalByDaoAddress,
   getProposalTxHash,
-} from "../../../../src/api/proposal";
-import { web3InstanceCustomRPC } from "../../../../src/utils/helper";
-import { addNftsOwnedByDao } from "../../../../src/redux/reducers/club";
+} from "../../src/api/proposal";
+import { web3InstanceCustomRPC } from "../../src/utils/helper";
+import { addNftsOwnedByDao } from "../../src/redux/reducers/club";
 
 const useStyles = makeStyles({
   noProposal_heading: {
@@ -393,4 +392,4 @@ const Proposal = () => {
   );
 };
 
-export default ClubFetch(Proposal);
+export default Proposal;

@@ -4,7 +4,6 @@ import { convertFromWeiGovernance } from "../../src/utils/globalFunctions";
 import { subgraphQuery } from "../../src/utils/subgraphs";
 import { QUERY_ALL_MEMBERS } from "../../src/api/graphql/queries";
 import { useSelector } from "react-redux";
-import ClubFetch from "../../src/utils/clubFetch";
 import { Backdrop, CircularProgress } from "@mui/material";
 import useSmartContractMethods from "../../src/hooks/useSmartContractMethods";
 import Layout1 from "../../src/components/layouts/layout1";
@@ -303,4 +302,4 @@ const Join = () => {
   );
 };
 
-export default ClubFetch(Join);
+export default Join;
