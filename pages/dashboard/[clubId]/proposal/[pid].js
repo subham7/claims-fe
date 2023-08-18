@@ -4,6 +4,7 @@ import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import {
   Alert,
   Backdrop,
+  Button,
   Card,
   CardActionArea,
   Chip,
@@ -291,6 +292,7 @@ const ProposalDetail = () => {
   const [fetched, setFetched] = useState(false);
   const [members, setMembers] = useState([]);
   const [nftData, setNftData] = useState([]);
+  const [isNftSold, setIsNftSold] = useState(false);
 
   const GNOSIS_TRANSACTION_URL = useSelector((state) => {
     return state.gnosis.transactionUrl;
@@ -458,6 +460,7 @@ const ProposalDetail = () => {
   }, [SUBGRAPH_URL, daoAddress, pid]);
 
   const nftListingExists = async () => {
+    // console.log(proposalData);
     const parts = proposalData.commands[0].nftLink.split("/");
 
     const linkData = parts.slice(-3);
@@ -467,6 +470,13 @@ const ProposalDetail = () => {
       linkData[2],
     );
     console.log("sdfasf", nftdata);
+    if (
+      !nftData?.data?.orders.length &&
+      proposalData.commands[0].executionId === 8
+    ) {
+      console.log("here");
+      setIsNftSold(true);
+    }
   };
 
   useEffect(() => {
@@ -1241,12 +1251,14 @@ const ProposalDetail = () => {
                       ) : proposalData?.status === "passed" ? (
                         isAdmin ? (
                           <Card>
-                            {console.log(
-                              "xxxxx",
-                              proposalData.cancelProposalId,
-                            )}
+                            {console.log("xxxxx", isNftSold)}
                             {proposalData?.cancelProposalId === undefined && (
-                              <Card
+                              <Button
+                                style={{
+                                  width: "100%",
+                                  padding: "1rem 0",
+                                  opacity: "50%",
+                                }}
                                 className={
                                   executed
                                     ? classes.mainCardButtonSuccess
@@ -1270,7 +1282,9 @@ const ProposalDetail = () => {
                                       }
                                 }
                                 disabled={
-                                  (!executionReady && signed) || executed
+                                  (!executionReady && signed) ||
+                                  executed ||
+                                  isNftSold
                                 }>
                                 <Grid
                                   container
@@ -1306,7 +1320,7 @@ const ProposalDetail = () => {
                                     </Grid>
                                   ) : null}
                                 </Grid>
-                              </Card>
+                              </Button>
                             )}
 
                             {signed && (

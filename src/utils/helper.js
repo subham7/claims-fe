@@ -136,7 +136,6 @@ export const extractNftAdressAndId = (url) => {
     const pathname = parsedUrl.pathname;
     const parts = pathname.split("/");
 
-    console.log("Parts", parts);
     return {
       nftAddress: parts[parts.length - 2],
       tokenId: parts[parts.length - 1],
