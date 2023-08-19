@@ -537,7 +537,6 @@ const useSmartContractMethods = () => {
     airDropAmountArray,
     transactionData = "",
   ) => {
-    console.log(transactionData);
     const parameters = data;
     const web3 = new Web3(window.ethereum);
     const ethAdapter = new Web3Adapter({
@@ -659,7 +658,6 @@ const useSmartContractMethods = () => {
     //   console.log("transactoin", transaction);
     // }
     else if (executionId === 6 || executionId === 7) {
-      console.log("in 6,7");
       if (executionId === 6) {
         transaction = {
           ownerAddress,
@@ -671,7 +669,6 @@ const useSmartContractMethods = () => {
         };
       }
     } else {
-      console.log("in else");
       if (
         isAssetsStoredOnGnosis &&
         proposalData.commands[0].executionId === 5
@@ -689,10 +686,6 @@ const useSmartContractMethods = () => {
         };
       } else if (transactionData) {
         if (isAssetsStoredOnGnosis) {
-          console.log(transactionData.fulfillment_data.transaction.value);
-          console.log(
-            transactionData.fulfillment_data.transaction.value.toString(),
-          );
           const seaportContract = new web3Send.eth.Contract(
             seaportABI,
             "0x00000000000000ADc04C56Bf30aC9d3c0aAF14dC",
@@ -710,7 +703,6 @@ const useSmartContractMethods = () => {
             value:
               transactionData.fulfillment_data.transaction.value.toString(),
           };
-          console.log(transaction);
         } else {
           transaction = {
             to: Web3.utils.toChecksumAddress(daoAddress),
@@ -741,8 +733,6 @@ const useSmartContractMethods = () => {
       }
     }
     if (executionStatus !== "executed") {
-      console.log("first");
-      //case for 1st signature
       if (txHash === "") {
         const nonce = await safeService.getNextNonce(gnosisAddress);
         let safeTransactionData;
@@ -753,7 +743,6 @@ const useSmartContractMethods = () => {
             value: transaction.value,
             nonce: nonce, // Optional
           };
-          console.log("safeTransactionData", safeTransactionData);
         } else {
           safeTransactionData = [
             {
@@ -782,14 +771,13 @@ const useSmartContractMethods = () => {
           safeTransaction = await safeSdk.createTransaction({
             safeTransactionData,
           });
-
-          console.log("safeTransaction", safeTransaction);
         }
         const safeTxHash = await safeSdk.getTransactionHash(safeTransaction);
         const payload = {
           proposalId: pid,
           txHash: safeTxHash,
         };
+
         await createProposalTxHash(payload);
 
         const proposeTxn = await safeService.proposeTransaction({
@@ -798,6 +786,7 @@ const useSmartContractMethods = () => {
           safeTxHash: safeTxHash,
           senderAddress: Web3.utils.toChecksumAddress(walletAddress),
         });
+
         const senderSignature = await safeSdk.signTypedData(
           safeTransaction,
           "v4",
@@ -858,7 +847,6 @@ const useSmartContractMethods = () => {
           }
         }
 
-        // const senderSignature = await safeSdk.signTypedData(tx, "v4");
         const senderSignature = await safeSdk.signTypedData(
           executionStatus === "cancel" ? rejectionTransaction : safeTransaction,
           "v4",

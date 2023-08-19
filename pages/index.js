@@ -343,7 +343,6 @@ const App = () => {
                               onClick={(e) => {
                                 handleItemClick(clubListData[key]);
                               }}>
-                              {console.log(club)}
                               <Grid container className={classes.flexContainer}>
                                 <Grid item md={6}>
                                   <Stack spacing={0}>
