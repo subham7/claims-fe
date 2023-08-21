@@ -328,6 +328,7 @@ const CreateProposalDialog = ({
         }
 
         const payload = {
+          clubId: daoAddress,
           name: values.proposalTitle,
           description: values.proposalDescription,
           createdBy: walletAddress,
