@@ -39,9 +39,8 @@ import { IoColorPalette } from "react-icons/io5";
 import useSmartContractMethods from "../../hooks/useSmartContractMethods";
 import { addNftsOwnedByDao } from "../../redux/reducers/club";
 import { useAccount } from "wagmi";
-// import useSmartContract from "../../hooks/useSmartContract";
 
-const DashboardIndex = () => {
+const DashboardIndex = ({ daoAddress }) => {
   const dispatch = useDispatch();
   const clubData = useSelector((state) => {
     return state.club.clubData;
@@ -63,7 +62,6 @@ const DashboardIndex = () => {
   const { address: walletAddress } = useAccount();
   const router = useRouter();
   const classes = DashboardStyles();
-  const { clubId: daoAddress } = router.query;
 
   const isAdmin = useSelector((state) => {
     return state.gnosis.adminUser;
@@ -771,7 +769,7 @@ const DashboardIndex = () => {
                         onClick={(e) => {
                           router.push(
                             {
-                              pathname: `/dashboard/${daoAddress}/proposal`,
+                              pathname: `/proposal/${daoAddress}`,
                               query: {
                                 create_proposal: true,
                               },

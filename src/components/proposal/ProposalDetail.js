@@ -385,7 +385,6 @@ const ProposalDetail = ({ pid, daoAddress }) => {
       proposalId: pid,
       votingOptionId: castVoteOption,
       voterAddress: walletAddress,
-      clubId: daoAddress,
       daoAddress: daoAddress,
     };
     const voteSubmit = castVote(payload, NETWORK_HEX);

@@ -331,7 +331,6 @@ const CreateProposalDialog = ({
           name: values.proposalTitle,
           description: values.proposalDescription,
           createdBy: walletAddress,
-          clubId: daoAddress,
           votingDuration: dayjs(values.proposalDeadline).unix(),
           votingOptions: values.optionList,
           commands: commands,
