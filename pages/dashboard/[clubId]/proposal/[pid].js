@@ -460,7 +460,6 @@ const ProposalDetail = () => {
   }, [SUBGRAPH_URL, daoAddress, pid]);
 
   const nftListingExists = async () => {
-    // console.log(proposalData);
     const parts = proposalData.commands[0].nftLink.split("/");
 
     const linkData = parts.slice(-3);
@@ -473,7 +472,6 @@ const ProposalDetail = () => {
       !nftdata?.data?.orders.length &&
       proposalData.commands[0].executionId === 8
     ) {
-      console.log("here");
       setIsNftSold(true);
     } else {
       setIsNftSold(false);
@@ -487,23 +485,16 @@ const ProposalDetail = () => {
   }, [proposalData]);
 
   async function signTypedData(payload) {
-    console.log("here", sdk.communicator);
-    // HACK(nlordell): Not released yet...
-    debugger;
     try {
       await sdk.communicator.send("rpcCall", {
         call: "eth_signTransaction",
         params: [{ offChainSigning: true }],
       });
     } catch (error) {
-      debugger;
       console.log(error);
     }
 
-    debugger;
-    console.log(payload);
     const result = await sdk.txs.signTypedMessage(payload);
-    console.log(result);
     return result;
   }
 
@@ -768,7 +759,6 @@ const ProposalDetail = () => {
       const parts = proposalData.commands[0].nftLink.split("/");
 
       const linkData = parts.slice(-3);
-      console.log(linkData);
       let iface = new Interface(ABI);
 
       approvalData = iface.encodeFunctionData("setApprovalForAll", [
@@ -1278,7 +1268,6 @@ const ProposalDetail = () => {
                       ) : proposalData?.status === "passed" ? (
                         isAdmin ? (
                           <Card>
-                            {console.log("xxxxx", isNftSold)}
                             {proposalData?.cancelProposalId === undefined && (
                               <Button
                                 style={{

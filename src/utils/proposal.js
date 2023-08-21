@@ -132,3 +132,47 @@ export const executeRejectTx = async ({
     console.error(e);
   }
 };
+
+export const signRejectTx = async ({
+  pid,
+  walletAddress,
+  gnosisTransactionUrl,
+  gnosisAddress,
+}) => {
+  try {
+    const web3 = new Web3(window.ethereum);
+    const ethAdapter = new Web3Adapter({
+      web3: web3,
+      signerAddress: Web3.utils.toChecksumAddress(walletAddress),
+    });
+
+    const txServiceUrl = gnosisTransactionUrl;
+
+    const safeService = new SafeApiKit({
+      txServiceUrl,
+      ethAdapter,
+    });
+
+    const proposalTxHash = await getProposalTxHash(pid);
+
+    const safetx = await safeService.getTransaction(
+      proposalTxHash.data[0].txHash,
+    );
+
+    const safeSdk = await Safe.create({
+      ethAdapter: ethAdapter,
+      safeAddress: Web3.utils.toChecksumAddress(gnosisAddress),
+    });
+
+    const senderSignature = await safeSdk.signTypedData(safetx, "v4");
+
+    await safeService.confirmTransaction(
+      safetx.safeTxHash,
+      senderSignature.data,
+    );
+
+    return true;
+  } catch (e) {
+    console.error(e);
+  }
+};
