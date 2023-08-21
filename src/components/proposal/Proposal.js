@@ -9,28 +9,22 @@ import {
   // Typography,
 } from "@mui/material";
 import { Button, Typography } from "@components/ui";
-import { proposalDisplayOptions } from "../../src/data/dashboard";
-import DocsCard from "../../src/components/proposalComps/DocsCard";
-import CreateProposalDialog from "../../src/components/proposalComps/CreateProposalDialog";
-import { fetchProposals } from "../../src/utils/proposal";
+import { proposalDisplayOptions } from "data/dashboard";
+import DocsCard from "@components/proposalComps/DocsCard";
+import CreateProposalDialog from "@components/proposalComps/CreateProposalDialog";
+import { fetchProposals } from "utils/proposal";
 import { useRouter } from "next/router";
 import ProposalCard from "./ProposalCard";
-import {
-  getAssetsByDaoAddress,
-  getNFTsByDaoAddress,
-} from "../../src/api/assets";
+import { getAssetsByDaoAddress, getNFTsByDaoAddress } from "api/assets";
 import { useDispatch, useSelector } from "react-redux";
 import { makeStyles } from "@mui/styles";
-import { setProposalList } from "../../src/redux/reducers/proposal";
+import { setProposalList } from "redux/reducers/proposal";
 import Web3 from "web3";
 import { Web3Adapter } from "@safe-global/protocol-kit";
 import SafeApiKit from "@safe-global/api-kit";
-import {
-  getProposalByDaoAddress,
-  getProposalTxHash,
-} from "../../src/api/proposal";
-import { web3InstanceCustomRPC } from "../../src/utils/helper";
-import { addNftsOwnedByDao } from "../../src/redux/reducers/club";
+import { getProposalByDaoAddress, getProposalTxHash } from "api/proposal";
+import { web3InstanceCustomRPC } from "utils/helper";
+import { addNftsOwnedByDao } from "redux/reducers/club";
 
 const useStyles = makeStyles({
   noProposal_heading: {
@@ -54,7 +48,7 @@ const useStyles = makeStyles({
   },
 });
 
-const Proposal = (daoAddress) => {
+const Proposal = ({ daoAddress }) => {
   const router = useRouter();
   const dispatch = useDispatch();
 

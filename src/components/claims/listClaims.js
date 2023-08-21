@@ -1,16 +1,15 @@
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { Button, Typography } from "@components/ui";
-import settingsImg from "../../public/assets/images/settings.png";
+import settingsImg from "../../../public/assets/images/settings.png";
+import claimsBanner from "../../../public/assets/images/claimsBanner.png";
 import { makeStyles } from "@mui/styles";
 import { useRouter } from "next/router";
 
-import claimsBanner from "../../public/assets/images/claimsBanner.png";
-import ClaimsCard from "../../src/components/claimsPageComps/ClaimsCard";
-import useSmartContract from "../../src/hooks/useSmartContract";
-import { subgraphQuery } from "../../src/utils/subgraphs";
-import { CLAIMS_SUBGRAPH_URL_POLYGON } from "../../src/api";
-import { QUERY_ALL_CLAIMS_OF_CREATOR } from "../../src/api/graphql/queries";
+import ClaimsCard from "@components/claimsPageComps/ClaimsCard";
+import { subgraphQuery } from "utils/subgraphs";
+import { CLAIMS_SUBGRAPH_URL_POLYGON } from "api";
+import { QUERY_ALL_CLAIMS_OF_CREATOR } from "api/graphql/queries";
 import { useAccount } from "wagmi";
 
 const useStyles = makeStyles({
@@ -79,10 +78,10 @@ const useStyles = makeStyles({
 });
 
 const ListClaims = () => {
+  debugger;
   const classes = useStyles();
   const router = useRouter();
   const [claimData, setClaimData] = useState([]);
-  useSmartContract();
 
   const createClaimHandler = () => {
     router.push("/claims/create");

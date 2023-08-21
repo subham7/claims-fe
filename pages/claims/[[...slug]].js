@@ -12,7 +12,7 @@ const Dashboard = () => {
 
   return (
     <Layout1 showSidebar={false} claimAddress={claimAddress}>
-      {claimAddress === "" ? (
+      {claimAddress === undefined ? (
         <ListClaims />
       ) : claimAddress === "create" ? (
         <CreateClaim />

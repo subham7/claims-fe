@@ -4,14 +4,14 @@ import {
   calculateDays,
   convertFromWeiGovernance,
   convertToWeiGovernance,
-} from "../../src/utils/globalFunctions";
-import SvgTickerIcon from "../../public/assets/icons/ticker_icon.js";
-import SvgActionIcon from "../../public/assets/icons/action_icon.js";
-import SvgSurveyIcon from "../../public/assets/icons/survey_icon.js";
+} from "utils/globalFunctions";
+import SvgTickerIcon from "../../../public/assets/icons/ticker_icon.js";
+import SvgActionIcon from "../../../public/assets/icons/action_icon.js";
+import SvgSurveyIcon from "../../../public/assets/icons/survey_icon.js";
 import React, { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { ProposalCardStyles } from "../../src/components/proposalComps/ProposalCardStyles";
-import useSmartContractMethods from "../../src/hooks/useSmartContractMethods";
+import { ProposalCardStyles } from "@components/proposalComps/ProposalCardStyles";
+import useSmartContractMethods from "hooks/useSmartContractMethods";
 
 const ProposalCard = ({ proposal, daoAddress }) => {
   const classes = ProposalCardStyles();

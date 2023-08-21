@@ -15,7 +15,7 @@ const drawerWidth = 50;
 export default function Layout1(props) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { showSidebar = true, daoAddress } = props;
-  useClubFetch(daoAddress);
+  useClubFetch({ daoAddress });
   const { address: walletAddress } = useAccount();
   const { chain } = useNetwork();
   const networkId = Web3.utils.numberToHex(chain?.id);
@@ -43,6 +43,7 @@ export default function Layout1(props) {
             mobileOpen={mobileOpen}
             handleDrawerToggle={handleDrawerToggle}
             page={props.page}
+            daoAddress={daoAddress}
           />
         )}
 

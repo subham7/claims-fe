@@ -17,10 +17,10 @@ import {
 import { Typography, Button } from "@components/ui";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { QUERY_PAGINATED_MEMBERS } from "../../src/api/graphql/queries";
-import { convertFromWeiGovernance } from "../../src/utils/globalFunctions";
-import { subgraphQuery } from "../../src/utils/subgraphs";
-import { getAllEntities } from "../../src/utils/helper";
+import { QUERY_PAGINATED_MEMBERS } from "api/graphql/queries";
+import { convertFromWeiGovernance } from "utils/globalFunctions";
+import { subgraphQuery } from "utils/subgraphs";
+import { getAllEntities } from "utils/helper";
 import { useFormik } from "formik";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
@@ -32,7 +32,7 @@ import { saveAs } from "file-saver";
 import { useNetwork } from "wagmi";
 import Web3 from "web3";
 
-const Members = (daoAddress) => {
+const Members = ({ daoAddress }) => {
   const [membersData, setMembersData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [downloadLoading, setDownloadLoading] = useState(false);

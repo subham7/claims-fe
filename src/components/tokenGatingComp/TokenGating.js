@@ -12,7 +12,7 @@ import {
 } from "../../utils/globalFunctions";
 import useSmartContractMethods from "../../hooks/useSmartContractMethods";
 
-const TokenGating = (daoAddress) => {
+const TokenGating = ({ daoAddress }) => {
   const [showTokenGatingModal, setShowTokenGatingModal] = useState(false);
   const [checked, setChecked] = useState(false);
   const [fetchedDetails, setFetchedDetails] = useState({

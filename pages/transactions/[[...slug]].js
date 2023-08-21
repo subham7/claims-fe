@@ -13,7 +13,7 @@ const TransactionsPage = () => {
   }
 
   return (
-    <Layout1 daoAddress={daoAddress} page={5}>
+    <Layout1 daoAddress={daoAddress} page={6}>
       <Transactions />
     </Layout1>
   );

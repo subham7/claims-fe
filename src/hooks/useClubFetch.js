@@ -25,7 +25,7 @@ import useSmartContractMethods from "./useSmartContractMethods";
 import useSmartContract from "./useSmartContract";
 import { useAccount, useNetwork } from "wagmi";
 
-const useClubFetch = (daoAddress) => {
+const useClubFetch = ({ daoAddress }) => {
   const dispatch = useDispatch();
   const { chain } = useNetwork();
   const networkId = Web3.utils.numberToHex(chain?.id);
@@ -50,7 +50,8 @@ const useClubFetch = (daoAddress) => {
   } = useSmartContractMethods();
 
   useEffect(() => {
-    dispatch(addDaoAddress(Web3.utils.toChecksumAddress(daoAddress)));
+    daoAddress &&
+      dispatch(addDaoAddress(Web3.utils.toChecksumAddress(daoAddress)));
   }, [daoAddress, dispatch]);
 
   useEffect(() => {

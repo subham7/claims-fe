@@ -1,18 +1,18 @@
 import dayjs from "dayjs";
 import React, { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { QUERY_ALL_MEMBERS } from "../../src/api/graphql/queries";
-import AdditionalSettings from "../../src/components/settingsComps/AdditionalSettings";
-import SettingsInfo from "../../src/components/settingsComps/SettingsInfo";
-import TokenGating from "../../src/components/tokenGatingComp/TokenGating";
-import { subgraphQuery } from "../../src/utils/subgraphs";
-import { convertFromWeiGovernance } from "../../src/utils/globalFunctions";
-import { getAssetsByDaoAddress } from "../../src/api/assets";
-import useSmartContractMethods from "../../src/hooks/useSmartContractMethods";
-import { getClubInfo } from "../../src/api/club";
+import { QUERY_ALL_MEMBERS } from "api/graphql/queries";
+import AdditionalSettings from "@components/settingsComps/AdditionalSettings";
+import SettingsInfo from "@components/settingsComps/SettingsInfo";
+import TokenGating from "@components/tokenGatingComp/TokenGating";
+import { subgraphQuery } from "utils/subgraphs";
+import { convertFromWeiGovernance } from "utils/globalFunctions";
+import { getAssetsByDaoAddress } from "api/assets";
+import useSmartContractMethods from "hooks/useSmartContractMethods";
+import { getClubInfo } from "api/club";
 import { useAccount } from "wagmi";
 
-const Settings = (daoAddress) => {
+const Settings = ({ daoAddress }) => {
   const [daoDetails, setDaoDetails] = useState({
     daoName: "",
     daoSymbol: "",

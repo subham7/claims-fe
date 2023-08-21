@@ -5,7 +5,6 @@ import ERC721DaoABI from "../abis/newArch/erc721Dao.json";
 import FactoryContractABI from "../abis/newArch/factoryContract.json";
 import ClaimContractABI from "../abis/newArch/claimContract.json";
 import ClaimFactoryABI from "../abis/newArch/claimFactory.json";
-import { useRouter } from "next/router";
 import Web3 from "web3";
 import {
   CLAIM_FACTORY_ADDRESS_GOERLI,
@@ -17,9 +16,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setContractInstances } from "../redux/reducers/contractInstances";
 import { useNetwork } from "wagmi";
 
-const useSmartContract = ({ daoAddress }) => {
-  const router = useRouter();
-  const { claimAddress, claimInsight } = router.query;
+const useSmartContract = ({ daoAddress, claimAddress }) => {
   const { chain } = useNetwork();
   const networkId = Web3.utils.numberToHex(chain?.id);
   const dispatch = useDispatch();
@@ -148,13 +145,10 @@ const useSmartContract = ({ daoAddress }) => {
     try {
       const claimContractCall = new web3Send.eth.Contract(
         ClaimContractABI.abi,
-        claimAddress ? claimAddress : claimInsight,
+        claimAddress,
       );
       const claimContractSend = web3Send
-        ? new web3Send.eth.Contract(
-            ClaimContractABI.abi,
-            claimAddress ? claimAddress : claimInsight,
-          )
+        ? new web3Send.eth.Contract(ClaimContractABI.abi, claimAddress)
         : {};
       contractInstances = {
         ...contractInstances,
@@ -189,10 +183,10 @@ const useSmartContract = ({ daoAddress }) => {
   }, [networkId, claimFactoryAddress]);
 
   useEffect(() => {
-    if (claimAddress || claimInsight) {
+    if (claimAddress) {
       initializeClaimContracts();
     }
-  }, [claimAddress, claimInsight]);
+  }, [claimAddress]);
 };
 
 export default useSmartContract;

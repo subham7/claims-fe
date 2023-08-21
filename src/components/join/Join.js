@@ -12,7 +12,7 @@ import useSmartContract from "../../src/hooks/useSmartContract";
 import { getWhitelistMerkleProof } from "api/whitelist";
 import { useAccount } from "wagmi";
 
-const Join = (daoAddress) => {
+const Join = ({ daoAddress }) => {
   const [daoDetails, setDaoDetails] = useState({
     depositDeadline: 0,
     minDeposit: 0,

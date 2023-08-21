@@ -5,7 +5,6 @@ import {
 } from "../../utils/globalFunctions";
 import { Alert, CircularProgress, Tooltip } from "@mui/material";
 import { getUserProofAndBalance } from "../../api/claims";
-import Layout1 from "../layouts/layout1";
 import Countdown from "react-countdown";
 import { useDispatch, useSelector } from "react-redux";
 import { addClaimEnabled } from "../../redux/reducers/createClaim";
@@ -48,7 +47,7 @@ const Claim = (claimAddress) => {
   const { chain } = useNetwork();
   const networkId = Web3.utils.numberToHex(chain?.id);
 
-  useSmartContract();
+  useSmartContract({ claimAddress });
 
   let contractInstances = useSelector((state) => {
     return state.contractInstances.contractInstances;
@@ -405,7 +404,7 @@ const Claim = (claimAddress) => {
   };
 
   return (
-    <Layout1 showSidebar={false}>
+    <>
       {isLoading ? (
         <div
           style={{
@@ -660,7 +659,7 @@ const Claim = (claimAddress) => {
           </Alert>
         )
       )}
-    </Layout1>
+    </>
   );
 };
 
