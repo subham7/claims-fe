@@ -56,7 +56,7 @@ const Join = ({ daoAddress }) => {
     return state.club.factoryData;
   });
 
-  useSmartContract({ daoAddress });
+  useSmartContract(daoAddress);
 
   const contractInstances = useSelector((state) => {
     return state.contractInstances.contractInstances;

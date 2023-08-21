@@ -12,11 +12,11 @@ import { subgraphQuery } from "utils/subgraphs";
 import { QUERY_CLAIM_DETAILS } from "api/graphql/queries";
 import { Alert, Backdrop, CircularProgress } from "@mui/material";
 import useSmartContractMethods from "hooks/useSmartContractMethods";
-import useSmartContract from "hooks/useSmartContract";
 import { convertToWeiGovernance } from "utils/globalFunctions";
 import { useNetwork } from "wagmi";
 import Web3 from "web3";
 import { CLAIMS_SUBGRAPH_URL } from "utils/constants";
+import useClaimSmartContracts from "hooks/useClaimSmartContracts";
 
 const ClaimInsight = ({ claimAddress }) => {
   const [claimsData, setClaimsData] = useState([]);
@@ -35,7 +35,7 @@ const ClaimInsight = ({ claimAddress }) => {
   const { chain } = useNetwork();
   const networkId = Web3.utils.numberToHex(chain?.id);
 
-  useSmartContract({ claimAddress });
+  useClaimSmartContracts(claimAddress);
 
   const {
     getDecimals,

@@ -297,23 +297,6 @@ const App = () => {
                 <Divider className={classes.divider} />
                 <div>
                   <div style={{ overflowY: "scroll", maxHeight: "60vh" }}>
-                    {/* {console.log(
-                      clubListData.map((club) => {
-                        if (
-                          club.daoAddress ===
-                          "0xe9c8342477576b0f4ee05be057146063a9b3b156"
-                        ) {
-                          console.log(club.daoAddress);
-                        }
-                      }),
-                    )}
-                    {console.log(clubListData)}
-                    {console.log(
-                      clubListData.filter((club) => {
-                        club.daoAddress ===
-                          "0xe9c8342477576b0f4ee05be057146063a9b3b156";
-                      }),
-                    )} */}
                     {walletAddress && clubListData.length ? (
                       clubListData
                         .reverse()
@@ -336,7 +319,6 @@ const App = () => {
                               onClick={(e) => {
                                 handleItemClick(clubListData[key]);
                               }}>
-                              {console.log(club)}
                               <Grid container className={classes.flexContainer}>
                                 <Grid item md={6}>
                                   <Stack spacing={0}>

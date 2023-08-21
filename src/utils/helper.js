@@ -1,12 +1,12 @@
 import Web3 from "web3";
-import { POLYGON_MAINNET_RPC_URL, RPC_URL } from "../api";
 import Safe, { Web3Adapter } from "@safe-global/protocol-kit";
 import WrongNetworkModal from "../components/modals/WrongNetworkModal";
 import { QUERY_ALL_MEMBERS } from "../api/graphql/queries";
 import { subgraphQuery } from "./subgraphs";
+import { NETWORK_RPC_URL } from "./constants";
 
-export const getSafeSdk = async (gnosisAddress, walletAddress) => {
-  const web3 = await web3InstanceCustomRPC();
+export const getSafeSdk = async (gnosisAddress, walletAddress, networkId) => {
+  const web3 = await web3InstanceCustomRPC(networkId);
   const ethAdapter = new Web3Adapter({
     web3,
     signerAddress: walletAddress,
@@ -20,8 +20,9 @@ export const getSafeSdk = async (gnosisAddress, walletAddress) => {
 };
 
 export const getIncreaseGasPrice = async (networkId = "0x89") => {
-  const web3 = await web3InstanceCustomRPC();
-  if (!sessionStorage.getItem("gasPrice")) {
+  const web3 = await web3InstanceCustomRPC(networkId);
+
+  if (!sessionStorage.getItem("gasPrice" + networkId)) {
     const gasPrice = await web3.eth.getGasPrice();
 
     let increasedGasPrice;
@@ -32,9 +33,10 @@ export const getIncreaseGasPrice = async (networkId = "0x89") => {
       increasedGasPrice = +gasPrice + 1000;
     }
 
+    sessionStorage.setItem("gasPrice" + networkId, increasedGasPrice);
     return increasedGasPrice;
   } else {
-    return Number(sessionStorage.getItem("gasPrice"));
+    return Number(sessionStorage.getItem("gasPrice" + networkId));
   }
 };
 
@@ -43,8 +45,8 @@ export const web3InstanceEthereum = async () => {
   return web3;
 };
 
-export const web3InstanceCustomRPC = async () => {
-  const web3 = new Web3(RPC_URL ? RPC_URL : POLYGON_MAINNET_RPC_URL);
+export const web3InstanceCustomRPC = async (networkId) => {
+  const web3 = new Web3(NETWORK_RPC_URL[networkId]);
   return web3;
 };
 

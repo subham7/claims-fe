@@ -48,7 +48,7 @@ import ProposalVotes from "@components/proposalComps/ProposalVotes";
 import { getSafeSdk, web3InstanceEthereum } from "utils/helper";
 import useSmartContractMethods from "hooks/useSmartContractMethods";
 import { getNFTsByDaoAddress } from "api/assets";
-import { useAccount } from "wagmi";
+import { useAccount, useNetwork } from "wagmi";
 
 const useStyles = makeStyles({
   clubAssets: {
@@ -287,6 +287,9 @@ const ProposalDetail = ({ pid, daoAddress }) => {
     return state.club.factoryData.assetsStoredOnGnosis;
   });
 
+  const { chain } = useNetwork();
+  const networkId = Web3.utils.numberToHex(chain?.id);
+
   const {
     getNftBalance,
     getERC20TotalSupply,
@@ -312,6 +315,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
       const safeSdk = await getSafeSdk(
         Web3.utils.toChecksumAddress(gnosisAddress),
         Web3.utils.toChecksumAddress(walletAddress),
+        networkId,
       );
       const owners = await safeSdk.getOwners();
 

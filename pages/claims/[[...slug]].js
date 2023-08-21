@@ -1,9 +1,9 @@
 import React from "react";
 import { useRouter } from "next/router";
 import Layout1 from "@components/layouts/layout1";
-import CreateClaim from "redux/reducers/createClaim";
 import ClaimInsight from "@components/claims/claimInsight";
 import ListClaims from "@components/claims/listClaims";
+import CreateClaim from "@components/claims/create";
 
 const ClaimsPage = () => {
   const router = useRouter();

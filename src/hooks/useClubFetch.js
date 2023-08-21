@@ -29,7 +29,7 @@ const useClubFetch = ({ daoAddress }) => {
   const dispatch = useDispatch();
   const { chain } = useNetwork();
   const networkId = Web3.utils.numberToHex(chain?.id);
-  useSmartContract({ daoAddress });
+  useSmartContract(daoAddress);
 
   const { address: walletAddress } = useAccount();
 
@@ -161,6 +161,7 @@ const useClubFetch = ({ daoAddress }) => {
               const safeSdk = await getSafeSdk(
                 reduxClubData.gnosisAddress,
                 walletAddress,
+                networkId,
               );
               const ownerAddresses = await safeSdk.getOwners();
               const ownerAddressesArray = ownerAddresses.map((value) =>
@@ -201,6 +202,7 @@ const useClubFetch = ({ daoAddress }) => {
               const safeSdk = await getSafeSdk(
                 reduxClubData.gnosisAddress,
                 walletAddress,
+                networkId,
               );
               const ownerAddresses = await safeSdk.getOwners();
               const ownerAddressesArray = ownerAddresses.map((value) =>

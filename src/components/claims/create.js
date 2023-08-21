@@ -9,8 +9,6 @@ import { convertToWeiGovernance } from "utils/globalFunctions";
 import { createClaimCsv, createSnapShot } from "api/claims";
 import { useRouter } from "next/router";
 import useSmartContractMethods from "../../hooks/useSmartContractMethods";
-import useSmartContract from "../../hooks/useSmartContract";
-import Layout1 from "../layouts/layout1";
 import Moralis from "moralis";
 import { EvmChain } from "@moralisweb3/common-evm-utils";
 import {
@@ -23,6 +21,7 @@ import { getTokensList } from "api/token";
 import { getAssetsByDaoAddress } from "api/assets";
 import { getUserTokenData } from "utils/helper";
 import { CLAIM_FACTORY_ADDRESS } from "utils/constants";
+import useClaimSmartContracts from "hooks/useClaimSmartContracts";
 
 const useStyles = makeStyles({
   container: {
@@ -42,7 +41,7 @@ const CreateClaim = () => {
   const [errMsg, setErrMsg] = useState("");
   const [loadingTokens, setLoadingTokens] = useState(false);
   const [snapshotMerkleData, setSnapshotMerkleData] = useState([]);
-  useSmartContract();
+  useClaimSmartContracts();
 
   const classes = useStyles();
 
@@ -534,7 +533,7 @@ const CreateClaim = () => {
   };
 
   return (
-    <Layout1 showSidebar={false} isClaims={true}>
+    <>
       <div className={classes.container}>
         <Grid container>
           <Grid item xs={12} sx={{ padding: "20px" }}>
@@ -575,7 +574,7 @@ const CreateClaim = () => {
           </Alert>
         )}
       </div>
-    </Layout1>
+    </>
   );
 };
 

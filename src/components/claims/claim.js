@@ -9,7 +9,6 @@ import Countdown from "react-countdown";
 import { useDispatch, useSelector } from "react-redux";
 import { addClaimEnabled } from "redux/reducers/createClaim";
 import useSmartContractMethods from "hooks/useSmartContractMethods";
-import useSmartContract from "hooks/useSmartContract";
 import { ClaimsStyles } from "components/claimsPageComps/ClaimsStyles";
 import { subgraphQuery } from "utils/subgraphs";
 import { QUERY_CLAIM_DETAILS } from "api/graphql/queries";
@@ -17,6 +16,7 @@ import Button from "@components/ui/button/Button";
 import { useAccount, useNetwork } from "wagmi";
 import Web3 from "web3";
 import { CLAIMS_SUBGRAPH_URL } from "utils/constants";
+import useClaimSmartContracts from "hooks/useClaimSmartContracts";
 
 const Claim = ({ claimAddress }) => {
   const classes = ClaimsStyles();
@@ -47,7 +47,7 @@ const Claim = ({ claimAddress }) => {
   const { chain } = useNetwork();
   const networkId = Web3.utils.numberToHex(chain?.id);
 
-  useSmartContract({ claimAddress });
+  useClaimSmartContracts(claimAddress);
 
   let contractInstances = useSelector((state) => {
     return state.contractInstances.contractInstances;

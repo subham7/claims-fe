@@ -29,7 +29,6 @@ const AdditionalSettings = ({
   gnosisAddress,
   daoAddress,
 }) => {
-  debugger;
   const classes = AdditionalSettingsStyles();
 
   const NETWORK_HEX = useSelector((state) => {

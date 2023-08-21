@@ -25,6 +25,7 @@ import SafeApiKit from "@safe-global/api-kit";
 import { getProposalByDaoAddress, getProposalTxHash } from "api/proposal";
 import { web3InstanceCustomRPC } from "utils/helper";
 import { addNftsOwnedByDao } from "redux/reducers/club";
+import { useNetwork } from "wagmi";
 
 const useStyles = makeStyles({
   noProposal_heading: {
@@ -61,6 +62,9 @@ const Proposal = ({ daoAddress }) => {
 
   const [open, setOpen] = useState(false);
   const [tokenData, setTokenData] = useState([]);
+
+  const { chain } = useNetwork();
+  const networkId = Web3.utils.numberToHex(chain?.id);
 
   const NETWORK_HEX = useSelector((state) => {
     return state.gnosis.networkHex;
@@ -169,7 +173,7 @@ const Proposal = ({ daoAddress }) => {
   };
 
   const getSafeService = useCallback(async () => {
-    const web3 = await web3InstanceCustomRPC();
+    const web3 = await web3InstanceCustomRPC(networkId);
 
     const ethAdapter = new Web3Adapter({
       web3,
