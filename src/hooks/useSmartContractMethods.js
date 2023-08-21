@@ -861,6 +861,7 @@ const useSmartContractMethods = () => {
     proposalData,
     membersArray,
     airDropAmountArray,
+    transactionData = "",
   ) => {
     const parameters = data;
     const web3 = new Web3(window.ethereum);
@@ -880,23 +881,183 @@ const useSmartContractMethods = () => {
       safeAddress: Web3.utils.toChecksumAddress(gnosisAddress),
     });
 
-    const { transaction, approvalTransaction } = getTransactionsObject(
-      data,
-      approvalData,
-      proposalData,
-      daoAddress,
-      factoryContractAddress,
-      tokenData,
-      isAssetsStoredOnGnosis,
-      airdropContractAddress,
-      executionId,
-      ownerAddress,
-      safeThreshold,
-      gnosisAddress,
-      airDropAmountArray,
-      membersArray,
-    );
+    let approvalTransaction;
+    let transaction;
+    if (approvalData !== "") {
+      if (
+        proposalData.commands[0].executionId === 10 ||
+        proposalData.commands[0].executionId === 11 ||
+        proposalData?.commands[0].executionId == 12
+      ) {
+        approvalTransaction = {
+          to: Web3.utils.toChecksumAddress(daoAddress),
+          data: erc20DaoContractSend.methods
+            .updateProposalAndExecution(
+              //usdc address
+              daoAddress,
+              approvalData,
+            )
+            .encodeABI(),
+          value: "0",
+        };
+        transaction = {
+          //dao
+          to: Web3.utils.toChecksumAddress(daoAddress),
+          data: erc20DaoContractSend.methods
+            .updateProposalAndExecution(
+              //factory
+              factoryContractAddress ? factoryContractAddress : daoAddress,
+              parameters,
+            )
+            .encodeABI(),
+          value: "0",
+        };
+      } else {
+        if (isAssetsStoredOnGnosis) {
+          approvalTransaction = {
+            to: Web3.utils.toChecksumAddress(tokenData),
+            // data: tokenData.methods.approve(dao / action).encodeABI(), // for send/airdrop -> action & send NFT -> daoAddress
+            data: approveDepositWithEncodeABI(
+              tokenData,
+              airdropContractAddress,
+              proposalData.commands[0].executionId === 0
+                ? proposalData.commands[0].airDropAmount
+                : proposalData.commands[0].customTokenAmounts[0],
+            ),
+            value: "0",
+          };
+        } else {
+          approvalTransaction = {
+            to: Web3.utils.toChecksumAddress(daoAddress),
+            data: erc20DaoContractSend.methods
+              .updateProposalAndExecution(
+                //usdc address
+                tokenData,
+                approvalData,
+              )
+              .encodeABI(),
+            value: "0",
+          };
+        }
 
+        if (isAssetsStoredOnGnosis) {
+          transaction = {
+            to: Web3.utils.toChecksumAddress(airdropContractAddress),
+            data: airdropTokenMethodEncoded(
+              airdropContractAddress,
+              tokenData,
+              airDropAmountArray,
+              membersArray,
+            ),
+            value: 0,
+          };
+        } else {
+          transaction = {
+            to: Web3.utils.toChecksumAddress(daoAddress),
+            data: erc20DaoContractSend.methods
+              .updateProposalAndExecution(
+                //airdrop address
+                airdropContractAddress,
+                parameters,
+              )
+              .encodeABI(),
+            value: "0",
+          };
+        }
+      }
+    }
+    // else if (transactionData !== "") {
+    //   console.log("first");
+    //   const web3Send = new Web3(window?.ethereum);
+    //   const seaportContract = new web3Send.eth.Contract(
+    //     seaportABI,
+    //     "0x00000000000000ADc04C56Bf30aC9d3c0aAF14dC",
+    //   );
+    //   transaction = {
+    //     from: isAssetsStoredOnGnosis ? gnosisAddress : daoAddress,
+    //     to: transactionData.fulfillment_data.transaction.to,
+    //     data: seaportContract.methods.fulfillBasicOrder_efficient_6GL6yc(
+    //       transactionData.fulfillment_data.transaction.input_data.parameters,
+    //     ),
+    //     value: transactionData.fulfillment_data.transaction.value.toString(),
+    //   };
+    //   console.log("transactoin", transaction);
+    // }
+    else if (executionId === 6 || executionId === 7) {
+      if (executionId === 6) {
+        transaction = {
+          ownerAddress,
+        };
+      } else {
+        transaction = {
+          ownerAddress,
+          threshold: safeThreshold,
+        };
+      }
+    } else {
+      if (
+        isAssetsStoredOnGnosis &&
+        proposalData.commands[0].executionId === 5
+      ) {
+        transaction = {
+          //dao
+          to: Web3.utils.toChecksumAddress(tokenData),
+          data: transferNFTfromSafe(
+            tokenData,
+            gnosisAddress,
+            proposalData.commands[0].customTokenAddresses[0],
+            proposalData.commands[0].customNftToken,
+          ),
+          value: "0",
+        };
+      } else if (transactionData) {
+        if (isAssetsStoredOnGnosis) {
+          const seaportContract = new web3Send.eth.Contract(
+            seaportABI,
+            "0x00000000000000ADc04C56Bf30aC9d3c0aAF14dC",
+          );
+          transaction = {
+            to: Web3.utils.toChecksumAddress(
+              "0x00000000000000ADc04C56Bf30aC9d3c0aAF14dC",
+            ),
+            data: seaportContract.methods
+              .fulfillBasicOrder_efficient_6GL6yc(
+                transactionData.fulfillment_data.transaction.input_data
+                  .parameters,
+              )
+              .encodeABI(),
+            value:
+              transactionData.fulfillment_data.transaction.value.toString(),
+          };
+        } else {
+          transaction = {
+            to: Web3.utils.toChecksumAddress(daoAddress),
+            data: erc20DaoContractSend.methods
+              .updateProposalAndExecution(
+                Web3.utils.toChecksumAddress(
+                  "0x00000000000000ADc04C56Bf30aC9d3c0aAF14dC",
+                ),
+                parameters,
+              )
+              .encodeABI(),
+            value: "10000000000000000",
+          };
+        }
+      } else {
+        transaction = {
+          //dao
+          to: Web3.utils.toChecksumAddress(daoAddress),
+          data: erc20DaoContractSend.methods
+            .updateProposalAndExecution(
+              //factory
+              factoryContractAddress ? factoryContractAddress : daoAddress,
+              parameters,
+            )
+            .encodeABI(),
+          value: "0",
+        };
+      }
+    }
     if (executionStatus !== "executed") {
       if (txHash === "") {
         const nonce = await safeService.getNextNonce(gnosisAddress);

@@ -510,21 +510,23 @@ const ProposalDetail = () => {
   }, [SUBGRAPH_URL, daoAddress, pid]);
 
   const nftListingExists = async () => {
-    const parts = proposalData.commands[0].nftLink.split("/");
+    const parts = proposalData?.commands[0]?.nftLink?.split("/");
 
-    const linkData = parts.slice(-3);
-    const nftdata = await retrieveNftListing(
-      linkData[0],
-      linkData[1],
-      linkData[2],
-    );
-    if (
-      !nftdata?.data?.orders.length &&
-      proposalData?.commands[0].executionId === 8
-    ) {
-      setIsNftSold(true);
-    } else {
-      setIsNftSold(false);
+    if (parts) {
+      const linkData = parts.slice(-3);
+      const nftdata = await retrieveNftListing(
+        linkData[0],
+        linkData[1],
+        linkData[2],
+      );
+      if (
+        !nftdata?.data?.orders.length &&
+        proposalData?.commands[0].executionId === 8
+      ) {
+        setIsNftSold(true);
+      } else {
+        setIsNftSold(false);
+      }
     }
   };
 
