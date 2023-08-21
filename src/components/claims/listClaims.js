@@ -78,7 +78,6 @@ const useStyles = makeStyles({
 });
 
 const ListClaims = () => {
-  debugger;
   const classes = useStyles();
   const router = useRouter();
   const [claimData, setClaimData] = useState([]);

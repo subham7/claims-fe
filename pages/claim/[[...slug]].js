@@ -6,7 +6,8 @@ import Claim from "@components/claims/claim";
 const Dashboard = () => {
   const router = useRouter();
 
-  const [claimAddress, network] = router?.query?.slug ?? [];
+  const [claimAddress] = router?.query?.slug ?? [];
+  const { network } = router?.query;
 
   return (
     <Layout1

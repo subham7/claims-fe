@@ -8,7 +8,7 @@ import ListClaims from "@components/claims/listClaims";
 const Claims = () => {
   const router = useRouter();
 
-  const [claimAddress] = router?.query?.slug ?? [];
+  const [insights, claimAddress] = router?.query?.slug ?? [];
 
   return (
     <Layout1 showSidebar={false} claimAddress={claimAddress} isClaims={true}>

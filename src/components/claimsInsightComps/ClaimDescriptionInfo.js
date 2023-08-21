@@ -60,7 +60,7 @@ const ClaimDescriptionInfo = ({
         <div className={classes.gapContainer}>
           <BsLink45Deg
             onClick={() => {
-              router.push(`/claims/${claimAddress}?network=${claimsNetwork}`);
+              router.push(`/claim/${claimAddress}?network=${claimsNetwork}`);
             }}
             style={{
               border: "0.5px solid #6475A3",

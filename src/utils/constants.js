@@ -6,7 +6,7 @@ export const CLAIM_FACTORY_ADDRESS = {
 
 export const CLAIMS_SUBGRAPH_URL = {
   "0x5": "https://api.thegraph.com/subgraphs/name/subham7/stnx-claim",
-  "0x89": "https://api.thegraph.com/subgraphs/name/subham7/stnx-claim-polygon",
+  "0x89": "https://api.thegraph.com/subgraphs/name/subham7/stnx-claim",
   "0x2105": "https://api.thegraph.com/subgraphs/name/subham7/stnx-claim-base",
 };
 
