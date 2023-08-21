@@ -1,14 +1,14 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { convertFromWeiGovernance } from "../../src/utils/globalFunctions";
-import { subgraphQuery } from "../../src/utils/subgraphs";
-import { QUERY_ALL_MEMBERS } from "../../src/api/graphql/queries";
+import { convertFromWeiGovernance } from "utils/globalFunctions";
+import { subgraphQuery } from "utils/subgraphs";
+import { QUERY_ALL_MEMBERS } from "api/graphql/queries";
 import { useSelector } from "react-redux";
 import { Backdrop, CircularProgress } from "@mui/material";
-import useSmartContractMethods from "../../src/hooks/useSmartContractMethods";
-import { getClubInfo } from "../../src/api/club";
-import ERC721 from "../../src/components/depositPageComps/ERC721/NewArch/ERC721";
-import ERC20 from "../../src/components/depositPageComps/ERC20/NewArch/ERC20";
-import useSmartContract from "../../src/hooks/useSmartContract";
+import useSmartContractMethods from "hooks/useSmartContractMethods";
+import { getClubInfo } from "api/club";
+import ERC721 from "@components/depositPageComps/ERC721/NewArch/ERC721";
+import ERC20 from "@components/depositPageComps/ERC20/NewArch/ERC20";
+import useSmartContract from "hooks/useSmartContract";
 import { getWhitelistMerkleProof } from "api/whitelist";
 import { useAccount } from "wagmi";
 
