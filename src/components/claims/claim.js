@@ -2,23 +2,23 @@ import React, { useCallback, useEffect, useState } from "react";
 import {
   convertFromWeiGovernance,
   convertToWeiGovernance,
-} from "../../utils/globalFunctions";
+} from "utils/globalFunctions";
 import { Alert, CircularProgress, Tooltip } from "@mui/material";
-import { getUserProofAndBalance } from "../../api/claims";
+import { getUserProofAndBalance } from "api/claims";
 import Countdown from "react-countdown";
 import { useDispatch, useSelector } from "react-redux";
-import { addClaimEnabled } from "../../redux/reducers/createClaim";
-import useSmartContractMethods from "../../hooks/useSmartContractMethods";
-import useSmartContract from "../../hooks/useSmartContract";
-import { ClaimsStyles } from "../claimsPageComps/ClaimsStyles";
-import { subgraphQuery } from "../../utils/subgraphs";
-import { CLAIMS_SUBGRAPH_URL_POLYGON } from "../../api";
-import { QUERY_CLAIM_DETAILS } from "../../api/graphql/queries";
+import { addClaimEnabled } from "redux/reducers/createClaim";
+import useSmartContractMethods from "hooks/useSmartContractMethods";
+import useSmartContract from "hooks/useSmartContract";
+import { ClaimsStyles } from "components/claimsPageComps/ClaimsStyles";
+import { subgraphQuery } from "utils/subgraphs";
+import { QUERY_CLAIM_DETAILS } from "api/graphql/queries";
 import Button from "@components/ui/button/Button";
 import { useAccount, useNetwork } from "wagmi";
 import Web3 from "web3";
+import { CLAIMS_SUBGRAPH_URL } from "utils/constants";
 
-const Claim = (claimAddress) => {
+const Claim = ({ claimAddress }) => {
   const classes = ClaimsStyles();
   const [contractData, setContractData] = useState([]);
   const [totalAmountofTokens, setTotalAmountOfTokens] = useState(0);
@@ -379,7 +379,7 @@ const Claim = (claimAddress) => {
     const fetchClaimsDataFromSubgraph = async () => {
       try {
         const { claims } = await subgraphQuery(
-          CLAIMS_SUBGRAPH_URL_POLYGON,
+          CLAIMS_SUBGRAPH_URL[networkId],
           QUERY_CLAIM_DETAILS(claimAddress),
         );
         setClaimsDataSubgraph(claims);
@@ -389,7 +389,7 @@ const Claim = (claimAddress) => {
     };
 
     if (claimAddress) fetchClaimsDataFromSubgraph();
-  }, [claimAddress]);
+  }, [claimAddress, networkId]);
 
   const isClaimButtonDisabled = () => {
     return (claimRemaining == 0 && alreadyClaimed && claimed) ||
@@ -571,14 +571,14 @@ const Claim = (claimAddress) => {
                     setShowInputError(false);
                   }
                 }}
-                // disabled={
-                //   !claimActive ||
-                //   !claimableAmt ||
-                //   !claimEnabled ||
-                //   (claimRemaining == 0 && alreadyClaimed)
-                //     ? true
-                //     : false
-                // }
+                disabled={
+                  !claimActive ||
+                  !claimableAmt ||
+                  !claimEnabled ||
+                  (claimRemaining == 0 && alreadyClaimed)
+                    ? true
+                    : false
+                }
                 value={claimInput}
                 placeholder="0"
                 type="number"

@@ -97,6 +97,7 @@ const ClaimsCard = ({
   claimContract,
   createdBy,
   isActive: active,
+  claimsNetwork,
 }) => {
   const classes = useStyles();
   const router = useRouter();
@@ -154,15 +155,6 @@ const ClaimsCard = ({
     fetchContractDetails();
   });
 
-  const claimContractData = {
-    description,
-    // airdropTokenSymbol,
-    totalAmount,
-    claimContract,
-    createdBy,
-    endDate,
-  };
-
   // dispatch(addClaimContractData(claimContractData));
 
   const claimHandler = () => {
@@ -199,7 +191,7 @@ const ClaimsCard = ({
             onClick={(e) => {
               e.stopPropagation();
               navigator.clipboard.writeText(
-                `${window.location.origin}/claims/${claimContract}`,
+                `${window.location.origin}/claim/${claimContract}?network=${claimsNetwork}`,
               );
               setIsCopied(true);
 

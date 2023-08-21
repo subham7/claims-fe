@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { ClaimsInsightStyles } from "@components/claimsInsightComps/claimsInsightStyles";
 import TotalClaimedInfo from "@components/claimsInsightComps/TotalClaimedInfo";
 import TotalWalletsClaimInfo from "@components/claimsInsightComps/TotalWalletsClaimInfo";
 import ClaimDescriptionInfo from "@components/claimsInsightComps/ClaimDescriptionInfo";
@@ -6,16 +7,18 @@ import ClaimEligibility from "@components/claimsInsightComps/ClaimEligibility";
 import ClaimEdit from "@components/claimsInsightComps/ClaimEdit";
 import ToggleClaim from "@components/claimsInsightComps/ToggleClaim";
 import ClaimsTransactions from "@components/claimsInsightComps/ClaimsTransactions";
+import { useRouter } from "next/router";
+import { subgraphQuery } from "utils/subgraphs";
 import { QUERY_CLAIM_DETAILS } from "api/graphql/queries";
 import { Alert, Backdrop, CircularProgress } from "@mui/material";
 import useSmartContractMethods from "hooks/useSmartContractMethods";
 import useSmartContract from "hooks/useSmartContract";
 import { convertToWeiGovernance } from "utils/globalFunctions";
-import { ClaimsInsightStyles } from "@components/claimsInsightComps/claimsInsightStyles";
-import { subgraphQuery } from "utils/subgraphs";
-import { CLAIMS_SUBGRAPH_URL_POLYGON } from "api";
+import { useNetwork } from "wagmi";
+import Web3 from "web3";
+import { CLAIMS_SUBGRAPH_URL } from "utils/constants";
 
-const ClaimInsight = (claimAddress) => {
+const ClaimInsight = ({ claimAddress }) => {
   const [claimsData, setClaimsData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [airdropTokenDetails, setAirdropTokenDetails] = useState({
@@ -28,6 +31,9 @@ const ClaimInsight = (claimAddress) => {
   const [isSuccessFull, setIsSuccessFull] = useState(false);
 
   const classes = ClaimsInsightStyles();
+  const router = useRouter();
+  const { chain } = useNetwork();
+  const networkId = Web3.utils.numberToHex(chain?.id);
 
   useSmartContract({ claimAddress });
 
@@ -44,7 +50,7 @@ const ClaimInsight = (claimAddress) => {
     setLoading(true);
     try {
       const { claims } = await subgraphQuery(
-        CLAIMS_SUBGRAPH_URL_POLYGON,
+        CLAIMS_SUBGRAPH_URL[networkId],
         QUERY_CLAIM_DETAILS(claimAddress),
       );
       setClaimsData(claims);
@@ -148,7 +154,7 @@ const ClaimInsight = (claimAddress) => {
 
   useEffect(() => {
     if (claimAddress) fetchClaimDetails();
-  }, [claimAddress]);
+  }, [claimAddress, networkId]);
 
   return (
     <>
@@ -161,6 +167,7 @@ const ClaimInsight = (claimAddress) => {
               startTime={claimsData[0]?.startTime}
               claimAddress={claimAddress}
               isActive={claimsData[0]?.isActive}
+              claimsNetwork={claimsData[0]?.networkId}
             />
             <div className={classes.infoBottomContainer}>
               <TotalClaimedInfo

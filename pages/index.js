@@ -142,11 +142,7 @@ const App = () => {
         const fetchClubs = async () => {
           try {
             const data = await subgraphQuery(
-              networkId === "0x5"
-                ? SUBGRAPH_URL_GOERLI
-                : networkId === "0x89"
-                ? SUBGRAPH_URL_POLYGON
-                : "",
+              SUBGRAPH_URL_POLYGON,
               QUERY_CLUBS_FROM_WALLET_ADDRESS(walletAddress),
             );
             setClubListData(data.users);
@@ -219,7 +215,7 @@ const App = () => {
   };
 
   return (
-    <Layout1 showSidebar={false} faucet={false}>
+    <Layout1 showSidebar={false} faucet={false} isClaims={true}>
       <div className={classes.container}>
         {!manageStation && clubFlow && (
           <div className={classes.cardContainer}>

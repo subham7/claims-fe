@@ -19,11 +19,19 @@ export const getSafeSdk = async (gnosisAddress, walletAddress) => {
   return safeSdk;
 };
 
-export const getIncreaseGasPrice = async () => {
+export const getIncreaseGasPrice = async (networkId = "0x89") => {
   const web3 = await web3InstanceCustomRPC();
   if (!sessionStorage.getItem("gasPrice")) {
     const gasPrice = await web3.eth.getGasPrice();
-    const increasedGasPrice = +gasPrice + 30000000000;
+
+    let increasedGasPrice;
+
+    if (networkId === "0x89") {
+      increasedGasPrice = +gasPrice + 30000000000;
+    } else {
+      increasedGasPrice = +gasPrice + 1000;
+    }
+
     return increasedGasPrice;
   } else {
     return Number(sessionStorage.getItem("gasPrice"));
@@ -83,8 +91,25 @@ export function returnRemainingTime(epochTime) {
     : 0;
 }
 
-export const showWrongNetworkModal = (walletAddress, networkId) => {
-  return walletAddress && networkId !== "0x89" ? <WrongNetworkModal /> : null;
+export const showWrongNetworkModal = (
+  walletAddress,
+  networkId,
+  isClaims = false,
+  network,
+) => {
+  if (isClaims) {
+    if (network && network !== networkId) {
+      return <WrongNetworkModal chainId={parseInt(network, 16)} />;
+    }
+
+    return walletAddress && networkId !== "0x89" && networkId !== "0x2105" ? (
+      <WrongNetworkModal />
+    ) : null;
+  }
+
+  return walletAddress && networkId !== "0x89" ? (
+    <WrongNetworkModal isClaims={isClaims} />
+  ) : null;
 };
 
 export const getAllEntities = async (
@@ -127,5 +152,27 @@ export const extractPartFromUrl = (url) => {
   } catch (error) {
     console.error("Invalid URL:", error);
     return null;
+  }
+};
+
+export const getUserTokenData = async (tokenData, networkId) => {
+  if (networkId === "0x89") {
+    return tokenData.map((token) => {
+      return {
+        balance: token.balance,
+        address: token.token_address,
+        decimals: token.decimals,
+        symbol: token.symbol,
+      };
+    });
+  } else if (networkId === "0x2105") {
+    return tokenData.map((token) => {
+      return {
+        balance: token.balance,
+        address: token.contract_address,
+        decimals: token.contract_decimals,
+        symbol: token.contract_ticker_symbol,
+      };
+    });
   }
 };

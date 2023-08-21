@@ -7,9 +7,14 @@ const Dashboard = () => {
   const router = useRouter();
 
   const [claimAddress] = router?.query?.slug ?? [];
+  const { network } = router?.query;
 
   return (
-    <Layout1 showSidebar={false} claimAddress={claimAddress}>
+    <Layout1
+      showSidebar={false}
+      claimAddress={claimAddress}
+      isClaims={true}
+      network={network}>
       <Claim claimAddress={claimAddress} />
     </Layout1>
   );

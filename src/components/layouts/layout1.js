@@ -2,13 +2,13 @@ import React, { useEffect, useState } from "react";
 import { Box, CssBaseline, Grid, Typography } from "@mui/material";
 import Navbar from "../navbar";
 import Sidebar from "../sidebar";
-import { showWrongNetworkModal } from "utils/helper";
 import { useDispatch } from "react-redux";
 import { addWalletAddress } from "redux/reducers/user";
 import { useAccount, useNetwork } from "wagmi";
 import { Web3Button } from "@web3modal/react";
 import Web3 from "web3";
 import useClubFetch from "hooks/useClubFetch";
+import { showWrongNetworkModal } from "utils/helper";
 
 const drawerWidth = 50;
 
@@ -83,7 +83,12 @@ export default function Layout1(props) {
                 {props.children}
               </div>
             </Box>
-            {showWrongNetworkModal(walletAddress, networkId)}
+            {showWrongNetworkModal(
+              walletAddress,
+              networkId,
+              props.isClaims,
+              props.network,
+            )}
           </>
         )}
       </Box>

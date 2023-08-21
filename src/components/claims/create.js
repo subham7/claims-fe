@@ -5,13 +5,8 @@ import ClaimStep1 from "../claimsPageComps/ClaimStep1";
 import ClaimStep2 from "../claimsPageComps/ClaimStep2";
 import dayjs from "dayjs";
 import { makeStyles } from "@mui/styles";
-import { getAssetsByDaoAddress } from "../../api/assets";
-import { convertToWeiGovernance } from "../../utils/globalFunctions";
-import { createClaimCsv, createSnapShot } from "../../api/claims";
-import {
-  CLAIM_FACTORY_ADDRESS_GOERLI,
-  CLAIM_FACTORY_ADDRESS_POLYGON,
-} from "../../api";
+import { convertToWeiGovernance } from "utils/globalFunctions";
+import { createClaimCsv, createSnapShot } from "api/claims";
 import { useRouter } from "next/router";
 import useSmartContractMethods from "../../hooks/useSmartContractMethods";
 import useSmartContract from "../../hooks/useSmartContract";
@@ -24,6 +19,10 @@ import {
 } from "../createClubComps/ValidationSchemas";
 import { useAccount, useNetwork } from "wagmi";
 import Web3 from "web3";
+import { getTokensList } from "api/token";
+import { getAssetsByDaoAddress } from "api/assets";
+import { getUserTokenData } from "utils/helper";
+import { CLAIM_FACTORY_ADDRESS } from "utils/constants";
 
 const useStyles = makeStyles({
   container: {
@@ -64,12 +63,34 @@ const CreateClaim = () => {
   };
 
   const getCurrentAccount = async () => {
-    setLoadingTokens(true);
-    // const data = await getTokensFromWallet(accounts[0], networkId);
-    if (networkId && walletAddress) {
-      const tokensList = await getAssetsByDaoAddress(walletAddress, networkId);
-      setTokensInWallet(tokensList.data.tokenPriceList);
-      setLoadingTokens(false);
+    try {
+      setLoadingTokens(true);
+      if (networkId && walletAddress) {
+        if (networkId === "0x2105") {
+          const tokensList = await getTokensList("base-mainnet", walletAddress);
+          const data = await getUserTokenData(
+            tokensList?.data?.items,
+            networkId,
+          );
+          setTokensInWallet(data);
+          setLoadingTokens(false);
+        } else if (networkId === "0x89") {
+          const tokensList = await getAssetsByDaoAddress(
+            walletAddress,
+            networkId,
+          );
+
+          const data = await getUserTokenData(
+            tokensList?.data?.tokenPriceList,
+            networkId,
+          );
+
+          setTokensInWallet(data);
+          setLoadingTokens(false);
+        }
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -129,7 +150,7 @@ const CreateClaim = () => {
       eligible: "everyone", // token || csv || everyone
       daoTokenAddress: "", // tokenGated
       tokenGatingAmt: 0,
-      maximumClaim: "", // prorata or custom
+      maximumClaim: "custom", // prorata or custom
       customAmount: 1,
       merkleData: [],
       csvObject: [],
@@ -138,10 +159,7 @@ const CreateClaim = () => {
     },
     validationSchema: claimStep2ValidationSchema,
     onSubmit: async (values) => {
-      const claimsContractAddress =
-        networkId === "0x89"
-          ? CLAIM_FACTORY_ADDRESS_POLYGON
-          : CLAIM_FACTORY_ADDRESS_GOERLI;
+      const claimsContractAddress = CLAIM_FACTORY_ADDRESS[networkId];
 
       const data = {
         description: formikStep1.values.description,
@@ -195,7 +213,7 @@ const CreateClaim = () => {
             data.blockNumber > 0 ? data.blockNumber : blockData.block;
 
           snapshotData = await createSnapShot(
-            data.numberOfTokens * 10 ** decimals,
+            convertToWeiGovernance(data.numberOfTokens, decimals),
             data.airdropTokenAddress,
             data.daoTokenAddress,
             data.tokenGatedNetwork,
@@ -272,7 +290,7 @@ const CreateClaim = () => {
                 data.airdropTokenAddress,
                 claimsContractAddress,
                 data.numberOfTokens,
-                decimals, // decimal
+                decimals,
               );
             }
 
@@ -363,7 +381,7 @@ const CreateClaim = () => {
             setFinish(true);
             showMessageHandler(setFinish);
             setTimeout(() => {
-              router.push("/claims");
+              router.push(`/claims`);
             }, 3000);
           } catch (err) {
             console.log(err);
@@ -467,7 +485,7 @@ const CreateClaim = () => {
             setFinish(true);
             showMessageHandler(setFinish);
             setTimeout(() => {
-              router.push("/claims");
+              router.push(`/claims`);
             }, 3000);
           } catch (err) {
             console.log(err);
@@ -516,7 +534,7 @@ const CreateClaim = () => {
   };
 
   return (
-    <Layout1 showSidebar={false}>
+    <Layout1 showSidebar={false} isClaims={true}>
       <div className={classes.container}>
         <Grid container>
           <Grid item xs={12} sx={{ padding: "20px" }}>

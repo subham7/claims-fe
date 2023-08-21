@@ -13,7 +13,6 @@ export const QUERY_ALL_MEMBERS = (daoAddress) => {
     }`;
 };
 
-
 export const QUERY_LATEST_MEMBERS = (daoAddress) => {
   return `query{
       users(
@@ -25,7 +24,7 @@ export const QUERY_LATEST_MEMBERS = (daoAddress) => {
         timeStamp
       }
   }`;
-}
+};
 
 export const QUERY_PAGINATED_MEMBERS = (
   daoAddress,
@@ -154,6 +153,7 @@ export const QUERY_ALL_CLAIMS_OF_CREATOR = (creatorAddress) => {
               claimType
               timestamp
               isActive
+              networkId
             }
     }`;
 };
@@ -185,6 +185,7 @@ export const QUERY_CLAIM_DETAILS = (claimAddress) => {
               claimType
               timestamp
               isActive
+              networkId
             }
     }`;
 };

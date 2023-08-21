@@ -1,7 +1,7 @@
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import Layout1 from "../../src/components/layouts/layout1";
-import settingsImg from "../../../../public/assets/images/settings.png";
+import settingsImg from "../../public/assets/images/settings.png";
 import { makeStyles } from "@mui/styles";
 import { useRouter } from "next/router";
 import { Card, Grid, Link, Typography } from "@mui/material";

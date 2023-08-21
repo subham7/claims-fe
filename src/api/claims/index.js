@@ -42,7 +42,7 @@ export const createSnapShot = async (
     const res = await fetch(`${MAIN_API_URL}snapshot/create`, {
       method: "POST",
       body: JSON.stringify({
-        totalClaimAmount: Number(totalClaimAmount),
+        totalClaimAmount: totalClaimAmount,
         airdropTokenAddress,
         gatingTokenAddress: tokenGatingAddress,
         gatingTokenNetwork: tokenGatingNetwork,

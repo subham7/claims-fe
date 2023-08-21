@@ -89,6 +89,22 @@ const WrongNetworkModal = ({ chainId = 137 }) => {
                   },
                 ],
               });
+            } else if (chainId === 8453) {
+              await window.ethereum.request({
+                method: "wallet_addEthereumChain",
+                params: [
+                  {
+                    chainName: "Base Mainnet",
+                    chainId: Web3.utils.toHex(chainId),
+                    nativeCurrency: {
+                      name: "Base ETH",
+                      decimals: 18,
+                      symbol: "ETH",
+                    },
+                    rpcUrls: ["https://mainnet.base.org"],
+                  },
+                ],
+              });
             }
           }
         }
@@ -106,7 +122,14 @@ const WrongNetworkModal = ({ chainId = 137 }) => {
         <Image src={img} alt="Wrong network" height={136} width={160} />
 
         <button className={classes.btn} onClick={switchNetworkHandler}>
-          Switch to {chainId === 137 ? "Polygon" : chainId === 5 && "Goerli"}
+          Switch to{" "}
+          {chainId === 137
+            ? "Polygon"
+            : chainId === 5
+            ? "Goerli"
+            : chainId === 8453
+            ? "Base"
+            : ""}
         </button>
       </div>
     </>
