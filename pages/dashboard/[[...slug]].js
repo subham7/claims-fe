@@ -14,7 +14,7 @@ const DashboardPage = () => {
 
   return (
     <Layout1 daoAddress={daoAddress} page={1}>
-      <DashboardIndex />
+      <DashboardIndex daoAddress={daoAddress} />
     </Layout1>
   );
 };
