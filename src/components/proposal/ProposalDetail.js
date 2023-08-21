@@ -191,7 +191,7 @@ const useStyles = makeStyles({
   },
 });
 
-const ProposalDetail = (pid, daoAddress) => {
+const ProposalDetail = ({ pid, daoAddress }) => {
   const classes = useStyles();
   const router = useRouter();
 

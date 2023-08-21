@@ -118,7 +118,6 @@ const Proposal = ({ daoAddress }) => {
     router.push(`${router.asPath}/${proposal?.proposalId}`, undefined, {
       shallow: true,
     });
-    // router.push("/");
   };
 
   const fetchNfts = useCallback(async () => {
