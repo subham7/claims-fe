@@ -139,8 +139,7 @@ const ClaimStep1 = ({ formik, tokensInWallet, isLoading }) => {
   const router = useRouter();
 
   useEffect(() => {
-    formik.values.airdropTokenAddress =
-      formik.values.selectedToken.contract_address;
+    formik.values.airdropTokenAddress = formik.values.selectedToken.address;
   }, [formik.values]);
 
   return (
@@ -282,7 +281,7 @@ const ClaimStep1 = ({ formik, tokensInWallet, isLoading }) => {
               }>
               {tokensInWallet?.map((token, i) => (
                 <MenuItem key={i} value={token}>
-                  {token?.contract_name}
+                  {token?.symbol}
                 </MenuItem>
               ))}
             </TextField>
@@ -303,7 +302,7 @@ const ClaimStep1 = ({ formik, tokensInWallet, isLoading }) => {
                 {formik.values.selectedToken
                   ? convertFromWeiGovernance(
                       formik.values.selectedToken.balance,
-                      formik.values.selectedToken.contract_decimals,
+                      formik.values.selectedToken.decimals,
                     )
                   : "0"}
               </InputAdornment>

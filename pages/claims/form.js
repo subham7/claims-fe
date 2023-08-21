@@ -26,6 +26,8 @@ import {
 import { useAccount, useNetwork } from "wagmi";
 import Web3 from "web3";
 import { getTokensList } from "api/token";
+import { getAssetsByDaoAddress } from "api/assets";
+import { getUserTokenData } from "utils/helper";
 
 const steps = ["Step1", "Step2"];
 
@@ -72,10 +74,28 @@ const Form = () => {
       setLoadingTokens(true);
       // const data = await getTokensFromWallet(accounts[0], networkId);
       if (networkId && walletAddress) {
-        const tokensList = await getTokensList("base-mainnet", walletAddress);
+        if (networkId === "0x2105") {
+          const tokensList = await getTokensList("base-mainnet", walletAddress);
+          const data = await getUserTokenData(
+            tokensList?.data?.items,
+            networkId,
+          );
+          setTokensInWallet(data);
+          setLoadingTokens(false);
+        } else if (networkId === "0x89") {
+          const tokensList = await getAssetsByDaoAddress(
+            walletAddress,
+            networkId,
+          );
 
-        setTokensInWallet(tokensList?.data?.items);
-        setLoadingTokens(false);
+          const data = await getUserTokenData(
+            tokensList?.data?.tokenPriceList,
+            networkId,
+          );
+
+          setTokensInWallet(data);
+          setLoadingTokens(false);
+        }
       }
     } catch (error) {
       console.log(error);
