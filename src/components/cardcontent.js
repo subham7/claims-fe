@@ -4,8 +4,7 @@ import { makeStyles } from "@mui/styles";
 
 const useStyles = makeStyles({
   netamount: {
-    fontFamily: "Whyte",
-    fontSize: "21px",
+    fontSize: "20px",
     color: "#0ABB92",
   },
 });

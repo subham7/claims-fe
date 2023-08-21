@@ -56,7 +56,7 @@ export default function Layout1(props) {
               <Typography
                 sx={{
                   fontSize: "2.3em",
-                  fontFamily: "Whyte",
+
                   color: "#F5F5F5",
                 }}>
                 Connect your wallet to StationX 🛸

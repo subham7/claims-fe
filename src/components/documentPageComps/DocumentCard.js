@@ -27,7 +27,7 @@ const useStyles = makeStyles({
   createdBy: {
     fontWeight: "300",
     margin: 0,
-    fontSize: "15px",
+    fontSize: "14px",
     color: "#6475A3",
     // letterSpacing: '0.5px'
   },

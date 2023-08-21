@@ -1,9 +1,9 @@
 import {
-  Button,
+  // Button,
   CircularProgress,
   Grid,
   IconButton,
-  Typography,
+  // Typography,
 } from "@mui/material";
 import React from "react";
 import { convertFromWeiGovernance } from "../../../../utils/globalFunctions";
@@ -11,6 +11,7 @@ import classes from "./ERC721.module.scss";
 import RemoveIcon from "@mui/icons-material/Remove";
 import AddIcon from "@mui/icons-material/Add";
 import { BsInfoCircleFill } from "react-icons/bs";
+import { Typography, Button } from "@components/ui";
 
 const PriceSection = ({
   clubData,
@@ -29,38 +30,22 @@ const PriceSection = ({
 }) => {
   return (
     <div className={classes.priceContainer}>
-      <p
-        style={{
-          marginBottom: "10px",
-        }}
-        className={classes.subtitle}>
+      <Typography variant="body">
         {nftMinted} collected out of{" "}
         {clubData?.raiseAmount === "0"
           ? "unlimited"
           : convertFromWeiGovernance(clubData.distributionAmount, 18) *
             convertFromWeiGovernance(clubData.pricePerToken, 6)}{" "}
         NFTs
-      </p>
-      <p
-        style={{
-          color: "#C1D3FE",
-        }}
-        className={classes.smallText}>
+      </Typography>
+      <Typography variant="info" className="text-blue tb-pad-min">
         Price
-      </p>
-      <p
-        style={{
-          marginBottom: "12px",
-          padding: 0,
-        }}
-        className={classes.heading}>
+      </Typography>
+      <Typography variant="heading">
         {convertFromWeiGovernance(clubData?.pricePerToken, 6)} USDC
-      </p>
+      </Typography>
 
-      <div
-        style={{
-          display: "flex",
-        }}>
+      <div className="f-d b-pad-1">
         <Grid spacing={3} className={classes.counterContainer}>
           <IconButton
             onClick={() => {
@@ -68,7 +53,10 @@ const PriceSection = ({
             }}>
             <RemoveIcon sx={{ color: "#EFEFEF", fontSize: 20 }} />
           </IconButton>
-          <Typography variant="h6" color="" sx={{ fontWeight: "bold" }}>
+          <Typography
+            variant="subheading"
+            className="text-bold"
+            style={{ paddingTop: "8px" }}>
             {count}
           </Typography>
           <IconButton
@@ -92,19 +80,20 @@ const PriceSection = ({
               : isTokenGated
               ? !isEligibleForTokenGating
               : false
-          }
-          sx={{ px: 8, borderRadius: "24px", py: "0.5rem" }}>
-          {loading ? <CircularProgress /> : hasClaimed ? "Minted" : "Mint"}
+          }>
+          {loading ? (
+            <CircularProgress size={20} />
+          ) : hasClaimed ? (
+            "Minted"
+          ) : (
+            "Mint"
+          )}
         </Button>
       </div>
-      <p
-        style={{
-          marginTop: "12px",
-        }}
-        className={classes.smallText}>
+      <Typography variant="info">
         Note: This station allows maximum of {clubData?.maxTokensPerUser}{" "}
         mint(s) per address
-      </p>
+      </Typography>
 
       {isTokenGated ||
       (whitelistUserData?.setWhitelist === true &&

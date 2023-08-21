@@ -11,11 +11,11 @@ import { extractNftAdressAndId } from "utils/helper";
 
 const useStyles = makeStyles({
   listFont2: {
-    fontSize: "19px",
+    fontSize: "18px",
     color: "#C1D3FF",
   },
   listFont2Colourless: {
-    fontSize: "19px",
+    fontSize: "18px",
     color: "#FFFFFF",
     fontWeight: "bold",
   },
@@ -408,6 +408,14 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
                       : "Sell NFT from Opensea"}
                   </Typography>
                 </Grid>
+              </>
+            ) : proposalData.commands[0].executionId === 13 ? (
+              <>
+                <Grid container item mb={1}>
+                  <Typography className={classes.listFont2Colourless}>
+                    Update price per token
+                  </Typography>
+                </Grid>
                 <Divider />
                 <Grid container mt={1}>
                   <Grid container spacing={3}>
@@ -435,6 +443,11 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
                             proposalData.commands[0].nftLink,
                           ).tokenId
                         }
+                        Price per token
+                      </Typography>
+                      <Typography className={classes.listFont2Colourless}>
+                        {fetched ? proposalData.commands[0].pricePerToken : ""}{" "}
+                        {proposalData?.commands[0].usdcTokenSymbol}
                       </Typography>
                     </Grid>
                   </Grid>

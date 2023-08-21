@@ -54,7 +54,14 @@ input::-webkit-inner-spin-button {
 .text-darkblue {
   color: $typography-darkblue;
 }
+.text-error {
+  color: red;
+}
 
+/* text weights*/
+.text-bold {
+  font-weight: 600 !important;
+}
 /* Padding Classes */
 .lr-pad-d {
   padding-right: 6rem;
@@ -237,6 +244,13 @@ input::-webkit-inner-spin-button {
   justify-content: space-between;
   padding: 16px 32px;
   align-items: center;
+}
+
+.wallet-div {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
 }
 
 .step-buttons {

@@ -32,7 +32,7 @@ const useStyles = makeStyles({
   },
   claimDoc: {
     width: "130px",
-    fontFamily: "sans-serif",
+
     fontSize: "16px",
     border: "none",
     padding: "18px 24px",

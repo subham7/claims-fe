@@ -489,15 +489,22 @@ const DashboardIndex = () => {
                       {tokenDetails.tokenPriceList.map((data, key) => {
                         if (data.value !== 0) {
                           return (
-                            <TableRow key={key}>
+                            <TableRow
+                              key={key}
+                              sx={{
+                                "&:last-child td, &:last-child th": {
+                                  border: 0,
+                                },
+                              }}>
                               <TableCell align="left" variant="tableBody">
+                                <></>
                                 {data.symbol}
                               </TableCell>
                               <TableCell align="left" variant="tableBody">
-                                {data.value}
+                                {Number(data.value).toFixed(4)}
                               </TableCell>
                               <TableCell align="left" variant="tableBody">
-                                ${data.usd.usdValue.toFixed(2)}
+                                ${Number(data.usd.usdValue).toFixed(4)}
                               </TableCell>
                             </TableRow>
                           );

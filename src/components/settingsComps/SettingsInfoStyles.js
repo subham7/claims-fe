@@ -5,14 +5,12 @@ export const SettingsInfoStlyes = makeStyles({
     marginRight: "0.5rem",
   },
   valuesStyle: {
-    fontSize: "21px",
+    fontSize: "20px",
     fontWeight: "normal",
-    fontFamily: "Whyte",
   },
   valuesDimStyle: {
     fontSize: "22px",
     color: "#C1D3FF",
-    fontFamily: "Whyte",
   },
   cardRegular: {
     borderRadius: "10px",
@@ -23,15 +21,13 @@ export const SettingsInfoStlyes = makeStyles({
   },
   connectWalletButton: {
     backgroundColor: "#3B7AFD",
-    fontSize: "21px",
-    fontFamily: "Whyte",
+    fontSize: "20px",
   },
   depositButton: {
     backgroundColor: "#3B7AFD",
     width: "208px",
     height: "60px",
-    fontSize: "21px",
-    fontFamily: "Whyte",
+    fontSize: "20px",
   },
   cardSmall: {
     backgroundColor: "#111D38",
@@ -39,7 +35,6 @@ export const SettingsInfoStlyes = makeStyles({
     opacity: 1,
   },
   cardSmallFont: {
-    fontFamily: "Whyte",
     fontSize: "18px",
     color: "#C1D3FF",
   },
@@ -47,7 +42,7 @@ export const SettingsInfoStlyes = makeStyles({
     width: "150px",
     fontSize: "38px",
     fontWeight: "bold",
-    fontFamily: "Whyte",
+
     color: "#F5F5F5",
     borderColor: "#142243",
     borderRadius: "0px",
@@ -72,7 +67,6 @@ export const SettingsInfoStlyes = makeStyles({
     textAlign: "left",
     color: "#FFB74D",
     fontSize: "14px",
-    fontFamily: "Whyte",
   },
   maxTag: {
     borderRadius: "17px",
@@ -85,7 +79,6 @@ export const SettingsInfoStlyes = makeStyles({
     alignItems: "center",
     backgroundColor: " #3B7AFD",
     fontSize: "20px",
-    fontFamily: "Whyte",
   },
   openTag: {
     width: "60px",
@@ -104,7 +97,6 @@ export const SettingsInfoStlyes = makeStyles({
     textTransform: "uppercase",
     color: "#0ABB92",
     opacity: "1",
-    fontFamily: "Whyte",
   },
   closeTag: {
     width: "60px",

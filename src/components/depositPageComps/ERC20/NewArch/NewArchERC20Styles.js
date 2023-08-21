@@ -7,12 +7,10 @@ export const NewArchERC20Styles = makeStyles({
     },
   },
   valuesStyle: {
-    fontFamily: "Whyte",
-    fontSize: "21px",
+    fontSize: "20px",
   },
   valuesDimStyle: {
-    fontFamily: "Whyte",
-    fontSize: "21px",
+    fontSize: "20px",
     color: "#C1D3FF",
   },
   cardRegular: {
@@ -36,19 +34,18 @@ export const NewArchERC20Styles = makeStyles({
     opacity: 1,
   },
   cardSmallFont: {
-    fontFamily: "Whyte",
     fontSize: "18px",
     color: "#111D38",
   },
   JoinText: {
     color: "#fff",
-    fontFamily: "Whyte",
-    fontSize: "21px",
+
+    fontSize: "20px",
     fontWeight: "bold",
   },
   textPara: {
     color: "#fff",
-    fontFamily: "Whyte",
+
     fontSize: "16px",
     fontWeight: "lighter",
   },

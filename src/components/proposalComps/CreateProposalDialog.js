@@ -45,7 +45,6 @@ const useStyles = makeStyles({
     backgroundColor: "#19274B",
   },
   dialogBox: {
-    fontFamily: "Whyte",
     fontSize: "38px",
     color: "#FFFFFF",
     opacity: 1,
@@ -55,7 +54,7 @@ const useStyles = makeStyles({
     width: "100%",
     // margin: "16px 0 25px 0",
     fontSize: "18px",
-    fontFamily: "Whyte",
+
     marginTop: "0.5rem",
   },
 });
@@ -116,6 +115,7 @@ const CreateProposalDialog = ({
       userAddress: "",
       amountOfTokens: 0,
       amountOfTokens721: 0,
+      pricePerToken: 0,
       quorum: 0,
       threshold: 0,
       totalDeposit: 0,
@@ -280,6 +280,8 @@ const CreateProposalDialog = ({
           let followersAddresses;
 
           if (values.actionCommand === "whitelist deposit") {
+            followersAddresses = values.csvObject;
+
             data = {
               daoAddress,
               whitelist: values.csvObject,
@@ -325,6 +327,17 @@ const CreateProposalDialog = ({
                   : null,
               whitelistAddresses: followersAddresses,
               allowWhitelisting: true,
+              usdcTokenSymbol: "USDC",
+              usdcTokenDecimal: 6,
+              usdcGovernanceTokenDecimal: 18,
+            },
+          ];
+        }
+        if (values.actionCommand === "update price per token") {
+          commands = [
+            {
+              executionId: 13,
+              pricePerToken: values.pricePerToken,
               usdcTokenSymbol: "USDC",
               usdcTokenDecimal: 6,
               usdcGovernanceTokenDecimal: 18,
@@ -479,7 +492,7 @@ const CreateProposalDialog = ({
                   backgroundColor: "#19274B",
                   fontSize: "18px",
                   color: "#C1D3FF",
-                  fontFamily: "Whyte",
+
                   margin: "0.5rem 0",
                 }}
                 name="proposalDescription"

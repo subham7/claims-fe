@@ -5,6 +5,7 @@ import { RiShareBoxLine } from "react-icons/ri";
 import { MdIosShare } from "react-icons/md";
 import { Menu, MenuItem } from "@mui/material";
 import LensterShareButton from "@components/LensterShareButton";
+import { Typography } from "@components/ui";
 import { TwitterShareButton } from "react-twitter-embed";
 
 const Header = ({
@@ -58,7 +59,7 @@ const Header = ({
 
   return (
     <div>
-      <p className={classes.heading}>{clubData?.name}</p>
+      <Typography variant="heading">{clubData?.name}</Typography>
       <div className={classes.flexContainer}>
         {active ? (
           <p className={classes.isActive}>
@@ -127,9 +128,9 @@ const Header = ({
 
       {isErc20 ? (
         <>
-          <p className={classes.smallText}>
+          <Typography variant="info">
             {isErc20 ? "Deposit Closes in" : "Minting closes in"}
-          </p>
+          </Typography>
 
           <div className={classes.timer}>
             <p>{timer.days}</p>

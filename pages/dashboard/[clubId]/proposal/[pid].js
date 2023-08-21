@@ -109,11 +109,11 @@ const useStyles = makeStyles({
     color: "#C1D3FF",
   },
   listFont2: {
-    fontSize: "19px",
+    fontSize: "18px",
     color: "#C1D3FF",
   },
   listFont2Colourless: {
-    fontSize: "19px",
+    fontSize: "18px",
     color: "#FFFFFF",
     fontWeight: "bold",
   },
@@ -126,7 +126,7 @@ const useStyles = makeStyles({
     color: "#C1D3FF",
   },
   cardFont1: {
-    fontSize: "19px",
+    fontSize: "18px",
     color: "#EFEFEF",
     justifyContent: "center",
     display: "flex",
@@ -568,7 +568,8 @@ const ProposalDetail = () => {
       proposalData.commands[0].executionId === 3 ||
       proposalData.commands[0].executionId === 10 ||
       proposalData.commands[0].executionId === 11 ||
-      proposalData?.commands[0].executionId == 12
+      proposalData?.commands[0].executionId === 12 ||
+      proposalData?.commands[0].executionId === 13
     ) {
       ABI = FactoryContractABI.abi;
     } else if (proposalData.commands[0].executionId === 8) {
@@ -922,6 +923,17 @@ const ProposalDetail = () => {
         proposalData.commands[0]?.merkleRoot?.merkleRoot,
       ]);
     }
+
+    if (proposalData.commands[0].executionId === 13) {
+      let iface = new Interface(ABI);
+
+      data = iface.encodeFunctionData("updateTotalRaiseAmount", [
+        factoryData?.distributionAmount,
+        convertToWeiGovernance(proposalData.commands[0]?.pricePerToken, 6),
+        daoAddress,
+      ]);
+    }
+
     const response = updateProposalAndExecution(
       data,
       approvalData,
@@ -941,7 +953,8 @@ const ProposalDetail = () => {
       proposalData.commands[0].executionId === 3 ||
         proposalData.commands[0].executionId === 10 ||
         proposalData.commands[0].executionId === 11 ||
-        proposalData?.commands[0].executionId == 12
+        proposalData?.commands[0].executionId === 12 ||
+        proposalData.commands[0].executionId === 13
         ? FACTORY_CONTRACT_ADDRESS
         : "",
       GNOSIS_TRANSACTION_URL,

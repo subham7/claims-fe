@@ -16,7 +16,6 @@ import { fetchTokenMetaData } from "../api/assets";
 
 const useStyles = makeStyles({
   dialogBox: {
-    fontFamily: "Whyte",
     fontSize: "38px",
     color: "#FFFFFF",
     opacity: 1,
@@ -24,10 +23,8 @@ const useStyles = makeStyles({
   },
   addCircleColour: {
     color: "#C1D3FF",
-    fontFamily: "Whyte",
   },
   card3text3: {
-    fontFamily: "Whyte",
     width: "354px",
     color: "#C1D3FF",
   },
