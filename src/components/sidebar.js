@@ -2,6 +2,7 @@ import React from "react";
 import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
 import PeopleRoundedIcon from "@mui/icons-material/PeopleRounded";
 import InsertDriveFileRoundedIcon from "@mui/icons-material/InsertDriveFileRounded";
+import { HiDocumentDuplicate } from "react-icons/hi";
 import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
 import AddCardIcon from "@mui/icons-material/AddCard";
 import CompareArrowsIcon from "@mui/icons-material/CompareArrows";
@@ -204,24 +205,24 @@ const Sidebar = (props) => {
             </ListItemButton>
           </BootstrapTooltip>
 
-          {/* <BootstrapTooltip title="Documents" placement="left">
-              <ListItemButton
-                component="a"
-                onClick={(e) => {
-                  router.push(`/documents/${daoAddress}`, undefined, {
-                    shallow: true,
-                  });
-                }}>
-                <ListItemIcon
-                  className={
-                    page == 6
-                      ? classes.listItemIconSelected
-                      : classes.listItemIcon
-                  }>
-                  <HiDocumentDuplicate size={30} />
-                </ListItemIcon>
-              </ListItemButton>
-            </BootstrapTooltip> */}
+          <BootstrapTooltip title="Documents" placement="left">
+            <ListItemButton
+              component="a"
+              onClick={(e) => {
+                router.push(`/documents/${daoAddress}`, undefined, {
+                  shallow: true,
+                });
+              }}>
+              <ListItemIcon
+                className={
+                  page == 7
+                    ? classes.listItemIconSelected
+                    : classes.listItemIcon
+                }>
+                <HiDocumentDuplicate size={30} />
+              </ListItemIcon>
+            </ListItemButton>
+          </BootstrapTooltip>
         </List>
       </div>
     </Box>
