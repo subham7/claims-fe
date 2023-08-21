@@ -469,13 +469,14 @@ const ProposalDetail = () => {
       linkData[1],
       linkData[2],
     );
-    console.log("sdfasf", nftdata);
     if (
-      !nftData?.data?.orders.length &&
+      !nftdata?.data?.orders.length &&
       proposalData.commands[0].executionId === 8
     ) {
       console.log("here");
       setIsNftSold(true);
+    } else {
+      setIsNftSold(false);
     }
   };
 
@@ -965,6 +966,32 @@ const ProposalDetail = () => {
 
   const createRejectSafeTransaction = async () => {
     setLoaderOpen(true);
+    const response = await createRejectSafeTx({
+      pid,
+      gnosisTransactionUrl: GNOSIS_TRANSACTION_URL,
+      gnosisAddress,
+      NETWORK_HEX,
+      daoAddress,
+      walletAddress,
+    });
+    console.log(response);
+    if (response) {
+      fetchData();
+      setExecuted(true);
+      setOpenSnackBar(true);
+      setMessage("Signature successful!");
+      setFailed(false);
+      setLoaderOpen(false);
+    } else {
+      setOpenSnackBar(true);
+      setMessage("Signature failed!");
+      setFailed(true);
+      setLoaderOpen(false);
+    }
+  };
+
+  const executeRejectSafeTransaction = async () => {
+    setLoaderOpen(true);
     const response = await executeRejectTx({
       pid: proposalData?.cancelProposalId,
       gnosisTransactionUrl: GNOSIS_TRANSACTION_URL,
@@ -1257,7 +1284,6 @@ const ProposalDetail = () => {
                                 style={{
                                   width: "100%",
                                   padding: "1rem 0",
-                                  opacity: "50%",
                                 }}
                                 className={
                                   executed
@@ -1330,19 +1356,12 @@ const ProposalDetail = () => {
                                     ? classes.mainCardButtonSuccess
                                     : classes.mainCardButton
                                 }
+                                style={{ marginTop: "20px" }}
                                 onClick={() => {
                                   if (proposalData?.cancelProposalId) {
-                                    createRejectSafeTransaction();
+                                    executeRejectSafeTransaction();
                                   } else {
-                                    createRejectSafeTx({
-                                      pid,
-                                      gnosisTransactionUrl:
-                                        GNOSIS_TRANSACTION_URL,
-                                      gnosisAddress,
-                                      NETWORK_HEX,
-                                      daoAddress,
-                                      walletAddress,
-                                    });
+                                    createRejectSafeTransaction();
                                   }
                                 }}>
                                 <Grid item>

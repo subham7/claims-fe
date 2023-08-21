@@ -60,6 +60,7 @@ export const createRejectSafeTx = async ({
       safeTxHash: safeTxHash,
       senderAddress: Web3.utils.toChecksumAddress(walletAddress),
     });
+    console.log(proposeTxn);
 
     const senderSignature = await safeSdk.signTypedData(
       rejectionTransaction,
@@ -83,7 +84,7 @@ export const createRejectSafeTx = async ({
 
     await createCancelProposal(cancelPayload, network);
 
-    return proposeTxn;
+    return true;
   } catch (e) {
     console.error(e);
   }
