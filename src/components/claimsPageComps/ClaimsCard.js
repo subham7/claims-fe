@@ -97,6 +97,7 @@ const ClaimsCard = ({
   claimContract,
   createdBy,
   isActive: active,
+  claimsNetwork,
 }) => {
   const classes = useStyles();
   const router = useRouter();
@@ -199,7 +200,7 @@ const ClaimsCard = ({
             onClick={(e) => {
               e.stopPropagation();
               navigator.clipboard.writeText(
-                `${window.location.origin}/claims/${claimContract}`,
+                `${window.location.origin}/claims/${claimContract}?network=${claimsNetwork}`,
               );
               setIsCopied(true);
 

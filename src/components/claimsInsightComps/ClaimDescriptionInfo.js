@@ -11,6 +11,7 @@ const ClaimDescriptionInfo = ({
   startTime,
   claimAddress,
   isActive,
+  claimsNetwork,
 }) => {
   const [claimActive, setClaimActive] = useState(false);
   const [isClaimStarted, setIsClaimStarted] = useState(false);
@@ -59,7 +60,7 @@ const ClaimDescriptionInfo = ({
         <div className={classes.gapContainer}>
           <BsLink45Deg
             onClick={() => {
-              router.push(`/claims/${claimAddress}`);
+              router.push(`/claims/${claimAddress}?network=${claimsNetwork}`);
             }}
             style={{
               border: "0.5px solid #6475A3",

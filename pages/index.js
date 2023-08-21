@@ -26,6 +26,7 @@ import { BsFillPlayFill } from "react-icons/bs";
 import Web3 from "web3";
 import VideoModal from "../src/components/modals/VideoModal";
 import { useAccount, useNetwork } from "wagmi";
+import { CLAIMS_SUBGRAPH_URL } from "utils/constants";
 
 const useStyles = makeStyles({
   container: {
@@ -142,11 +143,7 @@ const App = () => {
         const fetchClubs = async () => {
           try {
             const data = await subgraphQuery(
-              networkId === "0x5"
-                ? SUBGRAPH_URL_GOERLI
-                : networkId === "0x89"
-                ? SUBGRAPH_URL_POLYGON
-                : "",
+              CLAIMS_SUBGRAPH_URL[networkId],
               QUERY_CLUBS_FROM_WALLET_ADDRESS(walletAddress),
             );
             setClubListData(data.users);
@@ -219,7 +216,7 @@ const App = () => {
   };
 
   return (
-    <Layout1 showSidebar={false} faucet={false}>
+    <Layout1 showSidebar={false} faucet={false} isClaims={true}>
       <div className={classes.container}>
         {!manageStation && clubFlow && (
           <div className={classes.cardContainer}>

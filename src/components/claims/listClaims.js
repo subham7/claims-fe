@@ -5,12 +5,12 @@ import settingsImg from "../../../public/assets/images/settings.png";
 import claimsBanner from "../../../public/assets/images/claimsBanner.png";
 import { makeStyles } from "@mui/styles";
 import { useRouter } from "next/router";
-
-import ClaimsCard from "@components/claimsPageComps/ClaimsCard";
+import ClaimsCard from "components/claimsPageComps/ClaimsCard";
 import { subgraphQuery } from "utils/subgraphs";
-import { CLAIMS_SUBGRAPH_URL_POLYGON } from "api";
 import { QUERY_ALL_CLAIMS_OF_CREATOR } from "api/graphql/queries";
-import { useAccount } from "wagmi";
+import { useAccount, useNetwork } from "wagmi";
+import Web3 from "web3";
+import { CLAIMS_SUBGRAPH_URL } from "utils/constants";
 
 const useStyles = makeStyles({
   container: {
@@ -82,6 +82,8 @@ const ListClaims = () => {
   const classes = useStyles();
   const router = useRouter();
   const [claimData, setClaimData] = useState([]);
+  const { chain } = useNetwork();
+  const networkId = Web3.utils.numberToHex(chain?.id);
 
   const createClaimHandler = () => {
     router.push("/claims/create");
@@ -93,7 +95,7 @@ const ListClaims = () => {
     const fetchClaims = async () => {
       try {
         const { claims } = await subgraphQuery(
-          CLAIMS_SUBGRAPH_URL_POLYGON,
+          CLAIMS_SUBGRAPH_URL[networkId],
           QUERY_ALL_CLAIMS_OF_CREATOR(walletAddress),
         );
 
@@ -104,7 +106,7 @@ const ListClaims = () => {
     };
 
     fetchClaims();
-  }, [walletAddress]);
+  }, [networkId, walletAddress]);
 
   return (
     <>
@@ -142,6 +144,7 @@ const ListClaims = () => {
               claimContract={item?.claimAddress}
               createdBy={item?.creatorAddress}
               isActive={item?.isActive}
+              claimsNetwork={item?.networkId}
             />
           ))}
         </div>
