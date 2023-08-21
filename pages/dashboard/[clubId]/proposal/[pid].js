@@ -65,7 +65,11 @@ import seaportABI from "../../../../src/abis/seaport.json";
 import SafeAppsSDK from "@safe-global/safe-apps-sdk";
 import { useAccount } from "wagmi";
 // import Button from "@components/ui/button/Button";
-import { createRejectSafeTx, executeRejectTx } from "utils/proposal";
+import {
+  createRejectSafeTx,
+  executeRejectTx,
+  signRejectTx,
+} from "utils/proposal";
 
 const useStyles = makeStyles({
   clubAssets: {
@@ -285,7 +289,9 @@ const ProposalDetail = () => {
   const [executed, setExecuted] = useState(false);
   const [pendingTxHash, setPendingTxHash] = useState("");
   const [txHash, setTxHash] = useState();
+  const [cancelTxHash, setCancelTxHash] = useState();
   const [signedOwners, setSignedOwners] = useState([]);
+
   const [openSnackBar, setOpenSnackBar] = useState(false);
   const [message, setMessage] = useState("");
   const [failed, setFailed] = useState(false);
@@ -293,6 +299,10 @@ const ProposalDetail = () => {
   const [members, setMembers] = useState([]);
   const [nftData, setNftData] = useState([]);
   const [isNftSold, setIsNftSold] = useState(false);
+  const [isCancelSigned, setIsCancelSigned] = useState(false);
+  const [isCancelExecutionReady, setIsCancelExecutionReady] = useState(false);
+  const [isCancelExecuted, setIsCancelExecuted] = useState(false);
+  const [isRejectTxnSigned, setIsRejectTxnSigned] = useState(false);
 
   const GNOSIS_TRANSACTION_URL = useSelector((state) => {
     return state.gnosis.transactionUrl;
@@ -333,7 +343,6 @@ const ProposalDetail = () => {
     });
     return safeService;
   }, [GNOSIS_TRANSACTION_URL, walletAddress]);
-
   const isOwner = useCallback(async () => {
     if (gnosisAddress) {
       const safeSdk = await getSafeSdk(
@@ -354,6 +363,47 @@ const ProposalDetail = () => {
       } else setGovernance(true);
       const threshold = await safeSdk.getThreshold();
 
+      const proposalData = await getProposalDetail(pid);
+
+      if (proposalData.data[0].cancelProposalId) {
+        const proposalTxHash = getProposalTxHash(
+          proposalData.data[0].cancelProposalId,
+        );
+        proposalTxHash.then(async (result) => {
+          if (
+            result.status !== 200 ||
+            (result.status === 200 && result.data.length === 0)
+          ) {
+            setCancelTxHash("");
+          } else {
+            // txHash = result.data[0].txHash;
+            setCancelTxHash(result.data[0].txHash);
+            const safeService = await getSafeService();
+            const tx = await safeService.getTransaction(result.data[0].txHash);
+            const ownerAddresses = tx.confirmations.map(
+              (confirmOwners) => confirmOwners.owner,
+            );
+            if (ownerAddresses.length) {
+              setIsRejectTxnSigned(true);
+            }
+            const pendingTxs = await safeService.getPendingTransactions(
+              Web3.utils.toChecksumAddress(gnosisAddress),
+            );
+            setPendingTxHash(
+              pendingTxs?.results[pendingTxs.count - 1]?.safeTxHash,
+            );
+
+            setSignedOwners(ownerAddresses);
+            if (ownerAddresses.includes(walletAddress)) {
+              setIsCancelSigned(true);
+            }
+            if (ownerAddresses.length >= threshold) {
+              setIsCancelExecutionReady(true);
+            }
+          }
+          setLoaderOpen(false);
+        });
+      }
       const proposalTxHash = getProposalTxHash(pid);
       proposalTxHash.then(async (result) => {
         if (
@@ -964,15 +1014,41 @@ const ProposalDetail = () => {
       daoAddress,
       walletAddress,
     });
-    console.log(response);
     if (response) {
       fetchData();
-      setExecuted(true);
+      setIsCancelSigned(true);
       setOpenSnackBar(true);
       setMessage("Signature successful!");
       setFailed(false);
-      setLoaderOpen(false);
+      isOwner();
     } else {
+      setIsCancelSigned(false);
+      setOpenSnackBar(true);
+      setMessage("Signature failed!");
+      setFailed(true);
+      setLoaderOpen(false);
+    }
+  };
+
+  const signRejectTransaction = async () => {
+    setLoaderOpen(true);
+
+    const cancelPid = proposalData.cancelProposalId;
+    const response = await signRejectTx({
+      pid: cancelPid,
+      walletAddress,
+      gnosisTransactionUrl: GNOSIS_TRANSACTION_URL,
+      gnosisAddress,
+    });
+    if (response) {
+      fetchData();
+      setIsCancelSigned(true);
+      setOpenSnackBar(true);
+      setMessage("Signature successful!");
+      setFailed(false);
+      isOwner();
+    } else {
+      setIsCancelSigned(false);
       setOpenSnackBar(true);
       setMessage("Signature failed!");
       setFailed(true);
@@ -1026,6 +1102,7 @@ const ProposalDetail = () => {
       setLoaderOpen(true);
       fetchData();
       fetchNfts();
+
       isOwner();
     }
   }, [fetchData, fetchNfts, isOwner, pid]);
@@ -1338,36 +1415,72 @@ const ProposalDetail = () => {
                               </Button>
                             )}
 
-                            {signed && (
-                              <Card
-                                className={
-                                  executed
-                                    ? classes.mainCardButtonSuccess
-                                    : classes.mainCardButton
-                                }
-                                style={{ marginTop: "20px" }}
-                                onClick={() => {
-                                  if (proposalData?.cancelProposalId) {
-                                    executeRejectSafeTransaction();
-                                  } else {
-                                    createRejectSafeTransaction();
+                            {(signed || isRejectTxnSigned) &&
+                              proposalData.commands[0].executionId === 8 && (
+                                <Card
+                                  className={
+                                    executed
+                                      ? classes.mainCardButtonSuccess
+                                      : classes.mainCardButton
                                   }
-                                }}>
-                                <Grid item>
-                                  <Typography
-                                    className={classes.cardFont1}
-                                    style={{
-                                      display: "flex",
-                                      justifyContent: "center",
-                                      alignItems: "center",
-                                    }}>
-                                    {proposalData?.cancelProposalId
-                                      ? "Execute Reject Transaction"
-                                      : "Sign Reject Transaction"}
-                                  </Typography>
-                                </Grid>
-                              </Card>
-                            )}
+                                  style={{ marginTop: "20px" }}
+                                  // onClick={() => {
+                                  //   if (proposalData?.cancelProposalId) {
+                                  //     executeRejectSafeTransaction();
+                                  //   } else {
+                                  //     createRejectSafeTransaction();
+                                  //   }
+                                  // }}
+                                  onClick={
+                                    isCancelExecutionReady
+                                      ? pendingTxHash === txHash
+                                        ? () => {
+                                            executeRejectSafeTransaction();
+                                          }
+                                        : () => {
+                                            setOpenSnackBar(true);
+                                            setFailed(true);
+                                            setMessage(
+                                              "execute txns with smaller nonce first",
+                                            );
+                                          }
+                                      : !isRejectTxnSigned
+                                      ? () => {
+                                          createRejectSafeTransaction();
+                                        }
+                                      : () => {
+                                          signRejectTransaction();
+                                        }
+                                  }>
+                                  <Grid item>
+                                    {isCancelExecuted && isCancelSigned ? (
+                                      <Grid item>
+                                        <Typography
+                                          className={classes.cardFont1}>
+                                          Executed Reject Successfully
+                                        </Typography>
+                                      </Grid>
+                                    ) : isCancelExecutionReady ? (
+                                      <Grid item>
+                                        <Typography
+                                          className={classes.cardFont1}>
+                                          Execute Reject
+                                        </Typography>
+                                      </Grid>
+                                    ) : !isCancelExecutionReady &&
+                                      !isCancelExecuted ? (
+                                      <Grid item>
+                                        <Typography
+                                          className={classes.cardFont1}>
+                                          {isCancelSigned
+                                            ? "Signed Reject Succesfully"
+                                            : "Sign Reject Now"}
+                                        </Typography>
+                                      </Grid>
+                                    ) : null}
+                                  </Grid>
+                                </Card>
+                              )}
                           </Card>
                         ) : (
                           <Card sx={{ width: "100%" }}>

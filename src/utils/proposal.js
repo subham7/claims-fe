@@ -60,7 +60,6 @@ export const createRejectSafeTx = async ({
       safeTxHash: safeTxHash,
       senderAddress: Web3.utils.toChecksumAddress(walletAddress),
     });
-    console.log(proposeTxn);
 
     const senderSignature = await safeSdk.signTypedData(
       rejectionTransaction,
@@ -154,7 +153,6 @@ export const signRejectTx = async ({
     });
 
     const proposalTxHash = await getProposalTxHash(pid);
-
     const safetx = await safeService.getTransaction(
       proposalTxHash.data[0].txHash,
     );
@@ -164,7 +162,11 @@ export const signRejectTx = async ({
       safeAddress: Web3.utils.toChecksumAddress(gnosisAddress),
     });
 
-    const senderSignature = await safeSdk.signTypedData(safetx, "v4");
+    const safeTransaction = await safeSdk.createRejectionTransaction(
+      safetx.nonce,
+    );
+
+    const senderSignature = await safeSdk.signTypedData(safeTransaction, "v4");
 
     await safeService.confirmTransaction(
       safetx.safeTxHash,
