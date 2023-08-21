@@ -520,7 +520,7 @@ const ProposalDetail = () => {
     );
     if (
       !nftdata?.data?.orders.length &&
-      proposalData.commands[0].executionId === 8
+      proposalData?.commands[0].executionId === 8
     ) {
       setIsNftSold(true);
     } else {
@@ -565,17 +565,17 @@ const ProposalDetail = () => {
         "function airDropToken(address _airdropTokenAddress,uint256[] memory _airdropAmountArray,address[] memory _members)",
       ];
     } else if (
-      proposalData.commands[0].executionId === 3 ||
-      proposalData.commands[0].executionId === 10 ||
-      proposalData.commands[0].executionId === 11 ||
+      proposalData?.commands[0].executionId === 3 ||
+      proposalData?.commands[0].executionId === 10 ||
+      proposalData?.commands[0].executionId === 11 ||
       proposalData?.commands[0].executionId === 12 ||
       proposalData?.commands[0].executionId === 13
     ) {
       ABI = FactoryContractABI.abi;
-    } else if (proposalData.commands[0].executionId === 8) {
+    } else if (proposalData?.commands[0].executionId === 8) {
       ABI = seaportABI;
     } else if (
-      proposalData.commands[0].executionId === 9 ||
+      proposalData?.commands[0].executionId === 9 ||
       clubData.tokenType === "erc721"
     ) {
       ABI = Erc721Dao.abi;
@@ -723,17 +723,17 @@ const ProposalDetail = () => {
       membersArray = proposalData.commands[0].customTokenAddresses;
       airDropAmountArray = proposalData.commands[0].customTokenAmounts;
     }
-    if (proposalData.commands[0].executionId === 5) {
+    if (proposalData?.commands[0].executionId === 5) {
       let iface = new Interface(ABI);
 
       data = iface.encodeFunctionData("transferNft", [
-        proposalData.commands[0].customNft,
-        proposalData.commands[0].customTokenAddresses[0],
-        proposalData.commands[0].customNftToken,
+        proposalData?.commands[0].customNft,
+        proposalData?.commands[0].customTokenAddresses[0],
+        proposalData?.commands[0].customNftToken,
       ]);
     }
-    if (proposalData.commands[0].executionId === 8) {
-      const parts = proposalData.commands[0].nftLink.split("/");
+    if (proposalData?.commands[0].executionId === 8) {
+      const parts = proposalData?.commands[0].nftLink.split("/");
 
       const linkData = parts.slice(-3);
       const nftdata = await retrieveNftListing(
@@ -806,8 +806,8 @@ const ProposalDetail = () => {
         ]);
       }
     }
-    if (proposalData.commands[0].executionId === 9) {
-      const parts = proposalData.commands[0].nftLink.split("/");
+    if (proposalData?.commands[0].executionId === 9) {
+      const parts = proposalData?.commands[0].nftLink.split("/");
 
       const linkData = parts.slice(-3);
       let iface = new Interface(ABI);

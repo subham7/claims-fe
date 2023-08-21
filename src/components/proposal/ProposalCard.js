@@ -4,21 +4,17 @@ import {
   calculateDays,
   convertFromWeiGovernance,
   convertToWeiGovernance,
-} from "../../../../src/utils/globalFunctions";
-import SvgTickerIcon from "../../../../public/assets/icons/ticker_icon.js";
-import SvgActionIcon from "../../../../public/assets/icons/action_icon.js";
-import SvgSurveyIcon from "../../../../public/assets/icons/survey_icon.js";
+} from "utils/globalFunctions";
+import SvgTickerIcon from "../../../public/assets/icons/ticker_icon.js";
+import SvgActionIcon from "../../../public/assets/icons/action_icon.js";
+import SvgSurveyIcon from "../../../public/assets/icons/survey_icon.js";
 import React, { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { useRouter } from "next/router";
-import { ProposalCardStyles } from "../../../../src/components/proposalComps/ProposalCardStyles";
-import useSmartContractMethods from "../../../../src/hooks/useSmartContractMethods";
-import { extractNftAdressAndId } from "utils/helper";
+import { ProposalCardStyles } from "@components/proposalComps/ProposalCardStyles";
+import useSmartContractMethods from "hooks/useSmartContractMethods";
 
-const ProposalCard = ({ proposal }) => {
+const ProposalCard = ({ proposal, daoAddress }) => {
   const classes = ProposalCardStyles();
-  const router = useRouter();
-  const { clubId: daoAddress } = router.query;
 
   const tokenType = useSelector((state) => {
     return state.club.clubData.tokenType;
@@ -228,57 +224,12 @@ const ProposalCard = ({ proposal }) => {
                             )}
                         </Typography>
                       </div>
-                    }></Chip>
+                    }
+                  />
                 </Grid>
               </>
             ) : (
               <></>
-            )}
-
-            {proposal?.commands[0].executionId === 8 ||
-            proposal?.commands[0].executionId === 9 ? (
-              <Grid item>
-                <Chip
-                  className={classes.timeLeftChip}
-                  style={{
-                    marginRight: "10px",
-                  }}
-                  label={
-                    <div className="f-d f-v-c tb-pad-1">
-                      {" "}
-                      <Typography variant="info" className="text-blue r-pad-1">
-                        NFT address:
-                      </Typography>
-                      <Typography variant="info">
-                        {extractNftAdressAndId(
-                          proposal.commands[0].nftLink,
-                        ).nftAddress.slice(0, 6)}
-                        ....
-                        {extractNftAdressAndId(
-                          proposal.commands[0].nftLink,
-                        ).nftAddress.slice(-6)}
-                      </Typography>
-                    </div>
-                  }></Chip>
-
-                <Chip
-                  className={classes.timeLeftChip}
-                  label={
-                    <div className="f-d f-v-c tb-pad-1">
-                      <Typography variant="info" className="text-blue r-pad-1">
-                        Token Id:
-                      </Typography>
-                      <Typography variant="info">
-                        {
-                          extractNftAdressAndId(proposal.commands[0].nftLink)
-                            .tokenId
-                        }
-                      </Typography>
-                    </div>
-                  }></Chip>
-              </Grid>
-            ) : (
-              ""
             )}
 
             {proposal?.commands[0]?.executionId === 10 ? (
