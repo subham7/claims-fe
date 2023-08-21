@@ -8,7 +8,6 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { useDispatch } from "react-redux";
 import jazzicon from "@metamask/jazzicon";
 import { useState } from "react";
-import { useRouter } from "next/router";
 
 const StyledMenu = styled((props) => (
   <Menu
@@ -62,7 +61,6 @@ export default function AccountButton(props) {
   const open = Boolean(anchorEl);
   const dispatch = useDispatch();
   const [generated, setGenerated] = useState(false);
-  const router = useRouter();
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);

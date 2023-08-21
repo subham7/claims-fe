@@ -14,7 +14,7 @@ const SettingsPage = () => {
 
   return (
     <Layout1 daoAddress={daoAddress} page={5}>
-      <Settings />
+      <Settings daoAddress={daoAddress} />
     </Layout1>
   );
 };

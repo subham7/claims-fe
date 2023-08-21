@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import Layout1 from "@components/layouts/layout1";
 import Transactions from "@components/transactions/transactions";
 
-const SettingsPage = () => {
+const TransactionsPage = () => {
   const router = useRouter();
 
   const [daoAddress] = router?.query?.slug ?? [];
@@ -19,4 +19,4 @@ const SettingsPage = () => {
   );
 };
 
-export default SettingsPage;
+export default TransactionsPage;

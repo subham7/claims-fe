@@ -8,7 +8,6 @@ import { useRouter } from "next/router";
 import claimsBanner from "../../public/assets/images/claimsBanner.png";
 import ClaimsCard from "../../src/components/claimsPageComps/ClaimsCard";
 import useSmartContract from "../../src/hooks/useSmartContract";
-import Layout1 from "../../src/components/layouts/layout1";
 import { subgraphQuery } from "../../src/utils/subgraphs";
 import { CLAIMS_SUBGRAPH_URL_POLYGON } from "../../src/api";
 import { QUERY_ALL_CLAIMS_OF_CREATOR } from "../../src/api/graphql/queries";
@@ -32,7 +31,6 @@ const useStyles = makeStyles({
   },
   claimDoc: {
     width: "130px",
-
     fontSize: "16px",
     border: "none",
     padding: "18px 24px",
@@ -80,14 +78,14 @@ const useStyles = makeStyles({
   },
 });
 
-const Claims = () => {
+const ListClaims = () => {
   const classes = useStyles();
   const router = useRouter();
   const [claimData, setClaimData] = useState([]);
   useSmartContract();
 
   const createClaimHandler = () => {
-    router.push("/claims/form");
+    router.push("/claims/create");
   };
 
   const { address: walletAddress } = useAccount();
@@ -110,7 +108,7 @@ const Claims = () => {
   }, [walletAddress]);
 
   return (
-    <Layout1 showSidebar={false}>
+    <>
       <div className={classes.container}>
         {/* Left Side */}
         <div className={classes.leftDiv}>
@@ -159,8 +157,8 @@ const Claims = () => {
           />
         </div>
       </div>
-    </Layout1>
+    </>
   );
 };
 
-export default Claims;
+export default ListClaims;

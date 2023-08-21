@@ -4,7 +4,7 @@ import Layout1 from "@components/layouts/layout1";
 import Proposal from "@components/proposal/Proposal";
 import ProposalDetail from "@components/proposal/ProposalDetail";
 
-const Dashboard = () => {
+const ProposalPage = () => {
   const router = useRouter();
 
   const [daoAddress, proposalId] = router?.query?.slug ?? [];
@@ -24,4 +24,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default ProposalPage;

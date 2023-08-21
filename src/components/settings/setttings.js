@@ -1,5 +1,4 @@
 import dayjs from "dayjs";
-import { useRouter } from "next/router";
 import React, { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { QUERY_ALL_MEMBERS } from "../../src/api/graphql/queries";
@@ -13,7 +12,7 @@ import useSmartContractMethods from "../../src/hooks/useSmartContractMethods";
 import { getClubInfo } from "../../src/api/club";
 import { useAccount } from "wagmi";
 
-const Settings = () => {
+const Settings = (daoAddress) => {
   const [daoDetails, setDaoDetails] = useState({
     daoName: "",
     daoSymbol: "",
@@ -76,9 +75,6 @@ const Settings = () => {
   const gnosisAddress = useSelector((state) => {
     return state.club.clubData.gnosisAddress;
   });
-
-  const router = useRouter();
-  const { clubId: daoAddress } = router.query;
 
   const day = Math.floor(new Date().getTime() / 1000.0);
   const day1 = dayjs.unix(day);
@@ -265,6 +261,7 @@ const Settings = () => {
         clubInfo={clubInfo}
         getClubInfo={getClubInfoFn}
         isAdminUser={isAdminUser}
+        daoAddress={daoAddress}
       />
       <AdditionalSettings
         daoDetails={daoDetails}
@@ -276,8 +273,9 @@ const Settings = () => {
         fetchErc20ContractDetails={fetchErc20ContractDetails}
         fetchErc721ContractDetails={fetchErc721ContractDetails}
         isAdminUser={isAdminUser}
+        daoAddress={daoAddress}
       />
-      <TokenGating />
+      <TokenGating daoAddress={daoAddress} />
     </>
   );
 };

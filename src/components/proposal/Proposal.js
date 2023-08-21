@@ -326,8 +326,8 @@ const Proposal = (daoAddress) => {
                         md={12}>
                         <ProposalCard
                           proposal={executionTransaction}
-                          // fetched={fetched}
                           executionTransaction={true}
+                          daoAddress={daoAddress}
                         />
                       </Grid>
                     </>
@@ -349,7 +349,7 @@ const Proposal = (daoAddress) => {
                         <ProposalCard
                           proposal={proposal}
                           indexKey={key}
-                          // fetched={fetched}
+                          daoAddress={daoAddress}
                         />
                       </Grid>
                     );
@@ -381,6 +381,7 @@ const Proposal = (daoAddress) => {
         onClose={handleClose}
         tokenData={tokenData}
         nftData={nftData}
+        daoAddress={daoAddress}
       />
       <Backdrop
         sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}

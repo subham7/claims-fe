@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { useRouter } from "next/router";
 import { convertFromWeiGovernance } from "../../src/utils/globalFunctions";
 import { subgraphQuery } from "../../src/utils/subgraphs";
 import { QUERY_ALL_MEMBERS } from "../../src/api/graphql/queries";
@@ -13,7 +12,7 @@ import useSmartContract from "../../src/hooks/useSmartContract";
 import { getWhitelistMerkleProof } from "api/whitelist";
 import { useAccount } from "wagmi";
 
-const Join = () => {
+const Join = (daoAddress) => {
   const [daoDetails, setDaoDetails] = useState({
     depositDeadline: 0,
     minDeposit: 0,
@@ -45,9 +44,6 @@ const Join = () => {
 
   const { address: walletAddress } = useAccount();
 
-  const router = useRouter();
-  const { jid: daoAddress } = router.query;
-
   const SUBGRAPH_URL = useSelector((state) => {
     return state.gnosis.subgraphUrl;
   });
@@ -60,7 +56,7 @@ const Join = () => {
     return state.club.factoryData;
   });
 
-  useSmartContract();
+  useSmartContract({ daoAddress });
 
   const contractInstances = useSelector((state) => {
     return state.contractInstances.contractInstances;

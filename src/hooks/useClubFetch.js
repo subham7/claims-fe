@@ -1,4 +1,3 @@
-import { useRouter } from "next/router";
 import { useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { subgraphQuery } from "../utils/subgraphs";
@@ -27,11 +26,10 @@ import useSmartContract from "./useSmartContract";
 import { useAccount, useNetwork } from "wagmi";
 
 const useClubFetch = (daoAddress) => {
-  const router = useRouter();
   const dispatch = useDispatch();
   const { chain } = useNetwork();
   const networkId = Web3.utils.numberToHex(chain?.id);
-  useSmartContract();
+  useSmartContract({ daoAddress });
 
   const { address: walletAddress } = useAccount();
 
@@ -172,7 +170,6 @@ const useClubFetch = (daoAddress) => {
               } else {
                 if (erc20BalanceResponse === "0" && !daoAddress) {
                   dispatch(setMemberUser(false));
-                  router.push("/");
                 } else {
                   dispatch(setMemberUser(true));
                 }
@@ -213,7 +210,6 @@ const useClubFetch = (daoAddress) => {
               } else {
                 if (erc721BalanceResponse === "0" && !daoAddress) {
                   dispatch(setMemberUser(false));
-                  router.push("/");
                 } else {
                   dispatch(setMemberUser(true));
                 }
@@ -236,7 +232,6 @@ const useClubFetch = (daoAddress) => {
     getERC20DAOdetails,
     getERC20Balance,
     walletAddress,
-    router,
     getERC721DAOdetails,
     getERC721Balance,
   ]);

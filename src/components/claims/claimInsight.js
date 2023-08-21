@@ -1,23 +1,22 @@
 import React, { useEffect, useState } from "react";
-import { ClaimsInsightStyles } from "../../../src/components/claimsInsightComps/claimsInsightStyles";
-import Layout1 from "../../../src/components/layouts/layout1";
-import TotalClaimedInfo from "../../../src/components/claimsInsightComps/TotalClaimedInfo";
-import TotalWalletsClaimInfo from "../../../src/components/claimsInsightComps/TotalWalletsClaimInfo";
-import ClaimDescriptionInfo from "../../../src/components/claimsInsightComps/ClaimDescriptionInfo";
-import ClaimEligibility from "../../../src/components/claimsInsightComps/ClaimEligibility";
-import ClaimEdit from "../../../src/components/claimsInsightComps/ClaimEdit";
-import ToggleClaim from "../../../src/components/claimsInsightComps/ToggleClaim";
-import ClaimsTransactions from "../../../src/components/claimsInsightComps/ClaimsTransactions";
-import { useRouter } from "next/router";
-import { subgraphQuery } from "../../../src/utils/subgraphs";
-import { CLAIMS_SUBGRAPH_URL_POLYGON } from "../../../src/api";
-import { QUERY_CLAIM_DETAILS } from "../../../src/api/graphql/queries";
+import { ClaimsInsightStyles } from "../../src/components/claimsInsightComps/claimsInsightStyles";
+import Layout1 from "../../src/components/layouts/layout1";
+import TotalClaimedInfo from "../../src/components/claimsInsightComps/TotalClaimedInfo";
+import TotalWalletsClaimInfo from "../../src/components/claimsInsightComps/TotalWalletsClaimInfo";
+import ClaimDescriptionInfo from "../../src/components/claimsInsightComps/ClaimDescriptionInfo";
+import ClaimEligibility from "../../src/components/claimsInsightComps/ClaimEligibility";
+import ClaimEdit from "../../src/components/claimsInsightComps/ClaimEdit";
+import ToggleClaim from "../../src/components/claimsInsightComps/ToggleClaim";
+import ClaimsTransactions from "../../src/components/claimsInsightComps/ClaimsTransactions";
+import { subgraphQuery } from "../../src/utils/subgraphs";
+import { CLAIMS_SUBGRAPH_URL_POLYGON } from "../../src/api";
+import { QUERY_CLAIM_DETAILS } from "../../src/api/graphql/queries";
 import { Alert, Backdrop, CircularProgress } from "@mui/material";
-import useSmartContractMethods from "../../../src/hooks/useSmartContractMethods";
-import useSmartContract from "../../../src/hooks/useSmartContract";
-import { convertToWeiGovernance } from "../../../src/utils/globalFunctions";
+import useSmartContractMethods from "../../src/hooks/useSmartContractMethods";
+import useSmartContract from "../../src/hooks/useSmartContract";
+import { convertToWeiGovernance } from "../../src/utils/globalFunctions";
 
-const ClaimInsight = () => {
+const ClaimInsight = (claimAddress) => {
   const [claimsData, setClaimsData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [airdropTokenDetails, setAirdropTokenDetails] = useState({
@@ -30,8 +29,6 @@ const ClaimInsight = () => {
   const [isSuccessFull, setIsSuccessFull] = useState(false);
 
   const classes = ClaimsInsightStyles();
-  const router = useRouter();
-  const { claimInsight: claimAddress } = router.query;
 
   useSmartContract();
   const {

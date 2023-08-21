@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import Layout1 from "@components/layouts/layout1";
 import Join from "@components/join/Join";
 
-const Dashboard = () => {
+const JoinPage = () => {
   const router = useRouter();
 
   const [daoAddress] = router?.query?.slug ?? [];
@@ -14,9 +14,9 @@ const Dashboard = () => {
 
   return (
     <Layout1 showSidebar={false} daoAddress={daoAddress} page={4}>
-      <Join />
+      <Join daoAddress={daoAddress} />
     </Layout1>
   );
 };
 
-export default Dashboard;
+export default JoinPage;

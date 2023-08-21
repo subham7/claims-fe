@@ -17,9 +17,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { setContractInstances } from "../redux/reducers/contractInstances";
 import { useNetwork } from "wagmi";
 
-const useSmartContract = () => {
+const useSmartContract = ({ daoAddress }) => {
   const router = useRouter();
-  const { jid: daoAddress, clubId, claimAddress, claimInsight } = router.query;
+  const { claimAddress, claimInsight } = router.query;
   const { chain } = useNetwork();
   const networkId = Web3.utils.numberToHex(chain?.id);
   const dispatch = useDispatch();
@@ -75,28 +75,28 @@ const useSmartContract = () => {
     const web3Send = new Web3(window?.ethereum);
 
     try {
-      if (daoAddress || clubId) {
+      if (daoAddress) {
         const erc721TokenContractCall = new web3Call.eth.Contract(
           ERC721TokenABI.abi,
-          daoAddress || clubId,
+          daoAddress,
         );
 
         const erc20DaoContractCall = new web3Call.eth.Contract(
           ERC20DaoABI.abi,
-          daoAddress || clubId,
+          daoAddress,
         );
 
         const erc721DaoContractCall = new web3Call.eth.Contract(
           ERC721DaoABI.abi,
-          daoAddress || clubId,
+          daoAddress,
         );
 
         const erc20DaoContractSend = web3Send
-          ? new web3Send.eth.Contract(ERC20DaoABI.abi, daoAddress || clubId)
+          ? new web3Send.eth.Contract(ERC20DaoABI.abi, daoAddress)
           : {};
 
         const erc721DaoContractSend = web3Send
-          ? new web3Send.eth.Contract(ERC721DaoABI.abi, daoAddress || clubId)
+          ? new web3Send.eth.Contract(ERC721DaoABI.abi, daoAddress)
           : {};
 
         contractInstances = {
@@ -179,7 +179,7 @@ const useSmartContract = () => {
       getRpcUrl(networkId);
       initializeStationContracts();
     }
-  }, [daoAddress, clubId, networkId]);
+  }, [daoAddress, networkId]);
 
   useEffect(() => {
     if (networkId) {

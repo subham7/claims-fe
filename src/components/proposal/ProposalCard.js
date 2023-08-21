@@ -10,14 +10,11 @@ import SvgActionIcon from "../../public/assets/icons/action_icon.js";
 import SvgSurveyIcon from "../../public/assets/icons/survey_icon.js";
 import React, { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { useRouter } from "next/router";
 import { ProposalCardStyles } from "../../src/components/proposalComps/ProposalCardStyles";
 import useSmartContractMethods from "../../src/hooks/useSmartContractMethods";
 
-const ProposalCard = ({ proposal }) => {
+const ProposalCard = ({ proposal, daoAddress }) => {
   const classes = ProposalCardStyles();
-  const router = useRouter();
-  const { clubId: daoAddress } = router.query;
 
   const tokenType = useSelector((state) => {
     return state.club.clubData.tokenType;

@@ -27,7 +27,6 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import ProposalActionForm from "./ProposalActionForm";
 import { proposalValidationSchema } from "../createClubComps/ValidationSchemas";
 import { convertToWeiGovernance } from "../../utils/globalFunctions";
-import { useRouter } from "next/router";
 import { createProposal } from "../../api/proposal";
 import { fetchProposals } from "../../utils/proposal";
 import { useDispatch, useSelector } from "react-redux";
@@ -67,10 +66,8 @@ const CreateProposalDialog = ({
   nftData,
 }) => {
   const classes = useStyles();
-  const router = useRouter();
   const dispatch = useDispatch();
 
-  const { clubId } = router.query;
   const { address: walletAddress } = useAccount();
   const { chain } = useNetwork();
   const networkId = Web3.utils.numberToHex(chain?.id);
@@ -334,7 +331,7 @@ const CreateProposalDialog = ({
           name: values.proposalTitle,
           description: values.proposalDescription,
           createdBy: walletAddress,
-          clubId: clubId,
+          clubId: daoAddress,
           votingDuration: dayjs(values.proposalDeadline).unix(),
           votingOptions: values.optionList,
           commands: commands,
@@ -350,7 +347,7 @@ const CreateProposalDialog = ({
             setFailed(true);
             setLoaderOpen(false);
           } else {
-            const proposalData = await fetchProposals(clubId);
+            const proposalData = await fetchProposals(daoAddress);
             dispatch(setProposalList(proposalData));
             setOpenSnackBar(true);
             setFailed(false);

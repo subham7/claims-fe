@@ -1,31 +1,29 @@
 import { useEffect, useState } from "react";
 import { useFormik } from "formik";
 import { Grid, FormHelperText, Alert } from "@mui/material";
-import ClaimStep1 from "../../src/components/claimsPageComps/ClaimStep1";
-import ClaimStep2 from "../../src/components/claimsPageComps/ClaimStep2";
+import ClaimStep1 from "../claimsPageComps/ClaimStep1";
+import ClaimStep2 from "../claimsPageComps/ClaimStep2";
 import dayjs from "dayjs";
 import { makeStyles } from "@mui/styles";
-import { getAssetsByDaoAddress } from "../../src/api/assets";
-import { convertToWeiGovernance } from "../../src/utils/globalFunctions";
-import { createClaimCsv, createSnapShot } from "../../src/api/claims";
+import { getAssetsByDaoAddress } from "../../api/assets";
+import { convertToWeiGovernance } from "../../utils/globalFunctions";
+import { createClaimCsv, createSnapShot } from "../../api/claims";
 import {
   CLAIM_FACTORY_ADDRESS_GOERLI,
   CLAIM_FACTORY_ADDRESS_POLYGON,
-} from "../../src/api";
+} from "../../api";
 import { useRouter } from "next/router";
-import useSmartContractMethods from "../../src/hooks/useSmartContractMethods";
-import useSmartContract from "../../src/hooks/useSmartContract";
-import Layout1 from "../../src/components/layouts/layout1";
+import useSmartContractMethods from "../../hooks/useSmartContractMethods";
+import useSmartContract from "../../hooks/useSmartContract";
+import Layout1 from "../layouts/layout1";
 import Moralis from "moralis";
 import { EvmChain } from "@moralisweb3/common-evm-utils";
 import {
   claimStep1ValidationSchema,
   claimStep2ValidationSchema,
-} from "../../src/components/createClubComps/ValidationSchemas";
+} from "../createClubComps/ValidationSchemas";
 import { useAccount, useNetwork } from "wagmi";
 import Web3 from "web3";
-
-const steps = ["Step1", "Step2"];
 
 const useStyles = makeStyles({
   container: {
@@ -36,7 +34,7 @@ const useStyles = makeStyles({
   },
 });
 
-const Form = () => {
+const CreateClaim = () => {
   const [activeStep, setActiveStep] = useState(0);
   const [tokensInWallet, setTokensInWallet] = useState(null);
   const [showError, setShowError] = useState(null);
@@ -563,4 +561,4 @@ const Form = () => {
   );
 };
 
-export default Form;
+export default CreateClaim;

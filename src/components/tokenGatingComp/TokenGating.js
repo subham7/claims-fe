@@ -6,14 +6,13 @@ import { MdDelete } from "react-icons/md";
 import TokenGatingModal from "./TokenGatingModal";
 import { useSelector } from "react-redux";
 import SingleToken from "./SingleToken";
-import { useRouter } from "next/router";
 import {
   convertFromWeiGovernance,
   convertToWeiGovernance,
 } from "../../utils/globalFunctions";
 import useSmartContractMethods from "../../hooks/useSmartContractMethods";
 
-const TokenGating = () => {
+const TokenGating = (daoAddress) => {
   const [showTokenGatingModal, setShowTokenGatingModal] = useState(false);
   const [checked, setChecked] = useState(false);
   const [fetchedDetails, setFetchedDetails] = useState({
@@ -41,9 +40,7 @@ const TokenGating = () => {
     return state.gnosis.adminUser;
   });
 
-  const router = useRouter();
   const classes = TokenGatingStyle();
-  const { clubId: daoAddress } = router.query;
 
   const {
     getTokenGatingDetails,

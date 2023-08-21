@@ -2,28 +2,25 @@ import React, { useCallback, useEffect, useState } from "react";
 import {
   convertFromWeiGovernance,
   convertToWeiGovernance,
-} from "../../src/utils/globalFunctions";
-import { useRouter } from "next/router";
+} from "../../utils/globalFunctions";
 import { Alert, CircularProgress, Tooltip } from "@mui/material";
-import { getUserProofAndBalance } from "../../src/api/claims";
-import Layout1 from "../../src/components/layouts/layout1";
+import { getUserProofAndBalance } from "../../api/claims";
+import Layout1 from "../layouts/layout1";
 import Countdown from "react-countdown";
 import { useDispatch, useSelector } from "react-redux";
-import { addClaimEnabled } from "../../src/redux/reducers/createClaim";
-import useSmartContractMethods from "../../src/hooks/useSmartContractMethods";
-import useSmartContract from "../../src/hooks/useSmartContract";
-import { ClaimsStyles } from "../../src/components/claimsPageComps/ClaimsStyles";
-import { subgraphQuery } from "../../src/utils/subgraphs";
-import { CLAIMS_SUBGRAPH_URL_POLYGON } from "../../src/api";
-import { QUERY_CLAIM_DETAILS } from "../../src/api/graphql/queries";
+import { addClaimEnabled } from "../../redux/reducers/createClaim";
+import useSmartContractMethods from "../../hooks/useSmartContractMethods";
+import useSmartContract from "../../hooks/useSmartContract";
+import { ClaimsStyles } from "../claimsPageComps/ClaimsStyles";
+import { subgraphQuery } from "../../utils/subgraphs";
+import { CLAIMS_SUBGRAPH_URL_POLYGON } from "../../api";
+import { QUERY_CLAIM_DETAILS } from "../../api/graphql/queries";
 import Button from "@components/ui/button/Button";
 import { useAccount, useNetwork } from "wagmi";
 import Web3 from "web3";
 
-const ClaimAddress = () => {
+const Claim = (claimAddress) => {
   const classes = ClaimsStyles();
-  const router = useRouter();
-
   const [contractData, setContractData] = useState([]);
   const [totalAmountofTokens, setTotalAmountOfTokens] = useState(0);
   const [airdropTokenName, setAirdropTokenName] = useState("");
@@ -51,7 +48,6 @@ const ClaimAddress = () => {
   const { chain } = useNetwork();
   const networkId = Web3.utils.numberToHex(chain?.id);
 
-  const { claimAddress } = router.query;
   useSmartContract();
 
   let contractInstances = useSelector((state) => {
@@ -668,4 +664,4 @@ const ClaimAddress = () => {
   );
 };
 
-export default ClaimAddress;
+export default Claim;

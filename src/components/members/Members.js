@@ -15,8 +15,6 @@ import {
   // Typography,
 } from "@mui/material";
 import { Typography, Button } from "@components/ui";
-import { makeStyles } from "@mui/styles";
-import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { QUERY_PAGINATED_MEMBERS } from "../../src/api/graphql/queries";
@@ -34,36 +32,7 @@ import { saveAs } from "file-saver";
 import { useNetwork } from "wagmi";
 import Web3 from "web3";
 
-const useStyles = makeStyles({
-  searchField: {
-    width: "548px",
-    height: "55px",
-    color: "#C1D3FF",
-    backgroundColor: "#111D38",
-    border: "1px solid #C1D3FF40",
-    borderRadius: "10px",
-    "&:hover": {
-      boxShadow: "0px 0px 12px #C1D3FF40",
-      border: "1px solid #C1D3FF40",
-      borderRadius: "10px",
-      opacity: 1,
-    },
-  },
-  listFont: {
-    fontSize: "22px",
-    color: "#C1D3FF",
-  },
-  activityLink: {
-    color: "#C1D3FF",
-    textDecoration: "none",
-    "&:hover": {
-      textDecoration: "none",
-      cursor: "pointer",
-    },
-  },
-});
-
-const Members = () => {
+const Members = (daoAddress) => {
   const [membersData, setMembersData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [downloadLoading, setDownloadLoading] = useState(false);
@@ -74,10 +43,6 @@ const Members = () => {
     "Station tokens",
     "Joined on",
   ];
-
-  const router = useRouter();
-  const classes = useStyles();
-  const { clubId: daoAddress } = router.query;
 
   const { chain } = useNetwork();
   const networkId = Web3.utils.numberToHex(chain?.id);
