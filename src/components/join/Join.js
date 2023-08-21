@@ -6,7 +6,6 @@ import { QUERY_ALL_MEMBERS } from "../../src/api/graphql/queries";
 import { useSelector } from "react-redux";
 import { Backdrop, CircularProgress } from "@mui/material";
 import useSmartContractMethods from "../../src/hooks/useSmartContractMethods";
-import Layout1 from "../../src/components/layouts/layout1";
 import { getClubInfo } from "../../src/api/club";
 import ERC721 from "../../src/components/depositPageComps/ERC721/NewArch/ERC721";
 import ERC20 from "../../src/components/depositPageComps/ERC20/NewArch/ERC20";
@@ -271,7 +270,7 @@ const Join = () => {
   }, [daoAddress, walletAddress]);
 
   return (
-    <Layout1 showSidebar={false}>
+    <>
       {TOKEN_TYPE === "erc20" ? (
         <ERC20
           clubInfo={clubInfo}
@@ -298,7 +297,7 @@ const Join = () => {
         open={loading}>
         <CircularProgress color="inherit" />
       </Backdrop>
-    </Layout1>
+    </>
   );
 };
 

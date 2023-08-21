@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useState } from "react";
-import Layout1 from "../../src/components/layouts/layout1";
 import {
   Backdrop,
   CircularProgress,
@@ -55,10 +54,10 @@ const useStyles = makeStyles({
   },
 });
 
-const Proposal = () => {
+const Proposal = (daoAddress) => {
   const router = useRouter();
   const dispatch = useDispatch();
-  const { clubId: daoAddress } = router.query;
+
   const classes = useStyles();
 
   const [nftData, setNftData] = useState([]);
@@ -241,7 +240,7 @@ const Proposal = () => {
   }, [daoAddress]);
 
   return (
-    <Layout1 page={2}>
+    <>
       <Grid container spacing={3} paddingTop={2}>
         <Grid item md={8}>
           <Grid
@@ -388,7 +387,7 @@ const Proposal = () => {
         open={loaderOpen}>
         <CircularProgress color="inherit" />
       </Backdrop>
-    </Layout1>
+    </>
   );
 };
 
