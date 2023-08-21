@@ -5,10 +5,10 @@ import CreateClaim from "redux/reducers/createClaim";
 import ClaimInsight from "@components/claims/claimInsight";
 import ListClaims from "@components/claims/listClaims";
 
-const Claims = () => {
+const ClaimsPage = () => {
   const router = useRouter();
 
-  const [insights, claimAddress] = router?.query?.slug ?? [];
+  const [claimAddress] = router?.query?.slug ?? [];
 
   return (
     <Layout1 showSidebar={false} claimAddress={claimAddress} isClaims={true}>
@@ -23,4 +23,4 @@ const Claims = () => {
   );
 };
 
-export default Claims;
+export default ClaimsPage;

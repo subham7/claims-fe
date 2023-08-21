@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import Layout1 from "@components/layouts/layout1";
 import Claim from "@components/claims/claim";
 
-const Dashboard = () => {
+const ClaimPage = () => {
   const router = useRouter();
 
   const [claimAddress] = router?.query?.slug ?? [];
@@ -20,4 +20,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default ClaimPage;
