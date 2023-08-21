@@ -168,7 +168,7 @@ const SignDoc = () => {
       });
 
       dispatch(addDocumentList(docsList.reverse()));
-      router.push(`/dashboard/${clubId}/documents`);
+      router.push(`/documents/${clubId}`);
     } catch (error) {
       console.log(error);
     }

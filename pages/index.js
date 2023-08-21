@@ -11,7 +11,7 @@ import {
 import { Button, Typography } from "@components/ui";
 import { useDispatch } from "react-redux";
 import { makeStyles } from "@mui/styles";
-import Router, { useRouter } from "next/router";
+import { useRouter } from "next/router";
 import { addDaoAddress } from "../src/redux/reducers/club";
 import NewCard from "../src/components/cards/card";
 import { subgraphQuery } from "../src/utils/subgraphs";
@@ -164,9 +164,9 @@ const App = () => {
   }, [networkId, walletAddress]);
 
   const handleCreateButtonClick = async (event) => {
-    const { pathname } = Router;
+    const { pathname } = router;
     if (pathname == "/") {
-      Router.push("/create");
+      router.push("/create");
     }
   };
 

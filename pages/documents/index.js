@@ -117,7 +117,7 @@ const Documents = () => {
   const { clubId: daoAddress } = router.query;
 
   const createDocHandler = () => {
-    router.push(`/dashboard/${daoAddress}/documents/create`);
+    router.push(`/documents/${daoAddress}/create`);
   };
 
   // closing legal entity modal

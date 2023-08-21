@@ -92,7 +92,7 @@ const Homepage = () => {
     onSubmit: (values) => {
       dispatch(addAdminFormData(values));
       router.push({
-        pathname: `/dashboard/${clubId}/documents/sign`,
+        pathname: `/documents/${clubId}/sign`,
         query: {
           isAdmin: true,
         },
