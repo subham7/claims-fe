@@ -10,13 +10,10 @@ import ClaimsCard from "../../src/components/claimsPageComps/ClaimsCard";
 import useSmartContract from "../../src/hooks/useSmartContract";
 import Layout1 from "../../src/components/layouts/layout1";
 import { subgraphQuery } from "../../src/utils/subgraphs";
-import {
-  CLAIMS_SUBGRAPH_URL_BASE,
-  CLAIMS_SUBGRAPH_URL_POLYGON,
-} from "../../src/api";
 import { QUERY_ALL_CLAIMS_OF_CREATOR } from "../../src/api/graphql/queries";
 import { useAccount, useNetwork } from "wagmi";
 import Web3 from "web3";
+import { CLAIMS_SUBGRAPH_URL } from "utils/constants";
 
 const useStyles = makeStyles({
   container: {
@@ -103,11 +100,7 @@ const Claims = () => {
     const fetchClaims = async () => {
       try {
         const { claims } = await subgraphQuery(
-          networkId === "0x89"
-            ? CLAIMS_SUBGRAPH_URL_POLYGON
-            : networkId === "0x2105"
-            ? CLAIMS_SUBGRAPH_URL_BASE
-            : null,
+          CLAIMS_SUBGRAPH_URL[networkId],
           QUERY_ALL_CLAIMS_OF_CREATOR(walletAddress),
         );
 

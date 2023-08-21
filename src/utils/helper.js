@@ -97,14 +97,11 @@ export const showWrongNetworkModal = (
   isClaims = false,
   claimsNetwork,
 ) => {
-  console.log(walletAddress, networkId, isClaims, claimsNetwork);
-
   if (isClaims) {
     if (claimsNetwork && claimsNetwork !== networkId) {
       return <WrongNetworkModal chainId={parseInt(claimsNetwork, 16)} />;
     }
 
-    console.log("HEREEE");
     return walletAddress && networkId !== "0x89" && networkId !== "0x2105" ? (
       <WrongNetworkModal />
     ) : null;

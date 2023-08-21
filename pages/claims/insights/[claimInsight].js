@@ -10,10 +10,6 @@ import ToggleClaim from "../../../src/components/claimsInsightComps/ToggleClaim"
 import ClaimsTransactions from "../../../src/components/claimsInsightComps/ClaimsTransactions";
 import { useRouter } from "next/router";
 import { subgraphQuery } from "../../../src/utils/subgraphs";
-import {
-  CLAIMS_SUBGRAPH_URL_BASE,
-  CLAIMS_SUBGRAPH_URL_POLYGON,
-} from "../../../src/api";
 import { QUERY_CLAIM_DETAILS } from "../../../src/api/graphql/queries";
 import { Alert, Backdrop, CircularProgress } from "@mui/material";
 import useSmartContractMethods from "../../../src/hooks/useSmartContractMethods";
@@ -21,6 +17,7 @@ import useSmartContract from "../../../src/hooks/useSmartContract";
 import { convertToWeiGovernance } from "../../../src/utils/globalFunctions";
 import { useNetwork } from "wagmi";
 import Web3 from "web3";
+import { CLAIMS_SUBGRAPH_URL } from "utils/constants";
 
 const ClaimInsight = () => {
   const [claimsData, setClaimsData] = useState([]);
@@ -54,11 +51,7 @@ const ClaimInsight = () => {
     setLoading(true);
     try {
       const { claims } = await subgraphQuery(
-        networkId === "0x89"
-          ? CLAIMS_SUBGRAPH_URL_POLYGON
-          : networkId === "0x2105"
-          ? CLAIMS_SUBGRAPH_URL_BASE
-          : null,
+        CLAIMS_SUBGRAPH_URL[networkId],
         QUERY_CLAIM_DETAILS(claimAddress),
       );
       setClaimsData(claims);

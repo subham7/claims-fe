@@ -14,14 +14,11 @@ import useSmartContractMethods from "../../src/hooks/useSmartContractMethods";
 import useSmartContract from "../../src/hooks/useSmartContract";
 import { ClaimsStyles } from "../../src/components/claimsPageComps/ClaimsStyles";
 import { subgraphQuery } from "../../src/utils/subgraphs";
-import {
-  CLAIMS_SUBGRAPH_URL_BASE,
-  CLAIMS_SUBGRAPH_URL_POLYGON,
-} from "../../src/api";
 import { QUERY_CLAIM_DETAILS } from "../../src/api/graphql/queries";
 import Button from "@components/ui/button/Button";
 import { useAccount, useNetwork } from "wagmi";
 import Web3 from "web3";
+import { CLAIMS_SUBGRAPH_URL } from "utils/constants";
 
 const ClaimAddress = () => {
   const classes = ClaimsStyles();
@@ -387,11 +384,7 @@ const ClaimAddress = () => {
     const fetchClaimsDataFromSubgraph = async () => {
       try {
         const { claims } = await subgraphQuery(
-          networkId === "0x89"
-            ? CLAIMS_SUBGRAPH_URL_POLYGON
-            : networkId === "0x2105"
-            ? CLAIMS_SUBGRAPH_URL_BASE
-            : null,
+          CLAIMS_SUBGRAPH_URL[networkId],
           QUERY_CLAIM_DETAILS(claimAddress),
         );
         setClaimsDataSubgraph(claims);

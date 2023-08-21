@@ -5,14 +5,8 @@ import ClaimStep1 from "../../src/components/claimsPageComps/ClaimStep1";
 import ClaimStep2 from "../../src/components/claimsPageComps/ClaimStep2";
 import dayjs from "dayjs";
 import { makeStyles } from "@mui/styles";
-// import { getAssetsByDaoAddress } from "../../src/api/assets";
 import { convertToWeiGovernance } from "../../src/utils/globalFunctions";
 import { createClaimCsv, createSnapShot } from "../../src/api/claims";
-import {
-  CLAIM_FACTORY_ADDRESS_BASE,
-  CLAIM_FACTORY_ADDRESS_GOERLI,
-  CLAIM_FACTORY_ADDRESS_POLYGON,
-} from "../../src/api";
 import { useRouter } from "next/router";
 import useSmartContractMethods from "../../src/hooks/useSmartContractMethods";
 import useSmartContract from "../../src/hooks/useSmartContract";
@@ -28,6 +22,7 @@ import Web3 from "web3";
 import { getTokensList } from "api/token";
 import { getAssetsByDaoAddress } from "api/assets";
 import { getUserTokenData } from "utils/helper";
+import { CLAIM_FACTORY_ADDRESS } from "utils/constants";
 
 const steps = ["Step1", "Step2"];
 
@@ -72,7 +67,6 @@ const Form = () => {
   const getCurrentAccount = async () => {
     try {
       setLoadingTokens(true);
-      // const data = await getTokensFromWallet(accounts[0], networkId);
       if (networkId && walletAddress) {
         if (networkId === "0x2105") {
           const tokensList = await getTokensList("base-mainnet", walletAddress);
@@ -167,12 +161,7 @@ const Form = () => {
     },
     validationSchema: claimStep2ValidationSchema,
     onSubmit: async (values) => {
-      const claimsContractAddress =
-        networkId === "0x89"
-          ? CLAIM_FACTORY_ADDRESS_POLYGON
-          : networkId === "0x2105"
-          ? CLAIM_FACTORY_ADDRESS_BASE
-          : CLAIM_FACTORY_ADDRESS_GOERLI;
+      const claimsContractAddress = CLAIM_FACTORY_ADDRESS[networkId];
 
       const data = {
         description: formikStep1.values.description,

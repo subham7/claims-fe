@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { Box, CssBaseline, Grid, Typography } from "@mui/material";
 import Navbar from "../navbar";
 import Sidebar from "../sidebar";
-// import { showWrongNetworkModal } from "utils/helper";
 import { useDispatch } from "react-redux";
 import { addWalletAddress } from "redux/reducers/user";
 import { useAccount, useNetwork } from "wagmi";

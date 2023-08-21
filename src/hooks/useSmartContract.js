@@ -7,16 +7,11 @@ import ClaimContractABI from "../abis/newArch/claimContract.json";
 import ClaimFactoryABI from "../abis/newArch/claimFactory.json";
 import { useRouter } from "next/router";
 import Web3 from "web3";
-import {
-  CLAIM_FACTORY_ADDRESS_BASE,
-  CLAIM_FACTORY_ADDRESS_GOERLI,
-  CLAIM_FACTORY_ADDRESS_POLYGON,
-  getRpcUrl,
-  RPC_URL,
-} from "../api";
+import { getRpcUrl, RPC_URL } from "../api";
 import { useDispatch, useSelector } from "react-redux";
 import { setContractInstances } from "../redux/reducers/contractInstances";
 import { useNetwork } from "wagmi";
+import { CLAIM_FACTORY_ADDRESS } from "utils/constants";
 
 const useSmartContract = () => {
   const router = useRouter();
@@ -33,14 +28,7 @@ const useSmartContract = () => {
     return state.contractInstances.contractInstances;
   });
 
-  const claimFactoryAddress =
-    networkId === "0x5"
-      ? CLAIM_FACTORY_ADDRESS_GOERLI
-      : networkId === "0x89"
-      ? CLAIM_FACTORY_ADDRESS_POLYGON
-      : networkId === "0x2105"
-      ? CLAIM_FACTORY_ADDRESS_BASE
-      : "";
+  const claimFactoryAddress = CLAIM_FACTORY_ADDRESS[networkId];
 
   const initializeFactoryContracts = async () => {
     const web3Call = new Web3(RPC_URL);
