@@ -26,7 +26,6 @@ import { BsFillPlayFill } from "react-icons/bs";
 import Web3 from "web3";
 import VideoModal from "../src/components/modals/VideoModal";
 import { useAccount, useNetwork } from "wagmi";
-import { CLAIMS_SUBGRAPH_URL } from "utils/constants";
 
 const useStyles = makeStyles({
   container: {
@@ -143,7 +142,7 @@ const App = () => {
         const fetchClubs = async () => {
           try {
             const data = await subgraphQuery(
-              CLAIMS_SUBGRAPH_URL[networkId],
+              SUBGRAPH_URL_POLYGON,
               QUERY_CLUBS_FROM_WALLET_ADDRESS(walletAddress),
             );
             setClubListData(data.users);
