@@ -11,7 +11,7 @@ import {
 import { Button, Typography } from "@components/ui";
 import { useDispatch } from "react-redux";
 import { makeStyles } from "@mui/styles";
-import Router, { useRouter } from "next/router";
+import { useRouter } from "next/router";
 import { addDaoAddress } from "../src/redux/reducers/club";
 import NewCard from "../src/components/cards/card";
 import { subgraphQuery } from "../src/utils/subgraphs";
@@ -142,11 +142,7 @@ const App = () => {
         const fetchClubs = async () => {
           try {
             const data = await subgraphQuery(
-              networkId === "0x5"
-                ? SUBGRAPH_URL_GOERLI
-                : networkId === "0x89"
-                ? SUBGRAPH_URL_POLYGON
-                : "",
+              SUBGRAPH_URL_POLYGON,
               QUERY_CLUBS_FROM_WALLET_ADDRESS(walletAddress),
             );
             setClubListData(data.users);
@@ -168,9 +164,9 @@ const App = () => {
   }, [networkId, walletAddress]);
 
   const handleCreateButtonClick = async (event) => {
-    const { pathname } = Router;
+    const { pathname } = router;
     if (pathname == "/") {
-      Router.push("/create");
+      router.push("/create");
     }
   };
 
@@ -219,7 +215,7 @@ const App = () => {
   };
 
   return (
-    <Layout1 showSidebar={false} faucet={false}>
+    <Layout1 showSidebar={false} faucet={false} isClaims={true}>
       <div className={classes.container}>
         {!manageStation && clubFlow && (
           <div className={classes.cardContainer}>
@@ -301,23 +297,6 @@ const App = () => {
                 <Divider className={classes.divider} />
                 <div>
                   <div style={{ overflowY: "scroll", maxHeight: "60vh" }}>
-                    {/* {console.log(
-                      clubListData.map((club) => {
-                        if (
-                          club.daoAddress ===
-                          "0xe9c8342477576b0f4ee05be057146063a9b3b156"
-                        ) {
-                          console.log(club.daoAddress);
-                        }
-                      }),
-                    )}
-                    {console.log(clubListData)}
-                    {console.log(
-                      clubListData.filter((club) => {
-                        club.daoAddress ===
-                          "0xe9c8342477576b0f4ee05be057146063a9b3b156";
-                      }),
-                    )} */}
                     {walletAddress && clubListData.length ? (
                       clubListData
                         .reverse()

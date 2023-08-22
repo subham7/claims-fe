@@ -2,6 +2,7 @@ import React from "react";
 import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
 import PeopleRoundedIcon from "@mui/icons-material/PeopleRounded";
 import InsertDriveFileRoundedIcon from "@mui/icons-material/InsertDriveFileRounded";
+import { HiDocumentDuplicate } from "react-icons/hi";
 import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
 import AddCardIcon from "@mui/icons-material/AddCard";
 import CompareArrowsIcon from "@mui/icons-material/CompareArrows";
@@ -66,12 +67,11 @@ const drawerWidth = 100;
 
 const Sidebar = (props) => {
   const classes = useStyles();
-  const { page } = props;
+  const { page, daoAddress } = props;
   const router = useRouter();
-  const { clubId } = router.query;
 
   const handleDepositRedirect = () => {
-    router.push(`${window.origin}/join/${clubId}`, undefined, {
+    router.push(`${window.origin}/join/${daoAddress}`, undefined, {
       shallow: true,
     });
   };
@@ -96,7 +96,7 @@ const Sidebar = (props) => {
             <ListItemButton
               component="a"
               onClick={(e) => {
-                router.push(`/dashboard/${clubId}`, undefined, {
+                router.push(`/dashboard/${daoAddress}`, undefined, {
                   shallow: true,
                 });
               }}
@@ -117,7 +117,7 @@ const Sidebar = (props) => {
               component="a"
               onClick={(e) => {
                 router.push(
-                  `/dashboard/${Web3.utils.toChecksumAddress(clubId)}/proposal`,
+                  `/proposals/${Web3.utils.toChecksumAddress(daoAddress)}`,
                   undefined,
                   {
                     shallow: true,
@@ -139,7 +139,7 @@ const Sidebar = (props) => {
             <ListItemButton
               component="a"
               onClick={(e) => {
-                router.push(`/dashboard/${clubId}/members`, undefined, {
+                router.push(`/members/${daoAddress}`, undefined, {
                   shallow: true,
                 });
               }}>
@@ -158,7 +158,7 @@ const Sidebar = (props) => {
             <ListItemButton
               component="a"
               onClick={(e) => {
-                router.push(`/dashboard/${clubId}/transactions`, undefined, {
+                router.push(`/transactions/${daoAddress}`, undefined, {
                   shallow: true,
                 });
               }}>
@@ -190,7 +190,7 @@ const Sidebar = (props) => {
             <ListItemButton
               component="a"
               onClick={(e) => {
-                router.push(`/dashboard/${clubId}/settings`, undefined, {
+                router.push(`/settings/${daoAddress}`, undefined, {
                   shallow: true,
                 });
               }}>
@@ -205,24 +205,24 @@ const Sidebar = (props) => {
             </ListItemButton>
           </BootstrapTooltip>
 
-          {/* <BootstrapTooltip title="Documents" placement="left">
-              <ListItemButton
-                component="a"
-                onClick={(e) => {
-                  router.push(`/dashboard/${clubId}/documents`, undefined, {
-                    shallow: true,
-                  });
-                }}>
-                <ListItemIcon
-                  className={
-                    page == 6
-                      ? classes.listItemIconSelected
-                      : classes.listItemIcon
-                  }>
-                  <HiDocumentDuplicate size={30} />
-                </ListItemIcon>
-              </ListItemButton>
-            </BootstrapTooltip> */}
+          <BootstrapTooltip title="Documents" placement="left">
+            <ListItemButton
+              component="a"
+              onClick={(e) => {
+                router.push(`/documents/${daoAddress}`, undefined, {
+                  shallow: true,
+                });
+              }}>
+              <ListItemIcon
+                className={
+                  page == 7
+                    ? classes.listItemIconSelected
+                    : classes.listItemIcon
+                }>
+                <HiDocumentDuplicate size={30} />
+              </ListItemIcon>
+            </ListItemButton>
+          </BootstrapTooltip>
         </List>
       </div>
     </Box>

@@ -153,6 +153,7 @@ export const QUERY_ALL_CLAIMS_OF_CREATOR = (creatorAddress) => {
               claimType
               timestamp
               isActive
+              networkId
             }
     }`;
 };
@@ -184,6 +185,7 @@ export const QUERY_CLAIM_DETAILS = (claimAddress) => {
               claimType
               timestamp
               isActive
+              networkId
             }
     }`;
 };

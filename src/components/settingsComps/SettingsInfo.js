@@ -18,7 +18,6 @@ import {
   convertFromWeiGovernance,
 } from "../../utils/globalFunctions";
 import EditIcon from "@mui/icons-material/Edit";
-import { useRouter } from "next/router";
 import TelegramIcon from "@mui/icons-material/Telegram";
 import TwitterIcon from "@mui/icons-material/Twitter";
 import { RiDiscordFill } from "react-icons/ri";
@@ -37,12 +36,10 @@ const SettingsInfo = ({
   clubInfo,
   getClubInfo,
   isAdminUser,
+  daoAddress,
 }) => {
   const classes = SettingsInfoStlyes();
   const [open, setOpen] = useState(false);
-  const router = useRouter();
-  const { clubId: daoAddress } = router.query;
-  const [showMoreDesc, setShowMoreDesc] = useState(false);
 
   const handleClose = (event, reason) => {
     if (reason !== "backdropClick" && reason !== "escapeKeyDown") {

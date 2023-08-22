@@ -139,8 +139,7 @@ const ClaimStep1 = ({ formik, tokensInWallet, isLoading }) => {
   const router = useRouter();
 
   useEffect(() => {
-    formik.values.airdropTokenAddress =
-      formik.values.selectedToken.token_address;
+    formik.values.airdropTokenAddress = formik.values.selectedToken.address;
   }, [formik.values]);
 
   return (
