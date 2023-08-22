@@ -3,7 +3,7 @@ import Safe, { Web3Adapter } from "@safe-global/protocol-kit";
 import WrongNetworkModal from "../components/modals/WrongNetworkModal";
 import { QUERY_ALL_MEMBERS } from "../api/graphql/queries";
 import { subgraphQuery } from "./subgraphs";
-import { NETWORK_RPC_URL } from "./constants";
+import { IGNORE_TOKENS, NETWORK_RPC_URL } from "./constants";
 
 export const getSafeSdk = async (gnosisAddress, walletAddress, networkId) => {
   const web3 = await web3InstanceCustomRPC(networkId);
@@ -159,9 +159,7 @@ export const extractPartFromUrl = (url) => {
 
 export const getUserTokenData = async (tokenData) => {
   const filteredData = tokenData.filter(
-    (token) =>
-      token.contract_address !== "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" &&
-      token?.contract_address !== "0x0000000000000000000000000000000000001010",
+    (token) => !IGNORE_TOKENS.includes(token.contract_address),
   );
 
   return filteredData.map((token) => {

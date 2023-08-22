@@ -22,3 +22,8 @@ export const NETWORK_NAME = {
   "0x89": "matic-mainnet",
   "0x2105": "base-mainnet",
 };
+
+export const IGNORE_TOKENS = [
+  "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+  "0x0000000000000000000000000000000000001010",
+];
