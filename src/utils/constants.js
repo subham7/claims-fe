@@ -17,3 +17,13 @@ export const NETWORK_RPC_URL = {
   "0x2105":
     "https://multi-attentive-snowflake.base-mainnet.discover.quiknode.pro/c049d5956ce3327b2033ce81cefa515bfac91cb1/",
 };
+
+export const NETWORK_NAME = {
+  "0x89": "matic-mainnet",
+  "0x2105": "base-mainnet",
+};
+
+export const IGNORE_TOKENS = [
+  "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+  "0x0000000000000000000000000000000000001010",
+];

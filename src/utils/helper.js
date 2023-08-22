@@ -3,7 +3,7 @@ import Safe, { Web3Adapter } from "@safe-global/protocol-kit";
 import WrongNetworkModal from "../components/modals/WrongNetworkModal";
 import { QUERY_ALL_MEMBERS } from "../api/graphql/queries";
 import { subgraphQuery } from "./subgraphs";
-import { NETWORK_RPC_URL } from "./constants";
+import { IGNORE_TOKENS, NETWORK_RPC_URL } from "./constants";
 
 export const getSafeSdk = async (gnosisAddress, walletAddress, networkId) => {
   const web3 = await web3InstanceCustomRPC(networkId);
@@ -157,24 +157,17 @@ export const extractPartFromUrl = (url) => {
   }
 };
 
-export const getUserTokenData = async (tokenData, networkId) => {
-  if (networkId === "0x89") {
-    return tokenData.map((token) => {
-      return {
-        balance: token.balance,
-        address: token.token_address,
-        decimals: token.decimals,
-        symbol: token.symbol,
-      };
-    });
-  } else if (networkId === "0x2105") {
-    return tokenData.map((token) => {
-      return {
-        balance: token.balance,
-        address: token.contract_address,
-        decimals: token.contract_decimals,
-        symbol: token.contract_ticker_symbol,
-      };
-    });
-  }
+export const getUserTokenData = async (tokenData) => {
+  const filteredData = tokenData.filter(
+    (token) => !IGNORE_TOKENS.includes(token.contract_address),
+  );
+
+  return filteredData.map((token) => {
+    return {
+      balance: token.balance,
+      address: token.contract_address,
+      decimals: token.contract_decimals,
+      symbol: token.contract_ticker_symbol,
+    };
+  });
 };
