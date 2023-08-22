@@ -36,6 +36,8 @@ const useClubFetch = ({ daoAddress }) => {
     localStorage.setItem("wallet", walletAddress);
   }
 
+  const networkId = "0x" + chain?.id.toString(16);
+
   const reduxClubData = useSelector((state) => {
     return state.club.clubData;
   });
