@@ -16,7 +16,6 @@ import { NETWORK_RPC_URL } from "utils/constants";
 const useSmartContractMethods = () => {
   const { address: walletAddress } = useAccount();
   const { chain } = useNetwork();
-  const networkId = Web3.utils.numberToHex(chain?.id);
 
   const web3Call = new Web3(NETWORK_RPC_URL[networkId]);
 

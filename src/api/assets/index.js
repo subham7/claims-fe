@@ -106,28 +106,4 @@ export async function fulfillOrder(offer, fulfiller, consideration) {
     options,
   );
   return res.json();
-  // console.log(offer, fulfiller, consideration);
-  // try {
-  //   return await axios.post(
-  //     `https://api.opensea.io/v2/offers/fulfillment_data`,
-  //     {
-  //       headers: {
-  //         "X-API-KEY": "168c1d23e73c46318518d8f9eedc89dd",
-  //         "content-type": "application/json",
-  //       },
-  //       body: JSON.stringify({
-  //         offer: offer,
-  //         fulfiller: fulfiller,
-  //         consideration: consideration,
-  //       }),
-  //     },
-  //   );
-  // } catch (error) {
-  //   console.log(error);
-  // }
 }
-
-// fetch('https://api.opensea.io/v2/offers/fulfillment_data', options)
-//   .then(response => response.json())
-//   .then(response => console.log(response))
-//   .catch(err => console.error(err));

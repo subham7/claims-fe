@@ -34,7 +34,7 @@ export default function Step3(props) {
   const [allSafeAddresses, setAllSafeAddresses] = useState();
 
   const { chain } = useNetwork();
-  const networkId = Web3.utils.numberToHex(chain?.id);
+  const networkId = "0x" + chain?.id.toString(16);
 
   // const index = props.formik.values.addressList.indexOf(
   //   Web3.utils.toChecksumAddress(walletAddress),

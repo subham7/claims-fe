@@ -64,7 +64,6 @@ const Proposal = ({ daoAddress }) => {
   const [tokenData, setTokenData] = useState([]);
 
   const { chain } = useNetwork();
-  const networkId = Web3.utils.numberToHex(chain?.id);
 
   const NETWORK_HEX = useSelector((state) => {
     return state.gnosis.networkHex;

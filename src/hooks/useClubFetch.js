@@ -28,7 +28,6 @@ import { useAccount, useNetwork } from "wagmi";
 const useClubFetch = ({ daoAddress }) => {
   const dispatch = useDispatch();
   const { chain } = useNetwork();
-  const networkId = Web3.utils.numberToHex(chain?.id);
   useSmartContract(daoAddress);
 
   const { address: walletAddress } = useAccount();

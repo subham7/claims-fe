@@ -18,7 +18,7 @@ import {
 import { convertFromWeiGovernance } from "../../utils/globalFunctions";
 import { FiExternalLink } from "react-icons/fi";
 import { useNetwork } from "wagmi";
-import Web3 from "web3";
+
 import { CLAIMS_SUBGRAPH_URL } from "utils/constants";
 
 const ClaimsTransactions = ({
@@ -34,7 +34,7 @@ const ClaimsTransactions = ({
   const [isAllTransactionSelected, setIsAllTransactionSelected] =
     useState(false);
   const { chain } = useNetwork();
-  const networkId = Web3.utils.numberToHex(chain?.id);
+  const networkId = "0x" + chain?.id.toString(16);
 
   const classes = ClaimsInsightStyles();
   const walletHeaders = ["Wallet", "Total tokens", "Claimed", "Percentage"];

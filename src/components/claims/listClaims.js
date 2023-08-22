@@ -9,7 +9,6 @@ import ClaimsCard from "components/claimsPageComps/ClaimsCard";
 import { subgraphQuery } from "utils/subgraphs";
 import { QUERY_ALL_CLAIMS_OF_CREATOR } from "api/graphql/queries";
 import { useAccount, useNetwork } from "wagmi";
-import Web3 from "web3";
 import { CLAIMS_SUBGRAPH_URL } from "utils/constants";
 
 const useStyles = makeStyles({
@@ -82,7 +81,7 @@ const ListClaims = () => {
   const router = useRouter();
   const [claimData, setClaimData] = useState([]);
   const { chain } = useNetwork();
-  const networkId = Web3.utils.numberToHex(chain?.id);
+  const networkId = "0x" + chain?.id.toString(16);
 
   const createClaimHandler = () => {
     router.push("/claims/create");

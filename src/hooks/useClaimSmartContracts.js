@@ -10,7 +10,6 @@ import { CLAIM_FACTORY_ADDRESS } from "utils/constants";
 
 const useClaimSmartContracts = (claimAddress) => {
   const { chain } = useNetwork();
-  const networkId = Web3.utils.numberToHex(chain?.id);
   const dispatch = useDispatch();
 
   let contractInstances = useSelector((state) => {
