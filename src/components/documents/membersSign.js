@@ -86,7 +86,7 @@ const MembersSign = ({ daoAddress, membersSign }) => {
     onSubmit: (values) => {
       dispatch(addMembersData(values));
       dispatch(addEncryptedLink(membersSign));
-      router.push(`/documents/${daoAddress}/sign/${membersSign}`);
+      router.push(`/documents/${daoAddress}/sign`);
     },
   });
 

@@ -21,7 +21,8 @@ const DocumentsPage = () => {
         <Documents daoAddress={daoAddress} />
       ) : flow === "create" ? (
         <DocumentCreate daoAddress={daoAddress} />
-      ) : flow === "sign" && membersSign === "true" ? (
+      ) : (flow === "sign" && membersSign === "true") ||
+        membersSign === undefined ? (
         <SignDoc daoAddress={daoAddress} isAdmin={true} />
       ) : (
         <MembersSign daoAddress={daoAddress} membersSign={membersSign} />
