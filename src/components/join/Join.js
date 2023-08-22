@@ -1,21 +1,18 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { useRouter } from "next/router";
-import { convertFromWeiGovernance } from "../../src/utils/globalFunctions";
-import { subgraphQuery } from "../../src/utils/subgraphs";
-import { QUERY_ALL_MEMBERS } from "../../src/api/graphql/queries";
+import { convertFromWeiGovernance } from "utils/globalFunctions";
+import { subgraphQuery } from "utils/subgraphs";
+import { QUERY_ALL_MEMBERS } from "api/graphql/queries";
 import { useSelector } from "react-redux";
-import ClubFetch from "../../src/utils/clubFetch";
 import { Backdrop, CircularProgress } from "@mui/material";
-import useSmartContractMethods from "../../src/hooks/useSmartContractMethods";
-import Layout1 from "../../src/components/layouts/layout1";
-import { getClubInfo } from "../../src/api/club";
-import ERC721 from "../../src/components/depositPageComps/ERC721/NewArch/ERC721";
-import ERC20 from "../../src/components/depositPageComps/ERC20/NewArch/ERC20";
-import useSmartContract from "../../src/hooks/useSmartContract";
+import useSmartContractMethods from "hooks/useSmartContractMethods";
+import { getClubInfo } from "api/club";
+import ERC721 from "@components/depositPageComps/ERC721/NewArch/ERC721";
+import ERC20 from "@components/depositPageComps/ERC20/NewArch/ERC20";
+import useSmartContract from "hooks/useSmartContract";
 import { getWhitelistMerkleProof } from "api/whitelist";
 import { useAccount } from "wagmi";
 
-const Join = () => {
+const Join = ({ daoAddress }) => {
   const [daoDetails, setDaoDetails] = useState({
     depositDeadline: 0,
     minDeposit: 0,
@@ -47,9 +44,6 @@ const Join = () => {
 
   const { address: walletAddress } = useAccount();
 
-  const router = useRouter();
-  const { jid: daoAddress } = router.query;
-
   const SUBGRAPH_URL = useSelector((state) => {
     return state.gnosis.subgraphUrl;
   });
@@ -62,7 +56,7 @@ const Join = () => {
     return state.club.factoryData;
   });
 
-  useSmartContract();
+  useSmartContract(daoAddress);
 
   const contractInstances = useSelector((state) => {
     return state.contractInstances.contractInstances;
@@ -272,7 +266,7 @@ const Join = () => {
   }, [daoAddress, walletAddress]);
 
   return (
-    <Layout1 showSidebar={false}>
+    <>
       {TOKEN_TYPE === "erc20" ? (
         <ERC20
           clubInfo={clubInfo}
@@ -299,8 +293,8 @@ const Join = () => {
         open={loading}>
         <CircularProgress color="inherit" />
       </Backdrop>
-    </Layout1>
+    </>
   );
 };
 
-export default ClubFetch(Join);
+export default Join;

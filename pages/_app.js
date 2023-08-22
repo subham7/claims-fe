@@ -15,7 +15,7 @@ import {
 } from "@web3modal/ethereum";
 import { Web3Modal } from "@web3modal/react";
 import { configureChains, createConfig, WagmiConfig } from "wagmi";
-import { polygon } from "wagmi/chains";
+import { polygon, base } from "wagmi/chains";
 
 const API_URL = "https://api.lens.dev";
 
@@ -24,7 +24,7 @@ export const apolloClient = new ApolloClient({
   cache: new InMemoryCache(),
 });
 
-const chains = [polygon];
+const chains = [polygon, base];
 const projectId = "35b31c8ffbfd99ac267e35ecdf60530a";
 
 const { publicClient } = configureChains(chains, [w3mProvider({ projectId })]);

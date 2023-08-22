@@ -1,5 +1,5 @@
 import { React } from "react";
-import { Web3Button } from "@web3modal/react";
+import { Web3Button, Web3NetworkSwitch } from "@web3modal/react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -14,7 +14,10 @@ export default function Navbar() {
           alt="monogram"
         />
       </Link>
-      <Web3Button className="web3-button" />
+      <div className="wallet-div">
+        <Web3NetworkSwitch />
+        <Web3Button className="web3-button" />
+      </div>
     </div>
   );
 }

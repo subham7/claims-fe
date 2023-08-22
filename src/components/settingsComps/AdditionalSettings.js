@@ -15,7 +15,6 @@ import React, { useState } from "react";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import { AdditionalSettingsStyles } from "./AdditionalSettingsStyles";
-import { useRouter } from "next/router";
 import DepositOwnerFee from "./modals/DepositOwnerFee";
 import DepositDeadline from "./modals/DepositDeadline";
 import useSmartContractMethods from "../../hooks/useSmartContractMethods";
@@ -28,10 +27,9 @@ const AdditionalSettings = ({
   fetchErc721ContractDetails,
   isAdminUser,
   gnosisAddress,
+  daoAddress,
 }) => {
   const classes = AdditionalSettingsStyles();
-  const router = useRouter();
-  const { clubId: daoAddress } = router.query;
 
   const NETWORK_HEX = useSelector((state) => {
     return state.gnosis.networkHex;

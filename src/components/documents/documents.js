@@ -1,19 +1,16 @@
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
-import Layout1 from "../../../../src/components/layouts/layout1";
-import settingsImg from "../../../../public/assets/images/settings.png";
+import settingsImg from "../../../public/assets/images/settings.png";
 import { makeStyles } from "@mui/styles";
 import { useRouter } from "next/router";
 import { Card, Grid, Link, Typography } from "@mui/material";
-import LegalEntityModal from "../../../../src/components/modals/LegalEntityModal";
+import LegalEntityModal from "@components/modals/LegalEntityModal";
 import { useSelector } from "react-redux";
-import { getDocumentsByClubId } from "../../../../src/api/document";
-import DocumentCard from "../../../../src/components/documentPageComps/DocumentCard";
+import { getDocumentsByClubId } from "api/document";
+import DocumentCard from "@components/documentPageComps/DocumentCard";
 
 const useStyles = makeStyles({
   container: {
-    marginLeft: "80px",
-    marginTop: "120px",
     display: "flex",
     gap: "30px",
   },
@@ -99,10 +96,9 @@ const useStyles = makeStyles({
   },
 });
 
-const Documents = () => {
+const Documents = ({ daoAddress }) => {
   const classes = useStyles();
   const router = useRouter();
-  // const { encryptedLink } = router.query;
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [documents, setDocuments] = useState([]);
 
@@ -114,10 +110,8 @@ const Documents = () => {
     return state.legal.documentList;
   });
 
-  const { clubId: daoAddress } = router.query;
-
   const createDocHandler = () => {
-    router.push(`/dashboard/${daoAddress}/documents/create`);
+    router.push(`/documents/${daoAddress}/create`);
   };
 
   // closing legal entity modal
@@ -140,7 +134,7 @@ const Documents = () => {
   }, [daoAddress]);
 
   return (
-    <Layout1>
+    <>
       <div className={classes.container}>
         {/* Left Side */}
         <div className={classes.leftDiv}>
@@ -161,6 +155,7 @@ const Documents = () => {
                   fileName={document.fileName}
                   index={index + 1}
                   createdBy={document.createdBy}
+                  daoAddress={daoAddress}
                 />
               ))}
             </>
@@ -174,6 +169,7 @@ const Documents = () => {
                   fileName={document.fileName}
                   index={index + 1}
                   createdBy={document.createdBy}
+                  daoAddress={daoAddress}
                 />
               ))}
             </>
@@ -235,10 +231,11 @@ const Documents = () => {
             encryptedLink={encryptedLink}
             isInvite={true}
             onClose={closeModalHandler}
+            daoAddress={daoAddress}
           />
         )}
       </div>
-    </Layout1>
+    </>
   );
 };
 

@@ -21,10 +21,6 @@ export default function ProtectRoute(Component) {
       localStorage.setItem("wallet", walletAddress);
     }
 
-    const handleRedirectClick = () => {
-      // router.push("/");
-    };
-
     const fetchNetworks = () => {
       try {
         const networkData = fetchConfig();
@@ -89,7 +85,7 @@ export default function ProtectRoute(Component) {
       <Backdrop
         sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
         open={redirect}>
-        <Button onClick={handleRedirectClick}>Home</Button>
+        <Button>Home</Button>
       </Backdrop>
     );
   };

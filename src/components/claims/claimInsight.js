@@ -1,23 +1,24 @@
 import React, { useEffect, useState } from "react";
-import { ClaimsInsightStyles } from "../../../src/components/claimsInsightComps/claimsInsightStyles";
-import Layout1 from "../../../src/components/layouts/layout1";
-import TotalClaimedInfo from "../../../src/components/claimsInsightComps/TotalClaimedInfo";
-import TotalWalletsClaimInfo from "../../../src/components/claimsInsightComps/TotalWalletsClaimInfo";
-import ClaimDescriptionInfo from "../../../src/components/claimsInsightComps/ClaimDescriptionInfo";
-import ClaimEligibility from "../../../src/components/claimsInsightComps/ClaimEligibility";
-import ClaimEdit from "../../../src/components/claimsInsightComps/ClaimEdit";
-import ToggleClaim from "../../../src/components/claimsInsightComps/ToggleClaim";
-import ClaimsTransactions from "../../../src/components/claimsInsightComps/ClaimsTransactions";
+import { ClaimsInsightStyles } from "@components/claimsInsightComps/claimsInsightStyles";
+import TotalClaimedInfo from "@components/claimsInsightComps/TotalClaimedInfo";
+import TotalWalletsClaimInfo from "@components/claimsInsightComps/TotalWalletsClaimInfo";
+import ClaimDescriptionInfo from "@components/claimsInsightComps/ClaimDescriptionInfo";
+import ClaimEligibility from "@components/claimsInsightComps/ClaimEligibility";
+import ClaimEdit from "@components/claimsInsightComps/ClaimEdit";
+import ToggleClaim from "@components/claimsInsightComps/ToggleClaim";
+import ClaimsTransactions from "@components/claimsInsightComps/ClaimsTransactions";
 import { useRouter } from "next/router";
-import { subgraphQuery } from "../../../src/utils/subgraphs";
-import { CLAIMS_SUBGRAPH_URL_POLYGON } from "../../../src/api";
-import { QUERY_CLAIM_DETAILS } from "../../../src/api/graphql/queries";
+import { subgraphQuery } from "utils/subgraphs";
+import { QUERY_CLAIM_DETAILS } from "api/graphql/queries";
 import { Alert, Backdrop, CircularProgress } from "@mui/material";
-import useSmartContractMethods from "../../../src/hooks/useSmartContractMethods";
-import useSmartContract from "../../../src/hooks/useSmartContract";
-import { convertToWeiGovernance } from "../../../src/utils/globalFunctions";
+import useSmartContractMethods from "hooks/useSmartContractMethods";
+import { convertToWeiGovernance } from "utils/globalFunctions";
+import { useNetwork } from "wagmi";
+import Web3 from "web3";
+import { CLAIMS_SUBGRAPH_URL } from "utils/constants";
+import useClaimSmartContracts from "hooks/useClaimSmartContracts";
 
-const ClaimInsight = () => {
+const ClaimInsight = ({ claimAddress }) => {
   const [claimsData, setClaimsData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [airdropTokenDetails, setAirdropTokenDetails] = useState({
@@ -31,9 +32,11 @@ const ClaimInsight = () => {
 
   const classes = ClaimsInsightStyles();
   const router = useRouter();
-  const { claimInsight: claimAddress } = router.query;
+  const { chain } = useNetwork();
+  const networkId = Web3.utils.numberToHex(chain?.id);
 
-  useSmartContract();
+  useClaimSmartContracts(claimAddress);
+
   const {
     getDecimals,
     getTokenSymbol,
@@ -47,7 +50,7 @@ const ClaimInsight = () => {
     setLoading(true);
     try {
       const { claims } = await subgraphQuery(
-        CLAIMS_SUBGRAPH_URL_POLYGON,
+        CLAIMS_SUBGRAPH_URL[networkId],
         QUERY_CLAIM_DETAILS(claimAddress),
       );
       setClaimsData(claims);
@@ -151,10 +154,10 @@ const ClaimInsight = () => {
 
   useEffect(() => {
     if (claimAddress) fetchClaimDetails();
-  }, [claimAddress]);
+  }, [claimAddress, networkId]);
 
   return (
-    <Layout1 showSidebar={false}>
+    <>
       <section className={classes.mainContainer}>
         <div className={classes.claimInfoContainer}>
           <div className={classes.leftContainer}>
@@ -164,6 +167,7 @@ const ClaimInsight = () => {
               startTime={claimsData[0]?.startTime}
               claimAddress={claimAddress}
               isActive={claimsData[0]?.isActive}
+              claimsNetwork={claimsData[0]?.networkId}
             />
             <div className={classes.infoBottomContainer}>
               <TotalClaimedInfo
@@ -239,7 +243,7 @@ const ClaimInsight = () => {
         open={loading}>
         <CircularProgress color="inherit" />
       </Backdrop>
-    </Layout1>
+    </>
   );
 };
 
