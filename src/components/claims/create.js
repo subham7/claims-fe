@@ -337,31 +337,6 @@ const CreateClaim = () => {
               );
             }
 
-            // post data in api
-            // const postData = JSON.stringify({
-            //   description: data.description,
-            //   airdropTokenContract: data.airdropTokenAddress,
-            //   airdropTokenSymbol: data.selectedToken.symbol,
-            //   claimContract: newClaimContract,
-            //   totalAmount: data.numberOfTokens,
-            //   endDate: new Date(data.endDate).getTime() / 1000,
-            //   startDate: new Date(data.startDate).getTime() / 1000,
-            //   createdBy: data.walletAddress.toLowerCase(),
-            //   addresses: [],
-            //   networkId: networkId,
-            // });
-
-            // await createClaim(postData);
-
-            // if (data.maximumClaim === "proRata") {
-            //   const merkleData = JSON.stringify({
-            //     claimAddress: newClaimContract,
-            //     merkleTree: snapshotData?.merkleTree,
-            //   });
-
-            //   await sendMerkleTree(merkleData);
-            // }
-
             setLoading(false);
             setFinish(true);
             showMessageHandler(setFinish);

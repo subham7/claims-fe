@@ -190,21 +190,6 @@ const Claim = ({ claimAddress }) => {
           );
 
           setClaimableAmt(amount);
-
-          // converting the CSV data into merkleLeaves
-          // const csvData = await getCsvUserData(contractData.merkleRoot);
-
-          // let encodedListOfLeaves = [];
-
-          // csvData[0].snapshot.map((data) => {
-          //   if (data.address) {
-          //     const res = encode(data.address, data.amount);
-          //     encodedListOfLeaves.push(keccak256(res));
-          //   }
-          // });
-
-          // // setting merkleLeaves
-          // setMerkleLeaves(encodedListOfLeaves);
         } else if (desc.permission === "3") {
           try {
             const amountOfTokenUserHas = await getBalance(desc?.daoToken);

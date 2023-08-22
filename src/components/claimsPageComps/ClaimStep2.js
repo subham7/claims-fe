@@ -132,16 +132,6 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading, formikStep1 }) => {
     values.maximumClaim = "custom";
   }
 
-  // const helper = async (csvArr) => {
-  //   let encodedListOfLeaves = [];
-  //   csvArr.map((data) => {
-  //     const res = encode(data.address, data.amount);
-  //     encodedListOfLeaves.push(keccak256(res));
-  //   });
-
-  //   return encodedListOfLeaves;
-  // };
-
   const handleChange = async (event) => {
     const fileUploaded = event.target.files[0];
     setLoadingCsv(true);
