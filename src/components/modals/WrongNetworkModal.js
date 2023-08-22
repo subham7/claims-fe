@@ -1,6 +1,7 @@
 import { makeStyles } from "@mui/styles";
 import Image from "next/image";
 import React from "react";
+import { CHAIN_IDs } from "utils/constants";
 import Web3 from "web3";
 import img from "../../../public/assets/images/wrongNetwork.png";
 
@@ -105,6 +106,22 @@ const WrongNetworkModal = ({ chainId = 137 }) => {
                   },
                 ],
               });
+            } else if (chainId === 42161) {
+              await window.ethereum.request({
+                method: "wallet_addEthereumChain",
+                params: [
+                  {
+                    chainName: "Arbitrum One",
+                    chainId: Web3.utils.toHex(chainId),
+                    nativeCurrency: {
+                      name: "ETH",
+                      decimals: 18,
+                      symbol: "ETH",
+                    },
+                    rpcUrls: ["https://arb1.arbitrum.io/rpc"],
+                  },
+                ],
+              });
             }
           }
         }
@@ -122,14 +139,7 @@ const WrongNetworkModal = ({ chainId = 137 }) => {
         <Image src={img} alt="Wrong network" height={136} width={160} />
 
         <button className={classes.btn} onClick={switchNetworkHandler}>
-          Switch to{" "}
-          {chainId === 137
-            ? "Polygon"
-            : chainId === 5
-            ? "Goerli"
-            : chainId === 8453
-            ? "Base"
-            : ""}
+          Switch to {CHAIN_IDs[chainId]}
         </button>
       </div>
     </>
