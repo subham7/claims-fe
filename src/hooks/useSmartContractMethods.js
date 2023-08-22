@@ -1,6 +1,10 @@
 import { useSelector } from "react-redux";
 import Web3 from "web3";
-import { RPC_URL, POLYGON_MAINNET_RPC_URL } from "../api";
+import {
+  RPC_URL,
+  POLYGON_MAINNET_RPC_URL,
+  SEAPORT_CONTRACT_ADDRESS,
+} from "../api";
 import { getIncreaseGasPrice } from "../utils/helper";
 import ERC20TokenABI from "../abis/usdcTokenContract.json";
 import ERC721TokenABI from "../abis/nft.json";
@@ -743,25 +747,7 @@ const useSmartContractMethods = () => {
           };
         }
       }
-    }
-    // else if (transactionData !== "") {
-    //   console.log("first");
-    //   const web3Send = new Web3(window?.ethereum);
-    //   const seaportContract = new web3Send.eth.Contract(
-    //     seaportABI,
-    //     "0x00000000000000ADc04C56Bf30aC9d3c0aAF14dC",
-    //   );
-    //   transaction = {
-    //     from: isAssetsStoredOnGnosis ? gnosisAddress : daoAddress,
-    //     to: transactionData.fulfillment_data.transaction.to,
-    //     data: seaportContract.methods.fulfillBasicOrder_efficient_6GL6yc(
-    //       transactionData.fulfillment_data.transaction.input_data.parameters,
-    //     ),
-    //     value: transactionData.fulfillment_data.transaction.value.toString(),
-    //   };
-    //   console.log("transactoin", transaction);
-    // }
-    else if (executionId === 6 || executionId === 7) {
+    } else if (executionId === 6 || executionId === 7) {
       if (executionId === 6) {
         transaction = {
           ownerAddress,
@@ -792,12 +778,10 @@ const useSmartContractMethods = () => {
         if (isAssetsStoredOnGnosis) {
           const seaportContract = new web3Send.eth.Contract(
             seaportABI,
-            "0x00000000000000ADc04C56Bf30aC9d3c0aAF14dC",
+            SEAPORT_CONTRACT_ADDRESS,
           );
           transaction = {
-            to: Web3.utils.toChecksumAddress(
-              "0x00000000000000ADc04C56Bf30aC9d3c0aAF14dC",
-            ),
+            to: Web3.utils.toChecksumAddress(SEAPORT_CONTRACT_ADDRESS),
             data: seaportContract.methods
               .fulfillBasicOrder_efficient_6GL6yc(
                 transactionData.fulfillment_data.transaction.input_data
@@ -812,9 +796,7 @@ const useSmartContractMethods = () => {
             to: Web3.utils.toChecksumAddress(daoAddress),
             data: erc20DaoContractSend.methods
               .updateProposalAndExecution(
-                Web3.utils.toChecksumAddress(
-                  "0x00000000000000ADc04C56Bf30aC9d3c0aAF14dC",
-                ),
+                Web3.utils.toChecksumAddress(SEAPORT_CONTRACT_ADDRESS),
                 parameters,
               )
               .encodeABI(),
@@ -965,25 +947,7 @@ const useSmartContractMethods = () => {
           };
         }
       }
-    }
-    // else if (transactionData !== "") {
-    //   console.log("first");
-    //   const web3Send = new Web3(window?.ethereum);
-    //   const seaportContract = new web3Send.eth.Contract(
-    //     seaportABI,
-    //     "0x00000000000000ADc04C56Bf30aC9d3c0aAF14dC",
-    //   );
-    //   transaction = {
-    //     from: isAssetsStoredOnGnosis ? gnosisAddress : daoAddress,
-    //     to: transactionData.fulfillment_data.transaction.to,
-    //     data: seaportContract.methods.fulfillBasicOrder_efficient_6GL6yc(
-    //       transactionData.fulfillment_data.transaction.input_data.parameters,
-    //     ),
-    //     value: transactionData.fulfillment_data.transaction.value.toString(),
-    //   };
-    //   console.log("transactoin", transaction);
-    // }
-    else if (executionId === 6 || executionId === 7) {
+    } else if (executionId === 6 || executionId === 7) {
       if (executionId === 6) {
         transaction = {
           ownerAddress,
@@ -1014,12 +978,10 @@ const useSmartContractMethods = () => {
         if (isAssetsStoredOnGnosis) {
           const seaportContract = new web3Send.eth.Contract(
             seaportABI,
-            "0x00000000000000ADc04C56Bf30aC9d3c0aAF14dC",
+            SEAPORT_CONTRACT_ADDRESS,
           );
           transaction = {
-            to: Web3.utils.toChecksumAddress(
-              "0x00000000000000ADc04C56Bf30aC9d3c0aAF14dC",
-            ),
+            to: Web3.utils.toChecksumAddress(SEAPORT_CONTRACT_ADDRESS),
             data: seaportContract.methods
               .fulfillBasicOrder_efficient_6GL6yc(
                 transactionData.fulfillment_data.transaction.input_data
@@ -1034,9 +996,7 @@ const useSmartContractMethods = () => {
             to: Web3.utils.toChecksumAddress(daoAddress),
             data: erc20DaoContractSend.methods
               .updateProposalAndExecution(
-                Web3.utils.toChecksumAddress(
-                  "0x00000000000000ADc04C56Bf30aC9d3c0aAF14dC",
-                ),
+                Web3.utils.toChecksumAddress(SEAPORT_CONTRACT_ADDRESS),
                 parameters,
               )
               .encodeABI(),
