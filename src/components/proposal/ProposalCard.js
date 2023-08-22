@@ -12,6 +12,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { ProposalCardStyles } from "@components/proposalComps/ProposalCardStyles";
 import useSmartContractMethods from "hooks/useSmartContractMethods";
+import { extractNftAdressAndId } from "utils/helper";
 
 const ProposalCard = ({ proposal, daoAddress }) => {
   const classes = ProposalCardStyles();
@@ -224,12 +225,57 @@ const ProposalCard = ({ proposal, daoAddress }) => {
                             )}
                         </Typography>
                       </div>
-                    }
-                  />
+                    }></Chip>
                 </Grid>
               </>
             ) : (
               <></>
+            )}
+
+            {proposal?.commands[0].executionId === 8 ||
+            proposal?.commands[0].executionId === 9 ? (
+              <Grid item>
+                <Chip
+                  className={classes.timeLeftChip}
+                  style={{
+                    marginRight: "10px",
+                  }}
+                  label={
+                    <div className="f-d f-v-c tb-pad-1">
+                      {" "}
+                      <Typography variant="info" className="text-blue r-pad-1">
+                        NFT address:
+                      </Typography>
+                      <Typography variant="info">
+                        {extractNftAdressAndId(
+                          proposal.commands[0].nftLink,
+                        ).nftAddress.slice(0, 6)}
+                        ....
+                        {extractNftAdressAndId(
+                          proposal.commands[0].nftLink,
+                        ).nftAddress.slice(-6)}
+                      </Typography>
+                    </div>
+                  }></Chip>
+
+                <Chip
+                  className={classes.timeLeftChip}
+                  label={
+                    <div className="f-d f-v-c tb-pad-1">
+                      <Typography variant="info" className="text-blue r-pad-1">
+                        Token Id:
+                      </Typography>
+                      <Typography variant="info">
+                        {
+                          extractNftAdressAndId(proposal.commands[0].nftLink)
+                            .tokenId
+                        }
+                      </Typography>
+                    </div>
+                  }></Chip>
+              </Grid>
+            ) : (
+              ""
             )}
 
             {proposal?.commands[0]?.executionId === 10 ? (

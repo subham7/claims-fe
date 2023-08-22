@@ -1,18 +1,16 @@
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { Button, Typography } from "@components/ui";
-import settingsImg from "../../public/assets/images/settings.png";
+import settingsImg from "../../../public/assets/images/settings.png";
+import claimsBanner from "../../../public/assets/images/claimsBanner.png";
 import { makeStyles } from "@mui/styles";
 import { useRouter } from "next/router";
-
-import claimsBanner from "../../public/assets/images/claimsBanner.png";
-import ClaimsCard from "../../src/components/claimsPageComps/ClaimsCard";
-import useSmartContract from "../../src/hooks/useSmartContract";
-import Layout1 from "../../src/components/layouts/layout1";
-import { subgraphQuery } from "../../src/utils/subgraphs";
-import { CLAIMS_SUBGRAPH_URL_POLYGON } from "../../src/api";
-import { QUERY_ALL_CLAIMS_OF_CREATOR } from "../../src/api/graphql/queries";
-import { useAccount } from "wagmi";
+import ClaimsCard from "components/claimsPageComps/ClaimsCard";
+import { subgraphQuery } from "utils/subgraphs";
+import { QUERY_ALL_CLAIMS_OF_CREATOR } from "api/graphql/queries";
+import { useAccount, useNetwork } from "wagmi";
+import Web3 from "web3";
+import { CLAIMS_SUBGRAPH_URL } from "utils/constants";
 
 const useStyles = makeStyles({
   container: {
@@ -32,7 +30,6 @@ const useStyles = makeStyles({
   },
   claimDoc: {
     width: "130px",
-
     fontSize: "16px",
     border: "none",
     padding: "18px 24px",
@@ -80,14 +77,15 @@ const useStyles = makeStyles({
   },
 });
 
-const Claims = () => {
+const ListClaims = () => {
   const classes = useStyles();
   const router = useRouter();
   const [claimData, setClaimData] = useState([]);
-  useSmartContract();
+  const { chain } = useNetwork();
+  const networkId = Web3.utils.numberToHex(chain?.id);
 
   const createClaimHandler = () => {
-    router.push("/claims/form");
+    router.push("/claims/create");
   };
 
   const { address: walletAddress } = useAccount();
@@ -96,7 +94,7 @@ const Claims = () => {
     const fetchClaims = async () => {
       try {
         const { claims } = await subgraphQuery(
-          CLAIMS_SUBGRAPH_URL_POLYGON,
+          CLAIMS_SUBGRAPH_URL[networkId],
           QUERY_ALL_CLAIMS_OF_CREATOR(walletAddress),
         );
 
@@ -107,10 +105,10 @@ const Claims = () => {
     };
 
     fetchClaims();
-  }, [walletAddress]);
+  }, [networkId, walletAddress]);
 
   return (
-    <Layout1 showSidebar={false}>
+    <>
       <div className={classes.container}>
         {/* Left Side */}
         <div className={classes.leftDiv}>
@@ -145,6 +143,7 @@ const Claims = () => {
               claimContract={item?.claimAddress}
               createdBy={item?.creatorAddress}
               isActive={item?.isActive}
+              claimsNetwork={item?.networkId}
             />
           ))}
         </div>
@@ -159,8 +158,8 @@ const Claims = () => {
           />
         </div>
       </div>
-    </Layout1>
+    </>
   );
 };
 
-export default Claims;
+export default ListClaims;

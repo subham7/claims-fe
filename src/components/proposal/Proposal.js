@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useState } from "react";
-import Layout1 from "../../../../src/components/layouts/layout1";
 import {
   Backdrop,
   CircularProgress,
@@ -10,29 +9,23 @@ import {
   // Typography,
 } from "@mui/material";
 import { Button, Typography } from "@components/ui";
-import { proposalDisplayOptions } from "../../../../src/data/dashboard";
-import DocsCard from "../../../../src/components/proposalComps/DocsCard";
-import CreateProposalDialog from "../../../../src/components/proposalComps/CreateProposalDialog";
-import { fetchProposals } from "../../../../src/utils/proposal";
+import { proposalDisplayOptions } from "data/dashboard";
+import DocsCard from "@components/proposalComps/DocsCard";
+import CreateProposalDialog from "@components/proposalComps/CreateProposalDialog";
+import { fetchProposals } from "utils/proposal";
 import { useRouter } from "next/router";
 import ProposalCard from "./ProposalCard";
-import {
-  getAssetsByDaoAddress,
-  getNFTsByDaoAddress,
-} from "../../../../src/api/assets";
-import ClubFetch from "../../../../src/utils/clubFetch";
+import { getAssetsByDaoAddress, getNFTsByDaoAddress } from "api/assets";
 import { useDispatch, useSelector } from "react-redux";
 import { makeStyles } from "@mui/styles";
-import { setProposalList } from "../../../../src/redux/reducers/proposal";
+import { setProposalList } from "redux/reducers/proposal";
 import Web3 from "web3";
 import { Web3Adapter } from "@safe-global/protocol-kit";
 import SafeApiKit from "@safe-global/api-kit";
-import {
-  getProposalByDaoAddress,
-  getProposalTxHash,
-} from "../../../../src/api/proposal";
-import { web3InstanceCustomRPC } from "../../../../src/utils/helper";
-import { addNftsOwnedByDao } from "../../../../src/redux/reducers/club";
+import { getProposalByDaoAddress, getProposalTxHash } from "api/proposal";
+import { web3InstanceCustomRPC } from "utils/helper";
+import { addNftsOwnedByDao } from "redux/reducers/club";
+import { useNetwork } from "wagmi";
 
 const useStyles = makeStyles({
   noProposal_heading: {
@@ -56,10 +49,10 @@ const useStyles = makeStyles({
   },
 });
 
-const Proposal = () => {
+const Proposal = ({ daoAddress }) => {
   const router = useRouter();
   const dispatch = useDispatch();
-  const { clubId: daoAddress } = router.query;
+
   const classes = useStyles();
 
   const [nftData, setNftData] = useState([]);
@@ -69,6 +62,9 @@ const Proposal = () => {
 
   const [open, setOpen] = useState(false);
   const [tokenData, setTokenData] = useState([]);
+
+  const { chain } = useNetwork();
+  const networkId = Web3.utils.numberToHex(chain?.id);
 
   const NETWORK_HEX = useSelector((state) => {
     return state.gnosis.networkHex;
@@ -126,7 +122,6 @@ const Proposal = () => {
     router.push(`${router.asPath}/${proposal?.proposalId}`, undefined, {
       shallow: true,
     });
-    // router.push("/");
   };
 
   const fetchNfts = useCallback(async () => {
@@ -178,7 +173,7 @@ const Proposal = () => {
   };
 
   const getSafeService = useCallback(async () => {
-    const web3 = await web3InstanceCustomRPC();
+    const web3 = await web3InstanceCustomRPC(networkId);
 
     const ethAdapter = new Web3Adapter({
       web3,
@@ -242,7 +237,7 @@ const Proposal = () => {
   }, [daoAddress]);
 
   return (
-    <Layout1 page={2}>
+    <>
       <Grid container spacing={3} paddingTop={2}>
         <Grid item md={8}>
           <Grid
@@ -328,8 +323,8 @@ const Proposal = () => {
                         md={12}>
                         <ProposalCard
                           proposal={executionTransaction}
-                          // fetched={fetched}
                           executionTransaction={true}
+                          daoAddress={daoAddress}
                         />
                       </Grid>
                     </>
@@ -351,7 +346,7 @@ const Proposal = () => {
                         <ProposalCard
                           proposal={proposal}
                           indexKey={key}
-                          // fetched={fetched}
+                          daoAddress={daoAddress}
                         />
                       </Grid>
                     );
@@ -383,14 +378,15 @@ const Proposal = () => {
         onClose={handleClose}
         tokenData={tokenData}
         nftData={nftData}
+        daoAddress={daoAddress}
       />
       <Backdrop
         sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
         open={loaderOpen}>
         <CircularProgress color="inherit" />
       </Backdrop>
-    </Layout1>
+    </>
   );
 };
 
-export default ClubFetch(Proposal);
+export default Proposal;

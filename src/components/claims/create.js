@@ -1,30 +1,25 @@
 import { useEffect, useState } from "react";
 import { useFormik } from "formik";
 import { Grid, FormHelperText, Alert } from "@mui/material";
-import ClaimStep1 from "../../src/components/claimsPageComps/ClaimStep1";
-import ClaimStep2 from "../../src/components/claimsPageComps/ClaimStep2";
+import ClaimStep1 from "../claimsPageComps/ClaimStep1";
+import ClaimStep2 from "../claimsPageComps/ClaimStep2";
 import dayjs from "dayjs";
 import { makeStyles } from "@mui/styles";
-import { getAssetsByDaoAddress } from "../../src/api/assets";
-import { convertToWeiGovernance } from "../../src/utils/globalFunctions";
-import { createClaimCsv, createSnapShot } from "../../src/api/claims";
-import {
-  CLAIM_FACTORY_ADDRESS_GOERLI,
-  CLAIM_FACTORY_ADDRESS_POLYGON,
-} from "../../src/api";
+import { convertToWeiGovernance } from "utils/globalFunctions";
+import { createClaimCsv, createSnapShot } from "api/claims";
 import { useRouter } from "next/router";
-import useSmartContractMethods from "../../src/hooks/useSmartContractMethods";
-import useSmartContract from "../../src/hooks/useSmartContract";
-import Layout1 from "../../src/components/layouts/layout1";
+import useSmartContractMethods from "../../hooks/useSmartContractMethods";
 import Moralis from "moralis";
 import { EvmChain } from "@moralisweb3/common-evm-utils";
 import {
   claimStep1ValidationSchema,
   claimStep2ValidationSchema,
-} from "../../src/components/createClubComps/ValidationSchemas";
+} from "../createClubComps/ValidationSchemas";
 import { useAccount, useNetwork } from "wagmi";
-
-const steps = ["Step1", "Step2"];
+import { getTokensList } from "api/token";
+import { getUserTokenData } from "utils/helper";
+import { CLAIM_FACTORY_ADDRESS, NETWORK_NAME } from "utils/constants";
+import useClaimSmartContracts from "hooks/useClaimSmartContracts";
 
 const useStyles = makeStyles({
   container: {
@@ -35,7 +30,7 @@ const useStyles = makeStyles({
   },
 });
 
-const Form = () => {
+const CreateClaim = () => {
   const [activeStep, setActiveStep] = useState(0);
   const [tokensInWallet, setTokensInWallet] = useState(null);
   const [showError, setShowError] = useState(null);
@@ -44,7 +39,7 @@ const Form = () => {
   const [errMsg, setErrMsg] = useState("");
   const [loadingTokens, setLoadingTokens] = useState(false);
   const [snapshotMerkleData, setSnapshotMerkleData] = useState([]);
-  useSmartContract();
+  useClaimSmartContracts();
 
   const classes = useStyles();
 
@@ -65,12 +60,20 @@ const Form = () => {
   };
 
   const getCurrentAccount = async () => {
-    setLoadingTokens(true);
-    // const data = await getTokensFromWallet(accounts[0], networkId);
-    if (networkId && walletAddress) {
-      const tokensList = await getAssetsByDaoAddress(walletAddress, networkId);
-      setTokensInWallet(tokensList.data.tokenPriceList);
-      setLoadingTokens(false);
+    try {
+      setLoadingTokens(true);
+      if (networkId && walletAddress) {
+        const tokensList = await getTokensList(
+          NETWORK_NAME[networkId],
+          walletAddress,
+        );
+
+        const data = await getUserTokenData(tokensList?.data?.items);
+        setTokensInWallet(data?.filter((token) => token.symbol !== null));
+        setLoadingTokens(false);
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -130,7 +133,7 @@ const Form = () => {
       eligible: "everyone", // token || csv || everyone
       daoTokenAddress: "", // tokenGated
       tokenGatingAmt: 0,
-      maximumClaim: "", // prorata or custom
+      maximumClaim: "custom", // prorata or custom
       customAmount: 1,
       merkleData: [],
       csvObject: [],
@@ -139,10 +142,7 @@ const Form = () => {
     },
     validationSchema: claimStep2ValidationSchema,
     onSubmit: async (values) => {
-      const claimsContractAddress =
-        networkId === "0x89"
-          ? CLAIM_FACTORY_ADDRESS_POLYGON
-          : CLAIM_FACTORY_ADDRESS_GOERLI;
+      const claimsContractAddress = CLAIM_FACTORY_ADDRESS[networkId];
 
       const data = {
         description: formikStep1.values.description,
@@ -171,6 +171,8 @@ const Form = () => {
         blockNumber: values?.blockNumber,
       };
 
+      console.log("DATA", data);
+
       const decimals = await getDecimals(data.airdropTokenAddress);
 
       // fetch Block number
@@ -196,7 +198,7 @@ const Form = () => {
             data.blockNumber > 0 ? data.blockNumber : blockData.block;
 
           snapshotData = await createSnapShot(
-            data.numberOfTokens * 10 ** decimals,
+            convertToWeiGovernance(data.numberOfTokens, decimals),
             data.airdropTokenAddress,
             data.daoTokenAddress,
             data.tokenGatedNetwork,
@@ -273,7 +275,7 @@ const Form = () => {
                 data.airdropTokenAddress,
                 claimsContractAddress,
                 data.numberOfTokens,
-                decimals, // decimal
+                decimals,
               );
             }
 
@@ -335,36 +337,11 @@ const Form = () => {
               );
             }
 
-            // post data in api
-            // const postData = JSON.stringify({
-            //   description: data.description,
-            //   airdropTokenContract: data.airdropTokenAddress,
-            //   airdropTokenSymbol: data.selectedToken.symbol,
-            //   claimContract: newClaimContract,
-            //   totalAmount: data.numberOfTokens,
-            //   endDate: new Date(data.endDate).getTime() / 1000,
-            //   startDate: new Date(data.startDate).getTime() / 1000,
-            //   createdBy: data.walletAddress.toLowerCase(),
-            //   addresses: [],
-            //   networkId: networkId,
-            // });
-
-            // await createClaim(postData);
-
-            // if (data.maximumClaim === "proRata") {
-            //   const merkleData = JSON.stringify({
-            //     claimAddress: newClaimContract,
-            //     merkleTree: snapshotData?.merkleTree,
-            //   });
-
-            //   await sendMerkleTree(merkleData);
-            // }
-
             setLoading(false);
             setFinish(true);
             showMessageHandler(setFinish);
             setTimeout(() => {
-              router.push("/claims");
+              router.push(`/claims`);
             }, 3000);
           } catch (err) {
             console.log(err);
@@ -468,7 +445,7 @@ const Form = () => {
             setFinish(true);
             showMessageHandler(setFinish);
             setTimeout(() => {
-              router.push("/claims");
+              router.push(`/claims`);
             }, 3000);
           } catch (err) {
             console.log(err);
@@ -517,7 +494,7 @@ const Form = () => {
   };
 
   return (
-    <Layout1 showSidebar={false}>
+    <>
       <div className={classes.container}>
         <Grid container>
           <Grid item xs={12} sx={{ padding: "20px" }}>
@@ -558,8 +535,8 @@ const Form = () => {
           </Alert>
         )}
       </div>
-    </Layout1>
+    </>
   );
 };
 
-export default Form;
+export default CreateClaim;

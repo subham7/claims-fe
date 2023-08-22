@@ -1,21 +1,18 @@
 import dayjs from "dayjs";
-import { useRouter } from "next/router";
 import React, { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { QUERY_ALL_MEMBERS } from "../../../src/api/graphql/queries";
-import AdditionalSettings from "../../../src/components/settingsComps/AdditionalSettings";
-import SettingsInfo from "../../../src/components/settingsComps/SettingsInfo";
-import TokenGating from "../../../src/components/tokenGatingComp/TokenGating";
-import ClubFetch from "../../../src/utils/clubFetch";
-import { subgraphQuery } from "../../../src/utils/subgraphs";
-import { convertFromWeiGovernance } from "../../../src/utils/globalFunctions";
-import { getAssetsByDaoAddress } from "../../../src/api/assets";
-import useSmartContractMethods from "../../../src/hooks/useSmartContractMethods";
-import { getClubInfo } from "../../../src/api/club";
-import Layout1 from "@components/layouts/layout1";
+import { QUERY_ALL_MEMBERS } from "api/graphql/queries";
+import AdditionalSettings from "@components/settingsComps/AdditionalSettings";
+import SettingsInfo from "@components/settingsComps/SettingsInfo";
+import TokenGating from "@components/tokenGatingComp/TokenGating";
+import { subgraphQuery } from "utils/subgraphs";
+import { convertFromWeiGovernance } from "utils/globalFunctions";
+import { getAssetsByDaoAddress } from "api/assets";
+import useSmartContractMethods from "hooks/useSmartContractMethods";
+import { getClubInfo } from "api/club";
 import { useAccount } from "wagmi";
 
-const Settings = () => {
+const Settings = ({ daoAddress }) => {
   const [daoDetails, setDaoDetails] = useState({
     daoName: "",
     daoSymbol: "",
@@ -78,9 +75,6 @@ const Settings = () => {
   const gnosisAddress = useSelector((state) => {
     return state.club.clubData.gnosisAddress;
   });
-
-  const router = useRouter();
-  const { clubId: daoAddress } = router.query;
 
   const day = Math.floor(new Date().getTime() / 1000.0);
   const day1 = dayjs.unix(day);
@@ -254,7 +248,7 @@ const Settings = () => {
   }, [fetchAssets]);
 
   return (
-    <Layout1 page={5}>
+    <>
       <SettingsInfo
         daoDetails={daoDetails}
         erc20TokenDetails={erc20TokenDetails}
@@ -267,6 +261,7 @@ const Settings = () => {
         clubInfo={clubInfo}
         getClubInfo={getClubInfoFn}
         isAdminUser={isAdminUser}
+        daoAddress={daoAddress}
       />
       <AdditionalSettings
         daoDetails={daoDetails}
@@ -277,10 +272,11 @@ const Settings = () => {
         fetchErc20ContractDetails={fetchErc20ContractDetails}
         fetchErc721ContractDetails={fetchErc721ContractDetails}
         isAdminUser={isAdminUser}
+        daoAddress={daoAddress}
       />
-      <TokenGating />
-    </Layout1>
+      <TokenGating daoAddress={daoAddress} />
+    </>
   );
 };
 
-export default ClubFetch(Settings);
+export default Settings;

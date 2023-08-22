@@ -2,27 +2,23 @@ import React, { useCallback, useEffect, useState } from "react";
 import {
   convertFromWeiGovernance,
   convertToWeiGovernance,
-} from "../../src/utils/globalFunctions";
-import { useRouter } from "next/router";
+} from "utils/globalFunctions";
 import { Alert, CircularProgress, Tooltip } from "@mui/material";
-import { getUserProofAndBalance } from "../../src/api/claims";
-import Layout1 from "../../src/components/layouts/layout1";
+import { getUserProofAndBalance } from "api/claims";
 import Countdown from "react-countdown";
 import { useDispatch, useSelector } from "react-redux";
-import { addClaimEnabled } from "../../src/redux/reducers/createClaim";
-import useSmartContractMethods from "../../src/hooks/useSmartContractMethods";
-import useSmartContract from "../../src/hooks/useSmartContract";
-import { ClaimsStyles } from "../../src/components/claimsPageComps/ClaimsStyles";
-import { subgraphQuery } from "../../src/utils/subgraphs";
-import { CLAIMS_SUBGRAPH_URL_POLYGON } from "../../src/api";
-import { QUERY_CLAIM_DETAILS } from "../../src/api/graphql/queries";
+import { addClaimEnabled } from "redux/reducers/createClaim";
+import useSmartContractMethods from "hooks/useSmartContractMethods";
+import { ClaimsStyles } from "components/claimsPageComps/ClaimsStyles";
+import { subgraphQuery } from "utils/subgraphs";
+import { QUERY_CLAIM_DETAILS } from "api/graphql/queries";
 import Button from "@components/ui/button/Button";
 import { useAccount, useNetwork } from "wagmi";
+import { CLAIMS_SUBGRAPH_URL } from "utils/constants";
+import useClaimSmartContracts from "hooks/useClaimSmartContracts";
 
-const ClaimAddress = () => {
+const Claim = ({ claimAddress }) => {
   const classes = ClaimsStyles();
-  const router = useRouter();
-
   const [contractData, setContractData] = useState([]);
   const [totalAmountofTokens, setTotalAmountOfTokens] = useState(0);
   const [airdropTokenName, setAirdropTokenName] = useState("");
@@ -50,8 +46,7 @@ const ClaimAddress = () => {
   const { chain } = useNetwork();
   const networkId = "0x" + chain?.id.toString(16);
 
-  const { claimAddress } = router.query;
-  useSmartContract();
+  useClaimSmartContracts(claimAddress);
 
   let contractInstances = useSelector((state) => {
     return state.contractInstances.contractInstances;
@@ -195,21 +190,6 @@ const ClaimAddress = () => {
           );
 
           setClaimableAmt(amount);
-
-          // converting the CSV data into merkleLeaves
-          // const csvData = await getCsvUserData(contractData.merkleRoot);
-
-          // let encodedListOfLeaves = [];
-
-          // csvData[0].snapshot.map((data) => {
-          //   if (data.address) {
-          //     const res = encode(data.address, data.amount);
-          //     encodedListOfLeaves.push(keccak256(res));
-          //   }
-          // });
-
-          // // setting merkleLeaves
-          // setMerkleLeaves(encodedListOfLeaves);
         } else if (desc.permission === "3") {
           try {
             const amountOfTokenUserHas = await getBalance(desc?.daoToken);
@@ -383,7 +363,7 @@ const ClaimAddress = () => {
     const fetchClaimsDataFromSubgraph = async () => {
       try {
         const { claims } = await subgraphQuery(
-          CLAIMS_SUBGRAPH_URL_POLYGON,
+          CLAIMS_SUBGRAPH_URL[networkId],
           QUERY_CLAIM_DETAILS(claimAddress),
         );
         setClaimsDataSubgraph(claims);
@@ -393,7 +373,7 @@ const ClaimAddress = () => {
     };
 
     if (claimAddress) fetchClaimsDataFromSubgraph();
-  }, [claimAddress]);
+  }, [claimAddress, networkId]);
 
   const isClaimButtonDisabled = () => {
     return (claimRemaining == 0 && alreadyClaimed && claimed) ||
@@ -408,7 +388,7 @@ const ClaimAddress = () => {
   };
 
   return (
-    <Layout1 showSidebar={false}>
+    <>
       {isLoading ? (
         <div
           style={{
@@ -575,14 +555,14 @@ const ClaimAddress = () => {
                     setShowInputError(false);
                   }
                 }}
-                // disabled={
-                //   !claimActive ||
-                //   !claimableAmt ||
-                //   !claimEnabled ||
-                //   (claimRemaining == 0 && alreadyClaimed)
-                //     ? true
-                //     : false
-                // }
+                disabled={
+                  !claimActive ||
+                  !claimableAmt ||
+                  !claimEnabled ||
+                  (claimRemaining == 0 && alreadyClaimed)
+                    ? true
+                    : false
+                }
                 value={claimInput}
                 placeholder="0"
                 type="number"
@@ -663,8 +643,8 @@ const ClaimAddress = () => {
           </Alert>
         )
       )}
-    </Layout1>
+    </>
   );
 };
 
-export default ClaimAddress;
+export default Claim;
