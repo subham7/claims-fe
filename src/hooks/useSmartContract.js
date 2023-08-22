@@ -4,10 +4,10 @@ import ERC20DaoABI from "../abis/newArch/erc20Dao.json";
 import ERC721DaoABI from "../abis/newArch/erc721Dao.json";
 import FactoryContractABI from "../abis/newArch/factoryContract.json";
 import Web3 from "web3";
-import { getRpcUrl, RPC_URL } from "../api";
 import { useDispatch, useSelector } from "react-redux";
 import { setContractInstances } from "../redux/reducers/contractInstances";
 import { useNetwork } from "wagmi";
+import { NETWORK_RPC_URL } from "utils/constants";
 
 const useSmartContract = (daoAddress) => {
   const { chain } = useNetwork();
@@ -23,7 +23,7 @@ const useSmartContract = (daoAddress) => {
   });
 
   const initializeFactoryContracts = async () => {
-    const web3Call = new Web3(RPC_URL);
+    const web3Call = new Web3(NETWORK_RPC_URL[networkId]);
     const web3Send = new Web3(window?.ethereum);
 
     try {
@@ -54,7 +54,7 @@ const useSmartContract = (daoAddress) => {
   };
 
   const initializeStationContracts = async () => {
-    const web3Call = new Web3(RPC_URL);
+    const web3Call = new Web3(NETWORK_RPC_URL[networkId]);
     const web3Send = new Web3(window?.ethereum);
 
     try {
@@ -100,14 +100,12 @@ const useSmartContract = (daoAddress) => {
 
   useEffect(() => {
     if (networkId) {
-      getRpcUrl(networkId);
       initializeFactoryContracts();
     }
   }, [FACTORY_CONTRACT_ADDRESS, networkId]);
 
   useEffect(() => {
     if (networkId) {
-      getRpcUrl(networkId);
       initializeStationContracts();
     }
   }, [daoAddress, networkId]);

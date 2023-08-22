@@ -14,10 +14,10 @@ export const CLAIMS_SUBGRAPH_URL = {
 };
 
 export const NETWORK_RPC_URL = {
-  "0x5": process.env.NEXT_PUBLIC_GOERLI_RPC_URL,
-  "0x89": process.env.NEXT_PUBLIC_POLYGON_MAINNET_RPC_URL,
-  "0x2105": process.env.NEXT_PUBLIC_BASE_MAINNET_RPC_URL,
-  "0xa4b1": process.env.NEXT_PUBLIC_ARBITRUM_ONE_RPC_URL,
+  "0x5": `https://eth-goerli.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}`,
+  "0x89": `https://polygon-mainnet.infura.io/v3/${process.env.NEXT_PUBLIC_INFURA_API_KEY}`,
+  "0x2105": `https://multi-attentive-snowflake.base-mainnet.discover.quiknode.pro/${process.env.NEXT_PUBLIC_QUICKNODE_API_KEY}/`,
+  "0xa4b1": `https://arbitrum-mainnet.infura.io/v3/${process.env.NEXT_PUBLIC_INFURA_API_KEY}`,
 };
 
 export const NETWORK_NAME = {
@@ -38,4 +38,34 @@ export const CHAIN_IDs = {
   5: "Goerli",
   8453: "Base",
   42161: "Arbitrum",
+};
+
+export const CHAIN_CONFIGS = {
+  137: {
+    chainName: "Polygon Mainnet",
+    nativeCurrency: {
+      name: "MATIC",
+      decimals: 18,
+      symbol: "MATIC",
+    },
+    rpcUrls: ["https://polygon-rpc.com/"],
+  },
+  8453: {
+    chainName: "Base Mainnet",
+    nativeCurrency: {
+      name: "Base ETH",
+      decimals: 18,
+      symbol: "ETH",
+    },
+    rpcUrls: ["https://mainnet.base.org"],
+  },
+  42161: {
+    chainName: "Arbitrum One",
+    nativeCurrency: {
+      name: "ETH",
+      decimals: 18,
+      symbol: "ETH",
+    },
+    rpcUrls: ["https://arb1.arbitrum.io/rpc"],
+  },
 };

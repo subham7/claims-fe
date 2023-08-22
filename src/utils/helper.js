@@ -171,3 +171,7 @@ export const getUserTokenData = async (tokenData) => {
     };
   });
 };
+
+export const requestEthereumChain = async (method, params) => {
+  return await window.ethereum.request({ method, params });
+};

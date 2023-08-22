@@ -2,11 +2,10 @@ import { useEffect } from "react";
 import ClaimContractABI from "../abis/newArch/claimContract.json";
 import ClaimFactoryABI from "../abis/newArch/claimFactory.json";
 import Web3 from "web3";
-import { getRpcUrl, RPC_URL } from "../api";
 import { useDispatch, useSelector } from "react-redux";
 import { setContractInstances } from "../redux/reducers/contractInstances";
 import { useNetwork } from "wagmi";
-import { CLAIM_FACTORY_ADDRESS } from "utils/constants";
+import { CLAIM_FACTORY_ADDRESS, NETWORK_RPC_URL } from "utils/constants";
 
 const useClaimSmartContracts = (claimAddress) => {
   const { chain } = useNetwork();
@@ -20,7 +19,7 @@ const useClaimSmartContracts = (claimAddress) => {
   const claimFactoryAddress = CLAIM_FACTORY_ADDRESS[networkId];
 
   const initializeClaimFactoryContracts = async () => {
-    const web3Call = new Web3(RPC_URL);
+    const web3Call = new Web3(NETWORK_RPC_URL[networkId]);
     const web3Send = new Web3(window?.ethereum);
 
     try {
@@ -70,7 +69,6 @@ const useClaimSmartContracts = (claimAddress) => {
 
   useEffect(() => {
     if (networkId) {
-      getRpcUrl(networkId);
       initializeClaimFactoryContracts();
     }
   }, [networkId, claimFactoryAddress]);

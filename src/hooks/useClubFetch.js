@@ -19,7 +19,7 @@ import {
 import { fetchConfigById } from "../api/config";
 
 import Web3 from "web3";
-import { SUBGRAPH_URL_GOERLI, SUBGRAPH_URL_POLYGON, getRpcUrl } from "../api";
+import { SUBGRAPH_URL_GOERLI, SUBGRAPH_URL_POLYGON } from "../api";
 import { getSafeSdk } from "../utils/helper";
 import useSmartContractMethods from "./useSmartContractMethods";
 import useSmartContract from "./useSmartContract";
@@ -57,8 +57,6 @@ const useClubFetch = ({ daoAddress }) => {
   useEffect(() => {
     const getNetworkConfig = async () => {
       try {
-        getRpcUrl(networkId);
-
         const networkData = await fetchConfigById(networkId);
 
         dispatch(
