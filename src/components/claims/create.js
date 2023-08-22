@@ -18,9 +18,8 @@ import {
 import { useAccount, useNetwork } from "wagmi";
 import Web3 from "web3";
 import { getTokensList } from "api/token";
-import { getAssetsByDaoAddress } from "api/assets";
 import { getUserTokenData } from "utils/helper";
-import { CLAIM_FACTORY_ADDRESS } from "utils/constants";
+import { CLAIM_FACTORY_ADDRESS, NETWORK_NAME } from "utils/constants";
 import useClaimSmartContracts from "hooks/useClaimSmartContracts";
 
 const useStyles = makeStyles({
@@ -65,28 +64,14 @@ const CreateClaim = () => {
     try {
       setLoadingTokens(true);
       if (networkId && walletAddress) {
-        if (networkId === "0x2105") {
-          const tokensList = await getTokensList("base-mainnet", walletAddress);
-          const data = await getUserTokenData(
-            tokensList?.data?.items,
-            networkId,
-          );
-          setTokensInWallet(data);
-          setLoadingTokens(false);
-        } else if (networkId === "0x89") {
-          const tokensList = await getAssetsByDaoAddress(
-            walletAddress,
-            networkId,
-          );
+        const tokensList = await getTokensList(
+          NETWORK_NAME[networkId],
+          walletAddress,
+        );
 
-          const data = await getUserTokenData(
-            tokensList?.data?.tokenPriceList,
-            networkId,
-          );
-
-          setTokensInWallet(data);
-          setLoadingTokens(false);
-        }
+        const data = await getUserTokenData(tokensList?.data?.items);
+        setTokensInWallet(data?.filter((token) => token.symbol !== null));
+        setLoadingTokens(false);
       }
     } catch (error) {
       console.log(error);
@@ -186,6 +171,8 @@ const CreateClaim = () => {
         tokenGatedNetwork: values?.tokenGatedNetwork,
         blockNumber: values?.blockNumber,
       };
+
+      console.log("DATA", data);
 
       const decimals = await getDecimals(data.airdropTokenAddress);
 

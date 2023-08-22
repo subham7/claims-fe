@@ -157,24 +157,19 @@ export const extractPartFromUrl = (url) => {
   }
 };
 
-export const getUserTokenData = async (tokenData, networkId) => {
-  if (networkId === "0x89") {
-    return tokenData.map((token) => {
-      return {
-        balance: token.balance,
-        address: token.token_address,
-        decimals: token.decimals,
-        symbol: token.symbol,
-      };
-    });
-  } else if (networkId === "0x2105") {
-    return tokenData.map((token) => {
-      return {
-        balance: token.balance,
-        address: token.contract_address,
-        decimals: token.contract_decimals,
-        symbol: token.contract_ticker_symbol,
-      };
-    });
-  }
+export const getUserTokenData = async (tokenData) => {
+  const filteredData = tokenData.filter(
+    (token) =>
+      token.contract_address !== "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" &&
+      token?.contract_address !== "0x0000000000000000000000000000000000001010",
+  );
+
+  return filteredData.map((token) => {
+    return {
+      balance: token.balance,
+      address: token.contract_address,
+      decimals: token.contract_decimals,
+      symbol: token.contract_ticker_symbol,
+    };
+  });
 };
