@@ -251,7 +251,6 @@ export const proposalValidationSchema = yup.object({
                 !nftdata?.data?.orders.length &&
                 proposalData?.commands[0].executionId === 8
               ) {
-                console.log("hereee", value);
                 return false;
               }
             }

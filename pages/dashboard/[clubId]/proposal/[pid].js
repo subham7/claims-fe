@@ -70,6 +70,7 @@ import {
   executeRejectTx,
   signRejectTx,
 } from "utils/proposal";
+import { BsInfoCircleFill } from "react-icons/bs";
 
 const useStyles = makeStyles({
   clubAssets: {
@@ -343,6 +344,7 @@ const ProposalDetail = () => {
     });
     return safeService;
   }, [GNOSIS_TRANSACTION_URL, walletAddress]);
+
   const isOwner = useCallback(async () => {
     if (gnosisAddress) {
       const safeSdk = await getSafeSdk(
@@ -401,7 +403,6 @@ const ProposalDetail = () => {
               setIsCancelExecutionReady(true);
             }
           }
-          setLoaderOpen(false);
         });
       }
       const proposalTxHash = getProposalTxHash(pid);
@@ -531,7 +532,7 @@ const ProposalDetail = () => {
   };
 
   useEffect(() => {
-    if (proposalData) {
+    if (proposalData && proposalData.commands[0].executionId === 8) {
       nftListingExists();
     }
   }, [proposalData]);
@@ -1073,36 +1074,43 @@ const ProposalDetail = () => {
 
   const executeRejectSafeTransaction = async () => {
     setLoaderOpen(true);
-    const response = await executeRejectTx({
+    const response = executeRejectTx({
       pid: proposalData?.cancelProposalId,
       gnosisTransactionUrl: GNOSIS_TRANSACTION_URL,
       gnosisAddress,
       walletAddress,
     });
-    if (response) {
-      const updateStatus = patchProposalExecuted(pid);
-      updateStatus.then((result) => {
-        if (result.status !== 200) {
-          setExecuted(false);
-          setOpenSnackBar(true);
-          setMessage("execution status update failed!");
-          setFailed(true);
-          setLoaderOpen(false);
-        } else {
-          fetchData();
-          setExecuted(true);
-          setOpenSnackBar(true);
-          setMessage("execution successful!");
-          setFailed(false);
-          setLoaderOpen(false);
-        }
-      });
-    } else {
-      setOpenSnackBar(true);
-      setMessage("Signature failed!");
-      setFailed(true);
-      setLoaderOpen(false);
-    }
+    response.then(
+      (result) => {
+        result.promiEvent.on("confirmation", () => {
+          const updateStatus = patchProposalExecuted(pid);
+          updateStatus.then((result) => {
+            if (result.status !== 200) {
+              setExecuted(false);
+              setOpenSnackBar(true);
+              setMessage("execution status update failed!");
+              setFailed(true);
+              setLoaderOpen(false);
+            } else {
+              fetchData();
+              setExecuted(true);
+              setOpenSnackBar(true);
+              setMessage("execution successful!");
+              setFailed(false);
+              setLoaderOpen(false);
+            }
+          });
+        });
+      },
+      (error) => {
+        console.error(error);
+        setExecuted(false);
+        setOpenSnackBar(true);
+        setMessage("execution failed!");
+        setFailed(true);
+        setLoaderOpen(false);
+      },
+    );
   };
 
   const handleSnackBarClose = (event, reason) => {
@@ -1125,7 +1133,7 @@ const ProposalDetail = () => {
   if (!walletAddress && proposalData === null) {
     return <>loading</>;
   }
-
+  console.log(isNftSold);
   return (
     <>
       <Layout1 page={2}>
@@ -1240,7 +1248,26 @@ const ProposalDetail = () => {
                   __html: ReactHtmlParser(proposalData?.description),
                 }}></div>
             </Grid>
-
+            <br />
+            {isNftSold && (
+              <div
+                style={{
+                  background: "#D55438 0% 0% no-repeat padding-box",
+                  opacity: "50%",
+                  display: "flex",
+                  alignItems: "center",
+                  padding: "10px 30px",
+                  borderRadius: "10px",
+                }}>
+                <BsInfoCircleFill
+                  color="#C1D3FF"
+                  style={{ marginRight: "10px" }}
+                />
+                <p>
+                  This item has been sold already, please cancel this proposal
+                </p>
+              </div>
+            )}
             {/* voting process before Signature */}
             {governance || proposalData?.type === "survey" ? (
               <>
@@ -1429,23 +1456,28 @@ const ProposalDetail = () => {
                                 </Grid>
                               </Button>
                             )}
-
-                            {(signed || isRejectTxnSigned) &&
+                            {console.log("xxx", signed)}
+                            {(signed ||
+                              isRejectTxnSigned ||
+                              signedOwners.length) &&
                               proposalData.commands[0].executionId === 8 && (
-                                <Card
+                                <Button
                                   className={
                                     executed
                                       ? classes.mainCardButtonSuccess
                                       : classes.mainCardButton
                                   }
-                                  style={{ marginTop: "20px" }}
-                                  // onClick={() => {
-                                  //   if (proposalData?.cancelProposalId) {
-                                  //     executeRejectSafeTransaction();
-                                  //   } else {
-                                  //     createRejectSafeTransaction();
-                                  //   }
-                                  // }}
+                                  style={{
+                                    marginTop: "20px",
+                                    backgroundColor: "#D55438",
+                                    width: "100%",
+                                    padding: "1rem 0",
+                                  }}
+                                  disabled={
+                                    (!isCancelExecutionReady &&
+                                      isCancelSigned) ||
+                                    isCancelExecuted
+                                  }
                                   onClick={
                                     isCancelExecutionReady
                                       ? pendingTxHash === txHash
@@ -1488,13 +1520,13 @@ const ProposalDetail = () => {
                                         <Typography
                                           className={classes.cardFont1}>
                                           {isCancelSigned
-                                            ? "Signed Reject Succesfully"
-                                            : "Sign Reject Now"}
+                                            ? "Cancellation Requested"
+                                            : "Request Cancel"}
                                         </Typography>
                                       </Grid>
                                     ) : null}
                                   </Grid>
-                                </Card>
+                                </Button>
                               )}
                           </Card>
                         ) : (
