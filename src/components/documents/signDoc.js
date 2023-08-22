@@ -44,7 +44,7 @@ const useStyles = makeStyles({
   },
 });
 
-const SignDoc = ({ daoAddress }) => {
+const SignDoc = ({ daoAddress, isAdmin }) => {
   const classes = useStyles();
   const [signedAcc, setSignedAcc] = useState("");
   const [signDoc, setSignDoc] = useState(false);
@@ -97,7 +97,6 @@ const SignDoc = ({ daoAddress }) => {
 
   // Encrypting admin's data and converting into URL
   const finishHandler = async () => {
-    debugger;
     try {
       // Convert data into a JSON string
       const data = JSON.stringify({
@@ -248,20 +247,20 @@ const SignDoc = ({ daoAddress }) => {
             </button>
           )}
 
-          {signDoc && (
+          {signDoc && isAdmin && (
             <button onClick={finishHandler} className={classes.btn}>
               Finish
             </button>
           )}
 
-          {signDoc && membersData && (
+          {signDoc && membersData && !isAdmin && (
             <button onClick={finishMemberSignHandler} className={classes.btn}>
               Finish
             </button>
           )}
         </div>
 
-        {decryptedDataObj ? (
+        {decryptedDataObj && !isAdmin ? (
           <DocumentPDF
             signedAcc={signedAcc}
             signedHash={signedHash}

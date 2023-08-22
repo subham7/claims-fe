@@ -90,10 +90,7 @@ const DocumentCreate = ({ daoAddress }) => {
     onSubmit: (values) => {
       dispatch(addAdminFormData(values));
       router.push({
-        pathname: `/documents/${daoAddress}/sign`,
-        query: {
-          isAdmin: true,
-        },
+        pathname: `/documents/${daoAddress}/sign/true`,
       });
     },
   });
