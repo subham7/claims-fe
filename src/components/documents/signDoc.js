@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import Layout1 from "../../../src/components/layouts/layout1";
 import dynamic from "next/dynamic";
 import { makeStyles } from "@mui/styles";
 import { pdf } from "@react-pdf/renderer";
@@ -10,32 +9,25 @@ import {
   createDocument,
   getDocumentsByClubId,
   sentFileByEmail,
-} from "../../../src/api/document";
-import {
-  addDocumentList,
-  addLegalDocLink,
-} from "../../../src/redux/reducers/legal";
-import { PdfFile } from "../pdfGenerator";
-import LegalEntityModal from "../../../src/components/modals/LegalEntityModal";
-import { web3InstanceEthereum } from "../../../src/utils/helper";
-const DocumentPDF = dynamic(() => import("../pdfGenerator"), {
+} from "api/document";
+import { addDocumentList, addLegalDocLink } from "redux/reducers/legal";
+import { PdfFile } from "./pdfGenerator";
+import LegalEntityModal from "@components/modals/LegalEntityModal";
+import { web3InstanceEthereum } from "utils/helper";
+
+const DocumentPDF = dynamic(() => import("./pdfGenerator"), {
   ssr: false,
 });
 
 const useStyles = makeStyles({
   btn: {
-    width: "150px",
-
-    fontSize: "18px",
     border: "none",
     padding: "12px 20px",
+    marginBottom: "20px",
     color: "white",
     background: "#3B7AFD",
     borderRadius: "6px",
     cursor: "pointer",
-  },
-  title: {
-    fontSize: "28px",
   },
   container: {
     height: "90vh",
@@ -44,17 +36,15 @@ const useStyles = makeStyles({
     flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",
-    marginTop: "60px",
   },
   signDiv: {
     display: "flex",
     justifyContent: "space-between",
-    alignItems: "center",
     width: "65%",
   },
 });
 
-const SignDoc = () => {
+const SignDoc = ({ daoAddress, isAdmin }) => {
   const classes = useStyles();
   const [signedAcc, setSignedAcc] = useState("");
   const [signDoc, setSignDoc] = useState(false);
@@ -64,7 +54,6 @@ const SignDoc = () => {
   const [showModal, setShowModal] = useState(false);
 
   const router = useRouter();
-  const { clubId, isAdmin } = router.query;
   const dispatch = useDispatch();
   let docsList = [];
 
@@ -151,7 +140,7 @@ const SignDoc = () => {
       dispatch(addLegalDocLink(replacedEncrytedLink));
 
       createDocument({
-        daoAddress: clubId,
+        daoAddress,
         createdBy: signedAcc,
         fileName: "Legal Doc",
         isPublic: false,
@@ -168,7 +157,7 @@ const SignDoc = () => {
       });
 
       dispatch(addDocumentList(docsList.reverse()));
-      router.push(`/documents/${clubId}`);
+      router.push(`/documents/${daoAddress}`);
     } catch (error) {
       console.log(error);
     }
@@ -241,7 +230,7 @@ const SignDoc = () => {
 
   useEffect(() => {
     const fetchDocs = async () => {
-      const docs = await getDocumentsByClubId(clubId);
+      const docs = await getDocumentsByClubId(daoAddress);
       docsList.push(...docs);
     };
     fetchDocs();
@@ -249,55 +238,55 @@ const SignDoc = () => {
 
   return (
     <div>
-      <Layout1>
-        <div className={classes.container}>
-          <div className={classes.signDiv}>
-            <h2 className={classes.title}>Review and Confirm</h2>
-            {!signDoc && (
-              <button onClick={signDocumentHandler} className={classes.btn}>
-                Sign PDF
-              </button>
-            )}
-            {signDoc && isAdmin && (
-              <button onClick={finishHandler} className={classes.btn}>
-                Finish
-              </button>
-            )}
+      <div className={classes.container}>
+        <div className={classes.signDiv}>
+          <h2 className={classes.title}>Review and Confirm</h2>
+          {!signDoc && (
+            <button onClick={signDocumentHandler} className={classes.btn}>
+              Sign PDF
+            </button>
+          )}
 
-            {signDoc && membersData && !isAdmin && (
-              <button onClick={finishMemberSignHandler} className={classes.btn}>
-                Finish
-              </button>
-            )}
-          </div>
+          {signDoc && isAdmin && (
+            <button onClick={finishHandler} className={classes.btn}>
+              Finish
+            </button>
+          )}
 
-          {decryptedDataObj && !isAdmin ? (
-            <DocumentPDF
-              signedAcc={signedAcc}
-              signedHash={signedHash}
-              LLC_name={decryptedDataObj.LLC_name}
-              admin_name={decryptedDataObj.admin_name}
-              email={decryptedDataObj.email}
-              location={decryptedDataObj.location}
-              general_purpose={decryptedDataObj.general_purpose}
-              member_name={membersData.member_name}
-              amount={membersData.amount}
-              member_email={membersData.member_email}
-              admin_sign={decryptedDataObj.signedAcc}
-            />
-          ) : (
-            <DocumentPDF
-              signedAcc={signedAcc}
-              signedHash={signedHash}
-              LLC_name={adminFormData?.LLC_name}
-              admin_name={adminFormData?.admin_name}
-              email={adminFormData?.email}
-              location={adminFormData?.location}
-              general_purpose={adminFormData?.general_purpose}
-            />
+          {signDoc && membersData && !isAdmin && (
+            <button onClick={finishMemberSignHandler} className={classes.btn}>
+              Finish
+            </button>
           )}
         </div>
-        {/* <button>
+
+        {decryptedDataObj && !isAdmin ? (
+          <DocumentPDF
+            signedAcc={signedAcc}
+            signedHash={signedHash}
+            LLC_name={decryptedDataObj.LLC_name}
+            admin_name={decryptedDataObj.admin_name}
+            email={decryptedDataObj.email}
+            location={decryptedDataObj.location}
+            general_purpose={decryptedDataObj.general_purpose}
+            member_name={membersData.member_name}
+            amount={membersData.amount}
+            member_email={membersData.member_email}
+            admin_sign={decryptedDataObj.signedAcc}
+          />
+        ) : (
+          <DocumentPDF
+            signedAcc={signedAcc}
+            signedHash={signedHash}
+            LLC_name={adminFormData?.LLC_name}
+            admin_name={adminFormData?.admin_name}
+            email={adminFormData?.email}
+            location={adminFormData?.location}
+            general_purpose={adminFormData?.general_purpose}
+          />
+        )}
+      </div>
+      {/* <button>
         <PDFDownloadLink
           document={<MyDocument title="personal doc" data={formData || {}} />}
           fileName="formDataabc.pdf"
@@ -315,7 +304,7 @@ const SignDoc = () => {
         </PDFDownloadLink>
         Download
       </button> */}
-        {/* <button
+      {/* <button
         onClick={() => {
           htmltoImage().then((imgSrcArr) => {
             import("./PdfGenerator")
@@ -337,7 +326,7 @@ const SignDoc = () => {
       >
         Download PDF
       </button> */}
-        {/* {checkForEmptyFields() && (
+      {/* {checkForEmptyFields() && (
         <PDFDownloadLink
           document={<PdfFile data={formData} />}
           fileName="formDataabc.pdf"
@@ -354,17 +343,17 @@ const SignDoc = () => {
           }
         </PDFDownloadLink>
       )} */}
-        {/* <LineGraph /> */}
+      {/* <LineGraph /> */}
 
-        {showModal && (
-          <LegalEntityModal
-            isSuccess={true}
-            onClose={() => {
-              setShowModal(false);
-            }}
-          />
-        )}
-      </Layout1>
+      {showModal && (
+        <LegalEntityModal
+          daoAddress={daoAddress}
+          isSuccess={true}
+          onClose={() => {
+            setShowModal(false);
+          }}
+        />
+      )}
     </div>
   );
 };
