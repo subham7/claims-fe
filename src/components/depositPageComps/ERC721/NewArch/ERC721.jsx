@@ -147,19 +147,17 @@ const ERC721 = ({
   useEffect(() => {
     const fetchSubgraphData = async () => {
       const imageUrl = await getUploadedNFT(daoAddress);
+      const response = await subgraphQuery(
+        SUBGRAPH_URL,
+        QUERY_CLUB_DETAILS(daoAddress),
+      );
+      const { stations } = response;
+
+      setClubData(stations[0]);
       if (imageUrl.data.length) {
         setImgUrl(imageUrl.data[0].imageUrl);
       } else {
-        const response = await subgraphQuery(
-          SUBGRAPH_URL,
-          QUERY_CLUB_DETAILS(daoAddress),
-        );
-
         if (response) {
-          const { stations } = response;
-
-          setClubData(stations[0]);
-
           const imageUrl = await getImageURL(stations[0].imageUrl);
           setImgUrl(imageUrl);
         }
