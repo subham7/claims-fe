@@ -16,7 +16,6 @@ import {
   claimStep2ValidationSchema,
 } from "../createClubComps/ValidationSchemas";
 import { useAccount, useNetwork } from "wagmi";
-import Web3 from "web3";
 import { getTokensList } from "api/token";
 import { getUserTokenData } from "utils/helper";
 import { CLAIM_FACTORY_ADDRESS, NETWORK_NAME } from "utils/constants";
@@ -46,7 +45,7 @@ const CreateClaim = () => {
 
   const { address: walletAddress } = useAccount();
   const { chain } = useNetwork();
-  const networkId = Web3.utils.numberToHex(chain?.id);
+  const networkId = "0x" + chain?.id.toString(16);
   const router = useRouter();
 
   const { claimContract, approveDeposit, getDecimals } =
@@ -337,31 +336,6 @@ const CreateClaim = () => {
                 decimals,
               );
             }
-
-            // post data in api
-            // const postData = JSON.stringify({
-            //   description: data.description,
-            //   airdropTokenContract: data.airdropTokenAddress,
-            //   airdropTokenSymbol: data.selectedToken.symbol,
-            //   claimContract: newClaimContract,
-            //   totalAmount: data.numberOfTokens,
-            //   endDate: new Date(data.endDate).getTime() / 1000,
-            //   startDate: new Date(data.startDate).getTime() / 1000,
-            //   createdBy: data.walletAddress.toLowerCase(),
-            //   addresses: [],
-            //   networkId: networkId,
-            // });
-
-            // await createClaim(postData);
-
-            // if (data.maximumClaim === "proRata") {
-            //   const merkleData = JSON.stringify({
-            //     claimAddress: newClaimContract,
-            //     merkleTree: snapshotData?.merkleTree,
-            //   });
-
-            //   await sendMerkleTree(merkleData);
-            // }
 
             setLoading(false);
             setFinish(true);

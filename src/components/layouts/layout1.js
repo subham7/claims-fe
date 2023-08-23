@@ -6,7 +6,6 @@ import { useDispatch } from "react-redux";
 import { addWalletAddress } from "redux/reducers/user";
 import { useAccount, useNetwork } from "wagmi";
 import { Web3Button } from "@web3modal/react";
-import Web3 from "web3";
 import useClubFetch from "hooks/useClubFetch";
 import { showWrongNetworkModal } from "utils/helper";
 
@@ -18,7 +17,7 @@ export default function Layout1(props) {
   useClubFetch({ daoAddress });
   const { address: walletAddress } = useAccount();
   const { chain } = useNetwork();
-  const networkId = Web3.utils.numberToHex(chain?.id);
+  const networkId = "0x" + chain?.id.toString(16);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -47,7 +46,7 @@ export default function Layout1(props) {
           />
         )}
 
-        {!walletAddress ? (
+        {!walletAddress || !networkId ? (
           <Grid
             sx={{
               height: "75vh",

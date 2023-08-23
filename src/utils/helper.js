@@ -157,6 +157,22 @@ export const extractPartFromUrl = (url) => {
   }
 };
 
+export const extractNftAdressAndId = (url) => {
+  try {
+    const parsedUrl = new URL(url);
+    const pathname = parsedUrl.pathname;
+    const parts = pathname.split("/");
+
+    return {
+      nftAddress: parts[parts.length - 2],
+      tokenId: parts[parts.length - 1],
+    };
+  } catch (error) {
+    console.error("Invalid URL:", error);
+    return null;
+  }
+};
+
 export const getUserTokenData = async (tokenData) => {
   const filteredData = tokenData.filter(
     (token) => !IGNORE_TOKENS.includes(token.contract_address),

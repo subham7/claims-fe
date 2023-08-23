@@ -14,7 +14,6 @@ import { subgraphQuery } from "utils/subgraphs";
 import { QUERY_CLAIM_DETAILS } from "api/graphql/queries";
 import Button from "@components/ui/button/Button";
 import { useAccount, useNetwork } from "wagmi";
-import Web3 from "web3";
 import { CLAIMS_SUBGRAPH_URL } from "utils/constants";
 import useClaimSmartContracts from "hooks/useClaimSmartContracts";
 
@@ -45,7 +44,7 @@ const Claim = ({ claimAddress }) => {
 
   const { address: walletAddress } = useAccount();
   const { chain } = useNetwork();
-  const networkId = Web3.utils.numberToHex(chain?.id);
+  const networkId = "0x" + chain?.id.toString(16);
 
   useClaimSmartContracts(claimAddress);
 
@@ -191,21 +190,6 @@ const Claim = ({ claimAddress }) => {
           );
 
           setClaimableAmt(amount);
-
-          // converting the CSV data into merkleLeaves
-          // const csvData = await getCsvUserData(contractData.merkleRoot);
-
-          // let encodedListOfLeaves = [];
-
-          // csvData[0].snapshot.map((data) => {
-          //   if (data.address) {
-          //     const res = encode(data.address, data.amount);
-          //     encodedListOfLeaves.push(keccak256(res));
-          //   }
-          // });
-
-          // // setting merkleLeaves
-          // setMerkleLeaves(encodedListOfLeaves);
         } else if (desc.permission === "3") {
           try {
             const amountOfTokenUserHas = await getBalance(desc?.daoToken);

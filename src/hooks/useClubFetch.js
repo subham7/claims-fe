@@ -28,7 +28,6 @@ import { useAccount, useNetwork } from "wagmi";
 const useClubFetch = ({ daoAddress }) => {
   const dispatch = useDispatch();
   const { chain } = useNetwork();
-  const networkId = Web3.utils.numberToHex(chain?.id);
   useSmartContract(daoAddress);
 
   const { address: walletAddress } = useAccount();
@@ -36,6 +35,8 @@ const useClubFetch = ({ daoAddress }) => {
   if (walletAddress) {
     localStorage.setItem("wallet", walletAddress);
   }
+
+  const networkId = "0x" + chain?.id.toString(16);
 
   const reduxClubData = useSelector((state) => {
     return state.club.clubData;

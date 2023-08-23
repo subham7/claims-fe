@@ -1,3 +1,4 @@
+import { retrieveNftListing } from "api/assets";
 import * as yup from "yup";
 
 export const step1ValidationSchema = yup.object({
@@ -222,6 +223,46 @@ export const proposalValidationSchema = yup.object({
           .required("Safe Threshold is required")
           .moreThan(1, "Safe Threshold should be greater than 1"),
     }),
+  nftLink: yup.string("Please enter nft Link").when("actionCommand", {
+    is: "Buy nft",
+    then: () => yup.string("Enter nft link").required("Nft link is required"),
+  }),
+  nftLink: yup
+    .string()
+    .test(
+      "validate-nft-link",
+      "Invalid URL or this item has already been sold",
+      async (value, context) => {
+        const { actionCommand } = context.parent;
+
+        if (actionCommand === "Buy nft") {
+          try {
+            // Make your API call here and check the response
+            const parts = value?.split("/");
+
+            if (parts) {
+              const linkData = parts.slice(-3);
+              const nftdata = await retrieveNftListing(
+                linkData[0],
+                linkData[1],
+                linkData[2],
+              );
+              if (
+                !nftdata?.data?.orders.length &&
+                proposalData?.commands[0].executionId === 8
+              ) {
+                return false;
+              }
+            }
+          } catch (error) {
+            console.error(error);
+            return false; // Return false for any error
+          }
+        }
+
+        return true; // Return true for other cases or successful API response
+      },
+    ),
 });
 
 export const claimStep1ValidationSchema = yup.object({

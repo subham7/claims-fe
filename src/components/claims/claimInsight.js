@@ -14,7 +14,6 @@ import { Alert, Backdrop, CircularProgress } from "@mui/material";
 import useSmartContractMethods from "hooks/useSmartContractMethods";
 import { convertToWeiGovernance } from "utils/globalFunctions";
 import { useNetwork } from "wagmi";
-import Web3 from "web3";
 import { CLAIMS_SUBGRAPH_URL } from "utils/constants";
 import useClaimSmartContracts from "hooks/useClaimSmartContracts";
 
@@ -33,7 +32,7 @@ const ClaimInsight = ({ claimAddress }) => {
   const classes = ClaimsInsightStyles();
   const router = useRouter();
   const { chain } = useNetwork();
-  const networkId = Web3.utils.numberToHex(chain?.id);
+  const networkId = "0x" + chain?.id.toString(16);
 
   useClaimSmartContracts(claimAddress);
 

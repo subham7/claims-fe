@@ -11,7 +11,7 @@ import { NETWORK_RPC_URL } from "utils/constants";
 
 const useSmartContract = (daoAddress) => {
   const { chain } = useNetwork();
-  const networkId = Web3.utils.numberToHex(chain?.id);
+  const networkId = "0x" + chain?.id.toString(16);
   const dispatch = useDispatch();
 
   const FACTORY_CONTRACT_ADDRESS = useSelector(

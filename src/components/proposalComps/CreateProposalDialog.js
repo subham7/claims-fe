@@ -33,7 +33,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { setProposalList } from "../../redux/reducers/proposal";
 import { getWhiteListMerkleRoot } from "api/whitelist";
 import { useAccount, useNetwork } from "wagmi";
-import Web3 from "web3";
 import {
   handleFetchCommentAddresses,
   handleFetchFollowers,
@@ -58,6 +57,7 @@ const useStyles = makeStyles({
     marginTop: "0.5rem",
   },
 });
+
 const CreateProposalDialog = ({
   open,
   setOpen,
@@ -70,7 +70,7 @@ const CreateProposalDialog = ({
 
   const { address: walletAddress } = useAccount();
   const { chain } = useNetwork();
-  const networkId = Web3.utils.numberToHex(chain?.id);
+  const networkId = "0x" + chain?.id.toString(16);
 
   const tokenType = useSelector((state) => {
     return state.club.clubData.tokenType;
@@ -82,14 +82,6 @@ const CreateProposalDialog = ({
 
   const daoAddress = useSelector((state) => {
     return state.club.daoAddress;
-  });
-
-  const NETWORK_HEX = useSelector((state) => {
-    return state.gnosis.networkHex;
-  });
-
-  const factoryData = useSelector((state) => {
-    return state.club.factoryData;
   });
 
   const [loaderOpen, setLoaderOpen] = useState(false);
@@ -132,6 +124,7 @@ const CreateProposalDialog = ({
       ownerChangeAction: "",
       ownerAddress: "",
       safeThreshold: 1,
+      nftLink: "",
       csvObject: [],
       lensId: "",
       lensPostLink: "",
@@ -253,6 +246,28 @@ const CreateProposalDialog = ({
             },
           ];
         }
+        if (values.actionCommand === "Buy nft") {
+          commands = [
+            {
+              executionId: 8,
+              nftLink: values.nftLink,
+              usdcTokenSymbol: "USDC",
+              usdcTokenDecimal: 6,
+              usdcGovernanceTokenDecimal: 18,
+            },
+          ];
+        }
+        if (values.actionCommand === "Sell nft") {
+          commands = [
+            {
+              executionId: 9,
+              nftLink: values.nftLink,
+              usdcTokenSymbol: "USDC",
+              usdcTokenDecimal: 6,
+              usdcGovernanceTokenDecimal: 18,
+            },
+          ];
+        }
         if (
           values.actionCommand === "whitelist deposit" ||
           values.actionCommand === "whitelist with lens followers" ||
@@ -340,7 +355,7 @@ const CreateProposalDialog = ({
           daoAddress: daoAddress,
         };
 
-        const createRequest = createProposal(payload, NETWORK_HEX);
+        const createRequest = createProposal(payload, networkId);
         createRequest.then(async (result) => {
           if (result.status !== 201) {
             setOpenSnackBar(true);
