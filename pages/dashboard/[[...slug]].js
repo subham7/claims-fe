@@ -1,7 +1,7 @@
 import React from "react";
 import DashboardIndex from "../../src/components/dashboardComps/DashboardIndex";
 import { useRouter } from "next/router";
-import Layout1 from "@components/layouts/layout1";
+import Layout from "@components/layouts/layout";
 
 const DashboardPage = () => {
   const router = useRouter();
@@ -13,9 +13,9 @@ const DashboardPage = () => {
   }
 
   return (
-    <Layout1 daoAddress={daoAddress} page={1}>
+    <Layout daoAddress={daoAddress} page={1}>
       <DashboardIndex daoAddress={daoAddress} />
-    </Layout1>
+    </Layout>
   );
 };
 

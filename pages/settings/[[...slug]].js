@@ -1,6 +1,6 @@
 import React from "react";
 import { useRouter } from "next/router";
-import Layout1 from "@components/layouts/layout1";
+import Layout from "@components/layouts/layout";
 import Settings from "@components/settings/setttings";
 
 const SettingsPage = () => {
@@ -13,9 +13,9 @@ const SettingsPage = () => {
   }
 
   return (
-    <Layout1 daoAddress={daoAddress} page={5}>
+    <Layout daoAddress={daoAddress} page={5}>
       <Settings daoAddress={daoAddress} />
-    </Layout1>
+    </Layout>
   );
 };
 

@@ -1,6 +1,6 @@
 import React from "react";
 import { useRouter } from "next/router";
-import Layout1 from "@components/layouts/layout1";
+import Layout from "@components/layouts/layout";
 import Transactions from "@components/transactions/transactions";
 
 const TransactionsPage = () => {
@@ -13,9 +13,9 @@ const TransactionsPage = () => {
   }
 
   return (
-    <Layout1 daoAddress={daoAddress} page={6}>
+    <Layout daoAddress={daoAddress} page={6}>
       <Transactions />
-    </Layout1>
+    </Layout>
   );
 };
 

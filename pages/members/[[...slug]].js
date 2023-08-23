@@ -1,6 +1,6 @@
 import React from "react";
 import { useRouter } from "next/router";
-import Layout1 from "@components/layouts/layout1";
+import Layout from "@components/layouts/layout";
 import Members from "@components/members/Members";
 
 const MembersPage = () => {
@@ -13,9 +13,9 @@ const MembersPage = () => {
   }
 
   return (
-    <Layout1 daoAddress={daoAddress} page={3}>
+    <Layout daoAddress={daoAddress} page={3}>
       <Members daoAddress={daoAddress} />
-    </Layout1>
+    </Layout>
   );
 };
 

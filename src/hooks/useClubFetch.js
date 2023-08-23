@@ -234,15 +234,17 @@ const useClubFetch = ({ daoAddress }) => {
   ]);
 
   const checkClubExist = useCallback(async () => {
-    const clubData = await subgraphQuery(
-      networkId == "0x89" ? SUBGRAPH_URL_POLYGON : "",
-      QUERY_CLUB_DETAILS(daoAddress),
-    );
+    if (networkId) {
+      const clubData = await subgraphQuery(
+        networkId == "0x89" ? SUBGRAPH_URL_POLYGON : "",
+        QUERY_CLUB_DETAILS(daoAddress),
+      );
 
-    if (clubData?.stations.length) {
-      dispatch(setWrongNetwork(false));
-    } else {
-      dispatch(setWrongNetwork(true));
+      if (clubData?.stations.length) {
+        dispatch(setWrongNetwork(false));
+      } else {
+        dispatch(setWrongNetwork(true));
+      }
     }
   }, [daoAddress, dispatch, networkId]);
 

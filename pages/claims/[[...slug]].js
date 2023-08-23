@@ -1,6 +1,6 @@
 import React from "react";
 import { useRouter } from "next/router";
-import Layout1 from "@components/layouts/layout1";
+import Layout from "@components/layouts/layout";
 import ClaimInsight from "@components/claims/claimInsight";
 import ListClaims from "@components/claims/listClaims";
 import CreateClaim from "@components/claims/create";
@@ -11,7 +11,7 @@ const ClaimsPage = () => {
   const [claimAddress] = router?.query?.slug ?? [];
 
   return (
-    <Layout1 showSidebar={false} claimAddress={claimAddress} isClaims={true}>
+    <Layout showSidebar={false} claimAddress={claimAddress} isClaims={true}>
       {claimAddress === undefined ? (
         <ListClaims />
       ) : claimAddress === "create" ? (
@@ -19,7 +19,7 @@ const ClaimsPage = () => {
       ) : (
         <ClaimInsight claimAddress={claimAddress} />
       )}
-    </Layout1>
+    </Layout>
   );
 };
 

@@ -21,7 +21,7 @@ import {
 } from "../src/api/graphql/queries";
 import { SUBGRAPH_URL_POLYGON } from "../src/api";
 import { addClubData } from "../src/redux/reducers/club";
-import Layout1 from "../src/components/layouts/layout1";
+import Layout from "../src/components/layouts/layout";
 import { BsFillPlayFill } from "react-icons/bs";
 import Web3 from "web3";
 import VideoModal from "../src/components/modals/VideoModal";
@@ -215,7 +215,7 @@ const App = () => {
   };
 
   return (
-    <Layout1 showSidebar={false} faucet={false} isClaims={true}>
+    <Layout showSidebar={false} faucet={false} isClaims={true}>
       <div className={classes.container}>
         {!manageStation && clubFlow && (
           <div className={classes.cardContainer}>
@@ -428,7 +428,7 @@ const App = () => {
           />
         )}
       </div>
-    </Layout1>
+    </Layout>
   );
 };
 

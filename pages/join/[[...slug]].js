@@ -1,6 +1,6 @@
 import React from "react";
 import { useRouter } from "next/router";
-import Layout1 from "@components/layouts/layout1";
+import Layout from "@components/layouts/layout";
 import Join from "@components/join/Join";
 
 const JoinPage = () => {
@@ -13,9 +13,9 @@ const JoinPage = () => {
   }
 
   return (
-    <Layout1 showSidebar={false} daoAddress={daoAddress} page={4}>
+    <Layout showSidebar={false} daoAddress={daoAddress} page={4}>
       <Join daoAddress={daoAddress} />
-    </Layout1>
+    </Layout>
   );
 };
 

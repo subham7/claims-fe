@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import Layout1 from "components/layouts/layout1";
+import Layout from "@components/layouts/layout";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import {
   Alert,
@@ -1127,7 +1127,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
   console.log(isNftSold);
   return (
     <>
-      <Layout1 page={2}>
+      <Layout page={2}>
         <Grid container spacing={6} paddingTop={2} mb={8}>
           <Grid item md={8.5}>
             {/* back button */}
@@ -1781,7 +1781,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
           open={loaderOpen}>
           <CircularProgress color="inherit" />
         </Backdrop>
-      </Layout1>
+      </Layout>
     </>
   );
 };

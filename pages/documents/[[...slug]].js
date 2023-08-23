@@ -1,6 +1,6 @@
 import React from "react";
 import { useRouter } from "next/router";
-import Layout1 from "@components/layouts/layout1";
+import Layout from "@components/layouts/layout";
 import Documents from "@components/documents/documents";
 import SignDoc from "@components/documents/signDoc";
 import MembersSign from "@components/documents/membersSign";
@@ -16,7 +16,7 @@ const DocumentsPage = () => {
   }
 
   return (
-    <Layout1 daoAddress={daoAddress} page={7}>
+    <Layout daoAddress={daoAddress} page={7}>
       {flow === undefined ? (
         <Documents daoAddress={daoAddress} />
       ) : flow === "create" ? (
@@ -30,7 +30,7 @@ const DocumentsPage = () => {
       ) : (
         <MembersSign daoAddress={daoAddress} membersSign={membersSign} />
       )}
-    </Layout1>
+    </Layout>
   );
 };
 

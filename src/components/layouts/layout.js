@@ -11,7 +11,7 @@ import { showWrongNetworkModal } from "utils/helper";
 
 const drawerWidth = 50;
 
-export default function Layout1(props) {
+export default function Layout(props) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { showSidebar = true, daoAddress } = props;
   useClubFetch({ daoAddress });
