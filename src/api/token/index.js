@@ -1,10 +1,6 @@
 import axios from "axios";
 import { NETWORK_RPC_URL } from "utils/constants";
-import {
-  COVALENT_API,
-  GOERLI_RPC_URL,
-  POLYGON_MAINNET_RPC_URL,
-} from "../index";
+import { COVALENT_API } from "../index";
 
 export const getTokensFromWallet = async (address, networkId) => {
   try {
@@ -106,12 +102,7 @@ export const getBalanceOfToken = async (
       // options for making a request to get the token metadata
       const options = {
         method: "POST",
-        url:
-          networkId == "0x5"
-            ? GOERLI_RPC_URL
-            : networkId == "0x89"
-            ? POLYGON_MAINNET_RPC_URL
-            : "",
+        url: NETWORK_RPC_URL[networkId],
         headers: {
           accept: "application/json",
           "content-type": "application/json",
@@ -158,12 +149,7 @@ export const getTokensDecimalFromAddress = async (address, networkId) => {
 
     const config = {
       method: "post",
-      url:
-        networkId == "0x5"
-          ? GOERLI_RPC_URL
-          : networkId == "0x89"
-          ? POLYGON_MAINNET_RPC_URL
-          : "",
+      url: NETWORK_RPC_URL[networkId],
       headers: {
         "Content-Type": "application/json",
       },
@@ -200,12 +186,7 @@ export const getTokenMetadata = async (address, networkId) => {
 
     const config = {
       method: "post",
-      url:
-        networkId == "0x5"
-          ? GOERLI_RPC_URL
-          : networkId == "0x89"
-          ? POLYGON_MAINNET_RPC_URL
-          : "",
+      url: NETWORK_RPC_URL[networkId],
       headers: {
         "Content-Type": "application/json",
       },

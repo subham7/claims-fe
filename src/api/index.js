@@ -1,6 +1,7 @@
 import { fetchConfigById } from "./config";
 import { addContractAddress } from "../redux/reducers/gnosis";
 import { ApolloClient, InMemoryCache } from "@apollo/client";
+import { NETWORK_RPC_URL } from "utils/constants";
 
 const opts = {
   allowedDomains: [/gnosis-safe.io/],
@@ -14,31 +15,6 @@ export const USDC_FAUCET_ADDRESS = process.env.NEXT_PUBLIC_USDC_FAUCET_ADDRESS;
 
 // API KEY
 export const COVALENT_API = process.env.NEXT_PUBLIC_COVALENT_API_KEY;
-
-// RPCs
-export const GOERLI_RPC_URL = process.env.NEXT_PUBLIC_GOERLI_RPC_URL;
-export const POLYGON_MAINNET_RPC_URL =
-  process.env.NEXT_PUBLIC_POLYGON_MAINNET_RPC_URL;
-
-// Claim Factory
-export const CLAIM_FACTORY_ADDRESS_GOERLI =
-  process.env.NEXT_PUBLIC_CLAIM_FACTORY_ADDRESS_GOERLI;
-export const CLAIM_FACTORY_ADDRESS_POLYGON =
-  process.env.NEXT_PUBLIC_CLAIM_FACTORY_ADDRESS_POLYGON;
-export const CLAIM_FACTORY_ADDRESS_BASE =
-  process.env.NEXT_PUBLIC_CLAIM_FACTORY_ADDRESS_BASE;
-
-// Club Factory
-export const FACTORY_ADDRESS_GOERLI =
-  process.env.NEXT_PUBLIC_NEW_FACTORY_ADDRES_GOERLI;
-export const FACTORY_ADDRESS_POLYGON =
-  process.env.NEXT_PUBLIC_NEW_FACTORY_ADDRESS_POLYGON;
-
-// Action Contracts
-export const AIRDROP_ACTION_ADDRESS_GOERLI =
-  process.env.NEXT_PUBLIC_AIRDROP_ACTION_ADDRESS_GOERLI;
-export const AIRDROP_ACTION_ADDRESS_POLYGON =
-  process.env.NEXT_PUBLIC_AIRDROP_ACTION_ADDRESS_POLYGON;
 
 // Subgraph URL
 export const SUBGRAPH_URL_GOERLI =
@@ -62,7 +38,7 @@ export function updateDynamicAddress(networkId, dispatch) {
   try {
     const networkData = fetchConfigById(networkId);
 
-    getRpcUrl(networkId);
+    NETWORK_RPC_URL[networkId];
     networkData.then((result) => {
       if (result.status != 200) {
         console.log(result.error);
@@ -84,15 +60,4 @@ export function updateDynamicAddress(networkId, dispatch) {
   } catch (error) {
     console.log(error);
   }
-}
-
-export let RPC_URL;
-
-export function getRpcUrl(networkId) {
-  if (networkId == "0x89")
-    RPC_URL = process.env.NEXT_PUBLIC_POLYGON_MAINNET_RPC_URL;
-  else if (networkId === "0x2105") {
-    RPC_URL = process.env.NEXT_PUBLIC_BASE_MAINNET_RPC_URL;
-  } else if (networkId == "0x5")
-    RPC_URL = process.env.NEXT_PUBLIC_GOERLI_RPC_URL;
 }
