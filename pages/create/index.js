@@ -209,6 +209,7 @@ const Create = () => {
             formikStep1.values.clubTokenType,
             metadata.data.image.pathname,
             metadata.url,
+            formikERC721Step2.values.nftImage,
             formikStep1.values.useStationFor,
             formikStep1.values.email,
           );

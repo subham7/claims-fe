@@ -8,6 +8,7 @@ import {
 } from "../redux/reducers/gnosis";
 import Router from "next/router";
 import { createClubData } from "../api/club";
+// import { uploadNFT } from "api/assets";
 
 const useSafe = () => {
   const { createERC721DAO, createERC20DAO } = useSmartContractMethods();
@@ -19,6 +20,7 @@ const useSafe = () => {
     clubTokenType,
     tokenURI = "",
     metadataURL = "",
+    imgFile = "",
     useStationFor,
     email = "",
   ) => {
@@ -106,6 +108,13 @@ const useSafe = () => {
           clubType: useStationFor,
           deployerEmail: email,
         });
+
+        // if (clubTokenType === "NFT") {
+        //   const formData = new FormData();
+        //   formData.append("file", imgFile);
+        //   formData.append("daoAddress", daoAddress);
+        //   await uploadNFT(formData);
+        // }
 
         const { pathname } = Router;
         if (pathname == "/create") {
