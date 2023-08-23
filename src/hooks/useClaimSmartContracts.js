@@ -9,6 +9,8 @@ import { CLAIM_FACTORY_ADDRESS, NETWORK_RPC_URL } from "utils/constants";
 
 const useClaimSmartContracts = (claimAddress) => {
   const { chain } = useNetwork();
+  const networkId = "0x" + chain?.id.toString(16);
+
   const dispatch = useDispatch();
 
   let contractInstances = useSelector((state) => {

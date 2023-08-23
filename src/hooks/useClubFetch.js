@@ -227,15 +227,10 @@ const useClubFetch = ({ daoAddress }) => {
     }
   }, [
     daoAddress,
+    walletAddress,
     reduxClubData.gnosisAddress,
     reduxClubData.tokenType,
-    getDaoDetails,
-    dispatch,
-    getERC20DAOdetails,
-    getERC20Balance,
-    walletAddress,
-    getERC721DAOdetails,
-    getERC721Balance,
+    networkId,
   ]);
 
   const checkClubExist = useCallback(async () => {
