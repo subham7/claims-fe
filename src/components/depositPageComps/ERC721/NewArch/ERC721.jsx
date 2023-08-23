@@ -16,6 +16,7 @@ import PriceSection from "./PriceSection";
 import Header from "./Header";
 import { useRouter } from "next/router";
 import { useAccount } from "wagmi";
+import { getUploadedNFT } from "api/assets";
 
 const ERC721 = ({
   daoAddress,
@@ -145,18 +146,23 @@ const ERC721 = ({
 
   useEffect(() => {
     const fetchSubgraphData = async () => {
-      const response = await subgraphQuery(
-        SUBGRAPH_URL,
-        QUERY_CLUB_DETAILS(daoAddress),
-      );
+      const imageUrl = await getUploadedNFT(daoAddress);
+      if (imageUrl.data.length) {
+        setImgUrl(imageUrl.data[0].imageUrl);
+      } else {
+        const response = await subgraphQuery(
+          SUBGRAPH_URL,
+          QUERY_CLUB_DETAILS(daoAddress),
+        );
 
-      if (response) {
-        const { stations } = response;
+        if (response) {
+          const { stations } = response;
 
-        setClubData(stations[0]);
+          setClubData(stations[0]);
 
-        const imageUrl = await getImageURL(stations[0].imageUrl);
-        setImgUrl(imageUrl);
+          const imageUrl = await getImageURL(stations[0].imageUrl);
+          setImgUrl(imageUrl);
+        }
       }
     };
     if (daoAddress) {

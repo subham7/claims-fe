@@ -107,3 +107,23 @@ export async function fulfillOrder(offer, fulfiller, consideration) {
   );
   return res.json();
 }
+
+export async function uploadNFT(formData) {
+  // upload nft to corresponding DAO address
+  return await axios.post(MAIN_API_URL + `club/file`, formData, {
+    headers: {
+      Authorization: "Bearer " + getJwtToken(),
+      "Content-Type": "application/json",
+    },
+  });
+}
+
+export async function getUploadedNFT(daoAddress) {
+  // get uploaded nft to corresponding DAO address
+  return await axios.get(MAIN_API_URL + `club/${daoAddress}/file `, {
+    headers: {
+      Authorization: "Bearer " + getJwtToken(),
+      "Content-Type": "application/json",
+    },
+  });
+}
