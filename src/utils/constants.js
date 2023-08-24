@@ -26,8 +26,6 @@ export const NETWORK_NAME = {
   "0xa4b1": "arbitrum-mainnet",
 };
 
-export const NETWORK_IDs = ["0x89", "0x2105", "0xa4b1"];
-
 export const CHAIN_CONFIG = {
   "0x89": {
     chainName: "Polygon Mainnet",
