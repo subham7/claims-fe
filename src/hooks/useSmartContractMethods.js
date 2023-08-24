@@ -11,14 +11,14 @@ import { createProposalTxHash, getProposalTxHash } from "../api/proposal";
 import SafeApiKit from "@safe-global/api-kit";
 import { actionContractABI } from "../abis/newArch/actionContract";
 import { useAccount, useNetwork } from "wagmi";
-import { NETWORK_RPC_URL } from "utils/constants";
+import { CHAIN_CONFIG } from "utils/constants";
 
 const useSmartContractMethods = () => {
   const { address: walletAddress } = useAccount();
   const { chain } = useNetwork();
   const networkId = Web3.utils.numberToHex(chain?.id);
 
-  const web3Call = new Web3(NETWORK_RPC_URL[networkId]);
+  const web3Call = new Web3(CHAIN_CONFIG[networkId].appRpcUrl);
 
   const isAssetsStoredOnGnosis = useSelector((state) => {
     return state.club.factoryData.assetsStoredOnGnosis;

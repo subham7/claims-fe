@@ -3,7 +3,7 @@ import Safe, { Web3Adapter } from "@safe-global/protocol-kit";
 import WrongNetworkModal from "../components/modals/WrongNetworkModal";
 import { QUERY_ALL_MEMBERS } from "../api/graphql/queries";
 import { subgraphQuery } from "./subgraphs";
-import { CHAIN_CONFIG, NETWORK_RPC_URL } from "./constants";
+import { CHAIN_CONFIG } from "./constants";
 
 export const getSafeSdk = async (gnosisAddress, walletAddress, networkId) => {
   const web3 = await web3InstanceCustomRPC(networkId);
@@ -46,7 +46,7 @@ export const web3InstanceEthereum = async () => {
 };
 
 export const web3InstanceCustomRPC = async (networkId) => {
-  const web3 = new Web3(NETWORK_RPC_URL[networkId]);
+  const web3 = new Web3(CHAIN_CONFIG[networkId].appRpcUrl);
   return web3;
 };
 

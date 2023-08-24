@@ -7,7 +7,7 @@ import Web3 from "web3";
 import { useDispatch, useSelector } from "react-redux";
 import { setContractInstances } from "../redux/reducers/contractInstances";
 import { useNetwork } from "wagmi";
-import { NETWORK_RPC_URL } from "utils/constants";
+import { CHAIN_CONFIG } from "utils/constants";
 
 const useSmartContract = (daoAddress) => {
   const { chain } = useNetwork();
@@ -23,7 +23,7 @@ const useSmartContract = (daoAddress) => {
   });
 
   const initializeFactoryContracts = async () => {
-    const web3Call = new Web3(NETWORK_RPC_URL[networkId]);
+    const web3Call = new Web3(CHAIN_CONFIG[networkId].appRpcUrl);
     const web3Send = new Web3(window?.ethereum);
 
     try {
@@ -54,7 +54,7 @@ const useSmartContract = (daoAddress) => {
   };
 
   const initializeStationContracts = async () => {
-    const web3Call = new Web3(NETWORK_RPC_URL[networkId]);
+    const web3Call = new Web3(CHAIN_CONFIG[networkId].appRpcUrl);
     const web3Send = new Web3(window?.ethereum);
 
     try {
