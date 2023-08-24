@@ -13,13 +13,6 @@ export const CLAIMS_SUBGRAPH_URL = {
     "https://api.thegraph.com/subgraphs/name/subham7/stnx-claim-arbitrum",
 };
 
-export const NETWORK_RPC_URL = {
-  "0x5": `https://eth-goerli.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}`,
-  "0x89": `https://polygon-mainnet.infura.io/v3/${process.env.NEXT_PUBLIC_INFURA_API_KEY}`,
-  "0x2105": `https://multi-attentive-snowflake.base-mainnet.discover.quiknode.pro/${process.env.NEXT_PUBLIC_QUICKNODE_API_KEY}/`,
-  "0xa4b1": `https://arbitrum-mainnet.infura.io/v3/${process.env.NEXT_PUBLIC_INFURA_API_KEY}`,
-};
-
 export const CHAIN_CONFIG = {
   "0x89": {
     chainName: "Polygon Mainnet",
