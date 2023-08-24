@@ -16,9 +16,9 @@ import { CHAIN_CONFIG } from "utils/constants";
 const useSmartContractMethods = () => {
   const { address: walletAddress } = useAccount();
   const { chain } = useNetwork();
-  const networkId = Web3.utils.numberToHex(chain?.id);
+  const networkId = "0x" + chain?.id.toString(16);
 
-  const web3Call = new Web3(CHAIN_CONFIG[networkId].appRpcUrl);
+  const web3Call = new Web3(CHAIN_CONFIG[networkId]?.appRpcUrl);
 
   const isAssetsStoredOnGnosis = useSelector((state) => {
     return state.club.factoryData.assetsStoredOnGnosis;
