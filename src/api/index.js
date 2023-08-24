@@ -1,7 +1,7 @@
 import { fetchConfigById } from "./config";
 import { addContractAddress } from "../redux/reducers/gnosis";
 import { ApolloClient, InMemoryCache } from "@apollo/client";
-import { NETWORK_RPC_URL } from "utils/constants";
+import { CHAIN_CONFIG } from "utils/constants";
 
 const opts = {
   allowedDomains: [/gnosis-safe.io/],
@@ -41,7 +41,7 @@ export function updateDynamicAddress(networkId, dispatch) {
   try {
     const networkData = fetchConfigById(networkId);
 
-    NETWORK_RPC_URL[networkId];
+    CHAIN_CONFIG[networkId].appRpcUrl;
     networkData.then((result) => {
       if (result.status != 200) {
         console.log(result.error);

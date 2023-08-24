@@ -18,7 +18,7 @@ import {
 import { useAccount, useNetwork } from "wagmi";
 import { getTokensList } from "api/token";
 import { getUserTokenData } from "utils/helper";
-import { CLAIM_FACTORY_ADDRESS, NETWORK_NAME } from "utils/constants";
+import { CHAIN_CONFIG } from "utils/constants";
 import useClaimSmartContracts from "hooks/useClaimSmartContracts";
 
 const useStyles = makeStyles({
@@ -64,11 +64,11 @@ const CreateClaim = () => {
       setLoadingTokens(true);
       if (networkId && walletAddress) {
         const tokensList = await getTokensList(
-          NETWORK_NAME[networkId],
+          CHAIN_CONFIG[networkId].covalentNetworkName,
           walletAddress,
         );
 
-        const data = await getUserTokenData(tokensList?.data?.items);
+        const data = await getUserTokenData(tokensList?.data?.items, networkId);
         setTokensInWallet(data?.filter((token) => token.symbol !== null));
         setLoadingTokens(false);
       }
@@ -142,7 +142,7 @@ const CreateClaim = () => {
     },
     validationSchema: claimStep2ValidationSchema,
     onSubmit: async (values) => {
-      const claimsContractAddress = CLAIM_FACTORY_ADDRESS[networkId];
+      const claimsContractAddress = CHAIN_CONFIG[networkId].claimFactoryAddress;
 
       const data = {
         description: formikStep1.values.description,
