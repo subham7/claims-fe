@@ -68,7 +68,7 @@ const CreateClaim = () => {
           walletAddress,
         );
 
-        const data = await getUserTokenData(tokensList?.data?.items);
+        const data = await getUserTokenData(tokensList?.data?.items, networkId);
         setTokensInWallet(data?.filter((token) => token.symbol !== null));
         setLoadingTokens(false);
       }

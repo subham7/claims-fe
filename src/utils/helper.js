@@ -3,7 +3,7 @@ import Safe, { Web3Adapter } from "@safe-global/protocol-kit";
 import WrongNetworkModal from "../components/modals/WrongNetworkModal";
 import { QUERY_ALL_MEMBERS } from "../api/graphql/queries";
 import { subgraphQuery } from "./subgraphs";
-import { IGNORE_TOKENS, NETWORK_IDs, NETWORK_RPC_URL } from "./constants";
+import { CHAIN_CONFIG, NETWORK_IDs, NETWORK_RPC_URL } from "./constants";
 
 export const getSafeSdk = async (gnosisAddress, walletAddress, networkId) => {
   const web3 = await web3InstanceCustomRPC(networkId);
@@ -173,9 +173,9 @@ export const extractNftAdressAndId = (url) => {
   }
 };
 
-export const getUserTokenData = async (tokenData) => {
+export const getUserTokenData = async (tokenData, networkId) => {
   const filteredData = tokenData.filter(
-    (token) => !IGNORE_TOKENS.includes(token.contract_address),
+    (token) => token.contract_address !== CHAIN_CONFIG[networkId].native_token,
   );
 
   return filteredData.map((token) => {
