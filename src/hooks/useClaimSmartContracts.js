@@ -5,7 +5,7 @@ import Web3 from "web3";
 import { useDispatch, useSelector } from "react-redux";
 import { setContractInstances } from "../redux/reducers/contractInstances";
 import { useNetwork } from "wagmi";
-import { CHAIN_CONFIG, CLAIM_FACTORY_ADDRESS } from "utils/constants";
+import { CHAIN_CONFIG } from "utils/constants";
 
 const useClaimSmartContracts = (claimAddress) => {
   const { chain } = useNetwork();
@@ -17,7 +17,7 @@ const useClaimSmartContracts = (claimAddress) => {
     return state.contractInstances.contractInstances;
   });
 
-  const claimFactoryAddress = CLAIM_FACTORY_ADDRESS[networkId];
+  const claimFactoryAddress = CHAIN_CONFIG[networkId].claim_factory_address;
 
   const initializeClaimFactoryContracts = async () => {
     const web3Call = new Web3(CHAIN_CONFIG[networkId].appRpcUrl);

@@ -18,7 +18,7 @@ import {
 import { useAccount, useNetwork } from "wagmi";
 import { getTokensList } from "api/token";
 import { getUserTokenData } from "utils/helper";
-import { CHAIN_CONFIG, CLAIM_FACTORY_ADDRESS } from "utils/constants";
+import { CHAIN_CONFIG } from "utils/constants";
 import useClaimSmartContracts from "hooks/useClaimSmartContracts";
 
 const useStyles = makeStyles({
@@ -142,7 +142,8 @@ const CreateClaim = () => {
     },
     validationSchema: claimStep2ValidationSchema,
     onSubmit: async (values) => {
-      const claimsContractAddress = CLAIM_FACTORY_ADDRESS[networkId];
+      const claimsContractAddress =
+        CHAIN_CONFIG[networkId].claim_factory_address;
 
       const data = {
         description: formikStep1.values.description,
