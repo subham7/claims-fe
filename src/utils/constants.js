@@ -20,12 +20,6 @@ export const NETWORK_RPC_URL = {
   "0xa4b1": `https://arbitrum-mainnet.infura.io/v3/${process.env.NEXT_PUBLIC_INFURA_API_KEY}`,
 };
 
-export const NETWORK_NAME = {
-  "0x89": "matic-mainnet",
-  "0x2105": "base-mainnet",
-  "0xa4b1": "arbitrum-mainnet",
-};
-
 export const CHAIN_CONFIG = {
   "0x89": {
     chainName: "Polygon Mainnet",

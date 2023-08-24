@@ -18,7 +18,7 @@ import {
 import { useAccount, useNetwork } from "wagmi";
 import { getTokensList } from "api/token";
 import { getUserTokenData } from "utils/helper";
-import { CLAIM_FACTORY_ADDRESS, NETWORK_NAME } from "utils/constants";
+import { CHAIN_CONFIG, CLAIM_FACTORY_ADDRESS } from "utils/constants";
 import useClaimSmartContracts from "hooks/useClaimSmartContracts";
 
 const useStyles = makeStyles({
@@ -64,7 +64,7 @@ const CreateClaim = () => {
       setLoadingTokens(true);
       if (networkId && walletAddress) {
         const tokensList = await getTokensList(
-          NETWORK_NAME[networkId],
+          CHAIN_CONFIG[networkId].covalent_network_name,
           walletAddress,
         );
 
