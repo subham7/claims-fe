@@ -43,6 +43,7 @@ export default function Layout(props) {
             handleDrawerToggle={handleDrawerToggle}
             page={props.page}
             daoAddress={daoAddress}
+            networkId={networkId}
           />
         )}
 

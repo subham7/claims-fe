@@ -38,7 +38,7 @@ import { GiTwoCoins } from "react-icons/gi";
 import { IoColorPalette } from "react-icons/io5";
 import useSmartContractMethods from "../../hooks/useSmartContractMethods";
 import { addNftsOwnedByDao } from "../../redux/reducers/club";
-import { useAccount } from "wagmi";
+import { useAccount, useNetwork } from "wagmi";
 
 const DashboardIndex = ({ daoAddress }) => {
   const dispatch = useDispatch();
@@ -90,6 +90,9 @@ const DashboardIndex = ({ daoAddress }) => {
   const gnosisAddress = useSelector((state) => {
     return state.club.clubData.gnosisAddress;
   });
+
+  const { chain } = useNetwork();
+  const networkId = "0x" + chain?.id.toString(16);
 
   const {
     getERC721Balance,
@@ -182,7 +185,7 @@ const DashboardIndex = ({ daoAddress }) => {
   const handleCopy = () => {
     navigator.clipboard.writeText(
       typeof window !== "undefined" && window.location.origin
-        ? `${window.location.origin}/join/${daoAddress}`
+        ? `${window.location.origin}/join/${daoAddress}/${networkId}`
         : null,
     );
   };
@@ -653,7 +656,7 @@ const DashboardIndex = ({ daoAddress }) => {
                       disabled
                       value={
                         typeof window !== "undefined" && window.location.origin
-                          ? `${window.location.origin}/join/${daoAddress}`
+                          ? `${window.location.origin}/join/${daoAddress}/${networkId}`
                           : null
                       }
                       InputProps={{

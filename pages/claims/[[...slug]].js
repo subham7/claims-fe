@@ -8,10 +8,14 @@ import CreateClaim from "@components/claims/create";
 const ClaimsPage = () => {
   const router = useRouter();
 
-  const [claimAddress] = router?.query?.slug ?? [];
+  const [claimAddress, networkId] = router?.query?.slug ?? [];
 
   return (
-    <Layout showSidebar={false} claimAddress={claimAddress} isClaims={true}>
+    <Layout
+      showSidebar={false}
+      claimAddress={claimAddress}
+      isClaims={true}
+      network={networkId}>
       {claimAddress === undefined ? (
         <ListClaims />
       ) : claimAddress === "create" ? (
