@@ -9,7 +9,7 @@ import ClaimsCard from "components/claimsPageComps/ClaimsCard";
 import { subgraphQuery } from "utils/subgraphs";
 import { QUERY_ALL_CLAIMS_OF_CREATOR } from "api/graphql/queries";
 import { useAccount, useNetwork } from "wagmi";
-import { CLAIMS_SUBGRAPH_URL } from "utils/constants";
+import { CHAIN_CONFIG } from "utils/constants";
 
 const useStyles = makeStyles({
   container: {
@@ -93,7 +93,7 @@ const ListClaims = () => {
     const fetchClaims = async () => {
       try {
         const { claims } = await subgraphQuery(
-          CLAIMS_SUBGRAPH_URL[networkId],
+          CHAIN_CONFIG[networkId].claims_subgraph_url,
           QUERY_ALL_CLAIMS_OF_CREATOR(walletAddress),
         );
 

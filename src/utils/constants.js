@@ -5,14 +5,6 @@ export const CLAIM_FACTORY_ADDRESS = {
   "0xa4b1": "0x28F06a3415A741367303Db36a6646C354cCE1340",
 };
 
-export const CLAIMS_SUBGRAPH_URL = {
-  "0x5": "https://api.thegraph.com/subgraphs/name/subham7/stnx-claim",
-  "0x89": "https://api.thegraph.com/subgraphs/name/subham7/stnx-claim",
-  "0x2105": "https://api.thegraph.com/subgraphs/name/subham7/stnx-claim-base",
-  "0xa4b1":
-    "https://api.thegraph.com/subgraphs/name/subham7/stnx-claim-arbitrum",
-};
-
 export const CHAIN_CONFIG = {
   "0x89": {
     chainName: "Polygon Mainnet",

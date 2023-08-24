@@ -14,7 +14,7 @@ import { Alert, Backdrop, CircularProgress } from "@mui/material";
 import useSmartContractMethods from "hooks/useSmartContractMethods";
 import { convertToWeiGovernance } from "utils/globalFunctions";
 import { useNetwork } from "wagmi";
-import { CLAIMS_SUBGRAPH_URL } from "utils/constants";
+import { CHAIN_CONFIG } from "utils/constants";
 import useClaimSmartContracts from "hooks/useClaimSmartContracts";
 
 const ClaimInsight = ({ claimAddress }) => {
@@ -49,7 +49,7 @@ const ClaimInsight = ({ claimAddress }) => {
     setLoading(true);
     try {
       const { claims } = await subgraphQuery(
-        CLAIMS_SUBGRAPH_URL[networkId],
+        CHAIN_CONFIG[networkId].claims_subgraph_url,
         QUERY_CLAIM_DETAILS(claimAddress),
       );
       setClaimsData(claims);

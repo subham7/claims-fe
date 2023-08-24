@@ -14,7 +14,7 @@ import { subgraphQuery } from "utils/subgraphs";
 import { QUERY_CLAIM_DETAILS } from "api/graphql/queries";
 import Button from "@components/ui/button/Button";
 import { useAccount, useNetwork } from "wagmi";
-import { CLAIMS_SUBGRAPH_URL } from "utils/constants";
+import { CHAIN_CONFIG } from "utils/constants";
 import useClaimSmartContracts from "hooks/useClaimSmartContracts";
 
 const Claim = ({ claimAddress }) => {
@@ -363,7 +363,7 @@ const Claim = ({ claimAddress }) => {
     const fetchClaimsDataFromSubgraph = async () => {
       try {
         const { claims } = await subgraphQuery(
-          CLAIMS_SUBGRAPH_URL[networkId],
+          CHAIN_CONFIG[networkId].claims_subgraph_url,
           QUERY_CLAIM_DETAILS(claimAddress),
         );
         setClaimsDataSubgraph(claims);

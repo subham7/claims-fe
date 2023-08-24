@@ -19,7 +19,7 @@ import { convertFromWeiGovernance } from "../../utils/globalFunctions";
 import { FiExternalLink } from "react-icons/fi";
 import { useNetwork } from "wagmi";
 
-import { CLAIMS_SUBGRAPH_URL } from "utils/constants";
+import { CHAIN_CONFIG } from "utils/constants";
 
 const ClaimsTransactions = ({
   claimAddress,
@@ -49,7 +49,7 @@ const ClaimsTransactions = ({
 
   const fetchWalletWiseTransactions = async () => {
     const { claimers } = await subgraphQuery(
-      CLAIMS_SUBGRAPH_URL[networkId],
+      CHAIN_CONFIG[networkId].claims_subgraph_url,
       QUERY_WALLET_WISE_TRANSACTIONS(claimAddress),
     );
     setWalletWiseTransactionData(claimers);
@@ -57,7 +57,7 @@ const ClaimsTransactions = ({
 
   const fetchAllTransactions = async () => {
     const { airdrops } = await subgraphQuery(
-      CLAIMS_SUBGRAPH_URL[networkId],
+      CHAIN_CONFIG[networkId].claims_subgraph_url,
       QUERY_ALL_CLAIMS_TRANSACTIONS(claimAddress),
     );
     setAllTransactionsData(airdrops?.reverse());
