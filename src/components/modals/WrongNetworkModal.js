@@ -1,7 +1,7 @@
 import { makeStyles } from "@mui/styles";
 import Image from "next/image";
 import React from "react";
-import { CHAIN_CONFIGS, CHAIN_IDs } from "utils/constants";
+import { CHAIN_CONFIG, CHAIN_IDs } from "utils/constants";
 import { requestEthereumChain } from "utils/helper";
 import Web3 from "web3";
 import img from "../../../public/assets/images/wrongNetwork.png";
@@ -73,8 +73,8 @@ const WrongNetworkModal = ({ chainId = 137 }) => {
           ]);
         } catch (err) {
           // This error code indicates that the chain has not been added to MetaMask
-          if (err.code === 4902 && CHAIN_CONFIGS[chainId]) {
-            const chainConfig = CHAIN_CONFIGS[chainId];
+          if (err.code === 4902 && CHAIN_CONFIG[chainId]) {
+            const chainConfig = CHAIN_CONFIG[chainId];
             await requestEthereumChain("wallet_switchEthereumChain", [
               {
                 chainId: Web3.utils.toHex(chainId),
