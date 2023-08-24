@@ -93,7 +93,7 @@ const ListClaims = () => {
     const fetchClaims = async () => {
       try {
         const { claims } = await subgraphQuery(
-          CHAIN_CONFIG[networkId].claims_subgraph_url,
+          CHAIN_CONFIG[networkId].claimsSubgraphUrl,
           QUERY_ALL_CLAIMS_OF_CREATOR(walletAddress),
         );
 

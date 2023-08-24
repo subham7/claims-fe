@@ -17,7 +17,7 @@ const useClaimSmartContracts = (claimAddress) => {
     return state.contractInstances.contractInstances;
   });
 
-  const claimFactoryAddress = CHAIN_CONFIG[networkId].claim_factory_address;
+  const claimFactoryAddress = CHAIN_CONFIG[networkId].claimFactoryAddress;
 
   const initializeClaimFactoryContracts = async () => {
     const web3Call = new Web3(CHAIN_CONFIG[networkId].appRpcUrl);

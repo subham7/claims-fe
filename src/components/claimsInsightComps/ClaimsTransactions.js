@@ -49,7 +49,7 @@ const ClaimsTransactions = ({
 
   const fetchWalletWiseTransactions = async () => {
     const { claimers } = await subgraphQuery(
-      CHAIN_CONFIG[networkId].claims_subgraph_url,
+      CHAIN_CONFIG[networkId].claimsSubgraphUrl,
       QUERY_WALLET_WISE_TRANSACTIONS(claimAddress),
     );
     setWalletWiseTransactionData(claimers);
@@ -57,7 +57,7 @@ const ClaimsTransactions = ({
 
   const fetchAllTransactions = async () => {
     const { airdrops } = await subgraphQuery(
-      CHAIN_CONFIG[networkId].claims_subgraph_url,
+      CHAIN_CONFIG[networkId].claimsSubgraphUrl,
       QUERY_ALL_CLAIMS_TRANSACTIONS(claimAddress),
     );
     setAllTransactionsData(airdrops?.reverse());

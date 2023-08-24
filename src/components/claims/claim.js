@@ -363,7 +363,7 @@ const Claim = ({ claimAddress }) => {
     const fetchClaimsDataFromSubgraph = async () => {
       try {
         const { claims } = await subgraphQuery(
-          CHAIN_CONFIG[networkId].claims_subgraph_url,
+          CHAIN_CONFIG[networkId].claimsSubgraphUrl,
           QUERY_CLAIM_DETAILS(claimAddress),
         );
         setClaimsDataSubgraph(claims);

@@ -49,7 +49,7 @@ const ClaimInsight = ({ claimAddress }) => {
     setLoading(true);
     try {
       const { claims } = await subgraphQuery(
-        CHAIN_CONFIG[networkId].claims_subgraph_url,
+        CHAIN_CONFIG[networkId].claimsSubgraphUrl,
         QUERY_CLAIM_DETAILS(claimAddress),
       );
       setClaimsData(claims);

@@ -175,7 +175,7 @@ export const extractNftAdressAndId = (url) => {
 
 export const getUserTokenData = async (tokenData, networkId) => {
   const filteredData = tokenData.filter(
-    (token) => token.contract_address !== CHAIN_CONFIG[networkId].native_token,
+    (token) => token.contract_address !== CHAIN_CONFIG[networkId].nativeToken,
   );
 
   return filteredData.map((token) => {

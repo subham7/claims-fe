@@ -64,7 +64,7 @@ const CreateClaim = () => {
       setLoadingTokens(true);
       if (networkId && walletAddress) {
         const tokensList = await getTokensList(
-          CHAIN_CONFIG[networkId].covalent_network_name,
+          CHAIN_CONFIG[networkId].covalentNetworkName,
           walletAddress,
         );
 
@@ -142,8 +142,7 @@ const CreateClaim = () => {
     },
     validationSchema: claimStep2ValidationSchema,
     onSubmit: async (values) => {
-      const claimsContractAddress =
-        CHAIN_CONFIG[networkId].claim_factory_address;
+      const claimsContractAddress = CHAIN_CONFIG[networkId].claimFactoryAddress;
 
       const data = {
         description: formikStep1.values.description,
