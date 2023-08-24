@@ -26,11 +26,6 @@ export const NETWORK_NAME = {
   "0xa4b1": "arbitrum-mainnet",
 };
 
-export const IGNORE_TOKENS = [
-  "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
-  "0x0000000000000000000000000000000000001010",
-];
-
 export const NETWORK_IDs = ["0x89", "0x2105", "0xa4b1"];
 
 export const CHAIN_CONFIG = {
