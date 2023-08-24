@@ -1,6 +1,7 @@
 export const CHAIN_CONFIG = {
   "0x89": {
     chainName: "Polygon Mainnet",
+    shortName: "Polygon",
     chainId: 137,
     nativeCurrency: {
       name: "MATIC",
@@ -17,6 +18,7 @@ export const CHAIN_CONFIG = {
   },
   "0x5": {
     chainName: "Goerli Testnet",
+    shortName: "Goerli",
     chainId: 5,
     nativeCurrency: {
       name: "GoerliETH",
@@ -33,6 +35,7 @@ export const CHAIN_CONFIG = {
   },
   "0x2105": {
     chainName: "Base Mainnet",
+    shortName: "Base",
     chainId: 8453,
     nativeCurrency: {
       name: "Base ETH",
@@ -49,6 +52,7 @@ export const CHAIN_CONFIG = {
   },
   "0xa4b1": {
     chainName: "Arbitrum One",
+    shortName: "Arbitrum",
     chainId: 42161,
     nativeCurrency: {
       name: "ETH",
@@ -65,6 +69,7 @@ export const CHAIN_CONFIG = {
   },
   "0xe708": {
     chainName: "Linea Mainnet",
+    shortName: "Linea",
     chainId: 59144,
     nativeCurrency: {
       name: "Ether",
@@ -81,6 +86,7 @@ export const CHAIN_CONFIG = {
   },
   "0x38": {
     chainName: "BNB Smart Chain",
+    shortName: "BNB",
     chainId: 56,
     nativeCurrency: {
       name: "BNB",
@@ -94,5 +100,47 @@ export const CHAIN_CONFIG = {
       "https://api.thegraph.com/subgraphs/name/subham7/stnx-claim-bsc",
     covalentNetworkName: "bsc-mainnet",
     nativeToken: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+  },
+  "0x1388": {
+    chainName: "Mantle Mainnet",
+    shortName: "Mantle",
+    chainId: 5000,
+    nativeCurrency: {
+      name: "MNT",
+      decimals: 18,
+      symbol: "MNT",
+    },
+    rpcUrls: ["https://rpc.mantle.xyz"],
+    appRpcUrl: `https://mantle-mainnet.public.blastapi.io`,
+    claimFactoryAddress: "0x28F06a3415A741367303Db36a6646C354cCE1340",
+    claimsSubgraphUrl:
+      "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-claim-mantle/0.0.1/gn",
+    covalentNetworkName: "mantle-mainnet",
+    nativeToken: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+  },
+};
+
+export const lineaMainnetWalletConnect = {
+  id: 59144,
+  name: "Linea",
+  network: "linea",
+  nativeCurrency: {
+    decimals: 18,
+    name: "Ether ",
+    symbol: "ETH",
+  },
+  rpcUrls: {
+    public: { http: ["https://rpc.linea.build"] },
+    default: { http: ["https://rpc.linea.build"] },
+  },
+  blockExplorers: {
+    etherscan: { name: "LineaScan", url: "https://lineascan.build/" },
+    default: { name: "LineaScan", url: "https://lineascan.build/" },
+  },
+  contracts: {
+    multicall3: {
+      address: "0xcA11bde05977b3631167028862bE2a173976CA11",
+      blockCreated: 42,
+    },
   },
 };

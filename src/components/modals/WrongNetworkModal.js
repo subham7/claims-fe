@@ -97,7 +97,7 @@ const WrongNetworkModal = ({ chainId = 137 }) => {
         <Image src={img} alt="Wrong network" height={136} width={160} />
 
         <button className={classes.btn} onClick={switchNetworkHandler}>
-          Switch to {CHAIN_CONFIG[Web3.utils.toHex(chainId)].chainName}
+          Switch to {CHAIN_CONFIG[Web3.utils.toHex(chainId)]?.shortName}
         </button>
       </div>
     </>

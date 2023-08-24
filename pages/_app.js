@@ -15,7 +15,9 @@ import {
 } from "@web3modal/ethereum";
 import { Web3Modal } from "@web3modal/react";
 import { configureChains, createConfig, WagmiConfig } from "wagmi";
-import { polygon, base, arbitrum } from "wagmi/chains";
+import { polygon, base, arbitrum, bsc, mantle } from "wagmi/chains";
+import { lineaMainnetWalletConnect } from "utils/constants";
+// import { CHAIN_CONFIG } from "utils/constants";
 
 const API_URL = "https://api.lens.dev";
 
@@ -24,7 +26,14 @@ export const apolloClient = new ApolloClient({
   cache: new InMemoryCache(),
 });
 
-const chains = [polygon, base, arbitrum];
+const chains = [
+  polygon,
+  base,
+  arbitrum,
+  bsc,
+  mantle,
+  lineaMainnetWalletConnect,
+];
 const projectId = "35b31c8ffbfd99ac267e35ecdf60530a";
 
 const { publicClient } = configureChains(chains, [w3mProvider({ projectId })]);
@@ -50,6 +59,11 @@ function MyApp({ Component, pageProps }) {
         </Provider>
       </WagmiConfig>
       <Web3Modal
+        chainImages={{
+          59144: "/assets/icons/linea-mainnet.webp",
+          8453: "/assets/icons/base-mainnet.png",
+          5000: "/assets/icons/mantle-mainnet.png",
+        }}
         themeMode="light"
         themeVariables={{
           "--w3m-overlay-background-color": "#00000088",
