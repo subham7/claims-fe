@@ -23,7 +23,7 @@ const useSmartContract = (daoAddress) => {
   });
 
   const initializeFactoryContracts = async () => {
-    const web3Call = new Web3(CHAIN_CONFIG[networkId].appRpcUrl);
+    const web3Call = new Web3(CHAIN_CONFIG[networkId]?.appRpcUrl);
     const web3Send = new Web3(window?.ethereum);
 
     try {
@@ -54,7 +54,7 @@ const useSmartContract = (daoAddress) => {
   };
 
   const initializeStationContracts = async () => {
-    const web3Call = new Web3(CHAIN_CONFIG[networkId].appRpcUrl);
+    const web3Call = new Web3(CHAIN_CONFIG[networkId]?.appRpcUrl);
     const web3Send = new Web3(window?.ethereum);
 
     try {
