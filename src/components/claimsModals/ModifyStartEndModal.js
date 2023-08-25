@@ -24,8 +24,8 @@ const ModifyStartEndModal = ({
       const newEndTime = new Date(value.endTime).getTime() / 1000;
 
       modifyStartAndEndTimeHandler(
-        newStartTime > +startTime ? newStartTime : +startTime,
-        newEndTime > +endTime ? newEndTime : +endTime,
+        newStartTime ? newStartTime : +startTime,
+        newEndTime ? newEndTime : +endTime,
       );
       onClose();
     },
