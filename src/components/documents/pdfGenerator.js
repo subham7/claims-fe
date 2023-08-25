@@ -1110,7 +1110,12 @@ export const PdfFile = ({
             </Text>
             <Text style={styles.eachLine}>Subscription Amount: {amount}</Text>
             <Text style={styles.eachLine}>Subscriber:</Text>
-            <Text style={styles.eachLine}>{member_name && signedHash}</Text>
+            <Text style={styles.eachLine}>
+              {member_name &&
+                `${signedHash?.slice(0, 12)}....${signedHash?.slice(
+                  signedHash?.length - 12,
+                )}`}
+            </Text>
             <Text style={styles.eachLine}>(Signature)</Text>
             <Text style={styles.eachLine}>{member_name}</Text>
             <Text style={styles.eachLine}>ACCEPTANCE OF SUBSCRIPTION</Text>
@@ -1131,8 +1136,12 @@ export const PdfFile = ({
               and on behalf of {LLC_name}
             </Text>
             <Text style={styles.eachLine}>
-              By: {member_name ? admin_sign : signedHash?.slice(0, 12)}....
-              {signedHash?.slice(signedHash?.length - 12)}
+              By:{" "}
+              {member_name
+                ? admin_sign
+                : `${signedHash?.slice(0, 12)}....${signedHash?.slice(
+                    signedHash?.length - 12,
+                  )}`}
             </Text>
             <Text style={styles.eachLine}>Name: {admin_name}</Text>
             <Text style={styles.eachLine}>Title: Administrative Member</Text>
