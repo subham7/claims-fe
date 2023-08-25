@@ -79,8 +79,8 @@ export const CHAIN_CONFIG = {
     rpcUrls: ["https://rpc.linea.build"],
     appRpcUrl: `https://linea-mainnet.infura.io/v3/${process.env.NEXT_PUBLIC_INFURA_API_KEY}`,
     claimFactoryAddress: "0x50702Fd9086BAbDB0A3A576bFe22D4dD47b09937",
-    // claimsSubgraphUrl:
-    //   "https://api.thegraph.com/subgraphs/name/subham7/stnx-claim-arbitrum",
+    claimsSubgraphUrl:
+      "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-claim-linea/0.0.1/gn",
     covalentNetworkName: "linea-mainnet",
     nativeToken: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
   },
@@ -114,7 +114,7 @@ export const CHAIN_CONFIG = {
     appRpcUrl: `https://mantle-mainnet.public.blastapi.io`,
     claimFactoryAddress: "0x28F06a3415A741367303Db36a6646C354cCE1340",
     claimsSubgraphUrl:
-      "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-claim-mantle/0.0.1/gn",
+      "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-claim-mantle/0.0.2/gn",
     covalentNetworkName: "mantle-mainnet",
     nativeToken: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
   },
