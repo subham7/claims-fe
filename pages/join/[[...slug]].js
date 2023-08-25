@@ -6,19 +6,14 @@ import Join from "@components/join/Join";
 const JoinPage = () => {
   const router = useRouter();
 
-  const [daoAddress, networkId] = router?.query?.slug ?? [];
+  const [daoAddress] = router?.query?.slug ?? [];
 
   if (!daoAddress) {
     return null;
   }
 
   return (
-    <Layout
-      showSidebar={false}
-      daoAddress={daoAddress}
-      page={4}
-      network={networkId}
-      isClaims={true}>
+    <Layout showSidebar={false} daoAddress={daoAddress} page={4}>
       <Join daoAddress={daoAddress} />
     </Layout>
   );

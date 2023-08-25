@@ -67,11 +67,11 @@ const drawerWidth = 100;
 
 const Sidebar = (props) => {
   const classes = useStyles();
-  const { page, daoAddress, networkId } = props;
+  const { page, daoAddress } = props;
   const router = useRouter();
 
   const handleDepositRedirect = () => {
-    router.push(`${window.origin}/join/${daoAddress}/${networkId}`, undefined, {
+    router.push(`${window.origin}/join/${daoAddress}`, undefined, {
       shallow: true,
     });
   };
