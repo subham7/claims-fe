@@ -78,7 +78,8 @@ const SignDoc = ({ daoAddress, isAdmin }) => {
       const accounts = await web3.eth.getAccounts();
       const currentAccount = accounts[0];
 
-      const originalMessage = "YOUR_MESSAGE";
+      const originalMessage =
+        "Proceed to Sign the Subscription Document on StationX.network.";
 
       // Signed message
       const signedMessage = await web3.eth.personal.sign(
