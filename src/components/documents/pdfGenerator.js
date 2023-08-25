@@ -1110,7 +1110,7 @@ export const PdfFile = ({
             </Text>
             <Text style={styles.eachLine}>Subscription Amount: {amount}</Text>
             <Text style={styles.eachLine}>Subscriber:</Text>
-            <Text style={styles.eachLine}>{signedHash}</Text>
+            <Text style={styles.eachLine}>{member_name && signedHash}</Text>
             <Text style={styles.eachLine}>(Signature)</Text>
             <Text style={styles.eachLine}>{member_name}</Text>
             <Text style={styles.eachLine}>ACCEPTANCE OF SUBSCRIPTION</Text>
@@ -1130,39 +1130,14 @@ export const PdfFile = ({
               {admin_name}, in its capacity as Administrative Member, and for
               and on behalf of {LLC_name}
             </Text>
-            <Text style={styles.eachLine}>By: {admin_sign}</Text>
+            <Text style={styles.eachLine}>
+              By: {member_name ? admin_sign : signedHash?.slice(0, 12)}....
+              {signedHash?.slice(signedHash?.length - 12)}
+            </Text>
             <Text style={styles.eachLine}>Name: {admin_name}</Text>
             <Text style={styles.eachLine}>Title: Administrative Member</Text>
           </View>
-
-          {/* {member_name && (
-            <View>
-              <Text style={styles.adminDetails}>Admin</Text>
-              <View style={styles.signedAcc}>
-                <Text>{admin_name}</Text>
-                <Text>{admin_sign}</Text>
-              </View>
-            </View>
-          )} */}
         </View>
-
-        {/* {signedAcc && (
-          <View>
-            <Text style={styles.adminDetails}>Your Sign</Text>
-            <View style={styles.signedAcc}>
-              <Text>
-                Signed By:
-                {signedAcc?.slice(0, 8)}...
-                {signedAcc?.slice(signedAcc?.length - 6)}
-              </Text>
-
-              <Text>
-                Signed Hash: {signedHash?.slice(0, 12)}....
-                {signedHash?.slice(signedHash?.length - 12)}
-              </Text>
-            </View>
-          </View>
-        )} */}
 
         <Text
           style={styles.pageNumber}
