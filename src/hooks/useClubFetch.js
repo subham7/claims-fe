@@ -24,12 +24,14 @@ import { getSafeSdk } from "../utils/helper";
 import useSmartContractMethods from "./useSmartContractMethods";
 import useSmartContract from "./useSmartContract";
 import { useAccount, useNetwork } from "wagmi";
+import { useRouter } from "next/router";
 
 const useClubFetch = ({ daoAddress }) => {
   const dispatch = useDispatch();
   const { chain } = useNetwork();
   useSmartContract(daoAddress);
 
+  const router = useRouter();
   const { address: walletAddress } = useAccount();
 
   if (walletAddress) {
@@ -169,8 +171,9 @@ const useClubFetch = ({ daoAddress }) => {
               if (ownerAddressesArray.includes(walletAddress)) {
                 dispatch(setAdminUser(true));
               } else {
-                if (erc20BalanceResponse === "0" && !daoAddress) {
+                if (erc20BalanceResponse === "0" && daoAddress) {
                   dispatch(setMemberUser(false));
+                  router.push("/");
                 } else {
                   dispatch(setMemberUser(true));
                 }
@@ -210,8 +213,9 @@ const useClubFetch = ({ daoAddress }) => {
               if (ownerAddressesArray.includes(walletAddress)) {
                 dispatch(setAdminUser(true));
               } else {
-                if (erc721BalanceResponse === "0" && !daoAddress) {
+                if (erc721BalanceResponse === "0" && daoAddress) {
                   dispatch(setMemberUser(false));
+                  router.push("/");
                 } else {
                   dispatch(setMemberUser(true));
                 }
@@ -231,6 +235,7 @@ const useClubFetch = ({ daoAddress }) => {
     reduxClubData.gnosisAddress,
     reduxClubData.tokenType,
     networkId,
+    router,
   ]);
 
   const checkClubExist = useCallback(async () => {
