@@ -45,7 +45,7 @@ export const web3InstanceEthereum = async () => {
   return web3;
 };
 
-export const web3InstanceCustomRPC = async (networkId) => {
+export const web3InstanceCustomRPC = async (networkId = "0x89") => {
   const web3 = new Web3(CHAIN_CONFIG[networkId].appRpcUrl);
   return web3;
 };

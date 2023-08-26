@@ -135,9 +135,9 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
         <MenuItem key={8} value="Buy nft">
           Buy Nft
         </MenuItem>
-        <MenuItem key={9} value="Sell nft">
+        {/* <MenuItem key={9} value="Sell nft">
           Sell Nft
-        </MenuItem>
+        </MenuItem> */}
         <MenuItem key={10} value="whitelist deposit">
           Whitelist Deposit
         </MenuItem>
