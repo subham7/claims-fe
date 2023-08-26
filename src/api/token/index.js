@@ -16,7 +16,7 @@ export const getTokensFromWallet = async (address, networkId) => {
 
     const config = {
       method: "post",
-      url: CHAIN_CONFIG[networkId].appRpcUrl,
+      url: CHAIN_CONFIG[networkId]?.appRpcUrl,
       headers: {
         "Content-Type": "application/json",
       },
@@ -48,7 +48,7 @@ export const getTokensFromWallet = async (address, networkId) => {
         // options for making a request to get the token metadata
         const options = {
           method: "POST",
-          url: CHAIN_CONFIG[networkId].appRpcUrl,
+          url: CHAIN_CONFIG[networkId]?.appRpcUrl,
           headers: {
             accept: "application/json",
             "content-type": "application/json",
@@ -102,7 +102,7 @@ export const getBalanceOfToken = async (
       // options for making a request to get the token metadata
       const options = {
         method: "POST",
-        url: CHAIN_CONFIG[networkId].appRpcUrl,
+        url: CHAIN_CONFIG[networkId]?.appRpcUrl,
         headers: {
           accept: "application/json",
           "content-type": "application/json",
@@ -149,7 +149,7 @@ export const getTokensDecimalFromAddress = async (address, networkId) => {
 
     const config = {
       method: "post",
-      url: CHAIN_CONFIG[networkId].appRpcUrl,
+      url: CHAIN_CONFIG[networkId]?.appRpcUrl,
       headers: {
         "Content-Type": "application/json",
       },
@@ -186,7 +186,7 @@ export const getTokenMetadata = async (address, networkId) => {
 
     const config = {
       method: "post",
-      url: CHAIN_CONFIG[networkId].appRpcUrl,
+      url: CHAIN_CONFIG[networkId]?.appRpcUrl,
       headers: {
         "Content-Type": "application/json",
       },

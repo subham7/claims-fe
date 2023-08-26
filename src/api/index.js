@@ -41,7 +41,7 @@ export function updateDynamicAddress(networkId, dispatch) {
   try {
     const networkData = fetchConfigById(networkId);
 
-    CHAIN_CONFIG[networkId].appRpcUrl;
+    CHAIN_CONFIG[networkId]?.appRpcUrl;
     networkData.then((result) => {
       if (result.status != 200) {
         console.log(result.error);
