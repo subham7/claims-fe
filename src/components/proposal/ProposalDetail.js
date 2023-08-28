@@ -662,7 +662,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
 
       if (clubData.tokenType === "erc20") {
         data = iface.encodeFunctionData("mintGTToAddress", [
-          [proposalData.commands[0].mintGTAmounts.toString()],
+          proposalData.commands[0].mintGTAmounts,
           proposalData.commands[0].mintGTAddresses,
         ]);
       } else {
@@ -671,9 +671,14 @@ const ProposalDetail = ({ pid, daoAddress }) => {
           QUERY_CLUB_DETAILS(daoAddress),
         );
         const tokenURI = clubDetails?.stations[0].imageUrl;
+
+        const tokenURIArr = new Array(
+          proposalData.commands[0].mintGTAmounts.length,
+        ).fill(tokenURI);
+
         data = iface.encodeFunctionData("mintGTToAddress", [
           proposalData.commands[0].mintGTAmounts,
-          [tokenURI],
+          tokenURIArr,
           proposalData.commands[0].mintGTAddresses,
         ]);
       }
