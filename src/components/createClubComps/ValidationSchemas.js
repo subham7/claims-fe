@@ -130,30 +130,30 @@ export const proposalValidationSchema = yup.object({
         .required("Amount is required")
         .moreThan(0, "Amount should be greater than 0"),
   }),
-  userAddress: yup.string("Please enter user address").when("actionCommand", {
-    is: "Mint club token",
-    then: () =>
-      yup
-        .string("Enter user address")
-        .matches(/^0x[a-zA-Z0-9]+/gm, " Proper wallet address is required")
-        .required("User address is required"),
-  }),
-  amountOfTokens: yup.number().when(["tokenType", "actionCommand"], {
-    is: (tokenType, actionCommand) =>
-      tokenType === "erc20" && actionCommand === "Mint Club Token",
-    then: yup
-      .number()
-      .required("Amount is required")
-      .moreThan(0, "Amount should be greater than 0"),
-  }),
-  amountOfTokens721: yup.number().when(["tokenType", "actionCommand"], {
-    is: (tokenType, actionCommand) =>
-      tokenType === "erc721" && actionCommand === "Mint Club Token",
-    then: yup
-      .number()
-      .required("Amount is required")
-      .moreThan(0, "Amount should be greater than 0"),
-  }),
+  // userAddress: yup.string("Please enter user address").when("actionCommand", {
+  //   is: "Mint club token",
+  //   then: () =>
+  //     yup
+  //       .string("Enter user address")
+  //       .matches(/^0x[a-zA-Z0-9]+/gm, " Proper wallet address is required")
+  //       .required("User address is required"),
+  // }),
+  // amountOfTokens: yup.number().when(["tokenType", "actionCommand"], {
+  //   is: (tokenType, actionCommand) =>
+  //     tokenType === "erc20" && actionCommand === "Mint Club Token",
+  //   then: yup
+  //     .number()
+  //     .required("Amount is required")
+  //     .moreThan(0, "Amount should be greater than 0"),
+  // }),
+  // amountOfTokens721: yup.number().when(["tokenType", "actionCommand"], {
+  //   is: (tokenType, actionCommand) =>
+  //     tokenType === "erc721" && actionCommand === "Mint Club Token",
+  //   then: yup
+  //     .number()
+  //     .required("Amount is required")
+  //     .moreThan(0, "Amount should be greater than 0"),
+  // }),
   quorum: yup.number("Enter Quorum in percentage").when("actionCommand", {
     is: "Update Governance Settings",
     then: () =>
