@@ -1,6 +1,6 @@
 import { createTheme } from "@mui/material/styles";
-import { darkComponents } from "./darkComponent";
-import { lightComponents } from "./lightComponent";
+// import { darkComponents } from "./darkComponent";
+// import { lightComponents } from "./lightComponent";
 
 const theme = (mode) =>
   createTheme({
@@ -23,10 +23,13 @@ const theme = (mode) =>
         contrastText: "#F5F5F5",
       },
       background: { default: "#0F0F0F" },
+      text: {
+        primary: "#F5F5F5",
+      },
     },
-    components: {
-      ...(mode == "dark" ? darkComponents : lightComponents),
-    },
+    // components: {
+    //   ...(mode == "dark" ? darkComponents : lightComponents),
+    // },
   });
 
 export default theme;

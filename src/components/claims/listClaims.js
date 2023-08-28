@@ -1,6 +1,5 @@
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
-import { Typography } from "@components/ui";
 import settingsImg from "../../../public/assets/images/settings.png";
 import claimsBanner from "../../../public/assets/images/claimsBanner.png";
 import { makeStyles } from "@mui/styles";
@@ -10,7 +9,7 @@ import { subgraphQuery } from "utils/subgraphs";
 import { QUERY_ALL_CLAIMS_OF_CREATOR } from "api/graphql/queries";
 import { useAccount, useNetwork } from "wagmi";
 import { CHAIN_CONFIG } from "utils/constants";
-import { Button } from "@mui/material";
+import { Button, Typography } from "@mui/material";
 
 const useStyles = makeStyles({
   container: {
@@ -110,10 +109,11 @@ const ListClaims = () => {
   return (
     <>
       <div className={classes.container}>
-        {/* Left Side */}
         <div className={classes.leftDiv}>
           <div className={classes.header}>
-            <Typography variant="heading">Claims</Typography>
+            <Typography color="textPrimary" variant="h4">
+              Welcome to Drops
+            </Typography>
             <Button variant="contained" onClick={createClaimHandler}>
               Create
             </Button>
