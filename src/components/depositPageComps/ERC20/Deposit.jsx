@@ -1,7 +1,7 @@
 import Image from "next/image";
 import React from "react";
-import { convertFromWeiGovernance } from "../../../../utils/globalFunctions";
-import ProgressBar from "../../../progressbar";
+import { convertFromWeiGovernance } from "utils/globalFunctions";
+import ProgressBar from "@components/progressbar";
 import classes from "./ERC20.module.scss";
 import { IoIosWallet } from "react-icons/io";
 import { Typography, Button } from "@components/ui";

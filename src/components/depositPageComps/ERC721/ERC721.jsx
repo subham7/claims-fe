@@ -1,13 +1,10 @@
 import { Alert } from "@mui/material";
 import React, { useCallback, useEffect, useState } from "react";
 import classes from "./ERC721.module.scss";
-import { subgraphQuery } from "../../../../utils/subgraphs";
-import { QUERY_CLUB_DETAILS } from "../../../../api/graphql/queries";
+import { subgraphQuery } from "utils/subgraphs";
+import { QUERY_CLUB_DETAILS } from "api/graphql/queries";
 import { useSelector } from "react-redux";
-import {
-  convertFromWeiGovernance,
-  getImageURL,
-} from "../../../../utils/globalFunctions";
+import { convertFromWeiGovernance, getImageURL } from "utils/globalFunctions";
 import dayjs from "dayjs";
 import About from "./About";
 import NFTimg from "./NFTimg";
@@ -17,7 +14,7 @@ import { useRouter } from "next/router";
 import { useAccount } from "wagmi";
 import { getUploadedNFT } from "api/assets";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
-import useAppContractMethods from "../../../../hooks/useAppContractMethods";
+import useAppContractMethods from "hooks/useAppContractMethods";
 
 const ERC721 = ({
   daoAddress,

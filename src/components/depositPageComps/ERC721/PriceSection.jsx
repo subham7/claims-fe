@@ -6,7 +6,7 @@ import {
   // Typography,
 } from "@mui/material";
 import React from "react";
-import { convertFromWeiGovernance } from "../../../../utils/globalFunctions";
+import { convertFromWeiGovernance } from "utils/globalFunctions";
 import classes from "./ERC721.module.scss";
 import RemoveIcon from "@mui/icons-material/Remove";
 import AddIcon from "@mui/icons-material/Add";

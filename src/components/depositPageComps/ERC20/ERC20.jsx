@@ -1,14 +1,14 @@
 import { useFormik } from "formik";
 import React, { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { QUERY_CLUB_DETAILS } from "../../../../api/graphql/queries";
+import { QUERY_CLUB_DETAILS } from "api/graphql/queries";
 import {
   convertFromWeiGovernance,
   convertToWeiGovernance,
-} from "../../../../utils/globalFunctions";
-import { subgraphQuery } from "../../../../utils/subgraphs";
-import About from "../../ERC721/NewArch/About";
-import Header from "../../ERC721/NewArch/Header";
+} from "utils/globalFunctions";
+import { subgraphQuery } from "utils/subgraphs";
+import About from "../ERC721/About";
+import Header from "../ERC721/Header";
 import classes from "./ERC20.module.scss";
 import * as yup from "yup";
 import { useRouter } from "next/router";
@@ -18,7 +18,7 @@ import Deposit from "./Deposit";
 import ERC20Details from "./ERC20Details";
 import { useAccount } from "wagmi";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
-import useAppContractMethods from "../../../../hooks/useAppContractMethods";
+import useAppContractMethods from "hooks/useAppContractMethods";
 
 const ERC20 = ({
   clubInfo,

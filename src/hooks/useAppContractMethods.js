@@ -7,7 +7,7 @@ import seaportABI from "../abis/seaport.json";
 import Safe, { Web3Adapter } from "@safe-global/protocol-kit";
 import { createProposalTxHash, getProposalTxHash } from "../api/proposal";
 import SafeApiKit from "@safe-global/api-kit";
-import { actionContractABI } from "../abis/newArch/actionContract";
+import { actionContractABI } from "../abis/actionContract";
 import { useAccount } from "wagmi";
 
 const useAppContractMethods = () => {
