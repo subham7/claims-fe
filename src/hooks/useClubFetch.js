@@ -4,7 +4,6 @@ import { subgraphQuery } from "../utils/subgraphs";
 import { QUERY_CLUB_DETAILS } from "../api/graphql/queries";
 import {
   addClubData,
-  addDaoAddress,
   addErc20ClubDetails,
   addErc721ClubDetails,
   addFactoryData,
@@ -18,7 +17,6 @@ import {
 } from "../redux/reducers/gnosis";
 import { fetchConfigById } from "../api/config";
 
-import Web3 from "web3";
 import { SUBGRAPH_URL_GOERLI, SUBGRAPH_URL_POLYGON } from "../api";
 import { getSafeSdk } from "../utils/helper";
 import useAppContract from "./useAppContract";
@@ -33,10 +31,6 @@ const useClubFetch = ({ daoAddress }) => {
 
   const router = useRouter();
   const { address: walletAddress } = useAccount();
-
-  if (walletAddress) {
-    localStorage.setItem("wallet", walletAddress);
-  }
 
   const networkId = "0x" + chain?.id.toString(16);
 
@@ -53,11 +47,6 @@ const useClubFetch = ({ daoAddress }) => {
   } = useAppContractMethods();
 
   useEffect(() => {
-    daoAddress &&
-      dispatch(addDaoAddress(Web3.utils.toChecksumAddress(daoAddress)));
-  }, [daoAddress, dispatch]);
-
-  useEffect(() => {
     const getNetworkConfig = async () => {
       try {
         const networkData = await fetchConfigById(networkId);
@@ -72,9 +61,6 @@ const useClubFetch = ({ daoAddress }) => {
             transactionUrl: networkData?.data[0]?.gnosisTransactionUrl,
             networkHex: networkData?.data[0]?.networkHex,
             networkId: networkData?.data[0]?.networkId,
-            networkName: networkData?.data[0]?.name,
-            // Repair this
-            clubNetworkId: networkId,
           }),
         );
       } catch (e) {
@@ -118,111 +104,81 @@ const useClubFetch = ({ daoAddress }) => {
 
   const checkUserExists = useCallback(async () => {
     try {
-      if (daoAddress && walletAddress) {
-        if (reduxClubData.gnosisAddress) {
-          const factoryData = await getDaoDetails(daoAddress);
+      if (daoAddress && walletAddress && reduxClubData.gnosisAddress) {
+        const factoryData = await getDaoDetails(daoAddress);
 
-          if (factoryData) {
-            dispatch(
-              addFactoryData({
-                assetsStoredOnGnosis: factoryData?.assetsStoredOnGnosis,
-                depositCloseTime: factoryData.depositCloseTime,
-                depositTokenAddress: factoryData.depositTokenAddress,
-                distributionAmount: factoryData.distributionAmount,
-                gnosisAddress: factoryData.gnosisAddress,
-                isDeployedByFactory: factoryData.isDeployedByFactory,
-                isTokenGatingApplied: factoryData.isTokenGatingApplied,
-                maxDepositPerUser: factoryData.maxDepositPerUser,
-                merkleRoot: factoryData.merkleRoot,
-                minDepositPerUser: factoryData.minDepositPerUser,
-                ownerFeePerDepositPercent:
-                  factoryData.ownerFeePerDepositPercent,
-                pricePerToken: factoryData.pricePerToken,
-              }),
-            );
-          }
+        if (factoryData) {
+          dispatch(
+            addFactoryData({
+              assetsStoredOnGnosis: factoryData?.assetsStoredOnGnosis,
+              depositCloseTime: factoryData.depositCloseTime,
+              depositTokenAddress: factoryData.depositTokenAddress,
+              distributionAmount: factoryData.distributionAmount,
+              gnosisAddress: factoryData.gnosisAddress,
+              isDeployedByFactory: factoryData.isDeployedByFactory,
+              isTokenGatingApplied: factoryData.isTokenGatingApplied,
+              maxDepositPerUser: factoryData.maxDepositPerUser,
+              merkleRoot: factoryData.merkleRoot,
+              minDepositPerUser: factoryData.minDepositPerUser,
+              ownerFeePerDepositPercent: factoryData.ownerFeePerDepositPercent,
+              pricePerToken: factoryData.pricePerToken,
+            }),
+          );
+        }
 
-          if (reduxClubData.tokenType === "erc20") {
-            const daoDetails = await getERC20DAOdetails();
+        if (reduxClubData.tokenType === "erc20") {
+          const daoDetails = await getERC20DAOdetails();
 
-            const erc20BalanceResponse = await getERC20Balance();
+          dispatch(
+            addErc20ClubDetails({
+              quorum: daoDetails.quorum / 100,
+              threshold: daoDetails.threshold / 100,
+              isGovernanceActive: daoDetails.isGovernanceActive,
+              isTransferable: daoDetails.isTransferable,
+              onlyAllowWhitelist: daoDetails.onlyAllowWhitelist,
+              deployerAddress: daoDetails.deployerAddress,
+            }),
+          );
+        } else if (reduxClubData.tokenType === "erc721") {
+          const daoDetails = await getERC721DAOdetails();
+          dispatch(
+            addErc721ClubDetails({
+              quorum: daoDetails.quorum / 100,
+              threshold: daoDetails.threshold / 100,
+              maxTokensPerUser: daoDetails.maxTokensPerUser,
+              isNftTotalSupplyUnlimited: daoDetails.isNftTotalSupplyUnlimited,
+              isGovernanceActive: daoDetails.isGovernanceActive,
+              isTransferable: daoDetails.isTransferable,
+              onlyAllowWhitelist: daoDetails.onlyAllowWhitelist,
+              deployerAddress: daoDetails.deployerAddress,
+            }),
+          );
+        }
 
-            dispatch(
-              addErc20ClubDetails({
-                quorum: daoDetails.quorum / 100,
-                threshold: daoDetails.threshold / 100,
-                isGovernanceActive: daoDetails.isGovernanceActive,
-                isTransferable: daoDetails.isTransferable,
-                onlyAllowWhitelist: daoDetails.onlyAllowWhitelist,
-                deployerAddress: daoDetails.deployerAddress,
-              }),
-            );
+        let balance = 0;
+        if (reduxClubData.tokenType === "erc721") {
+          balance = await getERC721Balance();
+        } else {
+          balance = await getERC20Balance();
+        }
 
-            try {
-              const safeSdk = await getSafeSdk(
-                reduxClubData.gnosisAddress,
-                walletAddress,
-                networkId,
-              );
-              const ownerAddresses = await safeSdk.getOwners();
-              const ownerAddressesArray = ownerAddresses.map((value) =>
-                Web3.utils.toChecksumAddress(value),
-              );
-              if (ownerAddressesArray.includes(walletAddress)) {
-                dispatch(setAdminUser(true));
-              } else {
-                if (erc20BalanceResponse === "0" && daoAddress) {
-                  dispatch(setMemberUser(false));
-                  router.push("/");
-                } else {
-                  dispatch(setMemberUser(true));
-                }
-              }
-            } catch (error) {
-              console.error(error);
-            }
-          } else if (reduxClubData.tokenType === "erc721") {
-            try {
-              const daoDetails = await getERC721DAOdetails();
-
-              const erc721BalanceResponse = await getERC721Balance();
-
-              dispatch(
-                addErc721ClubDetails({
-                  quorum: daoDetails.quorum / 100,
-                  threshold: daoDetails.threshold / 100,
-                  maxTokensPerUser: daoDetails.maxTokensPerUser,
-                  isNftTotalSupplyUnlimited:
-                    daoDetails.isNftTotalSupplyUnlimited,
-                  isGovernanceActive: daoDetails.isGovernanceActive,
-                  isTransferable: daoDetails.isTransferable,
-                  onlyAllowWhitelist: daoDetails.onlyAllowWhitelist,
-                  deployerAddress: daoDetails.deployerAddress,
-                }),
-              );
-
-              const safeSdk = await getSafeSdk(
-                reduxClubData.gnosisAddress,
-                walletAddress,
-                networkId,
-              );
-              const ownerAddresses = await safeSdk.getOwners();
-              const ownerAddressesArray = ownerAddresses.map((value) =>
-                Web3.utils.toChecksumAddress(value),
-              );
-              if (ownerAddressesArray.includes(walletAddress)) {
-                dispatch(setAdminUser(true));
-              } else {
-                if (erc721BalanceResponse === "0" && daoAddress) {
-                  dispatch(setMemberUser(false));
-                  router.push("/");
-                } else {
-                  dispatch(setMemberUser(true));
-                }
-              }
-            } catch (error) {
-              console.error(error);
-            }
+        const safeSdk = await getSafeSdk(
+          reduxClubData.gnosisAddress,
+          walletAddress,
+          networkId,
+        );
+        const ownerAddresses = await safeSdk.getOwners();
+        const ownerAddressesArray = ownerAddresses.map((value) =>
+          value.toLowerCase(),
+        );
+        if (ownerAddressesArray.includes(walletAddress.toLowerCase())) {
+          dispatch(setAdminUser(true));
+        } else {
+          if (balance === "0") {
+            dispatch(setMemberUser(false));
+            router.push("/");
+          } else {
+            dispatch(setMemberUser(true));
           }
         }
       }
@@ -235,7 +191,6 @@ const useClubFetch = ({ daoAddress }) => {
     reduxClubData.gnosisAddress,
     reduxClubData.tokenType,
     networkId,
-    router,
   ]);
 
   const checkClubExist = useCallback(async () => {

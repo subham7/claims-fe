@@ -55,7 +55,6 @@ export function updateDynamicAddress(networkId, dispatch) {
             transactionUrl: result?.data[0]?.gnosisTransactionUrl,
             networkHex: result?.data[0]?.networkHex,
             networkId: result?.data[0]?.networkId,
-            networkName: result?.data[0]?.name,
           }),
         );
       }

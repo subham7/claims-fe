@@ -3,7 +3,6 @@ import { createSlice } from "@reduxjs/toolkit";
 export const slice = createSlice({
   name: "club",
   initialState: {
-    daoAddress: null,
     clubData: {
       gnosisAddress: null,
       isGtTransferable: null,
@@ -32,7 +31,6 @@ export const slice = createSlice({
       onlyAllowWhitelist: null,
       deployerAddress: null,
     },
-    clubNetworkId: null,
     factoryData: {
       assetsStoredOnGnosis: null,
       depositCloseTime: null,
@@ -50,9 +48,6 @@ export const slice = createSlice({
     nftsOwnedByDao: null,
   },
   reducers: {
-    addDaoAddress: (state, action) => {
-      state.daoAddress = action.payload;
-    },
     addClubData: (state, action) => {
       state.clubData.gnosisAddress = action.payload.gnosisAddress;
       state.clubData.isGtTransferable = action.payload.isGtTransferable;
@@ -87,9 +82,6 @@ export const slice = createSlice({
         action.payload.onlyAllowWhitelist;
       state.erc721ClubDetails.deployerAddress = action.payload.deployerAddress;
     },
-    setClubNetworkId: (state, action) => {
-      state.clubNetworkId = action.payload;
-    },
     addFactoryData: (state, action) => {
       state.factoryData.assetsStoredOnGnosis =
         action.payload.assetsStoredOnGnosis;
@@ -117,11 +109,9 @@ export const slice = createSlice({
 });
 
 export const {
-  addDaoAddress,
   addClubData,
   addErc20ClubDetails,
   addErc721ClubDetails,
-  setClubNetworkId,
   addFactoryData,
   addNftsOwnedByDao,
 } = slice.actions;

@@ -64,6 +64,7 @@ const CreateProposalDialog = ({
   onClose,
   tokenData,
   nftData,
+  daoAddress,
 }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
@@ -78,10 +79,6 @@ const CreateProposalDialog = ({
 
   const clubData = useSelector((state) => {
     return state.club.clubData;
-  });
-
-  const daoAddress = useSelector((state) => {
-    return state.club.daoAddress;
   });
 
   const [loaderOpen, setLoaderOpen] = useState(false);
