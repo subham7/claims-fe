@@ -2,7 +2,7 @@ import { createTheme } from "@mui/material/styles";
 // import { darkComponents } from "./darkComponent";
 // import { lightComponents } from "./lightComponent";
 
-const theme = (mode) =>
+const theme = () =>
   createTheme({
     palette: {
       primary: {

@@ -50,7 +50,7 @@ function MyApp({ Component, pageProps }) {
     <ApolloProvider client={apolloClient}>
       <WagmiConfig config={wagmiConfig}>
         <Provider store={store}>
-          <ThemeProvider theme={theme("dark")}>
+          <ThemeProvider theme={theme}>
             <AnnouncementProvider>
               <AnnouncementBar />
               <Component {...pageProps} />
