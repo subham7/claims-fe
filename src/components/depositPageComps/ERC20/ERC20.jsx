@@ -151,6 +151,7 @@ const ERC20 = ({
         formik.values.tokenInput = 0;
       } catch (error) {
         console.log(error);
+        setDepositSuccessfull(false);
         setLoading(false);
         showMessageHandler();
       }

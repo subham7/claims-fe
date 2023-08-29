@@ -9,6 +9,8 @@ import { createProposalTxHash, getProposalTxHash } from "../api/proposal";
 import SafeApiKit from "@safe-global/api-kit";
 import { actionContractABI } from "../abis/actionContract";
 import { useAccount } from "wagmi";
+import FactoryContractABI from "../abis/factoryContract.json";
+import { publicClient, walletClient } from "utils/viemConfig";
 
 const useAppContractMethods = () => {
   const { address: walletAddress } = useAccount();
@@ -25,6 +27,10 @@ const useAppContractMethods = () => {
   const contractInstances = useSelector((state) => {
     return state.contractInstances.contractInstances;
   });
+
+  const FACTORY_CONTRACT_ADDRESS = useSelector(
+    (state) => state.gnosis.factoryContractAddress,
+  );
 
   const {
     factoryContractCall,
@@ -67,18 +73,33 @@ const useAppContractMethods = () => {
     numOfTokens,
     merkleProof,
   ) => {
-    return await factoryContractSend?.methods
-      .buyGovernanceTokenERC721DAO(
-        userAddress,
-        daoAddress,
-        tokenUriOfNFT,
-        numOfTokens,
-        merkleProof,
-      )
-      .send({
-        from: walletAddress,
+    try {
+      const { request } = await publicClient.simulateContract({
+        address: FACTORY_CONTRACT_ADDRESS,
+        abi: FactoryContractABI.abi,
+        functionName: "buyGovernanceTokenERC721DAO",
+        args: [
+          userAddress,
+          daoAddress,
+          tokenUriOfNFT,
+          numOfTokens,
+          merkleProof,
+        ],
+        account: walletAddress,
         gasPrice: await getIncreaseGasPrice(),
       });
+
+      const txHash = await walletClient.writeContract(request);
+      await publicClient.waitForTransactionReceipt({
+        hash: txHash,
+        timeout: 120000,
+        confirmations: 6,
+      });
+
+      return true;
+    } catch (error) {
+      throw error;
+    }
   };
 
   const buyGovernanceTokenERC20DAO = async (
@@ -87,17 +108,27 @@ const useAppContractMethods = () => {
     numOfTokens,
     merkleProof,
   ) => {
-    return await factoryContractSend?.methods
-      ?.buyGovernanceTokenERC20DAO(
-        userAddress,
-        daoAddress,
-        numOfTokens,
-        merkleProof,
-      )
-      .send({
-        from: walletAddress,
+    try {
+      const { request } = await publicClient.simulateContract({
+        address: FACTORY_CONTRACT_ADDRESS,
+        abi: FactoryContractABI.abi,
+        functionName: "buyGovernanceTokenERC20DAO",
+        args: [userAddress, daoAddress, numOfTokens, merkleProof],
+        account: walletAddress,
         gasPrice: await getIncreaseGasPrice(),
       });
+
+      const txHash = await walletClient.writeContract(request);
+      await publicClient.waitForTransactionReceipt({
+        hash: txHash,
+        timeout: 120000,
+        confirmations: 6,
+      });
+
+      return true;
+    } catch (error) {
+      throw error;
+    }
   };
 
   const getNftOwnersCount = async () => {
@@ -105,21 +136,51 @@ const useAppContractMethods = () => {
   };
 
   const updateOwnerFee = async (ownerFeePerDeposit, daoAddress) => {
-    return await factoryContractSend.methods
-      .updateOwnerFee(ownerFeePerDeposit, daoAddress)
-      .send({
-        from: walletAddress,
+    try {
+      const { request } = await publicClient.simulateContract({
+        address: FACTORY_CONTRACT_ADDRESS,
+        abi: FactoryContractABI.abi,
+        functionName: "updateOwnerFee",
+        args: [ownerFeePerDeposit, daoAddress],
+        account: walletAddress,
         gasPrice: await getIncreaseGasPrice(),
       });
+
+      const txHash = await walletClient.writeContract(request);
+      await publicClient.waitForTransactionReceipt({
+        hash: txHash,
+        timeout: 120000,
+        confirmations: 6,
+      });
+
+      return true;
+    } catch (error) {
+      throw error;
+    }
   };
 
   const updateDepositTime = async (depositTime, daoAddress) => {
-    return await factoryContractSend.methods
-      .updateDepositTime(depositTime, daoAddress)
-      .send({
-        from: walletAddress,
+    try {
+      const { request } = await publicClient.simulateContract({
+        address: FACTORY_CONTRACT_ADDRESS,
+        abi: FactoryContractABI.abi,
+        functionName: "updateDepositTime",
+        args: [depositTime, daoAddress],
+        account: walletAddress,
         gasPrice: await getIncreaseGasPrice(),
       });
+
+      const txHash = await walletClient.writeContract(request);
+      await publicClient.waitForTransactionReceipt({
+        hash: txHash,
+        timeout: 120000,
+        confirmations: 6,
+      });
+
+      return true;
+    } catch (error) {
+      throw error;
+    }
   };
 
   const setupTokenGating = async (
@@ -130,28 +191,51 @@ const useAppContractMethods = () => {
     value,
     daoAddress,
   ) => {
-    return await factoryContractSend?.methods
-      ?.setupTokenGating(
-        tokenA,
-        tokenB,
-        operator,
-        comparator,
-        value,
-        daoAddress,
-      )
-      .send({
-        from: walletAddress,
+    try {
+      const { request } = await publicClient.simulateContract({
+        address: FACTORY_CONTRACT_ADDRESS,
+        abi: FactoryContractABI.abi,
+        functionName: "setupTokenGating",
+        args: [tokenA, tokenB, operator, comparator, value, daoAddress],
+        account: walletAddress,
         gasPrice: await getIncreaseGasPrice(),
       });
+
+      const txHash = await walletClient.writeContract(request);
+      await publicClient.waitForTransactionReceipt({
+        hash: txHash,
+        timeout: 120000,
+        confirmations: 6,
+      });
+
+      return true;
+    } catch (error) {
+      throw error;
+    }
   };
 
   const disableTokenGating = async (daoAddress) => {
-    return await factoryContractSend?.methods
-      ?.disableTokenGating(daoAddress)
-      .send({
-        from: walletAddress,
+    try {
+      const { request } = await publicClient.simulateContract({
+        address: FACTORY_CONTRACT_ADDRESS,
+        abi: FactoryContractABI.abi,
+        functionName: "disableTokenGating",
+        args: [daoAddress],
+        account: walletAddress,
         gasPrice: await getIncreaseGasPrice(),
       });
+
+      const txHash = await walletClient.writeContract(request);
+      await publicClient.waitForTransactionReceipt({
+        hash: txHash,
+        timeout: 120000,
+        confirmations: 6,
+      });
+
+      return true;
+    } catch (error) {
+      throw error;
+    }
   };
 
   const getTokenGatingDetails = async (daoAddress) => {
@@ -247,33 +331,48 @@ const useAppContractMethods = () => {
     assetsStoredOnGnosis,
     merkleRoot,
   ) => {
-    return await factoryContractSend.methods
-      .createERC721DAO(
-        clubName,
-        clubSymbol,
-        tokenUri,
-        ownerFeePerDepositPercent,
-        depositClose,
-        quorum,
-        threshold,
-        safeThreshold,
-        depositTokenAddress,
-        treasuryAddress,
-        addressList,
-        maxTokensPerUser,
-        distributeAmount,
-        pricePerToken,
-        isNftTransferable,
-        isNftTotalSupplyUnlimited,
-        isGovernanceActive,
-        allowWhiteList,
-        assetsStoredOnGnosis,
-        merkleRoot,
-      )
-      .send({
-        from: walletAddress,
+    try {
+      const { request } = await publicClient.simulateContract({
+        address: FACTORY_CONTRACT_ADDRESS,
+        abi: FactoryContractABI.abi,
+        functionName: "createERC721DAO",
+        args: [
+          clubName,
+          clubSymbol,
+          tokenUri,
+          ownerFeePerDepositPercent,
+          depositClose,
+          quorum,
+          threshold,
+          safeThreshold,
+          depositTokenAddress,
+          treasuryAddress,
+          addressList,
+          maxTokensPerUser,
+          distributeAmount,
+          pricePerToken,
+          isNftTransferable,
+          isNftTotalSupplyUnlimited,
+          isGovernanceActive,
+          allowWhiteList,
+          assetsStoredOnGnosis,
+          merkleRoot,
+        ],
+        account: walletAddress,
         gasPrice: await getIncreaseGasPrice(),
       });
+
+      const txHash = await walletClient.writeContract(request);
+      await publicClient.waitForTransactionReceipt({
+        hash: txHash,
+        timeout: 120000,
+        confirmations: 6,
+      });
+
+      return true;
+    } catch (error) {
+      throw error;
+    }
   };
 
   const createERC20DAO = async (
@@ -297,32 +396,47 @@ const useAppContractMethods = () => {
     assetsStoredOnGnosis,
     merkleRoot,
   ) => {
-    return await factoryContractSend.methods
-      .createERC20DAO(
-        clubName,
-        clubSymbol,
-        distributeAmount,
-        pricePerToken,
-        minDepositPerUser,
-        maxDepositPerUser,
-        ownerFeePerDepositPercent,
-        depositClose,
-        quorum,
-        threshold,
-        safeThreshold,
-        depositTokenAddress,
-        treasuryAddress,
-        addressList,
-        isGovernanceActive,
-        isGtTransferable,
-        allowWhiteList,
-        assetsStoredOnGnosis,
-        merkleRoot,
-      )
-      .send({
-        from: walletAddress,
+    try {
+      const { request } = await publicClient.simulateContract({
+        address: FACTORY_CONTRACT_ADDRESS,
+        abi: FactoryContractABI.abi,
+        functionName: "createERC721DAO",
+        args: [
+          clubName,
+          clubSymbol,
+          distributeAmount,
+          pricePerToken,
+          minDepositPerUser,
+          maxDepositPerUser,
+          ownerFeePerDepositPercent,
+          depositClose,
+          quorum,
+          threshold,
+          safeThreshold,
+          depositTokenAddress,
+          treasuryAddress,
+          addressList,
+          isGovernanceActive,
+          isGtTransferable,
+          allowWhiteList,
+          assetsStoredOnGnosis,
+          merkleRoot,
+        ],
+        account: walletAddress,
         gasPrice: await getIncreaseGasPrice(),
       });
+
+      const txHash = await walletClient.writeContract(request);
+      await publicClient.waitForTransactionReceipt({
+        hash: txHash,
+        timeout: 120000,
+        confirmations: 6,
+      });
+
+      return true;
+    } catch (error) {
+      throw error;
+    }
   };
 
   const updateProposalAndExecution = async (

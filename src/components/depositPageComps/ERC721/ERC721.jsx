@@ -134,6 +134,7 @@ const ERC721 = ({
       showMessageHandler();
     } catch (error) {
       console.log(error);
+      setClaimSuccessfull(false);
       setLoading(false);
       showMessageHandler();
     }
