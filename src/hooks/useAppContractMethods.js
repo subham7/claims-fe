@@ -3,22 +3,15 @@ import Web3 from "web3";
 import { SEAPORT_CONTRACT_ADDRESS } from "../api";
 import { getIncreaseGasPrice } from "../utils/helper";
 import ERC20TokenABI from "../abis/usdcTokenContract.json";
-import ERC721TokenABI from "../abis/nft.json";
 import seaportABI from "../abis/seaport.json";
-import { convertToWeiGovernance } from "../utils/globalFunctions";
 import Safe, { Web3Adapter } from "@safe-global/protocol-kit";
 import { createProposalTxHash, getProposalTxHash } from "../api/proposal";
 import SafeApiKit from "@safe-global/api-kit";
 import { actionContractABI } from "../abis/newArch/actionContract";
-import { useAccount, useNetwork } from "wagmi";
-import { CHAIN_CONFIG } from "utils/constants";
+import { useAccount } from "wagmi";
 
-const useSmartContractMethods = () => {
+const useAppContractMethods = () => {
   const { address: walletAddress } = useAccount();
-  const { chain } = useNetwork();
-  const networkId = "0x" + chain?.id.toString(16);
-
-  const web3Call = new Web3(CHAIN_CONFIG[networkId]?.appRpcUrl);
 
   const isAssetsStoredOnGnosis = useSelector((state) => {
     return state.club.factoryData.assetsStoredOnGnosis;
@@ -39,10 +32,6 @@ const useSmartContractMethods = () => {
     erc20DaoContractCall,
     erc20DaoContractSend,
     erc721DaoContractCall,
-    claimContractCall,
-    claimContractSend,
-    claimFactoryContractCall,
-    claimFactoryContractSend,
   } = contractInstances;
 
   const getDaoDetails = async (daoAddress) => {
@@ -133,13 +122,6 @@ const useSmartContractMethods = () => {
       });
   };
 
-  const addMoreTokens = async (noOfTokens) => {
-    return await claimContractSend.methods?.depositTokens(noOfTokens).send({
-      from: walletAddress,
-      gasPrice: await getIncreaseGasPrice(networkId),
-    });
-  };
-
   const setupTokenGating = async (
     tokenA,
     tokenB,
@@ -176,91 +158,6 @@ const useSmartContractMethods = () => {
     return await factoryContractCall?.methods
       ?.getTokenGatingDetails(daoAddress)
       .call();
-  };
-
-  const getDecimals = async (contractAddress) => {
-    if (contractAddress) {
-      const erc20TokenContractCall = new web3Call.eth.Contract(
-        ERC20TokenABI.abi,
-        Web3.utils.toChecksumAddress(contractAddress),
-      );
-      return await erc20TokenContractCall.methods.decimals().call();
-    }
-  };
-
-  const getERC721Symbol = async (contractAddress) => {
-    if (contractAddress) {
-      const erc721TokenContractCall = new web3Call.eth.Contract(
-        ERC721TokenABI.abi,
-        contractAddress,
-      );
-      return await erc721TokenContractCall?.methods?.symbol().call();
-    }
-  };
-
-  const getBalance = async (contractAddress) => {
-    if (contractAddress) {
-      const erc20TokenContractCall = new web3Call.eth.Contract(
-        ERC20TokenABI.abi,
-        contractAddress,
-      );
-      return await erc20TokenContractCall?.methods
-        ?.balanceOf(walletAddress)
-        .call();
-    }
-  };
-
-  const getTokenSymbol = async (contractAddress) => {
-    if (contractAddress) {
-      const erc20TokenContractCall = new web3Call.eth.Contract(
-        ERC20TokenABI.abi,
-        contractAddress,
-      );
-      return await erc20TokenContractCall?.methods?.symbol().call();
-    }
-  };
-
-  const getTokenName = async (contractAddress) => {
-    if (contractAddress) {
-      const erc20TokenContractCall = new web3Call.eth.Contract(
-        ERC20TokenABI.abi,
-        contractAddress,
-      );
-      return await erc20TokenContractCall?.methods?.name().call();
-    }
-  };
-
-  const approveDeposit = async (
-    contractAddress,
-    approvalContract,
-    amount,
-    usdcConvertDecimal,
-  ) => {
-    if (contractAddress) {
-      const erc20TokenContractSend = new web3Send.eth.Contract(
-        ERC20TokenABI.abi,
-        contractAddress,
-      );
-      const value = convertToWeiGovernance(
-        amount,
-        usdcConvertDecimal,
-      )?.toString();
-
-      const currentAllowance = await erc20TokenContractSend.methods
-        .allowance(walletAddress, approvalContract)
-        .call();
-
-      if (Number(currentAllowance) >= Number(value)) {
-        return;
-      } else {
-        return await erc20TokenContractSend?.methods
-          ?.approve(approvalContract, value)
-          .send({
-            from: walletAddress,
-            gasPrice: await getIncreaseGasPrice(networkId),
-          });
-      }
-    }
   };
 
   const approveDepositWithEncodeABI = (
@@ -322,103 +219,10 @@ const useSmartContractMethods = () => {
     }
   };
 
-  const claimContract = async (
-    claimSettings,
-    totalNoOfWallets,
-    blockNumber,
-    whitelistNetwork,
-  ) => {
-    return await claimFactoryContractSend?.methods
-      ?.deployClaimContract(
-        claimSettings,
-        totalNoOfWallets,
-        blockNumber,
-        whitelistNetwork,
-      )
-      .send({
-        from: walletAddress,
-        gasPrice: await getIncreaseGasPrice(networkId),
-      });
-  };
-
-  const claimSettings = async () => {
-    return await claimContractCall?.methods?.claimSettings().call();
-  };
-
-  const claimBalance = async () => {
-    return await claimContractCall?.methods.claimBalance().call();
-  };
-
-  const toggleClaim = async () => {
-    return await claimContractSend?.methods.toggleClaim().send({
-      from: walletAddress,
-      gasPrice: await getIncreaseGasPrice(networkId),
-    });
-  };
-
-  const changeClaimsStartTimeAndEndTime = async (startTime, endTime) => {
-    return await claimContractSend?.methods
-      .changeStartAndEndTime(startTime, endTime)
-      .send({
-        from: walletAddress,
-        gasPrice: await getIncreaseGasPrice(networkId),
-      });
-  };
-
-  const rollbackTokens = async (amount, rollbackAddress) => {
-    return await claimContractSend?.methods
-      .rollbackTokens(amount, rollbackAddress)
-      .send({
-        from: walletAddress,
-        gasPrice: await getIncreaseGasPrice(networkId),
-      });
-  };
-
-  const modifyStartAndEndTime = async (startTime, endTime) => {
-    return await claimContractSend?.methods
-      .changeStartAndEndTime(startTime, endTime)
-      .send({
-        from: walletAddress,
-        gasPrice: await getIncreaseGasPrice(networkId),
-      });
-  };
-
-  const claim = async (amount, reciever, merkleProof, encodedData) => {
-    return await claimContractSend.methods
-      .claim(amount, reciever, merkleProof, encodedData)
-      .send({
-        from: walletAddress,
-        gasPrice: await getIncreaseGasPrice(networkId),
-      });
-  };
-
-  const hasClaimed = async (walletAddress) => {
-    return await claimContractCall?.methods.hasClaimed(walletAddress).call();
-  };
-
-  const claimAmount = async (walletAddress) => {
-    return await claimContractCall?.methods.claimAmount(walletAddress).call();
-  };
-
-  const checkAmount = async (walletAddress) => {
-    return await claimContractCall?.methods.checkAmount(walletAddress).call();
-  };
-
   const getNftBalance = async (tokenType, contractAddress) => {
     return tokenType === "erc721"
       ? await erc721DaoContractCall.methods.balanceOf(contractAddress).call()
       : await erc20DaoContractCall.methods.balanceOf(contractAddress).call();
-  };
-
-  const encode = (address, amount) => {
-    // Define the types and values for encoding
-    const types = ["address", "uint256"];
-    const values = [address, amount];
-
-    // Encode the address and amount together
-    const encodedData = web3Call.eth.abi.encodeParameters(types, values);
-
-    return encodedData;
   };
 
   const createERC721DAO = async (
@@ -519,310 +323,6 @@ const useSmartContractMethods = () => {
         from: walletAddress,
         gasPrice: await getIncreaseGasPrice(),
       });
-  };
-
-  // const createTransaction = ()=>{
-  //   if (approvalData !== "") {
-  //     if (proposalData.commands[0].executionId === 10) {
-  //       approvalTransaction = {
-  //         to: Web3.utils.toChecksumAddress(daoAddress),
-  //         data: erc20DaoContractSend.methods
-  //           .updateProposalAndExecution(
-  //             //usdc address
-  //             daoAddress,
-  //             approvalData,
-  //           )
-  //           .encodeABI(),
-  //         value: "0",
-  //       };
-  //       transaction = {
-  //         //dao
-  //         to: Web3.utils.toChecksumAddress(daoAddress),
-  //         data: erc20DaoContractSend.methods
-  //           .updateProposalAndExecution(
-  //             //factory
-  //             factoryContractAddress ? factoryContractAddress : daoAddress,
-  //             parameters,
-  //           )
-  //           .encodeABI(),
-  //         value: "0",
-  //       };
-  //     } else {
-  //       if (isAssetsStoredOnGnosis) {
-  //         approvalTransaction = {
-  //           to: Web3.utils.toChecksumAddress(tokenData),
-  //           // data: tokenData.methods.approve(dao / action).encodeABI(), // for send/airdrop -> action & send NFT -> daoAddress
-  //           data: approveDepositWithEncodeABI(
-  //             tokenData,
-  //             airdropContractAddress,
-  //             proposalData.commands[0].executionId === 0
-  //               ? proposalData.commands[0].airDropAmount
-  //               : proposalData.commands[0].customTokenAmounts[0],
-  //           ),
-  //           value: "0",
-  //         };
-  //       } else {
-  //         approvalTransaction = {
-  //           to: Web3.utils.toChecksumAddress(daoAddress),
-  //           data: erc20DaoContractSend.methods
-  //             .updateProposalAndExecution(
-  //               //usdc address
-  //               tokenData,
-  //               approvalData,
-  //             )
-  //             .encodeABI(),
-  //           value: "0",
-  //         };
-  //       }
-
-  //       if (isAssetsStoredOnGnosis) {
-  //         transaction = {
-  //           to: Web3.utils.toChecksumAddress(airdropContractAddress),
-  //           data: airdropTokenMethodEncoded(
-  //             airdropContractAddress,
-  //             tokenData,
-  //             airDropAmountArray,
-  //             membersArray,
-  //           ),
-  //           value: 0,
-  //         };
-  //       } else {
-  //         transaction = {
-  //           to: Web3.utils.toChecksumAddress(daoAddress),
-  //           data: erc20DaoContractSend.methods
-  //             .updateProposalAndExecution(
-  //               //airdrop address
-  //               airdropContractAddress,
-  //               parameters,
-  //             )
-  //             .encodeABI(),
-  //           value: "0",
-  //         };
-  //       }
-  //     }
-  //   } else if (executionId === 6 || executionId === 7) {
-  //     if (executionId === 6) {
-  //       transaction = {
-  //         ownerAddress,
-  //       };
-  //     } else {
-  //       transaction = {
-  //         ownerAddress,
-  //         threshold: safeThreshold,
-  //       };
-  //     }
-  //   } else {
-  //     if (
-  //       isAssetsStoredOnGnosis &&
-  //       proposalData.commands[0].executionId === 5
-  //     ) {
-  //       transaction = {
-  //         //dao
-  //         to: Web3.utils.toChecksumAddress(tokenData),
-  //         data: transferNFTfromSafe(
-  //           tokenData,
-  //           gnosisAddress,
-  //           proposalData.commands[0].customTokenAddresses[0],
-  //           proposalData.commands[0].customNftToken,
-  //         ),
-  //         value: "0",
-  //       };
-  //     } else {
-  //       transaction = {
-  //         //dao
-  //         to: Web3.utils.toChecksumAddress(daoAddress),
-  //         data: erc20DaoContractSend.methods
-  //           .updateProposalAndExecution(
-  //             //factory
-  //             factoryContractAddress ? factoryContractAddress : daoAddress,
-  //             parameters,
-  //           )
-  //           .encodeABI(),
-  //         value: "0",
-  //       };
-  //     }
-  //   }
-  // }
-
-  // Function to handle transaction logic and return the transactions object
-  const getTransactionsObject = (
-    data,
-    approvalData,
-    proposalData,
-    daoAddress,
-    factoryContractAddress,
-    tokenData,
-    isAssetsStoredOnGnosis,
-    airdropContractAddress,
-    executionId,
-    ownerAddress,
-    safeThreshold,
-    gnosisAddress,
-    airDropAmountArray,
-    transactionData = "",
-    membersArray,
-  ) => {
-    let transaction;
-    let approvalTransaction;
-
-    if (approvalData !== "") {
-      if (
-        proposalData.commands[0].executionId === 10 ||
-        proposalData.commands[0].executionId === 11 ||
-        proposalData?.commands[0].executionId === 12
-      ) {
-        approvalTransaction = {
-          to: Web3.utils.toChecksumAddress(daoAddress),
-          data: erc20DaoContractSend.methods
-            .updateProposalAndExecution(
-              //usdc address
-              daoAddress,
-              approvalData,
-            )
-            .encodeABI(),
-          value: "0",
-        };
-        transaction = {
-          //dao
-          to: Web3.utils.toChecksumAddress(daoAddress),
-          data: erc20DaoContractSend.methods
-            .updateProposalAndExecution(
-              //factory
-              factoryContractAddress ? factoryContractAddress : daoAddress,
-              data,
-            )
-            .encodeABI(),
-          value: "0",
-        };
-      } else {
-        if (isAssetsStoredOnGnosis) {
-          approvalTransaction = {
-            to: Web3.utils.toChecksumAddress(tokenData),
-            // data: tokenData.methods.approve(dao / action).encodeABI(), // for send/airdrop -> action & send NFT -> daoAddress
-            data: approveDepositWithEncodeABI(
-              tokenData,
-              airdropContractAddress,
-              proposalData.commands[0].executionId === 0
-                ? proposalData.commands[0].airDropAmount
-                : proposalData.commands[0].customTokenAmounts[0],
-            ),
-            value: "0",
-          };
-        } else {
-          approvalTransaction = {
-            to: Web3.utils.toChecksumAddress(daoAddress),
-            data: erc20DaoContractSend.methods
-              .updateProposalAndExecution(
-                //usdc address
-                tokenData,
-                approvalData,
-              )
-              .encodeABI(),
-            value: "0",
-          };
-        }
-
-        if (isAssetsStoredOnGnosis) {
-          transaction = {
-            to: Web3.utils.toChecksumAddress(airdropContractAddress),
-            data: airdropTokenMethodEncoded(
-              airdropContractAddress,
-              tokenData,
-              airDropAmountArray,
-              membersArray,
-            ),
-            value: 0,
-          };
-        } else {
-          transaction = {
-            to: Web3.utils.toChecksumAddress(daoAddress),
-            data: erc20DaoContractSend.methods
-              .updateProposalAndExecution(
-                //airdrop address
-                airdropContractAddress,
-                data,
-              )
-              .encodeABI(),
-            value: "0",
-          };
-        }
-      }
-    } else if (executionId === 6 || executionId === 7) {
-      if (executionId === 6) {
-        transaction = {
-          ownerAddress,
-        };
-      } else {
-        transaction = {
-          ownerAddress,
-          threshold: safeThreshold,
-        };
-      }
-    } else {
-      if (
-        isAssetsStoredOnGnosis &&
-        proposalData.commands[0].executionId === 5
-      ) {
-        transaction = {
-          //dao
-          to: Web3.utils.toChecksumAddress(tokenData),
-          data: transferNFTfromSafe(
-            tokenData,
-            gnosisAddress,
-            proposalData.commands[0].customTokenAddresses[0],
-            proposalData.commands[0].customNftToken,
-          ),
-          value: "0",
-        };
-      } else if (transactionData) {
-        if (isAssetsStoredOnGnosis) {
-          const seaportContract = new web3Send.eth.Contract(
-            seaportABI,
-            SEAPORT_CONTRACT_ADDRESS,
-          );
-          transaction = {
-            to: Web3.utils.toChecksumAddress(SEAPORT_CONTRACT_ADDRESS),
-            data: seaportContract.methods
-              .fulfillBasicOrder_efficient_6GL6yc(
-                transactionData.fulfillment_data.transaction.input_data
-                  .parameters,
-              )
-              .encodeABI(),
-            value:
-              transactionData.fulfillment_data.transaction.value.toString(),
-          };
-        } else {
-          transaction = {
-            to: Web3.utils.toChecksumAddress(daoAddress),
-            data: erc20DaoContractSend.methods
-              .updateProposalAndExecution(
-                Web3.utils.toChecksumAddress(SEAPORT_CONTRACT_ADDRESS),
-                parameters,
-              )
-              .encodeABI(),
-            value: "10000000000000000",
-          };
-        }
-      } else {
-        transaction = {
-          //dao
-          to: Web3.utils.toChecksumAddress(daoAddress),
-          data: erc20DaoContractSend.methods
-            .updateProposalAndExecution(
-              //factory
-              factoryContractAddress ? factoryContractAddress : daoAddress,
-              data,
-            )
-            .encodeABI(),
-          value: "0",
-        };
-      }
-    }
-
-    return {
-      transaction,
-      approvalTransaction,
-    };
   };
 
   const updateProposalAndExecution = async (
@@ -1166,41 +666,22 @@ const useSmartContractMethods = () => {
     createERC721DAO,
     buyGovernanceTokenERC721DAO,
     buyGovernanceTokenERC20DAO,
-    getDecimals,
     getDaoDetails,
     getERC20DAOdetails,
     getERC721DAOdetails,
     getERC20Balance,
     getERC721Balance,
-    getERC721Symbol,
     getNftBalance,
     getNftOwnersCount,
     getERC20TotalSupply,
-    getBalance,
-    getTokenSymbol,
-    getTokenName,
-    approveDeposit,
     updateOwnerFee,
     updateDepositTime,
     setupTokenGating,
     disableTokenGating,
     getTokenGatingDetails,
-    claimAmount,
-    claim,
-    checkAmount,
-    encode,
-    hasClaimed,
-    rollbackTokens,
-    toggleClaim,
-    claimBalance,
-    claimSettings,
-    claimContract,
-    changeClaimsStartTimeAndEndTime,
     updateProposalAndExecution,
-    addMoreTokens,
-    modifyStartAndEndTime,
     toggleWhitelist,
   };
 };
 
-export default useSmartContractMethods;
+export default useAppContractMethods;

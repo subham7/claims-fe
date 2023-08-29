@@ -36,9 +36,10 @@ import {
 } from "../../utils/globalFunctions";
 import { GiTwoCoins } from "react-icons/gi";
 import { IoColorPalette } from "react-icons/io5";
-import useSmartContractMethods from "../../hooks/useSmartContractMethods";
 import { addNftsOwnedByDao } from "../../redux/reducers/club";
 import { useAccount } from "wagmi";
+import useAppContractMethods from "../../hooks/useAppContractMethods";
+import useCommonContractMethods from "hooks/useCommonContractMehods";
 
 const DashboardIndex = ({ daoAddress }) => {
   const dispatch = useDispatch();
@@ -93,11 +94,12 @@ const DashboardIndex = ({ daoAddress }) => {
 
   const {
     getERC721Balance,
-    getERC721Symbol,
     getNftOwnersCount,
     getERC20Balance,
     getERC20TotalSupply,
-  } = useSmartContractMethods();
+  } = useAppContractMethods();
+
+  const { getERC721Symbol } = useCommonContractMethods();
 
   const fetchClubDetails = useCallback(async () => {
     try {

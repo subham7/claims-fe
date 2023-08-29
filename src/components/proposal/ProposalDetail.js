@@ -47,7 +47,6 @@ import ProposalInfo from "@components/proposalComps/ProposalInfo";
 import CurrentResults from "@components/proposalComps/CurrentResults";
 import ProposalVotes from "@components/proposalComps/ProposalVotes";
 import { getSafeSdk, web3InstanceEthereum } from "utils/helper";
-import useSmartContractMethods from "hooks/useSmartContractMethods";
 import {
   fulfillOrder,
   getNFTsByDaoAddress,
@@ -62,6 +61,7 @@ import {
   signRejectTx,
 } from "utils/proposal";
 import { BsInfoCircleFill } from "react-icons/bs";
+import useAppContractMethods from "hooks/useAppContractMethods";
 
 const useStyles = makeStyles({
   clubAssets: {
@@ -320,7 +320,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
     getERC20TotalSupply,
     getNftOwnersCount,
     updateProposalAndExecution,
-  } = useSmartContractMethods();
+  } = useAppContractMethods();
 
   const getSafeService = useCallback(async () => {
     const web3 = await web3InstanceEthereum();

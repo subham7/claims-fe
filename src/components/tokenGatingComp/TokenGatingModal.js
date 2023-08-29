@@ -4,7 +4,7 @@ import { useFormik } from "formik";
 import React, { useState } from "react";
 import * as yup from "yup";
 import { TokenGatingModalStyles } from "./TokenGatingModalStyles";
-import useSmartContractMethods from "../../hooks/useSmartContractMethods";
+import useCommonContractMethods from "hooks/useCommonContractMehods";
 
 const Backdrop = ({ onClick }) => {
   const classes = TokenGatingModalStyles();
@@ -16,7 +16,7 @@ const TokenGatingModal = ({ closeModal, chooseTokens }) => {
   const [notValid, setNotValid] = useState(false);
   const classes = TokenGatingModalStyles();
 
-  const { getTokenSymbol, getDecimals } = useSmartContractMethods();
+  const { getTokenSymbol, getDecimals } = useCommonContractMethods();
 
   const formik = useFormik({
     initialValues: {

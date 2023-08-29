@@ -8,7 +8,6 @@ import {
   convertFromWeiGovernance,
   getImageURL,
 } from "../../../../utils/globalFunctions";
-import useSmartContractMethods from "../../../../hooks/useSmartContractMethods";
 import dayjs from "dayjs";
 import About from "./About";
 import NFTimg from "./NFTimg";
@@ -17,6 +16,8 @@ import Header from "./Header";
 import { useRouter } from "next/router";
 import { useAccount } from "wagmi";
 import { getUploadedNFT } from "api/assets";
+import useCommonContractMethods from "hooks/useCommonContractMehods";
+import useAppContractMethods from "../../../../hooks/useAppContractMethods";
 
 const ERC721 = ({
   daoAddress,
@@ -48,13 +49,10 @@ const ERC721 = ({
   const remainingDays = day2.diff(day1, "day");
   const remainingTimeInSecs = day2.diff(day1, "seconds");
 
-  const {
-    approveDeposit,
-    buyGovernanceTokenERC721DAO,
-    getDecimals,
-    getTokenSymbol,
-    getBalance,
-  } = useSmartContractMethods();
+  const { approveDeposit, getDecimals, getTokenSymbol, getBalance } =
+    useCommonContractMethods();
+
+  const { buyGovernanceTokenERC721DAO } = useAppContractMethods();
 
   const { address: walletAddress } = useAccount();
 

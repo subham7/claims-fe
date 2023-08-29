@@ -8,7 +8,6 @@ import { getUserProofAndBalance } from "api/claims";
 import Countdown from "react-countdown";
 import { useDispatch, useSelector } from "react-redux";
 import { addClaimEnabled } from "redux/reducers/createClaim";
-import useSmartContractMethods from "hooks/useSmartContractMethods";
 import { ClaimsStyles } from "components/claimsPageComps/ClaimsStyles";
 import { subgraphQuery } from "utils/subgraphs";
 import { QUERY_CLAIM_DETAILS } from "api/graphql/queries";
@@ -16,6 +15,8 @@ import Button from "@components/ui/button/Button";
 import { useAccount, useNetwork } from "wagmi";
 import { CHAIN_CONFIG } from "utils/constants";
 import useClaimSmartContracts from "hooks/useClaimSmartContracts";
+import useCommonContractMethods from "hooks/useCommonContractMehods";
+import useDropsContractMethods from "hooks/useDropsContracMethods";
 
 const Claim = ({ claimAddress }) => {
   const classes = ClaimsStyles();
@@ -52,16 +53,11 @@ const Claim = ({ claimAddress }) => {
     return state.contractInstances.contractInstances;
   });
 
-  const {
-    claimSettings,
-    claimBalance,
-    claimAmount,
-    claim,
-    encode,
-    getBalance,
-    getTokenSymbol,
-    getDecimals,
-  } = useSmartContractMethods();
+  const { encode, getBalance, getTokenSymbol, getDecimals } =
+    useCommonContractMethods();
+
+  const { claimSettings, claimBalance, claimAmount, claim } =
+    useDropsContractMethods();
 
   const dispatch = useDispatch();
 

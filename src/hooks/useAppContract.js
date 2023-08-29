@@ -9,7 +9,7 @@ import { setContractInstances } from "../redux/reducers/contractInstances";
 import { useNetwork } from "wagmi";
 import { CHAIN_CONFIG } from "utils/constants";
 
-const useSmartContract = (daoAddress) => {
+const useAppContract = (daoAddress) => {
   const { chain } = useNetwork();
   const networkId = "0x" + chain?.id.toString(16);
   const dispatch = useDispatch();
@@ -111,4 +111,4 @@ const useSmartContract = (daoAddress) => {
   }, [daoAddress, networkId]);
 };
 
-export default useSmartContract;
+export default useAppContract;
