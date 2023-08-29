@@ -10,7 +10,8 @@ import {
   convertFromWeiGovernance,
   convertToWeiGovernance,
 } from "../../utils/globalFunctions";
-import useSmartContractMethods from "../../hooks/useSmartContractMethods";
+import useAppContractMethods from "../../hooks/useAppContractMethods";
+import useCommonContractMethods from "hooks/useCommonContractMehods";
 
 const TokenGating = ({ daoAddress }) => {
   const [showTokenGatingModal, setShowTokenGatingModal] = useState(false);
@@ -45,10 +46,11 @@ const TokenGating = ({ daoAddress }) => {
   const {
     getTokenGatingDetails,
     setupTokenGating,
-    getTokenSymbol,
-    getDecimals,
+
     disableTokenGating,
-  } = useSmartContractMethods();
+  } = useAppContractMethods();
+
+  const { getTokenSymbol, getDecimals } = useCommonContractMethods();
 
   const addTokensHandler = () => {
     setShowTokenGatingModal(true);

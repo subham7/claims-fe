@@ -1,15 +1,15 @@
 import { useEffect } from "react";
 import ERC721TokenABI from "../abis/nft.json";
-import ERC20DaoABI from "../abis/newArch/erc20Dao.json";
-import ERC721DaoABI from "../abis/newArch/erc721Dao.json";
-import FactoryContractABI from "../abis/newArch/factoryContract.json";
+import ERC20DaoABI from "../abis/erc20Dao.json";
+import ERC721DaoABI from "../abis/erc721Dao.json";
+import FactoryContractABI from "../abis/factoryContract.json";
 import Web3 from "web3";
 import { useDispatch, useSelector } from "react-redux";
 import { setContractInstances } from "../redux/reducers/contractInstances";
 import { useNetwork } from "wagmi";
 import { CHAIN_CONFIG } from "utils/constants";
 
-const useSmartContract = (daoAddress) => {
+const useAppContract = (daoAddress) => {
   const { chain } = useNetwork();
   const networkId = "0x" + chain?.id.toString(16);
   const dispatch = useDispatch();
@@ -111,4 +111,4 @@ const useSmartContract = (daoAddress) => {
   }, [daoAddress, networkId]);
 };
 
-export default useSmartContract;
+export default useAppContract;

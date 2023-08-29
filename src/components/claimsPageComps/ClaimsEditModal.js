@@ -9,7 +9,7 @@ import { makeStyles } from "@mui/styles";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/router";
-import useSmartContractMethods from "../../hooks/useSmartContractMethods";
+import useDropsContractMethods from "hooks/useDropsContracMethods";
 
 const useStyles = makeStyles({
   backdrop: {
@@ -75,7 +75,7 @@ const ClaimsEditModal = ({ onClose, claimAddress, walletAddress }) => {
   );
 
   const { claimSettings, rollbackTokens, claimBalance, toggleClaim } =
-    useSmartContractMethods();
+    useDropsContractMethods();
 
   const claimsToggleHandler = async (e) => {
     setLoading(true);

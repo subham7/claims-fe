@@ -4,34 +4,47 @@
     {
       "inputs": [
         {
+          "internalType": "string",
+          "name": "_param",
+          "type": "string"
+        },
+        {
           "internalType": "address",
-          "name": "_wrappedTokenAddress",
+          "name": "_address",
           "type": "address"
         }
-      ],
-      "stateMutability": "nonpayable",
-      "type": "constructor"
-    },
-    {
-      "inputs": [
-        { "internalType": "string", "name": "_param", "type": "string" },
-        { "internalType": "address", "name": "_address", "type": "address" }
       ],
       "name": "AddressInvalid",
       "type": "error"
     },
     {
       "inputs": [
-        { "internalType": "string", "name": "_param", "type": "string" },
-        { "internalType": "uint256", "name": "_amount", "type": "uint256" }
+        {
+          "internalType": "string",
+          "name": "_param",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_amount",
+          "type": "uint256"
+        }
       ],
       "name": "AmountInvalid",
       "type": "error"
     },
     {
       "inputs": [
-        { "internalType": "uint256", "name": "_length1", "type": "uint256" },
-        { "internalType": "uint256", "name": "_length2", "type": "uint256" }
+        {
+          "internalType": "uint256",
+          "name": "_length1",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_length2",
+          "type": "uint256"
+        }
       ],
       "name": "ArrayLengthMismatch",
       "type": "error"
@@ -52,35 +65,100 @@
       "name": "DepositAmountInvalid",
       "type": "error"
     },
-    { "inputs": [], "name": "DepositClosed", "type": "error" },
-    { "inputs": [], "name": "DepositStarted", "type": "error" },
-    { "inputs": [], "name": "InsufficientFunds", "type": "error" },
-    { "inputs": [], "name": "InvalidData", "type": "error" },
+    {
+      "inputs": [],
+      "name": "DepositClosed",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "DepositStarted",
+      "type": "error"
+    },
     {
       "inputs": [
-        { "internalType": "uint256", "name": "_length", "type": "uint256" }
+        {
+          "internalType": "uint256",
+          "name": "required",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "current",
+          "type": "uint256"
+        }
+      ],
+      "name": "InsufficientAllowance",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "InsufficientBalance",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "InsufficientFunds",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "InvalidData",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_length",
+          "type": "uint256"
+        }
       ],
       "name": "Max4TokensAllowed",
       "type": "error"
     },
-    { "inputs": [], "name": "MaxTokensMinted", "type": "error" },
+    {
+      "inputs": [],
+      "name": "MaxTokensMinted",
+      "type": "error"
+    },
     {
       "inputs": [
-        { "internalType": "address", "name": "_user", "type": "address" }
+        {
+          "internalType": "address",
+          "name": "_user",
+          "type": "address"
+        }
       ],
       "name": "MaxTokensMintedForUser",
       "type": "error"
     },
-    { "inputs": [], "name": "MintingNotOpen", "type": "error" },
+    {
+      "inputs": [],
+      "name": "MintingNotOpen",
+      "type": "error"
+    },
     {
       "inputs": [
-        { "internalType": "address", "name": "_user", "type": "address" }
+        {
+          "internalType": "address",
+          "name": "_user",
+          "type": "address"
+        }
       ],
       "name": "NoAccess",
       "type": "error"
     },
-    { "inputs": [], "name": "NotERC20Template", "type": "error" },
-    { "inputs": [], "name": "NotWhitelisted", "type": "error" },
+    {
+      "inputs": [],
+      "name": "NotERC20Template",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "NotWhitelisted",
+      "type": "error"
+    },
     {
       "inputs": [
         {
@@ -98,42 +176,17 @@
       "type": "error"
     },
     {
-      "anonymous": false,
       "inputs": [
         {
-          "indexed": true,
           "internalType": "address",
-          "name": "previousOwner",
+          "name": "_user",
           "type": "address"
         },
         {
-          "indexed": true,
           "internalType": "address",
-          "name": "newOwner",
+          "name": "_daoAddress",
           "type": "address"
-        }
-      ],
-      "name": "OwnershipTransferred",
-      "type": "event"
-    },
-    {
-      "inputs": [],
-      "name": "ERC20Implementation",
-      "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "ERC721Implementation",
-      "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        { "internalType": "address", "name": "_user", "type": "address" },
-        { "internalType": "address", "name": "_daoAddress", "type": "address" },
+        },
         {
           "internalType": "uint256",
           "name": "_numOfTokensToBuy",
@@ -152,9 +205,21 @@
     },
     {
       "inputs": [
-        { "internalType": "address", "name": "_user", "type": "address" },
-        { "internalType": "address", "name": "_daoAddress", "type": "address" },
-        { "internalType": "string", "name": "_tokenURI", "type": "string" },
+        {
+          "internalType": "address",
+          "name": "_user",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_daoAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "string",
+          "name": "_tokenURI",
+          "type": "string"
+        },
         {
           "internalType": "uint256",
           "name": "_numOfTokensToBuy",
@@ -173,15 +238,31 @@
     },
     {
       "inputs": [
-        { "internalType": "address", "name": "_daoAddress", "type": "address" },
+        {
+          "internalType": "address",
+          "name": "_daoAddress",
+          "type": "address"
+        },
         {
           "internalType": "uint256",
           "name": "_numOfTokensToBuy",
           "type": "uint256"
         },
-        { "internalType": "string", "name": "_tokenURI", "type": "string" },
-        { "internalType": "bool", "name": "isNFTGovernance", "type": "bool" },
-        { "internalType": "bytes32[]", "name": "_proof", "type": "bytes32[]" }
+        {
+          "internalType": "string",
+          "name": "_tokenURI",
+          "type": "string"
+        },
+        {
+          "internalType": "bool",
+          "name": "isNFTGovernance",
+          "type": "bool"
+        },
+        {
+          "internalType": "bytes32[]",
+          "name": "_proof",
+          "type": "bytes32[]"
+        }
       ],
       "name": "buyGovernanceTokenWithNative",
       "outputs": [],
@@ -190,7 +271,11 @@
     },
     {
       "inputs": [
-        { "internalType": "address", "name": "_daoAddress", "type": "address" },
+        {
+          "internalType": "address",
+          "name": "_daoAddress",
+          "type": "address"
+        },
         {
           "internalType": "bytes32",
           "name": "_newMerkleRoot",
@@ -204,8 +289,29 @@
     },
     {
       "inputs": [
-        { "internalType": "string", "name": "_DaoName", "type": "string" },
-        { "internalType": "string", "name": "_DaoSymbol", "type": "string" },
+        {
+          "internalType": "address",
+          "name": "_newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "changeOwner",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_DaoName",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_DaoSymbol",
+          "type": "string"
+        },
         {
           "internalType": "uint256",
           "name": "_distributionAmount",
@@ -247,6 +353,11 @@
           "type": "uint256"
         },
         {
+          "internalType": "uint256",
+          "name": "_safeThreshold",
+          "type": "uint256"
+        },
+        {
           "internalType": "address",
           "name": "_depositTokenAddress",
           "type": "address"
@@ -256,13 +367,21 @@
           "name": "_gnosisAddress",
           "type": "address"
         },
-        { "internalType": "address[]", "name": "_admins", "type": "address[]" },
+        {
+          "internalType": "address[]",
+          "name": "_admins",
+          "type": "address[]"
+        },
         {
           "internalType": "bool",
           "name": "_isGovernanceActive",
           "type": "bool"
         },
-        { "internalType": "bool", "name": "_isTransferable", "type": "bool" },
+        {
+          "internalType": "bool",
+          "name": "_isTransferable",
+          "type": "bool"
+        },
         {
           "internalType": "bool",
           "name": "_onlyAllowWhitelist",
@@ -273,7 +392,11 @@
           "name": "_assetsStoredOnGnosis",
           "type": "bool"
         },
-        { "internalType": "bytes32", "name": "_merkleRoot", "type": "bytes32" }
+        {
+          "internalType": "bytes32",
+          "name": "_merkleRoot",
+          "type": "bytes32"
+        }
       ],
       "name": "createERC20DAO",
       "outputs": [],
@@ -282,8 +405,21 @@
     },
     {
       "inputs": [
-        { "internalType": "string", "name": "_DaoName", "type": "string" },
-        { "internalType": "string", "name": "_DaoSymbol", "type": "string" },
+        {
+          "internalType": "string",
+          "name": "_DaoName",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_DaoSymbol",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_tokenURI",
+          "type": "string"
+        },
         {
           "internalType": "uint256",
           "name": "_ownerFeePerDepositPercent",
@@ -305,6 +441,11 @@
           "type": "uint256"
         },
         {
+          "internalType": "uint256",
+          "name": "_safeThreshold",
+          "type": "uint256"
+        },
+        {
           "internalType": "address",
           "name": "_depositTokenAddress",
           "type": "address"
@@ -314,7 +455,11 @@
           "name": "_gnosisAddress",
           "type": "address"
         },
-        { "internalType": "address[]", "name": "_admins", "type": "address[]" },
+        {
+          "internalType": "address[]",
+          "name": "_admins",
+          "type": "address[]"
+        },
         {
           "internalType": "uint256",
           "name": "_maxTokensPerUser",
@@ -355,7 +500,11 @@
           "name": "_assetsStoredOnGnosis",
           "type": "bool"
         },
-        { "internalType": "bytes32", "name": "_merkleRoot", "type": "bytes32" }
+        {
+          "internalType": "bytes32",
+          "name": "_merkleRoot",
+          "type": "bytes32"
+        }
       ],
       "name": "createERC721DAO",
       "outputs": [],
@@ -378,6 +527,16 @@
           "internalType": "address",
           "name": "emitterImplementationAddress",
           "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_safe",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_singleton",
+          "type": "address"
         }
       ],
       "name": "defineTokenContracts",
@@ -387,7 +546,11 @@
     },
     {
       "inputs": [
-        { "internalType": "address", "name": "_daoAddress", "type": "address" }
+        {
+          "internalType": "address",
+          "name": "_daoAddress",
+          "type": "address"
+        }
       ],
       "name": "disableTokenGating",
       "outputs": [],
@@ -395,15 +558,12 @@
       "type": "function"
     },
     {
-      "inputs": [],
-      "name": "emitterAddress",
-      "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
       "inputs": [
-        { "internalType": "address", "name": "_daoAddress", "type": "address" }
+        {
+          "internalType": "address",
+          "name": "_daoAddress",
+          "type": "address"
+        }
       ],
       "name": "getDAOdetails",
       "outputs": [
@@ -480,14 +640,26 @@
     },
     {
       "inputs": [
-        { "internalType": "address", "name": "_daoAddress", "type": "address" }
+        {
+          "internalType": "address",
+          "name": "_daoAddress",
+          "type": "address"
+        }
       ],
       "name": "getTokenGatingDetails",
       "outputs": [
         {
           "components": [
-            { "internalType": "address", "name": "tokenA", "type": "address" },
-            { "internalType": "address", "name": "tokenB", "type": "address" },
+            {
+              "internalType": "address",
+              "name": "tokenA",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "tokenB",
+              "type": "address"
+            },
             {
               "internalType": "enum Helper.Operator",
               "name": "operator",
@@ -514,22 +686,23 @@
     },
     {
       "inputs": [],
-      "name": "owner",
-      "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "renounceOwnership",
+      "name": "initialize",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
     },
     {
       "inputs": [
-        { "internalType": "address", "name": "_tokenA", "type": "address" },
-        { "internalType": "address", "name": "_tokenB", "type": "address" },
+        {
+          "internalType": "address",
+          "name": "_tokenA",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_tokenB",
+          "type": "address"
+        },
         {
           "internalType": "enum Helper.Operator",
           "name": "_operator",
@@ -540,21 +713,20 @@
           "name": "_comparator",
           "type": "uint8"
         },
-        { "internalType": "uint256[]", "name": "_value", "type": "uint256[]" },
-        { "internalType": "address", "name": "_daoAddress", "type": "address" }
+        {
+          "internalType": "uint256[]",
+          "name": "_value",
+          "type": "uint256[]"
+        },
+        {
+          "internalType": "address",
+          "name": "_daoAddress",
+          "type": "address"
+        }
       ],
       "name": "setupTokenGating",
       "outputs": [],
       "stateMutability": "payable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        { "internalType": "address", "name": "newOwner", "type": "address" }
-      ],
-      "name": "transferOwnership",
-      "outputs": [],
-      "stateMutability": "nonpayable",
       "type": "function"
     },
     {
@@ -564,23 +736,13 @@
           "name": "_depositTime",
           "type": "uint256"
         },
-        { "internalType": "address", "name": "_daoAddress", "type": "address" }
+        {
+          "internalType": "address",
+          "name": "_daoAddress",
+          "type": "address"
+        }
       ],
       "name": "updateDepositTime",
-      "outputs": [],
-      "stateMutability": "payable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "uint256",
-          "name": "_newDistributionAmount",
-          "type": "uint256"
-        },
-        { "internalType": "address", "name": "_daoAddress", "type": "address" }
-      ],
-      "name": "updateDistributionAmount",
       "outputs": [],
       "stateMutability": "payable",
       "type": "function"
@@ -597,7 +759,11 @@
           "name": "_maxDepositPerUser",
           "type": "uint256"
         },
-        { "internalType": "address", "name": "_daoAddress", "type": "address" }
+        {
+          "internalType": "address",
+          "name": "_daoAddress",
+          "type": "address"
+        }
       ],
       "name": "updateMinMaxDeposit",
       "outputs": [],
@@ -611,7 +777,11 @@
           "name": "_ownerFeePerDeposit",
           "type": "uint256"
         },
-        { "internalType": "address", "name": "_daoAddress", "type": "address" }
+        {
+          "internalType": "address",
+          "name": "_daoAddress",
+          "type": "address"
+        }
       ],
       "name": "updateOwnerFee",
       "outputs": [],
@@ -622,21 +792,23 @@
       "inputs": [
         {
           "internalType": "uint256",
+          "name": "_newDistributionAmount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
           "name": "_newPricePerToken",
           "type": "uint256"
         },
-        { "internalType": "address", "name": "_daoAddress", "type": "address" }
+        {
+          "internalType": "address",
+          "name": "_daoAddress",
+          "type": "address"
+        }
       ],
-      "name": "updatePricePerToken",
+      "name": "updateTotalRaiseAmount",
       "outputs": [],
       "stateMutability": "payable",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "wrappedTokenAddress",
-      "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
-      "stateMutability": "view",
       "type": "function"
     }
   ]

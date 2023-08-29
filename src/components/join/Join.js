@@ -4,13 +4,14 @@ import { subgraphQuery } from "utils/subgraphs";
 import { QUERY_ALL_MEMBERS } from "api/graphql/queries";
 import { useSelector } from "react-redux";
 import { Backdrop, CircularProgress } from "@mui/material";
-import useSmartContractMethods from "hooks/useSmartContractMethods";
 import { getClubInfo } from "api/club";
-import ERC721 from "@components/depositPageComps/ERC721/NewArch/ERC721";
-import ERC20 from "@components/depositPageComps/ERC20/NewArch/ERC20";
-import useSmartContract from "hooks/useSmartContract";
+import ERC721 from "@components/depositPageComps/ERC721/ERC721";
+import ERC20 from "@components/depositPageComps/ERC20/ERC20";
+import useAppContract from "hooks/useAppContract";
 import { getWhitelistMerkleProof } from "api/whitelist";
 import { useAccount } from "wagmi";
+import useCommonContractMethods from "hooks/useCommonContractMehods";
+import useAppContractMethods from "hooks/useAppContractMethods";
 
 const Join = ({ daoAddress }) => {
   const [daoDetails, setDaoDetails] = useState({
@@ -56,7 +57,7 @@ const Join = ({ daoAddress }) => {
     return state.club.factoryData;
   });
 
-  useSmartContract(daoAddress);
+  useAppContract(daoAddress);
 
   const contractInstances = useSelector((state) => {
     return state.contractInstances.contractInstances;
@@ -64,13 +65,10 @@ const Join = ({ daoAddress }) => {
 
   const { factoryContractCall } = contractInstances;
 
-  const {
-    getDecimals,
-    getBalance,
-    getTokenGatingDetails,
-    getTokenSymbol,
-    getNftOwnersCount,
-  } = useSmartContractMethods();
+  const { getDecimals, getBalance, getTokenSymbol } =
+    useCommonContractMethods();
+
+  const { getTokenGatingDetails, getNftOwnersCount } = useAppContractMethods();
 
   /**
    * Fetching details for ERC20 comp

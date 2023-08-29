@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import classes from "./ERC721.module.scss";
 import ReactHtmlParser from "react-html-parser";
-import { subgraphQuery } from "../../../../utils/subgraphs";
-import { SUBGRAPH_URL_POLYGON } from "../../../../api";
-import { QUERY_LATEST_MEMBERS } from "../../../../api/graphql/queries";
-import { returnRemainingTime } from "../../../../utils/helper";
+import { subgraphQuery } from "../../../utils/subgraphs";
+import { SUBGRAPH_URL_POLYGON } from "../../../api";
+import { QUERY_LATEST_MEMBERS } from "../../../api/graphql/queries";
+import { returnRemainingTime } from "../../../utils/helper";
 
 const About = ({ bio, daoAddress }) => {
   const [members, setMembers] = useState([]);

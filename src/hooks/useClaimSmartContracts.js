@@ -1,6 +1,6 @@
 import { useEffect } from "react";
-import ClaimContractABI from "../abis/newArch/claimContract.json";
-import ClaimFactoryABI from "../abis/newArch/claimFactory.json";
+import ClaimContractABI from "../abis/claimContract.json";
+import ClaimFactoryABI from "../abis/claimFactory.json";
 import Web3 from "web3";
 import { useDispatch, useSelector } from "react-redux";
 import { setContractInstances } from "../redux/reducers/contractInstances";

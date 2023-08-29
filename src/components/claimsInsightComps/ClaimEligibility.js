@@ -1,5 +1,5 @@
+import useCommonContractMethods from "hooks/useCommonContractMehods";
 import React, { useEffect, useState } from "react";
-import useSmartContractMethods from "../../hooks/useSmartContractMethods";
 import { convertFromWeiGovernance } from "../../utils/globalFunctions";
 import { ClaimsInsightStyles } from "./claimsInsightStyles";
 
@@ -13,7 +13,7 @@ const ClaimEligibility = ({
   });
 
   const classes = ClaimsInsightStyles();
-  const { getDecimals, getTokenSymbol } = useSmartContractMethods();
+  const { getDecimals, getTokenSymbol } = useCommonContractMethods();
 
   useEffect(() => {
     const fetchWhiteListTokenDetails = async () => {

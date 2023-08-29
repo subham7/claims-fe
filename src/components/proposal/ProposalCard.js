@@ -11,8 +11,8 @@ import SvgSurveyIcon from "../../../public/assets/icons/survey_icon.js";
 import React, { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { ProposalCardStyles } from "@components/proposalComps/ProposalCardStyles";
-import useSmartContractMethods from "hooks/useSmartContractMethods";
 import { extractNftAdressAndId } from "utils/helper";
+import useCommonContractMethods from "hooks/useCommonContractMehods.js";
 
 const ProposalCard = ({ proposal, daoAddress }) => {
   const classes = ProposalCardStyles();
@@ -30,7 +30,7 @@ const ProposalCard = ({ proposal, daoAddress }) => {
     return state.club.factoryData;
   });
 
-  const { getDecimals, getTokenSymbol } = useSmartContractMethods();
+  const { getDecimals, getTokenSymbol } = useCommonContractMethods();
 
   const fetchAirDropContractDetails = useCallback(async () => {
     try {

@@ -8,9 +8,10 @@ import TokenGating from "@components/tokenGatingComp/TokenGating";
 import { subgraphQuery } from "utils/subgraphs";
 import { convertFromWeiGovernance } from "utils/globalFunctions";
 import { getAssetsByDaoAddress } from "api/assets";
-import useSmartContractMethods from "hooks/useSmartContractMethods";
 import { getClubInfo } from "api/club";
 import { useAccount } from "wagmi";
+import useAppContractMethods from "hooks/useAppContractMethods";
+import useCommonContractMethods from "hooks/useCommonContractMehods";
 
 const Settings = ({ daoAddress }) => {
   const [daoDetails, setDaoDetails] = useState({
@@ -87,13 +88,12 @@ const Settings = ({ daoAddress }) => {
     getERC721DAOdetails,
     getERC20TotalSupply,
     getERC20Balance,
-    getDecimals,
-    getBalance,
-    getTokenName,
-    getTokenSymbol,
     getERC721Balance,
     getNftOwnersCount,
-  } = useSmartContractMethods();
+  } = useAppContractMethods();
+
+  const { getDecimals, getBalance, getTokenName, getTokenSymbol } =
+    useCommonContractMethods();
 
   const fetchErc20ContractDetails = useCallback(async () => {
     try {

@@ -11,11 +11,12 @@ import { useRouter } from "next/router";
 import { subgraphQuery } from "utils/subgraphs";
 import { QUERY_CLAIM_DETAILS } from "api/graphql/queries";
 import { Alert, Backdrop, CircularProgress } from "@mui/material";
-import useSmartContractMethods from "hooks/useSmartContractMethods";
 import { convertToWeiGovernance } from "utils/globalFunctions";
 import { useNetwork } from "wagmi";
 import { CHAIN_CONFIG } from "utils/constants";
 import useClaimSmartContracts from "hooks/useClaimSmartContracts";
+import useDropsContractMethods from "hooks/useDropsContracMethods";
+import useCommonContractMethods from "hooks/useCommonContractMehods";
 
 const ClaimInsight = ({ claimAddress }) => {
   const [claimsData, setClaimsData] = useState([]);
@@ -36,14 +37,11 @@ const ClaimInsight = ({ claimAddress }) => {
 
   useClaimSmartContracts(claimAddress);
 
-  const {
-    getDecimals,
-    getTokenSymbol,
-    addMoreTokens,
-    rollbackTokens,
-    approveDeposit,
-    modifyStartAndEndTime,
-  } = useSmartContractMethods();
+  const { addMoreTokens, rollbackTokens, modifyStartAndEndTime } =
+    useDropsContractMethods();
+
+  const { getDecimals, getTokenSymbol, approveDeposit } =
+    useCommonContractMethods();
 
   const fetchClaimDetails = async () => {
     setLoading(true);

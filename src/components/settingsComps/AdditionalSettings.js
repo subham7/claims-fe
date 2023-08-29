@@ -17,8 +17,8 @@ import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import { AdditionalSettingsStyles } from "./AdditionalSettingsStyles";
 import DepositOwnerFee from "./modals/DepositOwnerFee";
 import DepositDeadline from "./modals/DepositDeadline";
-import useSmartContractMethods from "../../hooks/useSmartContractMethods";
 import { useSelector } from "react-redux";
+import useAppContractMethods from "../../hooks/useAppContractMethods";
 
 const AdditionalSettings = ({
   tokenType,
@@ -44,7 +44,7 @@ const AdditionalSettings = ({
 
   const startingTimeInNum = new Date(+daoDetails?.depositDeadline * 1000);
 
-  const { updateDepositTime, updateOwnerFee } = useSmartContractMethods();
+  const { updateDepositTime, updateOwnerFee } = useAppContractMethods();
 
   const updateAdminFees = async (ownerFee) => {
     setLoading(true);

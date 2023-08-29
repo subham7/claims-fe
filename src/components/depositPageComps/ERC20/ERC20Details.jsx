@@ -1,6 +1,6 @@
 import React from "react";
 import { BsInfoCircleFill } from "react-icons/bs";
-import { convertFromWeiGovernance } from "../../../../utils/globalFunctions";
+import { convertFromWeiGovernance } from "utils/globalFunctions";
 import classes from "./ERC20.module.scss";
 import { Typography } from "@components/ui";
 

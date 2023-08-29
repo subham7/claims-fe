@@ -1,4 +1,3 @@
-import useSmartContractMethods from "./useSmartContractMethods";
 import { addClubData, addDaoAddress } from "../redux/reducers/club";
 import {
   setCreateDaoAuthorized,
@@ -8,10 +7,11 @@ import {
 } from "../redux/reducers/gnosis";
 import Router from "next/router";
 import { createClubData } from "../api/club";
+import useAppContractMethods from "./useAppContractMethods";
 // import { uploadNFT } from "api/assets";
 
 const useSafe = () => {
-  const { createERC721DAO, createERC20DAO } = useSmartContractMethods();
+  const { createERC721DAO, createERC20DAO } = useAppContractMethods();
 
   const initiateConnection = async (
     params,

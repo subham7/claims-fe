@@ -6,8 +6,8 @@ import {
   convertFromWeiGovernance,
   convertToWeiGovernance,
 } from "../../utils/globalFunctions";
-import useSmartContractMethods from "../../hooks/useSmartContractMethods";
 import { extractNftAdressAndId } from "utils/helper";
+import useCommonContractMethods from "hooks/useCommonContractMehods";
 
 const useStyles = makeStyles({
   listFont2: {
@@ -24,7 +24,7 @@ const useStyles = makeStyles({
 const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
   const classes = useStyles();
 
-  const { getDecimals, getTokenSymbol } = useSmartContractMethods();
+  const { getDecimals, getTokenSymbol } = useCommonContractMethods();
 
   const tokenType = useSelector((state) => {
     return state.club.clubData.tokenType;

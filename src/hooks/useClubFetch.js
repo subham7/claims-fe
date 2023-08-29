@@ -21,15 +21,15 @@ import { fetchConfigById } from "../api/config";
 import Web3 from "web3";
 import { SUBGRAPH_URL_GOERLI, SUBGRAPH_URL_POLYGON } from "../api";
 import { getSafeSdk } from "../utils/helper";
-import useSmartContractMethods from "./useSmartContractMethods";
-import useSmartContract from "./useSmartContract";
+import useAppContract from "./useAppContract";
 import { useAccount, useNetwork } from "wagmi";
 import { useRouter } from "next/router";
+import useAppContractMethods from "./useAppContractMethods";
 
 const useClubFetch = ({ daoAddress }) => {
   const dispatch = useDispatch();
   const { chain } = useNetwork();
-  useSmartContract(daoAddress);
+  useAppContract(daoAddress);
 
   const router = useRouter();
   const { address: walletAddress } = useAccount();
@@ -50,7 +50,7 @@ const useClubFetch = ({ daoAddress }) => {
     getERC20Balance,
     getERC721Balance,
     getERC721DAOdetails,
-  } = useSmartContractMethods();
+  } = useAppContractMethods();
 
   useEffect(() => {
     daoAddress &&

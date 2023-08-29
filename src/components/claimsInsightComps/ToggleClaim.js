@@ -5,8 +5,8 @@ import {
   FormControlLabel,
   Switch,
 } from "@mui/material";
+import useDropsContractMethods from "hooks/useDropsContracMethods";
 import React, { useEffect, useState } from "react";
-import useSmartContractMethods from "../../hooks/useSmartContractMethods";
 import { ClaimsInsightStyles } from "./claimsInsightStyles";
 
 const ToggleClaim = ({ isActive }) => {
@@ -14,7 +14,7 @@ const ToggleClaim = ({ isActive }) => {
   const [isEnabled, setIsEnabled] = useState(true);
   const [showMessage, setShowMessage] = useState(null);
 
-  const { toggleClaim } = useSmartContractMethods();
+  const { toggleClaim } = useDropsContractMethods();
 
   const classes = ClaimsInsightStyles();
 

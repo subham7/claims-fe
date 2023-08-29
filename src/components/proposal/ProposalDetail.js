@@ -31,9 +31,9 @@ import { calculateDays, convertToWeiGovernance } from "utils/globalFunctions";
 import actionIcon from "../../../public/assets/icons/action_icon.svg";
 import surveyIcon from "../../../public/assets/icons/survey_icon.svg";
 import ReactHtmlParser from "react-html-parser";
-import Erc721Dao from "abis/newArch/erc721Dao.json";
-import Erc20Dao from "abis/newArch/erc20Dao.json";
-import FactoryContractABI from "abis/newArch/factoryContract.json";
+import Erc721Dao from "abis/erc721Dao.json";
+import Erc20Dao from "abis/erc20Dao.json";
+import FactoryContractABI from "abis/factoryContract.json";
 import { Interface } from "ethers";
 
 import Web3 from "web3";
@@ -47,7 +47,6 @@ import ProposalInfo from "@components/proposalComps/ProposalInfo";
 import CurrentResults from "@components/proposalComps/CurrentResults";
 import ProposalVotes from "@components/proposalComps/ProposalVotes";
 import { getSafeSdk, web3InstanceEthereum } from "utils/helper";
-import useSmartContractMethods from "hooks/useSmartContractMethods";
 import {
   fulfillOrder,
   getNFTsByDaoAddress,
@@ -62,6 +61,7 @@ import {
   signRejectTx,
 } from "utils/proposal";
 import { BsInfoCircleFill } from "react-icons/bs";
+import useAppContractMethods from "hooks/useAppContractMethods";
 
 const useStyles = makeStyles({
   clubAssets: {
@@ -320,7 +320,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
     getERC20TotalSupply,
     getNftOwnersCount,
     updateProposalAndExecution,
-  } = useSmartContractMethods();
+  } = useAppContractMethods();
 
   const getSafeService = useCallback(async () => {
     const web3 = await web3InstanceEthereum();
