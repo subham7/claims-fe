@@ -36,48 +36,14 @@ const useSafe = () => {
       let value;
       if (clubTokenType === "NFT") {
         value = await createERC721DAO({
-          clubName: params.clubName,
-          clubSymbol: params.clubSymbol,
+          ...params,
           metadataURL,
-          ownerFeePerDepositPercent: params.ownerFeePerDepositPercent,
-          depositClose: params.depositClose,
-          quorum: params.quorum,
-          threshold: params.threshold,
-          safeThreshold: params.safeThreshold,
-          depositTokenAddress: params.depositTokenAddress,
-          treasuryAddress: params.treasuryAddress,
           addressList,
-          maxTokensPerUser: params.maxTokensPerUser,
-          distributeAmount: params.distributeAmount,
-          pricePerToken: params.pricePerToken,
-          isNftTransferable: params.isNftTransferable,
-          isNftTotalSupplyUnlimited: params.isNftTotalSupplyUnlimited,
-          isGovernanceActive: params.isGovernanceActive,
-          allowWhiteList: params.allowWhiteList,
-          assetsStoredOnGnosis: params.storeAssetsOnGnosis,
-          merkleRoot: params.merkleRoot,
         });
       } else {
         value = await createERC20DAO({
-          clubName: params.clubName,
-          clubSymbol: params.clubSymbol,
-          distributeAmount: params.distributeAmount,
-          pricePerToken: params.pricePerToken,
-          minDepositPerUser: params.minDepositPerUser,
-          maxDepositPerUser: params.maxDepositPerUser,
-          ownerFeePerDepositPercent: params.ownerFeePerDepositPercent,
-          depositClose: params.depositClose,
-          quorum: params.quorum,
-          threshold: params.threshold,
-          safeThreshold: params.safeThreshold,
-          depositTokenAddress: params.depositTokenAddress,
-          treasuryAddress: params.treasuryAddress,
+          ...params,
           addressList,
-          isGovernanceActive: params.isGovernanceActive,
-          isGtTransferable: params.isGtTransferable,
-          allowWhiteList: params.allowWhiteList,
-          assetsStoredOnGnosis: params.storeAssetsOnGnosis,
-          merkleRoot: params.merkleRoot,
         });
       }
 

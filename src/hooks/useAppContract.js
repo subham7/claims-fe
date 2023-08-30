@@ -46,7 +46,6 @@ const useAppContract = (daoAddress) => {
 
   const initializeStationContracts = async () => {
     const web3Call = new Web3(CHAIN_CONFIG[networkId]?.appRpcUrl);
-    const web3Send = new Web3(window?.ethereum);
 
     try {
       if (daoAddress) {
@@ -65,20 +64,10 @@ const useAppContract = (daoAddress) => {
           daoAddress,
         );
 
-        const erc20DaoContractSend = web3Send
-          ? new web3Send.eth.Contract(erc20DaoABI, daoAddress)
-          : {};
-
-        const erc721DaoContractSend = web3Send
-          ? new web3Send.eth.Contract(erc721DaoABI, daoAddress)
-          : {};
-
         contractInstances = {
           ...contractInstances,
           erc20DaoContractCall,
-          erc20DaoContractSend,
           erc721DaoContractCall,
-          erc721DaoContractSend,
           erc721TokenContractCall,
         };
       }

@@ -1,7 +1,7 @@
 import { useSelector } from "react-redux";
 import Web3 from "web3";
 import { SEAPORT_CONTRACT_ADDRESS } from "../api";
-import { getIncreaseGasPrice } from "utils/helper";
+import { getIncreaseGasPrice, writeContractFunction } from "utils/helper";
 import { erc20TokenABI } from "abis/usdcTokenContract.js";
 import { seaportABI } from "abis/seaport.js";
 import Safe, { Web3Adapter } from "@safe-global/protocol-kit";
@@ -10,23 +10,18 @@ import SafeApiKit from "@safe-global/api-kit";
 import { actionContractABI } from "abis/actionContract";
 import { useAccount, useNetwork } from "wagmi";
 import { factoryContractABI } from "abis/factoryContract.js";
-import { getPublicClient, getWalletClient } from "utils/viemConfig";
-import { BLOCK_CONFIRMATIONS } from "utils/constants";
+import { CHAIN_CONFIG } from "utils/constants";
 
 const useAppContractMethods = () => {
   const { address: walletAddress } = useAccount();
 
   const { chain } = useNetwork();
   const networkId = "0x" + chain?.id.toString(16);
+  const web3Call = new Web3(CHAIN_CONFIG[networkId]?.appRpcUrl);
 
   const isAssetsStoredOnGnosis = useSelector((state) => {
     return state.club.factoryData.assetsStoredOnGnosis;
   });
-
-  let web3Send;
-  if (typeof window !== "undefined") {
-    web3Send = new Web3(window.ethereum);
-  }
 
   const contractInstances = useSelector((state) => {
     return state.contractInstances.contractInstances;
@@ -36,12 +31,8 @@ const useAppContractMethods = () => {
     (state) => state.gnosis.factoryContractAddress,
   );
 
-  const {
-    factoryContractCall,
-    erc20DaoContractCall,
-    erc20DaoContractSend,
-    erc721DaoContractCall,
-  } = contractInstances;
+  const { factoryContractCall, erc20DaoContractCall, erc721DaoContractCall } =
+    contractInstances;
 
   const getDaoDetails = async (daoAddress) => {
     return await factoryContractCall?.methods?.getDAOdetails(daoAddress).call();
@@ -77,10 +68,7 @@ const useAppContractMethods = () => {
     merkleProof,
   ) => {
     try {
-      const publicClient = getPublicClient(networkId);
-      const walletClient = getWalletClient(networkId);
-
-      const { request } = await publicClient.simulateContract({
+      const res = await writeContractFunction({
         address: FACTORY_CONTRACT_ADDRESS,
         abi: factoryContractABI,
         functionName: "buyGovernanceTokenERC721DAO",
@@ -92,16 +80,9 @@ const useAppContractMethods = () => {
           merkleProof,
         ],
         account: walletAddress,
-        gasPrice: await getIncreaseGasPrice(networkId),
+        networkId,
       });
-
-      const txHash = await walletClient.writeContract(request);
-      await publicClient.waitForTransactionReceipt({
-        hash: txHash,
-        confirmations: BLOCK_CONFIRMATIONS,
-      });
-
-      return true;
+      return res;
     } catch (error) {
       throw error;
     }
@@ -114,25 +95,15 @@ const useAppContractMethods = () => {
     merkleProof,
   ) => {
     try {
-      const publicClient = getPublicClient(networkId);
-      const walletClient = getWalletClient(networkId);
-
-      const { request } = await publicClient.simulateContract({
+      const res = await writeContractFunction({
         address: FACTORY_CONTRACT_ADDRESS,
         abi: factoryContractABI,
         functionName: "buyGovernanceTokenERC20DAO",
         args: [userAddress, daoAddress, numOfTokens, merkleProof],
         account: walletAddress,
-        gasPrice: await getIncreaseGasPrice(networkId),
+        networkId,
       });
-
-      const txHash = await walletClient.writeContract(request);
-      await publicClient.waitForTransactionReceipt({
-        hash: txHash,
-        confirmations: BLOCK_CONFIRMATIONS,
-      });
-
-      return true;
+      return res;
     } catch (error) {
       throw error;
     }
@@ -144,25 +115,15 @@ const useAppContractMethods = () => {
 
   const updateOwnerFee = async (ownerFeePerDeposit, daoAddress) => {
     try {
-      const publicClient = getPublicClient(networkId);
-      const walletClient = getWalletClient(networkId);
-
-      const { request } = await publicClient.simulateContract({
+      const res = await writeContractFunction({
         address: FACTORY_CONTRACT_ADDRESS,
         abi: factoryContractABI,
         functionName: "updateOwnerFee",
         args: [ownerFeePerDeposit, daoAddress],
         account: walletAddress,
-        gasPrice: await getIncreaseGasPrice(networkId),
+        networkId,
       });
-
-      const txHash = await walletClient.writeContract(request);
-      await publicClient.waitForTransactionReceipt({
-        hash: txHash,
-        confirmations: BLOCK_CONFIRMATIONS,
-      });
-
-      return true;
+      return res;
     } catch (error) {
       throw error;
     }
@@ -170,25 +131,15 @@ const useAppContractMethods = () => {
 
   const updateDepositTime = async (depositTime, daoAddress) => {
     try {
-      const publicClient = getPublicClient(networkId);
-      const walletClient = getWalletClient(networkId);
-
-      const { request } = await publicClient.simulateContract({
+      const res = await writeContractFunction({
         address: FACTORY_CONTRACT_ADDRESS,
         abi: factoryContractABI,
         functionName: "updateDepositTime",
         args: [depositTime, daoAddress],
         account: walletAddress,
-        gasPrice: await getIncreaseGasPrice(networkId),
+        networkId,
       });
-
-      const txHash = await walletClient.writeContract(request);
-      await publicClient.waitForTransactionReceipt({
-        hash: txHash,
-        confirmations: BLOCK_CONFIRMATIONS,
-      });
-
-      return true;
+      return res;
     } catch (error) {
       throw error;
     }
@@ -203,25 +154,15 @@ const useAppContractMethods = () => {
     daoAddress,
   ) => {
     try {
-      const publicClient = getPublicClient(networkId);
-      const walletClient = getWalletClient(networkId);
-
-      const { request } = await publicClient.simulateContract({
+      const res = await writeContractFunction({
         address: FACTORY_CONTRACT_ADDRESS,
         abi: factoryContractABI,
         functionName: "setupTokenGating",
         args: [tokenA, tokenB, operator, comparator, value, daoAddress],
         account: walletAddress,
-        gasPrice: await getIncreaseGasPrice(networkId),
+        networkId,
       });
-
-      const txHash = await walletClient.writeContract(request);
-      await publicClient.waitForTransactionReceipt({
-        hash: txHash,
-        confirmations: BLOCK_CONFIRMATIONS,
-      });
-
-      return true;
+      return res;
     } catch (error) {
       throw error;
     }
@@ -229,25 +170,15 @@ const useAppContractMethods = () => {
 
   const disableTokenGating = async (daoAddress) => {
     try {
-      const publicClient = getPublicClient(networkId);
-      const walletClient = getWalletClient(networkId);
-
-      const { request } = await publicClient.simulateContract({
+      const res = await writeContractFunction({
         address: FACTORY_CONTRACT_ADDRESS,
         abi: factoryContractABI,
         functionName: "disableTokenGating",
         args: [daoAddress],
         account: walletAddress,
-        gasPrice: await getIncreaseGasPrice(networkId),
+        networkId,
       });
-
-      const txHash = await walletClient.writeContract(request);
-      await publicClient.waitForTransactionReceipt({
-        hash: txHash,
-        confirmations: BLOCK_CONFIRMATIONS,
-      });
-
-      return true;
+      return res;
     } catch (error) {
       throw error;
     }
@@ -265,12 +196,12 @@ const useAppContractMethods = () => {
     amount,
   ) => {
     if (contractAddress) {
-      const erc20TokenContractSend = new web3Send.eth.Contract(
+      const erc20TokenContractCall = new web3Call.eth.Contract(
         erc20TokenABI,
         contractAddress,
       );
 
-      return erc20TokenContractSend?.methods
+      return erc20TokenContractCall?.methods
         ?.approve(approvalContract, amount)
         .encodeABI();
     }
@@ -283,19 +214,19 @@ const useAppContractMethods = () => {
     tokenId,
   ) => {
     if (tokenAddress) {
-      const erc20TokenContractSend = new web3Send.eth.Contract(
+      const erc20TokenContractCall = new web3Call.eth.Contract(
         erc20TokenABI,
         tokenAddress,
       );
 
-      return erc20TokenContractSend?.methods
+      return erc20TokenContractCall?.methods
         ?.transferFrom(gnosisAddress, receiverAddress, tokenId)
         .encodeABI();
     }
   };
 
   const toggleWhitelist = async () => {
-    return await erc20DaoContractSend?.methods
+    return await erc20DaoContractCall?.methods
       ?.toggleOnlyAllowWhitelist()
       .encodeABI();
   };
@@ -307,7 +238,7 @@ const useAppContractMethods = () => {
     members,
   ) => {
     if (actionContractAddress) {
-      const actionContractSend = new web3Send.eth.Contract(
+      const actionContractSend = new web3Call.eth.Contract(
         actionContractABI,
         actionContractAddress,
       );
@@ -347,10 +278,7 @@ const useAppContractMethods = () => {
     merkleRoot,
   }) => {
     try {
-      const publicClient = getPublicClient(networkId);
-      const walletClient = getWalletClient(networkId);
-
-      const { request } = await publicClient.simulateContract({
+      const res = await writeContractFunction({
         address: FACTORY_CONTRACT_ADDRESS,
         abi: factoryContractABI,
         functionName: "createERC721DAO",
@@ -377,16 +305,9 @@ const useAppContractMethods = () => {
           merkleRoot,
         ],
         account: walletAddress,
-        gasPrice: await getIncreaseGasPrice(networkId),
+        networkId,
       });
-
-      const txHash = await walletClient.writeContract(request);
-      const txReciept = await publicClient.waitForTransactionReceipt({
-        hash: txHash,
-        confirmations: BLOCK_CONFIRMATIONS,
-      });
-
-      return txReciept;
+      return res;
     } catch (error) {
       throw error;
     }
@@ -414,10 +335,7 @@ const useAppContractMethods = () => {
     merkleRoot,
   }) => {
     try {
-      const publicClient = getPublicClient(networkId);
-      const walletClient = getWalletClient(networkId);
-
-      const { request } = await publicClient.simulateContract({
+      const res = await writeContractFunction({
         address: FACTORY_CONTRACT_ADDRESS,
         abi: factoryContractABI,
         functionName: "createERC20DAO",
@@ -443,16 +361,9 @@ const useAppContractMethods = () => {
           merkleRoot,
         ],
         account: walletAddress,
-        gasPrice: await getIncreaseGasPrice(networkId),
+        networkId,
       });
-
-      const txHash = await walletClient.writeContract(request);
-      const txReciept = await publicClient.waitForTransactionReceipt({
-        hash: txHash,
-        confirmations: BLOCK_CONFIRMATIONS,
-      });
-
-      return txReciept;
+      return res;
     } catch (error) {
       throw error;
     }
@@ -506,7 +417,7 @@ const useAppContractMethods = () => {
       ) {
         approvalTransaction = {
           to: Web3.utils.toChecksumAddress(daoAddress),
-          data: erc20DaoContractSend.methods
+          data: erc20DaoContractCall.methods
             .updateProposalAndExecution(
               //usdc address
               daoAddress,
@@ -518,7 +429,7 @@ const useAppContractMethods = () => {
         transaction = {
           //dao
           to: Web3.utils.toChecksumAddress(daoAddress),
-          data: erc20DaoContractSend.methods
+          data: erc20DaoContractCall.methods
             .updateProposalAndExecution(
               //factory
               factoryContractAddress ? factoryContractAddress : daoAddress,
@@ -544,7 +455,7 @@ const useAppContractMethods = () => {
         } else {
           approvalTransaction = {
             to: Web3.utils.toChecksumAddress(daoAddress),
-            data: erc20DaoContractSend.methods
+            data: erc20DaoContractCall.methods
               .updateProposalAndExecution(
                 //usdc address
                 tokenData,
@@ -569,7 +480,7 @@ const useAppContractMethods = () => {
         } else {
           transaction = {
             to: Web3.utils.toChecksumAddress(daoAddress),
-            data: erc20DaoContractSend.methods
+            data: erc20DaoContractCall.methods
               .updateProposalAndExecution(
                 //airdrop address
                 airdropContractAddress,
@@ -609,7 +520,7 @@ const useAppContractMethods = () => {
         };
       } else if (transactionData) {
         if (isAssetsStoredOnGnosis) {
-          const seaportContract = new web3Send.eth.Contract(
+          const seaportContract = new web3Call.eth.Contract(
             seaportABI,
             SEAPORT_CONTRACT_ADDRESS,
           );
@@ -627,7 +538,7 @@ const useAppContractMethods = () => {
         } else {
           transaction = {
             to: Web3.utils.toChecksumAddress(daoAddress),
-            data: erc20DaoContractSend.methods
+            data: erc20DaoContractCall.methods
               .updateProposalAndExecution(
                 Web3.utils.toChecksumAddress(SEAPORT_CONTRACT_ADDRESS),
                 parameters,
@@ -640,7 +551,7 @@ const useAppContractMethods = () => {
         transaction = {
           //dao
           to: Web3.utils.toChecksumAddress(daoAddress),
-          data: erc20DaoContractSend.methods
+          data: erc20DaoContractCall.methods
             .updateProposalAndExecution(
               //factory
               factoryContractAddress ? factoryContractAddress : daoAddress,

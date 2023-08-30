@@ -1,11 +1,9 @@
 import Web3 from "web3";
-import { getIncreaseGasPrice } from "utils/helper";
 import { erc20TokenABI } from "abis/usdcTokenContract.js";
 import { erc721TokenABI } from "abis/nft.js";
 import { convertToWeiGovernance } from "utils/globalFunctions";
 import { useAccount, useNetwork } from "wagmi";
-import { BLOCK_CONFIRMATIONS, CHAIN_CONFIG } from "utils/constants";
-import { getPublicClient, getWalletClient } from "utils/viemConfig";
+import { CHAIN_CONFIG } from "utils/constants";
 
 const useCommonContractMethods = () => {
   const { address: walletAddress } = useAccount();
@@ -78,7 +76,7 @@ const useCommonContractMethods = () => {
     usdcConvertDecimal,
   ) => {
     if (contractAddress) {
-      const erc20TokenContractSend = new web3Send.eth.Contract(
+      const erc20TokenContractCall = new web3Call.eth.Contract(
         erc20TokenABI,
         contractAddress,
       );
@@ -87,7 +85,7 @@ const useCommonContractMethods = () => {
         usdcConvertDecimal,
       )?.toString();
 
-      const currentAllowance = await erc20TokenContractSend.methods
+      const currentAllowance = await erc20TokenContractCall.methods
         .allowance(walletAddress, approvalContract)
         .call();
 
@@ -95,26 +93,15 @@ const useCommonContractMethods = () => {
         return;
       } else {
         try {
-          debugger;
-          const publicClient = getPublicClient(networkId);
-          const walletClient = getWalletClient(networkId);
-
-          const { request } = await publicClient.simulateContract({
+          const res = await writeContractFunction({
             address: contractAddress,
             abi: erc20TokenABI,
             functionName: "approve",
             args: [approvalContract, value],
             account: walletAddress,
-            gasPrice: await getIncreaseGasPrice(networkId),
+            networkId,
           });
-
-          const txHash = await walletClient.writeContract(request);
-          await publicClient.waitForTransactionReceipt({
-            hash: txHash,
-            confirmations: BLOCK_CONFIRMATIONS,
-          });
-
-          return true;
+          return res;
         } catch (error) {
           throw error;
         }
