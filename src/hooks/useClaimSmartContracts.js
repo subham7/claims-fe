@@ -21,7 +21,6 @@ const useClaimSmartContracts = (claimAddress) => {
 
   const initializeClaimFactoryContracts = async () => {
     const web3Call = new Web3(CHAIN_CONFIG[networkId]?.appRpcUrl);
-    const web3Send = new Web3(window?.ethereum);
 
     try {
       if (claimFactoryAddress) {
@@ -30,14 +29,9 @@ const useClaimSmartContracts = (claimAddress) => {
           claimFactoryAddress,
         );
 
-        const claimFactoryContractSend = web3Send
-          ? new web3Send.eth.Contract(ClaimFactoryABI.abi, claimFactoryAddress)
-          : {};
-
         contractInstances = {
           ...contractInstances,
           claimFactoryContractCall,
-          claimFactoryContractSend,
         };
 
         dispatch(setContractInstances(contractInstances));
@@ -54,12 +48,9 @@ const useClaimSmartContracts = (claimAddress) => {
         ClaimContractABI.abi,
         claimAddress,
       );
-      const claimContractSend = web3Send
-        ? new web3Send.eth.Contract(ClaimContractABI.abi, claimAddress)
-        : {};
+
       contractInstances = {
         ...contractInstances,
-        claimContractSend,
         claimContractCall,
       };
       dispatch(setContractInstances(contractInstances));

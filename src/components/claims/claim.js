@@ -246,6 +246,7 @@ const Claim = ({ claimAddress }) => {
         const encodedLeaf = encode(walletAddress, amount);
 
         await claim(
+          claimAddress,
           convertToWeiGovernance(claimInput, decimalOfToken).toString(),
           walletAddress,
           proof,
@@ -262,6 +263,7 @@ const Claim = ({ claimAddress }) => {
         setMessage("Successfully Claimed!");
       } else {
         await claim(
+          claimAddress,
           convertToWeiGovernance(claimInput, decimalOfToken).toString(),
           walletAddress,
           [],

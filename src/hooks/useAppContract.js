@@ -24,7 +24,6 @@ const useAppContract = (daoAddress) => {
 
   const initializeFactoryContracts = async () => {
     const web3Call = new Web3(CHAIN_CONFIG[networkId]?.appRpcUrl);
-    const web3Send = new Web3(window?.ethereum);
 
     try {
       if (FACTORY_CONTRACT_ADDRESS) {
@@ -33,17 +32,9 @@ const useAppContract = (daoAddress) => {
           FACTORY_CONTRACT_ADDRESS,
         );
 
-        const factoryContractSend = web3Send
-          ? new web3Send.eth.Contract(
-              FactoryContractABI.abi,
-              FACTORY_CONTRACT_ADDRESS,
-            )
-          : {};
-
         contractInstances = {
           ...contractInstances,
           factoryContractCall,
-          factoryContractSend,
         };
       }
 

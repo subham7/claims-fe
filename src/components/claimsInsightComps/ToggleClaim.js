@@ -9,7 +9,7 @@ import useDropsContractMethods from "hooks/useDropsContracMethods";
 import React, { useEffect, useState } from "react";
 import { ClaimsInsightStyles } from "./claimsInsightStyles";
 
-const ToggleClaim = ({ isActive }) => {
+const ToggleClaim = ({ claimAddress, isActive }) => {
   const [loading, setLoading] = useState(false);
   const [isEnabled, setIsEnabled] = useState(true);
   const [showMessage, setShowMessage] = useState(null);
@@ -22,7 +22,7 @@ const ToggleClaim = ({ isActive }) => {
     setLoading(true);
 
     try {
-      await toggleClaim();
+      await toggleClaim(claimAddress);
       setLoading(false);
       setIsEnabled(!isEnabled);
       showMessageHandler();

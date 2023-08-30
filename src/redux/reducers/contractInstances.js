@@ -5,7 +5,6 @@ export const slice = createSlice({
   initialState: {
     contractInstances: {
       factoryContractCall: null,
-      factoryContractSend: null,
       erc20TokenContractCall: null,
       erc20TokenContractSend: null,
       erc20DaoContractCall: null,
@@ -14,17 +13,13 @@ export const slice = createSlice({
       erc721DaoContractCall: null,
       erc721DaoContractSend: null,
       claimContractCall: null,
-      claimContractSend: null,
       claimFactoryContractCall: null,
-      claimFactoryContractSend: null,
     },
   },
   reducers: {
     setContractInstances: (state, action) => {
       state.contractInstances.factoryContractCall =
         action.payload.factoryContractCall;
-      state.contractInstances.factoryContractSend =
-        action.payload.factoryContractSend;
       state.contractInstances.erc20TokenContractCall =
         action.payload.erc20TokenContractCall;
       state.contractInstances.erc20TokenContractSend =
@@ -39,12 +34,8 @@ export const slice = createSlice({
         action.payload.erc721DaoContractSend;
       state.contractInstances.claimContractCall =
         action.payload.claimContractCall;
-      state.contractInstances.claimContractSend =
-        action.payload.claimContractSend;
       state.contractInstances.claimFactoryContractCall =
         action.payload.claimFactoryContractCall;
-      state.contractInstances.claimFactoryContractSend =
-        action.payload.claimFactoryContractSend;
       state.contractInstances.erc721TokenContractCall =
         action.payload.erc721TokenContractCall;
     },

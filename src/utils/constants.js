@@ -144,3 +144,5 @@ export const lineaMainnetWalletConnect = {
     },
   },
 };
+
+export const BLOCK_CONFIRMATIONS = 6;

@@ -11,6 +11,7 @@ import { actionContractABI } from "../abis/actionContract";
 import { useAccount } from "wagmi";
 import FactoryContractABI from "../abis/factoryContract.json";
 import { publicClient, walletClient } from "utils/viemConfig";
+import { BLOCK_CONFIRMATIONS } from "utils/constants";
 
 const useAppContractMethods = () => {
   const { address: walletAddress } = useAccount();
@@ -34,7 +35,6 @@ const useAppContractMethods = () => {
 
   const {
     factoryContractCall,
-    factoryContractSend,
     erc20DaoContractCall,
     erc20DaoContractSend,
     erc721DaoContractCall,
@@ -92,8 +92,7 @@ const useAppContractMethods = () => {
       const txHash = await walletClient.writeContract(request);
       await publicClient.waitForTransactionReceipt({
         hash: txHash,
-        timeout: 120000,
-        confirmations: 6,
+        confirmations: BLOCK_CONFIRMATIONS,
       });
 
       return true;
@@ -122,7 +121,7 @@ const useAppContractMethods = () => {
       await publicClient.waitForTransactionReceipt({
         hash: txHash,
         timeout: 120000,
-        confirmations: 6,
+        confirmations: BLOCK_CONFIRMATIONS,
       });
 
       return true;
@@ -150,7 +149,7 @@ const useAppContractMethods = () => {
       await publicClient.waitForTransactionReceipt({
         hash: txHash,
         timeout: 120000,
-        confirmations: 6,
+        confirmations: BLOCK_CONFIRMATIONS,
       });
 
       return true;
@@ -174,7 +173,7 @@ const useAppContractMethods = () => {
       await publicClient.waitForTransactionReceipt({
         hash: txHash,
         timeout: 120000,
-        confirmations: 6,
+        confirmations: BLOCK_CONFIRMATIONS,
       });
 
       return true;
@@ -205,7 +204,7 @@ const useAppContractMethods = () => {
       await publicClient.waitForTransactionReceipt({
         hash: txHash,
         timeout: 120000,
-        confirmations: 6,
+        confirmations: BLOCK_CONFIRMATIONS,
       });
 
       return true;
@@ -229,7 +228,7 @@ const useAppContractMethods = () => {
       await publicClient.waitForTransactionReceipt({
         hash: txHash,
         timeout: 120000,
-        confirmations: 6,
+        confirmations: BLOCK_CONFIRMATIONS,
       });
 
       return true;
@@ -366,7 +365,7 @@ const useAppContractMethods = () => {
       await publicClient.waitForTransactionReceipt({
         hash: txHash,
         timeout: 120000,
-        confirmations: 6,
+        confirmations: BLOCK_CONFIRMATIONS,
       });
 
       return true;
@@ -430,7 +429,7 @@ const useAppContractMethods = () => {
       await publicClient.waitForTransactionReceipt({
         hash: txHash,
         timeout: 120000,
-        confirmations: 6,
+        confirmations: BLOCK_CONFIRMATIONS,
       });
 
       return true;

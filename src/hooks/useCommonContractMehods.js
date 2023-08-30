@@ -4,7 +4,8 @@ import ERC20TokenABI from "../abis/usdcTokenContract.json";
 import ERC721TokenABI from "../abis/nft.json";
 import { convertToWeiGovernance } from "../utils/globalFunctions";
 import { useAccount, useNetwork } from "wagmi";
-import { CHAIN_CONFIG } from "utils/constants";
+import { BLOCK_CONFIRMATIONS, CHAIN_CONFIG } from "utils/constants";
+import { publicClient, walletClient } from "utils/viemConfig";
 
 const useCommonContractMethods = () => {
   const { address: walletAddress } = useAccount();
@@ -93,12 +94,26 @@ const useCommonContractMethods = () => {
       if (Number(currentAllowance) >= Number(value)) {
         return;
       } else {
-        return await erc20TokenContractSend?.methods
-          ?.approve(approvalContract, value)
-          .send({
-            from: walletAddress,
-            gasPrice: await getIncreaseGasPrice(networkId),
+        try {
+          const { request } = await publicClient.simulateContract({
+            address: contractAddress,
+            abi: ERC20TokenABI.abi,
+            functionName: "approve",
+            args: [approvalContract, value],
+            account: walletAddress,
+            gasPrice: await getIncreaseGasPrice(),
           });
+
+          const txHash = await walletClient.writeContract(request);
+          await publicClient.waitForTransactionReceipt({
+            hash: txHash,
+            confirmations: BLOCK_CONFIRMATIONS,
+          });
+
+          return true;
+        } catch (error) {
+          throw error;
+        }
       }
     }
   };

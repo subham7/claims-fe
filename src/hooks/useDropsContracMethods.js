@@ -1,6 +1,10 @@
 import { useSelector } from "react-redux";
 import { getIncreaseGasPrice } from "utils/helper";
+import { publicClient, walletClient } from "utils/viemConfig";
 import { useAccount, useNetwork } from "wagmi";
+import ClaimContractABI from "abis/claimContract.json";
+import ClaimFactoryABI from "abis/claimFactory.json";
+import { BLOCK_CONFIRMATIONS, CHAIN_CONFIG } from "utils/constants";
 
 const useDropsContractMethods = () => {
   const { address: walletAddress } = useAccount();
@@ -11,14 +15,31 @@ const useDropsContractMethods = () => {
     return state.contractInstances.contractInstances;
   });
 
-  const { claimContractCall, claimContractSend, claimFactoryContractSend } =
-    contractInstances;
+  const claimFactoryAddress = CHAIN_CONFIG[networkId].claimFactoryAddress;
 
-  const addMoreTokens = async (noOfTokens) => {
-    return await claimContractSend.methods?.depositTokens(noOfTokens).send({
-      from: walletAddress,
-      gasPrice: await getIncreaseGasPrice(networkId),
-    });
+  const { claimContractCall } = contractInstances;
+
+  const addMoreTokens = async (claimAddress, noOfTokens) => {
+    try {
+      const { request } = await publicClient.simulateContract({
+        address: claimAddress,
+        abi: ClaimContractABI.abi,
+        functionName: "depositTokens",
+        args: [noOfTokens],
+        account: walletAddress,
+        gasPrice: await getIncreaseGasPrice(),
+      });
+
+      const txHash = await walletClient.writeContract(request);
+      await publicClient.waitForTransactionReceipt({
+        hash: txHash,
+        confirmations: BLOCK_CONFIRMATIONS,
+      });
+
+      return true;
+    } catch (error) {
+      throw error;
+    }
   };
 
   const claimContract = async (
@@ -27,17 +48,26 @@ const useDropsContractMethods = () => {
     blockNumber,
     whitelistNetwork,
   ) => {
-    return await claimFactoryContractSend?.methods
-      ?.deployClaimContract(
-        claimSettings,
-        totalNoOfWallets,
-        blockNumber,
-        whitelistNetwork,
-      )
-      .send({
-        from: walletAddress,
-        gasPrice: await getIncreaseGasPrice(networkId),
+    try {
+      const { request } = await publicClient.simulateContract({
+        address: claimFactoryAddress,
+        abi: ClaimFactoryABI.abi,
+        functionName: "deployClaimContract",
+        args: [claimSettings, totalNoOfWallets, blockNumber, whitelistNetwork],
+        account: walletAddress,
+        gasPrice: await getIncreaseGasPrice(),
       });
+
+      const txHash = await walletClient.writeContract(request);
+      await publicClient.waitForTransactionReceipt({
+        hash: txHash,
+        confirmations: BLOCK_CONFIRMATIONS,
+      });
+
+      return true;
+    } catch (error) {
+      throw error;
+    }
   };
 
   const claimSettings = async () => {
@@ -48,47 +78,101 @@ const useDropsContractMethods = () => {
     return await claimContractCall?.methods.claimBalance().call();
   };
 
-  const toggleClaim = async () => {
-    return await claimContractSend?.methods.toggleClaim().send({
-      from: walletAddress,
-      gasPrice: await getIncreaseGasPrice(networkId),
-    });
+  const toggleClaim = async (claimAddress) => {
+    try {
+      const { request } = await publicClient.simulateContract({
+        address: claimAddress,
+        abi: ClaimContractABI.abi,
+        functionName: "toggleClaim",
+        account: walletAddress,
+        gasPrice: await getIncreaseGasPrice(),
+      });
+
+      const txHash = await walletClient.writeContract(request);
+      await publicClient.waitForTransactionReceipt({
+        hash: txHash,
+        confirmations: BLOCK_CONFIRMATIONS,
+      });
+
+      return true;
+    } catch (error) {
+      throw error;
+    }
   };
 
-  const changeClaimsStartTimeAndEndTime = async (startTime, endTime) => {
-    return await claimContractSend?.methods
-      .changeStartAndEndTime(startTime, endTime)
-      .send({
-        from: walletAddress,
-        gasPrice: await getIncreaseGasPrice(networkId),
+  const rollbackTokens = async (claimAddress, amount, rollbackAddress) => {
+    try {
+      const { request } = await publicClient.simulateContract({
+        address: claimAddress,
+        abi: ClaimContractABI.abi,
+        functionName: "rollbackTokens",
+        args: [amount, rollbackAddress],
+        account: walletAddress,
+        gasPrice: await getIncreaseGasPrice(),
       });
+
+      const txHash = await walletClient.writeContract(request);
+      await publicClient.waitForTransactionReceipt({
+        hash: txHash,
+        confirmations: BLOCK_CONFIRMATIONS,
+      });
+
+      return true;
+    } catch (error) {
+      throw error;
+    }
   };
 
-  const rollbackTokens = async (amount, rollbackAddress) => {
-    return await claimContractSend?.methods
-      .rollbackTokens(amount, rollbackAddress)
-      .send({
-        from: walletAddress,
-        gasPrice: await getIncreaseGasPrice(networkId),
+  const modifyStartAndEndTime = async (claimAddress, startTime, endTime) => {
+    try {
+      const { request } = await publicClient.simulateContract({
+        address: claimAddress,
+        abi: ClaimContractABI.abi,
+        functionName: "changeStartAndEndTime",
+        args: [startTime, endTime],
+        account: walletAddress,
+        gasPrice: await getIncreaseGasPrice(),
       });
+
+      const txHash = await walletClient.writeContract(request);
+      await publicClient.waitForTransactionReceipt({
+        hash: txHash,
+        confirmations: BLOCK_CONFIRMATIONS,
+      });
+
+      return true;
+    } catch (error) {
+      throw error;
+    }
   };
 
-  const modifyStartAndEndTime = async (startTime, endTime) => {
-    return await claimContractSend?.methods
-      .changeStartAndEndTime(startTime, endTime)
-      .send({
-        from: walletAddress,
-        gasPrice: await getIncreaseGasPrice(networkId),
+  const claim = async (
+    claimAddress,
+    amount,
+    reciever,
+    merkleProof,
+    encodedData,
+  ) => {
+    try {
+      const { request } = await publicClient.simulateContract({
+        address: claimAddress,
+        abi: ClaimContractABI.abi,
+        functionName: "claim",
+        args: [amount, reciever, merkleProof, encodedData],
+        account: walletAddress,
+        gasPrice: await getIncreaseGasPrice(),
       });
-  };
 
-  const claim = async (amount, reciever, merkleProof, encodedData) => {
-    return await claimContractSend.methods
-      .claim(amount, reciever, merkleProof, encodedData)
-      .send({
-        from: walletAddress,
-        gasPrice: await getIncreaseGasPrice(networkId),
+      const txHash = await walletClient.writeContract(request);
+      await publicClient.waitForTransactionReceipt({
+        hash: txHash,
+        confirmations: BLOCK_CONFIRMATIONS,
       });
+
+      return true;
+    } catch (error) {
+      throw error;
+    }
   };
 
   const hasClaimed = async (walletAddress) => {
@@ -113,7 +197,6 @@ const useDropsContractMethods = () => {
     claimBalance,
     claimSettings,
     claimContract,
-    changeClaimsStartTimeAndEndTime,
     addMoreTokens,
     modifyStartAndEndTime,
   };
