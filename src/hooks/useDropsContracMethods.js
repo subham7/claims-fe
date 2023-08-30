@@ -1,9 +1,9 @@
 import { useSelector } from "react-redux";
 import { getIncreaseGasPrice } from "utils/helper";
-import { publicClient, walletClient } from "utils/viemConfig";
+import { getPublicClient, getWalletClient } from "utils/viemConfig";
 import { useAccount, useNetwork } from "wagmi";
-import ClaimContractABI from "abis/claimContract.json";
-import ClaimFactoryABI from "abis/claimFactory.json";
+import { claimContractABI } from "abis/claimContract.js";
+import { claimFactoryABI } from "abis/claimFactory.js";
 import { BLOCK_CONFIRMATIONS, CHAIN_CONFIG } from "utils/constants";
 
 const useDropsContractMethods = () => {
@@ -21,13 +21,16 @@ const useDropsContractMethods = () => {
 
   const addMoreTokens = async (claimAddress, noOfTokens) => {
     try {
+      const publicClient = getPublicClient(networkId);
+      const walletClient = getWalletClient(networkId);
+
       const { request } = await publicClient.simulateContract({
         address: claimAddress,
-        abi: ClaimContractABI.abi,
+        abi: claimContractABI,
         functionName: "depositTokens",
         args: [noOfTokens],
         account: walletAddress,
-        gasPrice: await getIncreaseGasPrice(),
+        gasPrice: await getIncreaseGasPrice(networkId),
       });
 
       const txHash = await walletClient.writeContract(request);
@@ -49,13 +52,16 @@ const useDropsContractMethods = () => {
     whitelistNetwork,
   ) => {
     try {
+      const publicClient = getPublicClient(networkId);
+      const walletClient = getWalletClient(networkId);
+
       const { request } = await publicClient.simulateContract({
         address: claimFactoryAddress,
-        abi: ClaimFactoryABI.abi,
+        abi: claimFactoryABI,
         functionName: "deployClaimContract",
         args: [claimSettings, totalNoOfWallets, blockNumber, whitelistNetwork],
         account: walletAddress,
-        gasPrice: await getIncreaseGasPrice(),
+        gasPrice: await getIncreaseGasPrice(networkId),
       });
 
       const txHash = await walletClient.writeContract(request);
@@ -80,12 +86,15 @@ const useDropsContractMethods = () => {
 
   const toggleClaim = async (claimAddress) => {
     try {
+      const publicClient = getPublicClient(networkId);
+      const walletClient = getWalletClient(networkId);
+
       const { request } = await publicClient.simulateContract({
         address: claimAddress,
-        abi: ClaimContractABI.abi,
+        abi: claimContractABI,
         functionName: "toggleClaim",
         account: walletAddress,
-        gasPrice: await getIncreaseGasPrice(),
+        gasPrice: await getIncreaseGasPrice(networkId),
       });
 
       const txHash = await walletClient.writeContract(request);
@@ -102,13 +111,16 @@ const useDropsContractMethods = () => {
 
   const rollbackTokens = async (claimAddress, amount, rollbackAddress) => {
     try {
+      const publicClient = getPublicClient(networkId);
+      const walletClient = getWalletClient(networkId);
+
       const { request } = await publicClient.simulateContract({
         address: claimAddress,
-        abi: ClaimContractABI.abi,
+        abi: claimContractABI,
         functionName: "rollbackTokens",
         args: [amount, rollbackAddress],
         account: walletAddress,
-        gasPrice: await getIncreaseGasPrice(),
+        gasPrice: await getIncreaseGasPrice(networkId),
       });
 
       const txHash = await walletClient.writeContract(request);
@@ -125,13 +137,16 @@ const useDropsContractMethods = () => {
 
   const modifyStartAndEndTime = async (claimAddress, startTime, endTime) => {
     try {
+      const publicClient = getPublicClient(networkId);
+      const walletClient = getWalletClient(networkId);
+
       const { request } = await publicClient.simulateContract({
         address: claimAddress,
-        abi: ClaimContractABI.abi,
+        abi: claimContractABI,
         functionName: "changeStartAndEndTime",
         args: [startTime, endTime],
         account: walletAddress,
-        gasPrice: await getIncreaseGasPrice(),
+        gasPrice: await getIncreaseGasPrice(networkId),
       });
 
       const txHash = await walletClient.writeContract(request);
@@ -154,13 +169,16 @@ const useDropsContractMethods = () => {
     encodedData,
   ) => {
     try {
+      const publicClient = getPublicClient(networkId);
+      const walletClient = getWalletClient(networkId);
+
       const { request } = await publicClient.simulateContract({
         address: claimAddress,
-        abi: ClaimContractABI.abi,
+        abi: claimContractABI,
         functionName: "claim",
         args: [amount, reciever, merkleProof, encodedData],
         account: walletAddress,
-        gasPrice: await getIncreaseGasPrice(),
+        gasPrice: await getIncreaseGasPrice(networkId),
       });
 
       const txHash = await walletClient.writeContract(request);

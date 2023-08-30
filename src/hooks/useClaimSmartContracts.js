@@ -1,6 +1,6 @@
 import { useEffect } from "react";
-import ClaimContractABI from "../abis/claimContract.json";
-import ClaimFactoryABI from "../abis/claimFactory.json";
+import { claimContractABI } from "abis/claimContract.js";
+import { claimFactoryABI } from "abis/claimFactory.js";
 import Web3 from "web3";
 import { useDispatch, useSelector } from "react-redux";
 import { setContractInstances } from "../redux/reducers/contractInstances";
@@ -25,7 +25,7 @@ const useClaimSmartContracts = (claimAddress) => {
     try {
       if (claimFactoryAddress) {
         const claimFactoryContractCall = new web3Call.eth.Contract(
-          ClaimFactoryABI.abi,
+          claimFactoryABI,
           claimFactoryAddress,
         );
 
@@ -45,7 +45,7 @@ const useClaimSmartContracts = (claimAddress) => {
     const web3Send = new Web3(window?.ethereum);
     try {
       const claimContractCall = new web3Send.eth.Contract(
-        ClaimContractABI.abi,
+        claimContractABI,
         claimAddress,
       );
 

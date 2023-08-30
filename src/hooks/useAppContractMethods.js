@@ -1,20 +1,23 @@
 import { useSelector } from "react-redux";
 import Web3 from "web3";
 import { SEAPORT_CONTRACT_ADDRESS } from "../api";
-import { getIncreaseGasPrice } from "../utils/helper";
-import ERC20TokenABI from "../abis/usdcTokenContract.json";
-import seaportABI from "../abis/seaport.json";
+import { getIncreaseGasPrice } from "utils/helper";
+import { erc20TokenABI } from "abis/usdcTokenContract.js";
+import { seaportABI } from "abis/seaport.js";
 import Safe, { Web3Adapter } from "@safe-global/protocol-kit";
 import { createProposalTxHash, getProposalTxHash } from "../api/proposal";
 import SafeApiKit from "@safe-global/api-kit";
-import { actionContractABI } from "../abis/actionContract";
-import { useAccount } from "wagmi";
-import FactoryContractABI from "../abis/factoryContract.json";
-import { publicClient, walletClient } from "utils/viemConfig";
+import { actionContractABI } from "abis/actionContract";
+import { useAccount, useNetwork } from "wagmi";
+import { factoryContractABI } from "abis/factoryContract.js";
+import { getPublicClient, getWalletClient } from "utils/viemConfig";
 import { BLOCK_CONFIRMATIONS } from "utils/constants";
 
 const useAppContractMethods = () => {
   const { address: walletAddress } = useAccount();
+
+  const { chain } = useNetwork();
+  const networkId = "0x" + chain?.id.toString(16);
 
   const isAssetsStoredOnGnosis = useSelector((state) => {
     return state.club.factoryData.assetsStoredOnGnosis;
@@ -74,9 +77,12 @@ const useAppContractMethods = () => {
     merkleProof,
   ) => {
     try {
+      const publicClient = getPublicClient(networkId);
+      const walletClient = getWalletClient(networkId);
+
       const { request } = await publicClient.simulateContract({
         address: FACTORY_CONTRACT_ADDRESS,
-        abi: FactoryContractABI.abi,
+        abi: factoryContractABI,
         functionName: "buyGovernanceTokenERC721DAO",
         args: [
           userAddress,
@@ -86,7 +92,7 @@ const useAppContractMethods = () => {
           merkleProof,
         ],
         account: walletAddress,
-        gasPrice: await getIncreaseGasPrice(),
+        gasPrice: await getIncreaseGasPrice(networkId),
       });
 
       const txHash = await walletClient.writeContract(request);
@@ -108,19 +114,21 @@ const useAppContractMethods = () => {
     merkleProof,
   ) => {
     try {
+      const publicClient = getPublicClient(networkId);
+      const walletClient = getWalletClient(networkId);
+
       const { request } = await publicClient.simulateContract({
         address: FACTORY_CONTRACT_ADDRESS,
-        abi: FactoryContractABI.abi,
+        abi: factoryContractABI,
         functionName: "buyGovernanceTokenERC20DAO",
         args: [userAddress, daoAddress, numOfTokens, merkleProof],
         account: walletAddress,
-        gasPrice: await getIncreaseGasPrice(),
+        gasPrice: await getIncreaseGasPrice(networkId),
       });
 
       const txHash = await walletClient.writeContract(request);
       await publicClient.waitForTransactionReceipt({
         hash: txHash,
-        timeout: 120000,
         confirmations: BLOCK_CONFIRMATIONS,
       });
 
@@ -136,19 +144,21 @@ const useAppContractMethods = () => {
 
   const updateOwnerFee = async (ownerFeePerDeposit, daoAddress) => {
     try {
+      const publicClient = getPublicClient(networkId);
+      const walletClient = getWalletClient(networkId);
+
       const { request } = await publicClient.simulateContract({
         address: FACTORY_CONTRACT_ADDRESS,
-        abi: FactoryContractABI.abi,
+        abi: factoryContractABI,
         functionName: "updateOwnerFee",
         args: [ownerFeePerDeposit, daoAddress],
         account: walletAddress,
-        gasPrice: await getIncreaseGasPrice(),
+        gasPrice: await getIncreaseGasPrice(networkId),
       });
 
       const txHash = await walletClient.writeContract(request);
       await publicClient.waitForTransactionReceipt({
         hash: txHash,
-        timeout: 120000,
         confirmations: BLOCK_CONFIRMATIONS,
       });
 
@@ -160,19 +170,21 @@ const useAppContractMethods = () => {
 
   const updateDepositTime = async (depositTime, daoAddress) => {
     try {
+      const publicClient = getPublicClient(networkId);
+      const walletClient = getWalletClient(networkId);
+
       const { request } = await publicClient.simulateContract({
         address: FACTORY_CONTRACT_ADDRESS,
-        abi: FactoryContractABI.abi,
+        abi: factoryContractABI,
         functionName: "updateDepositTime",
         args: [depositTime, daoAddress],
         account: walletAddress,
-        gasPrice: await getIncreaseGasPrice(),
+        gasPrice: await getIncreaseGasPrice(networkId),
       });
 
       const txHash = await walletClient.writeContract(request);
       await publicClient.waitForTransactionReceipt({
         hash: txHash,
-        timeout: 120000,
         confirmations: BLOCK_CONFIRMATIONS,
       });
 
@@ -191,19 +203,21 @@ const useAppContractMethods = () => {
     daoAddress,
   ) => {
     try {
+      const publicClient = getPublicClient(networkId);
+      const walletClient = getWalletClient(networkId);
+
       const { request } = await publicClient.simulateContract({
         address: FACTORY_CONTRACT_ADDRESS,
-        abi: FactoryContractABI.abi,
+        abi: factoryContractABI,
         functionName: "setupTokenGating",
         args: [tokenA, tokenB, operator, comparator, value, daoAddress],
         account: walletAddress,
-        gasPrice: await getIncreaseGasPrice(),
+        gasPrice: await getIncreaseGasPrice(networkId),
       });
 
       const txHash = await walletClient.writeContract(request);
       await publicClient.waitForTransactionReceipt({
         hash: txHash,
-        timeout: 120000,
         confirmations: BLOCK_CONFIRMATIONS,
       });
 
@@ -215,19 +229,21 @@ const useAppContractMethods = () => {
 
   const disableTokenGating = async (daoAddress) => {
     try {
+      const publicClient = getPublicClient(networkId);
+      const walletClient = getWalletClient(networkId);
+
       const { request } = await publicClient.simulateContract({
         address: FACTORY_CONTRACT_ADDRESS,
-        abi: FactoryContractABI.abi,
+        abi: factoryContractABI,
         functionName: "disableTokenGating",
         args: [daoAddress],
         account: walletAddress,
-        gasPrice: await getIncreaseGasPrice(),
+        gasPrice: await getIncreaseGasPrice(networkId),
       });
 
       const txHash = await walletClient.writeContract(request);
       await publicClient.waitForTransactionReceipt({
         hash: txHash,
-        timeout: 120000,
         confirmations: BLOCK_CONFIRMATIONS,
       });
 
@@ -250,7 +266,7 @@ const useAppContractMethods = () => {
   ) => {
     if (contractAddress) {
       const erc20TokenContractSend = new web3Send.eth.Contract(
-        ERC20TokenABI.abi,
+        erc20TokenABI,
         contractAddress,
       );
 
@@ -268,7 +284,7 @@ const useAppContractMethods = () => {
   ) => {
     if (tokenAddress) {
       const erc20TokenContractSend = new web3Send.eth.Contract(
-        ERC20TokenABI.abi,
+        erc20TokenABI,
         tokenAddress,
       );
 
@@ -308,7 +324,7 @@ const useAppContractMethods = () => {
       : await erc20DaoContractCall.methods.balanceOf(contractAddress).call();
   };
 
-  const createERC721DAO = async (
+  const createERC721DAO = async ({
     clubName,
     clubSymbol,
     tokenUri,
@@ -329,11 +345,14 @@ const useAppContractMethods = () => {
     allowWhiteList,
     assetsStoredOnGnosis,
     merkleRoot,
-  ) => {
+  }) => {
     try {
+      const publicClient = getPublicClient(networkId);
+      const walletClient = getWalletClient(networkId);
+
       const { request } = await publicClient.simulateContract({
         address: FACTORY_CONTRACT_ADDRESS,
-        abi: FactoryContractABI.abi,
+        abi: factoryContractABI,
         functionName: "createERC721DAO",
         args: [
           clubName,
@@ -358,23 +377,22 @@ const useAppContractMethods = () => {
           merkleRoot,
         ],
         account: walletAddress,
-        gasPrice: await getIncreaseGasPrice(),
+        gasPrice: await getIncreaseGasPrice(networkId),
       });
 
       const txHash = await walletClient.writeContract(request);
-      await publicClient.waitForTransactionReceipt({
+      const txReciept = await publicClient.waitForTransactionReceipt({
         hash: txHash,
-        timeout: 120000,
         confirmations: BLOCK_CONFIRMATIONS,
       });
 
-      return true;
+      return txReciept;
     } catch (error) {
       throw error;
     }
   };
 
-  const createERC20DAO = async (
+  const createERC20DAO = async ({
     clubName,
     clubSymbol,
     distributeAmount,
@@ -394,12 +412,15 @@ const useAppContractMethods = () => {
     allowWhiteList,
     assetsStoredOnGnosis,
     merkleRoot,
-  ) => {
+  }) => {
     try {
+      const publicClient = getPublicClient(networkId);
+      const walletClient = getWalletClient(networkId);
+
       const { request } = await publicClient.simulateContract({
         address: FACTORY_CONTRACT_ADDRESS,
-        abi: FactoryContractABI.abi,
-        functionName: "createERC721DAO",
+        abi: factoryContractABI,
+        functionName: "createERC20DAO",
         args: [
           clubName,
           clubSymbol,
@@ -422,17 +443,16 @@ const useAppContractMethods = () => {
           merkleRoot,
         ],
         account: walletAddress,
-        gasPrice: await getIncreaseGasPrice(),
+        gasPrice: await getIncreaseGasPrice(networkId),
       });
 
       const txHash = await walletClient.writeContract(request);
-      await publicClient.waitForTransactionReceipt({
+      const txReciept = await publicClient.waitForTransactionReceipt({
         hash: txHash,
-        timeout: 120000,
         confirmations: BLOCK_CONFIRMATIONS,
       });
 
-      return true;
+      return txReciept;
     } catch (error) {
       throw error;
     }
@@ -759,7 +779,7 @@ const useAppContractMethods = () => {
         proposalTxHash.data[0].txHash,
       );
       const options = {
-        gasPrice: await getIncreaseGasPrice(),
+        gasPrice: await getIncreaseGasPrice(networkId),
       };
 
       const executeTxResponse = await safeSdk.executeTransaction(

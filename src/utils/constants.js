@@ -43,7 +43,7 @@ export const CHAIN_CONFIG = {
       symbol: "ETH",
     },
     rpcUrls: ["https://mainnet.base.org"],
-    appRpcUrl: `https://multi-attentive-snowflake.base-mainnet.discover.quiknode.pro/${process.env.NEXT_PUBLIC_QUICKNODE_API_KEY}/`,
+    appRpcUrl: `https://multi-attentive-snowflake.base-mainnet.discover.quiknode.pro/${process.env.NEXT_PUBLIC_QUICKNODE_BASE_API_KEY}/`,
     claimFactoryAddress: "0x50702Fd9086BAbDB0A3A576bFe22D4dD47b09937",
     claimsSubgraphUrl:
       "https://api.thegraph.com/subgraphs/name/subham7/stnx-claim-base",
@@ -141,6 +141,31 @@ export const lineaMainnetWalletConnect = {
     multicall3: {
       address: "0xcA11bde05977b3631167028862bE2a173976CA11",
       blockCreated: 42,
+    },
+  },
+};
+
+export const mantleMainnetViem = {
+  id: 5000,
+  name: "Mantle",
+  network: "Mantle",
+  nativeCurrency: {
+    decimals: 18,
+    name: "MNT ",
+    symbol: "MNT",
+  },
+  rpcUrls: {
+    public: { http: ["https://rpc.mantle.xyz"] },
+    default: { http: ["https://rpc.mantle.xyz"] },
+  },
+  blockExplorers: {
+    etherscan: { name: "Mantle Explorer", url: "https://explorer.mantle.xyz/" },
+    default: { name: "Mantle Explorer", url: "https://explorer.mantle.xyz/" },
+  },
+  contracts: {
+    multicall3: {
+      address: "0xcA11bde05977b3631167028862bE2a173976CA11",
+      blockCreated: 304717,
     },
   },
 };

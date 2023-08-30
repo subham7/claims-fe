@@ -35,58 +35,59 @@ const useSafe = () => {
 
       let value;
       if (clubTokenType === "NFT") {
-        value = await createERC721DAO(
-          params.clubName,
-          params.clubSymbol,
+        value = await createERC721DAO({
+          clubName: params.clubName,
+          clubSymbol: params.clubSymbol,
           metadataURL,
-          params.ownerFeePerDepositPercent,
-          params.depositClose,
-          params.quorum,
-          params.threshold,
-          params.safeThreshold,
-          params.depositTokenAddress,
-          params.treasuryAddress,
+          ownerFeePerDepositPercent: params.ownerFeePerDepositPercent,
+          depositClose: params.depositClose,
+          quorum: params.quorum,
+          threshold: params.threshold,
+          safeThreshold: params.safeThreshold,
+          depositTokenAddress: params.depositTokenAddress,
+          treasuryAddress: params.treasuryAddress,
           addressList,
-          params.maxTokensPerUser,
-          params.distributeAmount,
-          params.pricePerToken,
-          params.isNftTransferable,
-          params.isNftTotalSupplyUnlimited,
-          params.isGovernanceActive,
-          params.allowWhiteList,
-          params.storeAssetsOnGnosis,
-          params.merkleRoot,
-        );
+          maxTokensPerUser: params.maxTokensPerUser,
+          distributeAmount: params.distributeAmount,
+          pricePerToken: params.pricePerToken,
+          isNftTransferable: params.isNftTransferable,
+          isNftTotalSupplyUnlimited: params.isNftTotalSupplyUnlimited,
+          isGovernanceActive: params.isGovernanceActive,
+          allowWhiteList: params.allowWhiteList,
+          assetsStoredOnGnosis: params.storeAssetsOnGnosis,
+          merkleRoot: params.merkleRoot,
+        });
       } else {
-        value = await createERC20DAO(
-          params.clubName,
-          params.clubSymbol,
-          params.distributeAmount,
-          params.pricePerToken,
-          params.minDepositPerUser,
-          params.maxDepositPerUser,
-          params.ownerFeePerDepositPercent,
-          params.depositClose,
-          params.quorum,
-          params.threshold,
-          params.safeThreshold,
-          params.depositTokenAddress,
-          params.treasuryAddress,
+        value = await createERC20DAO({
+          clubName: params.clubName,
+          clubSymbol: params.clubSymbol,
+          distributeAmount: params.distributeAmount,
+          pricePerToken: params.pricePerToken,
+          minDepositPerUser: params.minDepositPerUser,
+          maxDepositPerUser: params.maxDepositPerUser,
+          ownerFeePerDepositPercent: params.ownerFeePerDepositPercent,
+          depositClose: params.depositClose,
+          quorum: params.quorum,
+          threshold: params.threshold,
+          safeThreshold: params.safeThreshold,
+          depositTokenAddress: params.depositTokenAddress,
+          treasuryAddress: params.treasuryAddress,
           addressList,
-          params.isGovernanceActive,
-          params.isGtTransferable,
-          params.allowWhiteList,
-          params.storeAssetsOnGnosis,
-          params.merkleRoot,
-        );
+          isGovernanceActive: params.isGovernanceActive,
+          isGtTransferable: params.isGtTransferable,
+          allowWhiteList: params.allowWhiteList,
+          assetsStoredOnGnosis: params.storeAssetsOnGnosis,
+          merkleRoot: params.merkleRoot,
+        });
       }
+
       try {
         dispatch(
           addClubData({
             gnosisAddress:
               params.treasuryAddress ===
               "0x0000000000000000000000000000000000000000"
-                ? value.events[0].address
+                ? value.logs[0].address
                 : params.treasuryAddress,
             isGtTransferable: params.isGtTransferable,
             name: params.clubName,
@@ -99,8 +100,8 @@ const useSafe = () => {
         daoAddress =
           params.treasuryAddress ===
           "0x0000000000000000000000000000000000000000"
-            ? value.events[2].address
-            : value.events[0].address;
+            ? value.logs[2].address
+            : value.logs[0].address;
         dispatch(addDaoAddress(daoAddress));
 
         await createClubData({

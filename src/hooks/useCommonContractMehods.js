@@ -1,11 +1,11 @@
 import Web3 from "web3";
-import { getIncreaseGasPrice } from "../utils/helper";
-import ERC20TokenABI from "../abis/usdcTokenContract.json";
-import ERC721TokenABI from "../abis/nft.json";
-import { convertToWeiGovernance } from "../utils/globalFunctions";
+import { getIncreaseGasPrice } from "utils/helper";
+import { erc20TokenABI } from "abis/usdcTokenContract.js";
+import { erc721TokenABI } from "abis/nft.js";
+import { convertToWeiGovernance } from "utils/globalFunctions";
 import { useAccount, useNetwork } from "wagmi";
 import { BLOCK_CONFIRMATIONS, CHAIN_CONFIG } from "utils/constants";
-import { publicClient, walletClient } from "utils/viemConfig";
+import { getPublicClient, getWalletClient } from "utils/viemConfig";
 
 const useCommonContractMethods = () => {
   const { address: walletAddress } = useAccount();
@@ -22,7 +22,7 @@ const useCommonContractMethods = () => {
   const getDecimals = async (contractAddress) => {
     if (contractAddress) {
       const erc20TokenContractCall = new web3Call.eth.Contract(
-        ERC20TokenABI.abi,
+        erc20TokenABI,
         Web3.utils.toChecksumAddress(contractAddress),
       );
       return await erc20TokenContractCall.methods.decimals().call();
@@ -32,7 +32,7 @@ const useCommonContractMethods = () => {
   const getERC721Symbol = async (contractAddress) => {
     if (contractAddress) {
       const erc721TokenContractCall = new web3Call.eth.Contract(
-        ERC721TokenABI.abi,
+        erc721TokenABI,
         contractAddress,
       );
       return await erc721TokenContractCall?.methods?.symbol().call();
@@ -42,7 +42,7 @@ const useCommonContractMethods = () => {
   const getBalance = async (contractAddress) => {
     if (contractAddress) {
       const erc20TokenContractCall = new web3Call.eth.Contract(
-        ERC20TokenABI.abi,
+        erc20TokenABI,
         contractAddress,
       );
       return await erc20TokenContractCall?.methods
@@ -54,7 +54,7 @@ const useCommonContractMethods = () => {
   const getTokenSymbol = async (contractAddress) => {
     if (contractAddress) {
       const erc20TokenContractCall = new web3Call.eth.Contract(
-        ERC20TokenABI.abi,
+        erc20TokenABI,
         contractAddress,
       );
       return await erc20TokenContractCall?.methods?.symbol().call();
@@ -64,7 +64,7 @@ const useCommonContractMethods = () => {
   const getTokenName = async (contractAddress) => {
     if (contractAddress) {
       const erc20TokenContractCall = new web3Call.eth.Contract(
-        ERC20TokenABI.abi,
+        erc20TokenABI,
         contractAddress,
       );
       return await erc20TokenContractCall?.methods?.name().call();
@@ -79,7 +79,7 @@ const useCommonContractMethods = () => {
   ) => {
     if (contractAddress) {
       const erc20TokenContractSend = new web3Send.eth.Contract(
-        ERC20TokenABI.abi,
+        erc20TokenABI,
         contractAddress,
       );
       const value = convertToWeiGovernance(
@@ -95,13 +95,17 @@ const useCommonContractMethods = () => {
         return;
       } else {
         try {
+          debugger;
+          const publicClient = getPublicClient(networkId);
+          const walletClient = getWalletClient(networkId);
+
           const { request } = await publicClient.simulateContract({
             address: contractAddress,
-            abi: ERC20TokenABI.abi,
+            abi: erc20TokenABI,
             functionName: "approve",
             args: [approvalContract, value],
             account: walletAddress,
-            gasPrice: await getIncreaseGasPrice(),
+            gasPrice: await getIncreaseGasPrice(networkId),
           });
 
           const txHash = await walletClient.writeContract(request);
