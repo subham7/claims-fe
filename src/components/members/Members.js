@@ -78,7 +78,7 @@ const Members = ({ daoAddress }) => {
     try {
       setLoading(true);
       const fetchData = async () => {
-        if (daoAddress) {
+        if (daoAddress && deployedTime && SUBGRAPH_URL) {
           const data = await subgraphQuery(
             SUBGRAPH_URL,
             QUERY_PAGINATED_MEMBERS(
@@ -99,7 +99,7 @@ const Members = ({ daoAddress }) => {
       console.log(error);
       setLoading(false);
     }
-  }, [SUBGRAPH_URL, daoAddress]);
+  }, [SUBGRAPH_URL, daoAddress, deployedTime]);
 
   const [page, setPage] = React.useState(0);
 
@@ -156,10 +156,10 @@ const Members = ({ daoAddress }) => {
       setDownloadLoading(true);
       const membersData = await getAllEntities(
         SUBGRAPH_URL,
-        daoAddress ? daoAddress : pid,
+        daoAddress,
         "users",
-        dayjs(values.startDate).unix(),
-        dayjs(values.endDate).unix(),
+        dayjs(values?.startDate).unix(),
+        dayjs(values?.endDate).unix(),
       );
       const csvData = await convertDataToCSV(membersData); // Convert the membersData array to CSV format
 
@@ -265,7 +265,7 @@ const Members = ({ daoAddress }) => {
             <Table sx={{ minWidth: 809 }} aria-label="simple table">
               <TableHead>
                 <TableRow>
-                  {header.map((data, key) => {
+                  {header?.map((data, key) => {
                     return (
                       <TableCell align="left" variant="tableHeading" key={key}>
                         {data}
@@ -331,18 +331,18 @@ const Members = ({ daoAddress }) => {
             <TablePagination
               rowsPerPageOptions={[5, 10, 25]}
               component="div"
-              count={Members_Count}
+              count={Members_Count ?? 0}
               rowsPerPage={20}
               page={page}
               onPageChange={handleChangePage}
-              // onRowsPerPageChange={handleChangeRowsPerPage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
             />
           </TableContainer>
         </Grid>
       </Grid>
 
       <Backdrop
-        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        sx={{ color: "#fff", zIndex: (theme) => theme?.zIndex?.drawer + 1 }}
         open={loading}>
         <CircularProgress color="inherit" />
       </Backdrop>
