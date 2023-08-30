@@ -18,14 +18,12 @@ import ProposalCard from "./ProposalCard";
 import { getAssetsByDaoAddress, getNFTsByDaoAddress } from "api/assets";
 import { useDispatch, useSelector } from "react-redux";
 import { makeStyles } from "@mui/styles";
-import { setProposalList } from "redux/reducers/proposal";
 import Web3 from "web3";
 import { Web3Adapter } from "@safe-global/protocol-kit";
 import SafeApiKit from "@safe-global/api-kit";
 import { getProposalByDaoAddress, getProposalTxHash } from "api/proposal";
 import { web3InstanceCustomRPC } from "utils/helper";
 import { addNftsOwnedByDao } from "redux/reducers/club";
-import { useNetwork } from "wagmi";
 
 const useStyles = makeStyles({
   noProposal_heading: {
@@ -62,8 +60,7 @@ const Proposal = ({ daoAddress }) => {
 
   const [open, setOpen] = useState(false);
   const [tokenData, setTokenData] = useState([]);
-
-  const { chain } = useNetwork();
+  const [proposalList, setProposalList] = useState([]);
 
   const NETWORK_HEX = useSelector((state) => {
     return state.gnosis.networkHex;
@@ -75,10 +72,6 @@ const Proposal = ({ daoAddress }) => {
 
   const gnosisAddress = useSelector((state) => {
     return state.club.clubData.gnosisAddress;
-  });
-
-  const proposalList = useSelector((state) => {
-    return state.proposal.proposalList;
   });
 
   const tokenType = useSelector((state) => {
@@ -160,7 +153,7 @@ const Proposal = ({ daoAddress }) => {
 
   const fetchProposalList = async (type = "all") => {
     const data = await fetchProposals(daoAddress, type);
-    dispatch(setProposalList(data));
+    setProposalList(data);
   };
 
   const handleFilterChange = (event) => {
@@ -378,6 +371,7 @@ const Proposal = ({ daoAddress }) => {
         tokenData={tokenData}
         nftData={nftData}
         daoAddress={daoAddress}
+        fetchProposalList={fetchProposalList}
       />
       <Backdrop
         sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
