@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Box, CssBaseline, Grid, Typography } from "@mui/material";
 import Navbar from "../navbar";
 import Sidebar from "../sidebar";
 import { useDispatch } from "react-redux";
-import { addWalletAddress } from "redux/reducers/user";
 import { useAccount, useNetwork } from "wagmi";
 import { Web3Button } from "@web3modal/react";
 import useClubFetch from "hooks/useClubFetch";
@@ -19,14 +18,6 @@ export default function Layout(props) {
   const { chain } = useNetwork();
   const networkId = "0x" + chain?.id.toString(16);
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    if (walletAddress) {
-      dispatch(addWalletAddress(walletAddress));
-    } else {
-      dispatch(addWalletAddress(""));
-    }
-  }, [walletAddress]);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);

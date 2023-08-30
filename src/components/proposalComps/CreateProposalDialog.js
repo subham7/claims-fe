@@ -28,9 +28,7 @@ import ProposalActionForm from "./ProposalActionForm";
 import { proposalValidationSchema } from "../createClubComps/ValidationSchemas";
 import { convertToWeiGovernance } from "../../utils/globalFunctions";
 import { createProposal } from "../../api/proposal";
-import { fetchProposals } from "../../utils/proposal";
 import { useDispatch, useSelector } from "react-redux";
-import { setProposalList } from "../../redux/reducers/proposal";
 import { getWhiteListMerkleRoot } from "api/whitelist";
 import { useAccount, useNetwork } from "wagmi";
 import {
@@ -64,6 +62,8 @@ const CreateProposalDialog = ({
   onClose,
   tokenData,
   nftData,
+  daoAddress,
+  fetchProposalList,
 }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
@@ -78,10 +78,6 @@ const CreateProposalDialog = ({
 
   const clubData = useSelector((state) => {
     return state.club.clubData;
-  });
-
-  const daoAddress = useSelector((state) => {
-    return state.club.daoAddress;
   });
 
   const [loaderOpen, setLoaderOpen] = useState(false);
@@ -362,8 +358,7 @@ const CreateProposalDialog = ({
             setFailed(true);
             setLoaderOpen(false);
           } else {
-            const proposalData = await fetchProposals(daoAddress);
-            dispatch(setProposalList(proposalData));
+            fetchProposalList();
             setOpenSnackBar(true);
             setFailed(false);
             setOpen(false);

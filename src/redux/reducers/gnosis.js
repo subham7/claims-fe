@@ -10,8 +10,6 @@ export const slice = createSlice({
     transactionUrl: null,
     networkHex: null,
     networkId: null,
-    networkName: null,
-    clubNetworkId: null,
     adminUser: false,
     memberUser: false,
     setUploadNFTLoading: false,
@@ -30,8 +28,6 @@ export const slice = createSlice({
       state.transactionUrl = action.payload.transactionUrl;
       state.networkHex = action.payload.networkHex;
       state.networkId = action.payload.networkId;
-      state.networkName = action.payload.networkName;
-      state.clubNetworkId = action.payload.clubNetworkId;
     },
     setAdminUser: (state, action) => {
       state.adminUser = action.payload;

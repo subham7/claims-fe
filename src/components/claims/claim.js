@@ -7,7 +7,6 @@ import { Alert, CircularProgress, Tooltip } from "@mui/material";
 import { getUserProofAndBalance } from "api/claims";
 import Countdown from "react-countdown";
 import { useDispatch, useSelector } from "react-redux";
-import { addClaimEnabled } from "redux/reducers/createClaim";
 import { ClaimsStyles } from "components/claimsPageComps/ClaimsStyles";
 import { subgraphQuery } from "utils/subgraphs";
 import { QUERY_CLAIM_DETAILS } from "api/graphql/queries";
@@ -75,8 +74,6 @@ const Claim = ({ claimAddress }) => {
       const desc = await claimSettings();
       setContractData(desc);
       setClaimEnabled(desc?.isEnabled);
-      // setClaimEnabled(desc.isEnabled);
-      dispatch(addClaimEnabled(desc?.isEnabled));
 
       if (desc?.airdropToken) {
         // decimals of airdrop token

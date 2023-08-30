@@ -155,8 +155,6 @@ const ClaimsCard = ({
     fetchContractDetails();
   });
 
-  // dispatch(addClaimContractData(claimContractData));
-
   const claimHandler = () => {
     router.push(`/claims/${claimContract}`);
   };
