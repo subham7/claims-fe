@@ -31,9 +31,9 @@ import { calculateDays, convertToWeiGovernance } from "utils/globalFunctions";
 import actionIcon from "../../../public/assets/icons/action_icon.svg";
 import surveyIcon from "../../../public/assets/icons/survey_icon.svg";
 import ReactHtmlParser from "react-html-parser";
-import Erc721Dao from "abis/erc721Dao.json";
-import Erc20Dao from "abis/erc20Dao.json";
-import FactoryContractABI from "abis/factoryContract.json";
+import { erc721DaoABI } from "abis/erc721Dao.js";
+import { erc20DaoABI } from "abis/erc20Dao.js";
+import { factoryContractABI } from "abis/factoryContract.js";
 import { Interface } from "ethers";
 
 import Web3 from "web3";
@@ -52,7 +52,7 @@ import {
   getNFTsByDaoAddress,
   retrieveNftListing,
 } from "api/assets";
-import seaportABI from "abis/seaport.json";
+import { seaportABI } from "abis/seaport.js";
 import SafeAppsSDK from "@safe-global/safe-apps-sdk";
 import { useAccount } from "wagmi";
 import {
@@ -564,16 +564,16 @@ const ProposalDetail = ({ pid, daoAddress }) => {
       proposalData?.commands[0].executionId === 12 ||
       proposalData?.commands[0].executionId === 13
     ) {
-      ABI = FactoryContractABI.abi;
+      ABI = factoryContractABI;
     } else if (proposalData?.commands[0].executionId === 8) {
       ABI = seaportABI;
     } else if (
       proposalData?.commands[0].executionId === 9 ||
       clubData.tokenType === "erc721"
     ) {
-      ABI = Erc721Dao.abi;
+      ABI = erc721DaoABI;
     } else if (clubData.tokenType === "erc20") {
-      ABI = Erc20Dao.abi;
+      ABI = erc20DaoABI;
     }
     // if(clubData.tokenType === 'erc721')
     let membersArray = [];
@@ -907,7 +907,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
       proposalData?.commands[0].executionId == 12
     ) {
       let iface = new Interface(ABI);
-      let iface2 = new Interface(Erc20Dao.abi);
+      let iface2 = new Interface(erc20DaoABI);
 
       approvalData = iface2.encodeFunctionData("toggleOnlyAllowWhitelist", []);
 

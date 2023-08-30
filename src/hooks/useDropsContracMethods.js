@@ -1,6 +1,9 @@
 import { useSelector } from "react-redux";
-import { getIncreaseGasPrice } from "utils/helper";
+import { writeContractFunction } from "utils/helper";
 import { useAccount, useNetwork } from "wagmi";
+import { claimContractABI } from "abis/claimContract.js";
+import { claimFactoryABI } from "abis/claimFactory.js";
+import { CHAIN_CONFIG } from "utils/constants";
 
 const useDropsContractMethods = () => {
   const { address: walletAddress } = useAccount();
@@ -11,14 +14,24 @@ const useDropsContractMethods = () => {
     return state.contractInstances.contractInstances;
   });
 
-  const { claimContractCall, claimContractSend, claimFactoryContractSend } =
-    contractInstances;
+  const claimFactoryAddress = CHAIN_CONFIG[networkId].claimFactoryAddress;
 
-  const addMoreTokens = async (noOfTokens) => {
-    return await claimContractSend.methods?.depositTokens(noOfTokens).send({
-      from: walletAddress,
-      gasPrice: await getIncreaseGasPrice(networkId),
-    });
+  const { claimContractCall } = contractInstances;
+
+  const addMoreTokens = async (claimAddress, noOfTokens) => {
+    try {
+      const res = await writeContractFunction({
+        address: claimAddress,
+        abi: claimContractABI,
+        functionName: "depositTokens",
+        args: [noOfTokens],
+        account: walletAddress,
+        networkId,
+      });
+      return res;
+    } catch (error) {
+      throw error;
+    }
   };
 
   const claimContract = async (
@@ -27,17 +40,19 @@ const useDropsContractMethods = () => {
     blockNumber,
     whitelistNetwork,
   ) => {
-    return await claimFactoryContractSend?.methods
-      ?.deployClaimContract(
-        claimSettings,
-        totalNoOfWallets,
-        blockNumber,
-        whitelistNetwork,
-      )
-      .send({
-        from: walletAddress,
-        gasPrice: await getIncreaseGasPrice(networkId),
+    try {
+      const res = await writeContractFunction({
+        address: claimFactoryAddress,
+        abi: claimFactoryABI,
+        functionName: "deployClaimContract",
+        args: [claimSettings, totalNoOfWallets, blockNumber, whitelistNetwork],
+        account: walletAddress,
+        networkId,
       });
+      return res;
+    } catch (error) {
+      throw error;
+    }
   };
 
   const claimSettings = async () => {
@@ -48,47 +63,74 @@ const useDropsContractMethods = () => {
     return await claimContractCall?.methods.claimBalance().call();
   };
 
-  const toggleClaim = async () => {
-    return await claimContractSend?.methods.toggleClaim().send({
-      from: walletAddress,
-      gasPrice: await getIncreaseGasPrice(networkId),
-    });
+  const toggleClaim = async (claimAddress) => {
+    try {
+      const res = await writeContractFunction({
+        address: claimAddress,
+        abi: claimContractABI,
+        functionName: "toggleClaim",
+        account: walletAddress,
+        args: [],
+        networkId,
+      });
+      return res;
+    } catch (error) {
+      throw error;
+    }
   };
 
-  const changeClaimsStartTimeAndEndTime = async (startTime, endTime) => {
-    return await claimContractSend?.methods
-      .changeStartAndEndTime(startTime, endTime)
-      .send({
-        from: walletAddress,
-        gasPrice: await getIncreaseGasPrice(networkId),
+  const rollbackTokens = async (claimAddress, amount, rollbackAddress) => {
+    try {
+      const res = await writeContractFunction({
+        address: claimAddress,
+        abi: claimContractABI,
+        functionName: "rollbackTokens",
+        args: [amount, rollbackAddress],
+        account: walletAddress,
+        networkId,
       });
+      return res;
+    } catch (error) {
+      throw error;
+    }
   };
 
-  const rollbackTokens = async (amount, rollbackAddress) => {
-    return await claimContractSend?.methods
-      .rollbackTokens(amount, rollbackAddress)
-      .send({
-        from: walletAddress,
-        gasPrice: await getIncreaseGasPrice(networkId),
+  const modifyStartAndEndTime = async (claimAddress, startTime, endTime) => {
+    try {
+      const res = await writeContractFunction({
+        address: claimAddress,
+        abi: claimContractABI,
+        functionName: "changeStartAndEndTime",
+        args: [startTime, endTime],
+        account: walletAddress,
+        networkId,
       });
+      return res;
+    } catch (error) {
+      throw error;
+    }
   };
 
-  const modifyStartAndEndTime = async (startTime, endTime) => {
-    return await claimContractSend?.methods
-      .changeStartAndEndTime(startTime, endTime)
-      .send({
-        from: walletAddress,
-        gasPrice: await getIncreaseGasPrice(networkId),
+  const claim = async (
+    claimAddress,
+    amount,
+    reciever,
+    merkleProof,
+    encodedData,
+  ) => {
+    try {
+      const res = await writeContractFunction({
+        address: claimAddress,
+        abi: claimContractABI,
+        functionName: "claim",
+        args: [amount, reciever, merkleProof, encodedData],
+        account: walletAddress,
+        networkId,
       });
-  };
-
-  const claim = async (amount, reciever, merkleProof, encodedData) => {
-    return await claimContractSend.methods
-      .claim(amount, reciever, merkleProof, encodedData)
-      .send({
-        from: walletAddress,
-        gasPrice: await getIncreaseGasPrice(networkId),
-      });
+      return res;
+    } catch (error) {
+      throw error;
+    }
   };
 
   const hasClaimed = async (walletAddress) => {
@@ -113,7 +155,6 @@ const useDropsContractMethods = () => {
     claimBalance,
     claimSettings,
     claimContract,
-    changeClaimsStartTimeAndEndTime,
     addMoreTokens,
     modifyStartAndEndTime,
   };

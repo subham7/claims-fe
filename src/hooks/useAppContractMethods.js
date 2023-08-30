@@ -1,38 +1,38 @@
 import { useSelector } from "react-redux";
 import Web3 from "web3";
 import { SEAPORT_CONTRACT_ADDRESS } from "../api";
-import { getIncreaseGasPrice } from "../utils/helper";
-import ERC20TokenABI from "../abis/usdcTokenContract.json";
-import seaportABI from "../abis/seaport.json";
+import { getIncreaseGasPrice, writeContractFunction } from "utils/helper";
+import { erc20TokenABI } from "abis/usdcTokenContract.js";
+import { seaportABI } from "abis/seaport.js";
 import Safe, { Web3Adapter } from "@safe-global/protocol-kit";
 import { createProposalTxHash, getProposalTxHash } from "../api/proposal";
 import SafeApiKit from "@safe-global/api-kit";
-import { actionContractABI } from "../abis/actionContract";
-import { useAccount } from "wagmi";
+import { actionContractABI } from "abis/actionContract";
+import { useAccount, useNetwork } from "wagmi";
+import { factoryContractABI } from "abis/factoryContract.js";
+import { CHAIN_CONFIG } from "utils/constants";
 
 const useAppContractMethods = () => {
   const { address: walletAddress } = useAccount();
+
+  const { chain } = useNetwork();
+  const networkId = "0x" + chain?.id.toString(16);
+  const web3Call = new Web3(CHAIN_CONFIG[networkId]?.appRpcUrl);
 
   const isAssetsStoredOnGnosis = useSelector((state) => {
     return state.club.factoryData.assetsStoredOnGnosis;
   });
 
-  let web3Send;
-  if (typeof window !== "undefined") {
-    web3Send = new Web3(window.ethereum);
-  }
-
   const contractInstances = useSelector((state) => {
     return state.contractInstances.contractInstances;
   });
 
-  const {
-    factoryContractCall,
-    factoryContractSend,
-    erc20DaoContractCall,
-    erc20DaoContractSend,
-    erc721DaoContractCall,
-  } = contractInstances;
+  const FACTORY_CONTRACT_ADDRESS = useSelector(
+    (state) => state.gnosis.factoryContractAddress,
+  );
+
+  const { factoryContractCall, erc20DaoContractCall, erc721DaoContractCall } =
+    contractInstances;
 
   const getDaoDetails = async (daoAddress) => {
     return await factoryContractCall?.methods?.getDAOdetails(daoAddress).call();
@@ -67,18 +67,25 @@ const useAppContractMethods = () => {
     numOfTokens,
     merkleProof,
   ) => {
-    return await factoryContractSend?.methods
-      .buyGovernanceTokenERC721DAO(
-        userAddress,
-        daoAddress,
-        tokenUriOfNFT,
-        numOfTokens,
-        merkleProof,
-      )
-      .send({
-        from: walletAddress,
-        gasPrice: await getIncreaseGasPrice(),
+    try {
+      const res = await writeContractFunction({
+        address: FACTORY_CONTRACT_ADDRESS,
+        abi: factoryContractABI,
+        functionName: "buyGovernanceTokenERC721DAO",
+        args: [
+          userAddress,
+          daoAddress,
+          tokenUriOfNFT,
+          numOfTokens,
+          merkleProof,
+        ],
+        account: walletAddress,
+        networkId,
       });
+      return res;
+    } catch (error) {
+      throw error;
+    }
   };
 
   const buyGovernanceTokenERC20DAO = async (
@@ -87,17 +94,19 @@ const useAppContractMethods = () => {
     numOfTokens,
     merkleProof,
   ) => {
-    return await factoryContractSend?.methods
-      ?.buyGovernanceTokenERC20DAO(
-        userAddress,
-        daoAddress,
-        numOfTokens,
-        merkleProof,
-      )
-      .send({
-        from: walletAddress,
-        gasPrice: await getIncreaseGasPrice(),
+    try {
+      const res = await writeContractFunction({
+        address: FACTORY_CONTRACT_ADDRESS,
+        abi: factoryContractABI,
+        functionName: "buyGovernanceTokenERC20DAO",
+        args: [userAddress, daoAddress, numOfTokens, merkleProof],
+        account: walletAddress,
+        networkId,
       });
+      return res;
+    } catch (error) {
+      throw error;
+    }
   };
 
   const getNftOwnersCount = async () => {
@@ -105,21 +114,35 @@ const useAppContractMethods = () => {
   };
 
   const updateOwnerFee = async (ownerFeePerDeposit, daoAddress) => {
-    return await factoryContractSend.methods
-      .updateOwnerFee(ownerFeePerDeposit, daoAddress)
-      .send({
-        from: walletAddress,
-        gasPrice: await getIncreaseGasPrice(),
+    try {
+      const res = await writeContractFunction({
+        address: FACTORY_CONTRACT_ADDRESS,
+        abi: factoryContractABI,
+        functionName: "updateOwnerFee",
+        args: [ownerFeePerDeposit, daoAddress],
+        account: walletAddress,
+        networkId,
       });
+      return res;
+    } catch (error) {
+      throw error;
+    }
   };
 
   const updateDepositTime = async (depositTime, daoAddress) => {
-    return await factoryContractSend.methods
-      .updateDepositTime(depositTime, daoAddress)
-      .send({
-        from: walletAddress,
-        gasPrice: await getIncreaseGasPrice(),
+    try {
+      const res = await writeContractFunction({
+        address: FACTORY_CONTRACT_ADDRESS,
+        abi: factoryContractABI,
+        functionName: "updateDepositTime",
+        args: [depositTime, daoAddress],
+        account: walletAddress,
+        networkId,
       });
+      return res;
+    } catch (error) {
+      throw error;
+    }
   };
 
   const setupTokenGating = async (
@@ -130,28 +153,35 @@ const useAppContractMethods = () => {
     value,
     daoAddress,
   ) => {
-    return await factoryContractSend?.methods
-      ?.setupTokenGating(
-        tokenA,
-        tokenB,
-        operator,
-        comparator,
-        value,
-        daoAddress,
-      )
-      .send({
-        from: walletAddress,
-        gasPrice: await getIncreaseGasPrice(),
+    try {
+      const res = await writeContractFunction({
+        address: FACTORY_CONTRACT_ADDRESS,
+        abi: factoryContractABI,
+        functionName: "setupTokenGating",
+        args: [tokenA, tokenB, operator, comparator, value, daoAddress],
+        account: walletAddress,
+        networkId,
       });
+      return res;
+    } catch (error) {
+      throw error;
+    }
   };
 
   const disableTokenGating = async (daoAddress) => {
-    return await factoryContractSend?.methods
-      ?.disableTokenGating(daoAddress)
-      .send({
-        from: walletAddress,
-        gasPrice: await getIncreaseGasPrice(),
+    try {
+      const res = await writeContractFunction({
+        address: FACTORY_CONTRACT_ADDRESS,
+        abi: factoryContractABI,
+        functionName: "disableTokenGating",
+        args: [daoAddress],
+        account: walletAddress,
+        networkId,
       });
+      return res;
+    } catch (error) {
+      throw error;
+    }
   };
 
   const getTokenGatingDetails = async (daoAddress) => {
@@ -166,12 +196,12 @@ const useAppContractMethods = () => {
     amount,
   ) => {
     if (contractAddress) {
-      const erc20TokenContractSend = new web3Send.eth.Contract(
-        ERC20TokenABI.abi,
+      const erc20TokenContractCall = new web3Call.eth.Contract(
+        erc20TokenABI,
         contractAddress,
       );
 
-      return erc20TokenContractSend?.methods
+      return erc20TokenContractCall?.methods
         ?.approve(approvalContract, amount)
         .encodeABI();
     }
@@ -184,19 +214,19 @@ const useAppContractMethods = () => {
     tokenId,
   ) => {
     if (tokenAddress) {
-      const erc20TokenContractSend = new web3Send.eth.Contract(
-        ERC20TokenABI.abi,
+      const erc20TokenContractCall = new web3Call.eth.Contract(
+        erc20TokenABI,
         tokenAddress,
       );
 
-      return erc20TokenContractSend?.methods
+      return erc20TokenContractCall?.methods
         ?.transferFrom(gnosisAddress, receiverAddress, tokenId)
         .encodeABI();
     }
   };
 
   const toggleWhitelist = async () => {
-    return await erc20DaoContractSend?.methods
+    return await erc20DaoContractCall?.methods
       ?.toggleOnlyAllowWhitelist()
       .encodeABI();
   };
@@ -208,7 +238,7 @@ const useAppContractMethods = () => {
     members,
   ) => {
     if (actionContractAddress) {
-      const actionContractSend = new web3Send.eth.Contract(
+      const actionContractSend = new web3Call.eth.Contract(
         actionContractABI,
         actionContractAddress,
       );
@@ -225,7 +255,7 @@ const useAppContractMethods = () => {
       : await erc20DaoContractCall.methods.balanceOf(contractAddress).call();
   };
 
-  const createERC721DAO = async (
+  const createERC721DAO = async ({
     clubName,
     clubSymbol,
     tokenUri,
@@ -246,37 +276,44 @@ const useAppContractMethods = () => {
     allowWhiteList,
     assetsStoredOnGnosis,
     merkleRoot,
-  ) => {
-    return await factoryContractSend.methods
-      .createERC721DAO(
-        clubName,
-        clubSymbol,
-        tokenUri,
-        ownerFeePerDepositPercent,
-        depositClose,
-        quorum,
-        threshold,
-        safeThreshold,
-        depositTokenAddress,
-        treasuryAddress,
-        addressList,
-        maxTokensPerUser,
-        distributeAmount,
-        pricePerToken,
-        isNftTransferable,
-        isNftTotalSupplyUnlimited,
-        isGovernanceActive,
-        allowWhiteList,
-        assetsStoredOnGnosis,
-        merkleRoot,
-      )
-      .send({
-        from: walletAddress,
-        gasPrice: await getIncreaseGasPrice(),
+  }) => {
+    try {
+      const res = await writeContractFunction({
+        address: FACTORY_CONTRACT_ADDRESS,
+        abi: factoryContractABI,
+        functionName: "createERC721DAO",
+        args: [
+          clubName,
+          clubSymbol,
+          tokenUri,
+          ownerFeePerDepositPercent,
+          depositClose,
+          quorum,
+          threshold,
+          safeThreshold,
+          depositTokenAddress,
+          treasuryAddress,
+          addressList,
+          maxTokensPerUser,
+          distributeAmount,
+          pricePerToken,
+          isNftTransferable,
+          isNftTotalSupplyUnlimited,
+          isGovernanceActive,
+          allowWhiteList,
+          assetsStoredOnGnosis,
+          merkleRoot,
+        ],
+        account: walletAddress,
+        networkId,
       });
+      return res;
+    } catch (error) {
+      throw error;
+    }
   };
 
-  const createERC20DAO = async (
+  const createERC20DAO = async ({
     clubName,
     clubSymbol,
     distributeAmount,
@@ -296,33 +333,40 @@ const useAppContractMethods = () => {
     allowWhiteList,
     assetsStoredOnGnosis,
     merkleRoot,
-  ) => {
-    return await factoryContractSend.methods
-      .createERC20DAO(
-        clubName,
-        clubSymbol,
-        distributeAmount,
-        pricePerToken,
-        minDepositPerUser,
-        maxDepositPerUser,
-        ownerFeePerDepositPercent,
-        depositClose,
-        quorum,
-        threshold,
-        safeThreshold,
-        depositTokenAddress,
-        treasuryAddress,
-        addressList,
-        isGovernanceActive,
-        isGtTransferable,
-        allowWhiteList,
-        assetsStoredOnGnosis,
-        merkleRoot,
-      )
-      .send({
-        from: walletAddress,
-        gasPrice: await getIncreaseGasPrice(),
+  }) => {
+    try {
+      const res = await writeContractFunction({
+        address: FACTORY_CONTRACT_ADDRESS,
+        abi: factoryContractABI,
+        functionName: "createERC20DAO",
+        args: [
+          clubName,
+          clubSymbol,
+          distributeAmount,
+          pricePerToken,
+          minDepositPerUser,
+          maxDepositPerUser,
+          ownerFeePerDepositPercent,
+          depositClose,
+          quorum,
+          threshold,
+          safeThreshold,
+          depositTokenAddress,
+          treasuryAddress,
+          addressList,
+          isGovernanceActive,
+          isGtTransferable,
+          allowWhiteList,
+          assetsStoredOnGnosis,
+          merkleRoot,
+        ],
+        account: walletAddress,
+        networkId,
       });
+      return res;
+    } catch (error) {
+      throw error;
+    }
   };
 
   const updateProposalAndExecution = async (
@@ -373,7 +417,7 @@ const useAppContractMethods = () => {
       ) {
         approvalTransaction = {
           to: Web3.utils.toChecksumAddress(daoAddress),
-          data: erc20DaoContractSend.methods
+          data: erc20DaoContractCall.methods
             .updateProposalAndExecution(
               //usdc address
               daoAddress,
@@ -385,7 +429,7 @@ const useAppContractMethods = () => {
         transaction = {
           //dao
           to: Web3.utils.toChecksumAddress(daoAddress),
-          data: erc20DaoContractSend.methods
+          data: erc20DaoContractCall.methods
             .updateProposalAndExecution(
               //factory
               factoryContractAddress ? factoryContractAddress : daoAddress,
@@ -411,7 +455,7 @@ const useAppContractMethods = () => {
         } else {
           approvalTransaction = {
             to: Web3.utils.toChecksumAddress(daoAddress),
-            data: erc20DaoContractSend.methods
+            data: erc20DaoContractCall.methods
               .updateProposalAndExecution(
                 //usdc address
                 tokenData,
@@ -436,7 +480,7 @@ const useAppContractMethods = () => {
         } else {
           transaction = {
             to: Web3.utils.toChecksumAddress(daoAddress),
-            data: erc20DaoContractSend.methods
+            data: erc20DaoContractCall.methods
               .updateProposalAndExecution(
                 //airdrop address
                 airdropContractAddress,
@@ -476,7 +520,7 @@ const useAppContractMethods = () => {
         };
       } else if (transactionData) {
         if (isAssetsStoredOnGnosis) {
-          const seaportContract = new web3Send.eth.Contract(
+          const seaportContract = new web3Call.eth.Contract(
             seaportABI,
             SEAPORT_CONTRACT_ADDRESS,
           );
@@ -494,7 +538,7 @@ const useAppContractMethods = () => {
         } else {
           transaction = {
             to: Web3.utils.toChecksumAddress(daoAddress),
-            data: erc20DaoContractSend.methods
+            data: erc20DaoContractCall.methods
               .updateProposalAndExecution(
                 Web3.utils.toChecksumAddress(SEAPORT_CONTRACT_ADDRESS),
                 parameters,
@@ -507,7 +551,7 @@ const useAppContractMethods = () => {
         transaction = {
           //dao
           to: Web3.utils.toChecksumAddress(daoAddress),
-          data: erc20DaoContractSend.methods
+          data: erc20DaoContractCall.methods
             .updateProposalAndExecution(
               //factory
               factoryContractAddress ? factoryContractAddress : daoAddress,
@@ -646,7 +690,7 @@ const useAppContractMethods = () => {
         proposalTxHash.data[0].txHash,
       );
       const options = {
-        gasPrice: await getIncreaseGasPrice(),
+        gasPrice: await getIncreaseGasPrice(networkId),
       };
 
       const executeTxResponse = await safeSdk.executeTransaction(

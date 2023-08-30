@@ -80,7 +80,7 @@ const ClaimInsight = ({ claimAddress }) => {
         noOfTokens,
         airdropTokenDetails?.tokenDecimal,
       );
-      await addMoreTokens(amount);
+      await addMoreTokens(claimAddress, amount);
       setLoading(false);
       showMessageHandler();
       setIsSuccessFull(true);
@@ -104,7 +104,7 @@ const ClaimInsight = ({ claimAddress }) => {
         airdropTokenDetails?.tokenDecimal,
       );
 
-      await rollbackTokens(rollbackAmount, rollbackAddress);
+      await rollbackTokens(claimAddress, rollbackAmount, rollbackAddress);
       setLoading(false);
       showMessageHandler();
       setIsSuccessFull(true);
@@ -124,6 +124,7 @@ const ClaimInsight = ({ claimAddress }) => {
     setLoading(true);
     try {
       await modifyStartAndEndTime(
+        claimAddress,
         Number(startTime).toFixed(0),
         Number(endTime).toFixed(0),
       );
@@ -183,7 +184,10 @@ const ClaimInsight = ({ claimAddress }) => {
             </div>
           </div>
           <div className={classes.rightContainer}>
-            <ToggleClaim isActive={claimsData[0]?.isActive} />
+            <ToggleClaim
+              claimAddress={claimAddress}
+              isActive={claimsData[0]?.isActive}
+            />
             <ClaimEdit
               addMoreTokensHandler={addMoreTokensHandler}
               rollbackTokensHandler={rollbackTokensHandler}
