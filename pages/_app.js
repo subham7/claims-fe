@@ -16,7 +16,6 @@ import { Web3Modal } from "@web3modal/react";
 import { configureChains, createConfig, WagmiConfig } from "wagmi";
 import { polygon, base, arbitrum, bsc, mantle } from "wagmi/chains";
 import { lineaMainnetWalletConnect } from "utils/constants";
-// import { CHAIN_CONFIG } from "utils/constants";
 
 const API_URL = "https://api.lens.dev";
 
@@ -46,7 +45,7 @@ const ethereumClient = new EthereumClient(wagmiConfig, chains);
 
 function MyApp({ Component, pageProps }) {
   return (
-    <ThemeProvider theme={theme()}>
+    <ThemeProvider theme={theme("dark")}>
       <ApolloProvider client={apolloClient}>
         <WagmiConfig config={wagmiConfig}>
           <Provider store={store}>
