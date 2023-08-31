@@ -27,29 +27,23 @@ import { useSelector } from "react-redux";
 import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import CloseIcon from "@mui/icons-material/Close";
 import tickerIcon from "../../../public/assets/icons/ticker_icon.svg";
-import { calculateDays, convertToWeiGovernance } from "utils/globalFunctions";
+import { calculateDays } from "utils/globalFunctions";
 import actionIcon from "../../../public/assets/icons/action_icon.svg";
 import surveyIcon from "../../../public/assets/icons/survey_icon.svg";
 import ReactHtmlParser from "react-html-parser";
-import { erc20DaoABI } from "abis/erc20Dao.js";
-import { Interface } from "ethers";
 
 import Web3 from "web3";
 import { Web3Adapter } from "@safe-global/protocol-kit";
 import SafeApiKit from "@safe-global/api-kit";
 import { subgraphQuery } from "utils/subgraphs";
-import { QUERY_ALL_MEMBERS, QUERY_CLUB_DETAILS } from "api/graphql/queries";
+import { QUERY_ALL_MEMBERS } from "api/graphql/queries";
 import ProposalExecutionInfo from "@components/proposalComps/ProposalExecutionInfo";
 import Signators from "@components/proposalComps/Signators";
 import ProposalInfo from "@components/proposalComps/ProposalInfo";
 import CurrentResults from "@components/proposalComps/CurrentResults";
 import ProposalVotes from "@components/proposalComps/ProposalVotes";
 import { getSafeSdk, web3InstanceEthereum } from "utils/helper";
-import {
-  fulfillOrder,
-  getNFTsByDaoAddress,
-  retrieveNftListing,
-} from "api/assets";
+import { getNFTsByDaoAddress, retrieveNftListing } from "api/assets";
 import SafeAppsSDK from "@safe-global/safe-apps-sdk";
 import { useAccount } from "wagmi";
 import {
@@ -529,363 +523,22 @@ const ProposalDetail = ({ pid, daoAddress }) => {
   const executeFunction = async (proposalStatus) => {
     setLoaderOpen(true);
 
-    let data;
-    let approvalData;
-    let transactionData;
     const ABI = await fetchABI(proposalData, clubData);
 
-    getEncodedData();
-
-    let membersArray = [];
-    let airDropAmountArray = [];
-
-    if (proposalData.commands[0].executionId === 0) {
-      const membersData = await subgraphQuery(
-        SUBGRAPH_URL,
-        QUERY_ALL_MEMBERS(daoAddress),
-      );
-      setMembers(membersData);
-      membersData.users.map((member) => membersArray.push(member.userAddress));
-
-      let iface = new Interface(ABI);
-      approvalData = iface.encodeFunctionData("approve", [
-        AIRDROP_ACTION_ADDRESS,
-        proposalData.commands[0].airDropAmount,
-      ]);
-
-      if (proposalData.commands[0].airDropCarryFee !== 0) {
-        const carryFeeAmount =
-          (proposalData.commands[0].airDropAmount *
-            proposalData.commands[0].airDropCarryFee) /
-          100;
-        airDropAmountArray = await Promise.all(
-          membersArray.map(async (member) => {
-            const balance = await getNftBalance(
-              clubData.tokenType,
-              Web3.utils.toChecksumAddress(member),
-            );
-
-            let clubTokensMinted;
-            if (clubData.tokenType === "erc20") {
-              clubTokensMinted = await getERC20TotalSupply();
-            } else {
-              clubTokensMinted = await getNftOwnersCount();
-            }
-
-            return (
-              ((proposalData.commands[0].airDropAmount - carryFeeAmount) *
-                balance) /
-              clubTokensMinted
-            )
-              .toFixed(0)
-              .toString();
-          }),
-        );
-        airDropAmountArray.unshift(carryFeeAmount.toString());
-        membersArray.unshift(
-          Web3.utils.toChecksumAddress(proposalData.createdBy),
-        );
-      } else {
-        airDropAmountArray = await Promise.all(
-          membersArray.map(async (member) => {
-            const balance = await getNftBalance(
-              clubData.tokenType,
-              Web3.utils.toChecksumAddress(member),
-            );
-
-            let clubTokensMinted;
-            if (clubData.tokenType === "erc20") {
-              clubTokensMinted = await getERC20TotalSupply();
-            } else {
-              clubTokensMinted = await getNftOwnersCount();
-            }
-
-            return (
-              (proposalData.commands[0].airDropAmount * balance) /
-              clubTokensMinted
-            )
-              .toFixed(0)
-              .toString();
-          }),
-        );
-      }
-
-      data = iface.encodeFunctionData("airDropToken", [
-        proposalData.commands[0].airDropToken,
-        airDropAmountArray,
-        membersArray,
-      ]);
-    }
-
-    if (proposalData.commands[0].executionId === 1) {
-      let iface = new Interface(ABI);
-
-      if (clubData.tokenType === "erc20") {
-        data = iface.encodeFunctionData("mintGTToAddress", [
-          [proposalData.commands[0].mintGTAmounts.toString()],
-          proposalData.commands[0].mintGTAddresses,
-        ]);
-      } else {
-        const clubDetails = await subgraphQuery(
-          SUBGRAPH_URL,
-          QUERY_CLUB_DETAILS(daoAddress),
-        );
-        const tokenURI = clubDetails?.stations[0].imageUrl;
-        data = iface.encodeFunctionData("mintGTToAddress", [
-          proposalData.commands[0].mintGTAmounts,
-          [tokenURI],
-          proposalData.commands[0].mintGTAddresses,
-        ]);
-      }
-    }
-
-    if (proposalData.commands[0].executionId === 2) {
-      let iface = new Interface(ABI);
-      data = iface.encodeFunctionData("updateGovernanceSettings", [
-        proposalData.commands[0].quorum * 100,
-        proposalData.commands[0].threshold * 100,
-      ]);
-    }
-    if (proposalData.commands[0].executionId === 3) {
-      let iface = new Interface(ABI);
-
-      data = iface.encodeFunctionData("updateTotalRaiseAmount", [
-        convertToWeiGovernance(
-          convertToWeiGovernance(proposalData.commands[0].totalDeposits, 6) /
-            factoryData?.pricePerToken,
-          18,
-        ),
-        factoryData?.pricePerToken,
-        daoAddress,
-      ]);
-    }
-    if (proposalData.commands[0].executionId === 4) {
-      let iface = new Interface(ABI);
-
-      approvalData = iface.encodeFunctionData("approve", [
-        AIRDROP_ACTION_ADDRESS,
-        proposalData.commands[0].customTokenAmounts[0],
-      ]);
-
-      data = iface.encodeFunctionData("airDropToken", [
-        proposalData.commands[0].customToken,
-        proposalData.commands[0].customTokenAmounts,
-        proposalData.commands[0].customTokenAddresses,
-      ]);
-
-      membersArray = proposalData.commands[0].customTokenAddresses;
-      airDropAmountArray = proposalData.commands[0].customTokenAmounts;
-    }
-    if (proposalData?.commands[0].executionId === 5) {
-      let iface = new Interface(ABI);
-
-      data = iface.encodeFunctionData("transferNft", [
-        proposalData?.commands[0].customNft,
-        proposalData?.commands[0].customTokenAddresses[0],
-        proposalData?.commands[0].customNftToken,
-      ]);
-    }
-    if (proposalData?.commands[0].executionId === 8) {
-      const parts = proposalData?.commands[0].nftLink.split("/");
-
-      const linkData = parts.slice(-3);
-      const nftdata = await retrieveNftListing(
-        linkData[0],
-        linkData[1],
-        linkData[2],
-      );
-
-      if (nftdata) {
-        // const offer = {
-        //   hash: data.data.orders[0].order_hash,
-        //   chain: linkData[0],
-        //   protocol_address: data.data.orders[0].protocol_address,
-        // };
-        const offer = {
-          hash: nftdata.data.orders[0].order_hash,
-          chain: linkData[0],
-          protocol_address: nftdata.data.orders[0].protocol_address,
-        };
-
-        const fulfiller = {
-          address: daoAddress,
-        };
-        const consideration = {
-          asset_contract_address: linkData[1],
-          token_id: linkData[2],
-        };
-        transactionData = await fulfillOrder(offer, fulfiller, consideration);
-        let iface = new Interface(ABI);
-
-        data = iface.encodeFunctionData("fulfillBasicOrder_efficient_6GL6yc", [
-          [
-            transactionData.fulfillment_data.transaction.input_data.parameters
-              .considerationToken,
-            transactionData.fulfillment_data.transaction.input_data.parameters
-              .considerationIdentifier,
-            transactionData.fulfillment_data.transaction.input_data.parameters
-              .considerationAmount,
-            transactionData.fulfillment_data.transaction.input_data.parameters
-              .offerer,
-            transactionData.fulfillment_data.transaction.input_data.parameters
-              .zone,
-            transactionData.fulfillment_data.transaction.input_data.parameters
-              .offerToken,
-            transactionData.fulfillment_data.transaction.input_data.parameters
-              .offerIdentifier,
-            transactionData.fulfillment_data.transaction.input_data.parameters
-              .offerAmount,
-            transactionData.fulfillment_data.transaction.input_data.parameters
-              .basicOrderType,
-            transactionData.fulfillment_data.transaction.input_data.parameters
-              .startTime,
-            transactionData.fulfillment_data.transaction.input_data.parameters
-              .endTime,
-            transactionData.fulfillment_data.transaction.input_data.parameters
-              .zoneHash,
-            transactionData.fulfillment_data.transaction.input_data.parameters
-              .salt,
-            transactionData.fulfillment_data.transaction.input_data.parameters
-              .offererConduitKey,
-            transactionData.fulfillment_data.transaction.input_data.parameters
-              .fulfillerConduitKey,
-            transactionData.fulfillment_data.transaction.input_data.parameters
-              .totalOriginalAdditionalRecipients,
-            transactionData.fulfillment_data.transaction.input_data.parameters
-              .additionalRecipients,
-            transactionData.fulfillment_data.transaction.input_data.parameters
-              .signature,
-          ],
-        ]);
-      }
-    }
-    if (proposalData?.commands[0].executionId === 9) {
-      const parts = proposalData?.commands[0].nftLink.split("/");
-
-      const linkData = parts.slice(-3);
-      let iface = new Interface(ABI);
-
-      approvalData = iface.encodeFunctionData("setApprovalForAll", [
-        "0x1E0049783F008A0085193E00003D00cd54003c71",
-        true,
-      ]);
-
-      // data = iface.encodeFunctionData("eth_signTransaction", [
-      //   [
-      //     gnosisAddress,
-      //     JSON.stringify({
-      //       offerer: gnosisAddress,
-      //       zone: "0x0000000000000000000000000000000000000000",
-      //       zoneHash:
-      //         "0x0000000000000000000000000000000000000000000000000000000000000000",
-      //       startTime: 1690260419,
-      //       endTime: 1692938817,
-      //       orderType: 0,
-      //       offer: [
-      //         {
-      //           itemType: 2, // erc 721
-      //           token: "0xed55e4477b795eaa9bb4bca24df42214e1a05c18", // nft contract address
-      //           identifierOrCriteria: "1",
-      //           startAmount: "1",
-      //           endAmount: "1",
-      //         },
-      //       ],
-      //       consideration: [
-      //         {
-      //           itemType: 0, // same
-      //           token: "0x0000000000000000000000000000000000000000",
-      //           identifierOrCriteria: "0",
-      //           startAmount: "9750000000000000000",
-      //           endAmount: "9750000000000000000",
-      //           recipient: "0xed55e4477b795eaa9bb4bca24df42214e1a05c18",
-      //         },
-      //         {
-      //           itemType: 0, // same
-      //           token: "0x0000000000000000000000000000000000000000", // same
-      //           identifierOrCriteria: "0", // same
-      //           startAmount: "250000000000000000", // same
-      //           endAmount: "250000000000000000", // same
-      //           recipient: "0x0000a26b00c1F0DF003000390027140000fAa719", // 0x0000a26b00c1F0DF003000390027140000fAa719
-      //         },
-      //       ],
-      //       salt: "12686911856931635052326433555881236148",
-      //       conduitKey:
-      //         "0x0000007b02230091a7ed01230072f7006a004d60a8d4e71d599b8104250f0000",
-      //       protocol_address: "0x00000000000000ADc04C56Bf30aC9d3c0aAF14dC",
-      //     }),
-      //   ],
-      // ]);
-
-      // await signTypedData(
-      //   JSON.stringify({
-      //     offerer: gnosisAddress,
-      //     zone: "0x0000000000000000000000000000000000000000",
-      //     zoneHash:
-      //       "0x0000000000000000000000000000000000000000000000000000000000000000",
-      //     startTime: 1690260419,
-      //     endTime: 1692938817,
-      //     orderType: 0,
-      //     offer: [
-      //       {
-      //         itemType: 2, // erc 721
-      //         token: "0xed55e4477b795eaa9bb4bca24df42214e1a05c18", // nft contract address
-      //         identifierOrCriteria: "1",
-      //         startAmount: "1",
-      //         endAmount: "1",
-      //       },
-      //     ],
-      //     consideration: [
-      //       {
-      //         itemType: 0, // same
-      //         token: "0x0000000000000000000000000000000000000000",
-      //         identifierOrCriteria: "0",
-      //         startAmount: "9750000000000000000",
-      //         endAmount: "9750000000000000000",
-      //         recipient: "0xed55e4477b795eaa9bb4bca24df42214e1a05c18",
-      //       },
-      //       {
-      //         itemType: 0, // same
-      //         token: "0x0000000000000000000000000000000000000000", // same
-      //         identifierOrCriteria: "0", // same
-      //         startAmount: "250000000000000000", // same
-      //         endAmount: "250000000000000000", // same
-      //         recipient: "0x0000a26b00c1F0DF003000390027140000fAa719", // 0x0000a26b00c1F0DF003000390027140000fAa719
-      //       },
-      //     ],
-      //     salt: "12686911856931635052326433555881236148",
-      //     conduitKey:
-      //       "0x0000007b02230091a7ed01230072f7006a004d60a8d4e71d599b8104250f0000",
-      //     protocol_address: "0x00000000000000ADc04C56Bf30aC9d3c0aAF14dC",
-      //   }),
-      // );
-      // console.log(data);
-    }
-
-    if (
-      proposalData.commands[0].executionId === 10 ||
-      proposalData.commands[0].executionId === 11 ||
-      proposalData?.commands[0].executionId == 12
-    ) {
-      let iface = new Interface(ABI);
-      let iface2 = new Interface(erc20DaoABI);
-
-      approvalData = iface2.encodeFunctionData("toggleOnlyAllowWhitelist", []);
-
-      data = iface.encodeFunctionData("changeMerkleRoot", [
-        daoAddress,
-        proposalData.commands[0]?.merkleRoot?.merkleRoot,
-      ]);
-    }
-
-    if (proposalData.commands[0].executionId === 13) {
-      let iface = new Interface(ABI);
-
-      data = iface.encodeFunctionData("updateTotalRaiseAmount", [
-        factoryData?.distributionAmount,
-        convertToWeiGovernance(proposalData.commands[0]?.pricePerToken, 6),
-        daoAddress,
-      ]);
-    }
+    const {
+      data,
+      approvalData,
+      transactionData,
+      membersArray,
+      airDropAmountArray,
+    } = getEncodedData(
+      proposalData,
+      SUBGRAPH_URL,
+      daoAddress,
+      AIRDROP_ACTION_ADDRESS,
+      clubData,
+      factoryData,
+    );
 
     const response = updateProposalAndExecution(
       data,
