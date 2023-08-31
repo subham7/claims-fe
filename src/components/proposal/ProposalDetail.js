@@ -31,9 +31,7 @@ import { calculateDays, convertToWeiGovernance } from "utils/globalFunctions";
 import actionIcon from "../../../public/assets/icons/action_icon.svg";
 import surveyIcon from "../../../public/assets/icons/survey_icon.svg";
 import ReactHtmlParser from "react-html-parser";
-import { erc721DaoABI } from "abis/erc721Dao.js";
 import { erc20DaoABI } from "abis/erc20Dao.js";
-import { factoryContractABI } from "abis/factoryContract.js";
 import { Interface } from "ethers";
 
 import Web3 from "web3";
@@ -52,12 +50,13 @@ import {
   getNFTsByDaoAddress,
   retrieveNftListing,
 } from "api/assets";
-import { seaportABI } from "abis/seaport.js";
 import SafeAppsSDK from "@safe-global/safe-apps-sdk";
 import { useAccount } from "wagmi";
 import {
   createRejectSafeTx,
   executeRejectTx,
+  fetchABI,
+  getEncodedData,
   signRejectTx,
 } from "utils/proposal";
 import { BsInfoCircleFill } from "react-icons/bs";
@@ -527,55 +526,16 @@ const ProposalDetail = ({ pid, daoAddress }) => {
     }
   }, [proposalData]);
 
-  async function signTypedData(payload) {
-    try {
-      await sdk.communicator.send("rpcCall", {
-        call: "eth_signTransaction",
-        params: [{ offChainSigning: true }],
-      });
-    } catch (error) {
-      console.log(error);
-    }
-
-    const result = await sdk.txs.signTypedMessage(payload);
-    return result;
-  }
-
   const executeFunction = async (proposalStatus) => {
     setLoaderOpen(true);
 
     let data;
     let approvalData;
     let transactionData;
-    let ABI;
-    if (
-      proposalData.commands[0].executionId === 0 ||
-      proposalData.commands[0].executionId === 4
-    ) {
-      ABI = [
-        "function approve(address spender, uint256 amount)",
-        "function contractCalls(address _to, bytes memory _data)",
-        "function airDropToken(address _airdropTokenAddress,uint256[] memory _airdropAmountArray,address[] memory _members)",
-      ];
-    } else if (
-      proposalData?.commands[0].executionId === 3 ||
-      proposalData?.commands[0].executionId === 10 ||
-      proposalData?.commands[0].executionId === 11 ||
-      proposalData?.commands[0].executionId === 12 ||
-      proposalData?.commands[0].executionId === 13
-    ) {
-      ABI = factoryContractABI;
-    } else if (proposalData?.commands[0].executionId === 8) {
-      ABI = seaportABI;
-    } else if (
-      proposalData?.commands[0].executionId === 9 ||
-      clubData.tokenType === "erc721"
-    ) {
-      ABI = erc721DaoABI;
-    } else if (clubData.tokenType === "erc20") {
-      ABI = erc20DaoABI;
-    }
-    // if(clubData.tokenType === 'erc721')
+    const ABI = await fetchABI(proposalData, clubData);
+
+    getEncodedData();
+
     let membersArray = [];
     let airDropAmountArray = [];
 
