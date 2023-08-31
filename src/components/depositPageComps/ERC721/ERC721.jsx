@@ -143,12 +143,6 @@ const ERC721 = ({
     const fetchSubgraphData = async () => {
       try {
         const imageUrl = await getUploadedNFT(daoAddress);
-        // const { stations } = await queryStationDataFromSubgraph(
-        //   daoAddress,
-        //   networkId,
-        // );
-
-        // if (stations.length) setClubData(stations[0]);
         if (imageUrl.data.length) {
           setImgUrl(imageUrl.data[0].imageUrl);
         } else {
