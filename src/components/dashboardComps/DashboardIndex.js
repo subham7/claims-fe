@@ -35,10 +35,7 @@ import { addNftsOwnedByDao } from "../../redux/reducers/club";
 import { useAccount, useNetwork } from "wagmi";
 import useAppContractMethods from "../../hooks/useAppContractMethods";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
-import {
-  queryAllMembersFromSubgraph,
-  queryStationDataFromSubgraph,
-} from "utils/stationsSubgraphHelper";
+import { queryAllMembersFromSubgraph } from "utils/stationsSubgraphHelper";
 
 const DashboardIndex = ({ daoAddress }) => {
   const dispatch = useDispatch();
@@ -112,16 +109,9 @@ const DashboardIndex = ({ daoAddress }) => {
           networkId,
         );
 
-        const clubDetails = await queryStationDataFromSubgraph(
-          daoAddress,
-          networkId,
-        );
-
-        if (clubDetails && membersData) {
+        if (clubData && membersData) {
           if (tokenType === "erc721") {
-            const imageUrl = await getImageURL(
-              clubDetails.stations[0].imageUrl,
-            );
+            const imageUrl = await getImageURL(clubData?.stations[0]?.imageUrl);
 
             setClubDetails({
               clubImageUrl: imageUrl,
@@ -137,7 +127,7 @@ const DashboardIndex = ({ daoAddress }) => {
     } catch (error) {
       console.log(error);
     }
-  }, [daoAddress, networkId, tokenType, walletAddress]);
+  }, [clubData, daoAddress, networkId, tokenType, walletAddress]);
 
   const fetchAssets = useCallback(async () => {
     try {

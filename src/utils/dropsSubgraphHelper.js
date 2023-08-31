@@ -1,8 +1,8 @@
 import {
-  QUERY_ALL_DROPS_OF_CREATOR,
+  QUERY_WALLET_DROPS,
   QUERY_ALL_DROPS_TRANSACTIONS,
   QUERY_DROP_DETAILS,
-  QUERY_WALLET_WISE_TRANSACTIONS,
+  QUERY_WALLET_CLAIM_TRANSACTIONS,
 } from "api/graphql/dropQueries";
 import { CHAIN_CONFIG } from "./constants";
 import { subgraphQuery } from "./subgraphs";
@@ -14,7 +14,7 @@ export const queryWalletWiseTransactionsFromSubgraph = async (
   try {
     const data = await subgraphQuery(
       CHAIN_CONFIG[networkId]?.claimsSubgraphUrl,
-      QUERY_WALLET_WISE_TRANSACTIONS(claimAddress),
+      QUERY_WALLET_CLAIM_TRANSACTIONS(claimAddress),
     );
     return data ?? {};
   } catch (error) {
@@ -41,7 +41,7 @@ export const queryDropsListFromSubgraph = async (walletAddress, networkId) => {
   try {
     const data = await subgraphQuery(
       CHAIN_CONFIG[networkId]?.claimsSubgraphUrl,
-      QUERY_ALL_DROPS_OF_CREATOR(walletAddress),
+      QUERY_WALLET_DROPS(walletAddress),
     );
     return data ?? {};
   } catch (error) {

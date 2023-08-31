@@ -96,6 +96,7 @@ const useClubFetch = ({ daoAddress }) => {
               tokenType: clubData.stations[0].tokenType,
               membersCount: clubData.stations[0].membersCount,
               deployedTime: clubData.stations[0].timeStamp,
+              imgUrl: clubData.stations[0].imageUrl,
             }),
           );
         }

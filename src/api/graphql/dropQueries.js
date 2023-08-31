@@ -13,7 +13,7 @@ export const QUERY_ALL_DROPS_TRANSACTIONS = (claimAddress) => {
       }`;
 };
 
-export const QUERY_WALLET_WISE_TRANSACTIONS = (claimAddress) => {
+export const QUERY_WALLET_CLAIM_TRANSACTIONS = (claimAddress) => {
   return `query{
               claimers(where: {claimAddress: "${claimAddress}"}) {
                 claimAddress
@@ -24,7 +24,7 @@ export const QUERY_WALLET_WISE_TRANSACTIONS = (claimAddress) => {
       }`;
 };
 
-export const QUERY_ALL_DROPS_OF_CREATOR = (creatorAddress) => {
+export const QUERY_WALLET_DROPS = (creatorAddress) => {
   return `query{
               claims(where: {creatorAddress: "${creatorAddress}"}, orderBy: timestamp) {
                 id

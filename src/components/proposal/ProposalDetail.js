@@ -283,7 +283,6 @@ const ProposalDetail = ({ pid, daoAddress }) => {
   const [txHash, setTxHash] = useState();
   const [cancelTxHash, setCancelTxHash] = useState();
   const [signedOwners, setSignedOwners] = useState([]);
-  const [clubDetails, setClubDetails] = useState();
 
   const [openSnackBar, setOpenSnackBar] = useState(false);
   const [message, setMessage] = useState("");
@@ -657,7 +656,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
           proposalData.commands[0].mintGTAddresses,
         ]);
       } else {
-        const tokenURI = clubDetails?.stations[0].imageUrl;
+        const tokenURI = clubData?.imgUrl;
         data = iface.encodeFunctionData("mintGTToAddress", [
           proposalData.commands[0].mintGTAmounts,
           [tokenURI],
@@ -1119,18 +1118,8 @@ const ProposalDetail = ({ pid, daoAddress }) => {
       }
     };
 
-    const fetchStationData = async () => {
-      try {
-        const data = await queryStationDataFromSubgraph(daoAddress, networkId);
-        if (data) setClubDetails(data);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
     if (daoAddress && networkId && walletAddress) {
       fetchAllMembers();
-      fetchStationData();
     }
   }, [daoAddress, networkId, walletAddress]);
 
