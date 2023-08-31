@@ -431,28 +431,7 @@ const DashboardIndex = ({ daoAddress }) => {
             <div style={{ marginTop: "32px" }}>
               <Typography variant="heading">All Assets</Typography>
             </div>
-            {/* <Grid container mt={4}>
-                      <Grid item>
-                        <ButtonDropDown label="All" />
-                      </Grid>
-                      <Grid item ml={2}>
-                        <TextField
-                          className={classes.searchField}
-                          placeholder="Search by name or address"
-                          InputProps={{
-                            endAdornment: (
-                              <IconButton
-                                type="submit"
-                                sx={{ p: "10px" }}
-                                aria-label="search"
-                              >
-                                <SearchIcon />
-                              </IconButton>
-                            ),
-                          }}
-                        />
-                      </Grid>
-                    </Grid> */}
+
             <div
               style={{
                 display: "flex",
@@ -561,8 +540,6 @@ const DashboardIndex = ({ daoAddress }) => {
                 )
               ) : null}
             </Grid>
-            {/* <Typography mt={16} mb={5} variant="subHeading">Off-chain investments</Typography>
-                      <BasicTable /> */}
           </Grid>
         </Grid>
         <Grid item md={3}>
