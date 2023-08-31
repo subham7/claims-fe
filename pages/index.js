@@ -12,7 +12,6 @@ import { Button, Typography } from "@components/ui";
 import { useDispatch } from "react-redux";
 import { makeStyles } from "@mui/styles";
 import { useRouter } from "next/router";
-import { addDaoAddress } from "../src/redux/reducers/club";
 import NewCard from "../src/components/cards/card";
 import { subgraphQuery } from "../src/utils/subgraphs";
 import {
@@ -171,7 +170,6 @@ const App = () => {
   };
 
   const handleItemClick = async (data) => {
-    dispatch(addDaoAddress(data.daoAddress));
     const clubData = await subgraphQuery(
       networkId == "0x5"
         ? SUBGRAPH_URL_GOERLI
