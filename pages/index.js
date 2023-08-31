@@ -187,6 +187,17 @@ const App = () => {
             tokenType: clubData.stations[0].tokenType,
             membersCount: clubData.stations[0].membersCount,
             deployedTime: clubData.stations[0].timeStamp,
+            imgUrl: clubData.stations[0].imageUrl,
+            minDepositAmount: clubData.stations[0].minDepositAmount,
+            maxDepositAmount: clubData.stations[0].maxDepositAmount,
+            pricePerToken: clubData.stations[0].pricePerToken,
+            isGovernanceActive: clubData.stations[0].isGovernanceActive,
+            quorum: clubData.stations[0].quorum,
+            threshold: clubData.stations[0].threshold,
+            raiseAmount: clubData.stations[0].raiseAmount,
+            totalAmountRaised: clubData.stations[0].totalAmountRaised,
+            distributionAmount: clubData.stations[0].distributionAmount,
+            maxTokensPerUser: clubData.stations[0].maxTokensPerUser,
           }),
         );
       router.push(

@@ -17,7 +17,6 @@ import ERC20Details from "./ERC20Details";
 import { useAccount } from "wagmi";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 import useAppContractMethods from "hooks/useAppContractMethods";
-import { queryStationDataFromSubgraph } from "utils/stationsSubgraphHelper";
 
 const ERC20 = ({
   clubInfo,
@@ -29,7 +28,6 @@ const ERC20 = ({
   whitelistUserData,
   networkId,
 }) => {
-  const [clubData, setClubData] = useState([]);
   const [active, setActive] = useState(false);
   const [erc20TokenDetails, setErc20TokenDetails] = useState({
     tokenSymbol: "",
@@ -56,8 +54,8 @@ const ERC20 = ({
 
   const { buyGovernanceTokenERC20DAO } = useAppContractMethods();
 
-  const SUBGRAPH_URL = useSelector((state) => {
-    return state.gnosis.subgraphUrl;
+  const clubData = useSelector((state) => {
+    return state.club.clubData;
   });
 
   const FACTORY_CONTRACT_ADDRESS = useSelector((state) => {
@@ -180,21 +178,6 @@ const ERC20 = ({
       console.log(error);
     }
   }, [Deposit_Token_Address]);
-
-  useEffect(() => {
-    const fetchSubgraphData = async () => {
-      const { stations } = await queryStationDataFromSubgraph(
-        daoAddress,
-        networkId,
-      );
-
-      if (stations.length) setClubData(stations[0]);
-    };
-
-    if (daoAddress && walletAddress && networkId) {
-      fetchSubgraphData();
-    }
-  }, [daoAddress, networkId, walletAddress]);
 
   useEffect(() => {
     fetchTokenDetails();

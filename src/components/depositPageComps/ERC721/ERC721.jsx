@@ -13,7 +13,6 @@ import { useAccount } from "wagmi";
 import { getUploadedNFT } from "api/assets";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 import useAppContractMethods from "hooks/useAppContractMethods";
-import { queryStationDataFromSubgraph } from "utils/stationsSubgraphHelper";
 
 const ERC721 = ({
   daoAddress,
@@ -24,7 +23,7 @@ const ERC721 = ({
   whitelistUserData,
   networkId,
 }) => {
-  const [clubData, setClubData] = useState([]);
+  // const [clubData, setClubData] = useState([]);
   const [count, setCount] = useState(1);
   const [balanceOfNft, setBalanceOfNft] = useState();
   const [erc20TokenDetails, setErc20TokenDetails] = useState({
@@ -55,6 +54,10 @@ const ERC721 = ({
 
   const FACTORY_CONTRACT_ADDRESS = useSelector((state) => {
     return state.gnosis.factoryContractAddress;
+  });
+
+  const clubData = useSelector((state) => {
+    return state.club.clubData;
   });
 
   const Deposit_Token_Address = useSelector((state) => {
@@ -140,19 +143,17 @@ const ERC721 = ({
     const fetchSubgraphData = async () => {
       try {
         const imageUrl = await getUploadedNFT(daoAddress);
-        const { stations } = await queryStationDataFromSubgraph(
-          daoAddress,
-          networkId,
-        );
+        // const { stations } = await queryStationDataFromSubgraph(
+        //   daoAddress,
+        //   networkId,
+        // );
 
-        if (stations.length) setClubData(stations[0]);
+        // if (stations.length) setClubData(stations[0]);
         if (imageUrl.data.length) {
           setImgUrl(imageUrl.data[0].imageUrl);
         } else {
-          if (response) {
-            const imageUrl = await getImageURL(stations[0].imageUrl);
-            setImgUrl(imageUrl);
-          }
+          const imageUrl = await getImageURL(clubData?.imgUrl);
+          setImgUrl(imageUrl);
         }
       } catch (error) {
         console.log(error);
@@ -162,7 +163,7 @@ const ERC721 = ({
     if (daoAddress) {
       fetchSubgraphData();
     }
-  }, [daoAddress, networkId]);
+  }, [clubData?.imgUrl, daoAddress, networkId]);
 
   useEffect(() => {
     fetchTokenDetails();

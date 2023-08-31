@@ -70,16 +70,16 @@ const useClubFetch = ({ daoAddress }) => {
   }, [dispatch, networkId]);
 
   useEffect(() => {
-    try {
-      const fetchStationData = async () => {
+    const fetchStationData = async () => {
+      try {
         const data = await queryStationDataFromSubgraph(daoAddress, networkId);
         if (data) setClubData(data);
+      } catch (error) {
+        console.log(error);
+      }
 
-        if (daoAddress && networkId && walletAddress) fetchStationData();
-      };
-    } catch (error) {
-      console.log(error);
-    }
+      if (daoAddress && networkId && walletAddress) fetchStationData();
+    };
   }, [daoAddress, networkId, walletAddress]);
 
   useEffect(() => {
@@ -97,6 +97,16 @@ const useClubFetch = ({ daoAddress }) => {
               membersCount: clubData.stations[0].membersCount,
               deployedTime: clubData.stations[0].timeStamp,
               imgUrl: clubData.stations[0].imageUrl,
+              minDepositAmount: clubData.stations[0].minDepositAmount,
+              maxDepositAmount: clubData.stations[0].maxDepositAmount,
+              pricePerToken: clubData.stations[0].pricePerToken,
+              isGovernanceActive: clubData.stations[0].isGovernanceActive,
+              quorum: clubData.stations[0].quorum,
+              threshold: clubData.stations[0].threshold,
+              raiseAmount: clubData.stations[0].raiseAmount,
+              totalAmountRaised: clubData.stations[0].totalAmountRaised,
+              distributionAmount: clubData.stations[0].distributionAmount,
+              maxTokensPerUser: clubData.stations[0].maxTokensPerUser,
             }),
           );
         }
@@ -195,6 +205,7 @@ const useClubFetch = ({ daoAddress }) => {
     reduxClubData.gnosisAddress,
     reduxClubData.tokenType,
     networkId,
+    router,
   ]);
 
   useEffect(() => {

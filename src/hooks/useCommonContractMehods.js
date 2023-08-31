@@ -4,6 +4,7 @@ import { erc721TokenABI } from "abis/nft.js";
 import { convertToWeiGovernance } from "utils/globalFunctions";
 import { useAccount, useNetwork } from "wagmi";
 import { CHAIN_CONFIG } from "utils/constants";
+import { writeContractFunction } from "utils/helper";
 
 const useCommonContractMethods = () => {
   const { address: walletAddress } = useAccount();

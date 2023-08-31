@@ -13,6 +13,16 @@ export const slice = createSlice({
       membersCount: null,
       deployedTime: null,
       imgUrl: null,
+      minDepositAmount: null,
+      maxDepositAmount: null,
+      pricePerToken: null,
+      isGovernanceActive: null,
+      quorum: null,
+      threshold: null,
+      raiseAmount: null,
+      totalAmountRaised: null,
+      distributionAmount: null,
+      maxTokensPerUser: null,
     },
     erc20ClubDetails: {
       quorum: null,
@@ -58,7 +68,16 @@ export const slice = createSlice({
       state.clubData.tokenType = action.payload.tokenType;
       state.clubData.membersCount = action.payload.membersCount;
       state.clubData.deployedTime = action.payload.deployedTime;
-      state.clubData.imgUrl = action.payload.imgUrl;
+      state.clubData.minDepositAmount = action.payload.minDepositAmount;
+      state.clubData.maxDepositAmount = action.payload.maxDepositAmount;
+      state.clubData.pricePerToken = action.payload.pricePerToken;
+      state.clubData.threshold = action.payload.threshold;
+      state.clubData.isGovernanceActive = action.payload.isGovernanceActive;
+      state.clubData.raiseAmount = action.payload.raiseAmount;
+      state.clubData.maxTokensPerUser = action.payload.maxTokensPerUser;
+      state.clubData.distributionAmount = action.payload.distributionAmount;
+      state.clubData.totalAmountRaised = action.payload.totalAmountRaised;
+      state.clubData.quorum = action.payload.quorum;
     },
     addErc20ClubDetails: (state, action) => {
       state.erc20ClubDetails.quorum = action.payload.quorum;
