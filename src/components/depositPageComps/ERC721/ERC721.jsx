@@ -1,8 +1,6 @@
 import { Alert } from "@mui/material";
 import React, { useCallback, useEffect, useState } from "react";
 import classes from "./ERC721.module.scss";
-import { subgraphQuery } from "utils/subgraphs";
-import { QUERY_CLUB_DETAILS } from "api/graphql/queries";
 import { useSelector } from "react-redux";
 import { convertFromWeiGovernance, getImageURL } from "utils/globalFunctions";
 import dayjs from "dayjs";
@@ -15,6 +13,7 @@ import { useAccount } from "wagmi";
 import { getUploadedNFT } from "api/assets";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 import useAppContractMethods from "hooks/useAppContractMethods";
+import { queryStationDataFromSubgraph } from "utils/stationsSubgraphHelper";
 
 const ERC721 = ({
   daoAddress,
@@ -23,6 +22,7 @@ const ERC721 = ({
   isTokenGated,
   daoDetails,
   whitelistUserData,
+  networkId,
 }) => {
   const [clubData, setClubData] = useState([]);
   const [count, setCount] = useState(1);
@@ -52,10 +52,6 @@ const ERC721 = ({
   const { buyGovernanceTokenERC721DAO } = useAppContractMethods();
 
   const { address: walletAddress } = useAccount();
-
-  const SUBGRAPH_URL = useSelector((state) => {
-    return state.gnosis.subgraphUrl;
-  });
 
   const FACTORY_CONTRACT_ADDRESS = useSelector((state) => {
     return state.gnosis.factoryContractAddress;
@@ -144,13 +140,12 @@ const ERC721 = ({
     const fetchSubgraphData = async () => {
       try {
         const imageUrl = await getUploadedNFT(daoAddress);
-        const response = await subgraphQuery(
-          SUBGRAPH_URL,
-          QUERY_CLUB_DETAILS(daoAddress),
+        const { stations } = await queryStationDataFromSubgraph(
+          daoAddress,
+          networkId,
         );
-        const { stations } = response;
 
-        setClubData(stations[0]);
+        if (stations.length) setClubData(stations[0]);
         if (imageUrl.data.length) {
           setImgUrl(imageUrl.data[0].imageUrl);
         } else {
@@ -167,7 +162,7 @@ const ERC721 = ({
     if (daoAddress) {
       fetchSubgraphData();
     }
-  }, [SUBGRAPH_URL, daoAddress]);
+  }, [daoAddress, networkId]);
 
   useEffect(() => {
     fetchTokenDetails();

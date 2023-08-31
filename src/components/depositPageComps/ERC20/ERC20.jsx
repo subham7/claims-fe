@@ -1,12 +1,10 @@
 import { useFormik } from "formik";
 import React, { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { QUERY_CLUB_DETAILS } from "api/graphql/queries";
 import {
   convertFromWeiGovernance,
   convertToWeiGovernance,
 } from "utils/globalFunctions";
-import { subgraphQuery } from "utils/subgraphs";
 import About from "../ERC721/About";
 import Header from "../ERC721/Header";
 import classes from "./ERC20.module.scss";
@@ -19,6 +17,7 @@ import ERC20Details from "./ERC20Details";
 import { useAccount } from "wagmi";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 import useAppContractMethods from "hooks/useAppContractMethods";
+import { queryStationDataFromSubgraph } from "utils/stationsSubgraphHelper";
 
 const ERC20 = ({
   clubInfo,
@@ -28,6 +27,7 @@ const ERC20 = ({
   isEligibleForTokenGating,
   isTokenGated,
   whitelistUserData,
+  networkId,
 }) => {
   const [clubData, setClubData] = useState([]);
   const [active, setActive] = useState(false);
@@ -183,21 +183,18 @@ const ERC20 = ({
 
   useEffect(() => {
     const fetchSubgraphData = async () => {
-      const response = await subgraphQuery(
-        SUBGRAPH_URL,
-        QUERY_CLUB_DETAILS(daoAddress),
+      const { stations } = await queryStationDataFromSubgraph(
+        daoAddress,
+        networkId,
       );
 
-      if (response) {
-        const { stations } = response;
-        setClubData(stations[0]);
-      }
+      if (stations.length) setClubData(stations[0]);
     };
 
-    if (daoAddress) {
+    if (daoAddress && walletAddress && networkId) {
       fetchSubgraphData();
     }
-  }, [SUBGRAPH_URL, daoAddress]);
+  }, [daoAddress, networkId, walletAddress]);
 
   useEffect(() => {
     fetchTokenDetails();

@@ -25,11 +25,6 @@ import { DashboardStyles } from "./DashboardStyles";
 import { useRouter } from "next/router";
 import { getAssetsByDaoAddress, getNFTsByDaoAddress } from "../../api/assets";
 import { getProposalByDaoAddress } from "../../api/proposal";
-import { subgraphQuery } from "../../utils/subgraphs";
-import {
-  QUERY_ALL_MEMBERS,
-  QUERY_CLUB_DETAILS,
-} from "../../api/graphql/queries";
 import {
   convertFromWeiGovernance,
   getImageURL,
@@ -37,15 +32,24 @@ import {
 import { GiTwoCoins } from "react-icons/gi";
 import { IoColorPalette } from "react-icons/io5";
 import { addNftsOwnedByDao } from "../../redux/reducers/club";
-import { useAccount } from "wagmi";
+import { useAccount, useNetwork } from "wagmi";
 import useAppContractMethods from "../../hooks/useAppContractMethods";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
+import {
+  queryAllMembersFromSubgraph,
+  queryStationDataFromSubgraph,
+} from "utils/stationsSubgraphHelper";
 
 const DashboardIndex = ({ daoAddress }) => {
   const dispatch = useDispatch();
   const clubData = useSelector((state) => {
     return state.club.clubData;
   });
+
+  const { address: walletAddress } = useAccount();
+
+  const { chain } = useNetwork();
+  const networkId = "0x" + chain?.id.toString(16);
 
   const [clubDetails, setClubDetails] = useState({
     clubImageUrl: "",
@@ -60,7 +64,6 @@ const DashboardIndex = ({ daoAddress }) => {
   const [balanceOfUser, setBalanceOfUser] = useState(0);
   const [clubTokenMinted, setClubTokenMinted] = useState(0);
 
-  const { address: walletAddress } = useAccount();
   const router = useRouter();
   const classes = DashboardStyles();
 
@@ -103,34 +106,38 @@ const DashboardIndex = ({ daoAddress }) => {
 
   const fetchClubDetails = useCallback(async () => {
     try {
-      if (daoAddress) {
-        const membersData = await subgraphQuery(
-          SUBGRAPH_URL,
-          QUERY_ALL_MEMBERS(daoAddress),
+      if (daoAddress && walletAddress && networkId) {
+        const membersData = await queryAllMembersFromSubgraph(
+          daoAddress,
+          networkId,
         );
 
-        const clubDetails = await subgraphQuery(
-          SUBGRAPH_URL,
-          QUERY_CLUB_DETAILS(daoAddress),
+        const clubDetails = await queryStationDataFromSubgraph(
+          daoAddress,
+          networkId,
         );
 
-        if (tokenType === "erc721") {
-          const imageUrl = await getImageURL(clubDetails.stations[0].imageUrl);
+        if (clubDetails && membersData) {
+          if (tokenType === "erc721") {
+            const imageUrl = await getImageURL(
+              clubDetails.stations[0].imageUrl,
+            );
 
-          setClubDetails({
-            clubImageUrl: imageUrl,
-            noOfMembers: membersData?.users?.length,
-          });
-        } else {
-          setClubDetails({
-            noOfMembers: membersData?.users?.length,
-          });
+            setClubDetails({
+              clubImageUrl: imageUrl,
+              noOfMembers: membersData?.users?.length,
+            });
+          } else {
+            setClubDetails({
+              noOfMembers: membersData?.users?.length,
+            });
+          }
         }
       }
     } catch (error) {
       console.log(error);
     }
-  }, [SUBGRAPH_URL, daoAddress, tokenType]);
+  }, [daoAddress, networkId, tokenType, walletAddress]);
 
   const fetchAssets = useCallback(async () => {
     try {

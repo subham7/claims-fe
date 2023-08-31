@@ -16,7 +16,7 @@ export const queryWalletWiseTransactionsFromSubgraph = async (
       CHAIN_CONFIG[networkId]?.claimsSubgraphUrl,
       QUERY_WALLET_WISE_TRANSACTIONS(claimAddress),
     );
-    return data ?? null;
+    return data ?? {};
   } catch (error) {
     throw error;
   }
@@ -31,7 +31,7 @@ export const queryAllDropsTransactionsFromSubgraph = async (
       CHAIN_CONFIG[networkId]?.claimsSubgraphUrl,
       QUERY_ALL_DROPS_TRANSACTIONS(claimAddress),
     );
-    return data ?? null;
+    return data ?? {};
   } catch (error) {
     throw error;
   }
@@ -43,22 +43,19 @@ export const queryDropsListFromSubgraph = async (walletAddress, networkId) => {
       CHAIN_CONFIG[networkId]?.claimsSubgraphUrl,
       QUERY_ALL_DROPS_OF_CREATOR(walletAddress),
     );
-    return data ?? null;
+    return data ?? {};
   } catch (error) {
     throw error;
   }
 };
 
-export const queryClaimDetailsFromSubgraph = async (
-  claimAddress,
-  networkId,
-) => {
+export const queryDropDetailsFromSubgraph = async (claimAddress, networkId) => {
   try {
     const data = await subgraphQuery(
       CHAIN_CONFIG[networkId]?.claimsSubgraphUrl,
       QUERY_DROP_DETAILS(claimAddress),
     );
-    return data ?? null;
+    return data ?? {};
   } catch (error) {
     throw error;
   }

@@ -15,7 +15,7 @@ export const queryStationDataFromSubgraph = async (daoAddress, networkId) => {
       QUERY_STATION_DETAILS(daoAddress),
     );
 
-    return data ?? null;
+    return data ?? {};
   } catch (error) {
     throw error;
   }
@@ -31,7 +31,7 @@ export const queryStationListFromSubgraph = async (
       QUERY_STATIONS_LIST(walletAddress),
     );
 
-    return data ?? null;
+    return data ?? {};
   } catch (error) {
     throw error;
   }
@@ -44,7 +44,7 @@ export const queryAllMembersFromSubgraph = async (daoAddress, networkId) => {
       QUERY_ALL_MEMBERS(daoAddress),
     );
 
-    return data ?? null;
+    return data ?? {};
   } catch (error) {
     throw error;
   }
@@ -63,7 +63,7 @@ export const queryPaginatedMembersFromSubgraph = async (
       CHAIN_CONFIG[networkId]?.stationSubgraphUrl,
       QUERY_PAGINATED_MEMBERS(daoAddress, first, skip, startDate, endDate),
     );
-    return data ?? null;
+    return data ?? {};
   } catch (error) {
     throw error;
   }
@@ -75,7 +75,7 @@ export const queryLatestMembersFromSubgraph = async (daoAddress, networkId) => {
       CHAIN_CONFIG[networkId]?.stationSubgraphUrl,
       QUERY_LATEST_MEMBERS(daoAddress),
     );
-    return data ?? null;
+    return data ?? {};
   } catch (error) {
     throw error;
   }
