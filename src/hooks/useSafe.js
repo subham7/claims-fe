@@ -1,4 +1,4 @@
-import { addClubData, addDaoAddress } from "../redux/reducers/club";
+import { addClubData } from "../redux/reducers/club";
 import {
   setCreateDaoAuthorized,
   setCreateSafeError,
@@ -68,7 +68,6 @@ const useSafe = () => {
           "0x0000000000000000000000000000000000000000"
             ? value.logs[2].address
             : value.logs[0].address;
-        dispatch(addDaoAddress(daoAddress));
 
         await createClubData({
           daoAddress,

@@ -258,6 +258,10 @@ const ProposalDetail = ({ pid, daoAddress }) => {
     return state.club.erc20ClubDetails.threshold;
   });
 
+  const contractInstances = useSelector((state) => {
+    return state.contractInstances.contractInstances;
+  });
+
   const Club_Threshold =
     tokenType === "erc20" ? ERC20_Threshold : ERC721_Threshold;
 
@@ -538,6 +542,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
       AIRDROP_ACTION_ADDRESS,
       clubData,
       factoryData,
+      ABI,
     );
 
     const response = updateProposalAndExecution(

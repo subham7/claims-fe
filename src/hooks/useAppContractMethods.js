@@ -388,6 +388,7 @@ const useAppContractMethods = () => {
     airDropAmountArray,
     transactionData = "",
   ) => {
+    console.log("DATA", data);
     const parameters = data;
     const web3 = new Web3(window.ethereum);
     const ethAdapter = new Web3Adapter({
@@ -417,6 +418,8 @@ const useAppContractMethods = () => {
       airdropContractAddress,
       tokenData,
       gnosisAddress,
+      contractInstances,
+      parameters,
     );
 
     // let approvalTransaction;

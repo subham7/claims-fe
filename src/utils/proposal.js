@@ -13,7 +13,6 @@ import { QUERY_ALL_MEMBERS } from "api/graphql/queries";
 import { convertToWeiGovernance } from "./globalFunctions";
 import { Interface } from "ethers";
 import { fulfillOrder } from "api/assets";
-import contractInstances from "redux/reducers/contractInstances";
 import { SEAPORT_CONTRACT_ADDRESS } from "api";
 
 export const fetchProposals = async (clubId, type) => {
@@ -201,6 +200,11 @@ export const fetchABI = async (proposalData, clubData) => {
         "function contractCalls(address _to, bytes memory _data)",
         "function airDropToken(address _airdropTokenAddress,uint256[] memory _airdropAmountArray,address[] memory _members)",
       ];
+    case 1:
+    case 2:
+    case 5:
+      if (clubData.tokenType === "erc721") return erc721DaoABI;
+      else return erc20DaoABI;
     case 3:
     case 10:
     case 11:
@@ -222,6 +226,7 @@ export const getEncodedData = async (
   AIRDROP_ACTION_ADDRESS,
   clubData,
   factoryData,
+  ABI,
 ) => {
   const executionId = proposalData.commands[0].executionId;
   let membersArray = [];
@@ -461,8 +466,6 @@ export const getEncodedData = async (
   }
 };
 
-const { erc20DaoContractCall } = contractInstances;
-
 export const getTransaction = (
   proposalData,
   daoAddress,
@@ -474,10 +477,15 @@ export const getTransaction = (
   airdropContractAddress,
   tokenData,
   gnosisAddress,
+  contractInstances,
+  parameters,
 ) => {
   const executionId = proposalData.commands[0].executionId;
   let approvalTransaction;
   let transaction;
+
+  const { erc20DaoContractCall } = contractInstances;
+
   switch (executionId) {
     case 0:
     case 4:
@@ -532,6 +540,7 @@ export const getTransaction = (
     case 1:
     case 2:
     case 3:
+      console.log("nkakdm", parameters);
       transaction = {
         //dao
         to: Web3.utils.toChecksumAddress(daoAddress),
