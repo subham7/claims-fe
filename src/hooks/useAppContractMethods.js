@@ -407,7 +407,7 @@ const useAppContractMethods = () => {
       safeAddress: Web3.utils.toChecksumAddress(gnosisAddress),
     });
 
-    const { transaction, approvalTransaction } = getTransaction(
+    const { transaction, approvalTransaction } = await getTransaction(
       proposalData,
       daoAddress,
       factoryContractAddress,

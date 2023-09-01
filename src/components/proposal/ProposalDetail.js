@@ -535,7 +535,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
       transactionData,
       membersArray,
       airDropAmountArray,
-    } = getEncodedData(
+    } = await getEncodedData(
       proposalData,
       SUBGRAPH_URL,
       daoAddress,
@@ -741,7 +741,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
   if (!walletAddress && proposalData === null) {
     return <>loading</>;
   }
-  console.log(isNftSold);
+
   return (
     <>
       <Grid container spacing={6} paddingTop={2} mb={8}>
@@ -1061,7 +1061,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
                               </Grid>
                             </Button>
                           )}
-                          {console.log("xxx", signed)}
+
                           {(signed ||
                             isRejectTxnSigned ||
                             signedOwners.length) &&

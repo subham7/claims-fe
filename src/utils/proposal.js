@@ -9,7 +9,7 @@ import { erc721DaoABI } from "abis/erc721Dao";
 import { erc20DaoABI } from "abis/erc20Dao";
 import { seaportABI } from "abis/seaport";
 import { subgraphQuery } from "./subgraphs";
-import { QUERY_ALL_MEMBERS } from "api/graphql/queries";
+import { QUERY_ALL_MEMBERS, QUERY_CLUB_DETAILS } from "api/graphql/queries";
 import { convertToWeiGovernance } from "./globalFunctions";
 import { Interface } from "ethers";
 import { fulfillOrder } from "api/assets";
@@ -332,6 +332,8 @@ export const getEncodedData = async (
           proposalData.commands[0].mintGTAddresses,
         ]);
       }
+
+      console.log(data);
       return { data };
 
     case 2:
@@ -466,7 +468,7 @@ export const getEncodedData = async (
   }
 };
 
-export const getTransaction = (
+export const getTransaction = async (
   proposalData,
   daoAddress,
   factoryContractAddress,
