@@ -1,8 +1,6 @@
 import { Alert } from "@mui/material";
 import React, { useCallback, useEffect, useState } from "react";
 import classes from "./ERC721.module.scss";
-import { subgraphQuery } from "utils/subgraphs";
-import { QUERY_CLUB_DETAILS } from "api/graphql/queries";
 import { useSelector } from "react-redux";
 import { convertFromWeiGovernance, getImageURL } from "utils/globalFunctions";
 import dayjs from "dayjs";
@@ -23,8 +21,9 @@ const ERC721 = ({
   isTokenGated,
   daoDetails,
   whitelistUserData,
+  networkId,
 }) => {
-  const [clubData, setClubData] = useState([]);
+  // const [clubData, setClubData] = useState([]);
   const [count, setCount] = useState(1);
   const [balanceOfNft, setBalanceOfNft] = useState();
   const [erc20TokenDetails, setErc20TokenDetails] = useState({
@@ -53,12 +52,12 @@ const ERC721 = ({
 
   const { address: walletAddress } = useAccount();
 
-  const SUBGRAPH_URL = useSelector((state) => {
-    return state.gnosis.subgraphUrl;
-  });
-
   const FACTORY_CONTRACT_ADDRESS = useSelector((state) => {
     return state.gnosis.factoryContractAddress;
+  });
+
+  const clubData = useSelector((state) => {
+    return state.club.clubData;
   });
 
   const Deposit_Token_Address = useSelector((state) => {
@@ -144,20 +143,11 @@ const ERC721 = ({
     const fetchSubgraphData = async () => {
       try {
         const imageUrl = await getUploadedNFT(daoAddress);
-        const response = await subgraphQuery(
-          SUBGRAPH_URL,
-          QUERY_CLUB_DETAILS(daoAddress),
-        );
-        const { stations } = response;
-
-        setClubData(stations[0]);
         if (imageUrl.data.length) {
           setImgUrl(imageUrl.data[0].imageUrl);
         } else {
-          if (response) {
-            const imageUrl = await getImageURL(stations[0].imageUrl);
-            setImgUrl(imageUrl);
-          }
+          const imageUrl = await getImageURL(clubData?.imgUrl);
+          setImgUrl(imageUrl);
         }
       } catch (error) {
         console.log(error);
@@ -167,7 +157,7 @@ const ERC721 = ({
     if (daoAddress) {
       fetchSubgraphData();
     }
-  }, [SUBGRAPH_URL, daoAddress]);
+  }, [clubData?.imgUrl, daoAddress, networkId]);
 
   useEffect(() => {
     fetchTokenDetails();

@@ -39,8 +39,6 @@ import { Interface } from "ethers";
 import Web3 from "web3";
 import { Web3Adapter } from "@safe-global/protocol-kit";
 import SafeApiKit from "@safe-global/api-kit";
-import { subgraphQuery } from "utils/subgraphs";
-import { QUERY_ALL_MEMBERS, QUERY_CLUB_DETAILS } from "api/graphql/queries";
 import ProposalExecutionInfo from "@components/proposalComps/ProposalExecutionInfo";
 import Signators from "@components/proposalComps/Signators";
 import ProposalInfo from "@components/proposalComps/ProposalInfo";
@@ -54,7 +52,7 @@ import {
 } from "api/assets";
 import { seaportABI } from "abis/seaport.js";
 import SafeAppsSDK from "@safe-global/safe-apps-sdk";
-import { useAccount } from "wagmi";
+import { useAccount, useNetwork } from "wagmi";
 import {
   createRejectSafeTx,
   executeRejectTx,
@@ -62,6 +60,7 @@ import {
 } from "utils/proposal";
 import { BsInfoCircleFill } from "react-icons/bs";
 import useAppContractMethods from "hooks/useAppContractMethods";
+import { queryAllMembersFromSubgraph } from "utils/stationsSubgraphHelper";
 
 const useStyles = makeStyles({
   clubAssets: {
@@ -212,6 +211,8 @@ const ProposalDetail = ({ pid, daoAddress }) => {
   const router = useRouter();
 
   const { address: walletAddress } = useAccount();
+  const { chain } = useNetwork();
+  const networkId = "0x" + chain?.id.toString(16);
 
   const sdk = new SafeAppsSDK({
     allowedDomains: [/gnosis-safe.io$/, /safe.global$/, /5afe.dev$/],
@@ -484,12 +485,6 @@ const ProposalDetail = ({ pid, daoAddress }) => {
   const fetchData = useCallback(async () => {
     const proposalData = getProposalDetail(pid);
 
-    const membersData = await subgraphQuery(
-      SUBGRAPH_URL,
-      QUERY_ALL_MEMBERS(daoAddress),
-    );
-    setMembers(membersData);
-
     proposalData.then((result) => {
       if (result.status !== 200) {
         setFetched(false);
@@ -498,7 +493,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
         setFetched(true);
       }
     });
-  }, [SUBGRAPH_URL, daoAddress, pid]);
+  }, [pid]);
 
   const nftListingExists = async () => {
     const parts = proposalData?.commands[0]?.nftLink?.split("/");
@@ -580,12 +575,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
     let airDropAmountArray = [];
 
     if (proposalData.commands[0].executionId === 0) {
-      const membersData = await subgraphQuery(
-        SUBGRAPH_URL,
-        QUERY_ALL_MEMBERS(daoAddress),
-      );
-      setMembers(membersData);
-      membersData.users.map((member) => membersArray.push(member.userAddress));
+      members.users.map((member) => membersArray.push(member.userAddress));
 
       let iface = new Interface(ABI);
       approvalData = iface.encodeFunctionData("approve", [
@@ -666,11 +656,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
           proposalData.commands[0].mintGTAddresses,
         ]);
       } else {
-        const clubDetails = await subgraphQuery(
-          SUBGRAPH_URL,
-          QUERY_CLUB_DETAILS(daoAddress),
-        );
-        const tokenURI = clubDetails?.stations[0].imageUrl;
+        const tokenURI = clubData?.imgUrl;
         data = iface.encodeFunctionData("mintGTToAddress", [
           proposalData.commands[0].mintGTAmounts,
           [tokenURI],
@@ -1119,6 +1105,23 @@ const ProposalDetail = ({ pid, daoAddress }) => {
       isOwner();
     }
   }, [fetchData, fetchNfts, isOwner, pid]);
+
+  useEffect(() => {
+    const fetchAllMembers = async () => {
+      try {
+        const data = await queryAllMembersFromSubgraph(daoAddress, networkId);
+        if (data && data?.users) {
+          setMembers(data);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    if (daoAddress && networkId && walletAddress) {
+      fetchAllMembers();
+    }
+  }, [daoAddress, networkId, walletAddress]);
 
   if (!walletAddress && proposalData === null) {
     return <>loading</>;

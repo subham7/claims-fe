@@ -5,11 +5,9 @@ import claimsBanner from "../../../public/assets/images/claimsBanner.png";
 import { makeStyles } from "@mui/styles";
 import { useRouter } from "next/router";
 import ClaimsCard from "components/claimsPageComps/ClaimsCard";
-import { subgraphQuery } from "utils/subgraphs";
-import { QUERY_ALL_CLAIMS_OF_CREATOR } from "api/graphql/queries";
 import { useAccount, useNetwork } from "wagmi";
-import { CHAIN_CONFIG } from "utils/constants";
 import { Button, Typography } from "@mui/material";
+import { queryDropsListFromSubgraph } from "utils/dropsSubgraphHelper";
 
 const useStyles = makeStyles({
   container: {
@@ -92,18 +90,18 @@ const ListClaims = () => {
   useEffect(() => {
     const fetchClaims = async () => {
       try {
-        const { claims } = await subgraphQuery(
-          CHAIN_CONFIG[networkId].claimsSubgraphUrl,
-          QUERY_ALL_CLAIMS_OF_CREATOR(walletAddress),
+        const { claims } = await queryDropsListFromSubgraph(
+          walletAddress,
+          networkId,
         );
 
-        setClaimData(claims?.reverse());
+        if (claims.length) setClaimData(claims?.reverse());
       } catch (error) {
         console.log(error);
       }
     };
 
-    fetchClaims();
+    if (walletAddress && networkId) fetchClaims();
   }, [networkId, walletAddress]);
 
   return (

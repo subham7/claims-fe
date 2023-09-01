@@ -13,18 +13,16 @@ import { useDispatch } from "react-redux";
 import { makeStyles } from "@mui/styles";
 import { useRouter } from "next/router";
 import NewCard from "../src/components/cards/card";
-import { subgraphQuery } from "../src/utils/subgraphs";
-import {
-  QUERY_CLUBS_FROM_WALLET_ADDRESS,
-  QUERY_CLUB_DETAILS,
-} from "../src/api/graphql/queries";
-import { SUBGRAPH_URL_POLYGON } from "../src/api";
 import { addClubData } from "../src/redux/reducers/club";
 import Layout from "../src/components/layouts/layout";
 import { BsFillPlayFill } from "react-icons/bs";
 import Web3 from "web3";
 import VideoModal from "../src/components/modals/VideoModal";
 import { useAccount, useNetwork } from "wagmi";
+import {
+  queryStationDataFromSubgraph,
+  queryStationListFromSubgraph,
+} from "utils/stationsSubgraphHelper";
 
 const useStyles = makeStyles({
   container: {
@@ -140,16 +138,18 @@ const App = () => {
       else {
         const fetchClubs = async () => {
           try {
-            const data = await subgraphQuery(
-              SUBGRAPH_URL_POLYGON,
-              QUERY_CLUBS_FROM_WALLET_ADDRESS(walletAddress),
+            const data = await queryStationListFromSubgraph(
+              walletAddress,
+              networkId,
             );
-            setClubListData(data.users);
+
+            if (data.users) setClubListData(data.users);
           } catch (error) {
             console.log(error);
           }
         };
-        fetchClubs();
+
+        if (walletAddress && networkId) fetchClubs();
       }
 
       if (walletAddress) {
@@ -170,33 +170,46 @@ const App = () => {
   };
 
   const handleItemClick = async (data) => {
-    const clubData = await subgraphQuery(
-      networkId == "0x5"
-        ? SUBGRAPH_URL_GOERLI
-        : networkId == "0x89"
-        ? SUBGRAPH_URL_POLYGON
-        : "",
-      QUERY_CLUB_DETAILS(data.daoAddress),
-    );
-    dispatch(
-      addClubData({
-        gnosisAddress: clubData.stations[0].gnosisAddress,
-        isGtTransferable: clubData.stations[0].isGtTransferable,
-        name: clubData.stations[0].name,
-        ownerAddress: clubData.stations[0].ownerAddress,
-        symbol: clubData.stations[0].symbol,
-        tokenType: clubData.stations[0].tokenType,
-        membersCount: clubData.stations[0].membersCount,
-        deployedTime: clubData.stations[0].timeStamp,
-      }),
-    );
-    router.push(
-      `/dashboard/${Web3.utils.toChecksumAddress(data.daoAddress)}`,
-      undefined,
-      {
-        shallow: true,
-      },
-    );
+    try {
+      const clubData = await queryStationDataFromSubgraph(
+        data.daoAddress,
+        networkId,
+      );
+
+      if (clubData.stations.length)
+        dispatch(
+          addClubData({
+            gnosisAddress: clubData.stations[0].gnosisAddress,
+            isGtTransferable: clubData.stations[0].isGtTransferable,
+            name: clubData.stations[0].name,
+            ownerAddress: clubData.stations[0].ownerAddress,
+            symbol: clubData.stations[0].symbol,
+            tokenType: clubData.stations[0].tokenType,
+            membersCount: clubData.stations[0].membersCount,
+            deployedTime: clubData.stations[0].timeStamp,
+            imgUrl: clubData.stations[0].imageUrl,
+            minDepositAmount: clubData.stations[0].minDepositAmount,
+            maxDepositAmount: clubData.stations[0].maxDepositAmount,
+            pricePerToken: clubData.stations[0].pricePerToken,
+            isGovernanceActive: clubData.stations[0].isGovernanceActive,
+            quorum: clubData.stations[0].quorum,
+            threshold: clubData.stations[0].threshold,
+            raiseAmount: clubData.stations[0].raiseAmount,
+            totalAmountRaised: clubData.stations[0].totalAmountRaised,
+            distributionAmount: clubData.stations[0].distributionAmount,
+            maxTokensPerUser: clubData.stations[0].maxTokensPerUser,
+          }),
+        );
+      router.push(
+        `/dashboard/${Web3.utils.toChecksumAddress(data.daoAddress)}`,
+        undefined,
+        {
+          shallow: true,
+        },
+      );
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const handleClose = (e) => {
