@@ -13,6 +13,8 @@ import { QUERY_ALL_MEMBERS } from "api/graphql/queries";
 import { convertToWeiGovernance } from "./globalFunctions";
 import { Interface } from "ethers";
 import { fulfillOrder } from "api/assets";
+import contractInstances from "redux/reducers/contractInstances";
+import { SEAPORT_CONTRACT_ADDRESS } from "api";
 
 export const fetchProposals = async (clubId, type) => {
   let proposalData;
@@ -456,5 +458,173 @@ export const getEncodedData = async (
         daoAddress,
       ]);
       return { data };
+  }
+};
+
+const { erc20DaoContractCall } = contractInstances;
+
+export const getTransaction = (
+  proposalData,
+  daoAddress,
+  factoryContractAddress,
+  approvalData,
+  ownerAddress,
+  safeThreshold,
+  transactionData,
+  airdropContractAddress,
+  tokenData,
+  gnosisAddress,
+) => {
+  const executionId = proposalData.commands[0].executionId;
+  let approvalTransaction;
+  let transaction;
+  switch (executionId) {
+    case 0:
+    case 4:
+      if (isAssetsStoredOnGnosis) {
+        approvalTransaction = {
+          to: Web3.utils.toChecksumAddress(tokenData),
+          // data: tokenData.methods.approve(dao / action).encodeABI(), // for send/airdrop -> action & send NFT -> daoAddress
+          data: approveDepositWithEncodeABI(
+            tokenData,
+            airdropContractAddress,
+            proposalData.commands[0].executionId === 0
+              ? proposalData.commands[0].airDropAmount
+              : proposalData.commands[0].customTokenAmounts[0],
+          ),
+          value: "0",
+        };
+        transaction = {
+          to: Web3.utils.toChecksumAddress(airdropContractAddress),
+          data: airdropTokenMethodEncoded(
+            airdropContractAddress,
+            tokenData,
+            airDropAmountArray,
+            membersArray,
+          ),
+          value: 0,
+        };
+      } else {
+        approvalTransaction = {
+          to: Web3.utils.toChecksumAddress(daoAddress),
+          data: erc20DaoContractCall.methods
+            .updateProposalAndExecution(
+              //usdc address
+              tokenData,
+              approvalData,
+            )
+            .encodeABI(),
+          value: "0",
+        };
+        transaction = {
+          to: Web3.utils.toChecksumAddress(daoAddress),
+          data: erc20DaoContractCall.methods
+            .updateProposalAndExecution(
+              //airdrop address
+              airdropContractAddress,
+              parameters,
+            )
+            .encodeABI(),
+          value: "0",
+        };
+      }
+      return { transaction, approvalTransaction };
+    case 1:
+    case 2:
+    case 3:
+      transaction = {
+        //dao
+        to: Web3.utils.toChecksumAddress(daoAddress),
+        data: erc20DaoContractCall.methods
+          .updateProposalAndExecution(
+            //factory
+            factoryContractAddress ? factoryContractAddress : daoAddress,
+            parameters,
+          )
+          .encodeABI(),
+        value: "0",
+      };
+      return { transaction };
+
+    case 5:
+      transaction = {
+        //dao
+        to: Web3.utils.toChecksumAddress(tokenData),
+        data: transferNFTfromSafe(
+          tokenData,
+          gnosisAddress,
+          proposalData.commands[0].customTokenAddresses[0],
+          proposalData.commands[0].customNftToken,
+        ),
+        value: "0",
+      };
+      return { transaction };
+    case 6:
+      transaction = {
+        ownerAddress,
+      };
+      return { transaction };
+    case 7:
+      transaction = {
+        ownerAddress,
+        threshold: safeThreshold,
+      };
+      return { transaction };
+    case 8:
+      if (isAssetsStoredOnGnosis) {
+        const seaportContract = new web3Call.eth.Contract(
+          seaportABI,
+          SEAPORT_CONTRACT_ADDRESS,
+        );
+        transaction = {
+          to: Web3.utils.toChecksumAddress(SEAPORT_CONTRACT_ADDRESS),
+          data: seaportContract.methods
+            .fulfillBasicOrder_efficient_6GL6yc(
+              transactionData.fulfillment_data.transaction.input_data
+                .parameters,
+            )
+            .encodeABI(),
+          value: transactionData.fulfillment_data.transaction.value.toString(),
+        };
+      } else {
+        transaction = {
+          to: Web3.utils.toChecksumAddress(daoAddress),
+          data: erc20DaoContractCall.methods
+            .updateProposalAndExecution(
+              Web3.utils.toChecksumAddress(SEAPORT_CONTRACT_ADDRESS),
+              parameters,
+            )
+            .encodeABI(),
+          value: "10000000000000000",
+        };
+      }
+      return { transaction };
+    case 10:
+    case 11:
+    case 12:
+      approvalTransaction = {
+        to: Web3.utils.toChecksumAddress(daoAddress),
+        data: erc20DaoContractCall.methods
+          .updateProposalAndExecution(
+            //usdc address
+            daoAddress,
+            approvalData,
+          )
+          .encodeABI(),
+        value: "0",
+      };
+      transaction = {
+        //dao
+        to: Web3.utils.toChecksumAddress(daoAddress),
+        data: erc20DaoContractCall.methods
+          .updateProposalAndExecution(
+            //factory
+            factoryContractAddress ? factoryContractAddress : daoAddress,
+            parameters,
+          )
+          .encodeABI(),
+        value: "0",
+      };
+      return { transaction, approvalTransaction };
   }
 };
