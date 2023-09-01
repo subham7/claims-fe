@@ -124,6 +124,8 @@ const CreateProposalDialog = ({
       csvObject: [],
       lensId: "",
       lensPostLink: "",
+      aaveDepositToken: tokenData ? tokenData[0]?.tokenAddress : "",
+      aaveDepositAmount: 0,
     },
     validationSchema: proposalValidationSchema,
     onSubmit: async (values) => {
@@ -331,6 +333,25 @@ const CreateProposalDialog = ({
             {
               executionId: 13,
               pricePerToken: values.pricePerToken,
+              usdcTokenSymbol: "USDC",
+              usdcTokenDecimal: 6,
+              usdcGovernanceTokenDecimal: 18,
+            },
+          ];
+        }
+
+        if (values.actionCommand === "deposit tokens in AAVE pool") {
+          const tokenDecimal = tokenData.find(
+            (token) => token.token_address === values.aaveDepositToken,
+          ).decimals;
+          commands = [
+            {
+              executionId: 14,
+              depositToken: values.aaveDepositToken,
+              depositAmount: convertToWeiGovernance(
+                values.aaveDepositAmount,
+                tokenDecimal,
+              ),
               usdcTokenSymbol: "USDC",
               usdcTokenDecimal: 6,
               usdcGovernanceTokenDecimal: 18,

@@ -150,6 +150,9 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
         <MenuItem key={11} value="update price per token">
           Update price per token
         </MenuItem>
+        <MenuItem key={12} value="deposit tokens in AAVE pool">
+          Deposit tokens in AAVE pool
+        </MenuItem>
       </Select>
 
       {formik.values.actionCommand === "Distribute token to members" ? (
@@ -821,6 +824,72 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
             onWheel={(event) => event.target.blur()}
           />
         </Grid>
+      ) : formik.values.actionCommand === "deposit tokens in AAVE pool" ? (
+        <>
+          <Grid
+            container
+            direction={"column"}
+            ml={3}
+            mt={2}
+            // mb={}
+            sx={{ marginLeft: "0 !important" }}>
+            <Typography variant="proposalBody">
+              Token to be deposited
+            </Typography>
+            <Select
+              sx={{ marginTop: "0.5rem" }}
+              value={formik.values.aaveDepositToken}
+              onChange={(e) =>
+                formik.setFieldValue(
+                  "aaveDepositToken",
+                  tokenData.find((token) => token.name === e.target.value)
+                    .token_address,
+                )
+              }
+              renderValue={(selected) => {
+                if (selected.length === 0) {
+                  return "Select a command";
+                }
+                return selected;
+              }}
+              inputProps={{ "aria-label": "Without label" }}
+              name="aaveDepositToken"
+              id="aaveDepositToken">
+              {tokenData.map((token) => (
+                <MenuItem key={token.name} value={token.name}>
+                  {token.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </Grid>
+          <Grid
+            container
+            direction={"column"}
+            ml={3}
+            mt={2}
+            sx={{ marginLeft: "0 !important" }}>
+            <Typography variant="proposalBody">Amount of Tokens *</Typography>
+            <TextField
+              variant="outlined"
+              className={classes.textField}
+              placeholder="0"
+              type="number"
+              name="aaveDepositAmount"
+              id="aaveDepositAmount"
+              value={formik.values.aaveDepositAmount}
+              onChange={formik.handleChange}
+              error={
+                formik.touched.aaveDepositAmount &&
+                Boolean(formik.errors.aaveDepositAmount)
+              }
+              helperText={
+                formik.touched.aaveDepositAmount &&
+                formik.errors.aaveDepositAmount
+              }
+              onWheel={(event) => event.target.blur()}
+            />
+          </Grid>
+        </>
       ) : null}
     </Stack>
   );

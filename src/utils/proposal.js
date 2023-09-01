@@ -481,6 +481,10 @@ export const getTransaction = async (
   gnosisAddress,
   contractInstances,
   parameters,
+  isAssetsStoredOnGnosis,
+  approveDepositWithEncodeABI,
+  transferNFTfromSafe,
+  airdropTokenMethodEncoded,
 ) => {
   const executionId = proposalData.commands[0].executionId;
   let approvalTransaction;
@@ -542,6 +546,7 @@ export const getTransaction = async (
     case 1:
     case 2:
     case 3:
+    case 13:
       console.log("nkakdm", parameters);
       transaction = {
         //dao
@@ -636,6 +641,55 @@ export const getTransaction = async (
           .encodeABI(),
         value: "0",
       };
+      return { transaction, approvalTransaction };
+    case 13:
+      if (isAssetsStoredOnGnosis) {
+        approvalTransaction = {
+          to: Web3.utils.toChecksumAddress(tokenData),
+          // data: tokenData.methods.approve(dao / action).encodeABI(), // for send/airdrop -> action & send NFT -> daoAddress
+          data: approveDepositWithEncodeABI(
+            tokenData,
+            airdropContractAddress,
+            proposalData.commands[0].executionId === 0
+              ? proposalData.commands[0].airDropAmount
+              : proposalData.commands[0].customTokenAmounts[0],
+          ),
+          value: "0",
+        };
+        transaction = {
+          to: Web3.utils.toChecksumAddress(airdropContractAddress),
+          data: airdropTokenMethodEncoded(
+            airdropContractAddress,
+            tokenData,
+            airDropAmountArray,
+            membersArray,
+          ),
+          value: 0,
+        };
+      } else {
+        approvalTransaction = {
+          to: Web3.utils.toChecksumAddress(daoAddress),
+          data: erc20DaoContractCall.methods
+            .updateProposalAndExecution(
+              //usdc address
+              tokenData,
+              approvalData,
+            )
+            .encodeABI(),
+          value: "0",
+        };
+        transaction = {
+          to: Web3.utils.toChecksumAddress(daoAddress),
+          data: erc20DaoContractCall.methods
+            .updateProposalAndExecution(
+              //airdrop address
+              airdropContractAddress,
+              parameters,
+            )
+            .encodeABI(),
+          value: "0",
+        };
+      }
       return { transaction, approvalTransaction };
   }
 };

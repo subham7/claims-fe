@@ -420,6 +420,10 @@ const useAppContractMethods = () => {
       gnosisAddress,
       contractInstances,
       parameters,
+      isAssetsStoredOnGnosis,
+      approveDepositWithEncodeABI,
+      transferNFTfromSafe,
+      airdropTokenMethodEncoded,
     );
 
     // let approvalTransaction;

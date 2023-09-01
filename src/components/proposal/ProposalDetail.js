@@ -509,7 +509,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
       );
       if (
         !nftdata?.data?.orders.length &&
-        proposalData?.commands[0].executionId === 8
+        proposalData?.commands[0]?.executionId === 8
       ) {
         setIsNftSold(true);
       } else {
@@ -519,7 +519,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
   };
 
   useEffect(() => {
-    if (proposalData && proposalData.commands[0].executionId === 8) {
+    if (proposalData && proposalData.commands[0]?.executionId === 8) {
       nftListingExists();
     }
   }, [proposalData]);
@@ -552,26 +552,29 @@ const ProposalDetail = ({ pid, daoAddress }) => {
       Web3.utils.toChecksumAddress(gnosisAddress),
       txHash,
       pid,
-      proposalData.commands[0].executionId === 0
-        ? proposalData.commands[0].airDropToken
-        : proposalData.commands[0].executionId === 4
-        ? proposalData.commands[0].customToken
-        : proposalData.commands[0].executionId === 5
-        ? proposalData.commands[0].customNft
+      proposalData.commands[0]?.executionId === 0
+        ? proposalData.commands[0]?.airDropToken
+        : proposalData.commands[0]?.executionId === 4
+        ? proposalData.commands[0]?.customToken
+        : proposalData.commands[0]?.executionId === 5
+        ? proposalData.commands[0]?.customNft
+        : proposalData.commands[0]?.executeFunction === 14
+        ? proposalData.commands[0]?.depositAmount
         : "",
       proposalStatus,
       airdropContractAddress,
-      proposalData.commands[0].executionId === 3 ||
-        proposalData.commands[0].executionId === 10 ||
-        proposalData.commands[0].executionId === 11 ||
-        proposalData?.commands[0].executionId === 12 ||
-        proposalData.commands[0].executionId === 13
+      proposalData.commands[0]?.executionId === 3 ||
+        proposalData.commands[0]?.executionId === 10 ||
+        proposalData.commands[0]?.executionId === 11 ||
+        proposalData?.commands[0]?.executionId === 12 ||
+        proposalData.commands[0]?.executionId === 13 ||
+        proposalData.commands[0]?.executionId === 14
         ? FACTORY_CONTRACT_ADDRESS
         : "",
       GNOSIS_TRANSACTION_URL,
-      proposalData.commands[0].executionId,
-      proposalData.commands[0].ownerAddress,
-      proposalData.commands[0].safeThreshold,
+      proposalData.commands[0]?.executionId,
+      proposalData.commands[0]?.ownerAddress,
+      proposalData.commands[0]?.safeThreshold,
       proposalData,
       membersArray,
       airDropAmountArray,
@@ -1065,7 +1068,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
                           {(signed ||
                             isRejectTxnSigned ||
                             signedOwners.length) &&
-                            proposalData.commands[0].executionId === 8 && (
+                            proposalData.commands[0]?.executionId === 8 && (
                               <Button
                                 className={
                                   executed
