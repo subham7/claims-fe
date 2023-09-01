@@ -172,4 +172,4 @@ export const mantleMainnetViem = {
   },
 };
 
-export const BLOCK_CONFIRMATIONS = 6;
+export const BLOCK_CONFIRMATIONS = 1;

@@ -73,19 +73,21 @@ const useClubFetch = ({ daoAddress }) => {
     const fetchStationData = async () => {
       try {
         const data = await queryStationDataFromSubgraph(daoAddress, networkId);
-        if (data) setClubData(data);
+        if (data) {
+          setClubData(data);
+        }
       } catch (error) {
         console.log(error);
       }
-
-      if (daoAddress && networkId && walletAddress) fetchStationData();
     };
-  }, [daoAddress, networkId, walletAddress]);
+    if (daoAddress && networkId && walletAddress) fetchStationData();
+  }, [daoAddress, networkId, walletAddress, reduxClubData]);
 
   useEffect(() => {
     const addClubDataToRedux = async () => {
       if (!reduxClubData.gnosisAddress && networkId) {
         if (clubData) {
+          console.log("CLUB DATA", clubData);
           dispatch(
             addClubData({
               gnosisAddress: clubData.stations[0].gnosisAddress,
