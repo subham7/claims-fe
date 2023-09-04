@@ -167,14 +167,14 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
             <Typography variant="proposalBody">Token to be sent</Typography>
             <Select
               sx={{ marginTop: "0.5rem" }}
-              value={formik.values.customToken}
-              onChange={(e) =>
+              value={formik.values.airdropToken}
+              onChange={(e) => {
                 formik.setFieldValue(
                   "airdropToken",
-                  tokenData.find((token) => token.name === e.target.value)
-                    .token_address,
-                )
-              }
+                  tokenData.find((token) => token.symbol === e.target.value)
+                    .address,
+                );
+              }}
               renderValue={(selected) => {
                 if (selected.length === 0) {
                   return "Select a command";
@@ -185,8 +185,8 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
               name="airdropToken"
               id="airdropToken">
               {tokenData.map((token) => (
-                <MenuItem key={token.name} value={token.name}>
-                  {token.name}
+                <MenuItem key={token.symbol} value={token.symbol}>
+                  {token.symbol}
                 </MenuItem>
               ))}
             </Select>
@@ -411,8 +411,8 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
               onChange={(e) =>
                 formik.setFieldValue(
                   "customToken",
-                  tokenData.find((token) => token.name === e.target.value)
-                    .token_address,
+                  tokenData.find((token) => token.symbol === e.target.value)
+                    .address,
                 )
               }
               renderValue={(selected) => {
@@ -426,8 +426,8 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
               name="customToken"
               id="customToken">
               {tokenData.map((token) => (
-                <MenuItem key={token.name} value={token.name}>
-                  {token.name}
+                <MenuItem key={token.symbol} value={token.symbol}>
+                  {token.symbol}
                 </MenuItem>
               ))}
             </Select>
@@ -842,8 +842,8 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
               onChange={(e) =>
                 formik.setFieldValue(
                   "aaveDepositToken",
-                  tokenData.find((token) => token.name === e.target.value)
-                    .token_address,
+                  tokenData.find((token) => token.symbol === e.target.value)
+                    .address,
                 )
               }
               renderValue={(selected) => {
@@ -856,8 +856,8 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
               name="aaveDepositToken"
               id="aaveDepositToken">
               {tokenData.map((token) => (
-                <MenuItem key={token.name} value={token.name}>
-                  {token.name}
+                <MenuItem key={token.symbol} value={token.symbol}>
+                  {token.symbol}
                 </MenuItem>
               ))}
             </Select>

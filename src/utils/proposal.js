@@ -665,7 +665,7 @@ export const getTransaction = async (
         transaction = {
           to: Web3.utils.toChecksumAddress(AAVE_ERC20_POOL_ADDRESS),
           data: depositErc20TokensToAavePool(
-            proposalData.commands[0].depositToken, // address
+            tokenData, // address
             proposalData.commands[0].depositAmount, // amount
             gnosisAddress,
             0, // referall
