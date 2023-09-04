@@ -410,7 +410,6 @@ const useAppContractMethods = () => {
     airDropAmountArray,
     transactionData = "",
   ) => {
-    console.log("DATA", data);
     const parameters = data;
     const web3 = new Web3(window.ethereum);
     const ethAdapter = new Web3Adapter({
@@ -608,7 +607,7 @@ const useAppContractMethods = () => {
       if (txHash === "") {
         const nonce = await safeService.getNextNonce(gnosisAddress);
         let safeTransactionData;
-        if (approvalData === "") {
+        if (approvalTransaction === "") {
           safeTransactionData = {
             to: transaction.to,
             data: transaction.data,
@@ -645,6 +644,7 @@ const useAppContractMethods = () => {
           });
         }
         const safeTxHash = await safeSdk.getTransactionHash(safeTransaction);
+
         const payload = {
           proposalId: pid,
           txHash: safeTxHash,
@@ -675,7 +675,7 @@ const useAppContractMethods = () => {
         const nonce = await safeSdk.getNonce();
         let safeTransactionData;
 
-        if (approvalData === "") {
+        if (approvalTransaction === "") {
           safeTransactionData = {
             to: tx.to,
             data: tx.data,

@@ -673,30 +673,6 @@ export const getTransaction = async (
           value: "0",
         };
       }
-      // } else {
-      //   approvalTransaction = {
-      //     to: Web3.utils.toChecksumAddress(daoAddress),
-      //     data: erc20DaoContractCall.methods
-      //       .updateProposalAndExecution(
-      //         //usdc address
-      //         tokenData,
-      //         approvalData,
-      //       )
-      //       .encodeABI(),
-      //     value: "0",
-      //   };
-      //   transaction = {
-      //     to: Web3.utils.toChecksumAddress(daoAddress),
-      //     data: erc20DaoContractCall.methods
-      //       .updateProposalAndExecution(
-      //         //airdrop address
-      //         airdropContractAddress,
-      //         parameters,
-      //       )
-      //       .encodeABI(),
-      //     value: "0",
-      //   };
-      // }
 
       return { transaction, approvalTransaction };
   }
