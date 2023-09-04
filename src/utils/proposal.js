@@ -8,12 +8,14 @@ import { factoryContractABI } from "abis/factoryContract.js";
 import { erc721DaoABI } from "abis/erc721Dao";
 import { erc20DaoABI } from "abis/erc20Dao";
 import { seaportABI } from "abis/seaport";
+import { erc20AaveABI } from "abis/erc20AaveABI";
 import { subgraphQuery } from "./subgraphs";
 import { QUERY_ALL_MEMBERS, QUERY_CLUB_DETAILS } from "api/graphql/queries";
 import { convertToWeiGovernance } from "./globalFunctions";
 import { Interface } from "ethers";
 import { fulfillOrder } from "api/assets";
 import { SEAPORT_CONTRACT_ADDRESS } from "api";
+import { AAVE_ERC20_POOL_ADDRESS } from "./constants";
 
 export const fetchProposals = async (clubId, type) => {
   let proposalData;
@@ -216,6 +218,8 @@ export const fetchABI = async (proposalData, clubData) => {
     case 9:
       if (tokenType === "erc721") return erc721DaoABI;
       else if (tokenType === "erc20") return erc20DaoABI;
+    case 14:
+      return erc20AaveABI;
   }
 };
 
@@ -465,6 +469,8 @@ export const getEncodedData = async (
         daoAddress,
       ]);
       return { data };
+    case 14:
+      return { data: "" };
   }
 };
 
@@ -485,6 +491,7 @@ export const getTransaction = async (
   approveDepositWithEncodeABI,
   transferNFTfromSafe,
   airdropTokenMethodEncoded,
+  depositErc20TokensToAavePool,
 ) => {
   const executionId = proposalData.commands[0].executionId;
   let approvalTransaction;
@@ -547,7 +554,6 @@ export const getTransaction = async (
     case 2:
     case 3:
     case 13:
-      console.log("nkakdm", parameters);
       transaction = {
         //dao
         to: Web3.utils.toChecksumAddress(daoAddress),
@@ -642,54 +648,53 @@ export const getTransaction = async (
         value: "0",
       };
       return { transaction, approvalTransaction };
-    case 13:
+    case 14:
       if (isAssetsStoredOnGnosis) {
         approvalTransaction = {
-          to: Web3.utils.toChecksumAddress(tokenData),
-          // data: tokenData.methods.approve(dao / action).encodeABI(), // for send/airdrop -> action & send NFT -> daoAddress
+          to: Web3.utils.toChecksumAddress(tokenData), // usdc address
           data: approveDepositWithEncodeABI(
-            tokenData,
-            airdropContractAddress,
-            proposalData.commands[0].executionId === 0
-              ? proposalData.commands[0].airDropAmount
-              : proposalData.commands[0].customTokenAmounts[0],
+            tokenData, // usdc
+            AAVE_ERC20_POOL_ADDRESS, // erc20 pool
+            proposalData.commands[0].depositAmount, // amount
           ),
           value: "0",
         };
         transaction = {
-          to: Web3.utils.toChecksumAddress(airdropContractAddress),
-          data: airdropTokenMethodEncoded(
-            airdropContractAddress,
-            tokenData,
-            airDropAmountArray,
-            membersArray,
+          to: Web3.utils.toChecksumAddress(AAVE_ERC20_POOL_ADDRESS),
+          data: depositErc20TokensToAavePool(
+            proposalData.commands[0].depositToken, // address
+            proposalData.commands[0].depositAmount, // amount
+            gnosisAddress,
+            0, // referall
           ),
-          value: 0,
-        };
-      } else {
-        approvalTransaction = {
-          to: Web3.utils.toChecksumAddress(daoAddress),
-          data: erc20DaoContractCall.methods
-            .updateProposalAndExecution(
-              //usdc address
-              tokenData,
-              approvalData,
-            )
-            .encodeABI(),
-          value: "0",
-        };
-        transaction = {
-          to: Web3.utils.toChecksumAddress(daoAddress),
-          data: erc20DaoContractCall.methods
-            .updateProposalAndExecution(
-              //airdrop address
-              airdropContractAddress,
-              parameters,
-            )
-            .encodeABI(),
           value: "0",
         };
       }
+      // } else {
+      //   approvalTransaction = {
+      //     to: Web3.utils.toChecksumAddress(daoAddress),
+      //     data: erc20DaoContractCall.methods
+      //       .updateProposalAndExecution(
+      //         //usdc address
+      //         tokenData,
+      //         approvalData,
+      //       )
+      //       .encodeABI(),
+      //     value: "0",
+      //   };
+      //   transaction = {
+      //     to: Web3.utils.toChecksumAddress(daoAddress),
+      //     data: erc20DaoContractCall.methods
+      //       .updateProposalAndExecution(
+      //         //airdrop address
+      //         airdropContractAddress,
+      //         parameters,
+      //       )
+      //       .encodeABI(),
+      //     value: "0",
+      //   };
+      // }
+
       return { transaction, approvalTransaction };
   }
 };

@@ -6,9 +6,10 @@ import Safe, { Web3Adapter } from "@safe-global/protocol-kit";
 import { createProposalTxHash, getProposalTxHash } from "../api/proposal";
 import SafeApiKit from "@safe-global/api-kit";
 import { actionContractABI } from "abis/actionContract";
+import { erc20AaveABI } from "abis/erc20AaveABI";
 import { useAccount, useNetwork } from "wagmi";
 import { factoryContractABI } from "abis/factoryContract.js";
-import { CHAIN_CONFIG } from "utils/constants";
+import { AAVE_ERC20_POOL_ADDRESS, CHAIN_CONFIG } from "utils/constants";
 import { getTransaction } from "utils/proposal";
 
 const useAppContractMethods = () => {
@@ -248,6 +249,27 @@ const useAppContractMethods = () => {
     }
   };
 
+  const depositErc20TokensToAavePool = (
+    depositTokenAddress,
+    depositAmount,
+    addressWhereAssetsStored,
+    referalCode = 0,
+  ) => {
+    const depositInAavePoolCall = new web3Call.eth.Contract(
+      erc20AaveABI,
+      AAVE_ERC20_POOL_ADDRESS,
+    );
+
+    return depositInAavePoolCall.methods
+      .supply(
+        depositTokenAddress,
+        depositAmount,
+        addressWhereAssetsStored,
+        referalCode,
+      )
+      .encodeABI();
+  };
+
   const getNftBalance = async (tokenType, contractAddress) => {
     return tokenType === "erc721"
       ? await erc721DaoContractCall.methods.balanceOf(contractAddress).call()
@@ -424,6 +446,7 @@ const useAppContractMethods = () => {
       approveDepositWithEncodeABI,
       transferNFTfromSafe,
       airdropTokenMethodEncoded,
+      depositErc20TokensToAavePool,
     );
 
     // let approvalTransaction;

@@ -558,8 +558,8 @@ const ProposalDetail = ({ pid, daoAddress }) => {
         ? proposalData.commands[0]?.customToken
         : proposalData.commands[0]?.executionId === 5
         ? proposalData.commands[0]?.customNft
-        : proposalData.commands[0]?.executeFunction === 14
-        ? proposalData.commands[0]?.depositAmount
+        : proposalData.commands[0]?.executionId === 14
+        ? proposalData.commands[0]?.depositToken
         : "",
       proposalStatus,
       airdropContractAddress,

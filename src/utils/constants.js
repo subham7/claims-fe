@@ -171,3 +171,5 @@ export const mantleMainnetViem = {
 };
 
 export const BLOCK_CONFIRMATIONS = 6;
+export const AAVE_ERC20_POOL_ADDRESS =
+  "0x794a61358D6845594F94dc1DB02A252b5b4814aD";
