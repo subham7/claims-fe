@@ -1,25 +1,29 @@
 import React, { useEffect, useState } from "react";
 import classes from "./ERC721.module.scss";
 import ReactHtmlParser from "react-html-parser";
-import { subgraphQuery } from "../../../utils/subgraphs";
-import { SUBGRAPH_URL_POLYGON } from "../../../api";
-import { QUERY_LATEST_MEMBERS } from "../../../api/graphql/queries";
 import { returnRemainingTime } from "../../../utils/helper";
+import { queryLatestMembersFromSubgraph } from "utils/stationsSubgraphHelper";
+import { useAccount, useNetwork } from "wagmi";
 
 const About = ({ bio, daoAddress }) => {
   const [members, setMembers] = useState([]);
+  const { address: walletAddress } = useAccount();
+
+  const { chain } = useNetwork();
+  const networkId = "0x" + chain?.id.toString(16);
 
   useEffect(() => {
-    const queryMembers = async () => {
-      const users = await subgraphQuery(
-        SUBGRAPH_URL_POLYGON,
-        QUERY_LATEST_MEMBERS(daoAddress),
-      );
-      setMembers(users?.users);
+    const queryLatestMembers = async () => {
+      try {
+        const { users } = queryLatestMembersFromSubgraph(daoAddress, networkId);
+        if (users) setMembers(users);
+      } catch (error) {
+        console.log(error);
+      }
     };
 
-    queryMembers();
-  }, [daoAddress]);
+    if (walletAddress && networkId && daoAddress) queryLatestMembers();
+  }, [daoAddress, walletAddress, networkId]);
 
   return (
     <div className={classes.container}>

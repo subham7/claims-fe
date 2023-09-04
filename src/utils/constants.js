@@ -11,6 +11,8 @@ export const CHAIN_CONFIG = {
     rpcUrls: ["https://polygon-rpc.com/"],
     appRpcUrl: `https://polygon-mainnet.infura.io/v3/${process.env.NEXT_PUBLIC_INFURA_API_KEY}`,
     claimFactoryAddress: "0x47e6bFA71e490ADC8f0E33385aAdF85282E71002",
+    stationSubgraphUrl:
+      "https://api.thegraph.com/subgraphs/name/subham7/stnx-be-polygon",
     claimsSubgraphUrl:
       "https://api.thegraph.com/subgraphs/name/subham7/stnx-claim",
     covalentNetworkName: "matic-mainnet",
@@ -170,4 +172,4 @@ export const mantleMainnetViem = {
   },
 };
 
-export const BLOCK_CONFIRMATIONS = 6;
+export const BLOCK_CONFIRMATIONS = 1;
