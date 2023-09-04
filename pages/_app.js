@@ -3,7 +3,6 @@ import { ThemeProvider } from "@mui/material/styles";
 import theme from "../src/theme/theme";
 import store from "../src/redux/store";
 import { Provider } from "react-redux";
-import "../styles/fonts.css";
 import "../styles/globals.scss";
 import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
 import { AnnouncementProvider } from "../src/components/AnnouncementContext";
@@ -17,7 +16,6 @@ import { Web3Modal } from "@web3modal/react";
 import { configureChains, createConfig, WagmiConfig } from "wagmi";
 import { polygon, base, arbitrum, bsc, mantle } from "wagmi/chains";
 import { lineaMainnetWalletConnect } from "utils/constants";
-// import { CHAIN_CONFIG } from "utils/constants";
 
 const API_URL = "https://api.lens.dev";
 
@@ -47,33 +45,33 @@ const ethereumClient = new EthereumClient(wagmiConfig, chains);
 
 function MyApp({ Component, pageProps }) {
   return (
-    <ApolloProvider client={apolloClient}>
-      <WagmiConfig config={wagmiConfig}>
-        <Provider store={store}>
-          <ThemeProvider theme={theme}>
+    <ThemeProvider theme={theme("dark")}>
+      <ApolloProvider client={apolloClient}>
+        <WagmiConfig config={wagmiConfig}>
+          <Provider store={store}>
             <AnnouncementProvider>
               <AnnouncementBar />
               <Component {...pageProps} />
             </AnnouncementProvider>
-          </ThemeProvider>
-        </Provider>
-      </WagmiConfig>
-      <Web3Modal
-        chainImages={{
-          59144: "/assets/icons/linea-mainnet.webp",
-          8453: "/assets/icons/base-mainnet.png",
-          5000: "/assets/icons/mantle-mainnet.png",
-        }}
-        themeMode="light"
-        themeVariables={{
-          "--w3m-overlay-background-color": "#00000088",
-          "--w3m-accent-color": "#000",
-          "--w3m-background-color": "#000",
-        }}
-        projectId={projectId}
-        ethereumClient={ethereumClient}
-      />
-    </ApolloProvider>
+          </Provider>
+        </WagmiConfig>
+        <Web3Modal
+          chainImages={{
+            59144: "/assets/icons/linea-mainnet.webp",
+            8453: "/assets/icons/base-mainnet.png",
+            5000: "/assets/icons/mantle-mainnet.png",
+          }}
+          themeMode="light"
+          themeVariables={{
+            "--w3m-overlay-background-color": "#00000088",
+            "--w3m-accent-color": "#000",
+            "--w3m-background-color": "#000",
+          }}
+          projectId={projectId}
+          ethereumClient={ethereumClient}
+        />
+      </ApolloProvider>
+    </ThemeProvider>
   );
 }
 

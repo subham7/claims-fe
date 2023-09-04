@@ -8,14 +8,12 @@ import { getUserProofAndBalance } from "api/claims";
 import Countdown from "react-countdown";
 import { useDispatch, useSelector } from "react-redux";
 import { ClaimsStyles } from "components/claimsPageComps/ClaimsStyles";
-import { subgraphQuery } from "utils/subgraphs";
-import { QUERY_CLAIM_DETAILS } from "api/graphql/queries";
 import Button from "@components/ui/button/Button";
 import { useAccount, useNetwork } from "wagmi";
-import { CHAIN_CONFIG } from "utils/constants";
 import useClaimSmartContracts from "hooks/useClaimSmartContracts";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 import useDropsContractMethods from "hooks/useDropsContracMethods";
+import { queryDropDetailsFromSubgraph } from "utils/dropsSubgraphHelper";
 
 const Claim = ({ claimAddress }) => {
   const classes = ClaimsStyles();
@@ -357,17 +355,18 @@ const Claim = ({ claimAddress }) => {
   useEffect(() => {
     const fetchClaimsDataFromSubgraph = async () => {
       try {
-        const { claims } = await subgraphQuery(
-          CHAIN_CONFIG[networkId].claimsSubgraphUrl,
-          QUERY_CLAIM_DETAILS(claimAddress),
+        const { claims } = await queryDropDetailsFromSubgraph(
+          claimAddress,
+          networkId,
         );
-        setClaimsDataSubgraph(claims);
+
+        if (claims.length) setClaimsDataSubgraph(claims);
       } catch (error) {
         console.log(error);
       }
     };
 
-    if (claimAddress) fetchClaimsDataFromSubgraph();
+    if (claimAddress && networkId) fetchClaimsDataFromSubgraph();
   }, [claimAddress, networkId]);
 
   const isClaimButtonDisabled = () => {

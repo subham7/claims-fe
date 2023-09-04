@@ -1,7 +1,7 @@
 import Web3 from "web3";
 import Safe, { Web3Adapter } from "@safe-global/protocol-kit";
 import WrongNetworkModal from "../components/modals/WrongNetworkModal";
-import { QUERY_ALL_MEMBERS } from "../api/graphql/queries";
+import { QUERY_ALL_MEMBERS } from "api/graphql/stationQueries";
 import { subgraphQuery } from "./subgraphs";
 import { BLOCK_CONFIRMATIONS, CHAIN_CONFIG } from "./constants";
 import { getPublicClient, getWalletClient } from "utils/viemConfig";

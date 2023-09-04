@@ -1,7 +1,5 @@
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { subgraphQuery } from "../utils/subgraphs";
-import { QUERY_CLUB_DETAILS } from "../api/graphql/queries";
 import {
   addClubData,
   addErc20ClubDetails,
@@ -13,18 +11,19 @@ import {
   addContractAddress,
   setAdminUser,
   setMemberUser,
-  setWrongNetwork,
 } from "../redux/reducers/gnosis";
 import { fetchConfigById } from "../api/config";
 
-import { SUBGRAPH_URL_GOERLI, SUBGRAPH_URL_POLYGON } from "../api";
 import { getSafeSdk } from "../utils/helper";
 import useAppContract from "./useAppContract";
 import { useAccount, useNetwork } from "wagmi";
 import { useRouter } from "next/router";
 import useAppContractMethods from "./useAppContractMethods";
+import { queryStationDataFromSubgraph } from "utils/stationsSubgraphHelper";
 
 const useClubFetch = ({ daoAddress }) => {
+  const [clubData, setClubData] = useState();
+
   const dispatch = useDispatch();
   const { chain } = useNetwork();
   useAppContract(daoAddress);
@@ -71,18 +70,24 @@ const useClubFetch = ({ daoAddress }) => {
   }, [dispatch, networkId]);
 
   useEffect(() => {
+    const fetchStationData = async () => {
+      try {
+        const data = await queryStationDataFromSubgraph(daoAddress, networkId);
+        if (data) {
+          setClubData(data);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    if (daoAddress && networkId && walletAddress) fetchStationData();
+  }, [daoAddress, networkId, walletAddress, reduxClubData]);
+
+  useEffect(() => {
     const addClubDataToRedux = async () => {
       if (!reduxClubData.gnosisAddress && networkId) {
-        const clubData = await subgraphQuery(
-          networkId == "0x5"
-            ? SUBGRAPH_URL_GOERLI
-            : networkId == "0x89"
-            ? SUBGRAPH_URL_POLYGON
-            : "",
-          QUERY_CLUB_DETAILS(daoAddress),
-        );
-
         if (clubData) {
+          console.log("CLUB DATA", clubData);
           dispatch(
             addClubData({
               gnosisAddress: clubData.stations[0].gnosisAddress,
@@ -93,6 +98,17 @@ const useClubFetch = ({ daoAddress }) => {
               tokenType: clubData.stations[0].tokenType,
               membersCount: clubData.stations[0].membersCount,
               deployedTime: clubData.stations[0].timeStamp,
+              imgUrl: clubData.stations[0].imageUrl,
+              minDepositAmount: clubData.stations[0].minDepositAmount,
+              maxDepositAmount: clubData.stations[0].maxDepositAmount,
+              pricePerToken: clubData.stations[0].pricePerToken,
+              isGovernanceActive: clubData.stations[0].isGovernanceActive,
+              quorum: clubData.stations[0].quorum,
+              threshold: clubData.stations[0].threshold,
+              raiseAmount: clubData.stations[0].raiseAmount,
+              totalAmountRaised: clubData.stations[0].totalAmountRaised,
+              distributionAmount: clubData.stations[0].distributionAmount,
+              maxTokensPerUser: clubData.stations[0].maxTokensPerUser,
             }),
           );
         }
@@ -100,7 +116,7 @@ const useClubFetch = ({ daoAddress }) => {
     };
 
     addClubDataToRedux();
-  }, [reduxClubData, networkId, daoAddress, dispatch]);
+  }, [reduxClubData, networkId, daoAddress, dispatch, clubData]);
 
   const checkUserExists = useCallback(async () => {
     try {
@@ -191,29 +207,14 @@ const useClubFetch = ({ daoAddress }) => {
     reduxClubData.gnosisAddress,
     reduxClubData.tokenType,
     networkId,
+    router,
   ]);
-
-  const checkClubExist = useCallback(async () => {
-    if (networkId) {
-      const clubData = await subgraphQuery(
-        networkId == "0x89" ? SUBGRAPH_URL_POLYGON : "",
-        QUERY_CLUB_DETAILS(daoAddress),
-      );
-
-      if (clubData?.stations.length) {
-        dispatch(setWrongNetwork(false));
-      } else {
-        dispatch(setWrongNetwork(true));
-      }
-    }
-  }, [daoAddress, dispatch, networkId]);
 
   useEffect(() => {
     if (walletAddress && networkId) {
       checkUserExists();
-      checkClubExist();
     }
-  }, [checkUserExists, daoAddress, walletAddress, networkId, checkClubExist]);
+  }, [checkUserExists, walletAddress, networkId, daoAddress]);
 };
 
 export default useClubFetch;

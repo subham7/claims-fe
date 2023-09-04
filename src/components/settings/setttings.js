@@ -1,17 +1,16 @@
 import dayjs from "dayjs";
 import React, { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { QUERY_ALL_MEMBERS } from "api/graphql/queries";
 import AdditionalSettings from "@components/settingsComps/AdditionalSettings";
 import SettingsInfo from "@components/settingsComps/SettingsInfo";
 import TokenGating from "@components/tokenGatingComp/TokenGating";
-import { subgraphQuery } from "utils/subgraphs";
 import { convertFromWeiGovernance } from "utils/globalFunctions";
 import { getAssetsByDaoAddress } from "api/assets";
 import { getClubInfo } from "api/club";
-import { useAccount } from "wagmi";
+import { useAccount, useNetwork } from "wagmi";
 import useAppContractMethods from "hooks/useAppContractMethods";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
+import { queryAllMembersFromSubgraph } from "utils/stationsSubgraphHelper";
 
 const Settings = ({ daoAddress }) => {
   const [daoDetails, setDaoDetails] = useState({
@@ -53,9 +52,8 @@ const Settings = ({ daoAddress }) => {
 
   const { address: walletAddress } = useAccount();
 
-  const SUBGRAPH_URL = useSelector((state) => {
-    return state.gnosis.subgraphUrl;
-  });
+  const { chain } = useNetwork();
+  const networkId = "0x" + chain?.id.toString(16);
 
   const tokenType = useSelector((state) => {
     return state.club.clubData.tokenType;
@@ -63,10 +61,6 @@ const Settings = ({ daoAddress }) => {
 
   const isAdminUser = useSelector((state) => {
     return state.gnosis.adminUser;
-  });
-
-  const NETWORK_HEX = useSelector((state) => {
-    return state.gnosis.networkHex;
   });
 
   const factoryData = useSelector((state) => {
@@ -192,17 +186,17 @@ const Settings = ({ daoAddress }) => {
     }
   }, [factoryData]);
 
-  const fetchAssets = useCallback(async () => {
+  const fetchAssets = async () => {
     try {
       const assetsData = await getAssetsByDaoAddress(
         daoDetails.assetsStoredOnGnosis ? gnosisAddress : daoAddress,
-        NETWORK_HEX,
+        networkId,
       );
       setTreasuryAmount(assetsData?.data?.treasuryAmount);
     } catch (error) {
       console.log(error);
     }
-  }, [NETWORK_HEX, daoAddress, daoDetails.assetsStoredOnGnosis, gnosisAddress]);
+  };
 
   const getClubInfoFn = async () => {
     const info = await getClubInfo(daoAddress);
@@ -227,25 +221,25 @@ const Settings = ({ daoAddress }) => {
   ]);
 
   useEffect(() => {
-    try {
-      const fetchData = async () => {
-        if (daoAddress) {
-          const data = await subgraphQuery(
-            SUBGRAPH_URL,
-            QUERY_ALL_MEMBERS(daoAddress),
-          );
+    const fetchAllMembers = async () => {
+      try {
+        const data = await queryAllMembersFromSubgraph(daoAddress, networkId);
+        if (data && data?.users) {
           setMembers(data?.users);
         }
-      };
-      fetchData();
-    } catch (error) {
-      console.log(error);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    if (daoAddress && networkId && walletAddress) {
+      fetchAllMembers();
     }
-  }, [SUBGRAPH_URL, daoAddress]);
+  }, [daoAddress, networkId, walletAddress]);
 
   useEffect(() => {
     fetchAssets();
-  }, [fetchAssets]);
+  }, [networkId, daoAddress, daoDetails.assetsStoredOnGnosis, gnosisAddress]);
 
   return (
     <>
