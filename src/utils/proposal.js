@@ -14,7 +14,11 @@ import { convertToWeiGovernance } from "./globalFunctions";
 import { Interface } from "ethers";
 import { fulfillOrder } from "api/assets";
 import { SEAPORT_CONTRACT_ADDRESS } from "api";
-import { AAVE_ERC20_POOL_ADDRESS } from "./constants";
+import {
+  AAVE_MATIC_ADDRESS,
+  AAVE_POOL_ADDRESS,
+  CHAIN_CONFIG,
+} from "./constants";
 import {
   QUERY_ALL_MEMBERS,
   QUERY_STATION_DETAILS,
@@ -491,10 +495,12 @@ export const getTransaction = async (
   contractInstances,
   parameters,
   isAssetsStoredOnGnosis,
+  networkId,
   approveDepositWithEncodeABI,
   transferNFTfromSafe,
   airdropTokenMethodEncoded,
   depositErc20TokensToAavePool,
+  depositEthMethodEncoded,
 ) => {
   const executionId = proposalData.commands[0].executionId;
   let approvalTransaction;
@@ -653,27 +659,37 @@ export const getTransaction = async (
       return { transaction, approvalTransaction };
     case 14:
       if (isAssetsStoredOnGnosis) {
-        approvalTransaction = {
-          to: Web3.utils.toChecksumAddress(tokenData), // usdc address
-          data: approveDepositWithEncodeABI(
-            tokenData, // usdc
-            AAVE_ERC20_POOL_ADDRESS, // erc20 pool
-            proposalData.commands[0].depositAmount, // amount
-          ),
-          value: "0",
-        };
-        transaction = {
-          to: Web3.utils.toChecksumAddress(AAVE_ERC20_POOL_ADDRESS),
-          data: depositErc20TokensToAavePool(
-            tokenData, // address
-            proposalData.commands[0].depositAmount, // amount
-            gnosisAddress,
-            0, // referall
-          ),
-          value: "0",
-        };
-      }
+        if (tokenData === CHAIN_CONFIG[networkId].nativeToken) {
+          transaction = {
+            to: Web3.utils.toChecksumAddress(AAVE_MATIC_ADDRESS),
+            data: depositEthMethodEncoded(AAVE_POOL_ADDRESS, gnosisAddress, 0),
+            value: proposalData.commands[0].depositAmount.toString(),
+          };
 
-      return { transaction, approvalTransaction };
+          return { transaction };
+        } else {
+          approvalTransaction = {
+            to: Web3.utils.toChecksumAddress(tokenData), // usdc address
+            data: approveDepositWithEncodeABI(
+              tokenData, // usdc
+              AAVE_POOL_ADDRESS, // erc20 pool
+              proposalData.commands[0].depositAmount, // amount
+            ),
+            value: "0",
+          };
+          transaction = {
+            to: Web3.utils.toChecksumAddress(AAVE_POOL_ADDRESS),
+            data: depositErc20TokensToAavePool(
+              tokenData, // address
+              proposalData.commands[0].depositAmount, // amount
+              gnosisAddress,
+              0, // referall
+            ),
+            value: "0",
+          };
+
+          return { transaction, approvalTransaction };
+        }
+      }
   }
 };

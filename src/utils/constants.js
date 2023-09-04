@@ -1,3 +1,7 @@
+export const AAVE_POOL_ADDRESS = "0x794a61358D6845594F94dc1DB02A252b5b4814aD";
+export const AAVE_MATIC_ADDRESS = "0x1e4b7A6b903680eab0c5dAbcb8fD429cD2a9598c";
+export const BLOCK_CONFIRMATIONS = 1;
+
 export const CHAIN_CONFIG = {
   "0x89": {
     chainName: "Polygon Mainnet",
@@ -171,10 +175,3 @@ export const mantleMainnetViem = {
     },
   },
 };
-
-
-export const AAVE_ERC20_POOL_ADDRESS =
-  "0x794a61358D6845594F94dc1DB02A252b5b4814aD";
-
-export const BLOCK_CONFIRMATIONS = 1;
-

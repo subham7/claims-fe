@@ -9,8 +9,9 @@ import { actionContractABI } from "abis/actionContract";
 import { erc20AaveABI } from "abis/erc20AaveABI";
 import { useAccount, useNetwork } from "wagmi";
 import { factoryContractABI } from "abis/factoryContract.js";
-import { AAVE_ERC20_POOL_ADDRESS, CHAIN_CONFIG } from "utils/constants";
+import { AAVE_POOL_ADDRESS, CHAIN_CONFIG } from "utils/constants";
 import { getTransaction } from "utils/proposal";
+import { maticAaveABI } from "abis/MaticAaveABI";
 
 const useAppContractMethods = () => {
   const { address: walletAddress } = useAccount();
@@ -257,7 +258,7 @@ const useAppContractMethods = () => {
   ) => {
     const depositInAavePoolCall = new web3Call.eth.Contract(
       erc20AaveABI,
-      AAVE_ERC20_POOL_ADDRESS,
+      AAVE_POOL_ADDRESS,
     );
 
     return depositInAavePoolCall.methods
@@ -267,6 +268,21 @@ const useAppContractMethods = () => {
         addressWhereAssetsStored,
         referalCode,
       )
+      .encodeABI();
+  };
+
+  const depositEthMethodEncoded = (
+    poolAddress,
+    addressWhereAssetsStored,
+    referalCode,
+  ) => {
+    const depositEthCall = new web3Call.eth.Contract(
+      maticAaveABI,
+      AAVE_POOL_ADDRESS,
+    );
+
+    return depositEthCall.methods
+      .depositETH(poolAddress, addressWhereAssetsStored, referalCode)
       .encodeABI();
   };
 
@@ -442,10 +458,12 @@ const useAppContractMethods = () => {
       contractInstances,
       parameters,
       isAssetsStoredOnGnosis,
+      networkId,
       approveDepositWithEncodeABI,
       transferNFTfromSafe,
       airdropTokenMethodEncoded,
       depositErc20TokensToAavePool,
+      depositEthMethodEncoded,
     );
 
     // let approvalTransaction;
@@ -607,7 +625,7 @@ const useAppContractMethods = () => {
       if (txHash === "") {
         const nonce = await safeService.getNextNonce(gnosisAddress);
         let safeTransactionData;
-        if (approvalTransaction === "") {
+        if (approvalTransaction === "" || approvalTransaction === undefined) {
           safeTransactionData = {
             to: transaction.to,
             data: transaction.data,
@@ -675,7 +693,7 @@ const useAppContractMethods = () => {
         const nonce = await safeSdk.getNonce();
         let safeTransactionData;
 
-        if (approvalTransaction === "") {
+        if (approvalTransaction === "" || approvalTransaction === undefined) {
           safeTransactionData = {
             to: tx.to,
             data: tx.data,
