@@ -10,12 +10,15 @@ import { erc20DaoABI } from "abis/erc20Dao";
 import { seaportABI } from "abis/seaport";
 import { erc20AaveABI } from "abis/erc20AaveABI";
 import { subgraphQuery } from "./subgraphs";
-import { QUERY_ALL_MEMBERS, QUERY_CLUB_DETAILS } from "api/graphql/queries";
 import { convertToWeiGovernance } from "./globalFunctions";
 import { Interface } from "ethers";
 import { fulfillOrder } from "api/assets";
 import { SEAPORT_CONTRACT_ADDRESS } from "api";
 import { AAVE_ERC20_POOL_ADDRESS } from "./constants";
+import {
+  QUERY_ALL_MEMBERS,
+  QUERY_STATION_DETAILS,
+} from "api/graphql/stationQueries";
 
 export const fetchProposals = async (clubId, type) => {
   let proposalData;
@@ -327,7 +330,7 @@ export const getEncodedData = async (
       } else {
         const clubDetails = await subgraphQuery(
           SUBGRAPH_URL,
-          QUERY_CLUB_DETAILS(daoAddress),
+          QUERY_STATION_DETAILS(daoAddress),
         );
         const tokenURI = clubDetails?.stations[0].imageUrl;
         data = iface.encodeFunctionData("mintGTToAddress", [
