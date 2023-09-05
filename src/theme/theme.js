@@ -1,11 +1,10 @@
 import { createTheme } from "@mui/material/styles";
 import { darkComponents } from "./darkComponent";
-import { lightComponents } from "./lightComponent";
 
-const theme = (mode) =>
+const theme = () =>
   createTheme({
     palette: {
-      mode: mode,
+      mode: "dark",
       // primary: {
       //   main: "#2D55FF",
       //   dark: "#2E55FF",
@@ -25,15 +24,15 @@ const theme = (mode) =>
       // },
       // background: { default: "#0F0F0F" },
       background: {
-        default: mode == "dark" ? "#111D38" : "#EFEFEF",
-        paper: mode == "dark" ? "#191919" : "#F4F4F5",
+        default: "#111D38",
+        paper: "#191919",
       },
       text: {
         primary: "#F5F5F5",
       },
     },
     components: {
-      ...(mode == "dark" ? darkComponents : lightComponents),
+      ...darkComponents,
     },
   });
 

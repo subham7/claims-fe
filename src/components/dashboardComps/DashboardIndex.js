@@ -720,7 +720,7 @@ const DashboardIndex = ({ daoAddress }) => {
                     <Grid item md={12}>
                       <Button
                         sx={{ width: "100%" }}
-                        variant="transparentWhite"
+                        variant="text"
                         onClick={() => handleMoreClick()}>
                         More
                       </Button>
