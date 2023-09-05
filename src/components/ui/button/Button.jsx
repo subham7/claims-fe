@@ -1,6 +1,6 @@
 import React from "react";
 import styles from "./Button.module.scss";
-// import classNames from "classnames";
+import classNames from "classnames";
 import { Button } from "@mui/material";
 
 const CustomButton = ({
@@ -11,9 +11,7 @@ const CustomButton = ({
   type = "button",
   className,
 }) => {
-  let buttonStyles = `${styles.button} ${styles[variant]} ${
-    disabled && styles.disabled
-  }`;
+  let buttonStyles = `${styles.button}`;
 
   const handleClick = () => {
     onClick && onClick();
@@ -23,7 +21,7 @@ const CustomButton = ({
     <Button
       type={type}
       variant="contained"
-      className={className}
+      className={classNames(buttonStyles, className)}
       onClick={handleClick}
       disabled={disabled}>
       {children}

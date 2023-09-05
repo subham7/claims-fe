@@ -1,28 +1,3 @@
-@import "./../../../../styles/variables.scss";
-
 .button {
-  border: none;
-  width: fit-content;
   margin-right: 10px;
-  font-size: 16px;
-  font-weight: 400;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  text-align: center;
-  padding: 14px 32px;
-  color: $white;
-  border-radius: 8px;
-  cursor: pointer;
-  background-color: $primary;
-
-  &:hover {
-    background-color: $white;
-    color: $primary;
-  }
-}
-
-.disabled {
-  cursor: default !important;
 }
