@@ -452,28 +452,6 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
                   <Grid container spacing={3}>
                     <Grid item xs={12} md={4}>
                       <Typography className={classes.listFont2}>
-                        NFT Address
-                      </Typography>
-                      <Typography className={classes.listFont2Colourless}>
-                        {extractNftAdressAndId(
-                          proposalData.commands[0].nftLink,
-                        ).nftAddress.slice(0, 6)}
-                        ....
-                        {extractNftAdressAndId(
-                          proposalData.commands[0].nftLink,
-                        ).nftAddress.slice(-6)}
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={12} md={4}>
-                      <Typography className={classes.listFont2}>
-                        Token Id
-                      </Typography>
-                      <Typography className={classes.listFont2Colourless}>
-                        {
-                          extractNftAdressAndId(
-                            proposalData.commands[0].nftLink,
-                          ).tokenId
-                        }
                         Price per token
                       </Typography>
                       <Typography className={classes.listFont2Colourless}>
