@@ -372,21 +372,25 @@ export const getEncodedData = async ({
       return { data };
 
     case 4:
-      approvalData = iface.encodeFunctionData("approve", [
-        CHAIN_CONFIG[networkId]?.airdropContractAddress,
-        customTokenAmounts[0],
-      ]);
+      if (customToken === CHAIN_CONFIG[networkId].nativeToken) {
+        return {};
+      } else {
+        approvalData = iface.encodeFunctionData("approve", [
+          CHAIN_CONFIG[networkId]?.airdropContractAddress,
+          customTokenAmounts[0],
+        ]);
 
-      data = iface.encodeFunctionData("airDropToken", [
-        customToken,
-        customTokenAmounts,
-        customTokenAddresses,
-      ]);
+        data = iface.encodeFunctionData("airDropToken", [
+          customToken,
+          customTokenAmounts,
+          customTokenAddresses,
+        ]);
 
-      membersArray = customTokenAddresses;
-      airDropAmountArray = customTokenAmounts;
+        membersArray = customTokenAddresses;
+        airDropAmountArray = customTokenAmounts;
 
-      return { data, approvalData, membersArray, airDropAmountArray };
+        return { data, approvalData, membersArray, airDropAmountArray };
+      }
 
     case 5:
       data = iface.encodeFunctionData("transferNft", [
@@ -485,6 +489,8 @@ export const getEncodedData = async ({
         daoAddress,
       ]);
       return { data };
+    default:
+      return {};
   }
 };
 
@@ -576,10 +582,16 @@ export const getTransaction = async ({
   switch (executionId) {
     case 0:
     case 4:
-      if (isAssetsStoredOnGnosis) {
+      if (tokenData === CHAIN_CONFIG[networkId].nativeToken) {
+        transaction = {
+          to: Web3.utils.toChecksumAddress(customTokenAddresses[0]),
+          data: "0x",
+          value: customTokenAmounts[0],
+        };
+        return { transaction };
+      } else {
         approvalTransaction = {
           to: Web3.utils.toChecksumAddress(tokenData),
-          // data: tokenData.methods.approve(dao / action).encodeABI(), // for send/airdrop -> action & send NFT -> daoAddress
           data: approveDepositWithEncodeABI(
             tokenData,
             CHAIN_CONFIG[networkId]?.airdropContractAddress,
@@ -601,27 +613,10 @@ export const getTransaction = async ({
           ),
           value: 0,
         };
-      } else {
-        approvalTransaction = {
-          to: Web3.utils.toChecksumAddress(daoAddress),
-          data: erc20DaoContractCall.methods
-            .updateProposalAndExecution(tokenData, approvalData)
-            .encodeABI(),
-          value: "0",
-        };
-        transaction = {
-          to: Web3.utils.toChecksumAddress(daoAddress),
-          data: erc20DaoContractCall.methods
-            .updateProposalAndExecution(
-              //airdrop address
-              CHAIN_CONFIG[networkId]?.airdropContractAddress,
-              parameters,
-            )
-            .encodeABI(),
-          value: "0",
-        };
+
+        return { transaction, approvalTransaction };
       }
-      return { transaction, approvalTransaction };
+
     case 1:
     case 2:
     case 3:
