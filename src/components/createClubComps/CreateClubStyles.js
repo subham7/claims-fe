@@ -66,7 +66,7 @@ export const ERC20Step2Styles = makeStyles({
     fontWeight: "bold",
   },
   uploadButton: {
-    backgroundColor: "#111D38",
+    backgroundColor: "#0F0F0F",
     color: "#2D55FF",
     fontSize: "18px",
     width: "208px",
@@ -173,7 +173,7 @@ export const Step3Styles = makeStyles({
     fontWeight: "bold",
   },
   uploadButton: {
-    backgroundColor: "#111D38",
+    backgroundColor: "#0F0F0F",
     color: "#2D55FF",
     fontSize: "18px",
     width: "208px",

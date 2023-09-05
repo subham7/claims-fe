@@ -551,7 +551,7 @@ const DashboardIndex = ({ daoAddress }) => {
                   </Grid>
                   <Grid item>
                     <Link
-                      color={"#111D38"}
+                      color={"#0F0F0F"}
                       variant="Docs"
                       className={classes.docs}
                       onClick={() => {

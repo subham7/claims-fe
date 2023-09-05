@@ -202,7 +202,7 @@ const Documents = ({ daoAddress }) => {
                   position: "absolute",
                   left: 20,
                   top: 30,
-                  color: "#111D38",
+                  color: "#0F0F0F",
                   fontWeight: "normal",
                   width: "80%",
                 }}>
@@ -212,7 +212,7 @@ const Documents = ({ daoAddress }) => {
                 href="/"
                 sx={{
                   position: "absolute",
-                  color: "#111D38",
+                  color: "#0F0F0F",
                   fontWeight: "normal",
                   width: "70%",
                   textDecoration: "underline",

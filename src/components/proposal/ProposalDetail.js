@@ -181,7 +181,7 @@ const useStyles = makeStyles({
     textTransform: "capitalize",
   },
   timeLeftChip: {
-    background: "#111D38",
+    background: "#0F0F0F",
     borderRadius: "5px",
   },
   cardFontActive: {

@@ -28,7 +28,7 @@ export const ProposalCardStyles = makeStyles({
     width: "28.5vw",
     height: "55px",
     color: "#C1D3FF",
-    background: "#111D38 0% 0% no-repeat padding-box",
+    background: "#0F0F0F 0% 0% no-repeat padding-box",
     border: "1px solid #C1D3FF40",
     borderRadius: "10px",
     "&:hover": {
@@ -98,7 +98,7 @@ export const ProposalCardStyles = makeStyles({
     paddingLeft: "8px",
   },
   timeLeftChip: {
-    background: "#111D38",
+    background: "#0F0F0F",
     borderRadius: "5px",
   },
   cardFontActive: {
@@ -132,7 +132,7 @@ export const ProposalCardStyles = makeStyles({
   },
   cardTextBox: {
     color: "#C1D3FF",
-    background: "#111D38 0% 0% no-repeat padding-box",
+    background: "#0F0F0F 0% 0% no-repeat padding-box",
     border: "1px solid #C1D3FF40",
     borderRadius: "10px",
   },
@@ -156,7 +156,7 @@ export const ProposalCardStyles = makeStyles({
   },
   datePicker: {
     borderRadius: "10px",
-    backgroundColor: "#111D38",
+    backgroundColor: "#0F0F0F",
     width: "90%",
   },
   banner: {

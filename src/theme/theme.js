@@ -24,7 +24,7 @@ const theme = () =>
       },
       // background: { default: "#0F0F0F" },
       background: {
-        default: "#111D38",
+        default: "#0F0F0F",
         paper: "#191919",
       },
       text: {

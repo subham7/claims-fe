@@ -19,7 +19,7 @@ const useStyles = makeStyles({
   },
   modal: {
     width: "570px",
-    background: "#111D38",
+    background: "#0F0F0F",
     position: "fixed",
     top: "50%",
     left: "50%",
@@ -62,7 +62,7 @@ const useStyles = makeStyles({
   },
   inviteLink: {
     background:
-      "transparent linear-gradient(90deg, #111D3800 0%, #2D55FF 100%) 0% 0% no-repeat padding-box",
+      "transparent linear-gradient(90deg, #0F0F0F00 0%, #2D55FF 100%) 0% 0% no-repeat padding-box",
     position: "",
     display: "block",
     padding: "0px 20px",
@@ -82,7 +82,7 @@ const useStyles = makeStyles({
   linkInput: {
     width: "100%",
     color: "#C1D3FF",
-    background: "#111D38 0% 0% no-repeat padding-box",
+    background: "#0F0F0F 0% 0% no-repeat padding-box",
     border: "1px solid #C1D3FF40",
     borderRadius: "10px",
     "&:hover": {

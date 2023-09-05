@@ -174,7 +174,7 @@ export const DashboardStyles = makeStyles({
   linkInput: {
     width: "100%",
     color: "#C1D3FF",
-    background: "#111D38 0% 0% no-repeat padding-box",
+    background: "#0F0F0F 0% 0% no-repeat padding-box",
     border: "1px solid #C1D3FF40",
     borderRadius: "10px",
     "&:hover": {
@@ -219,7 +219,7 @@ export const DashboardStyles = makeStyles({
     width: "28.5vw",
     height: "auto",
     color: "#C1D3FF",
-    background: "#111D38 0% 0% no-repeat padding-box",
+    background: "#0F0F0F 0% 0% no-repeat padding-box",
     border: "1px solid #C1D3FF40",
     borderRadius: "10px",
     "&:hover": {

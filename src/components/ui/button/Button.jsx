@@ -23,7 +23,7 @@ const CustomButton = ({
     <Button
       type={type}
       variant="contained"
-      // className={classNames(buttonStyles, className)}
+      className={className}
       onClick={handleClick}
       disabled={disabled}>
       {children}

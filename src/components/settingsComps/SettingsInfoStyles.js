@@ -30,7 +30,7 @@ export const SettingsInfoStlyes = makeStyles({
     fontSize: "20px",
   },
   cardSmall: {
-    backgroundColor: "#111D38",
+    backgroundColor: "#0F0F0F",
     borderRadius: "20px",
     opacity: 1,
   },
@@ -136,7 +136,7 @@ export const SettingsInfoStlyes = makeStyles({
   },
   datePicker: {
     borderRadius: "10px",
-    backgroundColor: "#111D38",
+    backgroundColor: "#0F0F0F",
     width: "95%",
   },
 });
