@@ -592,7 +592,6 @@ export const getTransaction = async ({
       } else {
         approvalTransaction = {
           to: Web3.utils.toChecksumAddress(tokenData),
-          // data: tokenData.methods.approve(dao / action).encodeABI(), // for send/airdrop -> action & send NFT -> daoAddress
           data: approveDepositWithEncodeABI(
             tokenData,
             CHAIN_CONFIG[networkId]?.airdropContractAddress,
