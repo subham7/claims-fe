@@ -1,11 +1,9 @@
 import { useSelector } from "react-redux";
 import Web3 from "web3";
 import { getIncreaseGasPrice, writeContractFunction } from "utils/helper";
-import { erc20TokenABI } from "abis/usdcTokenContract.js";
 import Safe, { Web3Adapter } from "@safe-global/protocol-kit";
 import { createProposalTxHash, getProposalTxHash } from "../api/proposal";
 import SafeApiKit from "@safe-global/api-kit";
-import { actionContractABI } from "abis/actionContract";
 import { useAccount, useNetwork } from "wagmi";
 import { factoryContractABI } from "abis/factoryContract.js";
 import { CHAIN_CONFIG } from "utils/constants";
@@ -189,63 +187,10 @@ const useAppContractMethods = () => {
       .call();
   };
 
-  const approveDepositWithEncodeABI = (
-    contractAddress,
-    approvalContract,
-    amount,
-  ) => {
-    if (contractAddress) {
-      const erc20TokenContractCall = new web3Call.eth.Contract(
-        erc20TokenABI,
-        contractAddress,
-      );
-
-      return erc20TokenContractCall?.methods
-        ?.approve(approvalContract, amount)
-        .encodeABI();
-    }
-  };
-
-  const transferNFTfromSafe = (
-    tokenAddress,
-    gnosisAddress,
-    receiverAddress,
-    tokenId,
-  ) => {
-    if (tokenAddress) {
-      const erc20TokenContractCall = new web3Call.eth.Contract(
-        erc20TokenABI,
-        tokenAddress,
-      );
-
-      return erc20TokenContractCall?.methods
-        ?.transferFrom(gnosisAddress, receiverAddress, tokenId)
-        .encodeABI();
-    }
-  };
-
   const toggleWhitelist = async () => {
     return await erc20DaoContractCall?.methods
       ?.toggleOnlyAllowWhitelist()
       .encodeABI();
-  };
-
-  const airdropTokenMethodEncoded = (
-    actionContractAddress,
-    airdropTokenAddress,
-    amountArray,
-    members,
-  ) => {
-    if (actionContractAddress) {
-      const actionContractSend = new web3Call.eth.Contract(
-        actionContractABI,
-        actionContractAddress,
-      );
-
-      return actionContractSend.methods
-        .airDropToken(airdropTokenAddress, amountArray, members)
-        .encodeABI();
-    }
   };
 
   const getNftBalance = async (tokenType, contractAddress) => {
@@ -380,15 +325,13 @@ const useAppContractMethods = () => {
     airdropContractAddress = "",
     factoryContractAddress = "",
     gnosisTransactionUrl,
-    executionId,
-    ownerAddress,
-    safeThreshold,
     proposalData,
     membersArray,
     airDropAmountArray,
     transactionData = "",
   ) => {
     console.log("DATA", data);
+    const { executionId, safeThreshold } = proposalData.commands[0];
     const parameters = data;
     const web3 = new Web3(window.ethereum);
     const ethAdapter = new Web3Adapter({
@@ -412,7 +355,7 @@ const useAppContractMethods = () => {
       daoAddress,
       factoryContractAddress,
       approvalData,
-      ownerAddress,
+
       safeThreshold,
       transactionData,
       airdropContractAddress,
@@ -421,6 +364,9 @@ const useAppContractMethods = () => {
       contractInstances,
       parameters,
       isAssetsStoredOnGnosis,
+      membersArray,
+      airDropAmountArray,
+      networkId,
     });
 
     if (executionStatus !== "executed") {

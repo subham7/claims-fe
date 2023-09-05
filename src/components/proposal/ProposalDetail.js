@@ -216,10 +216,6 @@ const ProposalDetail = ({ pid, daoAddress }) => {
     return state.club.clubData.tokenType;
   });
 
-  const SUBGRAPH_URL = useSelector((state) => {
-    return state.gnosis.subgraphUrl;
-  });
-
   const isGovernanceERC20 = useSelector((state) => {
     return state.club.erc20ClubDetails.isGovernanceActive;
   });
@@ -257,10 +253,6 @@ const ProposalDetail = ({ pid, daoAddress }) => {
 
   const ERC20_Threshold = useSelector((state) => {
     return state.club.erc20ClubDetails.threshold;
-  });
-
-  const contractInstances = useSelector((state) => {
-    return state.contractInstances.contractInstances;
   });
 
   const Club_Threshold =
@@ -537,13 +529,12 @@ const ProposalDetail = ({ pid, daoAddress }) => {
       getERC20TotalSupply,
       getNftBalance,
       proposalData,
-      SUBGRAPH_URL,
       daoAddress,
-      AIRDROP_ACTION_ADDRESS,
       clubData,
       factoryData,
-      factoryABI: ABI,
+      contractABI: ABI,
       setMembers,
+      networkId,
     });
 
     const response = updateProposalAndExecution(
@@ -570,9 +561,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
         ? FACTORY_CONTRACT_ADDRESS
         : "",
       GNOSIS_TRANSACTION_URL,
-      proposalData.commands[0].executionId,
-      proposalData.commands[0].ownerAddress,
-      proposalData.commands[0].safeThreshold,
+
       proposalData,
       membersArray,
       airDropAmountArray,
