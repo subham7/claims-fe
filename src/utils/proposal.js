@@ -9,11 +9,14 @@ import { erc721DaoABI } from "abis/erc721Dao";
 import { erc20DaoABI } from "abis/erc20Dao";
 import { seaportABI } from "abis/seaport";
 import { subgraphQuery } from "./subgraphs";
-import { QUERY_ALL_MEMBERS, QUERY_CLUB_DETAILS } from "api/graphql/queries";
 import { convertToWeiGovernance } from "./globalFunctions";
 import { Interface } from "ethers";
 import { fulfillOrder } from "api/assets";
 import { SEAPORT_CONTRACT_ADDRESS } from "api";
+import {
+  QUERY_ALL_MEMBERS,
+  QUERY_STATION_DETAILS,
+} from "api/graphql/stationQueries";
 
 export const fetchProposals = async (clubId, type) => {
   let proposalData;
@@ -189,9 +192,7 @@ export const signRejectTx = async ({
   }
 };
 
-export const fetchABI = async (proposalData, clubData) => {
-  const executionId = proposalData.commands[0].executionId;
-  const tokenType = clubData.tokenType;
+export const fetchABI = async (executionId, tokenType) => {
   switch (executionId) {
     case 0:
     case 4:
@@ -203,7 +204,7 @@ export const fetchABI = async (proposalData, clubData) => {
     case 1:
     case 2:
     case 5:
-      if (clubData.tokenType === "erc721") return erc721DaoABI;
+      if (tokenType === "erc721") return erc721DaoABI;
       else return erc20DaoABI;
     case 3:
     case 10:
@@ -219,22 +220,25 @@ export const fetchABI = async (proposalData, clubData) => {
   }
 };
 
-export const getEncodedData = async (
+export const getEncodedData = async ({
   proposalData,
   SUBGRAPH_URL,
   daoAddress,
   AIRDROP_ACTION_ADDRESS,
   clubData,
   factoryData,
-  ABI,
-) => {
+  factoryABI,
+  setMembers,
+  getNftBalance,
+  getERC20TotalSupply,
+}) => {
   const executionId = proposalData.commands[0].executionId;
   let membersArray = [];
   let airDropAmountArray = [];
   let approvalData;
   let data;
 
-  let iface = new Interface(ABI);
+  let iface = new Interface(factoryABI);
 
   switch (executionId) {
     case 0:
@@ -242,6 +246,7 @@ export const getEncodedData = async (
         SUBGRAPH_URL,
         QUERY_ALL_MEMBERS(daoAddress),
       );
+
       setMembers(membersData);
       membersData.users.map((member) => membersArray.push(member.userAddress));
 
@@ -323,7 +328,7 @@ export const getEncodedData = async (
       } else {
         const clubDetails = await subgraphQuery(
           SUBGRAPH_URL,
-          QUERY_CLUB_DETAILS(daoAddress),
+          QUERY_STATION_DETAILS(daoAddress),
         );
         const tokenURI = clubDetails?.stations[0].imageUrl;
         data = iface.encodeFunctionData("mintGTToAddress", [
@@ -402,7 +407,6 @@ export const getEncodedData = async (
           token_id: linkData[2],
         };
         transactionData = await fulfillOrder(offer, fulfiller, consideration);
-        let iface = new Interface(ABI);
 
         data = iface.encodeFunctionData("fulfillBasicOrder_efficient_6GL6yc", [
           [
@@ -468,7 +472,7 @@ export const getEncodedData = async (
   }
 };
 
-export const getTransaction = async (
+export const getTransaction = async ({
   proposalData,
   daoAddress,
   factoryContractAddress,
@@ -481,7 +485,8 @@ export const getTransaction = async (
   gnosisAddress,
   contractInstances,
   parameters,
-) => {
+  isAssetsStoredOnGnosis,
+}) => {
   const executionId = proposalData.commands[0].executionId;
   let approvalTransaction;
   let transaction;

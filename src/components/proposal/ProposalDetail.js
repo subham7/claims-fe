@@ -522,7 +522,10 @@ const ProposalDetail = ({ pid, daoAddress }) => {
   const executeFunction = async (proposalStatus) => {
     setLoaderOpen(true);
 
-    const ABI = await fetchABI(proposalData, clubData);
+    const ABI = await fetchABI(
+      proposalData.commands[0].executionId,
+      clubData.tokenType,
+    );
 
     const {
       data,
@@ -530,15 +533,18 @@ const ProposalDetail = ({ pid, daoAddress }) => {
       transactionData,
       membersArray,
       airDropAmountArray,
-    } = await getEncodedData(
+    } = await getEncodedData({
+      getERC20TotalSupply,
+      getNftBalance,
       proposalData,
       SUBGRAPH_URL,
       daoAddress,
       AIRDROP_ACTION_ADDRESS,
       clubData,
       factoryData,
-      ABI,
-    );
+      factoryABI: ABI,
+      setMembers,
+    });
 
     const response = updateProposalAndExecution(
       data,
