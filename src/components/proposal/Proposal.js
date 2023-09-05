@@ -26,7 +26,7 @@ import { getUserTokenData, web3InstanceCustomRPC } from "utils/helper";
 import { addNftsOwnedByDao } from "redux/reducers/club";
 import { getTokensList } from "api/token";
 import { CHAIN_CONFIG } from "utils/constants";
-import { useAccount, useNetwork } from "wagmi";
+import { useNetwork } from "wagmi";
 
 const useStyles = makeStyles({
   noProposal_heading: {
@@ -53,11 +53,9 @@ const useStyles = makeStyles({
 const Proposal = ({ daoAddress }) => {
   const router = useRouter();
   const dispatch = useDispatch();
-
-  const classes = useStyles();
   const { chain } = useNetwork();
   const networkId = "0x" + chain?.id.toString(16);
-  const { address: walletAddress } = useAccount();
+  const classes = useStyles();
 
   const [nftData, setNftData] = useState([]);
   const [selectedListItem, setSelectedListItem] = useState(
@@ -276,7 +274,7 @@ const Proposal = ({ daoAddress }) => {
                     MenuProps={proposalDisplayOptions}
                     style={{
                       borderRadius: "10px",
-                      background: "#111D38 0% 0% no-repeat padding-box",
+                      background: "#0F0F0F 0% 0% no-repeat padding-box",
                       width: "30%",
                     }}>
                     {proposalDisplayOptions.map((option) => (

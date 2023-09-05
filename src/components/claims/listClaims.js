@@ -31,7 +31,7 @@ const useStyles = makeStyles({
     border: "none",
     padding: "18px 24px",
     color: "white",
-    background: "#3B7AFD",
+    background: "#2D55FF",
     borderRadius: "12px",
     cursor: "pointer",
   },

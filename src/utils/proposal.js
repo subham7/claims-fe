@@ -8,11 +8,11 @@ import { factoryContractABI } from "abis/factoryContract.js";
 import { erc721DaoABI } from "abis/erc721Dao";
 import { erc20DaoABI } from "abis/erc20Dao";
 import { seaportABI } from "abis/seaport";
-import { erc20AaveABI } from "abis/erc20AaveABI";
+// import { erc20AaveABI } from "abis/erc20AaveABI";
 import { subgraphQuery } from "./subgraphs";
 import { convertToWeiGovernance } from "./globalFunctions";
 import { Interface } from "ethers";
-import { fulfillOrder } from "api/assets";
+import { fulfillOrder, retrieveNftListing } from "api/assets";
 import { SEAPORT_CONTRACT_ADDRESS } from "api";
 import {
   AAVE_MATIC_POOL_ADDRESS,
@@ -25,6 +25,8 @@ import {
   QUERY_ALL_MEMBERS,
   QUERY_STATION_DETAILS,
 } from "api/graphql/stationQueries";
+import { erc20TokenABI } from "abis/usdcTokenContract.js";
+import { actionContractABI } from "abis/actionContract";
 
 export const fetchProposals = async (clubId, type) => {
   let proposalData;
@@ -200,9 +202,7 @@ export const signRejectTx = async ({
   }
 };
 
-export const fetchABI = async (proposalData, clubData) => {
-  const executionId = proposalData.commands[0].executionId;
-  const tokenType = clubData.tokenType;
+export const fetchABI = async (executionId, tokenType) => {
   switch (executionId) {
     case 0:
     case 4:
@@ -214,7 +214,8 @@ export const fetchABI = async (proposalData, clubData) => {
     case 1:
     case 2:
     case 5:
-      if (clubData.tokenType === "erc721") return erc721DaoABI;
+    case 9:
+      if (tokenType === "erc721") return erc721DaoABI;
       else return erc20DaoABI;
     case 3:
     case 10:
@@ -224,50 +225,66 @@ export const fetchABI = async (proposalData, clubData) => {
       return factoryContractABI;
     case 8:
       return seaportABI;
-    case 9:
-      if (tokenType === "erc721") return erc721DaoABI;
-      else if (tokenType === "erc20") return erc20DaoABI;
-    case 14:
-    case 15:
-      return erc20AaveABI;
+    default:
+      return null;
   }
 };
 
-export const getEncodedData = async (
+export const getEncodedData = async ({
   proposalData,
-  SUBGRAPH_URL,
   daoAddress,
-  AIRDROP_ACTION_ADDRESS,
   clubData,
   factoryData,
-  ABI,
-) => {
-  const executionId = proposalData.commands[0].executionId;
+  contractABI,
+  setMembers,
+  getNftBalance,
+  getERC20TotalSupply,
+  networkId,
+}) => {
   let membersArray = [];
   let airDropAmountArray = [];
   let approvalData;
   let data;
 
-  let iface = new Interface(ABI);
+  const {
+    executionId,
+    airDropAmount,
+    airDropCarryFee,
+    airDropToken,
+    mintGTAmounts,
+    mintGTAddresses,
+    quorum,
+    threshold,
+    totalDeposits,
+    customTokenAmounts,
+    customToken,
+    customTokenAddresses,
+    customNft,
+    customNftToken,
+    nftLink,
+    merkleRoot,
+    pricePerToken,
+  } = proposalData.commands[0];
+  let iface;
+
+  if (contractABI) iface = new Interface(contractABI);
 
   switch (executionId) {
     case 0:
       const membersData = await subgraphQuery(
-        SUBGRAPH_URL,
+        CHAIN_CONFIG[networkId]?.stationSubgraphUrl,
         QUERY_ALL_MEMBERS(daoAddress),
       );
+
       setMembers(membersData);
       membersData.users.map((member) => membersArray.push(member.userAddress));
 
       approvalData = iface.encodeFunctionData("approve", [
-        AIRDROP_ACTION_ADDRESS,
-        proposalData.commands[0].airDropAmount,
+        CHAIN_CONFIG[networkId]?.airdropContractAddress,
+        airDropAmount,
       ]);
-      if (proposalData.commands[0].airDropCarryFee !== 0) {
-        const carryFeeAmount =
-          (proposalData.commands[0].airDropAmount *
-            proposalData.commands[0].airDropCarryFee) /
-          100;
+      if (airDropCarryFee !== 0) {
+        const carryFeeAmount = (airDropAmount * airDropCarryFee) / 100;
         airDropAmountArray = await Promise.all(
           membersArray.map(async (member) => {
             const balance = await getNftBalance(
@@ -283,8 +300,7 @@ export const getEncodedData = async (
             }
 
             return (
-              ((proposalData.commands[0].airDropAmount - carryFeeAmount) *
-                balance) /
+              ((airDropAmount - carryFeeAmount) * balance) /
               clubTokensMinted
             )
               .toFixed(0)
@@ -310,10 +326,7 @@ export const getEncodedData = async (
               clubTokensMinted = await getNftOwnersCount();
             }
 
-            return (
-              (proposalData.commands[0].airDropAmount * balance) /
-              clubTokensMinted
-            )
+            return ((airDropAmount * balance) / clubTokensMinted)
               .toFixed(0)
               .toString();
           }),
@@ -321,7 +334,7 @@ export const getEncodedData = async (
       }
 
       data = iface.encodeFunctionData("airDropToken", [
-        proposalData.commands[0].airDropToken,
+        airDropToken,
         airDropAmountArray,
         membersArray,
       ]);
@@ -331,68 +344,69 @@ export const getEncodedData = async (
     case 1:
       if (clubData.tokenType === "erc20") {
         data = iface.encodeFunctionData("mintGTToAddress", [
-          [proposalData.commands[0].mintGTAmounts.toString()],
-          proposalData.commands[0].mintGTAddresses,
+          [mintGTAmounts.toString()],
+          mintGTAddresses,
         ]);
       } else {
         const clubDetails = await subgraphQuery(
-          SUBGRAPH_URL,
+          CHAIN_CONFIG[networkId]?.stationSubgraphUrl,
           QUERY_STATION_DETAILS(daoAddress),
         );
         const tokenURI = clubDetails?.stations[0].imageUrl;
         data = iface.encodeFunctionData("mintGTToAddress", [
-          proposalData.commands[0].mintGTAmounts,
+          mintGTAmounts,
           [tokenURI],
-          proposalData.commands[0].mintGTAddresses,
+          mintGTAddresses,
         ]);
       }
 
-      console.log(data);
       return { data };
 
     case 2:
       data = iface.encodeFunctionData("updateGovernanceSettings", [
-        proposalData.commands[0].quorum * 100,
-        proposalData.commands[0].threshold * 100,
+        quorum * 100,
+        threshold * 100,
       ]);
       return { data };
+
     case 3:
       data = iface.encodeFunctionData("updateTotalRaiseAmount", [
         convertToWeiGovernance(
-          convertToWeiGovernance(proposalData.commands[0].totalDeposits, 6) /
-            factoryData?.pricePerToken,
+          convertToWeiGovernance(totalDeposits, 6) / factoryData?.pricePerToken,
           18,
         ),
         factoryData?.pricePerToken,
         daoAddress,
       ]);
       return { data };
+
     case 4:
       approvalData = iface.encodeFunctionData("approve", [
-        AIRDROP_ACTION_ADDRESS,
-        proposalData.commands[0].customTokenAmounts[0],
+        CHAIN_CONFIG[networkId]?.airdropContractAddress,
+        customTokenAmounts[0],
       ]);
 
       data = iface.encodeFunctionData("airDropToken", [
-        proposalData.commands[0].customToken,
-        proposalData.commands[0].customTokenAmounts,
-        proposalData.commands[0].customTokenAddresses,
+        customToken,
+        customTokenAmounts,
+        customTokenAddresses,
       ]);
 
-      membersArray = proposalData.commands[0].customTokenAddresses;
-      airDropAmountArray = proposalData.commands[0].customTokenAmounts;
+      membersArray = customTokenAddresses;
+      airDropAmountArray = customTokenAmounts;
 
       return { data, approvalData, membersArray, airDropAmountArray };
 
     case 5:
       data = iface.encodeFunctionData("transferNft", [
-        proposalData?.commands[0].customNft,
-        proposalData?.commands[0].customTokenAddresses[0],
-        proposalData?.commands[0].customNftToken,
+        customNft,
+        customTokenAddresses[0],
+        customNftToken,
       ]);
       return { data };
+
     case 8:
-      const parts = proposalData?.commands[0].nftLink.split("/");
+      const parts = nftLink.split("/");
 
       const linkData = parts.slice(-3);
       const nftdata = await retrieveNftListing(
@@ -400,7 +414,7 @@ export const getEncodedData = async (
         linkData[1],
         linkData[2],
       );
-
+      let transactionData;
       if (nftdata) {
         const offer = {
           hash: nftdata.data.orders[0].order_hash,
@@ -416,46 +430,48 @@ export const getEncodedData = async (
           token_id: linkData[2],
         };
         transactionData = await fulfillOrder(offer, fulfiller, consideration);
-        let iface = new Interface(ABI);
+
+        const {
+          considerationToken,
+          considerationIdentifier,
+          considerationAmount,
+          offerer,
+          zone,
+          offerToken,
+          offerIdentifier,
+          offerAmount,
+          basicOrderType,
+          startTime,
+          endTime,
+          zoneHash,
+          salt,
+          offererConduitKey,
+          fulfillerConduitKey,
+          totalOriginalAdditionalRecipients,
+          additionalRecipients,
+          signature,
+        } = transactionData.fulfillment_data.transaction.input_data.parameters;
 
         data = iface.encodeFunctionData("fulfillBasicOrder_efficient_6GL6yc", [
           [
-            transactionData.fulfillment_data.transaction.input_data.parameters
-              .considerationToken,
-            transactionData.fulfillment_data.transaction.input_data.parameters
-              .considerationIdentifier,
-            transactionData.fulfillment_data.transaction.input_data.parameters
-              .considerationAmount,
-            transactionData.fulfillment_data.transaction.input_data.parameters
-              .offerer,
-            transactionData.fulfillment_data.transaction.input_data.parameters
-              .zone,
-            transactionData.fulfillment_data.transaction.input_data.parameters
-              .offerToken,
-            transactionData.fulfillment_data.transaction.input_data.parameters
-              .offerIdentifier,
-            transactionData.fulfillment_data.transaction.input_data.parameters
-              .offerAmount,
-            transactionData.fulfillment_data.transaction.input_data.parameters
-              .basicOrderType,
-            transactionData.fulfillment_data.transaction.input_data.parameters
-              .startTime,
-            transactionData.fulfillment_data.transaction.input_data.parameters
-              .endTime,
-            transactionData.fulfillment_data.transaction.input_data.parameters
-              .zoneHash,
-            transactionData.fulfillment_data.transaction.input_data.parameters
-              .salt,
-            transactionData.fulfillment_data.transaction.input_data.parameters
-              .offererConduitKey,
-            transactionData.fulfillment_data.transaction.input_data.parameters
-              .fulfillerConduitKey,
-            transactionData.fulfillment_data.transaction.input_data.parameters
-              .totalOriginalAdditionalRecipients,
-            transactionData.fulfillment_data.transaction.input_data.parameters
-              .additionalRecipients,
-            transactionData.fulfillment_data.transaction.input_data.parameters
-              .signature,
+            considerationToken,
+            considerationIdentifier,
+            considerationAmount,
+            offerer,
+            zone,
+            offerToken,
+            offerIdentifier,
+            offerAmount,
+            basicOrderType,
+            startTime,
+            endTime,
+            zoneHash,
+            salt,
+            offererConduitKey,
+            fulfillerConduitKey,
+            totalOriginalAdditionalRecipients,
+            additionalRecipients,
+            signature,
           ],
         ]);
       }
@@ -464,18 +480,17 @@ export const getEncodedData = async (
     case 11:
     case 12:
       let iface2 = new Interface(erc20DaoABI);
-
       approvalData = iface2.encodeFunctionData("toggleOnlyAllowWhitelist", []);
 
       data = iface.encodeFunctionData("changeMerkleRoot", [
         daoAddress,
-        proposalData.commands[0]?.merkleRoot?.merkleRoot,
+        merkleRoot?.merkleRoot,
       ]);
-      return { data };
+      return { data, approvalData };
     case 13:
       data = iface.encodeFunctionData("updateTotalRaiseAmount", [
         factoryData?.distributionAmount,
-        convertToWeiGovernance(proposalData.commands[0]?.pricePerToken, 6),
+        convertToWeiGovernance(pricePerToken, 6),
         daoAddress,
       ]);
       return { data };
@@ -485,15 +500,68 @@ export const getEncodedData = async (
   }
 };
 
-export const getTransaction = async (
+const approveDepositWithEncodeABI = (
+  contractAddress,
+  approvalContract,
+  amount,
+  web3Call,
+) => {
+  if (contractAddress) {
+    const erc20TokenContractCall = new web3Call.eth.Contract(
+      erc20TokenABI,
+      contractAddress,
+    );
+
+    return erc20TokenContractCall?.methods
+      ?.approve(approvalContract, amount)
+      .encodeABI();
+  }
+};
+
+const transferNFTfromSafe = (
+  tokenAddress,
+  gnosisAddress,
+  receiverAddress,
+  tokenId,
+  web3Call,
+) => {
+  if (tokenAddress) {
+    const erc20TokenContractCall = new web3Call.eth.Contract(
+      erc20TokenABI,
+      tokenAddress,
+    );
+
+    return erc20TokenContractCall?.methods
+      ?.transferFrom(gnosisAddress, receiverAddress, tokenId)
+      .encodeABI();
+  }
+};
+
+const airdropTokenMethodEncoded = (
+  actionContractAddress,
+  airdropTokenAddress,
+  amountArray,
+  members,
+  web3Call,
+) => {
+  if (actionContractAddress) {
+    const actionContractSend = new web3Call.eth.Contract(
+      actionContractABI,
+      actionContractAddress,
+    );
+
+    return actionContractSend.methods
+      .airDropToken(airdropTokenAddress, amountArray, members)
+      .encodeABI();
+  }
+};
+
+export const getTransaction = async ({
   proposalData,
   daoAddress,
   factoryContractAddress,
   approvalData,
-  ownerAddress,
-  safeThreshold,
   transactionData,
-  airdropContractAddress,
   tokenData,
   gnosisAddress,
   contractInstances,
@@ -507,13 +575,23 @@ export const getTransaction = async (
   depositEthMethodEncoded,
   withdrawEthMethodEncoded,
   withdrawErc20MethodEncoded,
-) => {
-  const executionId = proposalData.commands[0].executionId;
+  membersArray,
+  airDropAmountArray,
+}) => {
+  const {
+    executionId,
+    safeThreshold,
+    ownerAddress,
+    airDropAmount,
+    customTokenAmounts,
+    customTokenAddresses,
+    customNftToken,
+  } = proposalData.commands[0];
   let approvalTransaction;
   let transaction;
 
   const { erc20DaoContractCall } = contractInstances;
-
+  const web3Call = new Web3(CHAIN_CONFIG[networkId]?.appRpcUrl);
   switch (executionId) {
     case 0:
     case 4:
@@ -523,20 +601,22 @@ export const getTransaction = async (
           // data: tokenData.methods.approve(dao / action).encodeABI(), // for send/airdrop -> action & send NFT -> daoAddress
           data: approveDepositWithEncodeABI(
             tokenData,
-            airdropContractAddress,
-            proposalData.commands[0].executionId === 0
-              ? proposalData.commands[0].airDropAmount
-              : proposalData.commands[0].customTokenAmounts[0],
+            CHAIN_CONFIG[networkId]?.airdropContractAddress,
+            executionId === 0 ? airDropAmount : customTokenAmounts[0],
+            web3Call,
           ),
           value: "0",
         };
         transaction = {
-          to: Web3.utils.toChecksumAddress(airdropContractAddress),
+          to: Web3.utils.toChecksumAddress(
+            CHAIN_CONFIG[networkId]?.airdropContractAddress,
+          ),
           data: airdropTokenMethodEncoded(
-            airdropContractAddress,
+            CHAIN_CONFIG[networkId]?.airdropContractAddress,
             tokenData,
             airDropAmountArray,
             membersArray,
+            web3Call,
           ),
           value: 0,
         };
@@ -544,11 +624,7 @@ export const getTransaction = async (
         approvalTransaction = {
           to: Web3.utils.toChecksumAddress(daoAddress),
           data: erc20DaoContractCall.methods
-            .updateProposalAndExecution(
-              //usdc address
-              tokenData,
-              approvalData,
-            )
+            .updateProposalAndExecution(tokenData, approvalData)
             .encodeABI(),
           value: "0",
         };
@@ -557,7 +633,7 @@ export const getTransaction = async (
           data: erc20DaoContractCall.methods
             .updateProposalAndExecution(
               //airdrop address
-              airdropContractAddress,
+              CHAIN_CONFIG[networkId]?.airdropContractAddress,
               parameters,
             )
             .encodeABI(),
@@ -590,8 +666,9 @@ export const getTransaction = async (
         data: transferNFTfromSafe(
           tokenData,
           gnosisAddress,
-          proposalData.commands[0].customTokenAddresses[0],
-          proposalData.commands[0].customNftToken,
+          customTokenAddresses[0],
+          customNftToken,
+          web3Call,
         ),
         value: "0",
       };

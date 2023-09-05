@@ -551,7 +551,7 @@ const DashboardIndex = ({ daoAddress }) => {
                   </Grid>
                   <Grid item>
                     <Link
-                      color={"#111D38"}
+                      color={"#0F0F0F"}
                       variant="Docs"
                       className={classes.docs}
                       onClick={() => {
@@ -720,7 +720,7 @@ const DashboardIndex = ({ daoAddress }) => {
                     <Grid item md={12}>
                       <Button
                         sx={{ width: "100%" }}
-                        variant="transparentWhite"
+                        variant="text"
                         onClick={() => handleMoreClick()}>
                         More
                       </Button>

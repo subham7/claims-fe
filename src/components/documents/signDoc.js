@@ -25,7 +25,7 @@ const useStyles = makeStyles({
     padding: "12px 20px",
     marginBottom: "20px",
     color: "white",
-    background: "#3B7AFD",
+    background: "#2D55FF",
     borderRadius: "6px",
     cursor: "pointer",
   },

@@ -45,7 +45,7 @@ const ethereumClient = new EthereumClient(wagmiConfig, chains);
 
 function MyApp({ Component, pageProps }) {
   return (
-    <ThemeProvider theme={theme("dark")}>
+    <ThemeProvider theme={theme()}>
       <ApolloProvider client={apolloClient}>
         <WagmiConfig config={wagmiConfig}>
           <Provider store={store}>

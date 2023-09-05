@@ -111,7 +111,7 @@ const AdditionalSettings = ({
   return (
     <div className={classes.container}>
       <Typography className={classes.heading}>Additional Details</Typography>
-      <Stack spacing={3} ml={3}>
+      <Stack spacing={3}>
         <Divider />
         <Grid
           container
@@ -222,7 +222,7 @@ const AdditionalSettings = ({
         <Divider />
       </Stack>
 
-      <Stack spacing={1} ml={3}>
+      <Stack spacing={1}>
         <Grid
           container
           py={2}
@@ -259,7 +259,7 @@ const AdditionalSettings = ({
         <Divider />
       </Stack>
 
-      <Stack spacing={1} ml={3}>
+      <Stack spacing={1}>
         <Grid
           container
           py={2}

@@ -303,7 +303,7 @@ const TokenGating = ({ daoAddress }) => {
               checkedIcon={
                 <div
                   style={{
-                    background: "#3A7AFD",
+                    background: "#2D55FF",
                     height: "25px",
                     width: "25px",
                     borderRadius: "100px",

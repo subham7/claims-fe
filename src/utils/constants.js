@@ -26,6 +26,7 @@ export const CHAIN_CONFIG = {
       "https://api.thegraph.com/subgraphs/name/subham7/stnx-claim",
     covalentNetworkName: "matic-mainnet",
     nativeToken: "0x0000000000000000000000000000000000001010",
+    airdropContractAddress: "0x0DF19560f74749a42215A16C3FC22FfAA1c4029A",
   },
   "0x5": {
     chainName: "Goerli Testnet",

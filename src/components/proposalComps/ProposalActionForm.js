@@ -91,7 +91,7 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
         MenuProps={commandTypeList}
         style={{
           borderRadius: "10px",
-          background: "#111D38 0% 0% no-repeat padding-box",
+          background: "#0F0F0F 0% 0% no-repeat padding-box",
           width: "100%",
           marginTop: "0.5rem",
         }}
@@ -739,7 +739,7 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
 
           <Typography mt={1} variant="proposalSubHeading">
             Download sample from{" "}
-            <span style={{ color: "#3a7afd" }}>
+            <span style={{ color: "#2D55FF" }}>
               <Link href={"/assets/csv/addresses.csv"}>here</Link>
             </span>
           </Typography>
