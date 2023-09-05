@@ -2,7 +2,7 @@ import { makeStyles } from "@mui/styles";
 
 export const AdditionalSettingsStyles = makeStyles({
   container: {
-    background: "#142243",
+    background: "#151515",
     width: "70%",
     borderRadius: "12px",
     padding: "32px",

@@ -14,6 +14,8 @@ import { commandTypeList } from "../../data/dashboard";
 import { makeStyles } from "@mui/styles";
 import { useSelector } from "react-redux";
 import Link from "next/link";
+import { CHAIN_CONFIG } from "utils/constants";
+import { useNetwork } from "wagmi";
 
 const useStyles = makeStyles({
   textField: {
@@ -28,6 +30,8 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
   const hiddenFileInput = useRef(null);
   const [file, setFile] = useState("");
   const [loadingCsv, setLoadingCsv] = useState(false);
+  const { chain } = useNetwork();
+  const networkId = "0x" + chain?.id.toString(16);
 
   const classes = useStyles();
 
@@ -187,11 +191,16 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
               inputProps={{ "aria-label": "Without label" }}
               name="airdropToken"
               id="airdropToken">
-              {tokenData.map((token) => (
-                <MenuItem key={token.symbol} value={token.symbol}>
-                  {token.symbol}
-                </MenuItem>
-              ))}
+              {tokenData
+                .filter(
+                  (token) =>
+                    token.address !== CHAIN_CONFIG[networkId].nativeToken,
+                )
+                .map((token) => (
+                  <MenuItem key={token.symbol} value={token.symbol}>
+                    {token.symbol}
+                  </MenuItem>
+                ))}
             </Select>
           </Grid>
           <Grid
