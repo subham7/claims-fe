@@ -68,7 +68,7 @@ export const ClaimModalStyles = makeStyles({
     borderRadius: "50px",
     border: "none",
     cursor: "pointer",
-    background: "#3B7AFD",
+    background: "#2D55FF",
     color: "#fff",
   },
   buttonContainers: {

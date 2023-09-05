@@ -36,7 +36,7 @@ const useStyles = makeStyles({
     padding: 10,
     height: "auto",
     maxWidth: 360,
-    backgroundColor: "#3B7AFD",
+    backgroundColor: "#2D55FF",
     borderRadius: "23px",
     justifyContent: "center",
     alignItems: "center",

@@ -168,7 +168,7 @@ export const DashboardStyles = makeStyles({
   copyButton: {
     width: "68px",
     height: "30px",
-    background: "#3B7AFD 0% 0% no-repeat padding-box",
+    background: "#2D55FF 0% 0% no-repeat padding-box",
     borderRadius: "15px",
   },
   linkInput: {

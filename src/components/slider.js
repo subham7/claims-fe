@@ -9,7 +9,7 @@ const CustomPrompt = styled(Slider)(({ theme }) => ({
     height: "13px",
   },
   "& .MuiSlider-track": {
-    color: "#3B7AFD",
+    color: "#2D55FF",
     height: "13px",
   },
   "& .MuiSlider-thumb": {

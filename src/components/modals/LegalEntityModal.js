@@ -40,7 +40,7 @@ const useStyles = makeStyles({
     marginBottom: "6px",
   },
   btn: {
-    background: "#3B7AFD",
+    background: "#2D55FF",
     borderRadius: "10px",
     padding: "13px 30px",
     marginTop: "20px",
@@ -62,7 +62,7 @@ const useStyles = makeStyles({
   },
   inviteLink: {
     background:
-      "transparent linear-gradient(90deg, #111D3800 0%, #3B7AFD 100%) 0% 0% no-repeat padding-box",
+      "transparent linear-gradient(90deg, #111D3800 0%, #2D55FF 100%) 0% 0% no-repeat padding-box",
     position: "",
     display: "block",
     padding: "0px 20px",
@@ -76,7 +76,7 @@ const useStyles = makeStyles({
   copy: {
     width: "68px",
     height: "30px",
-    background: "#3B7AFD 0% 0% no-repeat padding-box",
+    background: "#2D55FF 0% 0% no-repeat padding-box",
     borderRadius: "15px",
   },
   linkInput: {

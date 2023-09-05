@@ -25,7 +25,7 @@ export const AdditionalSettingsStyles = makeStyles({
     fontWeight: "normal",
   },
   link: {
-    color: "#3B7AFD",
+    color: "#2D55FF",
     textDecoration: "none",
     "&:hover": {
       textDecoration: "none",

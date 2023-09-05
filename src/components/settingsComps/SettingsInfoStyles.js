@@ -20,11 +20,11 @@ export const SettingsInfoStlyes = makeStyles({
     color: "#C1D3FF",
   },
   connectWalletButton: {
-    backgroundColor: "#3B7AFD",
+    backgroundColor: "#2D55FF",
     fontSize: "20px",
   },
   depositButton: {
-    backgroundColor: "#3B7AFD",
+    backgroundColor: "#2D55FF",
     width: "208px",
     height: "60px",
     fontSize: "20px",
@@ -77,7 +77,7 @@ export const SettingsInfoStlyes = makeStyles({
     justifyContent: "center",
     display: "flex",
     alignItems: "center",
-    backgroundColor: " #3B7AFD",
+    backgroundColor: " #2D55FF",
     fontSize: "20px",
   },
   openTag: {
@@ -120,7 +120,7 @@ export const SettingsInfoStlyes = makeStyles({
     color: "#C1D3FF",
   },
   activityLink: {
-    color: "#3B7AFD",
+    color: "#2D55FF",
     textDecoration: "none",
     "&:hover": {
       textDecoration: "none",

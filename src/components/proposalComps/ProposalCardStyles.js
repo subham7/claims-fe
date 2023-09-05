@@ -14,13 +14,13 @@ export const ProposalCardStyles = makeStyles({
   addButton: {
     width: "11vw",
     height: "60px",
-    background: "#3B7AFD 0% 0% no-repeat padding-box",
+    background: "#2D55FF 0% 0% no-repeat padding-box",
     borderRadius: "10px",
   },
   addButton2: {
     width: "242px",
     height: "60px",
-    background: "#3B7AFD 0% 0% no-repeat padding-box",
+    background: "#2D55FF 0% 0% no-repeat padding-box",
     borderRadius: "10px",
     fontSize: "22px",
   },
@@ -42,7 +42,7 @@ export const ProposalCardStyles = makeStyles({
     width: "12px",
     height: "12px",
     marginRight: "15px",
-    backgroundColor: "#3B7AFD",
+    backgroundColor: "#2D55FF",
     borderRadius: "50%",
   },
   activeIllustration: {

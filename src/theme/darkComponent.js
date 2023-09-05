@@ -11,11 +11,11 @@ export const darkComponents = {
   MuiSwitch: {
     styleOverrides: {
       thumb: {
-        color: "#3B7AFD",
+        color: "#2D55FF",
       },
       track: {
         "&:checked": {
-          backgroundColor: "#3B7AFD",
+          backgroundColor: "#2D55FF",
         },
       },
     },

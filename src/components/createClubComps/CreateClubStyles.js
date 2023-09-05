@@ -67,7 +67,7 @@ export const ERC20Step2Styles = makeStyles({
   },
   uploadButton: {
     backgroundColor: "#111D38",
-    color: "#3B7AFD",
+    color: "#2D55FF",
     fontSize: "18px",
     width: "208px",
   },
@@ -84,7 +84,7 @@ export const ERC20Step2Styles = makeStyles({
     width: "208px",
     borderRadius: "30px",
     backgroundColor: "#FFFFFF",
-    color: "#3B7AFD",
+    color: "#2D55FF",
   },
   smallText: {
     fontSize: "16px",
@@ -128,7 +128,7 @@ export const Step3Styles = makeStyles({
     justifyContent: "center",
     flexDirection: "column",
     cursor: "pointer",
-    border: "1px solid #3B7AFD",
+    border: "1px solid #2D55FF",
     borderRadius: "10px",
   },
   textField: {
@@ -174,7 +174,7 @@ export const Step3Styles = makeStyles({
   },
   uploadButton: {
     backgroundColor: "#111D38",
-    color: "#3B7AFD",
+    color: "#2D55FF",
     fontSize: "18px",
     width: "208px",
   },
@@ -196,7 +196,7 @@ export const Step3Styles = makeStyles({
     width: "208px",
     borderRadius: "30px",
     backgroundColor: "#FFFFFF",
-    color: "#3B7AFD",
+    color: "#2D55FF",
   },
   smallText: {
     fontSize: "16px",

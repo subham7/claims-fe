@@ -150,7 +150,7 @@ const useStyles = makeStyles({
   mainCardButton: {
     borderRadius: "38px",
     border: "1px solid #C1D3FF40;",
-    backgroundColor: "#3B7AFD",
+    backgroundColor: "#2D55FF",
     "&:hover": {
       cursor: "pointer",
     },
