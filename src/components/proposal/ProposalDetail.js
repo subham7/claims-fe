@@ -143,7 +143,7 @@ const useStyles = makeStyles({
   mainCardButton: {
     borderRadius: "38px",
     border: "1px solid #C1D3FF40;",
-    backgroundColor: "#3B7AFD",
+    backgroundColor: "#2D55FF",
     "&:hover": {
       cursor: "pointer",
     },
@@ -174,7 +174,7 @@ const useStyles = makeStyles({
     textTransform: "capitalize",
   },
   timeLeftChip: {
-    background: "#111D38",
+    background: "#0F0F0F",
     borderRadius: "5px",
   },
   cardFontActive: {

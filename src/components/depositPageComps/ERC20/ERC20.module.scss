@@ -1,7 +1,7 @@
 $border: 0.5px solid #6475a3;
-$background-secondary: #3b7afd;
+$background-secondary: #2d55ff;
 $background-primary: #101d38;
-$background-input: #111d38;
+$background-input: #0f0f0f;
 $error: #ec4a4a;
 
 .mainContainer {
@@ -45,35 +45,6 @@ $error: #ec4a4a;
         border-radius: 20px;
       }
     }
-
-    // button {
-    //   background: $background-secondary;
-    //   padding: 12px 40px;
-    //   color: white;
-    //   font-size: 20px;
-    //   font-weight: 500;
-    //   border: none;
-    //   outline: none;
-    //   border-radius: 20rem;
-    //   margin-top: 20px;
-    //   cursor: pointer;
-    //   font-weight: 600;
-
-    //   &:disabled {
-    //     background-color: #8d8d8d;
-    //     cursor: not-allowed;
-
-    //     &:hover {
-    //       background: #8d8d8d;
-    //       color: white;
-    //     }
-    //   }
-
-    //   &:hover {
-    //     background: white;
-    //     color: $background-secondary;
-    //   }
-    // }
   }
 }
 

@@ -35,22 +35,22 @@ const ProposalCard = ({ proposal, daoAddress }) => {
   const fetchAirDropContractDetails = useCallback(async () => {
     try {
       if (proposal) {
-        if (tokenType === "erc20" || proposal?.commands[0].executionId !== 1) {
+        if (tokenType === "erc20" || proposal?.commands[0]?.executionId !== 1) {
           const decimal = await getDecimals(
-            proposal?.commands[0].executionId === 0
+            proposal?.commands[0]?.executionId === 0
               ? proposal?.commands[0]?.airDropToken
-              : proposal?.commands[0].executionId === 1
+              : proposal?.commands[0]?.executionId === 1
               ? daoAddress
               : proposal?.commands[0].executionId === 4
               ? proposal?.commands[0]?.customToken
               : "",
           );
           const symbol = await getTokenSymbol(
-            proposal?.commands[0].executionId === 0
+            proposal?.commands[0]?.executionId === 0
               ? proposal?.commands[0]?.airDropToken
-              : proposal?.commands[0].executionId === 1
+              : proposal?.commands[0]?.executionId === 1
               ? daoAddress
-              : proposal?.commands[0].executionId === 4
+              : proposal?.commands[0]?.executionId === 4
               ? proposal?.commands[0]?.customToken
               : "",
           );
@@ -61,14 +61,14 @@ const ProposalCard = ({ proposal, daoAddress }) => {
           });
         } else if (
           tokenType === "erc721" &&
-          proposal?.commands[0].executionId === 1
+          proposal?.commands[0]?.executionId === 1
         ) {
           const symbol = await getTokenSymbol(
-            proposal?.commands[0].executionId === 0
+            proposal?.commands[0]?.executionId === 0
               ? proposal?.commands[0]?.airDropToken
-              : proposal?.commands[0].executionId === 1
+              : proposal?.commands[0]?.executionId === 1
               ? daoAddress
-              : proposal?.commands[0].executionId === 4
+              : proposal?.commands[0]?.executionId === 4
               ? proposal?.commands[0]?.customToken
               : "",
           );
@@ -162,7 +162,7 @@ const ProposalCard = ({ proposal, daoAddress }) => {
             {(proposal?.commands[0]?.usdcTokenSymbol &&
               !proposal?.commands[0]?.quorum &&
               !proposal?.commands[0]?.totalDeposits &&
-              !proposal?.commands[0].customNft &&
+              !proposal?.commands[0]?.customNft &&
               !proposal?.commands[0]?.executionId === 6) ||
             !proposal?.commands[0]?.executionId === 7 ? (
               <Grid item sx={{ display: "flex" }}>
@@ -232,8 +232,8 @@ const ProposalCard = ({ proposal, daoAddress }) => {
               <></>
             )}
 
-            {proposal?.commands[0].executionId === 8 ||
-            proposal?.commands[0].executionId === 9 ? (
+            {proposal?.commands[0]?.executionId === 8 ||
+            proposal?.commands[0]?.executionId === 9 ? (
               <Grid item>
                 <Chip
                   className={classes.timeLeftChip}
@@ -248,11 +248,11 @@ const ProposalCard = ({ proposal, daoAddress }) => {
                       </Typography>
                       <Typography variant="info">
                         {extractNftAdressAndId(
-                          proposal.commands[0].nftLink,
+                          proposal?.commands[0]?.nftLink,
                         ).nftAddress.slice(0, 6)}
                         ....
                         {extractNftAdressAndId(
-                          proposal.commands[0].nftLink,
+                          proposal?.commands[0]?.nftLink,
                         ).nftAddress.slice(-6)}
                       </Typography>
                     </div>
@@ -481,7 +481,7 @@ const ProposalCard = ({ proposal, daoAddress }) => {
                       <Typography variant="info">
                         {(convertToWeiGovernance(
                           convertToWeiGovernance(
-                            proposal.commands[0].totalDeposits,
+                            proposal?.commands[0]?.totalDeposits,
                             6,
                           ) / factoryData?.pricePerToken,
                           18,

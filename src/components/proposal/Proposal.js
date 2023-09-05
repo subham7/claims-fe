@@ -270,7 +270,7 @@ const Proposal = ({ daoAddress }) => {
                     MenuProps={proposalDisplayOptions}
                     style={{
                       borderRadius: "10px",
-                      background: "#111D38 0% 0% no-repeat padding-box",
+                      background: "#0F0F0F 0% 0% no-repeat padding-box",
                       width: "30%",
                     }}>
                     {proposalDisplayOptions.map((option) => (

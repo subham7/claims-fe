@@ -24,7 +24,7 @@ const useStyles = makeStyles({
   },
   modal: {
     width: "450px",
-    background: "#111D38",
+    background: "#0F0F0F",
     // border: "1px solid #6475A3",
     position: "fixed",
     top: "50%",

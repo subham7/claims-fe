@@ -5,7 +5,7 @@ export const AdditionalSettingsStyles = makeStyles({
     background: "#142243",
     width: "70%",
     borderRadius: "12px",
-    padding: "50px 30px",
+    padding: "32px",
     display: "flex",
     flexDirection: "column",
     marginBottom: "40px",
@@ -13,7 +13,6 @@ export const AdditionalSettingsStyles = makeStyles({
   heading: {
     fontSize: "30px",
     marginBottom: "30px",
-    marginLeft: "20px",
   },
   iconColor: {
     fontSize: "18px",
@@ -25,7 +24,7 @@ export const AdditionalSettingsStyles = makeStyles({
     fontWeight: "normal",
   },
   link: {
-    color: "#3B7AFD",
+    color: "#2D55FF",
     textDecoration: "none",
     "&:hover": {
       textDecoration: "none",

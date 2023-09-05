@@ -63,7 +63,7 @@ const SettingsInfo = ({
                     alt="profile_pic"
                   />
                 </Grid> */}
-              <Grid item ml={4} mt={4}>
+              <Grid item ml={2} mt={4}>
                 <Stack spacing={0}>
                   <Typography variant="h4">
                     {daoDetails.daoName ? daoDetails.daoName : null}
@@ -74,7 +74,7 @@ const SettingsInfo = ({
                 </Stack>
               </Grid>
 
-              <Grid item ml={4} mb={7}>
+              <Grid item ml={2} mb={7}>
                 {clubInfo?.twitter && (
                   <TwitterIcon
                     onClick={() => window.open(clubInfo?.twitter, "_blank")}
@@ -106,7 +106,7 @@ const SettingsInfo = ({
               </Grid>
             </Grid>
 
-            <Grid item ml={4} mb={7}>
+            <Grid item ml={2} mb={4}>
               <div
                 style={{
                   maxHeight: "200px",
@@ -125,8 +125,8 @@ const SettingsInfo = ({
               style={{
                 background: "transparent",
                 boxShadow: "none",
-                paddingTop: "50px",
-                paddingLeft: "30px",
+                paddingTop: "24px",
+                paddingLeft: "12px",
               }}>
               <Grid container spacing={7}>
                 <Grid item md={3}>
@@ -506,7 +506,7 @@ const SettingsInfo = ({
             </Paper>
 
             <>
-              <Grid item ml={3} mt={5} mb={2} mr={3}>
+              <Grid item mx={1} mt={4} mb={2}>
                 {walletAddress &&
                 tokenType === "erc721" &&
                 !daoDetails.isTotalSupplyUnlimited ? (
@@ -557,7 +557,7 @@ const SettingsInfo = ({
                 {tokenType === "erc721" ? (
                   <>
                     {daoDetails.isGovernance && (
-                      <Grid item ml={4} mt={1} mb={2}>
+                      <Grid item ml={1} mt={1} mb={2}>
                         <Stack spacing={1}>
                           <Typography variant="settingText">
                             NFTs Minted so far
@@ -580,7 +580,7 @@ const SettingsInfo = ({
                     )}
                   </>
                 ) : (
-                  <Grid item ml={4} mt={1} mb={2}>
+                  <Grid item ml={1} mt={1} mb={2}>
                     <Stack spacing={1}>
                       <Typography variant="settingText">
                         Amount raised so far
@@ -611,10 +611,10 @@ const SettingsInfo = ({
 
                 <Grid
                   item
-                  ml={4}
+                  ml={1}
                   mt={1}
                   mb={2}
-                  mr={4}
+                  mr={1}
                   xs
                   sx={{ display: "flex", justifyContent: "flex-end" }}>
                   <Stack spacing={1}>

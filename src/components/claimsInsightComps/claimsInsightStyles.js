@@ -72,7 +72,7 @@ export const ClaimsInsightStyles = makeStyles({
     items: "center",
     gap: "20px",
     background:
-      "transparent linear-gradient(90deg, #19274B00 0%, #111D38 100%) 0% 0% no-repeat padding-box;",
+      "transparent linear-gradient(90deg, #19274B00 0%, #0F0F0F 100%) 0% 0% no-repeat padding-box;",
     padding: "12px",
     borderRadius: "8px",
     fontSize: "14px",
