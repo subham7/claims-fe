@@ -87,7 +87,6 @@ const useClubFetch = ({ daoAddress }) => {
     const addClubDataToRedux = async () => {
       if (!reduxClubData.gnosisAddress && networkId) {
         if (clubData) {
-          console.log("CLUB DATA", clubData);
           dispatch(
             addClubData({
               gnosisAddress: clubData.stations[0].gnosisAddress,
