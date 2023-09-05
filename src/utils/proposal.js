@@ -556,6 +556,8 @@ const depositErc20TokensToAavePool = (
   depositAmount,
   addressWhereAssetsStored,
   referalCode = 0,
+  web3Call,
+  networkId,
 ) => {
   const depositInAavePoolCall = new web3Call.eth.Contract(
     erc20AaveABI,
@@ -576,10 +578,12 @@ const depositEthMethodEncoded = (
   poolAddress,
   addressWhereAssetsStored,
   referalCode,
+  web3Call,
+  networkId,
 ) => {
   const depositEthCall = new web3Call.eth.Contract(
     maticAaveABI,
-    AAVE_POOL_ADDRESS,
+    CHAIN_CONFIG[networkId].aavePoolAddress,
   );
 
   return depositEthCall.methods
@@ -591,10 +595,12 @@ const withdrawEthMethodEncoded = (
   poolAddress,
   withdrawAmount,
   addressWhereAssetsStored,
+  web3Call,
+  networkId,
 ) => {
   const withdrawEthCall = new web3Call.eth.Contract(
     maticAaveABI,
-    AAVE_POOL_ADDRESS,
+    CHAIN_CONFIG[networkId].aavePoolAddress,
   );
 
   return withdrawEthCall.methods
@@ -606,10 +612,12 @@ const withdrawErc20MethodEncoded = (
   tokenAddress,
   withdrawAmount,
   addressWhereAssetsStored,
+  web3Call,
+  networkId,
 ) => {
   const withdrawEthCall = new web3Call.eth.Contract(
     erc20AaveABI,
-    AAVE_POOL_ADDRESS,
+    CHAIN_CONFIG[networkId].aavePoolAddress,
   );
 
   return withdrawEthCall.methods
@@ -645,9 +653,9 @@ export const getTransaction = async ({
   } = proposalData.commands[0];
   let approvalTransaction;
   let transaction;
+  const web3Call = new Web3(CHAIN_CONFIG[networkId]?.appRpcUrl);
 
   const { erc20DaoContractCall } = contractInstances;
-  const web3Call = new Web3(CHAIN_CONFIG[networkId]?.appRpcUrl);
   switch (executionId) {
     case 0:
     case 4:
@@ -807,6 +815,8 @@ export const getTransaction = async ({
               CHAIN_CONFIG[networkId]?.aavePoolAddress,
               gnosisAddress,
               0,
+              web3Call,
+              networkId,
             ),
             value: depositAmount.toString(),
           };
@@ -819,6 +829,7 @@ export const getTransaction = async ({
               tokenData,
               CHAIN_CONFIG[networkId].aavePoolAddress,
               depositAmount,
+              web3Call,
             ),
             value: "0",
           };
@@ -831,6 +842,8 @@ export const getTransaction = async ({
               depositAmount,
               gnosisAddress,
               0,
+              web3Call,
+              networkId,
             ),
             value: "0",
           };
@@ -849,6 +862,7 @@ export const getTransaction = async ({
               CHAIN_CONFIG[networkId].aaveWrappedMaticAddress,
               CHAIN_CONFIG[networkId].aaveMaticPoolAddress,
               withdrawAmount,
+              web3Call,
             ),
             value: "0",
           };
@@ -861,6 +875,8 @@ export const getTransaction = async ({
               CHAIN_CONFIG[networkId].aavePoolAddress,
               withdrawAmount,
               gnosisAddress,
+              web3Call,
+              networkId,
             ),
             value: "0",
           };
@@ -873,6 +889,7 @@ export const getTransaction = async ({
               CHAIN_CONFIG[networkId].aaveWrappedUsdcAddress,
               CHAIN_CONFIG[networkId].aavePoolAddress,
               withdrawAmount,
+              web3Call,
             ),
             value: "0",
           };
@@ -885,6 +902,8 @@ export const getTransaction = async ({
               Web3.utils.toChecksumAddress(tokenData),
               withdrawAmount,
               gnosisAddress,
+              web3Call,
+              networkId,
             ),
             value: "0",
           };
