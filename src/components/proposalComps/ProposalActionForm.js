@@ -733,7 +733,7 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
 
           <Typography mt={1} variant="proposalSubHeading">
             Download sample from{" "}
-            <span style={{ color: "#3a7afd" }}>
+            <span style={{ color: "#2D55FF" }}>
               <Link href={"/assets/csv/addresses.csv"}>here</Link>
             </span>
           </Typography>

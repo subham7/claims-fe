@@ -5,7 +5,7 @@ export const TokenGatingStyle = makeStyles({
     background: "#142243",
     width: "70%",
     borderRadius: "12px",
-    padding: "50px 30px",
+    padding: "32px",
     display: "flex",
     flexDirection: "column",
     marginBottom: "60px",
@@ -49,7 +49,7 @@ export const TokenGatingStyle = makeStyles({
 
   addBtn: {
     color: "inherit",
-    background: "#3A7AFD",
+    background: "#2D55FF",
     height: "40px",
     width: "40px",
     borderRadius: "50px",
@@ -64,7 +64,6 @@ export const TokenGatingStyle = makeStyles({
   },
 
   switchContainer: {
-    padding: "0px 16px",
     display: "flex",
     flexDirection: "row",
     alignItems: "center",

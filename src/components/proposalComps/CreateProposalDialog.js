@@ -22,7 +22,6 @@ import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import QuillEditor from "../quillEditor";
-import AddCircleRoundedIcon from "@mui/icons-material/AddCircleRounded";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ProposalActionForm from "./ProposalActionForm";
 import { proposalValidationSchema } from "../createClubComps/ValidationSchemas";
@@ -521,7 +520,6 @@ const CreateProposalDialog = ({
                   {proposal.values.optionList?.length > 0 ? (
                     <Grid
                       container
-                      pr={1}
                       mt={2}
                       mb={2}
                       sx={{
@@ -596,7 +594,6 @@ const CreateProposalDialog = ({
                         { text: "" },
                       ]);
                     }}>
-                    <AddCircleRoundedIcon />
                     Add Option
                   </Button>
                 </Stack>
