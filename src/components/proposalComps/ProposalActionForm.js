@@ -153,6 +153,9 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
         <MenuItem key={12} value="deposit tokens in AAVE pool">
           Deposit tokens in AAVE pool
         </MenuItem>
+        <MenuItem key={13} value="withdraw tokens from AAVE pool">
+          Withdraw tokens from AAVE pool
+        </MenuItem>
       </Select>
 
       {formik.values.actionCommand === "Distribute token to members" ? (
@@ -838,7 +841,7 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
             </Typography>
             <Select
               sx={{ marginTop: "0.5rem" }}
-              value={formik.values.aaveDepositToken}
+              value={formik.values.aaveWithdrawToken}
               onChange={(e) =>
                 formik.setFieldValue(
                   "aaveDepositToken",
@@ -885,6 +888,70 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
               helperText={
                 formik.touched.aaveDepositAmount &&
                 formik.errors.aaveDepositAmount
+              }
+              onWheel={(event) => event.target.blur()}
+            />
+          </Grid>
+        </>
+      ) : formik.values.actionCommand === "withdraw tokens from AAVE pool" ? (
+        <>
+          <Grid
+            container
+            direction={"column"}
+            ml={3}
+            mt={2}
+            // mb={}
+            sx={{ marginLeft: "0 !important" }}>
+            <Typography variant="proposalBody">Token to withdraw</Typography>
+            <Select
+              sx={{ marginTop: "0.5rem" }}
+              value={formik.values.aaveWithdrawToken}
+              onChange={(e) =>
+                formik.setFieldValue(
+                  "aaveWithdrawToken",
+                  tokenData.find((token) => token.symbol === e.target.value)
+                    .address,
+                )
+              }
+              renderValue={(selected) => {
+                if (selected.length === 0) {
+                  return "Select a command";
+                }
+                return selected;
+              }}
+              inputProps={{ "aria-label": "Without label" }}
+              name="aaveWithdrawToken"
+              id="aaveWithdrawToken">
+              {tokenData.map((token) => (
+                <MenuItem key={token.symbol} value={token.symbol}>
+                  {token.symbol}
+                </MenuItem>
+              ))}
+            </Select>
+          </Grid>
+          <Grid
+            container
+            direction={"column"}
+            ml={3}
+            mt={2}
+            sx={{ marginLeft: "0 !important" }}>
+            <Typography variant="proposalBody">Amount of Tokens *</Typography>
+            <TextField
+              variant="outlined"
+              className={classes.textField}
+              placeholder="0"
+              type="number"
+              name="aaveWithdrawAmount"
+              id="aaveWithdrawAmount"
+              value={formik.values.aaveWithdrawAmount}
+              onChange={formik.handleChange}
+              error={
+                formik.touched.aaveWithdrawAmount &&
+                Boolean(formik.errors.aaveWithdrawAmount)
+              }
+              helperText={
+                formik.touched.aaveWithdrawAmount &&
+                formik.errors.aaveWithdrawAmount
               }
               onWheel={(event) => event.target.blur()}
             />

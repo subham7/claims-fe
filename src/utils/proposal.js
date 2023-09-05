@@ -15,8 +15,10 @@ import { Interface } from "ethers";
 import { fulfillOrder } from "api/assets";
 import { SEAPORT_CONTRACT_ADDRESS } from "api";
 import {
-  AAVE_MATIC_ADDRESS,
+  AAVE_MATIC_POOL_ADDRESS,
   AAVE_POOL_ADDRESS,
+  AAVE_WRAPPED_MATIC_ADDRESS,
+  AAVE_WRAPPED_USDC_ADDRESS,
   CHAIN_CONFIG,
 } from "./constants";
 import {
@@ -226,6 +228,7 @@ export const fetchABI = async (proposalData, clubData) => {
       if (tokenType === "erc721") return erc721DaoABI;
       else if (tokenType === "erc20") return erc20DaoABI;
     case 14:
+    case 15:
       return erc20AaveABI;
   }
 };
@@ -477,6 +480,7 @@ export const getEncodedData = async (
       ]);
       return { data };
     case 14:
+    case 15:
       return { data: "" };
   }
 };
@@ -501,6 +505,8 @@ export const getTransaction = async (
   airdropTokenMethodEncoded,
   depositErc20TokensToAavePool,
   depositEthMethodEncoded,
+  withdrawEthMethodEncoded,
+  withdrawErc20MethodEncoded,
 ) => {
   const executionId = proposalData.commands[0].executionId;
   let approvalTransaction;
@@ -661,7 +667,7 @@ export const getTransaction = async (
       if (isAssetsStoredOnGnosis) {
         if (tokenData === CHAIN_CONFIG[networkId].nativeToken) {
           transaction = {
-            to: Web3.utils.toChecksumAddress(AAVE_MATIC_ADDRESS),
+            to: Web3.utils.toChecksumAddress(AAVE_MATIC_POOL_ADDRESS),
             data: depositEthMethodEncoded(AAVE_POOL_ADDRESS, gnosisAddress, 0),
             value: proposalData.commands[0].depositAmount.toString(),
           };
@@ -690,6 +696,52 @@ export const getTransaction = async (
 
           return { transaction, approvalTransaction };
         }
+      }
+    case 15:
+      if (isAssetsStoredOnGnosis) {
+        if (tokenData === CHAIN_CONFIG[networkId].nativeToken) {
+          approvalTransaction = {
+            to: Web3.utils.toChecksumAddress(AAVE_WRAPPED_MATIC_ADDRESS),
+            data: approveDepositWithEncodeABI(
+              AAVE_WRAPPED_MATIC_ADDRESS,
+              AAVE_MATIC_POOL_ADDRESS,
+              proposalData.commands[0].withdrawAmount,
+            ),
+            value: "0",
+          };
+
+          transaction = {
+            to: Web3.utils.toChecksumAddress(AAVE_MATIC_POOL_ADDRESS), // abi address
+            data: withdrawEthMethodEncoded(
+              AAVE_POOL_ADDRESS, // pool address
+              proposalData.commands[0].withdrawAmount,
+              gnosisAddress,
+            ),
+            value: "0",
+          };
+        } else {
+          approvalTransaction = {
+            to: Web3.utils.toChecksumAddress(AAVE_WRAPPED_USDC_ADDRESS),
+            data: approveDepositWithEncodeABI(
+              AAVE_WRAPPED_USDC_ADDRESS,
+              AAVE_POOL_ADDRESS,
+              proposalData.commands[0].withdrawAmount,
+            ),
+            value: "0",
+          };
+
+          transaction = {
+            to: Web3.utils.toChecksumAddress(AAVE_POOL_ADDRESS),
+            data: withdrawErc20MethodEncoded(
+              Web3.utils.toChecksumAddress(tokenData), //  usdc
+              proposalData.commands[0].withdrawAmount,
+              gnosisAddress,
+            ),
+            value: "0",
+          };
+        }
+
+        return { approvalTransaction, transaction };
       }
   }
 };

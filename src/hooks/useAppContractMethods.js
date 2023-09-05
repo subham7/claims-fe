@@ -199,11 +199,11 @@ const useAppContractMethods = () => {
     if (contractAddress) {
       const erc20TokenContractCall = new web3Call.eth.Contract(
         erc20TokenABI,
-        contractAddress,
+        contractAddress, // aave matic
       );
 
       return erc20TokenContractCall?.methods
-        ?.approve(approvalContract, amount)
+        ?.approve(approvalContract, amount) // 1e... , amount
         .encodeABI();
     }
   };
@@ -283,6 +283,36 @@ const useAppContractMethods = () => {
 
     return depositEthCall.methods
       .depositETH(poolAddress, addressWhereAssetsStored, referalCode)
+      .encodeABI();
+  };
+
+  const withdrawEthMethodEncoded = (
+    poolAddress,
+    withdrawAmount,
+    addressWhereAssetsStored,
+  ) => {
+    const withdrawEthCall = new web3Call.eth.Contract(
+      maticAaveABI,
+      AAVE_POOL_ADDRESS,
+    );
+
+    return withdrawEthCall.methods
+      .withdrawETH(poolAddress, withdrawAmount, addressWhereAssetsStored)
+      .encodeABI();
+  };
+
+  const withdrawErc20MethodEncoded = (
+    tokenAddress,
+    withdrawAmount,
+    addressWhereAssetsStored,
+  ) => {
+    const withdrawEthCall = new web3Call.eth.Contract(
+      erc20AaveABI,
+      AAVE_POOL_ADDRESS,
+    );
+
+    return withdrawEthCall.methods
+      .withdraw(tokenAddress, withdrawAmount, addressWhereAssetsStored)
       .encodeABI();
   };
 
@@ -464,6 +494,8 @@ const useAppContractMethods = () => {
       airdropTokenMethodEncoded,
       depositErc20TokensToAavePool,
       depositEthMethodEncoded,
+      withdrawEthMethodEncoded,
+      withdrawErc20MethodEncoded,
     );
 
     // let approvalTransaction;

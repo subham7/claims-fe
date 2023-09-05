@@ -126,6 +126,8 @@ const CreateProposalDialog = ({
       lensPostLink: "",
       aaveDepositToken: tokenData ? tokenData[0]?.address : "",
       aaveDepositAmount: 0,
+      aaveWithdrawAmount: 0,
+      aaveWithdrawToken: tokenData ? tokenData[0]?.address : "",
     },
     validationSchema: proposalValidationSchema,
     onSubmit: async (values) => {
@@ -350,6 +352,25 @@ const CreateProposalDialog = ({
               depositToken: values.aaveDepositToken,
               depositAmount: convertToWeiGovernance(
                 values.aaveDepositAmount,
+                tokenDecimal,
+              ),
+              usdcTokenSymbol: "USDC",
+              usdcTokenDecimal: 6,
+              usdcGovernanceTokenDecimal: 18,
+            },
+          ];
+        }
+
+        if (values.actionCommand === "withdraw tokens from AAVE pool") {
+          const tokenDecimal = tokenData.find(
+            (token) => token.address === values.aaveWithdrawToken,
+          ).decimals;
+          commands = [
+            {
+              executionId: 15,
+              withdrawToken: values.aaveWithdrawToken,
+              withdrawAmount: convertToWeiGovernance(
+                values.aaveWithdrawAmount,
                 tokenDecimal,
               ),
               usdcTokenSymbol: "USDC",
