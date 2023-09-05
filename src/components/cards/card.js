@@ -9,7 +9,7 @@ const useStyles = makeStyles({
     padding: "30px 40px",
     borderRadius: "20px",
     width: "481px",
-    background: "#142243",
+    background: "#151515",
     cursor: "pointer",
     height: "fit-content",
     alignItems: "flex-start",

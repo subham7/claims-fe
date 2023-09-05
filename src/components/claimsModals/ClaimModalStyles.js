@@ -39,7 +39,7 @@ export const ClaimModalStyles = makeStyles({
     display: "flex",
     justifyContent: "space-between",
     alignItems: "flex-start",
-    background: "#142243",
+    background: "#151515",
     border: "1px solid #C1D3FF40",
     borderRadius: "10px",
     padding: "30px",

@@ -141,14 +141,14 @@ export const ProposalCardStyles = makeStyles({
     backgroundColor: "#19274B",
   },
   proposalCard: {
-    backgroundColor: "#142243",
+    backgroundColor: "#151515",
     padding: 0,
     margin: 0,
   },
   mainCard: {
     borderRadius: "10px",
     border: "1px solid #C1D3FF40",
-    backgroundColor: "#142243",
+    backgroundColor: "#151515",
   },
   daysFont: {
     fontSize: "20px",

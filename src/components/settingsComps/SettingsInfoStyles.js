@@ -44,7 +44,7 @@ export const SettingsInfoStlyes = makeStyles({
     fontWeight: "bold",
 
     color: "#F5F5F5",
-    borderColor: "#142243",
+    borderColor: "#151515",
     borderRadius: "0px",
     "& input[type=number]": {
       "-moz-appearance": "textfield",
