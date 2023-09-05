@@ -15,15 +15,17 @@ import CreateProposalDialog from "@components/proposalComps/CreateProposalDialog
 import { fetchProposals } from "utils/proposal";
 import { useRouter } from "next/router";
 import ProposalCard from "./ProposalCard";
-import { getAssetsByDaoAddress, getNFTsByDaoAddress } from "api/assets";
+import { getNFTsByDaoAddress } from "api/assets";
 import { useDispatch, useSelector } from "react-redux";
 import { makeStyles } from "@mui/styles";
 import Web3 from "web3";
 import { Web3Adapter } from "@safe-global/protocol-kit";
 import SafeApiKit from "@safe-global/api-kit";
 import { getProposalByDaoAddress, getProposalTxHash } from "api/proposal";
-import { web3InstanceCustomRPC } from "utils/helper";
+import { getUserTokenData, web3InstanceCustomRPC } from "utils/helper";
 import { addNftsOwnedByDao } from "redux/reducers/club";
+import { getTokensList } from "api/token";
+import { CHAIN_CONFIG } from "utils/constants";
 import { useNetwork } from "wagmi";
 
 const useStyles = makeStyles({
@@ -53,7 +55,6 @@ const Proposal = ({ daoAddress }) => {
   const dispatch = useDispatch();
   const { chain } = useNetwork();
   const networkId = "0x" + chain?.id.toString(16);
-
   const classes = useStyles();
 
   const [nftData, setNftData] = useState([]);
@@ -138,21 +139,21 @@ const Proposal = ({ daoAddress }) => {
     isAssetsStoredOnGnosis,
   ]);
 
-  const fetchTokens = useCallback(() => {
-    if (daoAddress) {
-      const tokenData = getAssetsByDaoAddress(
-        isAssetsStoredOnGnosis ? gnosisAddress : daoAddress,
-        NETWORK_HEX,
+  const fetchTokens = useCallback(async () => {
+    if (daoAddress && gnosisAddress && networkId) {
+      const tokensList = await getTokensList(
+        CHAIN_CONFIG[networkId].covalentNetworkName,
+        gnosisAddress,
       );
-      tokenData.then((result) => {
-        if (result?.status != 200) {
-          console.log("error in token daata fetching");
-        } else {
-          setTokenData(result.data.tokenPriceList);
-        }
-      });
+      const data = await getUserTokenData(
+        tokensList?.data?.items,
+        networkId,
+        true,
+      );
+
+      setTokenData(data?.filter((token) => token.symbol !== null));
     }
-  }, [NETWORK_HEX, daoAddress, gnosisAddress, isAssetsStoredOnGnosis]);
+  }, [daoAddress, networkId, gnosisAddress]);
 
   const fetchProposalList = async (type = "all") => {
     const data = await fetchProposals(daoAddress, type);

@@ -41,7 +41,7 @@ const ProposalCard = ({ proposal, daoAddress }) => {
               ? proposal?.commands[0]?.airDropToken
               : proposal?.commands[0]?.executionId === 1
               ? daoAddress
-              : proposal?.commands[0].executionId === 4
+              : proposal?.commands[0]?.executionId === 4
               ? proposal?.commands[0]?.customToken
               : "",
           );
@@ -248,11 +248,11 @@ const ProposalCard = ({ proposal, daoAddress }) => {
                       </Typography>
                       <Typography variant="info">
                         {extractNftAdressAndId(
-                          proposal?.commands[0]?.nftLink,
+                          proposal.commands[0]?.nftLink,
                         ).nftAddress.slice(0, 6)}
                         ....
                         {extractNftAdressAndId(
-                          proposal?.commands[0]?.nftLink,
+                          proposal.commands[0]?.nftLink,
                         ).nftAddress.slice(-6)}
                       </Typography>
                     </div>
@@ -267,7 +267,7 @@ const ProposalCard = ({ proposal, daoAddress }) => {
                       </Typography>
                       <Typography variant="info">
                         {
-                          extractNftAdressAndId(proposal.commands[0].nftLink)
+                          extractNftAdressAndId(proposal.commands[0]?.nftLink)
                             .tokenId
                         }
                       </Typography>
@@ -332,13 +332,15 @@ const ProposalCard = ({ proposal, daoAddress }) => {
               </Grid>
             ) : null}
 
-            {proposal?.commands[0]?.airDropAmount ? (
+            {proposal?.commands[0]?.airDropAmount ||
+            proposal?.commands[0]?.aaveDepositAmount ? (
               <Grid item>
                 <Chip
                   size="medium"
                   className={classes.timeLeftChip}
                   label={
-                    proposal?.commands[0].airDropAmount ? (
+                    proposal?.commands[0]?.airDropAmount ||
+                    proposal?.commands[0]?.aaveDepositAmount ? (
                       <div className="f-d f-v-c tb-pad-1">
                         <Typography
                           variant="info"
@@ -347,7 +349,9 @@ const ProposalCard = ({ proposal, daoAddress }) => {
                         </Typography>
                         <Typography variant="info">
                           {convertFromWeiGovernance(
-                            proposal?.commands[0].airDropAmount,
+                            proposal?.commands[0]?.airDropAmount
+                              ? proposal?.commands[0]?.airDropAmount
+                              : proposal?.commands[0]?.aaveDepositAmount,
                             tokenDetails.decimals,
                           )}
                         </Typography>
@@ -362,7 +366,7 @@ const ProposalCard = ({ proposal, daoAddress }) => {
                 <Chip
                   className={classes.timeLeftChip}
                   label={
-                    proposal.commands[0].mintGTAmounts[0] ? (
+                    proposal.commands[0]?.mintGTAmounts[0] ? (
                       <div className="f-d f-v-c tb-pad-1">
                         <Typography
                           variant="info"
@@ -373,11 +377,11 @@ const ProposalCard = ({ proposal, daoAddress }) => {
                           {tokenType === "erc20"
                             ? Number(
                                 convertFromWeiGovernance(
-                                  proposal?.commands[0].mintGTAmounts[0],
+                                  proposal?.commands[0]?.mintGTAmounts[0],
                                   tokenDetails.decimals,
                                 ),
                               )
-                            : proposal?.commands[0].mintGTAmounts[0]}
+                            : proposal?.commands[0]?.mintGTAmounts[0]}
                         </Typography>
                       </div>
                     ) : null
@@ -396,7 +400,7 @@ const ProposalCard = ({ proposal, daoAddress }) => {
                         Amount:
                       </Typography>
                       <Typography variant="info">
-                        {proposal.commands[0].customTokenAmounts[0] /
+                        {proposal.commands[0]?.customTokenAmounts[0] /
                           10 ** tokenDetails.decimals}
                       </Typography>
                     </div>
@@ -481,7 +485,7 @@ const ProposalCard = ({ proposal, daoAddress }) => {
                       <Typography variant="info">
                         {(convertToWeiGovernance(
                           convertToWeiGovernance(
-                            proposal?.commands[0]?.totalDeposits,
+                            proposal.commands[0]?.totalDeposits,
                             6,
                           ) / factoryData?.pricePerToken,
                           18,

@@ -101,7 +101,7 @@ const CreateProposalDialog = ({
       proposalDescription: "",
       optionList: [{ text: "Yes" }, { text: "No" }, { text: "Abstain" }],
       actionCommand: "",
-      airdropToken: tokenData ? tokenData[0]?.tokenAddress : "",
+      airdropToken: tokenData ? tokenData[0]?.address : "",
       amountToAirdrop: 0,
       carryFee: 0,
       userAddress: "",
@@ -111,7 +111,7 @@ const CreateProposalDialog = ({
       quorum: 0,
       threshold: 0,
       totalDeposit: 0,
-      customToken: tokenData ? tokenData[0]?.tokenAddress : "",
+      customToken: tokenData ? tokenData[0]?.address : "",
       recieverAddress: "",
       amountToSend: 0,
       customNft: "",
@@ -123,6 +123,10 @@ const CreateProposalDialog = ({
       csvObject: [],
       lensId: "",
       lensPostLink: "",
+      aaveDepositToken: tokenData ? tokenData[0]?.address : "",
+      aaveDepositAmount: 0,
+      aaveWithdrawAmount: 0,
+      aaveWithdrawToken: tokenData ? tokenData[0]?.address : "",
     },
     validationSchema: proposalValidationSchema,
     onSubmit: async (values) => {
@@ -131,7 +135,7 @@ const CreateProposalDialog = ({
         setLoaderOpen(true);
         if (values.actionCommand === "Distribute token to members") {
           const airDropTokenDecimal = tokenData.find(
-            (token) => token.token_address === values.airdropToken,
+            (token) => token.address === values.airdropToken,
           ).decimals;
           commands = [
             {
@@ -189,7 +193,7 @@ const CreateProposalDialog = ({
         }
         if (values.actionCommand === "Send token to an address") {
           const tokenDecimal = tokenData.find(
-            (token) => token.token_address === values.customToken,
+            (token) => token.address === values.customToken,
           ).decimals;
           commands = [
             {
@@ -330,6 +334,44 @@ const CreateProposalDialog = ({
             {
               executionId: 13,
               pricePerToken: values.pricePerToken,
+              usdcTokenSymbol: "USDC",
+              usdcTokenDecimal: 6,
+              usdcGovernanceTokenDecimal: 18,
+            },
+          ];
+        }
+
+        if (values.actionCommand === "deposit tokens in AAVE pool") {
+          const tokenDecimal = tokenData.find(
+            (token) => token.address === values.aaveDepositToken,
+          ).decimals;
+          commands = [
+            {
+              executionId: 14,
+              depositToken: values.aaveDepositToken,
+              depositAmount: convertToWeiGovernance(
+                values.aaveDepositAmount,
+                tokenDecimal,
+              ),
+              usdcTokenSymbol: "USDC",
+              usdcTokenDecimal: 6,
+              usdcGovernanceTokenDecimal: 18,
+            },
+          ];
+        }
+
+        if (values.actionCommand === "withdraw tokens from AAVE pool") {
+          const tokenDecimal = tokenData.find(
+            (token) => token.address === values.aaveWithdrawToken,
+          ).decimals;
+          commands = [
+            {
+              executionId: 15,
+              withdrawToken: values.aaveWithdrawToken,
+              withdrawAmount: convertToWeiGovernance(
+                values.aaveWithdrawAmount,
+                tokenDecimal,
+              ),
               usdcTokenSymbol: "USDC",
               usdcTokenDecimal: 6,
               usdcGovernanceTokenDecimal: 18,

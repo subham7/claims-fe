@@ -1,3 +1,5 @@
+export const BLOCK_CONFIRMATIONS = 1;
+
 export const CHAIN_CONFIG = {
   "0x89": {
     chainName: "Polygon Mainnet",
@@ -18,6 +20,10 @@ export const CHAIN_CONFIG = {
     covalentNetworkName: "matic-mainnet",
     nativeToken: "0x0000000000000000000000000000000000001010",
     airdropContractAddress: "0x0DF19560f74749a42215A16C3FC22FfAA1c4029A",
+    aavePoolAddress: "0x794a61358D6845594F94dc1DB02A252b5b4814aD",
+    aaveMaticPoolAddress: "0x1e4b7A6b903680eab0c5dAbcb8fD429cD2a9598c",
+    aaveWrappedUsdcAddress: "0x625E7708f30cA75bfd92586e17077590C60eb4cD",
+    aaveWrappedMaticAddress: "0x6d80113e533a2C0fe82EaBD35f1875DcEA89Ea97",
   },
   "0x5": {
     chainName: "Goerli Testnet",
@@ -172,5 +178,3 @@ export const mantleMainnetViem = {
     },
   },
 };
-
-export const BLOCK_CONFIRMATIONS = 1;

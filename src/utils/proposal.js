@@ -13,13 +13,15 @@ import { convertToWeiGovernance } from "./globalFunctions";
 import { Interface } from "ethers";
 import { fulfillOrder, retrieveNftListing } from "api/assets";
 import { SEAPORT_CONTRACT_ADDRESS } from "api";
+import { CHAIN_CONFIG } from "./constants";
 import {
   QUERY_ALL_MEMBERS,
   QUERY_STATION_DETAILS,
 } from "api/graphql/stationQueries";
-import { CHAIN_CONFIG } from "./constants";
 import { erc20TokenABI } from "abis/usdcTokenContract.js";
 import { actionContractABI } from "abis/actionContract";
+import { erc20AaveABI } from "abis/erc20AaveABI";
+import { maticAaveABI } from "abis/MaticAaveABI";
 
 export const fetchProposals = async (clubId, type) => {
   let proposalData;
@@ -218,6 +220,8 @@ export const fetchABI = async (executionId, tokenType) => {
       return factoryContractABI;
     case 8:
       return seaportABI;
+    default:
+      return null;
   }
 };
 
@@ -550,6 +554,80 @@ const airdropTokenMethodEncoded = (
   }
 };
 
+const depositErc20TokensToAavePool = (
+  depositTokenAddress,
+  depositAmount,
+  addressWhereAssetsStored,
+  referalCode = 0,
+  web3Call,
+  networkId,
+) => {
+  const depositInAavePoolCall = new web3Call.eth.Contract(
+    erc20AaveABI,
+    CHAIN_CONFIG[networkId].aavePoolAddress,
+  );
+
+  return depositInAavePoolCall.methods
+    .supply(
+      depositTokenAddress,
+      depositAmount,
+      addressWhereAssetsStored,
+      referalCode,
+    )
+    .encodeABI();
+};
+
+const depositEthMethodEncoded = (
+  poolAddress,
+  addressWhereAssetsStored,
+  referalCode,
+  web3Call,
+  networkId,
+) => {
+  const depositEthCall = new web3Call.eth.Contract(
+    maticAaveABI,
+    CHAIN_CONFIG[networkId].aavePoolAddress,
+  );
+
+  return depositEthCall.methods
+    .depositETH(poolAddress, addressWhereAssetsStored, referalCode)
+    .encodeABI();
+};
+
+const withdrawEthMethodEncoded = (
+  poolAddress,
+  withdrawAmount,
+  addressWhereAssetsStored,
+  web3Call,
+  networkId,
+) => {
+  const withdrawEthCall = new web3Call.eth.Contract(
+    maticAaveABI,
+    CHAIN_CONFIG[networkId].aavePoolAddress,
+  );
+
+  return withdrawEthCall.methods
+    .withdrawETH(poolAddress, withdrawAmount, addressWhereAssetsStored)
+    .encodeABI();
+};
+
+const withdrawErc20MethodEncoded = (
+  tokenAddress,
+  withdrawAmount,
+  addressWhereAssetsStored,
+  web3Call,
+  networkId,
+) => {
+  const withdrawEthCall = new web3Call.eth.Contract(
+    erc20AaveABI,
+    CHAIN_CONFIG[networkId].aavePoolAddress,
+  );
+
+  return withdrawEthCall.methods
+    .withdraw(tokenAddress, withdrawAmount, addressWhereAssetsStored)
+    .encodeABI();
+};
+
 export const getTransaction = async ({
   proposalData,
   daoAddress,
@@ -561,9 +639,9 @@ export const getTransaction = async ({
   contractInstances,
   parameters,
   isAssetsStoredOnGnosis,
+  networkId,
   membersArray,
   airDropAmountArray,
-  networkId,
 }) => {
   const {
     executionId,
@@ -573,12 +651,14 @@ export const getTransaction = async ({
     customTokenAmounts,
     customTokenAddresses,
     customNftToken,
+    depositAmount,
+    withdrawAmount,
   } = proposalData.commands[0];
   let approvalTransaction;
   let transaction;
+  const web3Call = new Web3(CHAIN_CONFIG[networkId]?.appRpcUrl);
 
   const { erc20DaoContractCall } = contractInstances;
-  const web3Call = new Web3(CHAIN_CONFIG[networkId]?.appRpcUrl);
   switch (executionId) {
     case 0:
     case 4:
@@ -716,5 +796,112 @@ export const getTransaction = async ({
         value: "0",
       };
       return { transaction, approvalTransaction };
+    case 14:
+      if (isAssetsStoredOnGnosis) {
+        if (tokenData === CHAIN_CONFIG[networkId].nativeToken) {
+          transaction = {
+            to: Web3.utils.toChecksumAddress(
+              CHAIN_CONFIG[networkId].aaveMaticPoolAddress,
+            ),
+            data: depositEthMethodEncoded(
+              CHAIN_CONFIG[networkId]?.aavePoolAddress,
+              gnosisAddress,
+              0,
+              web3Call,
+              networkId,
+            ),
+            value: depositAmount.toString(),
+          };
+
+          return { transaction };
+        } else {
+          approvalTransaction = {
+            to: Web3.utils.toChecksumAddress(tokenData),
+            data: approveDepositWithEncodeABI(
+              tokenData,
+              CHAIN_CONFIG[networkId].aavePoolAddress,
+              depositAmount,
+              web3Call,
+            ),
+            value: "0",
+          };
+          transaction = {
+            to: Web3.utils.toChecksumAddress(
+              CHAIN_CONFIG[networkId].aavePoolAddress,
+            ),
+            data: depositErc20TokensToAavePool(
+              tokenData,
+              depositAmount,
+              gnosisAddress,
+              0,
+              web3Call,
+              networkId,
+            ),
+            value: "0",
+          };
+
+          return { transaction, approvalTransaction };
+        }
+      }
+    case 15:
+      if (isAssetsStoredOnGnosis) {
+        if (tokenData === CHAIN_CONFIG[networkId].nativeToken) {
+          approvalTransaction = {
+            to: Web3.utils.toChecksumAddress(
+              CHAIN_CONFIG[networkId].aaveWrappedMaticAddress,
+            ),
+            data: approveDepositWithEncodeABI(
+              CHAIN_CONFIG[networkId].aaveWrappedMaticAddress,
+              CHAIN_CONFIG[networkId].aaveMaticPoolAddress,
+              withdrawAmount,
+              web3Call,
+            ),
+            value: "0",
+          };
+
+          transaction = {
+            to: Web3.utils.toChecksumAddress(
+              CHAIN_CONFIG[networkId].aaveMaticPoolAddress,
+            ),
+            data: withdrawEthMethodEncoded(
+              CHAIN_CONFIG[networkId].aavePoolAddress,
+              withdrawAmount,
+              gnosisAddress,
+              web3Call,
+              networkId,
+            ),
+            value: "0",
+          };
+        } else {
+          approvalTransaction = {
+            to: Web3.utils.toChecksumAddress(
+              CHAIN_CONFIG[networkId].aaveWrappedUsdcAddress,
+            ),
+            data: approveDepositWithEncodeABI(
+              CHAIN_CONFIG[networkId].aaveWrappedUsdcAddress,
+              CHAIN_CONFIG[networkId].aavePoolAddress,
+              withdrawAmount,
+              web3Call,
+            ),
+            value: "0",
+          };
+
+          transaction = {
+            to: Web3.utils.toChecksumAddress(
+              CHAIN_CONFIG[networkId].aavePoolAddress,
+            ),
+            data: withdrawErc20MethodEncoded(
+              Web3.utils.toChecksumAddress(tokenData),
+              withdrawAmount,
+              gnosisAddress,
+              web3Call,
+              networkId,
+            ),
+            value: "0",
+          };
+        }
+
+        return { approvalTransaction, transaction };
+      }
   }
 };

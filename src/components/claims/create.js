@@ -173,8 +173,6 @@ const CreateClaim = () => {
         blockNumber: values?.blockNumber,
       };
 
-      console.log("DATA", data);
-
       const decimals = await getDecimals(data.airdropTokenAddress);
 
       // fetch Block number
