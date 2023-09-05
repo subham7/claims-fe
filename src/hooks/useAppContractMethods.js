@@ -6,7 +6,6 @@ import { createProposalTxHash, getProposalTxHash } from "../api/proposal";
 import SafeApiKit from "@safe-global/api-kit";
 import { useAccount, useNetwork } from "wagmi";
 import { factoryContractABI } from "abis/factoryContract.js";
-import { CHAIN_CONFIG } from "utils/constants";
 import { getTransaction } from "utils/proposal";
 
 const useAppContractMethods = () => {
@@ -14,7 +13,6 @@ const useAppContractMethods = () => {
 
   const { chain } = useNetwork();
   const networkId = "0x" + chain?.id.toString(16);
-  const web3Call = new Web3(CHAIN_CONFIG[networkId]?.appRpcUrl);
 
   const isAssetsStoredOnGnosis = useSelector((state) => {
     return state.club.factoryData.assetsStoredOnGnosis;
@@ -330,7 +328,6 @@ const useAppContractMethods = () => {
     airDropAmountArray,
     transactionData = "",
   ) => {
-    console.log("DATA", data);
     const { executionId, safeThreshold } = proposalData.commands[0];
     const parameters = data;
     const web3 = new Web3(window.ethereum);
@@ -368,7 +365,6 @@ const useAppContractMethods = () => {
       airDropAmountArray,
       networkId,
     });
-
     if (executionStatus !== "executed") {
       if (txHash === "") {
         const nonce = await safeService.getNextNonce(gnosisAddress);

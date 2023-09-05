@@ -24,6 +24,7 @@ import SafeApiKit from "@safe-global/api-kit";
 import { getProposalByDaoAddress, getProposalTxHash } from "api/proposal";
 import { web3InstanceCustomRPC } from "utils/helper";
 import { addNftsOwnedByDao } from "redux/reducers/club";
+import { useNetwork } from "wagmi";
 
 const useStyles = makeStyles({
   noProposal_heading: {
@@ -50,6 +51,8 @@ const useStyles = makeStyles({
 const Proposal = ({ daoAddress }) => {
   const router = useRouter();
   const dispatch = useDispatch();
+  const { chain } = useNetwork();
+  const networkId = "0x" + chain?.id.toString(16);
 
   const classes = useStyles();
 

@@ -11,7 +11,7 @@ import { seaportABI } from "abis/seaport";
 import { subgraphQuery } from "./subgraphs";
 import { convertToWeiGovernance } from "./globalFunctions";
 import { Interface } from "ethers";
-import { fulfillOrder } from "api/assets";
+import { fulfillOrder, retrieveNftListing } from "api/assets";
 import { SEAPORT_CONTRACT_ADDRESS } from "api";
 import {
   QUERY_ALL_MEMBERS,
@@ -256,8 +256,9 @@ export const getEncodedData = async ({
     merkleRoot,
     pricePerToken,
   } = proposalData.commands[0];
+  let iface;
 
-  let iface = new Interface(contractABI);
+  if (contractABI) iface = new Interface(contractABI);
 
   switch (executionId) {
     case 0:
@@ -350,7 +351,6 @@ export const getEncodedData = async ({
         ]);
       }
 
-      console.log(data);
       return { data };
 
     case 2:
@@ -405,7 +405,7 @@ export const getEncodedData = async ({
         linkData[1],
         linkData[2],
       );
-
+      let transactionData;
       if (nftdata) {
         const offer = {
           hash: nftdata.data.orders[0].order_hash,
@@ -471,14 +471,13 @@ export const getEncodedData = async ({
     case 11:
     case 12:
       let iface2 = new Interface(erc20DaoABI);
-
       approvalData = iface2.encodeFunctionData("toggleOnlyAllowWhitelist", []);
 
       data = iface.encodeFunctionData("changeMerkleRoot", [
         daoAddress,
         merkleRoot?.merkleRoot,
       ]);
-      return { data };
+      return { data, approvalData };
     case 13:
       data = iface.encodeFunctionData("updateTotalRaiseAmount", [
         factoryData?.distributionAmount,
@@ -606,11 +605,7 @@ export const getTransaction = async ({
         approvalTransaction = {
           to: Web3.utils.toChecksumAddress(daoAddress),
           data: erc20DaoContractCall.methods
-            .updateProposalAndExecution(
-              //usdc address
-              tokenData,
-              approvalData,
-            )
+            .updateProposalAndExecution(tokenData, approvalData)
             .encodeABI(),
           value: "0",
         };
@@ -630,7 +625,7 @@ export const getTransaction = async ({
     case 1:
     case 2:
     case 3:
-      console.log("nkakdm", parameters);
+    case 13:
       transaction = {
         //dao
         to: Web3.utils.toChecksumAddress(daoAddress),
