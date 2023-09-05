@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Box, CssBaseline, Grid, Typography } from "@mui/material";
 import Navbar from "../navbar";
 import Sidebar from "../sidebar";
-import { useDispatch } from "react-redux";
 import { useAccount, useNetwork } from "wagmi";
 import { Web3Button } from "@web3modal/react";
 import useClubFetch from "hooks/useClubFetch";
@@ -12,12 +11,11 @@ const drawerWidth = 50;
 
 export default function Layout(props) {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const { showSidebar = true, daoAddress } = props;
+  const { showSidebar = true, daoAddress, networkId: routeNetworkId } = props;
   useClubFetch({ daoAddress });
   const { address: walletAddress } = useAccount();
   const { chain } = useNetwork();
   const networkId = "0x" + chain?.id.toString(16);
-  const dispatch = useDispatch();
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -34,6 +32,7 @@ export default function Layout(props) {
             handleDrawerToggle={handleDrawerToggle}
             page={props.page}
             daoAddress={daoAddress}
+            networkId={networkId}
           />
         )}
 
@@ -77,7 +76,7 @@ export default function Layout(props) {
               walletAddress,
               networkId,
               props.isClaims,
-              props.network,
+              routeNetworkId,
             )}
           </>
         )}

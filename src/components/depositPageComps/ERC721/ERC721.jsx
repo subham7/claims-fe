@@ -127,7 +127,7 @@ const ERC721 = ({
       );
       setLoading(false);
       setClaimSuccessfull(true);
-      router.push(`/dashboard/${daoAddress}`, undefined, {
+      router.push(`/dashboard/${daoAddress}/${networkId}`, undefined, {
         shallow: true,
       });
       showMessageHandler();

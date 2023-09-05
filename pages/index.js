@@ -201,7 +201,9 @@ const App = () => {
           }),
         );
       router.push(
-        `/dashboard/${Web3.utils.toChecksumAddress(data.daoAddress)}`,
+        `/dashboard/${Web3.utils.toChecksumAddress(
+          data.daoAddress,
+        )}/${networkId}`,
         undefined,
         {
           shallow: true,
@@ -222,7 +224,7 @@ const App = () => {
   };
 
   const claimsHandler = () => {
-    router.push("/claims");
+    router.push(`/claims/${networkId}`);
   };
 
   return (

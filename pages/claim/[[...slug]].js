@@ -6,14 +6,14 @@ import Claim from "@components/claims/claim";
 const ClaimPage = () => {
   const router = useRouter();
 
-  const [claimAddress, network] = router?.query?.slug ?? [];
+  const [claimAddress, networkId] = router?.query?.slug ?? [];
 
   return (
     <Layout
       showSidebar={false}
       claimAddress={claimAddress}
       isClaims={true}
-      network={network}>
+      networkId={networkId}>
       <Claim claimAddress={claimAddress} />
     </Layout>
   );

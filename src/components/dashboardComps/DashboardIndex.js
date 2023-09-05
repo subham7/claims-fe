@@ -187,13 +187,23 @@ const DashboardIndex = ({ daoAddress }) => {
   };
 
   const handleMoreClick = () => {
-    router.push(`${router.asPath}/proposal`, undefined, { shallow: true });
+    router.push(
+      `${router.asPath}/proposal/${daoAddress}/${networkId}`,
+      undefined,
+      {
+        shallow: true,
+      },
+    );
   };
 
   const handleProposalClick = (proposal) => {
-    router.push(`${router.asPath}/proposal/${proposal.proposalId}`, undefined, {
-      shallow: true,
-    });
+    router.push(
+      `${router.asPath}/proposal/${daoAddress}/${networkId}/${proposal.proposalId}`,
+      undefined,
+      {
+        shallow: true,
+      },
+    );
   };
 
   useEffect(() => {

@@ -38,6 +38,8 @@ const Create = () => {
   ];
   const dispatch = useDispatch();
   const uploadInputRef = useRef(null);
+  const { chain } = useNetwork();
+  const networkId = "0x" + chain?.id.toString(16);
 
   const { address: walletAddress } = useAccount();
 
@@ -209,6 +211,7 @@ const Create = () => {
             formikERC721Step2.values.nftImage,
             formikStep1.values.useStationFor,
             formikStep1.values.email,
+            networkId,
           );
         } catch (error) {
           console.error(error);
@@ -263,6 +266,7 @@ const Create = () => {
             "",
             formikStep1.values.useStationFor,
             formikStep1.values.email,
+            networkId,
           );
         } catch (error) {
           console.error(error);

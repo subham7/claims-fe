@@ -142,7 +142,7 @@ const ERC20 = ({
 
         setLoading(false);
         setDepositSuccessfull(true);
-        router.push(`/dashboard/${daoAddress}`, undefined, {
+        router.push(`/dashboard/${daoAddress}/${networkId}`, undefined, {
           shallow: true,
         });
         showMessageHandler();

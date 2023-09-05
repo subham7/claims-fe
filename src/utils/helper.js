@@ -98,11 +98,11 @@ export const showWrongNetworkModal = (
   walletAddress,
   networkId,
   isClaims = false,
-  network,
+  routeNetworkId,
 ) => {
   if (isClaims) {
-    if (network && network !== networkId) {
-      return <WrongNetworkModal chainId={parseInt(network, 16)} />;
+    if (routeNetworkId && routeNetworkId !== networkId) {
+      return <WrongNetworkModal chainId={parseInt(routeNetworkId, 16)} />;
     }
 
     return walletAddress && !CHAIN_CONFIG[networkId] ? (

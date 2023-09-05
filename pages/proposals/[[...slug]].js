@@ -7,14 +7,14 @@ import ProposalDetail from "@components/proposal/ProposalDetail";
 const ProposalPage = () => {
   const router = useRouter();
 
-  const [daoAddress, proposalId] = router?.query?.slug ?? [];
+  const [daoAddress, networkId, proposalId] = router?.query?.slug ?? [];
 
   if (!daoAddress) {
     return null;
   }
 
   return (
-    <Layout daoAddress={daoAddress} page={2}>
+    <Layout daoAddress={daoAddress} networkId={networkId} page={2}>
       {proposalId ? (
         <ProposalDetail pid={proposalId} daoAddress={daoAddress} />
       ) : (
