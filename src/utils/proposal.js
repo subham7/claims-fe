@@ -8,7 +8,6 @@ import { factoryContractABI } from "abis/factoryContract.js";
 import { erc721DaoABI } from "abis/erc721Dao";
 import { erc20DaoABI } from "abis/erc20Dao";
 import { seaportABI } from "abis/seaport";
-// import { erc20AaveABI } from "abis/erc20AaveABI";
 import { subgraphQuery } from "./subgraphs";
 import { convertToWeiGovernance } from "./globalFunctions";
 import { Interface } from "ethers";
