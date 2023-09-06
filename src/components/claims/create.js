@@ -428,10 +428,6 @@ const CreateClaim = () => {
               "",
             );
 
-            console.log("RES,", response);
-
-            // const newClaimContract =
-            //   response.events.NewClaimContract.returnValues._newClaimContract;
             const newClaimContract = response.logs[0].address;
 
             if (hasAllowanceMechanism) {
