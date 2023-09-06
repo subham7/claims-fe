@@ -16,14 +16,14 @@ const useStyles = makeStyles({
   },
   heading: {
     fontSize: "1.2vw",
-    fontFamily: "Whyte",
+
     color: "#F5F5F5",
     verticalAlign: "middle",
     display: "inline-flex",
   },
   subheading: {
     fontSize: "1.0vw",
-    fontFamily: "Whyte",
+
     color: "#C1D3FF",
     fontWeight: "normal",
   },

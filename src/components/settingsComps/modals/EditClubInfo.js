@@ -23,7 +23,6 @@ const useStyles = makeStyles({
     backgroundColor: "#19274B",
   },
   dialogBox: {
-    fontFamily: "Whyte",
     fontSize: "38px",
     color: "#FFFFFF",
     opacity: 1,
@@ -33,12 +32,12 @@ const useStyles = makeStyles({
     width: "100%",
     // margin: "16px 0 25px 0",
     fontSize: "18px",
-    fontFamily: "Whyte",
+
     marginTop: "0.5rem",
   },
   wrapTextIcon: {
     fontSize: "22px",
-    fontFamily: "Whyte",
+
     color: "#C1D3FF",
     verticalAlign: "middle",
     display: "inline-flex",
@@ -133,7 +132,7 @@ const EditClubInfo = (props) => {
                   backgroundColor: "#121D38",
                   fontSize: "18px",
                   color: "#C1D3FF",
-                  fontFamily: "Whyte",
+
                   margin: "0.5rem 0",
                   marginBottom: "30px",
                   borderRadius: "18px",

@@ -26,8 +26,7 @@ import { convertToWeiGovernance } from "../../src/utils/globalFunctions";
 // import Web3 from "web3";
 // import { fetchClubOwners } from "../../src/api/club";
 import useSafe from "../../src/hooks/useSafe";
-import useSmartContract from "../../src/hooks/useSmartContract";
-import Layout1 from "../../src/components/layouts/layout1";
+import Layout from "../../src/components/layouts/layout";
 import { useAccount } from "wagmi";
 
 const Create = () => {
@@ -41,8 +40,6 @@ const Create = () => {
   const uploadInputRef = useRef(null);
 
   const { address: walletAddress } = useAccount();
-
-  useSmartContract();
 
   const [activeStep, setActiveStep] = useState(0);
   const [completed, setCompleted] = useState({});
@@ -490,7 +487,7 @@ const Create = () => {
   // ]);
 
   return (
-    <Layout1 showSidebar={false}>
+    <Layout showSidebar={false}>
       <Grid
         container
         item
@@ -583,7 +580,7 @@ const Create = () => {
           </form>
         </Box>
       </Grid>
-    </Layout1>
+    </Layout>
   );
 };
 export default ProtectRoute(Create);

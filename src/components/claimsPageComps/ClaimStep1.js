@@ -41,13 +41,13 @@ const useStyles = makeStyles({
   },
   btn: {
     width: "130px",
-    fontFamily: "sans-serif",
+
     fontSize: "16px",
     marginTop: "20px",
   },
   text: {
     color: "#6475A3",
-    fontSize: "15px",
+    fontSize: "14px",
     marginTop: "8px",
   },
 
@@ -139,8 +139,7 @@ const ClaimStep1 = ({ formik, tokensInWallet, isLoading }) => {
   const router = useRouter();
 
   useEffect(() => {
-    formik.values.airdropTokenAddress =
-      formik.values.selectedToken.token_address;
+    formik.values.airdropTokenAddress = formik.values.selectedToken.address;
   }, [formik.values]);
 
   return (

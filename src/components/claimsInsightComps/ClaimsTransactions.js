@@ -11,13 +11,15 @@ import {
 import React, { useEffect, useState } from "react";
 import { ClaimsInsightStyles } from "./claimsInsightStyles";
 import { subgraphQuery } from "../../utils/subgraphs";
-import { CLAIMS_SUBGRAPH_URL_POLYGON } from "../../api";
 import {
   QUERY_ALL_CLAIMS_TRANSACTIONS,
   QUERY_WALLET_WISE_TRANSACTIONS,
 } from "../../api/graphql/queries";
 import { convertFromWeiGovernance } from "../../utils/globalFunctions";
 import { FiExternalLink } from "react-icons/fi";
+import { useNetwork } from "wagmi";
+
+import { CHAIN_CONFIG } from "utils/constants";
 
 const ClaimsTransactions = ({
   claimAddress,
@@ -31,6 +33,8 @@ const ClaimsTransactions = ({
   const [isWalletSelected, setIsWalletSelected] = useState(true);
   const [isAllTransactionSelected, setIsAllTransactionSelected] =
     useState(false);
+  const { chain } = useNetwork();
+  const networkId = "0x" + chain?.id.toString(16);
 
   const classes = ClaimsInsightStyles();
   const walletHeaders = ["Wallet", "Total tokens", "Claimed", "Percentage"];
@@ -45,7 +49,7 @@ const ClaimsTransactions = ({
 
   const fetchWalletWiseTransactions = async () => {
     const { claimers } = await subgraphQuery(
-      CLAIMS_SUBGRAPH_URL_POLYGON,
+      CHAIN_CONFIG[networkId].claimsSubgraphUrl,
       QUERY_WALLET_WISE_TRANSACTIONS(claimAddress),
     );
     setWalletWiseTransactionData(claimers);
@@ -53,7 +57,7 @@ const ClaimsTransactions = ({
 
   const fetchAllTransactions = async () => {
     const { airdrops } = await subgraphQuery(
-      CLAIMS_SUBGRAPH_URL_POLYGON,
+      CHAIN_CONFIG[networkId].claimsSubgraphUrl,
       QUERY_ALL_CLAIMS_TRANSACTIONS(claimAddress),
     );
     setAllTransactionsData(airdrops?.reverse());

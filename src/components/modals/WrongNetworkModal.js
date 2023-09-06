@@ -1,6 +1,8 @@
 import { makeStyles } from "@mui/styles";
 import Image from "next/image";
 import React from "react";
+import { CHAIN_CONFIG } from "utils/constants";
+import { requestEthereumChain } from "utils/helper";
 import Web3 from "web3";
 import img from "../../../public/assets/images/wrongNetwork.png";
 
@@ -66,30 +68,19 @@ const WrongNetworkModal = ({ chainId = 137 }) => {
     if (typeof window !== "undefined") {
       if (window.ethereum.networkVersion !== chainId) {
         try {
-          await window.ethereum.request({
-            method: "wallet_switchEthereumChain",
-            params: [{ chainId: Web3.utils.toHex(chainId) }],
-          });
+          await requestEthereumChain("wallet_switchEthereumChain", [
+            { chainId: Web3.utils.toHex(chainId) },
+          ]);
         } catch (err) {
           // This error code indicates that the chain has not been added to MetaMask
-          if (err.code === 4902) {
-            if (chainId === 137) {
-              await window.ethereum.request({
-                method: "wallet_addEthereumChain",
-                params: [
-                  {
-                    chainName: "Polygon Mainnet",
-                    chainId: Web3.utils.toHex(chainId),
-                    nativeCurrency: {
-                      name: "MATIC",
-                      decimals: 18,
-                      symbol: "MATIC",
-                    },
-                    rpcUrls: ["https://polygon-rpc.com/"],
-                  },
-                ],
-              });
-            }
+          if (err.code === 4902 && CHAIN_CONFIG[Web3.utils.toHex(chainId)]) {
+            const chainConfig = CHAIN_CONFIG[Web3.utils.toHex(chainId)];
+            await requestEthereumChain("wallet_switchEthereumChain", [
+              {
+                chainId: Web3.utils.toHex(chainId),
+                ...chainConfig,
+              },
+            ]);
           }
         }
       }
@@ -106,7 +97,7 @@ const WrongNetworkModal = ({ chainId = 137 }) => {
         <Image src={img} alt="Wrong network" height={136} width={160} />
 
         <button className={classes.btn} onClick={switchNetworkHandler}>
-          Switch to {chainId === 137 ? "Polygon" : chainId === 5 && "Goerli"}
+          Switch to {CHAIN_CONFIG[Web3.utils.toHex(chainId)]?.shortName}
         </button>
       </div>
     </>

@@ -16,6 +16,20 @@ export async function createProposal(data, networkId) {
   );
 }
 
+export async function createCancelProposal(data, networkId) {
+  // create proposal API
+  return await axios.post(
+    MAIN_API_URL + `proposal/create/cancel?networkId=${networkId}`,
+    data,
+    {
+      headers: {
+        Authorization: "Bearer " + getJwtToken(),
+        "Content-Type": "application/json",
+      },
+    },
+  );
+}
+
 export async function getProposal(clubId, filter) {
   // get proposals by club id API
   if (filter) {

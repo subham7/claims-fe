@@ -15,8 +15,6 @@ const About = ({ bio, daoAddress }) => {
         SUBGRAPH_URL_POLYGON,
         QUERY_LATEST_MEMBERS(daoAddress),
       );
-      console.log(users);
-
       setMembers(users?.users);
     };
 

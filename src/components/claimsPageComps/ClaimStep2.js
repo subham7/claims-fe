@@ -54,18 +54,18 @@ const useStyles = makeStyles({
   },
   btn: {
     width: "130px",
-    fontFamily: "sans-serif",
+
     fontSize: "16px",
     marginTop: "20px",
   },
   text: {
     color: "#6475A3",
-    fontSize: "15px",
+    fontSize: "14px",
     marginTop: "8px",
   },
   error: {
     color: "red",
-    fontSize: "15px",
+    fontSize: "14px",
     marginTop: "8px",
     fontWeight: "400",
   },
@@ -106,7 +106,7 @@ const useStyles = makeStyles({
 
   finish: {
     width: "200px",
-    fontFamily: "sans-serif",
+
     fontSize: "16px",
     marginTop: "20px",
   },
@@ -131,16 +131,6 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading, formikStep1 }) => {
   if (values.eligible === "everyone") {
     values.maximumClaim = "custom";
   }
-
-  // const helper = async (csvArr) => {
-  //   let encodedListOfLeaves = [];
-  //   csvArr.map((data) => {
-  //     const res = encode(data.address, data.amount);
-  //     encodedListOfLeaves.push(keccak256(res));
-  //   });
-
-  //   return encodedListOfLeaves;
-  // };
 
   const handleChange = async (event) => {
     const fileUploaded = event.target.files[0];

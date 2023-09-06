@@ -110,7 +110,7 @@ export const ClaimsStyles = makeStyles({
 
   btn: {
     width: "130px",
-    fontFamily: "sans-serif",
+
     fontSize: "16px",
     border: "none",
     padding: "12px 24px",

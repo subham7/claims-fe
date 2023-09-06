@@ -11,7 +11,7 @@ import {
 import { Button, Typography } from "@components/ui";
 import { useDispatch } from "react-redux";
 import { makeStyles } from "@mui/styles";
-import Router, { useRouter } from "next/router";
+import { useRouter } from "next/router";
 import { addDaoAddress } from "../src/redux/reducers/club";
 import NewCard from "../src/components/cards/card";
 import { subgraphQuery } from "../src/utils/subgraphs";
@@ -21,7 +21,7 @@ import {
 } from "../src/api/graphql/queries";
 import { SUBGRAPH_URL_POLYGON } from "../src/api";
 import { addClubData } from "../src/redux/reducers/club";
-import Layout1 from "../src/components/layouts/layout1";
+import Layout from "../src/components/layouts/layout";
 import { BsFillPlayFill } from "react-icons/bs";
 import Web3 from "web3";
 import VideoModal from "../src/components/modals/VideoModal";
@@ -36,11 +36,10 @@ const useStyles = makeStyles({
     fontSize: "30px",
     color: "#F5F5F5",
     opacity: 1,
-    fontFamily: "Whyte",
   },
   createClubButton: {
     fontSize: "22px",
-    fontFamily: "Whyte",
+
     borderRadius: "30px",
   },
   divider: {
@@ -57,7 +56,6 @@ const useStyles = makeStyles({
     fontSize: "16px",
     color: "#C1D3FF",
     opacity: 1,
-    fontFamily: "Whyte",
   },
   bannerImage: {
     width: "60vh",
@@ -106,7 +104,6 @@ const useStyles = makeStyles({
     fontSize: "16px",
     color: "#C1D3FF",
     opacity: 1,
-    fontFamily: "Whyte",
   },
   flexContainer: {
     display: "flex",
@@ -136,7 +133,7 @@ const App = () => {
   const [open, setOpen] = useState(false);
   const router = useRouter();
   const { chain } = useNetwork();
-  const networkId = Web3.utils.numberToHex(chain?.id);
+  const networkId = "0x" + chain?.id.toString(16);
 
   useEffect(() => {
     try {
@@ -145,11 +142,7 @@ const App = () => {
         const fetchClubs = async () => {
           try {
             const data = await subgraphQuery(
-              networkId === "0x5"
-                ? SUBGRAPH_URL_GOERLI
-                : networkId === "0x89"
-                ? SUBGRAPH_URL_POLYGON
-                : "",
+              SUBGRAPH_URL_POLYGON,
               QUERY_CLUBS_FROM_WALLET_ADDRESS(walletAddress),
             );
             setClubListData(data.users);
@@ -171,9 +164,9 @@ const App = () => {
   }, [networkId, walletAddress]);
 
   const handleCreateButtonClick = async (event) => {
-    const { pathname } = Router;
+    const { pathname } = router;
     if (pathname == "/") {
-      Router.push("/create");
+      router.push("/create");
     }
   };
 
@@ -222,7 +215,7 @@ const App = () => {
   };
 
   return (
-    <Layout1 showSidebar={false} faucet={false}>
+    <Layout showSidebar={false} faucet={false} isClaims={true}>
       <div className={classes.container}>
         {!manageStation && clubFlow && (
           <div className={classes.cardContainer}>
@@ -304,23 +297,6 @@ const App = () => {
                 <Divider className={classes.divider} />
                 <div>
                   <div style={{ overflowY: "scroll", maxHeight: "60vh" }}>
-                    {/* {console.log(
-                      clubListData.map((club) => {
-                        if (
-                          club.daoAddress ===
-                          "0xe9c8342477576b0f4ee05be057146063a9b3b156"
-                        ) {
-                          console.log(club.daoAddress);
-                        }
-                      }),
-                    )}
-                    {console.log(clubListData)}
-                    {console.log(
-                      clubListData.filter((club) => {
-                        club.daoAddress ===
-                          "0xe9c8342477576b0f4ee05be057146063a9b3b156";
-                      }),
-                    )} */}
                     {walletAddress && clubListData.length ? (
                       clubListData
                         .reverse()
@@ -343,7 +319,6 @@ const App = () => {
                               onClick={(e) => {
                                 handleItemClick(clubListData[key]);
                               }}>
-                              {console.log(club)}
                               <Grid container className={classes.flexContainer}>
                                 <Grid item md={6}>
                                   <Stack spacing={0}>
@@ -453,7 +428,7 @@ const App = () => {
           />
         )}
       </div>
-    </Layout1>
+    </Layout>
   );
 };
 

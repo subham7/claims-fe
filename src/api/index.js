@@ -1,10 +1,14 @@
 import { fetchConfigById } from "./config";
 import { addContractAddress } from "../redux/reducers/gnosis";
 import { ApolloClient, InMemoryCache } from "@apollo/client";
+import { CHAIN_CONFIG } from "utils/constants";
 
 const opts = {
   allowedDomains: [/gnosis-safe.io/],
 };
+
+export const SEAPORT_CONTRACT_ADDRESS =
+  "0x00000000000000ADc04C56Bf30aC9d3c0aAF14dC";
 
 // Global variables
 export const MAIN_API_URL = process.env.NEXT_PUBLIC_API_HOST;
@@ -12,29 +16,8 @@ export const MAIN_API_URL = process.env.NEXT_PUBLIC_API_HOST;
 // Faucet
 export const USDC_FAUCET_ADDRESS = process.env.NEXT_PUBLIC_USDC_FAUCET_ADDRESS;
 
-// RPCs
-export const RINKEYBY_RPC_URL = process.env.NEXT_PUBLIC_RINKEYBY_RPC_URL;
-export const GOERLI_RPC_URL = process.env.NEXT_PUBLIC_GOERLI_RPC_URL;
-export const POLYGON_MAINNET_RPC_URL =
-  process.env.NEXT_PUBLIC_POLYGON_MAINNET_RPC_URL;
-
-// Claim Factory
-export const CLAIM_FACTORY_ADDRESS_GOERLI =
-  process.env.NEXT_PUBLIC_CLAIM_FACTORY_ADDRESS_GOERLI;
-export const CLAIM_FACTORY_ADDRESS_POLYGON =
-  process.env.NEXT_PUBLIC_CLAIM_FACTORY_ADDRESS_POLYGON;
-
-// Club Factory
-export const FACTORY_ADDRESS_GOERLI =
-  process.env.NEXT_PUBLIC_NEW_FACTORY_ADDRES_GOERLI;
-export const FACTORY_ADDRESS_POLYGON =
-  process.env.NEXT_PUBLIC_NEW_FACTORY_ADDRESS_POLYGON;
-
-// Action Contracts
-export const AIRDROP_ACTION_ADDRESS_GOERLI =
-  process.env.NEXT_PUBLIC_AIRDROP_ACTION_ADDRESS_GOERLI;
-export const AIRDROP_ACTION_ADDRESS_POLYGON =
-  process.env.NEXT_PUBLIC_AIRDROP_ACTION_ADDRESS_POLYGON;
+// API KEY
+export const COVALENT_API = process.env.NEXT_PUBLIC_COVALENT_API_KEY;
 
 // Subgraph URL
 export const SUBGRAPH_URL_GOERLI =
@@ -45,6 +28,8 @@ export const CLAIMS_SUBGRAPH_URL_GOERLI =
   process.env.NEXT_PUBLIC_CLAIMS_SUBGRAPH_API_ENDPOINT_GOERLI;
 export const CLAIMS_SUBGRAPH_URL_POLYGON =
   process.env.NEXT_PUBLIC_CLAIMS_SUBGRAPH_API_ENDPOINT_POLYGON;
+export const CLAIMS_SUBGRAPH_URL_BASE =
+  process.env.NEXT_PUBLIC_CLAIMS_SUBGRAPH_API_ENDPOINT_BASE;
 
 // Not Using this for now
 export const SUBGRAPH_CLIENT = new ApolloClient({
@@ -56,7 +41,7 @@ export function updateDynamicAddress(networkId, dispatch) {
   try {
     const networkData = fetchConfigById(networkId);
 
-    getRpcUrl(networkId);
+    CHAIN_CONFIG[networkId]?.appRpcUrl;
     networkData.then((result) => {
       if (result.status != 200) {
         console.log(result.error);
@@ -78,12 +63,4 @@ export function updateDynamicAddress(networkId, dispatch) {
   } catch (error) {
     console.log(error);
   }
-}
-
-export let RPC_URL;
-
-export function getRpcUrl(networkId) {
-  if (networkId == "0x89")
-    RPC_URL = process.env.NEXT_PUBLIC_POLYGON_MAINNET_RPC_URL;
-  else if (networkId == "0x5") RPC_URL = process.env.NEXT_PUBLIC_GOERLI_RPC_URL;
 }

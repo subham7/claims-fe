@@ -1,3 +1,4 @@
+import { retrieveNftListing } from "api/assets";
 import * as yup from "yup";
 
 export const step1ValidationSchema = yup.object({
@@ -129,30 +130,30 @@ export const proposalValidationSchema = yup.object({
         .required("Amount is required")
         .moreThan(0, "Amount should be greater than 0"),
   }),
-  userAddress: yup.string("Please enter user address").when("actionCommand", {
-    is: "Mint club token",
-    then: () =>
-      yup
-        .string("Enter user address")
-        .matches(/^0x[a-zA-Z0-9]+/gm, " Proper wallet address is required")
-        .required("User address is required"),
-  }),
-  amountOfTokens: yup.number().when(["tokenType", "actionCommand"], {
-    is: (tokenType, actionCommand) =>
-      tokenType === "erc20" && actionCommand === "Mint Club Token",
-    then: yup
-      .number()
-      .required("Amount is required")
-      .moreThan(0, "Amount should be greater than 0"),
-  }),
-  amountOfTokens721: yup.number().when(["tokenType", "actionCommand"], {
-    is: (tokenType, actionCommand) =>
-      tokenType === "erc721" && actionCommand === "Mint Club Token",
-    then: yup
-      .number()
-      .required("Amount is required")
-      .moreThan(0, "Amount should be greater than 0"),
-  }),
+  // userAddress: yup.string("Please enter user address").when("actionCommand", {
+  //   is: "Mint club token",
+  //   then: () =>
+  //     yup
+  //       .string("Enter user address")
+  //       .matches(/^0x[a-zA-Z0-9]+/gm, " Proper wallet address is required")
+  //       .required("User address is required"),
+  // }),
+  // amountOfTokens: yup.number().when(["tokenType", "actionCommand"], {
+  //   is: (tokenType, actionCommand) =>
+  //     tokenType === "erc20" && actionCommand === "Mint Club Token",
+  //   then: yup
+  //     .number()
+  //     .required("Amount is required")
+  //     .moreThan(0, "Amount should be greater than 0"),
+  // }),
+  // amountOfTokens721: yup.number().when(["tokenType", "actionCommand"], {
+  //   is: (tokenType, actionCommand) =>
+  //     tokenType === "erc721" && actionCommand === "Mint Club Token",
+  //   then: yup
+  //     .number()
+  //     .required("Amount is required")
+  //     .moreThan(0, "Amount should be greater than 0"),
+  // }),
   quorum: yup.number("Enter Quorum in percentage").when("actionCommand", {
     is: "Update Governance Settings",
     then: () =>
@@ -222,6 +223,46 @@ export const proposalValidationSchema = yup.object({
           .required("Safe Threshold is required")
           .moreThan(1, "Safe Threshold should be greater than 1"),
     }),
+  nftLink: yup.string("Please enter nft Link").when("actionCommand", {
+    is: "Buy nft",
+    then: () => yup.string("Enter nft link").required("Nft link is required"),
+  }),
+  nftLink: yup
+    .string()
+    .test(
+      "validate-nft-link",
+      "Invalid URL or this item has already been sold",
+      async (value, context) => {
+        const { actionCommand } = context.parent;
+
+        if (actionCommand === "Buy nft") {
+          try {
+            // Make your API call here and check the response
+            const parts = value?.split("/");
+
+            if (parts) {
+              const linkData = parts.slice(-3);
+              const nftdata = await retrieveNftListing(
+                linkData[0],
+                linkData[1],
+                linkData[2],
+              );
+              if (
+                !nftdata?.data?.orders.length &&
+                proposalData?.commands[0].executionId === 8
+              ) {
+                return false;
+              }
+            }
+          } catch (error) {
+            console.error(error);
+            return false; // Return false for any error
+          }
+        }
+
+        return true; // Return true for other cases or successful API response
+      },
+    ),
 });
 
 export const claimStep1ValidationSchema = yup.object({

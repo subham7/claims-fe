@@ -42,7 +42,7 @@ export const createSnapShot = async (
     const res = await fetch(`${MAIN_API_URL}snapshot/create`, {
       method: "POST",
       body: JSON.stringify({
-        totalClaimAmount: Number(totalClaimAmount),
+        totalClaimAmount: totalClaimAmount,
         airdropTokenAddress,
         gatingTokenAddress: tokenGatingAddress,
         gatingTokenNetwork: tokenGatingNetwork,
@@ -72,20 +72,3 @@ export const getUserProofAndBalance = async (merkleRoot, userAddress) => {
     console.log(error);
   }
 };
-
-// export const sendMerkleTree = async (jsonData) => {
-//   try {
-//     const res = await fetch(`${MAIN_API_URL}snapshot/create`, {
-//       method: "POST",
-//       body: jsonData,
-//       headers: {
-//         "Content-Type": "application/json",
-//       },
-//     });
-
-//     const data = await res.json();
-//     return data;
-//   } catch (err) {
-//     console.log(err);
-//   }
-// };

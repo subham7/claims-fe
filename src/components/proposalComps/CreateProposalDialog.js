@@ -27,14 +27,12 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import ProposalActionForm from "./ProposalActionForm";
 import { proposalValidationSchema } from "../createClubComps/ValidationSchemas";
 import { convertToWeiGovernance } from "../../utils/globalFunctions";
-import { useRouter } from "next/router";
 import { createProposal } from "../../api/proposal";
 import { fetchProposals } from "../../utils/proposal";
 import { useDispatch, useSelector } from "react-redux";
 import { setProposalList } from "../../redux/reducers/proposal";
 import { getWhiteListMerkleRoot } from "api/whitelist";
 import { useAccount, useNetwork } from "wagmi";
-import Web3 from "web3";
 import {
   handleFetchCommentAddresses,
   handleFetchFollowers,
@@ -46,7 +44,6 @@ const useStyles = makeStyles({
     backgroundColor: "#19274B",
   },
   dialogBox: {
-    fontFamily: "Whyte",
     fontSize: "38px",
     color: "#FFFFFF",
     opacity: 1,
@@ -56,10 +53,11 @@ const useStyles = makeStyles({
     width: "100%",
     // margin: "16px 0 25px 0",
     fontSize: "18px",
-    fontFamily: "Whyte",
+
     marginTop: "0.5rem",
   },
 });
+
 const CreateProposalDialog = ({
   open,
   setOpen,
@@ -68,13 +66,11 @@ const CreateProposalDialog = ({
   nftData,
 }) => {
   const classes = useStyles();
-  const router = useRouter();
   const dispatch = useDispatch();
 
-  const { clubId } = router.query;
   const { address: walletAddress } = useAccount();
   const { chain } = useNetwork();
-  const networkId = Web3.utils.numberToHex(chain?.id);
+  const networkId = "0x" + chain?.id.toString(16);
 
   const tokenType = useSelector((state) => {
     return state.club.clubData.tokenType;
@@ -86,14 +82,6 @@ const CreateProposalDialog = ({
 
   const daoAddress = useSelector((state) => {
     return state.club.daoAddress;
-  });
-
-  const NETWORK_HEX = useSelector((state) => {
-    return state.gnosis.networkHex;
-  });
-
-  const factoryData = useSelector((state) => {
-    return state.club.factoryData;
   });
 
   const [loaderOpen, setLoaderOpen] = useState(false);
@@ -121,9 +109,9 @@ const CreateProposalDialog = ({
       airdropToken: tokenData ? tokenData[0]?.tokenAddress : "",
       amountToAirdrop: 0,
       carryFee: 0,
-      userAddress: "",
-      amountOfTokens: 0,
-      amountOfTokens721: 0,
+      // userAddress: "",
+      // amountOfTokens: 0,
+      // amountOfTokens721: 0,
       pricePerToken: 0,
       quorum: 0,
       threshold: 0,
@@ -136,7 +124,10 @@ const CreateProposalDialog = ({
       ownerChangeAction: "",
       ownerAddress: "",
       safeThreshold: 1,
+      nftLink: "",
       csvObject: [],
+      mintGTAddresses: [],
+      mintGTAmounts: [],
       lensId: "",
       lensPostLink: "",
     },
@@ -168,12 +159,13 @@ const CreateProposalDialog = ({
           commands = [
             {
               executionId: 1,
-              mintGTAddresses: [values.userAddress],
-              mintGTAmounts: [
+              mintGTAddresses: values.mintGTAddresses,
+              mintGTAmounts:
                 clubData.tokenType === "erc20"
-                  ? convertToWeiGovernance(values.amountOfTokens, 18)
-                  : values.amountOfTokens721,
-              ],
+                  ? values.mintGTAmounts.map((amount) =>
+                      convertToWeiGovernance(amount, 18),
+                    )
+                  : values.mintGTAmounts,
               usdcTokenSymbol: "USDC",
               usdcTokenDecimal: 6,
               usdcGovernanceTokenDecimal: 18,
@@ -257,6 +249,28 @@ const CreateProposalDialog = ({
             },
           ];
         }
+        if (values.actionCommand === "Buy nft") {
+          commands = [
+            {
+              executionId: 8,
+              nftLink: values.nftLink,
+              usdcTokenSymbol: "USDC",
+              usdcTokenDecimal: 6,
+              usdcGovernanceTokenDecimal: 18,
+            },
+          ];
+        }
+        if (values.actionCommand === "Sell nft") {
+          commands = [
+            {
+              executionId: 9,
+              nftLink: values.nftLink,
+              usdcTokenSymbol: "USDC",
+              usdcTokenDecimal: 6,
+              usdcGovernanceTokenDecimal: 18,
+            },
+          ];
+        }
         if (
           values.actionCommand === "whitelist deposit" ||
           values.actionCommand === "whitelist with lens followers" ||
@@ -332,10 +346,10 @@ const CreateProposalDialog = ({
         }
 
         const payload = {
+          clubId: daoAddress,
           name: values.proposalTitle,
           description: values.proposalDescription,
           createdBy: walletAddress,
-          clubId: clubId,
           votingDuration: dayjs(values.proposalDeadline).unix(),
           votingOptions: values.optionList,
           commands: commands,
@@ -344,14 +358,14 @@ const CreateProposalDialog = ({
           daoAddress: daoAddress,
         };
 
-        const createRequest = createProposal(payload, NETWORK_HEX);
+        const createRequest = createProposal(payload, networkId);
         createRequest.then(async (result) => {
           if (result.status !== 201) {
             setOpenSnackBar(true);
             setFailed(true);
             setLoaderOpen(false);
           } else {
-            const proposalData = await fetchProposals(clubId);
+            const proposalData = await fetchProposals(daoAddress);
             dispatch(setProposalList(proposalData));
             setOpenSnackBar(true);
             setFailed(false);
@@ -478,7 +492,7 @@ const CreateProposalDialog = ({
                   backgroundColor: "#19274B",
                   fontSize: "18px",
                   color: "#C1D3FF",
-                  fontFamily: "Whyte",
+
                   margin: "0.5rem 0",
                 }}
                 name="proposalDescription"

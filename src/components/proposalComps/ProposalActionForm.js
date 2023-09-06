@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import Link from "next/link";
+import { csvToObjectForMintGT } from "utils/helper";
 import React, { useRef, useState } from "react";
 import { useSelector } from "react-redux";
 
@@ -22,7 +23,6 @@ const useStyles = makeStyles({
     // margin: "16px 0 25px 0",
     marginTop: "0.5rem",
     fontSize: "18px",
-    fontFamily: "Whyte",
   },
 });
 
@@ -48,11 +48,11 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
   const isGovernanceActive =
     tokenType === "erc20" ? isGovernanceERC20 : isGovernanceERC721;
 
-  const handleClick = (event) => {
+  const handleClick = () => {
     hiddenFileInput.current.click();
   };
 
-  const handleChange = async (event) => {
+  const handleChange = async (event, isMintGT = false) => {
     const fileUploaded = event.target.files[0];
     setLoadingCsv(true);
     setFile(fileUploaded);
@@ -66,10 +66,17 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
       // converting .csv file into array of objects
       reader.onload = async (event) => {
         const csvData = event.target.result;
-        const csvArr = csvData.split("\r\n");
-        // setCSVObject(csvArr);
-        formik.values.csvObject = csvArr;
-        setLoadingCsv(false);
+        if (!isMintGT) {
+          const csvArr = csvData.split("\r\n");
+          // setCSVObject(csvArr);
+          formik.values.csvObject = csvArr;
+          setLoadingCsv(false);
+        } else {
+          const { addresses, amounts } = csvToObjectForMintGT(csvData);
+          formik.values.mintGTAmounts = amounts;
+          formik.values.mintGTAddresses = addresses;
+          setLoadingCsv(false);
+        }
       };
     }
   };
@@ -134,7 +141,13 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
         <MenuItem key={7} value="Remove signer">
           Remove Signer
         </MenuItem>
-        <MenuItem key={8} value="whitelist deposit">
+        <MenuItem key={8} value="Buy nft">
+          Buy Nft
+        </MenuItem>
+        {/* <MenuItem key={9} value="Sell nft">
+          Sell Nft
+        </MenuItem> */}
+        <MenuItem key={10} value="whitelist deposit">
           Whitelist Deposit
         </MenuItem>
         {/* <MenuItem key={9} value="whitelist with lens followers">
@@ -234,79 +247,48 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
         </>
       ) : formik.values.actionCommand === "Mint club token" ? (
         <>
-          <Grid
-            container
-            direction={"column"}
-            ml={3}
-            mt={2}
-            sx={{ marginLeft: "0 !important" }}>
-            <Typography variant="proposalBody">User Address *</Typography>
+          <Typography mt={2} variant="proposalBody">
+            Upload your CSV file
+          </Typography>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "20px",
+              marginTop: "8px",
+            }}>
             <TextField
-              variant="outlined"
-              className={classes.textField}
-              placeholder="0x00"
-              name="userAddress"
-              id="userAddress"
-              value={formik.values.userAddress}
-              onChange={formik.handleChange}
-              error={
-                formik.touched.userAddress && Boolean(formik.errors.userAddress)
-              }
-              helperText={
-                formik.touched.userAddress && formik.errors.userAddress
-              }
+              style={{
+                width: "100%",
+              }}
+              className={classes.input}
+              onClick={handleClick}
+              onChange={(event) => {
+                handleChange(event, true);
+              }}
+              disabled
+              value={file?.name}
             />
-          </Grid>
+            <Button onClick={handleClick} variant="normal">
+              Upload
+            </Button>
+            <input
+              type="file"
+              accept=".csv"
+              ref={hiddenFileInput}
+              onChange={(event) => {
+                handleChange(event, true);
+              }}
+              style={{ display: "none" }}
+            />
+          </div>
 
-          <Grid
-            container
-            direction={"column"}
-            ml={3}
-            mt={2}
-            sx={{ marginLeft: "0 !important" }}>
-            <Typography variant="proposalBody">Amount of Tokens *</Typography>
-            {tokenType === "erc20" ? (
-              <TextField
-                variant="outlined"
-                className={classes.textField}
-                placeholder="0"
-                type="number"
-                name="amountOfTokens"
-                id="amountOfTokens"
-                value={formik.values.amountOfTokens}
-                onChange={formik.handleChange}
-                error={
-                  formik.touched.amountOfTokens &&
-                  Boolean(formik.errors.amountOfTokens)
-                }
-                helperText={
-                  formik.touched.amountOfTokens &&
-                  Boolean(formik.errors.amountOfTokens)
-                }
-                onWheel={(event) => event.target.blur()}
-              />
-            ) : (
-              <TextField
-                variant="outlined"
-                className={classes.textField}
-                placeholder="0"
-                type="number"
-                name="amountOfTokens721"
-                id="amountOfTokens721"
-                value={formik.values.amountOfTokens721}
-                onChange={formik.handleChange}
-                error={
-                  formik.touched.amountOfTokens721 &&
-                  Boolean(formik.errors.amountOfTokens721)
-                }
-                helperText={
-                  formik.touched.amountOfTokens721 &&
-                  formik.errors.amountOfTokens721
-                }
-                onWheel={(event) => event.target.blur()}
-              />
-            )}
-          </Grid>
+          <Typography mt={1} variant="proposalSubHeading">
+            Download sample from{" "}
+            <span style={{ color: "#3a7afd" }}>
+              <Link href={"/assets/csv/mintGT.csv"}>here</Link>
+            </span>
+          </Typography>
         </>
       ) : formik.values.actionCommand === "Update Governance Settings" ? (
         <>
@@ -649,6 +631,50 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
             />
           </Grid>
         </>
+      ) : formik.values.actionCommand === "Buy nft" ? (
+        <Grid
+          container
+          direction={"column"}
+          ml={3}
+          mt={2}
+          sx={{ marginLeft: "0 !important" }}>
+          <Typography mt={2} variant="proposalBody">
+            Opensea NFT Link *
+          </Typography>
+          <TextField
+            variant="outlined"
+            className={classes.textField}
+            placeholder="nft link"
+            name="nftLink"
+            id="nftLink"
+            value={formik.values.nftLink}
+            onChange={formik.handleChange}
+            error={formik.touched.nftLink && Boolean(formik.errors.nftLink)}
+            helperText={formik.touched.nftLink && formik.errors.nftLink}
+          />
+        </Grid>
+      ) : formik.values.actionCommand === "Sell nft" ? (
+        <Grid
+          container
+          direction={"column"}
+          ml={3}
+          mt={2}
+          sx={{ marginLeft: "0 !important" }}>
+          <Typography mt={2} variant="proposalBody">
+            Opensea NFT Link *
+          </Typography>
+          <TextField
+            variant="outlined"
+            className={classes.textField}
+            placeholder="nft link"
+            name="nftLink"
+            id="nftLink"
+            value={formik.values.nftLink}
+            onChange={formik.handleChange}
+            error={formik.touched.nftLink && Boolean(formik.errors.nftLink)}
+            helperText={formik.touched.nftLink && formik.errors.nftLink}
+          />
+        </Grid>
       ) : formik.values.actionCommand === "whitelist deposit" ? (
         <>
           <Typography mt={2} variant="proposalBody">

@@ -1,12 +1,12 @@
 import Web3 from "web3";
-import { POLYGON_MAINNET_RPC_URL, RPC_URL } from "../api";
 import Safe, { Web3Adapter } from "@safe-global/protocol-kit";
 import WrongNetworkModal from "../components/modals/WrongNetworkModal";
 import { QUERY_ALL_MEMBERS } from "../api/graphql/queries";
 import { subgraphQuery } from "./subgraphs";
+import { CHAIN_CONFIG } from "./constants";
 
-export const getSafeSdk = async (gnosisAddress, walletAddress) => {
-  const web3 = await web3InstanceCustomRPC();
+export const getSafeSdk = async (gnosisAddress, walletAddress, networkId) => {
+  const web3 = await web3InstanceCustomRPC(networkId);
   const ethAdapter = new Web3Adapter({
     web3,
     signerAddress: walletAddress,
@@ -19,14 +19,24 @@ export const getSafeSdk = async (gnosisAddress, walletAddress) => {
   return safeSdk;
 };
 
-export const getIncreaseGasPrice = async () => {
-  const web3 = await web3InstanceCustomRPC();
-  if (!sessionStorage.getItem("gasPrice")) {
+export const getIncreaseGasPrice = async (networkId = "0x89") => {
+  const web3 = await web3InstanceCustomRPC(networkId);
+
+  if (!sessionStorage.getItem("gasPrice" + networkId)) {
     const gasPrice = await web3.eth.getGasPrice();
-    const increasedGasPrice = +gasPrice + 30000000000;
+
+    let increasedGasPrice;
+
+    if (networkId === "0x89") {
+      increasedGasPrice = +gasPrice + 30000000000;
+    } else {
+      increasedGasPrice = +gasPrice + 1000;
+    }
+
+    sessionStorage.setItem("gasPrice" + networkId, increasedGasPrice);
     return increasedGasPrice;
   } else {
-    return Number(sessionStorage.getItem("gasPrice"));
+    return Number(sessionStorage.getItem("gasPrice" + networkId));
   }
 };
 
@@ -35,8 +45,8 @@ export const web3InstanceEthereum = async () => {
   return web3;
 };
 
-export const web3InstanceCustomRPC = async () => {
-  const web3 = new Web3(RPC_URL ? RPC_URL : POLYGON_MAINNET_RPC_URL);
+export const web3InstanceCustomRPC = async (networkId = "0x89") => {
+  const web3 = new Web3(CHAIN_CONFIG[networkId].appRpcUrl);
   return web3;
 };
 
@@ -83,8 +93,25 @@ export function returnRemainingTime(epochTime) {
     : 0;
 }
 
-export const showWrongNetworkModal = (walletAddress, networkId) => {
-  return walletAddress && networkId !== "0x89" ? <WrongNetworkModal /> : null;
+export const showWrongNetworkModal = (
+  walletAddress,
+  networkId,
+  isClaims = false,
+  network,
+) => {
+  if (isClaims) {
+    if (network && network !== networkId) {
+      return <WrongNetworkModal chainId={parseInt(network, 16)} />;
+    }
+
+    return walletAddress && !CHAIN_CONFIG[networkId] ? (
+      <WrongNetworkModal />
+    ) : null;
+  }
+
+  return walletAddress && networkId !== "0x89" ? (
+    <WrongNetworkModal isClaims={isClaims} />
+  ) : null;
 };
 
 export const getAllEntities = async (
@@ -128,4 +155,53 @@ export const extractPartFromUrl = (url) => {
     console.error("Invalid URL:", error);
     return null;
   }
+};
+
+export const extractNftAdressAndId = (url) => {
+  try {
+    const parsedUrl = new URL(url);
+    const pathname = parsedUrl.pathname;
+    const parts = pathname.split("/");
+
+    return {
+      nftAddress: parts[parts.length - 2],
+      tokenId: parts[parts.length - 1],
+    };
+  } catch (error) {
+    console.error("Invalid URL:", error);
+    return null;
+  }
+};
+
+export const getUserTokenData = async (tokenData, networkId) => {
+  const filteredData = tokenData.filter(
+    (token) => token.contract_address !== CHAIN_CONFIG[networkId].nativeToken,
+  );
+
+  return filteredData.map((token) => {
+    return {
+      balance: token.balance,
+      address: token.contract_address,
+      decimals: token.contract_decimals,
+      symbol: token.contract_ticker_symbol,
+    };
+  });
+};
+
+export const requestEthereumChain = async (method, params) => {
+  return await window.ethereum.request({ method, params });
+};
+
+export const csvToObjectForMintGT = (csvString) => {
+  const lines = csvString.trim().split("\n");
+  const addresses = [];
+  const amounts = [];
+
+  for (const line of lines) {
+    const [address, amount] = line.trim().split(",");
+    addresses.push(address);
+    amounts.push(parseInt(amount, 10));
+  }
+
+  return { addresses, amounts };
 };

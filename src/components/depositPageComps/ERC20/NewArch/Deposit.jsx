@@ -4,6 +4,7 @@ import { convertFromWeiGovernance } from "../../../../utils/globalFunctions";
 import ProgressBar from "../../../progressbar";
 import classes from "./ERC20.module.scss";
 import { IoIosWallet } from "react-icons/io";
+import { Typography, Button } from "@components/ui";
 
 const Deposit = ({
   erc20TokenDetails,
@@ -19,7 +20,7 @@ const Deposit = ({
   return (
     <div className={classes.rightContainer}>
       <div className={classes.flexContainer}>
-        <p className={classes.subtitle}>Join this station</p>
+        <Typography variant="subheading">Join this station</Typography>
         <div className={classes.balance}>
           <IoIosWallet size={22} />
 
@@ -53,7 +54,8 @@ const Deposit = ({
 
       <p className={classes.errorText}>{formik.errors.tokenInput}</p>
 
-      <button
+      <Button
+        className="tb-mar-1"
         disabled={
           (remainingDays >= 0 && remainingTimeInSecs > 0 && isTokenGated
             ? !isEligibleForTokenGating
@@ -67,13 +69,9 @@ const Deposit = ({
         }
         onClick={formik.handleSubmit}>
         Deposit
-      </button>
+      </Button>
 
-      <p
-        style={{
-          marginBottom: "8px",
-        }}
-        className={classes.smallText}>
+      <Typography variant="info" className="tb-mar-1">
         {convertFromWeiGovernance(
           clubData?.totalAmountRaised,
           erc20TokenDetails.tokenDecimal,
@@ -84,7 +82,7 @@ const Deposit = ({
           erc20TokenDetails?.tokenDecimal,
         )}{" "}
         {erc20TokenDetails.tokenSymbol} filled
-      </p>
+      </Typography>
       <ProgressBar
         value={
           (Number(clubData?.totalAmountRaised) * 100) /

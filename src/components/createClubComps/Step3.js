@@ -20,7 +20,7 @@ import { useState } from "react";
 import { useSelector } from "react-redux";
 import SafeApiKit from "@safe-global/api-kit";
 import { Web3Adapter } from "@safe-global/protocol-kit";
-import { useAccount } from "wagmi";
+import { useAccount, useNetwork } from "wagmi";
 
 export default function Step3(props) {
   const classes = Step3Styles();
@@ -33,6 +33,9 @@ export default function Step3(props) {
   const [ownerAddresses, setOwnerAddresses] = useState();
   const [allSafeAddresses, setAllSafeAddresses] = useState();
 
+  const { chain } = useNetwork();
+  const networkId = "0x" + chain?.id.toString(16);
+
   // const index = props.formik.values.addressList.indexOf(
   //   Web3.utils.toChecksumAddress(walletAddress),
   // );
@@ -42,6 +45,7 @@ export default function Step3(props) {
     const safeSdk = await getSafeSdk(
       Web3.utils.toChecksumAddress(gnosisAddress),
       Web3.utils.toChecksumAddress(walletAddress),
+      networkId,
     );
     const owners = await safeSdk.getOwners();
 

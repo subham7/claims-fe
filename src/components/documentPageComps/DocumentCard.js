@@ -1,6 +1,5 @@
 import { Alert } from "@mui/material";
 import { makeStyles } from "@mui/styles";
-import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { BsLink45Deg } from "react-icons/bs";
 
@@ -27,7 +26,7 @@ const useStyles = makeStyles({
   createdBy: {
     fontWeight: "300",
     margin: 0,
-    fontSize: "15px",
+    fontSize: "14px",
     color: "#6475A3",
     // letterSpacing: '0.5px'
   },
@@ -61,12 +60,17 @@ const useStyles = makeStyles({
   },
 });
 
-const DocumentCard = ({ legalDocLink, date, fileName, index, createdBy }) => {
+const DocumentCard = ({
+  legalDocLink,
+  date,
+  fileName,
+  index,
+  createdBy,
+  daoAddress,
+}) => {
   const [isCopied, setIsCopied] = useState(false);
 
   const classes = useStyles();
-  const router = useRouter();
-  const { clubId: daoAddress } = router.query;
   const convertedDate = new Date(date).toLocaleDateString();
 
   return (
@@ -86,10 +90,9 @@ const DocumentCard = ({ legalDocLink, date, fileName, index, createdBy }) => {
             onClick={(e) => {
               e.stopPropagation();
               navigator.clipboard.writeText(
-                `${window.location.origin}/dashboard/${daoAddress}/documents/sign/${legalDocLink}`,
+                `${window.location.origin}/documents/${daoAddress}/sign/${legalDocLink}`,
               );
               setIsCopied(true);
-
               setTimeout(() => {
                 setIsCopied(false);
               }, 3000);

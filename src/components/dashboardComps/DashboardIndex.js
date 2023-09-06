@@ -21,7 +21,6 @@ import { Stack } from "@mui/system";
 import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import CollectionCard from "../../../src/components/cardcontent";
-import Layout1 from "../../../src/components/layouts/layout1";
 import { DashboardStyles } from "./DashboardStyles";
 import { useRouter } from "next/router";
 import { getAssetsByDaoAddress, getNFTsByDaoAddress } from "../../api/assets";
@@ -31,7 +30,6 @@ import {
   QUERY_ALL_MEMBERS,
   QUERY_CLUB_DETAILS,
 } from "../../api/graphql/queries";
-import ClubFetch from "../../utils/clubFetch";
 import {
   convertFromWeiGovernance,
   getImageURL,
@@ -41,9 +39,8 @@ import { IoColorPalette } from "react-icons/io5";
 import useSmartContractMethods from "../../hooks/useSmartContractMethods";
 import { addNftsOwnedByDao } from "../../redux/reducers/club";
 import { useAccount } from "wagmi";
-// import useSmartContract from "../../hooks/useSmartContract";
 
-const DashboardIndex = () => {
+const DashboardIndex = ({ daoAddress }) => {
   const dispatch = useDispatch();
   const clubData = useSelector((state) => {
     return state.club.clubData;
@@ -65,7 +62,6 @@ const DashboardIndex = () => {
   const { address: walletAddress } = useAccount();
   const router = useRouter();
   const classes = DashboardStyles();
-  const { clubId: daoAddress } = router.query;
 
   const isAdmin = useSelector((state) => {
     return state.gnosis.adminUser;
@@ -269,7 +265,7 @@ const DashboardIndex = () => {
   ]);
 
   return (
-    <Layout1 page={1}>
+    <>
       <Grid container paddingTop={2} spacing={3} mb={8}>
         <Grid item xs={9}>
           <Card className={classes.cardSharp1}>
@@ -773,7 +769,7 @@ const DashboardIndex = () => {
                         onClick={(e) => {
                           router.push(
                             {
-                              pathname: `/dashboard/${daoAddress}/proposal`,
+                              pathname: `/proposal/${daoAddress}`,
                               query: {
                                 create_proposal: true,
                               },
@@ -810,16 +806,8 @@ const DashboardIndex = () => {
               </Alert>
             ) : null} */}
       </Snackbar>
-
-      {/* {tweetModal && (
-            <LegalEntityModal
-              isTwitter={true}
-              daoAddress={daoAddress}
-              onClose={() => setTweetModal(false)}
-            />
-          )} */}
-    </Layout1>
+    </>
   );
 };
 
-export default ClubFetch(DashboardIndex);
+export default DashboardIndex;

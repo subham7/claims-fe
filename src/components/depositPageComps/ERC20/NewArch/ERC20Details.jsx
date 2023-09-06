@@ -2,6 +2,7 @@ import React from "react";
 import { BsInfoCircleFill } from "react-icons/bs";
 import { convertFromWeiGovernance } from "../../../../utils/globalFunctions";
 import classes from "./ERC20.module.scss";
+import { Typography } from "@components/ui";
 
 const ERC20Details = ({
   clubData,
@@ -9,61 +10,73 @@ const ERC20Details = ({
   isTokenGated,
   whitelistUserData,
 }) => {
-  console.log(whitelistUserData);
-
   return (
     <div className={classes.detailsContainer}>
       <div className={classes.flexContainer}>
         <div>
-          <p className={classes.title}>Min. Deposit</p>
-          <p>
+          <Typography variant="body" className="text-bold">
+            Min. Deposit
+          </Typography>
+          <Typography variant="info">
             {convertFromWeiGovernance(
               clubData?.minDepositAmount,
               erc20TokenDetails?.tokenDecimal,
             )}{" "}
             {erc20TokenDetails?.tokenSymbol}
-          </p>
+          </Typography>
         </div>
 
         <div>
-          <p className={classes.title}>Max. Deposit</p>
-          <p>
+          <Typography variant="body" className="text-bold">
+            Max. Deposit
+          </Typography>
+          <Typography variant="info">
             {convertFromWeiGovernance(
               clubData?.maxDepositAmount,
               erc20TokenDetails?.tokenDecimal,
             )}{" "}
             {erc20TokenDetails?.tokenSymbol}
-          </p>
+          </Typography>
         </div>
 
         <div>
-          <p className={classes.title}>Token Price</p>
-          <p>
+          <Typography variant="body" className="text-bold">
+            Token Price
+          </Typography>
+          <Typography variant="info">
             {convertFromWeiGovernance(
               clubData?.pricePerToken,
               erc20TokenDetails?.tokenDecimal,
             )}{" "}
             {erc20TokenDetails?.tokenSymbol}
-          </p>
+          </Typography>
         </div>
       </div>
 
       <div className={classes.flexContainer}>
         <div>
-          <p className={classes.title}>Control</p>
-          <p>Admin(s)</p>
+          <Typography variant="body" className="text-bold">
+            Control
+          </Typography>
+          <Typography variant="info">Admin(s)</Typography>
         </div>
 
         <div>
-          <p className={classes.title}>Quorum</p>
-          <p>{clubData?.isGovernanceActive ? `${clubData?.quorum}%` : "-"}</p>
+          <Typography variant="body" className="text-bold">
+            Quorum
+          </Typography>
+          <Typography variant="info">
+            {clubData?.isGovernanceActive ? `${clubData?.quorum}%` : "-"}
+          </Typography>
         </div>
 
         <div>
-          <p className={classes.title}>Threshold</p>
-          <p>
+          <Typography variant="body" className="text-bold">
+            Threshold
+          </Typography>
+          <Typography variant="info">
             {clubData?.isGovernanceActive ? `${clubData?.threshold}%` : "-"}
-          </p>
+          </Typography>
         </div>
       </div>
 

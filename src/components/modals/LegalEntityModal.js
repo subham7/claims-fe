@@ -31,7 +31,7 @@ const useStyles = makeStyles({
   },
   title: {
     letterSpacing: "0.4px",
-    fontFamily: "sans-serif",
+
     fontSize: "28px",
   },
   subtitle: {
@@ -106,12 +106,11 @@ const LegalEntityModal = ({
   isInvite = false,
   encryptedLink,
   isTwitter = false,
+  daoAddress,
 }) => {
   const [isCopy, setIsCopy] = useState(false);
   const classes = useStyles();
   const router = useRouter();
-
-  const { clubId: daoAddress } = router.query;
 
   // create legal Entity
   const createLegalEntityHandler = () => {
@@ -128,7 +127,7 @@ const LegalEntityModal = ({
   const copyHandler = () => {
     navigator.clipboard.writeText(
       typeof window !== "undefined" && window.location.origin
-        ? `${window.location.origin}/dashboard/${daoAddress}/documents/sign/${encryptedLink}`
+        ? `${window.location.origin}/documents/${daoAddress}/sign/${encryptedLink}`
         : null,
     );
     setIsCopy(true);
@@ -164,7 +163,7 @@ const LegalEntityModal = ({
                   disabled
                   value={
                     typeof window !== "undefined" && window.location.origin
-                      ? `${window.location.origin}/dashboard/${daoAddress}/documents/sign/${encryptedLink}`
+                      ? `${window.location.origin}/documents/${daoAddress}/sign/${encryptedLink}`
                       : null
                   }
                   InputProps={{

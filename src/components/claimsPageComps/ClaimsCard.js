@@ -32,7 +32,7 @@ const useStyles = makeStyles({
   createdBy: {
     fontWeight: "300",
     margin: 0,
-    fontSize: "15px",
+    fontSize: "14px",
     color: "#6475A3",
     // letterSpacing: '0.5px'
   },
@@ -97,6 +97,7 @@ const ClaimsCard = ({
   claimContract,
   createdBy,
   isActive: active,
+  claimsNetwork,
 }) => {
   const classes = useStyles();
   const router = useRouter();
@@ -154,19 +155,10 @@ const ClaimsCard = ({
     fetchContractDetails();
   });
 
-  const claimContractData = {
-    description,
-    // airdropTokenSymbol,
-    totalAmount,
-    claimContract,
-    createdBy,
-    endDate,
-  };
-
   // dispatch(addClaimContractData(claimContractData));
 
   const claimHandler = () => {
-    router.push(`/claims/insights/${claimContract}`);
+    router.push(`/claims/${claimContract}`);
   };
 
   return (
@@ -199,7 +191,7 @@ const ClaimsCard = ({
             onClick={(e) => {
               e.stopPropagation();
               navigator.clipboard.writeText(
-                `${window.location.origin}/claims/${claimContract}`,
+                `${window.location.origin}/claim/${claimContract}/${claimsNetwork}`,
               );
               setIsCopied(true);
 

@@ -118,7 +118,7 @@ const useSafe = () => {
 
         const { pathname } = Router;
         if (pathname == "/create") {
-          Router.push(`/dashboard/${daoAddress}?clubCreate=true`, undefined, {
+          Router.push(`/dashboard/${daoAddress}`, undefined, {
             shallow: true,
           });
         }
