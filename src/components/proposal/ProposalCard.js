@@ -32,51 +32,40 @@ const ProposalCard = ({ proposal, daoAddress }) => {
 
   const { getDecimals, getTokenSymbol } = useCommonContractMethods();
 
-  const fetchAirDropContractDetails = useCallback(async () => {
+  const fetchTokenDetails = useCallback(async () => {
     try {
       if (proposal) {
-        if (tokenType === "erc20" || proposal?.commands[0]?.executionId !== 1) {
-          const decimal = await getDecimals(
-            proposal?.commands[0]?.executionId === 0
-              ? proposal?.commands[0]?.airDropToken
-              : proposal?.commands[0]?.executionId === 1
-              ? daoAddress
-              : proposal?.commands[0]?.executionId === 4
-              ? proposal?.commands[0]?.customToken
-              : "",
-          );
-          const symbol = await getTokenSymbol(
-            proposal?.commands[0]?.executionId === 0
-              ? proposal?.commands[0]?.airDropToken
-              : proposal?.commands[0]?.executionId === 1
-              ? daoAddress
-              : proposal?.commands[0]?.executionId === 4
-              ? proposal?.commands[0]?.customToken
-              : "",
-          );
+        let decimal = 18;
 
-          setTokenDetails({
-            decimals: decimal,
-            symbol: symbol,
-          });
-        } else if (
-          tokenType === "erc721" &&
-          proposal?.commands[0]?.executionId === 1
-        ) {
-          const symbol = await getTokenSymbol(
-            proposal?.commands[0]?.executionId === 0
-              ? proposal?.commands[0]?.airDropToken
-              : proposal?.commands[0]?.executionId === 1
+        const { executionId, airDropToken, customToken } =
+          proposal?.commands[0];
+
+        if (tokenType === "erc20" || executionId !== 1) {
+          decimal = await getDecimals(
+            executionId === 0
+              ? airDropToken
+              : executionId === 1
               ? daoAddress
-              : proposal?.commands[0]?.executionId === 4
-              ? proposal?.commands[0]?.customToken
+              : executionId === 4
+              ? customToken
               : "",
           );
-          setTokenDetails({
-            decimals: 18,
-            symbol: symbol,
-          });
         }
+
+        const symbol = await getTokenSymbol(
+          executionId === 0
+            ? airDropToken
+            : executionId === 1
+            ? daoAddress
+            : executionId === 4
+            ? customToken
+            : "",
+        );
+
+        setTokenDetails({
+          decimals: decimal,
+          symbol: symbol,
+        });
       }
     } catch (error) {
       console.log(error);
@@ -84,8 +73,8 @@ const ProposalCard = ({ proposal, daoAddress }) => {
   }, [proposal, tokenType, daoAddress]);
 
   useEffect(() => {
-    fetchAirDropContractDetails();
-  }, [fetchAirDropContractDetails]);
+    fetchTokenDetails();
+  }, [fetchTokenDetails]);
 
   return (
     <CardActionArea>
@@ -157,6 +146,7 @@ const ProposalCard = ({ proposal, daoAddress }) => {
         <div className="b-mar-1">
           <Typography variant="subheading">{proposal?.name}</Typography>
         </div>
+
         <div>
           <Grid container spacing={1}>
             {(proposal?.commands[0]?.usdcTokenSymbol &&
@@ -320,7 +310,6 @@ const ProposalCard = ({ proposal, daoAddress }) => {
                   className={classes.timeLeftChip}
                   label={
                     <div className="f-d f-v-c tb-pad-1">
-                      {" "}
                       <Typography variant="info" className="text-blue r-pad-1">
                         Price per token:
                       </Typography>
