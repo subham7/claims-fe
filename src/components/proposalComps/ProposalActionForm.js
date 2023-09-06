@@ -9,12 +9,13 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import React, { useRef, useState } from "react";
-import { commandTypeList } from "../../data/dashboard";
 import { makeStyles } from "@mui/styles";
-import { useSelector } from "react-redux";
 import Link from "next/link";
 import { csvToObjectForMintGT } from "utils/helper";
+import React, { useRef, useState } from "react";
+import { useSelector } from "react-redux";
+
+import { commandTypeList } from "../../data/dashboard";
 
 const useStyles = makeStyles({
   textField: {
@@ -149,12 +150,12 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
         <MenuItem key={10} value="whitelist deposit">
           Whitelist Deposit
         </MenuItem>
-        <MenuItem key={9} value="whitelist with lens followers">
+        {/* <MenuItem key={9} value="whitelist with lens followers">
           Whitelist with Lens followers
         </MenuItem>
         <MenuItem key={10} value="whitelist with lens post's comments">
           Whitelist with Lens post&apos;s comments
-        </MenuItem>
+        </MenuItem> */}
         <MenuItem key={11} value="update price per token">
           Update price per token
         </MenuItem>
