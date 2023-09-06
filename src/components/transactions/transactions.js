@@ -49,7 +49,7 @@ const Transactions = () => {
     setLoading(true);
     const address = Web3.utils.toChecksumAddress(gnosisAddress);
     const res = await axios.get(
-      `https://safe-transaction-polygon.safe.global/api/v1/safes/${address}/all-transactions/?ordering=hash&executed=true&queued=false`,
+      `https://safe-transaction-polygon.safe.global/api/v1/safes/${address}/all-transactions/?executed=true&queued=false`,
     );
     const results = res.data.results;
     let transfers = [];
