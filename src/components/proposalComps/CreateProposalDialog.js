@@ -104,9 +104,9 @@ const CreateProposalDialog = ({
       airdropToken: tokenData ? tokenData[0]?.address : "",
       amountToAirdrop: 0,
       carryFee: 0,
-      userAddress: "",
-      amountOfTokens: 0,
-      amountOfTokens721: 0,
+      // userAddress: "",
+      // amountOfTokens: 0,
+      // amountOfTokens721: 0,
       pricePerToken: 0,
       quorum: 0,
       threshold: 0,
@@ -121,6 +121,8 @@ const CreateProposalDialog = ({
       safeThreshold: 1,
       nftLink: "",
       csvObject: [],
+      mintGTAddresses: [],
+      mintGTAmounts: [],
       lensId: "",
       lensPostLink: "",
       aaveDepositToken: tokenData ? tokenData[0]?.address : "",
@@ -156,12 +158,13 @@ const CreateProposalDialog = ({
           commands = [
             {
               executionId: 1,
-              mintGTAddresses: [values.userAddress],
-              mintGTAmounts: [
+              mintGTAddresses: values.mintGTAddresses,
+              mintGTAmounts:
                 clubData.tokenType === "erc20"
-                  ? convertToWeiGovernance(values.amountOfTokens, 18)
-                  : values.amountOfTokens721,
-              ],
+                  ? values.mintGTAmounts.map((amount) =>
+                      convertToWeiGovernance(amount, 18),
+                    )
+                  : values.mintGTAmounts,
               usdcTokenSymbol: "USDC",
               usdcTokenDecimal: 6,
               usdcGovernanceTokenDecimal: 18,

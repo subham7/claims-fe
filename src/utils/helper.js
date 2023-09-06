@@ -231,4 +231,18 @@ export const writeContractFunction = async ({
   } catch (error) {
     throw error;
   }
+}
+
+export const csvToObjectForMintGT = (csvString) => {
+  const lines = csvString.trim().split("\n");
+  const addresses = [];
+  const amounts = [];
+
+  for (const line of lines) {
+    const [address, amount] = line.trim().split(",");
+    addresses.push(address);
+    amounts.push(parseInt(amount, 10));
+  }
+
+  return { addresses, amounts };
 };
