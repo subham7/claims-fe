@@ -134,7 +134,7 @@ const DashboardIndex = ({ daoAddress }) => {
     try {
       if (NETWORK_HEX !== "undefined") {
         const assetsData = await getAssetsByDaoAddress(
-          factoryData.assetsStoredOnGnosis ? gnosisAddress : daoAddress,
+          gnosisAddress,
           NETWORK_HEX,
         );
         setTokenDetails({
