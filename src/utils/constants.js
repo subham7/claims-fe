@@ -15,6 +15,8 @@ export const CHAIN_CONFIG = {
       "https://api.thegraph.com/subgraphs/name/subham7/stnx-claim",
     covalentNetworkName: "matic-mainnet",
     nativeToken: "0x0000000000000000000000000000000000001010",
+    stationSubgraphUrl:
+      "https://api.thegraph.com/subgraphs/name/subham7/stnx-be-polygon",
   },
   "0x5": {
     chainName: "Goerli Testnet",

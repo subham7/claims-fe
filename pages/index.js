@@ -26,6 +26,7 @@ import { BsFillPlayFill } from "react-icons/bs";
 import Web3 from "web3";
 import VideoModal from "../src/components/modals/VideoModal";
 import { useAccount, useNetwork } from "wagmi";
+import { CHAIN_CONFIG } from "utils/constants";
 
 const useStyles = makeStyles({
   container: {
@@ -122,7 +123,6 @@ const useStyles = makeStyles({
 
 const App = () => {
   const dispatch = useDispatch();
-  const [clubFlow, setClubFlow] = useState(false);
   const classes = useStyles();
   const { address: walletAddress } = useAccount();
   const [clubListData, setClubListData] = useState([]);
@@ -142,7 +142,7 @@ const App = () => {
         const fetchClubs = async () => {
           try {
             const data = await subgraphQuery(
-              SUBGRAPH_URL_POLYGON,
+              CHAIN_CONFIG[networkId].stationSubgraphUrl,
               QUERY_CLUBS_FROM_WALLET_ADDRESS(walletAddress),
             );
             setClubListData(data.users);
@@ -150,13 +150,12 @@ const App = () => {
             console.log(error);
           }
         };
-        fetchClubs();
-      }
 
-      if (walletAddress) {
-        setClubFlow(true);
-      } else {
-        setClubFlow(false);
+        if (CHAIN_CONFIG[networkId].stationSubgraphUrl) {
+          fetchClubs();
+        } else {
+          setClubListData([]);
+        }
       }
     } catch (error) {
       console.log(error);
@@ -217,7 +216,7 @@ const App = () => {
   return (
     <Layout showSidebar={false} faucet={false} isClaims={true}>
       <div className={classes.container}>
-        {!manageStation && clubFlow && (
+        {!manageStation && (
           <div className={classes.cardContainer}>
             <div
               style={{
@@ -274,7 +273,7 @@ const App = () => {
           </div>
         )}
 
-        {manageStation && clubFlow ? (
+        {manageStation ? (
           <Grid
             container
             direction="row"
