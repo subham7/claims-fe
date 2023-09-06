@@ -15,7 +15,7 @@ const useStyles = makeStyles({
     top: 0,
     left: 0,
     background: "#000000",
-    opacity: 0.85,
+    opacity: 0.6,
     zIndex: 2000,
   },
   modal: {

@@ -443,7 +443,7 @@ const CreateProposalDialog = ({
           </Grid> */}
 
             {/* type of proposal and end time */}
-            <Grid container spacing={3} ml={0}>
+            <Grid container spacing={3} ml={0} width="100%">
               <Grid item md={6} sx={{ paddingLeft: "0 !important" }}>
                 <Typography variant="proposalBody">Type of Proposal</Typography>
                 <FormControl sx={{ width: "100%", marginTop: "0.5rem" }}>
@@ -466,7 +466,7 @@ const CreateProposalDialog = ({
                   <DateTimePicker
                     fullWidth
                     sx={{
-                      width: "90%",
+                      width: "100%",
                       marginTop: "0.5rem",
                     }}
                     value={proposal.values.proposalDeadline}
@@ -525,10 +525,9 @@ const CreateProposalDialog = ({
                 style={{
                   width: "100%",
                   height: "auto",
-                  backgroundColor: "#19274B",
+                  backgroundColor: "#0f0f0f",
                   fontSize: "18px",
                   color: "#C1D3FF",
-
                   margin: "0.5rem 0",
                 }}
                 name="proposalDescription"
@@ -561,7 +560,7 @@ const CreateProposalDialog = ({
             {/* add options button */}
             {proposal.values.typeOfProposal === "survey" ? (
               <>
-                <Stack mt={3}>
+                <Stack mt={1}>
                   {proposal.values.optionList?.length > 0 ? (
                     <Grid
                       container
@@ -596,7 +595,6 @@ const CreateProposalDialog = ({
                               placeholder={"yes, no"}
                               sx={{
                                 m: 1,
-                                width: 443,
                                 mt: 1,
                                 borderRadius: "10px",
                               }}

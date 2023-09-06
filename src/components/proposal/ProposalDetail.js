@@ -1392,7 +1392,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
         )}
       </Snackbar>
       <Backdrop
-        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        sx={{ color: "#000", zIndex: (theme) => theme.zIndex.drawer + 1 }}
         open={loaderOpen}>
         <CircularProgress color="inherit" />
       </Backdrop>

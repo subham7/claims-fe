@@ -303,7 +303,7 @@ const AdditionalSettings = ({
         </Grid>
       </Stack>
 
-      <Backdrop sx={{ color: "#fff", zIndex: 10000000 }} open={loading}>
+      <Backdrop sx={{ color: "#000", zIndex: 10000000 }} open={loading}>
         <CircularProgress color="inherit" />
       </Backdrop>
 

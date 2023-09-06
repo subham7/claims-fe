@@ -19,8 +19,8 @@ export const ClaimModalStyles = makeStyles({
     width: "100vw",
     top: 0,
     left: 0,
-    background: "#fff",
-    opacity: 0.4,
+    background: "#000",
+    opacity: 0.6,
     zIndex: 2000,
   },
 

@@ -33,7 +33,7 @@ const About = ({ bio, daoAddress }) => {
           style={{
             maxHeight: "200px",
             overflowY: "scroll",
-            margin: "20px 0",
+            margin: "16px 0",
           }}>
           <div
             dangerouslySetInnerHTML={{

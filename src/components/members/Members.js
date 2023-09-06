@@ -74,16 +74,16 @@ const Members = ({ daoAddress }) => {
     try {
       setLoading(true);
       const fetchData = async () => {
-          const data = await queryPaginatedMembersFromSubgraph(
-            daoAddress,
-            20,
-            0,
-            deployedTime,
-            Date.now(),
-            networkId,
-          );
+        const data = await queryPaginatedMembersFromSubgraph(
+          daoAddress,
+          20,
+          0,
+          deployedTime,
+          Date.now(),
+          networkId,
+        );
 
-          if (data?.users) setMembersData(data?.users);
+        if (data?.users) setMembersData(data?.users);
       };
 
       if (daoAddress && networkId && deployedTime) fetchData();
@@ -334,7 +334,7 @@ const Members = ({ daoAddress }) => {
       </Grid>
 
       <Backdrop
-        sx={{ color: "#fff", zIndex: (theme) => theme?.zIndex?.drawer + 1 }}
+        sx={{ color: "#000", zIndex: (theme) => theme?.zIndex?.drawer + 1 }}
         open={loading}>
         <CircularProgress color="inherit" />
       </Backdrop>

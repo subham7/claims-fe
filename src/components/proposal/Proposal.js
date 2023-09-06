@@ -288,17 +288,9 @@ const Proposal = ({ daoAddress }) => {
                   </Select>
                 </Grid>
 
-                {isGovernanceActive ? (
-                  <Grid item>
-                    <Button variant="normal" onClick={handleClickOpen}>
-                      Propose
-                    </Button>
-                  </Grid>
-                ) : isAdminUser ? (
-                  <Grid item>
-                    <Button variant="normal" onClick={handleClickOpen}>
-                      Propose
-                    </Button>
+                {isGovernanceActive || isAdminUser ? (
+                  <Grid mt={"4px"} item>
+                    <Button onClick={handleClickOpen}>Propose</Button>
                   </Grid>
                 ) : null}
               </Grid>
