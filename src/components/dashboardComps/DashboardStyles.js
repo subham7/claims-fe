@@ -52,7 +52,7 @@ export const DashboardStyles = makeStyles({
     border: ".5px solid #6475A3",
   },
   cardSharp2: {
-    backgroundColor: "#142243",
+    backgroundColor: "#151515",
     borderTopLeftRadius: "0px",
     borderTopRightRadius: "0px",
     opacity: 1,
@@ -168,13 +168,13 @@ export const DashboardStyles = makeStyles({
   copyButton: {
     width: "68px",
     height: "30px",
-    background: "#3B7AFD 0% 0% no-repeat padding-box",
+    background: "#2D55FF 0% 0% no-repeat padding-box",
     borderRadius: "15px",
   },
   linkInput: {
     width: "100%",
     color: "#C1D3FF",
-    background: "#111D38 0% 0% no-repeat padding-box",
+    background: "#0F0F0F 0% 0% no-repeat padding-box",
     border: "1px solid #C1D3FF40",
     borderRadius: "10px",
     "&:hover": {
@@ -219,7 +219,7 @@ export const DashboardStyles = makeStyles({
     width: "28.5vw",
     height: "auto",
     color: "#C1D3FF",
-    background: "#111D38 0% 0% no-repeat padding-box",
+    background: "#0F0F0F 0% 0% no-repeat padding-box",
     border: "1px solid #C1D3FF40",
     borderRadius: "10px",
     "&:hover": {

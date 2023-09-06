@@ -27,41 +27,33 @@ import { useSelector } from "react-redux";
 import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import CloseIcon from "@mui/icons-material/Close";
 import tickerIcon from "../../../public/assets/icons/ticker_icon.svg";
-import { calculateDays, convertToWeiGovernance } from "utils/globalFunctions";
+import { calculateDays } from "utils/globalFunctions";
 import actionIcon from "../../../public/assets/icons/action_icon.svg";
 import surveyIcon from "../../../public/assets/icons/survey_icon.svg";
 import ReactHtmlParser from "react-html-parser";
-import Erc721Dao from "abis/newArch/erc721Dao.json";
-import Erc20Dao from "abis/newArch/erc20Dao.json";
-import FactoryContractABI from "abis/newArch/factoryContract.json";
-import { Interface } from "ethers";
 
 import Web3 from "web3";
 import { Web3Adapter } from "@safe-global/protocol-kit";
 import SafeApiKit from "@safe-global/api-kit";
-import { subgraphQuery } from "utils/subgraphs";
-import { QUERY_ALL_MEMBERS, QUERY_CLUB_DETAILS } from "api/graphql/queries";
 import ProposalExecutionInfo from "@components/proposalComps/ProposalExecutionInfo";
 import Signators from "@components/proposalComps/Signators";
 import ProposalInfo from "@components/proposalComps/ProposalInfo";
 import CurrentResults from "@components/proposalComps/CurrentResults";
 import ProposalVotes from "@components/proposalComps/ProposalVotes";
 import { getSafeSdk, web3InstanceEthereum } from "utils/helper";
-import useSmartContractMethods from "hooks/useSmartContractMethods";
-import {
-  fulfillOrder,
-  getNFTsByDaoAddress,
-  retrieveNftListing,
-} from "api/assets";
-import seaportABI from "abis/seaport.json";
+import { getNFTsByDaoAddress, retrieveNftListing } from "api/assets";
 import SafeAppsSDK from "@safe-global/safe-apps-sdk";
-import { useAccount } from "wagmi";
+import { useAccount, useNetwork } from "wagmi";
 import {
   createRejectSafeTx,
   executeRejectTx,
+  fetchABI,
+  getEncodedData,
   signRejectTx,
 } from "utils/proposal";
 import { BsInfoCircleFill } from "react-icons/bs";
+import useAppContractMethods from "hooks/useAppContractMethods";
+import { queryAllMembersFromSubgraph } from "utils/stationsSubgraphHelper";
 
 const useStyles = makeStyles({
   clubAssets: {
@@ -151,7 +143,7 @@ const useStyles = makeStyles({
   mainCardButton: {
     borderRadius: "38px",
     border: "1px solid #C1D3FF40;",
-    backgroundColor: "#3B7AFD",
+    backgroundColor: "#2D55FF",
     "&:hover": {
       cursor: "pointer",
     },
@@ -182,7 +174,7 @@ const useStyles = makeStyles({
     textTransform: "capitalize",
   },
   timeLeftChip: {
-    background: "#111D38",
+    background: "#0F0F0F",
     borderRadius: "5px",
   },
   cardFontActive: {
@@ -212,6 +204,8 @@ const ProposalDetail = ({ pid, daoAddress }) => {
   const router = useRouter();
 
   const { address: walletAddress } = useAccount();
+  const { chain } = useNetwork();
+  const networkId = "0x" + chain?.id.toString(16);
 
   const sdk = new SafeAppsSDK({
     allowedDomains: [/gnosis-safe.io$/, /safe.global$/, /5afe.dev$/],
@@ -220,10 +214,6 @@ const ProposalDetail = ({ pid, daoAddress }) => {
 
   const tokenType = useSelector((state) => {
     return state.club.clubData.tokenType;
-  });
-
-  const SUBGRAPH_URL = useSelector((state) => {
-    return state.gnosis.subgraphUrl;
   });
 
   const isGovernanceERC20 = useSelector((state) => {
@@ -320,7 +310,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
     getERC20TotalSupply,
     getNftOwnersCount,
     updateProposalAndExecution,
-  } = useSmartContractMethods();
+  } = useAppContractMethods();
 
   const getSafeService = useCallback(async () => {
     const web3 = await web3InstanceEthereum();
@@ -484,12 +474,6 @@ const ProposalDetail = ({ pid, daoAddress }) => {
   const fetchData = useCallback(async () => {
     const proposalData = getProposalDetail(pid);
 
-    const membersData = await subgraphQuery(
-      SUBGRAPH_URL,
-      QUERY_ALL_MEMBERS(daoAddress),
-    );
-    setMembers(membersData);
-
     proposalData.then((result) => {
       if (result.status !== 200) {
         setFetched(false);
@@ -498,7 +482,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
         setFetched(true);
       }
     });
-  }, [SUBGRAPH_URL, daoAddress, pid]);
+  }, [pid]);
 
   const nftListingExists = async () => {
     const parts = proposalData?.commands[0]?.nftLink?.split("/");
@@ -512,7 +496,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
       );
       if (
         !nftdata?.data?.orders.length &&
-        proposalData?.commands[0].executionId === 8
+        proposalData?.commands[0]?.executionId === 8
       ) {
         setIsNftSold(true);
       } else {
@@ -522,415 +506,36 @@ const ProposalDetail = ({ pid, daoAddress }) => {
   };
 
   useEffect(() => {
-    if (proposalData && proposalData.commands[0].executionId === 8) {
+    if (proposalData && proposalData.commands[0]?.executionId === 8) {
       nftListingExists();
     }
   }, [proposalData]);
 
-  async function signTypedData(payload) {
-    try {
-      await sdk.communicator.send("rpcCall", {
-        call: "eth_signTransaction",
-        params: [{ offChainSigning: true }],
-      });
-    } catch (error) {
-      console.log(error);
-    }
-
-    const result = await sdk.txs.signTypedMessage(payload);
-    return result;
-  }
-
   const executeFunction = async (proposalStatus) => {
     setLoaderOpen(true);
 
-    let data;
-    let approvalData;
-    let transactionData;
-    let ABI;
-    if (
-      proposalData.commands[0].executionId === 0 ||
-      proposalData.commands[0].executionId === 4
-    ) {
-      ABI = [
-        "function approve(address spender, uint256 amount)",
-        "function contractCalls(address _to, bytes memory _data)",
-        "function airDropToken(address _airdropTokenAddress,uint256[] memory _airdropAmountArray,address[] memory _members)",
-      ];
-    } else if (
-      proposalData?.commands[0].executionId === 3 ||
-      proposalData?.commands[0].executionId === 10 ||
-      proposalData?.commands[0].executionId === 11 ||
-      proposalData?.commands[0].executionId === 12 ||
-      proposalData?.commands[0].executionId === 13
-    ) {
-      ABI = FactoryContractABI.abi;
-    } else if (proposalData?.commands[0].executionId === 8) {
-      ABI = seaportABI;
-    } else if (
-      proposalData?.commands[0].executionId === 9 ||
-      clubData.tokenType === "erc721"
-    ) {
-      ABI = Erc721Dao.abi;
-    } else if (clubData.tokenType === "erc20") {
-      ABI = Erc20Dao.abi;
-    }
-    // if(clubData.tokenType === 'erc721')
-    let membersArray = [];
-    let airDropAmountArray = [];
+    const ABI = await fetchABI(
+      proposalData.commands[0].executionId,
+      clubData.tokenType,
+    );
 
-    if (proposalData.commands[0].executionId === 0) {
-      const membersData = await subgraphQuery(
-        SUBGRAPH_URL,
-        QUERY_ALL_MEMBERS(daoAddress),
-      );
-      setMembers(membersData);
-      membersData.users.map((member) => membersArray.push(member.userAddress));
-
-      let iface = new Interface(ABI);
-      approvalData = iface.encodeFunctionData("approve", [
-        AIRDROP_ACTION_ADDRESS,
-        proposalData.commands[0].airDropAmount,
-      ]);
-
-      if (proposalData.commands[0].airDropCarryFee !== 0) {
-        const carryFeeAmount =
-          (proposalData.commands[0].airDropAmount *
-            proposalData.commands[0].airDropCarryFee) /
-          100;
-        airDropAmountArray = await Promise.all(
-          membersArray.map(async (member) => {
-            const balance = await getNftBalance(
-              clubData.tokenType,
-              Web3.utils.toChecksumAddress(member),
-            );
-
-            let clubTokensMinted;
-            if (clubData.tokenType === "erc20") {
-              clubTokensMinted = await getERC20TotalSupply();
-            } else {
-              clubTokensMinted = await getNftOwnersCount();
-            }
-
-            return (
-              ((proposalData.commands[0].airDropAmount - carryFeeAmount) *
-                balance) /
-              clubTokensMinted
-            )
-              .toFixed(0)
-              .toString();
-          }),
-        );
-        airDropAmountArray.unshift(carryFeeAmount.toString());
-        membersArray.unshift(
-          Web3.utils.toChecksumAddress(proposalData.createdBy),
-        );
-      } else {
-        airDropAmountArray = await Promise.all(
-          membersArray.map(async (member) => {
-            const balance = await getNftBalance(
-              clubData.tokenType,
-              Web3.utils.toChecksumAddress(member),
-            );
-
-            let clubTokensMinted;
-            if (clubData.tokenType === "erc20") {
-              clubTokensMinted = await getERC20TotalSupply();
-            } else {
-              clubTokensMinted = await getNftOwnersCount();
-            }
-
-            return (
-              (proposalData.commands[0].airDropAmount * balance) /
-              clubTokensMinted
-            )
-              .toFixed(0)
-              .toString();
-          }),
-        );
-      }
-
-      data = iface.encodeFunctionData("airDropToken", [
-        proposalData.commands[0].airDropToken,
-        airDropAmountArray,
-        membersArray,
-      ]);
-    }
-
-    if (proposalData.commands[0].executionId === 1) {
-      let iface = new Interface(ABI);
-
-      if (clubData.tokenType === "erc20") {
-        data = iface.encodeFunctionData("mintGTToAddress", [
-          proposalData.commands[0].mintGTAmounts,
-          proposalData.commands[0].mintGTAddresses,
-        ]);
-      } else {
-        const clubDetails = await subgraphQuery(
-          SUBGRAPH_URL,
-          QUERY_CLUB_DETAILS(daoAddress),
-        );
-        const tokenURI = clubDetails?.stations[0].imageUrl;
-
-        const tokenURIArr = new Array(
-          proposalData.commands[0].mintGTAmounts.length,
-        ).fill(tokenURI);
-
-        data = iface.encodeFunctionData("mintGTToAddress", [
-          proposalData.commands[0].mintGTAmounts,
-          tokenURIArr,
-          proposalData.commands[0].mintGTAddresses,
-        ]);
-      }
-    }
-
-    if (proposalData.commands[0].executionId === 2) {
-      let iface = new Interface(ABI);
-      data = iface.encodeFunctionData("updateGovernanceSettings", [
-        proposalData.commands[0].quorum * 100,
-        proposalData.commands[0].threshold * 100,
-      ]);
-    }
-    if (proposalData.commands[0].executionId === 3) {
-      let iface = new Interface(ABI);
-
-      data = iface.encodeFunctionData("updateTotalRaiseAmount", [
-        convertToWeiGovernance(
-          convertToWeiGovernance(proposalData.commands[0].totalDeposits, 6) /
-            factoryData?.pricePerToken,
-          18,
-        ),
-        factoryData?.pricePerToken,
-        daoAddress,
-      ]);
-    }
-    if (proposalData.commands[0].executionId === 4) {
-      let iface = new Interface(ABI);
-
-      approvalData = iface.encodeFunctionData("approve", [
-        AIRDROP_ACTION_ADDRESS,
-        proposalData.commands[0].customTokenAmounts[0],
-      ]);
-
-      data = iface.encodeFunctionData("airDropToken", [
-        proposalData.commands[0].customToken,
-        proposalData.commands[0].customTokenAmounts,
-        proposalData.commands[0].customTokenAddresses,
-      ]);
-
-      membersArray = proposalData.commands[0].customTokenAddresses;
-      airDropAmountArray = proposalData.commands[0].customTokenAmounts;
-    }
-    if (proposalData?.commands[0].executionId === 5) {
-      let iface = new Interface(ABI);
-
-      data = iface.encodeFunctionData("transferNft", [
-        proposalData?.commands[0].customNft,
-        proposalData?.commands[0].customTokenAddresses[0],
-        proposalData?.commands[0].customNftToken,
-      ]);
-    }
-    if (proposalData?.commands[0].executionId === 8) {
-      const parts = proposalData?.commands[0].nftLink.split("/");
-
-      const linkData = parts.slice(-3);
-      const nftdata = await retrieveNftListing(
-        linkData[0],
-        linkData[1],
-        linkData[2],
-      );
-
-      if (nftdata) {
-        // const offer = {
-        //   hash: data.data.orders[0].order_hash,
-        //   chain: linkData[0],
-        //   protocol_address: data.data.orders[0].protocol_address,
-        // };
-        const offer = {
-          hash: nftdata.data.orders[0].order_hash,
-          chain: linkData[0],
-          protocol_address: nftdata.data.orders[0].protocol_address,
-        };
-
-        const fulfiller = {
-          address: daoAddress,
-        };
-        const consideration = {
-          asset_contract_address: linkData[1],
-          token_id: linkData[2],
-        };
-        transactionData = await fulfillOrder(offer, fulfiller, consideration);
-        let iface = new Interface(ABI);
-
-        data = iface.encodeFunctionData("fulfillBasicOrder_efficient_6GL6yc", [
-          [
-            transactionData.fulfillment_data.transaction.input_data.parameters
-              .considerationToken,
-            transactionData.fulfillment_data.transaction.input_data.parameters
-              .considerationIdentifier,
-            transactionData.fulfillment_data.transaction.input_data.parameters
-              .considerationAmount,
-            transactionData.fulfillment_data.transaction.input_data.parameters
-              .offerer,
-            transactionData.fulfillment_data.transaction.input_data.parameters
-              .zone,
-            transactionData.fulfillment_data.transaction.input_data.parameters
-              .offerToken,
-            transactionData.fulfillment_data.transaction.input_data.parameters
-              .offerIdentifier,
-            transactionData.fulfillment_data.transaction.input_data.parameters
-              .offerAmount,
-            transactionData.fulfillment_data.transaction.input_data.parameters
-              .basicOrderType,
-            transactionData.fulfillment_data.transaction.input_data.parameters
-              .startTime,
-            transactionData.fulfillment_data.transaction.input_data.parameters
-              .endTime,
-            transactionData.fulfillment_data.transaction.input_data.parameters
-              .zoneHash,
-            transactionData.fulfillment_data.transaction.input_data.parameters
-              .salt,
-            transactionData.fulfillment_data.transaction.input_data.parameters
-              .offererConduitKey,
-            transactionData.fulfillment_data.transaction.input_data.parameters
-              .fulfillerConduitKey,
-            transactionData.fulfillment_data.transaction.input_data.parameters
-              .totalOriginalAdditionalRecipients,
-            transactionData.fulfillment_data.transaction.input_data.parameters
-              .additionalRecipients,
-            transactionData.fulfillment_data.transaction.input_data.parameters
-              .signature,
-          ],
-        ]);
-      }
-    }
-    if (proposalData?.commands[0].executionId === 9) {
-      const parts = proposalData?.commands[0].nftLink.split("/");
-
-      const linkData = parts.slice(-3);
-      let iface = new Interface(ABI);
-
-      approvalData = iface.encodeFunctionData("setApprovalForAll", [
-        "0x1E0049783F008A0085193E00003D00cd54003c71",
-        true,
-      ]);
-
-      // data = iface.encodeFunctionData("eth_signTransaction", [
-      //   [
-      //     gnosisAddress,
-      //     JSON.stringify({
-      //       offerer: gnosisAddress,
-      //       zone: "0x0000000000000000000000000000000000000000",
-      //       zoneHash:
-      //         "0x0000000000000000000000000000000000000000000000000000000000000000",
-      //       startTime: 1690260419,
-      //       endTime: 1692938817,
-      //       orderType: 0,
-      //       offer: [
-      //         {
-      //           itemType: 2, // erc 721
-      //           token: "0xed55e4477b795eaa9bb4bca24df42214e1a05c18", // nft contract address
-      //           identifierOrCriteria: "1",
-      //           startAmount: "1",
-      //           endAmount: "1",
-      //         },
-      //       ],
-      //       consideration: [
-      //         {
-      //           itemType: 0, // same
-      //           token: "0x0000000000000000000000000000000000000000",
-      //           identifierOrCriteria: "0",
-      //           startAmount: "9750000000000000000",
-      //           endAmount: "9750000000000000000",
-      //           recipient: "0xed55e4477b795eaa9bb4bca24df42214e1a05c18",
-      //         },
-      //         {
-      //           itemType: 0, // same
-      //           token: "0x0000000000000000000000000000000000000000", // same
-      //           identifierOrCriteria: "0", // same
-      //           startAmount: "250000000000000000", // same
-      //           endAmount: "250000000000000000", // same
-      //           recipient: "0x0000a26b00c1F0DF003000390027140000fAa719", // 0x0000a26b00c1F0DF003000390027140000fAa719
-      //         },
-      //       ],
-      //       salt: "12686911856931635052326433555881236148",
-      //       conduitKey:
-      //         "0x0000007b02230091a7ed01230072f7006a004d60a8d4e71d599b8104250f0000",
-      //       protocol_address: "0x00000000000000ADc04C56Bf30aC9d3c0aAF14dC",
-      //     }),
-      //   ],
-      // ]);
-
-      // await signTypedData(
-      //   JSON.stringify({
-      //     offerer: gnosisAddress,
-      //     zone: "0x0000000000000000000000000000000000000000",
-      //     zoneHash:
-      //       "0x0000000000000000000000000000000000000000000000000000000000000000",
-      //     startTime: 1690260419,
-      //     endTime: 1692938817,
-      //     orderType: 0,
-      //     offer: [
-      //       {
-      //         itemType: 2, // erc 721
-      //         token: "0xed55e4477b795eaa9bb4bca24df42214e1a05c18", // nft contract address
-      //         identifierOrCriteria: "1",
-      //         startAmount: "1",
-      //         endAmount: "1",
-      //       },
-      //     ],
-      //     consideration: [
-      //       {
-      //         itemType: 0, // same
-      //         token: "0x0000000000000000000000000000000000000000",
-      //         identifierOrCriteria: "0",
-      //         startAmount: "9750000000000000000",
-      //         endAmount: "9750000000000000000",
-      //         recipient: "0xed55e4477b795eaa9bb4bca24df42214e1a05c18",
-      //       },
-      //       {
-      //         itemType: 0, // same
-      //         token: "0x0000000000000000000000000000000000000000", // same
-      //         identifierOrCriteria: "0", // same
-      //         startAmount: "250000000000000000", // same
-      //         endAmount: "250000000000000000", // same
-      //         recipient: "0x0000a26b00c1F0DF003000390027140000fAa719", // 0x0000a26b00c1F0DF003000390027140000fAa719
-      //       },
-      //     ],
-      //     salt: "12686911856931635052326433555881236148",
-      //     conduitKey:
-      //       "0x0000007b02230091a7ed01230072f7006a004d60a8d4e71d599b8104250f0000",
-      //     protocol_address: "0x00000000000000ADc04C56Bf30aC9d3c0aAF14dC",
-      //   }),
-      // );
-      // console.log(data);
-    }
-
-    if (
-      proposalData.commands[0].executionId === 10 ||
-      proposalData.commands[0].executionId === 11 ||
-      proposalData?.commands[0].executionId == 12
-    ) {
-      let iface = new Interface(ABI);
-      let iface2 = new Interface(Erc20Dao.abi);
-
-      approvalData = iface2.encodeFunctionData("toggleOnlyAllowWhitelist", []);
-
-      data = iface.encodeFunctionData("changeMerkleRoot", [
-        daoAddress,
-        proposalData.commands[0]?.merkleRoot?.merkleRoot,
-      ]);
-    }
-
-    if (proposalData.commands[0].executionId === 13) {
-      let iface = new Interface(ABI);
-
-      data = iface.encodeFunctionData("updateTotalRaiseAmount", [
-        factoryData?.distributionAmount,
-        convertToWeiGovernance(proposalData.commands[0]?.pricePerToken, 6),
-        daoAddress,
-      ]);
-    }
+    const {
+      data,
+      approvalData,
+      transactionData,
+      membersArray,
+      airDropAmountArray,
+    } = await getEncodedData({
+      getERC20TotalSupply,
+      getNftBalance,
+      proposalData,
+      daoAddress,
+      clubData,
+      factoryData,
+      contractABI: ABI,
+      setMembers,
+      networkId,
+    });
 
     const response = updateProposalAndExecution(
       data,
@@ -939,26 +544,28 @@ const ProposalDetail = ({ pid, daoAddress }) => {
       Web3.utils.toChecksumAddress(gnosisAddress),
       txHash,
       pid,
-      proposalData.commands[0].executionId === 0
-        ? proposalData.commands[0].airDropToken
-        : proposalData.commands[0].executionId === 4
-        ? proposalData.commands[0].customToken
-        : proposalData.commands[0].executionId === 5
-        ? proposalData.commands[0].customNft
+      proposalData.commands[0]?.executionId === 0
+        ? proposalData.commands[0]?.airDropToken
+        : proposalData.commands[0]?.executionId === 4
+        ? proposalData.commands[0]?.customToken
+        : proposalData.commands[0]?.executionId === 5
+        ? proposalData.commands[0]?.customNft
+        : proposalData.commands[0]?.executionId === 14
+        ? proposalData.commands[0]?.depositToken
+        : proposalData.commands[0]?.executionId === 15
+        ? proposalData.commands[0]?.withdrawToken
         : "",
       proposalStatus,
       airdropContractAddress,
-      proposalData.commands[0].executionId === 3 ||
-        proposalData.commands[0].executionId === 10 ||
-        proposalData.commands[0].executionId === 11 ||
-        proposalData?.commands[0].executionId === 12 ||
-        proposalData.commands[0].executionId === 13
+      proposalData.commands[0]?.executionId === 3 ||
+        proposalData.commands[0]?.executionId === 10 ||
+        proposalData.commands[0]?.executionId === 11 ||
+        proposalData?.commands[0]?.executionId === 12 ||
+        proposalData.commands[0]?.executionId === 13 ||
+        proposalData.commands[0]?.executionId === 14
         ? FACTORY_CONTRACT_ADDRESS
         : "",
       GNOSIS_TRANSACTION_URL,
-      proposalData.commands[0].executionId,
-      proposalData.commands[0].ownerAddress,
-      proposalData.commands[0].safeThreshold,
       proposalData,
       membersArray,
       airDropAmountArray,
@@ -1125,10 +732,27 @@ const ProposalDetail = ({ pid, daoAddress }) => {
     }
   }, [fetchData, fetchNfts, isOwner, pid]);
 
+  useEffect(() => {
+    const fetchAllMembers = async () => {
+      try {
+        const data = await queryAllMembersFromSubgraph(daoAddress, networkId);
+        if (data && data?.users) {
+          setMembers(data);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    if (daoAddress && networkId && walletAddress) {
+      fetchAllMembers();
+    }
+  }, [daoAddress, networkId, walletAddress]);
+
   if (!walletAddress && proposalData === null) {
     return <>loading</>;
   }
-  console.log(isNftSold);
+
   return (
     <>
       <Grid container spacing={6} paddingTop={2} mb={8}>
@@ -1448,11 +1072,11 @@ const ProposalDetail = ({ pid, daoAddress }) => {
                               </Grid>
                             </Button>
                           )}
-                          {console.log("xxx", signed)}
+
                           {(signed ||
                             isRejectTxnSigned ||
                             signedOwners.length) &&
-                            proposalData.commands[0].executionId === 8 && (
+                            proposalData.commands[0]?.executionId === 8 && (
                               <Button
                                 className={
                                   executed

@@ -20,17 +20,17 @@ export const SettingsInfoStlyes = makeStyles({
     color: "#C1D3FF",
   },
   connectWalletButton: {
-    backgroundColor: "#3B7AFD",
+    backgroundColor: "#2D55FF",
     fontSize: "20px",
   },
   depositButton: {
-    backgroundColor: "#3B7AFD",
+    backgroundColor: "#2D55FF",
     width: "208px",
     height: "60px",
     fontSize: "20px",
   },
   cardSmall: {
-    backgroundColor: "#111D38",
+    backgroundColor: "#0F0F0F",
     borderRadius: "20px",
     opacity: 1,
   },
@@ -44,7 +44,7 @@ export const SettingsInfoStlyes = makeStyles({
     fontWeight: "bold",
 
     color: "#F5F5F5",
-    borderColor: "#142243",
+    borderColor: "#151515",
     borderRadius: "0px",
     "& input[type=number]": {
       "-moz-appearance": "textfield",
@@ -77,7 +77,7 @@ export const SettingsInfoStlyes = makeStyles({
     justifyContent: "center",
     display: "flex",
     alignItems: "center",
-    backgroundColor: " #3B7AFD",
+    backgroundColor: " #2D55FF",
     fontSize: "20px",
   },
   openTag: {
@@ -120,7 +120,7 @@ export const SettingsInfoStlyes = makeStyles({
     color: "#C1D3FF",
   },
   activityLink: {
-    color: "#3B7AFD",
+    color: "#2D55FF",
     textDecoration: "none",
     "&:hover": {
       textDecoration: "none",
@@ -136,7 +136,7 @@ export const SettingsInfoStlyes = makeStyles({
   },
   datePicker: {
     borderRadius: "10px",
-    backgroundColor: "#111D38",
+    backgroundColor: "#0F0F0F",
     width: "95%",
   },
 });

@@ -1,10 +1,7 @@
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { subgraphQuery } from "../utils/subgraphs";
-import { QUERY_CLUB_DETAILS } from "../api/graphql/queries";
 import {
   addClubData,
-  addDaoAddress,
   addErc20ClubDetails,
   addErc721ClubDetails,
   addFactoryData,
@@ -14,29 +11,25 @@ import {
   addContractAddress,
   setAdminUser,
   setMemberUser,
-  setWrongNetwork,
 } from "../redux/reducers/gnosis";
 import { fetchConfigById } from "../api/config";
 
-import Web3 from "web3";
-import { SUBGRAPH_URL_GOERLI, SUBGRAPH_URL_POLYGON } from "../api";
 import { getSafeSdk } from "../utils/helper";
-import useSmartContractMethods from "./useSmartContractMethods";
-import useSmartContract from "./useSmartContract";
+import useAppContract from "./useAppContract";
 import { useAccount, useNetwork } from "wagmi";
 import { useRouter } from "next/router";
+import useAppContractMethods from "./useAppContractMethods";
+import { queryStationDataFromSubgraph } from "utils/stationsSubgraphHelper";
 
 const useClubFetch = ({ daoAddress }) => {
+  const [clubData, setClubData] = useState();
+
   const dispatch = useDispatch();
   const { chain } = useNetwork();
-  useSmartContract(daoAddress);
+  useAppContract(daoAddress);
 
   const router = useRouter();
   const { address: walletAddress } = useAccount();
-
-  if (walletAddress) {
-    localStorage.setItem("wallet", walletAddress);
-  }
 
   const networkId = "0x" + chain?.id.toString(16);
 
@@ -50,12 +43,7 @@ const useClubFetch = ({ daoAddress }) => {
     getERC20Balance,
     getERC721Balance,
     getERC721DAOdetails,
-  } = useSmartContractMethods();
-
-  useEffect(() => {
-    daoAddress &&
-      dispatch(addDaoAddress(Web3.utils.toChecksumAddress(daoAddress)));
-  }, [daoAddress, dispatch]);
+  } = useAppContractMethods();
 
   useEffect(() => {
     const getNetworkConfig = async () => {
@@ -72,9 +60,6 @@ const useClubFetch = ({ daoAddress }) => {
             transactionUrl: networkData?.data[0]?.gnosisTransactionUrl,
             networkHex: networkData?.data[0]?.networkHex,
             networkId: networkData?.data[0]?.networkId,
-            networkName: networkData?.data[0]?.name,
-            // Repair this
-            clubNetworkId: networkId,
           }),
         );
       } catch (e) {
@@ -85,17 +70,22 @@ const useClubFetch = ({ daoAddress }) => {
   }, [dispatch, networkId]);
 
   useEffect(() => {
+    const fetchStationData = async () => {
+      try {
+        const data = await queryStationDataFromSubgraph(daoAddress, networkId);
+        if (data) {
+          setClubData(data);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    if (daoAddress && networkId && walletAddress) fetchStationData();
+  }, [daoAddress, networkId, walletAddress, reduxClubData]);
+
+  useEffect(() => {
     const addClubDataToRedux = async () => {
       if (!reduxClubData.gnosisAddress && networkId) {
-        const clubData = await subgraphQuery(
-          networkId == "0x5"
-            ? SUBGRAPH_URL_GOERLI
-            : networkId == "0x89"
-            ? SUBGRAPH_URL_POLYGON
-            : "",
-          QUERY_CLUB_DETAILS(daoAddress),
-        );
-
         if (clubData) {
           dispatch(
             addClubData({
@@ -107,6 +97,17 @@ const useClubFetch = ({ daoAddress }) => {
               tokenType: clubData.stations[0].tokenType,
               membersCount: clubData.stations[0].membersCount,
               deployedTime: clubData.stations[0].timeStamp,
+              imgUrl: clubData.stations[0].imageUrl,
+              minDepositAmount: clubData.stations[0].minDepositAmount,
+              maxDepositAmount: clubData.stations[0].maxDepositAmount,
+              pricePerToken: clubData.stations[0].pricePerToken,
+              isGovernanceActive: clubData.stations[0].isGovernanceActive,
+              quorum: clubData.stations[0].quorum,
+              threshold: clubData.stations[0].threshold,
+              raiseAmount: clubData.stations[0].raiseAmount,
+              totalAmountRaised: clubData.stations[0].totalAmountRaised,
+              distributionAmount: clubData.stations[0].distributionAmount,
+              maxTokensPerUser: clubData.stations[0].maxTokensPerUser,
             }),
           );
         }
@@ -114,115 +115,85 @@ const useClubFetch = ({ daoAddress }) => {
     };
 
     addClubDataToRedux();
-  }, [reduxClubData, networkId, daoAddress, dispatch]);
+  }, [reduxClubData, networkId, daoAddress, dispatch, clubData]);
 
   const checkUserExists = useCallback(async () => {
     try {
-      if (daoAddress && walletAddress) {
-        if (reduxClubData.gnosisAddress) {
-          const factoryData = await getDaoDetails(daoAddress);
+      if (daoAddress && walletAddress && reduxClubData.gnosisAddress) {
+        const factoryData = await getDaoDetails(daoAddress);
 
-          if (factoryData) {
-            dispatch(
-              addFactoryData({
-                assetsStoredOnGnosis: factoryData?.assetsStoredOnGnosis,
-                depositCloseTime: factoryData.depositCloseTime,
-                depositTokenAddress: factoryData.depositTokenAddress,
-                distributionAmount: factoryData.distributionAmount,
-                gnosisAddress: factoryData.gnosisAddress,
-                isDeployedByFactory: factoryData.isDeployedByFactory,
-                isTokenGatingApplied: factoryData.isTokenGatingApplied,
-                maxDepositPerUser: factoryData.maxDepositPerUser,
-                merkleRoot: factoryData.merkleRoot,
-                minDepositPerUser: factoryData.minDepositPerUser,
-                ownerFeePerDepositPercent:
-                  factoryData.ownerFeePerDepositPercent,
-                pricePerToken: factoryData.pricePerToken,
-              }),
-            );
-          }
+        if (factoryData) {
+          dispatch(
+            addFactoryData({
+              assetsStoredOnGnosis: factoryData?.assetsStoredOnGnosis,
+              depositCloseTime: factoryData.depositCloseTime,
+              depositTokenAddress: factoryData.depositTokenAddress,
+              distributionAmount: factoryData.distributionAmount,
+              gnosisAddress: factoryData.gnosisAddress,
+              isDeployedByFactory: factoryData.isDeployedByFactory,
+              isTokenGatingApplied: factoryData.isTokenGatingApplied,
+              maxDepositPerUser: factoryData.maxDepositPerUser,
+              merkleRoot: factoryData.merkleRoot,
+              minDepositPerUser: factoryData.minDepositPerUser,
+              ownerFeePerDepositPercent: factoryData.ownerFeePerDepositPercent,
+              pricePerToken: factoryData.pricePerToken,
+            }),
+          );
+        }
 
-          if (reduxClubData.tokenType === "erc20") {
-            const daoDetails = await getERC20DAOdetails();
+        if (reduxClubData.tokenType === "erc20") {
+          const daoDetails = await getERC20DAOdetails();
 
-            const erc20BalanceResponse = await getERC20Balance();
+          dispatch(
+            addErc20ClubDetails({
+              quorum: daoDetails.quorum / 100,
+              threshold: daoDetails.threshold / 100,
+              isGovernanceActive: daoDetails.isGovernanceActive,
+              isTransferable: daoDetails.isTransferable,
+              onlyAllowWhitelist: daoDetails.onlyAllowWhitelist,
+              deployerAddress: daoDetails.deployerAddress,
+            }),
+          );
+        } else if (reduxClubData.tokenType === "erc721") {
+          const daoDetails = await getERC721DAOdetails();
+          dispatch(
+            addErc721ClubDetails({
+              quorum: daoDetails.quorum / 100,
+              threshold: daoDetails.threshold / 100,
+              maxTokensPerUser: daoDetails.maxTokensPerUser,
+              isNftTotalSupplyUnlimited: daoDetails.isNftTotalSupplyUnlimited,
+              isGovernanceActive: daoDetails.isGovernanceActive,
+              isTransferable: daoDetails.isTransferable,
+              onlyAllowWhitelist: daoDetails.onlyAllowWhitelist,
+              deployerAddress: daoDetails.deployerAddress,
+            }),
+          );
+        }
 
-            dispatch(
-              addErc20ClubDetails({
-                quorum: daoDetails.quorum / 100,
-                threshold: daoDetails.threshold / 100,
-                isGovernanceActive: daoDetails.isGovernanceActive,
-                isTransferable: daoDetails.isTransferable,
-                onlyAllowWhitelist: daoDetails.onlyAllowWhitelist,
-                deployerAddress: daoDetails.deployerAddress,
-              }),
-            );
+        let balance = 0;
+        if (reduxClubData.tokenType === "erc721") {
+          balance = await getERC721Balance();
+        } else {
+          balance = await getERC20Balance();
+        }
 
-            try {
-              const safeSdk = await getSafeSdk(
-                reduxClubData.gnosisAddress,
-                walletAddress,
-                networkId,
-              );
-              const ownerAddresses = await safeSdk.getOwners();
-              const ownerAddressesArray = ownerAddresses.map((value) =>
-                Web3.utils.toChecksumAddress(value),
-              );
-              if (ownerAddressesArray.includes(walletAddress)) {
-                dispatch(setAdminUser(true));
-              } else {
-                if (erc20BalanceResponse === "0" && daoAddress) {
-                  dispatch(setMemberUser(false));
-                  router.push("/");
-                } else {
-                  dispatch(setMemberUser(true));
-                }
-              }
-            } catch (error) {
-              console.error(error);
-            }
-          } else if (reduxClubData.tokenType === "erc721") {
-            try {
-              const daoDetails = await getERC721DAOdetails();
-
-              const erc721BalanceResponse = await getERC721Balance();
-
-              dispatch(
-                addErc721ClubDetails({
-                  quorum: daoDetails.quorum / 100,
-                  threshold: daoDetails.threshold / 100,
-                  maxTokensPerUser: daoDetails.maxTokensPerUser,
-                  isNftTotalSupplyUnlimited:
-                    daoDetails.isNftTotalSupplyUnlimited,
-                  isGovernanceActive: daoDetails.isGovernanceActive,
-                  isTransferable: daoDetails.isTransferable,
-                  onlyAllowWhitelist: daoDetails.onlyAllowWhitelist,
-                  deployerAddress: daoDetails.deployerAddress,
-                }),
-              );
-
-              const safeSdk = await getSafeSdk(
-                reduxClubData.gnosisAddress,
-                walletAddress,
-                networkId,
-              );
-              const ownerAddresses = await safeSdk.getOwners();
-              const ownerAddressesArray = ownerAddresses.map((value) =>
-                Web3.utils.toChecksumAddress(value),
-              );
-              if (ownerAddressesArray.includes(walletAddress)) {
-                dispatch(setAdminUser(true));
-              } else {
-                if (erc721BalanceResponse === "0" && daoAddress) {
-                  dispatch(setMemberUser(false));
-                  router.push("/");
-                } else {
-                  dispatch(setMemberUser(true));
-                }
-              }
-            } catch (error) {
-              console.error(error);
-            }
+        const safeSdk = await getSafeSdk(
+          reduxClubData.gnosisAddress,
+          walletAddress,
+          networkId,
+        );
+        const ownerAddresses = await safeSdk.getOwners();
+        const ownerAddressesArray = ownerAddresses.map((value) =>
+          value.toLowerCase(),
+        );
+        if (ownerAddressesArray.includes(walletAddress.toLowerCase())) {
+          dispatch(setAdminUser(true));
+        } else {
+          if (balance === "0") {
+            dispatch(setMemberUser(false));
+            router.push("/");
+          } else {
+            dispatch(setMemberUser(true));
           }
         }
       }
@@ -238,27 +209,11 @@ const useClubFetch = ({ daoAddress }) => {
     router,
   ]);
 
-  const checkClubExist = useCallback(async () => {
-    if (networkId) {
-      const clubData = await subgraphQuery(
-        networkId == "0x89" ? SUBGRAPH_URL_POLYGON : "",
-        QUERY_CLUB_DETAILS(daoAddress),
-      );
-
-      if (clubData?.stations.length) {
-        dispatch(setWrongNetwork(false));
-      } else {
-        dispatch(setWrongNetwork(true));
-      }
-    }
-  }, [daoAddress, dispatch, networkId]);
-
   useEffect(() => {
     if (walletAddress && networkId) {
       checkUserExists();
-      checkClubExist();
     }
-  }, [checkUserExists, daoAddress, walletAddress, networkId, checkClubExist]);
+  }, [checkUserExists, walletAddress, networkId, daoAddress]);
 };
 
 export default useClubFetch;

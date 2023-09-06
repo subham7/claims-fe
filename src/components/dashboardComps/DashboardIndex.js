@@ -25,26 +25,28 @@ import { DashboardStyles } from "./DashboardStyles";
 import { useRouter } from "next/router";
 import { getAssetsByDaoAddress, getNFTsByDaoAddress } from "../../api/assets";
 import { getProposalByDaoAddress } from "../../api/proposal";
-import { subgraphQuery } from "../../utils/subgraphs";
-import {
-  QUERY_ALL_MEMBERS,
-  QUERY_CLUB_DETAILS,
-} from "../../api/graphql/queries";
 import {
   convertFromWeiGovernance,
   getImageURL,
 } from "../../utils/globalFunctions";
 import { GiTwoCoins } from "react-icons/gi";
 import { IoColorPalette } from "react-icons/io5";
-import useSmartContractMethods from "../../hooks/useSmartContractMethods";
 import { addNftsOwnedByDao } from "../../redux/reducers/club";
-import { useAccount } from "wagmi";
+import { useAccount, useNetwork } from "wagmi";
+import useAppContractMethods from "../../hooks/useAppContractMethods";
+import useCommonContractMethods from "hooks/useCommonContractMehods";
+import { queryAllMembersFromSubgraph } from "utils/stationsSubgraphHelper";
 
 const DashboardIndex = ({ daoAddress }) => {
   const dispatch = useDispatch();
   const clubData = useSelector((state) => {
     return state.club.clubData;
   });
+
+  const { address: walletAddress } = useAccount();
+
+  const { chain } = useNetwork();
+  const networkId = "0x" + chain?.id.toString(16);
 
   const [clubDetails, setClubDetails] = useState({
     clubImageUrl: "",
@@ -59,7 +61,6 @@ const DashboardIndex = ({ daoAddress }) => {
   const [balanceOfUser, setBalanceOfUser] = useState(0);
   const [clubTokenMinted, setClubTokenMinted] = useState(0);
 
-  const { address: walletAddress } = useAccount();
   const router = useRouter();
   const classes = DashboardStyles();
 
@@ -93,42 +94,40 @@ const DashboardIndex = ({ daoAddress }) => {
 
   const {
     getERC721Balance,
-    getERC721Symbol,
     getNftOwnersCount,
     getERC20Balance,
     getERC20TotalSupply,
-  } = useSmartContractMethods();
+  } = useAppContractMethods();
+
+  const { getERC721Symbol } = useCommonContractMethods();
 
   const fetchClubDetails = useCallback(async () => {
     try {
-      if (daoAddress) {
-        const membersData = await subgraphQuery(
-          SUBGRAPH_URL,
-          QUERY_ALL_MEMBERS(daoAddress),
+      if (daoAddress && walletAddress && networkId) {
+        const membersData = await queryAllMembersFromSubgraph(
+          daoAddress,
+          networkId,
         );
 
-        const clubDetails = await subgraphQuery(
-          SUBGRAPH_URL,
-          QUERY_CLUB_DETAILS(daoAddress),
-        );
+        if (clubData && membersData) {
+          if (tokenType === "erc721") {
+            const imageUrl = await getImageURL(clubData?.stations[0]?.imageUrl);
 
-        if (tokenType === "erc721") {
-          const imageUrl = await getImageURL(clubDetails.stations[0].imageUrl);
-
-          setClubDetails({
-            clubImageUrl: imageUrl,
-            noOfMembers: membersData?.users?.length,
-          });
-        } else {
-          setClubDetails({
-            noOfMembers: membersData?.users?.length,
-          });
+            setClubDetails({
+              clubImageUrl: imageUrl,
+              noOfMembers: membersData?.users?.length,
+            });
+          } else {
+            setClubDetails({
+              noOfMembers: membersData?.users?.length,
+            });
+          }
         }
       }
     } catch (error) {
       console.log(error);
     }
-  }, [SUBGRAPH_URL, daoAddress, tokenType]);
+  }, [clubData, daoAddress, networkId, tokenType, walletAddress]);
 
   const fetchAssets = useCallback(async () => {
     try {
@@ -429,28 +428,7 @@ const DashboardIndex = ({ daoAddress }) => {
             <div style={{ marginTop: "32px" }}>
               <Typography variant="heading">All Assets</Typography>
             </div>
-            {/* <Grid container mt={4}>
-                      <Grid item>
-                        <ButtonDropDown label="All" />
-                      </Grid>
-                      <Grid item ml={2}>
-                        <TextField
-                          className={classes.searchField}
-                          placeholder="Search by name or address"
-                          InputProps={{
-                            endAdornment: (
-                              <IconButton
-                                type="submit"
-                                sx={{ p: "10px" }}
-                                aria-label="search"
-                              >
-                                <SearchIcon />
-                              </IconButton>
-                            ),
-                          }}
-                        />
-                      </Grid>
-                    </Grid> */}
+
             <div
               style={{
                 display: "flex",
@@ -559,8 +537,6 @@ const DashboardIndex = ({ daoAddress }) => {
                 )
               ) : null}
             </Grid>
-            {/* <Typography mt={16} mb={5} variant="subHeading">Off-chain investments</Typography>
-                      <BasicTable /> */}
           </Grid>
         </Grid>
         <Grid item md={3}>
@@ -575,7 +551,7 @@ const DashboardIndex = ({ daoAddress }) => {
                   </Grid>
                   <Grid item>
                     <Link
-                      color={"#111D38"}
+                      color={"#0F0F0F"}
                       variant="Docs"
                       className={classes.docs}
                       onClick={() => {
@@ -744,7 +720,7 @@ const DashboardIndex = ({ daoAddress }) => {
                     <Grid item md={12}>
                       <Button
                         sx={{ width: "100%" }}
-                        variant="transparentWhite"
+                        variant="text"
                         onClick={() => handleMoreClick()}>
                         More
                       </Button>

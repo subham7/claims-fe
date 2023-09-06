@@ -1,5 +1,4 @@
-import useSmartContractMethods from "./useSmartContractMethods";
-import { addClubData, addDaoAddress } from "../redux/reducers/club";
+import { addClubData } from "../redux/reducers/club";
 import {
   setCreateDaoAuthorized,
   setCreateSafeError,
@@ -8,10 +7,11 @@ import {
 } from "../redux/reducers/gnosis";
 import Router from "next/router";
 import { createClubData } from "../api/club";
+import useAppContractMethods from "./useAppContractMethods";
 // import { uploadNFT } from "api/assets";
 
 const useSafe = () => {
-  const { createERC721DAO, createERC20DAO } = useSmartContractMethods();
+  const { createERC721DAO, createERC20DAO } = useAppContractMethods();
 
   const initiateConnection = async (
     params,
@@ -35,58 +35,25 @@ const useSafe = () => {
 
       let value;
       if (clubTokenType === "NFT") {
-        value = await createERC721DAO(
-          params.clubName,
-          params.clubSymbol,
+        value = await createERC721DAO({
+          ...params,
           metadataURL,
-          params.ownerFeePerDepositPercent,
-          params.depositClose,
-          params.quorum,
-          params.threshold,
-          params.safeThreshold,
-          params.depositTokenAddress,
-          params.treasuryAddress,
           addressList,
-          params.maxTokensPerUser,
-          params.distributeAmount,
-          params.pricePerToken,
-          params.isNftTransferable,
-          params.isNftTotalSupplyUnlimited,
-          params.isGovernanceActive,
-          params.allowWhiteList,
-          params.storeAssetsOnGnosis,
-          params.merkleRoot,
-        );
+        });
       } else {
-        value = await createERC20DAO(
-          params.clubName,
-          params.clubSymbol,
-          params.distributeAmount,
-          params.pricePerToken,
-          params.minDepositPerUser,
-          params.maxDepositPerUser,
-          params.ownerFeePerDepositPercent,
-          params.depositClose,
-          params.quorum,
-          params.threshold,
-          params.safeThreshold,
-          params.depositTokenAddress,
-          params.treasuryAddress,
+        value = await createERC20DAO({
+          ...params,
           addressList,
-          params.isGovernanceActive,
-          params.isGtTransferable,
-          params.allowWhiteList,
-          params.storeAssetsOnGnosis,
-          params.merkleRoot,
-        );
+        });
       }
+
       try {
         dispatch(
           addClubData({
             gnosisAddress:
               params.treasuryAddress ===
               "0x0000000000000000000000000000000000000000"
-                ? value.events[0].address
+                ? value.logs[0].address
                 : params.treasuryAddress,
             isGtTransferable: params.isGtTransferable,
             name: params.clubName,
@@ -99,9 +66,8 @@ const useSafe = () => {
         daoAddress =
           params.treasuryAddress ===
           "0x0000000000000000000000000000000000000000"
-            ? value.events[2].address
-            : value.events[0].address;
-        dispatch(addDaoAddress(daoAddress));
+            ? value.logs[2].address
+            : value.logs[0].address;
 
         await createClubData({
           daoAddress,

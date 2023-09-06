@@ -99,7 +99,7 @@ const useStyles = makeStyles({
     justifyContent: "center",
     flexDirection: "column",
     cursor: "pointer",
-    border: "1px solid #3B7AFD",
+    border: "1px solid #2D55FF",
     borderRadius: "10px",
   },
 

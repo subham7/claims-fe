@@ -3,7 +3,7 @@ import { makeStyles } from "@mui/styles";
 export const ClaimModalStyles = makeStyles({
   card: {
     width: "650px",
-    background: "#111D38",
+    background: "#0F0F0F",
     position: "fixed",
     top: "50%",
     left: "50%",
@@ -39,7 +39,7 @@ export const ClaimModalStyles = makeStyles({
     display: "flex",
     justifyContent: "space-between",
     alignItems: "flex-start",
-    background: "#142243",
+    background: "#151515",
     border: "1px solid #C1D3FF40",
     borderRadius: "10px",
     padding: "30px",
@@ -68,7 +68,7 @@ export const ClaimModalStyles = makeStyles({
     borderRadius: "50px",
     border: "none",
     cursor: "pointer",
-    background: "#3B7AFD",
+    background: "#2D55FF",
     color: "#fff",
   },
   buttonContainers: {

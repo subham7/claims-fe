@@ -1,3 +1,5 @@
+export const BLOCK_CONFIRMATIONS = 1;
+
 export const CHAIN_CONFIG = {
   "0x89": {
     chainName: "Polygon Mainnet",
@@ -11,10 +13,17 @@ export const CHAIN_CONFIG = {
     rpcUrls: ["https://polygon-rpc.com/"],
     appRpcUrl: `https://polygon-mainnet.infura.io/v3/${process.env.NEXT_PUBLIC_INFURA_API_KEY}`,
     claimFactoryAddress: "0x47e6bFA71e490ADC8f0E33385aAdF85282E71002",
+    stationSubgraphUrl:
+      "https://api.thegraph.com/subgraphs/name/subham7/stnx-be-polygon",
     claimsSubgraphUrl:
       "https://api.thegraph.com/subgraphs/name/subham7/stnx-claim",
     covalentNetworkName: "matic-mainnet",
     nativeToken: "0x0000000000000000000000000000000000001010",
+    airdropContractAddress: "0x0DF19560f74749a42215A16C3FC22FfAA1c4029A",
+    aavePoolAddress: "0x794a61358D6845594F94dc1DB02A252b5b4814aD",
+    aaveMaticPoolAddress: "0x1e4b7A6b903680eab0c5dAbcb8fD429cD2a9598c",
+    aaveWrappedUsdcAddress: "0x625E7708f30cA75bfd92586e17077590C60eb4cD",
+    aaveWrappedMaticAddress: "0x6d80113e533a2C0fe82EaBD35f1875DcEA89Ea97",
   },
   "0x5": {
     chainName: "Goerli Testnet",
@@ -141,6 +150,31 @@ export const lineaMainnetWalletConnect = {
     multicall3: {
       address: "0xcA11bde05977b3631167028862bE2a173976CA11",
       blockCreated: 42,
+    },
+  },
+};
+
+export const mantleMainnetViem = {
+  id: 5000,
+  name: "Mantle",
+  network: "Mantle",
+  nativeCurrency: {
+    decimals: 18,
+    name: "MNT ",
+    symbol: "MNT",
+  },
+  rpcUrls: {
+    public: { http: ["https://rpc.mantle.xyz"] },
+    default: { http: ["https://rpc.mantle.xyz"] },
+  },
+  blockExplorers: {
+    etherscan: { name: "Mantle Explorer", url: "https://explorer.mantle.xyz/" },
+    default: { name: "Mantle Explorer", url: "https://explorer.mantle.xyz/" },
+  },
+  contracts: {
+    multicall3: {
+      address: "0xcA11bde05977b3631167028862bE2a173976CA11",
+      blockCreated: 304717,
     },
   },
 };

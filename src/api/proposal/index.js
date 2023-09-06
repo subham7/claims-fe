@@ -77,20 +77,6 @@ export async function castVote(data, networkId) {
   );
 }
 
-export async function patchProposalStatus(proposalId) {
-  // update proposal status API
-  return await axios.patch(
-    MAIN_API_URL + "proposal/result",
-    { proposalId: proposalId },
-    {
-      headers: {
-        Authorization: "Bearer " + getJwtToken(),
-        "Content-Type": "application/json",
-      },
-    },
-  );
-}
-
 export async function patchProposalExecuted(proposalId) {
   // update proposal status API
   return await axios.patch(

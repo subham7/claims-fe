@@ -34,7 +34,7 @@ const Signators = ({ ownerAddresses, signedOwners, isSurvey = false }) => {
               {signedOwners?.includes(owner) ? (
                 <DoneIcon
                   fill="blue"
-                  sx={{ marginRight: 2, color: "#3B7AFD" }}
+                  sx={{ marginRight: 2, color: "#2D55FF" }}
                 />
               ) : (
                 <HelpOutlineIcon sx={{ marginRight: 2 }} />

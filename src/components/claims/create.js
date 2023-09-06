@@ -8,7 +8,6 @@ import { makeStyles } from "@mui/styles";
 import { convertToWeiGovernance } from "utils/globalFunctions";
 import { createClaimCsv, createSnapShot } from "api/claims";
 import { useRouter } from "next/router";
-import useSmartContractMethods from "../../hooks/useSmartContractMethods";
 import Moralis from "moralis";
 import { EvmChain } from "@moralisweb3/common-evm-utils";
 import {
@@ -20,6 +19,8 @@ import { getTokensList } from "api/token";
 import { getUserTokenData } from "utils/helper";
 import { CHAIN_CONFIG } from "utils/constants";
 import useClaimSmartContracts from "hooks/useClaimSmartContracts";
+import useCommonContractMethods from "hooks/useCommonContractMehods";
+import useDropsContractMethods from "hooks/useDropsContracMethods";
 
 const useStyles = makeStyles({
   container: {
@@ -48,8 +49,9 @@ const CreateClaim = () => {
   const networkId = "0x" + chain?.id.toString(16);
   const router = useRouter();
 
-  const { claimContract, approveDeposit, getDecimals } =
-    useSmartContractMethods();
+  const { approveDeposit, getDecimals } = useCommonContractMethods();
+
+  const { claimContract } = useDropsContractMethods();
 
   const handleBack = () => {
     setActiveStep((prevStep) => prevStep - 1);

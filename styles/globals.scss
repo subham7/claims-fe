@@ -1,11 +1,17 @@
 @import "./variables.scss";
+
+@font-face {
+  font-family: "Avenir";
+  src: url("https://github.com/platanus/fonts/blob/master/Avenir/Avenir-Medium.woff2")
+    format("woff2");
+  background-color: #0f0f0f;
+}
+
 html,
 body {
   padding: 0;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
-  background-color: #111d38;
+  font-family: Avenir, Arial, Helvetica, sans-serif;
 }
 
 a {

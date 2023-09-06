@@ -10,16 +10,14 @@ import {
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { ClaimsInsightStyles } from "./claimsInsightStyles";
-import { subgraphQuery } from "../../utils/subgraphs";
-import {
-  QUERY_ALL_CLAIMS_TRANSACTIONS,
-  QUERY_WALLET_WISE_TRANSACTIONS,
-} from "../../api/graphql/queries";
 import { convertFromWeiGovernance } from "../../utils/globalFunctions";
 import { FiExternalLink } from "react-icons/fi";
 import { useNetwork } from "wagmi";
 
-import { CHAIN_CONFIG } from "utils/constants";
+import {
+  queryAllDropsTransactionsFromSubgraph,
+  queryWalletWiseTransactionsFromSubgraph,
+} from "utils/dropsSubgraphHelper";
 
 const ClaimsTransactions = ({
   claimAddress,
@@ -48,27 +46,37 @@ const ClaimsTransactions = ({
   ];
 
   const fetchWalletWiseTransactions = async () => {
-    const { claimers } = await subgraphQuery(
-      CHAIN_CONFIG[networkId].claimsSubgraphUrl,
-      QUERY_WALLET_WISE_TRANSACTIONS(claimAddress),
-    );
-    setWalletWiseTransactionData(claimers);
+    try {
+      const { claimers } = await queryWalletWiseTransactionsFromSubgraph(
+        claimAddress,
+        networkId,
+      );
+
+      if (claimers.length) setWalletWiseTransactionData(claimers);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const fetchAllTransactions = async () => {
-    const { airdrops } = await subgraphQuery(
-      CHAIN_CONFIG[networkId].claimsSubgraphUrl,
-      QUERY_ALL_CLAIMS_TRANSACTIONS(claimAddress),
-    );
-    setAllTransactionsData(airdrops?.reverse());
+    try {
+      const { airdrops } = await queryAllDropsTransactionsFromSubgraph(
+        claimAddress,
+        networkId,
+      );
+
+      if (airdrops.length) setAllTransactionsData(airdrops?.reverse());
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   useEffect(() => {
-    if (claimAddress) {
+    if (claimAddress && networkId) {
       fetchWalletWiseTransactions();
       fetchAllTransactions();
     }
-  }, [claimAddress]);
+  }, [claimAddress, networkId]);
 
   return (
     <div className={classes.claimsTransactionContainer}>
@@ -128,7 +136,7 @@ const ClaimsTransactions = ({
                         sx={{
                           minWidth: "100px",
                           fontSize: "16px",
-                          background: "#142243",
+                          background: "#151515",
                         }}
                         align="left"
                         variant="tableHeading"
@@ -146,7 +154,7 @@ const ClaimsTransactions = ({
                         sx={{
                           minWidth: "100px",
                           fontSize: "16px",
-                          background: "#142243",
+                          background: "#151515",
                         }}
                         align="left"
                         variant="tableHeading"

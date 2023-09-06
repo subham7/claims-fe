@@ -143,7 +143,7 @@ const Create = () => {
       threshold: 51,
       addressList: [walletAddress],
       safeThreshold: 1,
-      storeAssetsOnGnosis: true,
+      assetsStoredOnGnosis: true,
     },
     validationSchema: step3ValidationSchema,
     onSubmit: async (values) => {
@@ -193,7 +193,7 @@ const Create = () => {
               !formikERC721Step2.values.isNftTotalSupplylimited,
             isGovernanceActive:
               formikStep3.values.governance === "governance" ? true : false,
-            storeAssetsOnGnosis: formikStep3.values.storeAssetsOnGnosis,
+            assetsStoredOnGnosis: formikStep3.values.assetsStoredOnGnosis,
             allowWhiteList: false,
             merkleRoot:
               "0x0000000000000000000000000000000000000000000000000000000000000001",
@@ -251,7 +251,7 @@ const Create = () => {
             allowWhiteList: false,
             merkleRoot:
               "0x0000000000000000000000000000000000000000000000000000000000000001",
-            storeAssetsOnGnosis: formikStep3.values.storeAssetsOnGnosis,
+            assetsStoredOnGnosis: formikStep3.values.assetsStoredOnGnosis,
           };
 
           initiateConnection(

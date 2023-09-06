@@ -304,7 +304,7 @@ export default function Step3(props) {
                 <Typography variant="body" className="text-blue">
                   Min.{" "}
                   <Box
-                    sx={{ color: "#3B7AFD" }}
+                    sx={{ color: "#2D55FF" }}
                     fontWeight="fontWeightBold"
                     display="inline">
                     number of signature needed
@@ -384,7 +384,7 @@ export default function Step3(props) {
             <Typography className={classes.largeText2}>
               Min.{" "}
               <Box
-                sx={{ color: "#3B7AFD" }}
+                sx={{ color: "#2D55FF" }}
                 fontWeight="fontWeightBold"
                 display="inline">
                 % of votes needed
@@ -416,7 +416,7 @@ export default function Step3(props) {
             <Typography variant="body">
               Min.{" "}
               <Box
-                sx={{ color: "#3B7AFD" }}
+                sx={{ color: "#2D55FF" }}
                 fontWeight="fontWeightBold"
                 display="inline">
                 % of votes needed

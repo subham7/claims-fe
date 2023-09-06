@@ -1,9 +1,10 @@
 import Web3 from "web3";
 import Safe, { Web3Adapter } from "@safe-global/protocol-kit";
 import WrongNetworkModal from "../components/modals/WrongNetworkModal";
-import { QUERY_ALL_MEMBERS } from "../api/graphql/queries";
+import { QUERY_ALL_MEMBERS } from "api/graphql/stationQueries";
 import { subgraphQuery } from "./subgraphs";
-import { CHAIN_CONFIG } from "./constants";
+import { BLOCK_CONFIRMATIONS, CHAIN_CONFIG } from "./constants";
+import { getPublicClient, getWalletClient } from "utils/viemConfig";
 
 export const getSafeSdk = async (gnosisAddress, walletAddress, networkId) => {
   const web3 = await web3InstanceCustomRPC(networkId);
@@ -173,10 +174,17 @@ export const extractNftAdressAndId = (url) => {
   }
 };
 
-export const getUserTokenData = async (tokenData, networkId) => {
-  const filteredData = tokenData.filter(
-    (token) => token.contract_address !== CHAIN_CONFIG[networkId].nativeToken,
-  );
+export const getUserTokenData = async (
+  tokenData,
+  networkId,
+  isProposal = false,
+) => {
+  const filteredData = !isProposal
+    ? tokenData.filter(
+        (token) =>
+          token.contract_address !== CHAIN_CONFIG[networkId].nativeToken,
+      )
+    : tokenData;
 
   return filteredData.map((token) => {
     return {
@@ -191,6 +199,39 @@ export const getUserTokenData = async (tokenData, networkId) => {
 export const requestEthereumChain = async (method, params) => {
   return await window.ethereum.request({ method, params });
 };
+
+export const writeContractFunction = async ({
+  address,
+  abi,
+  functionName,
+  args,
+  account,
+  networkId,
+}) => {
+  try {
+    const publicClient = getPublicClient(networkId);
+    const walletClient = getWalletClient(networkId);
+
+    const { request } = await publicClient.simulateContract({
+      address,
+      abi,
+      functionName,
+      args,
+      account,
+      gasPrice: await getIncreaseGasPrice(networkId),
+    });
+
+    const txHash = await walletClient.writeContract(request);
+    const txReciept = await publicClient.waitForTransactionReceipt({
+      hash: txHash,
+      confirmations: BLOCK_CONFIRMATIONS,
+    });
+
+    return txReciept;
+  } catch (error) {
+    throw error;
+  }
+}
 
 export const csvToObjectForMintGT = (csvString) => {
   const lines = csvString.trim().split("\n");

@@ -1,6 +1,6 @@
 import { useEffect } from "react";
-import ClaimContractABI from "../abis/newArch/claimContract.json";
-import ClaimFactoryABI from "../abis/newArch/claimFactory.json";
+import { claimContractABI } from "abis/claimContract.js";
+import { claimFactoryABI } from "abis/claimFactory.js";
 import Web3 from "web3";
 import { useDispatch, useSelector } from "react-redux";
 import { setContractInstances } from "../redux/reducers/contractInstances";
@@ -21,23 +21,17 @@ const useClaimSmartContracts = (claimAddress) => {
 
   const initializeClaimFactoryContracts = async () => {
     const web3Call = new Web3(CHAIN_CONFIG[networkId]?.appRpcUrl);
-    const web3Send = new Web3(window?.ethereum);
 
     try {
       if (claimFactoryAddress) {
         const claimFactoryContractCall = new web3Call.eth.Contract(
-          ClaimFactoryABI.abi,
+          claimFactoryABI,
           claimFactoryAddress,
         );
-
-        const claimFactoryContractSend = web3Send
-          ? new web3Send.eth.Contract(ClaimFactoryABI.abi, claimFactoryAddress)
-          : {};
 
         contractInstances = {
           ...contractInstances,
           claimFactoryContractCall,
-          claimFactoryContractSend,
         };
 
         dispatch(setContractInstances(contractInstances));
@@ -51,15 +45,12 @@ const useClaimSmartContracts = (claimAddress) => {
     const web3Send = new Web3(window?.ethereum);
     try {
       const claimContractCall = new web3Send.eth.Contract(
-        ClaimContractABI.abi,
+        claimContractABI,
         claimAddress,
       );
-      const claimContractSend = web3Send
-        ? new web3Send.eth.Contract(ClaimContractABI.abi, claimAddress)
-        : {};
+
       contractInstances = {
         ...contractInstances,
-        claimContractSend,
         claimContractCall,
       };
       dispatch(setContractInstances(contractInstances));

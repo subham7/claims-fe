@@ -49,7 +49,7 @@ export const ClaimsStyles = makeStyles({
   },
 
   createdBy: {
-    background: "#142243",
+    background: "#151515",
     padding: "10px 10px",
     color: "#C1D3FF",
     borderRadius: "10px",
@@ -87,7 +87,7 @@ export const ClaimsStyles = makeStyles({
     padding: "60px",
     borderRadius: "20px",
     color: "white",
-    background: "#142243",
+    background: "#151515",
   },
 
   claimContainer: {
@@ -115,7 +115,7 @@ export const ClaimsStyles = makeStyles({
     border: "none",
     padding: "12px 24px",
     color: "white",
-    background: "#3B7AFD",
+    background: "#2D55FF",
     borderRadius: "8px",
     cursor: "pointer",
     marginTop: "20px",
@@ -147,7 +147,7 @@ export const ClaimsStyles = makeStyles({
   },
   max: {
     padding: "4px 12px",
-    background: "#3B7AFD",
+    background: "#2D55FF",
     borderRadius: "4px",
     color: "white",
     border: "none",

@@ -6,8 +6,8 @@ import { FaCoins } from "react-icons/fa";
 import { useRouter } from "next/router";
 import Countdown from "react-countdown";
 import { Alert } from "@mui/material";
-import useSmartContractMethods from "../../hooks/useSmartContractMethods";
 import { convertFromWeiGovernance } from "../../utils/globalFunctions";
+import useCommonContractMethods from "hooks/useCommonContractMehods";
 
 const useStyles = makeStyles({
   container: {
@@ -108,7 +108,7 @@ const ClaimsCard = ({
   const [symbol, setSymbol] = useState("");
   const [decimals, setDecimals] = useState(0);
 
-  const { getDecimals, getTokenSymbol } = useSmartContractMethods();
+  const { getDecimals, getTokenSymbol } = useCommonContractMethods();
 
   const startingTime = new Date(+startDate * 1000);
   const endingTime = new Date(+endDate * 1000);
@@ -154,8 +154,6 @@ const ClaimsCard = ({
   useEffect(() => {
     fetchContractDetails();
   });
-
-  // dispatch(addClaimContractData(claimContractData));
 
   const claimHandler = () => {
     router.push(`/claims/${claimContract}`);

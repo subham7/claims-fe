@@ -17,9 +17,7 @@ import {
 import { Typography, Button } from "@components/ui";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { QUERY_PAGINATED_MEMBERS } from "api/graphql/queries";
 import { convertFromWeiGovernance } from "utils/globalFunctions";
-import { subgraphQuery } from "utils/subgraphs";
 import { getAllEntities } from "utils/helper";
 import { useFormik } from "formik";
 import { LocalizationProvider } from "@mui/x-date-pickers";
@@ -30,6 +28,8 @@ import dayjs from "dayjs";
 import * as yup from "yup";
 import { saveAs } from "file-saver";
 import { useNetwork } from "wagmi";
+import { queryPaginatedMembersFromSubgraph } from "utils/stationsSubgraphHelper";
+import { CHAIN_CONFIG } from "utils/constants";
 
 const Members = ({ daoAddress }) => {
   const [membersData, setMembersData] = useState([]);
@@ -48,10 +48,6 @@ const Members = ({ daoAddress }) => {
 
   const tokenType = useSelector((state) => {
     return state.club.clubData.tokenType;
-  });
-
-  const SUBGRAPH_URL = useSelector((state) => {
-    return state.gnosis.subgraphUrl;
   });
 
   const Members_Count = useSelector((state) => {
@@ -78,28 +74,25 @@ const Members = ({ daoAddress }) => {
     try {
       setLoading(true);
       const fetchData = async () => {
-        if (daoAddress && deployedTime && SUBGRAPH_URL) {
-          const data = await subgraphQuery(
-            SUBGRAPH_URL,
-            QUERY_PAGINATED_MEMBERS(
-              daoAddress,
-              20,
-              0,
-              deployedTime,
-              Date.now(),
-            ),
-            "users",
+          const data = await queryPaginatedMembersFromSubgraph(
+            daoAddress,
+            20,
+            0,
+            deployedTime,
+            Date.now(),
+            networkId,
           );
-          setMembersData(data?.users);
-        }
+
+          if (data?.users) setMembersData(data?.users);
       };
-      fetchData();
+
+      if (daoAddress && networkId && deployedTime) fetchData();
       setLoading(false);
     } catch (error) {
       console.log(error);
       setLoading(false);
     }
-  }, [SUBGRAPH_URL, daoAddress, deployedTime]);
+  }, [daoAddress, deployedTime, networkId]);
 
   const [page, setPage] = React.useState(0);
 
@@ -109,17 +102,16 @@ const Members = ({ daoAddress }) => {
     try {
       setPage(newPage);
       const newSkip = newPage * rowsPerPage;
-      const data = await subgraphQuery(
-        SUBGRAPH_URL,
-        QUERY_PAGINATED_MEMBERS(
-          daoAddress,
-          20,
-          newSkip,
-          1685613616,
-          Date.now(),
-        ),
+      const data = await queryPaginatedMembersFromSubgraph(
+        daoAddress,
+        20,
+        newSkip,
+        1685613616,
+        Date.now(),
+        networkId,
       );
-      setMembersData(data?.users);
+
+      if (data.users) setMembersData(data?.users);
     } catch (error) {
       console.log(error);
     }
@@ -155,7 +147,7 @@ const Members = ({ daoAddress }) => {
     onSubmit: async (values) => {
       setDownloadLoading(true);
       const membersData = await getAllEntities(
-        SUBGRAPH_URL,
+        CHAIN_CONFIG[networkId]?.stationSubgraphUrl,
         daoAddress,
         "users",
         dayjs(values?.startDate).unix(),

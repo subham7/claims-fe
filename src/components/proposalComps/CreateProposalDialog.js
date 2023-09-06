@@ -22,15 +22,12 @@ import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import QuillEditor from "../quillEditor";
-import AddCircleRoundedIcon from "@mui/icons-material/AddCircleRounded";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ProposalActionForm from "./ProposalActionForm";
 import { proposalValidationSchema } from "../createClubComps/ValidationSchemas";
 import { convertToWeiGovernance } from "../../utils/globalFunctions";
 import { createProposal } from "../../api/proposal";
-import { fetchProposals } from "../../utils/proposal";
 import { useDispatch, useSelector } from "react-redux";
-import { setProposalList } from "../../redux/reducers/proposal";
 import { getWhiteListMerkleRoot } from "api/whitelist";
 import { useAccount, useNetwork } from "wagmi";
 import {
@@ -64,6 +61,8 @@ const CreateProposalDialog = ({
   onClose,
   tokenData,
   nftData,
+  daoAddress,
+  fetchProposalList,
 }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
@@ -78,10 +77,6 @@ const CreateProposalDialog = ({
 
   const clubData = useSelector((state) => {
     return state.club.clubData;
-  });
-
-  const daoAddress = useSelector((state) => {
-    return state.club.daoAddress;
   });
 
   const [loaderOpen, setLoaderOpen] = useState(false);
@@ -106,7 +101,7 @@ const CreateProposalDialog = ({
       proposalDescription: "",
       optionList: [{ text: "Yes" }, { text: "No" }, { text: "Abstain" }],
       actionCommand: "",
-      airdropToken: tokenData ? tokenData[0]?.tokenAddress : "",
+      airdropToken: tokenData ? tokenData[0]?.address : "",
       amountToAirdrop: 0,
       carryFee: 0,
       // userAddress: "",
@@ -116,7 +111,7 @@ const CreateProposalDialog = ({
       quorum: 0,
       threshold: 0,
       totalDeposit: 0,
-      customToken: tokenData ? tokenData[0]?.tokenAddress : "",
+      customToken: tokenData ? tokenData[0]?.address : "",
       recieverAddress: "",
       amountToSend: 0,
       customNft: "",
@@ -130,6 +125,10 @@ const CreateProposalDialog = ({
       mintGTAmounts: [],
       lensId: "",
       lensPostLink: "",
+      aaveDepositToken: tokenData ? tokenData[0]?.address : "",
+      aaveDepositAmount: 0,
+      aaveWithdrawAmount: 0,
+      aaveWithdrawToken: tokenData ? tokenData[0]?.address : "",
     },
     validationSchema: proposalValidationSchema,
     onSubmit: async (values) => {
@@ -138,7 +137,7 @@ const CreateProposalDialog = ({
         setLoaderOpen(true);
         if (values.actionCommand === "Distribute token to members") {
           const airDropTokenDecimal = tokenData.find(
-            (token) => token.token_address === values.airdropToken,
+            (token) => token.address === values.airdropToken,
           ).decimals;
           commands = [
             {
@@ -197,7 +196,7 @@ const CreateProposalDialog = ({
         }
         if (values.actionCommand === "Send token to an address") {
           const tokenDecimal = tokenData.find(
-            (token) => token.token_address === values.customToken,
+            (token) => token.address === values.customToken,
           ).decimals;
           commands = [
             {
@@ -345,6 +344,44 @@ const CreateProposalDialog = ({
           ];
         }
 
+        if (values.actionCommand === "deposit tokens in AAVE pool") {
+          const tokenDecimal = tokenData.find(
+            (token) => token.address === values.aaveDepositToken,
+          ).decimals;
+          commands = [
+            {
+              executionId: 14,
+              depositToken: values.aaveDepositToken,
+              depositAmount: convertToWeiGovernance(
+                values.aaveDepositAmount,
+                tokenDecimal,
+              ),
+              usdcTokenSymbol: "USDC",
+              usdcTokenDecimal: 6,
+              usdcGovernanceTokenDecimal: 18,
+            },
+          ];
+        }
+
+        if (values.actionCommand === "withdraw tokens from AAVE pool") {
+          const tokenDecimal = tokenData.find(
+            (token) => token.address === values.aaveWithdrawToken,
+          ).decimals;
+          commands = [
+            {
+              executionId: 15,
+              withdrawToken: values.aaveWithdrawToken,
+              withdrawAmount: convertToWeiGovernance(
+                values.aaveWithdrawAmount,
+                tokenDecimal,
+              ),
+              usdcTokenSymbol: "USDC",
+              usdcTokenDecimal: 6,
+              usdcGovernanceTokenDecimal: 18,
+            },
+          ];
+        }
+
         const payload = {
           clubId: daoAddress,
           name: values.proposalTitle,
@@ -365,8 +402,7 @@ const CreateProposalDialog = ({
             setFailed(true);
             setLoaderOpen(false);
           } else {
-            const proposalData = await fetchProposals(daoAddress);
-            dispatch(setProposalList(proposalData));
+            fetchProposalList();
             setOpenSnackBar(true);
             setFailed(false);
             setOpen(false);
@@ -529,7 +565,6 @@ const CreateProposalDialog = ({
                   {proposal.values.optionList?.length > 0 ? (
                     <Grid
                       container
-                      pr={1}
                       mt={2}
                       mb={2}
                       sx={{
@@ -604,7 +639,6 @@ const CreateProposalDialog = ({
                         { text: "" },
                       ]);
                     }}>
-                    <AddCircleRoundedIcon />
                     Add Option
                   </Button>
                 </Stack>
