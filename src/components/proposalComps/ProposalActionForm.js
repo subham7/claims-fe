@@ -11,13 +11,11 @@ import {
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import Link from "next/link";
-import { CHAIN_CONFIG } from "utils/constants";
 import { useNetwork } from "wagmi";
 import { csvToObjectForMintGT } from "utils/helper";
 import React, { useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { commandTypeList } from "../../data/dashboard";
-
 
 const useStyles = makeStyles({
   textField: {
@@ -201,11 +199,7 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
               name="airdropToken"
               id="airdropToken">
               {tokenData
-                .filter(
-                  (token) =>
-                    token.address !== 
-                      [networkId].nativeToken,
-                )
+                .filter((token) => token.address !== [networkId].nativeToken)
                 .map((token) => (
                   <MenuItem key={token.symbol} value={token.symbol}>
                     {token.symbol}
