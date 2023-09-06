@@ -527,7 +527,6 @@ const CreateProposalDialog = ({
                   height: "auto",
                   backgroundColor: "#0f0f0f",
                   fontSize: "18px",
-                  color: "#C1D3FF",
                   margin: "0.5rem 0",
                 }}
                 name="proposalDescription"

@@ -43,6 +43,7 @@ export const TokenGatingModalStyles = makeStyles({
   },
 
   btns: {
+    marginTop: "24px",
     alignSelf: "flex-end",
     justifySelf: "flex-end",
   },
