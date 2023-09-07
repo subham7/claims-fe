@@ -174,10 +174,17 @@ export const extractNftAdressAndId = (url) => {
   }
 };
 
-export const getUserTokenData = async (tokenData, networkId) => {
-  const filteredData = tokenData.filter(
-    (token) => token.contract_address !== CHAIN_CONFIG[networkId].nativeToken,
-  );
+export const getUserTokenData = async (
+  tokenData,
+  networkId,
+  isProposal = false,
+) => {
+  const filteredData = !isProposal
+    ? tokenData.filter(
+        (token) =>
+          token.contract_address !== CHAIN_CONFIG[networkId].nativeToken,
+      )
+    : tokenData;
 
   return filteredData.map((token) => {
     return {
@@ -223,5 +230,30 @@ export const writeContractFunction = async ({
     return txReciept;
   } catch (error) {
     throw error;
+  }
+};
+
+export const csvToObjectForMintGT = (csvString) => {
+  const lines = csvString.trim().split("\n");
+  const addresses = [];
+  const amounts = [];
+
+  for (const line of lines) {
+    const [address, amount] = line.trim().split(",");
+    addresses.push(address);
+    amounts.push(parseInt(amount, 10));
+  }
+
+  return { addresses, amounts };
+};
+
+export const shortAddress = (address) => {
+  console.log("address", address);
+  if (address) {
+    return (
+      address?.substring(0, 6) +
+      "....." +
+      address?.substring(address.length - 4)
+    );
   }
 };

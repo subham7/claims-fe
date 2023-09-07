@@ -18,13 +18,13 @@ const useDropsContractMethods = () => {
 
   const { claimContractCall } = contractInstances;
 
-  const addMoreTokens = async (claimAddress, noOfTokens) => {
+  const addMoreTokens = async (claimAddress, noOfTokens, merkleRoot) => {
     try {
       const res = await writeContractFunction({
         address: claimAddress,
         abi: claimContractABI,
         functionName: "depositTokens",
-        args: [noOfTokens],
+        args: [noOfTokens, merkleRoot],
         account: walletAddress,
         networkId,
       });

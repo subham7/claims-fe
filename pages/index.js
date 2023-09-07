@@ -76,7 +76,7 @@ const useStyles = makeStyles({
     minHeight: "70vh",
   },
   watchBtn: {
-    background: "#142243",
+    background: "#151515",
     borderRadius: "50px",
     border: "1px solid #EFEFEF",
     width: "180px",
@@ -89,7 +89,7 @@ const useStyles = makeStyles({
     cursor: "pointer",
   },
   secondContainer: {
-    background: "#142243",
+    background: "#151515",
     borderRadius: "20px",
     marginTop: "20px",
     display: "flex",

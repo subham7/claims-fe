@@ -22,8 +22,8 @@ export const TokenGatingModalStyles = makeStyles({
     left: "0",
     height: "100vh",
     width: "100vw",
-    background: "#fff",
-    opacity: "30%",
+    background: "#000",
+    opacity: "60%",
   },
   form: {
     width: "100%",
@@ -43,6 +43,7 @@ export const TokenGatingModalStyles = makeStyles({
   },
 
   btns: {
+    marginTop: "24px",
     alignSelf: "flex-end",
     justifySelf: "flex-end",
   },

@@ -52,6 +52,8 @@ export const QUERY_WALLET_DROPS = (creatorAddress) => {
                 timestamp
                 isActive
                 networkId
+                whitelistTokenNetwork
+                whitelistTokenBlockNum
               }
       }`;
 };
@@ -84,6 +86,8 @@ export const QUERY_DROP_DETAILS = (claimAddress) => {
                 timestamp
                 isActive
                 networkId
+                whitelistTokenNetwork
+                whitelistTokenBlockNum
               }
       }`;
 };

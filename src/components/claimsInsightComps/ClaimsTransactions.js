@@ -136,7 +136,7 @@ const ClaimsTransactions = ({
                         sx={{
                           minWidth: "100px",
                           fontSize: "16px",
-                          background: "#142243",
+                          background: "#151515",
                         }}
                         align="left"
                         variant="tableHeading"
@@ -154,7 +154,7 @@ const ClaimsTransactions = ({
                         sx={{
                           minWidth: "100px",
                           fontSize: "16px",
-                          background: "#142243",
+                          background: "#151515",
                         }}
                         align="left"
                         variant="tableHeading"

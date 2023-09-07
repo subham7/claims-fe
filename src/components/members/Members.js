@@ -74,21 +74,19 @@ const Members = ({ daoAddress }) => {
     try {
       setLoading(true);
       const fetchData = async () => {
-        if (daoAddress) {
-          const data = await queryPaginatedMembersFromSubgraph(
-            daoAddress,
-            20,
-            0,
-            deployedTime,
-            Date.now(),
-            networkId,
-          );
+        const data = await queryPaginatedMembersFromSubgraph(
+          daoAddress,
+          20,
+          0,
+          deployedTime,
+          Date.now(),
+          networkId,
+        );
 
-          if (data?.users) setMembersData(data?.users);
-        }
+        if (data?.users) setMembersData(data?.users);
       };
 
-      if (daoAddress && networkId) fetchData();
+      if (daoAddress && networkId && deployedTime) fetchData();
       setLoading(false);
     } catch (error) {
       console.log(error);
@@ -150,10 +148,10 @@ const Members = ({ daoAddress }) => {
       setDownloadLoading(true);
       const membersData = await getAllEntities(
         CHAIN_CONFIG[networkId]?.stationSubgraphUrl,
-        daoAddress ? daoAddress : pid,
+        daoAddress,
         "users",
-        dayjs(values.startDate).unix(),
-        dayjs(values.endDate).unix(),
+        dayjs(values?.startDate).unix(),
+        dayjs(values?.endDate).unix(),
       );
       const csvData = await convertDataToCSV(membersData); // Convert the membersData array to CSV format
 
@@ -259,7 +257,7 @@ const Members = ({ daoAddress }) => {
             <Table sx={{ minWidth: 809 }} aria-label="simple table">
               <TableHead>
                 <TableRow>
-                  {header.map((data, key) => {
+                  {header?.map((data, key) => {
                     return (
                       <TableCell align="left" variant="tableHeading" key={key}>
                         {data}
@@ -323,20 +321,20 @@ const Members = ({ daoAddress }) => {
               </TableBody>
             </Table>
             <TablePagination
-              rowsPerPageOptions={[5, 10, 25]}
+              rowsPerPageOptions={[5, 10, 25, 50]}
               component="div"
-              count={Members_Count}
-              rowsPerPage={20}
+              count={Members_Count ?? 0}
+              rowsPerPage={rowsPerPage}
               page={page}
               onPageChange={handleChangePage}
-              // onRowsPerPageChange={handleChangeRowsPerPage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
             />
           </TableContainer>
         </Grid>
       </Grid>
 
       <Backdrop
-        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        sx={{ color: "#000", zIndex: (theme) => theme?.zIndex?.drawer + 1 }}
         open={loading}>
         <CircularProgress color="inherit" />
       </Backdrop>

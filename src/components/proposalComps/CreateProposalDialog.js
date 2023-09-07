@@ -101,17 +101,17 @@ const CreateProposalDialog = ({
       proposalDescription: "",
       optionList: [{ text: "Yes" }, { text: "No" }, { text: "Abstain" }],
       actionCommand: "",
-      airdropToken: tokenData ? tokenData[0]?.tokenAddress : "",
+      airdropToken: tokenData ? tokenData[0]?.address : "",
       amountToAirdrop: 0,
       carryFee: 0,
-      userAddress: "",
-      amountOfTokens: 0,
-      amountOfTokens721: 0,
+      // userAddress: "",
+      // amountOfTokens: 0,
+      // amountOfTokens721: 0,
       pricePerToken: 0,
       quorum: 0,
       threshold: 0,
       totalDeposit: 0,
-      customToken: tokenData ? tokenData[0]?.tokenAddress : "",
+      customToken: tokenData ? tokenData[0]?.address : "",
       recieverAddress: "",
       amountToSend: 0,
       customNft: "",
@@ -121,8 +121,14 @@ const CreateProposalDialog = ({
       safeThreshold: 1,
       nftLink: "",
       csvObject: [],
+      mintGTAddresses: [],
+      mintGTAmounts: [],
       lensId: "",
       lensPostLink: "",
+      aaveDepositToken: tokenData ? tokenData[0]?.address : "",
+      aaveDepositAmount: 0,
+      aaveWithdrawAmount: 0,
+      aaveWithdrawToken: tokenData ? tokenData[0]?.address : "",
     },
     validationSchema: proposalValidationSchema,
     onSubmit: async (values) => {
@@ -131,7 +137,7 @@ const CreateProposalDialog = ({
         setLoaderOpen(true);
         if (values.actionCommand === "Distribute token to members") {
           const airDropTokenDecimal = tokenData.find(
-            (token) => token.token_address === values.airdropToken,
+            (token) => token.address === values.airdropToken,
           ).decimals;
           commands = [
             {
@@ -152,12 +158,13 @@ const CreateProposalDialog = ({
           commands = [
             {
               executionId: 1,
-              mintGTAddresses: [values.userAddress],
-              mintGTAmounts: [
+              mintGTAddresses: values.mintGTAddresses,
+              mintGTAmounts:
                 clubData.tokenType === "erc20"
-                  ? convertToWeiGovernance(values.amountOfTokens, 18)
-                  : values.amountOfTokens721,
-              ],
+                  ? values.mintGTAmounts.map((amount) =>
+                      convertToWeiGovernance(amount, 18),
+                    )
+                  : values.mintGTAmounts,
               usdcTokenSymbol: "USDC",
               usdcTokenDecimal: 6,
               usdcGovernanceTokenDecimal: 18,
@@ -189,7 +196,7 @@ const CreateProposalDialog = ({
         }
         if (values.actionCommand === "Send token to an address") {
           const tokenDecimal = tokenData.find(
-            (token) => token.token_address === values.customToken,
+            (token) => token.address === values.customToken,
           ).decimals;
           commands = [
             {
@@ -337,6 +344,44 @@ const CreateProposalDialog = ({
           ];
         }
 
+        if (values.actionCommand === "deposit tokens in AAVE pool") {
+          const tokenDecimal = tokenData.find(
+            (token) => token.address === values.aaveDepositToken,
+          ).decimals;
+          commands = [
+            {
+              executionId: 14,
+              depositToken: values.aaveDepositToken,
+              depositAmount: convertToWeiGovernance(
+                values.aaveDepositAmount,
+                tokenDecimal,
+              ),
+              usdcTokenSymbol: "USDC",
+              usdcTokenDecimal: 6,
+              usdcGovernanceTokenDecimal: 18,
+            },
+          ];
+        }
+
+        if (values.actionCommand === "withdraw tokens from AAVE pool") {
+          const tokenDecimal = tokenData.find(
+            (token) => token.address === values.aaveWithdrawToken,
+          ).decimals;
+          commands = [
+            {
+              executionId: 15,
+              withdrawToken: values.aaveWithdrawToken,
+              withdrawAmount: convertToWeiGovernance(
+                values.aaveWithdrawAmount,
+                tokenDecimal,
+              ),
+              usdcTokenSymbol: "USDC",
+              usdcTokenDecimal: 6,
+              usdcGovernanceTokenDecimal: 18,
+            },
+          ];
+        }
+
         const payload = {
           clubId: daoAddress,
           name: values.proposalTitle,
@@ -398,7 +443,7 @@ const CreateProposalDialog = ({
           </Grid> */}
 
             {/* type of proposal and end time */}
-            <Grid container spacing={3} ml={0}>
+            <Grid container spacing={3} ml={0} width="100%">
               <Grid item md={6} sx={{ paddingLeft: "0 !important" }}>
                 <Typography variant="proposalBody">Type of Proposal</Typography>
                 <FormControl sx={{ width: "100%", marginTop: "0.5rem" }}>
@@ -421,7 +466,7 @@ const CreateProposalDialog = ({
                   <DateTimePicker
                     fullWidth
                     sx={{
-                      width: "90%",
+                      width: "100%",
                       marginTop: "0.5rem",
                     }}
                     value={proposal.values.proposalDeadline}
@@ -480,10 +525,8 @@ const CreateProposalDialog = ({
                 style={{
                   width: "100%",
                   height: "auto",
-                  backgroundColor: "#19274B",
+                  backgroundColor: "#0f0f0f",
                   fontSize: "18px",
-                  color: "#C1D3FF",
-
                   margin: "0.5rem 0",
                 }}
                 name="proposalDescription"
@@ -516,7 +559,7 @@ const CreateProposalDialog = ({
             {/* add options button */}
             {proposal.values.typeOfProposal === "survey" ? (
               <>
-                <Stack mt={3}>
+                <Stack mt={1}>
                   {proposal.values.optionList?.length > 0 ? (
                     <Grid
                       container
@@ -551,7 +594,6 @@ const CreateProposalDialog = ({
                               placeholder={"yes, no"}
                               sx={{
                                 m: 1,
-                                width: 443,
                                 mt: 1,
                                 borderRadius: "10px",
                               }}

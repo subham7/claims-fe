@@ -2,7 +2,7 @@ export const darkComponents = {
   MuiCard: {
     styleOverrides: {
       root: {
-        background: "#142243",
+        background: "#151515",
         borderRadius: "10px",
         padding: "20px",
       },

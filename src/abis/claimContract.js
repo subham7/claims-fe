@@ -1,122 +1,7 @@
 export const claimContractABI = [
   {
-    inputs: [
-      {
-        internalType: "address",
-        name: "_admin",
-        type: "address",
-      },
-      {
-        components: [
-          {
-            internalType: "string",
-            name: "name",
-            type: "string",
-          },
-          {
-            internalType: "address",
-            name: "creatorAddress",
-            type: "address",
-          },
-          {
-            internalType: "address",
-            name: "walletAddress",
-            type: "address",
-          },
-          {
-            internalType: "address",
-            name: "airdropToken",
-            type: "address",
-          },
-          {
-            internalType: "address",
-            name: "daoToken",
-            type: "address",
-          },
-          {
-            internalType: "uint256",
-            name: "tokenGatingValue",
-            type: "uint256",
-          },
-          {
-            internalType: "uint256",
-            name: "startTime",
-            type: "uint256",
-          },
-          {
-            internalType: "uint256",
-            name: "endTime",
-            type: "uint256",
-          },
-          {
-            internalType: "uint256",
-            name: "cooldownTime",
-            type: "uint256",
-          },
-          {
-            internalType: "bool",
-            name: "hasAllowanceMechanism",
-            type: "bool",
-          },
-          {
-            internalType: "bool",
-            name: "isEnabled",
-            type: "bool",
-          },
-          {
-            internalType: "bytes32",
-            name: "merkleRoot",
-            type: "bytes32",
-          },
-          {
-            internalType: "enum CLAIM_PERMISSION",
-            name: "permission",
-            type: "uint8",
-          },
-          {
-            components: [
-              {
-                internalType: "uint256",
-                name: "maxClaimable",
-                type: "uint256",
-              },
-              {
-                internalType: "uint256",
-                name: "totalClaimAmount",
-                type: "uint256",
-              },
-            ],
-            internalType: "struct ClaimAmountDetails",
-            name: "claimAmountDetails",
-            type: "tuple",
-          },
-        ],
-        internalType: "struct ClaimSettings",
-        name: "_claimSettings",
-        type: "tuple",
-      },
-      {
-        internalType: "address",
-        name: "_emitter",
-        type: "address",
-      },
-    ],
-    stateMutability: "nonpayable",
-    type: "constructor",
-  },
-  {
-    inputs: [],
-    name: "AlreadyClaimed",
-    type: "error",
-  },
-  {
     inputs: [],
     name: "ClaimClosed",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "ClaimLimitReached",
     type: "error",
   },
   {
@@ -126,8 +11,46 @@ export const claimContractABI = [
   },
   {
     inputs: [],
+    name: "HasAllowanceMechanism",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "IncorrectProof",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "IncorrectUserAddress",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "InsufficientBalance",
+    type: "error",
+  },
+  {
+    inputs: [],
     name: "InvalidAmount",
     type: "error",
+  },
+  {
+    inputs: [],
+    name: "MaxReached",
+    type: "error",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint8",
+        name: "version",
+        type: "uint8",
+      },
+    ],
+    name: "Initialized",
+    type: "event",
   },
   {
     anonymous: false,
@@ -341,7 +264,7 @@ export const claimContractABI = [
     ],
     name: "claim",
     outputs: [],
-    stateMutability: "nonpayable",
+    stateMutability: "payable",
     type: "function",
   },
   {
@@ -486,23 +409,15 @@ export const claimContractABI = [
         name: "_amount",
         type: "uint256",
       },
+      {
+        internalType: "bytes32",
+        name: "_newRoot",
+        type: "bytes32",
+      },
     ],
     name: "depositTokens",
     outputs: [],
     stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "emitterContract",
-    outputs: [
-      {
-        internalType: "address",
-        name: "",
-        type: "address",
-      },
-    ],
-    stateMutability: "view",
     type: "function",
   },
   {
@@ -588,6 +503,118 @@ export const claimContractABI = [
       },
     ],
     stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_admin",
+        type: "address",
+      },
+      {
+        components: [
+          {
+            internalType: "string",
+            name: "name",
+            type: "string",
+          },
+          {
+            internalType: "address",
+            name: "creatorAddress",
+            type: "address",
+          },
+          {
+            internalType: "address",
+            name: "walletAddress",
+            type: "address",
+          },
+          {
+            internalType: "address",
+            name: "airdropToken",
+            type: "address",
+          },
+          {
+            internalType: "address",
+            name: "daoToken",
+            type: "address",
+          },
+          {
+            internalType: "uint256",
+            name: "tokenGatingValue",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "startTime",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "endTime",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "cooldownTime",
+            type: "uint256",
+          },
+          {
+            internalType: "bool",
+            name: "hasAllowanceMechanism",
+            type: "bool",
+          },
+          {
+            internalType: "bool",
+            name: "isEnabled",
+            type: "bool",
+          },
+          {
+            internalType: "bytes32",
+            name: "merkleRoot",
+            type: "bytes32",
+          },
+          {
+            internalType: "enum CLAIM_PERMISSION",
+            name: "permission",
+            type: "uint8",
+          },
+          {
+            components: [
+              {
+                internalType: "uint256",
+                name: "maxClaimable",
+                type: "uint256",
+              },
+              {
+                internalType: "uint256",
+                name: "totalClaimAmount",
+                type: "uint256",
+              },
+            ],
+            internalType: "struct ClaimAmountDetails",
+            name: "claimAmountDetails",
+            type: "tuple",
+          },
+        ],
+        internalType: "struct ClaimSettings",
+        name: "_claimSettings",
+        type: "tuple",
+      },
+      {
+        internalType: "address",
+        name: "_factory",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "_emitter",
+        type: "address",
+      },
+    ],
+    name: "initialize",
+    outputs: [],
+    stateMutability: "nonpayable",
     type: "function",
   },
   {

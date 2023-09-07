@@ -52,7 +52,7 @@ export const DashboardStyles = makeStyles({
     border: ".5px solid #6475A3",
   },
   cardSharp2: {
-    backgroundColor: "#142243",
+    backgroundColor: "#151515",
     borderTopLeftRadius: "0px",
     borderTopRightRadius: "0px",
     opacity: 1,

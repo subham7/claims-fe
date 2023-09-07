@@ -9,12 +9,16 @@ import ToggleClaim from "@components/claimsInsightComps/ToggleClaim";
 import ClaimsTransactions from "@components/claimsInsightComps/ClaimsTransactions";
 import { useRouter } from "next/router";
 import { Alert, Backdrop, CircularProgress } from "@mui/material";
-import { convertToWeiGovernance } from "utils/globalFunctions";
+import {
+  convertFromWeiGovernance,
+  convertToWeiGovernance,
+} from "utils/globalFunctions";
 import { useNetwork } from "wagmi";
 import useClaimSmartContracts from "hooks/useClaimSmartContracts";
 import useDropsContractMethods from "hooks/useDropsContracMethods";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 import { queryDropDetailsFromSubgraph } from "utils/dropsSubgraphHelper";
+import { createSnapShot } from "api/claims";
 
 const ClaimInsight = ({ claimAddress }) => {
   const [claimsData, setClaimsData] = useState([]);
@@ -73,13 +77,49 @@ const ClaimInsight = ({ claimAddress }) => {
         noOfTokens,
         airdropTokenDetails?.tokenDecimal,
       );
+
+      const remainingAmount = Number(
+        convertFromWeiGovernance(
+          claimsData[0].totalClaimAmount,
+          airdropTokenDetails?.tokenDecimal,
+        ) -
+          Number(
+            convertFromWeiGovernance(
+              claimsData[0].totalAmountClaimed,
+              airdropTokenDetails?.tokenDecimal,
+            ),
+          ),
+      );
+
+      let snapshotData;
+
+      if (claimsData[0]?.claimType === "3") {
+        snapshotData = await createSnapShot(
+          convertToWeiGovernance(
+            +noOfTokens + remainingAmount,
+            airdropTokenDetails?.tokenDecimal,
+          ),
+          airdropTokenDetails.tokenAddress,
+          claimsData[0]?.whitelistToken,
+          claimsData[0]?.whitelistTokenNetwork, // token gated network
+          claimsData[0]?.whitelistTokenBlockNum, // blockNumber
+          networkId,
+        );
+      }
+
       await approveDeposit(
         airdropTokenDetails?.tokenAddress,
         claimAddress,
         noOfTokens,
         airdropTokenDetails?.tokenDecimal,
       );
-      await addMoreTokens(claimAddress, amount);
+      await addMoreTokens(
+        claimAddress,
+        amount,
+        claimsData[0].claimType !== "3"
+          ? claimsData[0].merkleRoot
+          : snapshotData?.merkleRoot,
+      );
       setLoading(false);
       showMessageHandler();
       setIsSuccessFull(true);

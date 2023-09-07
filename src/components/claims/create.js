@@ -173,8 +173,6 @@ const CreateClaim = () => {
         blockNumber: values?.blockNumber,
       };
 
-      console.log("DATA", data);
-
       const decimals = await getDecimals(data.airdropTokenAddress);
 
       // fetch Block number
@@ -183,7 +181,7 @@ const CreateClaim = () => {
       let snapshotData;
       let blockNumber;
 
-      if (values.maximumClaim === "proRata") {
+      if (data.maximumClaim === "proRata") {
         try {
           const blockData = await fetchLatestBlockNumber(
             data?.tokenGatedNetwork,
@@ -327,8 +325,7 @@ const CreateClaim = () => {
               data.maximumClaim === "proRata" ? data.tokenGatedNetwork : "",
             );
 
-            const newClaimContract =
-              response.events.NewClaimContract.returnValues._newClaimContract;
+            const newClaimContract = response.logs[0].address;
 
             if (hasAllowanceMechanism) {
               await approveDeposit(
@@ -431,8 +428,7 @@ const CreateClaim = () => {
               "",
             );
 
-            const newClaimContract =
-              response.events.NewClaimContract.returnValues._newClaimContract;
+            const newClaimContract = response.logs[0].address;
 
             if (hasAllowanceMechanism) {
               await approveDeposit(
