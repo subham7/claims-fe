@@ -9,6 +9,7 @@ const ClaimsPage = () => {
   const router = useRouter();
 
   const [networkId, claimAddress] = router?.query?.slug ?? [];
+  debugger;
 
   return (
     <Layout
@@ -16,9 +17,9 @@ const ClaimsPage = () => {
       claimAddress={claimAddress}
       isClaims={true}
       network={networkId}>
-      {claimAddress === undefined ? (
+      {claimAddress === undefined && networkId !== "create" ? (
         <ListClaims />
-      ) : claimAddress === "create" ? (
+      ) : networkId === "create" ? (
         <CreateClaim />
       ) : (
         <ClaimInsight claimAddress={claimAddress} />
