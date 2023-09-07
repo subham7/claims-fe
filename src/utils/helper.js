@@ -231,7 +231,7 @@ export const writeContractFunction = async ({
   } catch (error) {
     throw error;
   }
-}
+};
 
 export const csvToObjectForMintGT = (csvString) => {
   const lines = csvString.trim().split("\n");
@@ -245,4 +245,11 @@ export const csvToObjectForMintGT = (csvString) => {
   }
 
   return { addresses, amounts };
+};
+
+export const shortAddress = (address) => {
+  return (
+    address &&
+    address.substring(0, 6) + "....." + address.substring(address.length - 4)
+  );
 };

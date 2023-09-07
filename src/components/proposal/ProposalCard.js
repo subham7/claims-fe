@@ -9,6 +9,7 @@ import { useSelector } from "react-redux";
 import { ProposalCardStyles } from "@components/proposalComps/ProposalCardStyles";
 import useCommonContractMethods from "hooks/useCommonContractMehods.js";
 import { proposalData } from "utils/proposalData.js";
+import { shortAddress } from "utils/helper.js";
 
 const ProposalCard = ({ proposal, daoAddress }) => {
   const classes = ProposalCardStyles();
@@ -24,7 +25,7 @@ const ProposalCard = ({ proposal, daoAddress }) => {
     decimals: 0,
     symbol: "",
   });
-  const [proposalDetails, setProposalDetails] = useState([]);
+  const [proposalDetails, setProposalDetails] = useState({});
 
   const { getDecimals, getTokenSymbol } = useCommonContractMethods();
 
@@ -72,13 +73,13 @@ const ProposalCard = ({ proposal, daoAddress }) => {
     fetchTokenDetails();
   }, [fetchTokenDetails]);
 
-  const getProposalData = async () => {
-    const response = await proposalData({
+  const getProposalData = () => {
+    const response = proposalData({
       data: proposal.commands[0],
       decimals: tokenDetails.decimals,
       factoryData,
     });
-    setProposalDetails([response]);
+    setProposalDetails(response);
   };
 
   useEffect(() => {
@@ -97,13 +98,8 @@ const ProposalCard = ({ proposal, daoAddress }) => {
         <div className={classes.proposalHeader}>
           <div>
             <Typography variant="body" className="text-blue">
-              Proposed by{" "}
-              {proposal?.createdBy.substring(0, 6) +
-                ".........." +
-                proposal?.createdBy.substring(
-                  proposal?.createdBy.length - 4,
-                )}{" "}
-              on {new Date(String(proposal?.updateDate)).toLocaleDateString()}
+              Proposed by {shortAddress(proposal?.createdBy)} on{" "}
+              {new Date(String(proposal?.updateDate)).toLocaleDateString()}
             </Typography>
           </div>
           <div>
@@ -152,27 +148,23 @@ const ProposalCard = ({ proposal, daoAddress }) => {
           <Typography variant="subheading">{proposal?.name}</Typography>
         </div>
         <Grid container spacing={1}>
-          {proposalDetails.map((item, index) => (
-            <Grid container spacing={1} key={index}>
-              {item &&
-                Object.keys(item).map((key, innerIndex) => (
-                  <Grid item key={innerIndex}>
-                    <Chip
-                      className={classes.timeLeftChip}
-                      label={
-                        <div className="f-d f-v-c tb-pad-1">
-                          <Typography
-                            variant="info"
-                            className="text-blue r-pad-1">
-                            {key}
-                          </Typography>
-                          <Typography variant="info">{item[key]}</Typography>
-                        </div>
-                      }></Chip>
-                  </Grid>
-                ))}
-            </Grid>
-          ))}
+          {proposalDetails &&
+            Object.keys(proposalDetails).map((key, index) => (
+              <Grid item key={index}>
+                <Chip
+                  className={classes.timeLeftChip}
+                  label={
+                    <div className="f-d f-v-c tb-pad-1">
+                      <Typography variant="info" className="text-blue r-pad-1">
+                        {key}
+                      </Typography>
+                      <Typography variant="info">
+                        {proposalDetails[key]}
+                      </Typography>
+                    </div>
+                  }></Chip>
+              </Grid>
+            ))}
         </Grid>
       </Card>
     </CardActionArea>

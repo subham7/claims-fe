@@ -2,9 +2,9 @@ import {
   convertFromWeiGovernance,
   convertToWeiGovernance,
 } from "./globalFunctions";
-import { extractNftAdressAndId } from "./helper";
+import { extractNftAdressAndId, shortAddress } from "./helper";
 
-export const proposalData = async ({ data, decimals, factoryData }) => {
+export const proposalData = ({ data, decimals, factoryData }) => {
   const {
     executionId,
     airDropAmount,
@@ -37,52 +37,31 @@ export const proposalData = async ({ data, decimals, factoryData }) => {
       };
     case 3:
       return {
-        "Raise Amount":
-          (convertToWeiGovernance(
-            convertToWeiGovernance(totalDeposits, 6) /
-              factoryData?.pricePerToken,
-            18,
-          ) /
-            10 ** 18) *
+        "Raise amount":
+          (convertToWeiGovernance(totalDeposits, 6) /
+            factoryData?.pricePerToken) *
           convertFromWeiGovernance(factoryData?.pricePerToken, 6),
       };
     case 4:
       return {
         Amount: customTokenAmounts[0] / 10 ** decimals,
-        Recipient:
-          customTokenAddresses[0].substring(0, 6) +
-          "....." +
-          customTokenAddresses[0].substring(customTokenAddresses[0].length - 4),
+        Recipient: shortAddress(customTokenAddresses),
       };
     case 5:
       return {
-        Nft:
-          customNft?.substring(0, 6) +
-          ".........." +
-          customNft?.substring(customNft?.length - 4),
-        Recipient:
-          customTokenAddresses[0].substring(0, 6) +
-          "....." +
-          customTokenAddresses[0].substring(customTokenAddresses[0].length - 4),
+        "NFT address": shortAddress(customNft),
+        Recipient: shortAddress(customTokenAddresses),
       };
     case 6:
     case 7:
       return {
-        "Owner Address":
-          ownerAddress.slice(0, 6) +
-          "...." +
-          ownerAddress.slice(ownerAddress.length - 4),
+        "Owner address": shortAddress(ownerAddress),
       };
     case 8:
     case 9:
       return {
-        "NFT address": `${extractNftAdressAndId(nftLink).nftAddress.slice(
-          0,
-          6,
-        )}}
-      ....
-      ${extractNftAdressAndId(nftLink).nftAddress.slice(-6)}`,
-        " Token Id": `${extractNftAdressAndId(nftLink).tokenId}`,
+        "NFT address": shortAddress(extractNftAdressAndId(nftLink).nftAddress),
+        "Token Id": `${extractNftAdressAndId(nftLink).tokenId}`,
       };
     case 10:
       return { "Enable whitelisting": "" };
@@ -100,7 +79,9 @@ export const proposalData = async ({ data, decimals, factoryData }) => {
     case 15:
       return {
         "Withdraw token": withdrawToken,
-        "Withdraw Amount": convertFromWeiGovernance(withdrawAmount, decimals),
+        "Withdraw amount": convertFromWeiGovernance(withdrawAmount, decimals),
       };
+    default:
+      return {};
   }
 };
