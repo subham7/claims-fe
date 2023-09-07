@@ -248,7 +248,6 @@ export const csvToObjectForMintGT = (csvString) => {
 };
 
 export const shortAddress = (address) => {
-  console.log("address", address);
   if (address) {
     return (
       address?.substring(0, 6) +

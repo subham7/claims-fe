@@ -14,7 +14,6 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import { makeStyles } from "@mui/styles";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import {
@@ -54,153 +53,10 @@ import {
 import { BsInfoCircleFill } from "react-icons/bs";
 import useAppContractMethods from "hooks/useAppContractMethods";
 import { queryAllMembersFromSubgraph } from "utils/stationsSubgraphHelper";
-
-const useStyles = makeStyles({
-  clubAssets: {
-    fontSize: "42px",
-    color: "#FFFFFF",
-  },
-  activeIllustration: {
-    height: "12px",
-    width: "12px",
-    backgroundColor: "#0ABB92",
-    borderRadius: "50%",
-    marginRight: "15px",
-  },
-  passedIllustration: {
-    height: "12px",
-    width: "12px",
-    backgroundColor: "#FFB74D",
-    borderRadius: "50%",
-    marginRight: "15px",
-  },
-  executedIllustration: {
-    height: "12px",
-    width: "12px",
-    backgroundColor: "#F75F71",
-    borderRadius: "50%",
-    marginRight: "15px",
-  },
-  failedIllustration: {
-    height: "12px",
-    width: "12px",
-    backgroundColor: "#D55438",
-    borderRadius: "50%",
-    marginRight: "15px",
-  },
-  listFont: {
-    fontSize: "20px",
-    color: "#C1D3FF",
-  },
-  listFont2: {
-    fontSize: "18px",
-    color: "#C1D3FF",
-  },
-  listFont2Colourless: {
-    fontSize: "18px",
-    color: "#FFFFFF",
-    fontWeight: "bold",
-  },
-  listFont2small: {
-    fontSize: "12px",
-    color: "#C1D3FF",
-  },
-  cardFont: {
-    fontSize: "18px",
-    color: "#C1D3FF",
-  },
-  cardFont1: {
-    fontSize: "18px",
-    color: "#EFEFEF",
-    justifyContent: "center",
-    display: "flex",
-    alignItems: "center",
-  },
-  successfulMessageText: {
-    fontSize: "28px",
-    color: "#EFEFEF",
-  },
-  cardFontYes: {
-    fontSize: "16px",
-    backgroundColor: "#0ABB92",
-    padding: "0 5px 0 5px",
-  },
-  cardFontNo: {
-    fontSize: "16px",
-    backgroundColor: "#D55438",
-    padding: "0 5px 0 5px",
-  },
-  mainCard: {
-    borderRadius: "38px",
-    border: "1px solid #C1D3FF40;",
-    backgroundColor: "#19274B",
-  },
-  mainCardSelected: {
-    borderRadius: "38px",
-    border: "1px solid #FFFFFF;",
-    backgroundColor: "#19274B",
-  },
-  mainCardButton: {
-    borderRadius: "38px",
-    border: "1px solid #C1D3FF40;",
-    backgroundColor: "#2D55FF",
-    "&:hover": {
-      cursor: "pointer",
-    },
-  },
-  mainCardButtonSuccess: {
-    borderRadius: "38px",
-    fontSize: "50px",
-    color: "#0ABB92",
-  },
-  mainCardButtonError: {
-    fontSize: "50px",
-    color: "#D55438",
-  },
-  seeMoreButton: {
-    border: "1px solid #C1D3FF40",
-    borderRadius: "10px",
-    backgroundColor: "#19274B",
-    display: "flex",
-  },
-  actionChip: {
-    border: "1px solid #0ABB92",
-    background: "transparent",
-    textTransform: "capitalize",
-  },
-  surveyChip: {
-    border: "1px solid #6C63FF",
-    background: "transparent",
-    textTransform: "capitalize",
-  },
-  timeLeftChip: {
-    background: "#0F0F0F",
-    borderRadius: "5px",
-  },
-  cardFontActive: {
-    fontSize: "16px",
-    backgroundColor: "#0ABB92",
-    padding: "5px 5px 5px 5px",
-  },
-  cardFontExecuted: {
-    fontSize: "16px",
-    backgroundColor: "#F75F71",
-    padding: "5px 5px 5px 5px",
-  },
-  cardFontPassed: {
-    fontSize: "16px",
-    backgroundColor: "#FFB74D",
-    padding: "5px 5px 5px 5px",
-  },
-  cardFontFailed: {
-    fontSize: "16px",
-    backgroundColor: "#D55438",
-    padding: "5px 5px 5px 5px",
-  },
-});
+import { ProposalDetailStyles } from "./ProposalDetailStyles";
 
 const ProposalDetail = ({ pid, daoAddress }) => {
-  const classes = useStyles();
+  const classes = ProposalDetailStyles();
   const router = useRouter();
 
   const { address: walletAddress } = useAccount();
