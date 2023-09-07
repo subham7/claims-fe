@@ -9,7 +9,6 @@ const ClaimsPage = () => {
   const router = useRouter();
 
   const [networkId, claimAddress] = router?.query?.slug ?? [];
-  debugger;
 
   return (
     <Layout
