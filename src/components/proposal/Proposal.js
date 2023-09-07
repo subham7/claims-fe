@@ -6,7 +6,6 @@ import {
   MenuItem,
   OutlinedInput,
   Select,
-  // Typography,
 } from "@mui/material";
 import { Button, Typography } from "@components/ui";
 import { proposalDisplayOptions } from "data/dashboard";
@@ -94,10 +93,6 @@ const Proposal = ({ daoAddress }) => {
     return state.club.erc721ClubDetails.isGovernanceActive;
   });
 
-  const isAssetsStoredOnGnosis = useSelector((state) => {
-    return state.club.factoryData.assetsStoredOnGnosis;
-  });
-
   const isGovernanceActive =
     tokenType === "erc20" ? isGovernanceERC20 : isGovernanceERC721;
 
@@ -122,22 +117,13 @@ const Proposal = ({ daoAddress }) => {
 
   const fetchNfts = useCallback(async () => {
     try {
-      const nftsData = await getNFTsByDaoAddress(
-        isAssetsStoredOnGnosis ? gnosisAddress : daoAddress,
-        NETWORK_HEX,
-      );
+      const nftsData = await getNFTsByDaoAddress(gnosisAddress, NETWORK_HEX);
       setNftData(nftsData.data);
       dispatch(addNftsOwnedByDao(nftsData.data));
     } catch (error) {
       console.log(error);
     }
-  }, [
-    NETWORK_HEX,
-    daoAddress,
-    dispatch,
-    gnosisAddress,
-    isAssetsStoredOnGnosis,
-  ]);
+  }, [NETWORK_HEX, dispatch, gnosisAddress]);
 
   const fetchTokens = useCallback(async () => {
     if (daoAddress && gnosisAddress && networkId) {
@@ -210,14 +196,13 @@ const Proposal = ({ daoAddress }) => {
       console.log(error);
     }
   };
-  // getExecutionTransaction();
 
   useEffect(() => {
     if (daoAddress) {
       fetchTokens();
       fetchNfts();
     }
-  }, [daoAddress, fetchTokens]);
+  }, [daoAddress, fetchNfts, fetchTokens]);
 
   useEffect(() => {
     setLoaderOpen(true);

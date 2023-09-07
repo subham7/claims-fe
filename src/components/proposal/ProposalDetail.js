@@ -40,7 +40,7 @@ import ProposalInfo from "@components/proposalComps/ProposalInfo";
 import CurrentResults from "@components/proposalComps/CurrentResults";
 import ProposalVotes from "@components/proposalComps/ProposalVotes";
 import { getSafeSdk, web3InstanceEthereum } from "utils/helper";
-import { getNFTsByDaoAddress, retrieveNftListing } from "api/assets";
+import { retrieveNftListing } from "api/assets";
 import SafeAppsSDK from "@safe-global/safe-apps-sdk";
 import { useAccount, useNetwork } from "wagmi";
 import {
@@ -134,7 +134,6 @@ const ProposalDetail = ({ pid, daoAddress }) => {
   const [failed, setFailed] = useState(false);
   const [fetched, setFetched] = useState(false);
   const [members, setMembers] = useState([]);
-  const [nftData, setNftData] = useState([]);
   const [isNftSold, setIsNftSold] = useState(false);
   const [isCancelSigned, setIsCancelSigned] = useState(false);
   const [isCancelExecutionReady, setIsCancelExecutionReady] = useState(false);
@@ -149,24 +148,12 @@ const ProposalDetail = ({ pid, daoAddress }) => {
     return state.gnosis.factoryContractAddress;
   });
 
-  const AIRDROP_ACTION_ADDRESS = useSelector((state) => {
-    return state.gnosis.actionContractAddress;
-  });
-
   const factoryData = useSelector((state) => {
     return state.club.factoryData;
   });
 
-  const isAssetsStoredOnGnosis = useSelector((state) => {
-    return state.club.factoryData.assetsStoredOnGnosis;
-  });
-
-  const {
-    getNftBalance,
-    getERC20TotalSupply,
-    getNftOwnersCount,
-    updateProposalAndExecution,
-  } = useAppContractMethods();
+  const { getNftBalance, getERC20TotalSupply, updateProposalAndExecution } =
+    useAppContractMethods();
 
   const getSafeService = useCallback(async () => {
     const web3 = await web3InstanceEthereum();
@@ -314,18 +301,6 @@ const ProposalDetail = ({ pid, daoAddress }) => {
       }
     });
   };
-
-  const fetchNfts = useCallback(async () => {
-    try {
-      const nftsData = await getNFTsByDaoAddress(
-        isAssetsStoredOnGnosis ? gnosisAddress : daoAddress,
-        NETWORK_HEX,
-      );
-      setNftData(nftsData.data);
-    } catch (error) {
-      console.log(error);
-    }
-  }, [NETWORK_HEX, daoAddress, gnosisAddress, isAssetsStoredOnGnosis]);
 
   const fetchData = useCallback(async () => {
     const proposalData = getProposalDetail(pid);
@@ -582,11 +557,9 @@ const ProposalDetail = ({ pid, daoAddress }) => {
     if (pid) {
       setLoaderOpen(true);
       fetchData();
-      fetchNfts();
-
       isOwner();
     }
-  }, [fetchData, fetchNfts, isOwner, pid]);
+  }, [fetchData, isOwner, pid]);
 
   useEffect(() => {
     const fetchAllMembers = async () => {
@@ -608,6 +581,13 @@ const ProposalDetail = ({ pid, daoAddress }) => {
   if (!walletAddress && proposalData === null) {
     return <>loading</>;
   }
+
+  const statusClassMap = {
+    active: classes.cardFontActive,
+    passed: classes.cardFontPassed,
+    executed: classes.cardFontExecuted,
+    failed: classes.cardFontFailed,
+  };
 
   return (
     <>
@@ -677,17 +657,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
                 </Grid>
                 <Grid item>
                   <Chip
-                    className={
-                      proposalData?.status === "active"
-                        ? classes.cardFontActive
-                        : proposalData?.status === "passed"
-                        ? classes.cardFontPassed
-                        : proposalData?.status === "executed"
-                        ? classes.cardFontExecuted
-                        : proposalData?.status === "failed"
-                        ? classes.cardFontFailed
-                        : classes.cardFontFailed
-                    }
+                    className={statusClassMap[proposalData.status]}
                     label={
                       proposalData?.status?.charAt(0).toUpperCase() +
                       proposalData?.status?.slice(1)
