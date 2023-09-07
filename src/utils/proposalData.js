@@ -37,20 +37,24 @@ export const proposalData = ({ data, decimals, factoryData }) => {
       };
     case 3:
       return {
-        "Raise amount":
-          (convertToWeiGovernance(totalDeposits, 6) /
-            factoryData?.pricePerToken) *
+        "Raise Amount :":
+          (convertToWeiGovernance(
+            convertToWeiGovernance(totalDeposits, 6) /
+              factoryData?.pricePerToken,
+            18,
+          ) /
+            10 ** 18) *
           convertFromWeiGovernance(factoryData?.pricePerToken, 6),
       };
     case 4:
       return {
         Amount: customTokenAmounts[0] / 10 ** decimals,
-        Recipient: shortAddress(customTokenAddresses),
+        Recipient: shortAddress(customTokenAddresses[0]),
       };
     case 5:
       return {
         "NFT address": shortAddress(customNft),
-        Recipient: shortAddress(customTokenAddresses),
+        Recipient: shortAddress(customTokenAddresses[0]),
       };
     case 6:
     case 7:
