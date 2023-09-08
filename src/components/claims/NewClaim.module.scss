@@ -1,0 +1,74 @@
+$dark-grey: #151515;
+$divider-color: #2e2e2e;
+
+.main {
+  display: flex;
+  gap: 120px;
+
+  .leftContainer {
+    flex: 0.45;
+    position: sticky;
+    top: 90px;
+    height: fit-content;
+  }
+
+  .rightContainer {
+    flex: 0.55;
+
+    .bannerContainer {
+      margin-bottom: 20px;
+
+      img {
+        border-radius: 8px;
+        margin-bottom: 12px;
+      }
+    }
+
+    .header {
+      padding-bottom: 4px;
+      border-bottom: 1px solid $divider-color;
+      margin-bottom: 20px;
+    }
+
+    .whoCanClaimContainer {
+      margin: 24px 0;
+
+      div {
+        background-color: $dark-grey;
+        padding: 20px;
+        border-radius: 8px;
+        h4 {
+          font-size: large;
+          margin-bottom: 4px;
+        }
+      }
+    }
+
+    .activities {
+      background-color: $dark-grey;
+      padding: 20px;
+      border-radius: 8px;
+      max-height: 400px;
+      overflow: hidden;
+
+      .activity {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+
+        div {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+
+          img {
+            border-radius: 25px;
+          }
+          p {
+            font-weight: 500;
+          }
+        }
+      }
+    }
+  }
+}
