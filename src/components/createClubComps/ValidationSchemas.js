@@ -1,4 +1,6 @@
 import { retrieveNftListing } from "api/assets";
+import { CHAIN_CONFIG } from "utils/constants";
+import { convertFromWeiGovernance } from "utils/globalFunctions";
 import * as yup from "yup";
 
 export const step1ValidationSchema = yup.object({
@@ -259,7 +261,7 @@ export const getProposalValidationSchema = ({
         async (value, context) => {
           const { actionCommand, aaveDepositToken } = context.parent;
 
-          if (actionCommand === "deposit tokens in AAVE pool") {
+          if (actionCommand === 14) {
             try {
               const balance = await getBalance(aaveDepositToken, gnosisAddress);
               const decimals = await getDecimals(aaveDepositToken);
@@ -274,6 +276,7 @@ export const getProposalValidationSchema = ({
               return false;
             }
           }
+          return true;
         },
       ),
 
@@ -285,7 +288,7 @@ export const getProposalValidationSchema = ({
         async (value, context) => {
           const { actionCommand, aaveWithdrawToken } = context.parent;
 
-          if (actionCommand === "withdraw tokens from AAVE pool") {
+          if (actionCommand === 15) {
             let tokenAddress;
 
             if (aaveWithdrawToken === CHAIN_CONFIG[networkId].nativeToken) {
@@ -307,6 +310,7 @@ export const getProposalValidationSchema = ({
               return false;
             }
           }
+          return true;
         },
       ),
   });
