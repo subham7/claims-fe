@@ -97,7 +97,7 @@ export const proposalData = ({ data, decimals, factoryData, symbol }) => {
       };
     case 15:
       return {
-        "Withdraw token": withdrawToken,
+        "Withdraw token": symbol,
         "Withdraw amount": convertFromWeiGovernance(withdrawAmount, decimals),
       };
     default:
@@ -803,8 +803,9 @@ export const proposalFormData = ({
               onChange={(e) =>
                 formik.setFieldValue(
                   "aaveWithdrawToken",
-                  tokenData.find((token) => token.symbol === e.target.value)
-                    .address,
+                  filteredTokens.find(
+                    (token) => token.symbol === e.target.value,
+                  ).address,
                 )
               }
               renderValue={(selected) => {
@@ -816,7 +817,7 @@ export const proposalFormData = ({
               inputProps={{ "aria-label": "Without label" }}
               name="aaveWithdrawToken"
               id="aaveWithdrawToken">
-              {tokenData.map((token) => (
+              {filteredTokens.map((token) => (
                 <MenuItem key={token.symbol} value={token.symbol}>
                   {token.symbol}
                 </MenuItem>
@@ -995,15 +996,13 @@ export const getProposalCommands = async ({
       tokenDecimal = tokenData.find(
         (token) => token.address === values.aaveDepositToken,
       ).decimals;
-      return [
-        {
-          depositToken: values.aaveDepositToken,
-          depositAmount: convertToWeiGovernance(
-            values.aaveDepositAmount,
-            tokenDecimal,
-          ),
-        },
-      ];
+      return {
+        depositToken: values.aaveDepositToken,
+        depositAmount: convertToWeiGovernance(
+          values.aaveDepositAmount,
+          tokenDecimal,
+        ),
+      };
 
     case 15:
       tokenDecimal = tokenData.find(

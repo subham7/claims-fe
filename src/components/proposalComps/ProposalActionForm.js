@@ -164,12 +164,12 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
         <MenuItem key={10} value="Whitelist deposit">
           Whitelist Deposit
         </MenuItem>
-        {/* <MenuItem key={11} value="Whitelist with lens followers">
+        <MenuItem key={11} value="Whitelist with lens followers">
           Whitelist with lens followers
         </MenuItem>
         <MenuItem key={12} value="Whitelist with lens post's comments">
           Whitelist with lens post&apos;s comments
-        </MenuItem> */}
+        </MenuItem>
         <MenuItem key={13} value="Update price per token">
           Update price per token
         </MenuItem>

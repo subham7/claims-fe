@@ -189,7 +189,7 @@ const useClubFetch = ({ daoAddress }) => {
         if (ownerAddressesArray.includes(walletAddress.toLowerCase())) {
           dispatch(setAdminUser(true));
         } else {
-          if (balance === "0") {
+          if (balance === "0" && !router.pathname.includes("join")) {
             dispatch(setMemberUser(false));
             router.push("/");
           } else {
