@@ -125,7 +125,7 @@ const CreateProposalDialog = ({
     onSubmit: async (values) => {
       try {
         setLoaderOpen(true);
-        const commands = await getProposalCommands({
+        let commands = await getProposalCommands({
           values,
           tokenData,
           clubData,
@@ -133,10 +133,14 @@ const CreateProposalDialog = ({
           networkId,
         });
 
-        commands[0].executionId = values.actionCommand;
-        commands[0].usdcTokenSymbol = "USDC";
-        commands[0].usdcTokenDecimal = 6;
-        commands[0].usdcGovernanceTokenDecimal = 18;
+        commands = {
+          executionId: values.actionCommand,
+          ...commands,
+          usdcTokenSymbol: "USDC",
+          usdcTokenDecimal: 6,
+          usdcGovernanceTokenDecimal: 18,
+        };
+        console.log(commands);
 
         const payload = {
           clubId: daoAddress,
@@ -145,7 +149,7 @@ const CreateProposalDialog = ({
           createdBy: walletAddress,
           votingDuration: dayjs(values.proposalDeadline).unix(),
           votingOptions: values.optionList,
-          commands: commands,
+          commands: [commands],
           type: values.typeOfProposal,
           tokenType: clubData.tokenType,
           daoAddress: daoAddress,

@@ -870,90 +870,72 @@ export const getProposalCommands = async ({
       const airDropTokenDecimal = tokenData.find(
         (token) => token.address === values.airdropToken,
       ).decimals;
-      return [
-        {
-          airDropToken: values.airdropToken,
-          airDropAmount: convertToWeiGovernance(
-            values.amountToAirdrop,
-            airDropTokenDecimal,
-          ).toString(),
-          airDropCarryFee: values.carryFee,
-        },
-      ];
+      return {
+        airDropToken: values.airdropToken,
+        airDropAmount: convertToWeiGovernance(
+          values.amountToAirdrop,
+          airDropTokenDecimal,
+        ).toString(),
+        airDropCarryFee: values.carryFee,
+      };
 
     case 1:
-      return [
-        {
-          mintGTAddresses: values.mintGTAddresses,
-          mintGTAmounts:
-            clubData.tokenType === "erc20"
-              ? values.mintGTAmounts.map((amount) =>
-                  convertToWeiGovernance(amount, 18),
-                )
-              : values.mintGTAmounts,
-        },
-      ];
+      return {
+        mintGTAddresses: values.mintGTAddresses,
+        mintGTAmounts:
+          clubData.tokenType === "erc20"
+            ? values.mintGTAmounts.map((amount) =>
+                convertToWeiGovernance(amount, 18),
+              )
+            : values.mintGTAmounts,
+      };
 
     case 2:
-      return [
-        {
-          quorum: values.quorum,
-          threshold: values.threshold,
-        },
-      ];
+      return {
+        quorum: values.quorum,
+        threshold: values.threshold,
+      };
 
     case 3:
-      return [
-        {
-          totalDeposits: values.totalDeposit,
-        },
-      ];
+      return {
+        totalDeposits: values.totalDeposit,
+      };
 
     case 4:
       tokenDecimal = tokenData.find(
         (token) => token.address === values.customToken,
       ).decimals;
-      return [
-        {
-          customToken: values.customToken,
-          customTokenAmounts: [
-            convertToWeiGovernance(values.amountToSend, tokenDecimal),
-          ],
-          customTokenAddresses: [values.recieverAddress],
-        },
-      ];
+      return {
+        customToken: values.customToken,
+        customTokenAmounts: [
+          convertToWeiGovernance(values.amountToSend, tokenDecimal),
+        ],
+        customTokenAddresses: [values.recieverAddress],
+      };
 
     case 5:
-      return [
-        {
-          customNft: values.customNft,
-          customNftToken: values.customNftToken,
-          customTokenAddresses: [values.recieverAddress],
-        },
-      ];
+      return {
+        customNft: values.customNft,
+        customNftToken: values.customNftToken,
+        customTokenAddresses: [values.recieverAddress],
+      };
 
     case 6:
-      return [
-        {
-          ownerAddress: values.ownerAddress,
-        },
-      ];
+      return {
+        ownerAddress: values.ownerAddress,
+      };
 
     case 7:
-      return [
-        {
-          ownerAddress: values.ownerAddress,
-          safeThreshold: values.safeThreshold,
-        },
-      ];
+      return {
+        ownerAddress: values.ownerAddress,
+        safeThreshold: values.safeThreshold,
+      };
 
     case 8:
     case 9:
-      return [
-        {
-          nftLink: values.nftLink,
-        },
-      ];
+      return {
+        nftLink: values.nftLink,
+      };
 
     case 10:
       followersAddresses = values.csvObject;
@@ -963,13 +945,11 @@ export const getProposalCommands = async ({
         whitelist: values.csvObject,
       };
       merkleRoot = await getWhiteListMerkleRoot(networkId, data);
-      return [
-        {
-          merkleRoot: merkleRoot,
-          whitelistAddresses: followersAddresses,
-          allowWhitelisting: true,
-        },
-      ];
+      return {
+        merkleRoot: merkleRoot,
+        whitelistAddresses: followersAddresses,
+        allowWhitelisting: true,
+      };
 
     case 11:
       followersAddresses = await handleFetchFollowers(values.lensId);
@@ -979,14 +959,12 @@ export const getProposalCommands = async ({
         whitelist: followersAddresses,
       };
       merkleRoot = await getWhiteListMerkleRoot(networkId, data);
-      return [
-        {
-          merkleRoot: merkleRoot,
-          lensId: values.lensId,
-          whitelistAddresses: followersAddresses,
-          allowWhitelisting: true,
-        },
-      ];
+      return {
+        merkleRoot: merkleRoot,
+        lensId: values.lensId,
+        whitelistAddresses: followersAddresses,
+        allowWhitelisting: true,
+      };
 
     case 12:
       followersAddresses = await handleFetchCommentAddresses(
@@ -999,21 +977,17 @@ export const getProposalCommands = async ({
       };
       merkleRoot = await getWhiteListMerkleRoot(networkId, data);
 
-      return [
-        {
-          merkleRoot: merkleRoot,
-          lensPostLink: values.lensPostLink,
-          whitelistAddresses: followersAddresses,
-          allowWhitelisting: true,
-        },
-      ];
+      return {
+        merkleRoot: merkleRoot,
+        lensPostLink: values.lensPostLink,
+        whitelistAddresses: followersAddresses,
+        allowWhitelisting: true,
+      };
 
     case 13:
-      return [
-        {
-          pricePerToken: values.pricePerToken,
-        },
-      ];
+      return {
+        pricePerToken: values.pricePerToken,
+      };
 
     case 14:
       tokenDecimal = tokenData.find(
@@ -1034,14 +1008,12 @@ export const getProposalCommands = async ({
         (token) => token.address === values.aaveWithdrawToken,
       ).decimals;
 
-      return [
-        {
-          withdrawToken: values.aaveWithdrawToken,
-          withdrawAmount: convertToWeiGovernance(
-            values.aaveWithdrawAmount,
-            tokenDecimal,
-          ),
-        },
-      ];
+      return {
+        withdrawToken: values.aaveWithdrawToken,
+        withdrawAmount: convertToWeiGovernance(
+          values.aaveWithdrawAmount,
+          tokenDecimal,
+        ),
+      };
   }
 };
