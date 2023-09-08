@@ -339,7 +339,7 @@ export const getEncodedData = async ({
     case 1:
       if (clubData.tokenType === "erc20") {
         data = iface.encodeFunctionData("mintGTToAddress", [
-          [mintGTAmounts.toString()],
+          mintGTAmounts,
           mintGTAddresses,
         ]);
       } else {
