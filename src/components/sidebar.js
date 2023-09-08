@@ -83,12 +83,12 @@ const Sidebar = (props) => {
           border: "none",
           boxSizing: "border-box",
           width: drawerWidth,
-          paddingTop: "50px",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
           minHeight: "100vh",
-          paddingTop: "2rem",
+          paddingTop: "5rem",
+          position: "fixed",
         }}
         open>
         <List>

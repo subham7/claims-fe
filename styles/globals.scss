@@ -246,6 +246,10 @@ input::-webkit-inner-spin-button {
   justify-content: space-between;
   padding: 16px 32px;
   align-items: center;
+  position: fixed;
+  width: 100vw;
+  background-color: #0f0f0f;
+  z-index: 10000;
 }
 
 .wallet-div {

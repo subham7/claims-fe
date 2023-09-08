@@ -1,5 +1,10 @@
+import ProgressBar from "@components/progressbar";
+import Button from "@components/ui/button/Button";
 import Image from "next/image";
 import React from "react";
+import { BiLogoTelegram } from "react-icons/bi";
+import { BsTwitter } from "react-icons/bs";
+import { IoLogoDiscord } from "react-icons/io5";
 import classes from "./NewClaim.module.scss";
 
 const DUMMY_ACTIVITIES = [
@@ -43,50 +48,56 @@ const DUMMY_ACTIVITIES = [
     amount: 100,
     tokenSymbol: "MEME",
   },
-  {
-    address: "0x12e56bCD9Fb726574BAdA826594bfdFeBD9f4304",
-    amount: 100,
-    tokenSymbol: "MEME",
-  },
-  {
-    address: "0x12e56bCD9Fb726574BAdA826594bfdFeBD9f4304",
-    amount: 100,
-    tokenSymbol: "MEME",
-  },
-
-  {
-    address: "0x12e56bCD9Fb726574BAdA826594bfdFeBD9f4304",
-    amount: 100,
-    tokenSymbol: "MEME",
-  },
-  {
-    address: "0x12e56bCD9Fb726574BAdA826594bfdFeBD9f4304",
-    amount: 100,
-    tokenSymbol: "MEME",
-  },
 ];
 
 const NewClaim = () => {
   return (
     <main className={classes.main}>
       <section className={classes.leftContainer}>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut vulputate
-        dolor mollis dui fermentum, eget volutpat velit rutrum. Nunc id ligula
-        ut augue fringilla tempus. Aenean eu varius ligula, at viverra magna.
-        Curabitur nisl elit, tempor eget euismod eget, maximus mattis ex.
-        Quisque interdum bibendum sodales. Fusce volutpat, metus et pretium
-        lobortis, nulla diam convallis enim, a eleifend mi nunc in nunc. Nulla
-        facilisi. Nullam quis urna condimentum, egestas sem sed, malesuada
-        risus. Sed non fringilla arcu, in luctus erat. Vestibulum imperdiet nibh
-        quis justo aliquet venenatis. Cras non gravida ex, sed dictum purus.
-        Integer molestie eleifend ornare. Donec aliquam ipsum eu ligula
-        ullamcorper, et tincidunt neque sollicitudin. Donec cursus fringilla
-        eros nec venenatis. Duis ut luctus leo. Nam tincidunt velit sed nibh
-        finibus fermentum. Pellentesque habitant morbi tristique senectus et
-        netus et malesuada fames ac turpis egestas. Vivamus dignissim nibh at
-        semper dictum. Vivamus vehicula lacinia arcu vel maximus. Proin ut urna
-        nulla. Cras euismod finibus lacus quis tincidunt. Proin semper non nulla
-        sit amet pharetra. Lorem ipsum dolor sit amet, consectetur adipiscing
+        <div>
+          <p className={classes.active}>Active</p>
+          <h1>MEME</h1>
+          <p>This drop closes on Aug 15, 2023 at 9:47am (UTC)</p>
+
+          <div className={classes.progress}>
+            <p>100% claimed</p>
+            <ProgressBar value={10} />
+          </div>
+
+          <div className={classes.inputContainer}>
+            <div>
+              <input
+                name="tokenInput"
+                id="tokenInput"
+                // onChange={formik.handleChange}
+                onWheel={(event) => event.target.blur()}
+                autoFocus
+                type={"number"}
+                placeholder="0"
+              />
+              <p className={classes.smallFont}>$1322.70</p>
+            </div>
+
+            <div className={classes.tokenContainer}>
+              <p className={classes.token}>USDC</p>
+              <p className={classes.smallFont}>
+                Available: 1000.0 <span>Max</span>
+              </p>
+            </div>
+          </div>
+
+          <Button className={classes.claim} variant="normal">
+            Claim now
+          </Button>
+        </div>
+
+        <div>
+          <div className={classes.socials}>
+            <BsTwitter />
+            <IoLogoDiscord />
+            <BiLogoTelegram />
+          </div>
+        </div>
       </section>
       <section className={classes.rightContainer}>
         <div className={classes.bannerContainer}>

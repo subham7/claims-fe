@@ -69,7 +69,12 @@ export default function Layout(props) {
                 width: { sm: `calc(100% - ${drawerWidth}px)` },
                 paddingX: showSidebar ? "0px" : "60px",
               }}>
-              <div style={{ padding: "12px 32px 0px 40px" }}>
+              <div
+                style={{
+                  padding: "12px 32px 0px 40px",
+                  marginTop: "80px",
+                  marginLeft: showSidebar ? "80px" : 0,
+                }}>
                 {props.children}
               </div>
             </Box>
