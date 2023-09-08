@@ -178,3 +178,22 @@ export const mantleMainnetViem = {
     },
   },
 };
+
+export const proposalActionCommands = {
+  0: "Distribute token to members",
+  1: "Mint club token",
+  2: "Update Governance Settings",
+  3: "Change total raise amount",
+  4: "Send token to an address",
+  5: "Send nft to an address",
+  6: "Add signer",
+  7: "Remove signer",
+  8: "Buy nft",
+  9: "Sell nft",
+  10: "whitelist deposit",
+  11: "whitelist with lens followers",
+  12: "whitelist with lens post's comments",
+  13: "update price per token",
+  14: "deposit tokens in AAVE pool",
+  15: "withdraw tokens from AAVE pool",
+};
