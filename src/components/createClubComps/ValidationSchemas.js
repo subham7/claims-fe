@@ -108,7 +108,7 @@ export const getProposalValidationSchema = ({
   getDecimals,
   gnosisAddress,
 }) => {
-  yup.object({
+  return yup.object({
     proposalDeadline: yup.date().required("Deposit close date is required"),
     proposalTitle: yup
       .string("Enter proposal title")
