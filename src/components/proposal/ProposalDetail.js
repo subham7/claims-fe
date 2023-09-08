@@ -657,7 +657,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
                 </Grid>
                 <Grid item>
                   <Chip
-                    className={statusClassMap[proposalData.status]}
+                    className={statusClassMap[proposalData?.status]}
                     label={
                       proposalData?.status?.charAt(0).toUpperCase() +
                       proposalData?.status?.slice(1)

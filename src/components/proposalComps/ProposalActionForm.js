@@ -10,8 +10,9 @@ import { useNetwork } from "wagmi";
 import { csvToObjectForMintGT } from "utils/helper";
 import React, { useRef, useState } from "react";
 import { useSelector } from "react-redux";
-import { proposalActionCommands } from "utils/constants";
+import { CHAIN_CONFIG, proposalActionCommands } from "utils/constants";
 import { proposalFormData } from "utils/proposalData";
+import Web3 from "web3";
 
 const useStyles = makeStyles({
   textField: {
@@ -47,7 +48,6 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
 
   let filteredTokens = [];
   tokenData.map((token) => {
-    debugger;
     if (
       token.address === CHAIN_CONFIG[networkId].nativeToken ||
       Web3.utils.toChecksumAddress(token.address) ===
@@ -56,8 +56,6 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
       filteredTokens.push(token);
     }
   });
-
-  console.log("FILTERED", filteredTokens);
 
   const handleClick = () => {
     hiddenFileInput.current.click();

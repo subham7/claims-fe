@@ -151,7 +151,6 @@ const CreateProposalDialog = ({
           usdcTokenDecimal: 6,
           usdcGovernanceTokenDecimal: 18,
         };
-        console.log(commands);
 
         const payload = {
           clubId: daoAddress,
