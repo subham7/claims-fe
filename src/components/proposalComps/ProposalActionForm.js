@@ -121,8 +121,8 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
         </MenuItem>
 
         {isGovernanceActive ? (
-          <MenuItem key={2} value="Update Governance Settings">
-            Update Governance Settings
+          <MenuItem key={2} value="Update governance settings">
+            Update governance settings
           </MenuItem>
         ) : null}
         {tokenType !== "erc721" ? (
@@ -138,33 +138,33 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
           Send nft to an address
         </MenuItem>
         <MenuItem key={6} value="Add signer">
-          Add Signer
+          Add signer
         </MenuItem>
         <MenuItem key={7} value="Remove signer">
-          Remove Signer
+          Remove signer
         </MenuItem>
         <MenuItem key={8} value="Buy nft">
-          Buy Nft
+          Buy nft
         </MenuItem>
         {/* <MenuItem key={9} value="Sell nft">
-          Sell Nft
+          Sell nft
         </MenuItem> */}
-        <MenuItem key={10} value="whitelist deposit">
+        <MenuItem key={10} value="Whitelist deposit">
           Whitelist Deposit
         </MenuItem>
-        {/* <MenuItem key={11} value="whitelist with lens followers">
-          Whitelist with Lens followers
+        {/* <MenuItem key={11} value="Whitelist with lens followers">
+          Whitelist with lens followers
         </MenuItem>
-        <MenuItem key={12} value="whitelist with lens post's comments">
-          Whitelist with Lens post&apos;s comments
+        <MenuItem key={12} value="Whitelist with lens post's comments">
+          Whitelist with lens post&apos;s comments
         </MenuItem> */}
-        <MenuItem key={13} value="update price per token">
+        <MenuItem key={13} value="Update price per token">
           Update price per token
         </MenuItem>
-        <MenuItem key={14} value="deposit tokens in AAVE pool">
+        <MenuItem key={14} value="Deposit tokens in AAVE pool">
           Deposit tokens in AAVE pool
         </MenuItem>
-        <MenuItem key={15} value="withdraw tokens from AAVE pool">
+        <MenuItem key={15} value="Withdraw tokens from AAVE pool">
           Withdraw tokens from AAVE pool
         </MenuItem>
       </Select>
