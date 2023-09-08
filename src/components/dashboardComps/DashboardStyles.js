@@ -26,30 +26,21 @@ export const DashboardStyles = makeStyles({
     width: "Infinityvw",
     height: "164px",
     padding: "0px",
-    // marginTop: "20px",
     background: "#0ABB92 no-repeat padding-box",
   },
   thirdCard: {
-    // width: "22vw",
-    // height: "351px",
-    background: "#121D38",
-    border: ".5px solid #6475A3",
+    background: "#151515",
   },
   fifthCard: {
-    // width: "22vw",
-    // height: "370px",
-    background: "#121D38",
-    border: ".5px solid #6475A3",
+    background: "#151515",
     color: "white",
     position: "relative",
   },
   cardSharp1: {
-    backgroundColor: "#121D38",
+    backgroundColor: "#151515",
     borderRadius: "10px",
     opacity: 1,
     width: "100%",
-    // height: "370px",
-    border: ".5px solid #6475A3",
   },
   cardSharp2: {
     backgroundColor: "#151515",
@@ -193,10 +184,8 @@ export const DashboardStyles = makeStyles({
     color: "#FFFFFF",
   },
   fourthCard: {
-    // width: "22vw",
-    background: "#121D38",
+    backgroundColor: "#151515",
     borderRadius: "10px",
-    border: ".5px solid #6475A3",
     paddingBottom: "25px",
   },
   pendingIllustration: {
@@ -246,7 +235,7 @@ export const DashboardStyles = makeStyles({
   membersTitleSmall: {
     fontSize: "24px",
     color: "#FFFFFF",
-    backgroundColor: "#19274B",
+    backgroundColor: "#151515",
   },
   banner: {
     width: "100%",

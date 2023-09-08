@@ -35,10 +35,8 @@ export const proposalData = ({ data, decimals, factoryData, symbol }) => {
     lensPostLink,
     pricePerToken,
     depositAmount,
-    depositToken,
-    withdrawToken,
     withdrawAmount,
-  } = data;
+  } = data ?? {};
 
   switch (executionId) {
     case 0:

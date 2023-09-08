@@ -34,7 +34,7 @@ import { getProposalValidationSchema } from "@components/createClubComps/Validat
 const useStyles = makeStyles({
   modalStyle: {
     width: "792px",
-    backgroundColor: "#19274B",
+    backgroundColor: "#151515",
   },
   dialogBox: {
     fontSize: "38px",
@@ -200,7 +200,7 @@ const CreateProposalDialog = ({
         <DialogContent
           sx={{
             overflow: "hidden",
-            backgroundColor: "#19274B",
+            backgroundColor: "#151515",
             padding: "3rem",
           }}>
           <form onSubmit={proposal.handleSubmit} className={classes.form}>

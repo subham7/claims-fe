@@ -70,7 +70,7 @@ export const darkComponents = {
   MuiDialog: {
     styleOverrides: {
       paper: {
-        backgroundColor: "#19274B",
+        backgroundColor: "#151515",
         borderRadius: "20px",
       },
     },
@@ -139,14 +139,6 @@ export const darkComponents = {
         style: {
           fontSize: "0.9375em",
           color: "#C1D3FF",
-        },
-      },
-      {
-        props: { variant: "textLink" },
-        style: {
-          fontSize: "1.5em",
-          color: "#FFFFFF",
-          backgroundColor: "#19274B",
         },
       },
       {
@@ -240,7 +232,7 @@ export const darkComponents = {
   MuiCalendarPicker: {
     styleOverrides: {
       root: {
-        backgroundColor: "#19274b",
+        backgroundColor: "#151515",
       },
     },
   },

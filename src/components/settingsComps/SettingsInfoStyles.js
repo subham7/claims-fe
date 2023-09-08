@@ -132,7 +132,7 @@ export const SettingsInfoStlyes = makeStyles({
   },
   modalStyle: {
     width: "792px",
-    backgroundColor: "#19274B",
+    backgroundColor: "#151515",
   },
   datePicker: {
     borderRadius: "10px",

@@ -20,7 +20,7 @@ import "react-quill/dist/quill.snow.css";
 const useStyles = makeStyles({
   modalStyle: {
     width: "792px",
-    backgroundColor: "#19274B",
+    backgroundColor: "#151515",
   },
   dialogBox: {
     fontSize: "38px",
@@ -116,7 +116,7 @@ const EditClubInfo = (props) => {
         <DialogContent
           sx={{
             overflow: "hidden",
-            backgroundColor: "#19274B",
+            backgroundColor: "#151515",
             padding: "3rem",
           }}>
           <form className={classes.form}>

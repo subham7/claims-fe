@@ -55,12 +55,12 @@ export const ProposalDetailStyles = makeStyles({
   mainCard: {
     borderRadius: "38px",
     border: "1px solid #C1D3FF40;",
-    backgroundColor: "#19274B",
+    backgroundColor: "#151515",
   },
   mainCardSelected: {
     borderRadius: "38px",
     border: "1px solid #FFFFFF;",
-    backgroundColor: "#19274B",
+    backgroundColor: "#151515",
   },
   mainCardButton: {
     borderRadius: "38px",

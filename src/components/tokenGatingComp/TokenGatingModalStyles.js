@@ -2,11 +2,10 @@ import { makeStyles } from "@mui/styles";
 
 export const TokenGatingModalStyles = makeStyles({
   container: {
-    background: "#101D38",
+    background: "#151515",
     width: "600px",
     borderRadius: "20px",
     padding: "70px 30px",
-    border: "0.5px solid #6475A3",
     display: "flex",
     flexDirection: "column",
     position: "fixed",
@@ -50,7 +49,6 @@ export const TokenGatingModalStyles = makeStyles({
 
   cancelBtn: {
     background: "#101D38",
-    border: "0.5px solid #6475A3",
     borderRadius: "50px",
     width: "150px",
     marginRight: "10px",
