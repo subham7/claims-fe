@@ -24,11 +24,12 @@ import dayjs from "dayjs";
 import QuillEditor from "../quillEditor";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ProposalActionForm from "./ProposalActionForm";
-import { proposalValidationSchema } from "../createClubComps/ValidationSchemas";
 import { createProposal } from "../../api/proposal";
 import { useSelector } from "react-redux";
 import { useAccount, useNetwork } from "wagmi";
 import { getProposalCommands } from "utils/proposalData";
+import useCommonContractMethods from "hooks/useCommonContractMehods";
+import { getProposalValidationSchema } from "@components/createClubComps/ValidationSchemas";
 
 const useStyles = makeStyles({
   modalStyle: {
@@ -86,6 +87,11 @@ const CreateProposalDialog = ({
     setLoaderOpen(false);
   };
 
+  const { getBalance, getDecimals } = useCommonContractMethods();
+  const gnosisAddress = useSelector((state) => {
+    return state.club.clubData.gnosisAddress;
+  });
+
   const proposal = useFormik({
     initialValues: {
       tokenType: tokenType,
@@ -121,7 +127,12 @@ const CreateProposalDialog = ({
       aaveWithdrawAmount: 0,
       aaveWithdrawToken: tokenData ? tokenData[0]?.address : "",
     },
-    validationSchema: proposalValidationSchema,
+    validationSchema: getProposalValidationSchema({
+      networkId,
+      getBalance,
+      getDecimals,
+      gnosisAddress,
+    }),
     onSubmit: async (values) => {
       try {
         setLoaderOpen(true);
@@ -431,11 +442,7 @@ const CreateProposalDialog = ({
               </Grid>
               <Grid item>
                 <Button type="submit">
-                  {loaderOpen ? (
-                    <CircularProgress color="inherit" size={25} />
-                  ) : (
-                    "Submit"
-                  )}
+                  {loaderOpen ? <CircularProgress size={25} /> : "Submit"}
                 </Button>
               </Grid>
             </Grid>

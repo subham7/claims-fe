@@ -1,4 +1,5 @@
-export const BLOCK_CONFIRMATIONS = 1;
+export const BLOCK_CONFIRMATIONS = 4;
+export const BLOCK_TIMEOUT = 120000;
 
 export const CHAIN_CONFIG = {
   "0x89": {
@@ -19,6 +20,7 @@ export const CHAIN_CONFIG = {
       "https://api.thegraph.com/subgraphs/name/subham7/stnx-claim",
     covalentNetworkName: "matic-mainnet",
     nativeToken: "0x0000000000000000000000000000000000001010",
+    usdcAddress: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
     airdropContractAddress: "0x0DF19560f74749a42215A16C3FC22FfAA1c4029A",
     aavePoolAddress: "0x794a61358D6845594F94dc1DB02A252b5b4814aD",
     aaveMaticPoolAddress: "0x1e4b7A6b903680eab0c5dAbcb8fD429cD2a9598c",

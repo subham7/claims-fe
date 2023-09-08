@@ -19,7 +19,7 @@ import {
   handleFetchFollowers,
 } from "./lensHelper";
 
-export const proposalData = ({ data, decimals, factoryData }) => {
+export const proposalData = ({ data, decimals, factoryData, symbol }) => {
   const {
     executionId,
     airDropAmount,
@@ -92,7 +92,7 @@ export const proposalData = ({ data, decimals, factoryData }) => {
       return { "Price per token": `${pricePerToken} USDC` };
     case 14:
       return {
-        Token: depositToken,
+        Token: symbol,
         Amount: convertFromWeiGovernance(depositAmount, decimals),
       };
     case 15:
@@ -115,6 +115,7 @@ export const proposalFormData = ({
   hiddenFileInput,
   file,
   nftData,
+  filteredTokens,
 }) => {
   const executionId = formik.values.actionCommand;
   switch (executionId) {
@@ -734,8 +735,9 @@ export const proposalFormData = ({
               onChange={(e) =>
                 formik.setFieldValue(
                   "aaveDepositToken",
-                  tokenData.find((token) => token.symbol === e.target.value)
-                    .address,
+                  filteredTokens.find(
+                    (token) => token.symbol === e.target.value,
+                  ).address,
                 )
               }
               renderValue={(selected) => {
@@ -747,7 +749,7 @@ export const proposalFormData = ({
               inputProps={{ "aria-label": "Without label" }}
               name="aaveDepositToken"
               id="aaveDepositToken">
-              {tokenData.map((token) => (
+              {filteredTokens.map((token) => (
                 <MenuItem key={token.symbol} value={token.symbol}>
                   {token.symbol}
                 </MenuItem>

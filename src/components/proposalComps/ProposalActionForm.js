@@ -45,6 +45,20 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
   const isGovernanceActive =
     tokenType === "erc20" ? isGovernanceERC20 : isGovernanceERC721;
 
+  let filteredTokens = [];
+  tokenData.map((token) => {
+    debugger;
+    if (
+      token.address === CHAIN_CONFIG[networkId].nativeToken ||
+      Web3.utils.toChecksumAddress(token.address) ===
+        CHAIN_CONFIG[networkId].usdcAddress
+    ) {
+      filteredTokens.push(token);
+    }
+  });
+
+  console.log("FILTERED", filteredTokens);
+
   const handleClick = () => {
     hiddenFileInput.current.click();
   };
@@ -178,6 +192,7 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
         hiddenFileInput,
         file,
         nftData,
+        filteredTokens,
       })}
     </Stack>
   );

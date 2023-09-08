@@ -46,7 +46,7 @@ const SafeDepositLoadingModal = ({ open, title, description }) => {
             </Typography>
           </Grid>
           <Grid item paddingTop="30px">
-            <CircularProgress color="inherit" />
+            <CircularProgress />
           </Grid>
         </Grid>
       </Card>

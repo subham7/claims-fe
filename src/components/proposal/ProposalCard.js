@@ -34,8 +34,13 @@ const ProposalCard = ({ proposal, daoAddress }) => {
       if (proposal) {
         let decimal = 18;
 
-        const { executionId, airDropToken, customToken } =
-          proposal?.commands[0];
+        const {
+          executionId,
+          airDropToken,
+          customToken,
+          depositToken,
+          withdrawToken,
+        } = proposal?.commands[0];
 
         if (tokenType === "erc20" || executionId !== 1) {
           decimal = await getDecimals(
@@ -45,6 +50,10 @@ const ProposalCard = ({ proposal, daoAddress }) => {
               ? daoAddress
               : executionId === 4
               ? customToken
+              : executionId === 14
+              ? depositToken
+              : executionId === 15
+              ? withdrawToken
               : "",
           );
         }
@@ -56,6 +65,10 @@ const ProposalCard = ({ proposal, daoAddress }) => {
             ? daoAddress
             : executionId === 4
             ? customToken
+            : executionId === 14
+            ? depositToken
+            : executionId === 15
+            ? withdrawToken
             : "",
         );
 
@@ -77,6 +90,7 @@ const ProposalCard = ({ proposal, daoAddress }) => {
     const response = proposalData({
       data: proposal.commands[0],
       decimals: tokenDetails.decimals,
+      symbol: tokenDetails.symbol,
       factoryData,
     });
     setProposalDetails(response);
@@ -84,7 +98,7 @@ const ProposalCard = ({ proposal, daoAddress }) => {
 
   useEffect(() => {
     getProposalData();
-  }, [proposal, tokenDetails.decimals]);
+  }, [proposal, tokenDetails.decimals, tokenDetails.symbol]);
 
   const statusClassMap = {
     active: classes.cardFontActive,

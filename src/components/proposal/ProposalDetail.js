@@ -1220,7 +1220,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
       <Backdrop
         sx={{ color: "#000", zIndex: (theme) => theme.zIndex.drawer + 1 }}
         open={loaderOpen}>
-        <CircularProgress color="inherit" />
+        <CircularProgress />
       </Backdrop>
     </>
   );
