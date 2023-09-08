@@ -1,4 +1,5 @@
-export const BLOCK_CONFIRMATIONS = 1;
+export const BLOCK_CONFIRMATIONS = 4;
+export const BLOCK_TIMEOUT = 120000;
 
 export const CHAIN_CONFIG = {
   "0x89": {
@@ -19,6 +20,7 @@ export const CHAIN_CONFIG = {
       "https://api.thegraph.com/subgraphs/name/subham7/stnx-claim",
     covalentNetworkName: "matic-mainnet",
     nativeToken: "0x0000000000000000000000000000000000001010",
+    usdcAddress: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
     airdropContractAddress: "0x0DF19560f74749a42215A16C3FC22FfAA1c4029A",
     aavePoolAddress: "0x794a61358D6845594F94dc1DB02A252b5b4814aD",
     aaveMaticPoolAddress: "0x1e4b7A6b903680eab0c5dAbcb8fD429cD2a9598c",
@@ -177,4 +179,23 @@ export const mantleMainnetViem = {
       blockCreated: 304717,
     },
   },
+};
+
+export const proposalActionCommands = {
+  0: "Distribute token to members",
+  1: "Mint club token",
+  2: "Update governance settings",
+  3: "Change total raise amount",
+  4: "Send token to an address",
+  5: "Send nft to an address",
+  6: "Add signer",
+  7: "Remove signer",
+  8: "Buy nft",
+  9: "Sell nft",
+  10: "Whitelist deposit",
+  11: "Whitelist with lens followers",
+  12: "Whitelist with lens post's comments",
+  13: "Update price per token",
+  14: "Deposit tokens in AAVE pool",
+  15: "Withdraw tokens from AAVE pool",
 };

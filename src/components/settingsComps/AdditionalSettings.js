@@ -304,7 +304,7 @@ const AdditionalSettings = ({
       </Stack>
 
       <Backdrop sx={{ color: "#000", zIndex: 10000000 }} open={loading}>
-        <CircularProgress color="inherit" />
+        <CircularProgress />
       </Backdrop>
 
       {showOwnerFeesModal && (

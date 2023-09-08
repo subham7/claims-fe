@@ -213,11 +213,7 @@ const EditClubInfo = (props) => {
               </Grid>
               <Grid item>
                 <Button onClick={() => formik.handleSubmit()}>
-                  {loaderOpen ? (
-                    <CircularProgress color="inherit" size={25} />
-                  ) : (
-                    "Save Changes"
-                  )}
+                  {loaderOpen ? <CircularProgress size={25} /> : "Save Changes"}
                 </Button>
               </Grid>
             </Grid>

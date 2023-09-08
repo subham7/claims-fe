@@ -144,12 +144,7 @@ const DashboardIndex = ({ daoAddress }) => {
     } catch (error) {
       console.log(error);
     }
-  }, [
-    NETWORK_HEX,
-    daoAddress,
-    factoryData.assetsStoredOnGnosis,
-    gnosisAddress,
-  ]);
+  }, [NETWORK_HEX, gnosisAddress]);
 
   const fetchNfts = useCallback(async () => {
     try {

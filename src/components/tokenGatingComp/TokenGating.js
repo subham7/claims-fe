@@ -330,7 +330,7 @@ const TokenGating = ({ daoAddress }) => {
       )}
 
       <Backdrop sx={{ color: "#fff", zIndex: 1000 }} open={loading}>
-        <CircularProgress color="inherit" />
+        <CircularProgress />
       </Backdrop>
 
       {showMessage && isTokenGatingSuccessfull && (

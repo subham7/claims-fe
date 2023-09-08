@@ -246,7 +246,7 @@ const Members = ({ daoAddress }) => {
             <Grid item>
               <Button onClick={formik.handleSubmit} variant="normal">
                 {downloadLoading ? (
-                  <CircularProgress color="inherit" size={24} />
+                  <CircularProgress size={24} />
                 ) : (
                   "Download CSV"
                 )}
@@ -336,7 +336,7 @@ const Members = ({ daoAddress }) => {
       <Backdrop
         sx={{ color: "#000", zIndex: (theme) => theme?.zIndex?.drawer + 1 }}
         open={loading}>
-        <CircularProgress color="inherit" />
+        <CircularProgress />
       </Backdrop>
     </>
   );

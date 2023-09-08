@@ -14,7 +14,6 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import { makeStyles } from "@mui/styles";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import {
@@ -41,7 +40,7 @@ import ProposalInfo from "@components/proposalComps/ProposalInfo";
 import CurrentResults from "@components/proposalComps/CurrentResults";
 import ProposalVotes from "@components/proposalComps/ProposalVotes";
 import { getSafeSdk, web3InstanceEthereum } from "utils/helper";
-import { getNFTsByDaoAddress, retrieveNftListing } from "api/assets";
+import { retrieveNftListing } from "api/assets";
 import SafeAppsSDK from "@safe-global/safe-apps-sdk";
 import { useAccount, useNetwork } from "wagmi";
 import {
@@ -54,153 +53,10 @@ import {
 import { BsInfoCircleFill } from "react-icons/bs";
 import useAppContractMethods from "hooks/useAppContractMethods";
 import { queryAllMembersFromSubgraph } from "utils/stationsSubgraphHelper";
-
-const useStyles = makeStyles({
-  clubAssets: {
-    fontSize: "42px",
-    color: "#FFFFFF",
-  },
-  activeIllustration: {
-    height: "12px",
-    width: "12px",
-    backgroundColor: "#0ABB92",
-    borderRadius: "50%",
-    marginRight: "15px",
-  },
-  passedIllustration: {
-    height: "12px",
-    width: "12px",
-    backgroundColor: "#FFB74D",
-    borderRadius: "50%",
-    marginRight: "15px",
-  },
-  executedIllustration: {
-    height: "12px",
-    width: "12px",
-    backgroundColor: "#F75F71",
-    borderRadius: "50%",
-    marginRight: "15px",
-  },
-  failedIllustration: {
-    height: "12px",
-    width: "12px",
-    backgroundColor: "#D55438",
-    borderRadius: "50%",
-    marginRight: "15px",
-  },
-  listFont: {
-    fontSize: "20px",
-    color: "#C1D3FF",
-  },
-  listFont2: {
-    fontSize: "18px",
-    color: "#C1D3FF",
-  },
-  listFont2Colourless: {
-    fontSize: "18px",
-    color: "#FFFFFF",
-    fontWeight: "bold",
-  },
-  listFont2small: {
-    fontSize: "12px",
-    color: "#C1D3FF",
-  },
-  cardFont: {
-    fontSize: "18px",
-    color: "#C1D3FF",
-  },
-  cardFont1: {
-    fontSize: "18px",
-    color: "#EFEFEF",
-    justifyContent: "center",
-    display: "flex",
-    alignItems: "center",
-  },
-  successfulMessageText: {
-    fontSize: "28px",
-    color: "#EFEFEF",
-  },
-  cardFontYes: {
-    fontSize: "16px",
-    backgroundColor: "#0ABB92",
-    padding: "0 5px 0 5px",
-  },
-  cardFontNo: {
-    fontSize: "16px",
-    backgroundColor: "#D55438",
-    padding: "0 5px 0 5px",
-  },
-  mainCard: {
-    borderRadius: "38px",
-    border: "1px solid #C1D3FF40;",
-    backgroundColor: "#19274B",
-  },
-  mainCardSelected: {
-    borderRadius: "38px",
-    border: "1px solid #FFFFFF;",
-    backgroundColor: "#19274B",
-  },
-  mainCardButton: {
-    borderRadius: "38px",
-    border: "1px solid #C1D3FF40;",
-    backgroundColor: "#2D55FF",
-    "&:hover": {
-      cursor: "pointer",
-    },
-  },
-  mainCardButtonSuccess: {
-    borderRadius: "38px",
-    fontSize: "50px",
-    color: "#0ABB92",
-  },
-  mainCardButtonError: {
-    fontSize: "50px",
-    color: "#D55438",
-  },
-  seeMoreButton: {
-    border: "1px solid #C1D3FF40",
-    borderRadius: "10px",
-    backgroundColor: "#19274B",
-    display: "flex",
-  },
-  actionChip: {
-    border: "1px solid #0ABB92",
-    background: "transparent",
-    textTransform: "capitalize",
-  },
-  surveyChip: {
-    border: "1px solid #6C63FF",
-    background: "transparent",
-    textTransform: "capitalize",
-  },
-  timeLeftChip: {
-    background: "#0F0F0F",
-    borderRadius: "5px",
-  },
-  cardFontActive: {
-    fontSize: "16px",
-    backgroundColor: "#0ABB92",
-    padding: "5px 5px 5px 5px",
-  },
-  cardFontExecuted: {
-    fontSize: "16px",
-    backgroundColor: "#F75F71",
-    padding: "5px 5px 5px 5px",
-  },
-  cardFontPassed: {
-    fontSize: "16px",
-    backgroundColor: "#FFB74D",
-    padding: "5px 5px 5px 5px",
-  },
-  cardFontFailed: {
-    fontSize: "16px",
-    backgroundColor: "#D55438",
-    padding: "5px 5px 5px 5px",
-  },
-});
+import { ProposalDetailStyles } from "./ProposalDetailStyles";
 
 const ProposalDetail = ({ pid, daoAddress }) => {
-  const classes = useStyles();
+  const classes = ProposalDetailStyles();
   const router = useRouter();
 
   const { address: walletAddress } = useAccount();
@@ -278,7 +134,6 @@ const ProposalDetail = ({ pid, daoAddress }) => {
   const [failed, setFailed] = useState(false);
   const [fetched, setFetched] = useState(false);
   const [members, setMembers] = useState([]);
-  const [nftData, setNftData] = useState([]);
   const [isNftSold, setIsNftSold] = useState(false);
   const [isCancelSigned, setIsCancelSigned] = useState(false);
   const [isCancelExecutionReady, setIsCancelExecutionReady] = useState(false);
@@ -293,24 +148,12 @@ const ProposalDetail = ({ pid, daoAddress }) => {
     return state.gnosis.factoryContractAddress;
   });
 
-  const AIRDROP_ACTION_ADDRESS = useSelector((state) => {
-    return state.gnosis.actionContractAddress;
-  });
-
   const factoryData = useSelector((state) => {
     return state.club.factoryData;
   });
 
-  const isAssetsStoredOnGnosis = useSelector((state) => {
-    return state.club.factoryData.assetsStoredOnGnosis;
-  });
-
-  const {
-    getNftBalance,
-    getERC20TotalSupply,
-    getNftOwnersCount,
-    updateProposalAndExecution,
-  } = useAppContractMethods();
+  const { getNftBalance, getERC20TotalSupply, updateProposalAndExecution } =
+    useAppContractMethods();
 
   const getSafeService = useCallback(async () => {
     const web3 = await web3InstanceEthereum();
@@ -458,18 +301,6 @@ const ProposalDetail = ({ pid, daoAddress }) => {
       }
     });
   };
-
-  const fetchNfts = useCallback(async () => {
-    try {
-      const nftsData = await getNFTsByDaoAddress(
-        isAssetsStoredOnGnosis ? gnosisAddress : daoAddress,
-        NETWORK_HEX,
-      );
-      setNftData(nftsData.data);
-    } catch (error) {
-      console.log(error);
-    }
-  }, [NETWORK_HEX, daoAddress, gnosisAddress, isAssetsStoredOnGnosis]);
 
   const fetchData = useCallback(async () => {
     const proposalData = getProposalDetail(pid);
@@ -726,11 +557,9 @@ const ProposalDetail = ({ pid, daoAddress }) => {
     if (pid) {
       setLoaderOpen(true);
       fetchData();
-      fetchNfts();
-
       isOwner();
     }
-  }, [fetchData, fetchNfts, isOwner, pid]);
+  }, [fetchData, isOwner, pid]);
 
   useEffect(() => {
     const fetchAllMembers = async () => {
@@ -752,6 +581,13 @@ const ProposalDetail = ({ pid, daoAddress }) => {
   if (!walletAddress && proposalData === null) {
     return <>loading</>;
   }
+
+  const statusClassMap = {
+    active: classes.cardFontActive,
+    passed: classes.cardFontPassed,
+    executed: classes.cardFontExecuted,
+    failed: classes.cardFontFailed,
+  };
 
   return (
     <>
@@ -821,17 +657,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
                 </Grid>
                 <Grid item>
                   <Chip
-                    className={
-                      proposalData?.status === "active"
-                        ? classes.cardFontActive
-                        : proposalData?.status === "passed"
-                        ? classes.cardFontPassed
-                        : proposalData?.status === "executed"
-                        ? classes.cardFontExecuted
-                        : proposalData?.status === "failed"
-                        ? classes.cardFontFailed
-                        : classes.cardFontFailed
-                    }
+                    className={statusClassMap[proposalData.status]}
                     label={
                       proposalData?.status?.charAt(0).toUpperCase() +
                       proposalData?.status?.slice(1)
@@ -1394,7 +1220,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
       <Backdrop
         sx={{ color: "#000", zIndex: (theme) => theme.zIndex.drawer + 1 }}
         open={loaderOpen}>
-        <CircularProgress color="inherit" />
+        <CircularProgress />
       </Backdrop>
     </>
   );

@@ -3,7 +3,7 @@ import Safe, { Web3Adapter } from "@safe-global/protocol-kit";
 import WrongNetworkModal from "../components/modals/WrongNetworkModal";
 import { QUERY_ALL_MEMBERS } from "api/graphql/stationQueries";
 import { subgraphQuery } from "./subgraphs";
-import { BLOCK_CONFIRMATIONS, CHAIN_CONFIG } from "./constants";
+import { BLOCK_CONFIRMATIONS, BLOCK_TIMEOUT, CHAIN_CONFIG } from "./constants";
 import { getPublicClient, getWalletClient } from "utils/viemConfig";
 
 export const getSafeSdk = async (gnosisAddress, walletAddress, networkId) => {
@@ -218,13 +218,14 @@ export const writeContractFunction = async ({
       functionName,
       args,
       account,
-      gasPrice: await getIncreaseGasPrice(networkId),
+      // gasPrice: await getIncreaseGasPrice(networkId),
     });
 
     const txHash = await walletClient.writeContract(request);
     const txReciept = await publicClient.waitForTransactionReceipt({
       hash: txHash,
       confirmations: BLOCK_CONFIRMATIONS,
+      timeout: BLOCK_TIMEOUT,
     });
 
     return txReciept;
@@ -248,7 +249,6 @@ export const csvToObjectForMintGT = (csvString) => {
 };
 
 export const shortAddress = (address) => {
-  console.log("address", address);
   if (address) {
     return (
       address?.substring(0, 6) +
