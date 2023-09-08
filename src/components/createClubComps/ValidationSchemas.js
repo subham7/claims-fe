@@ -119,43 +119,19 @@ export const proposalValidationSchema = yup.object({
     is: "action",
     then: () =>
       yup
-        .string("Enter proposal action")
+        .number("Enter proposal action")
         .required("Action command is required"),
   }),
   amountToAirdrop: yup.number("Enter amount of tokens").when("actionCommand", {
-    is: "Distribute token to members",
+    is: 0,
     then: () =>
       yup
         .number("Enter amount of tokens")
         .required("Amount is required")
         .moreThan(0, "Amount should be greater than 0"),
   }),
-  // userAddress: yup.string("Please enter user address").when("actionCommand", {
-  //   is: "Mint club token",
-  //   then: () =>
-  //     yup
-  //       .string("Enter user address")
-  //       .matches(/^0x[a-zA-Z0-9]+/gm, " Proper wallet address is required")
-  //       .required("User address is required"),
-  // }),
-  // amountOfTokens: yup.number().when(["tokenType", "actionCommand"], {
-  //   is: (tokenType, actionCommand) =>
-  //     tokenType === "erc20" && actionCommand === "Mint Club Token",
-  //   then: yup
-  //     .number()
-  //     .required("Amount is required")
-  //     .moreThan(0, "Amount should be greater than 0"),
-  // }),
-  // amountOfTokens721: yup.number().when(["tokenType", "actionCommand"], {
-  //   is: (tokenType, actionCommand) =>
-  //     tokenType === "erc721" && actionCommand === "Mint Club Token",
-  //   then: yup
-  //     .number()
-  //     .required("Amount is required")
-  //     .moreThan(0, "Amount should be greater than 0"),
-  // }),
   quorum: yup.number("Enter Quorum in percentage").when("actionCommand", {
-    is: "Update Governance Settings",
+    is: 2,
     then: () =>
       yup
         .number("Enter Quorum in percentage")
@@ -164,7 +140,7 @@ export const proposalValidationSchema = yup.object({
         .max(100, "Quorum should be less than 100"),
   }),
   threshold: yup.number("Enter Threshold in percentage").when("actionCommand", {
-    is: "Update Governance Settings",
+    is: 2,
     then: () =>
       yup
         .number("Enter Threshold in percentage")
@@ -173,7 +149,7 @@ export const proposalValidationSchema = yup.object({
         .max(100, "Threshold should be less than 100"),
   }),
   totalDeposit: yup.number("Enter total deposit amount").when("actionCommand", {
-    is: "Change total raise amount",
+    is: 3,
     then: () =>
       yup
         .number("Enter total deposit amount")
@@ -181,13 +157,13 @@ export const proposalValidationSchema = yup.object({
         .moreThan(0, "Total deposit should be greater than 0"),
   }),
   lensId: yup.string("Please enter lens id").when("actionCommand", {
-    is: "whitelist with lens followers",
+    is: 11,
     then: () =>
       yup.string("Enter lens profile id").required("Lens id is required"),
   }),
 
   lensPostLink: yup.string("Please enter lens id").when("actionCommand", {
-    is: "whitelist with lens post's comments",
+    is: 12,
     then: () =>
       yup
         .string("Enter lens post's link")
@@ -197,7 +173,7 @@ export const proposalValidationSchema = yup.object({
   recieverAddress: yup
     .string("Please enter reciever address")
     .when("actionCommand", {
-      is: "Send token to an address",
+      is: 4,
       then: () =>
         yup
           .string("Enter reciever address")
@@ -205,7 +181,7 @@ export const proposalValidationSchema = yup.object({
           .required("Reciever address is required"),
     }),
   amountToSend: yup.number("Enter amount to be sent").when("actionCommand", {
-    is: "Send token to an address",
+    is: 4,
     then: () =>
       yup
         .number("Enter amount to be sent")
@@ -216,7 +192,7 @@ export const proposalValidationSchema = yup.object({
     .number("Enter threshold")
     .when(["actionCommand", "ownerChangeAction"], {
       is: (actionCommand, ownerChangeAction) =>
-        actionCommand === "Add/remove owners" && ownerChangeAction === "remove",
+        actionCommand === 7 && ownerChangeAction === "remove",
       then: () =>
         yup
           .number("Enter threshold")
@@ -224,7 +200,7 @@ export const proposalValidationSchema = yup.object({
           .moreThan(1, "Safe Threshold should be greater than 1"),
     }),
   nftLink: yup.string("Please enter nft Link").when("actionCommand", {
-    is: "Buy nft",
+    is: 8,
     then: () => yup.string("Enter nft link").required("Nft link is required"),
   }),
   nftLink: yup
@@ -235,7 +211,7 @@ export const proposalValidationSchema = yup.object({
       async (value, context) => {
         const { actionCommand } = context.parent;
 
-        if (actionCommand === "Buy nft") {
+        if (actionCommand === 8) {
           try {
             // Make your API call here and check the response
             const parts = value?.split("/");

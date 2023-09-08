@@ -10,14 +10,12 @@ import { useNetwork } from "wagmi";
 import { csvToObjectForMintGT } from "utils/helper";
 import React, { useRef, useState } from "react";
 import { useSelector } from "react-redux";
-import { commandTypeList } from "../../data/dashboard";
 import { proposalActionCommands } from "utils/constants";
 import { proposalFormData } from "utils/proposalData";
 
 const useStyles = makeStyles({
   textField: {
     width: "100%",
-    // margin: "16px 0 25px 0",
     marginTop: "0.5rem",
     fontSize: "18px",
   },
@@ -97,12 +95,11 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
         }}
         input={<OutlinedInput />}
         renderValue={(selected) => {
-          //   if (selected.length === 0) {
-          //     return "Select a command";
-          //   }
+          if (!selected) {
+            return "Select a command";
+          }
           return selected;
         }}
-        MenuProps={commandTypeList}
         style={{
           borderRadius: "10px",
           background: "#0F0F0F 0% 0% no-repeat padding-box",
@@ -118,11 +115,11 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
         <MenuItem key={0} value="Distribute token to members">
           Distribute token to members
         </MenuItem>
-        {/* {tokenType !== "erc721" ? ( */}
+
         <MenuItem key={1} value="Mint club token">
           Mint club token
         </MenuItem>
-        {/* ) : null} */}
+
         {isGovernanceActive ? (
           <MenuItem key={2} value="Update Governance Settings">
             Update Governance Settings

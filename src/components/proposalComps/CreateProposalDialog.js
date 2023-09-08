@@ -26,7 +26,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import ProposalActionForm from "./ProposalActionForm";
 import { proposalValidationSchema } from "../createClubComps/ValidationSchemas";
 import { createProposal } from "../../api/proposal";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { useAccount, useNetwork } from "wagmi";
 import { getProposalCommands } from "utils/proposalData";
 
@@ -60,7 +60,6 @@ const CreateProposalDialog = ({
   fetchProposalList,
 }) => {
   const classes = useStyles();
-  const dispatch = useDispatch();
 
   const { address: walletAddress } = useAccount();
   const { chain } = useNetwork();
