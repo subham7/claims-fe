@@ -18,7 +18,7 @@ import { Typography, Button } from "@components/ui";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { convertFromWeiGovernance } from "utils/globalFunctions";
-import { getAllEntities } from "utils/helper";
+import { getAllEntities, shortAddress } from "utils/helper";
 import { useFormik } from "formik";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
@@ -281,11 +281,7 @@ const Members = ({ daoAddress }) => {
                             onClick={(e) => {
                               handleAddressClick(e, data.userAddress);
                             }}>
-                            {data.userAddress.substring(0, 8) +
-                              "......" +
-                              data.userAddress.substring(
-                                data.userAddress.length - 4,
-                              )}
+                            {shortAddress(data.userAddress)}
                             <OpenInNewIcon style={{ marginBottom: "12px" }} />
                           </div>
                         </Tooltip>

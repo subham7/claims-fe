@@ -1,6 +1,7 @@
 import { Card, Grid, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import React from "react";
+import { shortAddress } from "utils/helper";
 
 const useStyles = makeStyles({
   listFont: {
@@ -43,11 +44,7 @@ const ProposalVotes = ({ fetched, proposalData }) => {
                   <Grid container>
                     <Grid item>
                       <Typography className={classes.listFont2Colourless}>
-                        {voter.voterAddress.substring(0, 6) +
-                          "......" +
-                          voter.voterAddress.substring(
-                            voter.voterAddress.length - 4,
-                          )}
+                        {shortAddress(voter.voterAddress)}
                       </Typography>
                     </Grid>
                     <Grid
