@@ -243,7 +243,7 @@ const Members = ({ daoAddress }) => {
                 {formik.touched.endDate && formik.errors.endDate}
               </Typography>
             </Grid>
-            <Grid item>
+            <Grid item mt={1}>
               <Button onClick={formik.handleSubmit} variant="normal">
                 {downloadLoading ? (
                   <CircularProgress size={24} />
