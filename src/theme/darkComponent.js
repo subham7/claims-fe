@@ -1,4 +1,11 @@
 export const darkComponents = {
+  MuiCircularProgress: {
+    styleOverrides: {
+      root: {
+        color: "#F5F5F5",
+      },
+    },
+  },
   MuiCard: {
     styleOverrides: {
       root: {
