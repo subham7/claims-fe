@@ -201,6 +201,33 @@ export const getProposalValidationSchema = ({
           return true;
         },
       ),
+
+    amountToSend: yup
+      .number("Enter amount to be sent")
+      .test(
+        "invalidSendAmount",
+        "Enter an amount less or equal to treasury balance",
+        async (value, context) => {
+          const { actionCommand, customToken } = context.parent;
+          if (actionCommand === 4) {
+            try {
+              const balance = await getBalance(customToken, gnosisAddress);
+              const decimals = await getDecimals(customToken);
+              if (
+                Number(value) <=
+                  Number(convertFromWeiGovernance(balance, decimals)) &&
+                Number(value) > 0
+              ) {
+                return true;
+              } else return false;
+            } catch (error) {
+              return false;
+            }
+          }
+          return true;
+        },
+      ),
+
     lensId: yup.string("Please enter lens id").when("actionCommand", {
       is: 11,
       then: () =>
@@ -225,14 +252,7 @@ export const getProposalValidationSchema = ({
             .matches(/^0x[a-zA-Z0-9]+/gm, " Proper wallet address is required")
             .required("Reciever address is required"),
       }),
-    amountToSend: yup.number("Enter amount to be sent").when("actionCommand", {
-      is: 4,
-      then: () =>
-        yup
-          .number("Enter amount to be sent")
-          .required("Amount is required")
-          .moreThan(0, "Amount should be greater than 0"),
-    }),
+
     safeThreshold: yup
       .number("Enter threshold")
       .when(["actionCommand", "ownerChangeAction"], {
