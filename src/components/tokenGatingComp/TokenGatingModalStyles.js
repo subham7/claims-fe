@@ -38,7 +38,6 @@ export const TokenGatingModalStyles = makeStyles({
   label: {
     color: "white",
     fontSize: "18px",
-    marginBottom: "2px",
     marginTop: "10px",
   },
 

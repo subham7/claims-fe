@@ -120,13 +120,13 @@ const ClaimsTransactions = ({
         </button>
       </div>
 
-      <TableContainer component={Paper}>
+      <TableContainer
+        sx={{
+          overflow: "hidden",
+        }}
+        component={Paper}>
         <Table sx={{ minWidth: 809 }} aria-label="simple table">
-          <TableHead
-            sx={{
-              border: "0.5px solid #151515",
-              overflow: "hidden",
-            }}>
+          <TableHead>
             <TableRow>
               {isWalletSelected ? (
                 <>

@@ -96,7 +96,7 @@ export const proposalData = ({ data, decimals, factoryData, symbol }) => {
     case 14:
       return {
         "Deposit token": symbol,
-        "Deposit Amount": convertFromWeiGovernance(depositAmount, decimals),
+        "Deposit amount": convertFromWeiGovernance(depositAmount, decimals),
       };
     case 15:
       return {
