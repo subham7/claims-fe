@@ -124,7 +124,7 @@ const ClaimsTransactions = ({
         <Table sx={{ minWidth: 809 }} aria-label="simple table">
           <TableHead
             sx={{
-              border: "0.5px solid #6475A3",
+              border: "0.5px solid #151515",
               overflow: "hidden",
             }}>
             <TableRow>

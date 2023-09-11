@@ -18,7 +18,7 @@ const Signators = ({ ownerAddresses, signedOwners, isSurvey = false }) => {
     <Grid item md={3} minWidth={isSurvey && "340px"}>
       <Card
         sx={{
-          height: "145px",
+          minHeight: "140px",
         }}>
         <Grid container>
           <Typography className={classes.listFont2}>Signators</Typography>
