@@ -55,7 +55,7 @@ const Deposit = ({
       <p className={classes.errorText}>{formik.errors.tokenInput}</p>
 
       <Button
-        className={classes.dpositBtn}
+        className={classes.depositBtn}
         disabled={
           (remainingDays >= 0 && remainingTimeInSecs > 0 && isTokenGated
             ? !isEligibleForTokenGating
