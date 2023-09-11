@@ -126,7 +126,7 @@ const Members = ({ daoAddress }) => {
     startDate: yup
       .date()
       .min(
-        dayjs(deployedTime * 1000),
+        deployedTime ? dayjs(deployedTime * 1000) : dayjs(Date.now()),
         "Date-time must be after the station is deployed.",
       )
       .required("Start date is required"),
