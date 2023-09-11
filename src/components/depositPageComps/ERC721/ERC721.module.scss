@@ -1,7 +1,6 @@
 @import "../../../../styles/variables.scss";
 
 .mainContainer {
-  border: $border;
   background: $background-primary;
   border-radius: 16px;
   margin-top: 20px;
@@ -104,9 +103,7 @@
 }
 
 .priceContainer {
-  border: $border;
   border-radius: 16px;
-  padding: 30px;
 }
 
 .counterContainer {
