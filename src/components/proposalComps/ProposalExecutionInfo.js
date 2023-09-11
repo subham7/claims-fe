@@ -33,6 +33,7 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
   const [tokenDetails, setTokenDetails] = useState({
     decimals: 0,
     symbol: "",
+    amount: 0,
   });
 
   const fetchAirDropContractDetails = useCallback(async () => {
@@ -41,17 +42,33 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
         const decimal = await getDecimals(
           proposalData?.commands[0]?.airDropToken
             ? proposalData?.commands[0]?.airDropToken
-            : proposalData?.commands[0]?.customToken,
+            : proposalData?.commands[0]?.customToken
+            ? proposalData?.commands[0]?.customToken
+            : proposalData?.commands[0]?.depositToken
+            ? proposalData?.commands[0]?.depositToken
+            : proposalData?.commands[0]?.withdrawToken,
         );
         const symbol = await getTokenSymbol(
           proposalData?.commands[0]?.airDropToken
             ? proposalData?.commands[0]?.airDropToken
-            : proposalData?.commands[0]?.customToken,
+            : proposalData?.commands[0]?.customToken
+            ? proposalData?.commands[0]?.customToken
+            : proposalData?.commands[0]?.depositToken
+            ? proposalData?.commands[0]?.depositToken
+            : proposalData?.commands[0]?.withdrawToken,
+        );
+
+        const amount = convertFromWeiGovernance(
+          proposalData.commands[0].depositAmount
+            ? proposalData.commands[0].depositAmount
+            : proposalData.commands[0].withdrawAmount,
+          decimal,
         );
 
         setTokenDetails({
           decimals: decimal,
           symbol: symbol,
+          amount,
         });
       }
     } catch (error) {
@@ -457,6 +474,38 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
                       <Typography className={classes.listFont2Colourless}>
                         {fetched ? proposalData.commands[0].pricePerToken : ""}{" "}
                         {proposalData?.commands[0].usdcTokenSymbol}
+                      </Typography>
+                    </Grid>
+                  </Grid>
+                </Grid>
+              </>
+            ) : proposalData.commands[0].executionId === 14 ||
+              proposalData.commands[0].executionId === 15 ? (
+              <>
+                <Grid container item mb={1}>
+                  <Typography className={classes.listFont2Colourless}>
+                    {proposalData.commands[0].executionId === 14
+                      ? "Deposit tokens in AAVE pool"
+                      : "Withdraw tokens from AAVE pool"}
+                  </Typography>
+                </Grid>
+                <Divider />
+                <Grid container mt={1}>
+                  <Grid container spacing={3}>
+                    <Grid item xs={12} md={4}>
+                      <Typography className={classes.listFont2}>
+                        Token
+                      </Typography>
+                      <Typography className={classes.listFont2Colourless}>
+                        {fetched ? tokenDetails.symbol : null}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={12} md={4}>
+                      <Typography className={classes.listFont2}>
+                        Amount
+                      </Typography>
+                      <Typography className={classes.listFont2Colourless}>
+                        {fetched ? tokenDetails.amount : null}
                       </Typography>
                     </Grid>
                   </Grid>
