@@ -109,6 +109,7 @@ export const getProposalValidationSchema = ({
   getBalance,
   getDecimals,
   gnosisAddress,
+  factoryData,
 }) => {
   return yup.object({
     proposalDeadline: yup.date().required("Deposit close date is required"),
@@ -132,14 +133,29 @@ export const getProposalValidationSchema = ({
     }),
     amountToAirdrop: yup
       .number("Enter amount of tokens")
-      .when("actionCommand", {
-        is: 0,
-        then: () =>
-          yup
-            .number("Enter amount of tokens")
-            .required("Amount is required")
-            .moreThan(0, "Amount should be greater than 0"),
-      }),
+      .test(
+        "invalidAirdropAmount",
+        "Enter an amount less or equal to treasury balance",
+        async (value, context) => {
+          const { actionCommand, airdropToken } = context.parent;
+          if (actionCommand === 0) {
+            try {
+              const balance = await getBalance(airdropToken, gnosisAddress);
+              const decimals = await getDecimals(airdropToken);
+              if (
+                Number(value) <=
+                  Number(convertFromWeiGovernance(balance, decimals)) &&
+                Number(value) > 0
+              ) {
+                return true;
+              } else return false;
+            } catch (error) {
+              return false;
+            }
+          }
+          return true;
+        },
+      ),
     quorum: yup.number("Enter Quorum in percentage").when("actionCommand", {
       is: 2,
       then: () =>
@@ -160,16 +176,82 @@ export const getProposalValidationSchema = ({
             .moreThan(0, "Threshold should be greater than 0")
             .max(100, "Threshold should be less than 100"),
       }),
+
     totalDeposit: yup
       .number("Enter total deposit amount")
-      .when("actionCommand", {
-        is: 3,
-        then: () =>
-          yup
-            .number("Enter total deposit amount")
-            .required("Total deposit is required")
-            .moreThan(0, "Total deposit should be greater than 0"),
-      }),
+      .test(
+        "invalidDepositAmount",
+        "Enter deposit amount should be greater than current amount",
+        async (value, context) => {
+          const { actionCommand } = context.parent;
+          if (actionCommand === 3) {
+            try {
+              const { distributionAmount, pricePerToken } = factoryData;
+              if (
+                Number(value) >
+                Number(convertFromWeiGovernance(distributionAmount, 18)) *
+                  Number(convertFromWeiGovernance(pricePerToken, 6))
+              ) {
+                return true;
+              } else return false;
+            } catch (error) {
+              return false;
+            }
+          }
+          return true;
+        },
+      ),
+
+    pricePerToken: yup
+      .number("Enter price per token")
+      .test(
+        "invalidPricePerToken",
+        "Enter deposit amount should be greater than current amount",
+        async (value, context) => {
+          const { actionCommand } = context.parent;
+          if (actionCommand === 13) {
+            try {
+              const { pricePerToken } = factoryData;
+              if (
+                Number(value) >
+                Number(convertFromWeiGovernance(pricePerToken, 6))
+              ) {
+                return true;
+              } else return false;
+            } catch (error) {
+              return false;
+            }
+          }
+          return true;
+        },
+      ),
+
+    amountToSend: yup
+      .number("Enter amount to be sent")
+      .test(
+        "invalidSendAmount",
+        "Enter an amount less or equal to treasury balance",
+        async (value, context) => {
+          const { actionCommand, customToken } = context.parent;
+          if (actionCommand === 4) {
+            try {
+              const balance = await getBalance(customToken, gnosisAddress);
+              const decimals = await getDecimals(customToken);
+              if (
+                Number(value) <=
+                  Number(convertFromWeiGovernance(balance, decimals)) &&
+                Number(value) > 0
+              ) {
+                return true;
+              } else return false;
+            } catch (error) {
+              return false;
+            }
+          }
+          return true;
+        },
+      ),
+
     lensId: yup.string("Please enter lens id").when("actionCommand", {
       is: 11,
       then: () =>
@@ -194,14 +276,7 @@ export const getProposalValidationSchema = ({
             .matches(/^0x[a-zA-Z0-9]+/gm, " Proper wallet address is required")
             .required("Reciever address is required"),
       }),
-    amountToSend: yup.number("Enter amount to be sent").when("actionCommand", {
-      is: 4,
-      then: () =>
-        yup
-          .number("Enter amount to be sent")
-          .required("Amount is required")
-          .moreThan(0, "Amount should be greater than 0"),
-    }),
+
     safeThreshold: yup
       .number("Enter threshold")
       .when(["actionCommand", "ownerChangeAction"], {

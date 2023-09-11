@@ -88,6 +88,10 @@ const CreateProposalDialog = ({
   };
 
   const { getBalance, getDecimals } = useCommonContractMethods();
+
+  const factoryData = useSelector((state) => {
+    return state.club.factoryData;
+  });
   const gnosisAddress = useSelector((state) => {
     return state.club.clubData.gnosisAddress;
   });
@@ -95,7 +99,7 @@ const CreateProposalDialog = ({
   const proposal = useFormik({
     initialValues: {
       tokenType: tokenType,
-      typeOfProposal: "survey",
+      typeOfProposal: "action",
       proposalDeadline: dayjs(Date.now() + 3600 * 1000 * 24),
       proposalTitle: "",
       proposalDescription: "",
@@ -132,6 +136,7 @@ const CreateProposalDialog = ({
       getBalance,
       getDecimals,
       gnosisAddress,
+      factoryData,
     }),
     onSubmit: async (values) => {
       try {
