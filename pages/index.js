@@ -23,6 +23,7 @@ import {
   queryStationDataFromSubgraph,
   queryStationListFromSubgraph,
 } from "utils/stationsSubgraphHelper";
+import { shortAddress } from "utils/helper";
 
 const useStyles = makeStyles({
   container: {
@@ -339,12 +340,7 @@ const App = () => {
                                     <Typography
                                       variant="body"
                                       className="text-blue">
-                                      {`${club.userAddress.substring(
-                                        0,
-                                        9,
-                                      )}......${club.userAddress.substring(
-                                        club.userAddress.length - 6,
-                                      )}`}
+                                      {shortAddress(club.userAddress)}
                                     </Typography>
                                   </Stack>
                                 </Grid>
