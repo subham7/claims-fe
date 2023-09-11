@@ -99,7 +99,7 @@ const CreateProposalDialog = ({
   const proposal = useFormik({
     initialValues: {
       tokenType: tokenType,
-      typeOfProposal: "survey",
+      typeOfProposal: "action",
       proposalDeadline: dayjs(Date.now() + 3600 * 1000 * 24),
       proposalTitle: "",
       proposalDescription: "",

@@ -202,6 +202,30 @@ export const getProposalValidationSchema = ({
         },
       ),
 
+    pricePerToken: yup
+      .number("Enter price per token")
+      .test(
+        "invalidPricePerToken",
+        "Enter deposit amount should be greater than current amount",
+        async (value, context) => {
+          const { actionCommand } = context.parent;
+          if (actionCommand === 13) {
+            try {
+              const { pricePerToken } = factoryData;
+              if (
+                Number(value) >
+                Number(convertFromWeiGovernance(pricePerToken, 6))
+              ) {
+                return true;
+              } else return false;
+            } catch (error) {
+              return false;
+            }
+          }
+          return true;
+        },
+      ),
+
     amountToSend: yup
       .number("Enter amount to be sent")
       .test(
