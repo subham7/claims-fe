@@ -63,7 +63,7 @@ const ClaimDescriptionInfo = ({
               router.push(`/claim/${claimAddress}/${claimsNetwork}`);
             }}
             style={{
-              border: "0.5px solid #6475A3",
+              background: "#0f0f0f",
               padding: "3px",
               borderRadius: "5px",
               cursor: "pointer",
@@ -99,7 +99,7 @@ const ClaimDescriptionInfo = ({
           <AiFillCopy
             onClick={copyHandler}
             style={{
-              border: "0.5px solid #6475A3",
+              background: "#151515",
               padding: "4px",
               borderRadius: "5px",
               cursor: "pointer",
@@ -114,7 +114,7 @@ const ClaimDescriptionInfo = ({
               );
             }}
             style={{
-              border: "0.5px solid #6475A3",
+              background: "#151515",
               padding: "4px",
               borderRadius: "5px",
               cursor: "pointer",

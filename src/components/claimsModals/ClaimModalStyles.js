@@ -40,7 +40,6 @@ export const ClaimModalStyles = makeStyles({
     justifyContent: "space-between",
     alignItems: "flex-start",
     background: "#151515",
-    border: "1px solid #C1D3FF40",
     borderRadius: "10px",
     padding: "30px",
   },

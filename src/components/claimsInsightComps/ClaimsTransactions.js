@@ -167,10 +167,7 @@ const ClaimsTransactions = ({
               )}
             </TableRow>
           </TableHead>
-          <TableBody
-            sx={{
-              border: "0.5px solid #6475A3",
-            }}>
+          <TableBody>
             {isWalletSelected ? (
               <>
                 {walletWiseTransactionData?.map((data, key) => (
