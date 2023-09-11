@@ -96,7 +96,7 @@ export const ClaimsStyles = makeStyles({
     justifyContent: "space-between",
     alignItems: "center",
     padding: "28px 20px",
-    border: "0.5px solid #6475A3",
+    background: "#0f0f0f",
     borderRadius: "12px",
   },
   amount: {

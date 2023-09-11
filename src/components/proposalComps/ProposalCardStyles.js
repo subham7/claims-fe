@@ -85,7 +85,6 @@ export const ProposalCardStyles = makeStyles({
   },
   mainCard: {
     borderRadius: "10px",
-    border: "1px solid #C1D3FF40",
     backgroundColor: "#151515",
   },
   daysFont: {

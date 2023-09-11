@@ -15,7 +15,10 @@ const About = ({ bio, daoAddress }) => {
   useEffect(() => {
     const queryLatestMembers = async () => {
       try {
-        const { users } = queryLatestMembersFromSubgraph(daoAddress, networkId);
+        const { users } = await queryLatestMembersFromSubgraph(
+          daoAddress,
+          networkId,
+        );
         if (users) setMembers(users);
       } catch (error) {
         console.log(error);

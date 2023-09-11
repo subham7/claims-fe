@@ -33,25 +33,66 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
   const [tokenDetails, setTokenDetails] = useState({
     decimals: 0,
     symbol: "",
+    amount: 0,
   });
+
+  const {
+    executionId,
+    airDropToken,
+    customToken,
+    depositToken,
+    withdrawToken,
+    depositAmount,
+    withdrawAmount,
+    airDropAmount,
+    quorum,
+    threshold,
+    totalDeposits,
+    customTokenAmounts,
+    customTokenAddresses,
+    mintGTAddresses,
+    customNft,
+    ownerAddress,
+    nftLink,
+    pricePerToken,
+    mintGTAmounts,
+    usdcGovernanceTokenDecimal,
+    customNftToken,
+    usdcTokenSymbol,
+    whitelistAddresses,
+  } = proposalData.commands[0];
 
   const fetchAirDropContractDetails = useCallback(async () => {
     try {
-      if (proposalData) {
+      if (airDropToken || customToken || depositToken || withdrawToken) {
         const decimal = await getDecimals(
-          proposalData?.commands[0]?.airDropToken
-            ? proposalData?.commands[0]?.airDropToken
-            : proposalData?.commands[0]?.customToken,
+          airDropToken
+            ? airDropToken
+            : customToken
+            ? customToken
+            : depositToken
+            ? depositToken
+            : withdrawToken,
         );
         const symbol = await getTokenSymbol(
-          proposalData?.commands[0]?.airDropToken
-            ? proposalData?.commands[0]?.airDropToken
-            : proposalData?.commands[0]?.customToken,
+          airDropToken
+            ? airDropToken
+            : customToken
+            ? customToken
+            : depositToken
+            ? depositToken
+            : withdrawToken,
+        );
+
+        const amount = convertFromWeiGovernance(
+          depositAmount ? depositAmount : withdrawAmount,
+          decimal,
         );
 
         setTokenDetails({
           decimals: decimal,
           symbol: symbol,
+          amount,
         });
       }
     } catch (error) {
@@ -68,7 +109,7 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
       {proposalData?.commands.length ? (
         <Card>
           <>
-            {proposalData?.commands[0].executionId == 0 ? (
+            {executionId == 0 ? (
               <>
                 <Grid container item mb={1}>
                   <Typography className={classes.listFont2Colourless}>
@@ -93,7 +134,7 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
                       <Typography className={classes.listFont2Colourless}>
                         {fetched
                           ? convertFromWeiGovernance(
-                              proposalData?.commands[0].airDropAmount,
+                              airDropAmount,
                               tokenDetails.decimals,
                             )
                           : null}
@@ -104,16 +145,13 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
                         Carry fee
                       </Typography>
                       <Typography className={classes.listFont2Colourless}>
-                        {fetched
-                          ? proposalData?.commands[0].airDropCarryFee
-                          : null}
-                        %
+                        {fetched ? airDropCarryFee : null}%
                       </Typography>
                     </Grid>
                   </Grid>
                 </Grid>
               </>
-            ) : proposalData?.commands[0].executionId == 1 ? (
+            ) : executionId == 1 ? (
               <>
                 <Grid container item>
                   <Typography className={classes.listFont2Colourless}>
@@ -136,15 +174,9 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
                     <Typography className={classes.listFont2Colourless}>
                       {fetched
                         ? tokenType === "erc721"
-                          ? proposalData?.commands[0].mintGTAmounts[0]
-                          : proposalData?.commands[0].mintGTAmounts[0] /
-                            Math.pow(
-                              10,
-                              parseInt(
-                                proposalData?.commands[0]
-                                  .usdcGovernanceTokenDecimal,
-                              ),
-                            )
+                          ? mintGTAmounts[0]
+                          : mintGTAmounts[0] /
+                            Math.pow(10, parseInt(usdcGovernanceTokenDecimal))
                         : null}
                     </Typography>
                   </Grid>
@@ -164,21 +196,17 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
                     }}>
                     <Typography className={classes.listFont2Colourless}>
                       {fetched
-                        ? proposalData?.commands[0].mintGTAddresses[0].slice(
-                            0,
-                            6,
-                          ) +
+                        ? mintGTAddresses[0].slice(0, 6) +
                           "...." +
-                          proposalData?.commands[0].mintGTAddresses[0].slice(
-                            proposalData?.commands[0].mintGTAddresses[0]
-                              .length - 4,
+                          mintGTAddresses[0].slice(
+                            mintGTAddresses[0].length - 4,
                           )
                         : null}
                     </Typography>
                   </Grid>
                 </Grid>
               </>
-            ) : proposalData?.commands[0].executionId == 2 ? (
+            ) : executionId == 2 ? (
               <>
                 <Grid container item mb={1}>
                   <Typography className={classes.listFont2Colourless}>
@@ -193,7 +221,7 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
                         Quorum
                       </Typography>
                       <Typography className={classes.listFont2Colourless}>
-                        {fetched ? proposalData?.commands[0].quorum : null}%
+                        {fetched ? quorum : null}%
                       </Typography>
                     </Grid>
                     <Grid item xs={12} md={4}>
@@ -201,13 +229,13 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
                         Threshold
                       </Typography>
                       <Typography className={classes.listFont2Colourless}>
-                        {fetched ? proposalData?.commands[0].threshold : null}%
+                        {fetched ? threshold : null}%
                       </Typography>
                     </Grid>
                   </Grid>
                 </Grid>
               </>
-            ) : proposalData?.commands[0].executionId == 3 ? (
+            ) : executionId == 3 ? (
               <>
                 <Grid container item mb={1}>
                   <Typography className={classes.listFont2Colourless}>
@@ -224,10 +252,8 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
                       <Typography className={classes.listFont2Colourless}>
                         {fetched
                           ? (convertToWeiGovernance(
-                              convertToWeiGovernance(
-                                proposalData.commands[0].totalDeposits,
-                                6,
-                              ) / daoDetails?.pricePerToken,
+                              convertToWeiGovernance(totalDeposits, 6) /
+                                daoDetails?.pricePerToken,
                               18,
                             ) /
                               10 ** 18) *
@@ -236,13 +262,13 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
                               6,
                             )
                           : null}{" "}
-                        {proposalData?.commands[0].usdcTokenSymbol}
+                        {usdcTokenSymbol}
                       </Typography>
                     </Grid>
                   </Grid>
                 </Grid>
               </>
-            ) : proposalData?.commands[0].executionId == 4 ? (
+            ) : executionId == 4 ? (
               <>
                 <Grid container item mb={1}>
                   <Typography className={classes.listFont2Colourless}>
@@ -258,7 +284,7 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
                       </Typography>
                       <Typography className={classes.listFont2Colourless}>
                         {fetched
-                          ? proposalData?.commands[0].customTokenAmounts[0] /
+                          ? customTokenAmounts[0] /
                             Math.pow(10, parseInt(tokenDetails.decimals))
                           : null}{" "}
                         {tokenDetails.symbol}
@@ -270,14 +296,10 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
                       </Typography>
                       <Typography className={classes.listFont2Colourless}>
                         {fetched
-                          ? proposalData.commands[0].customTokenAddresses[0].slice(
-                              0,
-                              6,
-                            ) +
+                          ? customTokenAddresses[0].slice(0, 6) +
                             "...." +
-                            proposalData.commands[0].customTokenAddresses[0].slice(
-                              proposalData.commands[0].customTokenAddresses[0]
-                                .length - 4,
+                            customTokenAddresses[0].slice(
+                              customTokenAddresses[0].length - 4,
                             )
                           : null}
                       </Typography>
@@ -285,7 +307,7 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
                   </Grid>
                 </Grid>
               </>
-            ) : proposalData?.commands[0].executionId == 5 ? (
+            ) : executionId == 5 ? (
               <>
                 <Grid container item mb={1}>
                   <Typography className={classes.listFont2Colourless}>
@@ -301,11 +323,9 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
                       </Typography>
                       <Typography className={classes.listFont2Colourless}>
                         {fetched
-                          ? proposalData.commands[0].customNft.slice(0, 6) +
+                          ? customNft.slice(0, 6) +
                             "...." +
-                            proposalData.commands[0].customNft.slice(
-                              proposalData.commands[0].customNft.length - 4,
-                            )
+                            customNft.slice(customNft.length - 4)
                           : null}
                       </Typography>
                     </Grid>
@@ -314,9 +334,7 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
                         Nft Token Id
                       </Typography>
                       <Typography className={classes.listFont2Colourless}>
-                        {fetched
-                          ? proposalData.commands[0].customNftToken
-                          : null}
+                        {fetched ? customNftToken : null}
                       </Typography>
                     </Grid>
                     <Grid item xs={12} md={4}>
@@ -325,14 +343,10 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
                       </Typography>
                       <Typography className={classes.listFont2Colourless}>
                         {fetched
-                          ? proposalData.commands[0].customTokenAddresses[0].slice(
-                              0,
-                              6,
-                            ) +
+                          ? customTokenAddresses[0].slice(0, 6) +
                             "...." +
-                            proposalData.commands[0].customTokenAddresses[0].slice(
-                              proposalData.commands[0].customTokenAddresses[0]
-                                .length - 4,
+                            customTokenAddresses[0].slice(
+                              customTokenAddresses[0].length - 4,
                             )
                           : null}
                       </Typography>
@@ -340,14 +354,11 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
                   </Grid>
                 </Grid>
               </>
-            ) : proposalData?.commands[0].executionId == 6 ||
-              proposalData?.commands[0].executionId == 7 ? (
+            ) : executionId == 6 || executionId == 7 ? (
               <>
                 <Grid container item mb={1}>
                   <Typography className={classes.listFont2Colourless}>
-                    {proposalData?.commands[0].executionId == 6
-                      ? "Add Signer"
-                      : "Remove Signer"}
+                    {executionId == 6 ? "Add Signer" : "Remove Signer"}
                   </Typography>
                 </Grid>
                 <Divider />
@@ -359,20 +370,16 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
                       </Typography>
                       <Typography className={classes.listFont2Colourless}>
                         {fetched
-                          ? proposalData.commands[0].ownerAddress.slice(0, 6) +
+                          ? ownerAddress.slice(0, 6) +
                             "...." +
-                            proposalData.commands[0].ownerAddress.slice(
-                              proposalData.commands[0].ownerAddress.length - 4,
-                            )
+                            ownerAddress.slice(ownerAddress.length - 4)
                           : null}
                       </Typography>
                     </Grid>
                   </Grid>
                 </Grid>
               </>
-            ) : proposalData?.commands[0].executionId == 10 ||
-              proposalData?.commands[0].executionId == 11 ||
-              proposalData?.commands[0].executionId == 12 ? (
+            ) : executionId == 10 || executionId == 11 || executionId == 12 ? (
               <>
                 <Grid container item mb={1}>
                   <Typography className={classes.listFont2Colourless}>
@@ -387,23 +394,20 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
                         Whitelisted addresses
                       </Typography>
 
-                      {proposalData?.commands[0]?.whitelistAddresses.map(
-                        (address, index) => (
-                          <Typography key={index} mb={0.5}>
-                            {address}
-                          </Typography>
-                        ),
-                      )}
+                      {whitelistAddresses.map((address, index) => (
+                        <Typography key={index} mb={0.5}>
+                          {address}
+                        </Typography>
+                      ))}
                     </Grid>
                   </Grid>
                 </Grid>
               </>
-            ) : proposalData?.commands[0].executionId == 8 ||
-              proposalData?.commands[0].executionId == 9 ? (
+            ) : executionId == 8 || executionId == 9 ? (
               <>
                 <Grid container item mb={1}>
                   <Typography className={classes.listFont2Colourless}>
-                    {proposalData?.commands[0].executionId == 8
+                    {executionId == 8
                       ? "Buy NFT from Opensea"
                       : "Sell NFT from Opensea"}
                   </Typography>
@@ -416,13 +420,9 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
                         NFT Address
                       </Typography>
                       <Typography className={classes.listFont2Colourless}>
-                        {extractNftAdressAndId(
-                          proposalData.commands[0].nftLink,
-                        ).nftAddress.slice(0, 6)}
+                        {extractNftAdressAndId(nftLink).nftAddress.slice(0, 6)}
                         ....
-                        {extractNftAdressAndId(
-                          proposalData.commands[0].nftLink,
-                        ).nftAddress.slice(-6)}
+                        {extractNftAdressAndId(nftLink).nftAddress.slice(-6)}
                       </Typography>
                     </Grid>
                     <Grid item xs={12} md={4}>
@@ -430,17 +430,13 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
                         Token Id
                       </Typography>
                       <Typography className={classes.listFont2Colourless}>
-                        {
-                          extractNftAdressAndId(
-                            proposalData.commands[0].nftLink,
-                          ).tokenId
-                        }
+                        {extractNftAdressAndId(nftLink).tokenId}
                       </Typography>
                     </Grid>
                   </Grid>
                 </Grid>
               </>
-            ) : proposalData.commands[0].executionId === 13 ? (
+            ) : executionId === 13 ? (
               <>
                 <Grid container item mb={1}>
                   <Typography className={classes.listFont2Colourless}>
@@ -455,8 +451,38 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
                         Price per token
                       </Typography>
                       <Typography className={classes.listFont2Colourless}>
-                        {fetched ? proposalData.commands[0].pricePerToken : ""}{" "}
-                        {proposalData?.commands[0].usdcTokenSymbol}
+                        {fetched ? pricePerToken : ""} {usdcTokenSymbol}
+                      </Typography>
+                    </Grid>
+                  </Grid>
+                </Grid>
+              </>
+            ) : executionId === 14 || executionId === 15 ? (
+              <>
+                <Grid container item mb={1}>
+                  <Typography className={classes.listFont2Colourless}>
+                    {executionId === 14
+                      ? "Deposit tokens in AAVE pool"
+                      : "Withdraw tokens from AAVE pool"}
+                  </Typography>
+                </Grid>
+                <Divider />
+                <Grid container mt={1}>
+                  <Grid container spacing={3}>
+                    <Grid item xs={12} md={4}>
+                      <Typography className={classes.listFont2}>
+                        Token
+                      </Typography>
+                      <Typography className={classes.listFont2Colourless}>
+                        {fetched ? tokenDetails.symbol : null}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={12} md={4}>
+                      <Typography className={classes.listFont2}>
+                        Amount
+                      </Typography>
+                      <Typography className={classes.listFont2Colourless}>
+                        {fetched ? tokenDetails.amount : null}
                       </Typography>
                     </Grid>
                   </Grid>
