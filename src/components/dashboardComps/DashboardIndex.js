@@ -182,11 +182,11 @@ const DashboardIndex = ({ daoAddress }) => {
   };
 
   const handleMoreClick = () => {
-    router.push(`${router.asPath}/proposal`, undefined, { shallow: true });
+    router.push(`/proposals/${daoAddress}`, undefined, { shallow: true });
   };
 
   const handleProposalClick = (proposal) => {
-    router.push(`${router.asPath}/proposal/${proposal.proposalId}`, undefined, {
+    router.push(`/proposals/${daoAddress}/${proposal.proposalId}`, undefined, {
       shallow: true,
     });
   };
