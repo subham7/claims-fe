@@ -28,6 +28,7 @@ export const proposalData = ({ data, decimals, factoryData, symbol }) => {
     totalDeposits,
     customTokenAmounts,
     customTokenAddresses,
+    mintGTAddresses,
     customNft,
     ownerAddress,
     nftLink,
@@ -42,6 +43,10 @@ export const proposalData = ({ data, decimals, factoryData, symbol }) => {
     case 0:
       return {
         Amount: convertFromWeiGovernance(airDropAmount, decimals),
+      };
+    case 1:
+      return {
+        "No of recipients :": mintGTAddresses?.length,
       };
     case 2:
       return {
@@ -90,8 +95,8 @@ export const proposalData = ({ data, decimals, factoryData, symbol }) => {
       return { "Price per token": `${pricePerToken} USDC` };
     case 14:
       return {
-        Token: symbol,
-        Amount: convertFromWeiGovernance(depositAmount, decimals),
+        "Deposit token": symbol,
+        "Deposit Amount": convertFromWeiGovernance(depositAmount, decimals),
       };
     case 15:
       return {
