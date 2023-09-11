@@ -56,7 +56,7 @@ const PriceSection = ({
           <Typography
             variant="subheading"
             className="text-bold"
-            style={{ paddingTop: "8px" }}>
+            style={{ padding: "8px 0" }}>
             {count}
           </Typography>
           <IconButton
