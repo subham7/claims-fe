@@ -111,7 +111,7 @@ const DashboardIndex = ({ daoAddress }) => {
 
         if (clubData && membersData) {
           if (tokenType === "erc721") {
-            const imageUrl = await getImageURL(clubData?.stations[0]?.imageUrl);
+            const imageUrl = await getImageURL(clubData?.imgUrl);
 
             setClubDetails({
               clubImageUrl: imageUrl,

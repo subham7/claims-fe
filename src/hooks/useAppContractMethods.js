@@ -235,7 +235,7 @@ const useAppContractMethods = () => {
   const createERC721DAO = async ({
     clubName,
     clubSymbol,
-    tokenUri,
+    metadataURL,
     ownerFeePerDepositPercent,
     depositClose,
     quorum,
@@ -262,7 +262,7 @@ const useAppContractMethods = () => {
         args: [
           clubName,
           clubSymbol,
-          tokenUri,
+          metadataURL,
           ownerFeePerDepositPercent,
           depositClose,
           quorum,
