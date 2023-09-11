@@ -109,6 +109,7 @@ export const getProposalValidationSchema = ({
   getBalance,
   getDecimals,
   gnosisAddress,
+  factoryData,
 }) => {
   return yup.object({
     proposalDeadline: yup.date().required("Deposit close date is required"),
@@ -175,16 +176,31 @@ export const getProposalValidationSchema = ({
             .moreThan(0, "Threshold should be greater than 0")
             .max(100, "Threshold should be less than 100"),
       }),
+
     totalDeposit: yup
       .number("Enter total deposit amount")
-      .when("actionCommand", {
-        is: 3,
-        then: () =>
-          yup
-            .number("Enter total deposit amount")
-            .required("Total deposit is required")
-            .moreThan(0, "Total deposit should be greater than 0"),
-      }),
+      .test(
+        "invalidDepositAmount",
+        "Enter deposit amount should be greater than current amount",
+        async (value, context) => {
+          const { actionCommand } = context.parent;
+          if (actionCommand === 3) {
+            try {
+              const { distributionAmount, pricePerToken } = factoryData;
+              if (
+                Number(value) >
+                Number(convertFromWeiGovernance(distributionAmount, 18)) *
+                  Number(convertFromWeiGovernance(pricePerToken, 6))
+              ) {
+                return true;
+              } else return false;
+            } catch (error) {
+              return false;
+            }
+          }
+          return true;
+        },
+      ),
     lensId: yup.string("Please enter lens id").when("actionCommand", {
       is: 11,
       then: () =>
