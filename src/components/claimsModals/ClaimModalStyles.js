@@ -8,7 +8,7 @@ export const ClaimModalStyles = makeStyles({
     top: "50%",
     left: "50%",
     transform: "translateX(-50%) translateY(-50%)",
-    zIndex: 2002,
+    zIndex: 2,
     padding: "60px 32px",
     borderRadius: "20px",
     boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px;",
@@ -21,7 +21,7 @@ export const ClaimModalStyles = makeStyles({
     left: 0,
     background: "#000",
     opacity: 0.6,
-    zIndex: 2000,
+    zIndex: 2,
   },
 
   title: {
