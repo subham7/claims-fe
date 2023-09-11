@@ -11,7 +11,7 @@ html,
 body {
   padding: 0;
   margin: 0;
-  font-family: Avenir, Arial, Helvetica, sans-serif;
+  font-family: Avenir;
 }
 
 a {
@@ -259,4 +259,5 @@ input::-webkit-inner-spin-button {
   display: flex;
   justify-content: flex-end;
   width: 100%;
+  gap: 16px;
 }

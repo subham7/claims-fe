@@ -114,7 +114,7 @@
   display: flex;
   flex-direction: inherit;
   align-items: center;
-  border: 1px solid #c1d3ff40;
+  border: 1px solid #dcdcdc40;
   border-radius: 8px;
   margin-right: 2rem;
 }
@@ -149,7 +149,7 @@
   display: flex;
   gap: 10px;
   align-items: center;
-  background-color: #c1d3ff1a;
+  background-color: #dcdcdc1a;
   padding: 10px 20px;
   border-radius: 10px;
   font-size: 14px;
@@ -184,7 +184,7 @@
       align-items: center;
 
       .time {
-        color: #c1d3ff;
+        color: #dcdcdc;
       }
     }
   }

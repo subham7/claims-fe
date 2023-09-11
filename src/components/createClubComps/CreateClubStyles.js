@@ -3,7 +3,7 @@ import { makeStyles } from "@mui/styles";
 export const Step1Styles = makeStyles({
   largeText: {
     fontSize: "18px",
-    color: "#C1D3FF",
+    color: "#dcdcdc",
   },
   largeText1: {
     fontSize: "2.4vw",
@@ -12,7 +12,7 @@ export const Step1Styles = makeStyles({
   wrapTextIcon: {
     fontSize: "18px",
 
-    color: "#C1D3FF",
+    color: "#dcdcdc",
     verticalAlign: "middle",
     display: "inline-flex",
   },
@@ -36,7 +36,7 @@ export const ERC20Step2Styles = makeStyles({
   },
   largeText: {
     fontSize: "18px",
-    color: "#C1D3FF",
+    color: "#dcdcdc",
   },
   largeText1: {
     fontSize: "2.4vw",
@@ -45,7 +45,7 @@ export const ERC20Step2Styles = makeStyles({
   wrapTextIcon: {
     fontSize: "18px",
 
-    color: "#C1D3FF",
+    color: "#dcdcdc",
     verticalAlign: "middle",
     display: "inline-flex",
   },
@@ -72,7 +72,7 @@ export const ERC20Step2Styles = makeStyles({
     width: "208px",
   },
   addCircleColour: {
-    color: "#C1D3FF",
+    color: "#dcdcdc",
   },
   large_button: {
     fontSize: "18px",
@@ -143,7 +143,7 @@ export const Step3Styles = makeStyles({
   },
   largeText: {
     fontSize: "18px",
-    color: "#C1D3FF",
+    color: "#dcdcdc",
   },
   largeText1: {
     fontSize: "2.4vw",
@@ -152,7 +152,7 @@ export const Step3Styles = makeStyles({
   wrapTextIcon: {
     fontSize: "18px",
 
-    color: "#C1D3FF",
+    color: "#dcdcdc",
     verticalAlign: "middle",
     display: "inline-flex",
   },
@@ -184,7 +184,7 @@ export const Step3Styles = makeStyles({
     borderRadius: "10px",
   },
   addCircleColour: {
-    color: "#C1D3FF",
+    color: "#dcdcdc",
   },
   large_button: {
     fontSize: "18px",
@@ -212,7 +212,7 @@ export const Step3Styles = makeStyles({
 export const Step4Styles = makeStyles({
   largeText: {
     fontSize: "18px",
-    color: "#C1D3FF",
+    color: "#dcdcdc",
   },
   largeText2: {
     fontSize: "18px",
@@ -226,7 +226,7 @@ export const Step4Styles = makeStyles({
   wrapTextIcon: {
     fontSize: "18px",
 
-    color: "#C1D3FF",
+    color: "#dcdcdc",
     verticalAlign: "middle",
     display: "inline-flex",
   },

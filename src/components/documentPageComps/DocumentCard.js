@@ -31,7 +31,7 @@ const useStyles = makeStyles({
     // letterSpacing: '0.5px'
   },
   span: {
-    color: "#C1D3FF",
+    color: "#dcdcdc",
     // textDecoration: 'underline'
   },
   icons: {

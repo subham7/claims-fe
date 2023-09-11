@@ -13,11 +13,11 @@ export const ProposalCardStyles = makeStyles({
   },
   listFont: {
     fontSize: "22px",
-    color: "#C1D3FF",
+    color: "#dcdcdc",
   },
   cardFont: {
     fontSize: "18px",
-    color: "#C1D3FF",
+    color: "#dcdcdc",
   },
   cardFont1: {
     fontSize: "24px",
@@ -69,9 +69,9 @@ export const ProposalCardStyles = makeStyles({
     width: "340px",
   },
   cardTextBox: {
-    color: "#C1D3FF",
+    color: "#dcdcdc",
     background: "#0F0F0F 0% 0% no-repeat padding-box",
-    border: "1px solid #C1D3FF40",
+    border: "1px solid #dcdcdc40",
     borderRadius: "10px",
   },
   modalStyle: {

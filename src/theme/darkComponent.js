@@ -46,7 +46,7 @@ export const darkComponents = {
         style: {
           fontSize: "1.375em",
 
-          color: "#C1D3FF",
+          color: "#dcdcdc",
         },
       },
     ],
@@ -89,7 +89,7 @@ export const darkComponents = {
         props: { variant: "regularText" },
         style: {
           fontSize: "1.3125em",
-          color: "#C1D3FF",
+          color: "#dcdcdc",
         },
       },
       {
@@ -97,7 +97,7 @@ export const darkComponents = {
         style: {
           fontSize: "1.1875em",
 
-          color: "#C1D3FF",
+          color: "#dcdcdc",
         },
       },
       {
@@ -117,7 +117,7 @@ export const darkComponents = {
         style: {
           fontSize: "1.1875em",
 
-          color: "#C1D3FF",
+          color: "#dcdcdc",
         },
       },
       {
@@ -138,7 +138,7 @@ export const darkComponents = {
         props: { variant: "cardFont2" },
         style: {
           fontSize: "0.9375em",
-          color: "#C1D3FF",
+          color: "#dcdcdc",
         },
       },
       {
@@ -152,14 +152,14 @@ export const darkComponents = {
         props: { variant: "proposalSubHeading" },
         style: {
           fontSize: "0.75em",
-          color: "#C1D3FF",
+          color: "#dcdcdc",
         },
       },
       {
         props: { variant: "proposalBody" },
         style: {
           fontSize: "1.3rem",
-          color: "#C1D3FF",
+          color: "#dcdcdc",
         },
       },
       {
@@ -167,7 +167,7 @@ export const darkComponents = {
         style: {
           fontSize: "1.375em",
 
-          color: "#C1D3FF",
+          color: "#dcdcdc",
         },
       },
       {

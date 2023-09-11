@@ -35,11 +35,11 @@ export const ProposalDetailStyles = makeStyles({
   },
   listFont: {
     fontSize: "20px",
-    color: "#C1D3FF",
+    color: "#dcdcdc",
   },
   listFont2: {
     fontSize: "18px",
-    color: "#C1D3FF",
+    color: "#dcdcdc",
   },
   cardFont1: {
     fontSize: "18px",
@@ -54,7 +54,7 @@ export const ProposalDetailStyles = makeStyles({
   },
   mainCard: {
     borderRadius: "38px",
-    border: "1px solid #C1D3FF40;",
+    border: "1px solid #dcdcdc40;",
     backgroundColor: "#151515",
   },
   mainCardSelected: {
@@ -64,7 +64,7 @@ export const ProposalDetailStyles = makeStyles({
   },
   mainCardButton: {
     borderRadius: "38px",
-    border: "1px solid #C1D3FF40;",
+    border: "1px solid #dcdcdc40;",
     backgroundColor: "#2D55FF",
     "&:hover": {
       cursor: "pointer",

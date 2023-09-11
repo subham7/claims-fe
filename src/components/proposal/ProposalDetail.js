@@ -704,7 +704,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
                 borderRadius: "10px",
               }}>
               <BsInfoCircleFill
-                color="#C1D3FF"
+                color="#dcdcdc"
                 style={{ marginRight: "10px" }}
               />
               <p>

@@ -38,7 +38,7 @@ const useStyles = makeStyles({
   wrapTextIcon: {
     fontSize: "22px",
 
-    color: "#C1D3FF",
+    color: "#dcdcdc",
     verticalAlign: "middle",
     display: "inline-flex",
   },

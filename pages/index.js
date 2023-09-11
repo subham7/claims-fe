@@ -51,7 +51,7 @@ const useStyles = makeStyles({
   },
   clubAddress: {
     fontSize: "16px",
-    color: "#C1D3FF",
+    color: "#dcdcdc",
     opacity: 1,
   },
   bannerImage: {
@@ -99,7 +99,7 @@ const useStyles = makeStyles({
   },
   isAdmin: {
     fontSize: "16px",
-    color: "#C1D3FF",
+    color: "#dcdcdc",
     opacity: 1,
   },
   flexContainer: {
@@ -380,7 +380,7 @@ const App = () => {
                           }}>
                           No stations found
                         </h3>
-                        <p style={{ color: "#C1D3FF", fontWeight: "300" }}>
+                        <p style={{ color: "#dcdcdc", fontWeight: "300" }}>
                           Station(s) you created or a part of appear here
                         </p>
                       </div>

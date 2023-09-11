@@ -94,7 +94,7 @@ export default function Step4(props) {
                       "Owners of the safe does not match with the admins of the DAO" ||
                     props.ownerHelperText === "Invalid gnosis address"
                       ? "red"
-                      : "#C1D3FF",
+                      : "#dcdcdc",
                 }}>
                 {props.ownerHelperText}
               </p>

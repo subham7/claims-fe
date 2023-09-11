@@ -30,7 +30,7 @@ export const ClaimModalStyles = makeStyles({
     fontSize: "28px",
   },
   subtitle: {
-    color: "#C1D3FF",
+    color: "#dcdcdc",
     fontSize: "14px",
     marginBottom: "20px",
   },
@@ -60,7 +60,7 @@ export const ClaimModalStyles = makeStyles({
   },
   smallText: {
     fontSize: "14px",
-    color: "#C1D3FF",
+    color: "#dcdcdc",
   },
   submitBtn: {
     padding: "6px 24px",
@@ -108,7 +108,7 @@ export const ClaimModalStyles = makeStyles({
     borderRadius: "6px",
     padding: "12px 20px",
     outline: "none",
-    border: "1px solid #C1D3FF40",
+    border: "1px solid #dcdcdc40",
     background: "transparent",
   },
 });
