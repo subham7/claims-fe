@@ -675,18 +675,6 @@ const DashboardIndex = ({ daoAddress }) => {
                                     }
                                     sx={{ width: "100%" }}>
                                     <Grid container mb={2} direction="column">
-                                      {/* <Grid item md={12}>
-                                          <Typography
-                                            className={classes.card5text1}
-                                          >
-                                            Proposed by{" "}
-                                            {data.createdBy.substring(0, 6) +
-                                              "......" +
-                                              data.createdBy.substring(
-                                                data.createdBy.length - 4,
-                                              )}
-                                          </Typography>
-                                        </Grid> */}
                                       <Grid item>
                                         <Typography variant="body">
                                           {data.name}

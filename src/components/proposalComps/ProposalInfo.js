@@ -7,7 +7,7 @@ import { shortAddress } from "utils/helper";
 const useStyles = makeStyles({
   listFont2: {
     fontSize: "18px",
-    color: "#C1D3FF",
+    color: "#dcdcdc",
   },
   listFont2Colourless: {
     fontSize: "18px",

@@ -168,7 +168,7 @@ export default function NFTStep2(props) {
               }
               InputProps={{
                 endAdornment: (
-                  <InputAdornment position="end" sx={{ color: "#C1D3FF" }}>
+                  <InputAdornment position="end" sx={{ color: "#dcdcdc" }}>
                     USDC
                   </InputAdornment>
                 ),

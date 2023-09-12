@@ -670,11 +670,13 @@ const ProposalDetail = ({ pid, daoAddress }) => {
 
           {/* Proposal Info and Signators */}
           <Grid container spacing={2} mt={4} mb={3}>
-            <ProposalExecutionInfo
-              proposalData={proposalData}
-              fetched={fetched}
-              daoDetails={factoryData}
-            />
+            {proposalData && factoryData && (
+              <ProposalExecutionInfo
+                proposalData={proposalData}
+                fetched={fetched}
+                daoDetails={factoryData}
+              />
+            )}
 
             {proposalData?.type === "action" && (
               <Signators
@@ -704,7 +706,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
                 borderRadius: "10px",
               }}>
               <BsInfoCircleFill
-                color="#C1D3FF"
+                color="#dcdcdc"
                 style={{ marginRight: "10px" }}
               />
               <p>
