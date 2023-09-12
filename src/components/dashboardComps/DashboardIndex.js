@@ -182,13 +182,9 @@ const DashboardIndex = ({ daoAddress }) => {
   };
 
   const handleMoreClick = () => {
-    router.push(
-      `/proposals/${daoAddress}/${networkId}`,
-      undefined,
-      {
-        shallow: true,
-      },
-    );
+    router.push(`/proposals/${daoAddress}/${networkId}`, undefined, {
+      shallow: true,
+    });
   };
 
   const handleProposalClick = (proposal) => {
