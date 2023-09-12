@@ -13,11 +13,11 @@ export const ProposalCardStyles = makeStyles({
   },
   listFont: {
     fontSize: "22px",
-    color: "#C1D3FF",
+    color: "#dcdcdc",
   },
   cardFont: {
     fontSize: "18px",
-    color: "#C1D3FF",
+    color: "#dcdcdc",
   },
   cardFont1: {
     fontSize: "24px",
@@ -69,14 +69,14 @@ export const ProposalCardStyles = makeStyles({
     width: "340px",
   },
   cardTextBox: {
-    color: "#C1D3FF",
+    color: "#dcdcdc",
     background: "#0F0F0F 0% 0% no-repeat padding-box",
-    border: "1px solid #C1D3FF40",
+    border: "1px solid #dcdcdc40",
     borderRadius: "10px",
   },
   modalStyle: {
     width: "792px",
-    backgroundColor: "#19274B",
+    backgroundColor: "#151515",
   },
   proposalCard: {
     backgroundColor: "#151515",
@@ -85,7 +85,6 @@ export const ProposalCardStyles = makeStyles({
   },
   mainCard: {
     borderRadius: "10px",
-    border: "1px solid #C1D3FF40",
     backgroundColor: "#151515",
   },
   daysFont: {

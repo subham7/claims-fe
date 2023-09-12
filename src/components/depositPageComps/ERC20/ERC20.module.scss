@@ -1,11 +1,10 @@
 $border: 0.5px solid #6475a3;
 $background-secondary: #2d55ff;
-$background-primary: #101d38;
+$background-primary: #151515;
 $background-input: #0f0f0f;
 $error: #ec4a4a;
 
 .mainContainer {
-  border: $border;
   background: $background-primary;
   border-radius: 16px;
   margin-bottom: 24px;
@@ -119,10 +118,13 @@ $error: #ec4a4a;
   display: flex;
   gap: 10px;
   align-items: center;
-  background-color: #c1d3ff1a;
+  background-color: #dcdcdc1a;
   padding: 10px 20px;
   border-radius: 10px;
-  border: 0.5px solid #6475a3;
   font-size: 14px;
   margin-top: 10px;
+}
+
+.depositBtn {
+  margin: 16px 12px 0px 0px !important;
 }

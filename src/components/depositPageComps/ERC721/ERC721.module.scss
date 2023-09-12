@@ -1,7 +1,6 @@
 @import "../../../../styles/variables.scss";
 
 .mainContainer {
-  border: $border;
   background: $background-primary;
   border-radius: 16px;
   margin-top: 20px;
@@ -104,9 +103,9 @@
 }
 
 .priceContainer {
-  border: $border;
   border-radius: 16px;
-  padding: 30px;
+  background-color: #0f0f0f;
+  padding: 32px;
 }
 
 .counterContainer {
@@ -115,7 +114,7 @@
   display: flex;
   flex-direction: inherit;
   align-items: center;
-  border: 1px solid #c1d3ff40;
+  border: 1px solid #dcdcdc40;
   border-radius: 8px;
   margin-right: 2rem;
 }
@@ -132,7 +131,6 @@
   margin: 10px 0 16px 0;
 
   p {
-    border: $border;
     font-size: 20px;
     padding: 16px 24px;
     border-radius: 20px;
@@ -151,10 +149,9 @@
   display: flex;
   gap: 10px;
   align-items: center;
-  background-color: #c1d3ff1a;
+  background-color: #dcdcdc1a;
   padding: 10px 20px;
   border-radius: 10px;
-  border: 0.5px solid #6475a3;
   font-size: 14px;
   margin-top: 10px;
 }
@@ -165,7 +162,6 @@
   margin-bottom: 60px;
 
   .aboutContainer {
-    border: $border;
     background: $background-primary;
     border-radius: 16px;
     width: 90%;
@@ -175,7 +171,6 @@
   }
 
   .activityContainer {
-    border: $border;
     background: $background-primary;
     border-radius: 16px;
     width: 90%;
@@ -189,7 +184,7 @@
       align-items: center;
 
       .time {
-        color: #c1d3ff;
+        color: #dcdcdc;
       }
     }
   }

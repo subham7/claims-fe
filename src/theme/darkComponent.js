@@ -1,4 +1,11 @@
 export const darkComponents = {
+  MuiCircularProgress: {
+    styleOverrides: {
+      root: {
+        color: "#F5F5F5",
+      },
+    },
+  },
   MuiCard: {
     styleOverrides: {
       root: {
@@ -39,7 +46,7 @@ export const darkComponents = {
         style: {
           fontSize: "1.375em",
 
-          color: "#C1D3FF",
+          color: "#dcdcdc",
         },
       },
     ],
@@ -63,7 +70,7 @@ export const darkComponents = {
   MuiDialog: {
     styleOverrides: {
       paper: {
-        backgroundColor: "#19274B",
+        backgroundColor: "#151515",
         borderRadius: "20px",
       },
     },
@@ -82,7 +89,7 @@ export const darkComponents = {
         props: { variant: "regularText" },
         style: {
           fontSize: "1.3125em",
-          color: "#C1D3FF",
+          color: "#dcdcdc",
         },
       },
       {
@@ -90,7 +97,7 @@ export const darkComponents = {
         style: {
           fontSize: "1.1875em",
 
-          color: "#C1D3FF",
+          color: "#dcdcdc",
         },
       },
       {
@@ -110,7 +117,7 @@ export const darkComponents = {
         style: {
           fontSize: "1.1875em",
 
-          color: "#C1D3FF",
+          color: "#dcdcdc",
         },
       },
       {
@@ -131,15 +138,7 @@ export const darkComponents = {
         props: { variant: "cardFont2" },
         style: {
           fontSize: "0.9375em",
-          color: "#C1D3FF",
-        },
-      },
-      {
-        props: { variant: "textLink" },
-        style: {
-          fontSize: "1.5em",
-          color: "#FFFFFF",
-          backgroundColor: "#19274B",
+          color: "#dcdcdc",
         },
       },
       {
@@ -153,14 +152,14 @@ export const darkComponents = {
         props: { variant: "proposalSubHeading" },
         style: {
           fontSize: "0.75em",
-          color: "#C1D3FF",
+          color: "#dcdcdc",
         },
       },
       {
         props: { variant: "proposalBody" },
         style: {
           fontSize: "1.3rem",
-          color: "#C1D3FF",
+          color: "#dcdcdc",
         },
       },
       {
@@ -168,7 +167,7 @@ export const darkComponents = {
         style: {
           fontSize: "1.375em",
 
-          color: "#C1D3FF",
+          color: "#dcdcdc",
         },
       },
       {
@@ -233,7 +232,7 @@ export const darkComponents = {
   MuiCalendarPicker: {
     styleOverrides: {
       root: {
-        backgroundColor: "#19274b",
+        backgroundColor: "#151515",
       },
     },
   },

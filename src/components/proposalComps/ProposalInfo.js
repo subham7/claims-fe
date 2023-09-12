@@ -2,11 +2,12 @@ import { Card, Grid, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 
 import React from "react";
+import { shortAddress } from "utils/helper";
 
 const useStyles = makeStyles({
   listFont2: {
     fontSize: "18px",
-    color: "#C1D3FF",
+    color: "#dcdcdc",
   },
   listFont2Colourless: {
     fontSize: "18px",
@@ -37,13 +38,7 @@ const ProposalInfo = ({
         </Grid>
         <Grid item xs sx={{ display: "flex", justifyContent: "flex-end" }}>
           <Typography className={classes.listFont2Colourless}>
-            {fetched
-              ? proposalData?.createdBy.substring(0, 6) +
-                ".........." +
-                proposalData?.createdBy.substring(
-                  proposalData?.createdBy.length - 4,
-                )
-              : null}
+            {fetched ? shortAddress(proposalData?.createdBy) : null}
           </Typography>
         </Grid>
       </Grid>

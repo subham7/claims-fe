@@ -84,7 +84,7 @@ const Header = ({
           <RiShareBoxLine size={16} />
         </div>
 
-        <div>
+        <div style={{ display: "flex" }}>
           <MdIosShare
             size={35}
             className={classes.icons}

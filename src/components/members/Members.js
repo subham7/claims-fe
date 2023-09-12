@@ -18,7 +18,7 @@ import { Typography, Button } from "@components/ui";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { convertFromWeiGovernance } from "utils/globalFunctions";
-import { getAllEntities } from "utils/helper";
+import { getAllEntities, shortAddress } from "utils/helper";
 import { useFormik } from "formik";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
@@ -126,7 +126,7 @@ const Members = ({ daoAddress }) => {
     startDate: yup
       .date()
       .min(
-        dayjs(deployedTime * 1000),
+        deployedTime ? dayjs(deployedTime * 1000) : dayjs(Date.now()),
         "Date-time must be after the station is deployed.",
       )
       .required("Start date is required"),
@@ -243,10 +243,10 @@ const Members = ({ daoAddress }) => {
                 {formik.touched.endDate && formik.errors.endDate}
               </Typography>
             </Grid>
-            <Grid item>
+            <Grid item mt={1}>
               <Button onClick={formik.handleSubmit} variant="normal">
                 {downloadLoading ? (
-                  <CircularProgress color="inherit" size={24} />
+                  <CircularProgress size={24} />
                 ) : (
                   "Download CSV"
                 )}
@@ -281,11 +281,7 @@ const Members = ({ daoAddress }) => {
                             onClick={(e) => {
                               handleAddressClick(e, data.userAddress);
                             }}>
-                            {data.userAddress.substring(0, 8) +
-                              "......" +
-                              data.userAddress.substring(
-                                data.userAddress.length - 4,
-                              )}
+                            {shortAddress(data.userAddress)}
                             <OpenInNewIcon style={{ marginBottom: "12px" }} />
                           </div>
                         </Tooltip>
@@ -336,7 +332,7 @@ const Members = ({ daoAddress }) => {
       <Backdrop
         sx={{ color: "#000", zIndex: (theme) => theme?.zIndex?.drawer + 1 }}
         open={loading}>
-        <CircularProgress color="inherit" />
+        <CircularProgress />
       </Backdrop>
     </>
   );

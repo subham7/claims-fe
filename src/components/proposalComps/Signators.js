@@ -3,11 +3,12 @@ import DoneIcon from "@mui/icons-material/Done";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import React from "react";
 import { makeStyles } from "@mui/styles";
+import { shortAddress } from "utils/helper";
 
 const useStyles = makeStyles({
   listFont2: {
     fontSize: "18px",
-    color: "#C1D3FF",
+    color: "#dcdcdc",
   },
 });
 
@@ -17,7 +18,7 @@ const Signators = ({ ownerAddresses, signedOwners, isSurvey = false }) => {
     <Grid item md={3} minWidth={isSurvey && "340px"}>
       <Card
         sx={{
-          height: "145px",
+          minHeight: "140px",
         }}>
         <Grid container>
           <Typography className={classes.listFont2}>Signators</Typography>
@@ -39,15 +40,7 @@ const Signators = ({ ownerAddresses, signedOwners, isSurvey = false }) => {
               ) : (
                 <HelpOutlineIcon sx={{ marginRight: 2 }} />
               )}
-              {isSurvey ? (
-                <Typography>
-                  {owner.slice(0, 13)}....{owner.slice(-4)}
-                </Typography>
-              ) : (
-                <Typography>
-                  {owner.slice(0, 6)}.....{owner.slice(-4)}
-                </Typography>
-              )}
+              <Typography>{shortAddress(owner)}</Typography>
             </Grid>
           ))}
         </Grid>

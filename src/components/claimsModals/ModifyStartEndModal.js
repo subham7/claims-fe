@@ -4,7 +4,8 @@ import { useFormik } from "formik";
 import React from "react";
 import { ClaimModalStyles } from "./ClaimModalStyles";
 import ModalCard from "./ModalCard";
-// import * as yup from "yup";
+import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
 const ModifyStartEndModal = ({
   onClose,
@@ -16,8 +17,8 @@ const ModifyStartEndModal = ({
 
   const formik = useFormik({
     initialValues: {
-      startTime: +startTime,
-      endTime: +endTime,
+      startTime: startTime,
+      endTime: endTime,
     },
     onSubmit: (value) => {
       const newStartTime = new Date(value.startTime).getTime() / 1000;
@@ -33,7 +34,7 @@ const ModifyStartEndModal = ({
 
   return (
     <ModalCard onClose={onClose}>
-      <h2 className={classes.title}>Modify end/start of this claim</h2>
+      <h2 className={classes.title}>Modify end/start time of this claim</h2>
       <p className={classes.subtitle}>
         Change of plans? Modify when this token(s) claim will be active.
       </p>
@@ -43,26 +44,34 @@ const ModifyStartEndModal = ({
           <Typography className={classes.label}>
             Start date for this claim
           </Typography>
-          <input
-            id="startTime"
-            name="startTime"
-            className={classes.dateInput}
-            onChange={formik.handleChange}
-            value={formik.values.startTime}
-            type="datetime-local"
-          />
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DateTimePicker
+              sx={{
+                zIndex: (theme) => theme.zIndex.drawer + 9000,
+                width: "100%",
+              }}
+              value={formik.values.startTime}
+              onChange={(value) => {
+                formik.setFieldValue("startTime", value);
+              }}
+            />
+          </LocalizationProvider>
 
           <Typography className={classes.label}>
             End date for this claim
           </Typography>
-          <input
-            id="endTime"
-            name="endTime"
-            className={classes.dateInput}
-            onChange={formik.handleChange}
-            value={formik.values.endTime}
-            type="datetime-local"
-          />
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DateTimePicker
+              sx={{
+                zIndex: (theme) => theme.zIndex.drawer + 9000,
+                width: "100%",
+              }}
+              value={formik.values.endTime}
+              onChange={(value) => {
+                formik.setFieldValue("endTime", value);
+              }}
+            />
+          </LocalizationProvider>
         </div>
       </form>
 

@@ -35,7 +35,7 @@ const useStyles = makeStyles({
     fontSize: "28px",
   },
   subtitle: {
-    color: "#C1D3FF",
+    color: "#dcdcdc",
     fontSize: "16px",
     marginBottom: "6px",
   },
@@ -81,13 +81,13 @@ const useStyles = makeStyles({
   },
   linkInput: {
     width: "100%",
-    color: "#C1D3FF",
+    color: "#dcdcdc",
     background: "#0F0F0F 0% 0% no-repeat padding-box",
-    border: "1px solid #C1D3FF40",
+    border: "1px solid #dcdcdc40",
     borderRadius: "10px",
     "&:hover": {
-      boxShadow: "0px 0px 12px #C1D3FF40",
-      border: "1px solid #C1D3FF40",
+      boxShadow: "0px 0px 12px #dcdcdc40",
+      border: "1px solid #dcdcdc40",
       borderRadius: "10px",
       opacity: 1,
     },

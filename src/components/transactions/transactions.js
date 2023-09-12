@@ -178,10 +178,7 @@ const Transactions = () => {
                                       }}>
                                       {txn.transactionHash?.substring(0, 10) +
                                         "... "}
-                                      <OpenInNewIcon
-                                        className="c-pointer"
-                                        style={{ marginBottom: "12px" }}
-                                      />
+                                      <OpenInNewIcon className="c-pointer" />
                                     </div>
                                   </Tooltip>
                                 </Typography>

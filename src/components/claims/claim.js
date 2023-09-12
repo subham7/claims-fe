@@ -262,7 +262,7 @@ const Claim = ({ claimAddress }) => {
           convertToWeiGovernance(claimInput, decimalOfToken).toString(),
           walletAddress,
           [],
-          0,
+          "",
         );
 
         const claimedAmt = await claimAmount(walletAddress);

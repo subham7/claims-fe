@@ -9,11 +9,10 @@ import React from "react";
 
 const useStyles = makeStyles({
   container: {
-    background: "#19274A",
+    background: "#151515",
     width: "650px",
     borderRadius: "20px",
     padding: "80px 50px",
-    border: "0.5px solid #6475A3",
     display: "flex",
     flexDirection: "column",
     position: "fixed",

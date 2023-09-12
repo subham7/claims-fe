@@ -18,6 +18,7 @@ import {
   queryAllDropsTransactionsFromSubgraph,
   queryWalletWiseTransactionsFromSubgraph,
 } from "utils/dropsSubgraphHelper";
+import { shortAddress } from "utils/helper";
 
 const ClaimsTransactions = ({
   claimAddress,
@@ -120,13 +121,13 @@ const ClaimsTransactions = ({
         </button>
       </div>
 
-      <TableContainer component={Paper}>
+      <TableContainer
+        sx={{
+          overflow: "hidden",
+        }}
+        component={Paper}>
         <Table sx={{ minWidth: 809 }} aria-label="simple table">
-          <TableHead
-            sx={{
-              border: "0.5px solid #6475A3",
-              overflow: "hidden",
-            }}>
+          <TableHead>
             <TableRow>
               {isWalletSelected ? (
                 <>
@@ -167,10 +168,7 @@ const ClaimsTransactions = ({
               )}
             </TableRow>
           </TableHead>
-          <TableBody
-            sx={{
-              border: "0.5px solid #6475A3",
-            }}>
+          <TableBody>
             {isWalletSelected ? (
               <>
                 {walletWiseTransactionData?.map((data, key) => (
@@ -192,11 +190,7 @@ const ClaimsTransactions = ({
                           }}
                           item>
                           <a className={classes.activityLink}>
-                            {data.claimerAddress.substring(0, 6) +
-                              "......" +
-                              data.claimerAddress.substring(
-                                data.claimerAddress.length - 4,
-                              )}{" "}
+                            {shortAddress(data.claimAddress)}
                           </a>
                         </Grid>
                       </Grid>
@@ -248,10 +242,7 @@ const ClaimsTransactions = ({
                           gap: "10px",
                           alignItems: "flex-start",
                         }}>
-                        {data.txHash.substring(0, 6) +
-                          "......" +
-                          data.txHash.substring(data.txHash.length - 4)}
-
+                        {shortAddress(data.txHash)}
                         <FiExternalLink
                           onClick={() => {
                             window.open(
@@ -265,11 +256,7 @@ const ClaimsTransactions = ({
                       </div>
                     </TableCell>
                     <TableCell align="left" variant="tableBody">
-                      {data.claimerAddress.substring(0, 6) +
-                        "......" +
-                        data.claimerAddress.substring(
-                          data.claimerAddress.length - 4,
-                        )}
+                      {shortAddress(data.claimerAddress)}
                     </TableCell>
                     <TableCell align="left" variant="tableBody">
                       {Number(

@@ -20,7 +20,7 @@ import "react-quill/dist/quill.snow.css";
 const useStyles = makeStyles({
   modalStyle: {
     width: "792px",
-    backgroundColor: "#19274B",
+    backgroundColor: "#151515",
   },
   dialogBox: {
     fontSize: "38px",
@@ -38,7 +38,7 @@ const useStyles = makeStyles({
   wrapTextIcon: {
     fontSize: "22px",
 
-    color: "#C1D3FF",
+    color: "#dcdcdc",
     verticalAlign: "middle",
     display: "inline-flex",
   },
@@ -116,7 +116,7 @@ const EditClubInfo = (props) => {
         <DialogContent
           sx={{
             overflow: "hidden",
-            backgroundColor: "#19274B",
+            backgroundColor: "#151515",
             padding: "3rem",
           }}>
           <form className={classes.form}>
@@ -213,11 +213,7 @@ const EditClubInfo = (props) => {
               </Grid>
               <Grid item>
                 <Button onClick={() => formik.handleSubmit()}>
-                  {loaderOpen ? (
-                    <CircularProgress color="inherit" size={25} />
-                  ) : (
-                    "Save Changes"
-                  )}
+                  {loaderOpen ? <CircularProgress size={25} /> : "Save Changes"}
                 </Button>
               </Grid>
             </Grid>
