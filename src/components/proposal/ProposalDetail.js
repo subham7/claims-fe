@@ -39,7 +39,7 @@ import Signators from "@components/proposalComps/Signators";
 import ProposalInfo from "@components/proposalComps/ProposalInfo";
 import CurrentResults from "@components/proposalComps/CurrentResults";
 import ProposalVotes from "@components/proposalComps/ProposalVotes";
-import { getSafeSdk, web3InstanceEthereum } from "utils/helper";
+import { getCustomSafeSdk, web3InstanceEthereum } from "utils/helper";
 import { retrieveNftListing } from "api/assets";
 import SafeAppsSDK from "@safe-global/safe-apps-sdk";
 import { useAccount, useNetwork } from "wagmi";
@@ -170,7 +170,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
 
   const isOwner = useCallback(async () => {
     if (gnosisAddress) {
-      const safeSdk = await getSafeSdk(
+      const safeSdk = await getCustomSafeSdk(
         Web3.utils.toChecksumAddress(gnosisAddress),
         Web3.utils.toChecksumAddress(walletAddress),
       );
@@ -462,6 +462,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
       NETWORK_HEX,
       daoAddress,
       walletAddress,
+      networkId,
     });
     if (response) {
       fetchData();
@@ -488,6 +489,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
       walletAddress,
       gnosisTransactionUrl: GNOSIS_TRANSACTION_URL,
       gnosisAddress,
+      networkId,
     });
     if (response) {
       fetchData();
@@ -512,6 +514,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
       gnosisTransactionUrl: GNOSIS_TRANSACTION_URL,
       gnosisAddress,
       walletAddress,
+      networkId,
     });
     response.then(
       (result) => {

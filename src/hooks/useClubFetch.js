@@ -14,7 +14,7 @@ import {
 } from "../redux/reducers/gnosis";
 import { fetchConfigById } from "../api/config";
 
-import { getSafeSdk } from "../utils/helper";
+import { getCustomSafeSdk } from "../utils/helper";
 import useAppContract from "./useAppContract";
 import { useAccount, useNetwork } from "wagmi";
 import { useRouter } from "next/router";
@@ -177,7 +177,7 @@ const useClubFetch = ({ daoAddress }) => {
           balance = await getERC20Balance();
         }
 
-        const safeSdk = await getSafeSdk(
+        const safeSdk = await getCustomSafeSdk(
           reduxClubData.gnosisAddress,
           walletAddress,
           networkId,

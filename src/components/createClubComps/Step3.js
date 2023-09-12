@@ -15,7 +15,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { Step3Styles } from "./CreateClubStyles";
 import Web3 from "web3";
 import { useCallback, useEffect } from "react";
-import { getSafeSdk, web3InstanceEthereum } from "../../utils/helper";
+import { getCustomSafeSdk, web3InstanceEthereum } from "../../utils/helper";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import SafeApiKit from "@safe-global/api-kit";
@@ -42,7 +42,7 @@ export default function Step3(props) {
   // if (index >= 0) props.formik.values.addressList.splice(index, 1);
 
   const fetchOwners = async (gnosisAddress) => {
-    const safeSdk = await getSafeSdk(
+    const safeSdk = await getCustomSafeSdk(
       Web3.utils.toChecksumAddress(gnosisAddress),
       Web3.utils.toChecksumAddress(walletAddress),
       networkId,

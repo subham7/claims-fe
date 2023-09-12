@@ -1,7 +1,11 @@
 import { useSelector } from "react-redux";
 import Web3 from "web3";
-import { getIncreaseGasPrice, writeContractFunction } from "utils/helper";
-import Safe, { Web3Adapter } from "@safe-global/protocol-kit";
+import {
+  getIncreaseGasPrice,
+  getSafeSdk,
+  writeContractFunction,
+} from "utils/helper";
+import { Web3Adapter } from "@safe-global/protocol-kit";
 import { createProposalTxHash, getProposalTxHash } from "../api/proposal";
 import SafeApiKit from "@safe-global/api-kit";
 import { useAccount, useNetwork } from "wagmi";
@@ -377,10 +381,15 @@ const useAppContractMethods = () => {
       ethAdapter,
     });
 
-    const safeSdk = await Safe.create({
-      ethAdapter: ethAdapter,
-      safeAddress: Web3.utils.toChecksumAddress(gnosisAddress),
-    });
+    // const safeSdk = await Safe.create({
+    //   ethAdapter: ethAdapter,
+    //   safeAddress: Web3.utils.toChecksumAddress(gnosisAddress),
+    // });
+    const safeSdk = await getSafeSdk(
+      Web3.utils.toChecksumAddress(gnosisAddress),
+      Web3.utils.toChecksumAddress(walletAddress),
+      networkId,
+    );
 
     const { transaction, approvalTransaction } = await getTransaction({
       proposalData,
