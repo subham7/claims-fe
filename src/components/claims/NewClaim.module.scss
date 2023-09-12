@@ -5,6 +5,7 @@ $background-hover: #2446d3;
 $active-color: #0abb92;
 $gray: #707070;
 $offWhite: #f5f5f5;
+$inactive-color: #d55438;
 
 .main {
   display: flex;
@@ -24,16 +25,21 @@ $offWhite: #f5f5f5;
       font-size: large;
     }
 
+    .inactive {
+      color: $inactive-color;
+      font-size: large;
+    }
+
     h1 {
       margin: 12px 0px 4px;
     }
 
     .progress {
-      margin: 36px 0;
+      margin: 60px 0 20px;
 
       p {
         margin-bottom: 4px;
-        font-weight: 500;
+        font-weight: 400;
         font-size: large;
       }
     }
@@ -92,7 +98,7 @@ $offWhite: #f5f5f5;
     }
 
     .claim {
-      margin-top: 10px;
+      margin-top: 20px;
 
       &:hover {
         background: $background-hover;
