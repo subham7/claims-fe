@@ -173,6 +173,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
       const safeSdk = await getCustomSafeSdk(
         Web3.utils.toChecksumAddress(gnosisAddress),
         Web3.utils.toChecksumAddress(walletAddress),
+        networkId,
       );
       const owners = await safeSdk.getOwners();
 
