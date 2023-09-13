@@ -78,7 +78,7 @@ export const CHAIN_CONFIG = {
     appRpcUrl: `https://arbitrum-mainnet.infura.io/v3/${process.env.NEXT_PUBLIC_INFURA_API_KEY}`,
     claimFactoryAddress: "0x28F06a3415A741367303Db36a6646C354cCE1340",
     claimsSubgraphUrl:
-      "https://api.thegraph.com/subgraphs/name/subham7/stnx-claim-arbitrum",
+      "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-claim-arbitrum/prod/gn",
     covalentNetworkName: "arbitrum-mainnet",
     nativeToken: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
   },
