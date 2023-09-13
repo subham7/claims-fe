@@ -122,21 +122,14 @@ export function returnRemainingTime(epochTime) {
 export const showWrongNetworkModal = (
   walletAddress,
   networkId,
-  isClaims = false,
   routeNetworkId,
 ) => {
-  if (isClaims) {
-    if (routeNetworkId && routeNetworkId !== networkId) {
-      return <WrongNetworkModal chainId={parseInt(routeNetworkId, 16)} />;
-    }
-
-    return walletAddress && !CHAIN_CONFIG[networkId] ? (
-      <WrongNetworkModal />
-    ) : null;
+  if (routeNetworkId && routeNetworkId !== networkId) {
+    return <WrongNetworkModal chainId={routeNetworkId} />;
   }
 
-  return walletAddress && networkId !== "0x89" && networkId !== "0x2105" ? (
-    <WrongNetworkModal isClaims={isClaims} />
+  return walletAddress && !CHAIN_CONFIG[networkId] ? (
+    <WrongNetworkModal />
   ) : null;
 };
 

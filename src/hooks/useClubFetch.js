@@ -16,22 +16,19 @@ import { fetchConfigById } from "../api/config";
 
 import { getCustomSafeSdk } from "../utils/helper";
 import useAppContract from "./useAppContract";
-import { useAccount, useNetwork } from "wagmi";
+import { useAccount } from "wagmi";
 import { useRouter } from "next/router";
 import useAppContractMethods from "./useAppContractMethods";
 import { queryStationDataFromSubgraph } from "utils/stationsSubgraphHelper";
 
-const useClubFetch = ({ daoAddress }) => {
+const useClubFetch = ({ daoAddress, networkId }) => {
   const [clubData, setClubData] = useState();
 
   const dispatch = useDispatch();
-  const { chain } = useNetwork();
   useAppContract(daoAddress);
 
   const router = useRouter();
   const { address: walletAddress } = useAccount();
-
-  const networkId = "0x" + chain?.id.toString(16);
 
   const reduxClubData = useSelector((state) => {
     return state.club.clubData;
@@ -206,7 +203,6 @@ const useClubFetch = ({ daoAddress }) => {
     reduxClubData.gnosisAddress,
     reduxClubData.tokenType,
     networkId,
-    router,
   ]);
 
   useEffect(() => {
