@@ -218,7 +218,7 @@ export const writeContractFunction = async ({
       functionName,
       args,
       account,
-      gasPrice: await getIncreaseGasPrice(networkId),
+      // gasPrice: await getIncreaseGasPrice(networkId),
     });
 
     const txHash = await walletClient.writeContract(request);
