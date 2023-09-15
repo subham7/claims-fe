@@ -38,14 +38,14 @@ const useCommonContractMethods = () => {
     }
   };
 
-  const getBalance = async (contractAddress) => {
+  const getBalance = async (contractAddress, safeAddress = "") => {
     if (contractAddress) {
       const erc20TokenContractCall = new web3Call.eth.Contract(
         erc20TokenABI,
         contractAddress,
       );
       return await erc20TokenContractCall?.methods
-        ?.balanceOf(walletAddress)
+        ?.balanceOf(safeAddress ? safeAddress : walletAddress)
         .call();
     }
   };

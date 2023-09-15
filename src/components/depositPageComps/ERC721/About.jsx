@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import classes from "./ERC721.module.scss";
 import ReactHtmlParser from "react-html-parser";
-import { returnRemainingTime } from "../../../utils/helper";
+import { returnRemainingTime, shortAddress } from "../../../utils/helper";
 import { queryLatestMembersFromSubgraph } from "utils/stationsSubgraphHelper";
 import { useAccount, useNetwork } from "wagmi";
 
@@ -15,7 +15,10 @@ const About = ({ bio, daoAddress }) => {
   useEffect(() => {
     const queryLatestMembers = async () => {
       try {
-        const { users } = queryLatestMembersFromSubgraph(daoAddress, networkId);
+        const { users } = await queryLatestMembersFromSubgraph(
+          daoAddress,
+          networkId,
+        );
         if (users) setMembers(users);
       } catch (error) {
         console.log(error);
@@ -46,11 +49,7 @@ const About = ({ bio, daoAddress }) => {
 
         {members?.map((member) => (
           <div key={member?.userAddress} className={classes.flexContainer}>
-            <p>
-              {member?.userAddress.slice(0, 10)}....
-              {member?.userAddress.slice(member?.userAddress.length - 5)} joined
-              this station
-            </p>
+            <p>{shortAddress(member?.userAddress)} joined this station</p>
             <p className={classes.time}>
               {" "}
               {returnRemainingTime(+member?.timeStamp)} ago

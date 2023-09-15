@@ -111,7 +111,7 @@ const DashboardIndex = ({ daoAddress }) => {
 
         if (clubData && membersData) {
           if (tokenType === "erc721") {
-            const imageUrl = await getImageURL(clubData?.stations[0]?.imageUrl);
+            const imageUrl = await getImageURL(clubData?.imgUrl);
 
             setClubDetails({
               clubImageUrl: imageUrl,
@@ -144,12 +144,7 @@ const DashboardIndex = ({ daoAddress }) => {
     } catch (error) {
       console.log(error);
     }
-  }, [
-    NETWORK_HEX,
-    daoAddress,
-    factoryData.assetsStoredOnGnosis,
-    gnosisAddress,
-  ]);
+  }, [NETWORK_HEX, gnosisAddress]);
 
   const fetchNfts = useCallback(async () => {
     try {
@@ -187,11 +182,11 @@ const DashboardIndex = ({ daoAddress }) => {
   };
 
   const handleMoreClick = () => {
-    router.push(`${router.asPath}/proposal`, undefined, { shallow: true });
+    router.push(`/proposals/${daoAddress}`, undefined, { shallow: true });
   };
 
   const handleProposalClick = (proposal) => {
-    router.push(`${router.asPath}/proposal/${proposal.proposalId}`, undefined, {
+    router.push(`/proposals/${daoAddress}/${proposal.proposalId}`, undefined, {
       shallow: true,
     });
   };
@@ -680,18 +675,6 @@ const DashboardIndex = ({ daoAddress }) => {
                                     }
                                     sx={{ width: "100%" }}>
                                     <Grid container mb={2} direction="column">
-                                      {/* <Grid item md={12}>
-                                          <Typography
-                                            className={classes.card5text1}
-                                          >
-                                            Proposed by{" "}
-                                            {data.createdBy.substring(0, 6) +
-                                              "......" +
-                                              data.createdBy.substring(
-                                                data.createdBy.length - 4,
-                                              )}
-                                          </Typography>
-                                        </Grid> */}
                                       <Grid item>
                                         <Typography variant="body">
                                           {data.name}

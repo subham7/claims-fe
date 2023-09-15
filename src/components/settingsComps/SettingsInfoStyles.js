@@ -10,14 +10,14 @@ export const SettingsInfoStlyes = makeStyles({
   },
   valuesDimStyle: {
     fontSize: "22px",
-    color: "#C1D3FF",
+    color: "#dcdcdc",
   },
   cardRegular: {
     borderRadius: "10px",
     opacity: 1,
   },
   dimColor: {
-    color: "#C1D3FF",
+    color: "#dcdcdc",
   },
   connectWalletButton: {
     backgroundColor: "#2D55FF",
@@ -36,7 +36,7 @@ export const SettingsInfoStlyes = makeStyles({
   },
   cardSmallFont: {
     fontSize: "18px",
-    color: "#C1D3FF",
+    color: "#dcdcdc",
   },
   cardLargeFont: {
     width: "150px",
@@ -117,7 +117,7 @@ export const SettingsInfoStlyes = makeStyles({
     opacity: "1",
   },
   iconColor: {
-    color: "#C1D3FF",
+    color: "#dcdcdc",
   },
   activityLink: {
     color: "#2D55FF",
@@ -132,7 +132,7 @@ export const SettingsInfoStlyes = makeStyles({
   },
   modalStyle: {
     width: "792px",
-    backgroundColor: "#19274B",
+    backgroundColor: "#151515",
   },
   datePicker: {
     borderRadius: "10px",

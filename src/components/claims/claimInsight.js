@@ -19,6 +19,7 @@ import useDropsContractMethods from "hooks/useDropsContracMethods";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 import { queryDropDetailsFromSubgraph } from "utils/dropsSubgraphHelper";
 import { createSnapShot } from "api/claims";
+import dayjs from "dayjs";
 
 const ClaimInsight = ({ claimAddress }) => {
   const [claimsData, setClaimsData] = useState([]);
@@ -232,8 +233,8 @@ const ClaimInsight = ({ claimAddress }) => {
               rollbackTokensHandler={rollbackTokensHandler}
               airdropTokenDetails={airdropTokenDetails}
               modifyStartAndEndTimeHandler={modifyStartAndEndTimeHandler}
-              endTime={claimsData[0]?.endTime}
-              startTime={claimsData[0]?.startTime}
+              endTime={dayjs(Number(claimsData[0]?.endTime) * 1000)}
+              startTime={dayjs(Number(claimsData[0]?.startTime) * 1000)}
               hasAllowanceMechanism={claimsData[0]?.hasAllowanceMechanism}
             />
             <ClaimEligibility
@@ -281,7 +282,7 @@ const ClaimInsight = ({ claimAddress }) => {
       <Backdrop
         sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
         open={loading}>
-        <CircularProgress color="inherit" />
+        <CircularProgress />
       </Backdrop>
     </>
   );

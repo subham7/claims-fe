@@ -10,18 +10,17 @@ import * as yup from "yup";
 
 const useStyles = makeStyles({
   container: {
-    background: "#19274A",
+    background: "#151515",
     width: "650px",
     borderRadius: "20px",
     padding: "80px 50px",
-    border: "0.5px solid #6475A3",
     display: "flex",
     flexDirection: "column",
     position: "fixed",
     top: "50%",
     left: "50%",
     transform: "translateX(-50%) translateY(-50%)",
-    zIndex: "000",
+    zIndex: "1",
   },
   backdrop: {
     position: "fixed",
@@ -31,7 +30,7 @@ const useStyles = makeStyles({
     width: "100vw",
     background: "#000",
     opacity: "70%",
-    zIndex: "0000",
+    zIndex: "1",
   },
 });
 

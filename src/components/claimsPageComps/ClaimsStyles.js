@@ -51,7 +51,7 @@ export const ClaimsStyles = makeStyles({
   createdBy: {
     background: "#151515",
     padding: "10px 10px",
-    color: "#C1D3FF",
+    color: "#dcdcdc",
     borderRadius: "10px",
     display: "flex",
     gap: "10px",
@@ -59,7 +59,7 @@ export const ClaimsStyles = makeStyles({
     margin: 0,
   },
   claimCloses: {
-    color: "#C1D3FF",
+    color: "#dcdcdc",
     fontSize: "18px",
     fontWeight: "300",
     margin: "10px 0",
@@ -68,7 +68,7 @@ export const ClaimsStyles = makeStyles({
     flexDirection: "column",
   },
   para: {
-    color: "#C1D3FF",
+    color: "#dcdcdc",
     fontSize: "16px",
     marginBottom: "8px",
   },
@@ -96,7 +96,7 @@ export const ClaimsStyles = makeStyles({
     justifyContent: "space-between",
     alignItems: "center",
     padding: "28px 20px",
-    border: "0.5px solid #6475A3",
+    background: "#0f0f0f",
     borderRadius: "12px",
   },
   amount: {
@@ -128,7 +128,7 @@ export const ClaimsStyles = makeStyles({
   myClaim: {
     margin: 0,
     padding: 0,
-    color: "#C1D3FF",
+    color: "#dcdcdc",
     fontSize: "14px",
   },
   claims: {

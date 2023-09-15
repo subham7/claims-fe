@@ -56,7 +56,7 @@ const PriceSection = ({
           <Typography
             variant="subheading"
             className="text-bold"
-            style={{ paddingTop: "8px" }}>
+            style={{ padding: "8px 0" }}>
             {count}
           </Typography>
           <IconButton
@@ -99,7 +99,7 @@ const PriceSection = ({
       (whitelistUserData?.setWhitelist === true &&
         whitelistUserData?.proof === null) ? (
         <div className={classes.tokenGateInfo}>
-          <BsInfoCircleFill color="#C1D3FF" />
+          <BsInfoCircleFill color="#dcdcdc" />
           <p>
             This Station is token-gated. Please check the about section to know
             more.

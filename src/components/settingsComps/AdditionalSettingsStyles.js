@@ -16,7 +16,7 @@ export const AdditionalSettingsStyles = makeStyles({
   },
   iconColor: {
     fontSize: "18px",
-    color: "#C1D3FF",
+    color: "#dcdcdc",
   },
 
   valuesStyle: {

@@ -78,6 +78,7 @@ export const slice = createSlice({
       state.clubData.distributionAmount = action.payload.distributionAmount;
       state.clubData.totalAmountRaised = action.payload.totalAmountRaised;
       state.clubData.quorum = action.payload.quorum;
+      state.clubData.imgUrl = action.payload.imgUrl;
     },
     addErc20ClubDetails: (state, action) => {
       state.erc20ClubDetails.quorum = action.payload.quorum;

@@ -19,6 +19,7 @@ import DepositOwnerFee from "./modals/DepositOwnerFee";
 import DepositDeadline from "./modals/DepositDeadline";
 import { useSelector } from "react-redux";
 import useAppContractMethods from "../../hooks/useAppContractMethods";
+import { shortAddress } from "utils/helper";
 
 const AdditionalSettings = ({
   tokenType,
@@ -151,13 +152,7 @@ const AdditionalSettings = ({
             <Grid item mr={4} mt={1}>
               <Typography variant="p" className={classes.valuesStyle}>
                 {daoDetails ? (
-                  daoAddress?.substring(0, 6) +
-                  "......" +
-                  daoAddress?.substring(daoAddress.length - 4)
-                ) : tokenType === "erc721" ? (
-                  daoAddress?.substring(0, 6) +
-                  "......" +
-                  daoAddress?.substring(daoAddress.length - 4)
+                  shortAddress(daoAddress)
                 ) : (
                   <Skeleton variant="rectangular" width={100} height={25} />
                 )}
@@ -205,13 +200,7 @@ const AdditionalSettings = ({
             <Grid item mr={4} mt={1}>
               <Typography variant="p" className={classes.valuesStyle}>
                 {daoDetails ? (
-                  gnosisAddress?.substring(0, 6) +
-                  "......" +
-                  gnosisAddress?.substring(gnosisAddress.length - 4)
-                ) : tokenType === "erc721" ? (
-                  gnosisAddress?.substring(0, 6) +
-                  "......" +
-                  gnosisAddress?.substring(gnosisAddress.length - 4)
+                  shortAddress(gnosisAddress)
                 ) : (
                   <Skeleton variant="rectangular" width={100} height={25} />
                 )}
@@ -304,7 +293,7 @@ const AdditionalSettings = ({
       </Stack>
 
       <Backdrop sx={{ color: "#000", zIndex: 10000000 }} open={loading}>
-        <CircularProgress color="inherit" />
+        <CircularProgress />
       </Backdrop>
 
       {showOwnerFeesModal && (

@@ -37,44 +37,6 @@ export const votingDuration = [
   },
 ];
 
-export const commandTypeList = [
-  {
-    commandId: 0,
-    command: "airdropCustomToken",
-    commandText: "Distribute token to members",
-  },
-  {
-    commandId: 1,
-    command: "mintGTToAddress",
-    commandText: "Mint club token",
-  },
-  // {
-  //     commandId: 2,
-  //     command: "assignExecutorRole",
-  //     commandText: "Assign executor role"
-  // },
-  {
-    commandId: 2,
-    command: "updateGovernanceSettings",
-    commandText: "Update Governance Settings",
-  },
-  {
-    commandId: 3,
-    command: "updateRaiseAmount",
-    commandText: "Change total raise amount",
-  },
-  {
-    commandId: 4,
-    command: "sendCustomToken",
-    commandText: "Send token to an address",
-  },
-  // {
-  //     commandId: 7,
-  //     command: "sendEth",
-  //     commandText: "Send ETH"
-  // },
-];
-
 export const proposalDisplayOptions = [
   {
     type: "all",

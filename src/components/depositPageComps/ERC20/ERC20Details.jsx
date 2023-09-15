@@ -84,7 +84,7 @@ const ERC20Details = ({
       (whitelistUserData?.setWhitelist === true &&
         whitelistUserData?.proof === null) ? (
         <div className={classes.tokenGateInfo}>
-          <BsInfoCircleFill color="#C1D3FF" />
+          <BsInfoCircleFill color="#dcdcdc" />
           <p>
             This Station is token-gated. Please check the about section to know
             more.

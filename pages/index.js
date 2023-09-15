@@ -23,6 +23,7 @@ import {
   queryStationDataFromSubgraph,
   queryStationListFromSubgraph,
 } from "utils/stationsSubgraphHelper";
+import { shortAddress } from "utils/helper";
 
 const useStyles = makeStyles({
   container: {
@@ -51,7 +52,7 @@ const useStyles = makeStyles({
   },
   clubAddress: {
     fontSize: "16px",
-    color: "#C1D3FF",
+    color: "#dcdcdc",
     opacity: 1,
   },
   bannerImage: {
@@ -99,7 +100,7 @@ const useStyles = makeStyles({
   },
   isAdmin: {
     fontSize: "16px",
-    color: "#C1D3FF",
+    color: "#dcdcdc",
     opacity: 1,
   },
   flexContainer: {
@@ -339,12 +340,7 @@ const App = () => {
                                     <Typography
                                       variant="body"
                                       className="text-blue">
-                                      {`${club.userAddress.substring(
-                                        0,
-                                        9,
-                                      )}......${club.userAddress.substring(
-                                        club.userAddress.length - 6,
-                                      )}`}
+                                      {shortAddress(club.userAddress)}
                                     </Typography>
                                   </Stack>
                                 </Grid>
@@ -380,7 +376,7 @@ const App = () => {
                           }}>
                           No stations found
                         </h3>
-                        <p style={{ color: "#C1D3FF", fontWeight: "300" }}>
+                        <p style={{ color: "#dcdcdc", fontWeight: "300" }}>
                           Station(s) you created or a part of appear here
                         </p>
                       </div>

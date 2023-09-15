@@ -4,8 +4,8 @@ import { styled } from "@mui/material";
 
 const CustomPrompt = styled(Slider)(({ theme }) => ({
   "& .MuiSlider-rail": {
-    color: "#C1D3FF",
-    backgroundColor: "#C1D3FF",
+    color: "#dcdcdc",
+    backgroundColor: "#dcdcdc",
     height: "13px",
   },
   "& .MuiSlider-track": {
@@ -17,7 +17,7 @@ const CustomPrompt = styled(Slider)(({ theme }) => ({
     height: "26px",
   },
   "& .MuiSlider-valueLabel": {
-    color: "#C1D3FF",
+    color: "#dcdcdc",
     fontSize: 18,
     fontWeight: "normal",
     top: -6,
