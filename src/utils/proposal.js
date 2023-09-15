@@ -62,10 +62,6 @@ export const createRejectSafeTx = async ({
       proposalTxHash.data[0].txHash,
     );
 
-    // const safeSdk = await Safe.create({
-    //   ethAdapter: ethAdapter,
-    //   safeAddress: Web3.utils.toChecksumAddress(gnosisAddress),
-    // });
     const safeSdk = await getSafeSdk(
       Web3.utils.toChecksumAddress(gnosisAddress),
       Web3.utils.toChecksumAddress(walletAddress),
@@ -140,11 +136,6 @@ export const executeRejectTx = async ({
       proposalTxHash.data[0].txHash,
     );
 
-    // const safeSdk = await Safe.create({
-    //   ethAdapter: ethAdapter,
-    //   safeAddress: Web3.utils.toChecksumAddress(gnosisAddress),
-    // });
-
     const safeSdk = await getSafeSdk(
       Web3.utils.toChecksumAddress(gnosisAddress),
       Web3.utils.toChecksumAddress(walletAddress),
@@ -189,10 +180,6 @@ export const signRejectTx = async ({
       proposalTxHash.data[0].txHash,
     );
 
-    // const safeSdk = await Safe.create({
-    //   ethAdapter: ethAdapter,
-    //   safeAddress: Web3.utils.toChecksumAddress(gnosisAddress),
-    // });
     const safeSdk = await getSafeSdk(
       Web3.utils.toChecksumAddress(gnosisAddress),
       Web3.utils.toChecksumAddress(walletAddress),
