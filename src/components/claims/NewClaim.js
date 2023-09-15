@@ -1,7 +1,6 @@
 import ProgressBar from "@components/progressbar";
 import Button from "@components/ui/button/Button";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
-// import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { BiLogoTelegram } from "react-icons/bi";
 import { BsTwitter } from "react-icons/bs";
@@ -21,7 +20,11 @@ import { Alert, CircularProgress, Skeleton } from "@mui/material";
 import useClaimSmartContracts from "hooks/useClaimSmartContracts";
 import { getUserProofAndBalance } from "api/claims";
 import ClaimActivity from "./ClaimActivity";
-import Image from "next/image";
+// import Image from "next/image";
+import Eligibility from "./Eligibility";
+// import About from "./About";
+import Header from "./Header";
+import ClaimInput from "./ClaimInput";
 
 const NewClaim = ({ claimAddress }) => {
   const [claimsData, setClaimsData] = useState();
@@ -400,33 +403,12 @@ const NewClaim = ({ claimAddress }) => {
     <main className={classes.main}>
       <section className={classes.leftContainer}>
         <div>
-          <p
-            className={`${
-              isClaimActive && dropsData?.isEnabled
-                ? classes.active
-                : classes.inactive
-            }`}>
-            {isClaimActive && hasDropStarted && dropsData?.isEnabled
-              ? "Active"
-              : (!isClaimActive && hasDropStarted) || !dropsData?.isEnabled
-              ? "Inactive"
-              : !isClaimActive && !hasDropStarted && "Not started yet"}
-          </p>
-
-          {tokenDetails?.tokenSymbol ? (
-            <h1>{tokenDetails?.tokenSymbol}</h1>
-          ) : (
-            <Skeleton height={70} width={100} />
-          )}
-
-          {dropsData ? (
-            <p>
-              This drop closes on{" "}
-              {new Date(+dropsData?.endTime * 1000).toUTCString()}
-            </p>
-          ) : (
-            <Skeleton />
-          )}
+          <Header
+            dropsData={dropsData}
+            hasDropStarted={hasDropStarted}
+            isClaimActive={isClaimActive}
+            tokenDetails={tokenDetails}
+          />
 
           <div className={classes.progress}>
             {claimedPercentage !== null && claimedPercentage !== NaN ? (
@@ -438,46 +420,14 @@ const NewClaim = ({ claimAddress }) => {
             <ProgressBar value={claimedPercentage} />
           </div>
 
-          <div className={classes.inputContainer}>
-            <div>
-              <input
-                value={claimInput}
-                name="tokenInput"
-                id="tokenInput"
-                onChange={(event) => {
-                  setClaimInput(event.target.value);
-                }}
-                onWheel={(event) => event.target.blur()}
-                autoFocus
-                type={"number"}
-                placeholder="0"
-              />
-              {/* <p className={classes.smallFont}>$1322.70</p> */}
-            </div>
-
-            <div className={classes.tokenContainer}>
-              {tokenDetails?.tokenSymbol ? (
-                <p className={classes.token}>{tokenDetails?.tokenSymbol}</p>
-              ) : (
-                <Skeleton width={120} height={60} />
-              )}
-
-              {maxClaimableAmount && tokenDetails?.tokenDecimal ? (
-                <p className={classes.smallFont}>
-                  Available:{" "}
-                  {Number(
-                    convertFromWeiGovernance(
-                      claimRemaining,
-                      tokenDetails.tokenDecimal,
-                    ),
-                  ).toFixed(4)}
-                  <span onClick={maxHandler}>Max</span>
-                </p>
-              ) : (
-                <Skeleton height={40} width={150} />
-              )}
-            </div>
-          </div>
+          <ClaimInput
+            claimInput={claimInput}
+            claimRemaining={claimRemaining}
+            maxClaimableAmount={maxClaimableAmount}
+            maxHandler={maxHandler}
+            setClaimInput={setClaimInput}
+            tokenDetails={tokenDetails}
+          />
 
           <Button
             className={classes.claim}
@@ -504,12 +454,12 @@ const NewClaim = ({ claimAddress }) => {
       </section>
       <section className={classes.rightContainer}>
         <div className={classes.bannerContainer}>
-          <Image
+          {/* <Image
             src="/assets/images/newBanner.png"
             height={150}
             width={640}
             alt="Banner Image"
-          />
+          /> */}
 
           {claimsData ? (
             <h1>{claimsData?.description}</h1>
@@ -518,61 +468,9 @@ const NewClaim = ({ claimAddress }) => {
           )}
         </div>
 
-        <div>
-          <h3 className={classes.header}>About</h3>
-          <p>
-            Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of “de Finibus
-            Bonorum et Malorum” The standard chunk of Lorem Ipsum used since the
-            1500s is reproduced below for those interested. Sections 1.10.32 and
-            1.10.33 from “de Finibus Bonorum et Malorum” by Cicero are also
-            reproduced in their exact original form, accompanied by English
-            versions from the 1914 translation by H. Rackham.
-          </p>
-        </div>
+        {/* <About /> */}
 
-        <div className={classes.whoCanClaimContainer}>
-          <h3 className={classes.header}>Who can claim?</h3>
-
-          <div>
-            {claimsData ? (
-              <h4>
-                {claimsData?.claimType === "0"
-                  ? `${convertFromWeiGovernance(
-                      claimsData?.minWhitelistTokenValue,
-                      tokenDetails.whitelistTokenDecimal,
-                    )} ${tokenDetails.whitelistToken}`
-                  : claimsData?.claimType === "1"
-                  ? "Allowlisted users only"
-                  : claimsData?.claimType === "2"
-                  ? "Everyone"
-                  : "Pro-rata"}
-              </h4>
-            ) : (
-              <Skeleton height={40} width={140} />
-            )}
-
-            {claimsData ? (
-              <p>
-                {claimsData?.claimType === "2"
-                  ? `Upto ${Number(
-                      convertFromWeiGovernance(
-                        claimsData?.maxClaimableAmount,
-                        tokenDetails?.tokenDecimal,
-                      ),
-                    )} ${
-                      tokenDetails.tokenSymbol
-                    } on first-come first serve basis.`
-                  : claimsData?.claimType === "1"
-                  ? "Only allowlisted users by the creator can claim from this drop."
-                  : claimsData?.claimType === "0"
-                  ? "Hold these token(s) to participate in this drop."
-                  : "This drop is pro-rata gated"}
-              </p>
-            ) : (
-              <Skeleton />
-            )}
-          </div>
-        </div>
+        <Eligibility claimsData={claimsData} tokenDetails={tokenDetails} />
 
         <ClaimActivity
           activityDetails={activityDetails}
