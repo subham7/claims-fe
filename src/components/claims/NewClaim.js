@@ -1,7 +1,7 @@
 import ProgressBar from "@components/progressbar";
 import Button from "@components/ui/button/Button";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
-import Image from "next/image";
+// import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { BiLogoTelegram } from "react-icons/bi";
 import { BsTwitter } from "react-icons/bs";
@@ -10,14 +10,18 @@ import {
   queryAllDropsTransactionsFromSubgraph,
   queryDropDetailsFromSubgraph,
 } from "utils/dropsSubgraphHelper";
-import { convertFromWeiGovernance } from "utils/globalFunctions";
+import {
+  convertFromWeiGovernance,
+  convertToWeiGovernance,
+} from "utils/globalFunctions";
 import { useAccount, useNetwork } from "wagmi";
 import classes from "./NewClaim.module.scss";
-import { MetaMaskAvatar } from "react-metamask-avatar";
 import useDropsContractMethods from "hooks/useDropsContracMethods";
-import { Skeleton } from "@mui/material";
+import { Alert, CircularProgress, Skeleton } from "@mui/material";
 import useClaimSmartContracts from "hooks/useClaimSmartContracts";
 import { getUserProofAndBalance } from "api/claims";
+import ClaimActivity from "./ClaimActivity";
+import Image from "next/image";
 
 const NewClaim = ({ claimAddress }) => {
   const [claimsData, setClaimsData] = useState();
@@ -40,13 +44,20 @@ const NewClaim = ({ claimAddress }) => {
   const [dropsData, setDropsData] = useState();
   const [claimedPercentage, setClaimedPercentage] = useState(0);
   const [maxClaimableAmount, setMaxClaimableAmount] = useState(0);
+  const [claimRemaining, setClaimRemaining] = useState(0);
+  const [remainingInUSD, setRemainingInUSD] = useState(0);
+  const [claimInput, setClaimInput] = useState(0);
+  const [isClaiming, setIsClaiming] = useState(false);
+  const [showMessage, setShowMessage] = useState(false);
+  const [message, setMessage] = useState("");
+  const [claimed, setClaimed] = useState(false);
 
   const currentTime = Date.now() / 1000;
   const { address: walletAddress } = useAccount();
   const { chain } = useNetwork();
   const networkId = "0x" + chain?.id.toString(16);
 
-  const { getDecimals, getTokenSymbol, approveDeposit, getBalance } =
+  const { getDecimals, getTokenSymbol, approveDeposit, getBalance, encode } =
     useCommonContractMethods();
 
   const { claimSettings, claimBalance, claimAmount, claim } =
@@ -113,6 +124,18 @@ const NewClaim = ({ claimAddress }) => {
 
       // remaining in contract
       const remainingBalanceInContract = await claimBalance();
+
+      const remainingBalanceInUSD = convertFromWeiGovernance(
+        remainingBalanceInContract,
+        tokenDetails.tokenDecimal,
+      );
+      setRemainingInUSD(remainingBalanceInUSD);
+
+      const claimableAmtInUSD = convertFromWeiGovernance(
+        maxClaimableAmount,
+        tokenDetails.tokenDecimal,
+      );
+
       const totalAmountClaimed =
         Number(
           convertFromWeiGovernance(
@@ -142,6 +165,50 @@ const NewClaim = ({ claimAddress }) => {
       const claimedAmt = await claimAmount(walletAddress);
       const isClaimed = claimedAmt > 0;
       setAlreadyClaimed(isClaimed);
+
+      const remainingAmt = +maxClaimableAmount - +claimedAmt;
+      const remainingAmtInUSD = remainingAmt / 10 ** tokenDetails.tokenDecimal;
+
+      setClaimRemaining(remainingAmt);
+
+      if (!isClaimed) {
+        if (
+          +remainingBalanceInUSD >= +claimableAmtInUSD &&
+          (dropsData?.permission == 0
+            ? isEligibleForTokenGated
+            : !isEligibleForTokenGated)
+        ) {
+          setClaimRemaining(maxClaimableAmount);
+        } else if (
+          +remainingBalanceInUSD < +claimableAmtInUSD &&
+          (dropsData?.permission == 0
+            ? isEligibleForTokenGated
+            : !isEligibleForTokenGated)
+        ) {
+          setClaimRemaining(
+            convertToWeiGovernance(
+              remainingBalanceInUSD,
+              tokenDetails.tokenDecimal,
+            ),
+          );
+        }
+      } else {
+        if (
+          +remainingBalanceInUSD >= +remainingAmtInUSD &&
+          (dropsData?.permission == 0
+            ? isEligibleForTokenGated
+            : !isEligibleForTokenGated)
+        ) {
+          setClaimRemaining(remainingAmt);
+        } else if (
+          +remainingBalanceInUSD < +remainingAmtInUSD &&
+          (dropsData?.permission == 0
+            ? isEligibleForTokenGated
+            : !isEligibleForTokenGated)
+        ) {
+          setClaimRemaining(remainingBalanceInContract);
+        }
+      }
     } catch (error) {
       console.log(error);
     }
@@ -187,15 +254,128 @@ const NewClaim = ({ claimAddress }) => {
 
         case "3": {
           const whitelistTokenBalance = await getBalance(dropsData?.daoToken);
-          setIsEligibleForTokenGated(Number(whitelistTokenBalance > 0));
+          setIsEligibleForTokenGated(whitelistTokenBalance > 0);
+
           const { amount } = await getUserProofAndBalance(
             dropsData?.merkleRoot,
             walletAddress.toLowerCase(),
           );
+
           setMaxClaimableAmount(amount);
         }
       }
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const claimHandler = async () => {
+    setIsClaiming(true);
+    try {
+      if (
+        dropsData?.merkleRoot !==
+        "0x0000000000000000000000000000000000000000000000000000000000000001"
+      ) {
+        const data = await getUserProofAndBalance(
+          dropsData?.merkleRoot,
+          walletAddress.toLowerCase(),
+        );
+
+        const { amount, proof } = data;
+
+        const encodedLeaf = encode(walletAddress, amount);
+
+        await claim(
+          claimAddress,
+          convertToWeiGovernance(
+            claimInput,
+            tokenDetails.tokenDecimal,
+          ).toString(),
+          walletAddress,
+          proof,
+          encodedLeaf,
+        );
+
+        const claimedAmt = await claimAmount(walletAddress);
+        setClaimRemaining(maxClaimableAmount - claimedAmt);
+        setIsClaiming(false);
+        setAlreadyClaimed(true);
+        setClaimed(true);
+        setClaimInput(0);
+        showMessageHandler();
+        setMessage("Successfully Claimed!");
+      } else {
+        await claim(
+          claimAddress,
+          convertToWeiGovernance(
+            claimInput,
+            tokenDetails.tokenDecimal,
+          ).toString(),
+          walletAddress,
+          [],
+          "",
+        );
+
+        const claimedAmt = await claimAmount(walletAddress);
+
+        const remainingAmt = +maxClaimableAmount - +claimedAmt;
+
+        const remainingAmtInUSD =
+          remainingAmt / 10 ** tokenDetails.tokenDecimal;
+
+        if (+remainingInUSD >= +remainingAmtInUSD) {
+          setClaimRemaining(remainingAmt);
+        } else {
+          setClaimRemaining(remainingInUSD);
+        }
+
+        setIsClaiming(false);
+        setClaimed(true);
+        setAlreadyClaimed(true);
+        setClaimInput(0);
+
+        showMessageHandler();
+        setMessage("Successfully Claimed!");
+      }
+    } catch (err) {
+      console.log(err);
+      setClaimed(false);
+      setMessage("Some Error Occured!");
+      showMessageHandler();
+      // setMessage(err.message);
+      setIsClaiming(false);
+    }
+  };
+
+  const showMessageHandler = () => {
+    setShowMessage(true);
+    setTimeout(() => {
+      setShowMessage(false);
+    }, 4000);
+  };
+
+  const maxHandler = async () => {
+    if (
+      +claimRemaining === 0 &&
+      !alreadyClaimed &&
+      convertFromWeiGovernance(remainingInUSD, tokenDetails.tokenDecimal)
+    ) {
+      setClaimInput(maxClaimableAmount / 10 ** tokenDetails.tokenDecimal);
+    } else {
+      setClaimInput(claimRemaining / 10 ** tokenDetails.tokenDecimal);
+    }
+  };
+
+  const isClaimButtonDisabled = () => {
+    return (claimRemaining == 0 && alreadyClaimed && claimed) ||
+      !isClaimActive ||
+      !maxClaimableAmount ||
+      +claimInput <= 0 ||
+      claimInput >= +claimRemaining ||
+      (dropsData?.permission == 0 && !isEligibleForTokenGated) ||
+      (dropsData?.permission === "3" && !isEligibleForTokenGated)
+      ? true
+      : false;
   };
 
   useEffect(() => {
@@ -214,7 +394,7 @@ const NewClaim = ({ claimAddress }) => {
     if (dropsData?.permission) {
       setClaimAmountByType(dropsData.permission);
     }
-  }, [dropsData?.permission]);
+  }, [dropsData?.permission, dropsData]);
 
   return (
     <main className={classes.main}>
@@ -249,22 +429,30 @@ const NewClaim = ({ claimAddress }) => {
           )}
 
           <div className={classes.progress}>
-            <p>{claimedPercentage}% claimed</p>
+            {claimedPercentage !== null && claimedPercentage !== NaN ? (
+              <p>{claimedPercentage.toFixed(3)}% claimed</p>
+            ) : (
+              <Skeleton />
+            )}
+
             <ProgressBar value={claimedPercentage} />
           </div>
 
           <div className={classes.inputContainer}>
             <div>
               <input
+                value={claimInput}
                 name="tokenInput"
                 id="tokenInput"
-                // onChange={formik.handleChange}
+                onChange={(event) => {
+                  setClaimInput(event.target.value);
+                }}
                 onWheel={(event) => event.target.blur()}
                 autoFocus
                 type={"number"}
                 placeholder="0"
               />
-              <p className={classes.smallFont}>$1322.70</p>
+              {/* <p className={classes.smallFont}>$1322.70</p> */}
             </div>
 
             <div className={classes.tokenContainer}>
@@ -277,11 +465,13 @@ const NewClaim = ({ claimAddress }) => {
               {maxClaimableAmount && tokenDetails?.tokenDecimal ? (
                 <p className={classes.smallFont}>
                   Available:{" "}
-                  {convertFromWeiGovernance(
-                    maxClaimableAmount,
-                    tokenDetails?.tokenDecimal,
-                  )}{" "}
-                  <span>Max</span>
+                  {Number(
+                    convertFromWeiGovernance(
+                      claimRemaining,
+                      tokenDetails.tokenDecimal,
+                    ),
+                  ).toFixed(4)}
+                  <span onClick={maxHandler}>Max</span>
                 </p>
               ) : (
                 <Skeleton height={40} width={150} />
@@ -289,8 +479,18 @@ const NewClaim = ({ claimAddress }) => {
             </div>
           </div>
 
-          <Button className={classes.claim} variant="normal">
-            Claim now
+          <Button
+            className={classes.claim}
+            onClick={claimHandler}
+            disabled={isClaimButtonDisabled()}
+            variant="normal">
+            {isClaiming ? (
+              <CircularProgress size={25} />
+            ) : alreadyClaimed && +claimRemaining === 0 ? (
+              "Claimed"
+            ) : (
+              "Claim"
+            )}
           </Button>
         </div>
 
@@ -374,43 +574,40 @@ const NewClaim = ({ claimAddress }) => {
           </div>
         </div>
 
-        <div>
-          <h3 className={classes.header}>Activity</h3>
-
-          <div className={classes.activities}>
-            {activityDetails.length ? (
-              activityDetails?.map((activity, index) => (
-                <div className={classes.activity} key={index}>
-                  <div>
-                    {/* <Image
-                    src={`/assets/NFT_IMAGES/${Math.floor(
-                      Math.random() * 11,
-                    )}.png`}
-                    height={25}
-                    width={25}
-                    alt="icon"
-                  /> */}
-                    <MetaMaskAvatar address={activity?.claimerAddress} />
-                    <p>{`${activity?.claimerAddress.slice(
-                      0,
-                      7,
-                    )}....${activity?.claimerAddress.slice(-7)}`}</p>
-                  </div>
-                  <p>
-                    {convertFromWeiGovernance(
-                      activity?.amountClaimed,
-                      tokenDetails.tokenDecimal,
-                    )}{" "}
-                    <span>{tokenDetails?.tokenSymbol}</span>
-                  </p>
-                </div>
-              ))
-            ) : (
-              <p>No activities as of now!</p>
-            )}
-          </div>
-        </div>
+        <ClaimActivity
+          activityDetails={activityDetails}
+          tokenDetails={tokenDetails}
+        />
       </section>
+
+      {claimed && showMessage ? (
+        <Alert
+          severity="success"
+          sx={{
+            width: "250px",
+            position: "fixed",
+            bottom: "30px",
+            right: "20px",
+            borderRadius: "8px",
+          }}>
+          {message}
+        </Alert>
+      ) : (
+        !claimed &&
+        showMessage && (
+          <Alert
+            severity="error"
+            sx={{
+              width: "350px",
+              position: "fixed",
+              bottom: "30px",
+              right: "20px",
+              borderRadius: "8px",
+            }}>
+            {message}
+          </Alert>
+        )
+      )}
     </main>
   );
 };
