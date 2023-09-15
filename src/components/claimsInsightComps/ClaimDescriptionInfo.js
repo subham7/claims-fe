@@ -2,8 +2,10 @@ import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { AiFillCopy } from "react-icons/ai";
 import { BsArrowLeftShort, BsLink45Deg } from "react-icons/bs";
+import { AiOutlineEdit } from "react-icons/ai";
 import { FiExternalLink } from "react-icons/fi";
 import { ClaimsInsightStyles } from "./claimsInsightStyles";
+import EditClaimDetails from "@components/settingsComps/modals/EditClaimDetails";
 
 const ClaimDescriptionInfo = ({
   description,
@@ -16,6 +18,13 @@ const ClaimDescriptionInfo = ({
   const [claimActive, setClaimActive] = useState(false);
   const [isClaimStarted, setIsClaimStarted] = useState(false);
   const [claimEnabled, setClaimEnabled] = useState(false);
+  const [open, setOpen] = useState(false);
+
+  const handleClose = (event, reason) => {
+    if (reason !== "backdropClick" && reason !== "escapeKeyDown") {
+      setOpen(false);
+    }
+  };
 
   const router = useRouter();
   const classes = ClaimsInsightStyles();
@@ -58,6 +67,16 @@ const ClaimDescriptionInfo = ({
           <p>Back</p>
         </div>
         <div className={classes.gapContainer}>
+          <AiOutlineEdit
+            onClick={() => setOpen(true)}
+            style={{
+              background: "#0f0f0f",
+              padding: "3px",
+              borderRadius: "5px",
+              cursor: "pointer",
+            }}
+            size={25}
+          />
           <BsLink45Deg
             onClick={() => {
               router.push(`/claim/${claimAddress}/${claimsNetwork}`);
@@ -123,6 +142,14 @@ const ClaimDescriptionInfo = ({
           />
         </div>
       </div>
+      <EditClaimDetails
+        open={open}
+        setOpen={setOpen}
+        onClose={handleClose}
+        // daoAddress={daoAddress}
+        // clubInfo={clubInfo}
+        // getClubInfo={getClubInfo}
+      />
     </div>
   );
 };
