@@ -11,12 +11,13 @@ import { TextField } from "@components/ui";
 import Button from "@components/ui/button/Button";
 import { makeStyles } from "@mui/styles";
 import { useFormik } from "formik";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import QuillEditor from "../../quillEditor";
-// import ReactHtmlParser from "react-html-parser";
+import ReactHtmlParser from "react-html-parser";
 import "react-quill/dist/quill.snow.css";
 import UploadIcon from "@mui/icons-material/Upload";
+import { createClaimDetails, getClaimDetails } from "api/claims";
 
 const useStyles = makeStyles({
   modalStyle: {
@@ -46,15 +47,26 @@ const useStyles = makeStyles({
   },
 });
 
-const EditClaimDetails = (props) => {
-  //   const { daoAddress, clubInfo, getClubInfo } = props;
-  const { open, setOpen, onClose } = props;
+const EditClaimDetails = ({
+  open,
+  setOpen,
+  onClose,
+  claimAddress,
+  networkId,
+}) => {
   const classes = useStyles();
 
   const [loaderOpen, setLoaderOpen] = useState(false);
   const [openSnackBar, setOpenSnackBar] = useState(false);
   const [failed, setFailed] = useState(false);
   const uploadInputRef = useRef(null);
+
+  const [selectedFile, setSelectedFile] = useState("");
+  const [bannerData, setBannerData] = useState();
+
+  const selectFile = (event) => {
+    setSelectedFile(event.target.files[0]);
+  };
 
   const handleSnackBarClose = (event, reason) => {
     if (reason === "clickaway") {
@@ -64,52 +76,103 @@ const EditClaimDetails = (props) => {
     setLoaderOpen(false);
   };
 
+  const readFile = async () => {
+    return new Promise(async (resolve, reject) => {
+      const reader = new FileReader();
+      let file;
+      reader.addEventListener("loadend", async () => {
+        console.log({
+          filename: selectFile.name,
+          file: new Blob([reader.result], { type: selectFile.type }),
+        });
+        const res = await fetch(
+          `https://k3hu9vqwv4.execute-api.ap-south-1.amazonaws.com/upload?filename=${selectedFile.name}`,
+          {
+            method: "POST",
+            body: new Blob([reader.result], { type: selectFile.type }),
+          },
+        );
+
+        const data = await res.json();
+        resolve(data?.saveFileResponse?.Location);
+      });
+
+      reader.readAsArrayBuffer(selectedFile);
+    });
+  };
+
+  const fetchBannerDetails = async () => {
+    try {
+      const data = await getClaimDetails(claimAddress);
+      setBannerData(data[0]);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const formik = useFormik({
     initialValues: {
-      banner: "",
       description: "",
       twitter: "",
       discord: "",
       telegram: "",
+      website: "",
     },
 
     onSubmit: async (values) => {
-      console.log(values);
-      //   setLoaderOpen(true);
-      //   const res = await editInfo({
-      //     // daoAddress: daoAddress,
-      //     banner: values.banner,
-      //     bio: values.description,
-      //     twitter: values.twitter,
-      //     discord: values.discord,
-      //     telegram: values.telegram,
-      //   });
-      //   if (res.status === 200) {
-      //     setOpenSnackBar(true);
-      //     setFailed(false);
-      //     setOpen(false);
-      //     setLoaderOpen(false);
-      //     await getClubInfo();
-      //     onClose(event, "cancel");
-      //   } else {
-      //     setOpenSnackBar(true);
-      //     setFailed(true);
-      //     setLoaderOpen(false);
-      //   }
+      setLoaderOpen(true);
+      try {
+        let fileLink;
+        if (selectedFile) fileLink = await readFile();
+
+        const res = await createClaimDetails({
+          claimAddress,
+          description: values.description,
+          imageLinks: {
+            banner: bannerData?.imageLinks?.banner
+              ? bannerData?.imageLinks?.banner
+              : fileLink
+              ? fileLink
+              : "",
+          },
+          networkId,
+          socialLinks: {
+            twitter: values.twitter,
+            discord: values.discord,
+            telegram: values.telegram,
+            website: values.website,
+          },
+        });
+
+        setOpenSnackBar(true);
+        setFailed(false);
+        setOpen(false);
+        setLoaderOpen(false);
+        onClose(event, "cancel");
+      } catch (error) {
+        setOpenSnackBar(true);
+        setFailed(true);
+        setLoaderOpen(false);
+      }
     },
   });
 
-  //   useEffect(() => {
-  //     const parsedDescription = ReactHtmlParser(clubInfo?.bio ?? "");
-  //     // Update the formik initial values when clubInfo changes
-  //     formik.setValues({
-  //       description:
-  //         clubInfo?.bio && parsedDescription ? parsedDescription[0] : "",
-  //       twitter: clubInfo?.twitter ?? "",
-  //       discord: clubInfo?.discord ?? "",
-  //       telegram: clubInfo?.telegram ?? "",
-  //     });
-  //   }, [clubInfo]);
+  useEffect(() => {
+    if (claimAddress) fetchBannerDetails();
+  }, [claimAddress]);
+
+  useEffect(() => {
+    const parsedDescription = ReactHtmlParser(bannerData?.description ?? "");
+    formik.setValues({
+      description:
+        bannerData?.description && parsedDescription
+          ? parsedDescription[0]
+          : "",
+      twitter: bannerData?.socialLinks?.twitter ?? "",
+      discord: bannerData?.socialLinks?.discord ?? "",
+      telegram: bannerData?.socialLinks?.telegram ?? "",
+    });
+  }, [bannerData]);
 
   return (
     <>
@@ -131,7 +194,7 @@ const EditClaimDetails = (props) => {
               <Typography className={classes.wrapTextIcon}>
                 Upload Banner
               </Typography>
-              <p>{formik.values.banner.name}</p>
+              <p>{selectedFile?.name}</p>
               <Button
                 variant="normal"
                 onClick={(e) => {
@@ -142,14 +205,12 @@ const EditClaimDetails = (props) => {
               </Button>
               <input
                 name="banner"
-                accept="image/*,video/mp4"
+                accept=".jpg, .png|image/*"
                 type="file"
                 id="select-image"
                 style={{ display: "none" }}
                 ref={uploadInputRef}
-                onChange={(event) => {
-                  formik.setFieldValue("banner", event.currentTarget.files[0]);
-                }}
+                onChange={selectFile}
               />
             </Grid>
             <Grid item md={6} mb={2}>
@@ -184,6 +245,7 @@ const EditClaimDetails = (props) => {
               <Typography className={classes.wrapTextIcon}>Twitter</Typography>
               <TextField
                 name="twitter"
+                id="twitter"
                 placeholder="Paste URL here"
                 variant="outlined"
                 onChange={formik.handleChange}
@@ -198,6 +260,7 @@ const EditClaimDetails = (props) => {
               <Typography className={classes.wrapTextIcon}>Discord</Typography>
               <TextField
                 name="discord"
+                id="discord"
                 placeholder="Paste URL here"
                 variant="outlined"
                 onChange={formik.handleChange}
@@ -212,6 +275,7 @@ const EditClaimDetails = (props) => {
               <Typography className={classes.wrapTextIcon}>Telegram</Typography>
               <TextField
                 name="telegram"
+                id="telegram"
                 placeholder="Paste URL here"
                 variant="outlined"
                 onChange={formik.handleChange}

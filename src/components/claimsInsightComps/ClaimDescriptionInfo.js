@@ -6,6 +6,7 @@ import { AiOutlineEdit } from "react-icons/ai";
 import { FiExternalLink } from "react-icons/fi";
 import { ClaimsInsightStyles } from "./claimsInsightStyles";
 import EditClaimDetails from "@components/settingsComps/modals/EditClaimDetails";
+import { useNetwork } from "wagmi";
 
 const ClaimDescriptionInfo = ({
   description,
@@ -19,6 +20,9 @@ const ClaimDescriptionInfo = ({
   const [isClaimStarted, setIsClaimStarted] = useState(false);
   const [claimEnabled, setClaimEnabled] = useState(false);
   const [open, setOpen] = useState(false);
+
+  const { chain } = useNetwork();
+  const networkId = "0x" + chain?.id.toString(16);
 
   const handleClose = (event, reason) => {
     if (reason !== "backdropClick" && reason !== "escapeKeyDown") {
@@ -143,9 +147,11 @@ const ClaimDescriptionInfo = ({
         </div>
       </div>
       <EditClaimDetails
+        claimAddress={claimAddress}
         open={open}
         setOpen={setOpen}
         onClose={handleClose}
+        networkId={networkId}
         // daoAddress={daoAddress}
         // clubInfo={clubInfo}
         // getClubInfo={getClubInfo}

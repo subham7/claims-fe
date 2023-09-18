@@ -18,13 +18,15 @@ import classes from "./NewClaim.module.scss";
 import useDropsContractMethods from "hooks/useDropsContracMethods";
 import { Alert, CircularProgress, Skeleton } from "@mui/material";
 import useClaimSmartContracts from "hooks/useClaimSmartContracts";
-import { getUserProofAndBalance } from "api/claims";
+import { getClaimDetails, getUserProofAndBalance } from "api/claims";
 import ClaimActivity from "./ClaimActivity";
 // import Image from "next/image";
 import Eligibility from "./Eligibility";
 // import About from "./About";
 import Header from "./Header";
 import ClaimInput from "./ClaimInput";
+import Image from "next/image";
+import About from "./About";
 
 const NewClaim = ({ claimAddress }) => {
   const [claimsData, setClaimsData] = useState();
@@ -54,6 +56,7 @@ const NewClaim = ({ claimAddress }) => {
   const [showMessage, setShowMessage] = useState(false);
   const [message, setMessage] = useState("");
   const [claimed, setClaimed] = useState(false);
+  const [bannerData, setBannerData] = useState();
 
   const currentTime = Date.now() / 1000;
   const { address: walletAddress } = useAccount();
@@ -114,7 +117,7 @@ const NewClaim = ({ claimAddress }) => {
         claimAddress,
         networkId,
       );
-      setActivityDetails(airdrops);
+      setActivityDetails(airdrops.reverse());
     } catch (error) {
       console.log(error);
     }
@@ -381,6 +384,15 @@ const NewClaim = ({ claimAddress }) => {
       : false;
   };
 
+  const fetchBannerDetails = async () => {
+    try {
+      const data = await getClaimDetails(claimAddress);
+      setBannerData(data[0]);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     checkDropIsActive();
   }, [dropsData?.endTime, dropsData?.startTime, currentTime]);
@@ -399,6 +411,10 @@ const NewClaim = ({ claimAddress }) => {
     }
   }, [dropsData?.permission, dropsData]);
 
+  useEffect(() => {
+    if (claimAddress) fetchBannerDetails();
+  }, [claimAddress]);
+
   return (
     <main className={classes.main}>
       <section className={classes.leftContainer}>
@@ -411,10 +427,10 @@ const NewClaim = ({ claimAddress }) => {
           />
 
           <div className={classes.progress}>
-            {claimedPercentage !== null && claimedPercentage !== NaN ? (
+            {claimedPercentage ? (
               <p>{claimedPercentage.toFixed(3)}% claimed</p>
             ) : (
-              <Skeleton />
+              <Skeleton width={300} />
             )}
 
             <ProgressBar value={claimedPercentage} />
@@ -446,20 +462,42 @@ const NewClaim = ({ claimAddress }) => {
 
         <div>
           <div className={classes.socials}>
-            <BsTwitter />
-            <IoLogoDiscord />
-            <BiLogoTelegram />
+            {bannerData?.socialLinks?.twitter && (
+              <BsTwitter
+                onClick={() => {
+                  window.open(bannerData?.socialLinks?.twitter, "_blank");
+                }}
+              />
+            )}
+
+            {bannerData?.socialLinks?.discord && (
+              <IoLogoDiscord
+                onClick={() => {
+                  window.open(bannerData?.socialLinks?.discord, "_blank");
+                }}
+              />
+            )}
+
+            {bannerData?.socialLinks?.telegram && (
+              <BiLogoTelegram
+                onClick={() => {
+                  window.open(bannerData?.socialLinks?.telegram, "_blank");
+                }}
+              />
+            )}
           </div>
         </div>
       </section>
       <section className={classes.rightContainer}>
         <div className={classes.bannerContainer}>
-          {/* <Image
-            src="/assets/images/newBanner.png"
-            height={150}
-            width={640}
-            alt="Banner Image"
-          /> */}
+          {bannerData?.imageLinks ? (
+            <Image
+              src={bannerData?.imageLinks?.banner}
+              height={180}
+              width={640}
+              alt="Banner Image"
+            />
+          ) : null}
 
           {claimsData ? (
             <h1>{claimsData?.description}</h1>
@@ -468,7 +506,7 @@ const NewClaim = ({ claimAddress }) => {
           )}
         </div>
 
-        {/* <About /> */}
+        {bannerData?.description && <About bio={bannerData?.description} />}
 
         <Eligibility claimsData={claimsData} tokenDetails={tokenDetails} />
 
