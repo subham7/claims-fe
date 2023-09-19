@@ -41,7 +41,6 @@ export const handleFetchFollowers = async (profileId) => {
 
 export const fetchLensActionAddresses = async ({ postLink, action }) => {
   try {
-    console.log("postLink", postLink);
     const postId = extractPartFromUrl(postLink);
 
     let userArray = [];
@@ -56,7 +55,6 @@ export const fetchLensActionAddresses = async ({ postLink, action }) => {
         },
       });
 
-      console.log("data", data);
       if (!data?.publications?.items.length) {
         throw new Error("No comments found!");
       }
@@ -81,7 +79,6 @@ export const fetchLensActionAddresses = async ({ postLink, action }) => {
         },
       });
 
-      console.log("data", data);
       if (!data?.profiles?.items.length) {
         throw new Error("No comments found!");
       }
@@ -94,8 +91,6 @@ export const fetchLensActionAddresses = async ({ postLink, action }) => {
         throw new Error("No Comments found");
       }
     }
-
-    console.log(userArray);
 
     return userArray;
   } catch (error) {

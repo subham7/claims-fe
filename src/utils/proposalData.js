@@ -1025,7 +1025,6 @@ export const getProposalCommands = async ({
         postLink: values.lensPostLink,
         action: "mirror",
       });
-      console.log("mirrorAddresses", mirrorAddresses);
       data = {
         daoAddress,
         whitelist: mirrorAddresses,
