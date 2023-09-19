@@ -490,7 +490,7 @@ const NewClaim = ({ claimAddress }) => {
       </section>
       <section className={classes.rightContainer}>
         <div className={classes.bannerContainer}>
-          {bannerData?.imageLinks ? (
+          {bannerData?.imageLinks?.banner ? (
             <Image
               src={bannerData?.imageLinks?.banner}
               height={180}

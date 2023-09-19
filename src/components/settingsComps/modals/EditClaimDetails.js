@@ -18,6 +18,7 @@ import ReactHtmlParser from "react-html-parser";
 import "react-quill/dist/quill.snow.css";
 import UploadIcon from "@mui/icons-material/Upload";
 import { createClaimDetails, getClaimDetails } from "api/claims";
+import { FIVE_MB } from "utils/constants";
 
 const useStyles = makeStyles({
   modalStyle: {
@@ -40,10 +41,16 @@ const useStyles = makeStyles({
   },
   wrapTextIcon: {
     fontSize: "22px",
-
     color: "#dcdcdc",
     verticalAlign: "middle",
     display: "inline-flex",
+  },
+  error: {
+    color: "red",
+  },
+  smallText: {
+    fontSize: "14px",
+    marginLeft: "10px",
   },
 });
 
@@ -192,8 +199,16 @@ const EditClaimDetails = ({
           <form className={classes.form}>
             <Grid item md={6} mb={2}>
               <Typography className={classes.wrapTextIcon}>
-                Upload Banner
+                Upload Banner{" "}
               </Typography>
+              <span className={classes.smallText}>
+                (recommended dimension - 16:8)
+              </span>
+              <p className={classes.error}>
+                {selectedFile?.size > FIVE_MB
+                  ? "Image exceeds max size, please add image below 5 mb"
+                  : null}
+              </p>
               <p>{selectedFile?.name}</p>
               <Button
                 variant="normal"
@@ -308,7 +323,9 @@ const EditClaimDetails = ({
                 </Button>
               </Grid>
               <Grid item>
-                <Button onClick={() => formik.handleSubmit()}>
+                <Button
+                  disabled={selectedFile && selectedFile?.size > FIVE_MB}
+                  onClick={() => formik.handleSubmit()}>
                   {loaderOpen ? <CircularProgress size={25} /> : "Save Changes"}
                 </Button>
               </Grid>

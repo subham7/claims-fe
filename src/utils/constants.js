@@ -1,5 +1,6 @@
 export const BLOCK_CONFIRMATIONS = 4;
 export const BLOCK_TIMEOUT = 120000;
+export const FIVE_MB = 5242880;
 
 export const CHAIN_CONFIG = {
   "0x89": {
