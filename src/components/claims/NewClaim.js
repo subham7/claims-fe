@@ -168,8 +168,8 @@ const NewClaim = ({ claimAddress }) => {
       setClaimedPercentage(percentageClaimed);
 
       // claimed by user
-      const claimedAmt = await claimAmount(walletAddress);
-      const isClaimed = claimedAmt > 0;
+      const claimedAmt = (await claimAmount(walletAddress)) ?? 0;
+      const isClaimed = +claimedAmt > 0;
       setAlreadyClaimed(isClaimed);
 
       const remainingAmt = +maxClaimableAmount - +claimedAmt;
@@ -377,7 +377,8 @@ const NewClaim = ({ claimAddress }) => {
       !isClaimActive ||
       !maxClaimableAmount ||
       +claimInput <= 0 ||
-      claimInput >= +claimRemaining ||
+      claimInput >
+        +convertFromWeiGovernance(claimRemaining, tokenDetails.tokenDecimal) ||
       (dropsData?.permission == 0 && !isEligibleForTokenGated) ||
       (dropsData?.permission === "3" && !isEligibleForTokenGated)
       ? true
@@ -401,9 +402,12 @@ const NewClaim = ({ claimAddress }) => {
     if (claimAddress && networkId) {
       fetchClaimDetails();
       fetchTransactionActivity();
-      fetchContractData();
     }
   }, [claimAddress, networkId, tokenDetails?.tokenDecimal]);
+
+  useEffect(() => {
+    if (tokenDetails.tokenAddress && claimAddress) fetchContractData();
+  }, [tokenDetails, claimAddress]);
 
   useEffect(() => {
     if (dropsData?.permission) {
@@ -427,7 +431,7 @@ const NewClaim = ({ claimAddress }) => {
           />
 
           <div className={classes.progress}>
-            {claimedPercentage ? (
+            {+(claimedPercentage >= 0) ? (
               <p>{claimedPercentage.toFixed(3)}% claimed</p>
             ) : (
               <Skeleton width={300} />
