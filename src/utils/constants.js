@@ -198,4 +198,5 @@ export const proposalActionCommands = {
   13: "Update price per token",
   14: "Deposit tokens in AAVE pool",
   15: "Withdraw tokens from AAVE pool",
+  16: "Whitelist with lens post's mirror",
 };

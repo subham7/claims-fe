@@ -149,6 +149,8 @@ const CreateProposalDialog = ({
           networkId,
         });
 
+        console.log("commands", commands);
+
         commands = {
           executionId: values.actionCommand,
           ...commands,

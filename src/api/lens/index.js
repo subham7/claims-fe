@@ -35,3 +35,27 @@ export const fetchCommentsProfileByPost = gql`
     }
   }
 `;
+
+export const fetchMirrorsProfileByPost = gql`
+  query Profiles($request: ProfileQueryRequest!) {
+    profiles(request: $request) {
+      items {
+        ...ProfileFields
+        isDefault
+        isFollowedByMe
+        __typename
+      }
+      pageInfo {
+        next
+        __typename
+      }
+      __typename
+    }
+  }
+
+  fragment ProfileFields on Profile {
+    name
+    ownedBy
+    __typename
+  }
+`;

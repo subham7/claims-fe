@@ -399,6 +399,7 @@ const useAppContractMethods = () => {
       membersArray,
       airDropAmountArray,
     });
+    console.log(transaction, approvalTransaction);
     if (executionStatus !== "executed") {
       if (txHash === "") {
         const nonce = await safeService.getNextNonce(gnosisAddress);
