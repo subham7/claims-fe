@@ -690,7 +690,7 @@ const DashboardIndex = ({ daoAddress }) => {
                                         <Typography
                                           variant="info"
                                           className="text-blue">
-                                          Expired on{" "}
+                                          Expires on{" "}
                                           {new Date(
                                             data.votingDuration,
                                           ).toLocaleDateString()}
