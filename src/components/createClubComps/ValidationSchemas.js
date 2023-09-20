@@ -281,17 +281,14 @@ export const getProposalValidationSchema = ({
             .required("Reciever address is required"),
       }),
 
-    safeThreshold: yup
-      .number("Enter threshold")
-      .when(["actionCommand", "ownerChangeAction"], {
-        is: (actionCommand, ownerChangeAction) =>
-          actionCommand === 7 && ownerChangeAction === "remove",
-        then: () =>
-          yup
-            .number("Enter threshold")
-            .required("Safe Threshold is required")
-            .moreThan(1, "Safe Threshold should be greater than 1"),
-      }),
+    safeThreshold: yup.number("Enter threshold").when(["actionCommand"], {
+      is: (actionCommand) => actionCommand === 7 || actionCommand === 6,
+      then: () =>
+        yup
+          .number("Enter threshold")
+          .required("Safe Threshold is required")
+          .moreThan(1, "Safe Threshold should be greater than 1"),
+    }),
     nftLink: yup.string("Please enter nft Link").when("actionCommand", {
       is: 8,
       then: () => yup.string("Enter nft link").required("Nft link is required"),

@@ -730,10 +730,6 @@ export const getTransaction = async ({
       };
       return { transaction };
     case 6:
-      transaction = {
-        ownerAddress,
-      };
-      return { transaction };
     case 7:
       transaction = {
         ownerAddress,
