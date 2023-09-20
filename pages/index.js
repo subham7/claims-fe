@@ -202,7 +202,9 @@ const App = () => {
           }),
         );
       router.push(
-        `/dashboard/${Web3.utils.toChecksumAddress(data.daoAddress)}`,
+        `/dashboard/${Web3.utils.toChecksumAddress(
+          data.daoAddress,
+        )}/${networkId}`,
         undefined,
         {
           shallow: true,
@@ -223,11 +225,11 @@ const App = () => {
   };
 
   const claimsHandler = () => {
-    router.push("/claims");
+    router.push(`/claims/${networkId}`);
   };
 
   return (
-    <Layout showSidebar={false} faucet={false} isClaims={true}>
+    <Layout showSidebar={false} faucet={false}>
       <div className={classes.container}>
         {!manageStation && clubFlow && (
           <div className={classes.cardContainer}>

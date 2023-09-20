@@ -18,11 +18,10 @@ const useSafe = () => {
     dispatch,
     addressList,
     clubTokenType,
-    tokenURI = "",
     metadataURL = "",
-    imgFile = "",
     useStationFor,
     email = "",
+    networkId,
   ) => {
     dispatch(setCreateSafeLoading(true));
     dispatch(setCreateDaoAuthorized(false));
@@ -84,7 +83,7 @@ const useSafe = () => {
 
         const { pathname } = Router;
         if (pathname == "/create") {
-          Router.push(`/dashboard/${daoAddress}`, undefined, {
+          Router.push(`/dashboard/${daoAddress}/${networkId}`, undefined, {
             shallow: true,
           });
         }

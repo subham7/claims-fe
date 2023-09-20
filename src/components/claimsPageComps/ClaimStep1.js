@@ -134,7 +134,7 @@ const useStyles = makeStyles({
   },
 });
 
-const ClaimStep1 = ({ formik, tokensInWallet, isLoading }) => {
+const ClaimStep1 = ({ formik, tokensInWallet, isLoading, networkId }) => {
   const classes = useStyles();
   const router = useRouter();
 
@@ -146,7 +146,7 @@ const ClaimStep1 = ({ formik, tokensInWallet, isLoading }) => {
     <>
       <Typography
         onClick={() => {
-          router.push("/claims");
+          router.push(`/claims/${networkId}`);
         }}
         className={classes.back}>
         <BsArrowLeft /> Back to claims

@@ -182,13 +182,19 @@ const DashboardIndex = ({ daoAddress }) => {
   };
 
   const handleMoreClick = () => {
-    router.push(`/proposals/${daoAddress}`, undefined, { shallow: true });
+    router.push(`/proposals/${daoAddress}/${networkId}`, undefined, {
+      shallow: true,
+    });
   };
 
   const handleProposalClick = (proposal) => {
-    router.push(`/proposals/${daoAddress}/${proposal.proposalId}`, undefined, {
-      shallow: true,
-    });
+    router.push(
+      `/proposals/${daoAddress}/${networkId}/${proposal.proposalId}`,
+      undefined,
+      {
+        shallow: true,
+      },
+    );
   };
 
   useEffect(() => {
@@ -684,7 +690,7 @@ const DashboardIndex = ({ daoAddress }) => {
                                         <Typography
                                           variant="info"
                                           className="text-blue">
-                                          Expired on{" "}
+                                          Expires on{" "}
                                           {new Date(
                                             data.votingDuration,
                                           ).toLocaleDateString()}

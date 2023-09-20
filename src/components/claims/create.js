@@ -340,7 +340,7 @@ const CreateClaim = () => {
             setFinish(true);
             showMessageHandler(setFinish);
             setTimeout(() => {
-              router.push(`/claims`);
+              router.push(`/claims/${networkId}`);
             }, 3000);
           } catch (err) {
             console.log(err);
@@ -443,7 +443,7 @@ const CreateClaim = () => {
             setFinish(true);
             showMessageHandler(setFinish);
             setTimeout(() => {
-              router.push(`/claims`);
+              router.push(`/claims/${networkId}`);
             }, 3000);
           } catch (err) {
             console.log(err);
@@ -467,6 +467,7 @@ const CreateClaim = () => {
             setActiveStep={setActiveStep}
             tokensInWallet={tokensInWallet}
             isLoading={loadingTokens}
+            networkId={networkId}
           />
         );
       case 1:
@@ -479,6 +480,7 @@ const CreateClaim = () => {
             setActiveStep={setActiveStep}
             finish={finish}
             loading={loading}
+            networkId={networkId}
           />
         );
     }

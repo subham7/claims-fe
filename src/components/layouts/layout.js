@@ -19,8 +19,8 @@ const useStyles = makeStyles({
 
 export default function Layout(props) {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const { showSidebar = true, daoAddress } = props;
-  useClubFetch({ daoAddress });
+  const { showSidebar = true, daoAddress, networkId: routeNetworkId } = props;
+  useClubFetch({ daoAddress, networkId: routeNetworkId });
   const { address: walletAddress } = useAccount();
   const { chain } = useNetwork();
   const networkId = "0x" + chain?.id.toString(16);
@@ -41,6 +41,7 @@ export default function Layout(props) {
             handleDrawerToggle={handleDrawerToggle}
             page={props.page}
             daoAddress={daoAddress}
+            networkId={networkId}
           />
         )}
 
@@ -84,12 +85,7 @@ export default function Layout(props) {
                 {props.children}
               </div>
             </Box>
-            {showWrongNetworkModal(
-              walletAddress,
-              networkId,
-              props.isClaims,
-              props.network,
-            )}
+            {showWrongNetworkModal(walletAddress, networkId, routeNetworkId)}
           </>
         )}
       </Box>
