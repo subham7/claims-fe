@@ -19,6 +19,7 @@ import "react-quill/dist/quill.snow.css";
 import UploadIcon from "@mui/icons-material/Upload";
 import { createClaimDetails, getClaimDetails } from "api/claims";
 import { FIVE_MB } from "utils/constants";
+import Image from "next/image";
 
 const useStyles = makeStyles({
   modalStyle: {
@@ -51,6 +52,18 @@ const useStyles = makeStyles({
   smallText: {
     fontSize: "14px",
     marginLeft: "10px",
+  },
+  bannerContainer: {
+    margin: "20px 0",
+    position: "relative",
+    height: "200px",
+  },
+  bannerImage: {
+    borderRadius: "8px",
+    marginBottom: "12px",
+    objectFit: "cover",
+    width: "100%",
+    height: "100%",
   },
 });
 
@@ -136,11 +149,7 @@ const EditClaimDetails = ({
           claimAddress,
           description: values.description,
           imageLinks: {
-            banner: bannerData?.imageLinks?.banner
-              ? bannerData?.imageLinks?.banner
-              : fileLink
-              ? fileLink
-              : "",
+            banner: fileLink ? fileLink : bannerData?.imageLinks?.banner ?? "",
           },
           networkId,
           socialLinks: {
@@ -209,7 +218,21 @@ const EditClaimDetails = ({
                   ? "Image exceeds max size, please add image below 5 mb"
                   : null}
               </p>
-              <p>{selectedFile?.name}</p>
+
+              {bannerData?.imageLinks?.banner || selectedFile ? (
+                <div className={classes.bannerContainer}>
+                  <Image
+                    className={classes.bannerImage}
+                    src={
+                      selectedFile
+                        ? URL.createObjectURL(selectedFile)
+                        : bannerData?.imageLinks?.banner
+                    }
+                    fill
+                    alt="Banner Image"
+                  />
+                </div>
+              ) : null}
               <Button
                 variant="normal"
                 onClick={(e) => {
@@ -261,7 +284,7 @@ const EditClaimDetails = ({
               <TextField
                 name="twitter"
                 id="twitter"
-                placeholder="Paste URL here"
+                placeholder="Link"
                 variant="outlined"
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
@@ -276,7 +299,7 @@ const EditClaimDetails = ({
               <TextField
                 name="discord"
                 id="discord"
-                placeholder="Paste URL here"
+                placeholder="Link"
                 variant="outlined"
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
@@ -291,7 +314,7 @@ const EditClaimDetails = ({
               <TextField
                 name="telegram"
                 id="telegram"
-                placeholder="Paste URL here"
+                placeholder="Link"
                 variant="outlined"
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}

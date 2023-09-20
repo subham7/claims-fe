@@ -20,9 +20,7 @@ import { Alert, CircularProgress, Skeleton } from "@mui/material";
 import useClaimSmartContracts from "hooks/useClaimSmartContracts";
 import { getClaimDetails, getUserProofAndBalance } from "api/claims";
 import ClaimActivity from "./ClaimActivity";
-// import Image from "next/image";
 import Eligibility from "./Eligibility";
-// import About from "./About";
 import Header from "./Header";
 import ClaimInput from "./ClaimInput";
 import Image from "next/image";
@@ -243,7 +241,8 @@ const NewClaim = ({ claimAddress }) => {
           } else {
             setIsEligibleForTokenGated(false);
           }
-          setMaxClaimableAmount(dropsData?.claimAmountDetails[0]);
+          setMaxClaimableAmount(+dropsData?.claimAmountDetails[0]);
+          return;
         }
 
         case "1": {
@@ -252,10 +251,12 @@ const NewClaim = ({ claimAddress }) => {
             walletAddress.toLowerCase(),
           );
           setMaxClaimableAmount(amount);
+          return;
         }
 
         case "2": {
-          setMaxClaimableAmount(dropsData?.claimAmountDetails[0]);
+          setMaxClaimableAmount(+dropsData?.claimAmountDetails[0]);
+          return;
         }
 
         case "3": {
@@ -267,7 +268,8 @@ const NewClaim = ({ claimAddress }) => {
             walletAddress.toLowerCase(),
           );
 
-          setMaxClaimableAmount(amount);
+          setMaxClaimableAmount(+amount);
+          return;
         }
       }
     } catch (error) {
@@ -330,9 +332,9 @@ const NewClaim = ({ claimAddress }) => {
           remainingAmt / 10 ** tokenDetails.tokenDecimal;
 
         if (+remainingInUSD >= +remainingAmtInUSD) {
-          setClaimRemaining(remainingAmt);
+          setClaimRemaining(+remainingAmt);
         } else {
-          setClaimRemaining(remainingInUSD);
+          setClaimRemaining(+remainingInUSD);
         }
 
         setIsClaiming(false);
@@ -495,12 +497,13 @@ const NewClaim = ({ claimAddress }) => {
       <section className={classes.rightContainer}>
         <div className={classes.bannerContainer}>
           {bannerData?.imageLinks?.banner ? (
-            <Image
-              src={bannerData?.imageLinks?.banner}
-              height={180}
-              width={640}
-              alt="Banner Image"
-            />
+            <div className={classes.imageContainer}>
+              <Image
+                src={bannerData?.imageLinks?.banner}
+                fill
+                alt="Banner Image"
+              />
+            </div>
           ) : null}
 
           {claimsData ? (
