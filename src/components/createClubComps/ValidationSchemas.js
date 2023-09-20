@@ -166,7 +166,7 @@ export const getProposalValidationSchema = ({
         yup
           .number("Enter Quorum in percentage")
           .required("Quorum is required")
-          .moreThan(0, "Quorum should be greater than 0")
+          .moreThan(51, "Quorum should be greater than 51")
           .max(100, "Quorum should be less than 100"),
     }),
     threshold: yup
