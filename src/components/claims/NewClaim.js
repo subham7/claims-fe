@@ -432,16 +432,6 @@ const NewClaim = ({ claimAddress }) => {
             tokenDetails={tokenDetails}
           />
 
-          <div className={classes.progress}>
-            {+(claimedPercentage >= 0) ? (
-              <p>{claimedPercentage.toFixed(3)}% claimed</p>
-            ) : (
-              <Skeleton width={300} />
-            )}
-
-            <ProgressBar value={claimedPercentage} />
-          </div>
-
           <ClaimInput
             claimInput={claimInput}
             claimRemaining={claimRemaining}
@@ -449,6 +439,7 @@ const NewClaim = ({ claimAddress }) => {
             maxHandler={maxHandler}
             setClaimInput={setClaimInput}
             tokenDetails={tokenDetails}
+            claimsData={claimsData}
           />
 
           <Button
@@ -464,6 +455,16 @@ const NewClaim = ({ claimAddress }) => {
               "Claim"
             )}
           </Button>
+
+          <div className={classes.progress}>
+            {+(claimedPercentage >= 0) ? (
+              <p>{claimedPercentage.toFixed(3)}% claimed</p>
+            ) : (
+              <Skeleton width={300} />
+            )}
+
+            <ProgressBar value={claimedPercentage} />
+          </div>
         </div>
 
         <div>

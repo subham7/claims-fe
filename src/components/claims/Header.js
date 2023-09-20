@@ -25,8 +25,8 @@ const Header = ({ dropsData, isClaimActive, hasDropStarted, tokenDetails }) => {
       )}
 
       {dropsData ? (
-        <p>
-          This drop closes on{" "}
+        <p className={classes.endTime}>
+          Claim this drop by{" "}
           {new Date(+dropsData?.endTime * 1000).toUTCString()}
         </p>
       ) : (
