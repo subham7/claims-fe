@@ -1,4 +1,4 @@
-import { Skeleton, Tooltip } from "@mui/material";
+import { Skeleton, TextField, Tooltip } from "@mui/material";
 import React from "react";
 import { convertFromWeiGovernance } from "utils/globalFunctions";
 import classes from "./NewClaim.module.scss";
@@ -18,7 +18,10 @@ const ClaimInput = ({
       <p>How much do you want to claim?</p>
       <div className={classes.inputContainer}>
         <div>
-          <input
+          <TextField
+            sx={{
+              "& fieldset": { border: "none" },
+            }}
             value={claimInput}
             name="tokenInput"
             id="tokenInput"

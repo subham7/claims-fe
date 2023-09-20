@@ -3,20 +3,26 @@ import React from "react";
 import classes from "./NewClaim.module.scss";
 
 const Header = ({ dropsData, isClaimActive, hasDropStarted, tokenDetails }) => {
+  const getStatusText = () => {
+    if (isClaimActive && hasDropStarted && dropsData?.isEnabled) {
+      return "Active";
+    } else if ((!isClaimActive && hasDropStarted) || !dropsData?.isEnabled) {
+      return "Inactive";
+    } else if (!isClaimActive && !hasDropStarted) {
+      return "Not started yet";
+    }
+    return "";
+  };
+
+  const getStatusClassName = () => {
+    return isClaimActive && dropsData?.isEnabled
+      ? classes.active
+      : classes.inactive;
+  };
+
   return (
     <>
-      <p
-        className={`${
-          isClaimActive && dropsData?.isEnabled
-            ? classes.active
-            : classes.inactive
-        }`}>
-        {isClaimActive && hasDropStarted && dropsData?.isEnabled
-          ? "Active"
-          : (!isClaimActive && hasDropStarted) || !dropsData?.isEnabled
-          ? "Inactive"
-          : !isClaimActive && !hasDropStarted && "Not started yet"}
-      </p>
+      <p className={getStatusClassName()}>{getStatusText()}</p>
 
       {tokenDetails?.tokenSymbol ? (
         <h1>{tokenDetails?.tokenSymbol}</h1>

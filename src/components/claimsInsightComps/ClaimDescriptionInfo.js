@@ -152,9 +152,6 @@ const ClaimDescriptionInfo = ({
         setOpen={setOpen}
         onClose={handleClose}
         networkId={networkId}
-        // daoAddress={daoAddress}
-        // clubInfo={clubInfo}
-        // getClubInfo={getClubInfo}
       />
     </div>
   );

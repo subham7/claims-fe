@@ -350,7 +350,6 @@ const NewClaim = ({ claimAddress }) => {
       setClaimed(false);
       setMessage("Some Error Occured!");
       showMessageHandler();
-      // setMessage(err.message);
       setIsClaiming(false);
     }
   };
@@ -516,7 +515,9 @@ const NewClaim = ({ claimAddress }) => {
 
         {bannerData?.description && <About bio={bannerData?.description} />}
 
-        <Eligibility claimsData={claimsData} tokenDetails={tokenDetails} />
+        {claimsData && tokenDetails && (
+          <Eligibility claimsData={claimsData} tokenDetails={tokenDetails} />
+        )}
 
         <ClaimActivity
           activityDetails={activityDetails}

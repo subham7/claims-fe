@@ -13,7 +13,6 @@ const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
     borderRadius: 4,
     background:
       "transparent linear-gradient(270deg, #2D55FF 0%, #75D5FD 100%) 0% 0% no-repeat padding-box",
-    // backgroundColor: theme.palette.mode === 'light' ? '#1a90ff' : '#308fe8',
   },
 }));
 

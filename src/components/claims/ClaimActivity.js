@@ -1,6 +1,7 @@
 import React from "react";
 import { MetaMaskAvatar } from "react-metamask-avatar";
 import { convertFromWeiGovernance } from "utils/globalFunctions";
+import { shortAddress } from "utils/helper";
 import classes from "./NewClaim.module.scss";
 
 const ClaimActivity = ({ activityDetails, tokenDetails }) => {
@@ -14,10 +15,7 @@ const ClaimActivity = ({ activityDetails, tokenDetails }) => {
             <div className={classes.activity} key={index}>
               <div>
                 <MetaMaskAvatar address={activity?.claimerAddress} />
-                <p>{`${activity?.claimerAddress.slice(
-                  0,
-                  7,
-                )}....${activity?.claimerAddress.slice(-7)}`}</p>
+                <p>{shortAddress(activity?.claimerAddress)}</p>
               </div>
               <p>
                 {convertFromWeiGovernance(
