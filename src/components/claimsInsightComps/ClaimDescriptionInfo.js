@@ -5,8 +5,8 @@ import { BsArrowLeftShort, BsLink45Deg } from "react-icons/bs";
 import { AiOutlineEdit } from "react-icons/ai";
 import { FiExternalLink } from "react-icons/fi";
 import { ClaimsInsightStyles } from "./claimsInsightStyles";
-import EditClaimDetails from "@components/settingsComps/modals/EditClaimDetails";
 import { useNetwork } from "wagmi";
+import EditDetails from "@components/settingsComps/modals/EditDetails";
 
 const ClaimDescriptionInfo = ({
   description,
@@ -146,7 +146,8 @@ const ClaimDescriptionInfo = ({
           />
         </div>
       </div>
-      <EditClaimDetails
+      <EditDetails
+        isClaims={true}
         claimAddress={claimAddress}
         open={open}
         setOpen={setOpen}

@@ -22,7 +22,8 @@ import TelegramIcon from "@mui/icons-material/Telegram";
 import TwitterIcon from "@mui/icons-material/Twitter";
 import { RiDiscordFill } from "react-icons/ri";
 import ReactHtmlParser from "react-html-parser";
-import EditClubInfo from "./modals/EditClubInfo";
+import EditDetails from "./modals/EditDetails";
+import { useNetwork } from "wagmi";
 
 const SettingsInfo = ({
   daoDetails,
@@ -34,12 +35,14 @@ const SettingsInfo = ({
   walletAddress,
   remainingTimeInSecs,
   clubInfo,
-  getClubInfo,
   isAdminUser,
   daoAddress,
 }) => {
   const classes = SettingsInfoStlyes();
   const [open, setOpen] = useState(false);
+
+  const { chain } = useNetwork();
+  const networkId = "0x" + chain?.id.toString(16);
 
   const handleClose = (event, reason) => {
     if (reason !== "backdropClick" && reason !== "escapeKeyDown") {
@@ -686,13 +689,13 @@ const SettingsInfo = ({
         </Grid>
       </Grid>
 
-      <EditClubInfo
+      <EditDetails
+        networkId={networkId}
+        isClaims={false}
         open={open}
         setOpen={setOpen}
         onClose={handleClose}
         daoAddress={daoAddress}
-        clubInfo={clubInfo}
-        getClubInfo={getClubInfo}
       />
 
       <Backdrop

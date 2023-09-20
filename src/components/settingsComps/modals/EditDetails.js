@@ -20,6 +20,7 @@ import UploadIcon from "@mui/icons-material/Upload";
 import { createClaimDetails, getClaimDetails } from "api/claims";
 import { FIVE_MB } from "utils/constants";
 import Image from "next/image";
+import { editInfo, getClubInfo } from "api/club";
 
 const useStyles = makeStyles({
   modalStyle: {
@@ -67,12 +68,14 @@ const useStyles = makeStyles({
   },
 });
 
-const EditClaimDetails = ({
+const EditDetails = ({
   open,
   setOpen,
   onClose,
-  claimAddress,
+  claimAddress = "",
   networkId,
+  daoAddress = "",
+  isClaims = false,
 }) => {
   const classes = useStyles();
 
@@ -130,6 +133,66 @@ const EditClaimDetails = ({
     }
   };
 
+  const getClubInfoFn = async () => {
+    try {
+      const info = await getClubInfo(daoAddress);
+      if (info.status === 200) setBannerData(info.data[0]);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const readFileAsync = async () => {
+    if (selectedFile) {
+      return await readFile();
+    }
+    return null;
+  };
+
+  const sendRequest = async (values, fileLink = "") => {
+    if (isClaims) {
+      return await createClaimDetails({
+        claimAddress,
+        description: values.description,
+        imageLinks: {
+          banner: fileLink ? fileLink : bannerData?.imageLinks?.banner ?? "",
+        },
+        networkId,
+        socialLinks: {
+          twitter: values.twitter,
+          discord: values.discord,
+          telegram: values.telegram,
+          website: values.website,
+        },
+      });
+    } else {
+      return await editInfo({
+        daoAddress: daoAddress,
+        bio: values.description,
+        twitter: values.twitter,
+        discord: values.discord,
+        telegram: values.telegram,
+      });
+    }
+  };
+
+  const updateUIAfterSuccess = async () => {
+    setOpenSnackBar(true);
+    setFailed(false);
+    setOpen(false);
+    setLoaderOpen(false);
+    if (isClaims) {
+      await getClubInfo();
+    }
+    onClose(event, "cancel");
+  };
+
+  const updateUIAfterFailure = () => {
+    setOpenSnackBar(true);
+    setFailed(true);
+    setLoaderOpen(false);
+  };
+
   const formik = useFormik({
     initialValues: {
       description: "",
@@ -138,56 +201,63 @@ const EditClaimDetails = ({
       telegram: "",
       website: "",
     },
-
     onSubmit: async (values) => {
       setLoaderOpen(true);
       try {
-        let fileLink;
-        if (selectedFile) fileLink = await readFile();
-
-        const res = await createClaimDetails({
-          claimAddress,
-          description: values.description,
-          imageLinks: {
-            banner: fileLink ? fileLink : bannerData?.imageLinks?.banner ?? "",
-          },
-          networkId,
-          socialLinks: {
-            twitter: values.twitter,
-            discord: values.discord,
-            telegram: values.telegram,
-            website: values.website,
-          },
-        });
-
-        setOpenSnackBar(true);
-        setFailed(false);
-        setOpen(false);
-        setLoaderOpen(false);
-        onClose(event, "cancel");
+        let fileLink = "";
+        if (isClaims) {
+          fileLink = await readFileAsync();
+        }
+        const res = await sendRequest(values, fileLink);
+        await updateUIAfterSuccess();
       } catch (error) {
-        setOpenSnackBar(true);
-        setFailed(true);
-        setLoaderOpen(false);
+        updateUIAfterFailure();
       }
     },
   });
 
-  useEffect(() => {
-    if (claimAddress) fetchBannerDetails();
-  }, [claimAddress]);
+  const setFormValuesFromBannerData = (bannerData, formik) => {
+    const descriptionField = isClaims
+      ? bannerData?.description
+      : bannerData?.bio;
+    const parsedDescription = ReactHtmlParser(descriptionField ?? "");
+    const descriptionValue =
+      descriptionField && parsedDescription ? parsedDescription[0] : "";
+
+    const defaultValues = {
+      description: descriptionValue,
+      twitter: "",
+      discord: "",
+      telegram: "",
+    };
+
+    if (isClaims) {
+      formik.setValues({
+        ...defaultValues,
+        twitter: bannerData?.socialLinks?.twitter ?? "",
+        discord: bannerData?.socialLinks?.discord ?? "",
+        telegram: bannerData?.socialLinks?.telegram ?? "",
+      });
+    } else {
+      formik.setValues({
+        ...defaultValues,
+        twitter: bannerData?.twitter ?? "",
+        discord: bannerData?.discord ?? "",
+        telegram: bannerData?.telegram ?? "",
+      });
+    }
+  };
 
   useEffect(() => {
-    const parsedDescription = ReactHtmlParser(bannerData?.description ?? "");
-    formik.setValues({
-      description:
-        bannerData?.description && parsedDescription
-          ? parsedDescription[0]
-          : "",
-      twitter: bannerData?.socialLinks?.twitter ?? "",
-      discord: bannerData?.socialLinks?.discord ?? "",
-      telegram: bannerData?.socialLinks?.telegram ?? "",
-    });
+    if (isClaims && claimAddress) {
+      fetchBannerDetails();
+    } else if (daoAddress) {
+      getClubInfoFn();
+    }
+  }, [claimAddress, isClaims, daoAddress]);
+
+  useEffect(() => {
+    setFormValuesFromBannerData(bannerData, formik);
   }, [bannerData]);
 
   return (
@@ -206,51 +276,54 @@ const EditClaimDetails = ({
             padding: "3rem",
           }}>
           <form className={classes.form}>
-            <Grid item md={6} mb={2}>
-              <Typography className={classes.wrapTextIcon}>
-                Upload Banner{" "}
-              </Typography>
-              <span className={classes.smallText}>
-                (recommended dimension - 16:8)
-              </span>
-              <p className={classes.error}>
-                {selectedFile?.size > FIVE_MB
-                  ? "Image exceeds max size, please add image below 5 mb"
-                  : null}
-              </p>
+            {isClaims ? (
+              <Grid item md={6} mb={2}>
+                <Typography className={classes.wrapTextIcon}>
+                  Upload Banner{" "}
+                </Typography>
+                <span className={classes.smallText}>
+                  (recommended dimension - 16:8)
+                </span>
+                <p className={classes.error}>
+                  {selectedFile?.size > FIVE_MB
+                    ? "Image exceeds max size, please add image below 5 mb"
+                    : null}
+                </p>
 
-              {bannerData?.imageLinks?.banner || selectedFile ? (
-                <div className={classes.bannerContainer}>
-                  <Image
-                    className={classes.bannerImage}
-                    src={
-                      selectedFile
-                        ? URL.createObjectURL(selectedFile)
-                        : bannerData?.imageLinks?.banner
-                    }
-                    fill
-                    alt="Banner Image"
-                  />
-                </div>
-              ) : null}
-              <Button
-                variant="normal"
-                onClick={(e) => {
-                  uploadInputRef.current.click();
-                }}>
-                <UploadIcon fontSize="8px" />
-                Upload
-              </Button>
-              <input
-                name="banner"
-                accept=".jpg, .png|image/*"
-                type="file"
-                id="select-image"
-                style={{ display: "none" }}
-                ref={uploadInputRef}
-                onChange={selectFile}
-              />
-            </Grid>
+                {bannerData?.imageLinks?.banner || selectedFile ? (
+                  <div className={classes.bannerContainer}>
+                    <Image
+                      className={classes.bannerImage}
+                      src={
+                        selectedFile
+                          ? URL.createObjectURL(selectedFile)
+                          : bannerData?.imageLinks?.banner
+                      }
+                      fill
+                      alt="Banner Image"
+                    />
+                  </div>
+                ) : null}
+                <Button
+                  variant="normal"
+                  onClick={(e) => {
+                    uploadInputRef.current.click();
+                  }}>
+                  <UploadIcon fontSize="8px" />
+                  Upload
+                </Button>
+                <input
+                  name="banner"
+                  accept=".jpg, .png|image/*"
+                  type="file"
+                  id="select-image"
+                  style={{ display: "none" }}
+                  ref={uploadInputRef}
+                  onChange={selectFile}
+                />
+              </Grid>
+            ) : null}
+
             <Grid item md={6} mb={2}>
               <Typography className={classes.wrapTextIcon}>Add Bio</Typography>
               <QuillEditor
@@ -382,4 +455,4 @@ const EditClaimDetails = ({
   );
 };
 
-export default EditClaimDetails;
+export default EditDetails;
