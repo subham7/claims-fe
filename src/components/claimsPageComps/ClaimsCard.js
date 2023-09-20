@@ -156,7 +156,7 @@ const ClaimsCard = ({
   });
 
   const claimHandler = () => {
-    router.push(`/claims/${claimContract}`);
+    router.push(`/claims/${claimsNetwork}/${claimContract}`);
   };
 
   return (
@@ -189,7 +189,7 @@ const ClaimsCard = ({
             onClick={(e) => {
               e.stopPropagation();
               navigator.clipboard.writeText(
-                `${window.location.origin}/claim/${claimContract}/${claimsNetwork}`,
+                `${window.location.origin}/claim/${claimsNetwork}/${claimContract}/`,
               );
               setIsCopied(true);
 

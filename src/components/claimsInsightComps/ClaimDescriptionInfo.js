@@ -51,7 +51,7 @@ const ClaimDescriptionInfo = ({
             cursor: "pointer",
           }}
           onClick={() => {
-            router.push(`/claims/${networkId}`);
+            router.push(`/claims/${claimsNetwork}`);
           }}
           className={classes.gapContainer}>
           <BsArrowLeftShort size={25} />

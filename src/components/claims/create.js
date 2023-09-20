@@ -467,6 +467,7 @@ const CreateClaim = () => {
             setActiveStep={setActiveStep}
             tokensInWallet={tokensInWallet}
             isLoading={loadingTokens}
+            networkId={networkId}
           />
         );
       case 1:
@@ -479,6 +480,7 @@ const CreateClaim = () => {
             setActiveStep={setActiveStep}
             finish={finish}
             loading={loading}
+            networkId={networkId}
           />
         );
     }
