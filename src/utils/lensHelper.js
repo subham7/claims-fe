@@ -101,8 +101,6 @@ export const fetchLensActionAddresses = async ({ postLink, action }) => {
 
 export const getDefaultProfile = async (walletAddress) => {
   try {
-    let userHandle;
-
     const { data } = await apolloClient.query({
       query: fetchHandleByAddress,
       variables: {
@@ -116,11 +114,7 @@ export const getDefaultProfile = async (walletAddress) => {
       throw new Error("No handles found!");
     }
 
-    data?.profiles?.items.map((user) => {
-      userHandle = user?.handle;
-    });
-
-    return userHandle;
+    return data?.profiles?.items;
   } catch (error) {
     throw new Error(error);
   }

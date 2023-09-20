@@ -65,6 +65,7 @@ export const fetchHandleByAddress = gql`
     profiles(request: $request) {
       items {
         handle
+        ownedBy
       }
     }
   }
