@@ -11,11 +11,7 @@ const ClaimsPage = () => {
   const [networkId, claimAddress] = router?.query?.slug ?? [];
 
   return (
-    <Layout
-      showSidebar={false}
-      claimAddress={claimAddress}
-      isClaims={true}
-      network={networkId}>
+    <Layout showSidebar={false} claimAddress={claimAddress} network={networkId}>
       {claimAddress === undefined && networkId !== "create" ? (
         <ListClaims />
       ) : networkId === "create" ? (

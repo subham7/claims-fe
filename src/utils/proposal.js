@@ -1,9 +1,9 @@
 import { getProposal } from "../api/proposal";
 import SafeApiKit from "@safe-global/api-kit";
-import Safe, { Web3Adapter } from "@safe-global/protocol-kit";
+import { Web3Adapter } from "@safe-global/protocol-kit";
 import { createCancelProposal, getProposalTxHash } from "api/proposal";
 import Web3 from "web3";
-import { getIncreaseGasPrice } from "./helper";
+import { getIncreaseGasPrice, getSafeSdk } from "./helper";
 import { factoryContractABI } from "abis/factoryContract.js";
 import { erc721DaoABI } from "abis/erc721Dao";
 import { erc20DaoABI } from "abis/erc20Dao";
@@ -40,6 +40,7 @@ export const createRejectSafeTx = async ({
   daoAddress,
   network,
   walletAddress,
+  networkId,
 }) => {
   try {
     const web3 = new Web3(window.ethereum);
@@ -61,10 +62,11 @@ export const createRejectSafeTx = async ({
       proposalTxHash.data[0].txHash,
     );
 
-    const safeSdk = await Safe.create({
-      ethAdapter: ethAdapter,
-      safeAddress: Web3.utils.toChecksumAddress(gnosisAddress),
-    });
+    const safeSdk = await getSafeSdk(
+      Web3.utils.toChecksumAddress(gnosisAddress),
+      Web3.utils.toChecksumAddress(walletAddress),
+      networkId,
+    );
 
     const rejectionTransaction = await safeSdk.createRejectionTransaction(
       safetx.nonce,
@@ -112,6 +114,7 @@ export const executeRejectTx = async ({
   walletAddress,
   gnosisTransactionUrl,
   gnosisAddress,
+  networkId,
 }) => {
   try {
     const web3 = new Web3(window.ethereum);
@@ -133,10 +136,11 @@ export const executeRejectTx = async ({
       proposalTxHash.data[0].txHash,
     );
 
-    const safeSdk = await Safe.create({
-      ethAdapter: ethAdapter,
-      safeAddress: Web3.utils.toChecksumAddress(gnosisAddress),
-    });
+    const safeSdk = await getSafeSdk(
+      Web3.utils.toChecksumAddress(gnosisAddress),
+      Web3.utils.toChecksumAddress(walletAddress),
+      networkId,
+    );
 
     const options = {
       gasPrice: await getIncreaseGasPrice(),
@@ -155,6 +159,7 @@ export const signRejectTx = async ({
   walletAddress,
   gnosisTransactionUrl,
   gnosisAddress,
+  networkId,
 }) => {
   try {
     const web3 = new Web3(window.ethereum);
@@ -175,10 +180,11 @@ export const signRejectTx = async ({
       proposalTxHash.data[0].txHash,
     );
 
-    const safeSdk = await Safe.create({
-      ethAdapter: ethAdapter,
-      safeAddress: Web3.utils.toChecksumAddress(gnosisAddress),
-    });
+    const safeSdk = await getSafeSdk(
+      Web3.utils.toChecksumAddress(gnosisAddress),
+      Web3.utils.toChecksumAddress(walletAddress),
+      networkId,
+    );
 
     const safeTransaction = await safeSdk.createRejectionTransaction(
       safetx.nonce,

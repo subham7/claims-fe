@@ -12,7 +12,7 @@ const drawerWidth = 50;
 export default function Layout(props) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { showSidebar = true, daoAddress, networkId: routeNetworkId } = props;
-  useClubFetch({ daoAddress });
+  useClubFetch({ daoAddress, networkId: routeNetworkId });
   const { address: walletAddress } = useAccount();
   const { chain } = useNetwork();
   const networkId = "0x" + chain?.id.toString(16);
@@ -72,12 +72,7 @@ export default function Layout(props) {
                 {props.children}
               </div>
             </Box>
-            {showWrongNetworkModal(
-              walletAddress,
-              networkId,
-              props.isClaims,
-              routeNetworkId,
-            )}
+            {showWrongNetworkModal(walletAddress, networkId, routeNetworkId)}
           </>
         )}
       </Box>

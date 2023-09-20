@@ -27,7 +27,7 @@ import { convertToWeiGovernance } from "../../src/utils/globalFunctions";
 // import { fetchClubOwners } from "../../src/api/club";
 import useSafe from "../../src/hooks/useSafe";
 import Layout from "../../src/components/layouts/layout";
-import { useAccount } from "wagmi";
+import { useAccount, useNetwork } from "wagmi";
 
 const Create = () => {
   const steps = [
