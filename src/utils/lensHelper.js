@@ -5,6 +5,7 @@ const {
   fetchProfileFollowers,
   fetchCommentsProfileByPost,
   fetchMirrorsProfileByPost,
+  fetchHandleByAddress,
 } = require("api/lens");
 const { apolloClient } = require("../../pages/_app");
 
@@ -93,6 +94,33 @@ export const fetchLensActionAddresses = async ({ postLink, action }) => {
     }
 
     return userArray;
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+
+export const getDefaultProfile = async (walletAddress) => {
+  try {
+    let userHandle;
+
+    const { data } = await apolloClient.query({
+      query: fetchHandleByAddress,
+      variables: {
+        request: {
+          ownedBy: walletAddress,
+        },
+      },
+    });
+
+    if (!data?.profiles?.items.length) {
+      throw new Error("No handles found!");
+    }
+
+    data?.profiles?.items.map((user) => {
+      userHandle = user?.handle;
+    });
+
+    return userHandle;
   } catch (error) {
     throw new Error(error);
   }

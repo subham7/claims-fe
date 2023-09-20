@@ -59,3 +59,13 @@ export const fetchMirrorsProfileByPost = gql`
     __typename
   }
 `;
+
+export const fetchHandleByAddress = gql`
+  query Profiles($request: ProfileQueryRequest!) {
+    profiles(request: $request) {
+      items {
+        handle
+      }
+    }
+  }
+`;

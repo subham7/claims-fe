@@ -30,6 +30,7 @@ import { saveAs } from "file-saver";
 import { useNetwork } from "wagmi";
 import { queryPaginatedMembersFromSubgraph } from "utils/stationsSubgraphHelper";
 import { CHAIN_CONFIG } from "utils/constants";
+import LensHandleComponent from "./LensHandleComponent";
 
 const Members = ({ daoAddress }) => {
   const [membersData, setMembersData] = useState([]);
@@ -285,6 +286,13 @@ const Members = ({ daoAddress }) => {
                             <OpenInNewIcon style={{ marginBottom: "12px" }} />
                           </div>
                         </Tooltip>
+                      </Typography>
+                      <Typography>
+                        {data.userAddress ? (
+                          <LensHandleComponent address={data.userAddress} />
+                        ) : (
+                          "Loading Lens Handle..."
+                        )}
                       </Typography>
                     </TableCell>
 
