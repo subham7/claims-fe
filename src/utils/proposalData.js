@@ -531,31 +531,61 @@ export const proposalFormData = ({
     case 6:
     case 7:
       return (
-        <Grid
-          container
-          direction={"column"}
-          ml={3}
-          mt={2}
-          sx={{ marginLeft: "0 !important" }}>
-          <Typography mt={2} variant="proposalBody">
-            Wallet Address *
-          </Typography>
-          <TextField
-            variant="outlined"
-            className={classes.textField}
-            placeholder="0x00"
-            name="ownerAddress"
-            id="ownerAddress"
-            value={formik.values.ownerAddress}
-            onChange={formik.handleChange}
-            error={
-              formik.touched.ownerAddress && Boolean(formik.errors.ownerAddress)
-            }
-            helperText={
-              formik.touched.ownerAddress && formik.errors.ownerAddress
-            }
-          />
-        </Grid>
+        <>
+          <Grid
+            container
+            direction={"column"}
+            ml={3}
+            mt={2}
+            sx={{ marginLeft: "0 !important" }}>
+            <Typography mt={2} variant="proposalBody">
+              Wallet Address *
+            </Typography>
+            <TextField
+              variant="outlined"
+              className={classes.textField}
+              placeholder="0x00"
+              name="ownerAddress"
+              id="ownerAddress"
+              value={formik.values.ownerAddress}
+              onChange={formik.handleChange}
+              error={
+                formik.touched.ownerAddress &&
+                Boolean(formik.errors.ownerAddress)
+              }
+              helperText={
+                formik.touched.ownerAddress && formik.errors.ownerAddress
+              }
+            />
+          </Grid>
+
+          <Grid
+            container
+            direction={"column"}
+            ml={3}
+            mt={2}
+            sx={{ marginLeft: "0 !important" }}>
+            <Typography mt={2} variant="proposalBody">
+              Safe Threshold *
+            </Typography>
+            <TextField
+              variant="outlined"
+              className={classes.textField}
+              placeholder="0x00"
+              name="safeThreshold"
+              id="safeThreshold"
+              value={formik.values.safeThreshold}
+              onChange={formik.handleChange}
+              error={
+                formik.touched.safeThreshold &&
+                Boolean(formik.errors.safeThreshold)
+              }
+              helperText={
+                formik.touched.safeThreshold && formik.errors.safeThreshold
+              }
+            />
+          </Grid>
+        </>
       );
 
     case 8:
@@ -927,10 +957,6 @@ export const getProposalCommands = async ({
       };
 
     case 6:
-      return {
-        ownerAddress: values.ownerAddress,
-      };
-
     case 7:
       return {
         ownerAddress: values.ownerAddress,
