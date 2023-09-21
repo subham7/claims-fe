@@ -1,8 +1,9 @@
+import { Typography } from "@mui/material";
 import React from "react";
 import { MetaMaskAvatar } from "react-metamask-avatar";
 import { convertFromWeiGovernance } from "utils/globalFunctions";
 import { shortAddress } from "utils/helper";
-import classes from "./NewClaim.module.scss";
+import classes from "./Claim.module.scss";
 
 const ClaimActivity = ({ activityDetails, tokenDetails }) => {
   return (
@@ -15,19 +16,21 @@ const ClaimActivity = ({ activityDetails, tokenDetails }) => {
             <div className={classes.activity} key={index}>
               <div>
                 <MetaMaskAvatar address={activity?.claimerAddress} />
-                <p>{shortAddress(activity?.claimerAddress)}</p>
+                <Typography variant="inherit">
+                  {shortAddress(activity?.claimerAddress)}
+                </Typography>
               </div>
-              <p>
+              <Typography variant="inherit">
                 {convertFromWeiGovernance(
                   activity?.amountClaimed,
                   tokenDetails.tokenDecimal,
                 )}{" "}
                 <span>{tokenDetails?.tokenSymbol}</span>
-              </p>
+              </Typography>
             </div>
           ))
         ) : (
-          <p>No activities as of now!</p>
+          <Typography variant="inherit">No activities as of now!</Typography>
         )}
       </div>
     </div>

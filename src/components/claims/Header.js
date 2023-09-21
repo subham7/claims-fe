@@ -1,6 +1,6 @@
-import { Skeleton } from "@mui/material";
+import { Skeleton, Typography } from "@mui/material";
 import React from "react";
-import classes from "./NewClaim.module.scss";
+import classes from "./Claim.module.scss";
 
 const Header = ({ dropsData, isClaimActive, hasDropStarted, tokenDetails }) => {
   const getStatusText = () => {
@@ -20,23 +20,31 @@ const Header = ({ dropsData, isClaimActive, hasDropStarted, tokenDetails }) => {
       : classes.inactive;
   };
 
+  const HeaderShimmer = () => {
+    return (
+      <>
+        <Skeleton width={100} height={30} />
+        <Skeleton width={150} height={50} />
+        <Skeleton variant="text" width={450} />
+      </>
+    );
+  };
+
   return (
     <>
-      <p className={getStatusClassName()}>{getStatusText()}</p>
-
-      {tokenDetails?.tokenSymbol ? (
-        <h1>{tokenDetails?.tokenSymbol}</h1>
+      {tokenDetails?.tokenSymbol && dropsData ? (
+        <>
+          <Typography variant="inherit" className={getStatusClassName()}>
+            {getStatusText()}
+          </Typography>
+          <h1>{tokenDetails?.tokenSymbol}</h1>
+          <Typography variant="inherit" className={classes.endTime}>
+            Claim this drop by{" "}
+            {new Date(+dropsData?.endTime * 1000).toUTCString()}
+          </Typography>
+        </>
       ) : (
-        <Skeleton height={70} width={100} />
-      )}
-
-      {dropsData ? (
-        <p className={classes.endTime}>
-          Claim this drop by{" "}
-          {new Date(+dropsData?.endTime * 1000).toUTCString()}
-        </p>
-      ) : (
-        <Skeleton />
+        <HeaderShimmer />
       )}
     </>
   );

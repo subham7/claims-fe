@@ -2,9 +2,6 @@ import ProgressBar from "@components/progressbar";
 import Button from "@components/ui/button/Button";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 import React, { useEffect, useState } from "react";
-import { BiLogoTelegram } from "react-icons/bi";
-import { BsTwitter } from "react-icons/bs";
-import { IoLogoDiscord } from "react-icons/io5";
 import {
   queryAllDropsTransactionsFromSubgraph,
   queryDropDetailsFromSubgraph,
@@ -14,9 +11,9 @@ import {
   convertToWeiGovernance,
 } from "utils/globalFunctions";
 import { useAccount, useNetwork } from "wagmi";
-import classes from "./NewClaim.module.scss";
+import classes from "./Claim.module.scss";
 import useDropsContractMethods from "hooks/useDropsContracMethods";
-import { Alert, CircularProgress, Skeleton } from "@mui/material";
+import { Alert, CircularProgress, Skeleton, Typography } from "@mui/material";
 import useClaimSmartContracts from "hooks/useClaimSmartContracts";
 import { getClaimDetails, getUserProofAndBalance } from "api/claims";
 import ClaimActivity from "./ClaimActivity";
@@ -25,8 +22,10 @@ import Header from "./Header";
 import ClaimInput from "./ClaimInput";
 import Image from "next/image";
 import About from "./About";
+import { ZERO_ADDRESS, ZERO_MERKLE_ROOT } from "utils/constants";
+import SocialButtons from "./SocialButtons";
 
-const NewClaim = ({ claimAddress }) => {
+const Claim = ({ claimAddress }) => {
   const [claimsData, setClaimsData] = useState();
   const [loading, setLoading] = useState(false);
   const [tokenDetails, setTokenDetails] = useState({
@@ -54,7 +53,7 @@ const NewClaim = ({ claimAddress }) => {
   const [showMessage, setShowMessage] = useState(false);
   const [message, setMessage] = useState("");
   const [claimed, setClaimed] = useState(false);
-  const [bannerData, setBannerData] = useState();
+  const [claimGeneralInfo, setClaimGeneralInfo] = useState();
 
   const currentTime = Date.now() / 1000;
   const { address: walletAddress } = useAccount();
@@ -85,10 +84,7 @@ const NewClaim = ({ claimAddress }) => {
       let whitelistTokenSymbol;
       let whitelistTokenDecimal = 1;
       try {
-        if (
-          claims[0].whitelistToken !==
-          "0x0000000000000000000000000000000000000000"
-        )
+        if (claims[0].whitelistToken !== ZERO_ADDRESS)
           whitelistTokenSymbol = await getTokenSymbol(claims[0].whitelistToken);
         whitelistTokenDecimal = await getDecimals(claims[0].whitelistToken);
       } catch (error) {
@@ -280,10 +276,7 @@ const NewClaim = ({ claimAddress }) => {
   const claimHandler = async () => {
     setIsClaiming(true);
     try {
-      if (
-        dropsData?.merkleRoot !==
-        "0x0000000000000000000000000000000000000000000000000000000000000001"
-      ) {
+      if (dropsData?.merkleRoot !== ZERO_MERKLE_ROOT) {
         const data = await getUserProofAndBalance(
           dropsData?.merkleRoot,
           walletAddress.toLowerCase(),
@@ -389,7 +382,7 @@ const NewClaim = ({ claimAddress }) => {
   const fetchBannerDetails = async () => {
     try {
       const data = await getClaimDetails(claimAddress);
-      setBannerData(data[0]);
+      setClaimGeneralInfo(data[0]);
     } catch (error) {
       console.log(error);
     }
@@ -408,7 +401,7 @@ const NewClaim = ({ claimAddress }) => {
 
   useEffect(() => {
     if (tokenDetails.tokenAddress && claimAddress) fetchContractData();
-  }, [tokenDetails, claimAddress]);
+  }, [tokenDetails, claimAddress, networkId]);
 
   useEffect(() => {
     if (dropsData?.permission) {
@@ -457,7 +450,9 @@ const NewClaim = ({ claimAddress }) => {
 
           <div className={classes.progress}>
             {+(claimedPercentage >= 0) ? (
-              <p>{claimedPercentage.toFixed(3)}% claimed</p>
+              <Typography variant="inherit">
+                {claimedPercentage.toFixed(3)}% claimed
+              </Typography>
             ) : (
               <Skeleton width={300} />
             )}
@@ -466,40 +461,14 @@ const NewClaim = ({ claimAddress }) => {
           </div>
         </div>
 
-        <div>
-          <div className={classes.socials}>
-            {bannerData?.socialLinks?.twitter && (
-              <BsTwitter
-                onClick={() => {
-                  window.open(bannerData?.socialLinks?.twitter, "_blank");
-                }}
-              />
-            )}
-
-            {bannerData?.socialLinks?.discord && (
-              <IoLogoDiscord
-                onClick={() => {
-                  window.open(bannerData?.socialLinks?.discord, "_blank");
-                }}
-              />
-            )}
-
-            {bannerData?.socialLinks?.telegram && (
-              <BiLogoTelegram
-                onClick={() => {
-                  window.open(bannerData?.socialLinks?.telegram, "_blank");
-                }}
-              />
-            )}
-          </div>
-        </div>
+        <SocialButtons data={claimGeneralInfo} />
       </section>
       <section className={classes.rightContainer}>
         <div className={classes.bannerContainer}>
-          {bannerData?.imageLinks?.banner ? (
+          {claimGeneralInfo?.imageLinks?.banner ? (
             <div className={classes.imageContainer}>
               <Image
-                src={bannerData?.imageLinks?.banner}
+                src={claimGeneralInfo?.imageLinks?.banner}
                 fill
                 alt="Banner Image"
               />
@@ -513,7 +482,9 @@ const NewClaim = ({ claimAddress }) => {
           )}
         </div>
 
-        {bannerData?.description && <About bio={bannerData?.description} />}
+        {claimGeneralInfo?.description && (
+          <About bio={claimGeneralInfo?.description} />
+        )}
 
         {claimsData && tokenDetails && (
           <Eligibility claimsData={claimsData} tokenDetails={tokenDetails} />
@@ -525,9 +496,9 @@ const NewClaim = ({ claimAddress }) => {
         />
       </section>
 
-      {claimed && showMessage ? (
+      {showMessage ? (
         <Alert
-          severity="success"
+          severity={claimed ? "success" : "error"}
           sx={{
             width: "250px",
             position: "fixed",
@@ -537,24 +508,9 @@ const NewClaim = ({ claimAddress }) => {
           }}>
           {message}
         </Alert>
-      ) : (
-        !claimed &&
-        showMessage && (
-          <Alert
-            severity="error"
-            sx={{
-              width: "350px",
-              position: "fixed",
-              bottom: "30px",
-              right: "20px",
-              borderRadius: "8px",
-            }}>
-            {message}
-          </Alert>
-        )
-      )}
+      ) : null}
     </main>
   );
 };
 
-export default NewClaim;
+export default Claim;

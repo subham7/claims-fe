@@ -1,7 +1,7 @@
-import { Skeleton, TextField, Tooltip } from "@mui/material";
+import { Skeleton, TextField, Tooltip, Typography } from "@mui/material";
 import React from "react";
 import { convertFromWeiGovernance } from "utils/globalFunctions";
-import classes from "./NewClaim.module.scss";
+import classes from "./Claim.module.scss";
 import { AiFillInfoCircle } from "react-icons/ai";
 
 const ClaimInput = ({
@@ -13,9 +13,18 @@ const ClaimInput = ({
   maxHandler,
   claimsData,
 }) => {
+  const ClaimInputShimmer = () => {
+    return (
+      <div>
+        <Skeleton width={120} height={60} />
+        <Skeleton height={40} width={150} />
+      </div>
+    );
+  };
+
   return (
     <div className={classes.claimInputContainer}>
-      <p>How much do you want to claim?</p>
+      <Typography variant="inherit">How much do you want to claim?</Typography>
       <div className={classes.inputContainer}>
         <div>
           <TextField
@@ -35,15 +44,12 @@ const ClaimInput = ({
           />
         </div>
 
-        <div className={classes.tokenContainer}>
-          {tokenDetails?.tokenSymbol ? (
-            <p className={classes.token}>{tokenDetails?.tokenSymbol}</p>
-          ) : (
-            <Skeleton width={120} height={60} />
-          )}
-
-          {maxClaimableAmount && tokenDetails?.tokenDecimal ? (
-            <p className={classes.smallFont}>
+        {maxClaimableAmount && tokenDetails?.tokenDecimal ? (
+          <div className={classes.tokenContainer}>
+            <Typography variant="inherit" className={classes.token}>
+              {tokenDetails?.tokenSymbol}
+            </Typography>
+            <Typography variant="inherit" className={classes.smallFont}>
               Available:{" "}
               {Number(
                 convertFromWeiGovernance(
@@ -52,14 +58,14 @@ const ClaimInput = ({
                 ),
               ).toFixed(4)}
               <span onClick={maxHandler}>Max</span>
-            </p>
-          ) : (
-            <Skeleton height={40} width={150} />
-          )}
-        </div>
+            </Typography>
+          </div>
+        ) : (
+          <ClaimInputShimmer />
+        )}
       </div>
 
-      <p className={classes.allocated}>
+      <Typography variant="inherit" className={classes.allocated}>
         <Tooltip title="Allocated amount to claim per user">
           <span className={classes.icon}>
             <AiFillInfoCircle size={18} cursor="pointer" />
@@ -86,7 +92,7 @@ const ClaimInput = ({
         ) : (
           <Skeleton height={40} width={150} />
         )}
-      </p>
+      </Typography>
     </div>
   );
 };

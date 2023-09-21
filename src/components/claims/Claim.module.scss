@@ -1,12 +1,4 @@
-$dark-grey: #151515;
-$divider-color: #2e2e2e;
-$background-primary: #2d55ff;
-$background-hover: #2446d3;
-$active-color: #0abb92;
-$gray: #707070;
-$light-gray: #a0a0a0;
-$offWhite: #f5f5f5;
-$inactive-color: #d55438;
+@import "../../../styles/variables.scss";
 
 .main {
   display: flex;
@@ -23,12 +15,12 @@ $inactive-color: #d55438;
     height: 80vh;
 
     .active {
-      color: $active-color;
+      color: $active-text;
       font-size: large;
     }
 
     .inactive {
-      color: $inactive-color;
+      color: $inactive-text;
       font-size: large;
     }
 
@@ -72,7 +64,7 @@ $inactive-color: #d55438;
         }
 
         span {
-          color: $offWhite;
+          color: $typography-primary;
           font-weight: 500;
         }
       }
@@ -110,14 +102,14 @@ $inactive-color: #d55438;
 
         span {
           cursor: pointer;
-          color: $background-primary;
+          color: $primary;
           font-weight: 500;
           margin-left: 4px;
         }
       }
 
       .token {
-        background: $dark-grey;
+        background: $background-primary;
         padding: 10px 20px;
         border-radius: 8px;
         font-weight: 500;
@@ -125,7 +117,7 @@ $inactive-color: #d55438;
         cursor: pointer;
 
         &:hover {
-          background-color: $background-primary;
+          background-color: $primary;
         }
       }
     }
@@ -134,7 +126,7 @@ $inactive-color: #d55438;
       margin-top: 20px;
 
       &:hover {
-        background: $background-hover;
+        background: $background-secondary;
       }
     }
 
@@ -146,7 +138,7 @@ $inactive-color: #d55438;
 
       svg {
         &:hover {
-          color: $offWhite;
+          color: $typography-primary;
           cursor: pointer;
         }
       }
@@ -184,7 +176,7 @@ $inactive-color: #d55438;
       margin: 24px 0;
 
       div {
-        background-color: $dark-grey;
+        background-color: $background-primary;
         padding: 20px;
         border-radius: 8px;
         h4 {
@@ -195,7 +187,7 @@ $inactive-color: #d55438;
     }
 
     .activities {
-      background-color: $dark-grey;
+      background-color: $background-primary;
       padding: 20px;
       border-radius: 8px;
       max-height: 400px;
@@ -235,7 +227,7 @@ $inactive-color: #d55438;
       align-items: center;
       margin-top: 10px;
       &:hover {
-        color: $offWhite;
+        color: $typography-primary;
       }
     }
   }

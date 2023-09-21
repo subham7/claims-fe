@@ -1,6 +1,7 @@
+import { Typography } from "@mui/material";
 import React from "react";
 import { convertFromWeiGovernance } from "utils/globalFunctions";
-import classes from "./NewClaim.module.scss";
+import classes from "./Claim.module.scss";
 
 const Eligibility = ({ claimsData, tokenDetails }) => {
   const getClaimInfo = (claimType, claimsData, tokenDetails) => {
@@ -53,7 +54,7 @@ const Eligibility = ({ claimsData, tokenDetails }) => {
       <h3 className={classes.header}>Who can claim?</h3>
       <div>
         <h4>{displayText}</h4>
-        {<p>{description}</p>}
+        <Typography variant="inherit">{description}</Typography>
       </div>
     </div>
   );
