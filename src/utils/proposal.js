@@ -222,6 +222,7 @@ export const fetchABI = async (executionId, tokenType) => {
     case 10:
     case 11:
     case 12:
+    case 16:
     case 13:
       return factoryContractABI;
     case 8:
@@ -484,6 +485,7 @@ export const getEncodedData = async ({
     case 10:
     case 11:
     case 12:
+    case 16:
       let iface2 = new Interface(erc20DaoABI);
       approvalData = iface2.encodeFunctionData("toggleOnlyAllowWhitelist", []);
 
@@ -774,6 +776,7 @@ export const getTransaction = async ({
     case 10:
     case 11:
     case 12:
+    case 16:
       approvalTransaction = {
         to: Web3.utils.toChecksumAddress(daoAddress),
         data: erc20DaoContractCall.methods

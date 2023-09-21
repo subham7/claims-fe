@@ -394,7 +394,8 @@ const ProposalDetail = ({ pid, daoAddress }) => {
         proposalData.commands[0]?.executionId === 11 ||
         proposalData?.commands[0]?.executionId === 12 ||
         proposalData.commands[0]?.executionId === 13 ||
-        proposalData.commands[0]?.executionId === 14
+        proposalData.commands[0]?.executionId === 14 ||
+        proposalData.commands[0]?.executionId === 16
         ? FACTORY_CONTRACT_ADDRESS
         : "",
       GNOSIS_TRANSACTION_URL,
