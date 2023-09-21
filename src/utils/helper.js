@@ -124,7 +124,11 @@ export const showWrongNetworkModal = (
   networkId,
   routeNetworkId,
 ) => {
-  if (routeNetworkId && routeNetworkId !== networkId) {
+  if (
+    routeNetworkId &&
+    routeNetworkId !== networkId &&
+    routeNetworkId !== "create"
+  ) {
     return <WrongNetworkModal chainId={routeNetworkId} />;
   }
 
