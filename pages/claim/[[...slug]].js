@@ -13,7 +13,7 @@ const ClaimPage = () => {
       showSidebar={false}
       claimAddress={claimAddress}
       isClaims={true}
-      network={network}>
+      networkId={network}>
       <Claim claimAddress={claimAddress} />
     </Layout>
   );

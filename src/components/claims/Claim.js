@@ -60,7 +60,7 @@ const Claim = ({ claimAddress }) => {
   const { chain } = useNetwork();
   const networkId = "0x" + chain?.id.toString(16);
 
-  const { getDecimals, getTokenSymbol, approveDeposit, getBalance, encode } =
+  const { getDecimals, getTokenSymbol, getBalance, encode } =
     useCommonContractMethods();
 
   const { claimSettings, claimBalance, claimAmount, claim } =
@@ -390,7 +390,7 @@ const Claim = ({ claimAddress }) => {
 
   useEffect(() => {
     checkDropIsActive();
-  }, [dropsData?.endTime, dropsData?.startTime, currentTime]);
+  }, [dropsData?.endTime, dropsData?.startTime, currentTime, networkId]);
 
   useEffect(() => {
     if (claimAddress && networkId) {
@@ -407,11 +407,11 @@ const Claim = ({ claimAddress }) => {
     if (dropsData?.permission) {
       setClaimAmountByType(dropsData.permission);
     }
-  }, [dropsData?.permission, dropsData]);
+  }, [dropsData?.permission, dropsData, networkId]);
 
   useEffect(() => {
     if (claimAddress) fetchBannerDetails();
-  }, [claimAddress]);
+  }, [claimAddress, networkId]);
 
   return (
     <main className={classes.main}>
