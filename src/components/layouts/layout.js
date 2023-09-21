@@ -6,8 +6,16 @@ import { useAccount, useNetwork } from "wagmi";
 import { Web3Button } from "@web3modal/react";
 import useClubFetch from "hooks/useClubFetch";
 import { showWrongNetworkModal } from "utils/helper";
+import { makeStyles } from "@mui/styles";
 
 const drawerWidth = 50;
+
+const useStyles = makeStyles({
+  container: {
+    padding: "12px 32px 0px 40px",
+    marginTop: "80px",
+  },
+});
 
 export default function Layout(props) {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -16,6 +24,7 @@ export default function Layout(props) {
   const { address: walletAddress } = useAccount();
   const { chain } = useNetwork();
   const networkId = "0x" + chain?.id.toString(16);
+  const classes = useStyles();
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -68,7 +77,11 @@ export default function Layout(props) {
                 width: { sm: `calc(100% - ${drawerWidth}px)` },
                 paddingX: showSidebar ? "0px" : "60px",
               }}>
-              <div style={{ padding: "12px 32px 0px 40px" }}>
+              <div
+                className={classes.container}
+                style={{
+                  marginLeft: showSidebar ? "80px" : 0,
+                }}>
                 {props.children}
               </div>
             </Box>

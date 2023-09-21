@@ -17,7 +17,7 @@ import {
 import { useAccount, useNetwork } from "wagmi";
 import { getTokensList } from "api/token";
 import { getUserTokenData } from "utils/helper";
-import { CHAIN_CONFIG } from "utils/constants";
+import { CHAIN_CONFIG, ZERO_ADDRESS, ZERO_MERKLE_ROOT } from "utils/constants";
 import useClaimSmartContracts from "hooks/useClaimSmartContracts";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 import useDropsContractMethods from "hooks/useDropsContracMethods";
@@ -160,7 +160,7 @@ const CreateClaim = () => {
         daoTokenAddress:
           values?.daoTokenAddress.length > 2
             ? values?.daoTokenAddress
-            : "0x0000000000000000000000000000000000000000",
+            : ZERO_ADDRESS,
         tokenGatingAmt: values?.tokenGatingAmt ? values?.tokenGatingAmt : 0,
         maximumClaim: values?.maximumClaim,
         customAmount:
@@ -257,10 +257,7 @@ const CreateClaim = () => {
           try {
             let tokenGatingDecimals = 1;
 
-            if (
-              data.daoTokenAddress !==
-              "0x0000000000000000000000000000000000000000"
-            ) {
+            if (data.daoTokenAddress !== ZERO_ADDRESS) {
               try {
                 tokenGatingDecimals = await getDecimals(data.daoTokenAddress);
               } catch (error) {
@@ -285,8 +282,7 @@ const CreateClaim = () => {
               data.walletAddress.toLowerCase(),
               data.airdropTokenAddress,
               data.daoTokenAddress,
-              data.daoTokenAddress !==
-              "0x0000000000000000000000000000000000000000"
+              data.daoTokenAddress !== ZERO_ADDRESS
                 ? convertToWeiGovernance(
                     data.tokenGatingAmt,
                     tokenGatingDecimals,
@@ -299,7 +295,7 @@ const CreateClaim = () => {
               true,
               data.maximumClaim === "proRata"
                 ? snapshotData?.merkleRoot
-                : "0x0000000000000000000000000000000000000000000000000000000000000001",
+                : ZERO_MERKLE_ROOT,
               Number(eligible), // Permission ie. 0 - TG; 1 - Whitelisted; 2 - FreeForALL
               [
                 data.maximumClaim === "proRata"
@@ -400,7 +396,7 @@ const CreateClaim = () => {
               data.walletAddress.toLowerCase(),
               data.walletAddress.toLowerCase(),
               data.airdropTokenAddress,
-              "0x0000000000000000000000000000000000000000",
+              ZERO_ADDRESS,
               0,
               new Date(data.startDate).getTime() / 1000,
               new Date(data.endDate).getTime() / 1000,

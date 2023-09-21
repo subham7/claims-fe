@@ -1,18 +1,19 @@
 import React from "react";
 import { useRouter } from "next/router";
 import Layout from "@components/layouts/layout";
-import Claim from "@components/claims/claim";
+import Claim from "@components/claims/Claim";
 
 const ClaimPage = () => {
   const router = useRouter();
 
-  const [claimAddress, networkId] = router?.query?.slug ?? [];
+  const [claimAddress, network] = router?.query?.slug ?? [];
 
   return (
     <Layout
       showSidebar={false}
       claimAddress={claimAddress}
-      networkId={networkId}>
+      isClaims={true}
+      network={network}>
       <Claim claimAddress={claimAddress} />
     </Layout>
   );
