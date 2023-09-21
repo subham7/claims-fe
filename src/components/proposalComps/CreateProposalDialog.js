@@ -130,6 +130,9 @@ const CreateProposalDialog = ({
       aaveDepositAmount: 0,
       aaveWithdrawAmount: 0,
       aaveWithdrawToken: tokenData ? tokenData[0]?.address : "",
+      oneInchSwapToken: tokenData ? tokenData[0]?.address : "",
+      oneInchRecieverToken: "",
+      oneInchSwapAmount: 0,
     },
     validationSchema: getProposalValidationSchema({
       networkId,

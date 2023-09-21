@@ -389,6 +389,54 @@ export const getProposalValidationSchema = ({
           return true;
         },
       ),
+
+    oneInchRecieverToken: yup
+      .string("Please enter token address")
+      .required("Destination address is required")
+      .test(
+        "invalidOneInchRecieverToken",
+        "Reciever chain address should be same as sender chain",
+        async (value, context) => {
+          const { actionCommand } = context.parent;
+          if (actionCommand === 17) {
+            try {
+              const decimals = await getDecimals(value);
+              if (decimals) {
+                return true;
+              } else return false;
+            } catch (error) {
+              return false;
+            }
+          }
+          return true;
+        },
+      ),
+
+    oneInchSwapAmount: yup
+      .number("Please enter amount")
+      .test(
+        "invalidOneInchSwapAmount",
+        "Enter an amount less or equal to treasury balance",
+        async (value, context) => {
+          const { actionCommand, oneInchSwapToken } = context.parent;
+          if (actionCommand === 17) {
+            try {
+              const balance = await getBalance(oneInchSwapToken, gnosisAddress);
+              const decimals = await getDecimals(oneInchSwapToken);
+              if (
+                Number(value) <=
+                  Number(convertFromWeiGovernance(balance, decimals)) &&
+                Number(value) > 0
+              ) {
+                return true;
+              } else return false;
+            } catch (error) {
+              return false;
+            }
+          }
+          return true;
+        },
+      ),
   });
 };
 

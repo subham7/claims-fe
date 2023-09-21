@@ -886,6 +886,102 @@ export const proposalFormData = ({
           </Grid>
         </>
       );
+    case 17:
+      return (
+        <>
+          <Grid
+            container
+            direction={"column"}
+            ml={3}
+            mt={2}
+            // mb={}
+            sx={{ marginLeft: "0 !important" }}>
+            <Typography variant="proposalBody">Token to swap</Typography>
+            <Select
+              sx={{ marginTop: "0.5rem" }}
+              value={formik.values.oneInchSwapToken}
+              onChange={(e) =>
+                formik.setFieldValue(
+                  "oneInchSwapToken",
+                  filteredTokens.find(
+                    (token) => token.symbol === e.target.value,
+                  ).address,
+                )
+              }
+              renderValue={(selected) => {
+                if (selected.length === 0) {
+                  return "Select a command";
+                }
+                return selected;
+              }}
+              inputProps={{ "aria-label": "Without label" }}
+              name="oneInchSwapToken"
+              id="oneInchSwapToken">
+              {filteredTokens.map((token) => (
+                <MenuItem key={token.symbol} value={token.symbol}>
+                  {token.symbol}
+                </MenuItem>
+              ))}
+            </Select>
+          </Grid>
+          <Grid
+            container
+            direction={"column"}
+            ml={3}
+            mt={2}
+            sx={{ marginLeft: "0 !important" }}>
+            <Typography mt={2} variant="proposalBody">
+              Swap tokens to *
+            </Typography>
+            <TextField
+              variant="outlined"
+              className={classes.textField}
+              placeholder="0x00"
+              name="oneInchRecieverToken"
+              id="oneInchRecieverToken"
+              value={formik.values.oneInchRecieverToken}
+              onChange={formik.handleChange}
+              error={
+                formik.touched.oneInchRecieverToken &&
+                Boolean(formik.errors.oneInchRecieverToken)
+              }
+              helperText={
+                formik.touched.oneInchRecieverToken &&
+                formik.errors.oneInchRecieverToken
+              }
+            />
+          </Grid>
+          <Grid
+            container
+            direction={"column"}
+            ml={3}
+            mt={2}
+            sx={{ marginLeft: "0 !important" }}>
+            <Typography variant="proposalBody">
+              Amount of tokens to swap *
+            </Typography>
+            <TextField
+              variant="outlined"
+              className={classes.textField}
+              placeholder="0"
+              type="number"
+              name="oneInchSwapAmount"
+              id="oneInchSwapAmount"
+              value={formik.values.oneInchSwapAmount}
+              onChange={formik.handleChange}
+              error={
+                formik.touched.oneInchSwapAmount &&
+                Boolean(formik.errors.oneInchSwapAmount)
+              }
+              helperText={
+                formik.touched.oneInchSwapAmount &&
+                formik.errors.oneInchSwapAmount
+              }
+              onWheel={(event) => event.target.blur()}
+            />
+          </Grid>
+        </>
+      );
   }
 };
 
@@ -1044,6 +1140,19 @@ export const getProposalCommands = async ({
           values.aaveWithdrawAmount,
           tokenDecimal,
         ),
+      };
+    case 17:
+      tokenDecimal = tokenData.find(
+        (token) => token.address === values.oneInchSwapToken,
+      ).decimals;
+
+      return {
+        swapToken: values.oneInchSwapToken,
+        swapAmount: convertToWeiGovernance(
+          values.oneInchSwapAmount,
+          tokenDecimal,
+        ),
+        destinationToken: values.oneInchRecieverToken,
       };
   }
 };

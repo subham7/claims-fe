@@ -179,6 +179,9 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
         <MenuItem key={15} value="Withdraw tokens from AAVE pool">
           Withdraw tokens from AAVE pool
         </MenuItem>
+        <MenuItem key={17} value="Swap tokens through 1inch">
+          Swap tokens through 1inch
+        </MenuItem>
       </Select>
       {proposalFormData({
         formik,
