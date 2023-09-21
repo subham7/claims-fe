@@ -213,7 +213,11 @@ const useClubFetch = ({ daoAddress }) => {
               if (ownerAddressesArray.includes(walletAddress)) {
                 dispatch(setAdminUser(true));
               } else {
-                if (erc721BalanceResponse === "0" && daoAddress) {
+                if (
+                  erc721BalanceResponse === "0" &&
+                  daoAddress &&
+                  !router.pathname.includes("join")
+                ) {
                   dispatch(setMemberUser(false));
                   router.push("/");
                 } else {
