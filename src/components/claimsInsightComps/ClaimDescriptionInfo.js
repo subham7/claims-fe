@@ -73,24 +73,14 @@ const ClaimDescriptionInfo = ({
         <div className={classes.gapContainer}>
           <AiOutlineEdit
             onClick={() => setOpen(true)}
-            style={{
-              background: "#0f0f0f",
-              padding: "3px",
-              borderRadius: "5px",
-              cursor: "pointer",
-            }}
+            className={classes.icon}
             size={25}
           />
           <BsLink45Deg
             onClick={() => {
               router.push(`/claim/${claimAddress}/${claimsNetwork}`);
             }}
-            style={{
-              background: "#0f0f0f",
-              padding: "3px",
-              borderRadius: "5px",
-              cursor: "pointer",
-            }}
+            className={classes.icon}
             size={25}
           />
           <p
@@ -123,10 +113,8 @@ const ClaimDescriptionInfo = ({
             onClick={copyHandler}
             style={{
               background: "#151515",
-              padding: "4px",
-              borderRadius: "5px",
-              cursor: "pointer",
             }}
+            className={classes.icon}
             size={25}
           />
           <FiExternalLink
@@ -138,10 +126,8 @@ const ClaimDescriptionInfo = ({
             }}
             style={{
               background: "#151515",
-              padding: "4px",
-              borderRadius: "5px",
-              cursor: "pointer",
             }}
+            className={classes.icon}
             size={25}
           />
         </div>
