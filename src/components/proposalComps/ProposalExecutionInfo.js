@@ -103,7 +103,6 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
     customToken,
     depositAmount,
     depositToken,
-
     withdrawAmount,
     withdrawToken,
   ]);
@@ -387,7 +386,10 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
                   </Grid>
                 </Grid>
               </>
-            ) : executionId == 10 || executionId == 11 || executionId == 12 ? (
+            ) : executionId == 10 ||
+              executionId == 11 ||
+              executionId == 12 ||
+              executionId == 16 ? (
               <>
                 <Grid container item mb={1}>
                   <Typography className={classes.listFont2Colourless}>

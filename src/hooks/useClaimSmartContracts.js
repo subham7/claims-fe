@@ -18,10 +18,9 @@ const useClaimSmartContracts = (claimAddress) => {
   });
 
   const claimFactoryAddress = CHAIN_CONFIG[networkId].claimFactoryAddress;
+  const web3Call = new Web3(CHAIN_CONFIG[networkId]?.appRpcUrl);
 
   const initializeClaimFactoryContracts = async () => {
-    const web3Call = new Web3(CHAIN_CONFIG[networkId]?.appRpcUrl);
-
     try {
       if (claimFactoryAddress) {
         const claimFactoryContractCall = new web3Call.eth.Contract(
@@ -42,9 +41,8 @@ const useClaimSmartContracts = (claimAddress) => {
   };
 
   const initializeClaimContracts = () => {
-    const web3Send = new Web3(window?.ethereum);
     try {
-      const claimContractCall = new web3Send.eth.Contract(
+      const claimContractCall = new web3Call.eth.Contract(
         claimContractABI,
         claimAddress,
       );
@@ -66,10 +64,10 @@ const useClaimSmartContracts = (claimAddress) => {
   }, [networkId, claimFactoryAddress]);
 
   useEffect(() => {
-    if (claimAddress) {
+    if (claimAddress && networkId) {
       initializeClaimContracts();
     }
-  }, [claimAddress]);
+  }, [claimAddress, networkId]);
 };
 
 export default useClaimSmartContracts;

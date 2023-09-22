@@ -63,7 +63,7 @@ const useStyles = makeStyles({
     border: "1px solid #FFFFFF1A",
     borderRadius: "10px",
     padding: "10px 30px",
-    marginTop: "20px",
+    marginTop: "100px",
   },
   proposalInfoCard: {
     background: settingsImg,

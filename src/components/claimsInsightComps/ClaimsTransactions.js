@@ -190,7 +190,7 @@ const ClaimsTransactions = ({
                           }}
                           item>
                           <a className={classes.activityLink}>
-                            {shortAddress(data.claimAddress)}
+                            {shortAddress(data.claimerAddress)}
                           </a>
                         </Grid>
                       </Grid>

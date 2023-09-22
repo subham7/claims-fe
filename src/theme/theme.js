@@ -22,7 +22,6 @@ const theme = () =>
         main: "#0ABB92",
         contrastText: "#F5F5F5",
       },
-      // background: { default: "#0F0F0F" },
       background: {
         default: "#0F0F0F",
         paper: "#191919",

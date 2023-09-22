@@ -2,8 +2,11 @@ import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { AiFillCopy } from "react-icons/ai";
 import { BsArrowLeftShort, BsLink45Deg } from "react-icons/bs";
+import { AiOutlineEdit } from "react-icons/ai";
 import { FiExternalLink } from "react-icons/fi";
 import { ClaimsInsightStyles } from "./claimsInsightStyles";
+import { useNetwork } from "wagmi";
+import EditDetails from "@components/settingsComps/modals/EditDetails";
 
 const ClaimDescriptionInfo = ({
   description,
@@ -16,6 +19,16 @@ const ClaimDescriptionInfo = ({
   const [claimActive, setClaimActive] = useState(false);
   const [isClaimStarted, setIsClaimStarted] = useState(false);
   const [claimEnabled, setClaimEnabled] = useState(false);
+  const [open, setOpen] = useState(false);
+
+  const { chain } = useNetwork();
+  const networkId = "0x" + chain?.id.toString(16);
+
+  const handleClose = (event, reason) => {
+    if (reason !== "backdropClick" && reason !== "escapeKeyDown") {
+      setOpen(false);
+    }
+  };
 
   const router = useRouter();
   const classes = ClaimsInsightStyles();
@@ -51,23 +64,23 @@ const ClaimDescriptionInfo = ({
             cursor: "pointer",
           }}
           onClick={() => {
-            router.push("/claims");
+            router.push(`/claims/${claimsNetwork}`);
           }}
           className={classes.gapContainer}>
           <BsArrowLeftShort size={25} />
           <p>Back</p>
         </div>
         <div className={classes.gapContainer}>
+          <AiOutlineEdit
+            onClick={() => setOpen(true)}
+            className={classes.icon}
+            size={25}
+          />
           <BsLink45Deg
             onClick={() => {
               router.push(`/claim/${claimAddress}/${claimsNetwork}`);
             }}
-            style={{
-              background: "#0f0f0f",
-              padding: "3px",
-              borderRadius: "5px",
-              cursor: "pointer",
-            }}
+            className={classes.icon}
             size={25}
           />
           <p
@@ -100,10 +113,8 @@ const ClaimDescriptionInfo = ({
             onClick={copyHandler}
             style={{
               background: "#151515",
-              padding: "4px",
-              borderRadius: "5px",
-              cursor: "pointer",
             }}
+            className={classes.icon}
             size={25}
           />
           <FiExternalLink
@@ -115,14 +126,20 @@ const ClaimDescriptionInfo = ({
             }}
             style={{
               background: "#151515",
-              padding: "4px",
-              borderRadius: "5px",
-              cursor: "pointer",
             }}
+            className={classes.icon}
             size={25}
           />
         </div>
       </div>
+      <EditDetails
+        isClaims={true}
+        claimAddress={claimAddress}
+        open={open}
+        setOpen={setOpen}
+        onClose={handleClose}
+        networkId={networkId}
+      />
     </div>
   );
 };

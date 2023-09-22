@@ -32,6 +32,7 @@ const Transactions = () => {
     "From/To",
     "Tokens ",
   ];
+
   const gnosisAddress = useSelector((state) => {
     return state.club.clubData.gnosisAddress;
   });

@@ -14,10 +14,7 @@ import {
 import { extractNftAdressAndId, shortAddress } from "./helper";
 import Link from "next/link";
 import { getWhiteListMerkleRoot } from "api/whitelist";
-import {
-  handleFetchCommentAddresses,
-  handleFetchFollowers,
-} from "./lensHelper";
+import { fetchLensActionAddresses, handleFetchFollowers } from "./lensHelper";
 
 export const proposalData = ({ data, decimals, factoryData, symbol }) => {
   const {
@@ -93,6 +90,7 @@ export const proposalData = ({ data, decimals, factoryData, symbol }) => {
     case 11:
       return { "Lens profile id": lensId };
     case 12:
+    case 16:
       return { "Lens profile link": lensPostLink };
     case 13:
       return { "Price per token": `${pricePerToken} USDC` };
@@ -693,6 +691,7 @@ export const proposalFormData = ({
       );
 
     case 12:
+    case 16:
       return (
         <Grid
           container
@@ -1006,6 +1005,7 @@ export const getProposalCommands = async ({
   let followersAddresses;
   let merkleRoot;
   let tokenDecimal;
+  let mirrorAddresses;
   switch (executionId) {
     case 0:
       const airDropTokenDecimal = tokenData.find(
@@ -1104,9 +1104,10 @@ export const getProposalCommands = async ({
       };
 
     case 12:
-      followersAddresses = await handleFetchCommentAddresses(
-        values.lensPostLink,
-      );
+      followersAddresses = await fetchLensActionAddresses({
+        postLink: values.lensPostLink,
+        action: "comment",
+      });
 
       data = {
         daoAddress,
@@ -1162,6 +1163,23 @@ export const getProposalCommands = async ({
           tokenDecimal,
         ),
         destinationToken: values.oneInchRecieverToken,
+      };
+    case 16:
+      mirrorAddresses = await fetchLensActionAddresses({
+        postLink: values.lensPostLink,
+        action: "mirror",
+      });
+      data = {
+        daoAddress,
+        whitelist: mirrorAddresses,
+      };
+      merkleRoot = await getWhiteListMerkleRoot(networkId, data);
+
+      return {
+        merkleRoot: merkleRoot,
+        lensPostLink: values.lensPostLink,
+        whitelistAddresses: mirrorAddresses,
+        allowWhitelisting: true,
       };
   }
 };
