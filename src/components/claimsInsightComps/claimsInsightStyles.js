@@ -112,4 +112,10 @@ export const ClaimsInsightStyles = makeStyles({
     borderRadius: "8px",
     background: "#151515",
   },
+  icon: {
+    background: "#0f0f0f",
+    padding: "3px",
+    borderRadius: "5px",
+    cursor: "pointer",
+  },
 });

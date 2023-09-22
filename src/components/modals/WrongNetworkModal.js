@@ -3,7 +3,6 @@ import Image from "next/image";
 import React from "react";
 import { CHAIN_CONFIG } from "utils/constants";
 import { requestEthereumChain } from "utils/helper";
-import Web3 from "web3";
 import img from "../../../public/assets/images/wrongNetwork.png";
 
 const Backdrop = () => {
@@ -61,7 +60,7 @@ const useStyles = makeStyles({
   },
 });
 
-const WrongNetworkModal = ({ chainId = 137 }) => {
+const WrongNetworkModal = ({ chainId = "0x89" }) => {
   const classes = useStyles();
 
   const switchNetworkHandler = async () => {
@@ -69,18 +68,22 @@ const WrongNetworkModal = ({ chainId = 137 }) => {
       if (window.ethereum.networkVersion !== chainId) {
         try {
           await requestEthereumChain("wallet_switchEthereumChain", [
-            { chainId: Web3.utils.toHex(chainId) },
+            { chainId: chainId },
           ]);
         } catch (err) {
           // This error code indicates that the chain has not been added to MetaMask
-          if (err.code === 4902 && CHAIN_CONFIG[Web3.utils.toHex(chainId)]) {
-            const chainConfig = CHAIN_CONFIG[Web3.utils.toHex(chainId)];
-            await requestEthereumChain("wallet_switchEthereumChain", [
-              {
-                chainId: Web3.utils.toHex(chainId),
-                ...chainConfig,
-              },
-            ]);
+          if (err.code === 4902 && CHAIN_CONFIG[chainId]) {
+            const chainConfig = CHAIN_CONFIG[chainId];
+            await window.ethereum.request({
+              method: "wallet_addEthereumChain",
+              params: [
+                {
+                  chainId,
+                  chainName: chainConfig.chainName,
+                  rpcUrls: chainConfig.rpcUrls,
+                },
+              ],
+            });
           }
         }
       }
@@ -97,7 +100,7 @@ const WrongNetworkModal = ({ chainId = 137 }) => {
         <Image src={img} alt="Wrong network" height={136} width={160} />
 
         <button className={classes.btn} onClick={switchNetworkHandler}>
-          Switch to {CHAIN_CONFIG[Web3.utils.toHex(chainId)]?.shortName}
+          Switch to {CHAIN_CONFIG[chainId]?.shortName}
         </button>
       </div>
     </>

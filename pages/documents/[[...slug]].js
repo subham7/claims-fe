@@ -9,14 +9,14 @@ import DocumentCreate from "@components/documents/documentCreate";
 const DocumentsPage = () => {
   const router = useRouter();
 
-  const [daoAddress, flow, membersSign] = router?.query?.slug ?? [];
+  const [daoAddress, networkId, flow, membersSign] = router?.query?.slug ?? [];
 
   if (!daoAddress) {
     return null;
   }
 
   return (
-    <Layout daoAddress={daoAddress} page={7}>
+    <Layout daoAddress={daoAddress} networkId={networkId} page={7}>
       {flow === undefined ? (
         <Documents daoAddress={daoAddress} />
       ) : flow === "create" ? (

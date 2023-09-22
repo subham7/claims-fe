@@ -3,18 +3,43 @@ import Safe, { Web3Adapter } from "@safe-global/protocol-kit";
 import WrongNetworkModal from "../components/modals/WrongNetworkModal";
 import { QUERY_ALL_MEMBERS } from "api/graphql/stationQueries";
 import { subgraphQuery } from "./subgraphs";
-import { BLOCK_CONFIRMATIONS, BLOCK_TIMEOUT, CHAIN_CONFIG } from "./constants";
+import {
+  BLOCK_CONFIRMATIONS,
+  BLOCK_TIMEOUT,
+  CHAIN_CONFIG,
+  contractNetworks,
+} from "./constants";
 import { getPublicClient, getWalletClient } from "utils/viemConfig";
 
-export const getSafeSdk = async (gnosisAddress, walletAddress, networkId) => {
+export const getCustomSafeSdk = async (
+  gnosisAddress,
+  walletAddress,
+  networkId,
+) => {
   const web3 = await web3InstanceCustomRPC(networkId);
   const ethAdapter = new Web3Adapter({
     web3,
     signerAddress: walletAddress,
   });
   const safeSdk = await Safe.create({
-    ethAdapter: ethAdapter,
+    ethAdapter,
     safeAddress: gnosisAddress,
+    contractNetworks,
+  });
+
+  return safeSdk;
+};
+
+export const getSafeSdk = async (gnosisAddress, walletAddress, networkId) => {
+  const web3 = await web3InstanceEthereum();
+  const ethAdapter = new Web3Adapter({
+    web3,
+    signerAddress: walletAddress,
+  });
+  const safeSdk = await Safe.create({
+    ethAdapter,
+    safeAddress: gnosisAddress,
+    contractNetworks,
   });
 
   return safeSdk;
@@ -97,21 +122,18 @@ export function returnRemainingTime(epochTime) {
 export const showWrongNetworkModal = (
   walletAddress,
   networkId,
-  isClaims = false,
-  network,
+  routeNetworkId,
 ) => {
-  if (isClaims) {
-    if (network && network !== networkId) {
-      return <WrongNetworkModal chainId={parseInt(network, 16)} />;
-    }
-
-    return walletAddress && !CHAIN_CONFIG[networkId] ? (
-      <WrongNetworkModal />
-    ) : null;
+  if (
+    routeNetworkId &&
+    routeNetworkId !== networkId &&
+    routeNetworkId !== "create"
+  ) {
+    return <WrongNetworkModal chainId={routeNetworkId} />;
   }
 
-  return walletAddress && networkId !== "0x89" ? (
-    <WrongNetworkModal isClaims={isClaims} />
+  return walletAddress && !CHAIN_CONFIG[networkId] ? (
+    <WrongNetworkModal />
   ) : null;
 };
 

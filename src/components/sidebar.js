@@ -18,7 +18,6 @@ import { tooltipClasses } from "@mui/material/Tooltip";
 import { useRouter } from "next/router";
 import { styled } from "@mui/material/styles";
 import Fade from "@mui/material/Fade";
-import Web3 from "web3";
 
 const useStyles = makeStyles({
   listItemIcon: {
@@ -67,11 +66,11 @@ const drawerWidth = 100;
 
 const Sidebar = (props) => {
   const classes = useStyles();
-  const { page, daoAddress } = props;
+  const { page, daoAddress, networkId } = props;
   const router = useRouter();
 
   const handleDepositRedirect = () => {
-    router.push(`${window.origin}/join/${daoAddress}`, undefined, {
+    router.push(`${window.origin}/join/${daoAddress}/${networkId}`, undefined, {
       shallow: true,
     });
   };
@@ -83,12 +82,12 @@ const Sidebar = (props) => {
           border: "none",
           boxSizing: "border-box",
           width: drawerWidth,
-          paddingTop: "50px",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
           minHeight: "100vh",
-          paddingTop: "2rem",
+          paddingTop: "5rem",
+          position: "fixed",
         }}
         open>
         <List>
@@ -96,9 +95,13 @@ const Sidebar = (props) => {
             <ListItemButton
               component="a"
               onClick={(e) => {
-                router.push(`/dashboard/${daoAddress}`, undefined, {
-                  shallow: true,
-                });
+                router.push(
+                  `/dashboard/${daoAddress}/${networkId}`,
+                  undefined,
+                  {
+                    shallow: true,
+                  },
+                );
               }}
               alignItems="center">
               <ListItemIcon
@@ -117,7 +120,7 @@ const Sidebar = (props) => {
               component="a"
               onClick={(e) => {
                 router.push(
-                  `/proposals/${Web3.utils.toChecksumAddress(daoAddress)}`,
+                  `/proposals/${daoAddress}/${networkId}`,
                   undefined,
                   {
                     shallow: true,
@@ -139,7 +142,7 @@ const Sidebar = (props) => {
             <ListItemButton
               component="a"
               onClick={(e) => {
-                router.push(`/members/${daoAddress}`, undefined, {
+                router.push(`/members/${daoAddress}/${networkId}`, undefined, {
                   shallow: true,
                 });
               }}>
@@ -158,9 +161,13 @@ const Sidebar = (props) => {
             <ListItemButton
               component="a"
               onClick={(e) => {
-                router.push(`/transactions/${daoAddress}`, undefined, {
-                  shallow: true,
-                });
+                router.push(
+                  `/transactions/${daoAddress}/${networkId}`,
+                  undefined,
+                  {
+                    shallow: true,
+                  },
+                );
               }}>
               <ListItemIcon
                 className={
@@ -190,7 +197,7 @@ const Sidebar = (props) => {
             <ListItemButton
               component="a"
               onClick={(e) => {
-                router.push(`/settings/${daoAddress}`, undefined, {
+                router.push(`/settings/${daoAddress}/${networkId}`, undefined, {
                   shallow: true,
                 });
               }}>
@@ -209,9 +216,13 @@ const Sidebar = (props) => {
             <ListItemButton
               component="a"
               onClick={(e) => {
-                router.push(`/documents/${daoAddress}`, undefined, {
-                  shallow: true,
-                });
+                router.push(
+                  `/documents/${daoAddress}/${networkId}`,
+                  undefined,
+                  {
+                    shallow: true,
+                  },
+                );
               }}>
               <ListItemIcon
                 className={

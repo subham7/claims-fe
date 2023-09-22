@@ -8,6 +8,7 @@ import {
 import Router from "next/router";
 import { createClubData } from "../api/club";
 import useAppContractMethods from "./useAppContractMethods";
+import { ZERO_ADDRESS } from "utils/constants";
 // import { uploadNFT } from "api/assets";
 
 const useSafe = () => {
@@ -18,11 +19,10 @@ const useSafe = () => {
     dispatch,
     addressList,
     clubTokenType,
-    tokenURI = "",
     metadataURL = "",
-    imgFile = "",
     useStationFor,
     email = "",
+    networkId,
   ) => {
     dispatch(setCreateSafeLoading(true));
     dispatch(setCreateDaoAuthorized(false));
@@ -51,8 +51,7 @@ const useSafe = () => {
         dispatch(
           addClubData({
             gnosisAddress:
-              params.treasuryAddress ===
-              "0x0000000000000000000000000000000000000000"
+              params.treasuryAddress === ZERO_ADDRESS
                 ? value.logs[0].address
                 : params.treasuryAddress,
             isGtTransferable: params.isGtTransferable,
@@ -64,8 +63,7 @@ const useSafe = () => {
         );
 
         daoAddress =
-          params.treasuryAddress ===
-          "0x0000000000000000000000000000000000000000"
+          params.treasuryAddress === ZERO_ADDRESS
             ? value.logs[2].address
             : value.logs[0].address;
 
@@ -84,7 +82,7 @@ const useSafe = () => {
 
         const { pathname } = Router;
         if (pathname == "/create") {
-          Router.push(`/dashboard/${daoAddress}`, undefined, {
+          Router.push(`/dashboard/${daoAddress}/${networkId}`, undefined, {
             shallow: true,
           });
         }

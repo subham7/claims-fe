@@ -30,9 +30,12 @@ import { saveAs } from "file-saver";
 import { useNetwork } from "wagmi";
 import { queryPaginatedMembersFromSubgraph } from "utils/stationsSubgraphHelper";
 import { CHAIN_CONFIG } from "utils/constants";
+import { getDefaultProfile } from "utils/lensHelper";
 
 const Members = ({ daoAddress }) => {
   const [membersData, setMembersData] = useState([]);
+  const [memberProfiles, setMemberProfiles] = useState();
+
   const [loading, setLoading] = useState(false);
   const [downloadLoading, setDownloadLoading] = useState(false);
 
@@ -83,7 +86,23 @@ const Members = ({ daoAddress }) => {
           networkId,
         );
 
-        if (data?.users) setMembersData(data?.users);
+        if (data?.users) {
+          setMembersData(data?.users);
+          const memberAddresses = data?.users.map((item) => item.userAddress);
+
+          const profiles = await getDefaultProfile(memberAddresses);
+
+          const memberProfiles = new Map();
+          memberAddresses.forEach((address) => {
+            memberProfiles.set(
+              address,
+              profiles.find(
+                (profile) => profile.ownedBy.toLowerCase() === address,
+              )?.handle,
+            );
+          });
+          setMemberProfiles(memberProfiles);
+        }
       };
 
       if (daoAddress && networkId && deployedTime) fetchData();
@@ -111,7 +130,23 @@ const Members = ({ daoAddress }) => {
         networkId,
       );
 
-      if (data.users) setMembersData(data?.users);
+      if (data?.users) {
+        setMembersData(data?.users);
+        const memberAddresses = data?.users.map((item) => item.userAddress);
+
+        const profiles = await getDefaultProfile(memberAddresses);
+
+        const memberProfiles = new Map();
+        memberAddresses.forEach((address) => {
+          memberProfiles.set(
+            address,
+            profiles.find(
+              (profile) => profile.ownedBy.toLowerCase() === address,
+            )?.handle,
+          );
+        });
+        setMemberProfiles(memberProfiles);
+      }
     } catch (error) {
       console.log(error);
     }
@@ -281,7 +316,10 @@ const Members = ({ daoAddress }) => {
                             onClick={(e) => {
                               handleAddressClick(e, data.userAddress);
                             }}>
-                            {shortAddress(data.userAddress)}
+                            {memberProfiles?.has(data.userAddress) &&
+                            memberProfiles?.get(data.userAddress) !== undefined
+                              ? memberProfiles?.get(data.userAddress)
+                              : shortAddress(data.userAddress)}
                             <OpenInNewIcon style={{ marginBottom: "12px" }} />
                           </div>
                         </Tooltip>

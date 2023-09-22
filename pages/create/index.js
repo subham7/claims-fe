@@ -27,7 +27,8 @@ import { convertToWeiGovernance } from "../../src/utils/globalFunctions";
 // import { fetchClubOwners } from "../../src/api/club";
 import useSafe from "../../src/hooks/useSafe";
 import Layout from "../../src/components/layouts/layout";
-import { useAccount } from "wagmi";
+import { useAccount, useNetwork } from "wagmi";
+import { ZERO_ADDRESS, ZERO_MERKLE_ROOT } from "utils/constants";
 
 const Create = () => {
   const steps = [
@@ -38,6 +39,8 @@ const Create = () => {
   ];
   const dispatch = useDispatch();
   const uploadInputRef = useRef(null);
+  const { chain } = useNetwork();
+  const networkId = "0x" + chain?.id.toString(16);
 
   const { address: walletAddress } = useAccount();
 
@@ -175,7 +178,7 @@ const Create = () => {
             treasuryAddress:
               formikStep3.values.safeAddress.length > 0
                 ? formikStep3.values.safeAddress
-                : "0x0000000000000000000000000000000000000000",
+                : ZERO_ADDRESS,
             maxTokensPerUser: formikERC721Step2.values.maxTokensPerUser,
             distributeAmount: formikERC721Step2.values.isNftTotalSupplylimited
               ? convertToWeiGovernance(
@@ -195,8 +198,7 @@ const Create = () => {
               formikStep3.values.governance === "governance" ? true : false,
             assetsStoredOnGnosis: formikStep3.values.assetsStoredOnGnosis,
             allowWhiteList: false,
-            merkleRoot:
-              "0x0000000000000000000000000000000000000000000000000000000000000001",
+            merkleRoot: ZERO_MERKLE_ROOT,
           };
 
           initiateConnection(
@@ -209,6 +211,7 @@ const Create = () => {
             formikERC721Step2.values.nftImage,
             formikStep1.values.useStationFor,
             formikStep1.values.email,
+            networkId,
           );
         } catch (error) {
           console.error(error);
@@ -244,13 +247,12 @@ const Create = () => {
             treasuryAddress:
               formikStep3.values.safeAddress.length > 0
                 ? formikStep3.values.safeAddress
-                : "0x0000000000000000000000000000000000000000",
+                : ZERO_ADDRESS,
             isGovernanceActive:
               formikStep3.values.governance === "governance" ? true : false,
             isGtTransferable: false,
             allowWhiteList: false,
-            merkleRoot:
-              "0x0000000000000000000000000000000000000000000000000000000000000001",
+            merkleRoot: ZERO_MERKLE_ROOT,
             assetsStoredOnGnosis: formikStep3.values.assetsStoredOnGnosis,
           };
 
@@ -263,6 +265,7 @@ const Create = () => {
             "",
             formikStep1.values.useStationFor,
             formikStep1.values.email,
+            networkId,
           );
         } catch (error) {
           console.error(error);

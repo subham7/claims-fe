@@ -1,7 +1,7 @@
 import React from "react";
 import { useRouter } from "next/router";
 import Layout from "@components/layouts/layout";
-import Claim from "@components/claims/claim";
+import Claim from "@components/claims/Claim";
 
 const ClaimPage = () => {
   const router = useRouter();
@@ -13,7 +13,7 @@ const ClaimPage = () => {
       showSidebar={false}
       claimAddress={claimAddress}
       isClaims={true}
-      network={network}>
+      networkId={network}>
       <Claim claimAddress={claimAddress} />
     </Layout>
   );

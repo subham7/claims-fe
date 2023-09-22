@@ -26,7 +26,6 @@ const useStyles = makeStyles({
     justifyContent: "space-between",
     margin: 0,
     alignItems: "center",
-    // fontWeight: '400'
   },
 
   createdBy: {
@@ -34,11 +33,9 @@ const useStyles = makeStyles({
     margin: 0,
     fontSize: "14px",
     color: "#6475A3",
-    // letterSpacing: '0.5px'
   },
   span: {
     color: "#dcdcdc",
-    // textDecoration: 'underline'
   },
   icons: {
     padding: 4,
@@ -156,7 +153,7 @@ const ClaimsCard = ({
   });
 
   const claimHandler = () => {
-    router.push(`/claims/${claimContract}`);
+    router.push(`/claims/${claimsNetwork}/${claimContract}`);
   };
 
   return (
@@ -189,7 +186,7 @@ const ClaimsCard = ({
             onClick={(e) => {
               e.stopPropagation();
               navigator.clipboard.writeText(
-                `${window.location.origin}/claim/${claimContract}/${claimsNetwork}`,
+                `${window.location.origin}/claim/${claimsNetwork}/${claimContract}/`,
               );
               setIsCopied(true);
 
