@@ -40,6 +40,7 @@ const ProposalCard = ({ proposal, daoAddress }) => {
           customToken,
           depositToken,
           withdrawToken,
+          swapToken,
         } = proposal?.commands[0];
 
         if (tokenType === "erc20" || executionId !== 1) {
@@ -54,6 +55,8 @@ const ProposalCard = ({ proposal, daoAddress }) => {
               ? depositToken
               : executionId === 15
               ? withdrawToken
+              : executionId === 17
+              ? swapToken
               : "",
           );
         }
@@ -69,6 +72,8 @@ const ProposalCard = ({ proposal, daoAddress }) => {
             ? depositToken
             : executionId === 15
             ? withdrawToken
+            : executionId === 17
+            ? swapToken
             : "",
         );
 

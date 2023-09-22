@@ -1,4 +1,4 @@
-import { getProposal } from "../api/proposal";
+import { getProposal, getSwapInfo } from "../api/proposal";
 import SafeApiKit from "@safe-global/api-kit";
 import Safe, { Web3Adapter } from "@safe-global/protocol-kit";
 import { createCancelProposal, getProposalTxHash } from "api/proposal";
@@ -220,6 +220,10 @@ export const fetchABI = async (executionId, tokenType) => {
       return factoryContractABI;
     case 8:
       return seaportABI;
+    case 17:
+      return [
+        "function swap(address,tuple(address,address,address,address,uint256,uint256,uint256,bytes),bytes)",
+      ];
     default:
       return null;
   }
@@ -235,6 +239,7 @@ export const getEncodedData = async ({
   getNftBalance,
   getERC20TotalSupply,
   networkId,
+  gnosisAddress,
 }) => {
   let membersArray = [];
   let airDropAmountArray = [];
@@ -259,6 +264,9 @@ export const getEncodedData = async ({
     nftLink,
     merkleRoot,
     pricePerToken,
+    swapToken,
+    swapAmount,
+    destinationToken,
   } = proposalData.commands[0];
   let iface;
 
@@ -493,6 +501,32 @@ export const getEncodedData = async ({
         daoAddress,
       ]);
       return { data };
+    case 17:
+      // const swapParams = {
+      //   fromTokenAddress: swapToken,
+      //   toTokenAddress: destinationToken,
+      //   amount: swapAmount,
+      //   fromAddress: daoAddress,
+      //   destReceiver: gnosisAddress,
+      //   slippage: 3,
+      //   disableEstimate: true,
+      //   allowPartialFill: false,
+      // };
+
+      const swapParams = {
+        src: swapToken, // Token address of 1INCH
+        dst: destinationToken, // Token address of DAI
+        amount: swapAmount, // Amount of 1INCH to swap (in wei)
+        from: gnosisAddress,
+        slippage: 3, // Maximum acceptable slippage percentage for the swap (e.g., 1 for 1%)
+        disableEstimate: false, // Set to true to disable estimation of swap details
+        allowPartialFill: false, // Set to true to allow partial filling of the swap order
+      };
+
+      const response = await getSwapInfo(swapParams, networkId);
+      console.log("response", response);
+      data = iface.decodeFunctionData("swap", response.data);
+      return data;
     default:
       return {};
   }

@@ -1,6 +1,7 @@
 import axios from "axios";
 import { MAIN_API_URL } from "../index";
 import { getJwtToken } from "../../utils/auth";
+import { CHAIN_CONFIG } from "utils/constants";
 
 export async function createProposal(data, networkId) {
   // create proposal API
@@ -118,3 +119,54 @@ export async function getProposalByDaoAddress(daoAddress) {
     console.log(error);
   }
 }
+
+export async function getSwapInfo(swapParams, networkId) {
+  const API_URL = `https://api.1inch.dev/swap/v5.2/${
+    (CHAIN_CONFIG[networkId], chainId)
+  }/swap`;
+  // const PARAMS = {
+  //   src: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+  //   dst: "0xc2132d05d31c914a87c6611c10748aeb04b58e8f",
+  //   amount: "10000000000000000",
+  //   from: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
+  //   slippage: 1,
+  // };
+
+  const HEADERS = {
+    accept: "application/json",
+    Authorization: "Bearer YoMsRNILWOzs3XQug5pJ7XbgUPUjsWCm",
+  };
+
+  axios
+    .get(API_URL, { headers: HEADERS, params: swapParams })
+    .then((response) => {
+      console.log(response.data);
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+    });
+}
+//   try {
+//     console.log(swapParams);
+//     // return await axios.get(
+//     //   `https://api.1inch.dev/swap/v5.2/${networkId}/swap?fromTokenAddress=${swapParams.fromTokenAddress}&toTokenAddress=${swapParams.toTokenAddress}&amount=${swapParams.amount}&fromAddress=${swapParams.fromAddress}&destReceiver=${swapParams.destReceiver}&slippage=${swapParams.slippage}&disableEstimate=${swapParams.disableEstimate}/`,
+//     //   {
+//     //     headers: {
+//     //       Authorization: "Bearer YoMsRNILWOzs3XQug5pJ7XbgUPUjsWCm",
+//     //       accept: "application/json",
+//     //     },
+//     //   },
+//     // );
+//     return await axios.get(
+//       `https://api.1inch.dev/swap/v5.2/${CHAIN_CONFIG[networkId].chainId}/swap?src=${swapParams.src}&dst=${swapParams.dst}&amount=${swapParams.amount}&from=${swapParams.from}&slippage=${swapParams.slippage}&disableEstimate=${swapParams.disableEstimate}&allowPartialFill=${swapParams.allowPartialFill}/`,
+//       {
+//         headers: {
+//           Authorization: "Bearer YoMsRNILWOzs3XQug5pJ7XbgUPUjsWCm",
+//           "Content-Type": "application/json",
+//         },
+//       },
+//     );
+//   } catch (error) {
+//     console.log(error);
+//   }
+// }

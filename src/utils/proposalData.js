@@ -37,6 +37,9 @@ export const proposalData = ({ data, decimals, factoryData, symbol }) => {
     pricePerToken,
     depositAmount,
     withdrawAmount,
+    swapToken,
+    swapAmount,
+    destinationToken,
   } = data ?? {};
 
   switch (executionId) {
@@ -102,6 +105,12 @@ export const proposalData = ({ data, decimals, factoryData, symbol }) => {
       return {
         "Withdraw token": symbol,
         "Withdraw amount": convertFromWeiGovernance(withdrawAmount, decimals),
+      };
+    case 17:
+      return {
+        "Swap token": shortAddress(swapToken),
+        "Swap amt": convertFromWeiGovernance(swapAmount, decimals),
+        "Destination token": shortAddress(destinationToken),
       };
     default:
       return {};
