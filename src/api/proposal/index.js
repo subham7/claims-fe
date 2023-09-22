@@ -121,9 +121,7 @@ export async function getProposalByDaoAddress(daoAddress) {
 }
 
 export async function getSwapInfo(swapParams, networkId) {
-  const API_URL = `https://api.1inch.dev/swap/v5.2/${
-    (CHAIN_CONFIG[networkId], chainId)
-  }/swap`;
+  const API_URL = `https://api.1inch.dev/swap/v5.2/${CHAIN_CONFIG[networkId].chainId}/swap`;
   // const PARAMS = {
   //   src: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
   //   dst: "0xc2132d05d31c914a87c6611c10748aeb04b58e8f",
