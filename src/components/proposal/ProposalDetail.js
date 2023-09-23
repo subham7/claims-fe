@@ -512,7 +512,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
       );
       if (
         !nftdata?.data?.orders.length &&
-        proposalData?.commands[0].executionId === 8
+        proposalData?.commands[0]?.executionId === 8
       ) {
         setIsNftSold(true);
       } else {
@@ -522,7 +522,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
   };
 
   useEffect(() => {
-    if (proposalData && proposalData.commands[0].executionId === 8) {
+    if (proposalData && proposalData.commands[0]?.executionId === 8) {
       nftListingExists();
     }
   }, [proposalData]);
@@ -549,8 +549,8 @@ const ProposalDetail = ({ pid, daoAddress }) => {
     let transactionData;
     let ABI;
     if (
-      proposalData.commands[0].executionId === 0 ||
-      proposalData.commands[0].executionId === 4
+      proposalData.commands[0]?.executionId === 0 ||
+      proposalData.commands[0]?.executionId === 4
     ) {
       ABI = [
         "function approve(address spender, uint256 amount)",
@@ -558,17 +558,17 @@ const ProposalDetail = ({ pid, daoAddress }) => {
         "function airDropToken(address _airdropTokenAddress,uint256[] memory _airdropAmountArray,address[] memory _members)",
       ];
     } else if (
-      proposalData?.commands[0].executionId === 3 ||
-      proposalData?.commands[0].executionId === 10 ||
-      proposalData?.commands[0].executionId === 11 ||
-      proposalData?.commands[0].executionId === 12 ||
-      proposalData?.commands[0].executionId === 13
+      proposalData?.commands[0]?.executionId === 3 ||
+      proposalData?.commands[0]?.executionId === 10 ||
+      proposalData?.commands[0]?.executionId === 11 ||
+      proposalData?.commands[0]?.executionId === 12 ||
+      proposalData?.commands[0]?.executionId === 13
     ) {
       ABI = FactoryContractABI.abi;
-    } else if (proposalData?.commands[0].executionId === 8) {
+    } else if (proposalData?.commands[0]?.executionId === 8) {
       ABI = seaportABI;
     } else if (
-      proposalData?.commands[0].executionId === 9 ||
+      proposalData?.commands[0]?.executionId === 9 ||
       clubData.tokenType === "erc721"
     ) {
       ABI = Erc721Dao.abi;
@@ -579,7 +579,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
     let membersArray = [];
     let airDropAmountArray = [];
 
-    if (proposalData.commands[0].executionId === 0) {
+    if (proposalData.commands[0]?.executionId === 0) {
       const membersData = await subgraphQuery(
         SUBGRAPH_URL,
         QUERY_ALL_MEMBERS(daoAddress),
@@ -657,7 +657,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
       ]);
     }
 
-    if (proposalData.commands[0].executionId === 1) {
+    if (proposalData.commands[0]?.executionId === 1) {
       let iface = new Interface(ABI);
 
       if (clubData.tokenType === "erc20") {
@@ -684,14 +684,14 @@ const ProposalDetail = ({ pid, daoAddress }) => {
       }
     }
 
-    if (proposalData.commands[0].executionId === 2) {
+    if (proposalData.commands[0]?.executionId === 2) {
       let iface = new Interface(ABI);
       data = iface.encodeFunctionData("updateGovernanceSettings", [
         proposalData.commands[0].quorum * 100,
         proposalData.commands[0].threshold * 100,
       ]);
     }
-    if (proposalData.commands[0].executionId === 3) {
+    if (proposalData.commands[0]?.executionId === 3) {
       let iface = new Interface(ABI);
 
       data = iface.encodeFunctionData("updateTotalRaiseAmount", [
@@ -704,7 +704,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
         daoAddress,
       ]);
     }
-    if (proposalData.commands[0].executionId === 4) {
+    if (proposalData.commands[0]?.executionId === 4) {
       let iface = new Interface(ABI);
 
       approvalData = iface.encodeFunctionData("approve", [
@@ -721,7 +721,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
       membersArray = proposalData.commands[0].customTokenAddresses;
       airDropAmountArray = proposalData.commands[0].customTokenAmounts;
     }
-    if (proposalData?.commands[0].executionId === 5) {
+    if (proposalData?.commands[0]?.executionId === 5) {
       let iface = new Interface(ABI);
 
       data = iface.encodeFunctionData("transferNft", [
@@ -730,7 +730,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
         proposalData?.commands[0].customNftToken,
       ]);
     }
-    if (proposalData?.commands[0].executionId === 8) {
+    if (proposalData?.commands[0]?.executionId === 8) {
       const parts = proposalData?.commands[0].nftLink.split("/");
 
       const linkData = parts.slice(-3);
@@ -804,7 +804,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
         ]);
       }
     }
-    if (proposalData?.commands[0].executionId === 9) {
+    if (proposalData?.commands[0]?.executionId === 9) {
       const parts = proposalData?.commands[0].nftLink.split("/");
 
       const linkData = parts.slice(-3);
@@ -907,9 +907,9 @@ const ProposalDetail = ({ pid, daoAddress }) => {
     }
 
     if (
-      proposalData.commands[0].executionId === 10 ||
-      proposalData.commands[0].executionId === 11 ||
-      proposalData?.commands[0].executionId == 12
+      proposalData.commands[0]?.executionId === 10 ||
+      proposalData.commands[0]?.executionId === 11 ||
+      proposalData?.commands[0]?.executionId == 12
     ) {
       let iface = new Interface(ABI);
       let iface2 = new Interface(Erc20Dao.abi);
@@ -922,7 +922,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
       ]);
     }
 
-    if (proposalData.commands[0].executionId === 13) {
+    if (proposalData.commands[0]?.executionId === 13) {
       let iface = new Interface(ABI);
 
       data = iface.encodeFunctionData("updateTotalRaiseAmount", [
@@ -939,24 +939,24 @@ const ProposalDetail = ({ pid, daoAddress }) => {
       Web3.utils.toChecksumAddress(gnosisAddress),
       txHash,
       pid,
-      proposalData.commands[0].executionId === 0
+      proposalData.commands[0]?.executionId === 0
         ? proposalData.commands[0].airDropToken
-        : proposalData.commands[0].executionId === 4
+        : proposalData.commands[0]?.executionId === 4
         ? proposalData.commands[0].customToken
-        : proposalData.commands[0].executionId === 5
+        : proposalData.commands[0]?.executionId === 5
         ? proposalData.commands[0].customNft
         : "",
       proposalStatus,
       airdropContractAddress,
-      proposalData.commands[0].executionId === 3 ||
-        proposalData.commands[0].executionId === 10 ||
-        proposalData.commands[0].executionId === 11 ||
-        proposalData?.commands[0].executionId === 12 ||
-        proposalData.commands[0].executionId === 13
+      proposalData.commands[0]?.executionId === 3 ||
+        proposalData.commands[0]?.executionId === 10 ||
+        proposalData.commands[0]?.executionId === 11 ||
+        proposalData?.commands[0]?.executionId === 12 ||
+        proposalData.commands[0]?.executionId === 13
         ? FACTORY_CONTRACT_ADDRESS
         : "",
       GNOSIS_TRANSACTION_URL,
-      proposalData.commands[0].executionId,
+      proposalData.commands[0]?.executionId,
       proposalData.commands[0].ownerAddress,
       proposalData.commands[0].safeThreshold,
       proposalData,
@@ -1452,7 +1452,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
                           {(signed ||
                             isRejectTxnSigned ||
                             signedOwners.length) &&
-                            proposalData.commands[0].executionId === 8 && (
+                            proposalData.commands[0]?.executionId === 8 && (
                               <Button
                                 className={
                                   executed
