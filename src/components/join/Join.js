@@ -207,7 +207,12 @@ const Join = ({ daoAddress }) => {
     } else {
       fetchErc721ContractDetails();
     }
-  }, [fetchErc20ContractDetails, TOKEN_TYPE, fetchErc721ContractDetails]);
+  }, [
+    fetchErc20ContractDetails,
+    TOKEN_TYPE,
+    fetchErc721ContractDetails,
+    factoryData,
+  ]);
 
   useEffect(() => {
     try {

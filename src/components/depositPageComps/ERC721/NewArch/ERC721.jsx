@@ -183,7 +183,7 @@ const ERC721 = ({
     } else {
       setActive(false);
     }
-  }, [day2, day1]);
+  }, [day2, day1, daoDetails?.depositDeadline]);
 
   return (
     <div className={classes.pageContainer}>
