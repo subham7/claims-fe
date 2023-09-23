@@ -509,7 +509,7 @@ const Claim = ({ claimAddress }) => {
                             claimableAmt,
                             decimalOfToken,
                           ),
-                        ).toFixed(2)
+                        ).toFixed(3)
                       : 0}
                   </p>
                   <p className={classes.amount}>{airdropTokenName}</p>
@@ -520,7 +520,7 @@ const Claim = ({ claimAddress }) => {
                 <div className={classes.claims}>
                   <p className={classes.claimAmt}>
                     {claimRemaining
-                      ? Number(claimRemaining / 10 ** decimalOfToken).toFixed(2)
+                      ? Number(claimRemaining / 10 ** decimalOfToken).toFixed(3)
                       : 0}
                     {/* {claimRemaining ? claimRemaining : 0} */}
                   </p>
