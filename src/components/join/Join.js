@@ -127,7 +127,9 @@ const Join = ({ daoAddress }) => {
           comparator: tokenGatingDetails[0]?.comparator,
         });
 
-        const tokenASymbol = await getTokenSymbol(tokenGatingDetails[0].tokenA);
+        const tokenASymbol = await getTokenSymbol(
+          tokenGatingDetails[0]?.tokenA,
+        );
         const tokenBSymbol = await getTokenSymbol(
           tokenGatingDetails[0]?.tokenB,
         );
