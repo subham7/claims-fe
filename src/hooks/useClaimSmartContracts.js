@@ -49,9 +49,12 @@ const useClaimSmartContracts = (claimAddress) => {
   };
 
   const initializeClaimContracts = () => {
+    debugger;
+    const web3Call = new Web3(CHAIN_CONFIG[networkId]?.appRpcUrl);
     const web3Send = new Web3(window?.ethereum);
+
     try {
-      const claimContractCall = new web3Send.eth.Contract(
+      const claimContractCall = new web3Call.eth.Contract(
         ClaimContractABI.abi,
         claimAddress,
       );
@@ -70,7 +73,7 @@ const useClaimSmartContracts = (claimAddress) => {
   };
 
   useEffect(() => {
-    if (networkId) {
+    if (claimFactoryAddress && networkId) {
       initializeClaimFactoryContracts();
     }
   }, [networkId, claimFactoryAddress, walletAddress]);

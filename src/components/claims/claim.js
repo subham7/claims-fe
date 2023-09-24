@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   convertFromWeiGovernance,
   convertToWeiGovernance,
@@ -22,7 +22,7 @@ const Claim = ({ claimAddress }) => {
   const [contractData, setContractData] = useState([]);
   const [totalAmountofTokens, setTotalAmountOfTokens] = useState(0);
   const [airdropTokenName, setAirdropTokenName] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [isClaiming, setIsClaiming] = useState(false);
   const [message, setMessage] = useState("");
   const [claimed, setClaimed] = useState(false);
@@ -72,8 +72,8 @@ const Claim = ({ claimAddress }) => {
   const startingTimeInNum = new Date(+contractData?.startTime * 1000);
   const endingTimeInNum = new Date(+contractData?.endTime * 1000);
 
-  const fetchContractDetails = useCallback(async () => {
-    setIsLoading(false);
+  const fetchContractDetails = async () => {
+    setIsLoading(true);
 
     try {
       const desc = await claimSettings();
@@ -221,16 +221,7 @@ const Claim = ({ claimAddress }) => {
       setMessage(err.message);
       setIsLoading(false);
     }
-  }, [
-    claimableAmt,
-    walletAddress,
-    contractData?.daoToken,
-    contractData?.merkleRoot,
-    isEligibleForTokenGated,
-    networkId,
-    claimAddress,
-    contractInstances,
-  ]);
+  };
 
   const claimHandler = async () => {
     setIsClaiming(true);
@@ -342,26 +333,29 @@ const Claim = ({ claimAddress }) => {
   }, [contractData?.endTime, contractData?.startTime, currentTime]);
 
   useEffect(() => {
-    if (claimAddress && networkId) fetchContractDetails();
-  }, [
-    claimAddress,
-    contractInstances?.claimContractCall,
-    contractInstances?.erc20TokenContractCall,
-    networkId,
-  ]);
+    if (claimAddress && networkId && contractInstances?.claimContractCall)
+      fetchContractDetails();
+  }, [claimAddress, contractInstances?.claimContractCall, networkId]);
 
   useEffect(() => {
     (async () => {
       try {
-        // check if token is already claimed
-        const claimedAmt = await claimAmount(walletAddress);
-        const isClaimed = claimedAmt > 0 ? true : false;
-        setAlreadyClaimed(isClaimed);
+        if (networkId && contractInstances?.claimContractCall) {
+          // check if token is already claimed
+          const claimedAmt = await claimAmount(walletAddress);
+          const isClaimed = claimedAmt > 0 ? true : false;
+          setAlreadyClaimed(isClaimed);
+        }
       } catch (err) {
         console.log(err);
       }
     })();
-  }, [claimAddress, walletAddress]);
+  }, [
+    claimAddress,
+    networkId,
+    walletAddress,
+    contractInstances?.claimContractCall,
+  ]);
 
   useEffect(() => {
     const fetchClaimsDataFromSubgraph = async () => {
@@ -376,7 +370,7 @@ const Claim = ({ claimAddress }) => {
       }
     };
 
-    if (claimAddress) fetchClaimsDataFromSubgraph();
+    if (claimAddress && networkId) fetchClaimsDataFromSubgraph();
   }, [claimAddress, networkId]);
 
   const isClaimButtonDisabled = () => {
