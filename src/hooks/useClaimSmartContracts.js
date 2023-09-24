@@ -1,6 +1,6 @@
 import { useEffect } from "react";
-import { claimContractABI } from "abis/claimContract.js";
-import { claimFactoryABI } from "abis/claimFactory.js";
+import ClaimContractABI from "../abis/newArch/claimContract.json";
+import ClaimFactoryABI from "../abis/newArch/claimFactory.json";
 import Web3 from "web3";
 import { useDispatch, useSelector } from "react-redux";
 import { setContractInstances } from "../redux/reducers/contractInstances";
@@ -18,19 +18,26 @@ const useClaimSmartContracts = (claimAddress) => {
   });
 
   const claimFactoryAddress = CHAIN_CONFIG[networkId].claimFactoryAddress;
-  const web3Call = new Web3(CHAIN_CONFIG[networkId]?.appRpcUrl);
 
   const initializeClaimFactoryContracts = async () => {
+    const web3Call = new Web3(CHAIN_CONFIG[networkId]?.appRpcUrl);
+    const web3Send = new Web3(window?.ethereum);
+
     try {
       if (claimFactoryAddress) {
         const claimFactoryContractCall = new web3Call.eth.Contract(
-          claimFactoryABI,
+          ClaimFactoryABI.abi,
           claimFactoryAddress,
         );
+
+        const claimFactoryContractSend = web3Send
+          ? new web3Send.eth.Contract(ClaimFactoryABI.abi, claimFactoryAddress)
+          : {};
 
         contractInstances = {
           ...contractInstances,
           claimFactoryContractCall,
+          claimFactoryContractSend,
         };
 
         dispatch(setContractInstances(contractInstances));
@@ -41,14 +48,18 @@ const useClaimSmartContracts = (claimAddress) => {
   };
 
   const initializeClaimContracts = () => {
+    const web3Send = new Web3(window?.ethereum);
     try {
-      const claimContractCall = new web3Call.eth.Contract(
-        claimContractABI,
+      const claimContractCall = new web3Send.eth.Contract(
+        ClaimContractABI.abi,
         claimAddress,
       );
-
+      const claimContractSend = web3Send
+        ? new web3Send.eth.Contract(ClaimContractABI.abi, claimAddress)
+        : {};
       contractInstances = {
         ...contractInstances,
+        claimContractSend,
         claimContractCall,
       };
       dispatch(setContractInstances(contractInstances));
@@ -64,10 +75,10 @@ const useClaimSmartContracts = (claimAddress) => {
   }, [networkId, claimFactoryAddress]);
 
   useEffect(() => {
-    if (claimAddress && networkId) {
+    if (claimAddress) {
       initializeClaimContracts();
     }
-  }, [claimAddress, networkId]);
+  }, [claimAddress]);
 };
 
 export default useClaimSmartContracts;
