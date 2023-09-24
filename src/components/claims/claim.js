@@ -22,7 +22,7 @@ const Claim = ({ claimAddress }) => {
   const [contractData, setContractData] = useState([]);
   const [totalAmountofTokens, setTotalAmountOfTokens] = useState(0);
   const [airdropTokenName, setAirdropTokenName] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [isClaiming, setIsClaiming] = useState(false);
   const [message, setMessage] = useState("");
   const [claimed, setClaimed] = useState(false);
@@ -73,7 +73,7 @@ const Claim = ({ claimAddress }) => {
   const endingTimeInNum = new Date(+contractData?.endTime * 1000);
 
   const fetchContractDetails = useCallback(async () => {
-    setIsLoading(true);
+    setIsLoading(false);
 
     try {
       const desc = await claimSettings();
@@ -342,9 +342,13 @@ const Claim = ({ claimAddress }) => {
   }, [contractData?.endTime, contractData?.startTime, currentTime]);
 
   useEffect(() => {
-    if (claimAddress && contractInstances?.claimContractCall && networkId)
-      fetchContractDetails();
-  }, [claimAddress, contractInstances?.claimContractCall, networkId]);
+    if (claimAddress && networkId) fetchContractDetails();
+  }, [
+    claimAddress,
+    contractInstances?.claimContractCall,
+    contractInstances?.erc20TokenContractCall,
+    networkId,
+  ]);
 
   useEffect(() => {
     (async () => {
