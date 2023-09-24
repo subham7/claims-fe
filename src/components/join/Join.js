@@ -8,7 +8,6 @@ import useSmartContractMethods from "hooks/useSmartContractMethods";
 import { getClubInfo } from "api/club";
 import ERC721 from "@components/depositPageComps/ERC721/NewArch/ERC721";
 import ERC20 from "@components/depositPageComps/ERC20/NewArch/ERC20";
-import useSmartContract from "hooks/useSmartContract";
 import { getWhitelistMerkleProof } from "api/whitelist";
 import { useAccount } from "wagmi";
 
@@ -55,8 +54,6 @@ const Join = ({ daoAddress }) => {
   const factoryData = useSelector((state) => {
     return state.club.factoryData;
   });
-
-  useSmartContract(daoAddress);
 
   const contractInstances = useSelector((state) => {
     return state.contractInstances.contractInstances;

@@ -343,8 +343,13 @@ const Claim = ({ claimAddress }) => {
   }, [contractData?.endTime, contractData?.startTime, currentTime]);
 
   useEffect(() => {
-    if (claimAddress) fetchContractDetails();
-  }, [fetchContractDetails, claimAddress]);
+    if (claimAddress && contractInstances?.claimContractCall)
+      fetchContractDetails();
+  }, [
+    fetchContractDetails,
+    claimAddress,
+    contractInstances?.claimContractCall,
+  ]);
 
   useEffect(() => {
     (async () => {
