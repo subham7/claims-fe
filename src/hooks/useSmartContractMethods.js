@@ -350,7 +350,12 @@ const useSmartContractMethods = () => {
     return await claimContractCall?.methods?.claimSettings().call();
   };
 
-  const claimBalance = async () => {
+  const claimBalance = async (claimAddress) => {
+    const claimContractCall = new web3Call.eth.Contract(
+      ClaimContractABI.abi,
+      claimAddress,
+    );
+
     return await claimContractCall?.methods.claimBalance().call();
   };
 
@@ -388,7 +393,17 @@ const useSmartContractMethods = () => {
       });
   };
 
-  const claim = async (amount, reciever, merkleProof, encodedData) => {
+  const claim = async (
+    claimAddress,
+    amount,
+    reciever,
+    merkleProof,
+    encodedData,
+  ) => {
+    const claimContractSend = new web3Send.eth.Contract(
+      ClaimContractABI.abi,
+      claimAddress,
+    );
     return await claimContractSend.methods
       .claim(amount, reciever, merkleProof, encodedData)
       .send({
@@ -401,7 +416,11 @@ const useSmartContractMethods = () => {
     return await claimContractCall?.methods.hasClaimed(walletAddress).call();
   };
 
-  const claimAmount = async (walletAddress) => {
+  const claimAmount = async (claimAddress, walletAddress) => {
+    const claimContractCall = new web3Call.eth.Contract(
+      ClaimContractABI.abi,
+      claimAddress,
+    );
     return await claimContractCall?.methods.claimAmount(walletAddress).call();
   };
 

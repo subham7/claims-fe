@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   convertFromWeiGovernance,
   convertToWeiGovernance,
@@ -6,7 +6,7 @@ import {
 import { Alert, CircularProgress, Tooltip } from "@mui/material";
 import { getUserProofAndBalance } from "api/claims";
 import Countdown from "react-countdown";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { addClaimEnabled } from "redux/reducers/createClaim";
 import useSmartContractMethods from "hooks/useSmartContractMethods";
 import { ClaimsStyles } from "components/claimsPageComps/ClaimsStyles";
@@ -48,6 +48,10 @@ const Claim = ({ claimAddress }) => {
 
   useClaimSmartContracts(claimAddress);
 
+  let contractInstances = useSelector((state) => {
+    return state.contractInstances.contractInstances;
+  });
+
   const {
     claimSettings,
     claimBalance,
@@ -68,7 +72,7 @@ const Claim = ({ claimAddress }) => {
   const startingTimeInNum = new Date(+contractData?.startTime * 1000);
   const endingTimeInNum = new Date(+contractData?.endTime * 1000);
 
-  const fetchContractDetails = async () => {
+  const fetchContractDetails = useCallback(async () => {
     setIsLoading(true);
 
     try {
@@ -84,7 +88,7 @@ const Claim = ({ claimAddress }) => {
         setDecimalofToken(decimals);
 
         // remaining Balance in contract
-        const remainingBalanceInContract = await claimBalance();
+        const remainingBalanceInContract = await claimBalance(claimAddress);
 
         const remainingBalanceInUSD = convertFromWeiGovernance(
           remainingBalanceInContract,
@@ -97,7 +101,7 @@ const Claim = ({ claimAddress }) => {
 
         setClaimBalanceRemaing(remainingBalanceInUSD);
 
-        const claimedAmt = await claimAmount(walletAddress);
+        const claimedAmt = await claimAmount(claimAddress, walletAddress);
 
         const isClaimed = claimedAmt > 0 ? true : false;
         setAlreadyClaimed(isClaimed);
@@ -214,10 +218,20 @@ const Claim = ({ claimAddress }) => {
       }
       setIsLoading(false);
     } catch (err) {
+      // setIsLoading(true);
       setMessage(err.message);
       setIsLoading(false);
     }
-  };
+  }, [
+    claimableAmt,
+    walletAddress,
+    contractData?.daoToken,
+    contractData?.merkleRoot,
+    isEligibleForTokenGated,
+    networkId,
+    claimAddress,
+    contractInstances,
+  ]);
 
   const claimHandler = async () => {
     setIsClaiming(true);
@@ -236,13 +250,14 @@ const Claim = ({ claimAddress }) => {
         const encodedLeaf = encode(walletAddress, amount);
 
         await claim(
+          claimAddress,
           convertToWeiGovernance(claimInput, decimalOfToken).toString(),
           walletAddress,
           proof,
           encodedLeaf,
         );
 
-        const claimedAmt = await claimAmount(walletAddress);
+        const claimedAmt = await claimAmount(claimAddress, walletAddress);
         setClaimRemaining(claimableAmt - claimedAmt);
         setIsClaiming(false);
         setAlreadyClaimed(true);
@@ -252,13 +267,14 @@ const Claim = ({ claimAddress }) => {
         setMessage("Successfully Claimed!");
       } else {
         await claim(
+          claimAddress,
           convertToWeiGovernance(claimInput, decimalOfToken).toString(),
           walletAddress,
           [],
           0,
         );
 
-        const claimedAmt = await claimAmount(walletAddress);
+        const claimedAmt = await claimAmount(claimAddress, walletAddress);
 
         const remainingAmt = +claimableAmt - +claimedAmt;
 
@@ -329,14 +345,14 @@ const Claim = ({ claimAddress }) => {
   }, [contractData?.endTime, contractData?.startTime, currentTime]);
 
   useEffect(() => {
-    if (claimAddress && networkId && walletAddress) fetchContractDetails();
-  }, [claimAddress, networkId, walletAddress]);
+    if (claimAddress) fetchContractDetails();
+  }, [fetchContractDetails, claimAddress]);
 
   useEffect(() => {
     (async () => {
       try {
         // check if token is already claimed
-        const claimedAmt = await claimAmount(walletAddress);
+        const claimedAmt = await claimAmount(claimAddress, walletAddress);
         const isClaimed = claimedAmt > 0 ? true : false;
         setAlreadyClaimed(isClaimed);
       } catch (err) {
@@ -358,7 +374,7 @@ const Claim = ({ claimAddress }) => {
       }
     };
 
-    if (claimAddress && networkId) fetchClaimsDataFromSubgraph();
+    if (claimAddress) fetchClaimsDataFromSubgraph();
   }, [claimAddress, networkId]);
 
   const isClaimButtonDisabled = () => {
