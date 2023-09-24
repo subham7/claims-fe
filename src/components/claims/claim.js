@@ -218,7 +218,6 @@ const Claim = ({ claimAddress }) => {
       }
       setIsLoading(false);
     } catch (err) {
-      // setIsLoading(true);
       setMessage(err.message);
       setIsLoading(false);
     }
@@ -343,13 +342,9 @@ const Claim = ({ claimAddress }) => {
   }, [contractData?.endTime, contractData?.startTime, currentTime]);
 
   useEffect(() => {
-    if (claimAddress && contractInstances?.claimContractCall)
+    if (claimAddress && contractInstances?.claimContractCall && networkId)
       fetchContractDetails();
-  }, [
-    fetchContractDetails,
-    claimAddress,
-    contractInstances?.claimContractCall,
-  ]);
+  }, [claimAddress, contractInstances?.claimContractCall, networkId]);
 
   useEffect(() => {
     (async () => {
