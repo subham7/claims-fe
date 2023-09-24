@@ -88,7 +88,7 @@ const Claim = ({ claimAddress }) => {
         setDecimalofToken(decimals);
 
         // remaining Balance in contract
-        const remainingBalanceInContract = await claimBalance();
+        const remainingBalanceInContract = await claimBalance(claimAddress);
 
         const remainingBalanceInUSD = convertFromWeiGovernance(
           remainingBalanceInContract,
@@ -101,7 +101,7 @@ const Claim = ({ claimAddress }) => {
 
         setClaimBalanceRemaing(remainingBalanceInUSD);
 
-        const claimedAmt = await claimAmount(walletAddress);
+        const claimedAmt = await claimAmount(claimAddress, walletAddress);
 
         const isClaimed = claimedAmt > 0 ? true : false;
         setAlreadyClaimed(isClaimed);
@@ -246,7 +246,7 @@ const Claim = ({ claimAddress }) => {
           encodedLeaf,
         );
 
-        const claimedAmt = await claimAmount(walletAddress);
+        const claimedAmt = await claimAmount(claimAddress, walletAddress);
         setClaimRemaining(claimableAmt - claimedAmt);
         setIsClaiming(false);
         setAlreadyClaimed(true);
@@ -262,7 +262,7 @@ const Claim = ({ claimAddress }) => {
           0,
         );
 
-        const claimedAmt = await claimAmount(walletAddress);
+        const claimedAmt = await claimAmount(claimAddress, walletAddress);
 
         const remainingAmt = +claimableAmt - +claimedAmt;
 
@@ -341,7 +341,7 @@ const Claim = ({ claimAddress }) => {
       try {
         if (networkId) {
           // check if token is already claimed
-          const claimedAmt = await claimAmount(walletAddress);
+          const claimedAmt = await claimAmount(claimAddress, walletAddress);
           const isClaimed = claimedAmt > 0 ? true : false;
           setAlreadyClaimed(isClaimed);
         }
