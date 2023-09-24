@@ -22,14 +22,13 @@ import Web3 from "web3";
 import { SUBGRAPH_URL_GOERLI, SUBGRAPH_URL_POLYGON } from "../api";
 import { getSafeSdk } from "../utils/helper";
 import useSmartContractMethods from "./useSmartContractMethods";
-import useSmartContract from "./useSmartContract";
+
 import { useAccount, useNetwork } from "wagmi";
 import { useRouter } from "next/router";
 
 const useClubFetch = ({ daoAddress }) => {
   const dispatch = useDispatch();
   const { chain } = useNetwork();
-  useSmartContract(daoAddress);
 
   const router = useRouter();
   const { address: walletAddress } = useAccount();

@@ -8,12 +8,14 @@ import { useAccount, useNetwork } from "wagmi";
 import { Web3Button } from "@web3modal/react";
 import useClubFetch from "hooks/useClubFetch";
 import { showWrongNetworkModal } from "utils/helper";
+import useSmartContract from "hooks/useSmartContract";
 
 const drawerWidth = 50;
 
 export default function Layout(props) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { showSidebar = true, daoAddress } = props;
+  useSmartContract(daoAddress);
   useClubFetch({ daoAddress });
   const { address: walletAddress } = useAccount();
   const { chain } = useNetwork();
