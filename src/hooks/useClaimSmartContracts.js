@@ -49,7 +49,6 @@ const useClaimSmartContracts = (claimAddress) => {
   };
 
   const initializeClaimContracts = () => {
-    debugger;
     const web3Call = new Web3(CHAIN_CONFIG[networkId]?.appRpcUrl);
     const web3Send = new Web3(window?.ethereum);
 
