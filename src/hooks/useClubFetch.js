@@ -49,6 +49,10 @@ const useClubFetch = ({ daoAddress }) => {
     getERC721DAOdetails,
   } = useSmartContractMethods();
 
+  let contractInstances = useSelector((state) => {
+    return state.contractInstances.contractInstances;
+  });
+
   useEffect(() => {
     daoAddress &&
       dispatch(addDaoAddress(Web3.utils.toChecksumAddress(daoAddress)));
@@ -79,7 +83,7 @@ const useClubFetch = ({ daoAddress }) => {
       }
     };
     networkId && getNetworkConfig();
-  }, [dispatch, networkId, walletAddress]);
+  }, [dispatch, networkId]);
 
   useEffect(() => {
     const addClubDataToRedux = async () => {
@@ -237,6 +241,7 @@ const useClubFetch = ({ daoAddress }) => {
     reduxClubData.tokenType,
     networkId,
     router,
+    contractInstances?.factoryContractCall,
   ]);
 
   const checkClubExist = useCallback(async () => {

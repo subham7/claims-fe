@@ -76,7 +76,7 @@ const Claim = ({ claimAddress }) => {
     setIsLoading(true);
 
     try {
-      const desc = await claimSettings();
+      const desc = await claimSettings(claimAddress);
       setContractData(desc);
       setClaimEnabled(desc?.isEnabled);
       // setClaimEnabled(desc.isEnabled);
@@ -88,7 +88,7 @@ const Claim = ({ claimAddress }) => {
         setDecimalofToken(decimals);
 
         // remaining Balance in contract
-        const remainingBalanceInContract = await claimBalance();
+        const remainingBalanceInContract = await claimBalance(claimAddress);
 
         const remainingBalanceInUSD = convertFromWeiGovernance(
           remainingBalanceInContract,
@@ -101,7 +101,7 @@ const Claim = ({ claimAddress }) => {
 
         setClaimBalanceRemaing(remainingBalanceInUSD);
 
-        const claimedAmt = await claimAmount(walletAddress);
+        const claimedAmt = await claimAmount(claimAddress, walletAddress);
 
         const isClaimed = claimedAmt > 0 ? true : false;
         setAlreadyClaimed(isClaimed);
@@ -250,13 +250,14 @@ const Claim = ({ claimAddress }) => {
         const encodedLeaf = encode(walletAddress, amount);
 
         await claim(
+          claimAddress,
           convertToWeiGovernance(claimInput, decimalOfToken).toString(),
           walletAddress,
           proof,
           encodedLeaf,
         );
 
-        const claimedAmt = await claimAmount(walletAddress);
+        const claimedAmt = await claimAmount(claimAddress, walletAddress);
         setClaimRemaining(claimableAmt - claimedAmt);
         setIsClaiming(false);
         setAlreadyClaimed(true);
@@ -266,13 +267,14 @@ const Claim = ({ claimAddress }) => {
         setMessage("Successfully Claimed!");
       } else {
         await claim(
+          claimAddress,
           convertToWeiGovernance(claimInput, decimalOfToken).toString(),
           walletAddress,
           [],
           0,
         );
 
-        const claimedAmt = await claimAmount(walletAddress);
+        const claimedAmt = await claimAmount(claimAddress, walletAddress);
 
         const remainingAmt = +claimableAmt - +claimedAmt;
 
@@ -350,7 +352,7 @@ const Claim = ({ claimAddress }) => {
     (async () => {
       try {
         // check if token is already claimed
-        const claimedAmt = await claimAmount(walletAddress);
+        const claimedAmt = await claimAmount(claimAddress, walletAddress);
         const isClaimed = claimedAmt > 0 ? true : false;
         setAlreadyClaimed(isClaimed);
       } catch (err) {

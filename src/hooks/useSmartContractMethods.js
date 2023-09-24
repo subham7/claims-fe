@@ -3,6 +3,7 @@ import Web3 from "web3";
 import { SEAPORT_CONTRACT_ADDRESS } from "../api";
 import { getIncreaseGasPrice } from "../utils/helper";
 import ERC20TokenABI from "../abis/usdcTokenContract.json";
+import ClaimContractABI from "../abis/newArch/claimContract.json";
 import ERC721TokenABI from "../abis/nft.json";
 import seaportABI from "../abis/seaport.json";
 import { convertToWeiGovernance } from "../utils/globalFunctions";
@@ -341,11 +342,20 @@ const useSmartContractMethods = () => {
       });
   };
 
-  const claimSettings = async () => {
+  const claimSettings = async (claimAddress) => {
+    const claimContractCall = new web3Call.eth.Contract(
+      ClaimContractABI.abi,
+      claimAddress,
+    );
     return await claimContractCall?.methods?.claimSettings().call();
   };
 
-  const claimBalance = async () => {
+  const claimBalance = async (claimAddress) => {
+    const claimContractCall = new web3Call.eth.Contract(
+      ClaimContractABI.abi,
+      claimAddress,
+    );
+
     return await claimContractCall?.methods.claimBalance().call();
   };
 
@@ -383,7 +393,17 @@ const useSmartContractMethods = () => {
       });
   };
 
-  const claim = async (amount, reciever, merkleProof, encodedData) => {
+  const claim = async (
+    claimAddress,
+    amount,
+    reciever,
+    merkleProof,
+    encodedData,
+  ) => {
+    const claimContractSend = new web3Send.eth.Contract(
+      ClaimContractABI.abi,
+      claimAddress,
+    );
     return await claimContractSend.methods
       .claim(amount, reciever, merkleProof, encodedData)
       .send({
@@ -396,13 +416,17 @@ const useSmartContractMethods = () => {
     return await claimContractCall?.methods.hasClaimed(walletAddress).call();
   };
 
-  const claimAmount = async (walletAddress) => {
+  const claimAmount = async (claimAddress, walletAddress) => {
+    const claimContractCall = new web3Call.eth.Contract(
+      ClaimContractABI.abi,
+      claimAddress,
+    );
     return await claimContractCall?.methods.claimAmount(walletAddress).call();
   };
 
-  const checkAmount = async (walletAddress) => {
-    return await claimContractCall?.methods.checkAmount(walletAddress).call();
-  };
+  // const checkAmount = async (walletAddress) => {
+  //   return await claimContractCall?.methods.checkAmount(walletAddress).call();
+  // };
 
   const getNftBalance = async (tokenType, contractAddress) => {
     return tokenType === "erc721"
@@ -1187,7 +1211,6 @@ const useSmartContractMethods = () => {
     getTokenGatingDetails,
     claimAmount,
     claim,
-    checkAmount,
     encode,
     hasClaimed,
     rollbackTokens,
