@@ -339,22 +339,15 @@ const Claim = ({ claimAddress }) => {
   useEffect(() => {
     (async () => {
       try {
-        if (networkId) {
-          // check if token is already claimed
-          const claimedAmt = await claimAmount(claimAddress, walletAddress);
-          const isClaimed = claimedAmt > 0 ? true : false;
-          setAlreadyClaimed(isClaimed);
-        }
+        // check if token is already claimed
+        const claimedAmt = await claimAmount(claimAddress, walletAddress);
+        const isClaimed = claimedAmt > 0 ? true : false;
+        setAlreadyClaimed(isClaimed);
       } catch (err) {
         console.log(err);
       }
     })();
-  }, [
-    claimAddress,
-    networkId,
-    walletAddress,
-    contractInstances?.claimContractCall,
-  ]);
+  }, [claimAddress, networkId, walletAddress]);
 
   useEffect(() => {
     const fetchClaimsDataFromSubgraph = async () => {
