@@ -3,6 +3,7 @@ import Web3 from "web3";
 import { SEAPORT_CONTRACT_ADDRESS } from "../api";
 import { getIncreaseGasPrice } from "../utils/helper";
 import ERC20TokenABI from "../abis/usdcTokenContract.json";
+import ClaimContractABI from "../abis/newArch/claimContract.json";
 import ERC721TokenABI from "../abis/nft.json";
 import seaportABI from "../abis/seaport.json";
 import { convertToWeiGovernance } from "../utils/globalFunctions";
@@ -341,7 +342,11 @@ const useSmartContractMethods = () => {
       });
   };
 
-  const claimSettings = async () => {
+  const claimSettings = async (claimAddress) => {
+    const claimContractCall = new web3Call.eth.Contract(
+      ClaimContractABI.abi,
+      claimAddress,
+    );
     return await claimContractCall?.methods?.claimSettings().call();
   };
 

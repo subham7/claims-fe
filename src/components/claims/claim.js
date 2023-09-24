@@ -76,7 +76,7 @@ const Claim = ({ claimAddress }) => {
     setIsLoading(true);
 
     try {
-      const desc = await claimSettings();
+      const desc = await claimSettings(claimAddress);
       setContractData(desc);
       setClaimEnabled(desc?.isEnabled);
       // setClaimEnabled(desc.isEnabled);
@@ -333,14 +333,13 @@ const Claim = ({ claimAddress }) => {
   }, [contractData?.endTime, contractData?.startTime, currentTime]);
 
   useEffect(() => {
-    if (claimAddress && networkId && contractInstances?.claimContractCall)
-      fetchContractDetails();
+    if (claimAddress && networkId) fetchContractDetails();
   }, [claimAddress, contractInstances?.claimContractCall, networkId]);
 
   useEffect(() => {
     (async () => {
       try {
-        if (networkId && contractInstances?.claimContractCall) {
+        if (networkId) {
           // check if token is already claimed
           const claimedAmt = await claimAmount(walletAddress);
           const isClaimed = claimedAmt > 0 ? true : false;
