@@ -6,10 +6,11 @@ import FactoryContractABI from "../abis/newArch/factoryContract.json";
 import Web3 from "web3";
 import { useDispatch, useSelector } from "react-redux";
 import { setContractInstances } from "../redux/reducers/contractInstances";
-import { useNetwork } from "wagmi";
+import { useAccount, useNetwork } from "wagmi";
 import { CHAIN_CONFIG } from "utils/constants";
 
 const useSmartContract = (daoAddress) => {
+  const { address: walletAddress } = useAccount();
   const { chain } = useNetwork();
   const networkId = "0x" + chain?.id.toString(16);
   const dispatch = useDispatch();
@@ -102,13 +103,13 @@ const useSmartContract = (daoAddress) => {
     if (networkId) {
       initializeFactoryContracts();
     }
-  }, [FACTORY_CONTRACT_ADDRESS, networkId]);
+  }, [FACTORY_CONTRACT_ADDRESS, networkId, walletAddress]);
 
   useEffect(() => {
     if (networkId) {
       initializeStationContracts();
     }
-  }, [daoAddress, networkId]);
+  }, [daoAddress, networkId, walletAddress]);
 };
 
 export default useSmartContract;

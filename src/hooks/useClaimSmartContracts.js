@@ -8,6 +8,7 @@ import { useNetwork } from "wagmi";
 import { CHAIN_CONFIG } from "utils/constants";
 
 const useClaimSmartContracts = (claimAddress) => {
+  const { address: walletAddress } = useAccount();
   const { chain } = useNetwork();
   const networkId = "0x" + chain?.id.toString(16);
 
@@ -72,13 +73,13 @@ const useClaimSmartContracts = (claimAddress) => {
     if (networkId) {
       initializeClaimFactoryContracts();
     }
-  }, [networkId, claimFactoryAddress]);
+  }, [networkId, claimFactoryAddress, walletAddress]);
 
   useEffect(() => {
-    if (claimAddress) {
+    if (claimAddress && networkId) {
       initializeClaimContracts();
     }
-  }, [claimAddress]);
+  }, [claimAddress, networkId, walletAddress]);
 };
 
 export default useClaimSmartContracts;
