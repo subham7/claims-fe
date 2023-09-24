@@ -351,10 +351,6 @@ const useSmartContractMethods = () => {
   };
 
   const claimBalance = async (claimAddress) => {
-    const claimContractCall = new web3Call.eth.Contract(
-      ClaimContractABI.abi,
-      claimAddress,
-    );
     return await claimContractCall?.methods.claimBalance().call();
   };
 
@@ -405,17 +401,13 @@ const useSmartContractMethods = () => {
     return await claimContractCall?.methods.hasClaimed(walletAddress).call();
   };
 
-  const claimAmount = async (claimAddress, walletAddress) => {
-    const claimContractCall = new web3Call.eth.Contract(
-      ClaimContractABI.abi,
-      claimAddress,
-    );
+  const claimAmount = async (walletAddress) => {
     return await claimContractCall?.methods.claimAmount(walletAddress).call();
   };
 
-  const checkAmount = async (walletAddress) => {
-    return await claimContractCall?.methods.checkAmount(walletAddress).call();
-  };
+  // const checkAmount = async (walletAddress) => {
+  //   return await claimContractCall?.methods.checkAmount(walletAddress).call();
+  // };
 
   const getNftBalance = async (tokenType, contractAddress) => {
     return tokenType === "erc721"
@@ -1200,7 +1192,6 @@ const useSmartContractMethods = () => {
     getTokenGatingDetails,
     claimAmount,
     claim,
-    checkAmount,
     encode,
     hasClaimed,
     rollbackTokens,

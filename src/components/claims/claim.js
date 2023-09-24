@@ -6,7 +6,7 @@ import {
 import { Alert, CircularProgress, Tooltip } from "@mui/material";
 import { getUserProofAndBalance } from "api/claims";
 import Countdown from "react-countdown";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { addClaimEnabled } from "redux/reducers/createClaim";
 import useSmartContractMethods from "hooks/useSmartContractMethods";
 import { ClaimsStyles } from "components/claimsPageComps/ClaimsStyles";
@@ -47,10 +47,6 @@ const Claim = ({ claimAddress }) => {
   const networkId = "0x" + chain?.id.toString(16);
 
   useClaimSmartContracts(claimAddress);
-
-  let contractInstances = useSelector((state) => {
-    return state.contractInstances.contractInstances;
-  });
 
   const {
     claimSettings,
@@ -333,8 +329,8 @@ const Claim = ({ claimAddress }) => {
   }, [contractData?.endTime, contractData?.startTime, currentTime]);
 
   useEffect(() => {
-    if (claimAddress && networkId) fetchContractDetails();
-  }, [claimAddress, contractInstances?.claimContractCall, networkId]);
+    if (claimAddress && networkId && walletAddress) fetchContractDetails();
+  }, [claimAddress, networkId, walletAddress]);
 
   useEffect(() => {
     (async () => {
@@ -347,7 +343,7 @@ const Claim = ({ claimAddress }) => {
         console.log(err);
       }
     })();
-  }, [claimAddress, networkId, walletAddress]);
+  }, [claimAddress, walletAddress]);
 
   useEffect(() => {
     const fetchClaimsDataFromSubgraph = async () => {
