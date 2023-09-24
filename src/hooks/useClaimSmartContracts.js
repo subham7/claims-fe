@@ -72,16 +72,16 @@ const useClaimSmartContracts = (claimAddress) => {
   };
 
   useEffect(() => {
-    if (claimFactoryAddress && networkId) {
+    if (claimFactoryAddress) {
       initializeClaimFactoryContracts();
     }
-  }, [networkId, claimFactoryAddress, walletAddress]);
+  }, [networkId, claimFactoryAddress]);
 
   useEffect(() => {
-    if (claimAddress && networkId) {
+    if (claimAddress) {
       initializeClaimContracts();
     }
-  }, [claimAddress, networkId, walletAddress]);
+  }, [claimAddress]);
 };
 
 export default useClaimSmartContracts;
