@@ -4,7 +4,7 @@ import ClaimFactoryABI from "../abis/newArch/claimFactory.json";
 import Web3 from "web3";
 import { useDispatch, useSelector } from "react-redux";
 import { setContractInstances } from "../redux/reducers/contractInstances";
-import { useNetwork } from "wagmi";
+import { useAccount, useNetwork } from "wagmi";
 import { CHAIN_CONFIG } from "utils/constants";
 
 const useClaimSmartContracts = (claimAddress) => {
