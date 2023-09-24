@@ -350,7 +350,7 @@ const useSmartContractMethods = () => {
     return await claimContractCall?.methods?.claimSettings().call();
   };
 
-  const claimBalance = async (claimAddress) => {
+  const claimBalance = async () => {
     return await claimContractCall?.methods.claimBalance().call();
   };
 

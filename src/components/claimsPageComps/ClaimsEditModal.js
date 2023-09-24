@@ -105,7 +105,7 @@ const ClaimsEditModal = ({ onClose, claimAddress, walletAddress }) => {
 
     try {
       setLoading(true);
-      const balance = await claimBalance(claimAddress);
+      const balance = await claimBalance();
       const res = await rollbackTokens(balance);
       setClaimed(true);
       setLoading(false);
@@ -122,7 +122,7 @@ const ClaimsEditModal = ({ onClose, claimAddress, walletAddress }) => {
       const desc = await claimSettings();
       setIsEnabled(!desc.isEnabled);
 
-      const balance = await claimBalance(claimAddress);
+      const balance = await claimBalance();
       if (balance == 0) {
         setClaimed(true);
       }
