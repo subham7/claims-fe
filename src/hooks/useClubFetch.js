@@ -1,6 +1,11 @@
+import { useRouter } from "next/router";
 import { useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { subgraphQuery } from "../utils/subgraphs";
+import { useAccount, useNetwork } from "wagmi";
+import Web3 from "web3";
+
+import { SUBGRAPH_URL_GOERLI, SUBGRAPH_URL_POLYGON } from "../api";
+import { fetchConfigById } from "../api/config";
 import { QUERY_CLUB_DETAILS } from "../api/graphql/queries";
 import {
   addClubData,
@@ -9,22 +14,15 @@ import {
   addErc721ClubDetails,
   addFactoryData,
 } from "../redux/reducers/club";
-
 import {
   addContractAddress,
   setAdminUser,
   setMemberUser,
   setWrongNetwork,
 } from "../redux/reducers/gnosis";
-import { fetchConfigById } from "../api/config";
-
-import Web3 from "web3";
-import { SUBGRAPH_URL_GOERLI, SUBGRAPH_URL_POLYGON } from "../api";
 import { getSafeSdk } from "../utils/helper";
+import { subgraphQuery } from "../utils/subgraphs";
 import useSmartContractMethods from "./useSmartContractMethods";
-
-import { useAccount, useNetwork } from "wagmi";
-import { useRouter } from "next/router";
 
 const useClubFetch = ({ daoAddress }) => {
   const dispatch = useDispatch();
@@ -54,7 +52,7 @@ const useClubFetch = ({ daoAddress }) => {
   useEffect(() => {
     daoAddress &&
       dispatch(addDaoAddress(Web3.utils.toChecksumAddress(daoAddress)));
-  }, [daoAddress, dispatch]);
+  }, [daoAddress, dispatch, walletAddress]);
 
   useEffect(() => {
     const getNetworkConfig = async () => {
@@ -81,7 +79,7 @@ const useClubFetch = ({ daoAddress }) => {
       }
     };
     networkId && getNetworkConfig();
-  }, [dispatch, networkId]);
+  }, [dispatch, networkId, walletAddress]);
 
   useEffect(() => {
     const addClubDataToRedux = async () => {
@@ -113,7 +111,7 @@ const useClubFetch = ({ daoAddress }) => {
     };
 
     addClubDataToRedux();
-  }, [reduxClubData, networkId, daoAddress, dispatch]);
+  }, [reduxClubData, networkId, daoAddress, dispatch, walletAddress]);
 
   const checkUserExists = useCallback(async () => {
     try {
