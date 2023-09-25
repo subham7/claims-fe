@@ -1,5 +1,5 @@
 import { useSelector } from "react-redux";
-import { writeContractFunction } from "utils/helper";
+import { readContractFunction, writeContractFunction } from "utils/helper";
 import { useAccount, useNetwork } from "wagmi";
 import { claimContractABI } from "abis/claimContract.js";
 import { claimFactoryABI } from "abis/claimFactory.js";
@@ -55,8 +55,18 @@ const useDropsContractMethods = () => {
     }
   };
 
-  const claimSettings = async () => {
-    return await claimContractCall?.methods?.claimSettings().call();
+  const claimSettings = async (claimAddress) => {
+    const response = await readContractFunction({
+      address: claimAddress,
+      abi: claimContractABI,
+      functionName: "claimSettings",
+      args: [],
+      account: walletAddress,
+    });
+
+    debugger;
+
+    return response;
   };
 
   const claimBalance = async () => {
