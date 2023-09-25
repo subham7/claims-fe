@@ -36,8 +36,7 @@ const useClubFetch = ({ daoAddress, networkId }) => {
   const {
     getDaoDetails,
     getERC20DAOdetails,
-    getERC20Balance,
-    getERC721Balance,
+    getDaoBalance,
     getERC721DAOdetails,
   } = useAppContractMethods();
 
@@ -166,12 +165,10 @@ const useClubFetch = ({ daoAddress, networkId }) => {
           );
         }
 
-        let balance = 0;
-        if (reduxClubData.tokenType === "erc721") {
-          balance = await getERC721Balance();
-        } else {
-          balance = await getERC20Balance();
-        }
+        const balance = await getDaoBalance(
+          daoAddress,
+          reduxClubData.tokenType === "erc721",
+        );
 
         const safeSdk = await getCustomSafeSdk(
           reduxClubData.gnosisAddress,

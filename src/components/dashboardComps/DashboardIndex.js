@@ -95,7 +95,7 @@ const DashboardIndex = ({ daoAddress }) => {
   const {
     getERC721Balance,
     getNftOwnersCount,
-    getERC20Balance,
+    getDaoBalance,
     getERC20TotalSupply,
   } = useAppContractMethods();
 
@@ -217,7 +217,7 @@ const DashboardIndex = ({ daoAddress }) => {
       if (daoAddress) {
         const loadNftContractData = async () => {
           try {
-            const nftBalance = await getERC721Balance();
+            const nftBalance = await getDaoBalance(daoAddress, true);
             setBalanceOfUser(nftBalance);
             const symbol = await getERC721Symbol(daoAddress);
             const nftMinted = await getNftOwnersCount();
@@ -229,7 +229,7 @@ const DashboardIndex = ({ daoAddress }) => {
 
         const loadSmartContractData = async () => {
           try {
-            const balance = await getERC20Balance();
+            const balance = await getDaoBalance(daoAddress);
             //KEEP THIS CONSOLE
             setBalanceOfUser(balance);
             const clubTokensMinted = await getERC20TotalSupply();
@@ -260,7 +260,6 @@ const DashboardIndex = ({ daoAddress }) => {
     getERC721Balance,
     getERC721Symbol,
     getNftOwnersCount,
-    getERC20Balance,
     getERC20TotalSupply,
   ]);
 

@@ -33,8 +33,7 @@ const useAppContractMethods = () => {
     (state) => state.gnosis.factoryContractAddress,
   );
 
-  const { factoryContractCall, erc20DaoContractCall, erc721DaoContractCall } =
-    contractInstances;
+  const { erc20DaoContractCall, erc721DaoContractCall } = contractInstances;
 
   const getDaoDetails = async (daoAddress) => {
     const response = await readContractFunction({
@@ -119,14 +118,17 @@ const useAppContractMethods = () => {
     return response ?? [];
   };
 
-  const getERC20Balance = async () => {
-    return await erc20DaoContractCall?.methods?.balanceOf(walletAddress).call();
-  };
+  const getDaoBalance = async (daoAddress, is721) => {
+    const response = await readContractFunction({
+      address: daoAddress,
+      abi: is721 ? erc721DaoABI : erc20DaoABI,
+      functionName: "balanceOf",
+      args: [walletAddress],
+      account: walletAddress,
+      networkId,
+    });
 
-  const getERC721Balance = async () => {
-    return await erc721DaoContractCall?.methods
-      ?.balanceOf(walletAddress)
-      .call();
+    return Number(response ?? 0);
   };
 
   const getERC20TotalSupply = async () => {
@@ -624,8 +626,7 @@ const useAppContractMethods = () => {
     getDaoDetails,
     getERC20DAOdetails,
     getERC721DAOdetails,
-    getERC20Balance,
-    getERC721Balance,
+    getDaoBalance,
     getNftBalance,
     getNftOwnersCount,
     getERC20TotalSupply,
