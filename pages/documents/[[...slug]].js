@@ -18,17 +18,22 @@ const DocumentsPage = () => {
   return (
     <Layout daoAddress={daoAddress} networkId={networkId} page={7}>
       {flow === undefined ? (
-        <Documents daoAddress={daoAddress} />
+        <Documents daoAddress={daoAddress} networkId={networkId} />
       ) : flow === "create" ? (
-        <DocumentCreate daoAddress={daoAddress} />
+        <DocumentCreate daoAddress={daoAddress} networkId={networkId} />
       ) : flow === "sign" &&
         (membersSign === "true" || membersSign === undefined) ? (
         <SignDoc
           daoAddress={daoAddress}
           isAdmin={membersSign === undefined ? false : true}
+          networkId={networkId}
         />
       ) : (
-        <MembersSign daoAddress={daoAddress} membersSign={membersSign} />
+        <MembersSign
+          networkId={networkId}
+          daoAddress={daoAddress}
+          membersSign={membersSign}
+        />
       )}
     </Layout>
   );

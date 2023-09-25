@@ -181,11 +181,7 @@ const Create = () => {
                 : ZERO_ADDRESS,
             maxTokensPerUser: formikERC721Step2.values.maxTokensPerUser,
             distributeAmount: formikERC721Step2.values.isNftTotalSupplylimited
-              ? convertToWeiGovernance(
-                  formikERC721Step2.values.totalTokenSupply /
-                    formikERC721Step2.values.pricePerToken,
-                  18,
-                )
+              ? formikERC721Step2.values.totalTokenSupply
               : 0,
             pricePerToken: convertToWeiGovernance(
               formikERC721Step2.values.pricePerToken,

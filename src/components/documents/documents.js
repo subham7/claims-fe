@@ -96,7 +96,7 @@ const useStyles = makeStyles({
   },
 });
 
-const Documents = ({ daoAddress }) => {
+const Documents = ({ daoAddress, networkId }) => {
   const classes = useStyles();
   const router = useRouter();
   const [showInviteModal, setShowInviteModal] = useState(false);
@@ -111,7 +111,7 @@ const Documents = ({ daoAddress }) => {
   });
 
   const createDocHandler = () => {
-    router.push(`/documents/${daoAddress}/create`);
+    router.push(`/documents/${daoAddress}/${networkId}/create`);
   };
 
   // closing legal entity modal
@@ -156,6 +156,7 @@ const Documents = ({ daoAddress }) => {
                   index={index + 1}
                   createdBy={document.createdBy}
                   daoAddress={daoAddress}
+                  networkId={networkId}
                 />
               ))}
             </>
@@ -170,6 +171,7 @@ const Documents = ({ daoAddress }) => {
                   index={index + 1}
                   createdBy={document.createdBy}
                   daoAddress={daoAddress}
+                  networkId={networkId}
                 />
               ))}
             </>
@@ -232,6 +234,7 @@ const Documents = ({ daoAddress }) => {
             isInvite={true}
             onClose={closeModalHandler}
             daoAddress={daoAddress}
+            networkId={networkId}
           />
         )}
       </div>

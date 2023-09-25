@@ -107,6 +107,7 @@ const LegalEntityModal = ({
   encryptedLink,
   isTwitter = false,
   daoAddress,
+  networkId,
 }) => {
   const [isCopy, setIsCopy] = useState(false);
   const classes = useStyles();
@@ -120,14 +121,14 @@ const LegalEntityModal = ({
   // back to dashboard
   const dashboardHandler = () => {
     // add dynamic link
-    router.push(`/dashboard/${daoAddress}`);
+    router.push(`/dashboard/${daoAddress}/${networkId}`);
   };
 
   // copy link
   const copyHandler = () => {
     navigator.clipboard.writeText(
       typeof window !== "undefined" && window.location.origin
-        ? `${window.location.origin}/documents/${daoAddress}/sign/${encryptedLink}`
+        ? `${window.location.origin}/documents/${daoAddress}/${networkId}/sign/${encryptedLink}`
         : null,
     );
     setIsCopy(true);
@@ -163,7 +164,7 @@ const LegalEntityModal = ({
                   disabled
                   value={
                     typeof window !== "undefined" && window.location.origin
-                      ? `${window.location.origin}/documents/${daoAddress}/sign/${encryptedLink}`
+                      ? `${window.location.origin}/documents/${daoAddress}/${networkId}/sign/${encryptedLink}`
                       : null
                   }
                   InputProps={{
