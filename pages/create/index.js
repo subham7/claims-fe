@@ -212,6 +212,7 @@ const Create = () => {
             formikStep1.values.useStationFor,
             formikStep1.values.email,
             networkId,
+            formikERC721Step2.values.nftImage,
           );
         } catch (error) {
           console.error(error);

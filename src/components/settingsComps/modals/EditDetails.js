@@ -106,6 +106,7 @@ const EditDetails = ({
       reader.addEventListener("loadend", async () => {
         console.log({
           filename: selectFile.name,
+          reader: reader.result,
           file: new Blob([reader.result], { type: selectFile.type }),
         });
         const res = await fetch(
