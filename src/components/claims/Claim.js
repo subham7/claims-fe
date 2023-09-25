@@ -237,7 +237,7 @@ const Claim = ({ claimAddress }) => {
           } else {
             setIsEligibleForTokenGated(false);
           }
-          setMaxClaimableAmount(+dropsData?.claimAmountDetails[0]);
+          setMaxClaimableAmount(+dropsData?.claimAmountDetails.maxClaimable);
           return;
         }
 
@@ -251,7 +251,7 @@ const Claim = ({ claimAddress }) => {
         }
 
         case "2": {
-          setMaxClaimableAmount(+dropsData?.claimAmountDetails[0]);
+          setMaxClaimableAmount(+dropsData?.claimAmountDetails.maxClaimable);
           return;
         }
 

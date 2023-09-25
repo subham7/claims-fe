@@ -79,7 +79,7 @@ const useDropsContractMethods = () => {
           hasAllowanceMechanism: response[9],
           isEnabled: response[10],
           merkleRoot: response[11],
-          permission: response[12],
+          permission: response[12].toString(),
           claimAmountDetails: {
             maxClaimable: Number(response[13].maxClaimable),
             totalClaimAmount: Number(response[13].totalClaimAmount),
