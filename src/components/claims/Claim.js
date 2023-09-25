@@ -14,7 +14,6 @@ import { useAccount, useNetwork } from "wagmi";
 import classes from "./Claim.module.scss";
 import useDropsContractMethods from "hooks/useDropsContracMethods";
 import { Alert, CircularProgress, Skeleton, Typography } from "@mui/material";
-import useClaimSmartContracts from "hooks/useClaimSmartContracts";
 import { getClaimDetails, getUserProofAndBalance } from "api/claims";
 import ClaimActivity from "./ClaimActivity";
 import Eligibility from "./Eligibility";
@@ -65,8 +64,6 @@ const Claim = ({ claimAddress }) => {
 
   const { claimSettings, claimBalance, claimAmount, claim } =
     useDropsContractMethods();
-
-  useClaimSmartContracts(claimAddress);
 
   const fetchClaimDetails = async () => {
     setLoading(true);

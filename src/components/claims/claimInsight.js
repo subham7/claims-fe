@@ -14,7 +14,6 @@ import {
   convertToWeiGovernance,
 } from "utils/globalFunctions";
 import { useNetwork } from "wagmi";
-import useClaimSmartContracts from "hooks/useClaimSmartContracts";
 import useDropsContractMethods from "hooks/useDropsContracMethods";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 import { queryDropDetailsFromSubgraph } from "utils/dropsSubgraphHelper";
@@ -37,8 +36,6 @@ const ClaimInsight = ({ claimAddress }) => {
   const router = useRouter();
   const { chain } = useNetwork();
   const networkId = "0x" + chain?.id.toString(16);
-
-  useClaimSmartContracts(claimAddress);
 
   const { addMoreTokens, rollbackTokens, modifyStartAndEndTime } =
     useDropsContractMethods();

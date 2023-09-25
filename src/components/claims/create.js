@@ -18,7 +18,6 @@ import { useAccount, useNetwork } from "wagmi";
 import { getTokensList } from "api/token";
 import { getUserTokenData } from "utils/helper";
 import { CHAIN_CONFIG, ZERO_ADDRESS, ZERO_MERKLE_ROOT } from "utils/constants";
-import useClaimSmartContracts from "hooks/useClaimSmartContracts";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 import useDropsContractMethods from "hooks/useDropsContracMethods";
 
@@ -40,7 +39,6 @@ const CreateClaim = () => {
   const [errMsg, setErrMsg] = useState("");
   const [loadingTokens, setLoadingTokens] = useState(false);
   const [snapshotMerkleData, setSnapshotMerkleData] = useState([]);
-  useClaimSmartContracts();
 
   const classes = useStyles();
 
