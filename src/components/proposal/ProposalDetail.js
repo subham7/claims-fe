@@ -1379,7 +1379,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
                     ) : proposalData?.status === "passed" ? (
                       isAdmin ? (
                         <Card>
-                          {proposalData?.cancelProposalId === undefined && (
+                          {proposalData?.cancelProposalId === undefined ? (
                             <Button
                               style={{
                                 width: "100%",
@@ -1447,75 +1447,74 @@ const ProposalDetail = ({ pid, daoAddress }) => {
                                 ) : null}
                               </Grid>
                             </Button>
-                          )}
-                          {console.log("xxx", signed)}
+                          ) : null}
                           {(signed ||
                             isRejectTxnSigned ||
                             signedOwners.length) &&
-                            proposalData.commands[0]?.executionId === 8 && (
-                              <Button
-                                className={
-                                  executed
-                                    ? classes.mainCardButtonSuccess
-                                    : classes.mainCardButton
-                                }
-                                style={{
-                                  marginTop: "20px",
-                                  backgroundColor: "#D55438",
-                                  width: "100%",
-                                  padding: "1rem 0",
-                                }}
-                                disabled={
-                                  (!isCancelExecutionReady && isCancelSigned) ||
-                                  isCancelExecuted
-                                }
-                                onClick={
-                                  isCancelExecutionReady
-                                    ? pendingTxHash === txHash
-                                      ? () => {
-                                          executeRejectSafeTransaction();
-                                        }
-                                      : () => {
-                                          setOpenSnackBar(true);
-                                          setFailed(true);
-                                          setMessage(
-                                            "execute txns with smaller nonce first",
-                                          );
-                                        }
-                                    : !isRejectTxnSigned
+                          proposalData.commands[0]?.executionId === 8 ? (
+                            <Button
+                              className={
+                                executed
+                                  ? classes.mainCardButtonSuccess
+                                  : classes.mainCardButton
+                              }
+                              style={{
+                                marginTop: "20px",
+                                backgroundColor: "#D55438",
+                                width: "100%",
+                                padding: "1rem 0",
+                              }}
+                              disabled={
+                                (!isCancelExecutionReady && isCancelSigned) ||
+                                isCancelExecuted
+                              }
+                              onClick={
+                                isCancelExecutionReady
+                                  ? pendingTxHash === txHash
                                     ? () => {
-                                        createRejectSafeTransaction();
+                                        executeRejectSafeTransaction();
                                       }
                                     : () => {
-                                        signRejectTransaction();
+                                        setOpenSnackBar(true);
+                                        setFailed(true);
+                                        setMessage(
+                                          "execute txns with smaller nonce first",
+                                        );
                                       }
-                                }>
-                                <Grid item>
-                                  {isCancelExecuted && isCancelSigned ? (
-                                    <Grid item>
-                                      <Typography className={classes.cardFont1}>
-                                        Executed Reject Successfully
-                                      </Typography>
-                                    </Grid>
-                                  ) : isCancelExecutionReady ? (
-                                    <Grid item>
-                                      <Typography className={classes.cardFont1}>
-                                        Execute Reject
-                                      </Typography>
-                                    </Grid>
-                                  ) : !isCancelExecutionReady &&
-                                    !isCancelExecuted ? (
-                                    <Grid item>
-                                      <Typography className={classes.cardFont1}>
-                                        {isCancelSigned
-                                          ? "Cancellation Requested"
-                                          : "Request Cancel"}
-                                      </Typography>
-                                    </Grid>
-                                  ) : null}
-                                </Grid>
-                              </Button>
-                            )}
+                                  : !isRejectTxnSigned
+                                  ? () => {
+                                      createRejectSafeTransaction();
+                                    }
+                                  : () => {
+                                      signRejectTransaction();
+                                    }
+                              }>
+                              <Grid item>
+                                {isCancelExecuted && isCancelSigned ? (
+                                  <Grid item>
+                                    <Typography className={classes.cardFont1}>
+                                      Executed Reject Successfully
+                                    </Typography>
+                                  </Grid>
+                                ) : isCancelExecutionReady ? (
+                                  <Grid item>
+                                    <Typography className={classes.cardFont1}>
+                                      Execute Reject
+                                    </Typography>
+                                  </Grid>
+                                ) : !isCancelExecutionReady &&
+                                  !isCancelExecuted ? (
+                                  <Grid item>
+                                    <Typography className={classes.cardFont1}>
+                                      {isCancelSigned
+                                        ? "Cancellation Requested"
+                                        : "Request Cancel"}
+                                    </Typography>
+                                  </Grid>
+                                ) : null}
+                              </Grid>
+                            </Button>
+                          ) : null}
                         </Card>
                       ) : (
                         <Card sx={{ width: "100%" }}>
