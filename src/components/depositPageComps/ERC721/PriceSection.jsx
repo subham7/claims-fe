@@ -32,10 +32,9 @@ const PriceSection = ({
     <div className={classes.priceContainer}>
       <Typography variant="body">
         {nftMinted} collected out of{" "}
-        {clubData?.raiseAmount === "0"
+        {clubData?.distributionAmount === "0"
           ? "unlimited"
-          : convertFromWeiGovernance(clubData.distributionAmount, 18) *
-            convertFromWeiGovernance(clubData.pricePerToken, 6)}{" "}
+          : clubData.distributionAmount}{" "}
         NFTs
       </Typography>
       <Typography variant="info" className="text-blue tb-pad-min">

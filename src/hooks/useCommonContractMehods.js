@@ -75,7 +75,7 @@ const useCommonContractMethods = () => {
       const currentAllowance = await readContractFunction({
         address: contractAddress,
         abi: erc20TokenABI,
-        functionName: "balanceOf",
+        functionName: "allowance",
         args: [walletAddress, approvalContract],
         networkId,
       });

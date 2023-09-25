@@ -482,14 +482,7 @@ const SettingsInfo = ({
                                 daoDetails.isTotalSupplyUnlimited ? (
                                   "Unlimited"
                                 ) : (
-                                  convertFromWeiGovernance(
-                                    daoDetails.distributionAmt,
-                                    18,
-                                  ) *
-                                  convertFromWeiGovernance(
-                                    daoDetails.pricePerToken,
-                                    6,
-                                  )
+                                  daoDetails.distributionAmt
                                 )
                               ) : (
                                 <Skeleton
@@ -517,11 +510,7 @@ const SettingsInfo = ({
                     <ProgressBar
                       value={calculateTreasuryTargetShare(
                         daoDetails.nftMinted,
-                        convertFromWeiGovernance(
-                          daoDetails.distributionAmt,
-                          18,
-                        ) *
-                          convertFromWeiGovernance(daoDetails.pricePerToken, 6),
+                        daoDetails.distributionAmt,
                       )}
                     />
                   </>
@@ -640,14 +629,7 @@ const SettingsInfo = ({
                               daoDetails.isTotalSupplyUnlimited ? (
                                 "Unlimited"
                               ) : (
-                                convertFromWeiGovernance(
-                                  daoDetails.distributionAmt,
-                                  18,
-                                ) *
-                                convertFromWeiGovernance(
-                                  daoDetails.pricePerToken,
-                                  6,
-                                )
+                                daoDetails.distributionAmt
                               )
                             ) : (
                               <Skeleton
