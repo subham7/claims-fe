@@ -164,12 +164,12 @@ const ERC721 = ({
   }, [fetchTokenDetails]);
 
   useEffect(() => {
-    if (day2 >= day1) {
+    if (new Date(day2).getTime() / 1000 >= new Date(day1).getTime() / 1000) {
       setActive(true);
     } else {
       setActive(false);
     }
-  }, [day2, day1]);
+  }, [day2, day1, daoDetails?.depositDeadline]);
 
   return (
     <div className={classes.pageContainer}>

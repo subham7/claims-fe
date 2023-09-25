@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { convertFromWeiGovernance } from "utils/globalFunctions";
 import { useSelector } from "react-redux";
 import { Backdrop, CircularProgress } from "@mui/material";
@@ -74,14 +74,14 @@ const Join = ({ daoAddress }) => {
   /**
    * Fetching details for ERC20 comp
    */
-  const fetchErc20ContractDetails = useCallback(async () => {
+  const fetchErc20ContractDetails = async () => {
     try {
       setLoading(true);
-      if (factoryData)
+      if (factoryData?.depositCloseTime)
         setDaoDetails({
-          depositDeadline: factoryData.depositCloseTime,
-          minDeposit: factoryData.minDepositPerUser,
-          maxDeposit: factoryData.maxDepositPerUser,
+          depositDeadline: factoryData?.depositCloseTime,
+          minDeposit: factoryData?.minDepositPerUser,
+          maxDeposit: factoryData?.maxDepositPerUser,
         });
 
       setLoading(false);
@@ -89,28 +89,28 @@ const Join = ({ daoAddress }) => {
       console.log(error);
       setLoading(false);
     }
-  }, [factoryData]);
+  };
 
   /**
    * Fetching details for ERC721 comp
    */
-  const fetchErc721ContractDetails = useCallback(async () => {
+  const fetchErc721ContractDetails = async () => {
     try {
       setLoading(true);
       const nftMinted = await getNftOwnersCount();
 
-      if (factoryData) {
+      if (factoryData?.depositCloseTime && nftMinted) {
         setDaoDetails({
-          depositDeadline: factoryData.depositCloseTime,
+          depositDeadline: factoryData?.depositCloseTime,
           nftMinted: nftMinted,
         });
       }
       setLoading(false);
     } catch (error) {
-      console.log(error);
       setLoading(false);
+      console.log(error);
     }
-  }, [factoryData]);
+  };
 
   const fetchTokenGatingDetials = async () => {
     try {
@@ -126,7 +126,9 @@ const Join = ({ daoAddress }) => {
           comparator: tokenGatingDetails[0]?.comparator,
         });
 
-        const tokenASymbol = await getTokenSymbol(tokenGatingDetails[0].tokenA);
+        const tokenASymbol = await getTokenSymbol(
+          tokenGatingDetails[0]?.tokenA,
+        );
         const tokenBSymbol = await getTokenSymbol(
           tokenGatingDetails[0]?.tokenB,
         );
@@ -204,7 +206,7 @@ const Join = ({ daoAddress }) => {
     } else {
       fetchErc721ContractDetails();
     }
-  }, [fetchErc20ContractDetails, TOKEN_TYPE, fetchErc721ContractDetails]);
+  }, [TOKEN_TYPE, factoryData]);
 
   useEffect(() => {
     try {

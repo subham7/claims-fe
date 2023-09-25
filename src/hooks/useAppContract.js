@@ -82,13 +82,13 @@ const useAppContract = (daoAddress) => {
     if (networkId) {
       initializeFactoryContracts();
     }
-  }, [FACTORY_CONTRACT_ADDRESS, networkId]);
+  }, [FACTORY_CONTRACT_ADDRESS, networkId, walletAddress]);
 
   useEffect(() => {
     if (networkId) {
       initializeStationContracts();
     }
-  }, [daoAddress, networkId]);
+  }, [daoAddress, networkId, walletAddress]);
 };
 
 export default useAppContract;
