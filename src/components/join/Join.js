@@ -207,7 +207,7 @@ const Join = ({ daoAddress }) => {
     } else {
       fetchErc721ContractDetails();
     }
-  }, [TOKEN_TYPE, factoryData]);
+  }, [TOKEN_TYPE, factoryData, FACTORY_CONTRACT_ADDRESS]);
 
   useEffect(() => {
     try {
@@ -245,7 +245,13 @@ const Join = ({ daoAddress }) => {
       console.log(error);
       setLoading(false);
     }
-  }, [SUBGRAPH_URL, daoAddress, daoDetails, walletAddress]);
+  }, [
+    SUBGRAPH_URL,
+    daoAddress,
+    daoDetails,
+    walletAddress,
+    FACTORY_CONTRACT_ADDRESS,
+  ]);
 
   useEffect(() => {
     const fetchMerkleProof = async () => {
