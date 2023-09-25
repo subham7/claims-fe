@@ -176,7 +176,7 @@ const DashboardIndex = ({ daoAddress }) => {
   const handleCopy = () => {
     navigator.clipboard.writeText(
       typeof window !== "undefined" && window.location.origin
-        ? `${window.location.origin}/join/${daoAddress}`
+        ? `${window.location.origin}/join/${daoAddress}/${networkId}`
         : null,
     );
   };
