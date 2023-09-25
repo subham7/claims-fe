@@ -300,12 +300,6 @@ const useAppContractMethods = () => {
       .encodeABI();
   };
 
-  const getNftBalance = async (tokenType, contractAddress) => {
-    return tokenType === "erc721"
-      ? await erc721DaoContractCall.methods.balanceOf(contractAddress).call()
-      : await erc20DaoContractCall.methods.balanceOf(contractAddress).call();
-  };
-
   const createERC721DAO = async ({
     clubName,
     clubSymbol,
@@ -627,7 +621,6 @@ const useAppContractMethods = () => {
     getERC20DAOdetails,
     getERC721DAOdetails,
     getDaoBalance,
-    getNftBalance,
     getNftOwnersCount,
     getERC20TotalSupply,
     updateOwnerFee,
