@@ -128,7 +128,7 @@ const Create = () => {
       maxTokensPerUser: "",
       isNftTotalSupplylimited: false,
       totalTokenSupply: "",
-      depositClose: dayjs(Date.now() + 300000),
+      depositClose: dayjs(Date.now() + 3600 * 1000 * 24),
     },
 
     validationSchema: ERC721Step2ValidationSchema,
@@ -163,6 +163,8 @@ const Create = () => {
           description: "nft image",
           image: formikERC721Step2.values.nftImage,
         });
+
+        console.log("METADATA", metadata);
 
         dispatch(setUploadNFTLoading(false));
         try {

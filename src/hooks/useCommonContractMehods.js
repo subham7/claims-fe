@@ -13,51 +13,59 @@ const useCommonContractMethods = () => {
   const web3Call = new Web3(CHAIN_CONFIG[networkId]?.appRpcUrl);
 
   const getTokenSymbol = async (contractAddress) => {
-    const response = await readContractFunction({
-      address: contractAddress,
-      abi: erc20TokenABI,
-      functionName: "symbol",
-      args: [],
-      networkId,
-    });
+    if (contractAddress) {
+      const response = await readContractFunction({
+        address: contractAddress,
+        abi: erc20TokenABI,
+        functionName: "symbol",
+        args: [],
+        networkId,
+      });
 
-    return response;
+      return response;
+    }
   };
 
   const getTokenName = async (contractAddress) => {
-    const response = await readContractFunction({
-      address: contractAddress,
-      abi: erc20TokenABI,
-      functionName: "name",
-      args: [],
-      networkId,
-    });
+    if (contractAddress) {
+      const response = await readContractFunction({
+        address: contractAddress,
+        abi: erc20TokenABI,
+        functionName: "name",
+        args: [],
+        networkId,
+      });
 
-    return response;
+      return response;
+    }
   };
 
   const getDecimals = async (contractAddress) => {
-    const response = await readContractFunction({
-      address: contractAddress,
-      abi: erc20TokenABI,
-      functionName: "decimals",
-      args: [],
-      networkId,
-    });
+    if (contractAddress) {
+      const response = await readContractFunction({
+        address: contractAddress,
+        abi: erc20TokenABI,
+        functionName: "decimals",
+        args: [],
+        networkId,
+      });
 
-    return response;
+      return response;
+    }
   };
 
   const getBalance = async (contractAddress, safeAddress = "") => {
-    const response = await readContractFunction({
-      address: contractAddress,
-      abi: erc20TokenABI,
-      functionName: "balanceOf",
-      args: [safeAddress ? safeAddress : walletAddress],
-      networkId,
-    });
+    if (contractAddress) {
+      const response = await readContractFunction({
+        address: contractAddress,
+        abi: erc20TokenABI,
+        functionName: "balanceOf",
+        args: [safeAddress ? safeAddress : walletAddress],
+        networkId,
+      });
 
-    return Number(response);
+      return Number(response);
+    }
   };
 
   const approveDeposit = async (

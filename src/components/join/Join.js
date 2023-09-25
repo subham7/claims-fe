@@ -58,6 +58,10 @@ const Join = ({ daoAddress }) => {
     return state.club.factoryData;
   });
 
+  const FACTORY_CONTRACT_ADDRESS = useSelector(
+    (state) => state.gnosis.factoryContractAddress,
+  );
+
   useAppContract(daoAddress);
 
   const { getDecimals, getBalance, getTokenSymbol } =
@@ -149,7 +153,7 @@ const Join = ({ daoAddress }) => {
           tokenBDecimal: tokenBDecimal ? tokenBDecimal : 0,
         });
 
-        if (tokenGatingDetails[0]?.length) {
+        if (tokenGatingDetails?.length) {
           setIsTokenGated(true);
 
           const balanceOfTokenAInUserWallet = await getBalance(
@@ -190,10 +194,11 @@ const Join = ({ daoAddress }) => {
   };
 
   useEffect(() => {
-    if (walletAddress && daoAddress) {
+    console.log("DAO", daoAddress);
+    if (walletAddress && daoAddress && FACTORY_CONTRACT_ADDRESS) {
       fetchTokenGatingDetials();
     }
-  }, [walletAddress, daoAddress]);
+  }, [walletAddress, daoAddress, FACTORY_CONTRACT_ADDRESS]);
 
   useEffect(() => {
     if (TOKEN_TYPE === "erc20") {
@@ -201,7 +206,7 @@ const Join = ({ daoAddress }) => {
     } else {
       fetchErc721ContractDetails();
     }
-  }, [TOKEN_TYPE, factoryData]);
+  }, [TOKEN_TYPE, factoryData, FACTORY_CONTRACT_ADDRESS]);
 
   useEffect(() => {
     try {
@@ -239,7 +244,13 @@ const Join = ({ daoAddress }) => {
       console.log(error);
       setLoading(false);
     }
-  }, [SUBGRAPH_URL, daoAddress, daoDetails, walletAddress]);
+  }, [
+    SUBGRAPH_URL,
+    daoAddress,
+    daoDetails,
+    walletAddress,
+    FACTORY_CONTRACT_ADDRESS,
+  ]);
 
   useEffect(() => {
     const fetchMerkleProof = async () => {

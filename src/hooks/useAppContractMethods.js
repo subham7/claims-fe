@@ -259,41 +259,6 @@ const useAppContractMethods = () => {
     }
   };
 
-  const approveDepositWithEncodeABI = (
-    contractAddress,
-    approvalContract,
-    amount,
-  ) => {
-    if (contractAddress) {
-      const erc20TokenContractCall = new web3Call.eth.Contract(
-        erc20TokenABI,
-        contractAddress, // aave matic
-      );
-
-      return erc20TokenContractCall?.methods
-        ?.approve(approvalContract, amount) // 1e... , amount
-        .encodeABI();
-    }
-  };
-
-  const transferNFTfromSafe = (
-    tokenAddress,
-    gnosisAddress,
-    receiverAddress,
-    tokenId,
-  ) => {
-    if (tokenAddress) {
-      const erc20TokenContractCall = new web3Call.eth.Contract(
-        erc20TokenABI,
-        tokenAddress,
-      );
-
-      return erc20TokenContractCall?.methods
-        ?.transferFrom(gnosisAddress, receiverAddress, tokenId)
-        .encodeABI();
-    }
-  };
-
   const toggleWhitelist = async () => {
     return await erc20DaoContractCall?.methods
       ?.toggleOnlyAllowWhitelist()
