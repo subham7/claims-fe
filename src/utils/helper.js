@@ -240,7 +240,6 @@ export const writeContractFunction = async ({
       functionName,
       args,
       account,
-      // gasPrice: await getIncreaseGasPrice(networkId),
     });
 
     const txHash = await walletClient.writeContract(request);
@@ -254,6 +253,26 @@ export const writeContractFunction = async ({
   } catch (error) {
     throw error;
   }
+};
+
+export const readContractFunction = async ({
+  address,
+  abi,
+  functionName,
+  args,
+  account,
+}) => {
+  const publicClient = getPublicClient(networkId);
+
+  const data = await publicClient.readContract({
+    address,
+    abi,
+    functionName,
+    args,
+    account,
+  });
+
+  return data;
 };
 
 export const csvToObjectForMintGT = (csvString) => {
