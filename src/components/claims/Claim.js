@@ -123,7 +123,7 @@ const Claim = ({ claimAddress }) => {
       setDropsData(data);
 
       // remaining in contract
-      const remainingBalanceInContract = await claimBalance();
+      const remainingBalanceInContract = await claimBalance(claimAddress);
 
       const remainingBalanceInUSD = convertFromWeiGovernance(
         remainingBalanceInContract,
@@ -162,7 +162,7 @@ const Claim = ({ claimAddress }) => {
       setClaimedPercentage(percentageClaimed);
 
       // claimed by user
-      const claimedAmt = (await claimAmount(walletAddress)) ?? 0;
+      const claimedAmt = (await claimAmount(claimAddress, walletAddress)) ?? 0;
       const isClaimed = +claimedAmt > 0;
       setAlreadyClaimed(isClaimed);
 
@@ -297,7 +297,7 @@ const Claim = ({ claimAddress }) => {
           encodedLeaf,
         );
 
-        const claimedAmt = await claimAmount(walletAddress);
+        const claimedAmt = await claimAmount(claimAddress, walletAddress);
         setClaimRemaining(maxClaimableAmount - claimedAmt);
         setIsClaiming(false);
         setAlreadyClaimed(true);
@@ -317,7 +317,7 @@ const Claim = ({ claimAddress }) => {
           "",
         );
 
-        const claimedAmt = await claimAmount(walletAddress);
+        const claimedAmt = await claimAmount(claimAddress, walletAddress);
 
         const remainingAmt = +maxClaimableAmount - +claimedAmt;
 

@@ -88,8 +88,30 @@ const useDropsContractMethods = () => {
       : {};
   };
 
-  const claimBalance = async () => {
-    return await claimContractCall?.methods.claimBalance().call();
+  const claimBalance = async (claimAddress) => {
+    const response = await readContractFunction({
+      address: claimAddress,
+      abi: claimContractABI,
+      functionName: "claimBalance",
+      args: [],
+      account: walletAddress,
+      networkId,
+    });
+
+    return Number(response ?? 0);
+  };
+
+  const claimAmount = async (claimAddress, walletAddress) => {
+    const response = await readContractFunction({
+      address: claimAddress,
+      abi: claimContractABI,
+      functionName: "claimAmount",
+      args: [walletAddress],
+      account: walletAddress,
+      networkId,
+    });
+
+    return Number(response ?? 0);
   };
 
   const toggleClaim = async (claimAddress) => {
@@ -164,10 +186,6 @@ const useDropsContractMethods = () => {
 
   const hasClaimed = async (walletAddress) => {
     return await claimContractCall?.methods.hasClaimed(walletAddress).call();
-  };
-
-  const claimAmount = async (walletAddress) => {
-    return await claimContractCall?.methods.claimAmount(walletAddress).call();
   };
 
   const checkAmount = async (walletAddress) => {
