@@ -60,6 +60,7 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
     customNftToken,
     usdcTokenSymbol,
     whitelistAddresses,
+    airDropCarryFee,
   } = proposalData?.commands[0];
 
   const fetchAirDropContractDetails = useCallback(async () => {
