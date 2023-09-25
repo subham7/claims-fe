@@ -62,11 +62,30 @@ const useDropsContractMethods = () => {
       functionName: "claimSettings",
       args: [],
       account: walletAddress,
+      networkId,
     });
 
-    debugger;
-
-    return response;
+    return response
+      ? {
+          name: response[0],
+          creatorAddress: response[1],
+          walletAddress: response[2],
+          airdropToken: response[3],
+          daoToken: response[4],
+          tokenGatingValue: response[5],
+          startTime: Number(response[6]),
+          endTime: Number(response[7]),
+          cooldownTime: Number(response[8]),
+          hasAllowanceMechanism: response[9],
+          isEnabled: response[10],
+          merkleRoot: response[11],
+          permission: response[12],
+          claimAmountDetails: {
+            maxClaimable: Number(response[13].maxClaimable),
+            totalClaimAmount: Number(response[13].totalClaimAmount),
+          },
+        }
+      : {};
   };
 
   const claimBalance = async () => {
