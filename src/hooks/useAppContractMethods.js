@@ -99,6 +99,26 @@ const useAppContractMethods = () => {
       : {};
   };
 
+  const getTokenGatingDetails = async (daoAddress) => {
+    let response = await readContractFunction({
+      address: FACTORY_CONTRACT_ADDRESS,
+      abi: factoryContractABI,
+      functionName: "getTokenGatingDetails",
+      args: [daoAddress],
+      account: walletAddress,
+      networkId,
+    });
+
+    response = response?.map((item) => {
+      return {
+        ...item,
+        value: item.value.map((val) => Number(val)),
+      };
+    });
+
+    return response ?? [];
+  };
+
   const getERC20Balance = async () => {
     return await erc20DaoContractCall?.methods?.balanceOf(walletAddress).call();
   };
@@ -235,12 +255,6 @@ const useAppContractMethods = () => {
     } catch (error) {
       throw error;
     }
-  };
-
-  const getTokenGatingDetails = async (daoAddress) => {
-    return await factoryContractCall?.methods
-      ?.getTokenGatingDetails(daoAddress)
-      .call();
   };
 
   const approveDepositWithEncodeABI = (

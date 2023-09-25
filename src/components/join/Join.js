@@ -60,12 +60,6 @@ const Join = ({ daoAddress }) => {
 
   useAppContract(daoAddress);
 
-  const contractInstances = useSelector((state) => {
-    return state.contractInstances.contractInstances;
-  });
-
-  const { factoryContractCall } = contractInstances;
-
   const { getDecimals, getBalance, getTokenSymbol } =
     useCommonContractMethods();
 
@@ -116,6 +110,7 @@ const Join = ({ daoAddress }) => {
     try {
       setLoading(true);
       const tokenGatingDetails = await getTokenGatingDetails(daoAddress);
+
       if (tokenGatingDetails) {
         setFetchedDetails({
           tokenA: tokenGatingDetails[0]?.tokenA,
@@ -195,10 +190,10 @@ const Join = ({ daoAddress }) => {
   };
 
   useEffect(() => {
-    if (walletAddress && daoAddress && factoryContractCall) {
+    if (walletAddress && daoAddress) {
       fetchTokenGatingDetials();
     }
-  }, [walletAddress, daoAddress, factoryContractCall]);
+  }, [walletAddress, daoAddress]);
 
   useEffect(() => {
     if (TOKEN_TYPE === "erc20") {

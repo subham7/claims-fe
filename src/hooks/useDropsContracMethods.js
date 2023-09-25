@@ -1,4 +1,3 @@
-import { useSelector } from "react-redux";
 import { readContractFunction, writeContractFunction } from "utils/helper";
 import { useAccount, useNetwork } from "wagmi";
 import { claimContractABI } from "abis/claimContract.js";
@@ -10,13 +9,7 @@ const useDropsContractMethods = () => {
   const { chain } = useNetwork();
   const networkId = "0x" + chain?.id.toString(16);
 
-  const contractInstances = useSelector((state) => {
-    return state.contractInstances.contractInstances;
-  });
-
   const claimFactoryAddress = CHAIN_CONFIG[networkId].claimFactoryAddress;
-
-  const { claimContractCall } = contractInstances;
 
   const addMoreTokens = async (claimAddress, noOfTokens, merkleRoot) => {
     try {
@@ -184,19 +177,9 @@ const useDropsContractMethods = () => {
     }
   };
 
-  const hasClaimed = async (walletAddress) => {
-    return await claimContractCall?.methods.hasClaimed(walletAddress).call();
-  };
-
-  const checkAmount = async (walletAddress) => {
-    return await claimContractCall?.methods.checkAmount(walletAddress).call();
-  };
-
   return {
     claimAmount,
     claim,
-    checkAmount,
-    hasClaimed,
     rollbackTokens,
     toggleClaim,
     claimBalance,
