@@ -113,7 +113,7 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
 
   return (
     <Grid item md={9}>
-      {proposalData?.commands.length ? (
+      {proposalData?.commands.length && executionId ? (
         <Card>
           <>
             {executionId == 0 ? (
