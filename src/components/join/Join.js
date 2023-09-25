@@ -113,7 +113,6 @@ const Join = ({ daoAddress }) => {
   const fetchTokenGatingDetials = async () => {
     try {
       setLoading(true);
-      console.log("DAO000", daoAddress);
       const tokenGatingDetails = await getTokenGatingDetails(daoAddress);
 
       if (tokenGatingDetails) {
