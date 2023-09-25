@@ -92,7 +92,7 @@ const Settings = ({ daoAddress }) => {
   const fetchErc20ContractDetails = useCallback(async () => {
     try {
       const balanceOfClubToken = await getERC20Balance();
-      const erc20Data = await getERC20DAOdetails();
+      const erc20Data = await getERC20DAOdetails(daoAddress);
       const erc20DaoDecimal = await getDecimals(daoAddress);
       const clubTokensMinted = await getERC20TotalSupply();
 
@@ -150,7 +150,7 @@ const Settings = ({ daoAddress }) => {
 
   const fetchErc721ContractDetails = useCallback(async () => {
     try {
-      const erc721Data = await getERC721DAOdetails();
+      const erc721Data = await getERC721DAOdetails(daoAddress);
 
       const balanceOfClubToken = await getERC721Balance();
       const nftMinted = await getNftOwnersCount();

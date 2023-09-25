@@ -3,6 +3,7 @@ import Web3 from "web3";
 import {
   getIncreaseGasPrice,
   getSafeSdk,
+  readContractFunction,
   writeContractFunction,
 } from "utils/helper";
 import { Web3Adapter } from "@safe-global/protocol-kit";
@@ -11,6 +12,8 @@ import SafeApiKit from "@safe-global/api-kit";
 import { useAccount, useNetwork } from "wagmi";
 import { factoryContractABI } from "abis/factoryContract.js";
 import { getTransaction } from "utils/proposal";
+import { erc20DaoABI } from "abis/erc20Dao";
+import { erc721DaoABI } from "abis/erc721Dao";
 
 const useAppContractMethods = () => {
   const { address: walletAddress } = useAccount();
@@ -34,15 +37,66 @@ const useAppContractMethods = () => {
     contractInstances;
 
   const getDaoDetails = async (daoAddress) => {
-    return await factoryContractCall?.methods?.getDAOdetails(daoAddress).call();
+    const response = await readContractFunction({
+      address: FACTORY_CONTRACT_ADDRESS,
+      abi: factoryContractABI,
+      functionName: "getDAOdetails",
+      args: [daoAddress],
+      account: walletAddress,
+      networkId,
+    });
+
+    return response
+      ? {
+          ...response,
+          depositCloseTime: Number(response?.depositCloseTime),
+          distributionAmount: Number(response?.distributionAmount),
+          maxDepositPerUser: Number(response?.maxDepositPerUser),
+          minDepositPerUser: Number(response?.minDepositPerUser),
+          ownerFeePerDepositPercent: Number(
+            response?.ownerFeePerDepositPercent,
+          ),
+          pricePerToken: Number(response?.pricePerToken),
+        }
+      : {};
   };
 
-  const getERC20DAOdetails = async () => {
-    return await erc20DaoContractCall?.methods?.getERC20DAOdetails().call();
+  const getERC20DAOdetails = async (daoAddress) => {
+    const response = await readContractFunction({
+      address: daoAddress,
+      abi: erc20DaoABI,
+      functionName: "getERC20DAOdetails",
+      args: [],
+      account: walletAddress,
+      networkId,
+    });
+
+    return response
+      ? {
+          ...response,
+          quorum: Number(response?.quorum),
+          threshold: Number(response?.threshold),
+        }
+      : {};
   };
 
-  const getERC721DAOdetails = async () => {
-    return await erc721DaoContractCall?.methods?.getERC721DAOdetails().call();
+  const getERC721DAOdetails = async (daoAddress) => {
+    const response = await readContractFunction({
+      address: daoAddress,
+      abi: erc721DaoABI,
+      functionName: "getERC721DAOdetails",
+      args: [],
+      account: walletAddress,
+      networkId,
+    });
+
+    return response
+      ? {
+          ...response,
+          quorum: Number(response?.quorum),
+          threshold: Number(response?.threshold),
+        }
+      : {};
   };
 
   const getERC20Balance = async () => {

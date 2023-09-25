@@ -261,6 +261,7 @@ export const readContractFunction = async ({
   functionName,
   args,
   account,
+  networkId,
 }) => {
   const publicClient = getPublicClient(networkId);
 

@@ -138,7 +138,7 @@ const useClubFetch = ({ daoAddress, networkId }) => {
         }
 
         if (reduxClubData.tokenType === "erc20") {
-          const daoDetails = await getERC20DAOdetails();
+          const daoDetails = await getERC20DAOdetails(daoAddress);
 
           dispatch(
             addErc20ClubDetails({
@@ -151,7 +151,7 @@ const useClubFetch = ({ daoAddress, networkId }) => {
             }),
           );
         } else if (reduxClubData.tokenType === "erc721") {
-          const daoDetails = await getERC721DAOdetails();
+          const daoDetails = await getERC721DAOdetails(daoAddress);
           dispatch(
             addErc721ClubDetails({
               quorum: daoDetails.quorum / 100,
