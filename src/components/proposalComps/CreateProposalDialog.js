@@ -164,7 +164,7 @@ const CreateProposalDialog = ({
           createdBy: walletAddress,
           votingDuration: dayjs(values.proposalDeadline).unix(),
           votingOptions: values.optionList,
-          commands: [commands],
+          commands: [values.typeOfProposal !== "survey" ? commands : null],
           type: values.typeOfProposal,
           tokenType: clubData.tokenType,
           daoAddress: daoAddress,
