@@ -675,7 +675,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
 
           {/* Proposal Info and Signators */}
           <Grid container spacing={2} mt={4} mb={3}>
-            {proposalData && factoryData && (
+            {proposalData && factoryData && proposalData.type !== "survey" && (
               <ProposalExecutionInfo
                 proposalData={proposalData}
                 fetched={fetched}
