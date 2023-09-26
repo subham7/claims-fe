@@ -349,7 +349,7 @@ const DashboardIndex = ({ daoAddress }) => {
                     <Typography variant="heading">
                       $
                       {tokenDetails ? (
-                        tokenDetails.treasuryAmount
+                        Number(tokenDetails.treasuryAmount).toFixed(3)
                       ) : (
                         <Skeleton
                           variant="rectangular"
