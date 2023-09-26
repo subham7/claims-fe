@@ -158,13 +158,7 @@ const Members = ({ daoAddress }) => {
   };
 
   const MembersValidationSchema = yup.object({
-    startDate: yup
-      .date()
-      .min(
-        deployedTime ? dayjs(deployedTime * 1000) : dayjs(Date.now()),
-        "Date-time must be after the station is deployed.",
-      )
-      .required("Start date is required"),
+    startDate: yup.date().required("Start date is required"),
     endDate: yup
       .date()
       .max(dayjs(Date.now()), "Date-time must be less than now.")
@@ -173,12 +167,12 @@ const Members = ({ daoAddress }) => {
 
   const formik = useFormik({
     initialValues: {
-      startDate: deployedTime ? dayjs(deployedTime * 1000) : dayjs(Date.now()),
+      startDate: deployedTime
+        ? dayjs(deployedTime * 1000)
+        : dayjs(Date.now() - 86400000),
       endDate: dayjs(Date.now()),
     },
-
     validationSchema: MembersValidationSchema,
-
     onSubmit: async (values) => {
       setDownloadLoading(true);
       const membersData = await getAllEntities(
@@ -242,7 +236,6 @@ const Members = ({ daoAddress }) => {
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DateTimePicker
                   value={formik.values.startDate}
-                  minDateTime={dayjs(deployedTime * 1000)}
                   onChange={(value) => {
                     formik.setFieldValue("startDate", value);
                   }}

@@ -840,7 +840,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
                     ) : proposalData?.status === "passed" ? (
                       isAdmin ? (
                         <Card>
-                          {proposalData?.cancelProposalId === undefined && (
+                          {proposalData?.cancelProposalId === undefined ? (
                             <Button
                               style={{
                                 width: "100%",
@@ -908,8 +908,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
                                 ) : null}
                               </Grid>
                             </Button>
-                          )}
-
+                          ) : null}
                           {(signed ||
                             isRejectTxnSigned ||
                             signedOwners.length) &&
