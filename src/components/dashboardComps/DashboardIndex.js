@@ -128,7 +128,7 @@ const DashboardIndex = ({ daoAddress }) => {
 
           if (tokenType === "erc721") {
             const imageUrl = await fetchImageUrl(daoAddress, clubData?.imgUrl);
-            clubDetails.clubImageUrl = imageUrl;
+            clubDetails.clubImageUrl = imageUrl?.data[0]?.imageUrl;
           }
 
           clubDetails.noOfMembers = membersData?.users?.length;
