@@ -81,8 +81,6 @@ const Members = ({ daoAddress }) => {
           daoAddress,
           20,
           0,
-          deployedTime,
-          Date.now(),
           networkId,
         );
 
@@ -125,8 +123,6 @@ const Members = ({ daoAddress }) => {
         daoAddress,
         20,
         newSkip,
-        1685613616,
-        Date.now(),
         networkId,
       );
 

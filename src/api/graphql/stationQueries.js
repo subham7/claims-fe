@@ -26,19 +26,11 @@ export const QUERY_LATEST_MEMBERS = (daoAddress) => {
     }`;
 };
 
-export const QUERY_PAGINATED_MEMBERS = (
-  daoAddress,
-  first,
-  skip,
-  startDate,
-  endDate,
-) => {
+export const QUERY_PAGINATED_MEMBERS = (daoAddress, first, skip) => {
   return `query{
       users(
         where: {
           daoAddress: "${daoAddress}",
-          timeStamp_gte: ${startDate},
-          timeStamp_lte: ${endDate}
         },
         first: ${first},
         skip: ${skip}

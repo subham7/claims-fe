@@ -54,14 +54,12 @@ export const queryPaginatedMembersFromSubgraph = async (
   daoAddress,
   first,
   skip,
-  startDate,
-  endDate,
   networkId,
 ) => {
   try {
     const data = await subgraphQuery(
       CHAIN_CONFIG[networkId]?.stationSubgraphUrl,
-      QUERY_PAGINATED_MEMBERS(daoAddress, first, skip, startDate, endDate),
+      QUERY_PAGINATED_MEMBERS(daoAddress, first, skip),
     );
     return data ?? {};
   } catch (error) {
