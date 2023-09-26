@@ -54,7 +54,7 @@ export default function NFTStep2(props) {
           <div className="f-d f-vt tb-pad-2">
             <Typography variant="body">Upload Image</Typography>
 
-            <div className="f-d tb-pad-1">
+            <div className="f-d tb-pad-1" style={{ gap: "16px" }}>
               <Button variant="normal" onClick={generateRandomNFTImage}>
                 Generate random
               </Button>
