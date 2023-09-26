@@ -7,7 +7,7 @@ import ProposalDetail from "@components/proposal/ProposalDetail";
 const ProposalPage = () => {
   const router = useRouter();
 
-  const [daoAddress, networkId, proposalId] = router?.query?.slug ?? [];
+  let [daoAddress, networkId, proposalId] = router?.query?.slug ?? [];
 
   if (router?.query?.slug.length < 3) {
     proposalId = networkId;
