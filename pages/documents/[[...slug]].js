@@ -9,7 +9,8 @@ import DocumentCreate from "@components/documents/documentCreate";
 const DocumentsPage = () => {
   const router = useRouter();
 
-  const [daoAddress, networkId, flow, membersSign] = router?.query?.slug ?? [];
+  const [daoAddress, networkId = "0x89", flow, membersSign] =
+    router?.query?.slug ?? [];
 
   if (!daoAddress) {
     return null;

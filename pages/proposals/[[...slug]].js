@@ -9,6 +9,11 @@ const ProposalPage = () => {
 
   const [daoAddress, networkId, proposalId] = router?.query?.slug ?? [];
 
+  if (router?.query?.slug.length < 3) {
+    proposalId = networkId;
+    networkId = "0x89";
+  }
+
   if (!daoAddress) {
     return null;
   }
