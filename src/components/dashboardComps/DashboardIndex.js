@@ -106,7 +106,7 @@ const DashboardIndex = ({ daoAddress }) => {
   const { getTokenSymbol } = useCommonContractMethods();
 
   const fetchImageUrl = async (daoAddress, clubDataImgUrl) => {
-    let imageUrl = await getUploadedNFT(daoAddress);
+    let imageUrl = await getUploadedNFT(daoAddress?.toLowerCase());
 
     if (!imageUrl?.data.length) {
       imageUrl = await getImageURL(clubDataImgUrl);

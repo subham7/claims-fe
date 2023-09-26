@@ -78,7 +78,7 @@ const useSafe = () => {
 
         if (clubTokenType === "NFT") {
           const imageLink = await uploadFileToAWS(imageFile);
-          await uploadNFT(daoAddress, imageLink);
+          await uploadNFT(daoAddress?.toLowerCase(), imageLink);
         }
 
         router.push(`/dashboard/${daoAddress}/${networkId}`, undefined, {
