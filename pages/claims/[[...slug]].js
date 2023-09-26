@@ -8,9 +8,11 @@ import CreateClaim from "@components/claims/create";
 const ClaimsPage = () => {
   const router = useRouter();
 
-  let [networkId, claimAddress] = router?.query?.slug ?? [];
+  const routeParams = router?.query?.slug ?? [];
 
-  if (router?.query?.slug.length < 2) {
+  let [networkId, claimAddress] = routeParams;
+
+  if (routeParams.length < 2) {
     claimAddress = networkId;
     networkId = "0x89";
   }
