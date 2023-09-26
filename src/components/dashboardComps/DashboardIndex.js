@@ -23,7 +23,11 @@ import { useDispatch, useSelector } from "react-redux";
 import CollectionCard from "../../../src/components/cardcontent";
 import { DashboardStyles } from "./DashboardStyles";
 import { useRouter } from "next/router";
-import { getAssetsByDaoAddress, getNFTsByDaoAddress } from "../../api/assets";
+import {
+  getAssetsByDaoAddress,
+  getNFTsByDaoAddress,
+  getUploadedNFT,
+} from "../../api/assets";
 import { getProposalByDaoAddress } from "../../api/proposal";
 import {
   convertFromWeiGovernance,
@@ -101,6 +105,16 @@ const DashboardIndex = ({ daoAddress }) => {
 
   const { getTokenSymbol } = useCommonContractMethods();
 
+  const fetchImageUrl = async (daoAddress, clubDataImgUrl) => {
+    let imageUrl = await getUploadedNFT(daoAddress);
+
+    if (!imageUrl?.data.length) {
+      imageUrl = await getImageURL(clubDataImgUrl);
+    }
+
+    return imageUrl;
+  };
+
   const fetchClubDetails = useCallback(async () => {
     try {
       if (daoAddress && walletAddress && networkId) {
@@ -110,18 +124,16 @@ const DashboardIndex = ({ daoAddress }) => {
         );
 
         if (clubData && membersData) {
-          if (tokenType === "erc721") {
-            const imageUrl = await getImageURL(clubData?.imgUrl);
+          const clubDetails = {};
 
-            setClubDetails({
-              clubImageUrl: imageUrl,
-              noOfMembers: membersData?.users?.length,
-            });
-          } else {
-            setClubDetails({
-              noOfMembers: membersData?.users?.length,
-            });
+          if (tokenType === "erc721") {
+            const imageUrl = await fetchImageUrl(daoAddress, clubData?.imgUrl);
+            clubDetails.clubImageUrl = imageUrl;
           }
+
+          clubDetails.noOfMembers = membersData?.users?.length;
+
+          setClubDetails(clubDetails);
         }
       }
     } catch (error) {

@@ -164,8 +164,6 @@ const Create = () => {
           image: formikERC721Step2.values.nftImage,
         });
 
-        console.log("METADATA", metadata);
-
         dispatch(setUploadNFTLoading(false));
         try {
           const params = {
