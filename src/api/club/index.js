@@ -68,3 +68,20 @@ export async function createClubData(data) {
     return error;
   }
 }
+
+export const uploadToAWS = async (fileName, reader) => {
+  try {
+    const res = await fetch(
+      `https://k3hu9vqwv4.execute-api.ap-south-1.amazonaws.com/upload?filename=${fileName}`,
+      {
+        method: "POST",
+        body: new Blob([reader.result]),
+      },
+    );
+
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+};

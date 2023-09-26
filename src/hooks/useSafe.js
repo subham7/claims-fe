@@ -6,7 +6,7 @@ import {
   setCreateSafeLoading,
 } from "../redux/reducers/gnosis";
 import { useRouter } from "next/router";
-import { createClubData } from "../api/club";
+import { createClubData, uploadToAWS } from "../api/club";
 import useAppContractMethods from "./useAppContractMethods";
 import { ZERO_ADDRESS } from "utils/constants";
 import { uploadNFT } from "api/assets";
@@ -32,15 +32,7 @@ const useSafe = () => {
         reader.addEventListener("loadend", async () => {
           const path = imageFile?.name.split("/");
           const fileName = path[path.length - 1];
-          const res = await fetch(
-            `https://k3hu9vqwv4.execute-api.ap-south-1.amazonaws.com/upload?filename=${fileName}`,
-            {
-              method: "POST",
-              body: new Blob([reader.result]),
-            },
-          );
-
-          const data = await res.json();
+          const data = await uploadToAWS(fileName, reader);
           resolve(data?.saveFileResponse?.Location);
         });
 
