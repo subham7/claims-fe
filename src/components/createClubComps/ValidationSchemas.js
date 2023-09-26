@@ -95,9 +95,24 @@ export const ERC721Step2ValidationSchema = yup.object({
     .required("Price per token is required")
     .moreThan(0, "Price should be greater than 0"),
   maxTokensPerUser: yup
-    .number()
-    .required("Max token min limit per user is required")
-    .moreThan(0, "Max tokens should be greater than 0"),
+    .number("Enter amount of tokens")
+    .test(
+      "invalidMaxTokenPerUser",
+      "Enter token less than total supply",
+      async (value, context) => {
+        const { isNftTotalSupplylimited, totalTokenSupply } = context.parent;
+        if (isNftTotalSupplylimited === true) {
+          try {
+            if (Number(value) <= totalTokenSupply && Number(value) > 0) {
+              return true;
+            } else return false;
+          } catch (error) {
+            return false;
+          }
+        }
+        return true;
+      },
+    ),
   isNftTotalSupplylimited: yup.boolean(),
   totalTokenSupply: yup.number().when("isNftTotalSupplylimited", {
     is: true,

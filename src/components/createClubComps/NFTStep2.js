@@ -180,37 +180,6 @@ export default function NFTStep2(props) {
       </Card>
 
       <br />
-      {/* max mints allowed per wallet input */}
-      <Card>
-        <div className="f-d f-v-c f-h-sb">
-          <div>
-            <Typography variant="body">
-              Max. mints allowed per wallet
-            </Typography>
-          </div>
-          <div className="w-50">
-            <TextField
-              name="maxTokensPerUser"
-              type="number"
-              label="Eg: 100"
-              variant="outlined"
-              onChange={props.formik.handleChange}
-              onBlur={props.formik.handleBlur}
-              value={props.formik.values.maxTokensPerUser}
-              error={
-                props.formik.touched.maxTokensPerUser &&
-                Boolean(props.formik.errors.maxTokensPerUser)
-              }
-              helperText={
-                props.formik.touched.maxTokensPerUser &&
-                props.formik.errors.maxTokensPerUser
-              }
-              onWheel={(event) => event.target.blur()}
-            />
-          </div>
-        </div>
-      </Card>
-      <br />
       {/* limit token supply input */}
       <Card>
         <div className="f-d f-v-c f-h-sb">
@@ -269,6 +238,38 @@ export default function NFTStep2(props) {
           <br />
         </>
       )}
+
+      {/* max mints allowed per wallet input */}
+      <Card>
+        <div className="f-d f-v-c f-h-sb">
+          <div>
+            <Typography variant="body">
+              Max. mints allowed per wallet
+            </Typography>
+          </div>
+          <div className="w-50">
+            <TextField
+              name="maxTokensPerUser"
+              type="number"
+              label="Eg: 100"
+              variant="outlined"
+              onChange={props.formik.handleChange}
+              onBlur={props.formik.handleBlur}
+              value={props.formik.values.maxTokensPerUser}
+              error={
+                props.formik.touched.maxTokensPerUser &&
+                Boolean(props.formik.errors.maxTokensPerUser)
+              }
+              helperText={
+                props.formik.touched.maxTokensPerUser &&
+                props.formik.errors.maxTokensPerUser
+              }
+              onWheel={(event) => event.target.blur()}
+            />
+          </div>
+        </div>
+      </Card>
+      <br />
 
       <Card>
         <div className="f-d f-v-c f-h-sb">
