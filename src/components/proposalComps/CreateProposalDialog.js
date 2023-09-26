@@ -137,6 +137,8 @@ const CreateProposalDialog = ({
       getDecimals,
       gnosisAddress,
       factoryData,
+      walletAddress,
+      daoAddress,
     }),
     onSubmit: async (values) => {
       try {

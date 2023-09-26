@@ -1,6 +1,7 @@
 import { CHAIN_CONFIG } from "./constants";
 import { subgraphQuery } from "./subgraphs";
 import {
+  IS_STATION_MEMBER,
   QUERY_ALL_MEMBERS,
   QUERY_LATEST_MEMBERS,
   QUERY_PAGINATED_MEMBERS,
@@ -75,6 +76,19 @@ export const queryLatestMembersFromSubgraph = async (daoAddress, networkId) => {
       CHAIN_CONFIG[networkId]?.stationSubgraphUrl,
       QUERY_LATEST_MEMBERS(daoAddress),
     );
+    return data ?? {};
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const isMember = async (address, daoAddress, networkId) => {
+  try {
+    const data = await subgraphQuery(
+      CHAIN_CONFIG[networkId]?.stationSubgraphUrl,
+      IS_STATION_MEMBER(address, daoAddress),
+    );
+
     return data ?? {};
   } catch (error) {
     throw error;

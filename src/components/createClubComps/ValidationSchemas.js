@@ -1,6 +1,7 @@
 import { retrieveNftListing } from "api/assets";
 import { CHAIN_CONFIG } from "utils/constants";
 import { convertFromWeiGovernance } from "utils/globalFunctions";
+import { isMember } from "utils/stationsSubgraphHelper";
 import * as yup from "yup";
 
 export const step1ValidationSchema = yup.object({
@@ -114,6 +115,8 @@ export const getProposalValidationSchema = ({
   getDecimals,
   gnosisAddress,
   factoryData,
+  walletAddress,
+  daoAddress,
 }) => {
   return yup.object({
     proposalDeadline: yup.date().required("Deposit close date is required"),
@@ -289,6 +292,35 @@ export const getProposalValidationSchema = ({
           .required("Safe Threshold is required")
           .moreThan(1, "Safe Threshold should be greater than 1"),
     }),
+    ownerAddress: yup
+      .string()
+      .test(
+        "validate-owner",
+        "Address is not a member of a club",
+        async (value, context) => {
+          const { actionCommand } = context.parent;
+
+          if (actionCommand === 6) {
+            try {
+              // Make your API call here and check the response
+              const isStationMember = await isMember(
+                value,
+                daoAddress,
+                networkId,
+              );
+
+              if (isStationMember?.users?.length > 0) {
+                return true;
+              } else return false;
+            } catch (error) {
+              console.error(error);
+              return false; // Return false for any error
+            }
+          }
+
+          return true; // Return true for other cases or successful API response
+        },
+      ),
     nftLink: yup.string("Please enter nft Link").when("actionCommand", {
       is: 8,
       then: () => yup.string("Enter nft link").required("Nft link is required"),

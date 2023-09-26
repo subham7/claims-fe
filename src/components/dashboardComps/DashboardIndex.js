@@ -148,10 +148,7 @@ const DashboardIndex = ({ daoAddress }) => {
 
   const fetchNfts = useCallback(async () => {
     try {
-      const nftsData = await getNFTsByDaoAddress(
-        factoryData.assetsStoredOnGnosis ? gnosisAddress : daoAddress,
-        NETWORK_HEX,
-      );
+      const nftsData = await getNFTsByDaoAddress(gnosisAddress, NETWORK_HEX);
       setNftData(nftsData.data);
       dispatch(addNftsOwnedByDao(nftsData.data));
     } catch (error) {
@@ -201,7 +198,8 @@ const DashboardIndex = ({ daoAddress }) => {
     if (NETWORK_HEX) {
       fetchClubDetails();
       fetchAssets();
-      fetchNfts();
+      if (gnosisAddress) fetchNfts();
+
       fetchActiveProposals();
     }
   }, [
@@ -210,6 +208,7 @@ const DashboardIndex = ({ daoAddress }) => {
     fetchAssets,
     NETWORK_HEX,
     fetchActiveProposals,
+    gnosisAddress,
   ]);
 
   useEffect(() => {
