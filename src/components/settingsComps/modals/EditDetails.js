@@ -290,7 +290,7 @@ const EditDetails = ({
                 </Button>
                 <input
                   name="banner"
-                  accept=".jpg, .png|image/*"
+                  accept="image/*"
                   type="file"
                   id="select-image"
                   style={{ display: "none" }}
