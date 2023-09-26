@@ -6,10 +6,11 @@ import {
   setCreateSafeLoading,
 } from "../redux/reducers/gnosis";
 import { useRouter } from "next/router";
-import { createClubData, uploadToAWS } from "../api/club";
+import { createClubData } from "../api/club";
 import useAppContractMethods from "./useAppContractMethods";
 import { ZERO_ADDRESS } from "utils/constants";
 import { uploadNFT } from "api/assets";
+import { uploadFileToAWS } from "utils/helper";
 
 const useSafe = () => {
   const { createERC721DAO, createERC20DAO } = useAppContractMethods();
@@ -26,20 +27,6 @@ const useSafe = () => {
     networkId,
     imageFile = null,
   ) => {
-    const uploadFileToAWS = async () => {
-      return new Promise(async (resolve, reject) => {
-        const reader = new FileReader();
-        reader.addEventListener("loadend", async () => {
-          const path = imageFile?.name.split("/");
-          const fileName = path[path.length - 1];
-          const data = await uploadToAWS(fileName, reader);
-          resolve(data?.saveFileResponse?.Location);
-        });
-
-        reader.readAsArrayBuffer(imageFile);
-      });
-    };
-
     dispatch(setCreateSafeLoading(true));
     dispatch(setCreateDaoAuthorized(false));
 
@@ -90,7 +77,7 @@ const useSafe = () => {
         });
 
         if (clubTokenType === "NFT") {
-          const imageLink = await uploadFileToAWS();
+          const imageLink = await uploadFileToAWS(imageFile);
           await uploadNFT(daoAddress, imageLink);
         }
 
