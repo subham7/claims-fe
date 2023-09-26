@@ -89,7 +89,7 @@ export const isMember = async (address, daoAddress, networkId) => {
       IS_STATION_MEMBER(address, daoAddress),
     );
 
-    return data ?? {};
+    return data ?? [];
   } catch (error) {
     throw error;
   }

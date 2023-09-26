@@ -101,7 +101,6 @@ export const QUERY_STATION_DETAILS = (daoAddress) => {
 };
 
 export const IS_STATION_MEMBER = (address, daoAddress) => {
-  console.log("before query", address, daoAddress);
   return `query{
     users(
     where: {daoAddress: "${daoAddress}", userAddress: "${address}"}
