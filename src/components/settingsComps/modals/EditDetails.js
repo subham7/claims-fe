@@ -21,6 +21,7 @@ import { createClaimDetails, getClaimDetails } from "api/claims";
 import { FIVE_MB } from "utils/constants";
 import Image from "next/image";
 import { editInfo, getClubInfo } from "api/club";
+import { uploadFileToAWS } from "utils/helper";
 
 const useStyles = makeStyles({
   modalStyle: {
@@ -99,32 +100,6 @@ const EditDetails = ({
     setLoaderOpen(false);
   };
 
-  const readFile = async () => {
-    return new Promise(async (resolve, reject) => {
-      const reader = new FileReader();
-      let file;
-      reader.addEventListener("loadend", async () => {
-        console.log({
-          filename: selectFile.name,
-          reader: reader.result,
-          file: new Blob([reader.result], { type: selectFile.type }),
-        });
-        const res = await fetch(
-          `https://k3hu9vqwv4.execute-api.ap-south-1.amazonaws.com/upload?filename=${selectedFile.name}`,
-          {
-            method: "POST",
-            body: new Blob([reader.result], { type: selectFile.type }),
-          },
-        );
-
-        const data = await res.json();
-        resolve(data?.saveFileResponse?.Location);
-      });
-
-      reader.readAsArrayBuffer(selectedFile);
-    });
-  };
-
   const fetchBannerDetails = async () => {
     try {
       const data = await getClaimDetails(claimAddress);
@@ -145,7 +120,7 @@ const EditDetails = ({
 
   const readFileAsync = async () => {
     if (selectedFile) {
-      return await readFile();
+      return await uploadFileToAWS(selectedFile);
     }
     return null;
   };
