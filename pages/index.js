@@ -120,7 +120,6 @@ const useStyles = makeStyles({
 
 const App = () => {
   const dispatch = useDispatch();
-  const [clubFlow, setClubFlow] = useState(false);
   const classes = useStyles();
   const { address: walletAddress } = useAccount();
   const [clubListData, setClubListData] = useState([]);
@@ -151,12 +150,6 @@ const App = () => {
         };
 
         if (walletAddress && networkId) fetchClubs();
-      }
-
-      if (walletAddress) {
-        setClubFlow(true);
-      } else {
-        setClubFlow(false);
       }
     } catch (error) {
       console.log(error);
@@ -231,7 +224,7 @@ const App = () => {
   return (
     <Layout showSidebar={false} faucet={false}>
       <div className={classes.container}>
-        {!manageStation && clubFlow && (
+        {!manageStation && (
           <div className={classes.cardContainer}>
             <div
               style={{
@@ -288,7 +281,7 @@ const App = () => {
           </div>
         )}
 
-        {manageStation && clubFlow ? (
+        {manageStation ? (
           <Grid
             container
             direction="row"

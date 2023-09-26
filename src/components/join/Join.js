@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { convertFromWeiGovernance } from "utils/globalFunctions";
 import { useSelector } from "react-redux";
 import { Backdrop, CircularProgress } from "@mui/material";
@@ -58,13 +58,11 @@ const Join = ({ daoAddress }) => {
     return state.club.factoryData;
   });
 
+  const FACTORY_CONTRACT_ADDRESS = useSelector(
+    (state) => state.gnosis.factoryContractAddress,
+  );
+
   useAppContract(daoAddress);
-
-  const contractInstances = useSelector((state) => {
-    return state.contractInstances.contractInstances;
-  });
-
-  const { factoryContractCall } = contractInstances;
 
   const { getDecimals, getBalance, getTokenSymbol } =
     useCommonContractMethods();
@@ -74,14 +72,14 @@ const Join = ({ daoAddress }) => {
   /**
    * Fetching details for ERC20 comp
    */
-  const fetchErc20ContractDetails = useCallback(async () => {
+  const fetchErc20ContractDetails = async () => {
     try {
       setLoading(true);
-      if (factoryData)
+      if (factoryData?.depositCloseTime)
         setDaoDetails({
-          depositDeadline: factoryData.depositCloseTime,
-          minDeposit: factoryData.minDepositPerUser,
-          maxDeposit: factoryData.maxDepositPerUser,
+          depositDeadline: factoryData?.depositCloseTime,
+          minDeposit: factoryData?.minDepositPerUser,
+          maxDeposit: factoryData?.maxDepositPerUser,
         });
 
       setLoading(false);
@@ -89,33 +87,34 @@ const Join = ({ daoAddress }) => {
       console.log(error);
       setLoading(false);
     }
-  }, [factoryData]);
+  };
 
   /**
    * Fetching details for ERC721 comp
    */
-  const fetchErc721ContractDetails = useCallback(async () => {
+  const fetchErc721ContractDetails = async () => {
     try {
       setLoading(true);
       const nftMinted = await getNftOwnersCount();
 
-      if (factoryData) {
+      if (factoryData?.depositCloseTime && nftMinted) {
         setDaoDetails({
-          depositDeadline: factoryData.depositCloseTime,
+          depositDeadline: factoryData?.depositCloseTime,
           nftMinted: nftMinted,
         });
       }
       setLoading(false);
     } catch (error) {
-      console.log(error);
       setLoading(false);
+      console.log(error);
     }
-  }, [factoryData]);
+  };
 
   const fetchTokenGatingDetials = async () => {
     try {
       setLoading(true);
       const tokenGatingDetails = await getTokenGatingDetails(daoAddress);
+
       if (tokenGatingDetails) {
         setFetchedDetails({
           tokenA: tokenGatingDetails[0]?.tokenA,
@@ -126,7 +125,9 @@ const Join = ({ daoAddress }) => {
           comparator: tokenGatingDetails[0]?.comparator,
         });
 
-        const tokenASymbol = await getTokenSymbol(tokenGatingDetails[0].tokenA);
+        const tokenASymbol = await getTokenSymbol(
+          tokenGatingDetails[0]?.tokenA,
+        );
         const tokenBSymbol = await getTokenSymbol(
           tokenGatingDetails[0]?.tokenB,
         );
@@ -152,7 +153,7 @@ const Join = ({ daoAddress }) => {
           tokenBDecimal: tokenBDecimal ? tokenBDecimal : 0,
         });
 
-        if (tokenGatingDetails[0]?.length) {
+        if (tokenGatingDetails?.length) {
           setIsTokenGated(true);
 
           const balanceOfTokenAInUserWallet = await getBalance(
@@ -193,10 +194,11 @@ const Join = ({ daoAddress }) => {
   };
 
   useEffect(() => {
-    if (walletAddress && daoAddress && factoryContractCall) {
+    console.log("DAO", daoAddress);
+    if (walletAddress && daoAddress && FACTORY_CONTRACT_ADDRESS) {
       fetchTokenGatingDetials();
     }
-  }, [walletAddress, daoAddress, factoryContractCall]);
+  }, [walletAddress, daoAddress, FACTORY_CONTRACT_ADDRESS]);
 
   useEffect(() => {
     if (TOKEN_TYPE === "erc20") {
@@ -204,7 +206,7 @@ const Join = ({ daoAddress }) => {
     } else {
       fetchErc721ContractDetails();
     }
-  }, [fetchErc20ContractDetails, TOKEN_TYPE, fetchErc721ContractDetails]);
+  }, [TOKEN_TYPE, factoryData, FACTORY_CONTRACT_ADDRESS]);
 
   useEffect(() => {
     try {
@@ -242,7 +244,13 @@ const Join = ({ daoAddress }) => {
       console.log(error);
       setLoading(false);
     }
-  }, [SUBGRAPH_URL, daoAddress, daoDetails, walletAddress]);
+  }, [
+    SUBGRAPH_URL,
+    daoAddress,
+    daoDetails,
+    walletAddress,
+    FACTORY_CONTRACT_ADDRESS,
+  ]);
 
   useEffect(() => {
     const fetchMerkleProof = async () => {

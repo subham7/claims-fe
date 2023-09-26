@@ -54,6 +54,7 @@ import { BsInfoCircleFill } from "react-icons/bs";
 import useAppContractMethods from "hooks/useAppContractMethods";
 import { queryAllMembersFromSubgraph } from "utils/stationsSubgraphHelper";
 import { ProposalDetailStyles } from "./ProposalDetailStyles";
+import useCommonContractMethods from "hooks/useCommonContractMehods";
 
 const ProposalDetail = ({ pid, daoAddress }) => {
   const classes = ProposalDetailStyles();
@@ -152,8 +153,10 @@ const ProposalDetail = ({ pid, daoAddress }) => {
     return state.club.factoryData;
   });
 
-  const { getNftBalance, getERC20TotalSupply, updateProposalAndExecution } =
+  const { getERC20TotalSupply, updateProposalAndExecution, getNftOwnersCount } =
     useAppContractMethods();
+
+  const { getBalance } = useCommonContractMethods();
 
   const getSafeService = useCallback(async () => {
     const web3 = await web3InstanceEthereum();
@@ -359,13 +362,14 @@ const ProposalDetail = ({ pid, daoAddress }) => {
       airDropAmountArray,
     } = await getEncodedData({
       getERC20TotalSupply,
-      getNftBalance,
+      getBalance,
       proposalData,
       daoAddress,
       clubData,
       factoryData,
       contractABI: ABI,
       setMembers,
+      getNftOwnersCount,
       networkId,
     });
 
@@ -675,7 +679,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
 
           {/* Proposal Info and Signators */}
           <Grid container spacing={2} mt={4} mb={3}>
-            {proposalData && factoryData && (
+            {proposalData && factoryData && proposalData.type !== "survey" && (
               <ProposalExecutionInfo
                 proposalData={proposalData}
                 fetched={fetched}
@@ -836,7 +840,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
                     ) : proposalData?.status === "passed" ? (
                       isAdmin ? (
                         <Card>
-                          {proposalData?.cancelProposalId === undefined && (
+                          {proposalData?.cancelProposalId === undefined ? (
                             <Button
                               style={{
                                 width: "100%",
@@ -904,8 +908,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
                                 ) : null}
                               </Grid>
                             </Button>
-                          )}
-
+                          ) : null}
                           {(signed ||
                             isRejectTxnSigned ||
                             signedOwners.length) &&

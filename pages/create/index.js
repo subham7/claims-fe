@@ -128,7 +128,7 @@ const Create = () => {
       maxTokensPerUser: "",
       isNftTotalSupplylimited: false,
       totalTokenSupply: "",
-      depositClose: dayjs(Date.now() + 300000),
+      depositClose: dayjs(Date.now() + 3600 * 1000 * 24),
     },
 
     validationSchema: ERC721Step2ValidationSchema,
@@ -164,6 +164,8 @@ const Create = () => {
           image: formikERC721Step2.values.nftImage,
         });
 
+        console.log("METADATA", metadata);
+
         dispatch(setUploadNFTLoading(false));
         try {
           const params = {
@@ -181,11 +183,7 @@ const Create = () => {
                 : ZERO_ADDRESS,
             maxTokensPerUser: formikERC721Step2.values.maxTokensPerUser,
             distributeAmount: formikERC721Step2.values.isNftTotalSupplylimited
-              ? convertToWeiGovernance(
-                  formikERC721Step2.values.totalTokenSupply /
-                    formikERC721Step2.values.pricePerToken,
-                  18,
-                )
+              ? formikERC721Step2.values.totalTokenSupply
               : 0,
             pricePerToken: convertToWeiGovernance(
               formikERC721Step2.values.pricePerToken,
@@ -206,9 +204,7 @@ const Create = () => {
             dispatch,
             formikStep3.values.addressList,
             formikStep1.values.clubTokenType,
-            metadata.data.image.pathname,
             metadata.url,
-            formikERC721Step2.values.nftImage,
             formikStep1.values.useStationFor,
             formikStep1.values.email,
             networkId,
@@ -261,7 +257,6 @@ const Create = () => {
             dispatch,
             formikStep3.values.addressList,
             formikStep1.values.clubTokenType,
-            "",
             "",
             formikStep1.values.useStationFor,
             formikStep1.values.email,

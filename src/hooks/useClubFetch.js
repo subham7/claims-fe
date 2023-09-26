@@ -6,7 +6,6 @@ import {
   addErc721ClubDetails,
   addFactoryData,
 } from "../redux/reducers/club";
-
 import {
   addContractAddress,
   setAdminUser,
@@ -37,8 +36,7 @@ const useClubFetch = ({ daoAddress, networkId }) => {
   const {
     getDaoDetails,
     getERC20DAOdetails,
-    getERC20Balance,
-    getERC721Balance,
+    getDaoBalance,
     getERC721DAOdetails,
   } = useAppContractMethods();
 
@@ -139,7 +137,7 @@ const useClubFetch = ({ daoAddress, networkId }) => {
         }
 
         if (reduxClubData.tokenType === "erc20") {
-          const daoDetails = await getERC20DAOdetails();
+          const daoDetails = await getERC20DAOdetails(daoAddress);
 
           dispatch(
             addErc20ClubDetails({
@@ -152,7 +150,7 @@ const useClubFetch = ({ daoAddress, networkId }) => {
             }),
           );
         } else if (reduxClubData.tokenType === "erc721") {
-          const daoDetails = await getERC721DAOdetails();
+          const daoDetails = await getERC721DAOdetails(daoAddress);
           dispatch(
             addErc721ClubDetails({
               quorum: daoDetails.quorum / 100,
@@ -167,12 +165,10 @@ const useClubFetch = ({ daoAddress, networkId }) => {
           );
         }
 
-        let balance = 0;
-        if (reduxClubData.tokenType === "erc721") {
-          balance = await getERC721Balance();
-        } else {
-          balance = await getERC20Balance();
-        }
+        const balance = await getDaoBalance(
+          daoAddress,
+          reduxClubData.tokenType === "erc721",
+        );
 
         const safeSdk = await getCustomSafeSdk(
           reduxClubData.gnosisAddress,

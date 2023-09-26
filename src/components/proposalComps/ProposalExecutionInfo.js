@@ -60,6 +60,7 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
     customNftToken,
     usdcTokenSymbol,
     whitelistAddresses,
+    airDropCarryFee,
   } = proposalData?.commands[0];
 
   const fetchAirDropContractDetails = useCallback(async () => {
@@ -113,7 +114,7 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
 
   return (
     <Grid item md={9}>
-      {proposalData?.commands.length ? (
+      {proposalData?.commands.length && executionId ? (
         <Card>
           <>
             {executionId == 0 ? (

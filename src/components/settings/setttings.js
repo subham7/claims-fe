@@ -81,7 +81,7 @@ const Settings = ({ daoAddress }) => {
     getERC20DAOdetails,
     getERC721DAOdetails,
     getERC20TotalSupply,
-    getERC20Balance,
+    getDaoBalance,
     getERC721Balance,
     getNftOwnersCount,
   } = useAppContractMethods();
@@ -91,8 +91,8 @@ const Settings = ({ daoAddress }) => {
 
   const fetchErc20ContractDetails = useCallback(async () => {
     try {
-      const balanceOfClubToken = await getERC20Balance();
-      const erc20Data = await getERC20DAOdetails();
+      const balanceOfClubToken = await getDaoBalance(daoAddress);
+      const erc20Data = await getERC20DAOdetails(daoAddress);
       const erc20DaoDecimal = await getDecimals(daoAddress);
       const clubTokensMinted = await getERC20TotalSupply();
 
@@ -150,9 +150,9 @@ const Settings = ({ daoAddress }) => {
 
   const fetchErc721ContractDetails = useCallback(async () => {
     try {
-      const erc721Data = await getERC721DAOdetails();
+      const erc721Data = await getERC721DAOdetails(daoAddress);
 
-      const balanceOfClubToken = await getERC721Balance();
+      const balanceOfClubToken = await getDaoBalance(daoAddress, true);
       const nftMinted = await getNftOwnersCount();
 
       if (erc721Data && factoryData) {

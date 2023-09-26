@@ -1,5 +1,4 @@
-import { useSelector } from "react-redux";
-import { writeContractFunction } from "utils/helper";
+import { readContractFunction, writeContractFunction } from "utils/helper";
 import { useAccount, useNetwork } from "wagmi";
 import { claimContractABI } from "abis/claimContract.js";
 import { claimFactoryABI } from "abis/claimFactory.js";
@@ -10,13 +9,7 @@ const useDropsContractMethods = () => {
   const { chain } = useNetwork();
   const networkId = "0x" + chain?.id.toString(16);
 
-  const contractInstances = useSelector((state) => {
-    return state.contractInstances.contractInstances;
-  });
-
   const claimFactoryAddress = CHAIN_CONFIG[networkId].claimFactoryAddress;
-
-  const { claimContractCall } = contractInstances;
 
   const addMoreTokens = async (claimAddress, noOfTokens, merkleRoot) => {
     try {
@@ -55,12 +48,63 @@ const useDropsContractMethods = () => {
     }
   };
 
-  const claimSettings = async () => {
-    return await claimContractCall?.methods?.claimSettings().call();
+  const claimSettings = async (claimAddress) => {
+    const response = await readContractFunction({
+      address: claimAddress,
+      abi: claimContractABI,
+      functionName: "claimSettings",
+      args: [],
+      account: walletAddress,
+      networkId,
+    });
+
+    return response
+      ? {
+          name: response[0],
+          creatorAddress: response[1],
+          walletAddress: response[2],
+          airdropToken: response[3],
+          daoToken: response[4],
+          tokenGatingValue: response[5],
+          startTime: Number(response[6]),
+          endTime: Number(response[7]),
+          cooldownTime: Number(response[8]),
+          hasAllowanceMechanism: response[9],
+          isEnabled: response[10],
+          merkleRoot: response[11],
+          permission: response[12].toString(),
+          claimAmountDetails: {
+            maxClaimable: Number(response[13].maxClaimable),
+            totalClaimAmount: Number(response[13].totalClaimAmount),
+          },
+        }
+      : {};
   };
 
-  const claimBalance = async () => {
-    return await claimContractCall?.methods.claimBalance().call();
+  const claimBalance = async (claimAddress) => {
+    const response = await readContractFunction({
+      address: claimAddress,
+      abi: claimContractABI,
+      functionName: "claimBalance",
+      args: [],
+      account: walletAddress,
+      networkId,
+    });
+
+    return Number(response ?? 0);
+  };
+
+  const claimAmount = async (claimAddress, walletAddress) => {
+    const response = await readContractFunction({
+      address: claimAddress,
+      abi: claimContractABI,
+      functionName: "claimAmount",
+      args: [walletAddress],
+      account: walletAddress,
+      networkId,
+    });
+
+    return Number(response ?? 0);
   };
 
   const toggleClaim = async (claimAddress) => {
@@ -133,23 +177,9 @@ const useDropsContractMethods = () => {
     }
   };
 
-  const hasClaimed = async (walletAddress) => {
-    return await claimContractCall?.methods.hasClaimed(walletAddress).call();
-  };
-
-  const claimAmount = async (walletAddress) => {
-    return await claimContractCall?.methods.claimAmount(walletAddress).call();
-  };
-
-  const checkAmount = async (walletAddress) => {
-    return await claimContractCall?.methods.checkAmount(walletAddress).call();
-  };
-
   return {
     claimAmount,
     claim,
-    checkAmount,
-    hasClaimed,
     rollbackTokens,
     toggleClaim,
     claimBalance,

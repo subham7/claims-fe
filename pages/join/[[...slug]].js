@@ -6,7 +6,7 @@ import Join from "@components/join/Join";
 const JoinPage = () => {
   const router = useRouter();
 
-  const [daoAddress, networkId] = router?.query?.slug ?? [];
+  const [daoAddress, networkId = "0x89"] = router?.query?.slug ?? [];
 
   if (!daoAddress) {
     return null;

@@ -5,7 +5,7 @@ import {
   setCreateSafeErrorCode,
   setCreateSafeLoading,
 } from "../redux/reducers/gnosis";
-import Router from "next/router";
+import { useRouter } from "next/router";
 import { createClubData } from "../api/club";
 import useAppContractMethods from "./useAppContractMethods";
 import { ZERO_ADDRESS } from "utils/constants";
@@ -13,6 +13,7 @@ import { ZERO_ADDRESS } from "utils/constants";
 
 const useSafe = () => {
   const { createERC721DAO, createERC20DAO } = useAppContractMethods();
+  const router = useRouter();
 
   const initiateConnection = async (
     params,
@@ -73,19 +74,9 @@ const useSafe = () => {
           deployerEmail: email,
         });
 
-        // if (clubTokenType === "NFT") {
-        //   const formData = new FormData();
-        //   formData.append("file", imgFile);
-        //   formData.append("daoAddress", daoAddress);
-        //   await uploadNFT(formData);
-        // }
-
-        const { pathname } = Router;
-        if (pathname == "/create") {
-          Router.push(`/dashboard/${daoAddress}/${networkId}`, undefined, {
-            shallow: true,
-          });
-        }
+        router.push(`/dashboard/${daoAddress}/${networkId}`, undefined, {
+          shallow: true,
+        });
       } catch (error) {
         dispatch(setCreateDaoAuthorized(false));
         dispatch(setCreateSafeError(true));
