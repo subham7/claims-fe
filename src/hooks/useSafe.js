@@ -9,7 +9,8 @@ import { useRouter } from "next/router";
 import { createClubData } from "../api/club";
 import useAppContractMethods from "./useAppContractMethods";
 import { ZERO_ADDRESS } from "utils/constants";
-// import { uploadNFT } from "api/assets";
+import { uploadNFT } from "api/assets";
+import { uploadFileToAWS } from "utils/helper";
 
 const useSafe = () => {
   const { createERC721DAO, createERC20DAO } = useAppContractMethods();
@@ -24,6 +25,7 @@ const useSafe = () => {
     useStationFor,
     email = "",
     networkId,
+    imageFile = null,
   ) => {
     dispatch(setCreateSafeLoading(true));
     dispatch(setCreateDaoAuthorized(false));
@@ -73,6 +75,11 @@ const useSafe = () => {
           clubType: useStationFor,
           deployerEmail: email,
         });
+
+        if (clubTokenType === "NFT") {
+          const imageLink = await uploadFileToAWS(imageFile);
+          await uploadNFT(daoAddress, imageLink);
+        }
 
         router.push(`/dashboard/${daoAddress}/${networkId}`, undefined, {
           shallow: true,

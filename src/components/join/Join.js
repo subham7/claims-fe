@@ -194,7 +194,6 @@ const Join = ({ daoAddress }) => {
   };
 
   useEffect(() => {
-    console.log("DAO", daoAddress);
     if (walletAddress && daoAddress && FACTORY_CONTRACT_ADDRESS) {
       fetchTokenGatingDetials();
     }

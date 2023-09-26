@@ -4,6 +4,8 @@ export const FIVE_MB = 5242880;
 export const ZERO_MERKLE_ROOT =
   "0x0000000000000000000000000000000000000000000000000000000000000001";
 export const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
+export const AWS_API_URL =
+  "https://k3hu9vqwv4.execute-api.ap-south-1.amazonaws.com";
 
 export const CHAIN_CONFIG = {
   "0x89": {

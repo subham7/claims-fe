@@ -10,6 +10,7 @@ import {
   contractNetworks,
 } from "./constants";
 import { getPublicClient, getWalletClient } from "utils/viemConfig";
+import { uploadToAWS } from "api/club";
 
 export const getCustomSafeSdk = async (
   gnosisAddress,
@@ -298,4 +299,18 @@ export const shortAddress = (address) => {
       address?.substring(address.length - 4)
     );
   }
+};
+
+export const uploadFileToAWS = async (file) => {
+  return new Promise(async (resolve, reject) => {
+    const reader = new FileReader();
+    reader.addEventListener("loadend", async () => {
+      const path = file?.name.split("/");
+      const fileName = path[path.length - 1];
+      const data = await uploadToAWS(fileName, reader);
+      resolve(data?.saveFileResponse?.Location);
+    });
+
+    reader.readAsArrayBuffer(file);
+  });
 };

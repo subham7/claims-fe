@@ -1,6 +1,7 @@
 import axios from "axios";
 import { MAIN_API_URL } from "../index";
 import { getJwtToken } from "../../utils/auth";
+import { AWS_API_URL } from "utils/constants";
 
 export async function getClubInfo(daoAddress) {
   // fetch club details using clubId
@@ -68,3 +69,16 @@ export async function createClubData(data) {
     return error;
   }
 }
+
+export const uploadToAWS = async (fileName, reader) => {
+  try {
+    const response = await axios.post(
+      `${AWS_API_URL}/upload?filename=${fileName}`,
+      new Blob([reader.result]),
+    );
+
+    return response.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
