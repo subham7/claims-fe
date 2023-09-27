@@ -28,7 +28,7 @@ import { convertToWeiGovernance } from "../../src/utils/globalFunctions";
 import useSafe from "../../src/hooks/useSafe";
 import Layout from "../../src/components/layouts/layout";
 import { useAccount, useNetwork } from "wagmi";
-import { ZERO_ADDRESS, ZERO_MERKLE_ROOT } from "utils/constants";
+import { CHAIN_CONFIG, ZERO_ADDRESS, ZERO_MERKLE_ROOT } from "utils/constants";
 
 const Create = () => {
   const steps = [
@@ -174,7 +174,7 @@ const Create = () => {
             quorum: formikStep3.values.quorum * 100,
             threshold: formikStep3.values.threshold * 100,
             safeThreshold: formikStep3.values.safeThreshold ?? 0,
-            depositTokenAddress: GNOSIS_DATA.usdcContractAddress,
+            depositTokenAddress: CHAIN_CONFIG[networkId].usdcAddress,
             treasuryAddress:
               formikStep3.values.safeAddress.length > 0
                 ? formikStep3.values.safeAddress
@@ -238,7 +238,7 @@ const Create = () => {
             quorum: formikStep3.values.quorum * 100,
             threshold: formikStep3.values.threshold * 100,
             safeThreshold: formikStep3.values.safeThreshold ?? 0,
-            depositTokenAddress: GNOSIS_DATA.usdcContractAddress,
+            depositTokenAddress: CHAIN_CONFIG[networkId].usdcAddress,
             treasuryAddress:
               formikStep3.values.safeAddress.length > 0
                 ? formikStep3.values.safeAddress

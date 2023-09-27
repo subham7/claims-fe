@@ -105,7 +105,6 @@ const Settings = ({ daoAddress }) => {
           isGovernance: erc20Data.isGovernanceActive,
           decimals: erc20DaoDecimal,
           clubTokensMinted: clubTokensMinted,
-          // daoImage: fetchedImage,
           balanceOfClubToken: convertFromWeiGovernance(balanceOfClubToken, 18),
           isTokenGated: factoryData.isTokenGatingApplied,
           minDeposit: factoryData.minDepositPerUser,
@@ -164,7 +163,7 @@ const Settings = ({ daoAddress }) => {
           isGovernance: erc721Data.isGovernanceActive,
           maxTokensPerUser: erc721Data.maxTokensPerUser,
           isTotalSupplyUnlimited: erc721Data.isNftTotalSupplyUnlimited,
-          balanceOfClubToken: convertFromWeiGovernance(balanceOfClubToken, 18),
+          balanceOfClubToken: balanceOfClubToken,
           nftMinted: nftMinted,
           isTransferable: erc721Data.isTransferable,
           createdBy: erc721Data.ownerAddress,
@@ -176,8 +175,7 @@ const Settings = ({ daoAddress }) => {
           depositTokenAddress: factoryData.depositTokenAddress,
           distributionAmt: factoryData.distributionAmount,
           assetsStoredOnGnosis: factoryData.assetsStoredOnGnosis,
-          totalSupply:
-            factoryData.distributionAmount * factoryData.pricePerToken,
+          totalSupply: factoryData.distributionAmount,
           ownerFee: factoryData.ownerFeePerDepositPercent / 100,
         });
       }

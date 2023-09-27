@@ -59,13 +59,6 @@ const SettingsInfo = ({
               container
               spacing={2}
               sx={{ display: "flex", justifyContent: "space-between" }}>
-              {/* <Grid item mt={3} ml={3}>
-                  <img
-                    src={daoDetails.daoImage ?? null}
-                    width="100vw"
-                    alt="profile_pic"
-                  />
-                </Grid> */}
               <Grid item ml={2} mt={4}>
                 <Stack spacing={0}>
                   <Typography variant="h4">
@@ -659,7 +652,7 @@ const SettingsInfo = ({
                             width={100}
                             height={25}
                           />
-                        )}{" "}
+                        )}
                       </Typography>
                     )}
                   </Stack>
