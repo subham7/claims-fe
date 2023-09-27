@@ -141,7 +141,7 @@ const Create = () => {
     initialValues: {
       deploySafe: "newSafe",
       safeAddress: "",
-      governance: "governance",
+      governance: "non-governance",
       quorum: 1,
       threshold: 51,
       addressList: [walletAddress],
