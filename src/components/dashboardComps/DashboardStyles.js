@@ -184,6 +184,8 @@ export const DashboardStyles = makeStyles({
     color: "#FFFFFF",
   },
   fourthCard: {
+    display: "flex",
+    flexDirection: "column",
     backgroundColor: "#151515",
     borderRadius: "10px",
     paddingBottom: "25px",
