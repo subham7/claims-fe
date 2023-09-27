@@ -324,7 +324,7 @@ const SettingsInfo = ({
                       <Typography variant="p" className={classes.valuesStyle}>
                         $
                         {treasuryAmount >= 0 ? (
-                          treasuryAmount
+                          treasuryAmount.toFixed(3)
                         ) : (
                           <Skeleton
                             variant="rectangular"
@@ -572,16 +572,15 @@ const SettingsInfo = ({
                       </Typography>
                       <Typography variant="p" className={classes.valuesStyle}>
                         {walletAddress ? (
-                          (
-                            convertFromWeiGovernance(
-                              daoDetails.clubTokensMinted,
-                              daoDetails.decimals,
-                            ) *
+                          convertFromWeiGovernance(
+                            daoDetails.clubTokensMinted,
+                            daoDetails.decimals,
+                          ) *
                             convertFromWeiGovernance(
                               daoDetails.pricePerToken,
                               erc20TokenDetails.tokenDecimal,
-                            )
-                          ).toFixed(2) + " $USDC"
+                            ) +
+                          " $USDC"
                         ) : (
                           <Skeleton
                             variant="rectangular"
@@ -603,13 +602,11 @@ const SettingsInfo = ({
                   xs
                   sx={{ display: "flex", justifyContent: "flex-end" }}>
                   <Stack spacing={1}>
-                    {daoDetails.isGovernance && (
-                      <Typography variant="settingText">
-                        {tokenType === "erc721"
-                          ? " Total NFT Supply"
-                          : "Total Raise Amount"}
-                      </Typography>
-                    )}
+                    <Typography variant="settingText">
+                      {tokenType === "erc721"
+                        ? "Total NFT Supply"
+                        : "Total Raise Amount"}
+                    </Typography>
 
                     {tokenType === "erc721" ? (
                       <>
@@ -636,8 +633,7 @@ const SettingsInfo = ({
                       </>
                     ) : (
                       <Typography
-                        textAlign="right
-                        "
+                        textAlign="right"
                         variant="p"
                         className={classes.valuesStyle}>
                         {daoDetails.totalSupply ? (
