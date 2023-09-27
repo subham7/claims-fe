@@ -1,8 +1,9 @@
 import React from "react";
 import styles from "./Button.module.scss";
 import classNames from "classnames";
+import { Button } from "@mui/material";
 
-const Button = ({
+const CustomButton = ({
   variant = "pill",
   children,
   onClick,
@@ -10,23 +11,22 @@ const Button = ({
   type = "button",
   className,
 }) => {
-  let buttonStyles = `${styles.button} ${styles[variant]} ${
-    disabled && styles.disabled
-  }`;
+  let buttonStyles = `${styles.button}`;
 
   const handleClick = () => {
     onClick && onClick();
   };
 
   return (
-    <button
+    <Button
       type={type}
+      variant="contained"
       className={classNames(buttonStyles, className)}
       onClick={handleClick}
       disabled={disabled}>
       {children}
-    </button>
+    </Button>
   );
 };
 
-export default Button;
+export default CustomButton;

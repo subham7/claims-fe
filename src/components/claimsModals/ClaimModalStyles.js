@@ -3,12 +3,12 @@ import { makeStyles } from "@mui/styles";
 export const ClaimModalStyles = makeStyles({
   card: {
     width: "650px",
-    background: "#111D38",
+    background: "#0F0F0F",
     position: "fixed",
     top: "50%",
     left: "50%",
     transform: "translateX(-50%) translateY(-50%)",
-    zIndex: 2002,
+    zIndex: 2,
     padding: "60px 32px",
     borderRadius: "20px",
     boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px;",
@@ -19,9 +19,9 @@ export const ClaimModalStyles = makeStyles({
     width: "100vw",
     top: 0,
     left: 0,
-    background: "#fff",
-    opacity: 0.4,
-    zIndex: 2000,
+    background: "#000",
+    opacity: 0.6,
+    zIndex: 2,
   },
 
   title: {
@@ -30,7 +30,7 @@ export const ClaimModalStyles = makeStyles({
     fontSize: "28px",
   },
   subtitle: {
-    color: "#C1D3FF",
+    color: "#dcdcdc",
     fontSize: "14px",
     marginBottom: "20px",
   },
@@ -39,8 +39,7 @@ export const ClaimModalStyles = makeStyles({
     display: "flex",
     justifyContent: "space-between",
     alignItems: "flex-start",
-    background: "#142243",
-    border: "1px solid #C1D3FF40",
+    background: "#151515",
     borderRadius: "10px",
     padding: "30px",
   },
@@ -61,14 +60,14 @@ export const ClaimModalStyles = makeStyles({
   },
   smallText: {
     fontSize: "14px",
-    color: "#C1D3FF",
+    color: "#dcdcdc",
   },
   submitBtn: {
     padding: "6px 24px",
     borderRadius: "50px",
     border: "none",
     cursor: "pointer",
-    background: "#3B7AFD",
+    background: "#2D55FF",
     color: "#fff",
   },
   buttonContainers: {
@@ -109,7 +108,7 @@ export const ClaimModalStyles = makeStyles({
     borderRadius: "6px",
     padding: "12px 20px",
     outline: "none",
-    border: "1px solid #C1D3FF40",
+    border: "1px solid #dcdcdc40",
     background: "transparent",
   },
 });

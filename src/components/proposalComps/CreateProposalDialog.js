@@ -22,26 +22,19 @@ import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import QuillEditor from "../quillEditor";
-import AddCircleRoundedIcon from "@mui/icons-material/AddCircleRounded";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ProposalActionForm from "./ProposalActionForm";
-import { proposalValidationSchema } from "../createClubComps/ValidationSchemas";
-import { convertToWeiGovernance } from "../../utils/globalFunctions";
 import { createProposal } from "../../api/proposal";
-import { fetchProposals } from "../../utils/proposal";
-import { useDispatch, useSelector } from "react-redux";
-import { setProposalList } from "../../redux/reducers/proposal";
-import { getWhiteListMerkleRoot } from "api/whitelist";
+import { useSelector } from "react-redux";
 import { useAccount, useNetwork } from "wagmi";
-import {
-  handleFetchCommentAddresses,
-  handleFetchFollowers,
-} from "utils/lensHelper";
+import { getProposalCommands } from "utils/proposalData";
+import useCommonContractMethods from "hooks/useCommonContractMehods";
+import { getProposalValidationSchema } from "@components/createClubComps/ValidationSchemas";
 
 const useStyles = makeStyles({
   modalStyle: {
     width: "792px",
-    backgroundColor: "#19274B",
+    backgroundColor: "#151515",
   },
   dialogBox: {
     fontSize: "38px",
@@ -64,9 +57,10 @@ const CreateProposalDialog = ({
   onClose,
   tokenData,
   nftData,
+  daoAddress,
+  fetchProposalList,
 }) => {
   const classes = useStyles();
-  const dispatch = useDispatch();
 
   const { address: walletAddress } = useAccount();
   const { chain } = useNetwork();
@@ -78,10 +72,6 @@ const CreateProposalDialog = ({
 
   const clubData = useSelector((state) => {
     return state.club.clubData;
-  });
-
-  const daoAddress = useSelector((state) => {
-    return state.club.daoAddress;
   });
 
   const [loaderOpen, setLoaderOpen] = useState(false);
@@ -97,26 +87,32 @@ const CreateProposalDialog = ({
     setLoaderOpen(false);
   };
 
+  const { getBalance, getDecimals } = useCommonContractMethods();
+
+  const factoryData = useSelector((state) => {
+    return state.club.factoryData;
+  });
+  const gnosisAddress = useSelector((state) => {
+    return state.club.clubData.gnosisAddress;
+  });
+
   const proposal = useFormik({
     initialValues: {
       tokenType: tokenType,
-      typeOfProposal: "survey",
+      typeOfProposal: "action",
       proposalDeadline: dayjs(Date.now() + 3600 * 1000 * 24),
       proposalTitle: "",
       proposalDescription: "",
       optionList: [{ text: "Yes" }, { text: "No" }, { text: "Abstain" }],
       actionCommand: "",
-      airdropToken: tokenData ? tokenData[0]?.tokenAddress : "",
+      airdropToken: tokenData ? tokenData[0]?.address : "",
       amountToAirdrop: 0,
       carryFee: 0,
-      // userAddress: "",
-      // amountOfTokens: 0,
-      // amountOfTokens721: 0,
       pricePerToken: 0,
       quorum: 0,
       threshold: 0,
       totalDeposit: 0,
-      customToken: tokenData ? tokenData[0]?.tokenAddress : "",
+      customToken: tokenData ? tokenData[0]?.address : "",
       recieverAddress: "",
       amountToSend: 0,
       customNft: "",
@@ -130,220 +126,36 @@ const CreateProposalDialog = ({
       mintGTAmounts: [],
       lensId: "",
       lensPostLink: "",
+      aaveDepositToken: tokenData ? tokenData[0]?.address : "",
+      aaveDepositAmount: 0,
+      aaveWithdrawAmount: 0,
+      aaveWithdrawToken: tokenData ? tokenData[0]?.address : "",
     },
-    validationSchema: proposalValidationSchema,
+    validationSchema: getProposalValidationSchema({
+      networkId,
+      getBalance,
+      getDecimals,
+      gnosisAddress,
+      factoryData,
+    }),
     onSubmit: async (values) => {
       try {
-        let commands;
         setLoaderOpen(true);
-        if (values.actionCommand === "Distribute token to members") {
-          const airDropTokenDecimal = tokenData.find(
-            (token) => token.token_address === values.airdropToken,
-          ).decimals;
-          commands = [
-            {
-              executionId: 0,
-              airDropToken: values.airdropToken,
-              airDropAmount: convertToWeiGovernance(
-                values.amountToAirdrop,
-                airDropTokenDecimal,
-              ).toString(),
-              airDropCarryFee: values.carryFee,
-              usdcTokenSymbol: "USDC",
-              usdcTokenDecimal: 6,
-              usdcGovernanceTokenDecimal: 18,
-            },
-          ];
-        }
-        if (values.actionCommand === "Mint club token") {
-          commands = [
-            {
-              executionId: 1,
-              mintGTAddresses: values.mintGTAddresses,
-              mintGTAmounts:
-                clubData.tokenType === "erc20"
-                  ? values.mintGTAmounts.map((amount) =>
-                      convertToWeiGovernance(amount, 18),
-                    )
-                  : values.mintGTAmounts,
-              usdcTokenSymbol: "USDC",
-              usdcTokenDecimal: 6,
-              usdcGovernanceTokenDecimal: 18,
-            },
-          ];
-        }
-        if (values.actionCommand === "Update Governance Settings") {
-          commands = [
-            {
-              executionId: 2,
-              quorum: values.quorum,
-              threshold: values.threshold,
-              usdcTokenSymbol: "USDC",
-              usdcTokenDecimal: 6,
-              usdcGovernanceTokenDecimal: 18,
-            },
-          ];
-        }
-        if (values.actionCommand === "Change total raise amount") {
-          commands = [
-            {
-              executionId: 3,
-              totalDeposits: values.totalDeposit,
-              usdcTokenSymbol: "USDC",
-              usdcTokenDecimal: 6,
-              usdcGovernanceTokenDecimal: 18,
-            },
-          ];
-        }
-        if (values.actionCommand === "Send token to an address") {
-          const tokenDecimal = tokenData.find(
-            (token) => token.token_address === values.customToken,
-          ).decimals;
-          commands = [
-            {
-              executionId: 4,
-              customToken: values.customToken,
-              customTokenAmounts: [
-                convertToWeiGovernance(values.amountToSend, tokenDecimal),
-              ],
-              customTokenAddresses: [values.recieverAddress],
-              usdcTokenSymbol: "USDC",
-              usdcTokenDecimal: 6,
-              usdcGovernanceTokenDecimal: 18,
-            },
-          ];
-        }
-        if (values.actionCommand === "Send nft to an address") {
-          commands = [
-            {
-              executionId: 5,
-              customNft: values.customNft,
-              customNftToken: values.customNftToken,
-              customTokenAddresses: [values.recieverAddress],
-              usdcTokenSymbol: "USDC",
-              usdcTokenDecimal: 6,
-              usdcGovernanceTokenDecimal: 18,
-            },
-          ];
-        }
-        if (values.actionCommand === "Add signer") {
-          commands = [
-            {
-              executionId: 6,
-              ownerAddress: values.ownerAddress,
-              usdcTokenSymbol: "USDC",
-              usdcTokenDecimal: 6,
-              usdcGovernanceTokenDecimal: 18,
-            },
-          ];
-        }
-        if (values.actionCommand === "Remove signer") {
-          commands = [
-            {
-              executionId: 7,
-              ownerAddress: values.ownerAddress,
-              safeThreshold: values.safeThreshold,
-              usdcTokenSymbol: "USDC",
-              usdcTokenDecimal: 6,
-              usdcGovernanceTokenDecimal: 18,
-            },
-          ];
-        }
-        if (values.actionCommand === "Buy nft") {
-          commands = [
-            {
-              executionId: 8,
-              nftLink: values.nftLink,
-              usdcTokenSymbol: "USDC",
-              usdcTokenDecimal: 6,
-              usdcGovernanceTokenDecimal: 18,
-            },
-          ];
-        }
-        if (values.actionCommand === "Sell nft") {
-          commands = [
-            {
-              executionId: 9,
-              nftLink: values.nftLink,
-              usdcTokenSymbol: "USDC",
-              usdcTokenDecimal: 6,
-              usdcGovernanceTokenDecimal: 18,
-            },
-          ];
-        }
-        if (
-          values.actionCommand === "whitelist deposit" ||
-          values.actionCommand === "whitelist with lens followers" ||
-          values.actionCommand === "whitelist with lens post's comments"
-        ) {
-          let data;
-          let followersAddresses;
+        let commands = await getProposalCommands({
+          values,
+          tokenData,
+          clubData,
+          daoAddress,
+          networkId,
+        });
 
-          if (values.actionCommand === "whitelist deposit") {
-            followersAddresses = values.csvObject;
-
-            data = {
-              daoAddress,
-              whitelist: values.csvObject,
-            };
-          } else if (values.actionCommand === "whitelist with lens followers") {
-            followersAddresses = await handleFetchFollowers(values.lensId);
-
-            data = {
-              daoAddress,
-              whitelist: followersAddresses,
-            };
-          } else if (
-            values.actionCommand === "whitelist with lens post's comments"
-          ) {
-            followersAddresses = await handleFetchCommentAddresses(
-              values.lensPostLink,
-            );
-
-            data = {
-              daoAddress,
-              whitelist: followersAddresses,
-            };
-          }
-
-          const merkleRoot = await getWhiteListMerkleRoot(networkId, data);
-
-          commands = [
-            {
-              executionId:
-                values.actionCommand === "whitelist deposit"
-                  ? 10
-                  : values.actionCommand === "whitelist with lens followers"
-                  ? 11
-                  : 12,
-              merkleRoot: merkleRoot,
-              lensId:
-                values.actionCommand === "whitelist with lens followers"
-                  ? values.lensId
-                  : null,
-              lensPostLink:
-                values.actionCommand === "whitelist with lens post's comments"
-                  ? values.lensPostLink
-                  : null,
-              whitelistAddresses: followersAddresses,
-              allowWhitelisting: true,
-              usdcTokenSymbol: "USDC",
-              usdcTokenDecimal: 6,
-              usdcGovernanceTokenDecimal: 18,
-            },
-          ];
-        }
-        if (values.actionCommand === "update price per token") {
-          commands = [
-            {
-              executionId: 13,
-              pricePerToken: values.pricePerToken,
-              usdcTokenSymbol: "USDC",
-              usdcTokenDecimal: 6,
-              usdcGovernanceTokenDecimal: 18,
-            },
-          ];
-        }
+        commands = {
+          executionId: values.actionCommand,
+          ...commands,
+          usdcTokenSymbol: "USDC",
+          usdcTokenDecimal: 6,
+          usdcGovernanceTokenDecimal: 18,
+        };
 
         const payload = {
           clubId: daoAddress,
@@ -352,7 +164,7 @@ const CreateProposalDialog = ({
           createdBy: walletAddress,
           votingDuration: dayjs(values.proposalDeadline).unix(),
           votingOptions: values.optionList,
-          commands: commands,
+          commands: [values.typeOfProposal !== "survey" ? commands : null],
           type: values.typeOfProposal,
           tokenType: clubData.tokenType,
           daoAddress: daoAddress,
@@ -365,8 +177,7 @@ const CreateProposalDialog = ({
             setFailed(true);
             setLoaderOpen(false);
           } else {
-            const proposalData = await fetchProposals(daoAddress);
-            dispatch(setProposalList(proposalData));
+            fetchProposalList();
             setOpenSnackBar(true);
             setFailed(false);
             setOpen(false);
@@ -394,7 +205,7 @@ const CreateProposalDialog = ({
         <DialogContent
           sx={{
             overflow: "hidden",
-            backgroundColor: "#19274B",
+            backgroundColor: "#151515",
             padding: "3rem",
           }}>
           <form onSubmit={proposal.handleSubmit} className={classes.form}>
@@ -407,7 +218,7 @@ const CreateProposalDialog = ({
           </Grid> */}
 
             {/* type of proposal and end time */}
-            <Grid container spacing={3} ml={0}>
+            <Grid container spacing={3} ml={0} width="100%">
               <Grid item md={6} sx={{ paddingLeft: "0 !important" }}>
                 <Typography variant="proposalBody">Type of Proposal</Typography>
                 <FormControl sx={{ width: "100%", marginTop: "0.5rem" }}>
@@ -430,7 +241,7 @@ const CreateProposalDialog = ({
                   <DateTimePicker
                     fullWidth
                     sx={{
-                      width: "90%",
+                      width: "100%",
                       marginTop: "0.5rem",
                     }}
                     value={proposal.values.proposalDeadline}
@@ -489,10 +300,8 @@ const CreateProposalDialog = ({
                 style={{
                   width: "100%",
                   height: "auto",
-                  backgroundColor: "#19274B",
+                  backgroundColor: "#0f0f0f",
                   fontSize: "18px",
-                  color: "#C1D3FF",
-
                   margin: "0.5rem 0",
                 }}
                 name="proposalDescription"
@@ -525,11 +334,10 @@ const CreateProposalDialog = ({
             {/* add options button */}
             {proposal.values.typeOfProposal === "survey" ? (
               <>
-                <Stack mt={3}>
+                <Stack mt={1}>
                   {proposal.values.optionList?.length > 0 ? (
                     <Grid
                       container
-                      pr={1}
                       mt={2}
                       mb={2}
                       sx={{
@@ -561,7 +369,6 @@ const CreateProposalDialog = ({
                               placeholder={"yes, no"}
                               sx={{
                                 m: 1,
-                                width: 443,
                                 mt: 1,
                                 borderRadius: "10px",
                               }}
@@ -604,7 +411,6 @@ const CreateProposalDialog = ({
                         { text: "" },
                       ]);
                     }}>
-                    <AddCircleRoundedIcon />
                     Add Option
                   </Button>
                 </Stack>
@@ -640,11 +446,7 @@ const CreateProposalDialog = ({
               </Grid>
               <Grid item>
                 <Button type="submit">
-                  {loaderOpen ? (
-                    <CircularProgress color="inherit" size={25} />
-                  ) : (
-                    "Submit"
-                  )}
+                  {loaderOpen ? <CircularProgress size={25} /> : "Submit"}
                 </Button>
               </Grid>
             </Grid>

@@ -10,12 +10,12 @@ const useStyles = makeStyles({
     top: 0,
     left: 0,
     background: "#000000",
-    opacity: 0.85,
+    opacity: 0.6,
     zIndex: 2000,
   },
   modal: {
     width: "570px",
-    background: "#111D38",
+    background: "#0F0F0F",
     position: "fixed",
     top: "50%",
     left: "50%",
@@ -32,12 +32,12 @@ const useStyles = makeStyles({
     color: "red",
   },
   subtitle: {
-    color: "#C1D3FF",
+    color: "#dcdcdc",
     fontSize: "16px",
     marginBottom: "6px",
   },
   btn: {
-    background: "#3B7AFD",
+    background: "#2D55FF",
     borderRadius: "10px",
     padding: "13px 30px",
     marginTop: "20px",
@@ -47,47 +47,6 @@ const useStyles = makeStyles({
     fontWeight: 500,
     letterSpacing: "0.6px",
     fontSize: "16px",
-  },
-  relative: {
-    position: "relative",
-  },
-  icon: {
-    position: "absolute",
-    top: "-23px",
-    right: 0,
-    cursor: "pointer",
-  },
-  inviteLink: {
-    background:
-      "transparent linear-gradient(90deg, #111D3800 0%, #3B7AFD 100%) 0% 0% no-repeat padding-box",
-    position: "",
-    display: "block",
-    padding: "0px 20px",
-    overflowX: "scroll",
-    marginTop: "20px",
-    borderRadius: "10px",
-    border: "1px solid gray",
-    color: "#a7a6ba",
-    paddingRight: "20px",
-  },
-  copy: {
-    width: "68px",
-    height: "30px",
-    background: "#3B7AFD 0% 0% no-repeat padding-box",
-    borderRadius: "15px",
-  },
-  linkInput: {
-    width: "100%",
-    color: "#C1D3FF",
-    background: "#111D38 0% 0% no-repeat padding-box",
-    border: "1px solid #C1D3FF40",
-    borderRadius: "10px",
-    "&:hover": {
-      boxShadow: "0px 0px 12px #C1D3FF40",
-      border: "1px solid #C1D3FF40",
-      borderRadius: "10px",
-      opacity: 1,
-    },
   },
 });
 const Backdrop = () => {
@@ -101,7 +60,7 @@ const ErrorModal = ({ isSignRejected = false, isError = false }) => {
     <>
       <Backdrop />
       <div className={classes.modal}>
-        <div className={classes.relative}>
+        <div>
           <h2 className={classes.title}>Error</h2>
           <p className={classes.subtitle}>
             {isSignRejected && "Metamask Signature rejected by user"}

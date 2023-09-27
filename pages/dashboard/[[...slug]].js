@@ -6,14 +6,14 @@ import Layout from "@components/layouts/layout";
 const DashboardPage = () => {
   const router = useRouter();
 
-  const [daoAddress] = router?.query?.slug ?? [];
+  const [daoAddress, networkId = "0x89"] = router?.query?.slug ?? [];
 
   if (!daoAddress) {
     return null;
   }
 
   return (
-    <Layout daoAddress={daoAddress} page={1}>
+    <Layout daoAddress={daoAddress} networkId={networkId} page={1}>
       <DashboardIndex daoAddress={daoAddress} />
     </Layout>
   );

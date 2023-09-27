@@ -22,7 +22,8 @@ import TelegramIcon from "@mui/icons-material/Telegram";
 import TwitterIcon from "@mui/icons-material/Twitter";
 import { RiDiscordFill } from "react-icons/ri";
 import ReactHtmlParser from "react-html-parser";
-import EditClubInfo from "./modals/EditClubInfo";
+import EditDetails from "./modals/EditDetails";
+import { useNetwork } from "wagmi";
 
 const SettingsInfo = ({
   daoDetails,
@@ -34,12 +35,14 @@ const SettingsInfo = ({
   walletAddress,
   remainingTimeInSecs,
   clubInfo,
-  getClubInfo,
   isAdminUser,
   daoAddress,
 }) => {
   const classes = SettingsInfoStlyes();
   const [open, setOpen] = useState(false);
+
+  const { chain } = useNetwork();
+  const networkId = "0x" + chain?.id.toString(16);
 
   const handleClose = (event, reason) => {
     if (reason !== "backdropClick" && reason !== "escapeKeyDown") {
@@ -56,14 +59,7 @@ const SettingsInfo = ({
               container
               spacing={2}
               sx={{ display: "flex", justifyContent: "space-between" }}>
-              {/* <Grid item mt={3} ml={3}>
-                  <img
-                    src={daoDetails.daoImage ?? null}
-                    width="100vw"
-                    alt="profile_pic"
-                  />
-                </Grid> */}
-              <Grid item ml={4} mt={4}>
+              <Grid item ml={2} mt={4}>
                 <Stack spacing={0}>
                   <Typography variant="h4">
                     {daoDetails.daoName ? daoDetails.daoName : null}
@@ -74,7 +70,7 @@ const SettingsInfo = ({
                 </Stack>
               </Grid>
 
-              <Grid item ml={4} mb={7}>
+              <Grid item ml={2} mb={7}>
                 {clubInfo?.twitter && (
                   <TwitterIcon
                     onClick={() => window.open(clubInfo?.twitter, "_blank")}
@@ -106,7 +102,7 @@ const SettingsInfo = ({
               </Grid>
             </Grid>
 
-            <Grid item ml={4} mb={7}>
+            <Grid item ml={2} mb={4}>
               <div
                 style={{
                   maxHeight: "200px",
@@ -125,8 +121,8 @@ const SettingsInfo = ({
               style={{
                 background: "transparent",
                 boxShadow: "none",
-                paddingTop: "50px",
-                paddingLeft: "30px",
+                paddingTop: "24px",
+                paddingLeft: "12px",
               }}>
               <Grid container spacing={7}>
                 <Grid item md={3}>
@@ -328,7 +324,7 @@ const SettingsInfo = ({
                       <Typography variant="p" className={classes.valuesStyle}>
                         $
                         {treasuryAmount >= 0 ? (
-                          treasuryAmount
+                          treasuryAmount.toFixed(3)
                         ) : (
                           <Skeleton
                             variant="rectangular"
@@ -479,14 +475,7 @@ const SettingsInfo = ({
                                 daoDetails.isTotalSupplyUnlimited ? (
                                   "Unlimited"
                                 ) : (
-                                  convertFromWeiGovernance(
-                                    daoDetails.distributionAmt,
-                                    18,
-                                  ) *
-                                  convertFromWeiGovernance(
-                                    daoDetails.pricePerToken,
-                                    6,
-                                  )
+                                  daoDetails.distributionAmt
                                 )
                               ) : (
                                 <Skeleton
@@ -506,7 +495,7 @@ const SettingsInfo = ({
             </Paper>
 
             <>
-              <Grid item ml={3} mt={5} mb={2} mr={3}>
+              <Grid item mx={1} mt={4} mb={2}>
                 {walletAddress &&
                 tokenType === "erc721" &&
                 !daoDetails.isTotalSupplyUnlimited ? (
@@ -514,11 +503,7 @@ const SettingsInfo = ({
                     <ProgressBar
                       value={calculateTreasuryTargetShare(
                         daoDetails.nftMinted,
-                        convertFromWeiGovernance(
-                          daoDetails.distributionAmt,
-                          18,
-                        ) *
-                          convertFromWeiGovernance(daoDetails.pricePerToken, 6),
+                        daoDetails.distributionAmt,
                       )}
                     />
                   </>
@@ -557,7 +542,7 @@ const SettingsInfo = ({
                 {tokenType === "erc721" ? (
                   <>
                     {daoDetails.isGovernance && (
-                      <Grid item ml={4} mt={1} mb={2}>
+                      <Grid item ml={1} mt={1} mb={2}>
                         <Stack spacing={1}>
                           <Typography variant="settingText">
                             NFTs Minted so far
@@ -580,23 +565,22 @@ const SettingsInfo = ({
                     )}
                   </>
                 ) : (
-                  <Grid item ml={4} mt={1} mb={2}>
+                  <Grid item ml={1} mt={1} mb={2}>
                     <Stack spacing={1}>
                       <Typography variant="settingText">
                         Amount raised so far
                       </Typography>
                       <Typography variant="p" className={classes.valuesStyle}>
                         {walletAddress ? (
-                          (
-                            convertFromWeiGovernance(
-                              daoDetails.clubTokensMinted,
-                              daoDetails.decimals,
-                            ) *
+                          convertFromWeiGovernance(
+                            daoDetails.clubTokensMinted,
+                            daoDetails.decimals,
+                          ) *
                             convertFromWeiGovernance(
                               daoDetails.pricePerToken,
                               erc20TokenDetails.tokenDecimal,
-                            )
-                          ).toFixed(2) + " $USDC"
+                            ) +
+                          " $USDC"
                         ) : (
                           <Skeleton
                             variant="rectangular"
@@ -611,20 +595,18 @@ const SettingsInfo = ({
 
                 <Grid
                   item
-                  ml={4}
+                  ml={1}
                   mt={1}
                   mb={2}
-                  mr={4}
+                  mr={1}
                   xs
                   sx={{ display: "flex", justifyContent: "flex-end" }}>
                   <Stack spacing={1}>
-                    {daoDetails.isGovernance && (
-                      <Typography variant="settingText">
-                        {tokenType === "erc721"
-                          ? " Total NFT Supply"
-                          : "Total Raise Amount"}
-                      </Typography>
-                    )}
+                    <Typography variant="settingText">
+                      {tokenType === "erc721"
+                        ? "Total NFT Supply"
+                        : "Total Raise Amount"}
+                    </Typography>
 
                     {tokenType === "erc721" ? (
                       <>
@@ -637,14 +619,7 @@ const SettingsInfo = ({
                               daoDetails.isTotalSupplyUnlimited ? (
                                 "Unlimited"
                               ) : (
-                                convertFromWeiGovernance(
-                                  daoDetails.distributionAmt,
-                                  18,
-                                ) *
-                                convertFromWeiGovernance(
-                                  daoDetails.pricePerToken,
-                                  6,
-                                )
+                                daoDetails.distributionAmt
                               )
                             ) : (
                               <Skeleton
@@ -658,8 +633,7 @@ const SettingsInfo = ({
                       </>
                     ) : (
                       <Typography
-                        textAlign="right
-                        "
+                        textAlign="right"
                         variant="p"
                         className={classes.valuesStyle}>
                         {daoDetails.totalSupply ? (
@@ -674,7 +648,7 @@ const SettingsInfo = ({
                             width={100}
                             height={25}
                           />
-                        )}{" "}
+                        )}
                       </Typography>
                     )}
                   </Stack>
@@ -686,20 +660,20 @@ const SettingsInfo = ({
         </Grid>
       </Grid>
 
-      <EditClubInfo
+      <EditDetails
+        networkId={networkId}
+        isClaims={false}
         open={open}
         setOpen={setOpen}
         onClose={handleClose}
         daoAddress={daoAddress}
-        clubInfo={clubInfo}
-        getClubInfo={getClubInfo}
       />
 
       <Backdrop
         sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
         //   open={loaderOpen}
       >
-        <CircularProgress color="inherit" />
+        <CircularProgress />
       </Backdrop>
     </>
   );

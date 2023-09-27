@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { convertFromWeiGovernance } from "utils/globalFunctions";
-import { subgraphQuery } from "utils/subgraphs";
-import { QUERY_ALL_MEMBERS } from "api/graphql/queries";
 import { useSelector } from "react-redux";
 import { Backdrop, CircularProgress } from "@mui/material";
-import useSmartContractMethods from "hooks/useSmartContractMethods";
 import { getClubInfo } from "api/club";
-import ERC721 from "@components/depositPageComps/ERC721/NewArch/ERC721";
-import ERC20 from "@components/depositPageComps/ERC20/NewArch/ERC20";
+import ERC721 from "@components/depositPageComps/ERC721/ERC721";
+import ERC20 from "@components/depositPageComps/ERC20/ERC20";
+import useAppContract from "hooks/useAppContract";
 import { getWhitelistMerkleProof } from "api/whitelist";
-import { useAccount } from "wagmi";
+import { useAccount, useNetwork } from "wagmi";
+import useCommonContractMethods from "hooks/useCommonContractMehods";
+import useAppContractMethods from "hooks/useAppContractMethods";
+import { queryAllMembersFromSubgraph } from "utils/stationsSubgraphHelper";
 
 const Join = ({ daoAddress }) => {
   const [daoDetails, setDaoDetails] = useState({
@@ -42,6 +43,8 @@ const Join = ({ daoAddress }) => {
   const [clubInfo, setClubInfo] = useState();
 
   const { address: walletAddress } = useAccount();
+  const { chain } = useNetwork();
+  const networkId = "0x" + chain?.id.toString(16);
 
   const SUBGRAPH_URL = useSelector((state) => {
     return state.gnosis.subgraphUrl;
@@ -55,19 +58,16 @@ const Join = ({ daoAddress }) => {
     return state.club.factoryData;
   });
 
-  const contractInstances = useSelector((state) => {
-    return state.contractInstances.contractInstances;
-  });
+  const FACTORY_CONTRACT_ADDRESS = useSelector(
+    (state) => state.gnosis.factoryContractAddress,
+  );
 
-  const { factoryContractCall } = contractInstances;
+  useAppContract(daoAddress);
 
-  const {
-    getDecimals,
-    getBalance,
-    getTokenGatingDetails,
-    getTokenSymbol,
-    getNftOwnersCount,
-  } = useSmartContractMethods();
+  const { getDecimals, getBalance, getTokenSymbol } =
+    useCommonContractMethods();
+
+  const { getTokenGatingDetails, getNftOwnersCount } = useAppContractMethods();
 
   /**
    * Fetching details for ERC20 comp
@@ -114,6 +114,7 @@ const Join = ({ daoAddress }) => {
     try {
       setLoading(true);
       const tokenGatingDetails = await getTokenGatingDetails(daoAddress);
+
       if (tokenGatingDetails) {
         setFetchedDetails({
           tokenA: tokenGatingDetails[0]?.tokenA,
@@ -152,7 +153,7 @@ const Join = ({ daoAddress }) => {
           tokenBDecimal: tokenBDecimal ? tokenBDecimal : 0,
         });
 
-        if (tokenGatingDetails[0]?.length) {
+        if (tokenGatingDetails?.length) {
           setIsTokenGated(true);
 
           const balanceOfTokenAInUserWallet = await getBalance(
@@ -193,29 +194,27 @@ const Join = ({ daoAddress }) => {
   };
 
   useEffect(() => {
-    if (walletAddress && daoAddress && factoryContractCall) {
+    if (walletAddress && daoAddress && FACTORY_CONTRACT_ADDRESS) {
       fetchTokenGatingDetials();
     }
-  }, [walletAddress, daoAddress, factoryContractCall]);
+  }, [walletAddress, daoAddress, FACTORY_CONTRACT_ADDRESS]);
 
   useEffect(() => {
-    if (TOKEN_TYPE === "erc20") {
-      fetchErc20ContractDetails();
-    } else {
-      fetchErc721ContractDetails();
+    if (daoAddress) {
+      if (TOKEN_TYPE === "erc20") {
+        fetchErc20ContractDetails();
+      } else {
+        fetchErc721ContractDetails();
+      }
     }
-  }, [TOKEN_TYPE, factoryData]);
+  }, [TOKEN_TYPE, factoryData, FACTORY_CONTRACT_ADDRESS, daoAddress]);
 
   useEffect(() => {
     try {
       setLoading(true);
       const fetchData = async () => {
         if (daoAddress && daoDetails) {
-          const data = await subgraphQuery(
-            SUBGRAPH_URL,
-            QUERY_ALL_MEMBERS(daoAddress),
-          );
-
+          const data = await queryAllMembersFromSubgraph(daoAddress, networkId);
           const userDepositAmount = data?.users.find(
             (user) => user.userAddress === walletAddress,
           )?.depositAmount;
@@ -246,7 +245,13 @@ const Join = ({ daoAddress }) => {
       console.log(error);
       setLoading(false);
     }
-  }, [SUBGRAPH_URL, daoAddress, daoDetails, walletAddress]);
+  }, [
+    SUBGRAPH_URL,
+    daoAddress,
+    daoDetails,
+    walletAddress,
+    FACTORY_CONTRACT_ADDRESS,
+  ]);
 
   useEffect(() => {
     const fetchMerkleProof = async () => {
@@ -275,6 +280,7 @@ const Join = ({ daoAddress }) => {
           daoDetails={daoDetails}
           isEligibleForTokenGating={isEligibleForTokenGating}
           whitelistUserData={whitelistUserData}
+          networkId={networkId}
         />
       ) : TOKEN_TYPE === "erc721" ? (
         <ERC721
@@ -284,13 +290,14 @@ const Join = ({ daoAddress }) => {
           daoDetails={daoDetails}
           isEligibleForTokenGating={isEligibleForTokenGating}
           whitelistUserData={whitelistUserData}
+          networkId={networkId}
         />
       ) : null}
 
       <Backdrop
         sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
         open={loading}>
-        <CircularProgress color="inherit" />
+        <CircularProgress />
       </Backdrop>
     </>
   );

@@ -1,0 +1,130 @@
+$border: 0.5px solid #6475a3;
+$background-secondary: #2d55ff;
+$background-primary: #151515;
+$background-input: #0f0f0f;
+$error: #ec4a4a;
+
+.mainContainer {
+  background: $background-primary;
+  border-radius: 16px;
+  margin-bottom: 24px;
+  padding: 30px;
+  display: flex;
+  justify-content: space-between;
+
+  .leftContainer {
+    flex: 60;
+    width: 600px;
+  }
+
+  .rightContainer {
+    flex: 40;
+    background: #151515;
+    padding: 20px 32px;
+    border-radius: 20px;
+    max-width: 600px;
+
+    .inputContainer {
+      display: flex;
+      background: $background-input;
+      align-items: center;
+      border-radius: 20px;
+      padding: 20px 28px;
+      // gap: 20px;
+      justify-content: space-between;
+
+      input {
+        background: inherit;
+        border: none;
+        outline: none;
+        color: white;
+        width: 250px;
+        font-size: 32px;
+        padding: 10px 4px;
+        border-radius: 20px;
+      }
+    }
+  }
+}
+
+.detailsContainer {
+  width: 75%;
+  margin-top: 40px;
+}
+
+.flexContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 8px 0 16px 0;
+
+  div {
+    width: 120px;
+    .title {
+      font-weight: 500;
+    }
+
+    p {
+      font-size: 18px;
+      font-weight: 700;
+    }
+  }
+
+  .balance {
+    background: #1e2e5a;
+    padding: 4px 10px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: fit-content;
+
+    p {
+      font-size: 16px;
+      font-weight: 400;
+    }
+  }
+}
+
+.heading {
+  font-size: 44px;
+  font-weight: 200px;
+}
+
+.subtitle {
+  font-size: 28px;
+  font-weight: 100px;
+}
+
+.smallText {
+  margin-top: 40px;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.usdc {
+  border: $border;
+  border-radius: 20rem;
+  padding: 8px 16px 8px 8px;
+  display: flex;
+  align-items: center;
+}
+
+.errorText {
+  color: $error;
+}
+
+.tokenGateInfo {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  background-color: #dcdcdc1a;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+.depositBtn {
+  margin: 16px 12px 0px 0px !important;
+}

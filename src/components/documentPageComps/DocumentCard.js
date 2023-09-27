@@ -31,7 +31,7 @@ const useStyles = makeStyles({
     // letterSpacing: '0.5px'
   },
   span: {
-    color: "#C1D3FF",
+    color: "#dcdcdc",
     // textDecoration: 'underline'
   },
   icons: {
@@ -67,6 +67,7 @@ const DocumentCard = ({
   index,
   createdBy,
   daoAddress,
+  networkId,
 }) => {
   const [isCopied, setIsCopied] = useState(false);
 
@@ -90,7 +91,7 @@ const DocumentCard = ({
             onClick={(e) => {
               e.stopPropagation();
               navigator.clipboard.writeText(
-                `${window.location.origin}/documents/${daoAddress}/sign/${legalDocLink}`,
+                `${window.location.origin}/documents/${daoAddress}/${networkId}/sign/${legalDocLink}`,
               );
               setIsCopied(true);
               setTimeout(() => {

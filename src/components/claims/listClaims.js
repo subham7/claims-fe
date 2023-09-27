@@ -1,15 +1,13 @@
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
-import { Button, Typography } from "@components/ui";
 import settingsImg from "../../../public/assets/images/settings.png";
 import claimsBanner from "../../../public/assets/images/claimsBanner.png";
 import { makeStyles } from "@mui/styles";
 import { useRouter } from "next/router";
 import ClaimsCard from "components/claimsPageComps/ClaimsCard";
-import { subgraphQuery } from "utils/subgraphs";
-import { QUERY_ALL_CLAIMS_OF_CREATOR } from "api/graphql/queries";
 import { useAccount, useNetwork } from "wagmi";
-import { CHAIN_CONFIG } from "utils/constants";
+import { Button, Typography } from "@mui/material";
+import { queryDropsListFromSubgraph } from "utils/dropsSubgraphHelper";
 
 const useStyles = makeStyles({
   container: {
@@ -33,7 +31,7 @@ const useStyles = makeStyles({
     border: "none",
     padding: "18px 24px",
     color: "white",
-    background: "#3B7AFD",
+    background: "#2D55FF",
     borderRadius: "12px",
     cursor: "pointer",
   },
@@ -65,7 +63,7 @@ const useStyles = makeStyles({
     border: "1px solid #FFFFFF1A",
     borderRadius: "10px",
     padding: "10px 30px",
-    marginTop: "20px",
+    marginTop: "100px",
   },
   proposalInfoCard: {
     background: settingsImg,
@@ -92,28 +90,29 @@ const ListClaims = () => {
   useEffect(() => {
     const fetchClaims = async () => {
       try {
-        const { claims } = await subgraphQuery(
-          CHAIN_CONFIG[networkId].claimsSubgraphUrl,
-          QUERY_ALL_CLAIMS_OF_CREATOR(walletAddress),
+        const { claims } = await queryDropsListFromSubgraph(
+          walletAddress,
+          networkId,
         );
 
-        setClaimData(claims?.reverse());
+        if (claims.length) setClaimData(claims?.reverse());
       } catch (error) {
         console.log(error);
       }
     };
 
-    fetchClaims();
+    if (walletAddress && networkId) fetchClaims();
   }, [networkId, walletAddress]);
 
   return (
     <>
       <div className={classes.container}>
-        {/* Left Side */}
         <div className={classes.leftDiv}>
           <div className={classes.header}>
-            <Typography variant="heading">Claims</Typography>
-            <Button onClick={createClaimHandler} variant="normal">
+            <Typography color="textPrimary" variant="h4">
+              Welcome to Drops
+            </Typography>
+            <Button variant="contained" onClick={createClaimHandler}>
               Create
             </Button>
           </div>

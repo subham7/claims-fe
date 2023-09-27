@@ -27,7 +27,8 @@ import { convertToWeiGovernance } from "../../src/utils/globalFunctions";
 // import { fetchClubOwners } from "../../src/api/club";
 import useSafe from "../../src/hooks/useSafe";
 import Layout from "../../src/components/layouts/layout";
-import { useAccount } from "wagmi";
+import { useAccount, useNetwork } from "wagmi";
+import { CHAIN_CONFIG, ZERO_ADDRESS, ZERO_MERKLE_ROOT } from "utils/constants";
 
 const Create = () => {
   const steps = [
@@ -38,6 +39,8 @@ const Create = () => {
   ];
   const dispatch = useDispatch();
   const uploadInputRef = useRef(null);
+  const { chain } = useNetwork();
+  const networkId = "0x" + chain?.id.toString(16);
 
   const { address: walletAddress } = useAccount();
 
@@ -125,7 +128,7 @@ const Create = () => {
       maxTokensPerUser: "",
       isNftTotalSupplylimited: false,
       totalTokenSupply: "",
-      depositClose: dayjs(Date.now() + 300000),
+      depositClose: dayjs(Date.now() + 3600 * 1000 * 24),
     },
 
     validationSchema: ERC721Step2ValidationSchema,
@@ -138,12 +141,12 @@ const Create = () => {
     initialValues: {
       deploySafe: "newSafe",
       safeAddress: "",
-      governance: "governance",
+      governance: "non-governance",
       quorum: 1,
       threshold: 51,
       addressList: [walletAddress],
       safeThreshold: 1,
-      storeAssetsOnGnosis: true,
+      assetsStoredOnGnosis: true,
     },
     validationSchema: step3ValidationSchema,
     onSubmit: async (values) => {
@@ -171,18 +174,14 @@ const Create = () => {
             quorum: formikStep3.values.quorum * 100,
             threshold: formikStep3.values.threshold * 100,
             safeThreshold: formikStep3.values.safeThreshold ?? 0,
-            depositTokenAddress: GNOSIS_DATA.usdcContractAddress,
+            depositTokenAddress: CHAIN_CONFIG[networkId].usdcAddress,
             treasuryAddress:
               formikStep3.values.safeAddress.length > 0
                 ? formikStep3.values.safeAddress
-                : "0x0000000000000000000000000000000000000000",
+                : ZERO_ADDRESS,
             maxTokensPerUser: formikERC721Step2.values.maxTokensPerUser,
             distributeAmount: formikERC721Step2.values.isNftTotalSupplylimited
-              ? convertToWeiGovernance(
-                  formikERC721Step2.values.totalTokenSupply /
-                    formikERC721Step2.values.pricePerToken,
-                  18,
-                )
+              ? formikERC721Step2.values.totalTokenSupply
               : 0,
             pricePerToken: convertToWeiGovernance(
               formikERC721Step2.values.pricePerToken,
@@ -193,10 +192,9 @@ const Create = () => {
               !formikERC721Step2.values.isNftTotalSupplylimited,
             isGovernanceActive:
               formikStep3.values.governance === "governance" ? true : false,
-            storeAssetsOnGnosis: formikStep3.values.storeAssetsOnGnosis,
+            assetsStoredOnGnosis: formikStep3.values.assetsStoredOnGnosis,
             allowWhiteList: false,
-            merkleRoot:
-              "0x0000000000000000000000000000000000000000000000000000000000000001",
+            merkleRoot: ZERO_MERKLE_ROOT,
           };
 
           initiateConnection(
@@ -204,11 +202,11 @@ const Create = () => {
             dispatch,
             formikStep3.values.addressList,
             formikStep1.values.clubTokenType,
-            metadata.data.image.pathname,
             metadata.url,
-            formikERC721Step2.values.nftImage,
             formikStep1.values.useStationFor,
             formikStep1.values.email,
+            networkId,
+            formikERC721Step2.values.nftImage,
           );
         } catch (error) {
           console.error(error);
@@ -240,18 +238,17 @@ const Create = () => {
             quorum: formikStep3.values.quorum * 100,
             threshold: formikStep3.values.threshold * 100,
             safeThreshold: formikStep3.values.safeThreshold ?? 0,
-            depositTokenAddress: GNOSIS_DATA.usdcContractAddress,
+            depositTokenAddress: CHAIN_CONFIG[networkId].usdcAddress,
             treasuryAddress:
               formikStep3.values.safeAddress.length > 0
                 ? formikStep3.values.safeAddress
-                : "0x0000000000000000000000000000000000000000",
+                : ZERO_ADDRESS,
             isGovernanceActive:
               formikStep3.values.governance === "governance" ? true : false,
             isGtTransferable: false,
             allowWhiteList: false,
-            merkleRoot:
-              "0x0000000000000000000000000000000000000000000000000000000000000001",
-            storeAssetsOnGnosis: formikStep3.values.storeAssetsOnGnosis,
+            merkleRoot: ZERO_MERKLE_ROOT,
+            assetsStoredOnGnosis: formikStep3.values.assetsStoredOnGnosis,
           };
 
           initiateConnection(
@@ -260,9 +257,9 @@ const Create = () => {
             formikStep3.values.addressList,
             formikStep1.values.clubTokenType,
             "",
-            "",
             formikStep1.values.useStationFor,
             formikStep1.values.email,
+            networkId,
           );
         } catch (error) {
           console.error(error);
@@ -331,73 +328,6 @@ const Create = () => {
   //         };
 
   <Button onClick={handlePrev}>Prev</Button>;
-  //         initiateConnection(
-  //           params,
-  //           dispatch,
-  //           GNOSIS_DATA.transactionUrl,
-  //           formikStep3.values.addressList,
-  //           formikStep1.values.clubTokenType,
-  //           GNOSIS_DATA.factoryContractAddress,
-  //           metadata.data.image.pathname,
-  //           metadata.url,
-  //         );
-  //       } catch (error) {
-  //         console.error(error);
-  //       }
-  //     } else {
-  //       try {
-  //         const walletAddress = wallet.accounts[0].address;
-
-  //         formikStep3.values.addressList.unshift(walletAddress);
-  //         const params = {
-  //           clubName: formikStep1.values.clubName,
-  //           clubSymbol: formikStep1.values.clubSymbol,
-  //           distributeAmount: convertToWeiGovernance(
-  //             formikERC20Step2.values.totalRaiseAmount /
-  //               formikERC20Step2.values.pricePerToken,
-  //             18,
-  //           ),
-  //           pricePerToken: convertToWeiGovernance(
-  //             formikERC20Step2.values.pricePerToken,
-  //             6,
-  //           ),
-  //           minDepositPerUser: convertToWeiGovernance(
-  //             formikERC20Step2.values.minDepositPerUser,
-  //             6,
-  //           ),
-  //           maxDepositPerUser: convertToWeiGovernance(
-  //             formikERC20Step2.values.maxDepositPerUser,
-  //             6,
-  //           ),
-  //           ownerFeePerDepositPercent: 0 * 100,
-  //           depositClose: dayjs(formikERC20Step2.values.depositClose).unix(),
-  //           quorum: formikStep3.values.quorum * 100,
-  //           threshold: formikStep3.values.threshold * 100,
-  //           safeThreshold: formikStep3.values.safeThreshold,
-  //           depositTokenAddress: GNOSIS_DATA.usdcContractAddress,
-  //           treasuryAddress: formikStep4.values.safeAddress
-  //             ? formikStep4.values.safeAddress
-  //             : "0x0000000000000000000000000000000000000000",
-  //           isGovernanceActive: formikStep3.values.governance,
-  //           isGtTransferable: true,
-  //           allowWhiteList: false,
-  //           merkleRoot:
-  //             "0x0000000000000000000000000000000000000000000000000000000000000001",
-  //         };
-  //         initiateConnection(
-  //           params,
-  //           dispatch,
-  //           GNOSIS_DATA.transactionUrl,
-  //           formikStep3.values.addressList,
-  //           formikStep1.values.clubTokenType,
-  //           GNOSIS_DATA.factoryContractAddress,
-  //         );
-  //       } catch (error) {
-  //         console.error(error);
-  //       }
-  //     }
-  //   },
-  // });
 
   const handleSubmit = () => {
     switch (activeStep) {
@@ -560,10 +490,8 @@ const Create = () => {
                     )}
                     {activeStep === steps.length - 1 ? (
                       <>
-                        <div className="f-d">
-                          <Button onClick={handlePrev}>Prev</Button>
-                          <Button onClick={handleSubmit}>Finish</Button>
-                        </div>
+                        <Button onClick={handlePrev}>Prev</Button>
+                        <Button onClick={handleSubmit}>Finish</Button>
                       </>
                     ) : (
                       <div

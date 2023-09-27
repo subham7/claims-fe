@@ -6,14 +6,14 @@ import Members from "@components/members/Members";
 const MembersPage = () => {
   const router = useRouter();
 
-  const [daoAddress] = router?.query?.slug ?? [];
+  const [daoAddress, networkId = "0x89"] = router?.query?.slug ?? [];
 
   if (!daoAddress) {
     return null;
   }
 
   return (
-    <Layout daoAddress={daoAddress} page={3}>
+    <Layout daoAddress={daoAddress} page={3} networkId={networkId}>
       <Members daoAddress={daoAddress} />
     </Layout>
   );

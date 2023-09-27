@@ -17,12 +17,12 @@ export const ClaimsInsightStyles = makeStyles({
     gap: "30px",
   },
   infoTopContainer: {
-    border: ".5px solid #6475A3",
     borderRadius: "10px",
     padding: "30px",
     display: "flex",
     flexDirection: "column",
     gap: "20px",
+    background: "#151515",
   },
 
   infoBottomContainer: {
@@ -71,21 +71,19 @@ export const ClaimsInsightStyles = makeStyles({
     justifyContent: "space-between",
     items: "center",
     gap: "20px",
-    background:
-      "transparent linear-gradient(90deg, #19274B00 0%, #111D38 100%) 0% 0% no-repeat padding-box;",
+    background: "#0f0f0f",
     padding: "12px",
     borderRadius: "8px",
     fontSize: "14px",
-    border: "0.5px solid #6475A3",
   },
 
   toggleClaimContainer: {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    border: "0.5px solid #6475A3",
     padding: "6px 0px 6px 20px",
     borderRadius: "10px",
+    background: "#151515",
   },
   claimEditContainer: {
     padding: "20px 20px",
@@ -94,15 +92,15 @@ export const ClaimsInsightStyles = makeStyles({
     gap: "10px",
     justifyContent: "space-between",
     borderRadius: "10px",
-    border: "0.5px solid #6475A3",
     minHeight: "140px",
+    background: "#151515",
   },
 
   eligibilityContainer: {
     height: "100%",
     padding: "20px",
     borderRadius: "10px",
-    border: "0.5px solid #6475A3",
+    background: "#151515",
   },
 
   eligibleToken: {
@@ -111,7 +109,13 @@ export const ClaimsInsightStyles = makeStyles({
     gap: "10px",
     padding: "8px 10px",
     marginTop: "15px",
-    border: "0.5px solid #6475A3",
     borderRadius: "8px",
+    background: "#151515",
+  },
+  icon: {
+    background: "#0f0f0f",
+    padding: "3px",
+    borderRadius: "5px",
+    cursor: "pointer",
   },
 });

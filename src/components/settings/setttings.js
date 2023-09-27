@@ -1,16 +1,16 @@
 import dayjs from "dayjs";
 import React, { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { QUERY_ALL_MEMBERS } from "api/graphql/queries";
 import AdditionalSettings from "@components/settingsComps/AdditionalSettings";
 import SettingsInfo from "@components/settingsComps/SettingsInfo";
 import TokenGating from "@components/tokenGatingComp/TokenGating";
-import { subgraphQuery } from "utils/subgraphs";
 import { convertFromWeiGovernance } from "utils/globalFunctions";
 import { getAssetsByDaoAddress } from "api/assets";
-import useSmartContractMethods from "hooks/useSmartContractMethods";
 import { getClubInfo } from "api/club";
-import { useAccount } from "wagmi";
+import { useAccount, useNetwork } from "wagmi";
+import useAppContractMethods from "hooks/useAppContractMethods";
+import useCommonContractMethods from "hooks/useCommonContractMehods";
+import { queryAllMembersFromSubgraph } from "utils/stationsSubgraphHelper";
 
 const Settings = ({ daoAddress }) => {
   const [daoDetails, setDaoDetails] = useState({
@@ -52,9 +52,8 @@ const Settings = ({ daoAddress }) => {
 
   const { address: walletAddress } = useAccount();
 
-  const SUBGRAPH_URL = useSelector((state) => {
-    return state.gnosis.subgraphUrl;
-  });
+  const { chain } = useNetwork();
+  const networkId = "0x" + chain?.id.toString(16);
 
   const tokenType = useSelector((state) => {
     return state.club.clubData.tokenType;
@@ -62,10 +61,6 @@ const Settings = ({ daoAddress }) => {
 
   const isAdminUser = useSelector((state) => {
     return state.gnosis.adminUser;
-  });
-
-  const NETWORK_HEX = useSelector((state) => {
-    return state.gnosis.networkHex;
   });
 
   const factoryData = useSelector((state) => {
@@ -86,19 +81,18 @@ const Settings = ({ daoAddress }) => {
     getERC20DAOdetails,
     getERC721DAOdetails,
     getERC20TotalSupply,
-    getERC20Balance,
-    getDecimals,
-    getBalance,
-    getTokenName,
-    getTokenSymbol,
+    getDaoBalance,
     getERC721Balance,
     getNftOwnersCount,
-  } = useSmartContractMethods();
+  } = useAppContractMethods();
+
+  const { getDecimals, getBalance, getTokenName, getTokenSymbol } =
+    useCommonContractMethods();
 
   const fetchErc20ContractDetails = useCallback(async () => {
     try {
-      const balanceOfClubToken = await getERC20Balance();
-      const erc20Data = await getERC20DAOdetails();
+      const balanceOfClubToken = await getDaoBalance(daoAddress);
+      const erc20Data = await getERC20DAOdetails(daoAddress);
       const erc20DaoDecimal = await getDecimals(daoAddress);
       const clubTokensMinted = await getERC20TotalSupply();
 
@@ -111,7 +105,6 @@ const Settings = ({ daoAddress }) => {
           isGovernance: erc20Data.isGovernanceActive,
           decimals: erc20DaoDecimal,
           clubTokensMinted: clubTokensMinted,
-          // daoImage: fetchedImage,
           balanceOfClubToken: convertFromWeiGovernance(balanceOfClubToken, 18),
           isTokenGated: factoryData.isTokenGatingApplied,
           minDeposit: factoryData.minDepositPerUser,
@@ -156,9 +149,9 @@ const Settings = ({ daoAddress }) => {
 
   const fetchErc721ContractDetails = useCallback(async () => {
     try {
-      const erc721Data = await getERC721DAOdetails();
+      const erc721Data = await getERC721DAOdetails(daoAddress);
 
-      const balanceOfClubToken = await getERC721Balance();
+      const balanceOfClubToken = await getDaoBalance(daoAddress, true);
       const nftMinted = await getNftOwnersCount();
 
       if (erc721Data && factoryData) {
@@ -170,7 +163,7 @@ const Settings = ({ daoAddress }) => {
           isGovernance: erc721Data.isGovernanceActive,
           maxTokensPerUser: erc721Data.maxTokensPerUser,
           isTotalSupplyUnlimited: erc721Data.isNftTotalSupplyUnlimited,
-          balanceOfClubToken: convertFromWeiGovernance(balanceOfClubToken, 18),
+          balanceOfClubToken: balanceOfClubToken,
           nftMinted: nftMinted,
           isTransferable: erc721Data.isTransferable,
           createdBy: erc721Data.ownerAddress,
@@ -182,8 +175,7 @@ const Settings = ({ daoAddress }) => {
           depositTokenAddress: factoryData.depositTokenAddress,
           distributionAmt: factoryData.distributionAmount,
           assetsStoredOnGnosis: factoryData.assetsStoredOnGnosis,
-          totalSupply:
-            factoryData.distributionAmount * factoryData.pricePerToken,
+          totalSupply: factoryData.distributionAmount,
           ownerFee: factoryData.ownerFeePerDepositPercent / 100,
         });
       }
@@ -192,17 +184,17 @@ const Settings = ({ daoAddress }) => {
     }
   }, [factoryData]);
 
-  const fetchAssets = useCallback(async () => {
+  const fetchAssets = async () => {
     try {
       const assetsData = await getAssetsByDaoAddress(
         daoDetails.assetsStoredOnGnosis ? gnosisAddress : daoAddress,
-        NETWORK_HEX,
+        networkId,
       );
       setTreasuryAmount(assetsData?.data?.treasuryAmount);
     } catch (error) {
       console.log(error);
     }
-  }, [NETWORK_HEX, daoAddress, daoDetails.assetsStoredOnGnosis, gnosisAddress]);
+  };
 
   const getClubInfoFn = async () => {
     const info = await getClubInfo(daoAddress);
@@ -227,25 +219,25 @@ const Settings = ({ daoAddress }) => {
   ]);
 
   useEffect(() => {
-    try {
-      const fetchData = async () => {
-        if (daoAddress) {
-          const data = await subgraphQuery(
-            SUBGRAPH_URL,
-            QUERY_ALL_MEMBERS(daoAddress),
-          );
+    const fetchAllMembers = async () => {
+      try {
+        const data = await queryAllMembersFromSubgraph(daoAddress, networkId);
+        if (data && data?.users) {
           setMembers(data?.users);
         }
-      };
-      fetchData();
-    } catch (error) {
-      console.log(error);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    if (daoAddress && networkId && walletAddress) {
+      fetchAllMembers();
     }
-  }, [SUBGRAPH_URL, daoAddress]);
+  }, [daoAddress, networkId, walletAddress]);
 
   useEffect(() => {
     fetchAssets();
-  }, [fetchAssets]);
+  }, [networkId, daoAddress, daoDetails.assetsStoredOnGnosis, gnosisAddress]);
 
   return (
     <>

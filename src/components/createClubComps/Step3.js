@@ -15,7 +15,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { Step3Styles } from "./CreateClubStyles";
 import Web3 from "web3";
 import { useCallback, useEffect } from "react";
-import { getSafeSdk, web3InstanceEthereum } from "../../utils/helper";
+import { getCustomSafeSdk, web3InstanceEthereum } from "../../utils/helper";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import SafeApiKit from "@safe-global/api-kit";
@@ -42,7 +42,7 @@ export default function Step3(props) {
   // if (index >= 0) props.formik.values.addressList.splice(index, 1);
 
   const fetchOwners = async (gnosisAddress) => {
-    const safeSdk = await getSafeSdk(
+    const safeSdk = await getCustomSafeSdk(
       Web3.utils.toChecksumAddress(gnosisAddress),
       Web3.utils.toChecksumAddress(walletAddress),
       networkId,
@@ -168,7 +168,7 @@ export default function Step3(props) {
                   "Owners of the safe does not match with the admins of the DAO" ||
                 props.ownerHelperText === "Invalid gnosis address"
                   ? "red"
-                  : "#C1D3FF",
+                  : "#dcdcdc",
             }}>
             {props.ownerHelperText}
           </p>
@@ -304,7 +304,7 @@ export default function Step3(props) {
                 <Typography variant="body" className="text-blue">
                   Min.{" "}
                   <Box
-                    sx={{ color: "#3B7AFD" }}
+                    sx={{ color: "#2D55FF" }}
                     fontWeight="fontWeightBold"
                     display="inline">
                     number of signature needed
@@ -384,7 +384,7 @@ export default function Step3(props) {
             <Typography className={classes.largeText2}>
               Min.{" "}
               <Box
-                sx={{ color: "#3B7AFD" }}
+                sx={{ color: "#2D55FF" }}
                 fontWeight="fontWeightBold"
                 display="inline">
                 % of votes needed
@@ -416,7 +416,7 @@ export default function Step3(props) {
             <Typography variant="body">
               Min.{" "}
               <Box
-                sx={{ color: "#3B7AFD" }}
+                sx={{ color: "#2D55FF" }}
                 fontWeight="fontWeightBold"
                 display="inline">
                 % of votes needed

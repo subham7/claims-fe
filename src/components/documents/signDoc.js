@@ -25,7 +25,7 @@ const useStyles = makeStyles({
     padding: "12px 20px",
     marginBottom: "20px",
     color: "white",
-    background: "#3B7AFD",
+    background: "#2D55FF",
     borderRadius: "6px",
     cursor: "pointer",
   },
@@ -44,7 +44,7 @@ const useStyles = makeStyles({
   },
 });
 
-const SignDoc = ({ daoAddress, isAdmin }) => {
+const SignDoc = ({ daoAddress, isAdmin, networkId }) => {
   const classes = useStyles();
   const [signedAcc, setSignedAcc] = useState("");
   const [signDoc, setSignDoc] = useState(false);
@@ -158,7 +158,7 @@ const SignDoc = ({ daoAddress, isAdmin }) => {
       });
 
       dispatch(addDocumentList(docsList.reverse()));
-      router.push(`/documents/${daoAddress}`);
+      router.push(`/documents/${daoAddress}/${networkId}`);
     } catch (error) {
       console.log(error);
     }
@@ -348,6 +348,7 @@ const SignDoc = ({ daoAddress, isAdmin }) => {
 
       {showModal && (
         <LegalEntityModal
+          networkId={networkId}
           daoAddress={daoAddress}
           isSuccess={true}
           onClose={() => {

@@ -72,7 +72,7 @@ export default function CollectionCard(props) {
             component="img"
             alt="green iguana"
             sx={{ width: "340px", height: "320px" }}
-            image={imageUrl}
+            image={imageUrl ? imageUrl : "/assets/NFT_IMAGES/0.png"}
           />
         )}
 

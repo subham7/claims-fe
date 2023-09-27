@@ -76,7 +76,7 @@ const useStyles = makeStyles({
     display: "flex",
     alignItems: "center",
     gap: "5px",
-    color: "#C1D3FF",
+    color: "#dcdcdc",
     position: "absolute",
     left: "10%",
     top: "110px",
@@ -91,7 +91,7 @@ const useStyles = makeStyles({
     display: "flex",
     alignItems: "center",
     gap: "5px",
-    color: "#C1D3FF",
+    color: "#dcdcdc",
     position: "absolute",
     left: "33.5%",
     top: "110px",
@@ -403,7 +403,7 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading, formikStep1 }) => {
         {finish ? (
           <Button
             onClick={() => {
-              router.push("/claims");
+              router.push(`/claims/${networkId}`);
             }}
             variant="contained"
             className={classes.finish}>

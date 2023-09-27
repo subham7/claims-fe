@@ -17,8 +17,9 @@ import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import { AdditionalSettingsStyles } from "./AdditionalSettingsStyles";
 import DepositOwnerFee from "./modals/DepositOwnerFee";
 import DepositDeadline from "./modals/DepositDeadline";
-import useSmartContractMethods from "../../hooks/useSmartContractMethods";
 import { useSelector } from "react-redux";
+import useAppContractMethods from "../../hooks/useAppContractMethods";
+import { shortAddress } from "utils/helper";
 
 const AdditionalSettings = ({
   tokenType,
@@ -44,7 +45,7 @@ const AdditionalSettings = ({
 
   const startingTimeInNum = new Date(+daoDetails?.depositDeadline * 1000);
 
-  const { updateDepositTime, updateOwnerFee } = useSmartContractMethods();
+  const { updateDepositTime, updateOwnerFee } = useAppContractMethods();
 
   const updateAdminFees = async (ownerFee) => {
     setLoading(true);
@@ -111,7 +112,7 @@ const AdditionalSettings = ({
   return (
     <div className={classes.container}>
       <Typography className={classes.heading}>Additional Details</Typography>
-      <Stack spacing={3} ml={3}>
+      <Stack spacing={3}>
         <Divider />
         <Grid
           container
@@ -151,13 +152,7 @@ const AdditionalSettings = ({
             <Grid item mr={4} mt={1}>
               <Typography variant="p" className={classes.valuesStyle}>
                 {daoDetails ? (
-                  daoAddress?.substring(0, 6) +
-                  "......" +
-                  daoAddress?.substring(daoAddress.length - 4)
-                ) : tokenType === "erc721" ? (
-                  daoAddress?.substring(0, 6) +
-                  "......" +
-                  daoAddress?.substring(daoAddress.length - 4)
+                  shortAddress(daoAddress)
                 ) : (
                   <Skeleton variant="rectangular" width={100} height={25} />
                 )}
@@ -205,13 +200,7 @@ const AdditionalSettings = ({
             <Grid item mr={4} mt={1}>
               <Typography variant="p" className={classes.valuesStyle}>
                 {daoDetails ? (
-                  gnosisAddress?.substring(0, 6) +
-                  "......" +
-                  gnosisAddress?.substring(gnosisAddress.length - 4)
-                ) : tokenType === "erc721" ? (
-                  gnosisAddress?.substring(0, 6) +
-                  "......" +
-                  gnosisAddress?.substring(gnosisAddress.length - 4)
+                  shortAddress(gnosisAddress)
                 ) : (
                   <Skeleton variant="rectangular" width={100} height={25} />
                 )}
@@ -222,7 +211,7 @@ const AdditionalSettings = ({
         <Divider />
       </Stack>
 
-      <Stack spacing={1} ml={3}>
+      <Stack spacing={1}>
         <Grid
           container
           py={2}
@@ -259,7 +248,7 @@ const AdditionalSettings = ({
         <Divider />
       </Stack>
 
-      <Stack spacing={1} ml={3}>
+      <Stack spacing={1}>
         <Grid
           container
           py={2}
@@ -303,8 +292,8 @@ const AdditionalSettings = ({
         </Grid>
       </Stack>
 
-      <Backdrop sx={{ color: "#fff", zIndex: 10000000 }} open={loading}>
-        <CircularProgress color="inherit" />
+      <Backdrop sx={{ color: "#000", zIndex: 10000000 }} open={loading}>
+        <CircularProgress />
       </Backdrop>
 
       {showOwnerFeesModal && (

@@ -12,21 +12,18 @@ import { Button, Typography } from "@components/ui";
 import { useDispatch } from "react-redux";
 import { makeStyles } from "@mui/styles";
 import { useRouter } from "next/router";
-import { addDaoAddress } from "../src/redux/reducers/club";
 import NewCard from "../src/components/cards/card";
-import { subgraphQuery } from "../src/utils/subgraphs";
-import {
-  QUERY_CLUBS_FROM_WALLET_ADDRESS,
-  QUERY_CLUB_DETAILS,
-} from "../src/api/graphql/queries";
-import { SUBGRAPH_URL_POLYGON } from "../src/api";
 import { addClubData } from "../src/redux/reducers/club";
 import Layout from "../src/components/layouts/layout";
 import { BsFillPlayFill } from "react-icons/bs";
 import Web3 from "web3";
 import VideoModal from "../src/components/modals/VideoModal";
 import { useAccount, useNetwork } from "wagmi";
-import { CHAIN_CONFIG } from "utils/constants";
+import {
+  queryStationDataFromSubgraph,
+  queryStationListFromSubgraph,
+} from "utils/stationsSubgraphHelper";
+import { shortAddress } from "utils/helper";
 
 const useStyles = makeStyles({
   container: {
@@ -55,7 +52,7 @@ const useStyles = makeStyles({
   },
   clubAddress: {
     fontSize: "16px",
-    color: "#C1D3FF",
+    color: "#dcdcdc",
     opacity: 1,
   },
   bannerImage: {
@@ -80,7 +77,7 @@ const useStyles = makeStyles({
     minHeight: "70vh",
   },
   watchBtn: {
-    background: "#142243",
+    background: "#151515",
     borderRadius: "50px",
     border: "1px solid #EFEFEF",
     width: "180px",
@@ -93,7 +90,7 @@ const useStyles = makeStyles({
     cursor: "pointer",
   },
   secondContainer: {
-    background: "#142243",
+    background: "#151515",
     borderRadius: "20px",
     marginTop: "20px",
     display: "flex",
@@ -103,7 +100,7 @@ const useStyles = makeStyles({
   },
   isAdmin: {
     fontSize: "16px",
-    color: "#C1D3FF",
+    color: "#dcdcdc",
     opacity: 1,
   },
   flexContainer: {
@@ -141,21 +138,18 @@ const App = () => {
       else {
         const fetchClubs = async () => {
           try {
-            const data = await subgraphQuery(
-              CHAIN_CONFIG[networkId].stationSubgraphUrl,
-              QUERY_CLUBS_FROM_WALLET_ADDRESS(walletAddress),
+            const data = await queryStationListFromSubgraph(
+              walletAddress,
+              networkId,
             );
-            setClubListData(data.users);
+
+            if (data.users) setClubListData(data.users);
           } catch (error) {
             console.log(error);
           }
         };
 
-        if (CHAIN_CONFIG[networkId].stationSubgraphUrl) {
-          fetchClubs();
-        } else {
-          setClubListData([]);
-        }
+        if (walletAddress && networkId) fetchClubs();
       }
     } catch (error) {
       console.log(error);
@@ -170,34 +164,48 @@ const App = () => {
   };
 
   const handleItemClick = async (data) => {
-    dispatch(addDaoAddress(data.daoAddress));
-    const clubData = await subgraphQuery(
-      networkId == "0x5"
-        ? SUBGRAPH_URL_GOERLI
-        : networkId == "0x89"
-        ? SUBGRAPH_URL_POLYGON
-        : "",
-      QUERY_CLUB_DETAILS(data.daoAddress),
-    );
-    dispatch(
-      addClubData({
-        gnosisAddress: clubData.stations[0].gnosisAddress,
-        isGtTransferable: clubData.stations[0].isGtTransferable,
-        name: clubData.stations[0].name,
-        ownerAddress: clubData.stations[0].ownerAddress,
-        symbol: clubData.stations[0].symbol,
-        tokenType: clubData.stations[0].tokenType,
-        membersCount: clubData.stations[0].membersCount,
-        deployedTime: clubData.stations[0].timeStamp,
-      }),
-    );
-    router.push(
-      `/dashboard/${Web3.utils.toChecksumAddress(data.daoAddress)}`,
-      undefined,
-      {
-        shallow: true,
-      },
-    );
+    try {
+      const clubData = await queryStationDataFromSubgraph(
+        data.daoAddress,
+        networkId,
+      );
+
+      if (clubData.stations.length)
+        dispatch(
+          addClubData({
+            gnosisAddress: clubData.stations[0].gnosisAddress,
+            isGtTransferable: clubData.stations[0].isGtTransferable,
+            name: clubData.stations[0].name,
+            ownerAddress: clubData.stations[0].ownerAddress,
+            symbol: clubData.stations[0].symbol,
+            tokenType: clubData.stations[0].tokenType,
+            membersCount: clubData.stations[0].membersCount,
+            deployedTime: clubData.stations[0].timeStamp,
+            imgUrl: clubData.stations[0].imageUrl,
+            minDepositAmount: clubData.stations[0].minDepositAmount,
+            maxDepositAmount: clubData.stations[0].maxDepositAmount,
+            pricePerToken: clubData.stations[0].pricePerToken,
+            isGovernanceActive: clubData.stations[0].isGovernanceActive,
+            quorum: clubData.stations[0].quorum,
+            threshold: clubData.stations[0].threshold,
+            raiseAmount: clubData.stations[0].raiseAmount,
+            totalAmountRaised: clubData.stations[0].totalAmountRaised,
+            distributionAmount: clubData.stations[0].distributionAmount,
+            maxTokensPerUser: clubData.stations[0].maxTokensPerUser,
+          }),
+        );
+      router.push(
+        `/dashboard/${Web3.utils.toChecksumAddress(
+          data.daoAddress,
+        )}/${networkId}`,
+        undefined,
+        {
+          shallow: true,
+        },
+      );
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const handleClose = (e) => {
@@ -210,11 +218,11 @@ const App = () => {
   };
 
   const claimsHandler = () => {
-    router.push("/claims");
+    router.push(`/claims/${networkId}`);
   };
 
   return (
-    <Layout showSidebar={false} faucet={false} isClaims={true}>
+    <Layout showSidebar={false} faucet={false}>
       <div className={classes.container}>
         {!manageStation && (
           <div className={classes.cardContainer}>
@@ -327,12 +335,7 @@ const App = () => {
                                     <Typography
                                       variant="body"
                                       className="text-blue">
-                                      {`${club.userAddress.substring(
-                                        0,
-                                        9,
-                                      )}......${club.userAddress.substring(
-                                        club.userAddress.length - 6,
-                                      )}`}
+                                      {shortAddress(club.userAddress)}
                                     </Typography>
                                   </Stack>
                                 </Grid>
@@ -368,7 +371,7 @@ const App = () => {
                           }}>
                           No stations found
                         </h3>
-                        <p style={{ color: "#C1D3FF", fontWeight: "300" }}>
+                        <p style={{ color: "#dcdcdc", fontWeight: "300" }}>
                           Station(s) you created or a part of appear here
                         </p>
                       </div>

@@ -69,7 +69,7 @@ const validationSchema = yup.object({
     .moreThan(0, "Amount should be greater than 0"),
 });
 
-const MembersSign = ({ daoAddress, membersSign }) => {
+const MembersSign = ({ daoAddress, membersSign, networkId }) => {
   const router = useRouter();
 
   const dispatch = useDispatch();
@@ -86,7 +86,7 @@ const MembersSign = ({ daoAddress, membersSign }) => {
     onSubmit: (values) => {
       dispatch(addMembersData(values));
       dispatch(addEncryptedLink(membersSign));
-      router.push(`/documents/${daoAddress}/sign`);
+      router.push(`/documents/${daoAddress}/${networkId}/sign`);
     },
   });
 

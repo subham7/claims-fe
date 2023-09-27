@@ -2,16 +2,6 @@ import axios from "axios";
 import { MAIN_API_URL } from "../index";
 import { getJwtToken } from "../../utils/auth";
 
-// fetch treasury balance, tokens and nfts associated with a particular club
-export async function getAssets(clubId) {
-  return await axios.get(MAIN_API_URL + `assets/${clubId}`, {
-    headers: {
-      Authorization: "Bearer " + getJwtToken(),
-      "Content-Type": "application/json",
-    },
-  });
-}
-
 export async function getAssetsByDaoAddress(daoAddress, networkId) {
   try {
     return await axios.get(
@@ -44,15 +34,6 @@ export async function fetchTokenMetaData(tokenAddress, networkId) {
   } catch (error) {
     console.log(error);
   }
-}
-
-export async function getNFTs(clubId) {
-  return await axios.get(MAIN_API_URL + `assets/${clubId}/nft`, {
-    headers: {
-      Authorization: "Bearer " + getJwtToken(),
-      "Content-Type": "application/json",
-    },
-  });
 }
 
 export async function getNFTsByDaoAddress(daoAddress, networkId) {
@@ -108,14 +89,21 @@ export async function fulfillOrder(offer, fulfiller, consideration) {
   return res.json();
 }
 
-export async function uploadNFT(formData) {
+export async function uploadNFT(daoAddress, imageLink) {
   // upload nft to corresponding DAO address
-  return await axios.post(MAIN_API_URL + `club/file`, formData, {
-    headers: {
-      Authorization: "Bearer " + getJwtToken(),
-      "Content-Type": "application/json",
+  return await axios.post(
+    MAIN_API_URL + `club/file`,
+    {
+      daoAddress,
+      imageUrl: imageLink,
     },
-  });
+    {
+      headers: {
+        Authorization: "Bearer " + getJwtToken(),
+        "Content-Type": "application/json",
+      },
+    },
+  );
 }
 
 export async function getUploadedNFT(daoAddress) {

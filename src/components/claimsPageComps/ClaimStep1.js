@@ -57,7 +57,7 @@ const useStyles = makeStyles({
     display: "flex",
     alignItems: "center",
     gap: "5px",
-    color: "#C1D3FF",
+    color: "#dcdcdc",
     position: "absolute",
     left: "10%",
     top: "110px",
@@ -99,7 +99,7 @@ const useStyles = makeStyles({
     justifyContent: "center",
     flexDirection: "column",
     cursor: "pointer",
-    border: "1px solid #3B7AFD",
+    border: "1px solid #2D55FF",
     borderRadius: "10px",
   },
 
@@ -110,7 +110,7 @@ const useStyles = makeStyles({
     display: "flex",
     alignItems: "center",
     gap: "5px",
-    color: "#C1D3FF",
+    color: "#dcdcdc",
     position: "absolute",
     left: "33.5%",
     top: "110px",
@@ -134,7 +134,7 @@ const useStyles = makeStyles({
   },
 });
 
-const ClaimStep1 = ({ formik, tokensInWallet, isLoading }) => {
+const ClaimStep1 = ({ formik, tokensInWallet, isLoading, networkId }) => {
   const classes = useStyles();
   const router = useRouter();
 
@@ -146,7 +146,7 @@ const ClaimStep1 = ({ formik, tokensInWallet, isLoading }) => {
     <>
       <Typography
         onClick={() => {
-          router.push("/claims");
+          router.push(`/claims/${networkId}`);
         }}
         className={classes.back}>
         <BsArrowLeft /> Back to claims

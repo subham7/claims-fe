@@ -73,7 +73,7 @@ const validationSchema = yup.object({
   general_purpose: yup.string("Enter general purpose"),
 });
 
-const DocumentCreate = ({ daoAddress }) => {
+const DocumentCreate = ({ daoAddress, networkId }) => {
   const classes = useStyles();
   const router = useRouter();
   const dispatch = useDispatch();
@@ -90,7 +90,7 @@ const DocumentCreate = ({ daoAddress }) => {
     onSubmit: (values) => {
       dispatch(addAdminFormData(values));
       router.push({
-        pathname: `/documents/${daoAddress}/sign/true`,
+        pathname: `/documents/${daoAddress}/${networkId}/sign/true`,
       });
     },
   });

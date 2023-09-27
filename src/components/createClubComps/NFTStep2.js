@@ -54,7 +54,7 @@ export default function NFTStep2(props) {
           <div className="f-d f-vt tb-pad-2">
             <Typography variant="body">Upload Image</Typography>
 
-            <div className="f-d tb-pad-1">
+            <div className="f-d tb-pad-1" style={{ gap: "16px" }}>
               <Button variant="normal" onClick={generateRandomNFTImage}>
                 Generate random
               </Button>
@@ -168,7 +168,7 @@ export default function NFTStep2(props) {
               }
               InputProps={{
                 endAdornment: (
-                  <InputAdornment position="end" sx={{ color: "#C1D3FF" }}>
+                  <InputAdornment position="end" sx={{ color: "#dcdcdc" }}>
                     USDC
                   </InputAdornment>
                 ),

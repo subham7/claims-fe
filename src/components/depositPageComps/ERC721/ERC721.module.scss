@@ -1,0 +1,191 @@
+@import "../../../../styles/variables.scss";
+
+.mainContainer {
+  background: $background-primary;
+  border-radius: 16px;
+  margin-top: 20px;
+  margin-bottom: 60px;
+  padding: 30px;
+  display: flex;
+  justify-content: space-between;
+  gap: 60px;
+
+  .leftContainer {
+    flex: 55;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .rightContainer {
+    flex: 45;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    max-height: 70vh;
+    object-fit: cover;
+    overflow: hidden;
+    border-radius: 12px;
+  }
+}
+
+.flexContainer {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin: 8px 0 16px 0;
+}
+
+.isActive {
+  background-color: $active-background;
+  color: $active-text;
+  padding: 0.3em 1em;
+  border-radius: 0.8em;
+  display: flex;
+  align-items: center;
+  border: 0.3px solid $active-text;
+}
+
+.isInactive {
+  background-color: $inactive-background;
+  color: $inactive-text;
+  padding: 0.3em 1em;
+  border-radius: 0.3em;
+  display: flex;
+  align-items: center;
+  border: 0.5px solid $inactive-text;
+}
+
+.executedIllustration {
+  height: 12px;
+  width: 12px;
+  background-color: $inactive-text;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.activeIllustration {
+  height: 12px;
+  width: 12px;
+  background-color: $active-text;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.createdBy {
+  background: $background-secondary;
+  color: white;
+  padding: 6px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.heading {
+  font-size: 44px;
+  font-weight: 200px;
+}
+
+.subheading {
+  font-size: 32px;
+  font-weight: 200px;
+}
+
+.subtitle {
+  font-size: 20px;
+  font-weight: 100px;
+}
+
+.smallText {
+  font-size: 16px;
+}
+
+.priceContainer {
+  border-radius: 16px;
+  background-color: #0f0f0f;
+  padding: 32px;
+}
+
+.counterContainer {
+  color: #efefef;
+  border-radius: 2;
+  display: flex;
+  flex-direction: inherit;
+  align-items: center;
+  border: 1px solid #dcdcdc40;
+  border-radius: 8px;
+  margin-right: 2rem;
+}
+
+.icons {
+  padding: 6px;
+  border-radius: 4px;
+  cursor: pointer;
+  background: $background-secondary;
+}
+
+.timer {
+  display: flex;
+  margin: 10px 0 16px 0;
+
+  p {
+    font-size: 20px;
+    padding: 16px 24px;
+    border-radius: 20px;
+    margin-right: 8px;
+    background-color: #38435e;
+  }
+}
+
+.nftImg {
+  height: auto;
+  width: 100%;
+  border-radius: 20px;
+}
+
+.tokenGateInfo {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  background-color: #dcdcdc1a;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+.container {
+  display: flex;
+  gap: 30px;
+  margin-bottom: 60px;
+
+  .aboutContainer {
+    background: $background-primary;
+    border-radius: 16px;
+    width: 90%;
+    margin: 0px auto;
+    padding: 30px;
+    flex: 60;
+  }
+
+  .activityContainer {
+    background: $background-primary;
+    border-radius: 16px;
+    width: 90%;
+    margin: 0px auto;
+    padding: 30px;
+    flex: 40;
+
+    div {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      .time {
+        color: #dcdcdc;
+      }
+    }
+  }
+}

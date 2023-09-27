@@ -8,14 +8,17 @@ import ClaimEdit from "@components/claimsInsightComps/ClaimEdit";
 import ToggleClaim from "@components/claimsInsightComps/ToggleClaim";
 import ClaimsTransactions from "@components/claimsInsightComps/ClaimsTransactions";
 import { useRouter } from "next/router";
-import { subgraphQuery } from "utils/subgraphs";
-import { QUERY_CLAIM_DETAILS } from "api/graphql/queries";
 import { Alert, Backdrop, CircularProgress } from "@mui/material";
-import useSmartContractMethods from "hooks/useSmartContractMethods";
-import { convertToWeiGovernance } from "utils/globalFunctions";
+import {
+  convertFromWeiGovernance,
+  convertToWeiGovernance,
+} from "utils/globalFunctions";
 import { useNetwork } from "wagmi";
-import { CHAIN_CONFIG } from "utils/constants";
-import useClaimSmartContracts from "hooks/useClaimSmartContracts";
+import useDropsContractMethods from "hooks/useDropsContracMethods";
+import useCommonContractMethods from "hooks/useCommonContractMehods";
+import { queryDropDetailsFromSubgraph } from "utils/dropsSubgraphHelper";
+import { createSnapShot } from "api/claims";
+import dayjs from "dayjs";
 
 const ClaimInsight = ({ claimAddress }) => {
   const [claimsData, setClaimsData] = useState([]);
@@ -34,25 +37,21 @@ const ClaimInsight = ({ claimAddress }) => {
   const { chain } = useNetwork();
   const networkId = "0x" + chain?.id.toString(16);
 
-  useClaimSmartContracts(claimAddress);
+  const { addMoreTokens, rollbackTokens, modifyStartAndEndTime } =
+    useDropsContractMethods();
 
-  const {
-    getDecimals,
-    getTokenSymbol,
-    addMoreTokens,
-    rollbackTokens,
-    approveDeposit,
-    modifyStartAndEndTime,
-  } = useSmartContractMethods();
+  const { getDecimals, getTokenSymbol, approveDeposit } =
+    useCommonContractMethods();
 
   const fetchClaimDetails = async () => {
     setLoading(true);
     try {
-      const { claims } = await subgraphQuery(
-        CHAIN_CONFIG[networkId].claimsSubgraphUrl,
-        QUERY_CLAIM_DETAILS(claimAddress),
+      const { claims } = await queryDropDetailsFromSubgraph(
+        claimAddress,
+        networkId,
       );
-      setClaimsData(claims);
+
+      if (claims.length) setClaimsData(claims);
 
       const tokenDecimal = await getDecimals(claims[0].airdropToken);
       const tokenSymbol = await getTokenSymbol(claims[0].airdropToken);
@@ -76,13 +75,49 @@ const ClaimInsight = ({ claimAddress }) => {
         noOfTokens,
         airdropTokenDetails?.tokenDecimal,
       );
+
+      const remainingAmount = Number(
+        convertFromWeiGovernance(
+          claimsData[0].totalClaimAmount,
+          airdropTokenDetails?.tokenDecimal,
+        ) -
+          Number(
+            convertFromWeiGovernance(
+              claimsData[0].totalAmountClaimed,
+              airdropTokenDetails?.tokenDecimal,
+            ),
+          ),
+      );
+
+      let snapshotData;
+
+      if (claimsData[0]?.claimType === "3") {
+        snapshotData = await createSnapShot(
+          convertToWeiGovernance(
+            +noOfTokens + remainingAmount,
+            airdropTokenDetails?.tokenDecimal,
+          ),
+          airdropTokenDetails.tokenAddress,
+          claimsData[0]?.whitelistToken,
+          claimsData[0]?.whitelistTokenNetwork, // token gated network
+          claimsData[0]?.whitelistTokenBlockNum, // blockNumber
+          networkId,
+        );
+      }
+
       await approveDeposit(
         airdropTokenDetails?.tokenAddress,
         claimAddress,
         noOfTokens,
         airdropTokenDetails?.tokenDecimal,
       );
-      await addMoreTokens(amount);
+      await addMoreTokens(
+        claimAddress,
+        amount,
+        claimsData[0].claimType !== "3"
+          ? claimsData[0].merkleRoot
+          : snapshotData?.merkleRoot,
+      );
       setLoading(false);
       showMessageHandler();
       setIsSuccessFull(true);
@@ -106,7 +141,7 @@ const ClaimInsight = ({ claimAddress }) => {
         airdropTokenDetails?.tokenDecimal,
       );
 
-      await rollbackTokens(rollbackAmount, rollbackAddress);
+      await rollbackTokens(claimAddress, rollbackAmount, rollbackAddress);
       setLoading(false);
       showMessageHandler();
       setIsSuccessFull(true);
@@ -126,6 +161,7 @@ const ClaimInsight = ({ claimAddress }) => {
     setLoading(true);
     try {
       await modifyStartAndEndTime(
+        claimAddress,
         Number(startTime).toFixed(0),
         Number(endTime).toFixed(0),
       );
@@ -152,7 +188,7 @@ const ClaimInsight = ({ claimAddress }) => {
   };
 
   useEffect(() => {
-    if (claimAddress) fetchClaimDetails();
+    if (claimAddress && networkId) fetchClaimDetails();
   }, [claimAddress, networkId]);
 
   return (
@@ -185,14 +221,17 @@ const ClaimInsight = ({ claimAddress }) => {
             </div>
           </div>
           <div className={classes.rightContainer}>
-            <ToggleClaim isActive={claimsData[0]?.isActive} />
+            <ToggleClaim
+              claimAddress={claimAddress}
+              isActive={claimsData[0]?.isActive}
+            />
             <ClaimEdit
               addMoreTokensHandler={addMoreTokensHandler}
               rollbackTokensHandler={rollbackTokensHandler}
               airdropTokenDetails={airdropTokenDetails}
               modifyStartAndEndTimeHandler={modifyStartAndEndTimeHandler}
-              endTime={claimsData[0]?.endTime}
-              startTime={claimsData[0]?.startTime}
+              endTime={dayjs(Number(claimsData[0]?.endTime) * 1000)}
+              startTime={dayjs(Number(claimsData[0]?.startTime) * 1000)}
               hasAllowanceMechanism={claimsData[0]?.hasAllowanceMechanism}
             />
             <ClaimEligibility
@@ -240,7 +279,7 @@ const ClaimInsight = ({ claimAddress }) => {
       <Backdrop
         sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
         open={loading}>
-        <CircularProgress color="inherit" />
+        <CircularProgress />
       </Backdrop>
     </>
   );

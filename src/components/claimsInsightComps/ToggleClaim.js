@@ -5,16 +5,16 @@ import {
   FormControlLabel,
   Switch,
 } from "@mui/material";
+import useDropsContractMethods from "hooks/useDropsContracMethods";
 import React, { useEffect, useState } from "react";
-import useSmartContractMethods from "../../hooks/useSmartContractMethods";
 import { ClaimsInsightStyles } from "./claimsInsightStyles";
 
-const ToggleClaim = ({ isActive }) => {
+const ToggleClaim = ({ claimAddress, isActive }) => {
   const [loading, setLoading] = useState(false);
   const [isEnabled, setIsEnabled] = useState(true);
   const [showMessage, setShowMessage] = useState(null);
 
-  const { toggleClaim } = useSmartContractMethods();
+  const { toggleClaim } = useDropsContractMethods();
 
   const classes = ClaimsInsightStyles();
 
@@ -22,7 +22,7 @@ const ToggleClaim = ({ isActive }) => {
     setLoading(true);
 
     try {
-      await toggleClaim();
+      await toggleClaim(claimAddress);
       setLoading(false);
       setIsEnabled(!isEnabled);
       showMessageHandler();
@@ -101,7 +101,7 @@ const ToggleClaim = ({ isActive }) => {
       <Backdrop
         sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
         open={loading}>
-        <CircularProgress color="inherit" />
+        <CircularProgress />
       </Backdrop>
     </div>
   );

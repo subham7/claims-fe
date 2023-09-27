@@ -6,8 +6,8 @@ import { FaCoins } from "react-icons/fa";
 import { useRouter } from "next/router";
 import Countdown from "react-countdown";
 import { Alert } from "@mui/material";
-import useSmartContractMethods from "../../hooks/useSmartContractMethods";
 import { convertFromWeiGovernance } from "../../utils/globalFunctions";
+import useCommonContractMethods from "hooks/useCommonContractMehods";
 
 const useStyles = makeStyles({
   container: {
@@ -26,7 +26,6 @@ const useStyles = makeStyles({
     justifyContent: "space-between",
     margin: 0,
     alignItems: "center",
-    // fontWeight: '400'
   },
 
   createdBy: {
@@ -34,11 +33,9 @@ const useStyles = makeStyles({
     margin: 0,
     fontSize: "14px",
     color: "#6475A3",
-    // letterSpacing: '0.5px'
   },
   span: {
-    color: "#C1D3FF",
-    // textDecoration: 'underline'
+    color: "#dcdcdc",
   },
   icons: {
     padding: 4,
@@ -108,7 +105,7 @@ const ClaimsCard = ({
   const [symbol, setSymbol] = useState("");
   const [decimals, setDecimals] = useState(0);
 
-  const { getDecimals, getTokenSymbol } = useSmartContractMethods();
+  const { getDecimals, getTokenSymbol } = useCommonContractMethods();
 
   const startingTime = new Date(+startDate * 1000);
   const endingTime = new Date(+endDate * 1000);
@@ -155,10 +152,8 @@ const ClaimsCard = ({
     fetchContractDetails();
   });
 
-  // dispatch(addClaimContractData(claimContractData));
-
   const claimHandler = () => {
-    router.push(`/claims/${claimContract}`);
+    router.push(`/claims/${claimsNetwork}/${claimContract}`);
   };
 
   return (
@@ -191,7 +186,7 @@ const ClaimsCard = ({
             onClick={(e) => {
               e.stopPropagation();
               navigator.clipboard.writeText(
-                `${window.location.origin}/claim/${claimContract}/${claimsNetwork}`,
+                `${window.location.origin}/claim/${claimsNetwork}/${claimContract}/`,
               );
               setIsCopied(true);
 

@@ -2,11 +2,10 @@ import { makeStyles } from "@mui/styles";
 
 export const TokenGatingModalStyles = makeStyles({
   container: {
-    background: "#101D38",
+    background: "#151515",
     width: "600px",
     borderRadius: "20px",
     padding: "70px 30px",
-    border: "0.5px solid #6475A3",
     display: "flex",
     flexDirection: "column",
     position: "fixed",
@@ -22,8 +21,8 @@ export const TokenGatingModalStyles = makeStyles({
     left: "0",
     height: "100vh",
     width: "100vw",
-    background: "#fff",
-    opacity: "30%",
+    background: "#000",
+    opacity: "60%",
   },
   form: {
     width: "100%",
@@ -39,30 +38,30 @@ export const TokenGatingModalStyles = makeStyles({
   label: {
     color: "white",
     fontSize: "18px",
-    marginBottom: "5px",
+    marginTop: "10px",
   },
 
   btns: {
+    marginTop: "24px",
     alignSelf: "flex-end",
     justifySelf: "flex-end",
   },
 
   cancelBtn: {
     background: "#101D38",
-    border: "0.5px solid #6475A3",
     borderRadius: "50px",
     width: "150px",
     marginRight: "10px",
   },
 
   addBtn: {
-    background: "#3A7AFD",
+    background: "#2D55FF",
     border: "none",
     borderRadius: "50px",
     width: "150px",
     color: "white",
     "&:hover": {
-      background: "#3A7AFD90",
+      background: "#2D55FF90",
     },
   },
 });

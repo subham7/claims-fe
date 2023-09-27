@@ -8,7 +8,6 @@ import { makeStyles } from "@mui/styles";
 import { convertToWeiGovernance } from "utils/globalFunctions";
 import { createClaimCsv, createSnapShot } from "api/claims";
 import { useRouter } from "next/router";
-import useSmartContractMethods from "../../hooks/useSmartContractMethods";
 import Moralis from "moralis";
 import { EvmChain } from "@moralisweb3/common-evm-utils";
 import {
@@ -18,8 +17,9 @@ import {
 import { useAccount, useNetwork } from "wagmi";
 import { getTokensList } from "api/token";
 import { getUserTokenData } from "utils/helper";
-import { CHAIN_CONFIG } from "utils/constants";
-import useClaimSmartContracts from "hooks/useClaimSmartContracts";
+import { CHAIN_CONFIG, ZERO_ADDRESS, ZERO_MERKLE_ROOT } from "utils/constants";
+import useCommonContractMethods from "hooks/useCommonContractMehods";
+import useDropsContractMethods from "hooks/useDropsContracMethods";
 
 const useStyles = makeStyles({
   container: {
@@ -39,7 +39,6 @@ const CreateClaim = () => {
   const [errMsg, setErrMsg] = useState("");
   const [loadingTokens, setLoadingTokens] = useState(false);
   const [snapshotMerkleData, setSnapshotMerkleData] = useState([]);
-  useClaimSmartContracts();
 
   const classes = useStyles();
 
@@ -48,8 +47,9 @@ const CreateClaim = () => {
   const networkId = "0x" + chain?.id.toString(16);
   const router = useRouter();
 
-  const { claimContract, approveDeposit, getDecimals } =
-    useSmartContractMethods();
+  const { approveDeposit, getDecimals } = useCommonContractMethods();
+
+  const { claimContract } = useDropsContractMethods();
 
   const handleBack = () => {
     setActiveStep((prevStep) => prevStep - 1);
@@ -158,7 +158,7 @@ const CreateClaim = () => {
         daoTokenAddress:
           values?.daoTokenAddress.length > 2
             ? values?.daoTokenAddress
-            : "0x0000000000000000000000000000000000000000",
+            : ZERO_ADDRESS,
         tokenGatingAmt: values?.tokenGatingAmt ? values?.tokenGatingAmt : 0,
         maximumClaim: values?.maximumClaim,
         customAmount:
@@ -179,7 +179,7 @@ const CreateClaim = () => {
       let snapshotData;
       let blockNumber;
 
-      if (values.maximumClaim === "proRata") {
+      if (data.maximumClaim === "proRata") {
         try {
           const blockData = await fetchLatestBlockNumber(
             data?.tokenGatedNetwork,
@@ -255,10 +255,7 @@ const CreateClaim = () => {
           try {
             let tokenGatingDecimals = 1;
 
-            if (
-              data.daoTokenAddress !==
-              "0x0000000000000000000000000000000000000000"
-            ) {
+            if (data.daoTokenAddress !== ZERO_ADDRESS) {
               try {
                 tokenGatingDecimals = await getDecimals(data.daoTokenAddress);
               } catch (error) {
@@ -283,8 +280,7 @@ const CreateClaim = () => {
               data.walletAddress.toLowerCase(),
               data.airdropTokenAddress,
               data.daoTokenAddress,
-              data.daoTokenAddress !==
-              "0x0000000000000000000000000000000000000000"
+              data.daoTokenAddress !== ZERO_ADDRESS
                 ? convertToWeiGovernance(
                     data.tokenGatingAmt,
                     tokenGatingDecimals,
@@ -297,7 +293,7 @@ const CreateClaim = () => {
               true,
               data.maximumClaim === "proRata"
                 ? snapshotData?.merkleRoot
-                : "0x0000000000000000000000000000000000000000000000000000000000000001",
+                : ZERO_MERKLE_ROOT,
               Number(eligible), // Permission ie. 0 - TG; 1 - Whitelisted; 2 - FreeForALL
               [
                 data.maximumClaim === "proRata"
@@ -323,8 +319,7 @@ const CreateClaim = () => {
               data.maximumClaim === "proRata" ? data.tokenGatedNetwork : "",
             );
 
-            const newClaimContract =
-              response.events.NewClaimContract.returnValues._newClaimContract;
+            const newClaimContract = response.logs[0].address;
 
             if (hasAllowanceMechanism) {
               await approveDeposit(
@@ -339,7 +334,7 @@ const CreateClaim = () => {
             setFinish(true);
             showMessageHandler(setFinish);
             setTimeout(() => {
-              router.push(`/claims`);
+              router.push(`/claims/${networkId}`);
             }, 3000);
           } catch (err) {
             console.log(err);
@@ -399,7 +394,7 @@ const CreateClaim = () => {
               data.walletAddress.toLowerCase(),
               data.walletAddress.toLowerCase(),
               data.airdropTokenAddress,
-              "0x0000000000000000000000000000000000000000",
+              ZERO_ADDRESS,
               0,
               new Date(data.startDate).getTime() / 1000,
               new Date(data.endDate).getTime() / 1000,
@@ -427,8 +422,7 @@ const CreateClaim = () => {
               "",
             );
 
-            const newClaimContract =
-              response.events.NewClaimContract.returnValues._newClaimContract;
+            const newClaimContract = response.logs[0].address;
 
             if (hasAllowanceMechanism) {
               await approveDeposit(
@@ -443,7 +437,7 @@ const CreateClaim = () => {
             setFinish(true);
             showMessageHandler(setFinish);
             setTimeout(() => {
-              router.push(`/claims`);
+              router.push(`/claims/${networkId}`);
             }, 3000);
           } catch (err) {
             console.log(err);
@@ -467,6 +461,7 @@ const CreateClaim = () => {
             setActiveStep={setActiveStep}
             tokensInWallet={tokensInWallet}
             isLoading={loadingTokens}
+            networkId={networkId}
           />
         );
       case 1:
@@ -479,6 +474,7 @@ const CreateClaim = () => {
             setActiveStep={setActiveStep}
             finish={finish}
             loading={loading}
+            networkId={networkId}
           />
         );
     }

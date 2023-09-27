@@ -70,7 +70,7 @@ export default function ERC20Step2(props) {
                 }
                 InputProps={{
                   endAdornment: (
-                    <InputAdornment position="end" sx={{ color: "#C1D3FF" }}>
+                    <InputAdornment position="end" sx={{ color: "#dcdcdc" }}>
                       USDC
                     </InputAdornment>
                   ),
@@ -109,7 +109,7 @@ export default function ERC20Step2(props) {
                 }
                 InputProps={{
                   endAdornment: (
-                    <InputAdornment position="end" sx={{ color: "#C1D3FF" }}>
+                    <InputAdornment position="end" sx={{ color: "#dcdcdc" }}>
                       USDC
                     </InputAdornment>
                   ),
@@ -148,7 +148,7 @@ export default function ERC20Step2(props) {
                 }
                 InputProps={{
                   endAdornment: (
-                    <InputAdornment position="end" sx={{ color: "#C1D3FF" }}>
+                    <InputAdornment position="end" sx={{ color: "#dcdcdc" }}>
                       USDC
                     </InputAdornment>
                   ),
@@ -187,7 +187,7 @@ export default function ERC20Step2(props) {
                 }
                 InputProps={{
                   endAdornment: (
-                    <InputAdornment position="end" sx={{ color: "#C1D3FF" }}>
+                    <InputAdornment position="end" sx={{ color: "#dcdcdc" }}>
                       USDC
                     </InputAdornment>
                   ),

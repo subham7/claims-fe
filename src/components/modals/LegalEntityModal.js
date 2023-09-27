@@ -14,12 +14,12 @@ const useStyles = makeStyles({
     top: 0,
     left: 0,
     background: "#000000",
-    opacity: 0.85,
+    opacity: 0.6,
     zIndex: 2000,
   },
   modal: {
     width: "570px",
-    background: "#111D38",
+    background: "#0F0F0F",
     position: "fixed",
     top: "50%",
     left: "50%",
@@ -35,12 +35,12 @@ const useStyles = makeStyles({
     fontSize: "28px",
   },
   subtitle: {
-    color: "#C1D3FF",
+    color: "#dcdcdc",
     fontSize: "16px",
     marginBottom: "6px",
   },
   btn: {
-    background: "#3B7AFD",
+    background: "#2D55FF",
     borderRadius: "10px",
     padding: "13px 30px",
     marginTop: "20px",
@@ -62,7 +62,7 @@ const useStyles = makeStyles({
   },
   inviteLink: {
     background:
-      "transparent linear-gradient(90deg, #111D3800 0%, #3B7AFD 100%) 0% 0% no-repeat padding-box",
+      "transparent linear-gradient(90deg, #0F0F0F00 0%, #2D55FF 100%) 0% 0% no-repeat padding-box",
     position: "",
     display: "block",
     padding: "0px 20px",
@@ -76,18 +76,18 @@ const useStyles = makeStyles({
   copy: {
     width: "68px",
     height: "30px",
-    background: "#3B7AFD 0% 0% no-repeat padding-box",
+    background: "#2D55FF 0% 0% no-repeat padding-box",
     borderRadius: "15px",
   },
   linkInput: {
     width: "100%",
-    color: "#C1D3FF",
-    background: "#111D38 0% 0% no-repeat padding-box",
-    border: "1px solid #C1D3FF40",
+    color: "#dcdcdc",
+    background: "#0F0F0F 0% 0% no-repeat padding-box",
+    border: "1px solid #dcdcdc40",
     borderRadius: "10px",
     "&:hover": {
-      boxShadow: "0px 0px 12px #C1D3FF40",
-      border: "1px solid #C1D3FF40",
+      boxShadow: "0px 0px 12px #dcdcdc40",
+      border: "1px solid #dcdcdc40",
       borderRadius: "10px",
       opacity: 1,
     },
@@ -107,6 +107,7 @@ const LegalEntityModal = ({
   encryptedLink,
   isTwitter = false,
   daoAddress,
+  networkId,
 }) => {
   const [isCopy, setIsCopy] = useState(false);
   const classes = useStyles();
@@ -120,14 +121,14 @@ const LegalEntityModal = ({
   // back to dashboard
   const dashboardHandler = () => {
     // add dynamic link
-    router.push(`/dashboard/${daoAddress}`);
+    router.push(`/dashboard/${daoAddress}/${networkId}`);
   };
 
   // copy link
   const copyHandler = () => {
     navigator.clipboard.writeText(
       typeof window !== "undefined" && window.location.origin
-        ? `${window.location.origin}/documents/${daoAddress}/sign/${encryptedLink}`
+        ? `${window.location.origin}/documents/${daoAddress}/${networkId}/sign/${encryptedLink}`
         : null,
     );
     setIsCopy(true);
@@ -163,7 +164,7 @@ const LegalEntityModal = ({
                   disabled
                   value={
                     typeof window !== "undefined" && window.location.origin
-                      ? `${window.location.origin}/documents/${daoAddress}/sign/${encryptedLink}`
+                      ? `${window.location.origin}/documents/${daoAddress}/${networkId}/sign/${encryptedLink}`
                       : null
                   }
                   InputProps={{

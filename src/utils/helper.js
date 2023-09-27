@@ -1,19 +1,46 @@
 import Web3 from "web3";
 import Safe, { Web3Adapter } from "@safe-global/protocol-kit";
 import WrongNetworkModal from "../components/modals/WrongNetworkModal";
-import { QUERY_ALL_MEMBERS } from "../api/graphql/queries";
+import { QUERY_ALL_MEMBERS } from "api/graphql/stationQueries";
 import { subgraphQuery } from "./subgraphs";
-import { CHAIN_CONFIG } from "./constants";
+import {
+  BLOCK_CONFIRMATIONS,
+  BLOCK_TIMEOUT,
+  CHAIN_CONFIG,
+  contractNetworks,
+} from "./constants";
+import { getPublicClient, getWalletClient } from "utils/viemConfig";
+import { uploadToAWS } from "api/club";
 
-export const getSafeSdk = async (gnosisAddress, walletAddress, networkId) => {
+export const getCustomSafeSdk = async (
+  gnosisAddress,
+  walletAddress,
+  networkId,
+) => {
   const web3 = await web3InstanceCustomRPC(networkId);
   const ethAdapter = new Web3Adapter({
     web3,
     signerAddress: walletAddress,
   });
   const safeSdk = await Safe.create({
-    ethAdapter: ethAdapter,
+    ethAdapter,
     safeAddress: gnosisAddress,
+    contractNetworks,
+  });
+
+  return safeSdk;
+};
+
+export const getSafeSdk = async (gnosisAddress, walletAddress, networkId) => {
+  const web3 = await web3InstanceEthereum();
+  const ethAdapter = new Web3Adapter({
+    web3,
+    signerAddress: walletAddress,
+  });
+  const safeSdk = await Safe.create({
+    ethAdapter,
+    safeAddress: gnosisAddress,
+    contractNetworks,
   });
 
   return safeSdk;
@@ -96,21 +123,18 @@ export function returnRemainingTime(epochTime) {
 export const showWrongNetworkModal = (
   walletAddress,
   networkId,
-  isClaims = false,
-  network,
+  routeNetworkId,
 ) => {
-  if (isClaims) {
-    if (network && network !== networkId) {
-      return <WrongNetworkModal chainId={parseInt(network, 16)} />;
-    }
-
-    return walletAddress && !CHAIN_CONFIG[networkId] ? (
-      <WrongNetworkModal />
-    ) : null;
+  if (
+    routeNetworkId &&
+    routeNetworkId !== networkId &&
+    routeNetworkId !== "create"
+  ) {
+    return <WrongNetworkModal chainId={routeNetworkId} />;
   }
 
-  return walletAddress && networkId !== "0x89" ? (
-    <WrongNetworkModal isClaims={isClaims} />
+  return walletAddress && !CHAIN_CONFIG[networkId] ? (
+    <WrongNetworkModal />
   ) : null;
 };
 
@@ -173,10 +197,17 @@ export const extractNftAdressAndId = (url) => {
   }
 };
 
-export const getUserTokenData = async (tokenData, networkId) => {
-  const filteredData = tokenData.filter(
-    (token) => token.contract_address !== CHAIN_CONFIG[networkId].nativeToken,
-  );
+export const getUserTokenData = async (
+  tokenData,
+  networkId,
+  isProposal = false,
+) => {
+  const filteredData = !isProposal
+    ? tokenData.filter(
+        (token) =>
+          token.contract_address !== CHAIN_CONFIG[networkId].nativeToken,
+      )
+    : tokenData;
 
   return filteredData.map((token) => {
     return {
@@ -192,6 +223,60 @@ export const requestEthereumChain = async (method, params) => {
   return await window.ethereum.request({ method, params });
 };
 
+export const writeContractFunction = async ({
+  address,
+  abi,
+  functionName,
+  args,
+  account,
+  networkId,
+}) => {
+  try {
+    const publicClient = getPublicClient(networkId);
+    const walletClient = getWalletClient(networkId);
+
+    const { request } = await publicClient.simulateContract({
+      address,
+      abi,
+      functionName,
+      args,
+      account,
+    });
+
+    const txHash = await walletClient.writeContract(request);
+    const txReciept = await publicClient.waitForTransactionReceipt({
+      hash: txHash,
+      confirmations: BLOCK_CONFIRMATIONS,
+      timeout: BLOCK_TIMEOUT,
+    });
+
+    return txReciept;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const readContractFunction = async ({
+  address,
+  abi,
+  functionName,
+  args,
+  account,
+  networkId,
+}) => {
+  const publicClient = getPublicClient(networkId);
+
+  const data = await publicClient.readContract({
+    address,
+    abi,
+    functionName,
+    args,
+    account,
+  });
+
+  return data;
+};
+
 export const csvToObjectForMintGT = (csvString) => {
   const lines = csvString.trim().split("\n");
   const addresses = [];
@@ -204,4 +289,28 @@ export const csvToObjectForMintGT = (csvString) => {
   }
 
   return { addresses, amounts };
+};
+
+export const shortAddress = (address) => {
+  if (address) {
+    return (
+      address?.substring(0, 6) +
+      "....." +
+      address?.substring(address.length - 4)
+    );
+  }
+};
+
+export const uploadFileToAWS = async (file) => {
+  return new Promise(async (resolve, reject) => {
+    const reader = new FileReader();
+    reader.addEventListener("loadend", async () => {
+      const path = file?.name.split("/");
+      const fileName = path[path.length - 1];
+      const data = await uploadToAWS(fileName, reader);
+      resolve(data?.saveFileResponse?.Location);
+    });
+
+    reader.readAsArrayBuffer(file);
+  });
 };

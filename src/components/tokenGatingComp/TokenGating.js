@@ -10,7 +10,8 @@ import {
   convertFromWeiGovernance,
   convertToWeiGovernance,
 } from "../../utils/globalFunctions";
-import useSmartContractMethods from "../../hooks/useSmartContractMethods";
+import useAppContractMethods from "../../hooks/useAppContractMethods";
+import useCommonContractMethods from "hooks/useCommonContractMehods";
 
 const TokenGating = ({ daoAddress }) => {
   const [showTokenGatingModal, setShowTokenGatingModal] = useState(false);
@@ -45,10 +46,11 @@ const TokenGating = ({ daoAddress }) => {
   const {
     getTokenGatingDetails,
     setupTokenGating,
-    getTokenSymbol,
-    getDecimals,
+
     disableTokenGating,
-  } = useSmartContractMethods();
+  } = useAppContractMethods();
+
+  const { getTokenSymbol, getDecimals } = useCommonContractMethods();
 
   const addTokensHandler = () => {
     setShowTokenGatingModal(true);
@@ -301,7 +303,7 @@ const TokenGating = ({ daoAddress }) => {
               checkedIcon={
                 <div
                   style={{
-                    background: "#3A7AFD",
+                    background: "#2D55FF",
                     height: "25px",
                     width: "25px",
                     borderRadius: "100px",
@@ -328,7 +330,7 @@ const TokenGating = ({ daoAddress }) => {
       )}
 
       <Backdrop sx={{ color: "#fff", zIndex: 1000 }} open={loading}>
-        <CircularProgress color="inherit" />
+        <CircularProgress />
       </Backdrop>
 
       {showMessage && isTokenGatingSuccessfull && (

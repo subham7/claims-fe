@@ -26,33 +26,24 @@ export const DashboardStyles = makeStyles({
     width: "Infinityvw",
     height: "164px",
     padding: "0px",
-    // marginTop: "20px",
     background: "#0ABB92 no-repeat padding-box",
   },
   thirdCard: {
-    // width: "22vw",
-    // height: "351px",
-    background: "#121D38",
-    border: ".5px solid #6475A3",
+    background: "#151515",
   },
   fifthCard: {
-    // width: "22vw",
-    // height: "370px",
-    background: "#121D38",
-    border: ".5px solid #6475A3",
+    background: "#151515",
     color: "white",
     position: "relative",
   },
   cardSharp1: {
-    backgroundColor: "#121D38",
+    backgroundColor: "#151515",
     borderRadius: "10px",
     opacity: 1,
     width: "100%",
-    // height: "370px",
-    border: ".5px solid #6475A3",
   },
   cardSharp2: {
-    backgroundColor: "#142243",
+    backgroundColor: "#151515",
     borderTopLeftRadius: "0px",
     borderTopRightRadius: "0px",
     opacity: 1,
@@ -65,14 +56,14 @@ export const DashboardStyles = makeStyles({
   },
   card1text2: {
     fontSize: "2.2vh",
-    color: "#C1D3FF",
+    color: "#dcdcdc",
     textTransform: "uppercase",
     opacity: "1",
     paddingLeft: "10px",
   },
   card1text3: {
     fontSize: "14px",
-    color: "#C1D3FF",
+    color: "#dcdcdc",
 
     opacity: "1",
   },
@@ -85,13 +76,13 @@ export const DashboardStyles = makeStyles({
   },
   card1text5: {
     fontSize: "22px",
-    color: "#C1D3FF",
+    color: "#dcdcdc",
     textTransform: "uppercase",
     opacity: "1",
   },
   card2text1: {
     fontSize: "20px",
-    color: "#C1D3FF",
+    color: "#dcdcdc",
     opacity: "1",
   },
   card2text2: {
@@ -106,7 +97,7 @@ export const DashboardStyles = makeStyles({
   },
   card2text4: {
     fontSize: "18px",
-    color: "#C1D3FF",
+    color: "#dcdcdc",
     opacity: "1",
   },
   card2text5: {
@@ -116,7 +107,7 @@ export const DashboardStyles = makeStyles({
   },
   card2text6: {
     fontSize: "18px",
-    color: "#C1D3FF",
+    color: "#dcdcdc",
     opacity: "1",
   },
   card2text7: {
@@ -131,7 +122,7 @@ export const DashboardStyles = makeStyles({
   },
   card2text9: {
     fontSize: "22px",
-    color: "#C1D3FF",
+    color: "#dcdcdc",
     textTransform: "uppercase",
     opacity: "1",
   },
@@ -144,13 +135,13 @@ export const DashboardStyles = makeStyles({
   },
   card3text3: {
     width: "354px",
-    color: "#C1D3FF",
+    color: "#dcdcdc",
   },
   card3text4: {
     textAlign: "left",
     fontSize: "6px",
     letteSpacing: "0.2px",
-    color: "#C1D3FF",
+    color: "#dcdcdc",
     opacity: "1",
   },
   activeIllustration: {
@@ -168,18 +159,18 @@ export const DashboardStyles = makeStyles({
   copyButton: {
     width: "68px",
     height: "30px",
-    background: "#3B7AFD 0% 0% no-repeat padding-box",
+    background: "#2D55FF 0% 0% no-repeat padding-box",
     borderRadius: "15px",
   },
   linkInput: {
     width: "100%",
-    color: "#C1D3FF",
-    background: "#111D38 0% 0% no-repeat padding-box",
-    border: "1px solid #C1D3FF40",
+    color: "#dcdcdc",
+    background: "#0F0F0F 0% 0% no-repeat padding-box",
+    border: "1px solid #dcdcdc40",
     borderRadius: "10px",
     "&:hover": {
-      boxShadow: "0px 0px 12px #C1D3FF40",
-      border: "1px solid #C1D3FF40",
+      boxShadow: "0px 0px 12px #dcdcdc40",
+      border: "1px solid #dcdcdc40",
       borderRadius: "10px",
       opacity: 1,
     },
@@ -193,10 +184,10 @@ export const DashboardStyles = makeStyles({
     color: "#FFFFFF",
   },
   fourthCard: {
-    // width: "22vw",
-    background: "#121D38",
+    display: "flex",
+    flexDirection: "column",
+    backgroundColor: "#151515",
     borderRadius: "10px",
-    border: ".5px solid #6475A3",
     paddingBottom: "25px",
   },
   pendingIllustration: {
@@ -207,7 +198,7 @@ export const DashboardStyles = makeStyles({
   },
   card5text1: {
     fontSize: "16px",
-    color: "#C1D3FF",
+    color: "#dcdcdc",
     opacity: "1",
   },
   card5text2: {
@@ -218,13 +209,13 @@ export const DashboardStyles = makeStyles({
   searchField: {
     width: "28.5vw",
     height: "auto",
-    color: "#C1D3FF",
-    background: "#111D38 0% 0% no-repeat padding-box",
-    border: "1px solid #C1D3FF40",
+    color: "#dcdcdc",
+    background: "#0F0F0F 0% 0% no-repeat padding-box",
+    border: "1px solid #dcdcdc40",
     borderRadius: "10px",
     "&:hover": {
-      boxShadow: "0px 0px 12px #C1D3FF40",
-      border: "1px solid #C1D3FF40",
+      boxShadow: "0px 0px 12px #dcdcdc40",
+      border: "1px solid #dcdcdc40",
       borderRadius: "10px",
       opacity: 1,
     },
@@ -233,7 +224,7 @@ export const DashboardStyles = makeStyles({
     width: "70%",
   },
   tableheading: {
-    color: "#C1D3FF",
+    color: "#dcdcdc",
     fontSize: "22px",
   },
   tablecontent: {
@@ -246,7 +237,7 @@ export const DashboardStyles = makeStyles({
   membersTitleSmall: {
     fontSize: "24px",
     color: "#FFFFFF",
-    backgroundColor: "#19274B",
+    backgroundColor: "#151515",
   },
   banner: {
     width: "100%",

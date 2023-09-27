@@ -10,16 +10,15 @@ import {
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { ClaimsInsightStyles } from "./claimsInsightStyles";
-import { subgraphQuery } from "../../utils/subgraphs";
-import {
-  QUERY_ALL_CLAIMS_TRANSACTIONS,
-  QUERY_WALLET_WISE_TRANSACTIONS,
-} from "../../api/graphql/queries";
 import { convertFromWeiGovernance } from "../../utils/globalFunctions";
 import { FiExternalLink } from "react-icons/fi";
 import { useNetwork } from "wagmi";
 
-import { CHAIN_CONFIG } from "utils/constants";
+import {
+  queryAllDropsTransactionsFromSubgraph,
+  queryWalletWiseTransactionsFromSubgraph,
+} from "utils/dropsSubgraphHelper";
+import { shortAddress } from "utils/helper";
 
 const ClaimsTransactions = ({
   claimAddress,
@@ -48,27 +47,37 @@ const ClaimsTransactions = ({
   ];
 
   const fetchWalletWiseTransactions = async () => {
-    const { claimers } = await subgraphQuery(
-      CHAIN_CONFIG[networkId].claimsSubgraphUrl,
-      QUERY_WALLET_WISE_TRANSACTIONS(claimAddress),
-    );
-    setWalletWiseTransactionData(claimers);
+    try {
+      const { claimers } = await queryWalletWiseTransactionsFromSubgraph(
+        claimAddress,
+        networkId,
+      );
+
+      if (claimers.length) setWalletWiseTransactionData(claimers);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const fetchAllTransactions = async () => {
-    const { airdrops } = await subgraphQuery(
-      CHAIN_CONFIG[networkId].claimsSubgraphUrl,
-      QUERY_ALL_CLAIMS_TRANSACTIONS(claimAddress),
-    );
-    setAllTransactionsData(airdrops?.reverse());
+    try {
+      const { airdrops } = await queryAllDropsTransactionsFromSubgraph(
+        claimAddress,
+        networkId,
+      );
+
+      if (airdrops.length) setAllTransactionsData(airdrops?.reverse());
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   useEffect(() => {
-    if (claimAddress) {
+    if (claimAddress && networkId) {
       fetchWalletWiseTransactions();
       fetchAllTransactions();
     }
-  }, [claimAddress]);
+  }, [claimAddress, networkId]);
 
   return (
     <div className={classes.claimsTransactionContainer}>
@@ -112,13 +121,13 @@ const ClaimsTransactions = ({
         </button>
       </div>
 
-      <TableContainer component={Paper}>
+      <TableContainer
+        sx={{
+          overflow: "hidden",
+        }}
+        component={Paper}>
         <Table sx={{ minWidth: 809 }} aria-label="simple table">
-          <TableHead
-            sx={{
-              border: "0.5px solid #6475A3",
-              overflow: "hidden",
-            }}>
+          <TableHead>
             <TableRow>
               {isWalletSelected ? (
                 <>
@@ -128,7 +137,7 @@ const ClaimsTransactions = ({
                         sx={{
                           minWidth: "100px",
                           fontSize: "16px",
-                          background: "#142243",
+                          background: "#151515",
                         }}
                         align="left"
                         variant="tableHeading"
@@ -146,7 +155,7 @@ const ClaimsTransactions = ({
                         sx={{
                           minWidth: "100px",
                           fontSize: "16px",
-                          background: "#142243",
+                          background: "#151515",
                         }}
                         align="left"
                         variant="tableHeading"
@@ -159,10 +168,7 @@ const ClaimsTransactions = ({
               )}
             </TableRow>
           </TableHead>
-          <TableBody
-            sx={{
-              border: "0.5px solid #6475A3",
-            }}>
+          <TableBody>
             {isWalletSelected ? (
               <>
                 {walletWiseTransactionData?.map((data, key) => (
@@ -184,11 +190,7 @@ const ClaimsTransactions = ({
                           }}
                           item>
                           <a className={classes.activityLink}>
-                            {data.claimerAddress.substring(0, 6) +
-                              "......" +
-                              data.claimerAddress.substring(
-                                data.claimerAddress.length - 4,
-                              )}{" "}
+                            {shortAddress(data.claimerAddress)}
                           </a>
                         </Grid>
                       </Grid>
@@ -240,10 +242,7 @@ const ClaimsTransactions = ({
                           gap: "10px",
                           alignItems: "flex-start",
                         }}>
-                        {data.txHash.substring(0, 6) +
-                          "......" +
-                          data.txHash.substring(data.txHash.length - 4)}
-
+                        {shortAddress(data.txHash)}
                         <FiExternalLink
                           onClick={() => {
                             window.open(
@@ -257,11 +256,7 @@ const ClaimsTransactions = ({
                       </div>
                     </TableCell>
                     <TableCell align="left" variant="tableBody">
-                      {data.claimerAddress.substring(0, 6) +
-                        "......" +
-                        data.claimerAddress.substring(
-                          data.claimerAddress.length - 4,
-                        )}
+                      {shortAddress(data.claimerAddress)}
                     </TableCell>
                     <TableCell align="left" variant="tableBody">
                       {Number(

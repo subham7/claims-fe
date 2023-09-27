@@ -36,7 +36,7 @@ const useStyles = makeStyles({
     border: "none",
     padding: "18px 24px",
     color: "white",
-    background: "#3B7AFD",
+    background: "#2D55FF",
     borderRadius: "12px",
     cursor: "pointer",
   },
@@ -96,7 +96,7 @@ const useStyles = makeStyles({
   },
 });
 
-const Documents = ({ daoAddress }) => {
+const Documents = ({ daoAddress, networkId }) => {
   const classes = useStyles();
   const router = useRouter();
   const [showInviteModal, setShowInviteModal] = useState(false);
@@ -111,7 +111,7 @@ const Documents = ({ daoAddress }) => {
   });
 
   const createDocHandler = () => {
-    router.push(`/documents/${daoAddress}/create`);
+    router.push(`/documents/${daoAddress}/${networkId}/create`);
   };
 
   // closing legal entity modal
@@ -156,6 +156,7 @@ const Documents = ({ daoAddress }) => {
                   index={index + 1}
                   createdBy={document.createdBy}
                   daoAddress={daoAddress}
+                  networkId={networkId}
                 />
               ))}
             </>
@@ -170,6 +171,7 @@ const Documents = ({ daoAddress }) => {
                   index={index + 1}
                   createdBy={document.createdBy}
                   daoAddress={daoAddress}
+                  networkId={networkId}
                 />
               ))}
             </>
@@ -202,7 +204,7 @@ const Documents = ({ daoAddress }) => {
                   position: "absolute",
                   left: 20,
                   top: 30,
-                  color: "#111D38",
+                  color: "#0F0F0F",
                   fontWeight: "normal",
                   width: "80%",
                 }}>
@@ -212,7 +214,7 @@ const Documents = ({ daoAddress }) => {
                 href="/"
                 sx={{
                   position: "absolute",
-                  color: "#111D38",
+                  color: "#0F0F0F",
                   fontWeight: "normal",
                   width: "70%",
                   textDecoration: "underline",
@@ -232,6 +234,7 @@ const Documents = ({ daoAddress }) => {
             isInvite={true}
             onClose={closeModalHandler}
             daoAddress={daoAddress}
+            networkId={networkId}
           />
         )}
       </div>
