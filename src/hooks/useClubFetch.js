@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   addClubData,
@@ -32,6 +32,10 @@ const useClubFetch = ({ daoAddress, networkId }) => {
   const reduxClubData = useSelector((state) => {
     return state.club.clubData;
   });
+
+  const FACTORY_CONTRACT_ADDRESS = useSelector(
+    (state) => state.gnosis.factoryContractAddress,
+  );
 
   const {
     getDaoDetails,
@@ -110,9 +114,9 @@ const useClubFetch = ({ daoAddress, networkId }) => {
     };
 
     addClubDataToRedux();
-  }, [reduxClubData, networkId, daoAddress, dispatch, clubData]);
+  }, [reduxClubData, networkId, daoAddress, clubData]);
 
-  const checkUserExists = useCallback(async () => {
+  const checkUserExists = async () => {
     try {
       if (daoAddress && walletAddress && reduxClubData.gnosisAddress) {
         const factoryData = await getDaoDetails(daoAddress);
@@ -193,19 +197,13 @@ const useClubFetch = ({ daoAddress, networkId }) => {
     } catch (error) {
       console.error(error);
     }
-  }, [
-    daoAddress,
-    walletAddress,
-    reduxClubData.gnosisAddress,
-    reduxClubData.tokenType,
-    networkId,
-  ]);
+  };
 
   useEffect(() => {
-    if (walletAddress && networkId) {
+    if (networkId && FACTORY_CONTRACT_ADDRESS && daoAddress) {
       checkUserExists();
     }
-  }, [checkUserExists, walletAddress, networkId, daoAddress]);
+  }, [networkId, daoAddress, FACTORY_CONTRACT_ADDRESS]);
 };
 
 export default useClubFetch;
