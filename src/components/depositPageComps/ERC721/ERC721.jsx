@@ -1,5 +1,5 @@
 import { Alert } from "@mui/material";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import classes from "./ERC721.module.scss";
 import { useSelector } from "react-redux";
 import { convertFromWeiGovernance, getImageURL } from "utils/globalFunctions";
@@ -66,37 +66,33 @@ const ERC721 = ({
 
   const router = useRouter();
 
-  const fetchTokenDetails = useCallback(async () => {
+  const fetchTokenDetails = async () => {
     try {
-      const balance = await getBalance(daoAddress);
-      setBalanceOfNft(balance);
+      if (Deposit_Token_Address && daoAddress) {
+        const balance = await getBalance(daoAddress);
+        setBalanceOfNft(balance);
 
-      if (+balanceOfNft >= +clubData?.maxTokensPerUser) {
-        setHasClaimed(true);
-      } else {
-        setHasClaimed(false);
+        if (+balance >= +clubData?.maxTokensPerUser) {
+          setHasClaimed(true);
+        } else {
+          setHasClaimed(false);
+        }
+        const decimals = await getDecimals(Deposit_Token_Address);
+        const symbol = await getTokenSymbol(Deposit_Token_Address);
+        const name = await getTokenSymbol(Deposit_Token_Address);
+        const userBalance = await getBalance(Deposit_Token_Address);
+
+        setErc20TokenDetails({
+          tokenSymbol: symbol,
+          tokenName: name,
+          tokenDecimal: decimals,
+          userBalance: convertFromWeiGovernance(userBalance, decimals),
+        });
       }
-      const decimals = await getDecimals(Deposit_Token_Address);
-      const symbol = await getTokenSymbol(Deposit_Token_Address);
-      const name = await getTokenSymbol(Deposit_Token_Address);
-      const userBalance = await getBalance(Deposit_Token_Address);
-
-      setErc20TokenDetails({
-        tokenSymbol: symbol,
-        tokenName: name,
-        tokenDecimal: decimals,
-
-        userBalance: convertFromWeiGovernance(userBalance, decimals),
-      });
     } catch (error) {
       console.log(error);
     }
-  }, [
-    Deposit_Token_Address,
-    balanceOfNft,
-    daoAddress,
-    clubData?.maxTokensPerUser,
-  ]);
+  };
 
   const showMessageHandler = () => {
     setShowMessage(true);
@@ -161,7 +157,7 @@ const ERC721 = ({
 
   useEffect(() => {
     fetchTokenDetails();
-  }, [fetchTokenDetails]);
+  }, [Deposit_Token_Address, daoAddress]);
 
   useEffect(() => {
     if (new Date(day2).getTime() / 1000 >= new Date(day1).getTime() / 1000) {

@@ -1,5 +1,5 @@
 import { useFormik } from "formik";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import {
   convertFromWeiGovernance,
@@ -163,25 +163,27 @@ const ERC20 = ({
     }, 4000);
   };
 
-  const fetchTokenDetails = useCallback(async () => {
+  const fetchTokenDetails = async () => {
     try {
-      const decimals = await getDecimals(Deposit_Token_Address);
-      const symbol = await getTokenSymbol(Deposit_Token_Address);
-      const userBalance = await getBalance(Deposit_Token_Address);
+      if (Deposit_Token_Address) {
+        const decimals = await getDecimals(Deposit_Token_Address);
+        const symbol = await getTokenSymbol(Deposit_Token_Address);
+        const userBalance = await getBalance(Deposit_Token_Address);
 
-      setErc20TokenDetails({
-        tokenSymbol: symbol,
-        tokenDecimal: decimals,
-        userBalance: convertFromWeiGovernance(userBalance, decimals),
-      });
+        setErc20TokenDetails({
+          tokenSymbol: symbol,
+          tokenDecimal: decimals,
+          userBalance: convertFromWeiGovernance(userBalance, decimals),
+        });
+      }
     } catch (error) {
       console.log(error);
     }
-  }, [Deposit_Token_Address]);
+  };
 
   useEffect(() => {
     fetchTokenDetails();
-  }, [fetchTokenDetails]);
+  }, [Deposit_Token_Address]);
 
   useEffect(() => {
     if (day2 >= day1) {
