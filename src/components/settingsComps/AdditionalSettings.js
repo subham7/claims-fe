@@ -12,7 +12,7 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import { AdditionalSettingsStyles } from "./AdditionalSettingsStyles";
@@ -22,6 +22,8 @@ import useAppContractMethods from "../../hooks/useAppContractMethods";
 import { shortAddress } from "utils/helper";
 import DepositDocument from "./modals/DepositDocument";
 import { useNetwork } from "wagmi";
+import { editDepositConfig } from "api/deposit";
+import { fetchClubbyDaoAddress } from "api/club";
 
 const AdditionalSettings = ({
   tokenType,
@@ -98,7 +100,19 @@ const AdditionalSettings = ({
   };
 
   const updateDocumentLink = async (documentLink) => {
-    console.log(documentLink);
+    try {
+      await editDepositConfig({ subscriptionDocId: documentLink }, daoAddress);
+      setLoading(false);
+      showMessageHandler();
+      setIsSuccessFull(true);
+      setChecked(!checked);
+      setMessage("Subscription link updated Successfully");
+    } catch (error) {
+      showMessageHandler();
+      setLoading(false);
+      setIsSuccessFull(false);
+      setMessage("Subscription link updating failed");
+    }
   };
 
   const showUpdateDepositTimeModalHandler = () => {
@@ -116,13 +130,35 @@ const AdditionalSettings = ({
     }, 4000);
   };
 
-  const handlePrerequisitesChange = () => {
-    setChecked(!checked);
+  const handleDocumentLinkChange = async () => {
+    if (!checked) {
+      setShowDepositDocumentLinkModal(true);
+    } else {
+      try {
+        await editDepositConfig({ subscriptionDocId: null }, daoAddress);
+        setLoading(false);
+        showMessageHandler();
+        setIsSuccessFull(true);
+        setChecked(!checked);
+        setMessage("Subscription link removed Successfully");
+      } catch (error) {
+        showMessageHandler();
+        setLoading(false);
+        setIsSuccessFull(false);
+        setMessage("Subscription link removing failed");
+      }
+    }
   };
 
-  const handleDocumentLinkChange = (event) => {
-    setShowDepositDocumentLinkModal(true);
+  const getDepositPreRequisites = async (daoAddress) => {
+    const res = await fetchClubbyDaoAddress(daoAddress);
+    if (res?.data?.depositConfig?.subscriptionDocId !== null) {
+      setChecked(true);
+    } else setChecked(false);
   };
+  useEffect(() => {
+    if (daoAddress) getDepositPreRequisites(daoAddress);
+  }, [daoAddress]);
 
   return (
     <div className={classes.container}>
@@ -322,7 +358,10 @@ const AdditionalSettings = ({
               <Grid sx={{ display: "flex", alignItems: "center" }}>
                 <Switch
                   checked={checked}
-                  onChange={handlePrerequisitesChange}
+                  onChange={() => {
+                    // handlePrerequisitesChange();
+                    handleDocumentLinkChange();
+                  }}
                   inputProps={{ "aria-label": "controlled" }}
                 />
 

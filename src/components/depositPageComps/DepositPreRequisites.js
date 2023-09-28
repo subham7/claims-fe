@@ -4,13 +4,13 @@ import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
 import { Typography } from "@mui/material";
 import { fetchClubbyDaoAddress } from "api/club";
+import Link from "next/link";
 
 const DepositPreRequisites = ({ daoAddress }) => {
   const [depositConfig, setDepositConfig] = useState({});
 
   const getDepositPreRequisites = async (daoAddress) => {
     const res = await fetchClubbyDaoAddress(daoAddress);
-    console.log("res", res);
     setDepositConfig(res?.data?.depositConfig);
   };
   useEffect(() => {
@@ -19,12 +19,14 @@ const DepositPreRequisites = ({ daoAddress }) => {
 
   return (
     <>
-      {depositConfig?.subscriptionDocId !== null &&
-        depositConfig?.enableKyc === true &&
-        depositConfig?.uploadDocId !== null && (
-          <div>
-            <Typography>Complete these steps</Typography>
-            {depositConfig?.subscriptionDocId !== null && (
+      {(depositConfig?.subscriptionDocId !== null ||
+        depositConfig?.enableKyc === true ||
+        depositConfig?.uploadDocId !== null) && (
+        <div>
+          <Typography>Complete these steps</Typography>
+          {depositConfig?.subscriptionDocId !== null && (
+            <Link
+              href={`/documents/${daoAddress}/0x89/sign/${depositConfig?.subscriptionDocId}`}>
               <div className={classes.stepContainer}>
                 <RadioButtonUncheckedIcon className={classes.icons} />
                 <div style={{ marginRight: "0.5rem" }}>
@@ -32,25 +34,26 @@ const DepositPreRequisites = ({ daoAddress }) => {
                 </div>
                 <OpenInNewIcon className={classes.icons} />
               </div>
-            )}
+            </Link>
+          )}
 
-            {depositConfig?.enableKyc === true && (
-              <div className={classes.stepContainer}>
-                <RadioButtonUncheckedIcon className={classes.icons} />
-                <div style={{ marginRight: "0.5rem" }}>Complete KYC</div>
-                <OpenInNewIcon className={classes.icons} />
-              </div>
-            )}
+          {depositConfig?.enableKyc === true && (
+            <div className={classes.stepContainer}>
+              <RadioButtonUncheckedIcon className={classes.icons} />
+              <div style={{ marginRight: "0.5rem" }}>Complete KYC</div>
+              <OpenInNewIcon className={classes.icons} />
+            </div>
+          )}
 
-            {depositConfig?.uploadDocId !== null && (
-              <div className={classes.stepContainer}>
-                <RadioButtonUncheckedIcon className={classes.icons} />
-                <div style={{ marginRight: "0.5rem" }}>Upload w8ben</div>
-                <OpenInNewIcon className={classes.icons} />
-              </div>
-            )}
-          </div>
-        )}
+          {depositConfig?.uploadDocId !== null && (
+            <div className={classes.stepContainer}>
+              <RadioButtonUncheckedIcon className={classes.icons} />
+              <div style={{ marginRight: "0.5rem" }}>Upload w8ben</div>
+              <OpenInNewIcon className={classes.icons} />
+            </div>
+          )}
+        </div>
+      )}
     </>
   );
 };

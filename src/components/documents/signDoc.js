@@ -142,12 +142,14 @@ const SignDoc = ({ daoAddress, isAdmin, networkId }) => {
 
       createDocument({
         daoAddress,
-        createdBy: signedAcc,
         fileName: "Legal Doc",
-        isPublic: false,
-        isSignable: true,
-        isTokenForSign: true,
         docIdentifier: replacedEncrytedLink,
+        isTokenForSign: true,
+        isSignable: true,
+        isPublic: false,
+        createdBy: signedAcc,
+        isDocUploaded: "false",
+        docLink: "",
       });
 
       docsList.push({
