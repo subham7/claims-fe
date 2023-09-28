@@ -27,19 +27,16 @@ const Join = ({ daoAddress }) => {
   const [loading, setLoading] = useState(false);
   const [remainingClaimAmount, setRemainingClaimAmount] = useState();
   const [whitelistUserData, setWhitelistUserData] = useState();
-  const [fetchedDetails, setFetchedDetails] = useState({
-    tokenA: "",
-    tokenB: "",
-    tokenAAmt: 0,
-    tokenBAmt: 0,
-    operator: 0,
-    comparator: 0,
-  });
-  const [displayTokenDetails, setDisplayTokenDetails] = useState({
+
+  const [gatedTokenDetails, setGatedTokenDetails] = useState({
     tokenASymbol: "",
     tokenBSymbol: "",
     tokenADecimal: 0,
     tokenBDecimal: 0,
+    tokenAAmt: 0,
+    tokenBAmt: 0,
+    operator: 0,
+    comparator: 0,
   });
   const [clubInfo, setClubInfo] = useState();
 
@@ -117,15 +114,6 @@ const Join = ({ daoAddress }) => {
       const tokenGatingDetails = await getTokenGatingDetails(daoAddress);
 
       if (tokenGatingDetails) {
-        setFetchedDetails({
-          tokenA: tokenGatingDetails[0]?.tokenA,
-          tokenB: tokenGatingDetails[0]?.tokenB,
-          tokenAAmt: tokenGatingDetails[0]?.value[0],
-          tokenBAmt: tokenGatingDetails[0]?.value[1],
-          operator: tokenGatingDetails[0]?.operator,
-          comparator: tokenGatingDetails[0]?.comparator,
-        });
-
         const tokenASymbol = await getTokenSymbol(
           tokenGatingDetails[0]?.tokenA,
         );
@@ -147,11 +135,15 @@ const Join = ({ daoAddress }) => {
           console.log(error);
         }
 
-        setDisplayTokenDetails({
+        setGatedTokenDetails({
           tokenASymbol: tokenASymbol,
           tokenBSymbol: tokenBSymbol,
           tokenADecimal: tokenADecimal ? tokenADecimal : 0,
           tokenBDecimal: tokenBDecimal ? tokenBDecimal : 0,
+          tokenAAmt: tokenGatingDetails[0]?.value[0],
+          tokenBAmt: tokenGatingDetails[0]?.value[1],
+          operator: tokenGatingDetails[0]?.operator,
+          comparator: tokenGatingDetails[0]?.comparator,
         });
 
         if (tokenGatingDetails?.length) {
@@ -292,6 +284,7 @@ const Join = ({ daoAddress }) => {
           isEligibleForTokenGating={isEligibleForTokenGating}
           whitelistUserData={whitelistUserData}
           networkId={networkId}
+          gatedTokenDetails={gatedTokenDetails}
         />
       ) : TOKEN_TYPE === "erc721" ? (
         <ERC721

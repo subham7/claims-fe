@@ -34,6 +34,7 @@ const NewErc20 = ({
   isTokenGated,
   whitelistUserData,
   networkId,
+  gatedTokenDetails,
 }) => {
   const [showMessage, setShowMessage] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -69,6 +70,8 @@ const NewErc20 = ({
   const day1 = dayjs.unix(day);
   const day2 = dayjs.unix(daoDetails.depositDeadline);
   const router = useRouter();
+  const remainingDays = day2.diff(day1, "day");
+  const remainingTimeInSecs = day2.diff(day1, "seconds");
 
   const fetchActivities = async () => {
     try {
@@ -230,7 +233,17 @@ const NewErc20 = ({
           />
 
           <DepositPreRequisites />
-          <DepositInput formik={formik} tokenDetails={tokenDetails} />
+          <DepositInput
+            clubData={clubData}
+            isTokenGated={isTokenGated}
+            isEligibleForTokenGating={isEligibleForTokenGating}
+            remainingDays={remainingDays}
+            remainingTimeInSecs={remainingTimeInSecs}
+            whitelistUserData={whitelistUserData}
+            formik={formik}
+            tokenDetails={tokenDetails}
+            remainingClaimAmount={remainingClaimAmount}
+          />
           <DepositDetails contractData={clubData} tokenDetails={tokenDetails} />
         </div>
         <SocialButtons isDeposit={true} data={clubInfo} />
@@ -254,7 +267,12 @@ const NewErc20 = ({
         {clubInfo?.bio && <About bio={clubInfo?.bio} />}
 
         {clubData && (
-          <Eligibility isDeposit={true} isTokenGated={isTokenGated} />
+          <Eligibility
+            gatedTokenDetails={gatedTokenDetails}
+            isDeposit={true}
+            isTokenGated={isTokenGated}
+            isWhitelist={whitelistUserData?.setWhitelist}
+          />
         )}
 
         <ClaimActivity

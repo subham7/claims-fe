@@ -2,7 +2,17 @@ import { Button, Skeleton, TextField, Typography } from "@mui/material";
 import React from "react";
 import classes from "../../claims/Claim.module.scss";
 
-const DepositInput = ({ formik, tokenDetails }) => {
+const DepositInput = ({
+  formik,
+  tokenDetails,
+  remainingDays,
+  remainingTimeInSecs,
+  isTokenGated,
+  isEligibleForTokenGating,
+  clubData,
+  whitelistUserData,
+  remainingClaimAmount,
+}) => {
   const ClaimInputShimmer = () => {
     return (
       <div>
@@ -53,6 +63,17 @@ const DepositInput = ({ formik, tokenDetails }) => {
       </div>
 
       <Button
+        disabled={
+          (remainingDays >= 0 && remainingTimeInSecs > 0 && isTokenGated
+            ? !isEligibleForTokenGating
+            : remainingDays >= 0 && remainingTimeInSecs > 0
+            ? false
+            : true) ||
+          +clubData?.raiseAmount <= +clubData?.totalAmountRaised ||
+          +remainingClaimAmount <= 0 ||
+          (whitelistUserData?.setWhitelist === true &&
+            whitelistUserData?.proof === null)
+        }
         onClick={formik.handleSubmit}
         variant="contained"
         sx={{
