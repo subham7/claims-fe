@@ -239,13 +239,14 @@
   gap: 8px;
   margin-bottom: 10px;
   flex-wrap: wrap;
-  width: 530px;
+  width: 100%;
 
   .detailCard {
     background-color: $background-primary;
     padding: 10px;
     border-radius: 8px;
-    width: 170px;
+    flex: 0.33;
+    // width: 170px;
     text-align: center;
   }
 }
