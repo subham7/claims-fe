@@ -8,6 +8,7 @@ import {
   Link,
   Skeleton,
   Stack,
+  Switch,
   Tooltip,
   Typography,
 } from "@mui/material";
@@ -20,6 +21,7 @@ import DepositDeadline from "./modals/DepositDeadline";
 import { useSelector } from "react-redux";
 import useAppContractMethods from "../../hooks/useAppContractMethods";
 import { shortAddress } from "utils/helper";
+import DepositDocument from "./modals/DepositDocument";
 
 const AdditionalSettings = ({
   tokenType,
@@ -37,11 +39,14 @@ const AdditionalSettings = ({
   });
 
   const [showDepositTimeModal, setShowDepositTimeModal] = useState(false);
+  const [showDepositDocumentLinkModal, setShowDepositDocumentLinkModal] =
+    useState(false);
   const [showOwnerFeesModal, setShowOwnerFeesModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showMessage, setShowMessage] = useState(false);
   const [message, setMessage] = useState("");
   const [isSuccessFull, setIsSuccessFull] = useState(false);
+  const [checked, setChecked] = useState(true);
 
   const startingTimeInNum = new Date(+daoDetails?.depositDeadline * 1000);
 
@@ -94,6 +99,10 @@ const AdditionalSettings = ({
     }
   };
 
+  const updateDocumentLink = async (documentLink) => {
+    console.log(documentLink);
+  };
+
   const showUpdateDepositTimeModalHandler = () => {
     setShowDepositTimeModal(true);
   };
@@ -107,6 +116,14 @@ const AdditionalSettings = ({
     setTimeout(() => {
       setShowMessage(false);
     }, 4000);
+  };
+
+  const handlePrerequisitesChange = () => {
+    setChecked(!checked);
+  };
+
+  const handleDocumentLinkChange = (event) => {
+    setShowDepositDocumentLinkModal(true);
   };
 
   return (
@@ -290,6 +307,44 @@ const AdditionalSettings = ({
             </Grid>
           </Grid>
         </Grid>
+        <Divider />
+      </Stack>
+
+      <Stack spacing={1}>
+        <Grid
+          container
+          py={2}
+          sx={{ display: "flex", justifyContent: "space-between" }}>
+          <Grid item mt={3}>
+            <Typography variant="settingText">
+              Enable pre-requisites for deposit
+            </Typography>
+          </Grid>
+          <Grid
+            // container
+            sx={{ display: "flex", alignItems: "center" }}
+            spacing={1}>
+            <Grid mr={4}>
+              <Grid sx={{ display: "flex", alignItems: "center" }}>
+                <Switch
+                  checked={checked}
+                  onChange={handlePrerequisitesChange}
+                  inputProps={{ "aria-label": "controlled" }}
+                />
+
+                {isAdminUser ? (
+                  <Link
+                    className={classes.link}
+                    onClick={handleDocumentLinkChange}>
+                    (Change document link)
+                  </Link>
+                ) : (
+                  ""
+                )}
+              </Grid>
+            </Grid>
+          </Grid>
+        </Grid>
       </Stack>
 
       <Backdrop sx={{ color: "#000", zIndex: 10000000 }} open={loading}>
@@ -311,6 +366,16 @@ const AdditionalSettings = ({
             setShowDepositTimeModal(false);
           }}
           updateDepositTimeHandler={updateDepositDeadline}
+          loading={loading}
+        />
+      )}
+
+      {showDepositDocumentLinkModal && (
+        <DepositDocument
+          onClose={() => {
+            setShowDepositDocumentLinkModal(false);
+          }}
+          updateDocumentLink={updateDocumentLink}
           loading={loading}
         />
       )}

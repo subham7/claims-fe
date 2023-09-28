@@ -94,6 +94,7 @@ const useAppContractMethods = () => {
           ...response,
           quorum: Number(response?.quorum),
           threshold: Number(response?.threshold),
+          maxTokensPerUser: Number(response?.maxTokensPerUser),
         }
       : {};
   };

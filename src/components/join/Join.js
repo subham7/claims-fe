@@ -201,12 +201,14 @@ const Join = ({ daoAddress }) => {
   }, [walletAddress, daoAddress, FACTORY_CONTRACT_ADDRESS]);
 
   useEffect(() => {
-    if (TOKEN_TYPE === "erc20") {
-      fetchErc20ContractDetails();
-    } else {
-      fetchErc721ContractDetails();
+    if (daoAddress) {
+      if (TOKEN_TYPE === "erc20") {
+        fetchErc20ContractDetails();
+      } else {
+        fetchErc721ContractDetails();
+      }
     }
-  }, [TOKEN_TYPE, factoryData, FACTORY_CONTRACT_ADDRESS]);
+  }, [TOKEN_TYPE, factoryData, FACTORY_CONTRACT_ADDRESS, daoAddress]);
 
   useEffect(() => {
     try {
