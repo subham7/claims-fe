@@ -186,24 +186,22 @@ const NewErc20 = ({
 
   const fetchTokenDetails = async () => {
     try {
-      if (Deposit_Token_Address) {
-        const decimals = await getDecimals(Deposit_Token_Address);
-        const symbol = await getTokenSymbol(Deposit_Token_Address);
-        const userBalance = await getBalance(Deposit_Token_Address);
+      const decimals = await getDecimals(Deposit_Token_Address);
+      const symbol = await getTokenSymbol(Deposit_Token_Address);
+      const userBalance = await getBalance(Deposit_Token_Address);
 
-        setTokenDetails({
-          tokenSymbol: symbol,
-          tokenDecimal: decimals,
-          userBalance: convertFromWeiGovernance(userBalance, decimals),
-        });
-      }
+      setTokenDetails({
+        tokenSymbol: symbol,
+        tokenDecimal: decimals,
+        userBalance: convertFromWeiGovernance(userBalance, decimals),
+      });
     } catch (error) {
       console.log(error);
     }
   };
 
   useEffect(() => {
-    fetchTokenDetails();
+    if (Deposit_Token_Address) fetchTokenDetails();
   }, [Deposit_Token_Address]);
 
   useEffect(() => {

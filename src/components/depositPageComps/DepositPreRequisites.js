@@ -6,7 +6,7 @@ import { Typography } from "@mui/material";
 
 const DepositPreRequisites = () => {
   return (
-    <div>
+    <div className={classes.container}>
       <Typography>Complete these steps</Typography>
       <div className={classes.stepContainer}>
         <RadioButtonUncheckedIcon className={classes.icons} />
