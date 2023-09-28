@@ -72,14 +72,6 @@ const DashboardIndex = ({ daoAddress }) => {
     return state.gnosis.adminUser;
   });
 
-  const SUBGRAPH_URL = useSelector((state) => {
-    return state.gnosis.subgraphUrl;
-  });
-
-  const NETWORK_HEX = useSelector((state) => {
-    return state.gnosis.networkHex;
-  });
-
   const symbol = useSelector((state) => {
     return state.club.clubData.symbol;
   });
@@ -143,10 +135,10 @@ const DashboardIndex = ({ daoAddress }) => {
 
   const fetchAssets = useCallback(async () => {
     try {
-      if (NETWORK_HEX !== "undefined") {
+      if (networkId !== "undefined") {
         const assetsData = await getAssetsByDaoAddress(
           gnosisAddress,
-          NETWORK_HEX,
+          networkId,
         );
         setTokenDetails({
           treasuryAmount: assetsData?.data?.treasuryAmount,
@@ -156,25 +148,17 @@ const DashboardIndex = ({ daoAddress }) => {
     } catch (error) {
       console.log(error);
     }
-  }, [NETWORK_HEX, gnosisAddress]);
+  }, [networkId, gnosisAddress]);
 
   const fetchNfts = useCallback(async () => {
     try {
-      const nftsData = await getNFTsByDaoAddress(
-        factoryData.assetsStoredOnGnosis ? gnosisAddress : daoAddress,
-        NETWORK_HEX,
-      );
+      const nftsData = await getNFTsByDaoAddress(gnosisAddress, networkId);
       setNftData(nftsData.data);
       dispatch(addNftsOwnedByDao(nftsData.data));
     } catch (error) {
       console.log(error);
     }
-  }, [
-    NETWORK_HEX,
-    daoAddress,
-    factoryData.assetsStoredOnGnosis,
-    gnosisAddress,
-  ]);
+  }, [networkId, daoAddress, factoryData.assetsStoredOnGnosis, gnosisAddress]);
 
   const fetchActiveProposals = useCallback(async () => {
     try {
@@ -210,18 +194,20 @@ const DashboardIndex = ({ daoAddress }) => {
   };
 
   useEffect(() => {
-    if (NETWORK_HEX) {
+    if (networkId) {
       fetchClubDetails();
       fetchAssets();
-      fetchNfts();
+      if (gnosisAddress) fetchNfts();
+
       fetchActiveProposals();
     }
   }, [
     fetchClubDetails,
     fetchNfts,
     fetchAssets,
-    NETWORK_HEX,
+    networkId,
     fetchActiveProposals,
+    gnosisAddress,
   ]);
 
   useEffect(() => {

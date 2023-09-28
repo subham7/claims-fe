@@ -17,9 +17,9 @@ import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import { AdditionalSettingsStyles } from "./AdditionalSettingsStyles";
 import DepositOwnerFee from "./modals/DepositOwnerFee";
 import DepositDeadline from "./modals/DepositDeadline";
-import { useSelector } from "react-redux";
 import useAppContractMethods from "../../hooks/useAppContractMethods";
 import { shortAddress } from "utils/helper";
+import { useNetwork } from "wagmi";
 
 const AdditionalSettings = ({
   tokenType,
@@ -31,10 +31,8 @@ const AdditionalSettings = ({
   daoAddress,
 }) => {
   const classes = AdditionalSettingsStyles();
-
-  const NETWORK_HEX = useSelector((state) => {
-    return state.gnosis.networkHex;
-  });
+  const { chain } = useNetwork();
+  const networkId = "0x" + chain?.id.toString(16);
 
   const [showDepositTimeModal, setShowDepositTimeModal] = useState(false);
   const [showOwnerFeesModal, setShowOwnerFeesModal] = useState(false);
@@ -138,9 +136,9 @@ const AdditionalSettings = ({
                 onClick={() => {
                   window.open(
                     `https://${
-                      NETWORK_HEX === "0x5"
+                      networkId === "0x5"
                         ? "goerli.etherscan.io"
-                        : NETWORK_HEX === "0x89"
+                        : networkId === "0x89"
                         ? "polygonscan.com"
                         : ""
                     }/address/${daoAddress}`,
@@ -185,9 +183,9 @@ const AdditionalSettings = ({
                 onClick={() => {
                   window.open(
                     `https://${
-                      NETWORK_HEX === "0x5"
+                      networkId === "0x5"
                         ? "goerli.etherscan.io"
-                        : NETWORK_HEX === "0x89"
+                        : networkId === "0x89"
                         ? "polygonscan.com"
                         : ""
                     }/address/${gnosisAddress}`,

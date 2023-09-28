@@ -88,10 +88,6 @@ const ProposalDetail = ({ pid, daoAddress }) => {
     return state.gnosis.adminUser;
   });
 
-  const NETWORK_HEX = useSelector((state) => {
-    return state.gnosis.networkHex;
-  });
-
   const clubData = useSelector((state) => {
     return state.club.clubData;
   });
@@ -293,7 +289,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
       clubId: daoAddress,
       daoAddress: daoAddress,
     };
-    const voteSubmit = castVote(payload, NETWORK_HEX);
+    const voteSubmit = castVote(payload, networkId);
     voteSubmit.then((result) => {
       if (result.status !== 201) {
         setVoted(false);
@@ -465,7 +461,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
       pid,
       gnosisTransactionUrl: GNOSIS_TRANSACTION_URL,
       gnosisAddress,
-      NETWORK_HEX,
+      networkId,
       daoAddress,
       walletAddress,
       networkId,
