@@ -91,3 +91,21 @@ export const QUERY_STATION_DETAILS = (daoAddress) => {
               }
       }`;
 };
+
+export const IS_STATION_MEMBER = (address, daoAddress) => {
+  return `query{
+    users(
+    where: {daoAddress: "${daoAddress}", userAddress: "${address}"}
+  ) {
+    daoAddress
+    daoName
+    depositAmount
+    gtAmount
+    id
+    isAdmin
+    timeStamp
+    tokenAddress
+    userAddress
+  }
+  }`;
+};
