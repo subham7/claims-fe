@@ -22,7 +22,7 @@ import ClaimInput from "./ClaimInput";
 import Image from "next/image";
 import About from "./About";
 import { ZERO_ADDRESS, ZERO_MERKLE_ROOT } from "utils/constants";
-import SocialButtons from "./SocialButtons";
+import SocialButtons from "../common/SocialButtons";
 
 const Claim = ({ claimAddress }) => {
   const [claimsData, setClaimsData] = useState();

@@ -253,9 +253,7 @@ const AdditionalSettings = ({
                     onClick={showUpdateOwnerFeesModalHandler}>
                     (Change)
                   </Link>
-                ) : (
-                  ""
-                )}
+                ) : null}
               </Grid>
             </Grid>
           </Grid>
@@ -298,9 +296,7 @@ const AdditionalSettings = ({
                     onClick={showUpdateDepositTimeModalHandler}>
                     (Change)
                   </Link>
-                ) : (
-                  ""
-                )}
+                ) : null}
               </Grid>
             </Grid>
           </Grid>
@@ -336,9 +332,7 @@ const AdditionalSettings = ({
                     onClick={handleDocumentLinkChange}>
                     (Change document link)
                   </Link>
-                ) : (
-                  ""
-                )}
+                ) : null}
               </Grid>
             </Grid>
           </Grid>

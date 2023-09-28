@@ -8,6 +8,8 @@ const Eligibility = ({
   tokenDetails,
   isTokenGated = false,
   isDeposit = false,
+  gatedTokenDetails,
+  isWhitelist = false,
 }) => {
   const getClaimInfo = (claimType, contractData, tokenDetails) => {
     switch (claimType) {
@@ -52,20 +54,52 @@ const Eligibility = ({
   const { displayText: defaultDisplayText, description: defaultDescription } =
     getClaimInfo(claimType, contractData, tokenDetails);
 
+  let gatedTokenText = "";
+  const getGatedTokenValue = (amount, decimal) => {
+    return decimal > 0 ? convertFromWeiGovernance(amount, decimal) : amount;
+  };
+
+  if (isTokenGated) {
+    const tokenAValue = getGatedTokenValue(
+      gatedTokenDetails?.tokenAAmt,
+      gatedTokenDetails?.tokenADecimal,
+    );
+    const tokenASymbol = gatedTokenDetails?.tokenASymbol;
+
+    if (gatedTokenDetails?.tokenASymbol === gatedTokenDetails?.tokenBSymbol) {
+      gatedTokenText = `Hold ${tokenAValue} ${tokenASymbol}`;
+    } else {
+      const tokenBValue = getGatedTokenValue(
+        gatedTokenDetails?.tokenBAmt,
+        gatedTokenDetails?.tokenBDecimal,
+      );
+      const tokenBSymbol = gatedTokenDetails?.tokenBSymbol;
+      const operator = gatedTokenDetails?.operator === 0 ? "AND" : "OR";
+
+      gatedTokenText = `Hold ${tokenAValue} ${tokenASymbol} ${operator} ${tokenBValue} ${tokenBSymbol}`;
+    }
+  }
+
   const displayText = isDeposit
-    ? isTokenGated
+    ? isWhitelist
       ? "Allow listed users only"
+      : isTokenGated
+      ? gatedTokenText
       : "Everyone can join"
     : defaultDisplayText;
   const description = isDeposit
-    ? isTokenGated
+    ? isWhitelist
       ? "Only allowlisted users by the creator can join this station."
+      : isTokenGated
+      ? "You need to match the above condition(s) to join this Station."
       : "Anyone can join this Station on FCFS basis."
     : defaultDescription;
 
   return (
     <div className={classes.whoCanClaimContainer}>
-      <h3 className={classes.header}>Who can claim?</h3>
+      <h3 className={classes.header}>
+        Who can {isDeposit ? "join" : "claim"}?
+      </h3>
       <div>
         <h4>{displayText}</h4>
         <Typography variant="inherit">{description}</Typography>

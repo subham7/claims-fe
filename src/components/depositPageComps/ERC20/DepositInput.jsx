@@ -1,8 +1,18 @@
-import { Skeleton, TextField, Typography } from "@mui/material";
+import { Button, Skeleton, TextField, Typography } from "@mui/material";
 import React from "react";
 import classes from "../../claims/Claim.module.scss";
 
-const DepositInput = ({}) => {
+const DepositInput = ({
+  formik,
+  tokenDetails,
+  remainingDays,
+  remainingTimeInSecs,
+  isTokenGated,
+  isEligibleForTokenGating,
+  clubData,
+  whitelistUserData,
+  remainingClaimAmount,
+}) => {
   const ClaimInputShimmer = () => {
     return (
       <div>
@@ -13,41 +23,67 @@ const DepositInput = ({}) => {
   };
 
   return (
-    <div className={classes.claimInputContainer}>
-      <Typography variant="inherit">How much do you want to claim?</Typography>
-      <div className={classes.inputContainer}>
-        <div>
-          <TextField
-            sx={{
-              "& fieldset": { border: "none" },
-            }}
-            // value={claimInput}
-            name="tokenInput"
-            id="tokenInput"
-            // onChange={(event) => {
-            //   setClaimInput(event.target.value);
-            // }}
-            onWheel={(event) => event.target.blur()}
-            autoFocus
-            type={"number"}
-            placeholder="0"
-          />
-        </div>
+    <>
+      <div className={classes.claimInputContainer}>
+        <Typography variant="inherit">Your deposit amount</Typography>
+        <div className={classes.inputContainer}>
+          <div>
+            <TextField
+              sx={{
+                "& fieldset": { border: "none" },
+              }}
+              value={formik.values.tokenInput}
+              name="tokenInput"
+              id="tokenInput"
+              onChange={formik.handleChange}
+              onWheel={(event) => event.target.blur()}
+              autoFocus
+              type={"number"}
+              placeholder="0"
+              error={
+                formik.touched.tokenInput && Boolean(formik.errors.tokenInput)
+              }
+              helperText={formik.touched.tokenInput && formik.errors.tokenInput}
+            />
+          </div>
 
-        {/* {maxClaimableAmount && tokenDetails?.tokenDecimal ? ( */}
-        <div className={classes.tokenContainer}>
-          <Typography variant="inherit" className={classes.token}>
-            {/* {tokenDetails?.tokenSymbol} */}
-          </Typography>
-          <Typography variant="inherit" className={classes.smallFont}>
-            Balance:{" "}
-          </Typography>
+          {tokenDetails?.tokenDecimal ? (
+            <div className={classes.tokenContainer}>
+              <Typography variant="inherit" className={classes.token}>
+                {tokenDetails?.tokenSymbol}
+              </Typography>
+              <Typography variant="inherit" className={classes.smallFont}>
+                Balance: {tokenDetails?.userBalance}
+              </Typography>
+            </div>
+          ) : (
+            <ClaimInputShimmer />
+          )}
         </div>
-        {/* ) : (
-          <ClaimInputShimmer />
-        )} */}
       </div>
-    </div>
+
+      <Button
+        disabled={
+          (remainingDays >= 0 && remainingTimeInSecs > 0 && isTokenGated
+            ? !isEligibleForTokenGating
+            : remainingDays >= 0 && remainingTimeInSecs > 0
+            ? false
+            : true) ||
+          +clubData?.raiseAmount <= +clubData?.totalAmountRaised ||
+          +remainingClaimAmount <= 0 ||
+          (whitelistUserData?.setWhitelist === true &&
+            whitelistUserData?.proof === null)
+        }
+        onClick={formik.handleSubmit}
+        variant="contained"
+        sx={{
+          width: "100%",
+          padding: "10px 0",
+          margin: "10px 0",
+        }}>
+        Deposit
+      </Button>
+    </>
   );
 };
 
