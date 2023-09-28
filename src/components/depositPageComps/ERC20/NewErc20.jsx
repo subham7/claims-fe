@@ -11,6 +11,7 @@ import classes from "../../../components/claims/Claim.module.scss";
 import dayjs from "dayjs";
 import SocialButtons from "@components/claims/SocialButtons";
 import DepositInput from "./DepositInput";
+import DepositPreRequisites from "../DepositPreRequisites";
 
 const NewErc20 = ({
   clubInfo,
@@ -93,7 +94,7 @@ const NewErc20 = ({
             deadline={daoDetails.depositDeadline}
             isDeposit={true}
           />
-
+          <DepositPreRequisites daoAddress={daoAddress} />
           <DepositInput />
         </div>
         <SocialButtons isDeposit={true} data={clubInfo} />

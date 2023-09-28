@@ -17,7 +17,6 @@ import ERC20Details from "./ERC20Details";
 import { useAccount } from "wagmi";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 import useAppContractMethods from "hooks/useAppContractMethods";
-import DepositPreRequisites from "../DepositPreRequisites";
 
 const ERC20 = ({
   clubInfo,
@@ -226,7 +225,7 @@ const ERC20 = ({
           whitelistUserData={whitelistUserData}
         />
       </div>
-      <DepositPreRequisites />
+
       {clubInfo?.bio ? (
         <About bio={clubInfo?.bio} daoAddress={daoAddress} />
       ) : null}
