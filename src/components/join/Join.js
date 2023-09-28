@@ -4,13 +4,14 @@ import { useSelector } from "react-redux";
 import { Backdrop, CircularProgress } from "@mui/material";
 import { getClubInfo } from "api/club";
 import ERC721 from "@components/depositPageComps/ERC721/ERC721";
-import ERC20 from "@components/depositPageComps/ERC20/ERC20";
+// import ERC20 from "@components/depositPageComps/ERC20/ERC20";
 import useAppContract from "hooks/useAppContract";
 import { getWhitelistMerkleProof } from "api/whitelist";
 import { useAccount, useNetwork } from "wagmi";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 import useAppContractMethods from "hooks/useAppContractMethods";
 import { queryAllMembersFromSubgraph } from "utils/stationsSubgraphHelper";
+import NewErc20 from "@components/depositPageComps/ERC20/NewErc20";
 
 const Join = ({ daoAddress }) => {
   const [daoDetails, setDaoDetails] = useState({
@@ -270,7 +271,17 @@ const Join = ({ daoAddress }) => {
   return (
     <>
       {TOKEN_TYPE === "erc20" ? (
-        <ERC20
+        // <ERC20
+        // clubInfo={clubInfo}
+        // daoAddress={daoAddress}
+        // remainingClaimAmount={remainingClaimAmount}
+        // isTokenGated={isTokenGated}
+        // daoDetails={daoDetails}
+        // isEligibleForTokenGating={isEligibleForTokenGating}
+        // whitelistUserData={whitelistUserData}
+        // networkId={networkId}
+        // />
+        <NewErc20
           clubInfo={clubInfo}
           daoAddress={daoAddress}
           remainingClaimAmount={remainingClaimAmount}

@@ -3,51 +3,65 @@ import React from "react";
 import { convertFromWeiGovernance } from "utils/globalFunctions";
 import classes from "./Claim.module.scss";
 
-const Eligibility = ({ claimsData, tokenDetails }) => {
-  const getClaimInfo = (claimType, claimsData, tokenDetails) => {
-    let displayText = "";
-    let description = "";
-
+const Eligibility = ({
+  contractData,
+  tokenDetails,
+  isTokenGated = false,
+  isDeposit = false,
+}) => {
+  const getClaimInfo = (claimType, contractData, tokenDetails) => {
     switch (claimType) {
       case "0":
         const minValue = convertFromWeiGovernance(
-          claimsData?.minWhitelistTokenValue,
+          contractData?.minWhitelistTokenValue,
           tokenDetails?.whitelistTokenDecimal,
         );
-        displayText = `${minValue} ${tokenDetails.whitelistToken}`;
-        description = "Hold these token(s) to participate in this drop.";
-        break;
+        return {
+          displayText: `${minValue} ${tokenDetails.whitelistToken}`,
+          description: "Hold these token(s) to participate in this drop.",
+        };
 
       case "1":
-        displayText = "Allowlisted users only";
-        description =
-          "Only allowlisted users by the creator can claim from this drop.";
-        break;
+        return {
+          displayText: "Allowlisted users only",
+          description:
+            "Only allowlisted users by the creator can claim from this drop.",
+        };
 
       case "2":
-        displayText = "Everyone";
         const maxClaimableAmount = Number(
           convertFromWeiGovernance(
-            claimsData?.maxClaimableAmount,
+            contractData?.maxClaimableAmount,
             tokenDetails?.tokenDecimal,
           ),
         );
-        description = `Upto ${maxClaimableAmount} ${tokenDetails.tokenSymbol} on first-come first serve basis.`;
-        break;
+        return {
+          displayText: "Everyone",
+          description: `Upto ${maxClaimableAmount} ${tokenDetails.tokenSymbol} on first-come first serve basis.`,
+        };
 
       default:
-        displayText = "Pro-rata";
-        description = "This drop is pro-rata gated";
+        return {
+          displayText: "Pro-rata",
+          description: "This drop is pro-rata gated",
+        };
     }
-
-    return { displayText, description };
   };
 
-  const { displayText, description } = getClaimInfo(
-    claimsData?.claimType,
-    claimsData,
-    tokenDetails,
-  );
+  const { claimType } = contractData || {};
+  const { displayText: defaultDisplayText, description: defaultDescription } =
+    getClaimInfo(claimType, contractData, tokenDetails);
+
+  const displayText = isDeposit
+    ? isTokenGated
+      ? "Allow listed users only"
+      : "Everyone can join"
+    : defaultDisplayText;
+  const description = isDeposit
+    ? isTokenGated
+      ? "Only allowlisted users by the creator can join this station."
+      : "Anyone can join this Station on FCFS basis."
+    : defaultDescription;
 
   return (
     <div className={classes.whoCanClaimContainer}>

@@ -1,23 +1,35 @@
 import { Skeleton, Typography } from "@mui/material";
 import React from "react";
 import classes from "./Claim.module.scss";
+import { formatEpochTime } from "utils/helper";
 
-const Header = ({ dropsData, isClaimActive, hasDropStarted, tokenDetails }) => {
+const Header = ({
+  contractData,
+  isActive,
+  hasStarted = false,
+  tokenDetails,
+  isDeposit = false,
+  daoAddress = "",
+  deadline,
+}) => {
   const getStatusText = () => {
-    if (isClaimActive && hasDropStarted && dropsData?.isEnabled) {
+    if (isDeposit) {
+      return isActive ? "Active" : "Finished";
+    } else if (isActive && hasStarted && contractData?.isEnabled) {
       return "Active";
-    } else if ((!isClaimActive && hasDropStarted) || !dropsData?.isEnabled) {
+    } else if (!contractData?.isEnabled || (!isActive && hasStarted)) {
       return "Inactive";
-    } else if (!isClaimActive && !hasDropStarted) {
+    } else if (!isActive && !hasStarted) {
       return "Not started yet";
     }
     return "";
   };
 
   const getStatusClassName = () => {
-    return isClaimActive && dropsData?.isEnabled
-      ? classes.active
-      : classes.inactive;
+    if (isActive && (isDeposit || contractData?.isEnabled)) {
+      return classes.active;
+    }
+    return classes.inactive;
   };
 
   const HeaderShimmer = () => {
@@ -32,15 +44,15 @@ const Header = ({ dropsData, isClaimActive, hasDropStarted, tokenDetails }) => {
 
   return (
     <>
-      {tokenDetails?.tokenSymbol && dropsData ? (
+      {/* {tokenDetails?.tokenSymbol && contractData ? ( */}
+      {contractData ? (
         <>
           <Typography variant="inherit" className={getStatusClassName()}>
             {getStatusText()}
           </Typography>
           <h1>{tokenDetails?.tokenSymbol}</h1>
           <Typography variant="inherit" className={classes.endTime}>
-            Claim this drop by{" "}
-            {new Date(+dropsData?.endTime * 1000).toUTCString()}
+            Closes in {formatEpochTime(deadline)}
           </Typography>
         </>
       ) : (

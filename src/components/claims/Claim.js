@@ -415,14 +415,15 @@ const Claim = ({ claimAddress }) => {
       <section className={classes.leftContainer}>
         <div>
           <Header
-            dropsData={dropsData}
-            hasDropStarted={hasDropStarted}
-            isClaimActive={isClaimActive}
+            contractData={dropsData}
+            hasStarted={hasDropStarted}
+            isActive={isClaimActive}
             tokenDetails={tokenDetails}
+            deadline={dropsData?.endTime}
           />
 
           <ClaimInput
-            claimInput={claimInput}
+            inputAmount={claimInput}
             claimRemaining={claimRemaining}
             maxClaimableAmount={maxClaimableAmount}
             maxHandler={maxHandler}
@@ -484,7 +485,7 @@ const Claim = ({ claimAddress }) => {
         )}
 
         {claimsData && tokenDetails && (
-          <Eligibility claimsData={claimsData} tokenDetails={tokenDetails} />
+          <Eligibility contractData={claimsData} tokenDetails={tokenDetails} />
         )}
 
         <ClaimActivity
