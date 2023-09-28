@@ -9,7 +9,6 @@ const Header = ({
   hasStarted = false,
   tokenDetails,
   isDeposit = false,
-  daoAddress = "",
   deadline,
 }) => {
   const getStatusText = () => {
@@ -44,16 +43,22 @@ const Header = ({
 
   return (
     <>
-      {/* {tokenDetails?.tokenSymbol && contractData ? ( */}
-      {contractData ? (
+      {tokenDetails?.tokenSymbol && contractData ? (
         <>
-          <Typography variant="inherit" className={getStatusClassName()}>
-            {getStatusText()}
-          </Typography>
-          <h1>{tokenDetails?.tokenSymbol}</h1>
-          <Typography variant="inherit" className={classes.endTime}>
-            Closes in {formatEpochTime(deadline)}
-          </Typography>
+          <h1>{isDeposit ? contractData?.name : tokenDetails?.tokenSymbol}</h1>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "10px",
+            }}>
+            <Typography variant="inherit" className={getStatusClassName()}>
+              {getStatusText()}
+            </Typography>
+            <Typography variant="inherit" className={classes.endTime}>
+              | Closes in {formatEpochTime(deadline)}
+            </Typography>
+          </div>
         </>
       ) : (
         <HeaderShimmer />
