@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { PDFViewer } from "@react-pdf/renderer";
 
 import Html from "react-pdf-html";
+import { shortAddress } from "utils/helper";
 
 const html = `<style>
   .alt-graph .parent {
@@ -1556,10 +1557,7 @@ export const PdfFile = ({
             <Text style={styles.eachLine}>Subscription Amount: {amount}</Text>
             <Text style={styles.eachLine}>Subscriber:</Text>
             <Text style={styles.eachLine}>
-              {member_name &&
-                `${signedHash?.slice(0, 12)}....${signedHash?.slice(
-                  signedHash?.length - 12,
-                )}`}
+              {member_name && shortAddress(signedHash, 10)}
             </Text>
             <Text style={styles.eachLine}>(Signature)</Text>
             <Text style={styles.eachLine}>{member_name}</Text>
@@ -1581,12 +1579,7 @@ export const PdfFile = ({
               and on behalf of {LLC_name}
             </Text>
             <Text style={styles.eachLine}>
-              By:{" "}
-              {member_name
-                ? admin_sign
-                : `${signedHash?.slice(0, 12)}....${signedHash?.slice(
-                    signedHash?.length - 12,
-                  )}`}
+              By: {member_name ? admin_sign : shortAddress(signedHash, 10)}
             </Text>
             <Text style={styles.eachLine}>Name: {admin_name}</Text>
             <Text style={styles.eachLine}>Title: Administrative Member</Text>

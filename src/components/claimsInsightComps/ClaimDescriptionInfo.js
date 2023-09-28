@@ -120,7 +120,7 @@ const ClaimDescriptionInfo = ({
           <FiExternalLink
             onClick={() => {
               window.open(
-                `https://polygonscan.com/address/${claimAddress}`,
+                `${CHAIN_CONFIG[networkId].blockExplorerUrl}/address/${claimAddress}`,
                 "_blank",
               );
             }}

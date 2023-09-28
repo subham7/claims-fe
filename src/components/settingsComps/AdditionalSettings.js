@@ -20,6 +20,7 @@ import DepositDeadline from "./modals/DepositDeadline";
 import useAppContractMethods from "../../hooks/useAppContractMethods";
 import { shortAddress } from "utils/helper";
 import { useNetwork } from "wagmi";
+import { CHAIN_CONFIG } from "utils/constants";
 
 const AdditionalSettings = ({
   tokenType,
@@ -135,13 +136,7 @@ const AdditionalSettings = ({
                 color="primary"
                 onClick={() => {
                   window.open(
-                    `https://${
-                      networkId === "0x5"
-                        ? "goerli.etherscan.io"
-                        : networkId === "0x89"
-                        ? "polygonscan.com"
-                        : ""
-                    }/address/${daoAddress}`,
+                    `${CHAIN_CONFIG[networkId].blockExplorerUrl}/address/${daoAddress}`,
                   );
                 }}>
                 <OpenInNewIcon className={classes.iconColor} />
@@ -182,13 +177,7 @@ const AdditionalSettings = ({
                 color="primary"
                 onClick={() => {
                   window.open(
-                    `https://${
-                      networkId === "0x5"
-                        ? "goerli.etherscan.io"
-                        : networkId === "0x89"
-                        ? "polygonscan.com"
-                        : ""
-                    }/address/${gnosisAddress}`,
+                    `${CHAIN_CONFIG[networkId].blockExplorerUrl}/address/${gnosisAddress}`,
                   );
                 }}>
                 <OpenInNewIcon className={classes.iconColor} />

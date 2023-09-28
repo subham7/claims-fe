@@ -2,6 +2,7 @@ import { Alert } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import React, { useState } from "react";
 import { BsLink45Deg } from "react-icons/bs";
+import { shortAddress } from "utils/helper";
 
 const useStyles = makeStyles({
   container: {
@@ -79,11 +80,8 @@ const DocumentCard = ({
       <div className={classes.topLine}>
         <h4 className={classes.createdBy}>
           Created by{" "}
-          <span className={classes.span}>
-            {createdBy?.slice(0, 5)}....
-            {createdBy?.slice(createdBy?.length - 4)}
-          </span>{" "}
-          on <span className={classes.span}>{convertedDate}</span>
+          <span className={classes.span}>{shortAddress(createdBy)}</span> on{" "}
+          <span className={classes.span}>{convertedDate}</span>
         </h4>
 
         <div className={classes.iconContainer}>

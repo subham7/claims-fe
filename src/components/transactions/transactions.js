@@ -20,10 +20,11 @@ import {
   TableContainer,
   Paper,
 } from "@mui/material";
+import { CHAIN_CONFIG } from "utils/constants";
 
 dayjs.extend(relativeTime);
 
-const Transactions = () => {
+const Transactions = ({ networkId }) => {
   const tableHeaders = [
     "Token",
     "Txn Hash",
@@ -87,16 +88,19 @@ const Transactions = () => {
 
   const handleAddressClick = (event, address) => {
     event.preventDefault();
-    window.open(`https://polygonscan.com/address/${address}`);
+    window.open(
+      `${CHAIN_CONFIG[networkId].blockExplorerUrl}/address/${address}`,
+    );
   };
   const handleHashClick = (event, hash) => {
     event.preventDefault();
-    window.open(`https://polygonscan.com/tx/${hash}`);
+    window.open(`${CHAIN_CONFIG[networkId].blockExplorerUrl}/tx/${hash}`);
   };
 
   const handleChangePage = (event, newPage) => {
     setPaginationSettings({ ...paginationSettings, page: newPage });
   };
+
   const handleChangeRowsPerPage = (event) => {
     setPaginationSettings({
       page: 0,
