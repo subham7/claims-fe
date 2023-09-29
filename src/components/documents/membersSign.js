@@ -13,7 +13,7 @@ const useStyles = makeStyles({
     display: "flex-col",
     alignItems: "center",
     justifyContent: "center",
-    margin: "130px auto",
+    margin: "20px auto",
     width: "550px",
   },
 
@@ -64,10 +64,6 @@ const validationSchema = yup.object({
     .string("Enter member's name")
     .required("Member's name is required")
     .min(3, "Member's name should be atleast 3 characters long"),
-  // amount: yup
-  //   .number()
-  //   .required("Enter amount of USDC to deposit in station")
-  //   .moreThan(0, "Amount should be greater than 0"),
 });
 
 const MembersSign = ({ daoAddress, membersSign, networkId }) => {
@@ -84,7 +80,6 @@ const MembersSign = ({ daoAddress, membersSign, networkId }) => {
       member_name: "",
       address: "",
       phone: null,
-      // amount: "",
       nomination_name: "",
       witness_name: "",
     },
@@ -139,28 +134,6 @@ const MembersSign = ({ daoAddress, membersSign, networkId }) => {
           helperText={formik.touched.phone && formik.errors.phone}
           className={classes.input}
         />
-        {/* <Typography className={classes.label}>Deposit Amount</Typography>
-        <TextField
-          placeholder="Amount in USDC"
-          variant="outlined"
-          name="amount"
-          id="amount"
-          type="number"
-          className={classes.input}
-          InputProps={{
-            endAdornment: <InputAdornment position="end">USDC</InputAdornment>,
-          }}
-          value={formik.values.amount}
-          onChange={formik.handleChange}
-          error={formik.touched.amount && Boolean(formik.errors.amount)}
-          helperText={formik.touched.amount && formik.errors.amount}
-          onWheel={(event) => event.target.blur()}
-        />
-
-        <Typography className={classes.text}>
-          What is the amount of USDC you&apos;re going to deposit into this
-          station?
-        </Typography> */}
 
         <Typography className={classes.label}>E-mail *</Typography>
         <TextField

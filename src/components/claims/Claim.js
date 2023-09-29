@@ -13,7 +13,7 @@ import {
 import { useAccount, useNetwork } from "wagmi";
 import classes from "./Claim.module.scss";
 import useDropsContractMethods from "hooks/useDropsContracMethods";
-import { Alert, CircularProgress, Skeleton, Typography } from "@mui/material";
+import { CircularProgress, Skeleton, Typography } from "@mui/material";
 import { getClaimDetails, getUserProofAndBalance } from "api/claims";
 import ClaimActivity from "./ClaimActivity";
 import Eligibility from "./Eligibility";
@@ -23,6 +23,7 @@ import Image from "next/image";
 import About from "./About";
 import { ZERO_ADDRESS, ZERO_MERKLE_ROOT } from "utils/constants";
 import SocialButtons from "../common/SocialButtons";
+import CustomAlert from "@components/common/CustomAlert";
 
 const Claim = ({ claimAddress }) => {
   const [claimsData, setClaimsData] = useState();
@@ -495,17 +496,7 @@ const Claim = ({ claimAddress }) => {
       </section>
 
       {showMessage ? (
-        <Alert
-          severity={claimed ? "success" : "error"}
-          sx={{
-            width: "250px",
-            position: "fixed",
-            bottom: "30px",
-            right: "20px",
-            borderRadius: "8px",
-          }}>
-          {message}
-        </Alert>
+        <CustomAlert alertMessage={message} severity={claimed} />
       ) : null}
     </main>
   );

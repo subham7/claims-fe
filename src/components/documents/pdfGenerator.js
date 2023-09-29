@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { PDFViewer } from "@react-pdf/renderer";
 
 import Html from "react-pdf-html";
+import { shortAddress } from "utils/helper";
 
 const html = `<style>
   .alt-graph .parent {
@@ -174,7 +175,10 @@ export const PdfFile = ({
   member_email,
   member_name,
   admin_sign,
-  amount,
+  member_address,
+  member_contactNo,
+  member_nominationName,
+  member_witnessName,
 }) => {
   return (
     <Document>
@@ -1117,23 +1121,35 @@ export const PdfFile = ({
               and on behalf of {LLC_name}
             </Text>
             <Text style={styles.eachLine}>
-              By:{" "}
-              {member_name
-                ? admin_sign
-                : `${signedHash?.slice(0, 12)}....${signedHash?.slice(
-                    signedHash?.length - 12,
-                  )}`}
+              By: {shortAddress(admin_sign ?? signedHash)}
             </Text>
             <Text style={styles.eachLine}>Name: {admin_name}</Text>
             <Text style={styles.eachLine}>Title: Administrative Member</Text>
-          </View>
-          <View break>
-            <Text
-              style={{
-                fontSize: "14px",
-              }}>
-              A DELAWARE LIMITED LIABILITY COMPANY
-            </Text>
+
+            {member_name && (
+              <View>
+                <Text style={styles.headerLine} break>
+                  Subscriber Info{" "}
+                </Text>
+                <Text style={styles.eachLine}>Name: {member_name}</Text>
+                <Text style={styles.eachLine}>Email: {member_email}</Text>
+                <Text style={styles.eachLine}>Address: {member_address} </Text>
+                <Text style={styles.eachLine}>
+                  Contact No. : {member_contactNo ? member_contactNo : "N/A"}
+                </Text>
+                <Text style={styles.eachLine}>
+                  Nomination Name:{" "}
+                  {member_nominationName ? member_nominationName : "N/A"}
+                </Text>
+                <Text style={styles.eachLine}>
+                  Witness Name:{" "}
+                  {member_witnessName ? member_witnessName : "N/A"}
+                </Text>
+                <Text style={styles.eachLine}>
+                  Signature : {shortAddress(signedHash)}
+                </Text>
+              </View>
+            )}
           </View>
         </View>
 
@@ -1161,6 +1177,10 @@ const PDFView = ({
   member_email,
   amount,
   admin_sign,
+  member_address,
+  member_contactNo,
+  member_nominationName,
+  member_witnessName,
 }) => {
   const [client, setClient] = useState(false);
   useEffect(() => {
@@ -1184,6 +1204,10 @@ const PDFView = ({
           member_name={member_name}
           member_email={member_email}
           amount={amount}
+          member_address={member_address}
+          member_contactNo={member_contactNo}
+          member_nominationName={member_nominationName}
+          member_witnessName={member_witnessName}
         />
       </PDFViewer>
     </>
