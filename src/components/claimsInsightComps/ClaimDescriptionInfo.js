@@ -34,7 +34,7 @@ const ClaimDescriptionInfo = ({
   const classes = ClaimsInsightStyles();
   const copyHandler = () => {
     navigator.clipboard.writeText(
-      `${window.location.origin}/claims/${claimAddress}`,
+      `${window.location.origin}/claims/${networkId}/${claimAddress}`,
     );
   };
 
@@ -64,7 +64,7 @@ const ClaimDescriptionInfo = ({
             cursor: "pointer",
           }}
           onClick={() => {
-            router.push(`/claims/${claimsNetwork}`);
+            router.push(`/claims/`);
           }}
           className={classes.gapContainer}>
           <BsArrowLeftShort size={25} />
