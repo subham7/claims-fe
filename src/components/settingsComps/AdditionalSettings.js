@@ -101,7 +101,14 @@ const AdditionalSettings = ({
 
   const updateDocumentLink = async (documentLink) => {
     try {
-      await editDepositConfig({ subscriptionDocId: documentLink }, daoAddress);
+      const parts = documentLink.split("/");
+
+      // Get the last part
+      const subscriptionId = parts[parts.length - 1];
+      await editDepositConfig(
+        { subscriptionDocId: subscriptionId },
+        daoAddress,
+      );
       setLoading(false);
       showMessageHandler();
       setIsSuccessFull(true);

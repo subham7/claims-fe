@@ -13,3 +13,16 @@ export const editDepositConfig = async (data, daoAddress) => {
     console.log(error);
   }
 };
+
+export const editMembersFormData = async (data) => {
+  try {
+    const response = await axios.post(
+      `${MAIN_API_URL}document/user`,
+
+      data,
+    );
+    return response.data;
+  } catch (error) {
+    console.log(error);
+  }
+};

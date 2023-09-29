@@ -14,6 +14,7 @@ import { addDocumentList, addLegalDocLink } from "redux/reducers/legal";
 import { PdfFile } from "./pdfGenerator";
 import LegalEntityModal from "@components/modals/LegalEntityModal";
 import { web3InstanceEthereum } from "utils/helper";
+import { editMembersFormData } from "api/deposit";
 
 const DocumentPDF = dynamic(() => import("./pdfGenerator"), {
   ssr: false,
@@ -185,23 +186,39 @@ const SignDoc = ({ daoAddress, isAdmin, networkId }) => {
 
       const GetMyDoc = (props) => <PdfFile {...props} />;
 
-      const blob = await pdf(GetMyDoc(props)).toBlob();
-      const file = new File([blob], "document.pdf", {
-        type: "application/pdf",
-      });
+      // console.log("membersSign", membersSign);
+      try {
+        const res = await editMembersFormData({
+          daoAddress,
+          userAddress: signedAcc,
+          email: membersData.member_email,
+          docIdentifier: encryptedData,
+          docLink: "",
+          signature: signedHash,
+          formData: [membersData],
+        });
+        if (res) {
+          const blob = await pdf(GetMyDoc(props)).toBlob();
+          const file = new File([blob], "document.pdf", {
+            type: "application/pdf",
+          });
 
-      const adminFormData = new FormData();
-      adminFormData.append("file", file);
-      adminFormData.append("email", decryptedDataObj.email);
+          const adminFormData = new FormData();
+          adminFormData.append("file", file);
+          adminFormData.append("email", decryptedDataObj.email);
 
-      const memberFormData = new FormData();
-      memberFormData.append("file", file);
-      memberFormData.append("email", membersData.member_email);
+          const memberFormData = new FormData();
+          memberFormData.append("file", file);
+          memberFormData.append("email", membersData.member_email);
 
-      // ----- API CALL ------
-      sentFileByEmail(adminFormData);
-      sentFileByEmail(memberFormData);
-      setShowModal(true);
+          // ----- API CALL ------
+          sentFileByEmail(adminFormData);
+          sentFileByEmail(memberFormData);
+          router.push(`/join/${daoAddress}/${networkId}`);
+        }
+      } catch (error) {
+        console.log(error);
+      }
     } catch (error) {
       console.log(error);
     }
