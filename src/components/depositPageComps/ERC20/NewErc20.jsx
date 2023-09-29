@@ -251,7 +251,7 @@ const NewErc20 = ({
           {/* {generalInfo?.imageLinks?.banner ? ( */}
           <div className={classes.imageContainer}>
             <Image
-              src={"/assets/images/claimsBanner.png"}
+              src={"/assets/images/tempBanner.jpg"}
               fill
               alt="Banner Image"
             />
