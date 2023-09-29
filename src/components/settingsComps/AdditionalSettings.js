@@ -22,7 +22,7 @@ import { shortAddress } from "utils/helper";
 import DepositDocument from "./modals/DepositDocument";
 import { useNetwork } from "wagmi";
 import { editDepositConfig } from "api/deposit";
-import { fetchClubByDaoAddress } from "api/club";
+import { createStation, fetchClubByDaoAddress } from "api/club";
 import CustomAlert from "@components/common/CustomAlert";
 
 const AdditionalSettings = ({
@@ -47,6 +47,7 @@ const AdditionalSettings = ({
   const [message, setMessage] = useState("");
   const [isSuccessFull, setIsSuccessFull] = useState(false);
   const [checked, setChecked] = useState(true);
+  const [clubAlreadyExists, setClubAlreadyExists] = useState(true);
 
   const startingTimeInNum = new Date(+daoDetails?.depositDeadline * 1000);
 
@@ -105,10 +106,27 @@ const AdditionalSettings = ({
 
       // Get the last part
       const subscriptionId = parts[parts.length - 1];
-      await editDepositConfig(
-        { subscriptionDocId: subscriptionId },
-        daoAddress,
-      );
+
+      if (!clubAlreadyExists) {
+        await createStation({
+          depositConfig: {
+            subscriptionDocId: subscriptionId,
+            enableKyc: false,
+            uploadDocId: null,
+          },
+          name: daoDetails.daoName,
+          daoAddress: daoAddress?.toLowerCase(),
+          safeAddress: gnosisAddress,
+          networkId,
+          tokenType: tokenType === "erc721" ? "erc721" : "erc20NonTransferable",
+        });
+        setClubAlreadyExists(true);
+      } else {
+        await editDepositConfig(
+          { subscriptionDocId: subscriptionId },
+          daoAddress.toLowerCase(),
+        );
+      }
       setLoading(false);
       showMessageHandler();
       setIsSuccessFull(true);
@@ -157,14 +175,22 @@ const AdditionalSettings = ({
     }
   };
 
-  const getDepositPreRequisites = async (daoAddress) => {
-    const res = await fetchClubByDaoAddress(daoAddress);
+  const getDepositPreRequisites = async () => {
+    const res = await fetchClubByDaoAddress(daoAddress.toLowerCase());
+
+    if (res.data?.message === "Club not found") {
+      setClubAlreadyExists(false);
+    } else {
+      setClubAlreadyExists(true);
+    }
+
     if (res?.data?.depositConfig?.subscriptionDocId !== null) {
       setChecked(true);
     } else setChecked(false);
   };
+
   useEffect(() => {
-    if (daoAddress) getDepositPreRequisites(daoAddress);
+    if (daoAddress) getDepositPreRequisites();
   }, [daoAddress]);
 
   return (

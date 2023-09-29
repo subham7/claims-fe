@@ -6,7 +6,7 @@ import {
   setCreateSafeLoading,
 } from "../redux/reducers/gnosis";
 import { useRouter } from "next/router";
-import { createClubData } from "../api/club";
+import { createStation } from "../api/club";
 import useAppContractMethods from "./useAppContractMethods";
 import { ZERO_ADDRESS } from "utils/constants";
 import { uploadNFT } from "api/assets";
@@ -70,10 +70,21 @@ const useSafe = () => {
             ? value.logs[2].address
             : value.logs[0].address;
 
-        await createClubData({
-          daoAddress,
-          clubType: useStationFor,
-          deployerEmail: email,
+        await createStation({
+          depositConfig: {
+            subscriptionDocId: null,
+            enableKyc: false,
+            uploadDocId: null,
+          },
+          name: params.clubName,
+          daoAddress: daoAddress?.toLowerCase(),
+          safeAddress:
+            params.treasuryAddress === ZERO_ADDRESS
+              ? value.logs[0].address
+              : params.treasuryAddress,
+          networkId,
+          tokenType:
+            clubTokenType === "NFT" ? "erc721" : "erc20NonTransferable",
         });
 
         if (clubTokenType === "NFT") {

@@ -53,23 +53,6 @@ export async function fetchClubByDaoAddress(daoAddress) {
     });
 }
 
-export async function createClubData(data) {
-  try {
-    const response = await fetch(`https://api.stationx.network/v1/club/data`, {
-      method: "POST",
-      body: JSON.stringify(data),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    const result = await response.json();
-    return result;
-  } catch (error) {
-    console.log(error);
-    return error;
-  }
-}
-
 export const uploadToAWS = async (fileName, reader) => {
   try {
     const response = await axios.post(
@@ -78,6 +61,15 @@ export const uploadToAWS = async (fileName, reader) => {
     );
 
     return response.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const createStation = async (data) => {
+  try {
+    const res = await axios.post(`${MAIN_API_URL}club/create`, data);
+    return res.data;
   } catch (error) {
     console.log(error);
   }
