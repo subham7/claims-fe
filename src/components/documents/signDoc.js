@@ -133,7 +133,7 @@ const SignDoc = ({ daoAddress, isAdmin, networkId }) => {
         email: adminFormData.email,
         location: adminFormData.location,
         general_purpose: adminFormData.general_purpose,
-        signedAcc: signedAcc,
+        admin_address: signedAcc,
         signedMessage: signedHash,
       });
 
@@ -205,6 +205,7 @@ const SignDoc = ({ daoAddress, isAdmin, networkId }) => {
         member_name: membersData.member_name,
         member_email: membersData.member_email,
         admin_sign: decryptedDataObj.signedMessage,
+        admin_address: decryptedDataObj.signedAcc,
         signedAcc: signedAcc,
         signedHash: signedHash,
         member_address: membersData.address,
@@ -285,6 +286,7 @@ const SignDoc = ({ daoAddress, isAdmin, networkId }) => {
     fetchDocs();
   });
 
+  console.log("admin", decryptedDataObj);
   return (
     <div>
       <div className={classes.container}>
@@ -321,6 +323,7 @@ const SignDoc = ({ daoAddress, isAdmin, networkId }) => {
             member_name={membersData?.member_name}
             member_email={membersData?.member_email}
             admin_sign={decryptedDataObj?.signedMessage}
+            admin_address={decryptedDataObj?.admin_address}
             member_address={membersData?.address}
             member_contactNo={membersData?.phone}
             member_nominationName={membersData?.nomination_name}

@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { PDFViewer } from "@react-pdf/renderer";
 
 import Html from "react-pdf-html";
-import { shortAddress } from "utils/helper";
 
 const html = `<style>
   .alt-graph .parent {
@@ -179,7 +178,10 @@ export const PdfFile = ({
   member_contactNo,
   member_nominationName,
   member_witnessName,
+  admin_address,
 }) => {
+  console.log("admin", admin_address);
+
   return (
     <Document>
       <Page style={styles.page} wrap>
@@ -1121,7 +1123,10 @@ export const PdfFile = ({
               and on behalf of {LLC_name}
             </Text>
             <Text style={styles.eachLine}>
-              By: {shortAddress(admin_sign ?? signedHash)}
+              Wallet Address : {admin_address ?? signedAcc}
+            </Text>
+            <Text wrap style={styles.eachLine}>
+              Signature : {admin_sign ?? signedHash}
             </Text>
             <Text style={styles.eachLine}>Name: {admin_name}</Text>
             <Text style={styles.eachLine}>Title: Administrative Member</Text>
@@ -1146,7 +1151,10 @@ export const PdfFile = ({
                   {member_witnessName ? member_witnessName : "N/A"}
                 </Text>
                 <Text style={styles.eachLine}>
-                  Signature : {shortAddress(signedHash)}
+                  Wallet Address : {signedAcc}
+                </Text>
+                <Text wrap style={styles.eachLine}>
+                  Signature : {signedHash}
                 </Text>
               </View>
             )}
@@ -1177,6 +1185,7 @@ const PDFView = ({
   member_email,
   amount,
   admin_sign,
+  admin_address,
   member_address,
   member_contactNo,
   member_nominationName,
@@ -1189,6 +1198,9 @@ const PDFView = ({
   if (!client) {
     return null;
   }
+
+  console.log("admin", admin_address);
+
   return (
     <>
       <PDFViewer height="80%" width="65%">
@@ -1208,6 +1220,7 @@ const PDFView = ({
           member_contactNo={member_contactNo}
           member_nominationName={member_nominationName}
           member_witnessName={member_witnessName}
+          admin_address={admin_address}
         />
       </PDFViewer>
     </>
