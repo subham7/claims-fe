@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import {
-  Alert,
   Backdrop,
   Button,
   Card,
@@ -10,7 +9,6 @@ import {
   CircularProgress,
   Divider,
   Grid,
-  Snackbar,
   Stack,
   Typography,
 } from "@mui/material";
@@ -55,6 +53,7 @@ import useAppContractMethods from "hooks/useAppContractMethods";
 import { queryAllMembersFromSubgraph } from "utils/stationsSubgraphHelper";
 import { ProposalDetailStyles } from "./ProposalDetailStyles";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
+import CustomAlert from "@components/common/CustomAlert";
 
 const ProposalDetail = ({ pid, daoAddress }) => {
   const classes = ProposalDetailStyles();
@@ -1202,27 +1201,10 @@ const ProposalDetail = ({ pid, daoAddress }) => {
         </Grid>
       </Grid>
 
-      <Snackbar
-        open={openSnackBar}
-        autoHideDuration={6000}
-        onClose={handleSnackBarClose}
-        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}>
-        {!failed ? (
-          <Alert
-            onClose={handleSnackBarClose}
-            severity="success"
-            sx={{ width: "100%" }}>
-            {message}
-          </Alert>
-        ) : (
-          <Alert
-            onClose={handleSnackBarClose}
-            severity="error"
-            sx={{ width: "100%" }}>
-            {message}
-          </Alert>
-        )}
-      </Snackbar>
+      {openSnackBar ? (
+        <CustomAlert alertMessage={message} severity={failed} />
+      ) : null}
+
       <Backdrop
         sx={{ color: "#000", zIndex: (theme) => theme.zIndex.drawer + 1 }}
         open={loaderOpen}>

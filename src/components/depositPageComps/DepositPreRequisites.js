@@ -3,14 +3,14 @@ import classes from "./DepositPreRequisites.module.scss";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
 import { Typography } from "@mui/material";
-import { fetchClubbyDaoAddress } from "api/club";
+import { fetchClubByDaoAddress } from "api/club";
 import Link from "next/link";
 
 const DepositPreRequisites = ({ daoAddress }) => {
   const [depositConfig, setDepositConfig] = useState({});
 
   const getDepositPreRequisites = async (daoAddress) => {
-    const res = await fetchClubbyDaoAddress(daoAddress);
+    const res = await fetchClubByDaoAddress(daoAddress);
     setDepositConfig(res?.data?.depositConfig);
   };
   useEffect(() => {
@@ -37,13 +37,13 @@ const DepositPreRequisites = ({ daoAddress }) => {
             </Link>
           )}
 
-          {depositConfig?.enableKyc === true && (
+          {depositConfig?.enableKyc ? (
             <div className={classes.stepContainer}>
               <RadioButtonUncheckedIcon className={classes.icons} />
               <div style={{ marginRight: "0.5rem" }}>Complete KYC</div>
               <OpenInNewIcon className={classes.icons} />
             </div>
-          )}
+          ) : null}
 
           {depositConfig?.uploadDocId !== null && (
             <div className={classes.stepContainer}>

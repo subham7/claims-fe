@@ -1,5 +1,4 @@
 import {
-  Alert,
   Backdrop,
   CircularProgress,
   Divider,
@@ -23,7 +22,8 @@ import { shortAddress } from "utils/helper";
 import DepositDocument from "./modals/DepositDocument";
 import { useNetwork } from "wagmi";
 import { editDepositConfig } from "api/deposit";
-import { fetchClubbyDaoAddress } from "api/club";
+import { fetchClubByDaoAddress } from "api/club";
+import CustomAlert from "@components/common/CustomAlert";
 
 const AdditionalSettings = ({
   tokenType,
@@ -158,7 +158,7 @@ const AdditionalSettings = ({
   };
 
   const getDepositPreRequisites = async (daoAddress) => {
-    const res = await fetchClubbyDaoAddress(daoAddress);
+    const res = await fetchClubByDaoAddress(daoAddress);
     if (res?.data?.depositConfig?.subscriptionDocId !== null) {
       setChecked(true);
     } else setChecked(false);
@@ -418,33 +418,9 @@ const AdditionalSettings = ({
         />
       )}
 
-      {showMessage && isSuccessFull && (
-        <Alert
-          severity="success"
-          sx={{
-            width: "300px",
-            position: "fixed",
-            bottom: "30px",
-            right: "20px",
-            borderRadius: "8px",
-          }}>
-          {message}
-        </Alert>
-      )}
-
-      {showMessage && !isSuccessFull && (
-        <Alert
-          severity="error"
-          sx={{
-            width: "300px",
-            position: "fixed",
-            bottom: "30px",
-            right: "20px",
-            borderRadius: "8px",
-          }}>
-          {message}
-        </Alert>
-      )}
+      {showMessage ? (
+        <CustomAlert severity={isSuccessFull} alertMessage={message} />
+      ) : null}
     </div>
   );
 };

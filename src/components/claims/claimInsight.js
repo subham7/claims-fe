@@ -8,7 +8,7 @@ import ClaimEdit from "@components/claimsInsightComps/ClaimEdit";
 import ToggleClaim from "@components/claimsInsightComps/ToggleClaim";
 import ClaimsTransactions from "@components/claimsInsightComps/ClaimsTransactions";
 import { useRouter } from "next/router";
-import { Alert, Backdrop, CircularProgress } from "@mui/material";
+import { Backdrop, CircularProgress } from "@mui/material";
 import {
   convertFromWeiGovernance,
   convertToWeiGovernance,
@@ -19,6 +19,7 @@ import useCommonContractMethods from "hooks/useCommonContractMehods";
 import { queryDropDetailsFromSubgraph } from "utils/dropsSubgraphHelper";
 import { createSnapShot } from "api/claims";
 import dayjs from "dayjs";
+import CustomAlert from "@components/common/CustomAlert";
 
 const ClaimInsight = ({ claimAddress }) => {
   const [claimsData, setClaimsData] = useState([]);
@@ -248,33 +249,9 @@ const ClaimInsight = ({ claimAddress }) => {
         />
       </section>
 
-      {showMessage && isSuccessFull && (
-        <Alert
-          severity="success"
-          sx={{
-            width: "300px",
-            position: "fixed",
-            bottom: "30px",
-            right: "20px",
-            borderRadius: "8px",
-          }}>
-          {message}
-        </Alert>
-      )}
-
-      {showMessage && !isSuccessFull && (
-        <Alert
-          severity="error"
-          sx={{
-            width: "300px",
-            position: "fixed",
-            bottom: "30px",
-            right: "20px",
-            borderRadius: "8px",
-          }}>
-          {message}
-        </Alert>
-      )}
+      {showMessage ? (
+        <CustomAlert alertMessage={message} severity={isSuccessFull} />
+      ) : null}
 
       <Backdrop
         sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}

@@ -1,10 +1,11 @@
-import { Alert, Button, Typography } from "@mui/material";
+import { Button, Typography } from "@mui/material";
 import { TextField } from "@components/ui";
 import { useFormik } from "formik";
 import React, { useState } from "react";
 import * as yup from "yup";
 import { TokenGatingModalStyles } from "./TokenGatingModalStyles";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
+import CustomAlert from "@components/common/CustomAlert";
 
 const Backdrop = ({ onClick }) => {
   const classes = TokenGatingModalStyles();
@@ -113,20 +114,12 @@ const TokenGatingModal = ({ closeModal, chooseTokens }) => {
         </form>
       </div>
 
-      {notValid && (
-        <Alert
-          severity="error"
-          sx={{
-            width: "250px",
-            position: "fixed",
-            bottom: "30px",
-            right: "20px",
-            borderRadius: "8px",
-            zIndex: 900000000,
-          }}>
-          Not a valid token address!
-        </Alert>
-      )}
+      {notValid ? (
+        <CustomAlert
+          alertMessage={"Not a valid token address!"}
+          severity={false}
+        />
+      ) : null}
     </>
   );
 };
