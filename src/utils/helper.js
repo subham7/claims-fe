@@ -120,11 +120,7 @@ export function returnRemainingTime(epochTime) {
     : 0;
 }
 
-export const showWrongNetworkModal = (
-  walletAddress,
-  networkId,
-  routeNetworkId,
-) => {
+export const showWrongNetworkModal = (networkId, routeNetworkId) => {
   if (
     routeNetworkId &&
     routeNetworkId !== networkId &&
@@ -132,10 +128,6 @@ export const showWrongNetworkModal = (
   ) {
     return <WrongNetworkModal chainId={routeNetworkId} />;
   }
-
-  return walletAddress && !CHAIN_CONFIG[networkId] ? (
-    <WrongNetworkModal />
-  ) : null;
 };
 
 export const getAllEntities = async (

@@ -15,7 +15,7 @@ const ClaimsPage = () => {
       showSidebar={false}
       claimAddress={claimAddress}
       networkId={networkId}>
-      {claimAddress === undefined && networkId !== "create" ? (
+      {!claimAddress && !networkId ? (
         <ListClaims />
       ) : networkId === "create" ? (
         <CreateClaim />

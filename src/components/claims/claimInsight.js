@@ -7,7 +7,6 @@ import ClaimEligibility from "@components/claimsInsightComps/ClaimEligibility";
 import ClaimEdit from "@components/claimsInsightComps/ClaimEdit";
 import ToggleClaim from "@components/claimsInsightComps/ToggleClaim";
 import ClaimsTransactions from "@components/claimsInsightComps/ClaimsTransactions";
-import { useRouter } from "next/router";
 import { Alert, Backdrop, CircularProgress } from "@mui/material";
 import {
   convertFromWeiGovernance,
@@ -33,7 +32,6 @@ const ClaimInsight = ({ claimAddress }) => {
   const [isSuccessFull, setIsSuccessFull] = useState(false);
 
   const classes = ClaimsInsightStyles();
-  const router = useRouter();
   const { chain } = useNetwork();
   const networkId = "0x" + chain?.id.toString(16);
 
