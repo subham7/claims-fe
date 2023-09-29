@@ -26,3 +26,14 @@ export const editMembersFormData = async (data) => {
     console.log(error);
   }
 };
+
+export const hasUserSigned = async (docIdentifier, walletAddress) => {
+  try {
+    const response = await axios.get(
+      `${MAIN_API_URL}document/${docIdentifier}/user/${walletAddress}`,
+    );
+    return response.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
