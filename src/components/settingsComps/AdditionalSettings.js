@@ -47,6 +47,7 @@ const AdditionalSettings = ({
   const [message, setMessage] = useState("");
   const [isSuccessFull, setIsSuccessFull] = useState(false);
   const [checked, setChecked] = useState(true);
+  const [kycChecked, setKycChecked] = useState(false);
   const [clubAlreadyExists, setClubAlreadyExists] = useState(true);
 
   const startingTimeInNum = new Date(+daoDetails?.depositDeadline * 1000);
@@ -175,6 +176,22 @@ const AdditionalSettings = ({
     }
   };
 
+  const handleKycChange = async () => {
+    try {
+      await editDepositConfig({ enableKyc: !kycChecked }, daoAddress);
+      setLoading(false);
+      showMessageHandler();
+      setIsSuccessFull(true);
+      setKycChecked(!kycChecked);
+      setMessage("Kyc settings changed successfully");
+    } catch (error) {
+      showMessageHandler();
+      setLoading(false);
+      setIsSuccessFull(false);
+      setMessage("Kyc settings removing failed");
+    }
+  };
+
   const getDepositPreRequisites = async () => {
     const res = await fetchClubByDaoAddress(daoAddress.toLowerCase());
 
@@ -187,6 +204,8 @@ const AdditionalSettings = ({
     if (res?.data?.depositConfig?.subscriptionDocId !== null) {
       setChecked(true);
     } else setChecked(false);
+
+    if (res?.data?.depositConfig?.enableKyc === true) setKycChecked(true);
   };
 
   useEffect(() => {
@@ -409,6 +428,35 @@ const AdditionalSettings = ({
             </Grid>
           </Grid>
         </Grid>
+        <Divider />
+      </Stack>
+
+      <Stack spacing={1}>
+        <Grid
+          container
+          py={2}
+          sx={{ display: "flex", justifyContent: "space-between" }}>
+          <Grid item mt={3}>
+            <Typography variant="settingText">Enable KYC</Typography>
+          </Grid>
+          <Grid
+            // container
+            sx={{ display: "flex", alignItems: "center" }}
+            spacing={1}>
+            <Grid mr={4}>
+              <Grid sx={{ display: "flex", alignItems: "center" }}>
+                <Switch
+                  checked={kycChecked}
+                  onChange={() => {
+                    handleKycChange();
+                  }}
+                  inputProps={{ "aria-label": "controlled" }}
+                />
+              </Grid>
+            </Grid>
+          </Grid>
+        </Grid>
+        <Divider />
       </Stack>
 
       <Backdrop sx={{ color: "#000", zIndex: 10000000 }} open={loading}>
