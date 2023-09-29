@@ -22,7 +22,10 @@ const DepositPreRequisites = ({ daoAddress }) => {
       {(depositConfig?.subscriptionDocId !== null ||
         depositConfig?.enableKyc === true ||
         depositConfig?.uploadDocId !== null) && (
-        <div>
+        <div
+          style={{
+            marginTop: "20px",
+          }}>
           <Typography>Complete these steps</Typography>
           {depositConfig?.subscriptionDocId !== null && (
             <Link

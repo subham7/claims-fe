@@ -13,6 +13,7 @@ const DepositProgress = ({ clubData, tokenDetails }) => {
         style={{
           display: "flex",
           justifyContent: "space-between",
+          alignItems: "center",
         }}>
         <Typography variant="info" className="tb-mar-1">
           {convertFromWeiGovernance(
