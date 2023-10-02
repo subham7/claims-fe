@@ -47,11 +47,8 @@ const UploadDocModal = ({
           signature: null,
           formData: [],
         };
-
-        console.log("data", data);
-        await editMembersFormData(data);
-
-        onClose();
+        const response = await editMembersFormData(data);
+        onClose(response?.docIdentifier);
       } catch (error) {
         console.log(error);
       }

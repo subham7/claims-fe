@@ -51,7 +51,7 @@ const UploadW8Ben = ({ daoAddress, walletAddress, depositConfig }) => {
 
         await createDocument({
           daoAddress: daoAddress.toLowerCase(),
-          fileName: "Legal Doc",
+          fileName: "W-8BEN Document",
           docIdentifier: uploadIdentifier,
           isTokenForSign: false,
           isSignable: false,

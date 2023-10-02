@@ -2,7 +2,6 @@ import classes from "./DepositPreRequisites.module.scss";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
 import { Typography } from "@mui/material";
-import Link from "next/link";
 import DoneIcon from "@mui/icons-material/Done";
 import { useEffect, useState } from "react";
 import UploadDocModal from "@components/modals/UploadDocModal";
@@ -20,7 +19,6 @@ const DepositPreRequisites = ({
   const [isSigned, setIsSigned] = useState(false);
   const [isW8BenSigned, setIsW8BenSigned] = useState(false);
   const [depositConfig, setDepositConfig] = useState(null);
-  const [shouldRerender, setShouldRerender] = useState(false);
 
   const { address: walletAddress } = useAccount();
 
@@ -36,7 +34,6 @@ const DepositPreRequisites = ({
   ) => {
     if (!isUploadDoc) {
       const res = await hasUserSigned(docIdentifier, walletAddress);
-
       setIsSigned(res?.signature);
     } else {
       const res = await hasUserSigned(docIdentifier, walletAddress, true);
@@ -45,11 +42,6 @@ const DepositPreRequisites = ({
         setIsW8BenSigned(true);
       }
     }
-  };
-
-  const handleModalClose = () => {
-    setShowUploadDocModal(false);
-    setShouldRerender(true);
   };
 
   useEffect(() => {
@@ -92,44 +84,35 @@ const DepositPreRequisites = ({
           <div className={classes.mainContainer}>
             <Typography variant="subtitle1">Complete these steps</Typography>
             {depositConfig?.subscriptionDocId !== null && (
-              <Link
-                style={{
-                  display: "inline-block",
-                }}
-                href={`/documents/${daoAddress}/0x89/sign/${depositConfig?.subscriptionDocId}`}>
-                <div className={classes.stepContainer}>
-                  {isSigned ? (
-                    <DoneIcon className={classes.tickIcon} />
-                  ) : (
-                    <RadioButtonUncheckedIcon className={classes.icons} />
-                  )}
+              <div className={classes.stepContainer}>
+                {isSigned ? (
+                  <DoneIcon className={classes.tickIcon} />
+                ) : (
+                  <RadioButtonUncheckedIcon className={classes.icons} />
+                )}
 
+                <div
+                  className={classes.signTextDiv}
+                  onClick={() =>
+                    window.open(
+                      `/documents/${daoAddress}/0x89/sign/${depositConfig?.subscriptionDocId}`,
+                      "_blank",
+                    )
+                  }>
                   <div style={{ marginRight: "0.5rem" }}>
                     Sign subscription agreement
                   </div>
                   <OpenInNewIcon className={classes.icons} />
                 </div>
-              </Link>
-            )}
-
-            {depositConfig && depositConfig?.enableKyc ? (
-              <div className={classes.stepContainer}>
-                <RadioButtonUncheckedIcon className={classes.icons} />
-                <div style={{ marginRight: "0.5rem" }}>Complete KYC</div>
-                <OpenInNewIcon className={classes.icons} />
               </div>
-            ) : null}
+            )}
 
             {depositConfig && depositConfig?.uploadDocId !== null && (
               <div
-                style={{
-                  width: "fit-content",
-                  cursor: "pointer",
-                }}
+                className={classes.signTextDiv}
                 onClick={() => {
                   setShowUploadDocModal(true);
-                }}
-                className={classes.stepContainer}>
+                }}>
                 {isW8BenSigned ? (
                   <DoneIcon className={classes.tickIcon} />
                 ) : (
@@ -139,13 +122,24 @@ const DepositPreRequisites = ({
                 <OpenInNewIcon className={classes.icons} />
               </div>
             )}
+
+            {depositConfig && depositConfig?.enableKyc ? (
+              <div className={classes.stepContainer}>
+                <RadioButtonUncheckedIcon className={classes.icons} />
+                <div style={{ marginRight: "0.5rem" }}>Complete KYC</div>
+                <OpenInNewIcon className={classes.icons} />
+              </div>
+            ) : null}
           </div>
         )}
 
       {showUploadDocModal && (
         <UploadDocModal
           uploadDocIdentifier={uploadedDocInfo?.docIdentifier}
-          onClose={handleModalClose}
+          onClose={(docId) => {
+            userSigned(docId, walletAddress.toLowerCase(), true);
+            setShowUploadDocModal(false);
+          }}
           downloadUrl={uploadedDocInfo?.docLink}
           daoAddress={daoAddress}
         />
