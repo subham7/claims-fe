@@ -48,7 +48,7 @@ const AdditionalSettings = ({
   const [showMessage, setShowMessage] = useState(false);
   const [message, setMessage] = useState("");
   const [isSuccessFull, setIsSuccessFull] = useState(false);
-  const [checked, setChecked] = useState(true);
+  const [checked, setChecked] = useState(false);
   const [w8Checked, setW8Checked] = useState(false);
   const [kycChecked, setKycChecked] = useState(false);
   const [clubAlreadyExists, setClubAlreadyExists] = useState(true);
@@ -108,8 +108,6 @@ const AdditionalSettings = ({
   const updateDocumentLink = async (documentLink) => {
     try {
       const parts = documentLink.split("/");
-
-      // Get the last part
       const subscriptionId = parts[parts.length - 1];
 
       if (!clubAlreadyExists) {
@@ -135,7 +133,7 @@ const AdditionalSettings = ({
       setLoading(false);
       showMessageHandler();
       setIsSuccessFull(true);
-      setChecked(!checked);
+      setChecked(true);
       setMessage("Subscription link updated Successfully");
     } catch (error) {
       showMessageHandler();
@@ -160,11 +158,9 @@ const AdditionalSettings = ({
     }, 4000);
   };
 
-  const handleDocumentLinkChange = async () => {
+  const handleEnableSubscription = async () => {
     if (isAdminUser) {
-      if (!checked) {
-        setShowDepositDocumentLinkModal(true);
-      } else {
+      if (checked) {
         try {
           await editDepositConfig(
             { subscriptionDocId: null },
@@ -183,6 +179,10 @@ const AdditionalSettings = ({
         }
       }
     }
+  };
+
+  const handleDocumentLinkChange = async () => {
+    setShowDepositDocumentLinkModal(true);
   };
 
   const handleKycChange = async () => {
@@ -224,6 +224,18 @@ const AdditionalSettings = ({
     } else setChecked(false);
 
     if (res?.data?.depositConfig?.enableKyc === true) setKycChecked(true);
+  };
+
+  const handleUploadDocCheckbox = async () => {
+    if (w8Checked) {
+      setLoading(true);
+      await editDepositConfig({ uploadDocId: null }, daoAddress.toLowerCase());
+      showMessageHandler();
+      setIsSuccessFull(true);
+      setMessage("W-8Ben disabled");
+      setLoading(false);
+    }
+    setW8Checked(!w8Checked);
   };
 
   useEffect(() => {
@@ -428,10 +440,7 @@ const AdditionalSettings = ({
               <Grid sx={{ display: "flex", alignItems: "center" }}>
                 <Switch
                   checked={checked}
-                  onChange={() => {
-                    // handlePrerequisitesChange();
-                    handleDocumentLinkChange();
-                  }}
+                  onChange={handleEnableSubscription}
                   inputProps={{ "aria-label": "controlled" }}
                 />
 
@@ -439,7 +448,7 @@ const AdditionalSettings = ({
                   <Link
                     className={classes.link}
                     onClick={handleDocumentLinkChange}>
-                    (Change document link)
+                    (Change)
                   </Link>
                 ) : null}
               </Grid>
@@ -467,9 +476,7 @@ const AdditionalSettings = ({
               <Grid sx={{ display: "flex", alignItems: "center" }}>
                 <Switch
                   checked={w8Checked}
-                  onChange={() => {
-                    setW8Checked(!w8Checked);
-                  }}
+                  onChange={handleUploadDocCheckbox}
                   inputProps={{ "aria-label": "controlled" }}
                 />
               </Grid>

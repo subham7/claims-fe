@@ -68,13 +68,13 @@ const UploadW8Ben = ({ daoAddress, walletAddress, depositConfig }) => {
         setLoading(false);
         showMessageHandler();
         setIsSuccessFull(true);
-        setMessage("File uploaded successfully");
+        setMessage("W-8BEN enabled");
       } catch (error) {
         console.log(error);
         setLoading(false);
         showMessageHandler();
         setIsSuccessFull(false);
-        setMessage("File uploading failed");
+        setMessage("File upload failed");
       }
     },
   });
@@ -83,7 +83,11 @@ const UploadW8Ben = ({ daoAddress, walletAddress, depositConfig }) => {
     <Grid
       container
       py={2}
-      sx={{ display: "flex", justifyContent: "space-between" }}>
+      sx={{
+        display: "flex",
+        justifyContent: "space-between",
+        paddingRight: "40px",
+      }}>
       <Grid width={"80%"} item>
         <TextField
           disabled
