@@ -1,12 +1,23 @@
-import { Button, Grid, TextField } from "@mui/material";
+import {
+  Backdrop,
+  Button,
+  CircularProgress,
+  Grid,
+  TextField,
+} from "@mui/material";
 import { useFormik } from "formik";
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { generateRandomString, uploadFileToAWS } from "utils/helper";
 import { createDocument } from "api/document";
 import { editDepositConfig } from "api/deposit";
+import CustomAlert from "@components/common/CustomAlert";
 
 const UploadW8Ben = ({ daoAddress, walletAddress, depositConfig }) => {
   const hiddenFileInput = useRef(null);
+  const [message, setMessage] = useState("");
+  const [showMessage, setShowMessage] = useState(false);
+  const [isSuccessFull, setIsSuccessFull] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleClick = async () => {
     if (!formik.values.pdfFile?.name) {
@@ -21,12 +32,20 @@ const UploadW8Ben = ({ daoAddress, walletAddress, depositConfig }) => {
     formik.setFieldValue("pdfFile", fileUploaded);
   };
 
+  const showMessageHandler = () => {
+    setShowMessage(true);
+    setTimeout(() => {
+      setShowMessage(false);
+    }, 4000);
+  };
+
   const formik = useFormik({
     initialValues: {
       pdfFile: "",
     },
     onSubmit: async (value) => {
       try {
+        setLoading(true);
         const fileLink = await uploadFileToAWS(value.pdfFile);
         const uploadIdentifier = generateRandomString(18);
 
@@ -46,8 +65,16 @@ const UploadW8Ben = ({ daoAddress, walletAddress, depositConfig }) => {
           { uploadDocId: uploadIdentifier },
           daoAddress.toLowerCase(),
         );
+        setLoading(false);
+        showMessageHandler();
+        setIsSuccessFull(true);
+        setMessage("File uploaded successfully");
       } catch (error) {
         console.log(error);
+        setLoading(false);
+        showMessageHandler();
+        setIsSuccessFull(false);
+        setMessage("File uploading failed");
       }
     },
   });
@@ -90,6 +117,16 @@ const UploadW8Ben = ({ daoAddress, walletAddress, depositConfig }) => {
           {formik.values.pdfFile?.name ? "Upload" : "Browse"}
         </Button>
       </Grid>
+
+      <Backdrop
+        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={loading}>
+        <CircularProgress />
+      </Backdrop>
+
+      {showMessage && (
+        <CustomAlert alertMessage={message} severity={isSuccessFull} />
+      )}
     </Grid>
   );
 };

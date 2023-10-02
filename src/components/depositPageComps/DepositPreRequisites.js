@@ -59,7 +59,6 @@ const DepositPreRequisites = ({
         userSigned(depositConfig?.subscriptionDocId, walletAddress);
       } else {
         setIsSigned(true);
-        // setIsW8BenSigned(true);
       }
 
       if (depositConfig?.uploadDocId !== null) {
@@ -69,8 +68,6 @@ const DepositPreRequisites = ({
           true,
         );
       } else {
-        // setIsSigned(true);
-
         setIsW8BenSigned(true);
       }
     }
