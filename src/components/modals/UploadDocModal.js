@@ -5,10 +5,8 @@ import { useFormik } from "formik";
 import { uploadFileToAWS } from "utils/helper";
 import { editMembersFormData } from "api/deposit";
 import { useAccount } from "wagmi";
-
-const Backdrop = ({ onClose }) => {
-  return <div onClick={onClose} className={classes.backdrop}></div>;
-};
+import * as yup from "yup";
+import CustomBackdrop from "@components/common/CustomBackdrop";
 
 const UploadDocModal = ({
   daoAddress,
@@ -34,6 +32,10 @@ const UploadDocModal = ({
       email: "",
       pdfFile: "",
     },
+    validationSchema: yup.object({
+      email: yup.string().email().required("Email is required"),
+      pdfFile: yup.mixed().required("File is required"),
+    }),
     onSubmit: async (values) => {
       try {
         const fileLink = await uploadFileToAWS(values.pdfFile);
@@ -57,7 +59,7 @@ const UploadDocModal = ({
 
   return (
     <>
-      <Backdrop onClose={onClose} />
+      <CustomBackdrop onClick={onClose} />
       <div className={classes.modal}>
         <h2>Sign & upload W-8BEN</h2>
         <Typography variant="inherit" mt={1}>

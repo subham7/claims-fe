@@ -1,3 +1,14 @@
+.backdrop {
+  position: fixed;
+  height: 100vh;
+  width: 100vw;
+  top: 0;
+  left: 0;
+  background: #7d7d7d;
+  opacity: 0.6;
+  z-index: 10;
+}
+
 .modal {
   width: 570px;
   background: #0f0f0f;
@@ -38,15 +49,4 @@
       border-radius: 12px;
     }
   }
-}
-
-.backdrop {
-  position: fixed;
-  height: 100vh;
-  width: 100vw;
-  top: 0;
-  left: 0;
-  background: #7d7d7d;
-  opacity: 0.6;
-  z-index: 100;
 }

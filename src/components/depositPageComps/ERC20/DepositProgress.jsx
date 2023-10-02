@@ -33,6 +33,7 @@ const DepositProgress = ({ clubData, tokenDetails }) => {
       </div>
 
       <ProgressBar
+        zIndex={-1}
         value={
           (Number(clubData?.totalAmountRaised) * 100) /
           Number(clubData?.raiseAmount)

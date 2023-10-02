@@ -20,7 +20,7 @@ export default function ProgressBar(props) {
   return (
     <BorderLinearProgress
       sx={{
-        zIndex: -1,
+        zIndex: props.zIndex ? props.zIndex : 0,
       }}
       variant="determinate"
       value={props.value}
