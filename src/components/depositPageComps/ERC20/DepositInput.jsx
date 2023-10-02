@@ -13,6 +13,7 @@ const DepositInput = ({
   whitelistUserData,
   remainingClaimAmount,
   isSigned,
+  isW8BenSigned,
 }) => {
   const ClaimInputShimmer = () => {
     return (
@@ -23,6 +24,7 @@ const DepositInput = ({
     );
   };
 
+  console.log("xxx", isSigned, isW8BenSigned);
   return (
     <>
       <div className={classes.claimInputContainer}>
@@ -66,6 +68,7 @@ const DepositInput = ({
       <Button
         disabled={
           !isSigned ||
+          !isW8BenSigned ||
           (remainingDays >= 0 && remainingTimeInSecs > 0 && isTokenGated
             ? !isEligibleForTokenGating
             : remainingDays >= 0 && remainingTimeInSecs > 0

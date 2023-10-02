@@ -256,10 +256,10 @@ const Settings = ({ daoAddress }) => {
         daoAddress={daoAddress}
       />
       <AdditionalSettings
+        walletAddress={walletAddress}
         daoDetails={daoDetails}
         erc20TokenDetails={erc20TokenDetails}
         tokenType={tokenType}
-        walletAddress={walletAddress}
         gnosisAddress={gnosisAddress}
         fetchErc20ContractDetails={fetchErc20ContractDetails}
         fetchErc721ContractDetails={fetchErc721ContractDetails}

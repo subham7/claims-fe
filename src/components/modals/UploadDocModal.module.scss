@@ -1,0 +1,52 @@
+.modal {
+  width: 570px;
+  background: #0f0f0f;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  z-index: 100;
+  padding: 28px 25px;
+  border-radius: 20px;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+
+  .form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+
+    div {
+      .label {
+        margin-bottom: 5px;
+        margin-top: 12px;
+      }
+
+      .inputs {
+        width: 100%;
+      }
+    }
+
+    .dragContainer {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 72px 0;
+      margin: 12px 0;
+      border: 1px dashed #7d7d7d;
+      border-radius: 12px;
+    }
+  }
+}
+
+.backdrop {
+  position: fixed;
+  height: 100vh;
+  width: 100vw;
+  top: 0;
+  left: 0;
+  background: #7d7d7d;
+  opacity: 0.6;
+  z-index: 100;
+}

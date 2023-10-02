@@ -11,7 +11,6 @@ import useCommonContractMethods from "hooks/useCommonContractMehods";
 import useAppContractMethods from "hooks/useAppContractMethods";
 import { queryAllMembersFromSubgraph } from "utils/stationsSubgraphHelper";
 import ERC20 from "@components/depositPageComps/ERC20/ERC20";
-import { hasUserSigned } from "api/deposit";
 
 const Join = ({ daoAddress }) => {
   const [daoDetails, setDaoDetails] = useState({
@@ -28,7 +27,6 @@ const Join = ({ daoAddress }) => {
   const [remainingClaimAmount, setRemainingClaimAmount] = useState();
   const [whitelistUserData, setWhitelistUserData] = useState();
   const [depositConfig, setDepositConfig] = useState({});
-  const [isSigned, setIsSigned] = useState(false);
 
   const [gatedTokenDetails, setGatedTokenDetails] = useState({
     tokenASymbol: "",
@@ -193,21 +191,9 @@ const Join = ({ daoAddress }) => {
     setDepositConfig(res?.data?.depositConfig);
   };
 
-  const userSigned = async (docIdentifier, walletAddress) => {
-    const res = await hasUserSigned(docIdentifier, walletAddress);
-    setIsSigned(res?.signature);
-  };
-
   useEffect(() => {
-    if (daoAddress) {
-      getDepositPreRequisites(daoAddress);
-      if (depositConfig?.subscriptionDocId !== null)
-        userSigned(depositConfig?.subscriptionDocId, walletAddress);
-      else {
-        setIsSigned(true);
-      }
-    }
-  }, [daoAddress, depositConfig?.subscriptionDocId, walletAddress]);
+    if (daoAddress) getDepositPreRequisites(daoAddress);
+  }, [daoAddress, walletAddress]);
 
   useEffect(() => {
     if (walletAddress && daoAddress && FACTORY_CONTRACT_ADDRESS) {
@@ -299,7 +285,6 @@ const Join = ({ daoAddress }) => {
           networkId={networkId}
           gatedTokenDetails={gatedTokenDetails}
           depositConfig={depositConfig}
-          isSigned={isSigned}
         />
       ) : TOKEN_TYPE === "erc721" ? (
         <ERC721

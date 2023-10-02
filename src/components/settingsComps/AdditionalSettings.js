@@ -24,6 +24,7 @@ import { useNetwork } from "wagmi";
 import { editDepositConfig } from "api/deposit";
 import { createStation, fetchClubByDaoAddress } from "api/club";
 import CustomAlert from "@components/common/CustomAlert";
+import UploadW8Ben from "./modals/UploadW8Ben";
 
 const AdditionalSettings = ({
   tokenType,
@@ -33,6 +34,7 @@ const AdditionalSettings = ({
   isAdminUser,
   gnosisAddress,
   daoAddress,
+  walletAddress,
 }) => {
   const classes = AdditionalSettingsStyles();
   const { chain } = useNetwork();
@@ -47,8 +49,10 @@ const AdditionalSettings = ({
   const [message, setMessage] = useState("");
   const [isSuccessFull, setIsSuccessFull] = useState(false);
   const [checked, setChecked] = useState(true);
+  const [w8Checked, setW8Checked] = useState(false);
   const [kycChecked, setKycChecked] = useState(false);
   const [clubAlreadyExists, setClubAlreadyExists] = useState(true);
+  const [depositConfig, setDepositConfig] = useState(false);
 
   const startingTimeInNum = new Date(+daoDetails?.depositDeadline * 1000);
 
@@ -157,28 +161,36 @@ const AdditionalSettings = ({
   };
 
   const handleDocumentLinkChange = async () => {
-    if (!checked) {
-      setShowDepositDocumentLinkModal(true);
-    } else {
-      try {
-        await editDepositConfig({ subscriptionDocId: null }, daoAddress);
-        setLoading(false);
-        showMessageHandler();
-        setIsSuccessFull(true);
-        setChecked(!checked);
-        setMessage("Subscription link removed Successfully");
-      } catch (error) {
-        showMessageHandler();
-        setLoading(false);
-        setIsSuccessFull(false);
-        setMessage("Subscription link removing failed");
+    if (isAdminUser) {
+      if (!checked) {
+        setShowDepositDocumentLinkModal(true);
+      } else {
+        try {
+          await editDepositConfig(
+            { subscriptionDocId: null },
+            daoAddress.toLowerCase(),
+          );
+          setLoading(false);
+          showMessageHandler();
+          setIsSuccessFull(true);
+          setChecked(!checked);
+          setMessage("Subscription link removed Successfully");
+        } catch (error) {
+          showMessageHandler();
+          setLoading(false);
+          setIsSuccessFull(false);
+          setMessage("Subscription link removing failed");
+        }
       }
     }
   };
 
   const handleKycChange = async () => {
     try {
-      await editDepositConfig({ enableKyc: !kycChecked }, daoAddress);
+      await editDepositConfig(
+        { enableKyc: !kycChecked },
+        daoAddress.toLowerCase(),
+      );
       setLoading(false);
       showMessageHandler();
       setIsSuccessFull(true);
@@ -200,6 +212,12 @@ const AdditionalSettings = ({
     } else {
       setClubAlreadyExists(true);
     }
+
+    setDepositConfig(res?.data?.depositConfig);
+
+    if (res?.data?.depositConfig?.uploadDocId !== null) {
+      setW8Checked(true);
+    } else setW8Checked(false);
 
     if (res?.data?.depositConfig?.subscriptionDocId !== null) {
       setChecked(true);
@@ -399,7 +417,7 @@ const AdditionalSettings = ({
           sx={{ display: "flex", justifyContent: "space-between" }}>
           <Grid item mt={3}>
             <Typography variant="settingText">
-              Enable pre-requisites for deposit
+              Enable subscription sign for deposit
             </Typography>
           </Grid>
           <Grid
@@ -428,6 +446,44 @@ const AdditionalSettings = ({
             </Grid>
           </Grid>
         </Grid>
+        <Divider />
+      </Stack>
+
+      <Stack spacing={1}>
+        <Grid
+          container
+          py={2}
+          sx={{ display: "flex", justifyContent: "space-between" }}>
+          <Grid item mt={3}>
+            <Typography variant="settingText">
+              Enable W-8BEN sign for deposit
+            </Typography>
+          </Grid>
+          <Grid
+            // container
+            sx={{ display: "flex", alignItems: "center" }}
+            spacing={1}>
+            <Grid mr={4}>
+              <Grid sx={{ display: "flex", alignItems: "center" }}>
+                <Switch
+                  checked={w8Checked}
+                  onChange={() => {
+                    setW8Checked(!w8Checked);
+                  }}
+                  inputProps={{ "aria-label": "controlled" }}
+                />
+              </Grid>
+            </Grid>
+          </Grid>
+        </Grid>
+
+        {w8Checked && (
+          <UploadW8Ben
+            depositConfig={depositConfig}
+            walletAddress={walletAddress}
+            daoAddress={daoAddress}
+          />
+        )}
         <Divider />
       </Stack>
 

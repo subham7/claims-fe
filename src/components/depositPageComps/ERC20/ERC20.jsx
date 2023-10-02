@@ -25,6 +25,7 @@ import { useRouter } from "next/router";
 import DepositDetails from "./DepositDetails";
 import DepositProgress from "./DepositProgress";
 import CustomAlert from "@components/common/CustomAlert";
+import { getDocumentsByClubId } from "api/document";
 
 const ERC20 = ({
   clubInfo,
@@ -37,7 +38,6 @@ const ERC20 = ({
   networkId,
   gatedTokenDetails,
   depositConfig,
-  isSigned,
 }) => {
   const [showMessage, setShowMessage] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -50,6 +50,9 @@ const ERC20 = ({
     userBalance: 0,
   });
   const [members, setMembers] = useState([]);
+  const [uploadedDocInfo, setUploadedDocInfo] = useState({});
+  const [isSigned, setIsSigned] = useState(false);
+  const [isW8BenSigned, setIsW8BenSigned] = useState(false);
 
   const clubData = useSelector((state) => {
     return state.club.clubData;
@@ -93,6 +96,14 @@ const ERC20 = ({
     setTimeout(() => {
       setShowMessage(false);
     }, 4000);
+  };
+
+  const handleIsSignedChange = (newValue) => {
+    setIsSigned(newValue);
+  };
+
+  const handleIsW8BenSignedChange = (newValue) => {
+    setIsW8BenSigned(newValue);
   };
 
   const minValidation = yup.object().shape({
@@ -203,6 +214,24 @@ const ERC20 = ({
     }
   };
 
+  const fetchDocs = async () => {
+    try {
+      const docList = await getDocumentsByClubId(daoAddress.toLowerCase());
+
+      console.log("deposit", depositConfig);
+      const document = docList.find(
+        (doc) => doc.docIdentifier === depositConfig?.uploadDocId,
+      );
+      setUploadedDocInfo(document);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchDocs();
+  }, [daoAddress, depositConfig?.uploadDocId]);
+
   useEffect(() => {
     if (Deposit_Token_Address) fetchTokenDetails();
   }, [Deposit_Token_Address]);
@@ -234,8 +263,12 @@ const ERC20 = ({
           />
           <DepositPreRequisites
             depositConfig={depositConfig}
-            isSigned={isSigned}
+            subscriptionDocSigned={isSigned}
             daoAddress={daoAddress}
+            uploadedDocInfo={uploadedDocInfo}
+            isW8BenSigned={isW8BenSigned}
+            onIsSignedChange={handleIsSignedChange}
+            onIsW8BenSignedChange={handleIsW8BenSignedChange}
           />
           <DepositInput
             clubData={clubData}
@@ -248,6 +281,7 @@ const ERC20 = ({
             tokenDetails={tokenDetails}
             remainingClaimAmount={remainingClaimAmount}
             isSigned={isSigned}
+            isW8BenSigned={isW8BenSigned}
           />
           <DepositDetails contractData={clubData} tokenDetails={tokenDetails} />
         </div>
