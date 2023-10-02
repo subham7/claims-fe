@@ -28,7 +28,7 @@ const Join = ({ daoAddress }) => {
   const [remainingClaimAmount, setRemainingClaimAmount] = useState();
   const [whitelistUserData, setWhitelistUserData] = useState();
   const [depositConfig, setDepositConfig] = useState({});
-  const [isSigned, setIsSigned] = useState();
+  const [isSigned, setIsSigned] = useState(false);
 
   const [gatedTokenDetails, setGatedTokenDetails] = useState({
     tokenASymbol: "",
@@ -203,6 +203,9 @@ const Join = ({ daoAddress }) => {
       getDepositPreRequisites(daoAddress);
       if (depositConfig?.subscriptionDocId !== null)
         userSigned(depositConfig?.subscriptionDocId, walletAddress);
+      else {
+        setIsSigned(true);
+      }
     }
   }, [daoAddress, depositConfig?.subscriptionDocId, walletAddress]);
 

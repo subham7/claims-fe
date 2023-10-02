@@ -65,10 +65,10 @@ const DepositDetails = ({ contractData = {}, tokenDetails = {} }) => {
           title="Control"
           value={isGovernanceActive ? "Community" : "Admins"}
         />
-        <Detail title="Quorum" value={isGovernanceActive ? quorum : "-"} />
+        <Detail title="Quorum" value={isGovernanceActive ? quorum : "N/A"} />
         <Detail
           title="Threshold"
-          value={isGovernanceActive ? threshold : "-"}
+          value={isGovernanceActive ? threshold : "N/A"}
         />
       </div>
     </div>
