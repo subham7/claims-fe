@@ -36,6 +36,8 @@ const ERC20 = ({
   whitelistUserData,
   networkId,
   gatedTokenDetails,
+  depositConfig,
+  isSigned,
 }) => {
   const [showMessage, setShowMessage] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -230,7 +232,11 @@ const ERC20 = ({
             deadline={daoDetails.depositDeadline}
             isDeposit={true}
           />
-          <DepositPreRequisites daoAddress={daoAddress} />
+          <DepositPreRequisites
+            depositConfig={depositConfig}
+            isSigned={isSigned}
+            daoAddress={daoAddress}
+          />
           <DepositInput
             clubData={clubData}
             isTokenGated={isTokenGated}
@@ -241,6 +247,7 @@ const ERC20 = ({
             formik={formik}
             tokenDetails={tokenDetails}
             remainingClaimAmount={remainingClaimAmount}
+            isSigned={isSigned}
           />
           <DepositDetails contractData={clubData} tokenDetails={tokenDetails} />
         </div>

@@ -1,38 +1,11 @@
-import React, { useEffect, useState } from "react";
 import classes from "./DepositPreRequisites.module.scss";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
 import { Typography } from "@mui/material";
-import { fetchClubByDaoAddress } from "api/club";
 import Link from "next/link";
-import { useAccount } from "wagmi";
-import { hasUserSigned } from "api/deposit";
 import DoneIcon from "@mui/icons-material/Done";
 
-const DepositPreRequisites = ({ daoAddress }) => {
-  const { address: walletAddress } = useAccount();
-
-  const [depositConfig, setDepositConfig] = useState({});
-  const [isSigned, setIsSigned] = useState();
-
-  const getDepositPreRequisites = async (daoAddress) => {
-    const res = await fetchClubByDaoAddress(daoAddress?.toLowerCase());
-    setDepositConfig(res?.data?.depositConfig);
-  };
-
-  const userSigned = async (docIdentifier, walletAddress) => {
-    const res = await hasUserSigned(docIdentifier, walletAddress);
-    setIsSigned(res?.signature);
-  };
-  useEffect(() => {
-    if (daoAddress) {
-      getDepositPreRequisites(daoAddress);
-      if (depositConfig?.subscriptionDocId !== null)
-        userSigned(depositConfig?.subscriptionDocId, walletAddress);
-    }
-  }, [daoAddress, depositConfig?.subscriptionDocId, walletAddress]);
-
-  console.log("depositConfig", depositConfig);
+const DepositPreRequisites = ({ daoAddress, depositConfig, isSigned }) => {
   return (
     <>
       {depositConfig &&
@@ -43,6 +16,9 @@ const DepositPreRequisites = ({ daoAddress }) => {
             <Typography variant="subtitle1">Complete these steps</Typography>
             {depositConfig?.subscriptionDocId !== null && (
               <Link
+                style={{
+                  display: "inline-block",
+                }}
                 href={`/documents/${daoAddress}/0x89/sign/${depositConfig?.subscriptionDocId}`}>
                 <div className={classes.stepContainer}>
                   {isSigned ? (

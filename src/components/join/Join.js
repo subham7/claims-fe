@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { convertFromWeiGovernance } from "utils/globalFunctions";
 import { useSelector } from "react-redux";
 import { Backdrop, CircularProgress } from "@mui/material";
-import { getClubInfo } from "api/club";
+import { fetchClubByDaoAddress, getClubInfo } from "api/club";
 import ERC721 from "@components/depositPageComps/ERC721/ERC721";
 import useAppContract from "hooks/useAppContract";
 import { getWhitelistMerkleProof } from "api/whitelist";
@@ -11,6 +11,7 @@ import useCommonContractMethods from "hooks/useCommonContractMehods";
 import useAppContractMethods from "hooks/useAppContractMethods";
 import { queryAllMembersFromSubgraph } from "utils/stationsSubgraphHelper";
 import ERC20 from "@components/depositPageComps/ERC20/ERC20";
+import { hasUserSigned } from "api/deposit";
 
 const Join = ({ daoAddress }) => {
   const [daoDetails, setDaoDetails] = useState({
@@ -26,6 +27,8 @@ const Join = ({ daoAddress }) => {
   const [loading, setLoading] = useState(false);
   const [remainingClaimAmount, setRemainingClaimAmount] = useState();
   const [whitelistUserData, setWhitelistUserData] = useState();
+  const [depositConfig, setDepositConfig] = useState({});
+  const [isSigned, setIsSigned] = useState();
 
   const [gatedTokenDetails, setGatedTokenDetails] = useState({
     tokenASymbol: "",
@@ -185,6 +188,24 @@ const Join = ({ daoAddress }) => {
     }
   };
 
+  const getDepositPreRequisites = async (daoAddress) => {
+    const res = await fetchClubByDaoAddress(daoAddress?.toLowerCase());
+    setDepositConfig(res?.data?.depositConfig);
+  };
+
+  const userSigned = async (docIdentifier, walletAddress) => {
+    const res = await hasUserSigned(docIdentifier, walletAddress);
+    setIsSigned(res?.signature);
+  };
+
+  useEffect(() => {
+    if (daoAddress) {
+      getDepositPreRequisites(daoAddress);
+      if (depositConfig?.subscriptionDocId !== null)
+        userSigned(depositConfig?.subscriptionDocId, walletAddress);
+    }
+  }, [daoAddress, depositConfig?.subscriptionDocId, walletAddress]);
+
   useEffect(() => {
     if (walletAddress && daoAddress && FACTORY_CONTRACT_ADDRESS) {
       fetchTokenGatingDetials();
@@ -274,6 +295,8 @@ const Join = ({ daoAddress }) => {
           whitelistUserData={whitelistUserData}
           networkId={networkId}
           gatedTokenDetails={gatedTokenDetails}
+          depositConfig={depositConfig}
+          isSigned={isSigned}
         />
       ) : TOKEN_TYPE === "erc721" ? (
         <ERC721

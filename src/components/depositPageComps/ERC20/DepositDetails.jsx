@@ -1,5 +1,6 @@
 import { Typography } from "@mui/material";
 import React from "react";
+import { useSelector } from "react-redux";
 import { convertFromWeiGovernance } from "utils/globalFunctions";
 import classes from "../../claims/Claim.module.scss";
 
@@ -35,6 +36,10 @@ const DepositDetails = ({ contractData = {}, tokenDetails = {} }) => {
   } = contractData;
   const { tokenSymbol, tokenDecimal } = tokenDetails;
 
+  const isGovernanceActive = useSelector((state) => {
+    return state.club.erc20ClubDetails.isGovernanceActive;
+  });
+
   return (
     <div>
       <div className={classes.detailContainer}>
@@ -49,16 +54,22 @@ const DepositDetails = ({ contractData = {}, tokenDetails = {} }) => {
           isAmount
         />
         <Detail
-          title={tokenSymbol}
+          title={symbol}
           value={convertValue(pricePerToken, tokenDecimal)}
-          tokenName={symbol}
+          tokenName={tokenSymbol}
           isPricePerToken
         />
       </div>
       <div className={classes.detailContainer}>
-        <Detail title="Control" value="Admins" />
-        <Detail title="Quorum" value={quorum} />
-        <Detail title="Threshold" value={threshold} />
+        <Detail
+          title="Control"
+          value={isGovernanceActive ? "Community" : "Admins"}
+        />
+        <Detail title="Quorum" value={isGovernanceActive ? quorum : "-"} />
+        <Detail
+          title="Threshold"
+          value={isGovernanceActive ? threshold : "-"}
+        />
       </div>
     </div>
   );

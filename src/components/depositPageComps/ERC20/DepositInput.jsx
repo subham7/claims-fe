@@ -12,6 +12,7 @@ const DepositInput = ({
   clubData,
   whitelistUserData,
   remainingClaimAmount,
+  isSigned,
 }) => {
   const ClaimInputShimmer = () => {
     return (
@@ -64,6 +65,7 @@ const DepositInput = ({
 
       <Button
         disabled={
+          !isSigned ||
           (remainingDays >= 0 && remainingTimeInSecs > 0 && isTokenGated
             ? !isEligibleForTokenGating
             : remainingDays >= 0 && remainingTimeInSecs > 0
