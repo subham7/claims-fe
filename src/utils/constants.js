@@ -32,6 +32,7 @@ export const CHAIN_CONFIG = {
     aaveMaticPoolAddress: "0x1e4b7A6b903680eab0c5dAbcb8fD429cD2a9598c",
     aaveWrappedUsdcAddress: "0x625E7708f30cA75bfd92586e17077590C60eb4cD",
     aaveWrappedMaticAddress: "0x6d80113e533a2C0fe82EaBD35f1875DcEA89Ea97",
+    blockExplorerUrl: "https://polygonscan.com",
   },
   "0x5": {
     chainName: "Goerli Testnet",
@@ -49,6 +50,7 @@ export const CHAIN_CONFIG = {
       "https://api.thegraph.com/subgraphs/name/subham7/stnx-claim",
     covalentNetworkName: "goerli-testnet",
     nativeToken: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    blockExplorerUrl: "https://goerli.etherscan.io",
   },
   "0x2105": {
     chainName: "Base Mainnet",
@@ -70,6 +72,7 @@ export const CHAIN_CONFIG = {
     nativeToken: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
     usdcAddress: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
     airdropContractAddress: "0x9aeF8F840FED23502506CC988c0057F24638C00E",
+    blockExplorerUrl: "https://explorer.base.org",
   },
   "0xa4b1": {
     chainName: "Arbitrum One",
@@ -87,6 +90,7 @@ export const CHAIN_CONFIG = {
       "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-claim-arbitrum/prod/gn",
     covalentNetworkName: "arbitrum-mainnet",
     nativeToken: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    blockExplorerUrl: "https://arbiscan.io",
   },
   "0xe708": {
     chainName: "Linea Mainnet",
@@ -106,6 +110,7 @@ export const CHAIN_CONFIG = {
       "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-linea/0.0.1/gn",
     covalentNetworkName: "linea-mainnet",
     nativeToken: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    blockExplorerUrl: "https://lineascan.build",
   },
   "0x38": {
     chainName: "BNB Smart Chain",
@@ -123,6 +128,7 @@ export const CHAIN_CONFIG = {
       "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-claim-bsc/prod/gn",
     covalentNetworkName: "bsc-mainnet",
     nativeToken: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    blockExplorerUrl: "https://bscscan.com",
   },
   "0x1388": {
     chainName: "Mantle Mainnet",
@@ -140,6 +146,7 @@ export const CHAIN_CONFIG = {
       "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-claim-mantle/0.0.2/gn",
     covalentNetworkName: "mantle-mainnet",
     nativeToken: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    blockExplorerUrl: "https://explorer.mantle.xyz",
   },
 };
 

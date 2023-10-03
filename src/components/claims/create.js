@@ -335,7 +335,7 @@ const CreateClaim = () => {
             setFinish(true);
             showMessageHandler(setFinish);
             setTimeout(() => {
-              router.push(`/claims/${networkId}`);
+              router.push(`/claims/`);
             }, 3000);
           } catch (err) {
             console.log(err);
@@ -438,7 +438,7 @@ const CreateClaim = () => {
             setFinish(true);
             showMessageHandler(setFinish);
             setTimeout(() => {
-              router.push(`/claims/${networkId}`);
+              router.push(`/claims/`);
             }, 3000);
           } catch (err) {
             console.log(err);

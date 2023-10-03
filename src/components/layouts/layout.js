@@ -85,7 +85,7 @@ export default function Layout(props) {
                 {props.children}
               </div>
             </Box>
-            {showWrongNetworkModal(walletAddress, networkId, routeNetworkId)}
+            {showWrongNetworkModal(networkId, routeNetworkId)}
           </>
         )}
       </Box>

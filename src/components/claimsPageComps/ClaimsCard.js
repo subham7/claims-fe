@@ -153,7 +153,7 @@ const ClaimsCard = ({
   });
 
   const claimHandler = () => {
-    router.push(`/claims/${claimsNetwork}/${claimContract}`);
+    router.push(`/claim/${claimsNetwork}/${claimContract}`);
   };
 
   return (

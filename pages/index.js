@@ -218,7 +218,7 @@ const App = () => {
   };
 
   const claimsHandler = () => {
-    router.push(`/claims/${networkId}`);
+    router.push(`/claims/`);
   };
 
   return (

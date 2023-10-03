@@ -1117,7 +1117,6 @@ export const PdfFile = ({
               IN WITNESS WHEREOF, the Subscriber hereby executes this Agreement
               as of the date set forth below.
             </Text>
-
             <Text style={styles.eachLine}>
               {admin_name}, in its capacity as Administrative Member, and for
               and on behalf of {LLC_name}

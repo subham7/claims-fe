@@ -21,10 +21,9 @@ import useAppContractMethods from "../../hooks/useAppContractMethods";
 import { shortAddress } from "utils/helper";
 import DepositDocument from "./modals/DepositDocument";
 import { useNetwork } from "wagmi";
-import { editDepositConfig } from "api/deposit";
-import { createStation, fetchClubByDaoAddress } from "api/club";
-import CustomAlert from "@components/common/CustomAlert";
+import { CHAIN_CONFIG } from "utils/constants";
 import UploadW8Ben from "./modals/UploadW8Ben";
+import CustomAlert from "@components/common/CustomAlert";
 
 const AdditionalSettings = ({
   tokenType,
@@ -270,13 +269,7 @@ const AdditionalSettings = ({
                 color="primary"
                 onClick={() => {
                   window.open(
-                    `https://${
-                      networkId === "0x5"
-                        ? "goerli.etherscan.io"
-                        : networkId === "0x89"
-                        ? "polygonscan.com"
-                        : ""
-                    }/address/${daoAddress}`,
+                    `${CHAIN_CONFIG[networkId].blockExplorerUrl}/address/${daoAddress}`,
                   );
                 }}>
                 <OpenInNewIcon className={classes.iconColor} />
@@ -317,13 +310,7 @@ const AdditionalSettings = ({
                 color="primary"
                 onClick={() => {
                   window.open(
-                    `https://${
-                      networkId === "0x5"
-                        ? "goerli.etherscan.io"
-                        : networkId === "0x89"
-                        ? "polygonscan.com"
-                        : ""
-                    }/address/${gnosisAddress}`,
+                    `${CHAIN_CONFIG[networkId].blockExplorerUrl}/address/${gnosisAddress}`,
                   );
                 }}>
                 <OpenInNewIcon className={classes.iconColor} />
