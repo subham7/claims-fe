@@ -307,3 +307,7 @@ export const uploadFileToAWS = async (file) => {
     reader.readAsArrayBuffer(file);
   });
 };
+
+export const isValidAddress = (address) => {
+  return /^0x[a-fA-F0-9]{40}$/.test(address);
+};

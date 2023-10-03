@@ -6,7 +6,7 @@ import { useRouter } from "next/router";
 import { disburseFormValidation } from "../createClubComps/ValidationSchemas";
 import { useAccount, useNetwork } from "wagmi";
 import { getTokensList } from "api/token";
-import { getUserTokenData } from "utils/helper";
+import { getUserTokenData, isValidAddress } from "utils/helper";
 import { CHAIN_CONFIG } from "utils/constants";
 import DisburseForm from "@components/claimsPageComps/DisburseForm";
 
@@ -22,6 +22,7 @@ const useStyles = makeStyles({
 const CreateDisburse = () => {
   const [tokensInWallet, setTokensInWallet] = useState(null);
   const [showError, setShowError] = useState(null);
+  const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const [loadingTokens, setLoadingTokens] = useState(false);
@@ -62,7 +63,30 @@ const CreateDisburse = () => {
       disburseList: "",
     },
     validationSchema: disburseFormValidation,
-    onSubmit: () => {},
+    onSubmit: (values) => {
+      const disburseAddresses = [];
+      const disburseAmounts = [];
+      values.disburseList.split("\n").forEach((item) => {
+        const [address, amount] = item.split(",");
+        if (isValidAddress(address) && !isNaN(Number(amount))) {
+          disburseAddresses.push(address);
+          disburseAmounts.push(Number(amount));
+        } else {
+          setShowError(true);
+          setError("Invalid disburse list format");
+        }
+      });
+
+      const totalAmount = disburseAmounts.reduce(
+        (partialSum, a) => partialSum + a,
+        0,
+      );
+
+      if (totalAmount > values.selectedToken.balance) {
+        setShowError(true);
+        setError("Your wallet does not have enough balance for the disburse");
+      }
+    },
   });
 
   const showMessageHandler = (setState) => {
