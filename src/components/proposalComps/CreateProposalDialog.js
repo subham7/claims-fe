@@ -1,5 +1,4 @@
 import {
-  Alert,
   CircularProgress,
   Dialog,
   DialogContent,
@@ -9,7 +8,6 @@ import {
   IconButton,
   MenuItem,
   Select,
-  Snackbar,
   Stack,
   Typography,
 } from "@mui/material";
@@ -30,6 +28,7 @@ import { useAccount, useNetwork } from "wagmi";
 import { getProposalCommands } from "utils/proposalData";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 import { getProposalValidationSchema } from "@components/createClubComps/ValidationSchemas";
+import CustomAlert from "@components/common/CustomAlert";
 
 const useStyles = makeStyles({
   modalStyle: {
@@ -77,7 +76,7 @@ const CreateProposalDialog = ({
   const [loaderOpen, setLoaderOpen] = useState(false);
   const [openSnackBar, setOpenSnackBar] = useState(false);
   const [failed, setFailed] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [message, setMessage] = useState("");
 
   const handleSnackBarClose = (event, reason) => {
     if (reason === "clickaway") {
@@ -181,13 +180,14 @@ const CreateProposalDialog = ({
           } else {
             fetchProposalList();
             setOpenSnackBar(true);
+            setMessage("Proposal created successfully!");
             setFailed(false);
             setOpen(false);
             setLoaderOpen(false);
           }
         });
       } catch (error) {
-        setErrorMessage(error.message ?? error);
+        setMessage(error.message ?? error);
         setLoaderOpen(false);
         setOpenSnackBar(true);
         setFailed(true);
@@ -455,27 +455,9 @@ const CreateProposalDialog = ({
           </form>
         </DialogContent>
       </Dialog>
-      <Snackbar
-        open={openSnackBar}
-        autoHideDuration={6000}
-        onClose={handleSnackBarClose}
-        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}>
-        {!failed ? (
-          <Alert
-            onClose={handleSnackBarClose}
-            severity="success"
-            sx={{ width: "100%" }}>
-            Proposal Successfully created!
-          </Alert>
-        ) : (
-          <Alert
-            onClose={handleSnackBarClose}
-            severity="error"
-            sx={{ width: "100%" }}>
-            {errorMessage ? errorMessage : "Proposal creation failed!"}
-          </Alert>
-        )}
-      </Snackbar>
+      {openSnackBar ? (
+        <CustomAlert alertMessage={message} severity={failed} />
+      ) : null}
     </>
   );
 };

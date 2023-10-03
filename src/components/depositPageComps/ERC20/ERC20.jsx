@@ -1,22 +1,31 @@
-import { useFormik } from "formik";
+import About from "@components/claims/About";
+import ClaimActivity from "@components/claims/ClaimActivity";
+import Eligibility from "@components/claims/Eligibility";
+import Header from "@components/claims/Header";
+import { Backdrop, CircularProgress } from "@mui/material";
+import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import { queryLatestMembersFromSubgraph } from "utils/stationsSubgraphHelper";
+import classes from "../../../components/claims/Claim.module.scss";
+import dayjs from "dayjs";
+import SocialButtons from "@components/common/SocialButtons";
+import DepositInput from "./DepositInput";
+import DepositPreRequisites from "../DepositPreRequisites";
+import { useFormik } from "formik";
 import {
   convertFromWeiGovernance,
   convertToWeiGovernance,
 } from "utils/globalFunctions";
-import About from "../ERC721/About";
-import Header from "../ERC721/Header";
-import classes from "./ERC20.module.scss";
 import * as yup from "yup";
-import { useRouter } from "next/router";
-import { Alert, Backdrop, CircularProgress } from "@mui/material";
-import dayjs from "dayjs";
-import Deposit from "./Deposit";
-import ERC20Details from "./ERC20Details";
-import { useAccount } from "wagmi";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 import useAppContractMethods from "hooks/useAppContractMethods";
+import { useAccount } from "wagmi";
+import { useRouter } from "next/router";
+import DepositDetails from "./DepositDetails";
+import DepositProgress from "./DepositProgress";
+import CustomAlert from "@components/common/CustomAlert";
+import { getDocumentsByClubId } from "api/document";
 
 const ERC20 = ({
   clubInfo,
@@ -27,32 +36,23 @@ const ERC20 = ({
   isTokenGated,
   whitelistUserData,
   networkId,
+  gatedTokenDetails,
+  depositConfig,
 }) => {
+  const [showMessage, setShowMessage] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [depositSuccessfull, setDepositSuccessfull] = useState(false);
+  const [message, setMessage] = useState("");
   const [active, setActive] = useState(false);
-  const [erc20TokenDetails, setErc20TokenDetails] = useState({
-    tokenSymbol: "",
-    tokenDecimal: 0,
+  const [tokenDetails, setTokenDetails] = useState({
+    tokenDecimal: 6,
+    tokenSymbol: "USDC",
     userBalance: 0,
   });
-  const [loading, setLoading] = useState(false);
-  const [showMessage, setShowMessage] = useState(false);
-  const [depositSuccessfull, setDepositSuccessfull] = useState(false);
-
-  const { address: walletAddress } = useAccount();
-  const router = useRouter();
-
-  const day = Math.floor(new Date().getTime() / 1000.0);
-  const day1 = dayjs.unix(day);
-  const day2 = dayjs.unix(daoDetails.depositDeadline);
-
-  const remainingDays = day2.diff(day1, "day");
-  const remainingTimeInSecs = day2.diff(day1, "seconds");
-  // const remainingTimeInHours = day2.diff(day1, "hours");
-
-  const { approveDeposit, getDecimals, getTokenSymbol, getBalance } =
-    useCommonContractMethods();
-
-  const { buyGovernanceTokenERC20DAO } = useAppContractMethods();
+  const [members, setMembers] = useState([]);
+  const [uploadedDocInfo, setUploadedDocInfo] = useState({});
+  const [isSigned, setIsSigned] = useState(false);
+  const [isW8BenSigned, setIsW8BenSigned] = useState(false);
 
   const clubData = useSelector((state) => {
     return state.club.clubData;
@@ -66,6 +66,46 @@ const ERC20 = ({
     return state.club.factoryData.depositTokenAddress;
   });
 
+  const { approveDeposit, getDecimals, getTokenSymbol, getBalance } =
+    useCommonContractMethods();
+
+  const { buyGovernanceTokenERC20DAO } = useAppContractMethods();
+  const { address: walletAddress } = useAccount();
+
+  const day = Math.floor(new Date().getTime() / 1000.0);
+  const day1 = dayjs.unix(day);
+  const day2 = dayjs.unix(daoDetails.depositDeadline);
+  const router = useRouter();
+  const remainingDays = day2.diff(day1, "day");
+  const remainingTimeInSecs = day2.diff(day1, "seconds");
+
+  const fetchActivities = async () => {
+    try {
+      const { users } = await queryLatestMembersFromSubgraph(
+        daoAddress,
+        networkId,
+      );
+      if (users) setMembers(users);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const showMessageHandler = () => {
+    setShowMessage(true);
+    setTimeout(() => {
+      setShowMessage(false);
+    }, 4000);
+  };
+
+  const handleIsSignedChange = (newValue) => {
+    setIsSigned(newValue);
+  };
+
+  const handleIsW8BenSignedChange = (newValue) => {
+    setIsW8BenSigned(newValue);
+  };
+
   const minValidation = yup.object().shape({
     tokenInput: yup
       .number()
@@ -74,20 +114,20 @@ const ERC20 = ({
         Number(
           convertFromWeiGovernance(
             clubData?.minDepositAmount,
-            erc20TokenDetails?.tokenDecimal,
+            tokenDetails?.tokenDecimal,
           ),
         ),
         "Amount should be greater than min deposit",
       )
       .lessThan(
-        erc20TokenDetails.tokenBalance,
+        tokenDetails.tokenBalance,
         "Amount can't be greater than wallet balance",
       )
       .max(
         Number(
           convertFromWeiGovernance(
             clubData?.maxDepositAmount,
-            erc20TokenDetails?.tokenDecimal,
+            tokenDetails?.tokenDecimal,
           ),
         ),
         "Amount should be less than max deposit",
@@ -100,7 +140,7 @@ const ERC20 = ({
       .required("Input is required")
       .min(0.0000001, "Amount should be greater than min deposit")
       .lessThan(
-        erc20TokenDetails?.tokenBalance,
+        tokenDetails?.tokenBalance,
         "Amount can't be greater than wallet balance",
       )
       .max(
@@ -120,14 +160,14 @@ const ERC20 = ({
         setLoading(true);
         const inputValue = convertToWeiGovernance(
           values.tokenInput,
-          erc20TokenDetails?.tokenDecimal,
+          tokenDetails?.tokenDecimal,
         );
 
         await approveDeposit(
           Deposit_Token_Address,
           FACTORY_CONTRACT_ADDRESS,
           inputValue,
-          erc20TokenDetails?.tokenDecimal,
+          tokenDetails?.tokenDecimal,
         );
 
         await buyGovernanceTokenERC20DAO(
@@ -146,44 +186,61 @@ const ERC20 = ({
           shallow: true,
         });
         showMessageHandler();
+        setMessage("Deposit Successful");
         formik.values.tokenInput = 0;
       } catch (error) {
         console.log(error);
         setDepositSuccessfull(false);
         setLoading(false);
+        setMessage("Deposit Failed");
         showMessageHandler();
       }
     },
   });
 
-  const showMessageHandler = () => {
-    setShowMessage(true);
-    setTimeout(() => {
-      setShowMessage(false);
-    }, 4000);
-  };
-
   const fetchTokenDetails = async () => {
     try {
-      if (Deposit_Token_Address) {
-        const decimals = await getDecimals(Deposit_Token_Address);
-        const symbol = await getTokenSymbol(Deposit_Token_Address);
-        const userBalance = await getBalance(Deposit_Token_Address);
+      const decimals = await getDecimals(Deposit_Token_Address);
+      const symbol = await getTokenSymbol(Deposit_Token_Address);
+      const userBalance = await getBalance(Deposit_Token_Address);
 
-        setErc20TokenDetails({
-          tokenSymbol: symbol,
-          tokenDecimal: decimals,
-          userBalance: convertFromWeiGovernance(userBalance, decimals),
-        });
-      }
+      setTokenDetails({
+        tokenSymbol: symbol,
+        tokenDecimal: decimals,
+        userBalance: convertFromWeiGovernance(userBalance, decimals),
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const fetchDocs = async () => {
+    try {
+      const docList = await getDocumentsByClubId(daoAddress.toLowerCase());
+
+      console.log("deposit", depositConfig);
+      const document = docList.find(
+        (doc) => doc.docIdentifier === depositConfig?.uploadDocId,
+      );
+      setUploadedDocInfo(document);
     } catch (error) {
       console.log(error);
     }
   };
 
   useEffect(() => {
-    fetchTokenDetails();
+    fetchDocs();
+  }, [daoAddress, depositConfig?.uploadDocId]);
+
+  useEffect(() => {
+    if (Deposit_Token_Address) fetchTokenDetails();
   }, [Deposit_Token_Address]);
+
+  useEffect(() => {
+    if (daoAddress) {
+      fetchActivities();
+    }
+  }, [daoAddress, networkId]);
 
   useEffect(() => {
     if (day2 >= day1) {
@@ -194,77 +251,86 @@ const ERC20 = ({
   }, [day2, day1]);
 
   return (
-    <div className={classes.pageContainer}>
-      <div className={classes.mainContainer}>
-        <div className={classes.leftContainer}>
+    <main className={classes.main}>
+      <section className={classes.leftContainer}>
+        <div>
           <Header
-            daoAddress={daoAddress}
-            active={active}
-            clubData={clubData}
-            clubInfo={clubInfo}
+            contractData={clubData}
+            isActive={active}
+            tokenDetails={tokenDetails}
             deadline={daoDetails.depositDeadline}
+            isDeposit={true}
           />
-
-          <ERC20Details
+          <DepositPreRequisites
+            depositConfig={depositConfig}
+            subscriptionDocSigned={isSigned}
+            daoAddress={daoAddress}
+            uploadedDocInfo={uploadedDocInfo}
+            isW8BenSigned={isW8BenSigned}
+            onIsSignedChange={handleIsSignedChange}
+            onIsW8BenSignedChange={handleIsW8BenSignedChange}
+          />
+          <DepositInput
             clubData={clubData}
-            erc20TokenDetails={erc20TokenDetails}
             isTokenGated={isTokenGated}
+            isEligibleForTokenGating={isEligibleForTokenGating}
+            remainingDays={remainingDays}
+            remainingTimeInSecs={remainingTimeInSecs}
             whitelistUserData={whitelistUserData}
+            formik={formik}
+            tokenDetails={tokenDetails}
+            remainingClaimAmount={remainingClaimAmount}
+            isSigned={isSigned}
+            isW8BenSigned={isW8BenSigned}
           />
+          <DepositDetails contractData={clubData} tokenDetails={tokenDetails} />
+        </div>
+        <SocialButtons isDeposit={true} data={clubInfo} />
+      </section>
+
+      <section className={classes.rightContainer}>
+        <div className={classes.bannerContainer}>
+          {/* {generalInfo?.imageLinks?.banner ? ( */}
+          <div className={classes.imageContainer}>
+            <Image
+              src={"/assets/images/tempBanner.jpg"}
+              fill
+              alt="Banner Image"
+            />
+          </div>
+          {/* ) : null} */}
         </div>
 
-        <Deposit
-          clubData={clubData}
-          erc20TokenDetails={erc20TokenDetails}
-          formik={formik}
-          isEligibleForTokenGating={isEligibleForTokenGating}
-          isTokenGated={isTokenGated}
-          remainingClaimAmount={remainingClaimAmount}
-          remainingDays={remainingDays}
-          remainingTimeInSecs={remainingTimeInSecs}
-          whitelistUserData={whitelistUserData}
+        <DepositProgress clubData={clubData} tokenDetails={tokenDetails} />
+
+        {clubInfo?.bio && <About bio={clubInfo?.bio} />}
+
+        {clubData && (
+          <Eligibility
+            gatedTokenDetails={gatedTokenDetails}
+            isDeposit={true}
+            isTokenGated={isTokenGated}
+            isWhitelist={whitelistUserData?.setWhitelist}
+          />
+        )}
+
+        <ClaimActivity
+          isDeposit={true}
+          activityDetails={members}
+          tokenDetails={tokenDetails}
         />
-      </div>
+      </section>
 
-      {clubInfo?.bio ? (
-        <About bio={clubInfo?.bio} daoAddress={daoAddress} />
+      {showMessage ? (
+        <CustomAlert alertMessage={message} severity={depositSuccessfull} />
       ) : null}
-
-      {depositSuccessfull && showMessage ? (
-        <Alert
-          severity="success"
-          sx={{
-            width: "250px",
-            position: "fixed",
-            bottom: "30px",
-            right: "20px",
-            borderRadius: "8px",
-          }}>
-          Transaction Successfull
-        </Alert>
-      ) : (
-        !depositSuccessfull &&
-        showMessage && (
-          <Alert
-            severity="error"
-            sx={{
-              width: "250px",
-              position: "fixed",
-              bottom: "30px",
-              right: "20px",
-              borderRadius: "8px",
-            }}>
-            Transaction Failed
-          </Alert>
-        )
-      )}
 
       <Backdrop
         sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
         open={loading}>
         <CircularProgress />
       </Backdrop>
-    </div>
+    </main>
   );
 };
 

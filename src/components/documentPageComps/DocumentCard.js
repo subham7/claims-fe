@@ -1,4 +1,4 @@
-import { Alert } from "@mui/material";
+import CustomAlert from "@components/common/CustomAlert";
 import { makeStyles } from "@mui/styles";
 import React, { useState } from "react";
 import { BsLink45Deg } from "react-icons/bs";
@@ -107,19 +107,7 @@ const DocumentCard = ({
         {fileName}
       </h2>
 
-      {isCopied && (
-        <Alert
-          severity="success"
-          sx={{
-            width: "150px",
-            position: "absolute",
-            bottom: "30px",
-            right: "20px",
-            borderRadius: "8px",
-          }}>
-          {"Copied"}
-        </Alert>
-      )}
+      {isCopied && <CustomAlert alertMessage={"Copied"} severity={true} />}
     </div>
   );
 };
