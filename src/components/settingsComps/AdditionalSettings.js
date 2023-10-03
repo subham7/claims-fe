@@ -429,7 +429,7 @@ const AdditionalSettings = ({
           sx={{ display: "flex", justifyContent: "space-between" }}>
           <Grid item mt={3}>
             <Typography variant="settingText">
-              Enable subscription sign for deposit
+              Enable subscription agreement signing
             </Typography>
           </Grid>
           <Grid
@@ -464,9 +464,7 @@ const AdditionalSettings = ({
           py={2}
           sx={{ display: "flex", justifyContent: "space-between" }}>
           <Grid item mt={3}>
-            <Typography variant="settingText">
-              Enable W-8BEN sign for deposit
-            </Typography>
+            <Typography variant="settingText">Collect tax form</Typography>
           </Grid>
           <Grid
             // container

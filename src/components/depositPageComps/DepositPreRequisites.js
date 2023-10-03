@@ -93,12 +93,13 @@ const DepositPreRequisites = ({
 
                 <div
                   className={classes.signTextDiv}
-                  onClick={() =>
-                    window.open(
-                      `/documents/${daoAddress}/0x89/sign/${depositConfig?.subscriptionDocId}`,
-                      "_blank",
-                    )
-                  }>
+                  onClick={() => {
+                    !isSigned &&
+                      window.open(
+                        `/documents/${daoAddress}/0x89/sign/${depositConfig?.subscriptionDocId}`,
+                        "_blank",
+                      );
+                  }}>
                   <div style={{ marginRight: "0.5rem" }}>
                     Sign subscription agreement
                   </div>
@@ -111,7 +112,9 @@ const DepositPreRequisites = ({
               <div
                 className={classes.signTextDiv}
                 onClick={() => {
-                  setShowUploadDocModal(true);
+                  {
+                    !isW8BenSigned && setShowUploadDocModal(true);
+                  }
                 }}>
                 {isW8BenSigned ? (
                   <DoneIcon className={classes.tickIcon} />
@@ -125,7 +128,7 @@ const DepositPreRequisites = ({
 
             {depositConfig && depositConfig?.enableKyc ? (
               <div className={classes.stepContainer}>
-                <RadioButtonUncheckedIcon className={classes.icons} />
+                <DoneIcon className={classes.tickIcon} />
                 <div style={{ marginRight: "0.5rem" }}>Complete KYC</div>
                 <OpenInNewIcon className={classes.icons} />
               </div>

@@ -218,7 +218,8 @@ const Documents = ({ daoAddress, networkId }) => {
                 Sign documents within your station
               </Typography>
               <Link
-                href="/"
+                href="https://stationxnetwork.gitbook.io/docs"
+                target={"_blank"}
                 sx={{
                   position: "absolute",
                   color: "#0F0F0F",
