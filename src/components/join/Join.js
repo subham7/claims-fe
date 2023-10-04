@@ -2,15 +2,16 @@ import React, { useEffect, useState } from "react";
 import { convertFromWeiGovernance } from "utils/globalFunctions";
 import { useSelector } from "react-redux";
 import { Backdrop, CircularProgress } from "@mui/material";
-import { getClubInfo } from "api/club";
+import { fetchClubByDaoAddress, getClubInfo } from "api/club";
+// import ERC721 from "@components/depositPageComps/ERC721/ERC721";
 import useAppContract from "hooks/useAppContract";
 import { getWhitelistMerkleProof } from "api/whitelist";
 import { useAccount, useNetwork } from "wagmi";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 import useAppContractMethods from "hooks/useAppContractMethods";
 import { queryAllMembersFromSubgraph } from "utils/stationsSubgraphHelper";
-import NewErc20 from "@components/depositPageComps/ERC20/NewErc20";
 import NewErc721 from "@components/depositPageComps/ERC721/NewErc721";
+import ERC20 from "@components/depositPageComps/ERC20/ERC20";
 
 const Join = ({ daoAddress }) => {
   const [daoDetails, setDaoDetails] = useState({
@@ -26,6 +27,7 @@ const Join = ({ daoAddress }) => {
   const [loading, setLoading] = useState(false);
   const [remainingClaimAmount, setRemainingClaimAmount] = useState();
   const [whitelistUserData, setWhitelistUserData] = useState();
+  const [depositConfig, setDepositConfig] = useState({});
 
   const [gatedTokenDetails, setGatedTokenDetails] = useState({
     tokenASymbol: "",
@@ -185,6 +187,15 @@ const Join = ({ daoAddress }) => {
     }
   };
 
+  const getDepositPreRequisites = async (daoAddress) => {
+    const res = await fetchClubByDaoAddress(daoAddress?.toLowerCase());
+    setDepositConfig(res?.data?.depositConfig);
+  };
+
+  useEffect(() => {
+    if (daoAddress) getDepositPreRequisites(daoAddress);
+  }, [daoAddress, walletAddress]);
+
   useEffect(() => {
     if (walletAddress && daoAddress && FACTORY_CONTRACT_ADDRESS) {
       fetchTokenGatingDetials();
@@ -264,7 +275,7 @@ const Join = ({ daoAddress }) => {
   return (
     <>
       {TOKEN_TYPE === "erc20" ? (
-        <NewErc20
+        <ERC20
           clubInfo={clubInfo}
           daoAddress={daoAddress}
           remainingClaimAmount={remainingClaimAmount}
@@ -274,6 +285,7 @@ const Join = ({ daoAddress }) => {
           whitelistUserData={whitelistUserData}
           networkId={networkId}
           gatedTokenDetails={gatedTokenDetails}
+          depositConfig={depositConfig}
         />
       ) : TOKEN_TYPE === "erc721" ? (
         <NewErc721
@@ -285,6 +297,7 @@ const Join = ({ daoAddress }) => {
           whitelistUserData={whitelistUserData}
           networkId={networkId}
           gatedTokenDetails={gatedTokenDetails}
+          depositConfig={depositConfig}
         />
       ) : null}
 

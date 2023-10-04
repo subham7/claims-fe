@@ -4,7 +4,6 @@ import React from "react";
 import { convertFromWeiGovernance } from "utils/globalFunctions";
 
 const DepositProgress = ({ clubData, tokenDetails, nftMinted = 0 }) => {
-  console.log("xxx", clubData);
   return (
     <div
       style={{
@@ -14,6 +13,7 @@ const DepositProgress = ({ clubData, tokenDetails, nftMinted = 0 }) => {
         style={{
           display: "flex",
           justifyContent: "space-between",
+          alignItems: "center",
         }}>
         {clubData?.tokenType === "erc721" ? (
           <Typography>{nftMinted} minted</Typography>
@@ -41,6 +41,7 @@ const DepositProgress = ({ clubData, tokenDetails, nftMinted = 0 }) => {
       </div>
 
       <ProgressBar
+        zIndex={-1}
         value={
           clubData?.tokenType === "erc721"
             ? (Number(nftMinted) * 100) / Number(clubData?.distributionAmount)

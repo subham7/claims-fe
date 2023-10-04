@@ -17,6 +17,9 @@ import dayjs from "dayjs";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 import useAppContractMethods from "hooks/useAppContractMethods";
 import { useAccount } from "wagmi";
+import Mint from "./Mint";
+import { useRouter } from "next/router";
+import { getDocumentsByClubId } from "api/document";
 
 const NewErc721 = ({
   daoAddress,
@@ -27,6 +30,7 @@ const NewErc721 = ({
   whitelistUserData,
   networkId,
   gatedTokenDetails,
+  depositConfig,
 }) => {
   const [tokenDetails, setTokenDetails] = useState({
     tokenDecimal: 6,
@@ -38,9 +42,15 @@ const NewErc721 = ({
   const [members, setMembers] = useState([]);
   const [showMessage, setShowMessage] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [hasClaimed, setHasClaimed] = useState(false);
+  const [balanceOfNft, setBalanceOfNft] = useState();
+  const [message, setMessage] = useState("");
   const [imgUrl, setImgUrl] = useState("");
   const [count, setCount] = useState(1);
   const [claimSuccessfull, setClaimSuccessfull] = useState(false);
+  const [isSigned, setIsSigned] = useState(false);
+  const [isW8BenSigned, setIsW8BenSigned] = useState(false);
+  const [uploadedDocInfo, setUploadedDocInfo] = useState({});
 
   const day = Math.floor(new Date().getTime() / 1000.0);
   const day1 = dayjs.unix(day);
@@ -49,6 +59,7 @@ const NewErc721 = ({
   const remainingTimeInSecs = day2.diff(day1, "seconds");
 
   const { address: walletAddress } = useAccount();
+  const router = useRouter();
 
   const { approveDeposit, getDecimals, getTokenSymbol, getBalance } =
     useCommonContractMethods();
@@ -122,9 +133,9 @@ const NewErc721 = ({
         FACTORY_CONTRACT_ADDRESS,
         convertFromWeiGovernance(
           clubData?.pricePerToken,
-          erc20TokenDetails.tokenDecimal,
+          tokenDetails.tokenDecimal,
         ),
-        erc20TokenDetails.tokenDecimal,
+        tokenDetails.tokenDecimal,
       );
 
       await buyGovernanceTokenERC721DAO(
@@ -139,14 +150,41 @@ const NewErc721 = ({
       router.push(`/dashboard/${daoAddress}/${networkId}`, undefined, {
         shallow: true,
       });
+      setMessage("Transaction Successful");
       showMessageHandler();
     } catch (error) {
       console.log(error);
       setClaimSuccessfull(false);
       setLoading(false);
+      setMessage("Transaction Failed");
       showMessageHandler();
     }
   };
+
+  const handleIsSignedChange = (newValue) => {
+    setIsSigned(newValue);
+  };
+
+  const handleIsW8BenSignedChange = (newValue) => {
+    setIsW8BenSigned(newValue);
+  };
+
+  const fetchDocs = async () => {
+    try {
+      const docList = await getDocumentsByClubId(daoAddress.toLowerCase());
+
+      const document = docList.find(
+        (doc) => doc.docIdentifier === depositConfig?.uploadDocId,
+      );
+      setUploadedDocInfo(document);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchDocs();
+  }, [daoAddress, depositConfig?.uploadDocId]);
 
   useEffect(() => {
     fetchTokenDetails();
@@ -197,9 +235,33 @@ const NewErc721 = ({
             isDeposit={true}
             isActive={active}
           />
-          <DepositPreRequisites daoAddress={daoAddress} />
+          <DepositPreRequisites
+            uploadedDocInfo={uploadedDocInfo}
+            daoAddress={daoAddress}
+            onIsSignedChange={handleIsSignedChange}
+            onIsW8BenSignedChange={handleIsW8BenSignedChange}
+          />
+
+          <Mint
+            claimNFTHandler={claimNFTHandler}
+            clubData={clubData}
+            count={count}
+            hasClaimed={hasClaimed}
+            remainingDays={remainingDays}
+            remainingTimeInSecs={remainingTimeInSecs}
+            setCount={setCount}
+            balanceOfNft={balanceOfNft}
+            isEligibleForTokenGating={isEligibleForTokenGating}
+            isTokenGated={isTokenGated}
+            whitelistUserData={whitelistUserData}
+            isSigned={isSigned}
+            isW8BenSigned={isW8BenSigned}
+          />
         </div>
-        <SocialButtons isDeposit={true} data={clubInfo} />
+
+        <div>
+          <SocialButtons isDeposit={true} data={clubInfo} />
+        </div>
       </section>
 
       <section className={classes.rightContainer}>

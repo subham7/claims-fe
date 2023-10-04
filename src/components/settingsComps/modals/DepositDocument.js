@@ -50,8 +50,7 @@ const DepositDocument = ({ updateDocumentLink, onClose, loading }) => {
       depositTime: yup.date().required("Deposit time is required"),
     }),
     onSubmit: (value) => {
-      console.log(value);
-      //   updateDocumentLink(new Date(value.depositTime).getTime() / 1000);
+      updateDocumentLink(value.documentLink);
       onClose();
     },
   });
@@ -68,19 +67,6 @@ const DepositDocument = ({ updateDocumentLink, onClose, loading }) => {
         </Typography>
 
         <form style={{ width: "100%" }}>
-          {/* <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DateTimePicker
-              sx={{
-                zIndex: (theme) => theme.zIndex.drawer + 9000,
-                width: "100%",
-              }}
-              value={formik.values.depositTime}
-              minDateTime={dayjs(Date.now())}
-              onChange={(value) => {
-                formik.setFieldValue("depositTime", value);
-              }}
-            />
-          </LocalizationProvider> */}
           <TextField
             name="documentLink"
             label="https://"

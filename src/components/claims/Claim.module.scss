@@ -3,7 +3,7 @@
 .main {
   display: flex;
   gap: 120px;
-  margin-bottom: 30px;
+  padding-bottom: 100px;
 
   .leftContainer {
     flex: 0.45;
@@ -157,11 +157,13 @@
 
       position: relative;
       height: 200px;
+      z-index: -10;
 
       img {
         border-radius: 8px;
         margin-bottom: 12px;
         object-fit: cover;
+        position: relative;
         width: 100%;
         height: 100%;
       }
@@ -263,4 +265,5 @@
   height: 600px;
   border-radius: 20px;
   overflow: hidden;
+  z-index: -1;
 }

@@ -75,7 +75,7 @@ const Header = ({
         <div
           onClick={() => {
             window.open(
-              `https://polygonscan.com/address/${daoAddress}`,
+              `${CHAIN_CONFIG[networkId].blockExplorerUrl}/address/${daoAddress}`,
               "_blank",
             );
           }}

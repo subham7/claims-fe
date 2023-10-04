@@ -95,7 +95,11 @@ const ListClaims = () => {
           networkId,
         );
 
-        if (claims.length) setClaimData(claims?.reverse());
+        if (claims.length) {
+          setClaimData(claims?.reverse());
+        } else {
+          setClaimData([]);
+        }
       } catch (error) {
         console.log(error);
       }

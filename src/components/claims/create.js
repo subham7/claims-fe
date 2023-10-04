@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useFormik } from "formik";
-import { Grid, FormHelperText, Alert } from "@mui/material";
+import { Grid, FormHelperText } from "@mui/material";
 import ClaimStep1 from "../claimsPageComps/ClaimStep1";
 import ClaimStep2 from "../claimsPageComps/ClaimStep2";
 import dayjs from "dayjs";
@@ -20,6 +20,7 @@ import { getUserTokenData } from "utils/helper";
 import { CHAIN_CONFIG, ZERO_ADDRESS, ZERO_MERKLE_ROOT } from "utils/constants";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 import useDropsContractMethods from "hooks/useDropsContracMethods";
+import CustomAlert from "@components/common/CustomAlert";
 
 const useStyles = makeStyles({
   container: {
@@ -36,7 +37,7 @@ const CreateClaim = () => {
   const [showError, setShowError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [finish, setFinish] = useState(false);
-  const [errMsg, setErrMsg] = useState("");
+  const [message, setMessage] = useState("");
   const [loadingTokens, setLoadingTokens] = useState(false);
   const [snapshotMerkleData, setSnapshotMerkleData] = useState([]);
 
@@ -187,7 +188,7 @@ const CreateClaim = () => {
 
           if (data.blockNumber > 0 && data.blockNumber > blockData.block) {
             showMessageHandler(setShowError);
-            setErrMsg("Invalid block number!");
+            setMessage("Invalid block number!");
             setLoading(false);
             return;
           }
@@ -207,7 +208,7 @@ const CreateClaim = () => {
           setSnapshotMerkleData(snapshotData);
         } catch (error) {
           console.log(error);
-          setErrMsg("Unable to fetch snapshot data");
+          setMessage("Unable to fetch snapshot data");
           showMessageHandler(setShowError);
           setLoading(false);
         }
@@ -334,13 +335,13 @@ const CreateClaim = () => {
             setFinish(true);
             showMessageHandler(setFinish);
             setTimeout(() => {
-              router.push(`/claims/${networkId}`);
+              router.push(`/claims/`);
             }, 3000);
           } catch (err) {
             console.log(err);
             setLoading(false);
             showMessageHandler(setShowError);
-            setErrMsg(err.message);
+            setMessage(err.message);
           }
         };
 
@@ -437,13 +438,13 @@ const CreateClaim = () => {
             setFinish(true);
             showMessageHandler(setFinish);
             setTimeout(() => {
-              router.push(`/claims/${networkId}`);
+              router.push(`/claims/`);
             }, 3000);
           } catch (err) {
             console.log(err);
             setLoading(false);
             showMessageHandler(setShowError);
-            setErrMsg(err.message);
+            setMessage(err.message);
           }
         };
         loadClaimsContractFactoryData_CSV();
@@ -501,33 +502,16 @@ const CreateClaim = () => {
           )}
         </Grid>
 
-        {showError && (
-          <Alert
-            severity="error"
-            sx={{
-              width: "350px",
-              position: "fixed",
-              bottom: "30px",
-              right: "20px",
-              borderRadius: "8px",
-            }}>
-            {errMsg}
-          </Alert>
-        )}
+        {showError ? (
+          <CustomAlert severity={false} alertMessage={message} />
+        ) : null}
 
-        {finish && (
-          <Alert
-            severity="success"
-            sx={{
-              width: "350px",
-              position: "fixed",
-              bottom: "30px",
-              right: "20px",
-              borderRadius: "8px",
-            }}>
-            {"Airdrop created successfully"}
-          </Alert>
-        )}
+        {finish ? (
+          <CustomAlert
+            severity={true}
+            alertMessage={"Airdrop created successfully"}
+          />
+        ) : null}
       </div>
     </>
   );

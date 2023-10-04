@@ -120,11 +120,7 @@ export function returnRemainingTime(epochTime) {
     : 0;
 }
 
-export const showWrongNetworkModal = (
-  walletAddress,
-  networkId,
-  routeNetworkId,
-) => {
+export const showWrongNetworkModal = (networkId, routeNetworkId) => {
   if (
     routeNetworkId &&
     routeNetworkId !== networkId &&
@@ -132,10 +128,6 @@ export const showWrongNetworkModal = (
   ) {
     return <WrongNetworkModal chainId={routeNetworkId} />;
   }
-
-  return walletAddress && !CHAIN_CONFIG[networkId] ? (
-    <WrongNetworkModal />
-  ) : null;
 };
 
 export const getAllEntities = async (
@@ -291,10 +283,10 @@ export const csvToObjectForMintGT = (csvString) => {
   return { addresses, amounts };
 };
 
-export const shortAddress = (address) => {
+export const shortAddress = (address, length = 6) => {
   if (address) {
     return (
-      address?.substring(0, 6) +
+      address?.substring(0, length) +
       "....." +
       address?.substring(address.length - 4)
     );
@@ -313,4 +305,15 @@ export const uploadFileToAWS = async (file) => {
 
     reader.readAsArrayBuffer(file);
   });
+};
+
+export const generateRandomString = (length) => {
+  const chars =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let result = "";
+  for (let i = 0; i < length; i++) {
+    const randomIndex = Math.floor(Math.random() * chars.length);
+    result += chars[randomIndex];
+  }
+  return result;
 };

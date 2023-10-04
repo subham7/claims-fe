@@ -64,13 +64,7 @@ const Members = ({ daoAddress }) => {
   const handleAddressClick = (event, address) => {
     event.preventDefault();
     window.open(
-      `https://${
-        networkId === "0x5"
-          ? "goerli.etherscan.io/"
-          : networkId === "0x89"
-          ? "polygonscan.com"
-          : ""
-      }/address/${address}`,
+      `${CHAIN_CONFIG[networkId].blockExplorerUrl}/address/${address}`,
     );
   };
   useEffect(() => {

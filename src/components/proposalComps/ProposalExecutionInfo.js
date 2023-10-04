@@ -6,7 +6,7 @@ import {
   convertFromWeiGovernance,
   convertToWeiGovernance,
 } from "../../utils/globalFunctions";
-import { extractNftAdressAndId } from "utils/helper";
+import { extractNftAdressAndId, shortAddress } from "utils/helper";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 
 const useStyles = makeStyles({
@@ -203,13 +203,7 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
                       justifyContent: "flex-end",
                     }}>
                     <Typography className={classes.listFont2Colourless}>
-                      {fetched
-                        ? mintGTAddresses[0].slice(0, 6) +
-                          "...." +
-                          mintGTAddresses[0].slice(
-                            mintGTAddresses[0].length - 4,
-                          )
-                        : null}
+                      {fetched ? shortAddress(mintGTAddresses[0]) : null}
                     </Typography>
                   </Grid>
                 </Grid>
@@ -303,13 +297,7 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
                         Recipient
                       </Typography>
                       <Typography className={classes.listFont2Colourless}>
-                        {fetched
-                          ? customTokenAddresses[0].slice(0, 6) +
-                            "...." +
-                            customTokenAddresses[0].slice(
-                              customTokenAddresses[0].length - 4,
-                            )
-                          : null}
+                        {fetched ? shortAddress(customTokenAddresses[0]) : null}
                       </Typography>
                     </Grid>
                   </Grid>
@@ -330,11 +318,7 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
                         Nft Address
                       </Typography>
                       <Typography className={classes.listFont2Colourless}>
-                        {fetched
-                          ? customNft.slice(0, 6) +
-                            "...." +
-                            customNft.slice(customNft.length - 4)
-                          : null}
+                        {fetched ? shortAddress(customNft) : null}
                       </Typography>
                     </Grid>
                     <Grid item xs={12} md={4}>
@@ -350,13 +334,7 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
                         Recipient
                       </Typography>
                       <Typography className={classes.listFont2Colourless}>
-                        {fetched
-                          ? customTokenAddresses[0].slice(0, 6) +
-                            "...." +
-                            customTokenAddresses[0].slice(
-                              customTokenAddresses[0].length - 4,
-                            )
-                          : null}
+                        {fetched ? shortAddress(customTokenAddresses[0]) : null}
                       </Typography>
                     </Grid>
                   </Grid>
@@ -377,11 +355,7 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
                         Owner Address
                       </Typography>
                       <Typography className={classes.listFont2Colourless}>
-                        {fetched
-                          ? ownerAddress.slice(0, 6) +
-                            "...." +
-                            ownerAddress.slice(ownerAddress.length - 4)
-                          : null}
+                        {fetched ? shortAddress(ownerAddress) : null}
                       </Typography>
                     </Grid>
                   </Grid>
@@ -431,9 +405,9 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
                         NFT Address
                       </Typography>
                       <Typography className={classes.listFont2Colourless}>
-                        {extractNftAdressAndId(nftLink).nftAddress.slice(0, 6)}
-                        ....
-                        {extractNftAdressAndId(nftLink).nftAddress.slice(-6)}
+                        {shortAddress(
+                          extractNftAdressAndId(nftLink).nftAddress,
+                        )}
                       </Typography>
                     </Grid>
                     <Grid item xs={12} md={4}>
