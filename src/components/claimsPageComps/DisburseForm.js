@@ -71,23 +71,7 @@ const DisburseForm = ({ formik, tokensInWallet, isLoading }) => {
       </Typography>
 
       <form className={classes.form}>
-        <Typography className={classes.title}>Create a new disburse</Typography>
-
-        {/* Description of claim page */}
-        <Typography className={classes.label}>
-          Add a one line description *
-        </Typography>
-        <TextField
-          variant="outlined"
-          name="description"
-          id="description"
-          value={formik.values.description}
-          onChange={formik.handleChange}
-          error={
-            formik.touched.description && Boolean(formik.errors.description)
-          }
-          helperText={formik.touched.description && formik.errors.description}
-        />
+        <Typography className={classes.title}>Disburse Tokens</Typography>
 
         {/* Choose Token */}
         <Typography className={classes.label}>

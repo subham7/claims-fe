@@ -69,7 +69,6 @@ const CreateDisburse = () => {
 
   const disburseForm = useFormik({
     initialValues: {
-      description: "",
       selectedToken: "",
       disburseList: "",
     },
