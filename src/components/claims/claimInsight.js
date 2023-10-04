@@ -13,7 +13,7 @@ import {
   convertToWeiGovernance,
 } from "utils/globalFunctions";
 import { useNetwork } from "wagmi";
-import useDropsContractMethods from "hooks/useDropsContracMethods";
+import useDropsContractMethods from "hooks/useDropsContractMethods";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 import { queryDropDetailsFromSubgraph } from "utils/dropsSubgraphHelper";
 import { createSnapShot } from "api/claims";
