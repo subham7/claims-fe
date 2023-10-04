@@ -40,8 +40,8 @@ const ProposalCard = ({ proposal, daoAddress }) => {
           customToken,
           depositToken,
           withdrawToken,
+          stakeToken,
         } = proposal?.commands[0];
-
         if (tokenType === "erc20" || executionId !== 1) {
           decimal = await getDecimals(
             executionId === 0
@@ -54,6 +54,8 @@ const ProposalCard = ({ proposal, daoAddress }) => {
               ? depositToken
               : executionId === 15
               ? withdrawToken
+              : executionId === 17
+              ? stakeToken
               : "",
           );
         }
@@ -69,8 +71,11 @@ const ProposalCard = ({ proposal, daoAddress }) => {
             ? depositToken
             : executionId === 15
             ? withdrawToken
+            : executionId === 17
+            ? stakeToken
             : "",
         );
+        if (executionId === 17) console.log("symbol", symbol);
 
         setTokenDetails({
           decimals: decimal,

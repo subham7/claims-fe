@@ -24,6 +24,7 @@ import { useNetwork } from "wagmi";
 import { CHAIN_CONFIG } from "utils/constants";
 import UploadW8Ben from "./modals/UploadW8Ben";
 import CustomAlert from "@components/common/CustomAlert";
+import { fetchClubByDaoAddress } from "api/club";
 
 const AdditionalSettings = ({
   tokenType,
@@ -504,7 +505,6 @@ const AdditionalSettings = ({
             </Grid>
           </Grid>
         </Grid>
-        <Divider />
       </Stack>
 
       <Backdrop sx={{ color: "#000", zIndex: 10000000 }} open={loading}>
