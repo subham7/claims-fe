@@ -39,6 +39,13 @@ export const CHAIN_CONFIG = {
       "0x8f3cf7ad23cd3cadbd9735aff958023239c6a063",
       "0xa3fa99a148fa48d14ed51d610c367c61876997f1",
     ],
+    stargateRouterAddress: "0x45A01E4e04F14f7A4a6702c74187c5F6222033cd",
+    stargatePoolIds: {
+      "0x2791bca1f2de4661ed88a30c99a7a9449aa84174": 1,
+      "0xc2132d05d31c914a87c6611c10748aeb04b58e8f": 2,
+      "0x8f3cf7ad23cd3cadbd9735aff958023239c6a063": 3,
+      "0xa3fa99a148fa48d14ed51d610c367c61876997f1": 16,
+    },
   },
   "0x5": {
     chainName: "Goerli Testnet",
