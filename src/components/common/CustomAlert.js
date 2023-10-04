@@ -6,7 +6,7 @@ const CustomAlert = ({ severity, alertMessage }) => {
     <Alert
       severity={severity ? "success" : "error"}
       sx={{
-        width: "250px",
+        width: "300px",
         position: "fixed",
         bottom: "30px",
         right: "20px",

@@ -440,9 +440,6 @@ export const getProposalValidationSchema = ({
 };
 
 export const disburseFormValidation = yup.object({
-  description: yup
-    .string("Enter one-liner description")
-    .required("description is required"),
   selectedToken: yup.object({}).required("Token is required"),
   disburseList: yup.string().required("Disburse info required"),
 });

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useFormik } from "formik";
-import { Grid, FormHelperText } from "@mui/material";
+import { Grid, Backdrop, CircularProgress } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { useRouter } from "next/router";
 import { disburseFormValidation } from "../createClubComps/ValidationSchemas";
@@ -12,6 +12,7 @@ import DisburseForm from "@components/claimsPageComps/DisburseForm";
 import { convertToWeiGovernance } from "utils/globalFunctions";
 import useDropsContractMethods from "hooks/useDropsContractMethods";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
+import CustomAlert from "@components/common/CustomAlert";
 
 const useStyles = makeStyles({
   container: {
@@ -24,10 +25,10 @@ const useStyles = makeStyles({
 
 const CreateDisburse = () => {
   const [tokensInWallet, setTokensInWallet] = useState(null);
-  const [showError, setShowError] = useState(null);
-  const [error, setError] = useState(null);
+  const [message, setMessage] = useState("");
+  const [showMessage, setShowMessage] = useState(false);
   const [loading, setLoading] = useState(false);
-
+  const [isSuccessFull, setIsSuccessFull] = useState(false);
   const [loadingTokens, setLoadingTokens] = useState(false);
 
   const classes = useStyles();
@@ -75,6 +76,7 @@ const CreateDisburse = () => {
     validationSchema: disburseFormValidation,
     onSubmit: async (values) => {
       try {
+        setLoading(true);
         const { selectedToken } = values;
         const disburseAddresses = [];
         const disburseAmounts = [];
@@ -87,14 +89,20 @@ const CreateDisburse = () => {
               convertToWeiGovernance(Number(amount), selectedToken.decimals),
             );
           } else {
-            setShowError(true);
-            setError("Invalid disburse list format");
+            setLoading(false);
+            showMessageHandler();
+            setIsSuccessFull(false);
+            setMessage("Invalid disburse list format");
+            return;
           }
         });
 
         if (disburseAddresses.length !== disburseAmounts.length) {
-          setShowError(true);
-          setError("Invalid disburse list format");
+          setLoading(false);
+          showMessageHandler();
+          setIsSuccessFull(false);
+          setMessage("Invalid disburse list format");
+          return;
         }
 
         const totalAmount = disburseAmounts.reduce(
@@ -103,9 +111,13 @@ const CreateDisburse = () => {
         );
 
         if (totalAmount > Number(selectedToken.balance)) {
+          setLoading(false);
           showMessageHandler();
-          setShowError(true);
-          setError("Your wallet does not have enough balance for the disburse");
+          setIsSuccessFull(false);
+          setMessage(
+            "Your wallet does not have enough balance for the disburse",
+          );
+          return;
         }
 
         await approveDeposit(
@@ -132,17 +144,18 @@ const CreateDisburse = () => {
         }, 1000);
       } catch (e) {
         showMessageHandler();
-        setShowError(true);
-        setError("Disburse failed! Please try again.");
+        setIsSuccessFull(false);
+        setLoading(false);
+        setMessage("Disburse failed! Please try again.");
         console.error(e);
       }
     },
   });
 
-  const showMessageHandler = (setState) => {
-    setState(true);
+  const showMessageHandler = () => {
+    setShowMessage(true);
     setTimeout(() => {
-      setState(false);
+      setShowMessage(false);
     }, 4000);
   };
 
@@ -157,14 +170,17 @@ const CreateDisburse = () => {
               isLoading={loadingTokens}
             />
           </Grid>
-          {disburseForm.errors.submit && (
-            <Grid item xs={12}>
-              <FormHelperText error>
-                {disburseForm.errors.submit}
-              </FormHelperText>
-            </Grid>
-          )}
         </Grid>
+
+        {showMessage && (
+          <CustomAlert alertMessage={message} severity={isSuccessFull} />
+        )}
+
+        <Backdrop
+          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+          open={loading}>
+          <CircularProgress />
+        </Backdrop>
       </div>
     </>
   );
