@@ -885,6 +885,73 @@ export const proposalFormData = ({
           </Grid>
         </>
       );
+    case 17:
+      return (
+        <>
+          <Grid
+            container
+            direction={"column"}
+            ml={3}
+            mt={2}
+            // mb={}
+            sx={{ marginLeft: "0 !important" }}>
+            <Typography variant="proposalBody">Token to be staked</Typography>
+            <Select
+              sx={{ marginTop: "0.5rem" }}
+              value={formik.values.aaveWithdrawToken}
+              onChange={(e) =>
+                formik.setFieldValue(
+                  "stargateStakeToken",
+                  filteredTokens.find(
+                    (token) => token.symbol === e.target.value,
+                  ).address,
+                )
+              }
+              renderValue={(selected) => {
+                if (selected.length === 0) {
+                  return "Select a command";
+                }
+                return selected;
+              }}
+              inputProps={{ "aria-label": "Without label" }}
+              name="aaveDepositToken"
+              id="aaveDepositToken">
+              {filteredTokens.map((token) => (
+                <MenuItem key={token.symbol} value={token.symbol}>
+                  {token.symbol}
+                </MenuItem>
+              ))}
+            </Select>
+          </Grid>
+          <Grid
+            container
+            direction={"column"}
+            ml={3}
+            mt={2}
+            sx={{ marginLeft: "0 !important" }}>
+            <Typography variant="proposalBody">Amount of Tokens *</Typography>
+            <TextField
+              variant="outlined"
+              className={classes.textField}
+              placeholder="0"
+              type="number"
+              name="stargateStakeAmount"
+              id="stargateStakeAmount"
+              value={formik.values.stargateStakeAmount}
+              onChange={formik.handleChange}
+              error={
+                formik.touched.stargateStakeAmount &&
+                Boolean(formik.errors.stargateStakeAmount)
+              }
+              helperText={
+                formik.touched.stargateStakeAmount &&
+                formik.errors.stargateStakeAmount
+              }
+              onWheel={(event) => event.target.blur()}
+            />
+          </Grid>
+        </>
+      );
   }
 };
 
@@ -1062,6 +1129,17 @@ export const getProposalCommands = async ({
         lensPostLink: values.lensPostLink,
         whitelistAddresses: mirrorAddresses,
         allowWhitelisting: true,
+      };
+    case 17:
+      tokenDecimal = tokenData.find(
+        (token) => token.address === values.stargateStakeToken,
+      ).decimals;
+      return {
+        stakeToken: values.stargateStakeToken,
+        stakeAmount: convertToWeiGovernance(
+          values.stargateStakeAmount,
+          tokenDecimal,
+        ),
       };
   }
 };

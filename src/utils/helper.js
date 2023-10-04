@@ -201,7 +201,7 @@ export const getUserTokenData = async (
       )
     : tokenData;
 
-  return filteredData.map((token) => {
+  return filteredData?.map((token) => {
     return {
       balance: token.balance,
       address: token.contract_address,

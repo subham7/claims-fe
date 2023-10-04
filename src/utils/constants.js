@@ -33,6 +33,12 @@ export const CHAIN_CONFIG = {
     aaveWrappedUsdcAddress: "0x625E7708f30cA75bfd92586e17077590C60eb4cD",
     aaveWrappedMaticAddress: "0x6d80113e533a2C0fe82EaBD35f1875DcEA89Ea97",
     blockExplorerUrl: "https://polygonscan.com",
+    stargateStakingAddresses: [
+      "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
+      "0xc2132d05d31c914a87c6611c10748aeb04b58e8f",
+      "0x8f3cf7ad23cd3cadbd9735aff958023239c6a063",
+      "0xa3fa99a148fa48d14ed51d610c367c61876997f1",
+    ],
   },
   "0x5": {
     chainName: "Goerli Testnet",
@@ -218,6 +224,8 @@ export const proposalActionCommands = {
   14: "Deposit tokens in AAVE pool",
   15: "Withdraw tokens from AAVE pool",
   16: "Whitelist with lens post's mirror",
+  17: "Stake tokens through stargate",
+  18: "Unstake tokens through stargate",
 };
 
 export const contractNetworks = {

@@ -436,6 +436,44 @@ export const getProposalValidationSchema = ({
           return true;
         },
       ),
+    stargateStakeToken: yup
+      .string("Enter stargate staking token")
+      .when("actionCommand", {
+        is: 17,
+        then: () =>
+          yup
+            .string("Enter stargate staking token")
+            .required("Token is required"),
+      }),
+    stargateStakeAmount: yup
+      .number("Please enter amount")
+      .test(
+        "invalidStargateStakeAmt",
+        "Enter an amount less or equal to treasury balance",
+        async (value, context) => {
+          const { actionCommand, stargateStakeToken } = context.parent;
+
+          if (actionCommand === 17) {
+            try {
+              const balance = await getBalance(
+                stargateStakeToken,
+                gnosisAddress,
+              );
+              const decimals = await getDecimals(stargateStakeToken);
+              if (
+                Number(value) <=
+                  Number(convertFromWeiGovernance(balance, decimals)) &&
+                Number(value) > 0
+              ) {
+                return true;
+              } else return false;
+            } catch (error) {
+              return false;
+            }
+          }
+          return true;
+        },
+      ),
   });
 };
 
