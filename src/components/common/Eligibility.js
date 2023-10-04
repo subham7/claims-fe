@@ -1,7 +1,7 @@
 import { Typography } from "@mui/material";
 import React from "react";
 import { convertFromWeiGovernance } from "utils/globalFunctions";
-import classes from "./Claim.module.scss";
+import classes from "../claims/Claim.module.scss";
 
 const Eligibility = ({
   contractData,

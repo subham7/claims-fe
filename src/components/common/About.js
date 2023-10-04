@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import classes from "./Claim.module.scss";
+import classes from "../claims/Claim.module.scss";
 import ReactHtmlParser from "react-html-parser";
 import { BiSolidDownArrow, BiSolidUpArrow } from "react-icons/bi";
 

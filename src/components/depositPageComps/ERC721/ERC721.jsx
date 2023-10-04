@@ -1,5 +1,4 @@
-import ClaimActivity from "@components/claims/ClaimActivity";
-import Eligibility from "@components/claims/Eligibility";
+import Eligibility from "@components/common/Eligibility";
 import SocialButtons from "@components/common/SocialButtons";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
@@ -7,8 +6,8 @@ import DepositPreRequisites from "../DepositPreRequisites";
 import DepositProgress from "../ERC20/DepositProgress";
 import classes from "../../../components/claims/Claim.module.scss";
 import { useSelector } from "react-redux";
-import Header from "@components/claims/Header";
-import About from "@components/claims/About";
+import Header from "@components/common/Header";
+import About from "@components/common/About";
 import { getUploadedNFT } from "api/assets";
 import { convertFromWeiGovernance, getImageURL } from "utils/globalFunctions";
 import { queryLatestMembersFromSubgraph } from "utils/stationsSubgraphHelper";
@@ -21,6 +20,7 @@ import { useRouter } from "next/router";
 import { getDocumentsByClubId } from "api/document";
 import CustomAlert from "@components/common/CustomAlert";
 import BackdropLoader from "../../common/BackdropLoader";
+import Activity from "@components/common/Activity";
 
 const ERC721 = ({
   daoAddress,
@@ -294,7 +294,7 @@ const ERC721 = ({
           />
         )}
 
-        <ClaimActivity
+        <Activity
           isDeposit={true}
           activityDetails={members}
           tokenDetails={tokenDetails}

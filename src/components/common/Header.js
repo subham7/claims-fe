@@ -1,6 +1,6 @@
 import { Skeleton, Typography } from "@mui/material";
 import React from "react";
-import classes from "./Claim.module.scss";
+import classes from "../claims/Claim.module.scss";
 import { formatEpochTime } from "utils/helper";
 
 const Header = ({

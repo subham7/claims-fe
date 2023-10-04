@@ -3,7 +3,7 @@ import React from "react";
 import { MetaMaskAvatar } from "react-metamask-avatar";
 import { convertFromWeiGovernance } from "utils/globalFunctions";
 import { returnRemainingTime, shortAddress } from "utils/helper";
-import classes from "./Claim.module.scss";
+import classes from "../claims/Claim.module.scss";
 
 const ClaimerActivity = ({ activity, tokenDetails }) => (
   <div className={classes.activity}>
@@ -41,11 +41,7 @@ const DepositorActivity = ({ member }) => (
   </div>
 );
 
-const ClaimActivity = ({
-  activityDetails,
-  tokenDetails,
-  isDeposit = false,
-}) => {
+const Activity = ({ activityDetails, tokenDetails, isDeposit = false }) => {
   const Activities = activityDetails.length ? (
     isDeposit ? (
       activityDetails.map((member) => (
@@ -72,4 +68,4 @@ const ClaimActivity = ({
   );
 };
 
-export default ClaimActivity;
+export default Activity;

@@ -1,7 +1,6 @@
-import About from "@components/claims/About";
-import ClaimActivity from "@components/claims/ClaimActivity";
-import Eligibility from "@components/claims/Eligibility";
-import Header from "@components/claims/Header";
+import About from "@components/common/About";
+import Eligibility from "@components/common/Eligibility";
+import Header from "@components/common/Header";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
@@ -26,6 +25,7 @@ import DepositProgress from "./DepositProgress";
 import CustomAlert from "@components/common/CustomAlert";
 import { getDocumentsByClubId } from "api/document";
 import BackdropLoader from "@components/common/BackdropLoader";
+import Activity from "@components/common/Activity";
 
 const ERC20 = ({
   clubInfo,
@@ -310,7 +310,7 @@ const ERC20 = ({
           />
         )}
 
-        <ClaimActivity
+        <Activity
           isDeposit={true}
           activityDetails={members}
           tokenDetails={tokenDetails}

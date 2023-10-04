@@ -15,15 +15,15 @@ import classes from "./Claim.module.scss";
 import useDropsContractMethods from "hooks/useDropsContracMethods";
 import { CircularProgress, Skeleton, Typography } from "@mui/material";
 import { getClaimDetails, getUserProofAndBalance } from "api/claims";
-import ClaimActivity from "./ClaimActivity";
-import Eligibility from "./Eligibility";
-import Header from "./Header";
+import Eligibility from "../common/Eligibility";
+import Header from "../common/Header";
 import ClaimInput from "./ClaimInput";
 import Image from "next/image";
-import About from "./About";
+import About from "../common/About";
 import { ZERO_ADDRESS, ZERO_MERKLE_ROOT } from "utils/constants";
 import SocialButtons from "../common/SocialButtons";
 import CustomAlert from "@components/common/CustomAlert";
+import Activity from "../common/Activity";
 
 const Claim = ({ claimAddress }) => {
   const [claimsData, setClaimsData] = useState();
@@ -489,7 +489,7 @@ const Claim = ({ claimAddress }) => {
           <Eligibility contractData={claimsData} tokenDetails={tokenDetails} />
         )}
 
-        <ClaimActivity
+        <Activity
           activityDetails={activityDetails}
           tokenDetails={tokenDetails}
         />
