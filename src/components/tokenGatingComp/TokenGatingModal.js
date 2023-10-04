@@ -6,12 +6,7 @@ import * as yup from "yup";
 import { TokenGatingModalStyles } from "./TokenGatingModalStyles";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 import CustomAlert from "@components/common/CustomAlert";
-
-const Backdrop = ({ onClick }) => {
-  const classes = TokenGatingModalStyles();
-
-  return <div onClick={onClick} className={classes.backdrop}></div>;
-};
+import BackdropLoader from "@components/common/BackdropLoader";
 
 const TokenGatingModal = ({ closeModal, chooseTokens }) => {
   const [notValid, setNotValid] = useState(false);
@@ -68,51 +63,54 @@ const TokenGatingModal = ({ closeModal, chooseTokens }) => {
 
   return (
     <>
-      <Backdrop onClick={closeModal} />
-      <div className={classes.container}>
-        <form className={classes.form}>
-          <div>
-            <Typography className={classes.label}>Select token</Typography>
-            <TextField
-              name="address"
-              id="address"
-              type="text"
-              placeholder="Paste address here"
-              value={formik.values.address}
-              onChange={formik.handleChange}
-              error={formik.touched.address && Boolean(formik.errors.address)}
-              helperText={formik.touched.address && formik.errors.address}
-            />
-          </div>
+      <BackdropLoader isOpen={true} forLoading={false}>
+        <div className={classes.container}>
+          <form className={classes.form}>
+            <div>
+              <Typography className={classes.label}>Select token</Typography>
+              <TextField
+                name="address"
+                id="address"
+                type="text"
+                placeholder="Paste address here"
+                value={formik.values.address}
+                onChange={formik.handleChange}
+                error={formik.touched.address && Boolean(formik.errors.address)}
+                helperText={formik.touched.address && formik.errors.address}
+              />
+            </div>
 
-          <div>
-            <Typography className={classes.label}>
-              Minimum amount of tokens
-            </Typography>
-            <TextField
-              name="noOfTokens"
-              id="noOfTokens"
-              type={"number"}
-              placeholder="Eg. 100"
-              value={formik.values.noOfTokens}
-              onChange={formik.handleChange}
-              error={
-                formik.touched.noOfTokens && Boolean(formik.errors.noOfTokens)
-              }
-              helperText={formik.touched.noOfTokens && formik.errors.noOfTokens}
-            />
-          </div>
+            <div>
+              <Typography className={classes.label}>
+                Minimum amount of tokens
+              </Typography>
+              <TextField
+                name="noOfTokens"
+                id="noOfTokens"
+                type={"number"}
+                placeholder="Eg. 100"
+                value={formik.values.noOfTokens}
+                onChange={formik.handleChange}
+                error={
+                  formik.touched.noOfTokens && Boolean(formik.errors.noOfTokens)
+                }
+                helperText={
+                  formik.touched.noOfTokens && formik.errors.noOfTokens
+                }
+              />
+            </div>
 
-          <div className={classes.btns}>
-            <Button className={classes.cancelBtn} onClick={closeModal}>
-              Cancel
-            </Button>
-            <Button className={classes.addBtn} onClick={formik.handleSubmit}>
-              Add
-            </Button>
-          </div>
-        </form>
-      </div>
+            <div className={classes.btns}>
+              <Button className={classes.cancelBtn} onClick={closeModal}>
+                Cancel
+              </Button>
+              <Button className={classes.addBtn} onClick={formik.handleSubmit}>
+                Add
+              </Button>
+            </div>
+          </form>
+        </div>
+      </BackdropLoader>
 
       {notValid ? (
         <CustomAlert

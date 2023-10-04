@@ -1,18 +1,9 @@
+import BackdropLoader from "@components/common/BackdropLoader";
 import { Link } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import React from "react";
 
 const useStyles = makeStyles({
-  backdrop: {
-    position: "fixed",
-    height: "100vh",
-    width: "100vw",
-    top: 0,
-    left: 0,
-    background: "#000000",
-    opacity: 0.6,
-    zIndex: 2000,
-  },
   modal: {
     width: "570px",
     background: "#0F0F0F",
@@ -49,29 +40,26 @@ const useStyles = makeStyles({
     fontSize: "16px",
   },
 });
-const Backdrop = () => {
-  const classes = useStyles();
-  return <div className={classes.backdrop}></div>;
-};
 
 const ErrorModal = ({ isSignRejected = false, isError = false }) => {
   const classes = useStyles();
   return (
     <>
-      <Backdrop />
-      <div className={classes.modal}>
-        <div>
-          <h2 className={classes.title}>Error</h2>
-          <p className={classes.subtitle}>
-            {isSignRejected && "Metamask Signature rejected by user"}
-            {isError && "Some unknown error occurred."}
-          </p>
+      <BackdropLoader isOpen={true} forLoading={false}>
+        <div className={classes.modal}>
+          <div>
+            <h2 className={classes.title}>Error</h2>
+            <p className={classes.subtitle}>
+              {isSignRejected && "Metamask Signature rejected by user"}
+              {isError && "Some unknown error occurred."}
+            </p>
 
-          <Link href="/">
-            <button className={classes.btn}>Go to homepage</button>
-          </Link>
+            <Link href="/">
+              <button className={classes.btn}>Go to homepage</button>
+            </Link>
+          </div>
         </div>
-      </div>
+      </BackdropLoader>
     </>
   );
 };

@@ -7,6 +7,7 @@ import dayjs from "dayjs";
 import { useFormik } from "formik";
 import React from "react";
 import * as yup from "yup";
+import BackdropLoader from "@components/common/BackdropLoader";
 
 const useStyles = makeStyles({
   container: {
@@ -22,23 +23,7 @@ const useStyles = makeStyles({
     transform: "translateX(-50%) translateY(-50%)",
     zIndex: "1",
   },
-  backdrop: {
-    position: "fixed",
-    top: "0",
-    left: "0",
-    height: "100vh",
-    width: "100vw",
-    background: "#000",
-    opacity: "70%",
-    zIndex: "1",
-  },
 });
-
-const CustomBackdrop = ({ onClick }) => {
-  const classes = useStyles();
-
-  return <div onClick={onClick} className={classes.backdrop}></div>;
-};
 
 const DepositDeadline = ({ updateDepositTimeHandler, onClose, loading }) => {
   // const [depositTime, setDepositTime] = useState(dayjs(Date.now() + 300000));
@@ -60,40 +45,41 @@ const DepositDeadline = ({ updateDepositTimeHandler, onClose, loading }) => {
 
   return (
     <>
-      <CustomBackdrop onClick={onClose} />
-      <div className={classes.container}>
-        <Typography
-          sx={{ textAlign: "left", fontSize: "24px", marginBottom: "8px" }}>
-          Update Deposit Time
-        </Typography>
+      <BackdropLoader isOpen={true} forLoading={false}>
+        <div className={classes.container}>
+          <Typography
+            sx={{ textAlign: "left", fontSize: "24px", marginBottom: "8px" }}>
+            Update Deposit Time
+          </Typography>
 
-        <form style={{ width: "100%" }}>
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DateTimePicker
+          <form style={{ width: "100%" }}>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DateTimePicker
+                sx={{
+                  zIndex: (theme) => theme.zIndex.drawer + 9000,
+                  width: "100%",
+                }}
+                value={formik.values.depositTime}
+                minDateTime={dayjs(Date.now())}
+                onChange={(value) => {
+                  formik.setFieldValue("depositTime", value);
+                }}
+              />
+            </LocalizationProvider>
+
+            <Grid
               sx={{
-                zIndex: (theme) => theme.zIndex.drawer + 9000,
-                width: "100%",
-              }}
-              value={formik.values.depositTime}
-              minDateTime={dayjs(Date.now())}
-              onChange={(value) => {
-                formik.setFieldValue("depositTime", value);
-              }}
-            />
-          </LocalizationProvider>
-
-          <Grid
-            sx={{
-              justifyContent: "center",
-              display: "flex",
-              gap: "30px",
-              marginTop: "20px",
-            }}>
-            <Button onClick={formik.handleSubmit}>Update</Button>
-            <Button onClick={onClose}>Cancel</Button>
-          </Grid>
-        </form>
-      </div>
+                justifyContent: "center",
+                display: "flex",
+                gap: "30px",
+                marginTop: "20px",
+              }}>
+              <Button onClick={formik.handleSubmit}>Update</Button>
+              <Button onClick={onClose}>Cancel</Button>
+            </Grid>
+          </form>
+        </div>
+      </BackdropLoader>
     </>
   );
 };

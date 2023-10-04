@@ -1,10 +1,6 @@
+import BackdropLoader from "@components/common/BackdropLoader";
 import CustomAlert from "@components/common/CustomAlert";
-import {
-  Backdrop,
-  CircularProgress,
-  FormControlLabel,
-  Switch,
-} from "@mui/material";
+import { FormControlLabel, Switch } from "@mui/material";
 import useDropsContractMethods from "hooks/useDropsContracMethods";
 import React, { useEffect, useState } from "react";
 import { ClaimsInsightStyles } from "./claimsInsightStyles";
@@ -75,11 +71,7 @@ const ToggleClaim = ({ claimAddress, isActive }) => {
         <CustomAlert severity={isEnabled} alertMessage={message} />
       ) : null}
 
-      <Backdrop
-        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={loading}>
-        <CircularProgress />
-      </Backdrop>
+      <BackdropLoader isOpen={loading} />
     </div>
   );
 };

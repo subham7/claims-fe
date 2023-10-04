@@ -1,6 +1,5 @@
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import {
-  Backdrop,
   CircularProgress,
   Grid,
   Paper,
@@ -31,6 +30,7 @@ import { useNetwork } from "wagmi";
 import { queryPaginatedMembersFromSubgraph } from "utils/stationsSubgraphHelper";
 import { CHAIN_CONFIG } from "utils/constants";
 import { getDefaultProfile } from "utils/lensHelper";
+import BackdropLoader from "@components/common/BackdropLoader";
 
 const Members = ({ daoAddress }) => {
   const [membersData, setMembersData] = useState([]);
@@ -350,11 +350,7 @@ const Members = ({ daoAddress }) => {
         </Grid>
       </Grid>
 
-      <Backdrop
-        sx={{ color: "#000", zIndex: (theme) => theme?.zIndex?.drawer + 1 }}
-        open={loading}>
-        <CircularProgress />
-      </Backdrop>
+      <BackdropLoader isOpen={loading} />
     </>
   );
 };

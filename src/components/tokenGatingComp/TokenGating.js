@@ -1,4 +1,4 @@
-import { Backdrop, CircularProgress, Switch } from "@mui/material";
+import { Switch } from "@mui/material";
 import { Button } from "@components/ui";
 import React, { useCallback, useEffect, useState } from "react";
 import { TokenGatingStyle } from "./TokenGatingStyles";
@@ -13,6 +13,7 @@ import {
 import useAppContractMethods from "../../hooks/useAppContractMethods";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 import CustomAlert from "@components/common/CustomAlert";
+import BackdropLoader from "@components/common/BackdropLoader";
 
 const TokenGating = ({ daoAddress }) => {
   const [showTokenGatingModal, setShowTokenGatingModal] = useState(false);
@@ -333,9 +334,7 @@ const TokenGating = ({ daoAddress }) => {
         />
       )}
 
-      <Backdrop sx={{ color: "#fff", zIndex: 1000 }} open={loading}>
-        <CircularProgress />
-      </Backdrop>
+      <BackdropLoader isOpen={loading} />
 
       {showMessage ? (
         <CustomAlert

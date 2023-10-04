@@ -1,18 +1,26 @@
+import ClaimActivity from "@components/claims/ClaimActivity";
+import Eligibility from "@components/claims/Eligibility";
+import SocialButtons from "@components/common/SocialButtons";
+import Image from "next/image";
 import React, { useEffect, useState } from "react";
-import classes from "./ERC721.module.scss";
+import DepositPreRequisites from "../DepositPreRequisites";
+import DepositProgress from "../ERC20/DepositProgress";
+import classes from "../../../components/claims/Claim.module.scss";
 import { useSelector } from "react-redux";
-import { convertFromWeiGovernance, getImageURL } from "utils/globalFunctions";
-import dayjs from "dayjs";
-import About from "./About";
-import NFTimg from "./NFTimg";
-import PriceSection from "./PriceSection";
-import Header from "./Header";
-import { useRouter } from "next/router";
-import { useAccount } from "wagmi";
+import Header from "@components/claims/Header";
+import About from "@components/claims/About";
 import { getUploadedNFT } from "api/assets";
+import { convertFromWeiGovernance, getImageURL } from "utils/globalFunctions";
+import { queryLatestMembersFromSubgraph } from "utils/stationsSubgraphHelper";
+import dayjs from "dayjs";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 import useAppContractMethods from "hooks/useAppContractMethods";
+import { useAccount } from "wagmi";
+import Mint from "./Mint";
+import { useRouter } from "next/router";
+import { getDocumentsByClubId } from "api/document";
 import CustomAlert from "@components/common/CustomAlert";
+import BackdropLoader from "../../common/BackdropLoader";
 
 const ERC721 = ({
   daoAddress,
@@ -22,23 +30,28 @@ const ERC721 = ({
   daoDetails,
   whitelistUserData,
   networkId,
+  gatedTokenDetails,
+  depositConfig,
 }) => {
-  // const [clubData, setClubData] = useState([]);
-  const [count, setCount] = useState(1);
-  const [balanceOfNft, setBalanceOfNft] = useState();
-  const [erc20TokenDetails, setErc20TokenDetails] = useState({
-    tokenSymbol: "",
-    tokenName: "",
-    tokenDecimal: 0,
+  const [tokenDetails, setTokenDetails] = useState({
+    tokenDecimal: 6,
+    tokenSymbol: "USDC",
     userBalance: 0,
+    tokenName: name,
   });
-  const [loading, setLoading] = useState(false);
   const [active, setActive] = useState(false);
-  const [hasClaimed, setHasClaimed] = useState(false);
+  const [members, setMembers] = useState([]);
   const [showMessage, setShowMessage] = useState(false);
-  const [claimSuccessfull, setClaimSuccessfull] = useState(false);
-  const [imgUrl, setImgUrl] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [hasClaimed, setHasClaimed] = useState(false);
+  const [balanceOfNft, setBalanceOfNft] = useState();
   const [message, setMessage] = useState("");
+  const [imgUrl, setImgUrl] = useState("");
+  const [count, setCount] = useState(1);
+  const [claimSuccessfull, setClaimSuccessfull] = useState(false);
+  const [isSigned, setIsSigned] = useState(false);
+  const [isW8BenSigned, setIsW8BenSigned] = useState(false);
+  const [uploadedDocInfo, setUploadedDocInfo] = useState({});
 
   const day = Math.floor(new Date().getTime() / 1000.0);
   const day1 = dayjs.unix(day);
@@ -46,12 +59,13 @@ const ERC721 = ({
   const remainingDays = day2.diff(day1, "day");
   const remainingTimeInSecs = day2.diff(day1, "seconds");
 
+  const { address: walletAddress } = useAccount();
+  const router = useRouter();
+
   const { approveDeposit, getDecimals, getTokenSymbol, getBalance } =
     useCommonContractMethods();
 
   const { buyGovernanceTokenERC721DAO } = useAppContractMethods();
-
-  const { address: walletAddress } = useAccount();
 
   const FACTORY_CONTRACT_ADDRESS = useSelector((state) => {
     return state.gnosis.factoryContractAddress;
@@ -65,7 +79,17 @@ const ERC721 = ({
     return state.club.factoryData.depositTokenAddress;
   });
 
-  const router = useRouter();
+  const fetchActivities = async () => {
+    try {
+      const { users } = await queryLatestMembersFromSubgraph(
+        daoAddress,
+        networkId,
+      );
+      if (users) setMembers(users);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const fetchTokenDetails = async () => {
     try {
@@ -83,7 +107,7 @@ const ERC721 = ({
         const name = await getTokenSymbol(Deposit_Token_Address);
         const userBalance = await getBalance(Deposit_Token_Address);
 
-        setErc20TokenDetails({
+        setTokenDetails({
           tokenSymbol: symbol,
           tokenName: name,
           tokenDecimal: decimals,
@@ -110,9 +134,9 @@ const ERC721 = ({
         FACTORY_CONTRACT_ADDRESS,
         convertFromWeiGovernance(
           clubData?.pricePerToken,
-          erc20TokenDetails.tokenDecimal,
+          tokenDetails.tokenDecimal,
         ),
-        erc20TokenDetails.tokenDecimal,
+        tokenDetails.tokenDecimal,
       );
 
       await buyGovernanceTokenERC721DAO(
@@ -138,6 +162,35 @@ const ERC721 = ({
     }
   };
 
+  const handleIsSignedChange = (newValue) => {
+    setIsSigned(newValue);
+  };
+
+  const handleIsW8BenSignedChange = (newValue) => {
+    setIsW8BenSigned(newValue);
+  };
+
+  const fetchDocs = async () => {
+    try {
+      const docList = await getDocumentsByClubId(daoAddress.toLowerCase());
+
+      const document = docList.find(
+        (doc) => doc.docIdentifier === depositConfig?.uploadDocId,
+      );
+      setUploadedDocInfo(document);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchDocs();
+  }, [daoAddress, depositConfig?.uploadDocId]);
+
+  useEffect(() => {
+    fetchTokenDetails();
+  }, [Deposit_Token_Address, daoAddress]);
+
   useEffect(() => {
     const fetchSubgraphData = async () => {
       try {
@@ -159,8 +212,10 @@ const ERC721 = ({
   }, [clubData?.imgUrl, daoAddress, networkId]);
 
   useEffect(() => {
-    fetchTokenDetails();
-  }, [Deposit_Token_Address, daoAddress]);
+    if (daoAddress) {
+      fetchActivities();
+    }
+  }, [daoAddress, networkId]);
 
   useEffect(() => {
     if (new Date(day2).getTime() / 1000 >= new Date(day1).getTime() / 1000) {
@@ -171,23 +226,28 @@ const ERC721 = ({
   }, [day2, day1, daoDetails?.depositDeadline]);
 
   return (
-    <div className={classes.pageContainer}>
-      <div className={classes.mainContainer}>
-        <div className={classes.leftContainer}>
+    <main className={classes.main}>
+      <section className={classes.leftContainer}>
+        <div>
           <Header
-            isErc20={false}
-            active={active}
-            clubData={clubData}
-            clubInfo={clubInfo}
-            deadline={daoDetails.depositDeadline}
-            daoAddress={daoAddress}
+            contractData={clubData}
+            deadline={daoDetails?.depositDeadline}
+            tokenDetails={tokenDetails}
+            isDeposit={true}
+            isActive={active}
           />
-          <PriceSection
+          <DepositPreRequisites
+            uploadedDocInfo={uploadedDocInfo}
+            daoAddress={daoAddress}
+            onIsSignedChange={handleIsSignedChange}
+            onIsW8BenSignedChange={handleIsW8BenSignedChange}
+          />
+
+          <Mint
             claimNFTHandler={claimNFTHandler}
             clubData={clubData}
             count={count}
             hasClaimed={hasClaimed}
-            loading={loading}
             remainingDays={remainingDays}
             remainingTimeInSecs={remainingTimeInSecs}
             setCount={setCount}
@@ -195,20 +255,58 @@ const ERC721 = ({
             isEligibleForTokenGating={isEligibleForTokenGating}
             isTokenGated={isTokenGated}
             whitelistUserData={whitelistUserData}
-            nftMinted={daoDetails?.nftMinted}
+            isSigned={isSigned}
+            isW8BenSigned={isW8BenSigned}
           />
         </div>
-        <NFTimg imgUrl={imgUrl} />
-      </div>
 
-      {clubInfo?.bio ? (
-        <About bio={clubInfo?.bio} daoAddress={daoAddress} />
-      ) : null}
+        <div>
+          <SocialButtons isDeposit={true} data={clubInfo} />
+        </div>
+      </section>
+
+      <section className={classes.rightContainer}>
+        <div className={classes.bannerContainer}>
+          <div className={classes.nftContainer}>
+            <Image
+              src={imgUrl}
+              fill
+              alt="Banner Image"
+              className={classes.nftImage}
+            />
+          </div>
+        </div>
+
+        <DepositProgress
+          nftMinted={daoDetails?.nftMinted}
+          clubData={clubData}
+          tokenDetails={tokenDetails}
+        />
+
+        {clubInfo?.bio && <About bio={clubInfo?.bio} />}
+
+        {clubData && (
+          <Eligibility
+            gatedTokenDetails={gatedTokenDetails}
+            isDeposit={true}
+            isTokenGated={isTokenGated}
+            isWhitelist={whitelistUserData?.setWhitelist}
+          />
+        )}
+
+        <ClaimActivity
+          isDeposit={true}
+          activityDetails={members}
+          tokenDetails={tokenDetails}
+        />
+      </section>
 
       {showMessage ? (
-        <CustomAlert severity={claimSuccessfull} alertMessage={message} />
+        <CustomAlert alertMessage={message} severity={claimSuccessfull} />
       ) : null}
-    </div>
+
+      <BackdropLoader isOpen={loading} />
+    </main>
   );
 };
 

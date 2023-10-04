@@ -1,16 +1,11 @@
-import {
-  Backdrop,
-  Button,
-  CircularProgress,
-  Grid,
-  TextField,
-} from "@mui/material";
+import { Button, Grid, TextField } from "@mui/material";
 import { useFormik } from "formik";
 import React, { useRef, useState } from "react";
 import { generateRandomString, uploadFileToAWS } from "utils/helper";
 import { createDocument } from "api/document";
 import { editDepositConfig } from "api/deposit";
 import CustomAlert from "@components/common/CustomAlert";
+import BackdropLoader from "@components/common/BackdropLoader";
 
 const UploadW8Ben = ({ daoAddress, walletAddress, depositConfig }) => {
   const hiddenFileInput = useRef(null);
@@ -122,11 +117,7 @@ const UploadW8Ben = ({ daoAddress, walletAddress, depositConfig }) => {
         </Button>
       </Grid>
 
-      <Backdrop
-        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={loading}>
-        <CircularProgress />
-      </Backdrop>
+      <BackdropLoader isOpen={loading} />
 
       {showMessage && (
         <CustomAlert alertMessage={message} severity={isSuccessFull} />

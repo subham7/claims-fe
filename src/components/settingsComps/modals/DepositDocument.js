@@ -6,6 +6,7 @@ import dayjs from "dayjs";
 import { useFormik } from "formik";
 import React from "react";
 import * as yup from "yup";
+import BackdropLoader from "@components/common/BackdropLoader";
 
 const useStyles = makeStyles({
   container: {
@@ -21,23 +22,7 @@ const useStyles = makeStyles({
     transform: "translateX(-50%) translateY(-50%)",
     zIndex: "1",
   },
-  backdrop: {
-    position: "fixed",
-    top: "0",
-    left: "0",
-    height: "100vh",
-    width: "100vw",
-    background: "#000",
-    opacity: "70%",
-    zIndex: "1",
-  },
 });
-
-const CustomBackdrop = ({ onClick }) => {
-  const classes = useStyles();
-
-  return <div onClick={onClick} className={classes.backdrop}></div>;
-};
 
 const DepositDocument = ({ updateDocumentLink, onClose, loading }) => {
   // const [depositTime, setDepositTime] = useState(dayjs(Date.now() + 300000));
@@ -59,42 +44,44 @@ const DepositDocument = ({ updateDocumentLink, onClose, loading }) => {
 
   return (
     <>
-      <CustomBackdrop onClick={onClose} />
-      <div className={classes.container}>
-        <Typography
-          sx={{ textAlign: "left", fontSize: "24px", marginBottom: "8px" }}>
-          Update Document Link
-        </Typography>
+      <BackdropLoader isOpen={true} forLoading={false}>
+        <div className={classes.container}>
+          <Typography
+            sx={{ textAlign: "left", fontSize: "24px", marginBottom: "8px" }}>
+            Update Document Link
+          </Typography>
 
-        <form style={{ width: "100%" }}>
-          <TextField
-            name="documentLink"
-            label="https://"
-            variant="outlined"
-            fullWidth
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            value={formik.values.documentLink}
-            error={
-              formik.touched.documentLink && Boolean(formik.errors.documentLink)
-            }
-            helperText={
-              formik.touched.documentLink && formik.errors.documentLink
-            }
-          />
+          <form style={{ width: "100%" }}>
+            <TextField
+              name="documentLink"
+              label="https://"
+              variant="outlined"
+              fullWidth
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              value={formik.values.documentLink}
+              error={
+                formik.touched.documentLink &&
+                Boolean(formik.errors.documentLink)
+              }
+              helperText={
+                formik.touched.documentLink && formik.errors.documentLink
+              }
+            />
 
-          <Grid
-            sx={{
-              justifyContent: "center",
-              display: "flex",
-              gap: "30px",
-              marginTop: "20px",
-            }}>
-            <Button onClick={formik.handleSubmit}>Update</Button>
-            <Button onClick={onClose}>Cancel</Button>
-          </Grid>
-        </form>
-      </div>
+            <Grid
+              sx={{
+                justifyContent: "center",
+                display: "flex",
+                gap: "30px",
+                marginTop: "20px",
+              }}>
+              <Button onClick={formik.handleSubmit}>Update</Button>
+              <Button onClick={onClose}>Cancel</Button>
+            </Grid>
+          </form>
+        </div>
+      </BackdropLoader>
     </>
   );
 };

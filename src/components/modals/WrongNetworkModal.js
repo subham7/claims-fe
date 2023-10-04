@@ -1,3 +1,4 @@
+import BackdropLoader from "@components/common/BackdropLoader";
 import { makeStyles } from "@mui/styles";
 import Image from "next/image";
 import React from "react";
@@ -5,22 +6,7 @@ import { CHAIN_CONFIG } from "utils/constants";
 import { requestEthereumChain } from "utils/helper";
 import img from "../../../public/assets/images/wrongNetwork.png";
 
-const Backdrop = () => {
-  const classes = useStyles();
-  return <div className={classes.backdrop}></div>;
-};
-
 const useStyles = makeStyles({
-  backdrop: {
-    position: "fixed",
-    height: "100vh",
-    width: "100vw",
-    top: 0,
-    left: 0,
-    background: "#000000",
-    opacity: 0.6,
-    zIndex: 2000,
-  },
   modal: {
     width: "450px",
     background: "#0F0F0F",
@@ -92,17 +78,18 @@ const WrongNetworkModal = ({ chainId = "0x89" }) => {
 
   return (
     <>
-      <Backdrop />
-      <div className={classes.modal}>
-        <p className={classes.text}>
-          Oops! Looks like you’re on a different network.
-        </p>
-        <Image src={img} alt="Wrong network" height={136} width={160} />
+      <BackdropLoader isOpen={true} forLoading={false}>
+        <div className={classes.modal}>
+          <p className={classes.text}>
+            Oops! Looks like you’re on a different network.
+          </p>
+          <Image src={img} alt="Wrong network" height={136} width={160} />
 
-        <button className={classes.btn} onClick={switchNetworkHandler}>
-          Switch to {CHAIN_CONFIG[chainId]?.shortName}
-        </button>
-      </div>
+          <button className={classes.btn} onClick={switchNetworkHandler}>
+            Switch to {CHAIN_CONFIG[chainId]?.shortName}
+          </button>
+        </div>
+      </BackdropLoader>
     </>
   );
 };

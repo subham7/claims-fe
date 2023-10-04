@@ -2,7 +2,6 @@ import About from "@components/claims/About";
 import ClaimActivity from "@components/claims/ClaimActivity";
 import Eligibility from "@components/claims/Eligibility";
 import Header from "@components/claims/Header";
-import { Backdrop, CircularProgress } from "@mui/material";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
@@ -26,6 +25,7 @@ import DepositDetails from "./DepositDetails";
 import DepositProgress from "./DepositProgress";
 import CustomAlert from "@components/common/CustomAlert";
 import { getDocumentsByClubId } from "api/document";
+import BackdropLoader from "@components/common/BackdropLoader";
 
 const ERC20 = ({
   clubInfo,
@@ -321,11 +321,7 @@ const ERC20 = ({
         <CustomAlert alertMessage={message} severity={depositSuccessfull} />
       ) : null}
 
-      <Backdrop
-        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={loading}>
-        <CircularProgress />
-      </Backdrop>
+      <BackdropLoader isOpen={loading} />
     </main>
   );
 };

@@ -1,17 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { convertFromWeiGovernance } from "utils/globalFunctions";
 import { useSelector } from "react-redux";
-import { Backdrop, CircularProgress } from "@mui/material";
 import { fetchClubByDaoAddress, getClubInfo } from "api/club";
-// import ERC721 from "@components/depositPageComps/ERC721/ERC721";
 import useAppContract from "hooks/useAppContract";
 import { getWhitelistMerkleProof } from "api/whitelist";
 import { useAccount, useNetwork } from "wagmi";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 import useAppContractMethods from "hooks/useAppContractMethods";
 import { queryAllMembersFromSubgraph } from "utils/stationsSubgraphHelper";
-import NewErc721 from "@components/depositPageComps/ERC721/NewErc721";
 import ERC20 from "@components/depositPageComps/ERC20/ERC20";
+import ERC721 from "@components/depositPageComps/ERC721/Erc721";
+import BackdropLoader from "@components/common/BackdropLoader";
 
 const Join = ({ daoAddress }) => {
   const [daoDetails, setDaoDetails] = useState({
@@ -288,7 +287,7 @@ const Join = ({ daoAddress }) => {
           depositConfig={depositConfig}
         />
       ) : TOKEN_TYPE === "erc721" ? (
-        <NewErc721
+        <ERC721
           daoAddress={daoAddress}
           clubInfo={clubInfo}
           isTokenGated={isTokenGated}
@@ -301,11 +300,7 @@ const Join = ({ daoAddress }) => {
         />
       ) : null}
 
-      <Backdrop
-        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={loading}>
-        <CircularProgress />
-      </Backdrop>
+      <BackdropLoader isOpen={loading} />
     </>
   );
 };
