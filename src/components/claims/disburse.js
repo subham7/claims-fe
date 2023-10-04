@@ -9,6 +9,9 @@ import { getTokensList } from "api/token";
 import { getUserTokenData, isValidAddress } from "utils/helper";
 import { CHAIN_CONFIG } from "utils/constants";
 import DisburseForm from "@components/claimsPageComps/DisburseForm";
+import { convertToWeiGovernance } from "utils/globalFunctions";
+import useDropsContractMethods from "hooks/useDropsContractMethods";
+import useCommonContractMethods from "hooks/useCommonContractMehods";
 
 const useStyles = makeStyles({
   container: {
@@ -34,6 +37,10 @@ const CreateDisburse = () => {
   const networkId = "0x" + chain?.id.toString(16);
   const router = useRouter();
 
+  const { disburse } = useDropsContractMethods();
+
+  const { approveDeposit } = useCommonContractMethods();
+
   const getCurrentAccount = async () => {
     try {
       setLoadingTokens(true);
@@ -43,7 +50,11 @@ const CreateDisburse = () => {
           walletAddress,
         );
 
-        const data = await getUserTokenData(tokensList?.data?.items, networkId);
+        const data = await getUserTokenData(
+          tokensList?.data?.items,
+          networkId,
+          true,
+        );
         setTokensInWallet(data?.filter((token) => token.symbol !== null));
         setLoadingTokens(false);
       }
@@ -63,28 +74,68 @@ const CreateDisburse = () => {
       disburseList: "",
     },
     validationSchema: disburseFormValidation,
-    onSubmit: (values) => {
-      const disburseAddresses = [];
-      const disburseAmounts = [];
-      values.disburseList.split("\n").forEach((item) => {
-        const [address, amount] = item.split(",");
-        if (isValidAddress(address) && !isNaN(Number(amount))) {
-          disburseAddresses.push(address);
-          disburseAmounts.push(Number(amount));
-        } else {
+    onSubmit: async (values) => {
+      try {
+        const { selectedToken } = values;
+        const disburseAddresses = [];
+        const disburseAmounts = [];
+
+        values.disburseList.split("\n").forEach((item) => {
+          const [address, amount] = item.split(",");
+          if (isValidAddress(address) && !isNaN(Number(amount))) {
+            disburseAddresses.push(address);
+            disburseAmounts.push(
+              convertToWeiGovernance(Number(amount), selectedToken.decimals),
+            );
+          } else {
+            setShowError(true);
+            setError("Invalid disburse list format");
+          }
+        });
+
+        if (disburseAddresses.length !== disburseAmounts.length) {
           setShowError(true);
           setError("Invalid disburse list format");
         }
-      });
 
-      const totalAmount = disburseAmounts.reduce(
-        (partialSum, a) => partialSum + a,
-        0,
-      );
+        const totalAmount = disburseAmounts.reduce(
+          (partialSum, a) => partialSum + Number(a),
+          0,
+        );
 
-      if (totalAmount > values.selectedToken.balance) {
+        if (totalAmount > Number(selectedToken.balance)) {
+          showMessageHandler();
+          setShowError(true);
+          setError("Your wallet does not have enough balance for the disburse");
+        }
+
+        await approveDeposit(
+          selectedToken.address,
+          CHAIN_CONFIG[networkId].disburseContractAddress,
+          totalAmount,
+          1, //Passing 1 as the value is already converted
+        );
+
+        await disburse(
+          selectedToken.address === CHAIN_CONFIG[networkId].nativeToken,
+          selectedToken.address,
+          disburseAddresses,
+          disburseAmounts,
+        );
+
+        setLoading(false);
+        showMessageHandler();
+        setIsSuccessFull(true);
+        setMessage("Tokens disbursed successfully");
+
+        setTimeout(() => {
+          router.push(`/claims/`);
+        }, 1000);
+      } catch (e) {
+        showMessageHandler();
         setShowError(true);
-        setError("Your wallet does not have enough balance for the disburse");
+        setError("Disburse failed! Please try again.");
+        console.error(e);
       }
     },
   });

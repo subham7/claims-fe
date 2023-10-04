@@ -1,9 +1,15 @@
-import { FormControl, MenuItem, Typography } from "@mui/material";
+import {
+  FormControl,
+  InputAdornment,
+  MenuItem,
+  Typography,
+} from "@mui/material";
 import { Button, TextField } from "@components/ui";
 import { BsArrowLeft } from "react-icons/bs";
 import { makeStyles } from "@mui/styles";
 import React from "react";
 import { useRouter } from "next/router";
+import { convertFromWeiGovernance } from "utils/globalFunctions";
 
 const useStyles = makeStyles({
   form: {
@@ -92,6 +98,21 @@ const DisburseForm = ({ formik, tokensInWallet, isLoading }) => {
         </Typography>
         <FormControl sx={{ width: "100%" }}>
           <TextField
+            InputProps={{
+              endAdornment: (
+                <InputAdornment
+                  style={{ color: "#6475A3", marginRight: "20px" }}
+                  position="end">
+                  Balance:{" "}
+                  {formik.values.selectedToken
+                    ? convertFromWeiGovernance(
+                        formik.values.selectedToken.balance,
+                        formik.values.selectedToken.decimals,
+                      )
+                    : "0"}
+                </InputAdornment>
+              ),
+            }}
             disabled={isLoading}
             variant="outlined"
             name="selectedToken"

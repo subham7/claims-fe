@@ -193,9 +193,9 @@ export const extractNftAdressAndId = (url) => {
 export const getUserTokenData = async (
   tokenData,
   networkId,
-  isProposal = false,
+  allowNative = false,
 ) => {
-  const filteredData = !isProposal
+  const filteredData = !allowNative
     ? tokenData.filter(
         (token) =>
           token.contract_address !== CHAIN_CONFIG[networkId].nativeToken,

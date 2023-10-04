@@ -12,7 +12,7 @@ import {
 } from "utils/globalFunctions";
 import { useAccount, useNetwork } from "wagmi";
 import classes from "./Claim.module.scss";
-import useDropsContractMethods from "hooks/useDropsContracMethods";
+import useDropsContractMethods from "hooks/useDropsContractMethods";
 import { Alert, CircularProgress, Skeleton, Typography } from "@mui/material";
 import { getClaimDetails, getUserProofAndBalance } from "api/claims";
 import ClaimActivity from "./ClaimActivity";
