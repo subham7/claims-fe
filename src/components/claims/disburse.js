@@ -83,17 +83,18 @@ const CreateDisburse = () => {
 
         values.disburseList.split("\n").forEach((item) => {
           const [address, amount] = item.split(",");
-          if (isValidAddress(address) && !isNaN(Number(amount))) {
+          if (
+            isValidAddress(address) &&
+            !isNaN(Number(amount)) &&
+            Number(amount) > 0
+          ) {
             disburseAddresses.push(address);
-            disburseAmounts.push(
-              convertToWeiGovernance(Number(amount), selectedToken.decimals),
-            );
+            disburseAmounts.push(Number(amount));
           } else {
             setLoading(false);
             showMessageHandler();
             setIsSuccessFull(false);
-            setMessage("Invalid disburse list format");
-            return;
+            throw new Error("Invalid disburse list format");
           }
         });
 
@@ -110,7 +111,10 @@ const CreateDisburse = () => {
           0,
         );
 
-        if (totalAmount > Number(selectedToken.balance)) {
+        if (
+          convertToWeiGovernance(totalAmount, selectedToken.decimals) >
+          Number(selectedToken.balance)
+        ) {
           setLoading(false);
           showMessageHandler();
           setIsSuccessFull(false);
@@ -123,7 +127,7 @@ const CreateDisburse = () => {
         await approveDeposit(
           selectedToken.address,
           CHAIN_CONFIG[networkId].disburseContractAddress,
-          totalAmount,
+          convertToWeiGovernance(totalAmount, selectedToken.decimals),
           1, //Passing 1 as the value is already converted
         );
 
@@ -131,7 +135,9 @@ const CreateDisburse = () => {
           selectedToken.address === CHAIN_CONFIG[networkId].nativeToken,
           selectedToken.address,
           disburseAddresses,
-          disburseAmounts,
+          disburseAmounts.map((item) =>
+            convertToWeiGovernance(item, selectedToken.decimals),
+          ),
         );
 
         setLoading(false);
@@ -146,8 +152,7 @@ const CreateDisburse = () => {
         showMessageHandler();
         setIsSuccessFull(false);
         setLoading(false);
-        setMessage("Disburse failed! Please try again.");
-        console.error(e);
+        setMessage(e.message);
       }
     },
   });
