@@ -607,6 +607,27 @@ const stakeErc20TokensToStargate = (
     .encodeABI();
 };
 
+const unstakeErc20TokensToStargate = (
+  unstakeTokenAddress,
+  unstakeAmount,
+  gnosisAddress,
+  web3Call,
+  networkId,
+) => {
+  const stakeInStargate = new web3Call.eth.Contract(
+    stargateStakeABI,
+    CHAIN_CONFIG[networkId].stargateRouterAddress,
+  );
+
+  return stakeInStargate.methods
+    .instantRedeemLocal(
+      CHAIN_CONFIG[networkId].stargatePoolIds[unstakeTokenAddress],
+      unstakeAmount,
+      gnosisAddress,
+    )
+    .encodeABI();
+};
+
 const depositEthMethodEncoded = (
   poolAddress,
   addressWhereAssetsStored,
@@ -684,6 +705,7 @@ export const getTransaction = async ({
     depositAmount,
     withdrawAmount,
     stakeAmount,
+    unstakeAmount,
   } = proposalData.commands[0];
   let approvalTransaction;
   let transaction;
@@ -946,6 +968,30 @@ export const getTransaction = async ({
         data: stakeErc20TokensToStargate(
           tokenData,
           stakeAmount,
+          gnosisAddress,
+          web3Call,
+          networkId,
+        ),
+        value: "0",
+      };
+    case 18:
+      approvalTransaction = {
+        to: Web3.utils.toChecksumAddress(tokenData),
+        data: approveDepositWithEncodeABI(
+          tokenData,
+          CHAIN_CONFIG[networkId].stargateRouterAddress,
+          unstakeAmount,
+          web3Call,
+        ),
+        value: "0",
+      };
+      transaction = {
+        to: Web3.utils.toChecksumAddress(
+          CHAIN_CONFIG[networkId].stargateRouterAddress,
+        ),
+        data: unstakeErc20TokensToStargate(
+          tokenData,
+          unstakeAmount,
           gnosisAddress,
           web3Call,
           networkId,

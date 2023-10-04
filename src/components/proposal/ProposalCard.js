@@ -80,7 +80,6 @@ const ProposalCard = ({ proposal, daoAddress }) => {
             ? unstakeToken
             : "",
         );
-        if (executionId === 17) console.log("symbol", symbol);
 
         setTokenDetails({
           decimals: decimal,

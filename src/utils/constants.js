@@ -51,6 +51,10 @@ export const CHAIN_CONFIG = {
       "0xc2132d05d31c914a87c6611c10748aeb04b58e8f": 2,
       "0x8f3cf7ad23cd3cadbd9735aff958023239c6a063": 3,
       "0xa3fa99a148fa48d14ed51d610c367c61876997f1": 16,
+      "0x1205f31718499dbf1fca446663b532ef87481fe1": 1,
+      "0x29e38769f23701a2e4a8ef0492e19da4604be62c": 2,
+      "0x1c272232df0bb6225da87f4decd9d37c32f63eea": 3,
+      "0x8736f92646b2542b3e5f3c63590ca7fe313e283b": 16,
     },
   },
   "0x5": {

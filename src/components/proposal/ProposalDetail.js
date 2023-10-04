@@ -387,6 +387,8 @@ const ProposalDetail = ({ pid, daoAddress }) => {
         ? proposalData.commands[0]?.withdrawToken
         : proposalData.commands[0]?.executionId === 17
         ? proposalData.commands[0]?.stakeToken
+        : proposalData.commands[0]?.executionId === 18
+        ? proposalData.commands[0]?.unstakeToken
         : "",
       proposalStatus,
       airdropContractAddress,
