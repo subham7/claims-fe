@@ -110,6 +110,10 @@ const Documents = ({ daoAddress, networkId }) => {
     return state.legal.documentList;
   });
 
+  const isAdmin = useSelector((state) => {
+    return state.gnosis.adminUser;
+  });
+
   const createDocHandler = () => {
     router.push(`/documents/${daoAddress}/${networkId}/create`);
   };
@@ -140,9 +144,12 @@ const Documents = ({ daoAddress, networkId }) => {
         <div className={classes.leftDiv}>
           <div className={classes.header}>
             <p className={classes.title}>Documents</p>
-            <button onClick={createDocHandler} className={classes.createDoc}>
-              Create new
-            </button>
+
+            {isAdmin && (
+              <button onClick={createDocHandler} className={classes.createDoc}>
+                Create new
+              </button>
+            )}
           </div>
 
           {docsList?.length ? (
@@ -211,7 +218,8 @@ const Documents = ({ daoAddress, networkId }) => {
                 Sign documents within your station
               </Typography>
               <Link
-                href="/"
+                href="https://stationxnetwork.gitbook.io/docs"
+                target={"_blank"}
                 sx={{
                   position: "absolute",
                   color: "#0F0F0F",

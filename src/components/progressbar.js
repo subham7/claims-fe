@@ -6,9 +6,7 @@ import LinearProgress, {
 const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
   height: 10,
   borderRadius: 4,
-  [`&.${linearProgressClasses.colorPrimary}`]: {
-    border: "1px solid #dcdcdc40",
-  },
+  [`&.${linearProgressClasses.colorPrimary}`]: {},
   [`& .${linearProgressClasses.bar}`]: {
     borderRadius: 4,
     background:
@@ -17,5 +15,13 @@ const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
 }));
 
 export default function ProgressBar(props) {
-  return <BorderLinearProgress variant="determinate" value={props.value} />;
+  return (
+    <BorderLinearProgress
+      sx={{
+        zIndex: props.zIndex ? props.zIndex : 0,
+      }}
+      variant="determinate"
+      value={props.value}
+    />
+  );
 }

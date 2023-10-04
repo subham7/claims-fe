@@ -310,4 +310,15 @@ export const uploadFileToAWS = async (file) => {
 
 export const isValidAddress = (address) => {
   return /^0x[a-fA-F0-9]{40}$/.test(address);
+}
+
+export const generateRandomString = (length) => {
+  const chars =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let result = "";
+  for (let i = 0; i < length; i++) {
+    const randomIndex = Math.floor(Math.random() * chars.length);
+    result += chars[randomIndex];
+  }
+  return result;
 };

@@ -7,7 +7,6 @@ import {
   ListItemButton,
   Paper,
   Skeleton,
-  Snackbar,
   Table,
   TableBody,
   TableCell,
@@ -751,22 +750,6 @@ const DashboardIndex = ({ daoAddress }) => {
           </Stack>
         </Grid>
       </Grid>
-
-      <Snackbar
-        //   open={openSnackBar}
-        autoHideDuration={6000}
-        //   onClose={handleSnackBarClose}
-        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}>
-        {/* {failed ? (
-              <Alert
-              //   onClose={handleSnackBarClose}
-                severity="error"
-                sx={{ width: "100%" }}
-              >
-                Error fetching data!
-              </Alert>
-            ) : null} */}
-      </Snackbar>
     </>
   );
 };
