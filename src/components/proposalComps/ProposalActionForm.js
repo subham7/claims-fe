@@ -59,14 +59,19 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
 
   let stargateFilteredTokens = [];
   tokenData.map((token) => {
-    console.log(
-      CHAIN_CONFIG[networkId].stargateStakingAddresses,
-      token.address,
-    );
     if (
       CHAIN_CONFIG[networkId].stargateStakingAddresses.includes(token.address)
     ) {
       stargateFilteredTokens.push(token);
+    }
+  });
+
+  let stargateUnstakeFilteredTokens = [];
+  tokenData.map((token) => {
+    if (
+      CHAIN_CONFIG[networkId].stargateUnstakingAddresses.includes(token.address)
+    ) {
+      stargateUnstakeFilteredTokens.push(token);
     }
   });
 
@@ -215,6 +220,8 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
         filteredTokens:
           formik.values.actionCommand === 17
             ? stargateFilteredTokens
+            : formik.values.actionCommand === 18
+            ? stargateUnstakeFilteredTokens
             : filteredTokens,
       })}
     </Stack>

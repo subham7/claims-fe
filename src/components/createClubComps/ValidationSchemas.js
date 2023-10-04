@@ -474,6 +474,45 @@ export const getProposalValidationSchema = ({
           return true;
         },
       ),
+    stargateUnstakeToken: yup
+      .string("Enter stargate unstaking token")
+      .when("actionCommand", {
+        is: 18,
+        then: () =>
+          yup
+            .string("Enter stargate unstaking token")
+            .required("Token is required"),
+      }),
+    stargateUnstakeAmount: yup
+      .number("Please enter amount")
+      .test(
+        "invalidStargateUnstakeAmt",
+        "Enter an amount less or equal to treasury balance",
+        async (value, context) => {
+          const { actionCommand, stargateUnstakeToken } = context.parent;
+
+          if (actionCommand === 18) {
+            try {
+              const balance = await getBalance(
+                stargateUnstakeToken,
+                gnosisAddress,
+              );
+              const decimals = await getDecimals(stargateUnstakeToken);
+
+              if (
+                Number(value) <=
+                  Number(convertFromWeiGovernance(balance, decimals)) &&
+                Number(value) > 0
+              ) {
+                return true;
+              } else return false;
+            } catch (error) {
+              return false;
+            }
+          }
+          return true;
+        },
+      ),
   });
 };
 

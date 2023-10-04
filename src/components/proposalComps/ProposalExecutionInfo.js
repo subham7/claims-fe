@@ -63,6 +63,8 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
     airDropCarryFee,
     stakeToken,
     stakeAmount,
+    unstakeToken,
+    unstakeAmount,
   } = proposalData?.commands[0];
 
   const fetchAirDropContractDetails = useCallback(async () => {
@@ -72,7 +74,8 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
         customToken ||
         depositToken ||
         withdrawToken ||
-        stakeToken
+        stakeToken ||
+        unstakeToken
       ) {
         const decimal = await getDecimals(
           airDropToken
@@ -83,7 +86,9 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
             ? depositToken
             : withdrawToken
             ? withdrawToken
-            : stakeToken,
+            : stakeToken
+            ? stakeToken
+            : unstakeToken,
         );
         const symbol = await getTokenSymbol(
           airDropToken
@@ -94,7 +99,9 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
             ? depositToken
             : withdrawToken
             ? withdrawToken
-            : stakeToken,
+            : stakeToken
+            ? stakeToken
+            : unstakeToken,
         );
 
         const amount = convertFromWeiGovernance(
@@ -102,7 +109,9 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
             ? depositAmount
             : withdrawAmount
             ? withdrawAmount
-            : stakeAmount,
+            : stakeAmount
+            ? stakeAmount
+            : unstakeAmount,
           decimal,
         );
 
@@ -124,6 +133,8 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
     withdrawToken,
     stakeToken,
     stakeAmount,
+    unstakeToken,
+    unstakeAmount,
   ]);
 
   useEffect(() => {
@@ -491,11 +502,13 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
                   </Grid>
                 </Grid>
               </>
-            ) : executionId === 17 ? (
+            ) : executionId === 17 || executionId === 18 ? (
               <>
                 <Grid container item mb={1}>
                   <Typography className={classes.listFont2Colourless}>
-                    Stake tokens through stargate pool
+                    {executionId === 17
+                      ? "Stake tokens through stargate pool"
+                      : "Unstake tokens through stargate pool"}
                   </Typography>
                 </Grid>
                 <Divider />
