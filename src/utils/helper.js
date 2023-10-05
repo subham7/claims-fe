@@ -124,7 +124,8 @@ export const showWrongNetworkModal = (networkId, routeNetworkId) => {
   if (
     routeNetworkId &&
     routeNetworkId !== networkId &&
-    routeNetworkId !== "create"
+    routeNetworkId !== "create" &&
+    routeNetworkId !== "disburse"
   ) {
     return <WrongNetworkModal chainId={routeNetworkId} />;
   }
@@ -192,9 +193,9 @@ export const extractNftAdressAndId = (url) => {
 export const getUserTokenData = async (
   tokenData,
   networkId,
-  isProposal = false,
+  allowNative = false,
 ) => {
-  const filteredData = !isProposal
+  const filteredData = !allowNative
     ? tokenData.filter(
         (token) =>
           token.contract_address !== CHAIN_CONFIG[networkId].nativeToken,
@@ -306,6 +307,10 @@ export const uploadFileToAWS = async (file) => {
     reader.readAsArrayBuffer(file);
   });
 };
+
+export const isValidAddress = (address) => {
+  return /^0x[a-fA-F0-9]{40}$/.test(address);
+}
 
 export const generateRandomString = (length) => {
   const chars =

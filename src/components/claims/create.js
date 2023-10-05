@@ -19,7 +19,7 @@ import { getTokensList } from "api/token";
 import { getUserTokenData } from "utils/helper";
 import { CHAIN_CONFIG, ZERO_ADDRESS, ZERO_MERKLE_ROOT } from "utils/constants";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
-import useDropsContractMethods from "hooks/useDropsContracMethods";
+import useDropsContractMethods from "hooks/useDropsContractMethods";
 import CustomAlert from "@components/common/CustomAlert";
 
 const useStyles = makeStyles({
@@ -336,7 +336,7 @@ const CreateClaim = () => {
             showMessageHandler(setFinish);
             setTimeout(() => {
               router.push(`/claims/`);
-            }, 3000);
+            }, 1000);
           } catch (err) {
             console.log(err);
             setLoading(false);

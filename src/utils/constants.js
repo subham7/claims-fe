@@ -56,6 +56,7 @@ export const CHAIN_CONFIG = {
       "0x1c272232df0bb6225da87f4decd9d37c32f63eea": 3,
       "0x8736f92646b2542b3e5f3c63590ca7fe313e283b": 16,
     },
+    disburseContractAddress: "0x2F73a97D1be96853AF8E2b8F29E0F2AF332EA9f5",
   },
   "0x5": {
     chainName: "Goerli Testnet",

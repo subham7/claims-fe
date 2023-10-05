@@ -25,6 +25,11 @@ const useStyles = makeStyles({
     justifyContent: "space-between",
     alignItems: "center",
   },
+  headerBtns: {
+    display: "flex",
+    alignItems: "center",
+    gap: "16px",
+  },
   claimDoc: {
     width: "130px",
     fontSize: "16px",
@@ -81,8 +86,12 @@ const ListClaims = () => {
   const { chain } = useNetwork();
   const networkId = "0x" + chain?.id.toString(16);
 
-  const createClaimHandler = () => {
+  const createClaim = () => {
     router.push("/claims/create");
+  };
+
+  const createDisburse = () => {
+    router.push("/claims/disburse");
   };
 
   const { address: walletAddress } = useAccount();
@@ -116,9 +125,14 @@ const ListClaims = () => {
             <Typography color="textPrimary" variant="h4">
               Welcome to Drops
             </Typography>
-            <Button variant="contained" onClick={createClaimHandler}>
-              Create
-            </Button>
+            <div className={classes.headerBtns}>
+              <Button variant="contained" onClick={createDisburse}>
+                Disburse
+              </Button>
+              <Button variant="contained" onClick={createClaim}>
+                Create
+              </Button>
+            </div>
           </div>
 
           {!claimData.length && (

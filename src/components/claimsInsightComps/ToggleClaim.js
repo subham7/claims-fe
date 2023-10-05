@@ -5,7 +5,7 @@ import {
   FormControlLabel,
   Switch,
 } from "@mui/material";
-import useDropsContractMethods from "hooks/useDropsContracMethods";
+import useDropsContractMethods from "hooks/useDropsContractMethods";
 import React, { useEffect, useState } from "react";
 import { ClaimsInsightStyles } from "./claimsInsightStyles";
 
