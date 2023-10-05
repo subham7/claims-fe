@@ -104,7 +104,7 @@ export const proposalData = ({ data, decimals, factoryData, symbol }) => {
         "Withdraw token": symbol,
         "Withdraw amount": convertFromWeiGovernance(withdrawAmount, decimals),
       };
-    case 17:
+    case 19:
       return {
         "Swap token": shortAddress(swapToken),
         "Swap amt": convertFromWeiGovernance(swapAmount, decimals),
@@ -894,7 +894,7 @@ export const proposalFormData = ({
           </Grid>
         </>
       );
-    case 17:
+    case 19:
       return (
         <>
           <Grid
@@ -1151,19 +1151,6 @@ export const getProposalCommands = async ({
           tokenDecimal,
         ),
       };
-    case 17:
-      tokenDecimal = tokenData.find(
-        (token) => token.address === values.oneInchSwapToken,
-      ).decimals;
-
-      return {
-        swapToken: values.oneInchSwapToken,
-        swapAmount: convertToWeiGovernance(
-          values.oneInchSwapAmount,
-          tokenDecimal,
-        ),
-        destinationToken: values.oneInchRecieverToken,
-      };
     case 16:
       mirrorAddresses = await fetchLensActionAddresses({
         postLink: values.lensPostLink,
@@ -1180,6 +1167,19 @@ export const getProposalCommands = async ({
         lensPostLink: values.lensPostLink,
         whitelistAddresses: mirrorAddresses,
         allowWhitelisting: true,
+      };
+    case 19:
+      tokenDecimal = tokenData.find(
+        (token) => token.address === values.oneInchSwapToken,
+      ).decimals;
+
+      return {
+        swapToken: values.oneInchSwapToken,
+        swapAmount: convertToWeiGovernance(
+          values.oneInchSwapAmount,
+          tokenDecimal,
+        ),
+        destinationToken: values.oneInchRecieverToken,
       };
   }
 };
